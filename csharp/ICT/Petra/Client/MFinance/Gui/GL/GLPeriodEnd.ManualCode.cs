@@ -34,10 +34,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     /// </summary>
     public partial class TPeriodEnd
     {
-    	
-    	const bool INFORMATION_MODE = true;
-    	const bool CALCULATION_MODE = false;
-    	
+        const bool INFORMATION_MODE = true;
+        const bool CALCULATION_MODE = false;
+
         TVerificationResultCollection verificationResult;
         private Int32 FLedgerNumber;
 
@@ -68,20 +67,23 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             btnMonthEnd.Visible = false;
             btnCancel.Text = Catalog.GetString("Done");
         }
-        
+
         private bool RunPeriodEnd(bool AInInfoMode)
         {
             bool blnErrorStatus;
-                if (blnIsInMonthMode)
-                {
-                	blnErrorStatus = TRemote.MFinance.GL.WebConnectors.TPeriodMonthEnd(
-                		FLedgerNumber, AInInfoMode, out verificationResult);
-                } else
-                {
-                	blnErrorStatus = TRemote.MFinance.GL.WebConnectors.TPeriodYearEnd(
-                		FLedgerNumber, AInInfoMode, out verificationResult);
-                }
-            return blnErrorStatus;    
+
+            if (blnIsInMonthMode)
+            {
+                blnErrorStatus = TRemote.MFinance.GL.WebConnectors.TPeriodMonthEnd(
+                    FLedgerNumber, AInInfoMode, out verificationResult);
+            }
+            else
+            {
+                blnErrorStatus = TRemote.MFinance.GL.WebConnectors.TPeriodYearEnd(
+                    FLedgerNumber, AInInfoMode, out verificationResult);
+            }
+
+            return blnErrorStatus;
         }
 
         private void ResizeForm(object from, EventArgs e)

@@ -54,39 +54,34 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
     /// </summary>
     public partial class TPeriodIntervallConnector
     {
-
-    	/// <summary>
-    	/// Month end master routine ...
-    	/// </summary>
-    	/// <param name="ALedgerNum"></param>
-    	/// <param name="AIsInInfoMode"></param>
-    	/// <param name="AVerificationResult"></param>
-    	/// <returns></returns>
+        /// <summary>
+        /// Month end master routine ...
+        /// </summary>
+        /// <param name="ALedgerNum"></param>
+        /// <param name="AIsInInfoMode"></param>
+        /// <param name="AVerificationResult"></param>
+        /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
         public static bool TPeriodMonthEnd(
             int ALedgerNum,
-            bool AIsInInfoMode, 
+            bool AIsInInfoMode,
             out TVerificationResultCollection AVerificationResult)
         {
             return new TMonthEnd().RunMonthEnd(ALedgerNum, AIsInInfoMode,
                 out AVerificationResult);
         }
-    
-    
     }
 }
 
 namespace Ict.Petra.Server.MFinance.GL
 {
-	public class TMonthEnd : TPerdiodEndOperations
+    public class TMonthEnd : TPerdiodEndOperations
     {
-
         TLedgerInfo ledgerInfo;
 
         public bool RunMonthEnd(int ALedgerNum, bool AInfoMode,
             out TVerificationResultCollection AVRCollection)
         {
-        	
             blnIsInInfoMode = AInfoMode;
             ledgerInfo = new TLedgerInfo(ALedgerNum);
             verificationResults = new TVerificationResultCollection();
@@ -105,12 +100,11 @@ namespace Ict.Petra.Server.MFinance.GL
             }
 
             RunPeriodEndCheck(new RunMonthEndChecks(ledgerInfo));
-            
+
             // TODO: Admin Fees and
             // TODO: ICH stewardship ...
-            
+
             // RunPeriodEndSequence(new RunMonthlyAdminFees(), "Example");
-            
 
             if (!blnIsInInfoMode)
             {
@@ -123,9 +117,6 @@ namespace Ict.Petra.Server.MFinance.GL
             AVRCollection = verificationResults;
             return blnCriticalErrors;
         }
-        
-        
-        
 
         /// <summary>
         /// Class entry point for the info function
@@ -205,7 +196,6 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
 
-
         void RunAndAccountAdminFees()
         {
             // TODO: Admin Fees and
@@ -216,29 +206,30 @@ namespace Ict.Petra.Server.MFinance.GL
 
     class RunMonthEndChecks : AbstractPerdiodEndOperation
     {
-    	TLedgerInfo ledgerInfo;
+        TLedgerInfo ledgerInfo;
 
-    	bool blnZerorValueSuspenseAccountsFound = false;
-		GetSuspenseAccountInfo getSuspenseAccountInfo = null;
-    	
-    	public RunMonthEndChecks(TLedgerInfo ALedgerInfo)
-    	{
-    		ledgerInfo = ALedgerInfo;
-    	}
-    	
-		public override int JobSize {
-			get {
-				return 0;
-			}
-		}
-    	
-		public override AbstractPerdiodEndOperation GetActualizedClone()
-		{
-			return new RunMonthEndChecks(ledgerInfo);
-		}
-    	
-		public override void RunEndOfPeriodOperation()
-		{
+        bool blnZerorValueSuspenseAccountsFound = false;
+        GetSuspenseAccountInfo getSuspenseAccountInfo = null;
+
+        public RunMonthEndChecks(TLedgerInfo ALedgerInfo)
+        {
+            ledgerInfo = ALedgerInfo;
+        }
+
+        public override int JobSize {
+            get
+            {
+                return 0;
+            }
+        }
+
+        public override AbstractPerdiodEndOperation GetActualizedClone()
+        {
+            return new RunMonthEndChecks(ledgerInfo);
+        }
+
+        public override void RunEndOfPeriodOperation()
+        {
             CheckIfRevaluationIsDone();
             CheckForUnpostedBatches();
             CheckForUnpostedGiftBatches();
@@ -248,9 +239,9 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 CheckForSuspenseAcounts();
             }
-		}
+        }
 
-		private void CheckIfRevaluationIsDone()
+        private void CheckIfRevaluationIsDone()
         {
             if (!(new TLedgerInitFlagHandler(ledgerInfo.LedgerNumber,
                       TLedgerInitFlagEnum.Revaluation).Flag))
@@ -375,26 +366,26 @@ namespace Ict.Petra.Server.MFinance.GL
     /// <summary>
     /// Example ....
     /// </summary>
-    class RunMonthlyAdminFees : AbstractPerdiodEndOperation 
+    class RunMonthlyAdminFees : AbstractPerdiodEndOperation
     {
-		public override int JobSize {
-			get {
-    			// TODO: Some Code
-				return 0;
-			}
-		}
-    	
-		public override AbstractPerdiodEndOperation GetActualizedClone()
-		{
-    			// TODO: Some Code
-			return new RunMonthlyAdminFees();
-		}
-    	
-		public override void RunEndOfPeriodOperation()
-		{
-    			// TODO: Some Code
-			
-		}
+        public override int JobSize {
+            get
+            {
+                // TODO: Some Code
+                return 0;
+            }
+        }
+
+        public override AbstractPerdiodEndOperation GetActualizedClone()
+        {
+            // TODO: Some Code
+            return new RunMonthlyAdminFees();
+        }
+
+        public override void RunEndOfPeriodOperation()
+        {
+            // TODO: Some Code
+        }
     }
 
     /// <summary>
@@ -628,5 +619,4 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
     }
-
 }

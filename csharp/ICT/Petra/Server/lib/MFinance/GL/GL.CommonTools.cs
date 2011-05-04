@@ -109,11 +109,11 @@ namespace Ict.Petra.Server.MFinance.GL
         int iPtr = 0;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="AAccountCode"></param>
-        /// <param name="ACurrentFinancialYear">Number of the year after the the installation of 
+        /// <param name="ACurrentFinancialYear">Number of the year after the the installation of
         /// the software</param>
         public TGet_GLM_Info(int ALedgerNumber, string AAccountCode, int ACurrentFinancialYear)
         {
@@ -856,15 +856,15 @@ namespace Ict.Petra.Server.MFinance.GL
     /// </summary>
     public class TAccountPeriodInfo
     {
-    	private int intLedgerNumber = 0; 
+        private int intLedgerNumber = 0;
         private AAccountingPeriodTable periodTable = null;
         private AAccountingPeriodRow periodRow = null;
-        
-		
+
+
         protected void LoadTableData(int ALedgerNumber)
         {
-        	intLedgerNumber = ALedgerNumber;
-        	LoadData();
+            intLedgerNumber = ALedgerNumber;
+            LoadData();
         }
 
         /// <summary>
@@ -873,10 +873,10 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <param name="ALedgerNumber">Ledger number</param>
         public TAccountPeriodInfo(int ALedgerNumber)
         {
-        	intLedgerNumber = ALedgerNumber;
-        	LoadData();
+            intLedgerNumber = ALedgerNumber;
+            LoadData();
         }
-        
+
         /// <summary>
         /// Constructor to adress a record by its primary key
         /// </summary>
@@ -885,14 +885,13 @@ namespace Ict.Petra.Server.MFinance.GL
 
         public TAccountPeriodInfo(int ALedgerNumber, int ACurrentPeriod)
         {
-        	intLedgerNumber = ALedgerNumber;
-        	LoadData();
-        	AccountingPeriodNumber = ACurrentPeriod;
+            intLedgerNumber = ALedgerNumber;
+            LoadData();
+            AccountingPeriodNumber = ACurrentPeriod;
         }
 
         private void LoadData()
         {
-        	
             TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
 
             try
@@ -906,22 +905,24 @@ namespace Ict.Petra.Server.MFinance.GL
                 throw exception;
             }
         }
-        
+
         public int AccountingPeriodNumber
         {
-        	set
-        	{
-        		periodRow = null;
-        		AAccountingPeriodRow periodRowH;
-        		for (int i=0; i <  periodTable.Rows.Count; ++i)
-        		{
-        			periodRowH = periodTable[i];
-        			if (periodRowH.AccountingPeriodNumber == value)
-        			{
-        				periodRow = periodRowH;
-        			}
-        		}
-        	}
+            set
+            {
+                periodRow = null;
+                AAccountingPeriodRow periodRowH;
+
+                for (int i = 0; i < periodTable.Rows.Count; ++i)
+                {
+                    periodRowH = periodTable[i];
+
+                    if (periodRowH.AccountingPeriodNumber == value)
+                    {
+                        periodRow = periodRowH;
+                    }
+                }
+            }
         }
 
         public DateTime PeriodEndDate

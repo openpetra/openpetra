@@ -65,7 +65,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             if (currencyTable.Rows.Count == 0)
             {
-                LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL-Test\\" +
+                LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
                     "test-sql\\gl-test-currency-data.sql");
             }
         }

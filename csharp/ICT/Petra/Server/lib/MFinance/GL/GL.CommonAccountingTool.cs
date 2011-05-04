@@ -182,7 +182,12 @@ namespace Ict.Petra.Server.MFinance.GL
         public void AddForeignCurrencyJournal(string ACurrencyCode, decimal AExchangeRateToBase)
         {
             blnJournalIsInForeign = true;
-            //getForeignCurrencyInfo = new TCurrencyInfo(ACurrencyCode);
+
+            if (getForeignCurrencyInfo == null)
+            {
+                getForeignCurrencyInfo = new TCurrencyInfo(ACurrencyCode);
+            }
+
             AddAJournal(AExchangeRateToBase);
         }
 

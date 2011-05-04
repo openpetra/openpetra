@@ -46,8 +46,6 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Testing.Petra.Server.MFinance.GL
 {
-	
-		
     /// <summary>
     /// Test of the GL.PeriodEnd.Year routines ...
     /// </summary>
@@ -61,10 +59,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         public void Test_YearEnd()
         {
             ResetDatabase();
-            LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL-Test\\" +
-                "test-sql\\gl-test-year-end.sql");
-            LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL-Test\\" +
-                "test-sql\\gl-test-year-end-account-property.sql");
+            LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\test-sql\\gl-test-year-end.sql");
+            LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\test-sql\\gl-test-year-end-account-property.sql");
 
             TCommonAccountingTool commonAccountingTool =
                 new TCommonAccountingTool(intLedgerNumber, "NUNIT");
@@ -113,101 +109,110 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             TVerificationResultCollection verificationResult = new TVerificationResultCollection();
             bool blnHaseErrors;
-            
+
             TCarryForward carryForward;
-            
+
             bool blnLoop = true;
+
             while (blnLoop)
             {
-            	carryForward = new TCarryForward(new TLedgerInfo(intLedgerNumber));
-            	if (carryForward.GetPeriodType == TCarryForwardENum.Year)
-            	{
-            		blnLoop = false;
-            	}  else
-            	{
-            		carryForward.SetNextPeriod();
-            	}
+                carryForward = new TCarryForward(new TLedgerInfo(intLedgerNumber));
+
+                if (carryForward.GetPeriodType == TCarryForwardENum.Year)
+                {
+                    blnLoop = false;
+                }
+                else
+                {
+                    carryForward.SetNextPeriod();
+                }
             }
-                  
+
             TReallocation reallocation = new TReallocation(new TLedgerInfo(intLedgerNumber));
             reallocation.VerificationResultCollection = verificationResult;
             reallocation.IsInInfoMode = false;
-            Assert.AreEqual(6,reallocation.JobSize, "Check the number of reallocation jobs ...");
+            Assert.AreEqual(6, reallocation.JobSize, "Check the number of reallocation jobs ...");
             reallocation.RunEndOfPeriodOperation();
 
             reallocation = new TReallocation(new TLedgerInfo(intLedgerNumber));
             reallocation.VerificationResultCollection = verificationResult;
             reallocation.IsInInfoMode = true;
-            Assert.AreEqual(0,reallocation.JobSize, "Check the number of reallocation jobs ...");
-                            
+            Assert.AreEqual(0, reallocation.JobSize, "Check the number of reallocation jobs ...");
+
             int intYear = 0;
-            CheckGLMEntry(intLedgerNumber,intYear,strAccountBank,
-                         -50,0, 50,0, 100,0);
-            CheckGLMEntry(intLedgerNumber,intYear,strAccountExpense,
-                         0,-150, 0,-150, 0,-200);
-            CheckGLMEntry(intLedgerNumber,intYear,strAccountGift,
-                         0,-100, 0,-200, 0,-300);
-            
+            CheckGLMEntry(intLedgerNumber, intYear, strAccountBank,
+                -50, 0, 50, 0, 100, 0);
+            CheckGLMEntry(intLedgerNumber, intYear, strAccountExpense,
+                0, -150, 0, -150, 0, -200);
+            CheckGLMEntry(intLedgerNumber, intYear, strAccountGift,
+                0, -100, 0, -200, 0, -300);
+
             TGlmNewYearInit glmNewYearInit = new TGlmNewYearInit(intLedgerNumber, intYear);
             glmNewYearInit.VerificationResultCollection = verificationResult;
             glmNewYearInit.IsInInfoMode = false;
-            Assert.AreEqual(10,glmNewYearInit.JobSize, "Check the number of reallocation jobs ...");
+            Assert.AreEqual(10, glmNewYearInit.JobSize, "Check the number of reallocation jobs ...");
             glmNewYearInit.RunEndOfPeriodOperation();
             glmNewYearInit = new TGlmNewYearInit(intLedgerNumber, intYear);
             glmNewYearInit.VerificationResultCollection = verificationResult;
             glmNewYearInit.IsInInfoMode = true;
-            Assert.AreEqual(0,glmNewYearInit.JobSize, "Check the number of reallocation jobs ...");
-            
+            Assert.AreEqual(0, glmNewYearInit.JobSize, "Check the number of reallocation jobs ...");
+
             ++intYear;
-            CheckGLMEntry(intLedgerNumber,intYear,strAccountBank,
-                         -50,0, 50,0, 100,0);
-            CheckGLMEntry(intLedgerNumber,intYear,strAccountExpense,
-                         0,0, 0,0, 0,0);
-            CheckGLMEntry(intLedgerNumber,intYear,strAccountGift,
-                         0,0, 0,0, 0,0);
-            
-            TGlmInfo glmInfo = new TGlmInfo(intLedgerNumber,intYear,"8200");
+            CheckGLMEntry(intLedgerNumber, intYear, strAccountBank,
+                -50, 0, 50, 0, 100, 0);
+            CheckGLMEntry(intLedgerNumber, intYear, strAccountExpense,
+                0, 0, 0, 0, 0, 0);
+            CheckGLMEntry(intLedgerNumber, intYear, strAccountGift,
+                0, 0, 0, 0, 0, 0);
+
+            TGlmInfo glmInfo = new TGlmInfo(intLedgerNumber, intYear, "8200");
             glmInfo.Reset();
             glmInfo.MoveNext();
 
-            Assert.AreEqual(100,glmInfo.YtdActualBase);
-            Assert.AreEqual(0,glmInfo.ClosingPeriodActualBase);
+            Assert.AreEqual(100, glmInfo.YtdActualBase);
+            Assert.AreEqual(0, glmInfo.ClosingPeriodActualBase);
         }
-        
-        void CheckGLMEntry(int ALedgerNumber, int AYear, string AAccount, 
-                           decimal cc1Base, decimal cc1Closing,
-                           decimal cc2Base, decimal cc2Closing,
-                           decimal cc3Base, decimal cc3Closing)
+
+        void CheckGLMEntry(int ALedgerNumber, int AYear, string AAccount,
+            decimal cc1Base, decimal cc1Closing,
+            decimal cc2Base, decimal cc2Closing,
+            decimal cc3Base, decimal cc3Closing)
         {
-            TGlmInfo glmInfo = new TGlmInfo(ALedgerNumber,AYear,AAccount);
+            TGlmInfo glmInfo = new TGlmInfo(ALedgerNumber, AYear, AAccount);
+
             glmInfo.Reset();
             int intCnt = 0;
             bool blnFnd1 = false;
             bool blnFnd2 = false;
             bool blnFnd3 = false;
+
             while (glmInfo.MoveNext())
             {
-            	if (glmInfo.CostCentreCode.Equals("4301"))
-            	{
-            		Assert.AreEqual(cc1Base,glmInfo.YtdActualBase);
-            		Assert.AreEqual(cc1Closing,glmInfo.ClosingPeriodActualBase);
-            		blnFnd1 = true;
-            	}
-            	if (glmInfo.CostCentreCode.Equals("4302"))
-            	{
-            		Assert.AreEqual(cc2Base,glmInfo.YtdActualBase);
-            		Assert.AreEqual(cc2Closing,glmInfo.ClosingPeriodActualBase);
-            		blnFnd2 = true;
-            	}
-            	if (glmInfo.CostCentreCode.Equals("4303"))
-            	{
-            		Assert.AreEqual(cc3Base,glmInfo.YtdActualBase);
-            		Assert.AreEqual(cc3Closing,glmInfo.ClosingPeriodActualBase);
-            		blnFnd3 = true;
-            	}
-            	++intCnt;
+                if (glmInfo.CostCentreCode.Equals("4301"))
+                {
+                    Assert.AreEqual(cc1Base, glmInfo.YtdActualBase);
+                    Assert.AreEqual(cc1Closing, glmInfo.ClosingPeriodActualBase);
+                    blnFnd1 = true;
+                }
+
+                if (glmInfo.CostCentreCode.Equals("4302"))
+                {
+                    Assert.AreEqual(cc2Base, glmInfo.YtdActualBase);
+                    Assert.AreEqual(cc2Closing, glmInfo.ClosingPeriodActualBase);
+                    blnFnd2 = true;
+                }
+
+                if (glmInfo.CostCentreCode.Equals("4303"))
+                {
+                    Assert.AreEqual(cc3Base, glmInfo.YtdActualBase);
+                    Assert.AreEqual(cc3Closing, glmInfo.ClosingPeriodActualBase);
+                    blnFnd3 = true;
+                }
+
+                ++intCnt;
             }
-            Assert.AreEqual(3,intCnt,"3 Hits ...");
+
+            Assert.AreEqual(3, intCnt, "3 Hits ...");
             Assert.IsTrue(blnFnd1);
             Assert.IsTrue(blnFnd2);
             Assert.IsTrue(blnFnd3);
@@ -243,18 +248,17 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             accountPeriodInfo.AccountingPeriodNumber = 2;
             Assert.AreEqual(2011, accountPeriodInfo.PeriodStartDate.Year, "Test of the year");
             Assert.AreEqual(28, accountPeriodInfo.PeriodEndDate.Day, "Test of the Feb. 28th");
-           
+
             // Switch to 2012 - this is a leap year ...
             accountPeriodToNewYear = new TAccountPeriodToNewYear(intLedgerNumber, 2011);
             accountPeriodToNewYear.IsInInfoMode = false;
             Assert.AreEqual(20, accountPeriodToNewYear.JobSize, "...");
             accountPeriodToNewYear.RunEndOfPeriodOperation();
             Assert.AreEqual(0, accountPeriodToNewYear.JobSize, "...");
-            
+
             accountPeriodInfo = new TAccountPeriodInfo(intLedgerNumber);
             accountPeriodInfo.AccountingPeriodNumber = 2;
             Assert.AreEqual(29, accountPeriodInfo.PeriodEndDate.Day, "Test of the Feb. 29th");
-
         }
 
         [TestFixtureSetUp]
@@ -283,7 +287,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             if (batches.Rows.Count == 0)
             {
-                LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL-Test\\" +
+                LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
                     "test-sql\\gl-test-batch-data.sql");
             }
         }

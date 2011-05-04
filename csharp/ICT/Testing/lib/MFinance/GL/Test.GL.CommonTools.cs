@@ -81,19 +81,12 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         {
             TAccountPeriodInfo getAPI = new TAccountPeriodInfo(LedgerNumber);
 
-//            Assert.AreNotEqual(DateTime.MinValue, getAPI.GetPeriodEndDate(1),
-//                "DateTime.MinValue is an error representative");
-//            Assert.AreNotEqual(DateTime.MinValue, getAPI.GetPeriodStartDate(1),
-//                "DateTime.MinValue is an error representative");
-//
-//            Assert.AreEqual(DateTime.MinValue, getAPI.GetPeriodEndDate(33),
-//                "DateTime.MinValue is an error representative");
-//            Assert.AreEqual(DateTime.MinValue, getAPI.GetPeriodEndDate(33),
-//                "DateTime.MinValue is an error representative");
-//            Assert.IsTrue(TryGetAccountPeriodInfo(LedgerNumber, 1),
-//                "This request shall pass");
-            Assert.IsFalse(TryGetAccountPeriodInfo(LedgerNumber, 100),
-                "This request shall fail (period does not exist)");
+            getAPI.AccountingPeriodNumber = 2;
+
+            Assert.AreNotEqual(DateTime.MinValue, getAPI.PeriodStartDate,
+                "Simple Date Check");
+            Assert.AreNotEqual(DateTime.MinValue, getAPI.PeriodEndDate,
+                "Simple Date Check");
         }
 
         /// <summary>
@@ -112,7 +105,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             }
             catch (TerminateException internalException)
             {
-                Assert.AreEqual("TCurrencyInfo.03", internalException.ErrorCode, "Wrong Error Code");
+                Assert.AreEqual("TCurrencyInfo03", internalException.ErrorCode, "Wrong Error Code");
             }
             catch (Exception)
             {
@@ -134,7 +127,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             }
             catch (TerminateException internalException)
             {
-                Assert.AreEqual("TCurrencyInfo.02", internalException.ErrorCode, "Wrong Error Code");
+                Assert.AreEqual("TCurrencyInfo02", internalException.ErrorCode, "Wrong Error Code");
             }
             catch (Exception)
             {
@@ -158,7 +151,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 }
                 else
                 {
-                    Assert.AreEqual("TCurrencyInfo.02",
+                    Assert.AreEqual("TCurrencyInfo03",
                         internalException.ErrorCode,
                         "Wrong Error Code");
                 }
@@ -197,21 +190,6 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 "Conversion from 100 GBP to 113.62 EUR");
             Assert.AreEqual(88.01m, getCurrencyInfo.ToForeignValue(100.00m, exchangeRate),
                 "Conversion from 100 EUR to 88.01 GBP");
-        }
-
-        /// <summary>
-        /// Test of the Lock-System for ledgers ...
-        /// </summary>
-        [Test]
-        public void Test_06_TLedgerLock()
-        {
-            TLedgerLock tLegerLock1 = new TLedgerLock(LedgerNumber);
-
-            Assert.IsTrue(tLegerLock1.IsLocked, "Leger can be locked");
-            TLedgerLock tLegerLock2 = new TLedgerLock(LedgerNumber);
-            Assert.IsFalse(tLegerLock2.IsLocked, "Leger cannot be locked");
-            System.Diagnostics.Debug.WriteLine(tLegerLock2.LockInfo());
-            tLegerLock2.UnLock();
         }
 
         [Test]

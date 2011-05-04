@@ -66,7 +66,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             requestParams.Add("NumberFormat", "European");
             requestParams.Add("NewLine", Environment.NewLine);
 
-            string strContent = LoadCSVFileToString("csharp\\ICT\\Testing\\lib\\MFinance\\GL-Test\\" +
+            string strContent = LoadCSVFileToString("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
                 "test-csv\\glbatch-import.csv");
             // FileStream fs = new FileStream(
 

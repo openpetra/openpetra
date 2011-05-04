@@ -84,7 +84,7 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             Apeo.IsInInfoMode = blnIsInInfoMode;
             Apeo.VerificationResultCollection = verificationResults;
-            
+
             if (Apeo.JobSize == 0)
             {
                 // Non Critical Problem but the user shall be informed ...
@@ -155,7 +155,7 @@ namespace Ict.Petra.Server.MFinance.GL
         /// See TPerdiodEndOperations
         /// </summary>
         protected bool blnCriticalErrors = false;
-        
+
         protected int intCountJobs;
 
         /// <summary>
@@ -178,7 +178,7 @@ namespace Ict.Petra.Server.MFinance.GL
         /// </summary>
         /// <returns></returns>
         public abstract AbstractPerdiodEndOperation GetActualizedClone();
-        
+
 
         /// <summary>
         /// Summarizes the values of blnCriticalErrors and blnIsInInfoMode to the decision if an
@@ -229,7 +229,7 @@ namespace Ict.Petra.Server.MFinance.GL
     }
 
     /// <summary>
-    /// ENum-List of the accounting stati of a ledger 
+    /// ENum-List of the accounting stati of a ledger
     /// </summary>
     public enum TCarryForwardENum
     {
@@ -238,12 +238,12 @@ namespace Ict.Petra.Server.MFinance.GL
     }
 
     /// <summary>
-    /// Zentral object which shall switch from one acounting intervall to the next 
+    /// Zentral object which shall switch from one acounting intervall to the next
     /// </summary>
     public class TCarryForward
     {
         TLedgerInfo ledgerInfo;
-        
+
         /// <summary>
         /// The routine requires a TLedgerInfo object ...
         /// </summary>
@@ -260,35 +260,36 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             if (ledgerInfo.ProvisionalYearEndFlag)
             {
-            	// Set to the first month of the "next year". 
+                // Set to the first month of the "next year".
                 SetProvisionalYearEndFlag(false);
                 SetNewFwdPeriodValue(1);
             }
             else if (ledgerInfo.CurrentPeriod == ledgerInfo.NumberOfAccountingPeriods)
             {
-            	// Set the YearEndFlag to "Switch between the months ... 
+                // Set the YearEndFlag to "Switch between the months ...
                 SetProvisionalYearEndFlag(true);
-                SetYearMark(0,true);
+                SetYearMark(0, true);
             }
             else
             {
-            	// Conventional Month->Month Switch ...
+                // Conventional Month->Month Switch ...
                 SetNewFwdPeriodValue(ledgerInfo.CurrentPeriod + 1);
-                SetYearMark(-1,false);
+                SetYearMark(-1, false);
             }
 
             new TLedgerInitFlagHandler(ledgerInfo.LedgerNumber,
                 TLedgerInitFlagEnum.Revaluation).Flag = false;
         }
-        
+
         private void SetYearMark(int AYearOffset, bool AValue)
         {
-        	TAccountPeriodToNewYear accountPeriod = new TAccountPeriodToNewYear(ledgerInfo.LedgerNumber);
-        	
+            TAccountPeriodToNewYear accountPeriod = new TAccountPeriodToNewYear(ledgerInfo.LedgerNumber);
+
             int intYear = accountPeriod.ActualYear;
             TLedgerInitFlagHandler ledgerInitFlagHandler =
-            	new TLedgerInitFlagHandler(ledgerInfo.LedgerNumber,
-                	                           TLedgerInitFlagEnum.ActualYear);
+                new TLedgerInitFlagHandler(ledgerInfo.LedgerNumber,
+                    TLedgerInitFlagEnum.ActualYear);
+
             ledgerInitFlagHandler.AddMarker((intYear + AYearOffset).ToString());
             ledgerInitFlagHandler.Flag = AValue;
         }
@@ -310,35 +311,39 @@ namespace Ict.Petra.Server.MFinance.GL
                 }
             }
         }
-        
+
         /// <summary>
-        /// This value is only defined if the TCarryForwardENum holds the value "year". In normal cases you can 
+        /// This value is only defined if the TCarryForwardENum holds the value "year". In normal cases you can
         /// get the value of the actual accounting year from the table a_accounting_period
-        /// of the open petra database. But this values are changed in the year end routine and in order 
-        /// to make shure to get allways the same value, the year is stored in a_ledger_init_flag from the 
-        /// entrance to the TCarryForwardENum.Year-Period to the next TCarryForwardENum.Month-Period. 
+        /// of the open petra database. But this values are changed in the year end routine and in order
+        /// to make shure to get allways the same value, the year is stored in a_ledger_init_flag from the
+        /// entrance to the TCarryForwardENum.Year-Period to the next TCarryForwardENum.Month-Period.
         /// </summary>
         public int Year
         {
-        	get
-        	{
-        		TAccountPeriodToNewYear accountPeriod = new TAccountPeriodToNewYear(ledgerInfo.LedgerNumber);
-        		int intYear = accountPeriod.ActualYear;
-        		TLedgerInitFlagHandler ledgerInitFlagHandler =
-        			new TLedgerInitFlagHandler(ledgerInfo.LedgerNumber,
-        			                           TLedgerInitFlagEnum.ActualYear);
-        		ledgerInitFlagHandler.AddMarker((intYear).ToString());
-        		if (ledgerInitFlagHandler.Flag)
-        		{
-        			return intYear;
-        		}
-        		ledgerInitFlagHandler.AddMarker((intYear-1).ToString());
-        		if (ledgerInitFlagHandler.Flag)
-        		{
-        			return intYear-1;
-        		}
-        		throw new ApplicationException("Undefined TCarryForwardENum.Year Request");
-        	}
+            get
+            {
+                TAccountPeriodToNewYear accountPeriod = new TAccountPeriodToNewYear(ledgerInfo.LedgerNumber);
+                int intYear = accountPeriod.ActualYear;
+                TLedgerInitFlagHandler ledgerInitFlagHandler =
+                    new TLedgerInitFlagHandler(ledgerInfo.LedgerNumber,
+                        TLedgerInitFlagEnum.ActualYear);
+                ledgerInitFlagHandler.AddMarker((intYear).ToString());
+
+                if (ledgerInitFlagHandler.Flag)
+                {
+                    return intYear;
+                }
+
+                ledgerInitFlagHandler.AddMarker((intYear - 1).ToString());
+
+                if (ledgerInitFlagHandler.Flag)
+                {
+                    return intYear - 1;
+                }
+
+                throw new ApplicationException("Undefined TCarryForwardENum.Year Request");
+            }
         }
 
         void SetProvisionalYearEndFlag(bool AFlagValue)
@@ -383,66 +388,64 @@ namespace Ict.Petra.Server.MFinance.GL
 
     public enum TPeriodEndErrorAndStatusCodes
     {
-    	/// <summary>
-    	/// If a periodic end operation shall be done at least on one data base record 
-    	/// (something like the calculation of the admin fees) this hin is shon to indicate 
-    	/// tha no database records are affected.
-    	/// </summary>
-    	PEEC_01,
-    	
-    	/// <summary>
-    	/// Afte a specific perdio end operation has been done, the programm calculates again the 
-    	/// number of database records which shall be changed. If this value is non zero, this 
-    	/// error is shown. 
-    	/// Type: Critical. 
-    	/// </summary>
-    	PEEC_02,
-    	
-    	/// <summary>
-    	/// The user has required a period month end but a year end should be done first.
-    	/// </summary>
-    	PEEC_03,
-    	
-    	/// <summary>
-    	/// The user has required a period year end but a month end should be done first.
-    	/// </summary>
-    	PEEC_04,
-    	
-    	/// <summary>
-    	/// A revaluation should be done befor the month end ..
-    	/// </summary>
-    	PEEC_05,
-    	
-    	/// <summary>
-    	/// Unposted batches are found
-    	/// </summary>
-    	PEEC_06,
-    	
-    	/// <summary>
-    	/// Suspensed accountes are found
-    	/// </summary>
-    	PEEC_07,
+        /// <summary>
+        /// If a periodic end operation shall be done at least on one data base record
+        /// (something like the calculation of the admin fees) this hin is shon to indicate
+        /// tha no database records are affected.
+        /// </summary>
+        PEEC_01,
 
-    	/// <summary>
-    	/// Unposted gift batches are found ...
-    	/// </summary>
-    	PEEC_08,
-    	
-    	/// <summary>
-    	/// No income accounts have been found ...
-    	/// </summary>
-    	PEEC_09,
-    	
-    	/// <summary>
-    	/// No expense accounts have been found ...
-    	/// </summary>
-    	PEEC_10,
-    	
-    	/// <summary>
-    	/// No ICH_ACCT Account is defined
-    	/// </summary>
-    	PEEC_11,
-    	
+        /// <summary>
+        /// Afte a specific perdio end operation has been done, the programm calculates again the
+        /// number of database records which shall be changed. If this value is non zero, this
+        /// error is shown.
+        /// Type: Critical.
+        /// </summary>
+        PEEC_02,
+
+        /// <summary>
+        /// The user has required a period month end but a year end should be done first.
+        /// </summary>
+        PEEC_03,
+
+        /// <summary>
+        /// The user has required a period year end but a month end should be done first.
+        /// </summary>
+        PEEC_04,
+
+        /// <summary>
+        /// A revaluation should be done befor the month end ..
+        /// </summary>
+        PEEC_05,
+
+        /// <summary>
+        /// Unposted batches are found
+        /// </summary>
+        PEEC_06,
+
+        /// <summary>
+        /// Suspensed accountes are found
+        /// </summary>
+        PEEC_07,
+
+        /// <summary>
+        /// Unposted gift batches are found ...
+        /// </summary>
+        PEEC_08,
+
+        /// <summary>
+        /// No income accounts have been found ...
+        /// </summary>
+        PEEC_09,
+
+        /// <summary>
+        /// No expense accounts have been found ...
+        /// </summary>
+        PEEC_10,
+
+        /// <summary>
+        /// No ICH_ACCT Account is defined
+        /// </summary>
+        PEEC_11,
     }
-   
 }

@@ -129,7 +129,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_PEMM_04_UnpostedGifts()
         {
-            LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL-Test\\" +
+            LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
                 "test-sql\\gl-test-gift-batch-data.sql");
 
             TVerificationResultCollection verificationResult;
@@ -244,7 +244,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             if (batches.Rows.Count == 0)
             {
-                LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL-Test\\" +
+                LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
                     "test-sql\\gl-test-batch-data.sql");
             }
         }

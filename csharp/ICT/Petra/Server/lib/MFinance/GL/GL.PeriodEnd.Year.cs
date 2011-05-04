@@ -53,25 +53,23 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 {
     public partial class TPeriodIntervallConnector
     {
-
-    	/// <summary>
-    	/// Routine to run the period end calculations ...
-    	/// </summary>
-    	/// <param name="ALedgerNum"></param>
-    	/// <param name="AIsInInfoMode">True means: No Calculation is done, only 
-    	/// verification result messages are collected</param>
-    	/// <param name="AVerificationResult"></param>
-    	/// <returns></returns>
+        /// <summary>
+        /// Routine to run the period end calculations ...
+        /// </summary>
+        /// <param name="ALedgerNum"></param>
+        /// <param name="AIsInInfoMode">True means: No Calculation is done, only
+        /// verification result messages are collected</param>
+        /// <param name="AVerificationResult"></param>
+        /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
         public static bool TPeriodYearEnd(
             int ALedgerNum,
-            bool AIsInInfoMode, 
+            bool AIsInInfoMode,
             out TVerificationResultCollection AVerificationResult)
         {
             return new TYearEnd().RunYearEnd(ALedgerNum, AIsInInfoMode,
                 out AVerificationResult);
         }
-    
     }
 }
 
@@ -110,9 +108,10 @@ namespace Ict.Petra.Server.MFinance.GL
                         TResultSeverity.Resv_Critical);
                 verificationResults.Add(tvt);
                 blnCriticalErrors = true;
-            } else
+            }
+            else
             {
-            	intYear = carryForward.Year;
+                intYear = carryForward.Year;
             }
 
             RunPeriodEndSequence(new TReallocation(ledgerInfo),
@@ -227,10 +226,10 @@ namespace Ict.Petra.Server.MFinance.GL
         public override int JobSize {
             get
             {
-            	bool blnHelp = blnIsInInfoMode; 
-            	blnIsInInfoMode = true;
-            	intCountJobs = 0;
-            	RunEndOfPeriodOperation();
+                bool blnHelp = blnIsInInfoMode;
+                blnIsInInfoMode = true;
+                intCountJobs = 0;
+                RunEndOfPeriodOperation();
                 blnIsInInfoMode = blnHelp;
                 return intCountJobs;
             }
@@ -379,6 +378,7 @@ namespace Ict.Petra.Server.MFinance.GL
                     strAccountTo, strCostCentreTo, strBuildNarrative,
                     strYearEnd, blnDebitCredit, Math.Abs(glmInfo.YtdActualBase));
             }
+
             ++intCountJobs;
         }
 

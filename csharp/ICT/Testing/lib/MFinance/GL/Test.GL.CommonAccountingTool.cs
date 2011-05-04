@@ -124,14 +124,14 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             // Check if some special test data are availiable - otherwise load ...
             if (!new TAccountInfo(new TLedgerInfo(LedgerNumber), "6001").IsValid)
             {
-                LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL-Test\\" +
+                LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
                     "test-sql\\gl-test-account-data.sql");
             }
 
             // Check if some special test data are availiable - otherwise load ...
             if (!new TCostCenterInfo(LedgerNumber, "4301").IsValid)
             {
-                LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL-Test\\" +
+                LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
                     "test-sql\\gl-test-costcentre-data.sql");
             }
 
@@ -181,14 +181,14 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             // Check if some special test data are availiable - otherwise load ...
             if (!new TAccountInfo(new TLedgerInfo(LedgerNumber), "6001").IsValid)
             {
-                LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL-Test\\" +
+                LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
                     "test-sql\\gl-test-account-data.sql");
             }
 
             // Check if some special test data are availiable - otherwise load ...
             if (!new TCostCenterInfo(LedgerNumber, "4301").IsValid)
             {
-                LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL-Test\\" +
+                LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
                     "test-sql\\gl-test-costcentre-data.sql");
             }
 
@@ -214,20 +214,6 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 System.Diagnostics.Debug.WriteLine(exception.ToString());
                 Assert.Fail("Wrong exception thrown");
             }
-        }
-
-        [Test]
-        public void Test_04_ENum()
-        {
-            string username = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
-
-            System.Diagnostics.Debug.WriteLine(username);
-
-            TLedgerInitFlagHandler tifh = new TLedgerInitFlagHandler(
-                LedgerNumber, TLedgerInitFlagEnum.DatabaseAllocation);
-            System.Diagnostics.Debug.WriteLine(tifh.Flag.ToString());
-            tifh.SetFlagAndName(username);
-            System.Diagnostics.Debug.WriteLine(tifh.Flag.ToString());
         }
 
         [TestFixtureSetUp]

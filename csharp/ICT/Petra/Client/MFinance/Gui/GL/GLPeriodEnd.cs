@@ -26,37 +26,33 @@ using System.Windows.Forms;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
-	
-	
-	public class TPeriodEndMonth : TPeriodEnd
-	{
-		public TPeriodEndMonth(IntPtr AParentFormHandle) : base(AParentFormHandle, true)
-		{
-		}
-	}
+    public class TPeriodEndMonth : TPeriodEnd
+    {
+        public TPeriodEndMonth(IntPtr AParentFormHandle) : base(AParentFormHandle, true)
+        {
+        }
+    }
 
-	public class TPeriodEndYear : TPeriodEnd
-	{
-		public TPeriodEndYear(IntPtr AParentFormHandle) : base(AParentFormHandle,false)
-		{
-		}	
-	}
-	
-    
-    
+    public class TPeriodEndYear : TPeriodEnd
+    {
+        public TPeriodEndYear(IntPtr AParentFormHandle) : base(AParentFormHandle, false)
+        {
+        }
+    }
+
+
     public partial class TPeriodEnd : Form
     {
-    	
-    	public bool blnIsInMonthMode;
-    	
+        public bool blnIsInMonthMode;
+
         public TPeriodEnd(IntPtr AParentFormHandle, bool AIsMonthMode) : base()
         {
             //
             // The InitializeComponent() call is required for Windows Forms designer support.
             //
-            
+
             blnIsInMonthMode = AIsMonthMode;
-            
+
             InitializeComponent();
 
 

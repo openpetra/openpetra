@@ -29,82 +29,81 @@ using Ict.Petra.Server.MFinance.GL;
 
 namespace Ict.Testing.Petra.Server.MFinance.GL
 {
-	
-	class TestOperation : AbstractPerdiodEndOperation
-	{
-		int intCount;
-		int intJobCount;
-		int intOperationCount;
-		
-		public TestOperation(int ACount)
-		{
-			intCount = ACount;
-			intOperationCount = 0;
-		}
-		
-		public override AbstractPerdiodEndOperation GetActualizedClone()
-		{
-			return new TestOperation(intCount + 1);
-		}
-		
-		public override int JobSize {
-			get {
-				return intJobCount;
-			}
-		}
-		
-		public void SetJobSize(int ASize)
-		{
-			intJobCount = ASize;
-		}
-		
-		public int GetOperationCount()
-		{
-			return intOperationCount;
-		}
-		
-		public override void RunEndOfPeriodOperation()
-		{
-			Assert.AreEqual(1, intCount);
-			++intOperationCount;
-			intJobCount = 0;
-		}
-	}
-	
-	class TestOperations : TPerdiodEndOperations
-	{
-		public void Test1(TVerificationResultCollection tvr)
-		{
-			verificationResults = tvr;
-			TestOperation testOperation = new TestOperation(1);
-			testOperation.SetJobSize(12);
-			testOperation.IsInInfoMode = true;
-			RunPeriodEndSequence(testOperation, "Message");
-			Assert.AreEqual(1,testOperation.GetOperationCount());
-		}
+    class TestOperation : AbstractPerdiodEndOperation
+    {
+        int intCount;
+        int intJobCount;
+        int intOperationCount;
 
-		public void Test2(TVerificationResultCollection tvr)
-		{
-			verificationResults = tvr;
-			TestOperation testOperation = new TestOperation(1);
-			testOperation.SetJobSize(12);
-			testOperation.IsInInfoMode = false;
-			RunPeriodEndSequence(testOperation, "Message");
-			Assert.AreEqual(1,testOperation.GetOperationCount());
-		}
-	}
-	
-	
+        public TestOperation(int ACount)
+        {
+            intCount = ACount;
+            intOperationCount = 0;
+        }
+
+        public override AbstractPerdiodEndOperation GetActualizedClone()
+        {
+            return new TestOperation(intCount + 1);
+        }
+
+        public override int JobSize {
+            get
+            {
+                return intJobCount;
+            }
+        }
+
+        public void SetJobSize(int ASize)
+        {
+            intJobCount = ASize;
+        }
+
+        public int GetOperationCount()
+        {
+            return intOperationCount;
+        }
+
+        public override void RunEndOfPeriodOperation()
+        {
+            Assert.AreEqual(1, intCount);
+            ++intOperationCount;
+            intJobCount = 0;
+        }
+    }
+
+    class TestOperations : TPerdiodEndOperations
+    {
+        public void Test1(TVerificationResultCollection tvr)
+        {
+            verificationResults = tvr;
+            TestOperation testOperation = new TestOperation(1);
+            testOperation.SetJobSize(12);
+            testOperation.IsInInfoMode = true;
+            RunPeriodEndSequence(testOperation, "Message");
+            Assert.AreEqual(1, testOperation.GetOperationCount());
+        }
+
+        public void Test2(TVerificationResultCollection tvr)
+        {
+            verificationResults = tvr;
+            TestOperation testOperation = new TestOperation(1);
+            testOperation.SetJobSize(12);
+            testOperation.IsInInfoMode = false;
+            RunPeriodEndSequence(testOperation, "Message");
+            Assert.AreEqual(1, testOperation.GetOperationCount());
+        }
+    }
+
+
     /// <summary>
     /// Test of the GL.PeriodEnd.Year routines ...
     /// </summary>
     [TestFixture]
     public partial class TestGLPeriodicEnd : CommonNUnitFunctions
     {
-    	
         private const int intLedgerNumber = 43;
         TLedgerInfo ledgerInfo;
-        
+
         /// <summary>
         /// Some very basic tests of TPerdiodEndOperations and AbstractPerdiodEndOperation
         /// </summary>
@@ -112,9 +111,10 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         public void Test_AbstractPerdiodEndOperation()
         {
             TVerificationResultCollection tvr = new TVerificationResultCollection();
-        	TestOperations perdiodEndOperations = new TestOperations();
-        	perdiodEndOperations.Test1(tvr);
-        	perdiodEndOperations.Test2(tvr);
+            TestOperations perdiodEndOperations = new TestOperations();
+
+            perdiodEndOperations.Test1(tvr);
+            perdiodEndOperations.Test2(tvr);
         }
 
         /// <summary>
@@ -126,18 +126,18 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             ResetDatabase();
             TCarryForward carryForward;
 
-            for (int i=1; i < 13; ++i)  // 12 Months 
+            for (int i = 1; i < 13; ++i)  // 12 Months
             {
-            	carryForward = new TCarryForward(new TLedgerInfo(intLedgerNumber));
-            	Assert.AreEqual(carryForward.GetPeriodType, TCarryForwardENum.Month,
-            	                "Month: " + i.ToString());
-            	carryForward.SetNextPeriod();
+                carryForward = new TCarryForward(new TLedgerInfo(intLedgerNumber));
+                Assert.AreEqual(carryForward.GetPeriodType, TCarryForwardENum.Month,
+                    "Month: " + i.ToString());
+                carryForward.SetNextPeriod();
             }
 
             carryForward = new TCarryForward(new TLedgerInfo(intLedgerNumber));
             Assert.AreEqual(carryForward.GetPeriodType, TCarryForwardENum.Year, "Next Year");
             carryForward.SetNextPeriod();
-            
+
             carryForward = new TCarryForward(new TLedgerInfo(intLedgerNumber));
             Assert.AreEqual(carryForward.GetPeriodType, TCarryForwardENum.Month, "Next Month");
             carryForward.SetNextPeriod();
@@ -150,19 +150,19 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             TCarryForward carryForward = null;
             TVerificationResultCollection tvr = new TVerificationResultCollection();
 
-            for (int i=1; i < 13; ++i)  // 12 Months 
+            for (int i = 1; i < 13; ++i)  // 12 Months
             {
-            	carryForward = new TCarryForward(new TLedgerInfo(intLedgerNumber));
-            	Assert.AreEqual(carryForward.GetPeriodType, TCarryForwardENum.Month,
-            	                "Month: " + i.ToString());
-            	carryForward.SetNextPeriod();
+                carryForward = new TCarryForward(new TLedgerInfo(intLedgerNumber));
+                Assert.AreEqual(carryForward.GetPeriodType, TCarryForwardENum.Month,
+                    "Month: " + i.ToString());
+                carryForward.SetNextPeriod();
             }
-            
+
             Assert.AreEqual(2010, carryForward.Year, "Standard");
-            TAccountPeriodToNewYear accountPeriodToNewYear = 
-            	new TAccountPeriodToNewYear(intLedgerNumber, 2010);
+            TAccountPeriodToNewYear accountPeriodToNewYear =
+                new TAccountPeriodToNewYear(intLedgerNumber, 2010);
             accountPeriodToNewYear.IsInInfoMode = false;
-            accountPeriodToNewYear.VerificationResultCollection = tvr; 
+            accountPeriodToNewYear.VerificationResultCollection = tvr;
             accountPeriodToNewYear.RunEndOfPeriodOperation();
 
             carryForward = new TCarryForward(new TLedgerInfo(intLedgerNumber));
@@ -171,12 +171,11 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             carryForward = new TCarryForward(new TLedgerInfo(intLedgerNumber));
             carryForward.SetNextPeriod();
-        	
-            TLedgerInitFlagHandler ledgerInitFlag = 
-            	new TLedgerInitFlagHandler(intLedgerNumber,TLedgerInitFlagEnum.ActualYear);
+
+            TLedgerInitFlagHandler ledgerInitFlag =
+                new TLedgerInitFlagHandler(intLedgerNumber, TLedgerInitFlagEnum.ActualYear);
             ledgerInitFlag.AddMarker("2010");
             Assert.IsFalse(ledgerInitFlag.Flag, "Should be deleted ...");
-            
         }
 
         [TestFixtureSetUp]
@@ -191,6 +190,5 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         {
             DisconnectServerConnection();
         }
-	
     }
 }
