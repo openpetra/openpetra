@@ -66,19 +66,21 @@ namespace Tests.MPartner.Server.PartnerExports
         [Test]
         public void TestImportFamily()
         {
-        	const string testFile = "../../csharp/ICT/Testing/lib/MPartner/SampleData/sampleExtract.ext";
-        	StreamReader reader = new StreamReader(testFile);
-        	string [] lines = reader.ReadToEnd().Replace("\r", "").Split(new char[]{'\n'});
-        	reader.Close();
-        	TPartnerFileImport importer = new TPartnerFileImport();
-        	PartnerImportExportTDS MainDS = importer.ImportAllData(lines);
+            const string testFile = "../../csharp/ICT/Testing/lib/MPartner/SampleData/sampleExtract.ext";
+            StreamReader reader = new StreamReader(testFile);
 
-        	foreach (PPartnerRow PartnerRow in MainDS.PPartner.Rows)
-        	{
-        		TLogging.Log(PartnerRow.PartnerKey.ToString() + " " + PartnerRow.PartnerShortName);
-        	}
-        	
-        	Assert.AreEqual(2, MainDS.PPartner.Rows);
+            string[] lines = reader.ReadToEnd().Replace("\r\n", "\n").Replace("\r", "\n").Split(new char[] { '\n' });
+            reader.Close();
+
+            TPartnerFileImport importer = new TPartnerFileImport();
+            PartnerImportExportTDS MainDS = importer.ImportAllData(lines);
+
+            foreach (PPartnerRow PartnerRow in MainDS.PPartner.Rows)
+            {
+                TLogging.Log(PartnerRow.PartnerKey.ToString() + " " + PartnerRow.PartnerShortName);
+            }
+
+            Assert.AreEqual(2, MainDS.PPartner.Rows.Count);
         }
     }
 }

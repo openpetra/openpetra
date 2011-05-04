@@ -146,6 +146,13 @@ namespace Ict.Common.IO
                 throw new Exception("ReadNextStringItem: there is no data anymore");
             }
 
+            // sometimes strings go across several lines
+            while (FCurrentLine.StartsWith("\"") && StringHelper.FindMatchingQuote(FCurrentLine) == -1 && !EndOfFile())
+            {
+                FCurrentLineCounter++;
+                FCurrentLine += Environment.NewLine + FLinesToParse[FCurrentLineCounter].TrimEnd();
+            }
+
             string NextStringItem = StringHelper.GetNextCSV(ref FCurrentLine, SPACE);
 
             while (FCurrentLine.Length == 0 && FCurrentLineCounter < FLinesToParse.Length - 1)
@@ -327,6 +334,21 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
+        /// read an Int64 value
+        /// </summary>
+        public Int64 ? ReadNullableInt64()
+        {
+            string s = ReadNextStringItem();
+
+            if (s == "?")
+            {
+                return new Nullable <Int64>();
+            }
+
+            return Convert.ToInt64(s);
+        }
+
+        /// <summary>
         /// write an Int32 value
         /// </summary>
         /// <param name="AValue"></param>
@@ -348,6 +370,21 @@ namespace Ict.Common.IO
         public Int32 ReadInt32()
         {
             return Convert.ToInt32(ReadNextStringItem());
+        }
+
+        /// <summary>
+        /// read an Int32 value
+        /// </summary>
+        public Int32 ? ReadNullableInt32()
+        {
+            string s = ReadNextStringItem();
+
+            if (s == "?")
+            {
+                return new Nullable <Int32>();
+            }
+
+            return Convert.ToInt32(s);
         }
 
         /// <summary>
@@ -412,6 +449,12 @@ namespace Ict.Common.IO
             if (NextItem == "?")
             {
                 return new Nullable <DateTime>();
+            }
+
+            if (NextItem.Length != DATEFORMAT.Length)
+            {
+                // eg. pm_special_need.s_date_created_d is stored with just two digits for the year
+                return DateTime.ParseExact(NextItem, DATEFORMAT.Replace("yyyy", "yy"), CultureInfo.InvariantCulture);
             }
 
             return DateTime.ParseExact(NextItem, DATEFORMAT, CultureInfo.InvariantCulture);
