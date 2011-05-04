@@ -46,6 +46,8 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Testing.Petra.Server.MFinance.GL
 {
+	
+		
     /// <summary>
     /// Test of the GL.PeriodEnd.Year routines ...
     /// </summary>
@@ -54,57 +56,6 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
     {
         private const int intLedgerNumber = 43;
         TLedgerInfo ledgerInfo;
-
-
-        [Test]
-        public void Test_YearEndFlagStatus()
-        {
-            ResetDatabase();
-
-            int counter = 0;
-
-            TVerificationResultCollection verificationResult;
-            bool blnHaseErrors = TPeriodIntervallConnector.TPeriodYearEndInfo(
-                intLedgerNumber, out verificationResult);
-
-            bool messageHasBeenShown;
-
-            Assert.GreaterOrEqual(verificationResult.Count, 1, "At least one message required");
-            Assert.IsTrue(blnHaseErrors, "No Year End allowed ...");
-            messageHasBeenShown = false;
-
-            for (int i = 0; i < verificationResult.Count; ++i)
-            {
-                System.Diagnostics.Debug.WriteLine(verificationResult[i].ResultCode.ToString());
-
-                if (verificationResult[i].ResultCode.Equals(TYearEndErrorStatus.PEYM_02.ToString()))
-                {
-                    messageHasBeenShown = true;
-                }
-            }
-
-            Assert.IsTrue(messageHasBeenShown, "Correct message ...");
-
-            do
-            {
-                ++counter;
-                Assert.Greater(20, counter, "To many loops");
-
-                // Set revaluation flag ...
-                new TLedgerInitFlagHandler(intLedgerNumber,
-                    TLedgerInitFlagEnum.Revaluation).Flag = true;
-                blnHaseErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
-                    intLedgerNumber, out verificationResult);
-                ledgerInfo = new TLedgerInfo(intLedgerNumber);
-            } while (!ledgerInfo.ProvisionalYearEndFlag);
-
-            blnHaseErrors = TPeriodIntervallConnector.TPeriodYearEndInfo(
-                intLedgerNumber, out verificationResult);
-
-            Assert.AreEqual(0, verificationResult.Count, "No Error message shall be shown");
-            Assert.IsFalse(blnHaseErrors, "Year End allowed ...");
-            ResetDatabase();
-        }
 
         [Test]
         public void Test_YearEnd()
@@ -160,68 +111,106 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             int counter = 0;
 
-            TVerificationResultCollection verificationResult;
-            bool blnHaseErrors;
-
-//            blnHaseErrors= TPeriodIntervallConnector.TPeriodYearEndInfo(
-//                intLedgerNumber, out verificationResult);
-//
-//
-//            Assert.GreaterOrEqual(verificationResult.Count, 1, "At least one message required");
-//            Assert.IsTrue(blnHaseErrors, "No Year End allowed ...");
-            bool messageHasBeenShown;
-            messageHasBeenShown = false;
-
-//            for (int i = 0; i < verificationResult.Count; ++i)
-//            {
-//                System.Diagnostics.Debug.WriteLine(verificationResult[i].ResultCode.ToString());
-//
-//                if (verificationResult[i].ResultCode.Equals(TYearEndErrorStatus.PEYM_02.ToString()))
-//                {
-//                    messageHasBeenShown = true;
-//                }
-//            }
-//
-//            Assert.IsTrue(messageHasBeenShown, "Correct message ...");
-
-            do
-            {
-                ++counter;
-                Assert.Greater(20, counter, "To many loops");
-
-                // Set revaluation flag ...
-                new TLedgerInitFlagHandler(intLedgerNumber,
-                    TLedgerInitFlagEnum.Revaluation).Flag = true;
-                blnHaseErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
-                    intLedgerNumber, out verificationResult);
-                ledgerInfo = new TLedgerInfo(intLedgerNumber);
-            } while (!ledgerInfo.ProvisionalYearEndFlag);
-
-            blnHaseErrors = TPeriodIntervallConnector.TPeriodYearEnd(
-                intLedgerNumber, out verificationResult);
-
-            Assert.AreEqual(0, verificationResult.Count, "No Error message shall be shown");
-            Assert.IsFalse(blnHaseErrors, "Year End allowed ...");
-        }
-
-        /// <summary>
-        /// Test of SwitchToNextYear
-        /// </summary>
-        [Test]
-        public void Test_01_CheckLedger()
-        {
-            int intYear = 0;
-
-            ResetDatabase();
             TVerificationResultCollection verificationResult = new TVerificationResultCollection();
+            bool blnHaseErrors;
+            
+            TCarryForward carryForward;
+            
+            bool blnLoop = true;
+            while (blnLoop)
+            {
+            	carryForward = new TCarryForward(new TLedgerInfo(intLedgerNumber));
+            	if (carryForward.GetPeriodType == TCarryForwardENum.Year)
+            	{
+            		blnLoop = false;
+            	}  else
+            	{
+            		carryForward.SetNextPeriod();
+            	}
+            }
+                  
+            TReallocation reallocation = new TReallocation(new TLedgerInfo(intLedgerNumber));
+            reallocation.VerificationResultCollection = verificationResult;
+            reallocation.IsInInfoMode = false;
+            Assert.AreEqual(6,reallocation.JobSize, "Check the number of reallocation jobs ...");
+            reallocation.RunEndOfPeriodOperation();
 
-//            CheckLedger checkLedger = new CheckLedger(new TLedgerInfo(intLedgerNumber));
-//            checkLedger.VerificationResultCollection = verificationResult;
-//            checkLedger.IsInInfoMode = false;
-//            checkLedger.RunEndOfPeriodOperation();
-//            intYear = checkLedger.Year;
+            reallocation = new TReallocation(new TLedgerInfo(intLedgerNumber));
+            reallocation.VerificationResultCollection = verificationResult;
+            reallocation.IsInInfoMode = true;
+            Assert.AreEqual(0,reallocation.JobSize, "Check the number of reallocation jobs ...");
+                            
+            int intYear = 0;
+            CheckGLMEntry(intLedgerNumber,intYear,strAccountBank,
+                         -50,0, 50,0, 100,0);
+            CheckGLMEntry(intLedgerNumber,intYear,strAccountExpense,
+                         0,-150, 0,-150, 0,-200);
+            CheckGLMEntry(intLedgerNumber,intYear,strAccountGift,
+                         0,-100, 0,-200, 0,-300);
+            
+            TGlmNewYearInit glmNewYearInit = new TGlmNewYearInit(intLedgerNumber, intYear);
+            glmNewYearInit.VerificationResultCollection = verificationResult;
+            glmNewYearInit.IsInInfoMode = false;
+            Assert.AreEqual(10,glmNewYearInit.JobSize, "Check the number of reallocation jobs ...");
+            glmNewYearInit.RunEndOfPeriodOperation();
+            glmNewYearInit = new TGlmNewYearInit(intLedgerNumber, intYear);
+            glmNewYearInit.VerificationResultCollection = verificationResult;
+            glmNewYearInit.IsInInfoMode = true;
+            Assert.AreEqual(0,glmNewYearInit.JobSize, "Check the number of reallocation jobs ...");
+            
+            ++intYear;
+            CheckGLMEntry(intLedgerNumber,intYear,strAccountBank,
+                         -50,0, 50,0, 100,0);
+            CheckGLMEntry(intLedgerNumber,intYear,strAccountExpense,
+                         0,0, 0,0, 0,0);
+            CheckGLMEntry(intLedgerNumber,intYear,strAccountGift,
+                         0,0, 0,0, 0,0);
+            
+            TGlmInfo glmInfo = new TGlmInfo(intLedgerNumber,intYear,"8200");
+            glmInfo.Reset();
+            glmInfo.MoveNext();
 
-            System.Diagnostics.Debug.WriteLine(intYear.ToString());
+            Assert.AreEqual(100,glmInfo.YtdActualBase);
+            Assert.AreEqual(0,glmInfo.ClosingPeriodActualBase);
+        }
+        
+        void CheckGLMEntry(int ALedgerNumber, int AYear, string AAccount, 
+                           decimal cc1Base, decimal cc1Closing,
+                           decimal cc2Base, decimal cc2Closing,
+                           decimal cc3Base, decimal cc3Closing)
+        {
+            TGlmInfo glmInfo = new TGlmInfo(ALedgerNumber,AYear,AAccount);
+            glmInfo.Reset();
+            int intCnt = 0;
+            bool blnFnd1 = false;
+            bool blnFnd2 = false;
+            bool blnFnd3 = false;
+            while (glmInfo.MoveNext())
+            {
+            	if (glmInfo.CostCentreCode.Equals("4301"))
+            	{
+            		Assert.AreEqual(cc1Base,glmInfo.YtdActualBase);
+            		Assert.AreEqual(cc1Closing,glmInfo.ClosingPeriodActualBase);
+            		blnFnd1 = true;
+            	}
+            	if (glmInfo.CostCentreCode.Equals("4302"))
+            	{
+            		Assert.AreEqual(cc2Base,glmInfo.YtdActualBase);
+            		Assert.AreEqual(cc2Closing,glmInfo.ClosingPeriodActualBase);
+            		blnFnd2 = true;
+            	}
+            	if (glmInfo.CostCentreCode.Equals("4303"))
+            	{
+            		Assert.AreEqual(cc3Base,glmInfo.YtdActualBase);
+            		Assert.AreEqual(cc3Closing,glmInfo.ClosingPeriodActualBase);
+            		blnFnd3 = true;
+            	}
+            	++intCnt;
+            }
+            Assert.AreEqual(3,intCnt,"3 Hits ...");
+            Assert.IsTrue(blnFnd1);
+            Assert.IsTrue(blnFnd2);
+            Assert.IsTrue(blnFnd3);
         }
 
         /// <summary>
@@ -234,36 +223,38 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             TVerificationResultCollection verificationResult = new TVerificationResultCollection();
 
-
-            TGetAccountingPeriodInfo accountingPeriodInfo1 = new TGetAccountingPeriodInfo(intLedgerNumber, 3);
-
-
+            // We are in 2010 and this and 2011 is not a leap year
             TAccountPeriodToNewYear accountPeriodToNewYear =
                 new TAccountPeriodToNewYear(intLedgerNumber, 2010);
             accountPeriodToNewYear.VerificationResultCollection = verificationResult;
             accountPeriodToNewYear.IsInInfoMode = false;
 
+            // RunEndOfPeriodOperation ...
             Assert.AreEqual(20, accountPeriodToNewYear.JobSize, "...");
             accountPeriodToNewYear.RunEndOfPeriodOperation();
 
+            // JobSize-Check ...
             TAccountPeriodToNewYear accountPeriodToNewYear2 =
                 new TAccountPeriodToNewYear(intLedgerNumber, 2010);
             accountPeriodToNewYear2.IsInInfoMode = false;
             Assert.AreEqual(0, accountPeriodToNewYear2.JobSize, "...");
 
-//            new TAccountPeriodToNewYear(intLedgerNumber).MoveIntervallsToNextYear();
-//            TGetAccountingPeriodInfo accountingPeriodInfo2 = new TGetAccountingPeriodInfo(intLedgerNumber, 3);
-//
-//            Assert.AreEqual(accountingPeriodInfo1.PeriodEndDate.AddYears(1),
-//                accountingPeriodInfo2.PeriodEndDate, "Dates shall be equal");
-//
-//            new TAccountPeriodToNewYear(intLedgerNumber).MoveIntervallsToNextYear();
-//            TGetAccountingPeriodInfo accountingPeriodInfo3 = new TGetAccountingPeriodInfo(intLedgerNumber, 2);
-//            Assert.AreEqual(new DateTime(2012, 2, 29), accountingPeriodInfo3.PeriodEndDate, "February ...");
-//
-//            new TAccountPeriodToNewYear(intLedgerNumber).MoveIntervallsToNextYear();
-//            TGetAccountingPeriodInfo accountingPeriodInfo4 = new TGetAccountingPeriodInfo(intLedgerNumber, 2);
-//            Assert.AreEqual(new DateTime(2013, 2, 28), accountingPeriodInfo4.PeriodEndDate, "February ...");
+            TAccountPeriodInfo accountPeriodInfo = new TAccountPeriodInfo(intLedgerNumber);
+            accountPeriodInfo.AccountingPeriodNumber = 2;
+            Assert.AreEqual(2011, accountPeriodInfo.PeriodStartDate.Year, "Test of the year");
+            Assert.AreEqual(28, accountPeriodInfo.PeriodEndDate.Day, "Test of the Feb. 28th");
+           
+            // Switch to 2012 - this is a leap year ...
+            accountPeriodToNewYear = new TAccountPeriodToNewYear(intLedgerNumber, 2011);
+            accountPeriodToNewYear.IsInInfoMode = false;
+            Assert.AreEqual(20, accountPeriodToNewYear.JobSize, "...");
+            accountPeriodToNewYear.RunEndOfPeriodOperation();
+            Assert.AreEqual(0, accountPeriodToNewYear.JobSize, "...");
+            
+            accountPeriodInfo = new TAccountPeriodInfo(intLedgerNumber);
+            accountPeriodInfo.AccountingPeriodNumber = 2;
+            Assert.AreEqual(29, accountPeriodInfo.PeriodEndDate.Day, "Test of the Feb. 29th");
+
         }
 
         [TestFixtureSetUp]

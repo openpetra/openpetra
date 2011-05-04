@@ -562,16 +562,12 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors
     public interface IGLWebConnectorsNamespace : IInterface
     {
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodIntervallConnector)</summary>
-        bool TPeriodMonthEndInfo(int ALedgerNum,
-                                 out TVerificationResultCollection AVerificationResult);
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodIntervallConnector)</summary>
         bool TPeriodMonthEnd(int ALedgerNum,
+                             bool AIsInInfoMode,
                              out TVerificationResultCollection AVerificationResult);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodIntervallConnector)</summary>
-        bool TPeriodYearEndInfo(int ALedgerNum,
-                                out TVerificationResultCollection AVerificationResult);
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodIntervallConnector)</summary>
         bool TPeriodYearEnd(int ALedgerNum,
+                            bool AIsInInfoMode,
                             out TVerificationResultCollection AVerificationResult);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TRevaluationWebConnector)</summary>
         bool Revaluate(int ALedgerNum,

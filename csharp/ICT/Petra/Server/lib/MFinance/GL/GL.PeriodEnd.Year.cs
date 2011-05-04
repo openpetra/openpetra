@@ -53,36 +53,25 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 {
     public partial class TPeriodIntervallConnector
     {
-        /// <summary>
-        /// Routine to initialize the "Hello" Message if you want to start the
-        /// periodic month end.
-        /// </summary>
-        /// <param name="ALedgerNum"></param>
-        /// <param name="AVerificationResult"></param>
-        /// <returns>True if critical values appeared otherwise false</returns>
-        [RequireModulePermission("FINANCE-1")]
-        public static bool TPeriodYearEndInfo(
-            int ALedgerNum,
-            out TVerificationResultCollection AVerificationResult)
-        {
-            return new TYearEnd().RunYearEnd(ALedgerNum, true,
-                out AVerificationResult);
-        }
 
-        /// <summary>
-        /// Routine to run the finally month end ...
-        /// </summary>
-        /// <param name="ALedgerNum"></param>
-        /// <param name="AVerificationResult"></param>
-        /// <returns></returns>
+    	/// <summary>
+    	/// Routine to run the period end calculations ...
+    	/// </summary>
+    	/// <param name="ALedgerNum"></param>
+    	/// <param name="AIsInInfoMode">True means: No Calculation is done, only 
+    	/// verification result messages are collected</param>
+    	/// <param name="AVerificationResult"></param>
+    	/// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
         public static bool TPeriodYearEnd(
             int ALedgerNum,
+            bool AIsInInfoMode, 
             out TVerificationResultCollection AVerificationResult)
         {
-            return new TYearEnd().RunYearEnd(ALedgerNum, false,
+            return new TYearEnd().RunYearEnd(ALedgerNum, AIsInInfoMode,
                 out AVerificationResult);
         }
+    
     }
 }
 
@@ -110,17 +99,20 @@ namespace Ict.Petra.Server.MFinance.GL
             verificationResults = new TVerificationResultCollection();
 
             TCarryForward carryForward = new TCarryForward(ledgerInfo);
-            int intYear = carryForward.Year;
+            int intYear = 0;
 
             if (carryForward.GetPeriodType != TCarryForwardENum.Year)
             {
                 TVerificationResult tvt =
-                    new TVerificationResult(Catalog.GetString("Next Month is expected ..."),
+                    new TVerificationResult(Catalog.GetString("Year End is expected ..."),
                         Catalog.GetString("In this situation you cannot run a year end routine"), "",
-                        TYearEndErrorStatus.PEYM_02.ToString(),
+                        TPeriodEndErrorAndStatusCodes.PEEC_04.ToString(),
                         TResultSeverity.Resv_Critical);
                 verificationResults.Add(tvt);
                 blnCriticalErrors = true;
+            } else
+            {
+            	intYear = carryForward.Year;
             }
 
             RunPeriodEndSequence(new TReallocation(ledgerInfo),
@@ -195,7 +187,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 TVerificationResult tvt =
                     new TVerificationResult(Catalog.GetString("No Income Account found"),
                         Catalog.GetString("You shall have at least one income"), "",
-                        TYearEndErrorStatus.PEYM_03.ToString(),
+                        TPeriodEndErrorAndStatusCodes.PEEC_09.ToString(),
                         TResultSeverity.Resv_Critical);
                 verificationResults.Add(tvt);
                 blnCriticalErrors = true;
@@ -206,7 +198,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 TVerificationResult tvt =
                     new TVerificationResult(Catalog.GetString("No Expense Account found"),
                         Catalog.GetString("You shall have at least one expense"), "",
-                        TYearEndErrorStatus.PEYM_04.ToString(),
+                        TPeriodEndErrorAndStatusCodes.PEEC_10.ToString(),
                         TResultSeverity.Resv_Critical);
                 verificationResults.Add(tvt);
                 blnCriticalErrors = true;
@@ -223,7 +215,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 TVerificationResult tvt =
                     new TVerificationResult(Catalog.GetString("No ICH_ACCT Account defined"),
                         Catalog.GetString("You need to define this account"), "",
-                        TYearEndErrorStatus.PEYM_05.ToString(),
+                        TPeriodEndErrorAndStatusCodes.PEEC_11.ToString(),
                         TResultSeverity.Resv_Critical);
                 verificationResults.Add(tvt);
                 blnCriticalErrors = true;
@@ -235,12 +227,12 @@ namespace Ict.Petra.Server.MFinance.GL
         public override int JobSize {
             get
             {
-                if (accountList == null)
-                {
-                    CaculateAccountList();
-                }
-
-                return accountList.Count;
+            	bool blnHelp = blnIsInInfoMode; 
+            	blnIsInInfoMode = true;
+            	intCountJobs = 0;
+            	RunEndOfPeriodOperation();
+                blnIsInInfoMode = blnHelp;
+                return intCountJobs;
             }
         }
 
@@ -387,6 +379,7 @@ namespace Ict.Petra.Server.MFinance.GL
                     strAccountTo, strCostCentreTo, strBuildNarrative,
                     strYearEnd, blnDebitCredit, Math.Abs(glmInfo.YtdActualBase));
             }
+            ++intCountJobs;
         }
 
         private string GetStandardCostCentre()
@@ -690,39 +683,6 @@ namespace Ict.Petra.Server.MFinance.GL
                 }
             }
         }
-    }
-
-    /// <summary>
-    /// Status values for error messages ...
-    /// </summary>
-    public enum TYearEndErrorStatus
-    {
-        /// <summary>
-        /// The Leger is locked ...
-        /// </summary>
-        PEYM_01,
-        /// <summary>
-        /// Openpetra is not in the modus to run a year end procedure.
-        /// This is only allowed if you have run the last month end period of the year
-        /// </summary>
-        PEYM_02,
-        /// <summary>
-        /// No income account in this ledger
-        /// </summary>
-        PEYM_03,
-
-        /// <summary>
-        /// No expense account in this ledger
-        /// </summary>
-        PEYM_04,
-
-        /// <summary>
-        /// No ICH account in this ledger
-        /// </summary>
-        PEYM_05,
-
-        PEYM_06,
-        PEYM_07
     }
 
     /// <summary>

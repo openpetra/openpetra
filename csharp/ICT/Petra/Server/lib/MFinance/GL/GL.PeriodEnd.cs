@@ -93,7 +93,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 strMessage = String.Format(strMessage, AOperationName);
                 TVerificationResult tvt =
                     new TVerificationResult(strTitle, strMessage, "",
-                        TYearEndErrorStatus.PEYM_06.ToString(),
+                        TPeriodEndErrorAndStatusCodes.PEEC_01.ToString(),
                         TResultSeverity.Resv_Noncritical);
                 verificationResults.Add(tvt);
             }
@@ -114,7 +114,7 @@ namespace Ict.Petra.Server.MFinance.GL
                     strMessage = String.Format(strMessage, newApeo.JobSize.ToString());
                     TVerificationResult tvt =
                         new TVerificationResult(strTitle, strMessage, "",
-                            TYearEndErrorStatus.PEYM_06.ToString(),
+                            TPeriodEndErrorAndStatusCodes.PEEC_02.ToString(),
                             TResultSeverity.Resv_Critical);
                     verificationResults.Add(tvt);
                     blnCriticalErrors = true;
@@ -155,6 +155,8 @@ namespace Ict.Petra.Server.MFinance.GL
         /// See TPerdiodEndOperations
         /// </summary>
         protected bool blnCriticalErrors = false;
+        
+        protected int intCountJobs;
 
         /// <summary>
         /// JobSize returns the number of data base records which are affected in this operation. Be shure
@@ -379,4 +381,68 @@ namespace Ict.Petra.Server.MFinance.GL
         }
     }
 
+    public enum TPeriodEndErrorAndStatusCodes
+    {
+    	/// <summary>
+    	/// If a periodic end operation shall be done at least on one data base record 
+    	/// (something like the calculation of the admin fees) this hin is shon to indicate 
+    	/// tha no database records are affected.
+    	/// </summary>
+    	PEEC_01,
+    	
+    	/// <summary>
+    	/// Afte a specific perdio end operation has been done, the programm calculates again the 
+    	/// number of database records which shall be changed. If this value is non zero, this 
+    	/// error is shown. 
+    	/// Type: Critical. 
+    	/// </summary>
+    	PEEC_02,
+    	
+    	/// <summary>
+    	/// The user has required a period month end but a year end should be done first.
+    	/// </summary>
+    	PEEC_03,
+    	
+    	/// <summary>
+    	/// The user has required a period year end but a month end should be done first.
+    	/// </summary>
+    	PEEC_04,
+    	
+    	/// <summary>
+    	/// A revaluation should be done befor the month end ..
+    	/// </summary>
+    	PEEC_05,
+    	
+    	/// <summary>
+    	/// Unposted batches are found
+    	/// </summary>
+    	PEEC_06,
+    	
+    	/// <summary>
+    	/// Suspensed accountes are found
+    	/// </summary>
+    	PEEC_07,
+
+    	/// <summary>
+    	/// Unposted gift batches are found ...
+    	/// </summary>
+    	PEEC_08,
+    	
+    	/// <summary>
+    	/// No income accounts have been found ...
+    	/// </summary>
+    	PEEC_09,
+    	
+    	/// <summary>
+    	/// No expense accounts have been found ...
+    	/// </summary>
+    	PEEC_10,
+    	
+    	/// <summary>
+    	/// No ICH_ACCT Account is defined
+    	/// </summary>
+    	PEEC_11,
+    	
+    }
+   
 }

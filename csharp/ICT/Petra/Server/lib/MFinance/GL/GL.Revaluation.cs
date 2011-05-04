@@ -348,7 +348,7 @@ namespace Ict.Petra.Server.MFinance.GL
             batch = GLDataset.ABatch[0];
             batch.BatchDescription = Catalog.GetString("Period end revaluations");
             
-            TGetAccountingPeriodInfo accountingPeriodInfo = new TGetAccountingPeriodInfo(intLedgerNum);
+            TAccountPeriodInfo accountingPeriodInfo = new TAccountPeriodInfo(intLedgerNum);
             accountingPeriodInfo.AccountingPeriodNumber = intAccountingPeriod;
             batch.DateEffective = accountingPeriodInfo.PeriodEndDate;
 

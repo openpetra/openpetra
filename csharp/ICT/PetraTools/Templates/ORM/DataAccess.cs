@@ -291,7 +291,7 @@ public class {#TABLENAME}Access : TTypedDataAccess
     }
     
     /// <summary>
-    /// The changes are written to the database ...
+    /// Auto generated code ...
     /// </summary>
     /// <param name="ATable"></param>
     /// <param name="ATransaction"></param>

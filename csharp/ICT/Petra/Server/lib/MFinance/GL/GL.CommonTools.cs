@@ -108,6 +108,13 @@ namespace Ict.Petra.Server.MFinance.GL
         DataTable aGLM;
         int iPtr = 0;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AAccountCode"></param>
+        /// <param name="ACurrentFinancialYear">Number of the year after the the installation of 
+        /// the software</param>
         public TGet_GLM_Info(int ALedgerNumber, string AAccountCode, int ACurrentFinancialYear)
         {
             OdbcParameter[] ParametersArray;
@@ -280,6 +287,13 @@ namespace Ict.Petra.Server.MFinance.GL
             get
             {
                 return (decimal)glmRow[AGeneralLedgerMasterTable.GetYtdActualBaseDBName()];
+            }
+        }
+        public decimal ClosingPeriodActualBase
+        {
+            get
+            {
+                return (decimal)glmRow[AGeneralLedgerMasterTable.GetClosingPeriodActualBaseDBName()];
             }
         }
     }
@@ -840,7 +854,7 @@ namespace Ict.Petra.Server.MFinance.GL
     /// one row (Contructor with two parameters) and on time it holds a set of rows (Constructor with
     /// one parameter.
     /// </summary>
-    public class TGetAccountingPeriodInfo
+    public class TAccountPeriodInfo
     {
     	private int intLedgerNumber = 0; 
         private AAccountingPeriodTable periodTable = null;
@@ -857,7 +871,7 @@ namespace Ict.Petra.Server.MFinance.GL
         /// Constructor needs a valid ledger number.
         /// </summary>
         /// <param name="ALedgerNumber">Ledger number</param>
-        public TGetAccountingPeriodInfo(int ALedgerNumber)
+        public TAccountPeriodInfo(int ALedgerNumber)
         {
         	intLedgerNumber = ALedgerNumber;
         	LoadData();
@@ -869,7 +883,7 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <param name="ALedgerNumber">the ledger number</param>
         /// <param name="ACurrentPeriod">the current accounting period</param>
 
-        public TGetAccountingPeriodInfo(int ALedgerNumber, int ACurrentPeriod)
+        public TAccountPeriodInfo(int ALedgerNumber, int ACurrentPeriod)
         {
         	intLedgerNumber = ALedgerNumber;
         	LoadData();

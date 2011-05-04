@@ -30,7 +30,7 @@ using Ict.Petra.Server.MFinance.GL;
 namespace Ict.Testing.Petra.Server.MFinance.GL
 {
 	
-	public class TestOperation : AbstractPerdiodEndOperation
+	class TestOperation : AbstractPerdiodEndOperation
 	{
 		int intCount;
 		int intJobCount;
@@ -71,7 +71,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 		}
 	}
 	
-	public class TestOperations : TPerdiodEndOperations
+	class TestOperations : TPerdiodEndOperations
 	{
 		public void Test1(TVerificationResultCollection tvr)
 		{

@@ -26,21 +26,42 @@ using System.Windows.Forms;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
-    /// <summary>
-    /// Description of GLRevaluation.
-    /// </summary>
-    public partial class TPeriodEndMonthly : Form
+	
+	
+	public class TPeriodEndMonth : TPeriodEnd
+	{
+		public TPeriodEndMonth(IntPtr AParentFormHandle) : base(AParentFormHandle, true)
+		{
+		}
+	}
+
+	public class TPeriodEndYear : TPeriodEnd
+	{
+		public TPeriodEndYear(IntPtr AParentFormHandle) : base(AParentFormHandle,false)
+		{
+		}	
+	}
+	
+    
+    
+    public partial class TPeriodEnd : Form
     {
-        public TPeriodEndMonthly(IntPtr AParentFormHandle) : base()
+    	
+    	public bool blnIsInMonthMode;
+    	
+        public TPeriodEnd(IntPtr AParentFormHandle, bool AIsMonthMode) : base()
         {
             //
             // The InitializeComponent() call is required for Windows Forms designer support.
             //
+            
+            blnIsInMonthMode = AIsMonthMode;
+            
             InitializeComponent();
 
 
-            this.btnCancel.Click += new EventHandler(CancelMonthEnd);
-            this.btnMonthEnd.Click += new EventHandler(RunMonthEnd);
+            this.btnCancel.Click += new EventHandler(CancelButtonClick);
+            this.btnMonthEnd.Click += new EventHandler(PeriodEndButtonClick);
 
             this.ResizeEnd += new EventHandler(ResizeForm);
         }

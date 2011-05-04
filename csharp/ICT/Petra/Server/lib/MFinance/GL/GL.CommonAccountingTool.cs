@@ -260,8 +260,8 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             if (blnInitBatchDate)
             {
-                TGetAccountingPeriodInfo getAccountingPeriodInfo =
-                    new TGetAccountingPeriodInfo(TLedgerInfo.LedgerNumber, TLedgerInfo.CurrentPeriod);
+                TAccountPeriodInfo getAccountingPeriodInfo =
+                    new TAccountPeriodInfo(TLedgerInfo.LedgerNumber, TLedgerInfo.CurrentPeriod);
                 aBatchRow.DateEffective = getAccountingPeriodInfo.PeriodEndDate;
                 blnInitBatchDate = false;
             }

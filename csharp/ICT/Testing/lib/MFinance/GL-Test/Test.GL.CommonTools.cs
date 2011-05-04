@@ -77,9 +77,9 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         }
 
         [Test]
-        public void Test_03_TGetAccountingPeriodInfo()
+        public void Test_03_TAccountPeriodInfo()
         {
-            TGetAccountingPeriodInfo getAPI = new TGetAccountingPeriodInfo(LedgerNumber);
+            TAccountPeriodInfo getAPI = new TAccountPeriodInfo(LedgerNumber);
 
 //            Assert.AreNotEqual(DateTime.MinValue, getAPI.GetPeriodEndDate(1),
 //                "DateTime.MinValue is an error representative");
@@ -264,7 +264,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         {
             try
             {
-                TGetAccountingPeriodInfo getAPI = new TGetAccountingPeriodInfo(ALedgerNum, APeriodNum);
+                TAccountPeriodInfo getAPI = new TAccountPeriodInfo(ALedgerNum, APeriodNum);
                 DateTime date = getAPI.PeriodEndDate;
                 return date != null;
             }

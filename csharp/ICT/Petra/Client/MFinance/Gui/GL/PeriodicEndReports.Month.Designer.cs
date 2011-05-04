@@ -30,7 +30,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     /// <summary>
     /// Month-End dialog
     /// </summary>
-    public partial class TPeriodEndMonthly
+    public partial class TPeriodEnd
     {
         private System.ComponentModel.IContainer components = null;
 
@@ -54,7 +54,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TPeriodEndMonthly));
+            System.ComponentModel.ComponentResourceManager resources = 
+            	new System.ComponentModel.ComponentResourceManager(typeof(TPeriodEnd));
 
             this.btnMonthEnd = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
@@ -75,7 +76,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.btnMonthEnd.Name = "btnMonthEnd";
             this.btnMonthEnd.Size = new System.Drawing.Size(144, 23);
             this.btnMonthEnd.TabIndex = 2;
-            this.btnMonthEnd.Text = Catalog.GetString("Month End");
+            if (blnIsInMonthMode)
+            {
+            	this.btnMonthEnd.Text = Catalog.GetString("Month End");
+            } else
+            {
+            	this.btnMonthEnd.Text = Catalog.GetString("Year End");
+            }
             this.btnMonthEnd.UseVisualStyleBackColor = true;
             //
             // btnCancel
@@ -92,10 +99,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.Controls.Add(this.btnMonthEnd);
             this.Controls.Add(this.tbxMessage);
 
-            this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+           // this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
 
             this.Name = "GLMonthEnd";
-            this.Text = Catalog.GetString("Periodic End - Month ...");
+            if (blnIsInMonthMode)
+            {
+            	this.Text = Catalog.GetString("Periodic End - Month ...");
+            } else {
+            	this.Text = Catalog.GetString("Periodic End - Year ...");
+            }
             this.ResumeLayout(false);
         }
 

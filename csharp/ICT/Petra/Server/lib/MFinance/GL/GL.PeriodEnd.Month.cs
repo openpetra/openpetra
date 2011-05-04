@@ -54,50 +54,78 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
     /// </summary>
     public partial class TPeriodIntervallConnector
     {
-        /// <summary>
-        /// Routine to initialize the "Hello" Message if you want to start the
-        /// periodic month end.
-        /// </summary>
-        /// <param name="ALedgerNum"></param>
-        /// <param name="AVerificationResult"></param>
-        /// <returns>True if critical values appeared otherwise false</returns>
-        [RequireModulePermission("FINANCE-1")]
-        public static bool TPeriodMonthEndInfo(
-            int ALedgerNum,
-            out TVerificationResultCollection AVerificationResult)
-        {
-            return new TMonthEnd().RunMonthEndInfo(ALedgerNum, out AVerificationResult);
-        }
 
-        /// <summary>
-        /// Routine to run the finally month end ...
-        /// </summary>
-        /// <param name="ALedgerNum"></param>
-        /// <param name="AVerificationResult"></param>
-        /// <returns></returns>
+    	/// <summary>
+    	/// Month end master routine ...
+    	/// </summary>
+    	/// <param name="ALedgerNum"></param>
+    	/// <param name="AIsInInfoMode"></param>
+    	/// <param name="AVerificationResult"></param>
+    	/// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
         public static bool TPeriodMonthEnd(
             int ALedgerNum,
+            bool AIsInInfoMode, 
             out TVerificationResultCollection AVerificationResult)
         {
-            return new TMonthEnd().RunMonthEnd(ALedgerNum, out AVerificationResult);
+            return new TMonthEnd().RunMonthEnd(ALedgerNum, AIsInInfoMode,
+                out AVerificationResult);
         }
+    
+    
     }
 }
 
 namespace Ict.Petra.Server.MFinance.GL
 {
-    public class TMonthEnd
+	public class TMonthEnd : TPerdiodEndOperations
     {
-        TVerificationResultCollection verificationResults;
-        GetSuspenseAccountInfo getSuspenseAccountInfo = null;
+
         TLedgerInfo ledgerInfo;
 
-        // Set this value true means: Continue the checks and report but never
-        // calculate ...
-        bool blnCriticalErrors = false;
-        bool blnZerorValueSuspenseAccountsFound = false;
+        public bool RunMonthEnd(int ALedgerNum, bool AInfoMode,
+            out TVerificationResultCollection AVRCollection)
+        {
+        	
+            blnIsInInfoMode = AInfoMode;
+            ledgerInfo = new TLedgerInfo(ALedgerNum);
+            verificationResults = new TVerificationResultCollection();
 
+            TCarryForward carryForward = new TCarryForward(ledgerInfo);
+
+            if (carryForward.GetPeriodType != TCarryForwardENum.Month)
+            {
+                TVerificationResult tvt =
+                    new TVerificationResult(Catalog.GetString("Next Month is expected ..."),
+                        Catalog.GetString("In this situation you cannot run a year end routine"), "",
+                        TPeriodEndErrorAndStatusCodes.PEEC_03.ToString(),
+                        TResultSeverity.Resv_Critical);
+                verificationResults.Add(tvt);
+                blnCriticalErrors = true;
+            }
+
+            RunPeriodEndCheck(new RunMonthEndChecks(ledgerInfo));
+            
+            // TODO: Admin Fees and
+            // TODO: ICH stewardship ...
+            
+            // RunPeriodEndSequence(new RunMonthlyAdminFees(), "Example");
+            
+
+            if (!blnIsInInfoMode)
+            {
+                if (!blnCriticalErrors)
+                {
+                    carryForward.SetNextPeriod();
+                }
+            }
+
+            AVRCollection = verificationResults;
+            return blnCriticalErrors;
+        }
+        
+        
+        
 
         /// <summary>
         /// Class entry point for the info function
@@ -113,7 +141,7 @@ namespace Ict.Petra.Server.MFinance.GL
             try
             {
                 ledgerInfo = new TLedgerInfo(ALedgerNum);
-                RunFirstChecks();
+                // RunFirstChecks();
                 AVRCollection = verificationResults;
                 return blnCriticalErrors;
             }
@@ -138,7 +166,7 @@ namespace Ict.Petra.Server.MFinance.GL
             try
             {
                 ledgerInfo = new TLedgerInfo(ALedgerNum);
-                RunFirstChecks();
+                // RunFirstChecks();
                 AVRCollection = verificationResults;
 
                 if (blnCriticalErrors)
@@ -177,10 +205,41 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
 
-        private void RunFirstChecks()
+
+        void RunAndAccountAdminFees()
         {
+            // TODO: Admin Fees and
+            // TODO: ICH stewardship ...
+            // TCommonAccountingTool cat = new TCommonAccountingTool(ledgerInfo, "Batch Description");
+        }
+    }
+
+    class RunMonthEndChecks : AbstractPerdiodEndOperation
+    {
+    	TLedgerInfo ledgerInfo;
+
+    	bool blnZerorValueSuspenseAccountsFound = false;
+		GetSuspenseAccountInfo getSuspenseAccountInfo = null;
+    	
+    	public RunMonthEndChecks(TLedgerInfo ALedgerInfo)
+    	{
+    		ledgerInfo = ALedgerInfo;
+    	}
+    	
+		public override int JobSize {
+			get {
+				return 0;
+			}
+		}
+    	
+		public override AbstractPerdiodEndOperation GetActualizedClone()
+		{
+			return new RunMonthEndChecks(ledgerInfo);
+		}
+    	
+		public override void RunEndOfPeriodOperation()
+		{
             CheckIfRevaluationIsDone();
-            CheckYearEndProcessingNecessary();
             CheckForUnpostedBatches();
             CheckForUnpostedGiftBatches();
             CheckForSuspenseAcountsZero();
@@ -189,9 +248,9 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 CheckForSuspenseAcounts();
             }
-        }
+		}
 
-        private void CheckIfRevaluationIsDone()
+		private void CheckIfRevaluationIsDone()
         {
             if (!(new TLedgerInitFlagHandler(ledgerInfo.LedgerNumber,
                       TLedgerInitFlagEnum.Revaluation).Flag))
@@ -199,23 +258,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 TVerificationResult tvr = new TVerificationResult(
                     Catalog.GetString("A Revaluation shall be done first"),
                     Catalog.GetString("Please run a revalution for Ledger first."), "",
-                    PeriodEndMonthStatus.PEMM_05.ToString(), TResultSeverity.Resv_Critical);
-                // Error is critical but additional checks shall be done
-                verificationResults.Add(tvr);
-                blnCriticalErrors = true;
-            }
-        }
-
-        private void CheckYearEndProcessingNecessary()
-        {
-            if (ledgerInfo.ProvisionalYearEndFlag)
-            {
-                TVerificationResult tvr = new TVerificationResult(
-                    Catalog.GetString("Peridic Year End Processing shall be done first"),
-                    String.Format(
-                        Catalog.GetString("Please run the year end processing for Ledger {0} first."),
-                        ledgerInfo.LedgerNumber.ToString()),
-                    "", PeriodEndMonthStatus.PEMM_01.ToString(), TResultSeverity.Resv_Critical);
+                    TPeriodEndErrorAndStatusCodes.PEEC_05.ToString(), TResultSeverity.Resv_Critical);
                 // Error is critical but additional checks shall be done
                 verificationResults.Add(tvr);
                 blnCriticalErrors = true;
@@ -234,7 +277,7 @@ namespace Ict.Petra.Server.MFinance.GL
                     String.Format(Catalog.GetString(
                             "Please post or cancel the batches {0} first!"),
                         getBatchInfo.ToString()),
-                    "", PeriodEndMonthStatus.PEMM_02.ToString(), TResultSeverity.Resv_Critical);
+                    "", TPeriodEndErrorAndStatusCodes.PEEC_06.ToString(), TResultSeverity.Resv_Critical);
                 verificationResults.Add(tvr);
                 blnCriticalErrors = true;
             }
@@ -256,15 +299,15 @@ namespace Ict.Petra.Server.MFinance.GL
                         Catalog.GetString(
                             "You have checked the suspense account details of {0} before?"),
                         getSuspenseAccountInfo.ToString()),
-                    "", PeriodEndMonthStatus.PEMM_03.ToString(), TResultSeverity.Resv_Status);
+                    "", TPeriodEndErrorAndStatusCodes.PEEC_07.ToString(), TResultSeverity.Resv_Status);
                 verificationResults.Add(tvr);
             }
         }
 
         private void CheckForUnpostedGiftBatches()
         {
-            TGetAccountingPeriodInfo getAccountingPeriodInfo =
-                new TGetAccountingPeriodInfo(ledgerInfo.LedgerNumber, ledgerInfo.CurrentPeriod);
+            TAccountPeriodInfo getAccountingPeriodInfo =
+                new TAccountPeriodInfo(ledgerInfo.LedgerNumber, ledgerInfo.CurrentPeriod);
             GetUnpostedGiftInfo getUnpostedGiftInfo = new GetUnpostedGiftInfo(
                 ledgerInfo.LedgerNumber, getAccountingPeriodInfo.PeriodEndDate);
 
@@ -275,7 +318,7 @@ namespace Ict.Petra.Server.MFinance.GL
                     String.Format(
                         "Please post or cancel the gift batches {0} first!",
                         getUnpostedGiftInfo.ToString()),
-                    "", PeriodEndMonthStatus.PEMM_04.ToString(), TResultSeverity.Resv_Critical);
+                    "", TPeriodEndErrorAndStatusCodes.PEEC_08.ToString(), TResultSeverity.Resv_Critical);
                 verificationResults.Add(tvr);
                 blnCriticalErrors = true;
             }
@@ -327,15 +370,32 @@ namespace Ict.Petra.Server.MFinance.GL
                 }
             }
         }
-
-        void RunAndAccountAdminFees()
-        {
-            // TODO: Admin Fees and
-            // TODO: ICH stewardship ...
-            // TCommonAccountingTool cat = new TCommonAccountingTool(ledgerInfo, "Batch Description");
-        }
     }
 
+    /// <summary>
+    /// Example ....
+    /// </summary>
+    class RunMonthlyAdminFees : AbstractPerdiodEndOperation 
+    {
+		public override int JobSize {
+			get {
+    			// TODO: Some Code
+				return 0;
+			}
+		}
+    	
+		public override AbstractPerdiodEndOperation GetActualizedClone()
+		{
+    			// TODO: Some Code
+			return new RunMonthlyAdminFees();
+		}
+    	
+		public override void RunEndOfPeriodOperation()
+		{
+    			// TODO: Some Code
+			
+		}
+    }
 
     /// <summary>
     /// Routine to finde unposted gifts batches.
@@ -569,34 +629,4 @@ namespace Ict.Petra.Server.MFinance.GL
         }
     }
 
-    /// <summary>
-    /// Values for the error Codes
-    /// </summary>
-    public enum PeriodEndMonthStatus
-    {
-        /// <summary>
-        /// Status message from the CheckYearEndProcessingNecessary
-        /// </summary>
-        PEMM_01,
-
-        /// <summary>
-        /// Status message form the CheckForUnpostedBatches
-        /// </summary>
-        PEMM_02,
-
-        /// <summary>
-        /// Status message from the CheckForSuspenseAcounts
-        /// </summary>
-        PEMM_03,
-
-        /// <summary>
-        /// Status message from the CheckForUnpostedGiftBatches
-        /// </summary>
-        PEMM_04,
-
-        /// <summary>
-        /// Status message from the revalutaion check
-        /// </summary>
-        PEMM_05
-    }
 }
