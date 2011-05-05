@@ -30,8 +30,7 @@ using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Server.MFinance.GL.Data.Access;
 using Ict.Petra.Server.MFinance.GL;
 
-
-namespace Ict.Petra.Server.MFinance.GL
+namespace Ict.Petra.Server.MFinance
 {
     /// <summary>
     /// Some E-Nums for the TCommonAccountingTool i.E. for the transaction property
@@ -42,10 +41,23 @@ namespace Ict.Petra.Server.MFinance.GL
     public enum CommonAccountingSubSystemsEnum
     {
         /// <summary>
-        /// Default - resp Standard value
+        /// Sub Systems, General Ledger
         /// </summary>
         GL,
+        
+        /// <summary>
+        /// Sub Systems, Accounts Payable
+        /// </summary>
         AP,
+        
+        /// <summary>
+        /// Sub Systems, Accounts Receivable
+        /// </summary>
+        AR,
+        
+        /// <summary>
+        /// Sub Systems, Gifts receivable
+        /// </summary>
         GR
     }
 
@@ -58,20 +70,44 @@ namespace Ict.Petra.Server.MFinance.GL
     public enum CommonAccountingTransactionTypesEnum
     {
         /// <summary>
-        /// Default - resp Standard value
+        /// GL-Batch-Standard
         /// </summary>
         STD,
-            ALLOC,
-            GR,
-            INV,
-            REALLOC,
+        
+        /// <summary>
+        /// ALLOC
+        /// </summary>
+
+        /// <summary>
+        /// ...
+        /// </summary>
+        ALLOC,
+        
+        /// <summary>
+        /// ...
+        /// </summary>
+        GR,
+        
+        /// <summary>
+        /// ...
+        /// </summary>
+        INV,
+            
+        /// <summary>
+        /// Reallloc
+        /// </summary>
+        REALLOC,
 
         /// <summary>
         /// Used in a revaluation only ...
         /// </summary>
-            REVAL
+        REVAL
     }
+	
+}
 
+namespace Ict.Petra.Server.MFinance.GL
+{
     /// <summary>
     /// Some constants for the journal values to rember that IS_Debit ist true.
     /// </summary>

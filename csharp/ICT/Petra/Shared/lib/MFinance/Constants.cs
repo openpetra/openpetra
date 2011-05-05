@@ -42,27 +42,6 @@ namespace Ict.Petra.Shared.MFinance
         /// <summary>GL Batch</summary>
         public const String BATCH_HAS_TRANSACTIONS = "HasTransactions";
 
-        /// <summary>GL Batch</summary>
-        public const String TRANSACTION_REVAL = "REVAL";
-
-        /// <summary>GL Batch</summary>
-        public const String TRANSACTION_FX_REVAL = "FX REVAL";
-
-        /// <summary>GL Batch</summary>
-        public const String TRANSACTION_STD = "STD";
-
-        /// <summary>GL Batch</summary>
-        public const String TRANSACTION_ALLOC = "ALLOC";
-
-        /// <summary>GL Batch</summary>
-        public const String TRANSACTION_REALLOC = "REALLOC";
-
-        /// <summary>GL Batch</summary>
-        public const String TRANSACTION_GIFT = "GR";
-
-        /// <summary>GL Batch</summary>
-        public const String TRANSACTION_AP = "INV";
-
         /// <summary>General Ledger</summary>
         public const String ACCOUNT_HIERARCHY_STANDARD = "STANDARD";
 
@@ -101,18 +80,6 @@ namespace Ict.Petra.Shared.MFinance
 
         /// <summary>Bank statements</summary>
         public const String BANK_STMT_STATUS_UNMATCHED = "UNMATCHED";
-
-        /// <summary>Sub Systems, General Ledger</summary>
-        public const String SUB_SYSTEM_GL = "GL";
-
-        /// <summary>Sub Systems, Accounts Payable</summary>
-        public const String SUB_SYSTEM_AP = "AP";
-
-        /// <summary>Sub Systems, Accounts Receivable</summary>
-        public const String SUB_SYSTEM_AR = "AR";
-
-        /// <summary>Sub Systems, Gifts receivable</summary>
-        public const String SUB_SYSTEM_GR = "GR";
 
         /// <summary>Unit-Type is key-min</summary>
         public const String GROUP_DETAIL_KEY_MIN = "KEYMIN";

@@ -35,6 +35,7 @@ using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Server.MFinance.GL.Data.Access;
+using Ict.Petra.Server.MFinance;
 
 namespace Ict.Petra.Server.MFinance.GL
 {
@@ -330,8 +331,8 @@ namespace Ict.Petra.Server.MFinance.GL
 
                     // check that transactions on foreign currency accounts are using the correct currency
                     // (fx reval transactions are an exception because they are posted in base currency)
-                    if (!((transaction.Reference == MFinanceConstants.TRANSACTION_FX_REVAL)
-                          && (journal.TransactionTypeCode == MFinanceConstants.TRANSACTION_REVAL)))
+                    if (!((transaction.Reference == CommonAccountingTransactionTypesEnum.REVAL.ToString())
+                          && (journal.TransactionTypeCode == CommonAccountingTransactionTypesEnum.REVAL.ToString())))
                     {
                         // get the account that this transaction is writing to
                         accountView.RowFilter = AAccountTable.GetAccountCodeDBName() + " = '" + transaction.AccountCode + "'";

@@ -406,8 +406,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 journal.DateEffective = batch.DateEffective;
                 journal.TransactionCurrency = CurrencyCode;
                 journal.JournalDescription = "TODO"; // TODO: journal description for posting AP documents
-                journal.TransactionTypeCode = MFinanceConstants.TRANSACTION_STD;
-                journal.SubSystemCode = MFinanceConstants.SUB_SYSTEM_AP;
+                journal.TransactionTypeCode = CommonAccountingTransactionTypesEnum.STD.ToString();
+                journal.SubSystemCode = CommonAccountingSubSystemsEnum.AP.ToString();
                 journal.DateOfEntry = DateTime.Now;
 
                 // TODO journal.ExchangeRateToBase
@@ -653,8 +653,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 journal.DateEffective = batch.DateEffective;
                 journal.TransactionCurrency = CurrencyCode;
                 journal.JournalDescription = "TODO"; // TODO: journal description for posting AP documents
-                journal.TransactionTypeCode = MFinanceConstants.TRANSACTION_AP;
-                journal.SubSystemCode = MFinanceConstants.SUB_SYSTEM_AP;
+                journal.TransactionTypeCode = CommonAccountingTransactionTypesEnum.INV.ToString();
+                journal.SubSystemCode = CommonAccountingSubSystemsEnum.AP.ToString();
                 journal.DateOfEntry = DateTime.Now;
 
                 // TODO journal.ExchangeRateToBase
