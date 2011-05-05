@@ -50,7 +50,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
     /// Test of the GL.PeriodEnd.Month routines ...
     /// </summary>
     [TestFixture]
-    public partial class TestGLPeriodicEndMonth : CommonNUnitFunctions
+    public class TestGLPeriodicEndMonth : CommonNUnitFunctions
     {
         private const int intLedgerNumber = 43;
 
@@ -218,17 +218,25 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             } while (!ledgerInfo2.ProvisionalYearEndFlag);
         }
 
-        [TestFixtureSetUp]
+        /// <summary>
+        /// TestFixtureSetUp
+        /// </summary>
+        [SetUp]
         public void Init()
         {
             InitServerConnection();
             ResetDatabase();
+            System.Diagnostics.Debug.WriteLine("Init: " + this.ToString());
         }
 
+        /// <summary>
+        /// TearDown the test
+        /// </summary>
         [TestFixtureTearDown]
-        public void TearDown()
+        public void TearDownTest()
         {
             DisconnectServerConnection();
+            System.Diagnostics.Debug.WriteLine("TearDown: " + this.ToString());
         }
 
         private const string strTestDataBatchDescription = "TestGLPeriodicEndMonth-TESTDATA";

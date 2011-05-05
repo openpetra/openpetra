@@ -28,16 +28,13 @@ using Ict.Testing.NUnitForms;
 using Ict.Petra.Server.MFinance.GL;
 
 
-using Ict.Common;
-
-
 namespace Ict.Testing.Petra.Server.MFinance.GL
 {
     /// <summary>
-    /// Tests for some common Tools.
+    /// TestGLCommonTools
     /// </summary>
     [TestFixture]
-    public partial class TestGLCommonTools : CommonNUnitFunctions
+    public class TestGLCommonTools : CommonNUnitFunctions
     {
         int LedgerNumber = 43;
         /// <summary>
@@ -76,6 +73,9 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 String.Format("Revaluation Account of {0} shall be 5003", LedgerNumber));
         }
 
+        /// <summary>
+        /// Test_03_TAccountPeriodInfo
+        /// </summary>
         [Test]
         public void Test_03_TAccountPeriodInfo()
         {
@@ -141,11 +141,11 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             }
             catch (TerminateException internalException)
             {
-                if (internalException.ErrorCode.Equals("TCurrencyInfo.01"))
+                if (internalException.ErrorCode.Equals("TCurrencyInfo01"))
                 {
                     Assert.Fail("Test Data are not loaded correctly");
                 }
-                else if (internalException.ErrorCode.Equals("TCurrencyInfo.02"))
+                else if (internalException.ErrorCode.Equals("TCurrencyInfo02"))
                 {
                     Assert.Pass("DMG-Test ok");
                 }
@@ -192,6 +192,9 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 "Conversion from 100 EUR to 88.01 GBP");
         }
 
+        /// <summary>
+        /// Test_07_ProcessStatus
+        /// </summary>
         [Test]
         public void Test_07_ProcessStatus()
         {
@@ -227,6 +230,9 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             Assert.AreEqual(40, list2.Count, "Atually 40 chield entries ...");
         }
 
+        /// <summary>
+        /// Test_09_TAccountPropertyHandler
+        /// </summary>
         [Test]
         public void Test_09_TAccountPropertyHandler()
         {
@@ -252,16 +258,24 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             }
         }
 
-        [TestFixtureSetUp]
+        /// <summary>
+        /// TestFixtureSetUp
+        /// </summary>
+        [SetUp]
         public void Init()
         {
             InitServerConnection();
+            System.Diagnostics.Debug.WriteLine("Init: " + this.ToString());
         }
 
+        /// <summary>
+        /// TearDown the test
+        /// </summary>
         [TestFixtureTearDown]
-        public void TearDown()
+        public void TearDownTest()
         {
             DisconnectServerConnection();
+            System.Diagnostics.Debug.WriteLine("TearDown: " + this.ToString());
         }
     }
 }

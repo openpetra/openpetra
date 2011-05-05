@@ -32,7 +32,11 @@ using Ict.Common;
 
 namespace Ict.Testing.Petra.Server.MFinance.GL
 {
-    public partial class TestCommonAccountingTool : CommonNUnitFunctions
+    /// <summary>
+    /// TestCommonAccountingTool
+    /// </summary>
+    [TestFixture]
+    public class TestCommonAccountingTool : CommonNUnitFunctions
     {
         int LedgerNumber = 43;
 
@@ -216,16 +220,25 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             }
         }
 
-        [TestFixtureSetUp]
+        /// <summary>
+        /// TestFixtureSetUp
+        /// </summary>
+        [SetUp]
         public void Init()
         {
             InitServerConnection();
+            ResetDatabase();
+            System.Diagnostics.Debug.WriteLine("Init: " + this.ToString());
         }
 
+        /// <summary>
+        /// TearDown the test
+        /// </summary>
         [TestFixtureTearDown]
-        public void TearDown()
+        public void TearDownTest()
         {
             DisconnectServerConnection();
+            System.Diagnostics.Debug.WriteLine("TearDownTest: " + this.ToString());
         }
     }
 }

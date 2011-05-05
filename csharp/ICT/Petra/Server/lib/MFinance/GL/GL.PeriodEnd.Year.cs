@@ -394,8 +394,9 @@ namespace Ict.Petra.Server.MFinance.GL
     /// </summary>
     public class TAccountPeriodToNewYear : AbstractPerdiodEndOperation
     {
+        const int NOT_INITIALIZED = -1;
         int intLedgerNumber;
-        int intActualYear;
+        int intActualYear = NOT_INITIALIZED;
         AAccountingPeriodTable accountingPeriodTable = null;
         AAccountingPeriodRow accountingPeriodRow = null;
 
@@ -403,6 +404,9 @@ namespace Ict.Petra.Server.MFinance.GL
         /// Constructor to define and load the complete table defined by the same ledger number
         /// </summary>
         /// <param name="ALedgerNumber"></param>
+        /// <param name="AActualYear">This parameter is important for the
+        /// JobSize-Routine to decide if the RunEndOfPeriodOperation has
+        /// been done or not.</param>
         public TAccountPeriodToNewYear(int ALedgerNumber, int AActualYear)
         {
             intActualYear = AActualYear;
@@ -410,12 +414,19 @@ namespace Ict.Petra.Server.MFinance.GL
             LoadData();
         }
 
+        /// <summary>
+        /// Constructor to define and load the complete table defined by the same ledger number
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
         public TAccountPeriodToNewYear(int ALedgerNumber)
         {
             intLedgerNumber = ALedgerNumber;
             LoadData();
         }
 
+        /// <summary>
+        /// Gets the year from the first data base record in the table (PeriodStartDate).
+        /// </summary>
         public int ActualYear
         {
             get
@@ -441,11 +452,26 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
 
+        /// <summary>
+        /// Gets the control instance and thros an error if the
+        /// Actual year is not set (other Constructor is used).
+        /// </summary>
+        /// <returns></returns>
         public override AbstractPerdiodEndOperation GetActualizedClone()
         {
+            if (intActualYear == NOT_INITIALIZED)
+            {
+                throw new ApplicationException(
+                    "Actual Year is not initialized - you cannot test for the succes of RunEndOfPeriodOperation()");
+            }
+
             return new TAccountPeriodToNewYear(intLedgerNumber, intActualYear);
         }
 
+        /// <summary>
+        /// This is the number of data base record holding the date values of the
+        /// just ending year.
+        /// </summary>
         public override int JobSize {
             get
             {
@@ -481,9 +507,12 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
 
+        /// <summary>
+        /// The years are actulized ...
+        /// </summary>
         override public void RunEndOfPeriodOperation()
         {
-            if (!blnIsInInfoMode)
+            if (DoExecuteableCode)
             {
                 int year = intActualYear + 1;
 
@@ -664,7 +693,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 }
             }
 
-            if (!blnIsInInfoMode)
+            if (DoExecuteableCode)
             {
                 TSubmitChangesResult tSubmitChangesResult =
                     GLBatchTDSAccess.SubmitChanges(glBatchTo, out tVerificationResultCollection);
@@ -676,10 +705,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
                 if (tSubmitChangesResult == TSubmitChangesResult.scrInfoNeeded)
                 {
-                    if (!blnIsInInfoMode)
-                    {
-                        blnCriticalErrors = true;
-                    }
+                    blnCriticalErrors = true;
                 }
             }
         }

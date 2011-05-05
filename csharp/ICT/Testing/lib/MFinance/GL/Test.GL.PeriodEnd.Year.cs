@@ -50,11 +50,13 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
     /// Test of the GL.PeriodEnd.Year routines ...
     /// </summary>
     [TestFixture]
-    public partial class TestGLPeriodicEndYear : CommonNUnitFunctions
+    public class TestGLPeriodicEndYear : CommonNUnitFunctions
     {
         private const int intLedgerNumber = 43;
-        TLedgerInfo ledgerInfo;
 
+        /// <summary>
+        /// Test_YearEnd
+        /// </summary>
         [Test]
         public void Test_YearEnd()
         {
@@ -105,10 +107,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             commonAccountingTool.CloseSaveAndPost();
 
 
-            int counter = 0;
-
             TVerificationResultCollection verificationResult = new TVerificationResultCollection();
-            bool blnHaseErrors;
 
             TCarryForward carryForward;
 
@@ -261,17 +260,25 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             Assert.AreEqual(29, accountPeriodInfo.PeriodEndDate.Day, "Test of the Feb. 29th");
         }
 
-        [TestFixtureSetUp]
+        /// <summary>
+        /// TestFixtureSetUp
+        /// </summary>
+        [SetUp]
         public void Init()
         {
             InitServerConnection();
             //ResetDatabase();
+            System.Diagnostics.Debug.WriteLine("Init: " + this.ToString());
         }
 
+        /// <summary>
+        /// TearDown the test
+        /// </summary>
         [TestFixtureTearDown]
-        public void TearDown()
+        public void TearDownTest()
         {
             DisconnectServerConnection();
+            System.Diagnostics.Debug.WriteLine("TearDown: " + this.ToString());
         }
 
         private const string strTestDataBatchDescription = "TestGLPeriodicEndMonth-TESTDATA";

@@ -28,9 +28,20 @@ using Ict.Petra.Server.MFinance.GL;
 
 namespace Ict.Testing.Petra.Server.MFinance.GL
 {
+    /// <summary>
+    /// TestGLRevaluation - math part
+    /// </summary>
     [TestFixture]
     public partial class TestGLRevaluation : CommonNUnitFunctions
     {
+        /// <summary>
+        /// Test_05_AccountDelta
+        /// </summary>
+        /// <param name="AAmountInBaseCurency"></param>
+        /// <param name="AAmountInForeignCurrency"></param>
+        /// <param name="AExchangeRate"></param>
+        /// <param name="ACurrencyDigits"></param>
+        /// <param name="AExpectedResult"></param>
         [Test]
         [TestCase(10, 100, 2, 2, -40)]
         // "-40" means: 40 Currency Units are missing for the correct ratio

@@ -75,10 +75,22 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
 namespace Ict.Petra.Server.MFinance.GL
 {
+    /// <summary>
+    /// Main Class to serve a
+    /// Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodMonthEnd request ...
+    /// </summary>
     public class TMonthEnd : TPerdiodEndOperations
     {
         TLedgerInfo ledgerInfo;
 
+        /// <summary>
+        /// Main Entry point. The parameters are the same as in
+        /// Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodMonthEnd
+        /// </summary>
+        /// <param name="ALedgerNum"></param>
+        /// <param name="AInfoMode"></param>
+        /// <param name="AVRCollection"></param>
+        /// <returns></returns>
         public bool RunMonthEnd(int ALedgerNum, bool AInfoMode,
             out TVerificationResultCollection AVRCollection)
         {
@@ -116,91 +128,6 @@ namespace Ict.Petra.Server.MFinance.GL
 
             AVRCollection = verificationResults;
             return blnCriticalErrors;
-        }
-
-        /// <summary>
-        /// Class entry point for the info function
-        /// </summary>
-        /// <param name="ALedgerNum"></param>
-        /// <param name="AVRCollection"></param>
-        /// <returns></returns>
-        public bool RunMonthEndInfo(int ALedgerNum,
-            out TVerificationResultCollection AVRCollection)
-        {
-            DBAccess.GDBAccessObj.CommitTransaction();
-            verificationResults = new TVerificationResultCollection();
-            try
-            {
-                ledgerInfo = new TLedgerInfo(ALedgerNum);
-                // RunFirstChecks();
-                AVRCollection = verificationResults;
-                return blnCriticalErrors;
-            }
-            catch (TerminateException terminate)
-            {
-                AVRCollection = terminate.ResultCollection();
-                return true;
-            }
-        }
-
-        /// <summary>
-        /// Class entry point for the Routine itself.
-        /// </summary>
-        /// <param name="ALedgerNum"></param>
-        /// <param name="AVRCollection"></param>
-        /// <returns></returns>
-        public bool RunMonthEnd(int ALedgerNum,
-            out TVerificationResultCollection AVRCollection)
-        {
-            DBAccess.GDBAccessObj.CommitTransaction();
-            verificationResults = new TVerificationResultCollection();
-            try
-            {
-                ledgerInfo = new TLedgerInfo(ALedgerNum);
-                // RunFirstChecks();
-                AVRCollection = verificationResults;
-
-                if (blnCriticalErrors)
-                {
-                    return true;
-                }
-            }
-            catch (TerminateException terminate)
-            {
-                AVRCollection = terminate.ResultCollection();
-                return true;
-            }
-
-            if (verificationResults.Count != 0)
-            {
-                for (int i = 0; i < verificationResults.Count; ++i)
-                {
-                    if (verificationResults[i].ResultSeverity == TResultSeverity.Resv_Critical)
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            try
-            {
-                RunAndAccountAdminFees();
-                TCarryForward tcf = new TCarryForward(ledgerInfo);
-                tcf.SetNextPeriod();
-                return false;
-            }
-            catch (TerminateException terminate)
-            {
-                AVRCollection = terminate.ResultCollection();
-                return true;
-            }
-        }
-
-        void RunAndAccountAdminFees()
-        {
-            // TODO: Admin Fees and
-            // TODO: ICH stewardship ...
-            // TCommonAccountingTool cat = new TCommonAccountingTool(ledgerInfo, "Batch Description");
         }
     }
 
@@ -439,7 +366,7 @@ namespace Ict.Petra.Server.MFinance.GL
         }
 
         /// <summary>
-        /// Creates a coma separated list of the batch numbers
+        /// Creates a comma separated list of the batch numbers
         /// </summary>
         /// <returns></returns>
         public override string ToString()

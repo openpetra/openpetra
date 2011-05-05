@@ -31,7 +31,6 @@ using Ict.Common.Data;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Server.MCommon.Data.Access;
 
-
 namespace Ict.Testing.Petra.Server.MFinance.GL
 {
     [TestFixture]
@@ -41,24 +40,28 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         /// Normally I plan to move out this routine to CommonNUnitFunctions but this is not coorect
         /// for all types of test. So I need a set of CommonNUnitFunctions
         /// </summary>
-        [TestFixtureSetUp]
+        [SetUp]
         public void Init()
         {
             InitServerConnection();
+            System.Diagnostics.Debug.WriteLine("Init: " + this.ToString());
             ResetDatabase();
             LoadTestTata();
         }
 
         /// <summary>
-        /// Normally I plan to move out this routine to CommonNUnitFunctions but this is not coorect
-        /// for all types of test. So I need a set of CommonNUnitFunctions
+        /// TearDown the test
         /// </summary>
         [TestFixtureTearDown]
-        public void TearDown()
+        public void TearDownTest()
         {
             DisconnectServerConnection();
+            System.Diagnostics.Debug.WriteLine("TearDown: " + this.ToString());
         }
 
+        /// <summary>
+        /// Load specifi test data
+        /// </summary>
         public void LoadTestTata()
         {
             ACurrencyTable currencyTable = ACurrencyAccess.LoadByPrimaryKey("DMG", null);

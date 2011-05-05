@@ -26,25 +26,55 @@ using System.Windows.Forms;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
+    /// <summary>
+    /// Specification of TPeriodEnd to handle the month-to-month switch.
+    /// </summary>
     public class TPeriodEndMonth : TPeriodEnd
     {
+        /// <summary>
+        /// The constructor is the typical constructor which shall be supported by
+        /// refering this object in UINavigation.yml and AParentFormHandle
+        /// is used to put into TPeriodEnd, adding a boolean constant to
+        /// switch to the EndMonthMode
+        /// </summary>
+        /// <param name="AParentFormHandle"></param>
         public TPeriodEndMonth(IntPtr AParentFormHandle) : base(AParentFormHandle, true)
         {
         }
     }
 
+    /// <summary>
+    /// Specification of TPeriodEnd to handle the year-to-first-month switch.
+    /// </summary>
     public class TPeriodEndYear : TPeriodEnd
     {
+        /// <summary>
+        /// The constructor is the typical constructor which shall be supported by
+        /// refering this object in UINavigation.yml and AParentFormHandle
+        /// is used to put into TPeriodEnd, adding a boolean constant to
+        /// switch to the EndYearMode
+        /// </summary>
+        /// <param name="AParentFormHandle"></param>
         public TPeriodEndYear(IntPtr AParentFormHandle) : base(AParentFormHandle, false)
         {
         }
     }
 
 
+    /// <summary>
+    /// Main form to handle the period ends like Month and Year ...
+    /// </summary>
     public partial class TPeriodEnd : Form
     {
-        public bool blnIsInMonthMode;
+        bool blnIsInMonthMode;
 
+
+        /// <summary>
+        /// Non UINavigation.yml standard constructor
+        /// </summary>
+        /// <param name="AParentFormHandle">Standard parameter</param>
+        /// <param name="AIsMonthMode">true = month-to-month mode,
+        /// false = year-to-month mode</param>
         public TPeriodEnd(IntPtr AParentFormHandle, bool AIsMonthMode) : base()
         {
             //
@@ -57,7 +87,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
 
             this.btnCancel.Click += new EventHandler(CancelButtonClick);
-            this.btnMonthEnd.Click += new EventHandler(PeriodEndButtonClick);
+            this.btnPeriodEnd.Click += new EventHandler(PeriodEndButtonClick);
 
             this.ResizeEnd += new EventHandler(ResizeForm);
         }

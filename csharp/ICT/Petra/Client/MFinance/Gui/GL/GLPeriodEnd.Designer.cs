@@ -27,13 +27,14 @@ using Ict.Common;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
-    /// <summary>
-    /// Month-End dialog
-    /// </summary>
     public partial class TPeriodEnd
     {
         private System.ComponentModel.IContainer components = null;
 
+        /// <summary>
+        /// Standard GUI-Routine ...
+        /// </summary>
+        /// <param name="disposing"></param>
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -47,17 +48,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             base.Dispose(disposing);
         }
 
-        /// <summary>
-        /// This method is required for Windows Forms designer support.
-        /// Do not change the method contents inside the source code editor. The Forms designer might
-        /// not be able to load this method if it was changed manually.
-        /// </summary>
         private void InitializeComponent()
         {
+            // In normal cases here TPeriodEnd shall be inserted but
+            // this will not work. A MissingManifestResourceException is thrown
             System.ComponentModel.ComponentResourceManager resources =
-                new System.ComponentModel.ComponentResourceManager(typeof(TPeriodEnd));
+                new System.ComponentModel.ComponentResourceManager(typeof(TFrmGLBatch));
 
-            this.btnMonthEnd = new System.Windows.Forms.Button();
+            this.btnPeriodEnd = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.tbxMessage = new TextBox();
             this.SuspendLayout();
@@ -71,22 +69,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
 
             //
-            // btnMonthEnd
+            // btnPeriodEnd
             //
-            this.btnMonthEnd.Name = "btnMonthEnd";
-            this.btnMonthEnd.Size = new System.Drawing.Size(144, 23);
-            this.btnMonthEnd.TabIndex = 2;
+            this.btnPeriodEnd.Name = "btnPeriodEnd";
+            this.btnPeriodEnd.Size = new System.Drawing.Size(144, 23);
+            this.btnPeriodEnd.TabIndex = 2;
 
             if (blnIsInMonthMode)
             {
-                this.btnMonthEnd.Text = Catalog.GetString("Month End");
+                this.btnPeriodEnd.Text = Catalog.GetString("Month End");
             }
             else
             {
-                this.btnMonthEnd.Text = Catalog.GetString("Year End");
+                this.btnPeriodEnd.Text = Catalog.GetString("Year End");
             }
 
-            this.btnMonthEnd.UseVisualStyleBackColor = true;
+            this.btnPeriodEnd.UseVisualStyleBackColor = true;
             //
             // btnCancel
             //
@@ -99,10 +97,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             this.ClientSize = new System.Drawing.Size(600, 500);
             this.Controls.Add(this.btnCancel);
-            this.Controls.Add(this.btnMonthEnd);
+            this.Controls.Add(this.btnPeriodEnd);
             this.Controls.Add(this.tbxMessage);
 
-            // this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+            this.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
 
             this.Name = "GLMonthEnd";
 
@@ -119,7 +117,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         private System.Windows.Forms.Button btnCancel;
-        private System.Windows.Forms.Button btnMonthEnd;
+        private System.Windows.Forms.Button btnPeriodEnd;
         private System.Windows.Forms.TextBox tbxMessage;
     }
 }

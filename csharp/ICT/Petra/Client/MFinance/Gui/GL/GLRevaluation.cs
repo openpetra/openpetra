@@ -31,6 +31,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     /// </summary>
     public partial class TGLRevaluation : Form
     {
+        /// <summary>
+        /// Runs the revalation ...
+        /// </summary>
+        /// <param name="AParentFormHandle"></param>
         public TGLRevaluation(IntPtr AParentFormHandle) : base()
         {
             //

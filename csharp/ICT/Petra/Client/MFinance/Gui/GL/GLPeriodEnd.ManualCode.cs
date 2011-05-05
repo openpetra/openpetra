@@ -29,9 +29,6 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
-    /// <summary>
-    /// Description of GLRevaluation.
-    /// </summary>
     public partial class TPeriodEnd
     {
         const bool INFORMATION_MODE = true;
@@ -41,7 +38,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Int32 FLedgerNumber;
 
         /// <summary>
-        /// use this ledger
+        /// Sets the ledger number and initializes the gui ...
         /// </summary>
         public Int32 LedgerNumber
         {
@@ -50,7 +47,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FLedgerNumber = value;
                 bool blnErrorStatus = RunPeriodEnd(INFORMATION_MODE);
                 tbxMessage.Text = verificationResult.BuildVerificationResultString();
-                btnMonthEnd.Enabled = !blnErrorStatus;
+                btnPeriodEnd.Enabled = !blnErrorStatus;
                 this.OnResizeEnd(new EventArgs());
             }
         }
@@ -64,7 +61,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             RunPeriodEnd(CALCULATION_MODE);
             tbxMessage.Text = verificationResult.BuildVerificationResultString();
-            btnMonthEnd.Visible = false;
+            btnPeriodEnd.Visible = false;
             btnCancel.Text = Catalog.GetString("Done");
         }
 
@@ -89,7 +86,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void ResizeForm(object from, EventArgs e)
         {
             tbxMessage.Size = new Size(this.Width - 30, this.Height - 100);
-            this.btnMonthEnd.Location =
+            this.btnPeriodEnd.Location =
                 new System.Drawing.Point(this.Width - 400, this.Height - 70);
             this.btnCancel.Location =
                 new System.Drawing.Point(this.Width - 200, this.Height - 70);

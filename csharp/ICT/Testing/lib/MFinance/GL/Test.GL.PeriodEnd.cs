@@ -102,7 +102,6 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
     public partial class TestGLPeriodicEnd : CommonNUnitFunctions
     {
         private const int intLedgerNumber = 43;
-        TLedgerInfo ledgerInfo;
 
         /// <summary>
         /// Some very basic tests of TPerdiodEndOperations and AbstractPerdiodEndOperation
@@ -143,6 +142,9 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             carryForward.SetNextPeriod();
         }
 
+        /// <summary>
+        /// Test_TCarryForwardYear
+        /// </summary>
         [Test]
         public void Test_TCarryForwardYear()
         {
@@ -178,17 +180,25 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             Assert.IsFalse(ledgerInitFlag.Flag, "Should be deleted ...");
         }
 
-        [TestFixtureSetUp]
+        /// <summary>
+        /// TestFixtureSetUp
+        /// </summary>
+        [SetUp]
         public void Init()
         {
             InitServerConnection();
             //ResetDatabase();
+            System.Diagnostics.Debug.WriteLine("Init: " + this.ToString());
         }
 
+        /// <summary>
+        /// TearDown the test
+        /// </summary>
         [TestFixtureTearDown]
-        public void TearDown()
+        public void TearDownTest()
         {
             DisconnectServerConnection();
+            System.Diagnostics.Debug.WriteLine("TearDown: " + this.ToString());
         }
     }
 }
