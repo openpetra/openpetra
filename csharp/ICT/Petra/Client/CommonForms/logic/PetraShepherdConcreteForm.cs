@@ -90,6 +90,8 @@ namespace Ict.Petra.Client.CommonForms.Logic
 
             SwitchToStartPage();
             
+            CreateTaskList(); // test call to this function; not where it will be implemented 
+            
             TLogging.Log("The TPetraShepherdFormLogic constructor has switched to the first page.");
 	
             // Iterate over all FPetraShepherdPages and add the VisibleOrEnabledChangedEventHandler
@@ -437,6 +439,67 @@ namespace Ict.Petra.Client.CommonForms.Logic
         public void PagesDataHeapPoke(string AKey, string AValue)
         {
             TLogging.Log("PagesDataHeapPoke");
+        }
+        
+        public XmlNodeList CreateTaskList()
+        {
+        	TLogging.Log("Starting method CreateTaskList!");
+        	// Create the xml document container
+			XmlDocument XMLDocumentOfActivePages = new XmlDocument();// Create the XML Declaration, and append it to XML document
+			XmlDeclaration dec = XMLDocumentOfActivePages.CreateXmlDeclaration("1.0", null, null);
+			XMLDocumentOfActivePages.AppendChild(dec);// Create the root element
+			XmlElement root = XMLDocumentOfActivePages.CreateElement("Library");
+			XMLDocumentOfActivePages.AppendChild(root);
+        
+			XmlElement ShepherdPages = XMLDocumentOfActivePages.CreateElement("ShepherdPages"); //<ShepherdPages>
+			
+			foreach (KeyValuePair <string, TPetraShepherdPage>pair in FShepherdPages.Pages)
+			{
+				XmlElement ID = XMLDocumentOfActivePages.CreateElement("ID"); //<ID>
+				ID.InnerText = pair.Key;
+				
+				XmlElement Title = XMLDocumentOfActivePages.CreateElement("Title"); //<Title>
+				Title.InnerText = pair.Value.Title; 
+				
+				XmlElement Visible = XMLDocumentOfActivePages.CreateElement("Visible"); // <Visible>
+				if(pair.Value.Visible)
+				{
+					Visible.InnerText = "True"; 	
+				}
+				else
+				{
+					Visible.InnerText = "False"; 	
+				}				
+				
+				XmlElement Enabled = XMLDocumentOfActivePages.CreateElement("Enabled"); 
+				if(pair.Value.Enabled)
+				{
+					Enabled.InnerText = "True"; 	
+				}
+				else
+				{
+					Enabled.InnerText = "False"; 	
+				}
+				//TODO 
+				//IF(ISSUBSHEPHERD)
+				//SUDOCODE HERE 
+				
+				ID.AppendChild(Title); 
+				ID.AppendChild(Visible);
+				ID.AppendChild(Enabled);
+				ShepherdPages.AppendChild(ID); 
+			}
+			root.AppendChild(ShepherdPages); //Last Step 
+			
+			XmlNode firstPage = root.FirstChild.FirstChild.FirstChild;
+			TLogging.Log("First Child Value: " + firstPage.InnerText); 
+			TLogging.Log("First Child Title: " + firstPage.NextSibling.NextSibling.InnerText); 
+			TLogging.Log("First Child Visible: " + firstPage.NextSibling.NextSibling.NextSibling.InnerText); 
+			//TLogging.Log("First Child Enabled: " + firstPage.NextSibling.NextSibling.NextSibling.NextSibling.InnerText); 
+			
+        	XmlNodeList ActiveListOfPages = null; //TODO: Transform XML document to node list first. 
+        	
+        	return ActiveListOfPages; 
         }
     }
 }
