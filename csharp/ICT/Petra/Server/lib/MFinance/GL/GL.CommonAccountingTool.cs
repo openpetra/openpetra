@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -30,99 +30,8 @@ using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Server.MFinance.GL.Data.Access;
 using Ict.Petra.Server.MFinance.GL;
 
-namespace Ict.Petra.Server.MFinance
-{
-    /// <summary>
-    /// Some E-Nums for the TCommonAccountingTool i.E. for the transaction property
-    /// Sub-System.
-    /// (The enum.toString() is used for the database entry so you must not change the
-    /// values if you do not want to change the entries.)
-    /// </summary>
-    public enum CommonAccountingSubSystemsEnum
-    {
-        /// <summary>
-        /// Sub Systems, General Ledger
-        /// </summary>
-        GL,
-        
-        /// <summary>
-        /// Sub Systems, Accounts Payable
-        /// </summary>
-        AP,
-        
-        /// <summary>
-        /// Sub Systems, Accounts Receivable
-        /// </summary>
-        AR,
-        
-        /// <summary>
-        /// Sub Systems, Gifts receivable
-        /// </summary>
-        GR
-    }
-
-    /// <summary>
-    /// Some E-Nums for the TCommonAccountingTool i.E. for the transaction property
-    /// Transaction Type.
-    /// (The enum.toString() is used for the database entry so you must not change the
-    /// values if you do not want to change the entries.)
-    /// </summary>
-    public enum CommonAccountingTransactionTypesEnum
-    {
-        /// <summary>
-        /// GL-Batch-Standard
-        /// </summary>
-        STD,
-        
-        /// <summary>
-        /// ALLOC
-        /// </summary>
-
-        /// <summary>
-        /// ...
-        /// </summary>
-        ALLOC,
-        
-        /// <summary>
-        /// ...
-        /// </summary>
-        GR,
-        
-        /// <summary>
-        /// ...
-        /// </summary>
-        INV,
-            
-        /// <summary>
-        /// Reallloc
-        /// </summary>
-        REALLOC,
-
-        /// <summary>
-        /// Used in a revaluation only ...
-        /// </summary>
-        REVAL
-    }
-	
-}
-
 namespace Ict.Petra.Server.MFinance.GL
 {
-    /// <summary>
-    /// Some constants for the journal values to rember that IS_Debit ist true.
-    /// </summary>
-    public class CommonAccountingConstants
-    {
-        /// <summary>
-        /// Sets the transaction to a debit transaction
-        /// </summary>
-        public const bool IS_DEBIT = true;
-        /// <summary>
-        /// Sets the transaction to a credit transaction
-        /// </summary>
-        public const bool IS_CREDIT = false;
-    }
-
     /// <summary>
     /// This Tool creates a batch enables to add a journal and to add transactions to a yournal
     /// All internal "pointers" and control data are set internal and the structure is "read to post".

@@ -34,7 +34,6 @@ using Ict.Petra.Server.MFinance.GL.WebConnectors;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Server.MCommon.Data.Access;
 
-
 using Ict.Common.DB;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
@@ -74,35 +73,35 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             // Accounting of some gifts ...
             commonAccountingTool.AddBaseCurrencyTransaction(
-                strAccountBank, "4301", "Gift Example", "Debit", CommonAccountingConstants.IS_DEBIT, 100);
+                strAccountBank, "4301", "Gift Example", "Debit", MFinanceConstants.IS_DEBIT, 100);
             commonAccountingTool.AddBaseCurrencyTransaction(
-                strAccountBank, "4302", "Gift Example", "Debit", CommonAccountingConstants.IS_DEBIT, 200);
+                strAccountBank, "4302", "Gift Example", "Debit", MFinanceConstants.IS_DEBIT, 200);
             commonAccountingTool.AddBaseCurrencyTransaction(
-                strAccountBank, "4303", "Gift Example", "Debit", CommonAccountingConstants.IS_DEBIT, 300);
+                strAccountBank, "4303", "Gift Example", "Debit", MFinanceConstants.IS_DEBIT, 300);
 
             commonAccountingTool.AddBaseCurrencyTransaction(
-                strAccountGift, "4301", "Gift Example", "Credit", CommonAccountingConstants.IS_CREDIT, 100);
+                strAccountGift, "4301", "Gift Example", "Credit", MFinanceConstants.IS_CREDIT, 100);
             commonAccountingTool.AddBaseCurrencyTransaction(
-                strAccountGift, "4302", "Gift Example", "Credit", CommonAccountingConstants.IS_CREDIT, 200);
+                strAccountGift, "4302", "Gift Example", "Credit", MFinanceConstants.IS_CREDIT, 200);
             commonAccountingTool.AddBaseCurrencyTransaction(
-                strAccountGift, "4303", "Gift Example", "Credit", CommonAccountingConstants.IS_CREDIT, 300);
+                strAccountGift, "4303", "Gift Example", "Credit", MFinanceConstants.IS_CREDIT, 300);
 
 
             // Accounting of some expenses ...
 
             commonAccountingTool.AddBaseCurrencyTransaction(
-                strAccountExpense, "4301", "Expense Example", "Debit", CommonAccountingConstants.IS_DEBIT, 150);
+                strAccountExpense, "4301", "Expense Example", "Debit", MFinanceConstants.IS_DEBIT, 150);
             commonAccountingTool.AddBaseCurrencyTransaction(
-                strAccountExpense, "4302", "Expense Example", "Debit", CommonAccountingConstants.IS_DEBIT, 150);
+                strAccountExpense, "4302", "Expense Example", "Debit", MFinanceConstants.IS_DEBIT, 150);
             commonAccountingTool.AddBaseCurrencyTransaction(
-                strAccountExpense, "4303", "Expense Example", "Debit", CommonAccountingConstants.IS_DEBIT, 200);
+                strAccountExpense, "4303", "Expense Example", "Debit", MFinanceConstants.IS_DEBIT, 200);
 
             commonAccountingTool.AddBaseCurrencyTransaction(
-                strAccountBank, "4301", "Expense Example", "Credit", CommonAccountingConstants.IS_CREDIT, 150);
+                strAccountBank, "4301", "Expense Example", "Credit", MFinanceConstants.IS_CREDIT, 150);
             commonAccountingTool.AddBaseCurrencyTransaction(
-                strAccountBank, "4302", "Expense Example", "Credit", CommonAccountingConstants.IS_CREDIT, 150);
+                strAccountBank, "4302", "Expense Example", "Credit", MFinanceConstants.IS_CREDIT, 150);
             commonAccountingTool.AddBaseCurrencyTransaction(
-                strAccountBank, "4303", "Expense Example", "Credit", CommonAccountingConstants.IS_CREDIT, 200);
+                strAccountBank, "4303", "Expense Example", "Credit", MFinanceConstants.IS_CREDIT, 200);
 
             commonAccountingTool.CloseSaveAndPost();
 

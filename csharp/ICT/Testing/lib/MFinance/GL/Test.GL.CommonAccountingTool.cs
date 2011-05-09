@@ -25,10 +25,8 @@ using System;
 using NUnit.Framework;
 using Ict.Testing.NUnitForms;
 using Ict.Petra.Server.MFinance.GL;
-
-
+using Ict.Petra.Shared.MFinance;
 using Ict.Common;
-
 
 namespace Ict.Testing.Petra.Server.MFinance.GL
 {
@@ -76,10 +74,10 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             commonAccountingTool.AddBaseCurrencyTransaction(
                 strAccountStart, strCostCentre, "Debit-Test-10", "NUNIT",
-                CommonAccountingConstants.IS_DEBIT, 10);
+                MFinanceConstants.IS_DEBIT, 10);
             commonAccountingTool.AddBaseCurrencyTransaction(
                 strAccountEnd, strCostCentre, "Credit-Test 10", "NUNIT",
-                CommonAccountingConstants.IS_CREDIT, 10);
+                MFinanceConstants.IS_CREDIT, 10);
             int intBatchNumber = commonAccountingTool.CloseSaveAndPost();
 
             TGet_GLM_Info getGLM_InfoAfterStart = new TGet_GLM_Info(LedgerNumber, strAccountStart, strCostCentre);
@@ -99,10 +97,10 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             commonAccountingTool.AddBaseCurrencyTransaction(
                 strAccountStart, strCostCentre, "Debit-Test-5", "NUNIT",
-                CommonAccountingConstants.IS_CREDIT, 5);
+                MFinanceConstants.IS_CREDIT, 5);
             commonAccountingTool.AddBaseCurrencyTransaction(
                 strAccountEnd, strCostCentre, "Credit-Test 5", "NUNIT",
-                CommonAccountingConstants.IS_DEBIT, 5);
+                MFinanceConstants.IS_DEBIT, 5);
             intBatchNumber = commonAccountingTool.CloseSaveAndPost();
 
             getGLM_InfoAfterStart = new TGet_GLM_Info(LedgerNumber, strAccountStart, strCostCentre);
@@ -151,10 +149,10 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             commonAccountingTool.AddForeignCurrencyTransaction(
                 strAccountStart, strCostCentre, "Debit GBP 100", "NUNIT",
-                CommonAccountingConstants.IS_DEBIT, 100, 333.33m);
+                MFinanceConstants.IS_DEBIT, 100, 333.33m);
             commonAccountingTool.AddForeignCurrencyTransaction(
                 strAccountEnd, strCostCentre, "Credit GBP 100", "NUNIT",
-                CommonAccountingConstants.IS_CREDIT, 100, 333.33m);
+                MFinanceConstants.IS_CREDIT, 100, 333.33m);
 
             int intBatchNumber = commonAccountingTool.CloseSaveAndPost();
 
@@ -203,10 +201,10 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 commonAccountingTool.AddForeignCurrencyJournal("JPY", 0.3m);
                 commonAccountingTool.AddForeignCurrencyTransaction(
                     strAccountStart, strCostCentre, "Credit GBP 100", "NUNIT",
-                    CommonAccountingConstants.IS_DEBIT, 100, 333.33m);
+                    MFinanceConstants.IS_DEBIT, 100, 333.33m);
                 commonAccountingTool.AddForeignCurrencyTransaction(
                     strAccountEnd, strCostCentre, "Debit GBP 100", "NUNIT",
-                    CommonAccountingConstants.IS_CREDIT, 100, 333.33m);
+                    MFinanceConstants.IS_CREDIT, 100, 333.33m);
                 Assert.Fail("Exception does not appear!");
             }
             catch (TerminateException)
