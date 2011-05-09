@@ -867,7 +867,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 systemDefaultsRow.DefaultValue = PartnerKey.ToString("0000000000");
                 MainDS.SSystemDefaults.Rows.Add(systemDefaultsRow);
             }
-            
+
             // create calendar
             // at the moment we only support financial years that start on the first day of a month
             DateTime periodStartDate = ACalendarStartDate;
@@ -895,7 +895,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             ASystemInterfaceRow systemInterfaceRow = MainDS.ASystemInterface.NewRowTyped();
             systemInterfaceRow.LedgerNumber = ALedgerNumber;
-          
+
             systemInterfaceRow.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
             systemInterfaceRow.SetUpComplete = true;
             MainDS.ASystemInterface.Rows.Add(systemInterfaceRow);

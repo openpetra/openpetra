@@ -98,11 +98,11 @@ namespace Ict.Petra.Shared.MFinance
 
         /// <summary>Sets the transaction to a debit transaction</summary>
         public const bool IS_DEBIT = true;
-        
+
         /// <summary>Sets the transaction to a credit transaction</summary>
         public const bool IS_CREDIT = false;
     }
-    
+
     /// <summary>
     /// Some E-Nums for the TCommonAccountingTool i.E. for the transaction property
     /// Sub-System.
@@ -115,17 +115,17 @@ namespace Ict.Petra.Shared.MFinance
         /// Sub Systems, General Ledger
         /// </summary>
         GL,
-        
+
         /// <summary>
         /// Sub Systems, Accounts Payable
         /// </summary>
         AP,
-        
+
         /// <summary>
         /// Sub Systems, Accounts Receivable
         /// </summary>
         AR,
-        
+
         /// <summary>
         /// Sub Systems, Gifts receivable
         /// </summary>
@@ -144,7 +144,7 @@ namespace Ict.Petra.Shared.MFinance
         /// GL-Batch-Standard
         /// </summary>
         STD,
-        
+
         /// <summary>
         /// ALLOC
         /// </summary>
@@ -152,26 +152,26 @@ namespace Ict.Petra.Shared.MFinance
         /// <summary>
         /// ...
         /// </summary>
-        ALLOC,
-        
+            ALLOC,
+
         /// <summary>
         /// ...
         /// </summary>
-        GR,
-        
+            GR,
+
         /// <summary>
         /// ...
         /// </summary>
-        INV,
-            
+            INV,
+
         /// <summary>
         /// Reallloc
         /// </summary>
-        REALLOC,
+            REALLOC,
 
         /// <summary>
         /// Used in a revaluation only ...
         /// </summary>
-        REVAL
+            REVAL
     }
 }
