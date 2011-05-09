@@ -22,20 +22,52 @@
   </delete>
 </target>
 
-<target name="startPetraServer" depends="" description="Starts a local Petra Server">
-  <!-- Create config files, if missing -->
+<target name="initConfigFiles" description="write and overwrite the config files for client, server and testing, and the version.txt">
   <copy file="${dir.incdir.template.etc}/Server-${DBMS.Type}.config"
-        tofile="${ServerConfigFile}">
+        tofile="${ServerConfigFile}" overwrite="true">
     <filterchain>
       <expandproperties />
     </filterchain>
   </copy>
 
+  <copy file="${dir.incdir.template.etc}/ServerAdmin.config"
+        tofile="${ServerAdminConfigFile}" overwrite="true">
+    <filterchain>
+      <expandproperties />
+    </filterchain>  
+  </copy>
+  
+  <mkdir dir="${dir.log}/PetraClient" />
+
+  <copy file="${dir.incdir.template.etc}/Client.config"
+        tofile="${ClientConfigFile}" overwrite="true">
+    <filterchain>
+      <expandproperties />
+    </filterchain>  
+  </copy>
+
+  <copy file="${dir.incdir.template.etc}/TestServer.config"
+        tofile="${path::combine(dir.etc, 'TestServer.config')}" overwrite="true">
+    <filterchain>
+      <expandproperties />
+    </filterchain>  
+  </copy>
+
+  <copy file="${dir.incdir.template.etc}/TestClient.config"
+        tofile="${path::combine(dir.etc, 'TestClient.config')}" overwrite="true">
+    <filterchain>
+      <expandproperties />
+    </filterchain>  
+  </copy>
+  
 <!-- MGR: TODO: Remove copy. Should be during database work! -->
   <copy file="${path::combine(dir.db.patches, 'version.txt')}"
       tofile="${path::combine(dir.bin, 'version.txt')}" 
       overwrite="true"/>
+  
+</target>
 
+<target name="startPetraServer" depends="initConfigFiles" description="Starts a local Petra Server">
   <if test="${platform::is-windows()}">
     <exec program="cmd.exe" 
           workingdir="${dir.bin}"
@@ -70,14 +102,7 @@
   </if>
 </target>
 
-<target name="stopPetraServer" depends="" description="stop the local Petra Server">
-  <copy file="${dir.incdir.template.etc}/ServerAdmin.config"
-        tofile="${ServerAdminConfigFile}">
-    <filterchain>
-      <expandproperties />
-    </filterchain>  
-  </copy>
-  
+<target name="stopPetraServer" depends="initConfigFiles" description="stop the local Petra Server">
   <if test="${platform::is-windows()}" >
       <exec program="PetraServerAdminConsole.exe" 
             basedir="${dir.bin}" 
@@ -97,20 +122,7 @@
   </if>
 </target>
 
-<target name="startPetraClient" depends="" description="start the Petra Client"> 
-  <copy file="${dir.incdir.template.etc}/Client.config"
-        tofile="${ClientConfigFile}">
-    <filterchain>
-      <expandproperties />
-    </filterchain>  
-  </copy>
-  <mkdir dir="${dir.log}/PetraClient" />
-    
-<!-- MGR: TODO: Remove copy. Should be during database work! -->
-  <copy file="${path::combine(dir.db.patches, 'version.txt')}"
-      tofile="${path::combine(dir.bin, 'version.txt')}" 
-      overwrite="true"/>
-
+<target name="startPetraClient" depends="initConfigFiles" description="start the Petra Client"> 
   <if test="${platform::is-windows()}">
     <exec program="cmd.exe" 
           workingdir="${dir.bin}"

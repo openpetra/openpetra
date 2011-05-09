@@ -301,7 +301,7 @@ OpenPetra:
                 ExchangeRates: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
                     SetupCurrencies: {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmSetupCurrency}
                     SetupDailyExchangeRate: {ActionOpenScreen=TFrmSetupDailyExchangeRate}
-                Analysis Types: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
+                AnalysisTypes: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
                     SetupAnalysisTypes: {ActionOpenScreen=TFrmSetupAnalysisTypes}
             Database:
                 ImportExport:

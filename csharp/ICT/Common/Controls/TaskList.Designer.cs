@@ -2,7 +2,8 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//		 chadds
+//		 ashleyc
 //
 // Copyright 2004-2010 by OM International
 //
@@ -21,15 +22,15 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
-namespace Ict.Petra.Client.MPartner.Gui
+namespace Ict.Common.Controls
 {
-    /// UserControl for displaying Partner Info data in the Partner Find screen.
-    partial class TUC_PartnerFind_PartnerInfo
+    partial class TTaskList
     {
         /// <summary>
         /// Designer variable used to keep track of non-visual components.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
+
 
         /// <summary>
         /// Disposes resources used by the control.
@@ -55,45 +56,44 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources =
-                new System.ComponentModel.ComponentResourceManager(typeof(TUC_PartnerFind_PartnerInfo));
-            this.ucoPartnerInfo = new Ict.Petra.Client.MPartner.Gui.TUC_PartnerInfo();
-            this.pnlContent.SuspendLayout();
+            this.tPnlGradient1 = new Ict.Common.Controls.TPnlGradient();
+            this.tPnlGradient1.SuspendLayout();
             this.SuspendLayout();
             //
-            // ucoPartnerInfo
+            // tPnlGradient1
             //
-            this.ucoPartnerInfo.Anchor =
-                ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) |
-                                                       System.Windows.Forms.AnchorStyles.Left) |
-                                                      System.Windows.Forms.AnchorStyles.Right)));
-            this.ucoPartnerInfo.BackColor = System.Drawing.SystemColors.Info;
-            this.ucoPartnerInfo.Font = new System.Drawing.Font("Verdana", 6.75F);
-            this.ucoPartnerInfo.Location = new System.Drawing.Point(0, 0);
-            this.ucoPartnerInfo.MainDS = null;
-            this.ucoPartnerInfo.Margin = new System.Windows.Forms.Padding(0);
-            this.ucoPartnerInfo.Name = "ucoPartnerInfo";
-            this.ucoPartnerInfo.Size = new System.Drawing.Size(424, 126);
-            this.ucoPartnerInfo.TabIndex = 2;
-            this.ucoPartnerInfo.VerificationResultCollection = null;
+            this.tPnlGradient1.AutoSize = true;
+            this.tPnlGradient1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.tPnlGradient1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.tPnlGradient1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tPnlGradient1.DontDrawBottomLine = false;
+            this.tPnlGradient1.GradientColorBottom = System.Drawing.Color.FromArgb(((int)(((byte)(181)))), ((int)(((byte)(203)))), ((int)(((byte)(231)))));
+            this.tPnlGradient1.GradientColorTop = System.Drawing.Color.FromArgb(((int)(((byte)(239)))), ((int)(((byte)(251)))), ((int)(((byte)(255)))));
+            this.tPnlGradient1.GradientMode = System.Drawing.Drawing2D.LinearGradientMode.Vertical;
+            this.tPnlGradient1.Location = new System.Drawing.Point(0, 0);
+            this.tPnlGradient1.Margin = new System.Windows.Forms.Padding(0);
+            this.tPnlGradient1.Name = "tPnlGradient1";
+            this.tPnlGradient1.Size = new System.Drawing.Size(81, 32);
+            this.tPnlGradient1.TabIndex = 0;
 
-            this.pnlContent.Controls.Add(ucoPartnerInfo);
             //
-            // TUC_PartnerFind_PartnerInfo
+            // TTaskList
             //
+            this.AccessibleName = "pnlModule";
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScroll = true;
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.Controls.Add(this.tPnlGradient1);
             this.Margin = new System.Windows.Forms.Padding(0);
-            this.Name = "TUC_PartnerFind_PartnerInfo";
-            this.Size = new System.Drawing.Size(424, 150);
-            this.pnlContent.ResumeLayout(false);
+            this.Name = "TTaskList";
+            this.Size = new System.Drawing.Size(81, 32);
+            this.tPnlGradient1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
         }
 
-        private Ict.Petra.Client.MPartner.Gui.TUC_PartnerInfo ucoPartnerInfo;
+        private Ict.Common.Controls.TPnlGradient tPnlGradient1;
     }
 }

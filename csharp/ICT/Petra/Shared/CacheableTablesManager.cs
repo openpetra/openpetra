@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -879,7 +879,7 @@ namespace Ict.Petra.Shared
 
         /// <summary>
         /// Marks a DataTable in the Cache to be no longer up-to-date (=out of sync
-        /// with the data that was orginally placed in the DataTable).
+        /// with the data that was originally placed in the DataTable).
         ///
         /// This will lead to ECacheableTablesMgrTableNotUpToDateException being thrown
         /// when GetCachedDataTable is called for this DataTable. This tells the caller
@@ -966,6 +966,28 @@ namespace Ict.Petra.Shared
                     }
 #endif
                 }
+            }
+        }
+
+        /// <summary>
+        /// Marks all DataTables in the Cache to be no longer up-to-date (=out of sync
+        /// with the data that was originally placed in the DataTable).
+        ///
+        /// This will lead to ECacheableTablesMgrTableNotUpToDateException being thrown
+        /// when GetCachedDataTable is called for this DataTable. This tells the caller
+        /// of GetCachedDataTable that the DataTable needs to be retrieved anew before
+        /// it can be used.
+        ///
+        /// </summary>
+        /// <returns>void</returns>
+        /// <exception cref="ECacheableTablesMgrException">if the DataTable doesn't exist in the
+        /// Cache
+        /// </exception>
+        public void MarkAllCachedTableNeedsRefreshing()
+        {
+            foreach (DataTable CachedTable in UDataCacheDataSet.Tables)
+            {
+                MarkCachedTableNeedsRefreshing(CachedTable.TableName);
             }
         }
 

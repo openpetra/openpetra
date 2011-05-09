@@ -55,8 +55,7 @@ namespace Ict.Common.Controls
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources =
-                new System.ComponentModel.ComponentResourceManager(typeof(TPnlCollapsible));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TPnlCollapsible));
             this.pnlTitle = new Ict.Common.Controls.TPnlGradient();
             this.pnlTitleText = new System.Windows.Forms.Panel();
             this.lblDetailHeading = new System.Windows.Forms.Label();
@@ -97,12 +96,15 @@ namespace Ict.Common.Controls
             //
             // lblDetailHeading
             //
+            this.lblDetailHeading.Anchor =
+                ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) |
+                                                      System.Windows.Forms.AnchorStyles.Right)));
             this.lblDetailHeading.Font =
                 new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblDetailHeading.ForeColor = System.Drawing.Color.MediumBlue;
             this.lblDetailHeading.Location = new System.Drawing.Point(2, 5);
             this.lblDetailHeading.Name = "lblDetailHeading";
-            this.lblDetailHeading.Size = new System.Drawing.Size(144, 18);
+            this.lblDetailHeading.Size = new System.Drawing.Size(395, 18);
             this.lblDetailHeading.TabIndex = 1;
             this.lblDetailHeading.Text = "Collapsible Panel";
             this.tipCollapseExpandHints.SetToolTip(this.lblDetailHeading, "Click here to expand / collapse the panel");
@@ -115,11 +117,7 @@ namespace Ict.Common.Controls
             this.btnToggle.BackColor = System.Drawing.Color.LightSteelBlue;
             this.btnToggle.FlatAppearance.BorderColor = System.Drawing.SystemColors.GradientInactiveCaption;
             this.btnToggle.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnToggle.Font = new System.Drawing.Font("Verdana",
-                7F,
-                System.Drawing.FontStyle.Bold,
-                System.Drawing.GraphicsUnit.Point,
-                ((byte)(0)));
+            this.btnToggle.Font = new System.Drawing.Font("Verdana", 7F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnToggle.ImageIndex = 0;
             this.btnToggle.ImageList = this.imlUpDownArrows;
             this.btnToggle.Location = new System.Drawing.Point(403, 2);
@@ -137,10 +135,18 @@ namespace Ict.Common.Controls
             //
             this.imlUpDownArrows.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imlUpDownArrows.ImageStream")));
             this.imlUpDownArrows.TransparentColor = System.Drawing.Color.Transparent;
-            this.imlUpDownArrows.Images.SetKeyName(0, "HCollapseDown.ico");
-            this.imlUpDownArrows.Images.SetKeyName(1, "HCollapseUp.ico");
-            this.imlUpDownArrows.Images.SetKeyName(2, "HCollapseUpHover.ico");
-            this.imlUpDownArrows.Images.SetKeyName(3, "HCollapseDownHover.ico");
+            this.imlUpDownArrows.Images.SetKeyName(0, "CollapseDown.ico");
+            this.imlUpDownArrows.Images.SetKeyName(1, "CollapseDown_Hover.ico");
+            this.imlUpDownArrows.Images.SetKeyName(2, "CollapseLeft.ico");
+            this.imlUpDownArrows.Images.SetKeyName(3, "CollapseLeft_Hover.ico");
+            this.imlUpDownArrows.Images.SetKeyName(4, "CollapseRight.ico");
+            this.imlUpDownArrows.Images.SetKeyName(5, "CollapseRight_Hover.ico");
+            this.imlUpDownArrows.Images.SetKeyName(6, "CollapseUp.ico");
+            this.imlUpDownArrows.Images.SetKeyName(7, "CollapseUp_Hover.ico");
+            this.imlUpDownArrows.Images.SetKeyName(8, "TaskPanel_CollapseDown.ico");
+            this.imlUpDownArrows.Images.SetKeyName(9, "TaskPanel_CollapseDown_Hover.ico");
+            this.imlUpDownArrows.Images.SetKeyName(10, "TaskPanel_CollapseUp.ico");
+            this.imlUpDownArrows.Images.SetKeyName(11, "TaskPanel_CollapseUp_Hover.ico");
             //
             // pnlContent
             //
@@ -178,7 +184,6 @@ namespace Ict.Common.Controls
         private System.Windows.Forms.Label lblDetailHeading;
         private System.Windows.Forms.Panel pnlTitleText;
         private Ict.Common.Controls.TPnlGradient pnlTitle;
-        /// <summary>The Content Panel. This needs to become private again after this Control can dynamically instantiate UserControls!</summary>
-        protected Ict.Common.Controls.TPnlGradient pnlContent;
+        private Ict.Common.Controls.TPnlGradient pnlContent;
     }
 }

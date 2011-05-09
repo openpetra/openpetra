@@ -241,6 +241,18 @@ namespace Ict.Tools.CodeGeneration.DataStore
                     tempTemplate.SetCodelet("COLUMNLENGTH", col.iLength.ToString());
                     tempTemplate.SetCodelet("COLUMNDOTNETTYPE", col.GetDotNetType());
 
+                    if (!col.bNotNull)
+                    {
+                        if (col.GetDotNetType().Contains("DateTime?"))
+                        {
+                            tempTemplate.SetCodelet("TESTFORNULL", "!value.HasValue");
+                        }
+                        else if (col.GetDotNetType().Contains("String"))
+                        {
+                            tempTemplate.SetCodelet("TESTFORNULL", "(value == null) || (value.Length == 0)");
+                        }
+                    }
+
                     if (col.GetDotNetType().Contains("DateTime?"))
                     {
                         tempTemplate.SetCodelet("ACTIONGETNULLVALUE", "return null;");
