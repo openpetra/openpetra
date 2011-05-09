@@ -14,7 +14,7 @@ RootNode:
         actDelete: {Label=&Delete, ActionClick=DeleteRow}      
     Controls:
         pnlContent:
-            Controls: [pnlGrid, pnlDetails]
+            Controls: [pnlInfo,pnlGrid, pnlDetails]
             Dock: Fill
         pnlGrid:
             Height: 200
@@ -27,27 +27,37 @@ RootNode:
             Action: actNew
         btnDelete:
             Action: actDelete
+        pnlInfo:
+            Dock: Top
+            Controls:
+                Row0: [txtDetailPartnerKey, txtName]
+                Row1: [txtDetailStatusCode, txtLanguageCode]    
         grdDetails:
             Dock: Fill
-            Columns: [DetailPartnerKey, DetailStartOfCommitment, DetailEndOfCommitment]
+            Columns: [DetailPartnerKey, DetailStartOfCommitment, DetailEndOfCommitment,DetailReceivingField]
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom
             Controls:
-                Row0: [txtDetailPartnerKey]
+                Row0: [txtDetailReceivingField]
                 Row1: [dtpDetailStartOfCommitment]
                 Row2: [dtpDetailEndOfCommitment]
-                Row3: [txtDetailOfficeRecruitedBy]
-                Row4: [txtDetailHomeOffice] 
-                Row5: [txtDetailReceivingField]
-                Row6: [txtDetailReceivingFieldOffice]
+                Row3: [txtDetailHomeOffice]
+                Row4: [txtDetailOfficeRecruitedBy]
+                Row5: [txtDetailStaffDataComments]
+                Row6: [txtDetailJobTitle]
+               
         dtpDetailStartOfCommitment: {Label=&Start of Commitment}
         dtpDetailEndOfCommitment: {Label=&End of Commitment}
         txtDetailPartnerKey: {Label=Partner Key, ReadOnly=true}
-        txtDetailOfficeRecruitedBy: {Label=Recruiting Office, Type=PartnerKey, ColSpan=3}
-        txtDetailHomeOffice: {Label=Home Office, Type=PartnerKey, ColSpan=3}
-        txtDetailReceivingField: {Label=Receiving Field, Type=PartnerKey, ColSpan=3}
-        txtDetailReceivingFieldOffice: {Label=Receiving Field Office, Type=PartnerKey, ColSpan=3}
+        txtName: {Label=Name, ReadOnly=true}
+        txtLanguageCode: {Label=Language Code, ReadOnly=true}
+        txtDetailStatusCode: {Label=Status, ReadOnly=true}
+        txtDetailOfficeRecruitedBy: {Label=Recruiting Office, Type=PartnerKey}
+        txtDetailHomeOffice: {Label=Home Office, Type=PartnerKey}
+        txtDetailReceivingField: {Label=Receiving Field, Type=PartnerKey}
+        txtDetailStaffDataComments: {Label=Comments}
+        txtDetailJobTitle: {Label=Job Title}
     Toolbar:
         tbbNew:
             Label: New Commitment
