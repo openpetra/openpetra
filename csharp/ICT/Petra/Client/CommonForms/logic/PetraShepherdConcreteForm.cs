@@ -456,10 +456,12 @@ namespace Ict.Petra.Client.CommonForms.Logic
 			int PageCounter = 1; 
 			foreach (KeyValuePair <string, TPetraShepherdPage>pair in FShepherdPages.Pages)
 			{
-				XmlElement ID = XMLDocumentOfActivePages.CreateElement("ID"); //<ID>
-				ID.InnerText = "Task" + PageCounter + " " + pair.Key;
+				XmlElement ID = XMLDocumentOfActivePages.CreateElement("Task" + PageCounter.ToString()); //<ID>
+				ID.InnerText = "" + PageCounter + " " + pair.Key;
 				
-				XmlElement Title = XMLDocumentOfActivePages.CreateElement("Title"); //<Title>
+				ID.SetAttribute("Label", pair.Value.Title); 
+				
+				XmlElement Title = XMLDocumentOfActivePages.CreateElement("Label"); //<Title>
 				Title.InnerText = pair.Value.Title; 
 				
 				XmlElement Visible = XMLDocumentOfActivePages.CreateElement("Visible"); // <Visible>
@@ -490,6 +492,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
 				ID.AppendChild(Visible);
 				ID.AppendChild(Enabled);
 				ShepherdPages.AppendChild(ID); 
+				PageCounter++; 
 			}
 			root.AppendChild(ShepherdPages); //Last Step 
 			
@@ -510,7 +513,36 @@ namespace Ict.Petra.Client.CommonForms.Logic
 				TLogging.Log("Inner foreach: " + counter); 
 				counter++;
 			}
+			
+			TLogging.Log("FIRST CHILD NAME" + root.FirstChild.FirstChild.FirstChild.NextSibling.InnerText);
+			ChildDisplay(root.FirstChild.FirstChild,0);
         	return root.FirstChild; 
         }
+		 private static void ChildDisplay(XmlNode xnod, int level)
+		  {
+		    XmlNode xnodWorking;
+		    String pad = new String(' ', level * 2);
+		
+		    TLogging.Log(pad + xnod.Name + "(" + xnod.NodeType.ToString() + ": <" + xnod.Value + ">)");
+		    
+		    if (xnod.NodeType == XmlNodeType.Element)
+		    {
+		      XmlNamedNodeMap mapAttributes = xnod.Attributes;
+		      for(int i=0; i<mapAttributes.Count; i++)
+		      {
+		        TLogging.Log(pad + " " + mapAttributes.Item(i).Name + " = " +  mapAttributes.Item(i).Value);
+		      }
+		    }
+		    
+		    if (xnod.HasChildNodes)
+		    {
+		      xnodWorking = xnod.FirstChild;
+		      while (xnodWorking != null)
+		      {
+		        ChildDisplay(xnodWorking, level+1);
+		        xnodWorking = xnodWorking.NextSibling;
+		      }
+		    }
+		  }
     }
 }

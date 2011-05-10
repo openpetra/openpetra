@@ -166,6 +166,8 @@ namespace Ict.Petra.Client.CommonForms
         	this.lblHeading2.Text = FLogic.CurrentPage.Note;
         	
         	pnlCollapsibleNavigation.TaskListNode = FLogic.CreateTaskList();
+        	pnlCollapsibleNavigation.Show(); 
+        	
         	TLogging.Log("Added a node to the task list.");
         
         	pnlCollapsibleNavigation.InstantiateTaskList();

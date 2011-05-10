@@ -26,7 +26,7 @@ namespace TestCollapsible
 		public MainForm2(XmlNode xmlNode, TVisualStylesEnum AVisualStyle)
 		{
 		    this.FVisualStyle = AVisualStyle;
-		    this.FXmlNode = xmlNode;
+		    this.FXmlNode = CreateXMLNode();//xmlNode;
 
 		    InitializeComponent();
 		    
@@ -83,5 +83,49 @@ namespace TestCollapsible
 		{
 			this.tPnlCollapsible2.Text = ((System.Windows.Forms.TextBox)sender).Text;
 		}
+		XmlNode CreateXMLNode()
+		{
+
+        	// Create the xml document container
+			XmlDocument XMLDocumentOfActivePages = new XmlDocument();// Create the XML Declaration, and append it to XML document
+			XmlDeclaration dec = XMLDocumentOfActivePages.CreateXmlDeclaration("1.0", null, null);
+			XMLDocumentOfActivePages.AppendChild(dec);// Create the root element
+			XmlElement root = XMLDocumentOfActivePages.CreateElement("Library");
+			XMLDocumentOfActivePages.AppendChild(root);
+        
+			XmlElement ShepherdPages = XMLDocumentOfActivePages.CreateElement("ShepherdPages"); //<ShepherdPages>
+			
+			int PageCounter = 1; 
+			for(int i = 0; i < 5; i++)
+			{
+				XmlElement ID = XMLDocumentOfActivePages.CreateElement("Task" + i); //<ID>
+				ID.InnerText = "Task" + PageCounter + " " + i;
+				
+				XmlElement Title = XMLDocumentOfActivePages.CreateElement("Label"); //<Title>
+				Title.InnerText = "Label" + i; 
+				
+				XmlElement Visible = XMLDocumentOfActivePages.CreateElement("Visible"); // <Visible>
+						Visible.InnerText = "True"; 	
+						
+				XmlElement Enabled = XMLDocumentOfActivePages.CreateElement("Enabled"); 
+					Enabled.InnerText = "True"; 	
+				//TODO 
+				//IF(ISSUBSHEPHERD)
+				//SUDOCODE HERE 
+				
+				ID.AppendChild(Title); 
+				ID.AppendChild(Visible);
+				ID.AppendChild(Enabled);
+				ShepherdPages.AppendChild(ID); 
+			}
+			root.AppendChild(ShepherdPages); //Last Step 
+			
+			XmlNode firstPage = root.FirstChild;
+			
+			
+			XmlNodeList PageAttributes = firstPage.ChildNodes;
+			
+        	return root.FirstChild.FirstChild; 
+		}	
 	}
 }

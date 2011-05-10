@@ -39,6 +39,9 @@
     <Reference Include="Ict.Common.IO">
       <HintPath>..\..\..\..\..\..\..\delivery\bin\Ict.Common.IO.dll</HintPath>
     </Reference>
+    <Reference Include="Ict.Petra.Client.CommonForms.logic">
+      <HintPath>..\..\..\..\..\..\..\delivery\bin\Ict.Petra.Client.CommonForms.logic\x86\Debug\Ict.Petra.Client.CommonForms.logic.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
