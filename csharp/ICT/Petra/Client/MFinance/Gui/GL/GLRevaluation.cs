@@ -1,4 +1,4 @@
-﻿//
+//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -23,6 +23,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using Ict.Common;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
@@ -37,6 +38,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // The InitializeComponent() call is required for Windows Forms designer support.
             //
             InitializeComponent();
+            #region CATALOGI18N
+
+            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            this.lblName.Text = Catalog.GetString("Select cost center:");
+            this.btnRevaluate.Text = Catalog.GetString("Revaluate");
+            this.btnCancel.Text = Catalog.GetString("Cancel");
+            this.Text = Catalog.GetString("Revaluation ...");
+            #endregion
 
 
             this.btnCancel.Click += new EventHandler(CancelRevaluation);

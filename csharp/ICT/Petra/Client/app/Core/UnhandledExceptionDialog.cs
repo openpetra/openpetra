@@ -214,6 +214,18 @@ namespace Ict.Petra.Client.App.Core
             /* Required for Windows Form Designer support */
             /*  */
             InitializeComponent();
+            #region CATALOGI18N
+
+            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            this.lblInfo1.Text = Catalog.GetString("Info 1 Text");
+            this.lblHeading.Text = Catalog.GetString("Title Text");
+            this.lblInfo3.Text = Catalog.GetString("Info 3 Text");
+            this.lblInfo2.Text = Catalog.GetString("Info 2 Text");
+            this.btnErrorDetails.Text = Catalog.GetString("Error &Details...");
+            this.btnClose.Text = Catalog.GetString("&Close OpenPetra");
+            this.btnSend.Text = Catalog.GetString("&Report Error");
+            this.Text = Catalog.GetString("OpenPetra x.x.x.x Application Error");
+            #endregion
 
             /*  */
             /* TODO: Add any constructor code after InitializeComponent call */

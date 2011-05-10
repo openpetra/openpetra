@@ -312,12 +312,6 @@ namespace Ict.Common.Controls
             // The InitializeComponent() call is required for Windows Forms designer support.
             //
             InitializeComponent();
-            #region CATALOGI18N
-
-            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-            //FToolTipText = Catalog.GetString("Click here to expand / collapse the {0} panel");
-            this.tipCollapseExpandHints.SetToolTip(this.lblDetailHeading, FToolTipText);
-            #endregion
 
             Collapse();
             FHostedControlKind = AHCK;
