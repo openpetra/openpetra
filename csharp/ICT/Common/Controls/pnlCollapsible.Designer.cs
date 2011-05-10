@@ -66,9 +66,9 @@ namespace Ict.Common.Controls
             this.pnlTitle.SuspendLayout();
             this.pnlTitleText.SuspendLayout();
             this.SuspendLayout();
-            // 
+            //
             // pnlTitle
-            // 
+            //
             this.pnlTitle.AutoSize = true;
             this.pnlTitle.BackColor = System.Drawing.Color.Red;
             this.pnlTitle.Controls.Add(this.pnlTitleText);
@@ -78,9 +78,9 @@ namespace Ict.Common.Controls
             this.pnlTitle.Name = "pnlTitle";
             this.pnlTitle.Size = new System.Drawing.Size(424, 150);
             this.pnlTitle.TabIndex = 2;
-            // 
+            //
             // pnlTitleText
-            // 
+            //
             this.pnlTitleText.BackColor = System.Drawing.Color.LightSteelBlue;
             this.pnlTitleText.Controls.Add(this.lblDetailHeading);
             this.pnlTitleText.Controls.Add(this.btnToggle);
@@ -93,12 +93,14 @@ namespace Ict.Common.Controls
             this.pnlTitleText.MouseLeave += new System.EventHandler(this.BtnToggleMouseLeave);
             this.pnlTitleText.Click += new System.EventHandler(this.BtnToggleClick);
             this.pnlTitleText.MouseEnter += new System.EventHandler(this.BtnToggleMouseEnter);
-            // 
+            //
             // lblDetailHeading
-            // 
-            this.lblDetailHeading.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-                                    | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblDetailHeading.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            //
+            this.lblDetailHeading.Anchor =
+                ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) |
+                                                      System.Windows.Forms.AnchorStyles.Right)));
+            this.lblDetailHeading.Font =
+                new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblDetailHeading.ForeColor = System.Drawing.Color.MediumBlue;
             this.lblDetailHeading.Location = new System.Drawing.Point(2, 5);
             this.lblDetailHeading.Name = "lblDetailHeading";
@@ -107,10 +109,11 @@ namespace Ict.Common.Controls
             this.lblDetailHeading.Text = "Collapsible Panel";
             this.tipCollapseExpandHints.SetToolTip(this.lblDetailHeading, "Click here to expand / collapse the panel");
             this.lblDetailHeading.Click += new System.EventHandler(this.BtnToggleClick);
-            // 
+            //
             // btnToggle
-            // 
-            this.btnToggle.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            //
+            this.btnToggle.Anchor =
+                ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnToggle.BackColor = System.Drawing.Color.LightSteelBlue;
             this.btnToggle.FlatAppearance.BorderColor = System.Drawing.SystemColors.GradientInactiveCaption;
             this.btnToggle.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -127,9 +130,9 @@ namespace Ict.Common.Controls
             this.btnToggle.MouseLeave += new System.EventHandler(this.BtnToggleMouseLeave);
             this.btnToggle.Click += new System.EventHandler(this.BtnToggleClick);
             this.btnToggle.MouseEnter += new System.EventHandler(this.BtnToggleMouseEnter);
-            // 
+            //
             // imlUpDownArrows
-            // 
+            //
             this.imlUpDownArrows.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imlUpDownArrows.ImageStream")));
             this.imlUpDownArrows.TransparentColor = System.Drawing.Color.Transparent;
             this.imlUpDownArrows.Images.SetKeyName(0, "CollapseDown.ico");
@@ -144,12 +147,13 @@ namespace Ict.Common.Controls
             this.imlUpDownArrows.Images.SetKeyName(9, "TaskPanel_CollapseDown_Hover.ico");
             this.imlUpDownArrows.Images.SetKeyName(10, "TaskPanel_CollapseUp.ico");
             this.imlUpDownArrows.Images.SetKeyName(11, "TaskPanel_CollapseUp_Hover.ico");
-            // 
+            //
             // pnlContent
-            // 
-            this.pnlContent.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-                                    | System.Windows.Forms.AnchorStyles.Left) 
-                                    | System.Windows.Forms.AnchorStyles.Right)));
+            //
+            this.pnlContent.Anchor =
+                ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) |
+                                                       System.Windows.Forms.AnchorStyles.Left) |
+                                                      System.Windows.Forms.AnchorStyles.Right)));
             this.pnlContent.BackColor = System.Drawing.SystemColors.Info;
             this.pnlContent.Font = new System.Drawing.Font("Verdana", 6.75F);
             this.pnlContent.Location = new System.Drawing.Point(0, 24);
@@ -157,9 +161,9 @@ namespace Ict.Common.Controls
             this.pnlContent.Name = "pnlContent";
             this.pnlContent.Size = new System.Drawing.Size(424, 126);
             this.pnlContent.TabIndex = 2;
-            // 
+            //
             // TPnlCollapsible
-            // 
+            //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;

@@ -26,97 +26,113 @@ using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
+using Ict.Petra.Client.App.Core;
+using Ict.Petra.Shared;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
-    public partial class TFrmPersonnelStaffData
-    {
-		/// <summary>The new button was pressed;create a new row</summary></summary>      
-        public void NewRow(System.Object sender, EventArgs e)
-        {
-        	CreateNewPmStaffData();
-        	
-        	txtDetailPartnerKey.Text = Convert.ToString(FPartnerKey);
-        }
-		public void NewRowManual(ref PmStaffDataRow ANewRow)	
-        {
-				ANewRow.SiteKey=0; // TODO where to get from
-				ANewRow.Key=-1; //Hope that this will be inserted by submitchanges
-				ANewRow.PartnerKey=FPartnerKey;
+	public partial class TFrmPersonnelStaffData
+	{
+		/// <summary>The new button was pressed;create a new row</summary></summary>
+		public void NewRow(System.Object sender, EventArgs e)
+		{
+			CreateNewPmStaffData();		
+			UpdatePartnerKey();
 		}
-     	private Int64 FPartnerKey;
-     	
+
+		private void UpdatePartnerKey()
+		{
+			txtDetailPartnerKey.Text = Convert.ToString(FPartnerKey);
+		}
+
+		public void NewRowManual(ref PmStaffDataRow ANewRow)
+		{
+			ANewRow.SiteKey = Convert.ToInt64(TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_SITEKEY, ""));
+			ANewRow.Key = -1;                   //Hope that this will be inserted by submitchanges
+			ANewRow.PartnerKey = FPartnerKey;
+			ANewRow.ReceivingField = 0;
+			//ANewRow.ReceivingFieldOffice = 0;
+			ANewRow.OfficeRecruitedBy = 0;
+			ANewRow.HomeOffice = 0;
+		}
+
+		private Int64 FPartnerKey;
+
 		/// <summary>Partnerkey is the part of the "real" primary key for this table</summary>
-     	public long PartnerKey {
-			get { return FPartnerKey; }
-			set { FPartnerKey = value; }
+		public long PartnerKey {
+			get
+			{
+				return FPartnerKey;
+			}
+			set
+			{
+				FPartnerKey = value;
+				UpdatePartnerKey();
+			}
 		}
 
-        private void DeleteRow(System.Object sender, EventArgs e)
-        {
-          
-        }
+		private void DeleteRow(System.Object sender, EventArgs e)
+		{
+		}
 
-      
 		private TSubmitChangesResult StoreManualCode(ref PersonnelTDS ASubmitChanges, out TVerificationResultCollection AVerificationResult)
 		{
-			return TRemote.MPersonnel.WebConnectors.SavePersonnelTDS( ref ASubmitChanges, out AVerificationResult);
+			return TRemote.MPersonnel.WebConnectors.SavePersonnelTDS(ref ASubmitChanges, out AVerificationResult);
 		}
-		
-        private void ShowDetailsManual(PmStaffDataRow ARow)
-        {
-            if (ARow == null)
-            {
-                pnlDetails.Enabled = false;
-            }
-            else
-            {
-                pnlDetails.Enabled = true;
-            }
-        }
 
-        private int CurrentRowIndex()
-        {
-            int rowIndex = -1;
+		private void ShowDetailsManual(PmStaffDataRow ARow)
+		{
+			if (ARow == null)
+			{
+				pnlDetails.Enabled = false;
+			}
+			else
+			{
+				pnlDetails.Enabled = true;
+			}
+		}
 
-            SourceGrid.RangeRegion selectedRegion = grdDetails.Selection.GetSelectionRegion();
+		private int CurrentRowIndex()
+		{
+			int rowIndex = -1;
 
-            if ((selectedRegion != null) && (selectedRegion.GetRowsIndex().Length > 0))
-            {
-                rowIndex = selectedRegion.GetRowsIndex()[0];
-            }
+			SourceGrid.RangeRegion selectedRegion = grdDetails.Selection.GetSelectionRegion();
 
-            return rowIndex;
-        }
-        private void GetDetailDataFromControlsManual(PmStaffDataRow ARow)
-        {
-        	//TODO
-        }
+			if ((selectedRegion != null) && (selectedRegion.GetRowsIndex().Length > 0))
+			{
+				rowIndex = selectedRegion.GetRowsIndex()[0];
+			}
 
-        private void SelectByIndex(int rowIndex)
-        {
-            if (rowIndex >= grdDetails.Rows.Count)
-            {
-                rowIndex = grdDetails.Rows.Count - 1;
-            }
+			return rowIndex;
+		}
 
-            if ((rowIndex < 1) && (grdDetails.Rows.Count > 1))
-            {
-                rowIndex = 1;
-            }
+		private void GetDetailDataFromControlsManual(PmStaffDataRow ARow)
+		{
+			//TODO
+		}
 
-            if ((rowIndex >= 1) && (grdDetails.Rows.Count > 1))
-            {
-                grdDetails.Selection.SelectRow(rowIndex, true);
-                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                ShowDetails(FPreviouslySelectedDetailRow);
-            }
-            else
-            {
-                FPreviouslySelectedDetailRow = null;
-            }
-        }
+		private void SelectByIndex(int rowIndex)
+		{
+			if (rowIndex >= grdDetails.Rows.Count)
+			{
+				rowIndex = grdDetails.Rows.Count - 1;
+			}
 
-       
-    }
+			if ((rowIndex < 1) && (grdDetails.Rows.Count > 1))
+			{
+				rowIndex = 1;
+			}
+
+			if ((rowIndex >= 1) && (grdDetails.Rows.Count > 1))
+			{
+				grdDetails.Selection.SelectRow(rowIndex, true);
+				FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+				ShowDetails(FPreviouslySelectedDetailRow);
+			}
+			else
+			{
+				FPreviouslySelectedDetailRow = null;
+			}
+		}
+	}
 }

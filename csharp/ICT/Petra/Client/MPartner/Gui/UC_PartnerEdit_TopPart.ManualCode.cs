@@ -585,24 +585,25 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             //this may be temporary used to have an access point for this dialog
             TFrmPersonnelStaffData staffDataForm = new TFrmPersonnelStaffData(this.Handle);
+
             staffDataForm.PartnerKey = ((TFrmPartnerEdit)ParentForm).PartnerKey;
             staffDataForm.Show();
-            
+
 /*
-#if TODO
-            if (this.FDelegateMaintainWorkerField != null)
-            {
-                try
-                {
-                    this.FDelegateMaintainWorkerField();
-                }
-                finally
-                {
-                    throw new EVerificationMissing(Catalog.GetString("this.FDelegateGetPartnerShortName could not be called!"));
-                }
-            }
-#endif
-*/
+ * #if TODO
+ *          if (this.FDelegateMaintainWorkerField != null)
+ *          {
+ *              try
+ *              {
+ *                  this.FDelegateMaintainWorkerField();
+ *              }
+ *              finally
+ *              {
+ *                  throw new EVerificationMissing(Catalog.GetString("this.FDelegateGetPartnerShortName could not be called!"));
+ *              }
+ *          }
+ * #endif
+ */
         }
 
         #endregion

@@ -270,7 +270,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     txtFamilyPartnerBox.Focus();
                     return;
                 }
-
             }
 
             NewPartnerKey = txtPartnerKey.PartnerKey;

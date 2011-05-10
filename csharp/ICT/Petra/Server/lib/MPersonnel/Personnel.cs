@@ -42,12 +42,12 @@ using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 
 namespace Ict.Petra.Server.MPersonnel.WebConnectors
 {
-	/// <summary>
-	/// Description of Personnel.
-	/// </summary>
-	public class TPersonnelWebConnector
+    /// <summary>
+    /// Description of Personnel.
+    /// </summary>
+    public class TPersonnelWebConnector
     {
-	     /// <summary>
+        /// <summary>
         /// this will store PersonnelTDS
         /// </summary>
         /// <param name="AInspectDS"></param>
@@ -63,6 +63,5 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
 
             return SubmissionResult;
         }
-		
-	}
+    }
 }

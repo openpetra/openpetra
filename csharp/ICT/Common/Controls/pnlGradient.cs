@@ -39,80 +39,79 @@ namespace Ict.Common.Controls
     /// </summary>
     public partial class TPnlGradient : System.Windows.Forms.Panel
     {
-        
         private Color InternalGradientColorTop = Color.FromArgb(0xEF, 0xFB, 0xFF);
-    	/// see variable name
-        public Color GradientColorTop{
-        	get
-        	{
-        		return InternalGradientColorTop;
-        	} 
-        	set
-        	{
-        		InternalGradientColorTop = value;
-        	}
+        /// see variable name
+        public Color GradientColorTop {
+            get
+            {
+                return InternalGradientColorTop;
+            }
+            set
+            {
+                InternalGradientColorTop = value;
+            }
         }
 
-        
+
         private Color InternalGradientColorBottom = Color.FromArgb(0xB5, 0xCB, 0xE7);
         /// see variable name
-        public Color GradientColorBottom{
-        	get
-        	{
-        		return InternalGradientColorBottom;
-        	}
-        	set
-        	{
-        		InternalGradientColorBottom = value;
-        	}
+        public Color GradientColorBottom {
+            get
+            {
+                return InternalGradientColorBottom;
+            }
+            set
+            {
+                InternalGradientColorBottom = value;
+            }
         }
 
-    
+
         private Pen InternalBorder = Pens.Transparent;
         /// <summary>
         /// color for the border; if transparent, no border is drawn
         /// </summary>
-        public Pen Border{
-        	get
-        	{
-        		return InternalBorder;
-        	}
-        	set
-        	{
-        		InternalBorder = value;
-        	}
+        public Pen Border {
+            get
+            {
+                return InternalBorder;
+            }
+            set
+            {
+                InternalBorder = value;
+            }
         }
 
-    
+
         private bool InternalDontDrawBottomLine = false;
         /// <summary>
         /// sometimes, when stacking several panels on top of each other, you don't want bottom and top line to result in 2 lines
         /// </summary>
-        public bool DontDrawBottomLine{
-        	get
-        	{
-        		return InternalDontDrawBottomLine;
-        	}
-        	set
-        	{
-        		InternalDontDrawBottomLine = value;
-        	}
+        public bool DontDrawBottomLine {
+            get
+            {
+                return InternalDontDrawBottomLine;
+            }
+            set
+            {
+                InternalDontDrawBottomLine = value;
+            }
         }
-        
-    
+
+
         private LinearGradientMode InternalGradientMode = LinearGradientMode.Vertical;
         /// <summary>
         /// direction of gradient
         /// </summary>
-        public LinearGradientMode GradientMode{
-        	get
-        	{
-        		return InternalGradientMode;
-        	}
-        	set
-        	{
-        		InternalGradientMode = value;
-        	}
+        public LinearGradientMode GradientMode {
+            get
+            {
+                return InternalGradientMode;
+            }
+            set
+            {
+                InternalGradientMode = value;
+            }
         }
 
         /// <summary>
