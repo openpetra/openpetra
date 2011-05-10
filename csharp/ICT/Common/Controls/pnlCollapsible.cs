@@ -480,7 +480,7 @@ namespace Ict.Common.Controls
         }
 
         /// <summary></summary>
-        private void InstantiateTaskList()
+        public void InstantiateTaskList()
         {
             //needs to set correct visual style.
             if(FTaskListNode == null)

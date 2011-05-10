@@ -311,7 +311,8 @@ namespace Ict.Petra.Client.CommonForms
         	this.ResumeLayout(false);
         	this.PerformLayout();
         }
-        private Ict.Common.Controls.TPnlCollapsible pnlCollapsibleNavigation;
+        
+        protected Ict.Common.Controls.TPnlCollapsible pnlCollapsibleNavigation;
 
         protected Ict.Common.Controls.TExtStatusBarHelp stbMain;
         protected System.Windows.Forms.Label lblPageProgress;

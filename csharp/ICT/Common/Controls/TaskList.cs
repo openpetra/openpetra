@@ -204,6 +204,7 @@ namespace Ict.Common.Controls
 					lblTaskItem.Font = VisualStyle.ContentText;
 					lblTaskItem.LinkBehavior = LinkBehavior.HoverUnderline;
 					
+					
 					//@TODO: This line specifies the indentation by setting the location, however each level is indented the same amount
 					// Should allow the first level to be indented a different amount than the rest of the levels
 					lblTaskItem.Location = new System.Drawing.Point(NumberingLevel * this.TaskIndentation,NumTasks*TaskHeight);

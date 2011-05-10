@@ -441,7 +441,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
             TLogging.Log("PagesDataHeapPoke");
         }
         
-        public XmlNodeList CreateTaskList()
+        public XmlNode CreateTaskList()
         {
         	TLogging.Log("Starting method CreateTaskList!");
         	// Create the xml document container
@@ -453,33 +453,35 @@ namespace Ict.Petra.Client.CommonForms.Logic
         
 			XmlElement ShepherdPages = XMLDocumentOfActivePages.CreateElement("ShepherdPages"); //<ShepherdPages>
 			
+			int PageCounter = 1; 
 			foreach (KeyValuePair <string, TPetraShepherdPage>pair in FShepherdPages.Pages)
 			{
 				XmlElement ID = XMLDocumentOfActivePages.CreateElement("ID"); //<ID>
-				ID.InnerText = pair.Key;
+				ID.InnerText = "Task" + PageCounter + " " + pair.Key;
 				
 				XmlElement Title = XMLDocumentOfActivePages.CreateElement("Title"); //<Title>
 				Title.InnerText = pair.Value.Title; 
 				
 				XmlElement Visible = XMLDocumentOfActivePages.CreateElement("Visible"); // <Visible>
-				if(pair.Value.Visible)
-				{
-					Visible.InnerText = "True"; 	
-				}
-				else
-				{
-					Visible.InnerText = "False"; 	
-				}				
-				
+					if(pair.Value.Visible)
+					{
+						Visible.InnerText = "True"; 	
+					}
+					else
+					{
+						Visible.InnerText = "False"; 	
+					}	
+					
 				XmlElement Enabled = XMLDocumentOfActivePages.CreateElement("Enabled"); 
-				if(pair.Value.Enabled)
-				{
-					Enabled.InnerText = "True"; 	
-				}
-				else
-				{
-					Enabled.InnerText = "False"; 	
-				}
+					if(pair.Value.Enabled)
+					{
+						Enabled.InnerText = "True"; 	
+					}
+					else
+					{
+						Enabled.InnerText = "False"; 	
+					}
+
 				//TODO 
 				//IF(ISSUBSHEPHERD)
 				//SUDOCODE HERE 
@@ -491,15 +493,24 @@ namespace Ict.Petra.Client.CommonForms.Logic
 			}
 			root.AppendChild(ShepherdPages); //Last Step 
 			
-			XmlNode firstPage = root.FirstChild.FirstChild.FirstChild;
-			TLogging.Log("First Child Value: " + firstPage.InnerText); 
-			TLogging.Log("First Child Title: " + firstPage.NextSibling.NextSibling.InnerText); 
-			TLogging.Log("First Child Visible: " + firstPage.NextSibling.NextSibling.NextSibling.InnerText); 
-			//TLogging.Log("First Child Enabled: " + firstPage.NextSibling.NextSibling.NextSibling.NextSibling.InnerText); 
+			XmlNode firstPage = root.FirstChild;
+			TLogging.Log("Count of child nodes: " + firstPage.ChildNodes.Count); 
 			
-        	XmlNodeList ActiveListOfPages = null; //TODO: Transform XML document to node list first. 
-        	
-        	return ActiveListOfPages; 
+
+			XmlNodeList PageAttributes = firstPage.ChildNodes;
+			int counter = 0;
+			foreach(XmlNode node in PageAttributes)
+			{
+				foreach(XmlNode attributeNode in node.ChildNodes)
+				{
+					
+					TLogging.Log("Foreach Node Value: " + attributeNode.InnerText); 
+					
+				}
+				TLogging.Log("Inner foreach: " + counter); 
+				counter++;
+			}
+        	return root.FirstChild; 
         }
     }
 }

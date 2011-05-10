@@ -25,6 +25,7 @@ using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
 using Ict.Petra.Client.CommonForms.Logic;
+using System.Xml;
 
 using Ict.Common; //this is also a test
 
@@ -164,6 +165,10 @@ namespace Ict.Petra.Client.CommonForms
         	this.lblHeading1.Text = FLogic.CurrentPage.Title; 
         	this.lblHeading2.Text = FLogic.CurrentPage.Note;
         	
+        	pnlCollapsibleNavigation.TaskListNode = FLogic.CreateTaskList();
+        	TLogging.Log("Added a node to the task list.");
+        
+        	pnlCollapsibleNavigation.InstantiateTaskList();
         	
             TLogging.Log("UpdateNavigation");
         }
