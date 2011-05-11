@@ -24,6 +24,7 @@
 using System;
 using System.Text;
 using System.Data;
+using System.Collections.Generic;
 using Ict.Common.IO;
 using Ict.Common;
 using Ict.Common.DB;
@@ -34,6 +35,7 @@ using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MPersonnel.Units.Data;
 using Ict.Petra.Shared.MHospitality.Data;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
 
 namespace Ict.Petra.Server.MPartner.ImportExport
 {
@@ -43,9 +45,77 @@ namespace Ict.Petra.Server.MPartner.ImportExport
     public class TPartnerFileImport : TImportExportTextFile
     {
         private PartnerImportExportTDS FMainDS = null;
+        private List <Int64>FRequiredOfficeKeys = new List <long>();
+        private List <Int64>FRequiredOptionKeys = new List <long>();
+        private string FLimitToOption = string.Empty;
         private int FCountLocationKeys = -1;
         private Int64 FPartnerKey = -1;
         private bool FIgnorePartner = false;
+        private bool FIgnoreApplication = false;
+
+        private void AddRequiredOffice(Int64 AOfficeKey)
+        {
+            if ((AOfficeKey != 0) && !FRequiredOfficeKeys.Contains(AOfficeKey))
+            {
+                FRequiredOfficeKeys.Add(AOfficeKey);
+            }
+        }
+
+        /// <summary>
+        /// need to add referenced offices if they don't exist yet
+        /// </summary>
+        private void AddRequiredUnits(List <Int64>AUnitKeys, string AUnitType, Int64 AUnitParent, string AUnitNamePrefix)
+        {
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
+
+            foreach (Int64 NewUnitKey in AUnitKeys)
+            {
+                if (!PUnitAccess.Exists(NewUnitKey, Transaction))
+                {
+                    PUnitRow UnitRow = FMainDS.PUnit.NewRowTyped();
+                    UnitRow.PartnerKey = NewUnitKey;
+                    UnitRow.UnitName = AUnitNamePrefix + " " + NewUnitKey.ToString();
+                    UnitRow.UnitTypeCode = AUnitType;
+                    FMainDS.PUnit.Rows.Add(UnitRow);
+
+                    PPartnerRow partnerRow = FMainDS.PPartner.NewRowTyped();
+                    partnerRow.PartnerKey = UnitRow.PartnerKey;
+                    partnerRow.PartnerShortName = UnitRow.UnitName;
+                    partnerRow.StatusCode = MPartnerConstants.PARTNERSTATUS_ACTIVE;
+                    partnerRow.PartnerClass = MPartnerConstants.PARTNERCLASS_UNIT;
+                    FMainDS.PPartner.Rows.Add(partnerRow);
+
+                    UmUnitStructureRow UnitStructureRow = FMainDS.UmUnitStructure.NewRowTyped();
+                    UnitStructureRow.ParentUnitKey = AUnitParent;
+                    UnitStructureRow.ChildUnitKey = UnitRow.PartnerKey;
+                    FMainDS.UmUnitStructure.Rows.Add(UnitStructureRow);
+
+                    // TODO: should we add an empty location or not?
+                    // this currently causes problem with the generated code, with the sequence for the
+                    PLocationRow locationRow = FMainDS.PLocation.NewRowTyped();
+                    locationRow.SiteKey = UnitRow.PartnerKey;
+                    locationRow.LocationKey = 0;
+                    locationRow.StreetName = Catalog.GetString("No valid address on file");
+                    FMainDS.PLocation.Rows.Add(locationRow);
+
+                    PPartnerLocationRow partnerLocationRow = FMainDS.PPartnerLocation.NewRowTyped();
+                    partnerLocationRow.SiteKey = UnitRow.PartnerKey;
+                    partnerLocationRow.PartnerKey = UnitRow.PartnerKey;
+                    partnerLocationRow.LocationKey = 0;
+                    FMainDS.PPartnerLocation.Rows.Add(partnerLocationRow);
+                }
+            }
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+        }
+
+        private void AddUnitOption(Int64 AOptionKey)
+        {
+            if ((AOptionKey != 0) && !FRequiredOptionKeys.Contains(AOptionKey))
+            {
+                FRequiredOptionKeys.Add(AOptionKey);
+            }
+        }
 
         private PPartnerRow ImportPartner()
         {
@@ -58,7 +128,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             PartnerRow.StatusCode = ReadString();
             PartnerRow.PreviousName = ReadString();
             PartnerRow.LanguageCode = ReadString();
-            PartnerRow.AddresseeTypeCode = ReadString();
+            PartnerRow.AddresseeTypeCode = ReadString().ToUpper();
             PartnerRow.ChildIndicator = ReadBoolean();
             PartnerRow.ReceiptEachGift = ReadBoolean();
             PartnerRow.ReceiptLetterFrequency = ReadString();
@@ -70,6 +140,19 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             if (PartnerRow.AcquisitionCode.Length == 0)
             {
                 PartnerRow.AcquisitionCode = MPartnerConstants.ACQUISITIONCODE_APPLICANT;
+            }
+
+            // check if acquisition code does already exist in this database
+            FMainDS.PAcquisition.DefaultView.RowFilter = String.Format("{0} = '{1}'",
+                PAcquisitionTable.GetAcquisitionCodeDBName(), PartnerRow.AcquisitionCode);
+
+            if (FMainDS.PAcquisition.DefaultView.Count == 0)
+            {
+                TLogging.Log("Adding new acquisition code " + PartnerRow.AcquisitionCode);
+                PAcquisitionRow aqRow = FMainDS.PAcquisition.NewRowTyped();
+                aqRow.AcquisitionCode = PartnerRow.AcquisitionCode;
+                aqRow.AcquisitionDescription = "N/A";
+                FMainDS.PAcquisition.Rows.Add(aqRow);
             }
 
             // check if such a partner (most likely family partner has already been loaded)
@@ -109,6 +192,11 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 try
                 {
                     FamilyRow.FieldKey = ReadInt64();
+
+                    if (FamilyRow.FieldKey == 0)
+                    {
+                        FamilyRow.SetFieldKeyNull();
+                    }
                 }
                 catch (Exception)
                 {
@@ -149,9 +237,23 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                 PersonRow.BelieverSinceComment = ReadString();
                 PersonRow.OccupationCode = ReadString();
+
+                // check if occupation code does already exist in this database
+                FMainDS.POccupation.DefaultView.RowFilter = String.Format("{0} = '{1}'",
+                    POccupationTable.GetOccupationCodeDBName(), PersonRow.OccupationCode);
+
+                if (FMainDS.POccupation.DefaultView.Count == 0)
+                {
+                    TLogging.Log("Adding new occupation code " + PersonRow.OccupationCode);
+                    POccupationRow ocRow = FMainDS.POccupation.NewRowTyped();
+                    ocRow.OccupationCode = PersonRow.OccupationCode;
+                    ocRow.OccupationDescription = "N/A";
+                    FMainDS.POccupation.Rows.Add(ocRow);
+                }
+
                 Int64? FieldKey = ReadNullableInt64();
 
-                if (FieldKey.HasValue)
+                if (FieldKey.HasValue && (FieldKey.Value != 0))
                 {
                     PersonRow.FieldKey = FieldKey.Value;
                 }
@@ -263,8 +365,17 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             ShortTermApplicationRow.PartnerKey = FPartnerKey;
             ShortTermApplicationRow.ApplicationKey = AGeneralApplicationRow.ApplicationKey;
-
+            ShortTermApplicationRow.RegistrationOffice = AGeneralApplicationRow.RegistrationOffice;
+            ShortTermApplicationRow.StAppDate = AGeneralApplicationRow.GenAppDate;
+            ShortTermApplicationRow.StApplicationType = AGeneralApplicationRow.AppTypeName;
+            ShortTermApplicationRow.StBasicXyzTbdIdentifier = AGeneralApplicationRow.OldLink;
             ShortTermApplicationRow.ConfirmedOptionCode = ReadString();
+
+            if ((FLimitToOption.Length > 0) && (ShortTermApplicationRow.ConfirmedOptionCode != FLimitToOption))
+            {
+                FIgnoreApplication = true;
+            }
+
             ShortTermApplicationRow.Option1Code = ReadString();
             ShortTermApplicationRow.Option2Code = ReadString();
             ShortTermApplicationRow.FromCongTravelInfo = ReadString();
@@ -287,18 +398,46 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             ShortTermApplicationRow.StComment = ReadString();
 
             ShortTermApplicationRow.StConfirmedOption = ReadInt64();
+
+            if (!FIgnoreApplication)
+            {
+                AddUnitOption(ShortTermApplicationRow.StConfirmedOption);
+            }
+
             ShortTermApplicationRow.StCongressCode = ReadString();
             ShortTermApplicationRow.StCongressLanguage = ReadString();
             ShortTermApplicationRow.StCountryPref = ReadString();
-            ShortTermApplicationRow.StCurrentField = ReadInt64();
+
+            Int64? StCurrentField = ReadNullableInt64();
+
+            if (!FIgnoreApplication && StCurrentField.HasValue && (StCurrentField.Value != 0))
+            {
+                ShortTermApplicationRow.StCurrentField = StCurrentField.Value;
+                AddRequiredOffice(ShortTermApplicationRow.StCurrentField);
+            }
+
             ShortTermApplicationRow.XyzTbdRole = ReadString();
 
             ShortTermApplicationRow.StFgCode = ReadString();
             ShortTermApplicationRow.StFgLeader = ReadBoolean();
             ShortTermApplicationRow.StFieldCharged = ReadInt64();
             ShortTermApplicationRow.StLeadershipRating = ReadString();
-            ShortTermApplicationRow.StOption1 = ReadInt64();
-            ShortTermApplicationRow.StOption2 = ReadInt64();
+
+            Int64? StOption1 = ReadNullableInt64();
+
+            if (!FIgnoreApplication && StOption1.HasValue && (StOption1.Value != 0))
+            {
+                ShortTermApplicationRow.StOption1 = StOption1.Value;
+                AddUnitOption(ShortTermApplicationRow.StOption1);
+            }
+
+            Int64? StOption2 = ReadNullableInt64();
+
+            if (!FIgnoreApplication && StOption2.HasValue && (StOption2.Value != 0))
+            {
+                ShortTermApplicationRow.StOption2 = StOption2.Value;
+                AddUnitOption(ShortTermApplicationRow.StOption2);
+            }
 
             ShortTermApplicationRow.StPartyContact = ReadInt64();
             ShortTermApplicationRow.StPartyTogether = ReadString();
@@ -314,7 +453,35 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             ShortTermApplicationRow.StActivityPref = ReadString();
             ShortTermApplicationRow.ToCongTravelInfo = ReadString();
             ShortTermApplicationRow.ArrivalPointCode = ReadString();
+
+            // check if arrival point code does already exist in this database
+            FMainDS.PtArrivalPoint.DefaultView.RowFilter = String.Format("{0} = '{1}'",
+                PtArrivalPointTable.GetCodeDBName(), ShortTermApplicationRow.ArrivalPointCode);
+
+            if (!FIgnoreApplication && (FMainDS.PtArrivalPoint.DefaultView.Count == 0))
+            {
+                TLogging.Log("Adding new arrival point code " + ShortTermApplicationRow.ArrivalPointCode);
+                PtArrivalPointRow arrivalRow = FMainDS.PtArrivalPoint.NewRowTyped();
+                arrivalRow.Code = ShortTermApplicationRow.ArrivalPointCode;
+                arrivalRow.Description = "N/A";
+                FMainDS.PtArrivalPoint.Rows.Add(arrivalRow);
+            }
+
             ShortTermApplicationRow.DeparturePointCode = ReadString();
+
+            // check if arrival point code does already exist in this database
+            FMainDS.PtArrivalPoint.DefaultView.RowFilter = String.Format("{0} = '{1}'",
+                PtArrivalPointTable.GetCodeDBName(), ShortTermApplicationRow.DeparturePointCode);
+
+            if (!FIgnoreApplication && (FMainDS.PtArrivalPoint.DefaultView.Count == 0))
+            {
+                TLogging.Log("Adding new arrival point code " + ShortTermApplicationRow.DeparturePointCode);
+                PtArrivalPointRow arrivalRow = FMainDS.PtArrivalPoint.NewRowTyped();
+                arrivalRow.Code = ShortTermApplicationRow.DeparturePointCode;
+                arrivalRow.Description = "N/A";
+                FMainDS.PtArrivalPoint.Rows.Add(arrivalRow);
+            }
+
             ShortTermApplicationRow.TravelTypeFromCongCode = ReadString();
             ShortTermApplicationRow.TravelTypeToCongCode = ReadString();
 
@@ -334,7 +501,10 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             ShortTermApplicationRow.DepartureExpMinute = ReadInt32();
             ShortTermApplicationRow.DepartureComments = ReadString();
 
-            FMainDS.PmShortTermApplication.Rows.Add(ShortTermApplicationRow);
+            if (!FIgnoreApplication)
+            {
+                FMainDS.PmShortTermApplication.Rows.Add(ShortTermApplicationRow);
+            }
         }
 
         private void ReadLongApplicationForm(PmGeneralApplicationRow AGeneralApplicationRow)
@@ -365,7 +535,10 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             YearProgramApplicationRow.YpScholarshipReviewDate = ReadNullableDate();
             YearProgramApplicationRow.YpSupportPeriod = ReadString();
 
-            FMainDS.PmYearProgramApplication.Rows.Add(YearProgramApplicationRow);
+            if (!FIgnoreApplication)
+            {
+                FMainDS.PmYearProgramApplication.Rows.Add(YearProgramApplicationRow);
+            }
         }
 
         private void ReadApplicationForm(PmGeneralApplicationRow AGeneralApplicationRow)
@@ -387,32 +560,27 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             ApplicationFormRow.ReferencePartnerKey = ReadInt64();
             ApplicationFormRow.Comment = ReadString();
 
-            FMainDS.PmApplicationForms.Rows.Add(ApplicationFormRow);
+            if (!FIgnoreApplication)
+            {
+                FMainDS.PmApplicationForms.Rows.Add(ApplicationFormRow);
+            }
         }
 
         private void ImportApplication()
         {
+            FIgnoreApplication = true;
+
             PtApplicationTypeRow ApplicationTypeRow = FMainDS.PtApplicationType.NewRowTyped();
 
             ApplicationTypeRow.AppFormType = ReadString();
             ApplicationTypeRow.AppTypeName = ReadString();
             ApplicationTypeRow.AppTypeDescr = ReadString();
 
-            FMainDS.PtApplicationType.DefaultView.RowFilter = String.Format("{0} = '{1}'",
-                PtApplicationTypeTable.GetAppTypeNameDBName(), ApplicationTypeRow.AppTypeName);
-
-            if (FMainDS.PtApplicationType.DefaultView.Count == 0)
-            {
-                FMainDS.PtApplicationType.Rows.Add(ApplicationTypeRow);
-            }
-
-            FMainDS.PtApplicationType.DefaultView.RowFilter = String.Empty;
-
-
             PmGeneralApplicationRow GeneralApplicationRow = FMainDS.PmGeneralApplication.NewRowTyped();
 
             GeneralApplicationRow.PartnerKey = FPartnerKey;
 
+            GeneralApplicationRow.AppTypeName = ApplicationTypeRow.AppTypeName;
             GeneralApplicationRow.GenAppDate = ReadDate();
             GeneralApplicationRow.OldLink = ReadString();
             GeneralApplicationRow.GenApplicantType = ReadString();
@@ -428,7 +596,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             Int64? GenAppPossSrvUnitKey = ReadNullableInt64();
 
-            if (GenAppPossSrvUnitKey.HasValue)
+            if (GenAppPossSrvUnitKey.HasValue && (GenAppPossSrvUnitKey.Value != 0))
             {
                 GeneralApplicationRow.GenAppPossSrvUnitKey = GenAppPossSrvUnitKey.Value;
             }
@@ -438,7 +606,14 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             GeneralApplicationRow.GenAppSendFldAcceptDate = ReadNullableDate();
             GeneralApplicationRow.GenAppSendFldAccept = ReadBoolean();
             GeneralApplicationRow.GenAppCurrencyCode = ReadString();
-            GeneralApplicationRow.PlacementPartnerKey = ReadInt64();
+
+            Int64? PlacementPartnerKey = ReadNullableInt64();
+
+            if (PlacementPartnerKey.HasValue && (PlacementPartnerKey.Value != 0))
+            {
+                GeneralApplicationRow.PlacementPartnerKey = PlacementPartnerKey.Value;
+            }
+
             GeneralApplicationRow.GenAppUpdate = ReadNullableDate();
             GeneralApplicationRow.GenCancelledApp = ReadBoolean();
             GeneralApplicationRow.GenContact1 = ReadString();
@@ -448,8 +623,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             GeneralApplicationRow.RegistrationOffice = ReadInt64();
             GeneralApplicationRow.Comment = ReadMultiLine();
 
-            FMainDS.PmGeneralApplication.Rows.Add(GeneralApplicationRow);
-
             if (ApplicationTypeRow.AppFormType == MPersonnelConstants.APPLICATIONFORMTYPE_SHORTFORM)
             {
                 ReadShortApplicationForm(GeneralApplicationRow);
@@ -457,6 +630,19 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             else if (ApplicationTypeRow.AppFormType == MPersonnelConstants.APPLICATIONFORMTYPE_SHORTFORM)
             {
                 ReadLongApplicationForm(GeneralApplicationRow);
+            }
+
+            if (!FIgnoreApplication)
+            {
+                FMainDS.PmGeneralApplication.Rows.Add(GeneralApplicationRow);
+
+                FMainDS.PtApplicationType.DefaultView.RowFilter = String.Format("{0} = '{1}'",
+                    PtApplicationTypeTable.GetAppTypeNameDBName(), ApplicationTypeRow.AppTypeName);
+
+                if (FMainDS.PtApplicationType.DefaultView.Count == 0)
+                {
+                    FMainDS.PtApplicationType.Rows.Add(ApplicationTypeRow);
+                }
             }
 
             string KeyWord = ReadString();
@@ -506,11 +692,26 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             StaffDataRow.ReceivingField = ReadInt64();
             StaffDataRow.HomeOffice = ReadInt64();
             StaffDataRow.OfficeRecruitedBy = ReadInt64();
-            StaffDataRow.ReceivingFieldOffice = ReadInt64();
+
+            Int64? ReceivingFieldOffice = ReadNullableInt64();
+
+            if (ReceivingFieldOffice.HasValue && (ReceivingFieldOffice.Value != 0))
+            {
+                StaffDataRow.ReceivingFieldOffice = ReceivingFieldOffice.Value;
+            }
+
             StaffDataRow.JobTitle = ReadString();
             StaffDataRow.StaffDataComments = ReadString();
 
             FMainDS.PmStaffData.Rows.Add(StaffDataRow);
+
+            AddRequiredOffice(StaffDataRow.HomeOffice);
+            AddRequiredOffice(StaffDataRow.ReceivingField);
+
+            if (!StaffDataRow.IsReceivingFieldOfficeNull())
+            {
+                AddRequiredOffice(StaffDataRow.ReceivingFieldOffice);
+            }
         }
 
         private void ImportLanguage()
@@ -681,7 +882,21 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             if (!FIgnorePartner)
             {
-                FMainDS.PPartnerType.Rows.Add(PartnerTypeRow);
+                // check if type code does already exist in this database
+                FMainDS.PType.DefaultView.RowFilter = String.Format("{0} = '{1}'", PTypeTable.GetTypeCodeDBName(), PartnerTypeRow.TypeCode);
+
+                if (FMainDS.PType.DefaultView.Count == 0)
+                {
+                    TLogging.Log("Ignoring non existing type code " + PartnerTypeRow.TypeCode);
+                    //                  PTypeRow typeRow = FMainDS.PType.NewRowTyped();
+                    //                  typeRow.TypeCode = PartnerTypeRow.TypeCode;
+                    //                  typeRow.TypeDescription = "N/A";
+                    //                  FMainDS.PType.Rows.Add(typeRow);
+                }
+                else
+                {
+                    FMainDS.PPartnerType.Rows.Add(PartnerTypeRow);
+                }
             }
         }
 
@@ -1044,13 +1259,20 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         ///             interests, personnel data, commitments, applications
         /// for units there is more specific data, used eg. for the events file
         /// </summary>
-        public PartnerImportExportTDS ImportAllData(string[] ALinesToImport)
+        /// <param name="ALinesToImport"></param>
+        /// <param name="ALimitToOption">if this is not an empty string, only the applications for this conference will be imported, historic applications will be ignored</param>
+        /// <returns></returns>
+        public PartnerImportExportTDS ImportAllData(string[] ALinesToImport, string ALimitToOption)
         {
             FCountLocationKeys = -1;
             FMainDS = new PartnerImportExportTDS();
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
             PtApplicationTypeAccess.LoadAll(FMainDS, Transaction);
+            PtArrivalPointAccess.LoadAll(FMainDS, Transaction);
+            PAcquisitionAccess.LoadAll(FMainDS, Transaction);
+            PTypeAccess.LoadAll(FMainDS, Transaction);
+            POccupationAccess.LoadAll(FMainDS, Transaction);
             DBAccess.GDBAccessObj.RollbackTransaction();
 
             InitReading(ALinesToImport);
@@ -1080,6 +1302,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 TLogging.Log(CurrentLine);
                 throw;
             }
+
+            AddRequiredUnits(FRequiredOfficeKeys, "F", 1000000, "Office");
+            AddRequiredUnits(FRequiredOptionKeys, "CONF", 1000000, "Conference");
 
             return FMainDS;
         }

@@ -34,13 +34,17 @@ compat:
   recreateDatabase: needed after changes in table structure in petra.xml
   resetDatabase: just resets the data, resets the permissions
   patchDatabase: update the database to the latest development version
+  dumpDatabase: dump the database to a db specific format.
+        nant dumpDatabase -D:OutputDB.file=test.sql
+  loadDatabase: load the database from a db specific dump
+        nant loadDatabase -D:LoadDB.file=test.sql
   generateORM: generates Object Relational Mapping routines from petra.xml
     sub items: generateORMCachedTables, generateORMData, generateORMAccess
   generateGlue: generates the interfaces and instantiators, which is the glue between client and server
   cleanPetra: prepare for a clean build
   compilePetra: build all Petra C# code
   translationCompilePOFile: create the dlls required to be delivered with a new release
-  translation: extracts string in winforms, creates and updates the .po files, and compiles the .mo files for delivery
+  translation: extracts string in winforms, creates and updates the .po files, and compiles the dll files for delivery
 
 list of commands, which works in the specific csharp directories:
   indent: beautify the code according to coding style guide

@@ -32,6 +32,8 @@ using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Data;
 using Ict.Common.IO;
+using Ict.Common.Verification;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.ImportExport;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 
@@ -67,17 +69,40 @@ namespace Tests.MPartner.Server.PartnerExports
         public void TestImportFamily()
         {
             const string testFile = "../../csharp/ICT/Testing/lib/MPartner/SampleData/sampleExtract.ext";
+            const string SelectedEventCode = string.empty;
             StreamReader reader = new StreamReader(testFile);
 
             string[] lines = reader.ReadToEnd().Replace("\r\n", "\n").Replace("\r", "\n").Split(new char[] { '\n' });
             reader.Close();
 
             TPartnerFileImport importer = new TPartnerFileImport();
-            PartnerImportExportTDS MainDS = importer.ImportAllData(lines);
+            PartnerImportExportTDS MainDS = importer.ImportAllData(lines, SelectedEventCode);
 
             foreach (PPartnerRow PartnerRow in MainDS.PPartner.Rows)
             {
                 TLogging.Log(PartnerRow.PartnerKey.ToString() + " " + PartnerRow.PartnerShortName);
+            }
+
+            // TODO: check if the partners have been imported previously already
+            foreach (PPartnerRow PartnerRow in MainDS.PPartner.Rows)
+            {
+                TLogging.Log(PartnerRow.PartnerKey.ToString() + " " + PartnerRow.PartnerShortName);
+            }
+
+            try
+            {
+                TVerificationResultCollection VerificationResult;
+
+                if (TSubmitChangesResult.scrOK == PartnerImportExportTDSAccess.SubmitChanges(MainDS, out VerificationResult))
+                {
+                    //return;
+                }
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(e.Message);
+                TLogging.Log(e.StackTrace);
+                Assert.Fail("See log messages");
             }
 
             Assert.AreEqual(2, MainDS.PPartner.Rows.Count);

@@ -237,7 +237,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             AVerificationResult = new TVerificationResultCollection();
 
             TPartnerFileImport Importer = new TPartnerFileImport();
-            PartnerImportExportTDS MainDS = Importer.ImportAllData(ATextFileLines);
+            PartnerImportExportTDS MainDS = Importer.ImportAllData(ATextFileLines, string.Empty);
 
             // TODO: check for updated partners, matching addresses etc.
 

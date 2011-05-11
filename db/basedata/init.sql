@@ -29,6 +29,13 @@ COPY p_reason_subscription_given FROM '{#ABSOLUTEBASEDATAPATH}/p_reason_subscrip
 COPY pt_application_type FROM '{#ABSOLUTEBASEDATAPATH}/pt_application_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY pt_applicant_status FROM '{#ABSOLUTEBASEDATAPATH}/pt_applicant_status.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY pt_congress_code FROM '{#ABSOLUTEBASEDATAPATH}/pt_congress_code.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY pt_driver_status FROM '{#ABSOLUTEBASEDATAPATH}/pt_driver_status.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY pt_passport_type FROM '{#ABSOLUTEBASEDATAPATH}/pt_passport_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY pt_language_level FROM '{#ABSOLUTEBASEDATAPATH}/pt_language_level.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY pt_ability_area FROM '{#ABSOLUTEBASEDATAPATH}/pt_ability_area.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY pt_ability_level FROM '{#ABSOLUTEBASEDATAPATH}/pt_ability_level.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY pm_commitment_status FROM '{#ABSOLUTEBASEDATAPATH}/pm_commitment_status.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY pt_travel_type FROM '{#ABSOLUTEBASEDATAPATH}/pt_travel_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 
 INSERT INTO s_system_status(s_user_id_c,s_system_login_status_l) VALUES('SYSADMIN', true);
 INSERT INTO p_partner(p_partner_key_n, p_partner_short_name_c) VALUES(0, 'INVALID PARTNER');
