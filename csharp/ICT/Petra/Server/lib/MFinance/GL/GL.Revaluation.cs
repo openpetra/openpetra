@@ -103,12 +103,6 @@ namespace Ict.Petra.Server.MFinance.GL
 
         private int intPtrToForeignData;
 
-
-        decimal decAccActForeign;
-        decimal decAccActBase;
-
-        decimal decAccActBaseRequired;
-
         decimal decDelta;
 
         private GLBatchTDS GLDataset = null;
@@ -120,7 +114,6 @@ namespace Ict.Petra.Server.MFinance.GL
 
         TVerificationResultCollection verificationCollection = new TVerificationResultCollection();
         TResultSeverity resultSeverity = TResultSeverity.Resv_Noncritical;
-        private bool blnVerificationCollectionContainsData = false;
 
 
         /// <summary>
@@ -142,9 +135,11 @@ namespace Ict.Petra.Server.MFinance.GL
             strRevaluationCostCenter = ARevaluationCostCenter;
             strArrForeignCurrencyType = AForeignCurrency;
             decArrExchangeRate = ANewExchangeRate;
-            blnVerificationCollectionContainsData = false;
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         public TVerificationResultCollection GetVerificationResultCollection {
             get
             {
@@ -152,6 +147,10 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
 
+
+        /// <summary>
+        ///
+        /// </summary>
         public bool RunRevaluation()
         {
             try
@@ -404,7 +403,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
                 if (blnReturnValue)
                 {
-                    blnVerificationCollectionContainsData = true;
+                    //blnVerificationCollectionContainsData = true;
                 }
 
                 ;

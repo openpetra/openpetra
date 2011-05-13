@@ -96,6 +96,9 @@ namespace Tests.MFinance.Server.Gift
             Assert.AreEqual(SMTH, motivationDetail, "motivationDetail must not be changed");
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         [Test]
         public void Test_Person()
         {
@@ -112,6 +115,9 @@ namespace Tests.MFinance.Server.Gift
             Assert.AreEqual(SMTH, motivationDetail, "motivationDetail must not be changed");
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         [Test]
         public void Test_Unit_WithoutKeyMin()
         {
@@ -128,6 +134,9 @@ namespace Tests.MFinance.Server.Gift
             Assert.AreEqual(SMTH, motivationDetail, "motivationDetail must not be changed");
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         [Test]
         public void Test_Unit_WithKeyMin()
         {

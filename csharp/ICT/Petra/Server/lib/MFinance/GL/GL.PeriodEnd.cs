@@ -156,6 +156,10 @@ namespace Ict.Petra.Server.MFinance.GL
         /// </summary>
         protected bool blnCriticalErrors = false;
 
+
+        /// <summary>
+        ///
+        /// </summary>
         protected int intCountJobs;
 
         /// <summary>
@@ -233,7 +237,14 @@ namespace Ict.Petra.Server.MFinance.GL
     /// </summary>
     public enum TCarryForwardENum
     {
+        /// <summary>
+        ///
+        /// </summary>
         Month,
+
+        /// <summary>
+        ///
+        /// </summary>
         Year
     }
 
@@ -386,6 +397,10 @@ namespace Ict.Petra.Server.MFinance.GL
         }
     }
 
+
+    /// <summary>
+    /// This is the actual list of the different error status codes of the GL Module ...
+    /// </summary>
     public enum TPeriodEndErrorAndStatusCodes
     {
         /// <summary>
