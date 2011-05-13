@@ -22,6 +22,11 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.IO;
+using System.Data;
+using System.Windows.Forms;
+using System.Collections.Generic;
+using System.Drawing.Printing;
 using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
@@ -33,6 +38,10 @@ namespace Ict.Petra.Client.MPartner.Gui
 {
 	public partial class TFrmPersonnelStaffData
 	{
+		private void InitializeManualCode()
+        {
+            pnlDetails.Enabled = false;
+        }
 		/// <summary>The new button was pressed;create a new row</summary></summary>
 		public void NewRow(System.Object sender, EventArgs e)
 		{
@@ -44,14 +53,17 @@ namespace Ict.Petra.Client.MPartner.Gui
 		{
 			txtDetailPartnerKey.Text = Convert.ToString(FPartnerKey);
 		}
-
+		private Int64 GetSiteKey()
+		{
+			return Convert.ToInt64(TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_SITEKEY, ""));
+		}
 		public void NewRowManual(ref PmStaffDataRow ANewRow)
 		{
-			ANewRow.SiteKey = Convert.ToInt64(TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_SITEKEY, ""));
+			ANewRow.SiteKey = GetSiteKey();
 			ANewRow.Key = -1;                   //Hope that this will be inserted by submitchanges
 			ANewRow.PartnerKey = FPartnerKey;
 			ANewRow.ReceivingField = 0;
-			//ANewRow.ReceivingFieldOffice = 0;
+			ANewRow.SetReceivingFieldOfficeNull();
 			ANewRow.OfficeRecruitedBy = 0;
 			ANewRow.HomeOffice = 0;
 		}
@@ -68,9 +80,21 @@ namespace Ict.Petra.Client.MPartner.Gui
 			{
 				FPartnerKey = value;
 				UpdatePartnerKey();
+				LoadPersonellStaffData();
 			}
 		}
-
+		private void  LoadPersonellStaffData()
+		{
+			FMainDS = TRemote.MPersonnel.WebConnectors.LoadPersonellStaffData( FPartnerKey);
+			int a=FMainDS.PmStaffData.Rows.Count;
+			System.Diagnostics.Debug.Print(""+a);
+           	if (FMainDS != null)
+            {
+            	DataView myDataView = FMainDS.PmStaffData.DefaultView;
+      			myDataView.AllowNew = false;
+      			grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);       
+            }
+		}	
 		private void DeleteRow(System.Object sender, EventArgs e)
 		{
 		}
@@ -108,7 +132,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
 		private void GetDetailDataFromControlsManual(PmStaffDataRow ARow)
 		{
-			//TODO
+			//TODO THis is a workaround, where is the input of ReceivingFieldOffice? 
+			ARow.ReceivingFieldOffice = Convert.ToInt64(txtDetailReceivingField.Text);
 		}
 
 		private void SelectByIndex(int rowIndex)

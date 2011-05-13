@@ -63,5 +63,22 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
 
             return SubmissionResult;
         }
+
+        /// <summary>
+        /// loads the Staff Data Table ("commitments") for a single person
+        /// </summary>
+        /// <param name="APartnerKey"></param>
+        /// <returns>PersonnelTDS</returns>
+        [RequireModulePermission("PERSONNEL")]
+        public static PersonnelTDS LoadPersonellStaffData(Int64 APartnerKey)
+        {
+            PersonnelTDS MainDS = new PersonnelTDS();
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            PmStaffDataAccess.LoadViaPPerson(MainDS, APartnerKey, Transaction);
+            
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            return MainDS;
+        }
     }
 }

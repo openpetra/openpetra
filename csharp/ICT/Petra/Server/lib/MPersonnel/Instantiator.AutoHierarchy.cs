@@ -460,6 +460,13 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.WebConnectors
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPersonnel.WebConnectors.TPersonnelWebConnector), "SavePersonnelTDS", ";PERSONNELTDS;TVERIFICATIONRESULTCOLLECTION;");
             return Ict.Petra.Server.MPersonnel.WebConnectors.TPersonnelWebConnector.SavePersonnelTDS(ref AInspectDS, out AVerificationResult);
         }
+
+        /// generated method from connector
+        public PersonnelTDS LoadPersonellStaffData(Int64 APartnerKey)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPersonnel.WebConnectors.TPersonnelWebConnector), "LoadPersonellStaffData", ";LONG;");
+            return Ict.Petra.Server.MPersonnel.WebConnectors.TPersonnelWebConnector.LoadPersonellStaffData(APartnerKey);
+        }
     }
 }
 

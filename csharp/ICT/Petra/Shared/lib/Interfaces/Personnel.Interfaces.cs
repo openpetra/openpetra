@@ -94,6 +94,8 @@ namespace Ict.Petra.Shared.Interfaces.MPersonnel.WebConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPersonnel.WebConnectors.TPersonnelWebConnector)</summary>
         TSubmitChangesResult SavePersonnelTDS(ref PersonnelTDS AInspectDS,
                                               out TVerificationResultCollection AVerificationResult);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPersonnel.WebConnectors.TPersonnelWebConnector)</summary>
+        PersonnelTDS LoadPersonellStaffData(Int64 APartnerKey);
     }
 
 }
