@@ -97,8 +97,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     out DefaultDate);
 
 
-                //GetCurrencyInfo getCurrencyInfo = new GetCurrencyInfo(FLedgerNumber);
-                //getCurrencyInfo.
+                //TCurrencyInfo getCurrencyInfo = new TCurrencyInfo(FLedgerNumber);
+                //TCurrencyInfo
                 CreateDataGridHeader();
                 GetListOfRevaluationCurrencies();
 

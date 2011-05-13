@@ -92,7 +92,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             int rowHeight = 25;
             int rightColWidth = 350;
 
-            int buttonTop = 210;
+            // int buttonTop = 210;
             int buttonLeft = 140;
 
             //

@@ -156,7 +156,7 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             try
             {
-                GetLedgerInfo gli = new GetLedgerInfo(intLedgerNum);
+                TLedgerInfo gli = new TLedgerInfo(intLedgerNum);
                 strBaseCurrencyType = gli.BaseCurrency;
                 strRevaluationAccount = gli.RevaluationAccount;
                 RunRevaluationIntern();
@@ -261,7 +261,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
                 try
                 {
-                    int intNoOfForeignDigts = new GetCurrencyInfo(strBaseCurrencyType).digits;
+                    int intNoOfForeignDigts = new TCurrencyInfo(strBaseCurrencyType).digits;
                     decDelta = AccountDelta(generalLedgerMasterRow.YtdActualBase,
                         generalLedgerMasterRow.YtdActualForeign,
                         decArrExchangeRate[intPtrToForeignData],
@@ -347,8 +347,11 @@ namespace Ict.Petra.Server.MFinance.GL
             GLDataset = TTransactionWebConnector.CreateABatch(intLedgerNum);
             batch = GLDataset.ABatch[0];
             batch.BatchDescription = Catalog.GetString("Period end revaluations");
-            batch.DateEffective = new
-                                  GetAccountingPeriodInfo(intLedgerNum).GetPeriodEndDate(intAccountingPeriod);
+
+            TAccountPeriodInfo accountingPeriodInfo = new TAccountPeriodInfo(intLedgerNum);
+            accountingPeriodInfo.AccountingPeriodNumber = intAccountingPeriod;
+            batch.DateEffective = accountingPeriodInfo.PeriodEndDate;
+
             batch.BatchStatus = MFinanceConstants.BATCH_UNPOSTED;
 
             journal = GLDataset.AJournal.NewRowTyped();
@@ -359,8 +362,8 @@ namespace Ict.Petra.Server.MFinance.GL
             journal.JournalPeriod = intAccountingPeriod;
             journal.TransactionCurrency = strBaseCurrencyType;
             journal.JournalDescription = batch.BatchDescription;
-            journal.TransactionTypeCode = MFinanceConstants.TRANSACTION_REVAL;
-            journal.SubSystemCode = MFinanceConstants.SUB_SYSTEM_GL;
+            journal.TransactionTypeCode = CommonAccountingTransactionTypesEnum.REVAL.ToString();
+            journal.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
             journal.LastTransactionNumber = 0;
             journal.DateOfEntry = DateTime.Now;
             journal.ExchangeRateToBase = 1.0M;
@@ -382,7 +385,7 @@ namespace Ict.Petra.Server.MFinance.GL
             transaction.AccountCode = AAccount;
             transaction.CostCentreCode = ACostCenter;
             transaction.Narrative = AMessage;
-            transaction.Reference = MFinanceConstants.TRANSACTION_FX_REVAL;
+            transaction.Reference = CommonAccountingTransactionTypesEnum.REVAL.ToString();
             transaction.DebitCreditIndicator = ADebitFlag;
             transaction.AmountInBaseCurrency = decDelta;
             transaction.TransactionAmount = 2;

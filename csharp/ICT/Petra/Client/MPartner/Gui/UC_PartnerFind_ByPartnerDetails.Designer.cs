@@ -69,7 +69,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.linCriteriaDivider = new DevAge.Windows.Forms.Line();
             this.btnCustomCriteriaDemo = new System.Windows.Forms.Button();
             this.ucoPartnerFindCriteria = new Ict.Petra.Client.MPartner.Gui.TUC_PartnerFindCriteria();
-            this.ucoPartnerInfo = new Ict.Petra.Client.MPartner.Gui.TUC_PartnerFind_PartnerInfo();
+            this.ucoPartnerInfo = new TPnlCollapsible();
             this.grpResult = new System.Windows.Forms.GroupBox();
             this.grdResult = new Ict.Common.Controls.TSgrdDataGridPaged();
             this.pnlBlankSearchResult = new System.Windows.Forms.Panel();
@@ -366,7 +366,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private System.Windows.Forms.Panel pnlBlankSearchResult;
         private System.Windows.Forms.Label lblSearchInfo;
         private TUC_PartnerFindCriteria ucoPartnerFindCriteria;
-        private TUC_PartnerFind_PartnerInfo ucoPartnerInfo;
+        private TPnlCollapsible ucoPartnerInfo;
         private System.Windows.Forms.Button btnCustomCriteriaDemo;
     }
 }

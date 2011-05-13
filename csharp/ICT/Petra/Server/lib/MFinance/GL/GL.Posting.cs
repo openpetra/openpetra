@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, morayh
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -34,7 +34,7 @@ using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
-using System.Diagnostics;
+using Ict.Petra.Server.MFinance.GL.Data.Access;
 
 namespace Ict.Petra.Server.MFinance.GL
 {
@@ -330,8 +330,8 @@ namespace Ict.Petra.Server.MFinance.GL
 
                     // check that transactions on foreign currency accounts are using the correct currency
                     // (fx reval transactions are an exception because they are posted in base currency)
-                    if (!((transaction.Reference == MFinanceConstants.TRANSACTION_FX_REVAL)
-                          && (journal.TransactionTypeCode == MFinanceConstants.TRANSACTION_REVAL)))
+                    if (!((transaction.Reference == CommonAccountingTransactionTypesEnum.REVAL.ToString())
+                          && (journal.TransactionTypeCode == CommonAccountingTransactionTypesEnum.REVAL.ToString())))
                     {
                         // get the account that this transaction is writing to
                         accountView.RowFilter = AAccountTable.GetAccountCodeDBName() + " = '" + transaction.AccountCode + "'";
@@ -1203,6 +1203,32 @@ namespace Ict.Petra.Server.MFinance.GL
 
 
             return true;
+        }
+
+        public static GLBatchTDS CreateABatch(Int32 ALedgerNumber)
+        {
+            GLBatchTDS MainDS = new GLBatchTDS();
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+
+            ABatchRow NewRow = MainDS.ABatch.NewRowTyped(true);
+            NewRow.LedgerNumber = ALedgerNumber;
+            MainDS.ALedger[0].LastBatchNumber++;
+            NewRow.BatchNumber = MainDS.ALedger[0].LastBatchNumber;
+            NewRow.BatchPeriod = MainDS.ALedger[0].CurrentPeriod;
+            MainDS.ABatch.Rows.Add(NewRow);
+
+            TVerificationResultCollection VerificationResult;
+
+            if (GLBatchTDSAccess.SubmitChanges(MainDS, out VerificationResult) == TSubmitChangesResult.scrOK)
+            {
+                MainDS.AcceptChanges();
+            }
+
+            return MainDS;
         }
     }
 }

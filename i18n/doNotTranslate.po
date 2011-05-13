@@ -1,3 +1,15 @@
+msgid "OpenPetra x.x.x.x Application Error"
+msgstr "do not translate"
+
+msgid "DBTable"
+msgstr "do not translate"
+
+msgid "DBOperation"
+msgstr "do not translate"
+
+msgid "LastModificationUser"
+msgstr "do not translate"
+
 msgid "0000000000"
 msgstr "do not translate"
 
