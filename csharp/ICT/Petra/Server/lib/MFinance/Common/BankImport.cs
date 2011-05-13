@@ -556,8 +556,8 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             gljournalRow.JournalPeriod = glbatchRow.BatchPeriod;
             gljournalRow.DateEffective = glbatchRow.DateEffective;
             gljournalRow.JournalDescription = glbatchRow.BatchDescription;
-            gljournalRow.SubSystemCode = MFinanceConstants.SUB_SYSTEM_GL;
-            gljournalRow.TransactionTypeCode = MFinanceConstants.TRANSACTION_STD;
+            gljournalRow.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
+            gljournalRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.STD.ToString();
             GLDS.AJournal.Rows.Add(gljournalRow);
 
             foreach (DataRowView dv in AMainDS.AEpTransaction.DefaultView)

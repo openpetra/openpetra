@@ -29,49 +29,64 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
-    /// <summary>
-    /// Description of GLRevaluation.
-    /// </summary>
-    public partial class TPeriodEndMonthly
+    public partial class TPeriodEnd
     {
+        const bool INFORMATION_MODE = true;
+        const bool CALCULATION_MODE = false;
+
         TVerificationResultCollection verificationResult;
         private Int32 FLedgerNumber;
 
         /// <summary>
-        /// use this ledger
+        /// Sets the ledger number and initializes the gui ...
         /// </summary>
         public Int32 LedgerNumber
         {
             set
             {
                 FLedgerNumber = value;
-                bool blnErrorStatus = TRemote.MFinance.GL.WebConnectors.TPeriodMonthEndInfo(
-                    value, out verificationResult);
+                bool blnErrorStatus = RunPeriodEnd(INFORMATION_MODE);
                 tbxMessage.Text = verificationResult.BuildVerificationResultString();
-                btnMonthEnd.Enabled = !blnErrorStatus;
+                btnPeriodEnd.Enabled = !blnErrorStatus;
                 this.OnResizeEnd(new EventArgs());
             }
         }
 
-        private void CancelMonthEnd(object btn, EventArgs e)
+        private void CancelButtonClick(object btn, EventArgs e)
         {
             this.Close();
         }
 
-        private void RunMonthEnd(object btn, EventArgs e)
+        private void PeriodEndButtonClick(object btn, EventArgs e)
         {
-            bool blnErrorStatus = TRemote.MFinance.GL.WebConnectors.TPeriodMonthEnd(
-                FLedgerNumber, out verificationResult);
-
+            RunPeriodEnd(CALCULATION_MODE);
             tbxMessage.Text = verificationResult.BuildVerificationResultString();
-            btnMonthEnd.Visible = false;
+            btnPeriodEnd.Visible = false;
             btnCancel.Text = Catalog.GetString("Done");
+        }
+
+        private bool RunPeriodEnd(bool AInInfoMode)
+        {
+            bool blnErrorStatus;
+
+            if (blnIsInMonthMode)
+            {
+                blnErrorStatus = TRemote.MFinance.GL.WebConnectors.TPeriodMonthEnd(
+                    FLedgerNumber, AInInfoMode, out verificationResult);
+            }
+            else
+            {
+                blnErrorStatus = TRemote.MFinance.GL.WebConnectors.TPeriodYearEnd(
+                    FLedgerNumber, AInInfoMode, out verificationResult);
+            }
+
+            return blnErrorStatus;
         }
 
         private void ResizeForm(object from, EventArgs e)
         {
             tbxMessage.Size = new Size(this.Width - 30, this.Height - 100);
-            this.btnMonthEnd.Location =
+            this.btnPeriodEnd.Location =
                 new System.Drawing.Point(this.Width - 400, this.Height - 70);
             this.btnCancel.Location =
                 new System.Drawing.Point(this.Width - 200, this.Height - 70);

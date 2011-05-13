@@ -268,6 +268,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
+        /// <summary>
+        /// UpdateTotals
+        /// </summary>
         public void UpdateTotals()
         {
             txtDetailBatchControlTotal.NumberValueDecimal =
@@ -366,6 +369,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             return rowIndex;
         }
 
+        /// <summary>
+        /// SelectByIndex
+        /// </summary>
+        /// <param name="rowIndex"></param>
         public void SelectByIndex(int rowIndex)
         {
             if (rowIndex >= grdDetails.Rows.Count)
@@ -391,12 +398,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
-        /// <summary>
-        /// This routine is invoked if no Batch-Row has been selected. The idea was to
-        /// select the "old row again" defined by row index but in this case
-        /// the list of batches ist filtered. So the row must not exist any more.
-        /// </summary>
-        /// <param name="rowIndex">Index of a previosly selected row and -1 defines no row.</param>
+//        / <summary>
+//        / This routine is invoked if no Batch-Row has been selected. The idea was to
+//        / select the "old row again" defined by row index but in this case
+//        / the list of batches ist filtered. So the row must not exist any more.
+//        / </summary>
+//        / <param name="rowIndex">Index of a previosly selected row and -1 defines no row.</param>
 //        private void SelectByIndex(int rowIndex)
 //        {
 //            // In the very first call FPetraUtilsObject does not exists

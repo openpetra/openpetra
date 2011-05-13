@@ -33,7 +33,6 @@ using Ict.Common.Verification;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
-using Ict.Petra.Server.MFinance.GL;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Server.MCommon.Data.Access;
 
@@ -49,12 +48,18 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Testing.Petra.Server.MFinance.GL
 {
+    /// <summary>
+    /// TestGLImport
+    /// </summary>
     [TestFixture]
-    public partial class TestGLImport : CommonNUnitFunctions
+    public class TestGLImport : CommonNUnitFunctions
     {
         private const int intLedgerNumber = 43;
 
 
+        /// <summary>
+        /// Test_01_GL_Import
+        /// </summary>
         [Test]
         public void Test_01_GL_Import()
         {
@@ -66,7 +71,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             requestParams.Add("NumberFormat", "European");
             requestParams.Add("NewLine", Environment.NewLine);
 
-            string strContent = LoadCSVFileToString("csharp\\ICT\\Testing\\lib\\MFinance\\GL-Test\\" +
+            string strContent = LoadCSVFileToString("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
                 "test-csv\\glbatch-import.csv");
             // FileStream fs = new FileStream(
 
@@ -84,17 +89,25 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             }
         }
 
-        [TestFixtureSetUp]
+        /// <summary>
+        /// TestFixtureSetUp
+        /// </summary>
+        [SetUp]
         public void Init()
         {
             InitServerConnection();
+            System.Diagnostics.Debug.WriteLine("Init: " + this.ToString());
             ResetDatabase();
         }
 
+        /// <summary>
+        /// TearDown the test
+        /// </summary>
         [TestFixtureTearDown]
-        public void TearDown()
+        public void TearDownTest()
         {
             DisconnectServerConnection();
+            System.Diagnostics.Debug.WriteLine("TearDown: " + this.ToString());
         }
     }
 }

@@ -50,42 +50,9 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
     /// Test of the GL.PeriodEnd.Month routines ...
     /// </summary>
     [TestFixture]
-    public partial class TestGLPeriodicEndMonth : CommonNUnitFunctions
+    public class TestGLPeriodicEndMonth : CommonNUnitFunctions
     {
         private const int intLedgerNumber = 43;
-
-
-        /// <summary>
-        /// Tests if the status flag for the ProvisionalYearEndFlag appears correctly
-        /// </summary>
-        [Test]
-        public void Test_PEMM_01_ProvisionalYearEndFlag()
-        {
-            new SetLedgerParameter(intLedgerNumber).ProvisionalYearEndFlag = true;
-            Assert.True(new GetLedgerInfo(intLedgerNumber).ProvisionalYearEndFlag,
-                "Cannot start test because ProvisionalYearEndFlag cannot be changed");
-
-            TVerificationResultCollection verificationResult;
-            bool blnHaseErrors = TPeriodMonthConnector.TPeriodMonthEndInfo(
-                intLedgerNumber, out verificationResult);
-            bool blnStatusArrived = false;
-
-            for (int i = 0; i < verificationResult.Count; ++i)
-            {
-                if (verificationResult[i].ResultCode.Equals(
-                        PeriodEndMonthStatus.PEMM_01.ToString()))
-                {
-                    blnStatusArrived = true;
-                    Assert.IsTrue(verificationResult[i].ResultSeverity == TResultSeverity.Resv_Critical,
-                        "Value shall be of type critical ...");
-                }
-            }
-
-            Assert.IsTrue(blnStatusArrived, "Correc status message has been shown");
-            Assert.IsTrue(blnHaseErrors, "This is not a Critital Message");
-
-            new SetLedgerParameter(intLedgerNumber).ProvisionalYearEndFlag = false;
-        }
 
         /// <summary>
         /// Tests if unposted batches are detected correctly
@@ -93,7 +60,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_PEMM_02_UnpostedBatches()
         {
-            GetLedgerInfo ledgerInfo = new GetLedgerInfo(intLedgerNumber);
+            TLedgerInfo ledgerInfo = new TLedgerInfo(intLedgerNumber);
 
             // System.Diagnostics.Debug.WriteLine(
             UnloadTestData_GetBatchInfo();
@@ -107,14 +74,14 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             //UnloadTestData_GetBatchInfo();
 
             TVerificationResultCollection verificationResult;
-            bool blnHaseErrors = TPeriodMonthConnector.TPeriodMonthEndInfo(
-                intLedgerNumber, out verificationResult);
+            bool blnHaseErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
+                intLedgerNumber, true, out verificationResult);
             bool blnStatusArrived = false;
 
             for (int i = 0; i < verificationResult.Count; ++i)
             {
                 if (verificationResult[i].ResultCode.Equals(
-                        PeriodEndMonthStatus.PEMM_02.ToString()))
+                        TPeriodEndErrorAndStatusCodes.PEEC_06.ToString()))
                 {
                     blnStatusArrived = true;
                     Assert.IsTrue(verificationResult[i].ResultSeverity == TResultSeverity.Resv_Critical,
@@ -136,14 +103,14 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             new SetDeleteSuspenseAccount(intLedgerNumber, "6000").Suspense();
 
             TVerificationResultCollection verificationResult;
-            bool blnHaseErrors = TPeriodMonthConnector.TPeriodMonthEndInfo(
-                intLedgerNumber, out verificationResult);
+            bool blnHaseErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
+                intLedgerNumber, true, out verificationResult);
             bool blnStatusArrived = false;
 
             for (int i = 0; i < verificationResult.Count; ++i)
             {
                 if (verificationResult[i].ResultCode.Equals(
-                        PeriodEndMonthStatus.PEMM_03.ToString()))
+                        TPeriodEndErrorAndStatusCodes.PEEC_07.ToString()))
                 {
                     blnStatusArrived = true;
                     Assert.IsTrue(verificationResult[i].ResultSeverity == TResultSeverity.Resv_Status,
@@ -162,18 +129,18 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_PEMM_04_UnpostedGifts()
         {
-            LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL-Test\\" +
+            LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
                 "test-sql\\gl-test-gift-batch-data.sql");
 
             TVerificationResultCollection verificationResult;
-            bool blnHaseErrors = TPeriodMonthConnector.TPeriodMonthEndInfo(
-                intLedgerNumber, out verificationResult);
+            bool blnHaseErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
+                intLedgerNumber, true, out verificationResult);
             bool blnStatusArrived = false;
 
             for (int i = 0; i < verificationResult.Count; ++i)
             {
                 if (verificationResult[i].ResultCode.Equals(
-                        PeriodEndMonthStatus.PEMM_04.ToString()))
+                        TPeriodEndErrorAndStatusCodes.PEEC_08.ToString()))
                 {
                     blnStatusArrived = true;
                     Assert.IsTrue(verificationResult[i].ResultSeverity == TResultSeverity.Resv_Critical,
@@ -192,14 +159,14 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         public void Test_PEMM_05_Revaluation()
         {
             TVerificationResultCollection verificationResult;
-            bool blnHaseErrors = TPeriodMonthConnector.TPeriodMonthEndInfo(
-                intLedgerNumber, out verificationResult);
+            bool blnHaseErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
+                intLedgerNumber, true, out verificationResult);
             bool blnStatusArrived = false;
 
             for (int i = 0; i < verificationResult.Count; ++i)
             {
                 if (verificationResult[i].ResultCode.Equals(
-                        PeriodEndMonthStatus.PEMM_05.ToString()))
+                        TPeriodEndErrorAndStatusCodes.PEEC_05.ToString()))
                 {
                     blnStatusArrived = true;
                     Assert.IsTrue(verificationResult[i].ResultSeverity == TResultSeverity.Resv_Critical,
@@ -219,8 +186,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         public void Test_SwitchToNextMonth()
         {
             ResetDatabase();
-            GetLedgerInfo ledgerInfo1;
-            GetLedgerInfo ledgerInfo2;
+            TLedgerInfo ledgerInfo1;
+            TLedgerInfo ledgerInfo2;
             int counter = 0;
 
             do
@@ -232,13 +199,13 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 new TLedgerInitFlagHandler(intLedgerNumber,
                     TLedgerInitFlagEnum.Revaluation).Flag = true;
 
-                ledgerInfo1 = new GetLedgerInfo(intLedgerNumber);
+                ledgerInfo1 = new TLedgerInfo(intLedgerNumber);
                 // Period end now shall run ...
                 TVerificationResultCollection verificationResult;
-                bool blnHaseErrors = TPeriodMonthConnector.TPeriodMonthEnd(
-                    intLedgerNumber, out verificationResult);
+                bool blnHaseErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
+                    intLedgerNumber, false, out verificationResult);
 
-                ledgerInfo2 = new GetLedgerInfo(intLedgerNumber);
+                ledgerInfo2 = new TLedgerInfo(intLedgerNumber);
 
                 if (!ledgerInfo2.ProvisionalYearEndFlag)
                 {
@@ -247,20 +214,29 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 }
 
                 Assert.IsFalse(blnHaseErrors, "Month end without any error");
+                System.Diagnostics.Debug.WriteLine("Counter: " + counter.ToString());
             } while (!ledgerInfo2.ProvisionalYearEndFlag);
         }
 
-        [TestFixtureSetUp]
+        /// <summary>
+        /// TestFixtureSetUp
+        /// </summary>
+        [SetUp]
         public void Init()
         {
             InitServerConnection();
             ResetDatabase();
+            System.Diagnostics.Debug.WriteLine("Init: " + this.ToString());
         }
 
+        /// <summary>
+        /// TearDown the test
+        /// </summary>
         [TestFixtureTearDown]
-        public void TearDown()
+        public void TearDownTest()
         {
             DisconnectServerConnection();
+            System.Diagnostics.Debug.WriteLine("TearDown: " + this.ToString());
         }
 
         private const string strTestDataBatchDescription = "TestGLPeriodicEndMonth-TESTDATA";
@@ -276,7 +252,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             if (batches.Rows.Count == 0)
             {
-                LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL-Test\\" +
+                LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
                     "test-sql\\gl-test-batch-data.sql");
             }
         }
