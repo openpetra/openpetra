@@ -132,7 +132,7 @@ public class TServer
                     throw;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -154,7 +154,7 @@ public class TServer
                 TLogging.Log("May be a nant initConfigFile helps ...");
                 throw new ApplicationException();
             }
-            catch (Exception exp)
+            catch (Exception)
             {
                 throw;
             }

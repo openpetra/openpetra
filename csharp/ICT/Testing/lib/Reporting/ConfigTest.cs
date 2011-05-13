@@ -35,6 +35,9 @@ namespace Tests.Reporting
     [TestFixture]
     public class TConfigTest : System.Object
     {
+    	/// <summary>
+        /// ...
+        /// </summary>
         [SetUp]
         public void Init()
         {
@@ -43,11 +46,17 @@ namespace Tests.Reporting
             new TLogging("test.log");
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         [TearDown]
         public void TearDown()
         {
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         [Test]
         public void CheckConfigFile()
         {
