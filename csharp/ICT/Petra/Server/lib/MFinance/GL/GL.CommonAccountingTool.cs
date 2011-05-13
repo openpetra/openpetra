@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,83 +27,31 @@ using Ict.Common.Verification;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
-using Ict.Petra.Server.MFinance.GL.WebConnectors;
+using Ict.Petra.Server.MFinance.GL.Data.Access;
+using Ict.Petra.Server.MFinance.GL;
 
 namespace Ict.Petra.Server.MFinance.GL
 {
     /// <summary>
-    /// Some E-Nums for the CommonAccountingTool i.E. for the transaction property
-    /// Sub-System.
-    /// (The enum.toString() is used for the database entry so you must not change the
-    /// values if you do not want to change the entries.)
-    /// </summary>
-    public enum CommonAccountingSubSystemsEnum
-    {
-        /// <summary>
-        /// Default - resp Standard value
-        /// </summary>
-        GL,
-        AP,
-        GR
-    }
-
-    /// <summary>
-    /// Some E-Nums for the CommonAccountingTool i.E. for the transaction property
-    /// Transaction Type.
-    /// (The enum.toString() is used for the database entry so you must not change the
-    /// values if you do not want to change the entries.)
-    /// </summary>
-    public enum CommonAccountingTransactionTypesEnum
-    {
-        /// <summary>
-        /// Default - resp Standard value
-        /// </summary>
-        STD,
-            ALLOC,
-            GR,
-            INV,
-            REALLOC,
-
-        /// <summary>
-        /// Used in a revaluation only ...
-        /// </summary>
-            REVAL
-    }
-
-    /// <summary>
-    /// Some constants for the journal values to rember that IS_Debit ist true.
-    /// </summary>
-    public partial class CommonAccountingConstants
-    {
-        /// <summary>
-        /// Sets the transaction to a debit transaction
-        /// </summary>
-        public const bool IS_DEBIT = true;
-        /// <summary>
-        /// Sets the transaction to a credit transaction
-        /// </summary>
-        public const bool IS_CREDIT = false;
-    }
-
-    /// <summary>
     /// This Tool creates a batch enables to add a journal and to add transactions to a yournal
     /// All internal "pointers" and control data are set internal and the structure is "read to post".
     /// </summary>
-    public partial class CommonAccountingTool
+    public class TCommonAccountingTool
     {
         private GLBatchTDS aBatchTable = null;
         private ABatchRow aBatchRow;
         private AJournalRow journal;
 
-        private GetLedgerInfo getLedgerInfo;
-        private GetCurrencyInfo getBaseCurrencyInfo;
-        private GetCurrencyInfo getForeignCurrencyInfo = null;
+        private TLedgerInfo TLedgerInfo;
+        private TCurrencyInfo getBaseCurrencyInfo;
+        private TCurrencyInfo getForeignCurrencyInfo = null;
         bool blnJournalIsInForeign;
 
         private int intJournalCount;
 
         private bool blnReadyForTransaction;
 
+        private ATransactionRow lastTransaction = null;
 
         // The use of the default value requires an additional database request. So this is done in the
         // "last moment" and only if no other date value is used
@@ -116,29 +64,29 @@ namespace Ict.Petra.Server.MFinance.GL
         /// </summary>
         /// <param name="ALedgerNumber">the ledger number</param>
         /// <param name="ABatchDescription">a batch description text</param>
-        public CommonAccountingTool(int ALedgerNumber,
+        public TCommonAccountingTool(int ALedgerNumber,
             string ABatchDescription)
         {
-            getLedgerInfo = new GetLedgerInfo(ALedgerNumber);
-            CommonAccountingTool_(ABatchDescription);
+            TLedgerInfo = new TLedgerInfo(ALedgerNumber);
+            TCommonAccountingTool_(ABatchDescription);
         }
 
         /// <summary>
-        /// Internaly a GetLedgerInfo-Oject is used. If you have one, reduce the number of not neccessary
+        /// Internaly a TLedgerInfo-Oject is used. If you have one, reduce the number of not neccessary
         /// database requests and use this constructor ...
         /// </summary>
         /// <param name="ALedgerInfo">The ledger-info object</param>
         /// <param name="ABatchDescription">the description text ...</param>
-        public CommonAccountingTool(GetLedgerInfo ALedgerInfo, string ABatchDescription)
+        public TCommonAccountingTool(TLedgerInfo ALedgerInfo, string ABatchDescription)
         {
-            getLedgerInfo = ALedgerInfo;
-            CommonAccountingTool_(ABatchDescription);
+            TLedgerInfo = ALedgerInfo;
+            TCommonAccountingTool_(ABatchDescription);
         }
 
-        private void CommonAccountingTool_(string ABatchDescription)
+        private void TCommonAccountingTool_(string ABatchDescription)
         {
-            aBatchTable = TTransactionWebConnector.CreateABatch(getLedgerInfo.LedgerNumber);
-            getBaseCurrencyInfo = new GetCurrencyInfo(getLedgerInfo.BaseCurrency);
+            aBatchTable = TGLPosting.CreateABatch(TLedgerInfo.LedgerNumber);
+            getBaseCurrencyInfo = new TCurrencyInfo(TLedgerInfo.BaseCurrency);
             aBatchRow = aBatchTable.ABatch[0];
             aBatchRow.BatchDescription = ABatchDescription;
             aBatchRow.BatchStatus = MFinanceConstants.BATCH_UNPOSTED;
@@ -169,17 +117,22 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
 
-        public void AddForeignCurrencyJournal(GetCurrencyInfo AGetCurrencyInfo, decimal AExchangeRateToBase)
+        public void AddForeignCurrencyJournal(TCurrencyInfo ATCurrencyInfo, decimal AExchangeRateToBase)
         {
             blnJournalIsInForeign = true;
-            getForeignCurrencyInfo = AGetCurrencyInfo;
+            getForeignCurrencyInfo = ATCurrencyInfo;
             AddAJournal(AExchangeRateToBase);
         }
 
         public void AddForeignCurrencyJournal(string ACurrencyCode, decimal AExchangeRateToBase)
         {
             blnJournalIsInForeign = true;
-            getForeignCurrencyInfo = new GetCurrencyInfo(ACurrencyCode);
+
+            if (getForeignCurrencyInfo == null)
+            {
+                getForeignCurrencyInfo = new TCurrencyInfo(ACurrencyCode);
+            }
+
             AddAJournal(AExchangeRateToBase);
         }
 
@@ -257,8 +210,8 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             if (blnInitBatchDate)
             {
-                GetAccountingPeriodInfo getAccountingPeriodInfo =
-                    new GetAccountingPeriodInfo(getLedgerInfo.LedgerNumber, getLedgerInfo.CurrentPeriod);
+                TAccountPeriodInfo getAccountingPeriodInfo =
+                    new TAccountPeriodInfo(TLedgerInfo.LedgerNumber, TLedgerInfo.CurrentPeriod);
                 aBatchRow.DateEffective = getAccountingPeriodInfo.PeriodEndDate;
                 blnInitBatchDate = false;
             }
@@ -275,7 +228,7 @@ namespace Ict.Petra.Server.MFinance.GL
             journal.BatchNumber = aBatchRow.BatchNumber;
             journal.JournalNumber = intJournalCount;
             journal.DateEffective = aBatchRow.DateEffective;
-            journal.JournalPeriod = getLedgerInfo.CurrentPeriod;
+            journal.JournalPeriod = TLedgerInfo.CurrentPeriod;
 
             if (blnJournalIsInForeign)
             {
@@ -362,8 +315,8 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 if (ATransActionIsInForeign)
                 {
-                    GetAccountInfo accountCheck =
-                        new GetAccountInfo(null, getLedgerInfo, AAccount);
+                    TAccountInfo accountCheck =
+                        new TAccountInfo(TLedgerInfo, AAccount);
 
                     if (accountCheck.IsValid)
                     {
@@ -376,7 +329,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                 string strMessage = Catalog.GetString("The ledger is defined in {0}, the account {1} is defined in " +
                                     "{2} and you want to account something in {3}?");
                                 strMessage = String.Format(strMessage,
-                                    getLedgerInfo.BaseCurrency,
+                                    TLedgerInfo.BaseCurrency,
                                     AAccount,
                                     accountCheck.ForeignCurrencyCode,
                                     getForeignCurrencyInfo.CurrencyCode);
@@ -425,6 +378,8 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 journal.JournalCreditTotal += AAmountBaseCurrency;
             }
+
+            lastTransaction = transaction;
         }
 
         /// <summary>
@@ -458,11 +413,17 @@ namespace Ict.Petra.Server.MFinance.GL
                 aBatchRow.BatchControlTotal += journal.JournalDebitTotal - journal.JournalCreditTotal;
             }
 
-            bool blnReturnValue =
-                (TTransactionWebConnector.SaveGLBatchTDS(
-                     ref aBatchTable, out AVerifications) == TSubmitChangesResult.scrOK);
-            blnReturnValue = (GL.WebConnectors.TTransactionWebConnector.PostGLBatch(
-                                  aBatchRow.LedgerNumber, aBatchRow.BatchNumber, out AVerifications));
+            TSubmitChangesResult submissionResult = GLBatchTDSAccess.SubmitChanges(
+                aBatchTable, out AVerifications);
+
+            if (submissionResult != TSubmitChangesResult.scrOK)
+            {
+                throw new ApplicationException("Batch could not be saved!");
+            }
+
+            TGLPosting.PostGLBatch(
+                aBatchRow.LedgerNumber, aBatchRow.BatchNumber, out AVerifications);
+
             int returnValue = aBatchRow.BatchNumber;
             // Make shure that this object cannot be used for another posting ...
             aBatchTable = null;

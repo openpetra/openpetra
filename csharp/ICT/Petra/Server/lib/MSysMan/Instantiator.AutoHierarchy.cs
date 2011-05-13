@@ -1506,6 +1506,13 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance.WebConnectors
         }
 
         /// generated method from connector
+        public bool CheckPasswordQuality(string APassword,
+                                         out TVerificationResultCollection AVerification)
+        {
+            return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector.CheckPasswordQuality(APassword, out AVerification);
+        }
+
+        /// generated method from connector
         public bool SetUserPassword(string AUsername,
                                     string APassword,
                                     string AOldPassword)

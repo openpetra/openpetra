@@ -25,21 +25,23 @@ using System;
 using NUnit.Framework;
 using Ict.Testing.NUnitForms;
 using Ict.Petra.Server.MFinance.GL;
-
-
+using Ict.Petra.Shared.MFinance;
 using Ict.Common;
-
 
 namespace Ict.Testing.Petra.Server.MFinance.GL
 {
-    public partial class TestCommonAccountingTool : CommonNUnitFunctions
+    /// <summary>
+    /// TestCommonAccountingTool
+    /// </summary>
+    [TestFixture]
+    public class TestCommonAccountingTool : CommonNUnitFunctions
     {
         int LedgerNumber = 43;
 
 
         /// <summary>
         /// This routine tests the TLedgerInitFlagHandler completely. It's the routine
-        /// which writes "boolean" values to a data base table. The class Get_GLM_Info is
+        /// which writes "boolean" values to a data base table. The class TGet_GLM_Info is
         /// tested indirect too.
         ///
         /// Be careful by changing this routine. The behaviour has been compared to this of
@@ -62,24 +64,24 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             // Get the glm-values before and after the test and taking the differences enables
             // to run the test several times
-            Get_GLM_Info getGLM_InfoBeforeStart = new Get_GLM_Info(LedgerNumber, strAccountStart, strCostCentre);
-            Get_GLM_Info getGLM_InfoBeforeEnd = new Get_GLM_Info(LedgerNumber, strAccountEnd, strCostCentre);
+            TGet_GLM_Info getGLM_InfoBeforeStart = new TGet_GLM_Info(LedgerNumber, strAccountStart, strCostCentre);
+            TGet_GLM_Info getGLM_InfoBeforeEnd = new TGet_GLM_Info(LedgerNumber, strAccountEnd, strCostCentre);
 
-            CommonAccountingTool commonAccountingTool =
-                new CommonAccountingTool(LedgerNumber, "NUNIT");
+            TCommonAccountingTool commonAccountingTool =
+                new TCommonAccountingTool(LedgerNumber, "NUNIT");
 
             commonAccountingTool.AddBaseCurrencyJournal();
 
             commonAccountingTool.AddBaseCurrencyTransaction(
                 strAccountStart, strCostCentre, "Debit-Test-10", "NUNIT",
-                CommonAccountingConstants.IS_DEBIT, 10);
+                MFinanceConstants.IS_DEBIT, 10);
             commonAccountingTool.AddBaseCurrencyTransaction(
                 strAccountEnd, strCostCentre, "Credit-Test 10", "NUNIT",
-                CommonAccountingConstants.IS_CREDIT, 10);
+                MFinanceConstants.IS_CREDIT, 10);
             int intBatchNumber = commonAccountingTool.CloseSaveAndPost();
 
-            Get_GLM_Info getGLM_InfoAfterStart = new Get_GLM_Info(LedgerNumber, strAccountStart, strCostCentre);
-            Get_GLM_Info getGLM_InfoAfterEnd = new Get_GLM_Info(LedgerNumber, strAccountEnd, strCostCentre);
+            TGet_GLM_Info getGLM_InfoAfterStart = new TGet_GLM_Info(LedgerNumber, strAccountStart, strCostCentre);
+            TGet_GLM_Info getGLM_InfoAfterEnd = new TGet_GLM_Info(LedgerNumber, strAccountEnd, strCostCentre);
 
             // strAccountStart is a debit account -> in this case "+"
             Assert.AreEqual(getGLM_InfoBeforeStart.YtdActual + 10, getGLM_InfoAfterStart.YtdActual,
@@ -89,20 +91,20 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 "Check if 10 has been accounted");
 
             commonAccountingTool =
-                new CommonAccountingTool(LedgerNumber, "NUNIT");
+                new TCommonAccountingTool(LedgerNumber, "NUNIT");
 
             commonAccountingTool.AddBaseCurrencyJournal();
 
             commonAccountingTool.AddBaseCurrencyTransaction(
                 strAccountStart, strCostCentre, "Debit-Test-5", "NUNIT",
-                CommonAccountingConstants.IS_CREDIT, 5);
+                MFinanceConstants.IS_CREDIT, 5);
             commonAccountingTool.AddBaseCurrencyTransaction(
                 strAccountEnd, strCostCentre, "Credit-Test 5", "NUNIT",
-                CommonAccountingConstants.IS_DEBIT, 5);
+                MFinanceConstants.IS_DEBIT, 5);
             intBatchNumber = commonAccountingTool.CloseSaveAndPost();
 
-            getGLM_InfoAfterStart = new Get_GLM_Info(LedgerNumber, strAccountStart, strCostCentre);
-            getGLM_InfoAfterEnd = new Get_GLM_Info(LedgerNumber, strAccountEnd, strCostCentre);
+            getGLM_InfoAfterStart = new TGet_GLM_Info(LedgerNumber, strAccountStart, strCostCentre);
+            getGLM_InfoAfterEnd = new TGet_GLM_Info(LedgerNumber, strAccountEnd, strCostCentre);
             // now both directions are "-" and so the difference is reduced to 5
             Assert.AreEqual(getGLM_InfoBeforeStart.YtdActual + 5, getGLM_InfoAfterStart.YtdActual,
                 "Check if 10 has been accounted");
@@ -112,7 +114,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         }
 
         /// <summary>
-        /// Tests the foreign Currency part of the CommonAccountingTool.
+        /// Tests the foreign Currency part of the TCommonAccountingTool.
         /// </summary>
         [Test]
         public void Test_02_ForeignCurrencyAccounting()
@@ -122,40 +124,40 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             string strCostCentre = "4300";
 
             // Check if some special test data are availiable - otherwise load ...
-            if (!new GetAccountInfo(null, new GetLedgerInfo(LedgerNumber), "6001").IsValid)
+            if (!new TAccountInfo(new TLedgerInfo(LedgerNumber), "6001").IsValid)
             {
-                LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL-Test\\" +
+                LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
                     "test-sql\\gl-test-account-data.sql");
             }
 
             // Check if some special test data are availiable - otherwise load ...
-            if (!new GetCostCenterInfo(LedgerNumber, "4301").IsValid)
+            if (!new TCostCenterInfo(LedgerNumber, "4301").IsValid)
             {
-                LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL-Test\\" +
+                LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
                     "test-sql\\gl-test-costcentre-data.sql");
             }
 
             // Get the glm-values before and after the test and taking the differences enables
             // to run the test several times
-            Get_GLM_Info getGLM_InfoBeforeStart = new Get_GLM_Info(LedgerNumber, strAccountStart, strCostCentre);
-            Get_GLM_Info getGLM_InfoBeforeEnd = new Get_GLM_Info(LedgerNumber, strAccountEnd, strCostCentre);
+            TGet_GLM_Info getGLM_InfoBeforeStart = new TGet_GLM_Info(LedgerNumber, strAccountStart, strCostCentre);
+            TGet_GLM_Info getGLM_InfoBeforeEnd = new TGet_GLM_Info(LedgerNumber, strAccountEnd, strCostCentre);
 
-            CommonAccountingTool commonAccountingTool =
-                new CommonAccountingTool(LedgerNumber, "NUNIT");
+            TCommonAccountingTool commonAccountingTool =
+                new TCommonAccountingTool(LedgerNumber, "NUNIT");
 
             commonAccountingTool.AddForeignCurrencyJournal("GBP", 0.3m);
 
             commonAccountingTool.AddForeignCurrencyTransaction(
                 strAccountStart, strCostCentre, "Debit GBP 100", "NUNIT",
-                CommonAccountingConstants.IS_DEBIT, 100, 333.33m);
+                MFinanceConstants.IS_DEBIT, 100, 333.33m);
             commonAccountingTool.AddForeignCurrencyTransaction(
                 strAccountEnd, strCostCentre, "Credit GBP 100", "NUNIT",
-                CommonAccountingConstants.IS_CREDIT, 100, 333.33m);
+                MFinanceConstants.IS_CREDIT, 100, 333.33m);
 
             int intBatchNumber = commonAccountingTool.CloseSaveAndPost();
 
-            Get_GLM_Info getGLM_InfoAfterStart = new Get_GLM_Info(LedgerNumber, strAccountStart, strCostCentre);
-            Get_GLM_Info getGLM_InfoAfterEnd = new Get_GLM_Info(LedgerNumber, strAccountEnd, strCostCentre);
+            TGet_GLM_Info getGLM_InfoAfterStart = new TGet_GLM_Info(LedgerNumber, strAccountStart, strCostCentre);
+            TGet_GLM_Info getGLM_InfoAfterEnd = new TGet_GLM_Info(LedgerNumber, strAccountEnd, strCostCentre);
 
             Assert.AreEqual(getGLM_InfoBeforeStart.YtdActual + 100, getGLM_InfoAfterStart.YtdActual,
                 "Check if 100 has been accounted");
@@ -179,30 +181,30 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             string strCostCentre = "4300";
 
             // Check if some special test data are availiable - otherwise load ...
-            if (!new GetAccountInfo(null, new GetLedgerInfo(LedgerNumber), "6001").IsValid)
+            if (!new TAccountInfo(new TLedgerInfo(LedgerNumber), "6001").IsValid)
             {
-                LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL-Test\\" +
+                LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
                     "test-sql\\gl-test-account-data.sql");
             }
 
             // Check if some special test data are availiable - otherwise load ...
-            if (!new GetCostCenterInfo(LedgerNumber, "4301").IsValid)
+            if (!new TCostCenterInfo(LedgerNumber, "4301").IsValid)
             {
-                LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL-Test\\" +
+                LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
                     "test-sql\\gl-test-costcentre-data.sql");
             }
 
-            CommonAccountingTool commonAccountingTool =
-                new CommonAccountingTool(LedgerNumber, "NUNIT");
+            TCommonAccountingTool commonAccountingTool =
+                new TCommonAccountingTool(LedgerNumber, "NUNIT");
             try
             {
                 commonAccountingTool.AddForeignCurrencyJournal("JPY", 0.3m);
                 commonAccountingTool.AddForeignCurrencyTransaction(
                     strAccountStart, strCostCentre, "Credit GBP 100", "NUNIT",
-                    CommonAccountingConstants.IS_DEBIT, 100, 333.33m);
+                    MFinanceConstants.IS_DEBIT, 100, 333.33m);
                 commonAccountingTool.AddForeignCurrencyTransaction(
                     strAccountEnd, strCostCentre, "Debit GBP 100", "NUNIT",
-                    CommonAccountingConstants.IS_CREDIT, 100, 333.33m);
+                    MFinanceConstants.IS_CREDIT, 100, 333.33m);
                 Assert.Fail("Exception does not appear!");
             }
             catch (TerminateException)
@@ -216,30 +218,25 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             }
         }
 
-        [Test]
-        public void Test_04_ENum()
-        {
-            string username = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
-
-            System.Diagnostics.Debug.WriteLine(username);
-
-            TLedgerInitFlagHandler tifh = new TLedgerInitFlagHandler(
-                LedgerNumber, TLedgerInitFlagEnum.DatabaseAllocation);
-            System.Diagnostics.Debug.WriteLine(tifh.Flag.ToString());
-            tifh.SetFlagAndName(username);
-            System.Diagnostics.Debug.WriteLine(tifh.Flag.ToString());
-        }
-
-        [TestFixtureSetUp]
+        /// <summary>
+        /// TestFixtureSetUp
+        /// </summary>
+        [SetUp]
         public void Init()
         {
             InitServerConnection();
+            ResetDatabase();
+            System.Diagnostics.Debug.WriteLine("Init: " + this.ToString());
         }
 
+        /// <summary>
+        /// TearDown the test
+        /// </summary>
         [TestFixtureTearDown]
-        public void TearDown()
+        public void TearDownTest()
         {
             DisconnectServerConnection();
+            System.Diagnostics.Debug.WriteLine("TearDownTest: " + this.ToString());
         }
     }
 }

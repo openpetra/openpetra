@@ -40,6 +40,7 @@ using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.MFinance.GL;
 
 
 namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
@@ -622,8 +623,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             journal.JournalPeriod = giftbatch.BatchPeriod;
             journal.TransactionCurrency = giftbatch.CurrencyCode;
             journal.JournalDescription = batch.BatchDescription;
-            journal.TransactionTypeCode = MFinanceConstants.TRANSACTION_GIFT;
-            journal.SubSystemCode = MFinanceConstants.SUB_SYSTEM_GR;
+            journal.TransactionTypeCode = CommonAccountingTransactionTypesEnum.GR.ToString();
+            journal.SubSystemCode = CommonAccountingSubSystemsEnum.GR.ToString();
             journal.LastTransactionNumber = 0;
             journal.DateOfEntry = DateTime.Now;
 

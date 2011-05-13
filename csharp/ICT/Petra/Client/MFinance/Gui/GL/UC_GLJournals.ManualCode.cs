@@ -92,6 +92,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
+        /// <summary>
+        /// WorkAroundInitialization
+        /// </summary>
         public void WorkAroundInitialization()
         {
             btnGetSetExchangeRate.Click += new EventHandler(SetExchangeRateValue);
@@ -307,7 +310,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
-        public decimal GetActualExchangeRateForeign()
+        private decimal GetActualExchangeRateForeign()
         {
             return Convert.ToDecimal(txtDetailExchangeRateToBase.Text);
         }

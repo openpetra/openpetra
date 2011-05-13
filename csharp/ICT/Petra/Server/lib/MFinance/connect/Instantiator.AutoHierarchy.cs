@@ -2573,19 +2573,21 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
         }
 
         /// generated method from connector
-        public bool TPeriodMonthEndInfo(int ALedgerNum,
-                                        out TVerificationResultCollection AVerificationResult)
+        public bool TPeriodMonthEnd(int ALedgerNum,
+                                    bool AIsInInfoMode,
+                                    out TVerificationResultCollection AVerificationResult)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodMonthConnector), "TPeriodMonthEndInfo", ";INT;TVERIFICATIONRESULTCOLLECTION;");
-            return Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodMonthConnector.TPeriodMonthEndInfo(ALedgerNum, out AVerificationResult);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodIntervallConnector), "TPeriodMonthEnd", ";INT;BOOL;TVERIFICATIONRESULTCOLLECTION;");
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodIntervallConnector.TPeriodMonthEnd(ALedgerNum, AIsInInfoMode, out AVerificationResult);
         }
 
         /// generated method from connector
-        public bool TPeriodMonthEnd(int ALedgerNum,
-                                    out TVerificationResultCollection AVerificationResult)
+        public bool TPeriodYearEnd(int ALedgerNum,
+                                   bool AIsInInfoMode,
+                                   out TVerificationResultCollection AVerificationResult)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodMonthConnector), "TPeriodMonthEnd", ";INT;TVERIFICATIONRESULTCOLLECTION;");
-            return Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodMonthConnector.TPeriodMonthEnd(ALedgerNum, out AVerificationResult);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodIntervallConnector), "TPeriodYearEnd", ";INT;BOOL;TVERIFICATIONRESULTCOLLECTION;");
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodIntervallConnector.TPeriodYearEnd(ALedgerNum, AIsInInfoMode, out AVerificationResult);
         }
 
         /// generated method from connector

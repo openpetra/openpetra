@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -3079,7 +3079,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         /// <returns></returns>
         public Boolean HasPartnerCostCentreLink(out String ACostCentreCode)
         {
-            return Ict.Petra.Server.MFinance.Common.HasPartnerCostCentreLink(FPartnerKey, out ACostCentreCode);
+            return Ict.Petra.Server.MFinance.Common.Common.HasPartnerCostCentreLink(FPartnerKey, out ACostCentreCode);
         }
 
         /// <summary>
@@ -3090,7 +3090,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         /// <returns></returns>
         public Boolean HasPartnerCostCentreLink(System.Int64 APartnerKey, out String ACostCentreCode)
         {
-            return Ict.Petra.Server.MFinance.Common.HasPartnerCostCentreLink(APartnerKey, out ACostCentreCode);
+            return Ict.Petra.Server.MFinance.Common.Common.HasPartnerCostCentreLink(APartnerKey, out ACostCentreCode);
         }
 
         /// <summary>
