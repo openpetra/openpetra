@@ -152,9 +152,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             TFrmRecurringGiftBatchSubmit submitForm = new TFrmRecurringGiftBatchSubmit(this.Handle);
-            submitForm.MainDS = FMainDS;
-            submitForm.BatchRow = FPreviouslySelectedDetailRow;
-            submitForm.Show();
+            try
+            {
+                ParentForm.ShowInTaskbar = false;
+                submitForm.MainDS = FMainDS;
+                submitForm.BatchRow = FPreviouslySelectedDetailRow;
+                submitForm.ShowDialog();
+            }
+            finally
+            {
+                submitForm.Dispose();
+                ParentForm.ShowInTaskbar = true;
+            }
         }
 
         /// <summary>

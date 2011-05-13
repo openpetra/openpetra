@@ -151,7 +151,16 @@ namespace {#NAMESPACE}
     {
         {#PRIMARYKEYCONTROLSREADONLY}
     }
-
+    private bool pnlDetailsProtected = false;
+    /// <summary>
+    /// protect the pnlDetail (only for this tab)
+    /// </summary>
+    public bool PnlDetailsProtected
+    {
+        get { return pnlDetailsProtected; }
+        set { pnlDetailsProtected = value; }
+    }
+    
     private void ShowData()
     {
         FPetraUtilsObject.DisableDataChangedEvent();
@@ -173,7 +182,7 @@ namespace {#NAMESPACE}
                 grdDetails.Selection.ResetSelection(false);
                 grdDetails.Selection.SelectRow(1, true);
                 FocusedRowChanged(this, new SourceGrid.RowEventArgs(1));
-                pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
+                pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode && !pnlDetailsProtected;
             }
         }
         FPetraUtilsObject.EnableDataChangedEvent();
@@ -192,7 +201,7 @@ namespace {#NAMESPACE}
         {
             FPreviouslySelectedDetailRow = ARow;
             {#SHOWDETAILS}
-            pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
+            pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode && !pnlDetailsProtected;
         }
         FPetraUtilsObject.EnableDataChangedEvent();
     }
