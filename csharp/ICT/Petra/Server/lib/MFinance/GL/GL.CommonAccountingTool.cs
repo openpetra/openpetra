@@ -117,6 +117,12 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
 
+        /// <summary>
+        /// Here you can add a Foreign currency Journal
+        /// </summary>
+        /// <param name="ATCurrencyInfo">A TCurrencyInfo is created extern and
+        /// can be included as a parameter</param>
+        /// <param name="AExchangeRateToBase"></param>
         public void AddForeignCurrencyJournal(TCurrencyInfo ATCurrencyInfo, decimal AExchangeRateToBase)
         {
             blnJournalIsInForeign = true;
@@ -124,6 +130,12 @@ namespace Ict.Petra.Server.MFinance.GL
             AddAJournal(AExchangeRateToBase);
         }
 
+        /// <summary>
+        /// Here you can add a Foreign currency Journal
+        /// </summary>
+        /// <param name="ACurrencyCode">The currency code is defined by a string and the
+        /// TCurrencyInfo object is created internally</param>
+        /// <param name="AExchangeRateToBase"></param>
         public void AddForeignCurrencyJournal(string ACurrencyCode, decimal AExchangeRateToBase)
         {
             blnJournalIsInForeign = true;
@@ -272,6 +284,16 @@ namespace Ict.Petra.Server.MFinance.GL
                 AReferenceMessage, AIsDebit, AAmountBaseCurrency, 0, false);
         }
 
+        /// <summary>
+        /// Add a foreign currency transaction ...
+        /// </summary>
+        /// <param name="AAccount"></param>
+        /// <param name="ACostCenter"></param>
+        /// <param name="ANarrativeMessage"></param>
+        /// <param name="AReferenceMessage"></param>
+        /// <param name="AIsDebit"></param>
+        /// <param name="AAmountBaseCurrency"></param>
+        /// <param name="AAmountForeignCurrency"></param>
         public void AddForeignCurrencyTransaction(string AAccount,
             string ACostCenter,
             string ANarrativeMessage,

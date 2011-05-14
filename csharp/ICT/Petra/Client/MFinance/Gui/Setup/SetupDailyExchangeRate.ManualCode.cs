@@ -167,6 +167,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             DefineModalSettings();
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
+        /// <param name="dteStart"></param>
+        /// <param name="dteEnd"></param>
+        /// <param name="strCurrencyTo"></param>
+        /// <param name="decExchangeDefault"></param>
         public void SetDataFilters(DateTime dteStart,
             DateTime dteEnd,
             string strCurrencyTo,
@@ -190,6 +197,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             DefineModalSettings();
         }
 
+
+        /// <summary>
+        /// ...
+        /// </summary>
+        /// <param name="dteStart"></param>
+        /// <param name="dteEnd"></param>
+        /// <param name="strCurrencyTo"></param>
+        /// <returns></returns>
         public decimal GetLastExchangeValueOfIntervall(DateTime dteStart,
             DateTime dteEnd,
             string strCurrencyTo)
@@ -217,7 +232,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         (ADailyExchangeRateRow)(FMainDS.ADailyExchangeRate.DefaultView[0].Row);
                     return dailyExchangeRateRow.RateOfExchange;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     return 1.0m;
                 }
@@ -592,7 +607,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         }
 
         /// <summary>
-        /// SelectByIndex is a copy&paste routine which is always sligtly modified
+        /// SelectByIndex is a copy&amp;paste routine which is always sligtly modified
         /// and adapted to the project ..
         /// </summary>
         /// <param name="rowIndex">-1 means "noRow" and 1 is the first row</param>

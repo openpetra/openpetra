@@ -136,6 +136,10 @@ namespace Ict.Petra.Server.MFinance.GL
         }
     }
 
+
+    /// <summary>
+    /// The Reallocation Module ...
+    /// </summary>
     public class TReallocation : AbstractPerdiodEndOperation
     {
         TLedgerInfo ledgerInfo;
@@ -149,6 +153,9 @@ namespace Ict.Petra.Server.MFinance.GL
         List <String>accountList = null;
 
 
+        /// <summary>
+        ///
+        /// </summary>
         public TReallocation(TLedgerInfo ALedgerInfo)
         {
             ledgerInfo = ALedgerInfo;
@@ -223,6 +230,9 @@ namespace Ict.Petra.Server.MFinance.GL
             costCenterInfo = new TCostCenterInfo(ledgerInfo.LedgerNumber);
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         public override int JobSize {
             get
             {
@@ -235,11 +245,18 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
 
+
+        /// <summary>
+        ///
+        /// </summary>
         public override AbstractPerdiodEndOperation GetActualizedClone()
         {
             return new TReallocation(ledgerInfo);
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         public override void RunEndOfPeriodOperation()
         {
             if (accountList == null)
@@ -589,11 +606,17 @@ namespace Ict.Petra.Server.MFinance.GL
             glBatchTo = LoadTable(ALedgerNumber, ++AYear);
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         public override AbstractPerdiodEndOperation GetActualizedClone()
         {
             return new TGlmNewYearInit(intLedgerNumber, intThisYear);
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         public override int JobSize {
             get
             {
@@ -715,6 +738,7 @@ namespace Ict.Petra.Server.MFinance.GL
     /// This is the list of status values of a_ledger.a_year_end_process_status_i which has been
     /// copied from petra. The status begins by counting from RESET_Status up to LEDGER_UPDATED
     /// and each higher level status includes the lower level ones.
+    /// (May be obsolete - wait until Year end is done)
     /// </summary>
     public enum TYearEndProcessStatus
     {
@@ -723,11 +747,35 @@ namespace Ict.Petra.Server.MFinance.GL
         /// </summary>
         RESET_STATUS = 0,
 
+
+        /// <summary>
+        ///
+        /// </summary>
         GIFT_CLOSED_OUT = 1,
+
+        /// <summary>
+        ///
+        /// </summary>
         ACCOUNT_CLOSED_OUT = 2,
+
+        /// <summary>
+        ///
+        /// </summary>
         GLMASTER_CLOSED_OUT = 3,
+
+        /// <summary>
+        ///
+        /// </summary>
         BUDGET_CLOSED_OUT = 4,
+
+        /// <summary>
+        ///
+        /// </summary>
         PERIODS_UPDATED = 7,
+
+        /// <summary>
+        ///
+        /// </summary>
         SET_NEW_YEAR = 8,
 
         /// <summary>

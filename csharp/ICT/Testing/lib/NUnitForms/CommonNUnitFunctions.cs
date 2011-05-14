@@ -50,7 +50,6 @@ namespace Ict.Testing.NUnitForms
     /// </summary>
     public class CommonNUnitFunctions : NUnitFormTest
     {
-        private Int32 FLedgerNumber;
 
         /// <summary>
         /// Empty Constructor ...
@@ -131,11 +130,17 @@ namespace Ict.Testing.NUnitForms
             TPetraServerConnector.Connect(strNameConfig);
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         public void DisconnectServerConnection()
         {
             TPetraServerConnector.Disconnect();
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         public string LoadCSVFileToString(string fileName)
         {
             using (FileStream fs = new FileStream(rootPath + "/" + fileName, FileMode.Open))
@@ -210,6 +215,9 @@ namespace Ict.Testing.NUnitForms
         MatchCollection matchCollection;
         Regex regex;
 
+        /// <summary>
+        /// ...
+        /// </summary>
         public DateConverter()
         {
             regex = new Regex("[0-3][0-9]-" +

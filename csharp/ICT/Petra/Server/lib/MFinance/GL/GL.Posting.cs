@@ -1205,6 +1205,9 @@ namespace Ict.Petra.Server.MFinance.GL
             return true;
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         public static GLBatchTDS CreateABatch(Int32 ALedgerNumber)
         {
             GLBatchTDS MainDS = new GLBatchTDS();

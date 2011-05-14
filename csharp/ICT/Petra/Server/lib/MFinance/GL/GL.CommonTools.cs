@@ -36,17 +36,28 @@ using Ict.Petra.Server.MCommon.Data.Access;
 
 namespace Ict.Petra.Server.MFinance.GL
 {
+    /// <summary>
+    /// Handling the information of the General Legder Master Table Period Table ...
+    /// </summary>
     public class TGlmpInfo
     {
         AGeneralLedgerMasterPeriodTable aGLMp;
         AGeneralLedgerMasterPeriodRow aGLMpRow;
 
+        /// <summary>
+        /// Loads <b>all</b> GLMP data ...
+        /// </summary>
         public TGlmpInfo()
         {
             LoadAll();
             aGLMpRow = null;
         }
 
+        /// <summary>
+        /// Loads all Data and sets a pointer to a specific period ...
+        /// </summary>
+        /// <param name="ASequence"></param>
+        /// <param name="APeriod"></param>
         public TGlmpInfo(int ASequence, int APeriod)
         {
             LoadAll();
@@ -68,6 +79,12 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
 
+        /// <summary>
+        /// Sets a pointer to a row specified by APeriod ...
+        /// </summary>
+        /// <param name="ASequence"></param>
+        /// <param name="APeriod"></param>
+        /// <returns></returns>
         public bool SetToRow(int ASequence, int APeriod)
         {
             if (aGLMp.Rows.Count > 0)
@@ -90,6 +107,9 @@ namespace Ict.Petra.Server.MFinance.GL
             return false;
         }
 
+        /// <summary>
+        /// Returns the data base row value
+        /// </summary>
         public decimal ActualBase
         {
             get
@@ -136,6 +156,12 @@ namespace Ict.Petra.Server.MFinance.GL
             DBAccess.GDBAccessObj.CommitTransaction();
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AAccountCode"></param>
+        /// <param name="ACostCentreCode"></param>
         public TGet_GLM_Info(int ALedgerNumber, string AAccountCode, string ACostCentreCode)
         {
             OdbcParameter[] ParametersArray;
@@ -157,6 +183,9 @@ namespace Ict.Petra.Server.MFinance.GL
             DBAccess.GDBAccessObj.CommitTransaction();
         }
 
+        /// <summary>
+        /// Reads the value of YtdActual and supports a default value of 0 if it not exists.
+        /// </summary>
         public decimal YtdActual
         {
             get
@@ -172,6 +201,9 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
 
+        /// <summary>
+        /// Reads the value of YtdForeign and supports a default value of 0 if it not exists.
+        /// </summary>
         public decimal YtdForeign
         {
             get
@@ -190,6 +222,10 @@ namespace Ict.Petra.Server.MFinance.GL
                 }
             }
         }
+
+        /// <summary>
+        /// ...
+        /// </summary>
         public int Sequence
         {
             get
@@ -197,6 +233,10 @@ namespace Ict.Petra.Server.MFinance.GL
                 return (int)aGLM.Rows[iPtr][AGeneralLedgerMasterTable.GetGlmSequenceDBName()];
             }
         }
+
+        /// <summary>
+        /// ...
+        /// </summary>
         public string CostCentreCode
         {
             get
@@ -206,12 +246,21 @@ namespace Ict.Petra.Server.MFinance.GL
         }
     }
 
+    /// <summary>
+    /// GLM-Info but an other handling than TGet_GLM_Info
+    /// </summary>
     public class TGlmInfo
     {
         DataTable glmTable;
         DataRow glmRow;
         int iPtr;
 
+        /// <summary>
+        /// Loads only GLM Data selected by Ledger Number, Year and Account Code ...
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AYear"></param>
+        /// <param name="AAccountCode"></param>
         public TGlmInfo(int ALedgerNumber, int AYear, string AAccountCode)
         {
             OdbcParameter[] ParametersArray;
@@ -241,11 +290,18 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
 
+        /// <summary>
+        /// A Row list can be searched and be resetted here ...
+        /// </summary>
         public void Reset()
         {
             iPtr = -1;
         }
 
+        /// <summary>
+        /// Next Element of the Row list ...
+        /// </summary>
+        /// <returns></returns>
         public bool MoveNext()
         {
             ++iPtr;
@@ -260,6 +316,9 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         public string AccountCode
         {
             get
@@ -267,6 +326,10 @@ namespace Ict.Petra.Server.MFinance.GL
                 return (string)glmRow[AGeneralLedgerMasterTable.GetAccountCodeDBName()];
             }
         }
+
+        /// <summary>
+        /// ...
+        /// </summary>
         public string CostCentreCode
         {
             get
@@ -275,6 +338,9 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         public int GlmSequence
         {
             get
@@ -282,6 +348,10 @@ namespace Ict.Petra.Server.MFinance.GL
                 return (int)glmRow[AGeneralLedgerMasterTable.GetGlmSequenceDBName()];
             }
         }
+
+        /// <summary>
+        /// ...
+        /// </summary>
         public decimal YtdActualBase
         {
             get
@@ -289,6 +359,10 @@ namespace Ict.Petra.Server.MFinance.GL
                 return (decimal)glmRow[AGeneralLedgerMasterTable.GetYtdActualBaseDBName()];
             }
         }
+
+        /// <summary>
+        /// ...
+        /// </summary>
         public decimal ClosingPeriodActualBase
         {
             get
@@ -375,6 +449,9 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         public bool PostingCostCentreFlag
         {
             get
@@ -382,6 +459,11 @@ namespace Ict.Petra.Server.MFinance.GL
                 return costCentreRow.PostingCostCentreFlag;
             }
         }
+
+
+        /// <summary>
+        /// ...
+        /// </summary>
         public string CostCentreCode
         {
             get
@@ -408,8 +490,11 @@ namespace Ict.Petra.Server.MFinance.GL
         AAccountHierarchyDetailRow accountRow = null;
         TLedgerInfo ledgerInfo;
 
-        int iPtr;
 
+        /// <summary>
+        /// ...
+        /// </summary>
+        /// <param name="ALedgerInfo"></param>
         public TGetAccountHierarchyDetailInfo(TLedgerInfo ALedgerInfo)
         {
             ledgerInfo = ALedgerInfo;
@@ -528,36 +613,104 @@ namespace Ict.Petra.Server.MFinance.GL
 
     /// <summary>
     /// A Enum-list of some special account codes ...
+    /// https://sourceforge.net/apps/mediawiki/openpetraorg/index.php?title=Data_Conversion_from_Petra_to_Openpetra
     /// </summary>
     public enum TAccountPropertyEnum
     {
+        /// <summary>
+        ///
+        /// </summary>
         GIFT_HEADING,               // GIFT
-        INTER_LEDGER_HEADING,       // ILT
-        BANK_HEADING,               // CASH
-        BALANCE_SHEET_HEADING,      // BAL
 
         /// <summary>
-        /// See: https://sourceforge.net/apps/phpbb/openpetraorg/viewtopic.php?f=14&t=117&start=0
-        /// And
-        /// https://sourceforge.net/apps/mediawiki/openpetraorg/index.php?title=Data_Conversion_from_Petra_to_Openpetra
+        ///
         /// </summary>
+        INTER_LEDGER_HEADING,       // ILT
+
+        /// <summary>
+        ///
+        /// </summary>
+        BANK_HEADING,               // CASH
+
+        /// <summary>
+        ///
+        /// </summary>
+        BALANCE_SHEET_HEADING,      // BAL
+
         //PROFIT_AND_LOSS_HEADING,    // PL
         //INCOME_HEADING,             // INC
         //EXPENSE_HEADING,            // EXP
+
+        /// <summary>
+        ///
+        /// </summary>
         DEBTOR_HEADING,             // DRS
+
+
+        /// <summary>
+        ///
+        /// </summary>
         CREDITOR_HEADING,           // CRS
+
+        /// <summary>
+        ///
+        /// </summary>
         TOTAL_ASSET_HEADING,        // ASSETS
+
+        /// <summary>
+        ///
+        /// </summary>
         TOTAL_LIABILITY_HEADING,    // LIABS
+
+        /// <summary>
+        ///
+        /// </summary>
         EQUITY_HEADING,             // RET EARN
 
+
+        /// <summary>
+        ///
+        /// </summary>
         EARNINGS_BF_ACCT,           // 9700
+
+        /// <summary>
+        ///
+        /// </summary>
         DIRECT_XFER_ACCT,           // 5501
+
+        /// <summary>
+        ///
+        /// </summary>
         ICH_SETTLEMENT_ACCT,        // 5601
+
+        /// <summary>
+        ///
+        /// </summary>
         ICH_ACCT,                   // 8500
+
+        /// <summary>
+        ///
+        /// </summary>
         INTERNAL_XFER_ACCT,         // 9800
+
+        /// <summary>
+        ///
+        /// </summary>
         ADMIN_FEE_INCOME_ACCT,      // 3400
+
+        /// <summary>
+        ///
+        /// </summary>
         ADMIN_FEE_EXPENSE_ACCT,     // 4900
+
+        /// <summary>
+        ///
+        /// </summary>
         FUND_TRANSFER_INCOME_ACCT,  // 3300
+
+        /// <summary>
+        ///
+        /// </summary>
         FUND_TRANSFER_EXPENSE_ACCT, // 4800
     }
 
@@ -617,6 +770,11 @@ namespace Ict.Petra.Server.MFinance.GL
             return String.Empty;
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="APropertyCode"></param>
+        /// <returns></returns>
         public string GetAccountCode(string APropertyCode)
         {
             try
@@ -696,6 +854,11 @@ namespace Ict.Petra.Server.MFinance.GL
             accountRow = null;
         }
 
+        /// <summary>
+        /// TAccountPropertyEnum defines a set of special accounts and here on of them
+        /// ca be selected. ..
+        /// </summary>
+        /// <param name="AENum"></param>
         public void SetSpecialAccountCode(TAccountPropertyEnum AENum)
         {
             accountRow = null;
@@ -713,6 +876,10 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
+        /// <returns></returns>
         public string SetCarryForwardAccount()
         {
             accountRow = null;
@@ -738,7 +905,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
         /// <summary>
         /// The Account code can be read and the result is the account code of the row
-        /// which was selected before. </br>
+        /// which was selected before. <br />
         /// The Account can be written and this will change the selected row without any
         /// database request. The result may be invalid.
         /// </summary>
@@ -769,6 +936,9 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         public string AccountType
         {
             get
@@ -777,11 +947,18 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
 
+        /// <summary>
+        /// Reset the row list
+        /// </summary>
         public void Reset()
         {
             iPtr = -1;
         }
 
+        /// <summary>
+        /// Move to the next row ...
+        /// </summary>
+        /// <returns></returns>
         public bool MoveNext()
         {
             ++iPtr;
@@ -832,6 +1009,9 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         public bool PostingStatus
         {
             get
@@ -839,6 +1019,10 @@ namespace Ict.Petra.Server.MFinance.GL
                 return accountRow.PostingStatus;
             }
         }
+
+        /// <summary>
+        ///
+        /// </summary>
         public bool DebitCreditIndicator
         {
             get
@@ -861,6 +1045,9 @@ namespace Ict.Petra.Server.MFinance.GL
         private AAccountingPeriodRow periodRow = null;
 
 
+        /// <summary>
+        ///
+        /// </summary>
         protected void LoadTableData(int ALedgerNumber)
         {
             intLedgerNumber = ALedgerNumber;
@@ -906,6 +1093,9 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         public int AccountingPeriodNumber
         {
             set
@@ -925,6 +1115,10 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
 
+
+        /// <summary>
+        ///
+        /// </summary>
         public DateTime PeriodEndDate
         {
             get
@@ -934,6 +1128,9 @@ namespace Ict.Petra.Server.MFinance.GL
         }
 
 
+        /// <summary>
+        ///
+        /// </summary>
         public DateTime PeriodStartDate
         {
             get
@@ -943,6 +1140,9 @@ namespace Ict.Petra.Server.MFinance.GL
         }
 
 
+        /// <summary>
+        ///
+        /// </summary>
         public DateTime EffectiveDate
         {
             get
@@ -964,12 +1164,35 @@ namespace Ict.Petra.Server.MFinance.GL
         }
     }
 
+
+    /// <summary>
+    /// Different Account Types ...
+    /// </summary>
     public enum TAccountTypeEnum
     {
+        /// <summary>
+        ///
+        /// </summary>
         Income,
+
+        /// <summary>
+        ///
+        /// </summary>
         Expense,
+
+        /// <summary>
+        ///
+        /// </summary>
         Asset,
+
+        /// <summary>
+        ///
+        /// </summary>
         Equity,
+
+        /// <summary>
+        ///
+        /// </summary>
         Liability
     }
 
@@ -1063,6 +1286,9 @@ namespace Ict.Petra.Server.MFinance.GL
         }
 
 
+        /// <summary>
+        ///
+        /// </summary>
         public int CurrentPeriod
         {
             get
@@ -1070,6 +1296,10 @@ namespace Ict.Petra.Server.MFinance.GL
                 return row.CurrentPeriod;
             }
         }
+
+        /// <summary>
+        ///
+        /// </summary>
         public int NumberOfAccountingPeriods
         {
             get
@@ -1077,6 +1307,10 @@ namespace Ict.Petra.Server.MFinance.GL
                 return row.NumberOfAccountingPeriods;
             }
         }
+
+        /// <summary>
+        ///
+        /// </summary>
         public int NumberFwdPostingPeriods
         {
             get
@@ -1084,6 +1318,10 @@ namespace Ict.Petra.Server.MFinance.GL
                 return row.NumberFwdPostingPeriods;
             }
         }
+
+        /// <summary>
+        ///
+        /// </summary>
         public int CurrentFinancialYear
         {
             get
@@ -1092,6 +1330,10 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
 
+
+        /// <summary>
+        ///
+        /// </summary>
         public int LedgerNumber
         {
             get
@@ -1100,6 +1342,10 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
 
+
+        /// <summary>
+        ///
+        /// </summary>
         public bool YearEndFlag
         {
             get
@@ -1107,6 +1353,10 @@ namespace Ict.Petra.Server.MFinance.GL
                 return row.YearEndFlag;
             }
         }
+
+        /// <summary>
+        ///
+        /// </summary>
         public int YearEndProcessStatus
         {
             get
@@ -1133,6 +1383,10 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
 
+
+        /// <summary>
+        ///
+        /// </summary>
         public bool IltAccountFlag
         {
             get
@@ -1140,6 +1394,10 @@ namespace Ict.Petra.Server.MFinance.GL
                 return row.IltAccountFlag;
             }
         }
+
+        /// <summary>
+        ///
+        /// </summary>
         public bool BranchProcessing
         {
             get
@@ -1148,6 +1406,10 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
 
+
+        /// <summary>
+        ///
+        /// </summary>
         public bool IltProcessingCentre
         {
             get
@@ -1157,11 +1419,20 @@ namespace Ict.Petra.Server.MFinance.GL
         }
     }
 
+
+    /// <summary>
+    /// May be obsolete ...
+    /// Wait until Year End is done well ...
+    /// </summary>
     public class TLedgerLock
     {
         int intLegerNumber;
         private bool blnResult;
         private Object synchRoot = new Object();
+
+        /// <summary>
+        ///
+        /// </summary>
         public TLedgerLock(int ALedgerNum)
         {
             intLegerNumber = ALedgerNum;
@@ -1188,6 +1459,9 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         public bool IsLocked
         {
             get
@@ -1196,6 +1470,10 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
 
+
+        /// <summary>
+        ///
+        /// </summary>
         public void UnLock()
         {
             if (blnResult)
@@ -1206,6 +1484,9 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         public string LockInfo()
         {
             if (!blnResult)
@@ -1257,6 +1538,10 @@ namespace Ict.Petra.Server.MFinance.GL
         /// </summary>
         LedgerLock,
 
+
+        /// <summary>
+        ///
+        /// </summary>
         DatabaseAllocation,
 
         /// <summary>
@@ -1301,6 +1586,9 @@ namespace Ict.Petra.Server.MFinance.GL
             strFlagNameHelp = strFlagName;
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         public void AddMarker(string AMarker)
         {
             strFlagName = strFlagNameHelp + ":" + AMarker;
@@ -1334,6 +1622,10 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
 
+
+        /// <summary>
+        ///
+        /// </summary>
         public void SetFlagAndName(string AName)
         {
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
@@ -1569,6 +1861,9 @@ namespace Ict.Petra.Server.MFinance.GL
             baseCurrencyRow = SetRowToCode(ACurrencyCode);
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         public TCurrencyInfo(string ACurrencyCode, TDBTransaction AMasterTransaction)
         {
             LoadDatabase(null);
@@ -1749,6 +2044,10 @@ namespace Ict.Petra.Server.MFinance.GL
         Regex reg;
         MatchCollection matchCollection;
         int intDigits;
+
+        /// <summary>
+        ///
+        /// </summary>
         public FormatConverter(string strFormat)
         {
             sRegex = ">9.(9)+|>9$";
