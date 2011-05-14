@@ -60,7 +60,13 @@ namespace Ict.Petra.Client.MPartner.Gui
 		public void NewRowManual(ref PmStaffDataRow ANewRow)
 		{
 			ANewRow.SiteKey = GetSiteKey();
-			ANewRow.Key = -1;                   //Hope that this will be inserted by submitchanges
+			//search the latest used (max) id to build the new key, ignore sitekey
+			long max=0;
+			foreach (PmStaffDataRow am in FMainDS.PmStaffData.Rows)
+			{
+				if (am.Key > max) max=am.Key;
+			}
+			ANewRow.Key = max + 1;                  
 			ANewRow.PartnerKey = FPartnerKey;
 			ANewRow.ReceivingField = 0;
 			ANewRow.SetReceivingFieldOfficeNull();
