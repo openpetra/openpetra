@@ -41,6 +41,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 		private void InitializeManualCode()
         {
             pnlDetails.Enabled = false;
+            cmbDetailStatusCode.ComboBoxWidth = 200;
+            
         }
 		/// <summary>The new button was pressed;create a new row</summary></summary>
 		public void NewRow(System.Object sender, EventArgs e)
@@ -91,7 +93,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 		}
 		private void  LoadPersonellStaffData()
 		{
+			
 			FMainDS = TRemote.MPersonnel.WebConnectors.LoadPersonellStaffData( FPartnerKey);
+			cmbDetailStatusCode.InitialiseUserControl(FMainDS.PmCommitmentStatus, PmCommitmentStatusTable.GetCodeDBName(),PmCommitmentStatusTable.GetDescDBName(),null);
 			int a=FMainDS.PmStaffData.Rows.Count;
 			System.Diagnostics.Debug.Print(""+a);
            	if (FMainDS != null)

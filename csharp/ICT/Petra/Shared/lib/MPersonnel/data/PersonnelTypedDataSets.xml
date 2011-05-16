@@ -7,6 +7,7 @@
   <ImportUnit name="Ict.Petra.Shared.MHospitality.Data"/>
   <ImportUnit name="Ict.Petra.Shared.MCommon.Data"/>
    <DataSet name="PersonnelTDS">
-          <Table sqltable="pm_staff_data"/>      
+          <Table sqltable="pm_staff_data"/> 
+          <Table sqltable="pm_commitment_status"/>
    </DataSet>    
 </PetraDataSets>

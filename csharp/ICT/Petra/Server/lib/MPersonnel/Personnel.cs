@@ -75,6 +75,7 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
             PersonnelTDS MainDS = new PersonnelTDS();
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
+            PmCommitmentStatusAccess.LoadAll(MainDS,Transaction);
             PmStaffDataAccess.LoadViaPPerson(MainDS, APartnerKey, Transaction);
             
             DBAccess.GDBAccessObj.RollbackTransaction();
