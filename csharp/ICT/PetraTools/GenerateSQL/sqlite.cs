@@ -69,6 +69,25 @@ public class TSQLiteWriter
                 firstField = false;
             }
 
+            if (table.HasPrimaryKey() && !createStmt.Contains("PRIMARY KEY AUTOINCREMENT"))
+            {
+                createStmt += ", PRIMARY KEY (";
+                bool firstPrimaryKeyColumn = true;
+
+                foreach (string primaryKeyColumnName in table.GetPrimaryKey().strThisFields)
+                {
+                    if (!firstPrimaryKeyColumn)
+                    {
+                        createStmt += ",";
+                    }
+
+                    createStmt += primaryKeyColumnName;
+                    firstPrimaryKeyColumn = false;
+                }
+
+                createStmt += ")";
+            }
+
             createStmt += ");";
 
             // TODO: primary key
