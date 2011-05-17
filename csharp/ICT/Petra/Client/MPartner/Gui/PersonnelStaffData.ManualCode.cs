@@ -41,7 +41,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 		private void InitializeManualCode()
         {
             pnlDetails.Enabled = false;
-            cmbDetailStatusCode.ComboBoxWidth = 200;
+            cmbDetailStatusCode.ComboBoxWidth = 150;
             
         }
 		/// <summary>The new button was pressed;create a new row</summary></summary>
@@ -96,9 +96,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 			
 			FMainDS = TRemote.MPersonnel.WebConnectors.LoadPersonellStaffData( FPartnerKey);
 			cmbDetailStatusCode.InitialiseUserControl(FMainDS.PmCommitmentStatus, PmCommitmentStatusTable.GetCodeDBName(),PmCommitmentStatusTable.GetDescDBName(),null);
-			int a=FMainDS.PmStaffData.Rows.Count;
-			System.Diagnostics.Debug.Print(""+a);
-           	if (FMainDS != null)
+			    	if (FMainDS != null)
             {
             	DataView myDataView = FMainDS.PmStaffData.DefaultView;
       			myDataView.AllowNew = false;
@@ -107,6 +105,24 @@ namespace Ict.Petra.Client.MPartner.Gui
 		}	
 		private void DeleteRow(System.Object sender, EventArgs e)
 		{
+			   if (FPreviouslySelectedDetailRow == null)
+            {
+                return;
+            }
+
+         
+
+            if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
+                || (MessageBox.Show(String.Format(Catalog.GetString(
+                                "You have choosen to delete this entry with start of commitment date ({0:d}).\n\nDo you really want to delete it?"),
+                            FPreviouslySelectedDetailRow.StartOfCommitment), Catalog.GetString("Confirm Delete"),
+                        MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes))
+            {
+                int rowIndex = CurrentRowIndex();
+                FPreviouslySelectedDetailRow.Delete();
+                FPetraUtilsObject.SetChangedFlag();
+                SelectByIndex(rowIndex);
+            }
 		}
 
 		private TSubmitChangesResult StoreManualCode(ref PersonnelTDS ASubmitChanges, out TVerificationResultCollection AVerificationResult)

@@ -134,7 +134,9 @@ namespace {#NAMESPACE}
 {#IFDEF SHOWDETAILS}
     private void ShowDetails({#DETAILTABLE}Row ARow)
     {
+        FPetraUtilsObject.DisableDataChangedEvent();
         {#SHOWDETAILS}
+        FPetraUtilsObject.EnableDataChangedEvent();
     }
 
     private {#DETAILTABLE}Row FPreviouslySelectedDetailRow = null;
