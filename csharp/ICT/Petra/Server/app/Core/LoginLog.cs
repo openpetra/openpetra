@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -129,7 +129,7 @@ namespace Ict.Petra.Server.App.Core.Security
 
                 // ROWID for postgresql: see http://archives.postgresql.org/sydpug/2005-05/msg00002.php
                 AProcessID =
-                    Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT s_login_process_id_r FROM PUB_" +
+                    Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT " + SLoginTable.GetLoginProcessIdDBName() + " FROM PUB_" +
                             TTypedDataTable.GetTableNameSQL(SLoginTable.TableId) +
                             ' ' +
                             "WHERE " + SLoginTable.GetUserIdDBName() + " = ? AND " + SLoginTable.GetLoginDateDBName() + " = ? AND " +
