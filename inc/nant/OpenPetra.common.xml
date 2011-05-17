@@ -134,6 +134,8 @@
 <!-- Server configuration -->
 <property name="Server.Port" value="9000" 
           overwrite="false" />
+<property name="Server.DebugLevel" value="0" 
+          overwrite="false" />
 <property name="SelectedLanguage" value="en" overwrite="false" />
 
 <!-- database -->
