@@ -1223,6 +1223,9 @@
     <!-- Constraints on table s_login -->
     <primarykey name="s_login_pk"
                 descr=""
+                thisFields="s_login_process_id_r"/>
+    <uniquekey name="s_login_uk"
+                descr=""
                 thisFields="s_user_id_c, s_login_date_d, s_login_time_i"/>
     <!-- Explicit Indexes on table s_login  -->
     <index name="s_login_date"
