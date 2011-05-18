@@ -86,6 +86,7 @@ namespace Ict.Petra.Server.App.Core.Security
             LoginDateTime = DateTime.Now;
 
             // Set DataRow values
+            NewLoginRow.LoginProcessId = -1;
             NewLoginRow.UserId = AUserID.ToUpper();
             NewLoginRow.LoginStatus = ALoginStatus;
             NewLoginRow.LoginDate = LoginDateTime;
