@@ -79,7 +79,7 @@ namespace Ict.Petra.Server.MFinance.GL
     /// <summary>
     /// Modul for the year end calculations ...
     /// </summary>
-    public class TYearEnd : TPerdiodEndOperations
+    public class TYearEnd : TPeriodEndOperations
     {
         TLedgerInfo ledgerInfo;
 
@@ -141,7 +141,7 @@ namespace Ict.Petra.Server.MFinance.GL
     /// <summary>
     /// The Reallocation Module ...
     /// </summary>
-    public class TReallocation : AbstractPerdiodEndOperation
+    public class TReallocation : AbstractPeriodEndOperation
     {
     	TLedgerInfo ledgerInfo;
         TAccountInfo accountInfo;
@@ -250,7 +250,7 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <summary>
         ///
         /// </summary>
-        public override AbstractPerdiodEndOperation GetActualizedClone()
+        public override AbstractPeriodEndOperation GetActualizedClone()
         {
             return new TReallocation(ledgerInfo);
         }

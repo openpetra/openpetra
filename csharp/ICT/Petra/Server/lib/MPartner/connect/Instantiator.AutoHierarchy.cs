@@ -124,7 +124,6 @@ using Ict.Petra.Server.MPartner.Partner.WebConnectors;
 using Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors;
 using Ict.Petra.Server.MPartner.Partner.UIConnectors;
 using Ict.Petra.Server.MPartner.Extracts.UIConnectors;
-using Ict.Petra.Server.MPartner.Partner;
 
 #region ManualCode
 using System.Collections.Specialized;

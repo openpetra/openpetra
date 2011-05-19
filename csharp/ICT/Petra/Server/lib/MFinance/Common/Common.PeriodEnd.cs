@@ -34,11 +34,11 @@ namespace Ict.Petra.Server.MFinance.Common
 {
     /// <summary>
     /// If a proceure is defined which shall be assined inside a specific perodic process you have to use this
-    /// class the handle the operation itself and the AbstractPerdiodEndOperation class to handle the internal
+    /// class the handle the operation itself and the AbstractPeriodEndOperation class to handle the internal
     /// parts of the operation. <br />
-    /// For example the class TMonthEnd and TYearEnd inherits TPerdiodEndOperations.<br />
+    /// For example the class TMonthEnd and TYearEnd inherits TPeriodEndOperations.<br />
     /// </summary>
-    public class TPerdiodEndOperations
+    public class TPeriodEndOperations
     {
         /// <summary>
         /// If the user invokes a specific year end command, he automatically starts a server request
@@ -66,7 +66,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// This is for all info only routines that means JobSize has no definition
         /// </summary>
         /// <param name="Apeo"></param>
-        protected void RunPeriodEndCheck(AbstractPerdiodEndOperation Apeo)
+        protected void RunPeriodEndCheck(AbstractPeriodEndOperation Apeo)
         {
             Apeo.IsInInfoMode = blnIsInInfoMode;
             Apeo.VerificationResultCollection = verificationResults;
@@ -79,11 +79,11 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
         /// <summary>
-        /// Standard routine to execute the period end of each AbstractPerdiodEndOperation correctly
+        /// Standard routine to execute the period end of each AbstractPeriodEndOperation correctly
         /// </summary>
         /// <param name="Apeo"></param>
         /// <param name="AOperationName"></param>
-        protected void RunPeriodEndSequence(AbstractPerdiodEndOperation Apeo, string AOperationName)
+        protected void RunPeriodEndSequence(AbstractPeriodEndOperation Apeo, string AOperationName)
         {
             Apeo.IsInInfoMode = blnIsInInfoMode;
             Apeo.VerificationResultCollection = verificationResults;
@@ -103,7 +103,7 @@ namespace Ict.Petra.Server.MFinance.Common
             else
             {
                 Apeo.RunEndOfPeriodOperation();
-                AbstractPerdiodEndOperation newApeo = Apeo.GetActualizedClone();
+                AbstractPeriodEndOperation newApeo = Apeo.GetActualizedClone();
                 newApeo.IsInInfoMode = true;
                 newApeo.VerificationResultCollection = verificationResults;
 
@@ -138,11 +138,11 @@ namespace Ict.Petra.Server.MFinance.Common
 
 
     /// <summary>
-    /// Any perdiodic end operation shall be inherit and complete this abstract class. The constructor of the
+    /// Any periodic end operation shall be inherit and complete this abstract class. The constructor of the
     /// inhereting class shall handle all parameters which are necessary for the RunEndOfPeriodOperation and
     /// RunEndOfPeriodOperation shall handle the data base operations
     /// </summary>
-    public abstract class AbstractPerdiodEndOperation
+    public abstract class AbstractPeriodEndOperation
     {
         /// <summary>
         /// This is the standard VerificationResultCollection for the info and the error messages.
@@ -150,12 +150,12 @@ namespace Ict.Petra.Server.MFinance.Common
         protected TVerificationResultCollection verificationResults = null;
 
         /// <summary>
-        /// See TPerdiodEndOperations
+        /// See TPeriodEndOperations
         /// </summary>
         protected bool blnIsInInfoMode = true;
 
         /// <summary>
-        /// See TPerdiodEndOperations
+        /// See TPeriodEndOperations
         /// </summary>
         protected bool blnCriticalErrors = false;
 
@@ -184,7 +184,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// Method to create a duplicate based on the actualized database value(s)
         /// </summary>
         /// <returns></returns>
-        public abstract AbstractPerdiodEndOperation GetActualizedClone();
+        public abstract AbstractPeriodEndOperation GetActualizedClone();
 
 
         /// <summary>
@@ -201,7 +201,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
         /// <summary>
         /// Set-Property to set the common value of the VerificationResultCollection
-        ///  (Set by TPerdiodEndOperations.RunYearEndSequence)
+        ///  (Set by TPeriodEndOperations.RunYearEndSequence)
         /// </summary>
         public TVerificationResultCollection VerificationResultCollection
         {
@@ -212,7 +212,7 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
         /// <summary>
-        /// Property to set the correct info-mode (Set by TPerdiodEndOperations.RunYearEndSequence)
+        /// Property to set the correct info-mode (Set by TPeriodEndOperations.RunYearEndSequence)
         /// </summary>
         public bool IsInInfoMode
         {
@@ -224,7 +224,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
         /// <summary>
         /// Property to read if the process could be done without critical errors.
-        ///  (Used by TPerdiodEndOperations.RunYearEndSequence)
+        ///  (Used by TPeriodEndOperations.RunYearEndSequence)
         /// </summary>
         public bool HasCriticalErrors
         {
@@ -403,7 +403,7 @@ namespace Ict.Petra.Server.MFinance.Common
     /// This object handles the transformation of the accouting interval parameters into the
     /// next year
     /// </summary>
-    public class TAccountPeriodToNewYear : AbstractPerdiodEndOperation
+    public class TAccountPeriodToNewYear : AbstractPeriodEndOperation
     {
         const int NOT_INITIALIZED = -1;
         int intLedgerNumber;
@@ -468,7 +468,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// Actual year is not set (other Constructor is used).
         /// </summary>
         /// <returns></returns>
-        public override AbstractPerdiodEndOperation GetActualizedClone()
+        public override AbstractPeriodEndOperation GetActualizedClone()
         {
             if (intActualYear == NOT_INITIALIZED)
             {
@@ -571,7 +571,7 @@ namespace Ict.Petra.Server.MFinance.Common
     /// This Object read all glm year end record of the actual year and creates the start record for
     /// the next year
     /// </summary>
-    public class TGlmNewYearInit : AbstractPerdiodEndOperation
+    public class TGlmNewYearInit : AbstractPeriodEndOperation
     {
         GLBatchTDS glBatchFrom = null;
         GLBatchTDS glBatchTo = null;
@@ -603,7 +603,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <summary>
         ///
         /// </summary>
-        public override AbstractPerdiodEndOperation GetActualizedClone()
+        public override AbstractPeriodEndOperation GetActualizedClone()
         {
             return new TGlmNewYearInit(intLedgerNumber, intThisYear);
         }
