@@ -30,7 +30,7 @@ using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Server.MFinance.GL.Data.Access;
 using Ict.Petra.Server.MFinance.GL;
 
-namespace Ict.Petra.Server.MFinance.GL
+namespace Ict.Petra.Server.MFinance.Common
 {
     /// <summary>
     /// This Tool creates a batch enables to add a journal and to add transactions to a yournal

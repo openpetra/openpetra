@@ -29,7 +29,7 @@ using Ict.Common.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Shared.MFinance.Account.Data;
 
-namespace Ict.Petra.Server.MFinance.GL
+namespace Ict.Petra.Server.MFinance.Common
 {
     ///<summary>
     /// This connector provides methods for creating and closing a financial year or period

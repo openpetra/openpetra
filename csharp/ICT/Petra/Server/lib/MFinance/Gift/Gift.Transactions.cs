@@ -39,6 +39,7 @@ using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Server.MFinance.Common;
 
 namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 {
@@ -783,7 +784,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         out AVerifications) == TSubmitChangesResult.scrOK)
                 {
                     // post the batch
-                    if (!Ict.Petra.Server.MFinance.GL.TGLPosting.PostGLBatch(ALedgerNumber, batch.BatchNumber,
+                    if (!TGLPosting.PostGLBatch(ALedgerNumber, batch.BatchNumber,
                             out AVerifications))
                     {
                         // TODO: what if posting fails? do we have an orphaned GL batch lying around? can this be put into one single transaction? probably not

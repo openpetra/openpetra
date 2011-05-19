@@ -36,7 +36,7 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Server.MFinance.GL.Data.Access;
 
-namespace Ict.Petra.Server.MFinance.GL
+namespace Ict.Petra.Server.MFinance.Common
 {
     /// <summary>
     /// provides methods for posting a batch

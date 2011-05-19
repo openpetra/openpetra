@@ -39,9 +39,9 @@ using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
-using Ict.Petra.Server.MFinance.Gift.WebConnectors;
 using Ict.Petra.Server.MFinance.GL;
 using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Server.MFinance.Common;
 
 namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 {
@@ -423,7 +423,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
             DBAccess.GDBAccessObj.RollbackTransaction();
 
-            GiftBatchTDS GiftDS = TTransactionWebConnector.CreateAGiftBatch(ALedgerNumber, stmt.Date);
+            GiftBatchTDS GiftDS = Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.CreateAGiftBatch(ALedgerNumber, stmt.Date);
 
             AGiftBatchRow giftbatchRow = GiftDS.AGiftBatch[0];
             giftbatchRow.BatchDescription = String.Format(Catalog.GetString("bank import for date {0}"), stmt.Date.ToShortDateString());
@@ -475,7 +475,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
             giftbatchRow.HashTotal = HashTotal;
 
-            TSubmitChangesResult result = TTransactionWebConnector.SaveGiftBatchTDS(ref GiftDS, out AVerificationResult);
+            TSubmitChangesResult result = Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.SaveGiftBatchTDS(ref GiftDS, out AVerificationResult);
 
             if (result == TSubmitChangesResult.scrOK)
             {

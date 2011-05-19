@@ -34,7 +34,7 @@ using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Server.MCommon.Data.Access;
 
-namespace Ict.Petra.Server.MFinance.GL
+namespace Ict.Petra.Server.MFinance.Common
 {
     /// <summary>
     /// Handling the information of the General Legder Master Table Period Table ...
