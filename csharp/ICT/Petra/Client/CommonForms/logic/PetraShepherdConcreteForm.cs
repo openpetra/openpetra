@@ -376,7 +376,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
             }
             else
             {
-	            foreach (KeyValuePair <string, TPetraShepherdPage>pair in FShepherdPages.Pages)
+	            foreach(KeyValuePair <string, TPetraShepherdPage>pair in FShepherdPages.Pages)
 	            { 
 	            	if(pair.Value == CurrentPage && pair.Value.Enabled && pair.Value.Visible) 
 	            	{
@@ -421,7 +421,6 @@ namespace Ict.Petra.Client.CommonForms.Logic
         private void VisibleOrEnabledChangedEventHandler()
         {
             TLogging.Log("VisibleOrEnabledChangedEventHandler");
-
             // re-enumerate FShepherdPages!
 
             FForm.UpdateNavigation();
@@ -459,7 +458,15 @@ namespace Ict.Petra.Client.CommonForms.Logic
 				XmlElement ID = XMLDocumentOfActivePages.CreateElement("Task" + PageCounter.ToString()); //<ID>
 				ID.InnerText = "" + PageCounter + " " + pair.Key;
 				
-				ID.SetAttribute("Label", pair.Value.Title); 
+				ID.SetAttribute("Label", pair.Value.Title);
+				if(!(pair.Value.Visible))
+				{
+					ID.SetAttribute("Hidden", "True");
+				}
+				if(!(pair.Value.Enabled))
+				{
+					ID.SetAttribute("Enabled","False");
+				}
 				
 				XmlElement Title = XMLDocumentOfActivePages.CreateElement("Label"); //<Title>
 				Title.InnerText = pair.Value.Title; 
