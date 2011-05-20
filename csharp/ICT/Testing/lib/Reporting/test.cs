@@ -49,7 +49,7 @@ namespace Tests.Reporting
 
         /// the object that is able to deal with all the parameters, and can calculate a report
         public TRptCalculator FCalculator;
-        
+
         /// <summary>
         /// ...
         /// </summary>
@@ -177,8 +177,8 @@ namespace Tests.Reporting
         }
 
         /// <summary>
-        /// common procedure that will load all settings in the given directory, and run a report and 
-        /// compare the result with results 
+        /// common procedure that will load all settings in the given directory, and run a report and
+        /// compare the result with results
         /// from previous, using the csv and the txt output
         /// </summary>
         public void TestReport(String ASettingsDirectory)

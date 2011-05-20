@@ -42,9 +42,9 @@ using NUnit.Framework.Constraints;
 
 namespace Tests.MFinance.GLBatches
 {
-	/// <summary>
-	/// ...
-	/// </summary>
+    /// <summary>
+    /// ...
+    /// </summary>
     [TestFixture]
     public class GLAccountHierarchy_test : CommonNUnitFunctions
     {

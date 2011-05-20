@@ -50,7 +50,6 @@ namespace Ict.Testing.NUnitForms
     /// </summary>
     public class CommonNUnitFunctions : NUnitFormTest
     {
-
         /// <summary>
         /// Empty Constructor ...
         /// </summary>

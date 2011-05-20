@@ -35,6 +35,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Server.MFinance;
 using Ict.Petra.Server.MFinance.GL;
+using Ict.Petra.Server.MFinance.Common;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.AP.Data;
@@ -548,7 +549,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             }
 
             // post the batch
-            if (!Ict.Petra.Server.MFinance.GL.TGLPosting.PostGLBatch(ALedgerNumber, batch.BatchNumber, out AVerifications))
+            if (!TGLPosting.PostGLBatch(ALedgerNumber, batch.BatchNumber, out AVerifications))
             {
                 // TODO: what if posting fails? do we have an orphaned batch lying around? can this be put into one single transaction? probably not
                 // TODO: we should cancel that batch
@@ -828,7 +829,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         out AVerifications) == TSubmitChangesResult.scrOK)
                 {
                     // post the batch
-                    if (!Ict.Petra.Server.MFinance.GL.TGLPosting.PostGLBatch(MainDS.AApPayment[0].LedgerNumber, batch.BatchNumber,
+                    if (!TGLPosting.PostGLBatch(MainDS.AApPayment[0].LedgerNumber, batch.BatchNumber,
                             out AVerifications))
                     {
                         // TODO: what if posting fails? do we have an orphaned batch lying around? can this be put into one single transaction? probably not
