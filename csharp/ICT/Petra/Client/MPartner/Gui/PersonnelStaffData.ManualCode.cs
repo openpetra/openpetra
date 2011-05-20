@@ -66,7 +66,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 			long max=0;
 			foreach (PmStaffDataRow am in FMainDS.PmStaffData.Rows)
 			{
-				if (am.Key > max) max=am.Key;
+				if ((am.RowState!= DataRowState.Deleted) &&(am.Key > max)) max=am.Key;
 			}
 			ANewRow.Key = max + 1;                  
 			ANewRow.PartnerKey = FPartnerKey;

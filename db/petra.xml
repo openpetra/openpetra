@@ -1218,7 +1218,7 @@
                 label="Logout Date"/>
     <tablefield name="s_login_process_id_r"
                 type="integer"
-                autoincrement="yes"
+                sequence="seq_login_process_id"
                 descr="Petra process ID; this is a unique key"/>
     <!-- Constraints on table s_login -->
     <primarykey name="s_login_pk"
@@ -27161,4 +27161,12 @@
             cycleonlimit="no"
             minval="0"
             maxval="999999999"/>
+  <sequence name="seq_login_process_id"
+            descr=""
+            initial="2000"
+            increment="1"
+            cycleonlimit="no"
+            minval="0"
+            maxval="999999999"
+            area=""/>
 </database>
