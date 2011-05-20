@@ -475,7 +475,8 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
             giftbatchRow.HashTotal = HashTotal;
 
-            TSubmitChangesResult result = Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.SaveGiftBatchTDS(ref GiftDS, out AVerificationResult);
+            TSubmitChangesResult result = Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.SaveGiftBatchTDS(ref GiftDS,
+                out AVerificationResult);
 
             if (result == TSubmitChangesResult.scrOK)
             {

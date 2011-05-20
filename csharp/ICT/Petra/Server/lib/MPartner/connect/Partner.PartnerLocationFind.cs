@@ -40,7 +40,6 @@ using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MCommon;
-using Ict.Petra.Server.MFinance;
 using Ict.Petra.Server.MPartner.Partner;
 
 namespace Ict.Petra.Server.MPartner.Partner.UIConnectors

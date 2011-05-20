@@ -35,7 +35,7 @@ namespace Tests.Reporting
     [TestFixture]
     public class TConfigTest : System.Object
     {
-    	/// <summary>
+        /// <summary>
         /// ...
         /// </summary>
         [SetUp]

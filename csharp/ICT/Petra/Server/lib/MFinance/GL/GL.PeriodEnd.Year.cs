@@ -143,7 +143,7 @@ namespace Ict.Petra.Server.MFinance.GL
     /// </summary>
     public class TReallocation : AbstractPeriodEndOperation
     {
-    	TLedgerInfo ledgerInfo;
+        TLedgerInfo ledgerInfo;
         TAccountInfo accountInfo;
         TCostCenterInfo costCenterInfo;
 
@@ -405,5 +405,4 @@ namespace Ict.Petra.Server.MFinance.GL
             return ledgerInfo.LedgerNumber.ToString() + "00";
         }
     }
-
 }

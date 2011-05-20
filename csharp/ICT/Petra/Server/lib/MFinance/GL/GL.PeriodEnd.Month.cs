@@ -47,8 +47,6 @@ using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 
-using Ict.Petra.Server.MFinance;
-
 namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 {
     /// <summary>
