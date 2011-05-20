@@ -37,6 +37,7 @@ using Ict.Petra.Server.App.ClientDomain;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MFinance.GL;
+using Ict.Petra.Server.MFinance.Common;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
@@ -57,7 +58,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// for each account number - cost center combination which holds a foreign currency value
         /// </summary>
         /// <param name="ALedgerNum">Number of the Ledger to be revaluated</param>
-        /// <param name="AAccoutingPeriod">Number of the accouting perdiod
+        /// <param name="AAccoutingPeriod">Number of the accouting period
         /// (other form of the date)</param>
         /// <param name="ARevaluationCostCenter">Cost Center for the revaluation</param>
         /// <param name="AForeignCurrency">Types (Array) of the foreign currency account</param>

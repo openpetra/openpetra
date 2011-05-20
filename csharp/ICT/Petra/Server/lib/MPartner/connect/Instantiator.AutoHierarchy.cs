@@ -105,24 +105,25 @@ using Ict.Petra.Server.MPartner.Partner;
 //using Ict.Petra.Server.MPartner.PartnerMerge;
 //using Ict.Petra.Server.MPartner.Subscriptions;
 //using Ict.Petra.Server.MPartner.TableMaintenance;
-using Ict.Petra.Server.MPartner.Extracts.UIConnectors;
 //using Ict.Petra.Server.MPartner.Extracts.WebConnectors;
 //using Ict.Petra.Server.MPartner.ImportExport.UIConnectors;
 using Ict.Petra.Server.MPartner.ImportExport.WebConnectors;
-using Ict.Petra.Server.MPartner.Mailing.Cacheable;
+//using Ict.Petra.Server.MPartner.Mailing.Cacheable;
 //using Ict.Petra.Server.MPartner.Mailing.UIConnectors;
 using Ict.Petra.Server.MPartner.Mailing.WebConnectors;
-using Ict.Petra.Server.MPartner.Partner.Cacheable;
+//using Ict.Petra.Server.MPartner.Partner.Cacheable;
 //using Ict.Petra.Server.MPartner.Partner.DataElements;
 //using Ict.Petra.Server.MPartner.Partner.DataElements.UIConnectors;
 using Ict.Petra.Server.MPartner.Partner.ServerLookups;
-using Ict.Petra.Server.MPartner.Partner.UIConnectors;
+//using Ict.Petra.Server.MPartner.Partner.UIConnectors;
 using Ict.Petra.Server.MPartner.Partner.WebConnectors;
 //using Ict.Petra.Server.MPartner.PartnerMerge.UIConnectors;
-using Ict.Petra.Server.MPartner.Subscriptions.Cacheable;
+//using Ict.Petra.Server.MPartner.Subscriptions.Cacheable;
 //using Ict.Petra.Server.MPartner.Subscriptions.UIConnectors;
 //using Ict.Petra.Server.MPartner.TableMaintenance.UIConnectors;
 using Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors;
+using Ict.Petra.Server.MPartner.Partner.UIConnectors;
+using Ict.Petra.Server.MPartner.Extracts.UIConnectors;
 
 #region ManualCode
 using System.Collections.Specialized;
@@ -2709,8 +2710,8 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
                                            string ACity,
                                            StringCollection APartnerClasses)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerFindWebConnector), "FindPartners", ";STRING;STRING;STRING;STRINGCOLLECTION;");
-            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerFindWebConnector.FindPartners(AFirstName, AFamilyNameOrOrganisation, ACity, APartnerClasses);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(TSimplePartnerFindWebConnector), "FindPartners", ";STRING;STRING;STRING;STRINGCOLLECTION;");
+            return TSimplePartnerFindWebConnector.FindPartners(AFirstName, AFamilyNameOrOrganisation, ACity, APartnerClasses);
         }
     }
 }

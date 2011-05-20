@@ -39,13 +39,13 @@ using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MFinance.GL;
+using Ict.Petra.Server.MFinance.Common;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-
 
 namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 {
@@ -79,7 +79,7 @@ namespace Ict.Petra.Server.MFinance.GL
     /// Main Class to serve a
     /// Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodMonthEnd request ...
     /// </summary>
-    public class TMonthEnd : TPerdiodEndOperations
+    public class TMonthEnd : TPeriodEndOperations
     {
         TLedgerInfo ledgerInfo;
 
@@ -131,7 +131,7 @@ namespace Ict.Petra.Server.MFinance.GL
         }
     }
 
-    class RunMonthEndChecks : AbstractPerdiodEndOperation
+    class RunMonthEndChecks : AbstractPeriodEndOperation
     {
         TLedgerInfo ledgerInfo;
 
@@ -150,7 +150,7 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
 
-        public override AbstractPerdiodEndOperation GetActualizedClone()
+        public override AbstractPeriodEndOperation GetActualizedClone()
         {
             return new RunMonthEndChecks(ledgerInfo);
         }
@@ -293,7 +293,7 @@ namespace Ict.Petra.Server.MFinance.GL
     /// <summary>
     /// Example ....
     /// </summary>
-    class RunMonthlyAdminFees : AbstractPerdiodEndOperation
+    class RunMonthlyAdminFees : AbstractPeriodEndOperation
     {
         public override int JobSize {
             get
@@ -303,7 +303,7 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
 
-        public override AbstractPerdiodEndOperation GetActualizedClone()
+        public override AbstractPeriodEndOperation GetActualizedClone()
         {
             // TODO: Some Code
             return new RunMonthlyAdminFees();

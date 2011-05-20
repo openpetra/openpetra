@@ -25,11 +25,11 @@ using System;
 using NUnit.Framework;
 using Ict.Testing.NUnitForms;
 using Ict.Common.Verification;
-using Ict.Petra.Server.MFinance.GL;
+using Ict.Petra.Server.MFinance.Common;
 
 namespace Ict.Testing.Petra.Server.MFinance.GL
 {
-    class TestOperation : AbstractPerdiodEndOperation
+    class TestOperation : AbstractPeriodEndOperation
     {
         int intCount;
         int intJobCount;
@@ -41,7 +41,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             intOperationCount = 0;
         }
 
-        public override AbstractPerdiodEndOperation GetActualizedClone()
+        public override AbstractPeriodEndOperation GetActualizedClone()
         {
             return new TestOperation(intCount + 1);
         }
@@ -71,7 +71,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         }
     }
 
-    class TestOperations : TPerdiodEndOperations
+    class TestOperations : TPeriodEndOperations
     {
         public void Test1(TVerificationResultCollection tvr)
         {
@@ -104,16 +104,16 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         private const int intLedgerNumber = 43;
 
         /// <summary>
-        /// Some very basic tests of TPerdiodEndOperations and AbstractPerdiodEndOperation
+        /// Some very basic tests of TPeriodEndOperations and AbstractPeriodEndOperation
         /// </summary>
         [Test]
-        public void Test_AbstractPerdiodEndOperation()
+        public void Test_AbstractPeriodEndOperation()
         {
             TVerificationResultCollection tvr = new TVerificationResultCollection();
-            TestOperations perdiodEndOperations = new TestOperations();
+            TestOperations periodEndOperations = new TestOperations();
 
-            perdiodEndOperations.Test1(tvr);
-            perdiodEndOperations.Test2(tvr);
+            periodEndOperations.Test1(tvr);
+            periodEndOperations.Test2(tvr);
         }
 
         /// <summary>

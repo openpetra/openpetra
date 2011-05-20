@@ -197,7 +197,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             DefineModalSettings();
         }
 
-
         /// <summary>
         /// ...
         /// </summary>
