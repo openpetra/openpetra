@@ -31,6 +31,7 @@ using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Shared;
 
@@ -96,11 +97,14 @@ namespace Ict.Petra.Client.MPartner.Gui
 			
 			FMainDS = TRemote.MPersonnel.WebConnectors.LoadPersonellStaffData( FPartnerKey);
 			cmbDetailStatusCode.InitialiseUserControl(FMainDS.PmCommitmentStatus, PmCommitmentStatusTable.GetCodeDBName(),PmCommitmentStatusTable.GetDescDBName(),null);
-			    	if (FMainDS != null)
+			if (FMainDS != null)
             {
             	DataView myDataView = FMainDS.PmStaffData.DefaultView;
       			myDataView.AllowNew = false;
-      			grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);       
+      			grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+      			PPartnerRow partnerRow = FMainDS.PPartner[0];
+      			txtName.Text = partnerRow.PartnerShortName;
+      			txtLanguageCode.Text = partnerRow.LanguageCode;
             }
 		}	
 		private void DeleteRow(System.Object sender, EventArgs e)

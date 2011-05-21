@@ -35,6 +35,8 @@ using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Data;
 using Ict.Common.Verification;
+using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared.MPersonnel.Personnel;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
@@ -74,6 +76,7 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
         {
             PersonnelTDS MainDS = new PersonnelTDS();
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            PPartnerAccess.LoadByPrimaryKey(MainDS,APartnerKey,Transaction);
 
             PmCommitmentStatusAccess.LoadAll(MainDS,Transaction);
             PmStaffDataAccess.LoadViaPPerson(MainDS, APartnerKey, Transaction);
