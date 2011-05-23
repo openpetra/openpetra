@@ -31,7 +31,7 @@ RootNode:
             Dock: Top
             Controls:
                 Row0: [txtDetailPartnerKey, txtName]
-                Row1: [txtLanguageCode]    
+                Row1: [txtPartnerStatusCode,txtLanguageCode]    
         grdDetails:
             Dock: Fill
             Columns: [DetailPartnerKey, DetailStartOfCommitment, DetailEndOfCommitment,DetailReceivingField]
@@ -52,6 +52,7 @@ RootNode:
         dtpDetailEndOfCommitment: {Label=&End of Commitment}
         txtDetailPartnerKey: {Label=Partner Key, ReadOnly=true}
         txtName: {Label=Name, ReadOnly=true}
+        txtPartnerStatusCode: {Label=Status, ReadOnly=true}
         txtLanguageCode: {Label=Language Code, ReadOnly=true}
         cmbDetailStatusCode: {Label=Status,  List=UserDefinedList, Width=400}
         txtDetailOfficeRecruitedBy: {Label=Recruiting Office, Type=PartnerKey}

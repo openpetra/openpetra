@@ -104,6 +104,7 @@ namespace Ict.Petra.Client.MPartner.Gui
       			grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
       			PPartnerRow partnerRow = FMainDS.PPartner[0];
       			txtName.Text = partnerRow.PartnerShortName;
+      			txtPartnerStatusCode.Text = partnerRow.StatusCode;
       			txtLanguageCode.Text = partnerRow.LanguageCode;
             }
 		}	
