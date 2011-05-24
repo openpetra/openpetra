@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -59,7 +59,10 @@ class Program
                             password = cmdLine.GetOptValue("password");
                         }
 
-                        TSQLiteWriter.CreateDatabase(store, outputfile, password);
+                        if (!TSQLiteWriter.CreateDatabase(store, outputfile, password))
+                        {
+                            Environment.Exit(-1);
+                        }
                     }
                     else
                     {
