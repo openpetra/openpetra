@@ -16824,8 +16824,7 @@
                 descr="Gives a phone number/email where the applicant (or registering person) can be contacted."
                 format="X(30)"
                 label="Contact"
-                help="Give a phone number/email/etc. of the registering person."
-                initial="no"/>
+                help="Give a phone number/email/etc. of the registering person."/>
     <tablefield name="pm_st_recruit_efforts_c"
                 type="varchar"
                 descr="This is the efforts that recruited the applicant for the event."

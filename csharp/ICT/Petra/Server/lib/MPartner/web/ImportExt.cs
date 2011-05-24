@@ -582,6 +582,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             ApplicationFormRow.PartnerKey = FPartnerKey;
             ApplicationFormRow.ApplicationKey = AGeneralApplicationRow.ApplicationKey;
+            ApplicationFormRow.RegistrationOffice = AGeneralApplicationRow.RegistrationOffice;
 
             ApplicationFormRow.FormName = ReadString();
 
@@ -595,7 +596,13 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             ApplicationFormRow.ReferencePartnerKey = ReadInt64();
             ApplicationFormRow.Comment = ReadString();
 
-            if (!FIgnoreApplication)
+            // ignore application forms with an unknown type
+            FMainDS.PtAppFormTypes.DefaultView.RowFilter =
+                String.Format("{0}='{1}'",
+                    PtAppFormTypesTable.GetFormNameDBName(),
+                    ApplicationFormRow.FormName.Replace("'", "''"));
+
+            if (!FIgnoreApplication && (FMainDS.PtAppFormTypes.DefaultView.Count == 1))
             {
                 PmApplicationFormsAccess.AddOrModifyRecord(ApplicationFormRow.PartnerKey,
                     ApplicationFormRow.ApplicationKey,
@@ -1396,6 +1403,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             PAcquisitionAccess.LoadAll(FMainDS, Transaction);
             PTypeAccess.LoadAll(FMainDS, Transaction);
             POccupationAccess.LoadAll(FMainDS, Transaction);
+            PtAppFormTypesAccess.LoadAll(FMainDS, Transaction);
             DBAccess.GDBAccessObj.RollbackTransaction();
 
             InitReading(ALinesToImport);

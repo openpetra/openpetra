@@ -344,6 +344,7 @@
         <Table sqltable="pm_general_application"/>
         <Table sqltable="pm_short_term_application"/>
         <Table sqltable="pm_year_program_application"/>
+        <Table sqltable="pt_app_form_types"/>
         <Table sqltable="pm_application_forms"/>
         
         <Table sqltable="um_unit_structure"/>

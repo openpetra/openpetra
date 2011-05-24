@@ -406,14 +406,18 @@ namespace Ict.Common.Data
             {
                 string columnName = ASourceRow.Table.Columns[col].ColumnName;
 
-                if (ADestinationRow.Table.Columns.Contains(columnName))
+                if (columnName != "s_created_by_c" && columnName != "s_modified_by_c" 
+					&& columnName != "s_date_created_d" && columnName != "s_date_modified_d" 
+                    && columnName != "s_modification_id_c"
+                    && ADestinationRow.Table.Columns.Contains(columnName))
                 {
-                    string SourceValue = ASourceRow[col].ToString();
-                    string DestinationValue = ADestinationRow[ADestinationRow.Table.Columns[columnName].Ordinal].ToString();
+                	
+                    object SourceValue = ASourceRow[col];
+                    object DestinationValue = ADestinationRow[ADestinationRow.Table.Columns[columnName].Ordinal];
 
-                    if (SourceValue != DestinationValue)
+                    if (!SourceValue.Equals(DestinationValue))
                     {
-                        ADifferences.Add(new TColumnDifference(columnName, SourceValue, DestinationValue));
+                    	ADifferences.Add(new TColumnDifference(columnName, SourceValue.ToString(), DestinationValue.ToString()));
                     }
                 }
             }

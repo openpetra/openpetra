@@ -76,7 +76,7 @@ namespace Tests.MPartner.Server.PartnerExports
             reader.Close();
 
             TPartnerFileImport importer = new TPartnerFileImport();
-            PartnerImportExportTDS MainDS = importer.ImportAllData(lines, SelectedEventCode);
+            PartnerImportExportTDS MainDS = importer.ImportAllData(lines, SelectedEventCode, true);
 
             foreach (PPartnerRow PartnerRow in MainDS.PPartner.Rows)
             {

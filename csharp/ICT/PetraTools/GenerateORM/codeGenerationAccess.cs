@@ -148,7 +148,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 {
                     formalParametersKey += ", ";
                     actualParametersKey += ", ";
-                    actualParametersToString += " + ";
+                    actualParametersToString += " + \" \" + ";
                 }
 
                 TTableField typedField = ACurrentTable.GetField(field);
