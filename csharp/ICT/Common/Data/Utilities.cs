@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,6 +27,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Reflection;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Ict.Common.Data
 {
@@ -367,6 +368,53 @@ namespace Ict.Common.Data
                 if (ADestinationRow.Table.Columns.Contains(columnName))
                 {
                     ADestinationRow[ADestinationRow.Table.Columns[columnName].Ordinal] = ASourceRow[col];
+                }
+            }
+        }
+
+        /// <summary>
+        /// small structure for comparing 2 DataRows by columns, used by CompareAllColumnValues
+        /// </summary>
+        public struct TColumnDifference
+        {
+            /// <summary> the name of the column that is different </summary>
+            public string FColumnName;
+            /// <summary> the new value </summary>
+            public string FSourceValue;
+            /// <summary> the original value </summary>
+            public string FDestinationValue;
+            /// <summary> Constructor </summary>
+            public TColumnDifference(string AColumnName, string ASourceName, string ADestinationValue)
+            {
+                FColumnName = AColumnName;
+                FSourceValue = ASourceName;
+                FDestinationValue = ADestinationValue;
+            }
+        }
+
+        /// <summary>
+        /// compare the values of two rows; must have the same columns
+        /// </summary>
+        /// <param name="ASourceRow"></param>
+        /// <param name="ADestinationRow"></param>
+        /// <param name="ADifferences"></param>
+        public static void CompareAllColumnValues(DataRow ASourceRow, DataRow ADestinationRow, out List <TColumnDifference>ADifferences)
+        {
+            ADifferences = new List <TColumnDifference>();
+
+            for (Int32 col = 0; col < ASourceRow.Table.Columns.Count; col++)
+            {
+                string columnName = ASourceRow.Table.Columns[col].ColumnName;
+
+                if (ADestinationRow.Table.Columns.Contains(columnName))
+                {
+                    string SourceValue = ASourceRow[col].ToString();
+                    string DestinationValue = ADestinationRow[ADestinationRow.Table.Columns[columnName].Ordinal].ToString();
+
+                    if (SourceValue != DestinationValue)
+                    {
+                        ADifferences.Add(new TColumnDifference(columnName, SourceValue, DestinationValue));
+                    }
                 }
             }
         }
