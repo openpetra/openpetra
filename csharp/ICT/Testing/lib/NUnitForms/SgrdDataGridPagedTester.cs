@@ -34,7 +34,7 @@ namespace Ict.Testing.NUnitForms
     /// </summary>
     public class TSgrdDataGridPagedTester : ControlTester
     {
-        new private TSgrdDataGridPaged _TheObject;
+        private TSgrdDataGridPaged _TheObject;
         private int OldSelectedRow = -1;
 
         /// constructor
@@ -69,6 +69,9 @@ namespace Ict.Testing.NUnitForms
             }
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         public override object TheObject
         {
             get
@@ -77,6 +80,9 @@ namespace Ict.Testing.NUnitForms
             }
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         public void SelectRow(int ARowNumber)
         {
             Properties.Selection.SelectRow(ARowNumber, true);

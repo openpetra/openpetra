@@ -31,11 +31,11 @@ class Program
 {
     public static void Main(string[] args)
     {
-        TAppSettingsManager settings = new TAppSettingsManager(false);
+        new TAppSettingsManager(false);
 
         try
         {
-            string filename = settings.GetValue("extfile");
+            string filename = TAppSettingsManager.GetValue("extfile");
             string newCSVFilename = Path.GetDirectoryName(filename) +
                                     Path.DirectorySeparatorChar +
                                     Path.GetFileNameWithoutExtension(filename) +

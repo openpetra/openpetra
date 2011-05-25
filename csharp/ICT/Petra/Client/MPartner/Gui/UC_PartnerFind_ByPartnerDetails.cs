@@ -236,11 +236,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// needed for generated code
         /// </summary>
-        public void InitUserControl()            
+        public void InitUserControl()
         {
             ucoPartnerInfo.HostedControlKind = THostedControlKind.hckUserControl;
-		    ucoPartnerInfo.UserControlClass = "TUC_PartnerInfo";  // TUC_PartnerInfo
-		    ucoPartnerInfo.UserControlNamespace = "Ict.Petra.Client.MPartner.Gui";            
+            ucoPartnerInfo.UserControlClass = "TUC_PartnerInfo";          // TUC_PartnerInfo
+            ucoPartnerInfo.UserControlNamespace = "Ict.Petra.Client.MPartner.Gui";
         }
 
         /// <summary>
@@ -822,12 +822,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             OnPartnerInfoPaneExpanded();
 
             ucoPartnerInfo.Expand();
-            
+
             if (FPartnerInfoUC == null)
             {
-                FPartnerInfoUC = ((TUC_PartnerInfo)(ucoPartnerInfo.UserControlInstance));    
-            }            
-            
+                FPartnerInfoUC = ((TUC_PartnerInfo)(ucoPartnerInfo.UserControlInstance));
+            }
+
             UpdatePartnerInfoPanel();
 
             //            MessageBox.Show("FCurrentGridRow: " + FCurrentGridRow.ToString());
@@ -1021,8 +1021,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (!FKeepUpSearchFinishedCheck)
             {
-                FPartnerInfoUC = ((TUC_PartnerInfo)(ucoPartnerInfo.UserControlInstance));                
-                
+                FPartnerInfoUC = ((TUC_PartnerInfo)(ucoPartnerInfo.UserControlInstance));
+
                 // get the data from the currently edited control;
                 // otherwise there are not the right search criteria when hitting the enter key
                 ucoPartnerFindCriteria.CompleteBindings();
@@ -1043,12 +1043,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // Update UI
                 grdResult.SendToBack();
                 grpResult.Text = Resourcestrings.StrSearchResult;
-                
+
                 if (FPartnerInfoUC != null)
                 {
-                    FPartnerInfoUC.ClearControls();    
+                    FPartnerInfoUC.ClearControls();
                 }
-                
+
                 lblSearchInfo.Text = Resourcestrings.StrSearching;
                 FPetraUtilsObject.SetStatusBarText(btnSearch, Resourcestrings.StrSearching);
 
@@ -1750,7 +1750,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void StopTimer()
         {
             if (FPartnerInfoUC != null)
-            {            
+            {
                 FPartnerInfoUC.StopTimer();
             }
         }

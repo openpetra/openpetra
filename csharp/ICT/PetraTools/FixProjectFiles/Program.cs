@@ -32,13 +32,13 @@ class Program
 {
     public static void Main(string[] args)
     {
-        TAppSettingsManager settings = new TAppSettingsManager(false);
+        new TAppSettingsManager(false);
 
         try
         {
             TFixProjectReferences FixReferences = new TFixProjectReferences();
-            string SolutionPath = settings.GetValue("solutionpath", true);
-            StringCollection SolutionFiles = StringHelper.StrSplit(settings.GetValue("solutions", true), ",");
+            string SolutionPath = TAppSettingsManager.GetValue("solutionpath", true);
+            StringCollection SolutionFiles = StringHelper.StrSplit(TAppSettingsManager.GetValue("solutions", true), ",");
 
             foreach (string solutionFilename in SolutionFiles)
             {

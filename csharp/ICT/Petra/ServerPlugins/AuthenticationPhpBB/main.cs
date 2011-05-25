@@ -44,14 +44,14 @@ namespace Plugin.AuthenticationPhpBB
         public bool AuthenticateUser(string AUsername, string APassword, out string AMessage)
         {
             AMessage = "";
-            string keyfile = TAppSettingsManager.GetValueStatic("Server.ChannelEncryption.Keyfile", "");
+            string keyfile = TAppSettingsManager.GetValue("Server.ChannelEncryption.Keyfile", "");
             byte[] key = EncryptionRijndael.ReadSecretKey(keyfile);
             string encryptedMessage;
             string ivMessage;
             EncryptionRijndael.Encrypt(key, AUsername + ";" + APassword + ";", out encryptedMessage, out ivMessage);
 
             // url is for example: http://forum.example.org/OpenPetraLogin/authenticate.php
-            string url = TAppSettingsManager.GetValueStatic("UserAuthenticationMethod.Url", "");
+            string url = TAppSettingsManager.GetValue("UserAuthenticationMethod.Url", "");
             SortedList <string, string>parameters = new SortedList <string, string>();
             parameters.Add("msg", encryptedMessage);
             parameters.Add("msg2", ivMessage);

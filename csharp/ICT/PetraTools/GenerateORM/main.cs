@@ -39,6 +39,8 @@ namespace Ict.Tools.CodeGeneration.DataStore
 
         int run()
         {
+            new TAppSettingsManager(false);
+
             cmdLine = new TCmdOpts();
 
             if (!cmdLine.IsFlagSet("do")

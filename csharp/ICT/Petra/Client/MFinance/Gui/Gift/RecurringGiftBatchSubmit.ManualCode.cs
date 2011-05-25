@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       matthiash,timop
+//       matthiash
 //
 // Copyright 2004-2010 by OM International
 //

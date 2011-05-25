@@ -180,7 +180,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
         {
             // look for available plugin for importing a bank statement.
             // the plugin will upload the data into the tables a_ep_statement and a_ep_transaction on the server/database
-            string BankStatementImportPlugin = TAppSettingsManager.GetValueStatic("Plugin.BankStatementImport", "");
+            string BankStatementImportPlugin = TAppSettingsManager.GetValue("Plugin.BankStatementImport", "");
 
             if (BankStatementImportPlugin.Length == 0)
             {
