@@ -54,7 +54,7 @@ namespace Tests.MFinance.GLBatches
             // this may take some time ....
             new TLogging("TestClient.log");
             TPetraConnector.Connect("../../../../../etc/TestClient.config");
-            FLedgerNumber = Convert.ToInt32(TAppSettingsManager.GetValueStatic("LedgerNumber"));
+            FLedgerNumber = Convert.ToInt32(TAppSettingsManager.GetValue("LedgerNumber"));
         }
 
         /// <summary>
@@ -232,7 +232,7 @@ namespace Tests.MFinance.GLBatches
             // export the 2 test batches, with summarize option
             // compare the exported text file
 
-            string TestFile = TAppSettingsManager.GetValueStatic("Testing.Path") + "/MFinance/GLForm/TestData/BatchImportFloatTest.csv";
+            string TestFile = TAppSettingsManager.GetValue("Testing.Path") + "/MFinance/GLForm/TestData/BatchImportFloatTest.csv";
 
             TestFile = Path.GetFullPath(TestFile);
             Assert.IsTrue(File.Exists(TestFile), "File does not exist: " + TestFile);
@@ -304,7 +304,7 @@ namespace Tests.MFinance.GLBatches
             txtBatchNumberEnd.Properties.NumberValueInt = ImportedBatchNumber;
 
             // Test simple export of batches, no summary
-            TestFile = TAppSettingsManager.GetValueStatic("Testing.Path") + "/MFinance/GLForm/TestData/BatchExportFloatTest.csv";
+            TestFile = TAppSettingsManager.GetValue("Testing.Path") + "/MFinance/GLForm/TestData/BatchExportFloatTest.csv";
             TestFile = Path.GetFullPath(TestFile);
             Assert.IsTrue(File.Exists(TestFile), "File does not exist: " + TestFile);
             txtFilename.Properties.Text = TestFile + ".new";
@@ -323,7 +323,7 @@ namespace Tests.MFinance.GLBatches
             System.IO.File.Delete(TestFile + ".new");
 
             // Test export of batches, summarizing the transactions
-            TestFile = TAppSettingsManager.GetValueStatic("Testing.Path") + "/MFinance/GLForm/TestData/BatchExportFloatTestSummary.csv";
+            TestFile = TAppSettingsManager.GetValue("Testing.Path") + "/MFinance/GLForm/TestData/BatchExportFloatTestSummary.csv";
             TestFile = Path.GetFullPath(TestFile);
             Assert.IsTrue(File.Exists(TestFile), "File does not exist: " + TestFile);
             txtFilename.Properties.Text = TestFile + ".new";

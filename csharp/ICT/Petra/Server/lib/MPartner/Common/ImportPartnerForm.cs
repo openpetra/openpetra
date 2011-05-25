@@ -278,12 +278,12 @@ namespace Ict.Petra.Server.MPartner.Import
         /// create PDF
         public static string GeneratePDF(Int64 APartnerKey, string ACountryCode, TApplicationFormData AData, out string ADownloadIdentifier)
         {
-            string FileName = TAppSettingsManager.GetValueStatic("Formletters.Path") +
+            string FileName = TAppSettingsManager.GetValue("Formletters.Path") +
                               Path.DirectorySeparatorChar + "ApplicationPDF." + ACountryCode + "." + AData.formsid + ".html";
 
             if (!File.Exists(FileName))
             {
-                FileName = TAppSettingsManager.GetValueStatic("Formletters.Path") +
+                FileName = TAppSettingsManager.GetValue("Formletters.Path") +
                            Path.DirectorySeparatorChar + "ApplicationPDF." + ACountryCode + ".html";
             }
 
@@ -309,9 +309,9 @@ namespace Ict.Petra.Server.MPartner.Import
             HTMLText = TJsonTools.ReplaceKeywordsWithData(AData.RawData, HTMLText);
 
             HTMLText = HTMLText.Replace("#DATE", StringHelper.DateToLocalizedString(DateTime.Today));
-            HTMLText = HTMLText.Replace("#FORMLETTERPATH", TAppSettingsManager.GetValueStatic("Formletters.Path"));
+            HTMLText = HTMLText.Replace("#FORMLETTERPATH", TAppSettingsManager.GetValue("Formletters.Path"));
             HTMLText = HTMLText.Replace("#REGISTRATIONID", StringHelper.FormatStrToPartnerKeyString(APartnerKey.ToString()));
-            HTMLText = HTMLText.Replace("#PHOTOPARTICIPANT", TAppSettingsManager.GetValueStatic("Server.PathData") +
+            HTMLText = HTMLText.Replace("#PHOTOPARTICIPANT", TAppSettingsManager.GetValue("Server.PathData") +
                 Path.DirectorySeparatorChar + "photos" +
                 Path.DirectorySeparatorChar + APartnerKey.ToString() + ".jpg");
 
@@ -326,7 +326,7 @@ namespace Ict.Petra.Server.MPartner.Import
 
             pdfPrinter.Init(eOrientation.ePortrait, htmlPrinter, eMarginType.ePrintableArea);
 
-            string pdfPath = TAppSettingsManager.GetValueStatic("Server.PathData") + Path.DirectorySeparatorChar +
+            string pdfPath = TAppSettingsManager.GetValue("Server.PathData") + Path.DirectorySeparatorChar +
                              "pdfs";
 
             if (!Directory.Exists(pdfPath))
@@ -338,7 +338,7 @@ namespace Ict.Petra.Server.MPartner.Import
 
             pdfPrinter.SavePDF(pdfFilename);
 
-            string downloadPath = TAppSettingsManager.GetValueStatic("Server.PathData") + Path.DirectorySeparatorChar +
+            string downloadPath = TAppSettingsManager.GetValue("Server.PathData") + Path.DirectorySeparatorChar +
                                   "downloads";
 
             if (!Directory.Exists(downloadPath))
@@ -359,12 +359,12 @@ namespace Ict.Petra.Server.MPartner.Import
         /// send an email to the applicant and the registration office
         public static bool SendEmail(Int64 APartnerKey, string ACountryCode, TApplicationFormData AData, string APDFFilename)
         {
-            string FileName = TAppSettingsManager.GetValueStatic("Formletters.Path") +
+            string FileName = TAppSettingsManager.GetValue("Formletters.Path") +
                               Path.DirectorySeparatorChar + "ApplicationReceivedEmail." + ACountryCode + "." + AData.formsid + ".html";
 
             if (!File.Exists(FileName))
             {
-                FileName = TAppSettingsManager.GetValueStatic("Formletters.Path") +
+                FileName = TAppSettingsManager.GetValue("Formletters.Path") +
                            Path.DirectorySeparatorChar + "ApplicationReceivedEmail." + ACountryCode + ".html";
             }
 
@@ -543,13 +543,13 @@ namespace Ict.Petra.Server.MPartner.Import
                     }
 
                     // process Photo
-                    imageTmpPath = TAppSettingsManager.GetValueStatic("Server.PathTemp") +
+                    imageTmpPath = TAppSettingsManager.GetValue("Server.PathTemp") +
                                    Path.DirectorySeparatorChar +
                                    Path.GetFileName(data.imageid);
 
                     if (File.Exists(imageTmpPath))
                     {
-                        string photosPath = TAppSettingsManager.GetValueStatic("Server.PathData") + Path.DirectorySeparatorChar +
+                        string photosPath = TAppSettingsManager.GetValue("Server.PathData") + Path.DirectorySeparatorChar +
                                             "photos";
 
                         if (!Directory.Exists(photosPath))

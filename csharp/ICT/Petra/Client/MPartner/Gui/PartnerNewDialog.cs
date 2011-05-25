@@ -253,7 +253,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (NewPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
             {
-                if (TAppSettingsManager.GetValueStatic("AllowCreationPersonRecords", "false", false).ToLower() != "true")
+                if (TAppSettingsManager.GetValue("AllowCreationPersonRecords", "false", false).ToLower() != "true")
                 {
                     MessageBox.Show("We are planning to change the Person and Family system to something more easy to understand." +
                         Environment.NewLine +

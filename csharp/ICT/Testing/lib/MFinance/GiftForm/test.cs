@@ -57,7 +57,7 @@ namespace Tests.MFinance.Client.Gift
             nant("startPetraServer", true);
 
             TPetraConnector.Connect("../../../../../etc/TestClient.config");
-            FLedgerNumber = Convert.ToInt32(TAppSettingsManager.GetValueStatic("LedgerNumber"));
+            FLedgerNumber = Convert.ToInt32(TAppSettingsManager.GetValue("LedgerNumber"));
         }
 
         void nant(String argument, bool ignoreError)
@@ -126,7 +126,7 @@ namespace Tests.MFinance.Client.Gift
             // export the 2 test batches, with summarize option
             // compare the exported text file
 
-            string TestFile = TAppSettingsManager.GetValueStatic("Testing.Path") + "/MFinance/GiftForm/TestData/BatchImportTest.csv";
+            string TestFile = TAppSettingsManager.GetValue("Testing.Path") + "/MFinance/GiftForm/TestData/BatchImportTest.csv";
 
             TestFile = Path.GetFullPath(TestFile);
             Assert.IsTrue(File.Exists(TestFile), "File does not exist: " + TestFile);

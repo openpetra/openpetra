@@ -349,7 +349,7 @@ namespace Tests.MFinance.GLBatches
         {
             new TLogging("PetraClient.log");
             TPetraConnector.Connect("../../../../../etc/TestClient.config");
-            fLedgerNumber = Convert.ToInt32(TAppSettingsManager.GetValueStatic("LedgerNumber"));
+            fLedgerNumber = Convert.ToInt32(TAppSettingsManager.GetValue("LedgerNumber"));
         }
 
         /// <summary>

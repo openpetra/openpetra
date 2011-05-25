@@ -405,7 +405,7 @@ namespace Ict.Petra.Server.App.ClientDomain
                 TCPSink.TypeFilterLevel = TypeFilterLevel.Low;
                 IServerChannelSinkProvider EncryptionSink = TCPSink;
 
-                if (TAppSettingsManager.GetValueStatic("Server.ChannelEncryption.PrivateKeyfile", "", false).Length > 0)
+                if (TAppSettingsManager.GetValue("Server.ChannelEncryption.PrivateKeyfile", "", false).Length > 0)
                 {
                     EncryptionSink = new EncryptionServerSinkProvider();
                     EncryptionSink.Next = TCPSink;
@@ -414,7 +414,7 @@ namespace Ict.Petra.Server.App.ClientDomain
                 ChannelProperties = new Hashtable();
                 ChannelProperties.Add("port", RemotingPortInt.ToString());
 
-                string SpecificIPAddress = TAppSettingsManager.GetValueStatic("ListenOnIPAddress", "", false);
+                string SpecificIPAddress = TAppSettingsManager.GetValue("ListenOnIPAddress", "", false);
 
                 if (SpecificIPAddress.Length > 0)
                 {

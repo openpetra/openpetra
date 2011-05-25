@@ -292,13 +292,13 @@ namespace Ict.Petra.Server.MConference.Applications
         /// only sends an email if the template exists
         public static bool SendEmail(TApplicationFormData AData)
         {
-            string FileName = TAppSettingsManager.GetValueStatic("Formletters.Path") +
+            string FileName = TAppSettingsManager.GetValue("Formletters.Path") +
                               Path.DirectorySeparatorChar + "ApplicationAcceptedEmail." + AData.registrationcountrycode + "." + AData.formsid +
                               ".html";
 
             if (!File.Exists(FileName))
             {
-                FileName = TAppSettingsManager.GetValueStatic("Formletters.Path") +
+                FileName = TAppSettingsManager.GetValue("Formletters.Path") +
                            Path.DirectorySeparatorChar + "ApplicationAcceptedEmail." + AData.registrationcountrycode + ".html";
             }
 

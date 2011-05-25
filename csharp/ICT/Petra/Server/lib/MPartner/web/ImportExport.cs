@@ -103,7 +103,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
 
                     if (TYml2Xml.GetAttributeRecursive(LocalNode, "class") == MPartnerConstants.PARTNERCLASS_PERSON)
                     {
-                        if (TAppSettingsManager.GetValueStatic("AllowCreationPersonRecords", "false", false).ToLower() != "true")
+                        if (TAppSettingsManager.GetValue("AllowCreationPersonRecords", "false", false).ToLower() != "true")
                         {
                             throw new Exception(
                                 "We are currently not supporting import of PERSON records, until we have resolved the issues with household/family. "

@@ -58,14 +58,14 @@ namespace Ict.Testing.NUnitPetraClient
 
             Application.ThreadException += new ThreadExceptionEventHandler(UnhandledThreadExceptionHandler.OnThreadException);
 
-            TAppSettingsManager Config = new TAppSettingsManager(AConfigName);
+            new TAppSettingsManager(AConfigName);
 
             Catalog.Init();
 
             new TClientSettings();
             TClientInfo.InitVersion();
             TCacheableTablesManager.InitializeUnit();
-            Connect(Config.GetValue("AutoLogin"), Config.GetValue("AutoLoginPasswd"), Config.GetInt64("SiteKey"));
+            Connect(TAppSettingsManager.GetValue("AutoLogin"), TAppSettingsManager.GetValue("AutoLoginPasswd"), TAppSettingsManager.GetInt64("SiteKey"));
         }
 
         public static void Connect(String AUserName, String APassword, Int64 ASiteKey)
