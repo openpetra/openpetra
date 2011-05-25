@@ -117,8 +117,13 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                     if (TYml2Xml.GetAttributeRecursive(LocalNode, "class") == MPartnerConstants.PARTNERCLASS_PERSON)
                     {
-                        throw new Exception(
-                            "We are currently not supporting import of PERSON records, until we have resolved the issues with household/family");
+                        if (TAppSettingsManager.GetValueStatic("AllowCreationPersonRecords", "false", false).ToLower() != "true")
+                        {
+                            throw new Exception(
+                                "We are currently not supporting import of PERSON records, until we have resolved the issues with household/family. "
+                               + "Please add configuration parameter AllowCreationPersonRecords with value true if you want to use PERSON records");
+                        }
+
                         // TODO
                     }
                     else if (TYml2Xml.GetAttributeRecursive(LocalNode, "class") == MPartnerConstants.PARTNERCLASS_ORGANISATION)
