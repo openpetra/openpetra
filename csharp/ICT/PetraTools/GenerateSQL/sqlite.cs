@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -49,6 +49,13 @@ public class TSQLiteWriter
         if (System.IO.File.Exists(ADBFilename))
         {
             throw new Exception("cannot overwrite existing file " + ADBFilename);
+        }
+
+        if (ADBPwd.Length > 0)
+        {
+            System.Console.WriteLine(
+                "Error: we do not support sqlite databases with passwords at the moment, since that does not seem to work on Windows");
+            return false;
         }
 
         System.Console.WriteLine("Writing file to {0}...", ADBFilename);

@@ -130,8 +130,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
         {
             Console.WriteLine("processing dataset " + ANameSpace);
 
-            TAppSettingsManager opts = new TAppSettingsManager(false);
-            string templateDir = opts.GetValue("TemplateDir", true);
+            string templateDir = TAppSettingsManager.GetValue("TemplateDir", true);
             ProcessTemplate Template = new ProcessTemplate(templateDir + Path.DirectorySeparatorChar +
                 "ORM" + Path.DirectorySeparatorChar +
                 "DataSetAccess.cs");

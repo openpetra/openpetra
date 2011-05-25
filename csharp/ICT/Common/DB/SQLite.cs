@@ -74,8 +74,7 @@ namespace Ict.Common.DB
                 // see also http://www.vincenzo.net/isxkb/index.php?title=Vista_considerations#Best_Practices
 
                 // copy the base database
-                TAppSettingsManager settings = new TAppSettingsManager();
-                string baseDatabase = settings.GetValue("Server.BaseDatabase");
+                string baseDatabase = TAppSettingsManager.GetValue("Server.BaseDatabase");
 
                 if (!Directory.Exists(Path.GetDirectoryName(AServer)))
                 {

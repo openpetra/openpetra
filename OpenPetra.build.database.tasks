@@ -83,6 +83,7 @@
     <target name="recreateDatabase" depends="init,createSQLStatements">
         <if test="${DBMS.Type=='sqlite'}">
              <delete file="${SQLitedb.file}" if="${file::exists(SQLitedb.file)}"/>
+             <move file="${SQLitedbWork.file}" tofile="${SQLitedbWork.file}.bak" if="${file::exists(SQLitedbWork.file)}"/>
              <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:sql -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -password:${DBMS.Password}" failonerror="true"/>
         </if>
         <if test="${DBMS.Type=='postgresql'}">

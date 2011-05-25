@@ -704,8 +704,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
         {
             Console.WriteLine("processing namespace PetraTypedDataAccess." + strGroup.Substring(0, 1).ToUpper() + strGroup.Substring(1));
 
-            TAppSettingsManager opts = new TAppSettingsManager(false);
-            string templateDir = opts.GetValue("TemplateDir", true);
+            string templateDir = TAppSettingsManager.GetValue("TemplateDir", true);
             ProcessTemplate Template = new ProcessTemplate(templateDir + Path.DirectorySeparatorChar +
                 "ORM" + Path.DirectorySeparatorChar +
                 "DataAccess.cs");

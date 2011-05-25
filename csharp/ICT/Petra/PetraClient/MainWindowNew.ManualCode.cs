@@ -67,7 +67,7 @@ namespace Ict.Petra.Client.App.PetraClient
         {
             if (System.Windows.Forms.Form.ModifierKeys != Keys.Control)
             {
-                string testAction = TAppSettingsManager.GetValueStatic("TestAction");
+                string testAction = TAppSettingsManager.GetValue("TestAction");
 
                 if (testAction != TAppSettingsManager.UNDEFINEDVALUE)
                 {
@@ -156,8 +156,7 @@ namespace Ict.Petra.Client.App.PetraClient
 
         private void LoadNavigationUI()
         {
-            TAppSettingsManager opts = new TAppSettingsManager();
-            TYml2Xml parser = new TYml2Xml(opts.GetValue("UINavigation.File"));
+            TYml2Xml parser = new TYml2Xml(TAppSettingsManager.GetValue("UINavigation.File"));
             XmlDocument UINavigation = parser.ParseYML2XML();
 
             ALedgerTable AvailableLedgers = new ALedgerTable();

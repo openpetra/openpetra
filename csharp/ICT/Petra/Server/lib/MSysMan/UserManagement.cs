@@ -75,7 +75,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         [RequireModulePermission("SYSMAN")]
         public static bool SetUserPassword(string AUsername, string APassword)
         {
-            string UserAuthenticationMethod = TAppSettingsManager.GetValueStatic("UserAuthenticationMethod", "OpenPetraDBSUser", false);
+            string UserAuthenticationMethod = TAppSettingsManager.GetValue("UserAuthenticationMethod", "OpenPetraDBSUser", false);
 
             if (UserAuthenticationMethod == "OpenPetraDBSUser")
             {
@@ -138,7 +138,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         [RequireModulePermission("NONE")]
         public static bool SetUserPassword(string AUsername, string APassword, string AOldPassword)
         {
-            string UserAuthenticationMethod = TAppSettingsManager.GetValueStatic("UserAuthenticationMethod", "OpenPetraDBSUser", false);
+            string UserAuthenticationMethod = TAppSettingsManager.GetValue("UserAuthenticationMethod", "OpenPetraDBSUser", false);
 
             TVerificationResultCollection verification;
 
@@ -194,7 +194,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             newUser.UserId = AUsername.ToUpper();
             userTable.Rows.Add(newUser);
 
-            string UserAuthenticationMethod = TAppSettingsManager.GetValueStatic("UserAuthenticationMethod", "OpenPetraDBSUser", false);
+            string UserAuthenticationMethod = TAppSettingsManager.GetValue("UserAuthenticationMethod", "OpenPetraDBSUser", false);
 
             if (UserAuthenticationMethod == "OpenPetraDBSUser")
             {
@@ -307,7 +307,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             ACanChangePassword = true;
             ACanChangePermissions = true;
 
-            string UserAuthenticationMethod = TAppSettingsManager.GetValueStatic("UserAuthenticationMethod", "OpenPetraDBSUser", false);
+            string UserAuthenticationMethod = TAppSettingsManager.GetValue("UserAuthenticationMethod", "OpenPetraDBSUser", false);
 
             if (UserAuthenticationMethod != "OpenPetraDBSUser")
             {

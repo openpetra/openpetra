@@ -305,7 +305,7 @@ public class TOpenPetraOrg : WebService
         // user ANONYMOUS, can only write, not read
         if (!IsUserLoggedIn())
         {
-            if (!LoginInternal("ANONYMOUS", TAppSettingsManager.GetValueStatic("AnonymousUserPasswd")))
+            if (!LoginInternal("ANONYMOUS", TAppSettingsManager.GetValue("AnonymousUserPasswd")))
             {
                 string message =
                     "In order to process anonymous submission of data from the web, we need to have a user ANONYMOUS which does not have any read permissions";

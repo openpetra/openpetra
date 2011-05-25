@@ -97,7 +97,7 @@ class Program
     {
         try
         {
-            TAppSettingsManager opts = new TAppSettingsManager(false);
+            new TAppSettingsManager(false);
 
             if (Directory.Exists("log"))
             {
@@ -108,7 +108,7 @@ class Program
                 new TLogging("generateextjsforms.log");
             }
 
-            if (!opts.HasValue("ymlfile"))
+            if (!TAppSettingsManager.HasValue("ymlfile"))
             {
                 Console.WriteLine("call: GenerateExtJsForms -ymlfile:c:\\test.yaml -petraxml:petra.xml -localisation:en");
                 Console.Write("Press any key to continue . . . ");
@@ -118,7 +118,7 @@ class Program
             }
 
             // calculate ICTPath from ymlfile path
-            string fullYmlfilePath = Path.GetFullPath(opts.GetValue("ymlfile")).Replace("\\", "/");
+            string fullYmlfilePath = Path.GetFullPath(TAppSettingsManager.GetValue("ymlfile")).Replace("\\", "/");
 
             if (!fullYmlfilePath.Contains("webserver/"))
             {
@@ -127,19 +127,19 @@ class Program
 
             string SelectedLocalisation = null;             // none selected by default
 
-            if (opts.HasValue("localisation"))
+            if (TAppSettingsManager.HasValue("localisation"))
             {
-                SelectedLocalisation = opts.GetValue("localisation");
+                SelectedLocalisation = TAppSettingsManager.GetValue("localisation");
             }
 
             CSParser.ICTPath = fullYmlfilePath.Substring(0, fullYmlfilePath.IndexOf("csharp/ICT") + "csharp/ICT".Length);
 
             TDataBinding.FPetraXMLStore = new TDataDefinitionStore();
-            Console.WriteLine("parsing " + opts.GetValue("petraxml", true));
-            TDataDefinitionParser parser = new TDataDefinitionParser(opts.GetValue("petraxml", true));
+            Console.WriteLine("parsing " + TAppSettingsManager.GetValue("petraxml", true));
+            TDataDefinitionParser parser = new TDataDefinitionParser(TAppSettingsManager.GetValue("petraxml", true));
             parser.ParseDocument(ref TDataBinding.FPetraXMLStore, true, true);
 
-            string ymlfileParam = opts.GetValue("ymlfile", true);
+            string ymlfileParam = TAppSettingsManager.GetValue("ymlfile", true);
 
             if (ymlfileParam.Contains(","))
             {

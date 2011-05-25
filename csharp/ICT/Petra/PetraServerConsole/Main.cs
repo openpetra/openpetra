@@ -170,7 +170,7 @@ public class TServer
 #if  RUNWITHOUTMENU
             RunWithoutMenu = true;
 #else
-            RunWithoutMenu = TAppSettingsManager.ToBoolean(TAppSettingsManager.GetValueStatic("RunWithoutMenu", "false"), false);
+            RunWithoutMenu = TAppSettingsManager.ToBoolean(TAppSettingsManager.GetValue("RunWithoutMenu", "false"), false);
 
             if ((!RunWithoutMenu))
             {
