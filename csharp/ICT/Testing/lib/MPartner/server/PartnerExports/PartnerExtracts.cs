@@ -68,8 +68,8 @@ namespace Tests.MPartner.Server.PartnerExports
         [Test]
         public void TestImportFamily()
         {
-            const string testFile = "../../csharp/ICT/Testing/lib/MPartner/SampleData/sampleExtract.ext";
-            const string SelectedEventCode = string.empty;
+            const string testFile = TAppSettingsManager.GetValue("ExtractTest.file", "../../csharp/ICT/Testing/lib/MPartner/SampleData/sampleExtract.ext");
+            const string SelectedEventCode = TAppSettingsManager.GetValue("ImportPartnerForEventCode", string.empty);
             StreamReader reader = new StreamReader(testFile);
 
             string[] lines = reader.ReadToEnd().Replace("\r\n", "\n").Replace("\r", "\n").Split(new char[] { '\n' });
