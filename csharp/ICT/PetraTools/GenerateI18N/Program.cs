@@ -67,38 +67,38 @@ class Program
 
     public static void Main(string[] args)
     {
-        TAppSettingsManager settings = new TAppSettingsManager(false);
+        new TAppSettingsManager(false);
 
         try
         {
-            if (settings.HasValue("do") && (settings.GetValue("do") == "removeDoNotTranslate"))
+            if (TAppSettingsManager.HasValue("do") && (TAppSettingsManager.GetValue("do") == "removeDoNotTranslate"))
             {
-                string doNotTranslatePath = settings.GetValue("dntFile");
-                string poFilePath = settings.GetValue("poFile");
+                string doNotTranslatePath = TAppSettingsManager.GetValue("dntFile");
+                string poFilePath = TAppSettingsManager.GetValue("poFile");
 
                 // remove all strings from po file that are listed in the "Do Not Translate" file
                 TDropUnwantedStrings.RemoveUnwantedStringsFromTranslation(doNotTranslatePath, poFilePath);
             }
-            else if (settings.HasValue("file"))
+            else if (TAppSettingsManager.HasValue("file"))
             {
-                TGenerateCatalogStrings.Execute(settings.GetValue("file"), null, null);
+                TGenerateCatalogStrings.Execute(TAppSettingsManager.GetValue("file"), null, null);
             }
-            else if (settings.HasValue("filelist"))
+            else if (TAppSettingsManager.HasValue("filelist"))
             {
                 TDataDefinitionStore store = new TDataDefinitionStore();
-                Console.WriteLine("parsing " + settings.GetValue("petraxml", true));
-                TDataDefinitionParser parser = new TDataDefinitionParser(settings.GetValue("petraxml", true));
+                Console.WriteLine("parsing " + TAppSettingsManager.GetValue("petraxml", true));
+                TDataDefinitionParser parser = new TDataDefinitionParser(TAppSettingsManager.GetValue("petraxml", true));
                 parser.ParseDocument(ref store, true, true);
 
-                string CollectedStringsFilename = settings.GetValue("tmpPath") +
+                string CollectedStringsFilename = TAppSettingsManager.GetValue("tmpPath") +
                                                   Path.DirectorySeparatorChar +
                                                   "GenerateI18N.CollectedGettext.cs";
                 StreamWriter writerCollectedStringsFile = new StreamWriter(CollectedStringsFilename);
 
-                string GettextApp = settings.GetValue("gettext");
+                string GettextApp = TAppSettingsManager.GetValue("gettext");
 
                 string filesToParseWithGettext = string.Empty;
-                StreamReader readerFilelist = new StreamReader(settings.GetValue("filelist"));
+                StreamReader readerFilelist = new StreamReader(TAppSettingsManager.GetValue("filelist"));
 
                 while (!readerFilelist.EndOfStream)
                 {
@@ -113,7 +113,7 @@ class Program
 
                             if (filesToParseWithGettext.Length > 1500)
                             {
-                                ParseWithGettext(GettextApp, settings.GetValue("poFile"), filesToParseWithGettext);
+                                ParseWithGettext(GettextApp, TAppSettingsManager.GetValue("poFile"), filesToParseWithGettext);
                                 filesToParseWithGettext = string.Empty;
                             }
                         }
@@ -130,7 +130,7 @@ class Program
 
                 if (filesToParseWithGettext.Length > 0)
                 {
-                    ParseWithGettext(GettextApp, settings.GetValue("poFile"), filesToParseWithGettext);
+                    ParseWithGettext(GettextApp, TAppSettingsManager.GetValue("poFile"), filesToParseWithGettext);
                 }
 
                 writerCollectedStringsFile.Close();

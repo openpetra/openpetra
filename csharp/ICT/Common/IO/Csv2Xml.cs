@@ -101,7 +101,7 @@ namespace Ict.Common.IO
             List <XmlNode>AllNodes = new List <XmlNode>();
             GetAllAttributesAndNodes(ADoc.DocumentElement, ref AllAttributes, ref AllNodes);
 
-            string separator = TAppSettingsManager.GetValueStatic("CSVSeparator",
+            string separator = TAppSettingsManager.GetValue("CSVSeparator",
                 System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator);
 
             string headerLine = "";

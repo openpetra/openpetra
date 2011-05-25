@@ -429,6 +429,7 @@ namespace Ict.Petra.Shared
             list.Add("seq_ar_invoice");
             list.Add("seq_match_number");
             list.Add("seq_statement_number");
+            list.Add("seq_login_process_id");
 
             #endregion
             return list;

@@ -352,6 +352,8 @@ namespace Ict.Petra.Server.App.ClientDomain
             System.Int16 RemotingPortInt;
             Hashtable ChannelProperties;
 
+            new TAppSettingsManager();
+
             // Console.WriteLine('TClientDomainManager.Create in AppDomain: ' + Thread.GetDomain().FriendlyName);
             DomainManager.GClientID = Convert.ToInt16(AClientID);
             DomainManager.GCacheableTablesManager = ACacheableTablesManagerRef;
@@ -405,7 +407,7 @@ namespace Ict.Petra.Server.App.ClientDomain
                 TCPSink.TypeFilterLevel = TypeFilterLevel.Low;
                 IServerChannelSinkProvider EncryptionSink = TCPSink;
 
-                if (TAppSettingsManager.GetValueStatic("Server.ChannelEncryption.PrivateKeyfile", "", false).Length > 0)
+                if (TAppSettingsManager.GetValue("Server.ChannelEncryption.PrivateKeyfile", "", false).Length > 0)
                 {
                     EncryptionSink = new EncryptionServerSinkProvider();
                     EncryptionSink.Next = TCPSink;
@@ -414,7 +416,7 @@ namespace Ict.Petra.Server.App.ClientDomain
                 ChannelProperties = new Hashtable();
                 ChannelProperties.Add("port", RemotingPortInt.ToString());
 
-                string SpecificIPAddress = TAppSettingsManager.GetValueStatic("ListenOnIPAddress", "", false);
+                string SpecificIPAddress = TAppSettingsManager.GetValue("ListenOnIPAddress", "", false);
 
                 if (SpecificIPAddress.Length > 0)
                 {

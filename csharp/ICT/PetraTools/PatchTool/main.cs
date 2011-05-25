@@ -47,38 +47,38 @@ namespace Ict.Tools.PatchTool
             try
             {
                 // check command line
-                TAppSettingsManager appOpts = new TAppSettingsManager(false);
-                string TempPath = appOpts.GetValue("OpenPetra.PathTemp").
+                new TAppSettingsManager(false);
+                string TempPath = TAppSettingsManager.GetValue("OpenPetra.PathTemp").
                                   Replace("{userappdata}",
                     Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
 
                 new TLogging(TempPath + Path.DirectorySeparatorChar + "PetraPatch.log");
 //                Catalog.Init();
 
-                String action = appOpts.GetValue("action", false);
+                String action = TAppSettingsManager.GetValue("action", false);
 
                 if (action.Equals("create"))
                 {
                     PatchCreation.CreateDiff(TempPath,
-                        appOpts.GetValue("deliverypath"),
-                        appOpts.GetValue("appname"),
-                        appOpts.GetValue("oldversion"),
-                        appOpts.GetValue("newversion"));
+                        TAppSettingsManager.GetValue("deliverypath"),
+                        TAppSettingsManager.GetValue("appname"),
+                        TAppSettingsManager.GetValue("oldversion"),
+                        TAppSettingsManager.GetValue("newversion"));
                 }
                 else if (action.Equals("preparePatch"))
                 {
                     // to be called before installing the patch;
                     // will only copy the files if there is a new patch available
-                    TPetraPatchTools patchTools = new TPetraPatchTools(appOpts.GetValue("OpenPetra.Path"),
+                    TPetraPatchTools patchTools = new TPetraPatchTools(TAppSettingsManager.GetValue("OpenPetra.Path"),
                         TempPath,
                         "",
                         "",
-                        appOpts.GetValue("OpenPetra.Path.Patches"),
+                        TAppSettingsManager.GetValue("OpenPetra.Path.Patches"),
                         "");
 
                     if (patchTools.CheckForRecentPatch())
                     {
-                        patchTools.CopyLatestPatchProgram(appOpts.GetValue("OpenPetra.PathTemp"));
+                        patchTools.CopyLatestPatchProgram(TAppSettingsManager.GetValue("OpenPetra.PathTemp"));
                     }
                     else
                     {
@@ -89,18 +89,18 @@ namespace Ict.Tools.PatchTool
                 else if (action.Equals("patchRemote"))
                 {
                     // basically the same as patchFiles, but will use the status window.
-                    PatchApplication.PatchRemoteInstallation(appOpts);
+                    PatchApplication.PatchRemoteInstallation();
                 }
                 else if (action.Equals("patchFiles"))
                 {
                     // need to call first preparePatch;
                     // and then run the patch from TmpPatchPath so that the files can be overwritten
                     // this will patch the application files
-                    TPetraPatchTools patchTools = new TPetraPatchTools(appOpts.GetValue("OpenPetra.Path"),
+                    TPetraPatchTools patchTools = new TPetraPatchTools(TAppSettingsManager.GetValue("OpenPetra.Path"),
                         TempPath,
-                        appOpts.GetValue("OpenPetra.Path.Dat"),
+                        TAppSettingsManager.GetValue("OpenPetra.Path.Dat"),
                         "",
-                        appOpts.GetValue("OpenPetra.Path.Patches"),
+                        TAppSettingsManager.GetValue("OpenPetra.Path.Patches"),
                         "");
 
                     if (patchTools.CheckForRecentPatch())
@@ -130,11 +130,11 @@ namespace Ict.Tools.PatchTool
                 {
                     // this should only be called after patchFiles;
                     // this will possibly change the database structure, and modify database content
-                    TPetraPatchTools patchTools = new TPetraPatchTools(appOpts.GetValue("OpenPetra.Path"),
+                    TPetraPatchTools patchTools = new TPetraPatchTools(TAppSettingsManager.GetValue("OpenPetra.Path"),
                         TempPath,
                         "",
                         "",
-                        appOpts.GetValue("DBPatches.Path"),
+                        TAppSettingsManager.GetValue("DBPatches.Path"),
                         "");
 
                     patchTools.RunDBPatches();

@@ -34,20 +34,31 @@ using Ict.Petra.Shared.MReporting;
 
 namespace Tests.Reporting
 {
+    /// <summary>
     /// This is a test for the parameter list which is used for reporting.
+    /// </summary>
     [TestFixture]
     public class TParameterListTest
     {
+        /// <summary>
+        /// ...
+        /// </summary>
         [SetUp]
         public void Init()
         {
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         [TearDown]
         public void TearDown()
         {
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         [Test]
         public void TestGeneralParametersProcessing()
         {

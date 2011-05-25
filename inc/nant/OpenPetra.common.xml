@@ -75,6 +75,9 @@
           overwrite="false" />
 <property name="dir.incdir.template.etc" value="${path::combine(dir.incdir.template, 'etc')}"
           overwrite="false" />
+<property name="dir.incdir.cfg" value="${path::combine(dir.incdir, 'cfg')}"
+          overwrite="false" />
+
  <!-- csharp -->
 <property name="dir.csharp" value="${path::combine(dir.root, 'csharp')}"
           overwrite="false" />
@@ -134,6 +137,8 @@
 <!-- Server configuration -->
 <property name="Server.Port" value="9000" 
           overwrite="false" />
+<property name="Server.DebugLevel" value="0" 
+          overwrite="false" />
 <property name="SelectedLanguage" value="en" overwrite="false" />
 
 <!-- database -->
@@ -187,6 +192,10 @@
 
 
 <!-- external utilities dependend on platform -->
+<property name="external.doxygen" value="doxygen" overwrite="false"/>
+<property name="external.doxygen.configfile" value="${path::combine(dir.incdir.cfg, 'doxygen.cfg')}"
+          overwrite="false" />
+
 <if test="${'win32'==platform::get-name()}" >
   <!-- MS Windows specific -->
   <property name="external.Uncrustify" value="${environment::get-variable('ProgramFiles')}/uncrustify-0.56-win32/uncrustify.exe" 

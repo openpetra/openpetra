@@ -65,6 +65,12 @@ useful parameters
 </echo>
 </target>
 
+<target name="apiDoc" description="Generates API documentation. nant depend should have been run" >
+  <exec program="${external.doxygen}">
+    <arg value="&quot;${external.doxygen.configfile}&quot;" />
+  </exec>  
+</target>
+
 <target name="translationCompilePOFile" description="create the dlls with the i18n messages" >
   <property name="target" value="compile" overwrite="false" />
   <nant inheritall="false" target="${target}" 

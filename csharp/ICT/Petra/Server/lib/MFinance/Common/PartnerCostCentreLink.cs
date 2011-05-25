@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -29,7 +29,7 @@ using Ict.Common.DB;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 
-namespace Ict.Petra.Server.MFinance
+namespace Ict.Petra.Server.MFinance.Common
 {
     /// <summary>
     /// Contains Finance Module Setup-Subnamespace Business Logic.

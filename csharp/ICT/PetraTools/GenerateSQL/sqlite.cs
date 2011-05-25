@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -51,6 +51,13 @@ public class TSQLiteWriter
             throw new Exception("cannot overwrite existing file " + ADBFilename);
         }
 
+        if (ADBPwd.Length > 0)
+        {
+            System.Console.WriteLine(
+                "Error: we do not support sqlite databases with passwords at the moment, since that does not seem to work on Windows");
+            return false;
+        }
+
         System.Console.WriteLine("Writing file to {0}...", ADBFilename);
 
         // see also tutorial http://sqlite.phxsoftware.com/forums/p/130/452.aspx#452
@@ -67,6 +74,25 @@ public class TSQLiteWriter
             {
                 createStmt += TWriteSQL.WriteField(TWriteSQL.eDatabaseType.Sqlite, table, field, firstField, false);
                 firstField = false;
+            }
+
+            if (table.HasPrimaryKey() && !createStmt.Contains("PRIMARY KEY AUTOINCREMENT"))
+            {
+                createStmt += ", PRIMARY KEY (";
+                bool firstPrimaryKeyColumn = true;
+
+                foreach (string primaryKeyColumnName in table.GetPrimaryKey().strThisFields)
+                {
+                    if (!firstPrimaryKeyColumn)
+                    {
+                        createStmt += ",";
+                    }
+
+                    createStmt += primaryKeyColumnName;
+                    firstPrimaryKeyColumn = false;
+                }
+
+                createStmt += ")";
             }
 
             createStmt += ");";

@@ -373,6 +373,38 @@ namespace Ict.Common.Data
         }
 
         /// <summary>
+        /// copy all values from one row to the other; must have the same columns; omit Primary Key Columns
+        /// </summary>
+        /// <param name="ASourceRow"></param>
+        /// <param name="ADestinationRow"></param>
+        public static void CopyAllColumnValuesWithoutPK(DataRow ASourceRow, DataRow ADestinationRow)
+        {
+            for (Int32 col = 0; col < ASourceRow.Table.Columns.Count; col++)
+            {
+                Int32 pkIndex = 0;
+                bool pk = false;
+
+                while (pkIndex < ADestinationRow.Table.PrimaryKey.Length)
+                {
+                    if (col == ADestinationRow.Table.PrimaryKey[pkIndex].Ordinal)
+                    {
+                        pk = true;
+                        break;
+                    }
+
+                    pkIndex++;
+                }
+
+                string columnName = ASourceRow.Table.Columns[col].ColumnName;
+
+                if (!pk && ADestinationRow.Table.Columns.Contains(columnName))
+                {
+                    ADestinationRow[ADestinationRow.Table.Columns[columnName].Ordinal] = ASourceRow[col];
+                }
+            }
+        }
+
+        /// <summary>
         /// small structure for comparing 2 DataRows by columns, used by CompareAllColumnValues
         /// </summary>
         public struct TColumnDifference

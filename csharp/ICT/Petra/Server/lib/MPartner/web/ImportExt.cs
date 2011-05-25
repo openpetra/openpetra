@@ -281,8 +281,12 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                 PPersonAccess.AddOrModifyRecord(PersonRow.PartnerKey, FMainDS.PPerson, PersonRow, FDoNotOverwrite, ATransaction);
 
-                throw new Exception(
-                    "We are currently not supporting import of PERSON records, until we have resolved the issues with household/family");
+                if (TAppSettingsManager.GetValue("AllowCreationPersonRecords", "false", false).ToLower() != "true")
+                {
+                    throw new Exception(
+                        "We are currently not supporting import of PERSON records, until we have resolved the issues with household/family. " +
+                        "Please add configuration parameter AllowCreationPersonRecords with value true if you want to use PERSON records");
+                }
             }
             else if (APartnerClass == MPartnerConstants.PARTNERCLASS_ORGANISATION)
             {
