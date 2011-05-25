@@ -69,13 +69,11 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         /// <summary>
         /// need to add referenced offices if they don't exist yet
         /// </summary>
-        private void AddRequiredUnits(List <Int64>AUnitKeys, string AUnitType, Int64 AUnitParent, string AUnitNamePrefix)
+        private void AddRequiredUnits(List <Int64>AUnitKeys, string AUnitType, Int64 AUnitParent, string AUnitNamePrefix, TDBTransaction ATransaction)
         {
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
-
             foreach (Int64 NewUnitKey in AUnitKeys)
             {
-                if (!PUnitAccess.Exists(NewUnitKey, Transaction))
+                if (!PUnitAccess.Exists(NewUnitKey, ATransaction))
                 {
                     PUnitRow UnitRow = FMainDS.PUnit.NewRowTyped();
                     UnitRow.PartnerKey = NewUnitKey;
@@ -110,8 +108,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     FMainDS.PPartnerLocation.Rows.Add(partnerLocationRow);
                 }
             }
-
-            DBAccess.GDBAccessObj.RollbackTransaction();
         }
 
         private void AddUnitOption(Int64 AOptionKey)
@@ -213,6 +209,10 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     {
                         FamilyRow.SetFieldKeyNull();
                     }
+                    else
+                    {
+                        AddRequiredOffice(FamilyRow.FieldKey);
+                    }
                 }
                 catch (Exception)
                 {
@@ -272,6 +272,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 if (FieldKey.HasValue && (FieldKey.Value != 0))
                 {
                     PersonRow.FieldKey = FieldKey.Value;
+
+                    AddRequiredOffice(PersonRow.FieldKey);
                 }
 
                 PersonRow.FamilyKey = ReadInt64();
@@ -1426,20 +1428,21 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                     ImportOptionalDetails(PartnerRow, PetraVersion, Transaction);
                 }
+
+                AddRequiredUnits(FRequiredOfficeKeys, "F", 1000000, "Office", Transaction);
+                AddRequiredUnits(FRequiredOptionKeys, "CONF", 1000000, "Conference", Transaction);
             }
             catch (Exception e)
             {
-                TLogging.Log(e.Message + " in line " + (CurrentLineCounter + 1).ToString());
+                TLogging.Log(e.GetType().ToString() + ": " + e.Message + " in line " + (CurrentLineCounter + 1).ToString());
                 TLogging.Log(CurrentLine);
+                TLogging.Log(e.StackTrace);
                 throw;
             }
             finally
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
-
-            AddRequiredUnits(FRequiredOfficeKeys, "F", 1000000, "Office");
-            AddRequiredUnits(FRequiredOptionKeys, "CONF", 1000000, "Conference");
 
             return FMainDS;
         }

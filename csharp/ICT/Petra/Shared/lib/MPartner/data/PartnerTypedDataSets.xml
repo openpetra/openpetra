@@ -309,9 +309,9 @@
         <Table sqltable="p_location"/>
         <Table sqltable="p_partner_location"/>
 
+        <Table sqltable="p_unit"/>
         <Table sqltable="p_family"/>
         <Table sqltable="p_person"/>
-        <Table sqltable="p_unit"/>
         <Table sqltable="p_organisation"/>
         <Table sqltable="p_church"/>
         <Table sqltable="p_bank"/>
