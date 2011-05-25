@@ -75,8 +75,14 @@ namespace Tests.MPartner.Server.PartnerExports
             string[] lines = reader.ReadToEnd().Replace("\r\n", "\n").Replace("\r", "\n").Split(new char[] { '\n' });
             reader.Close();
 
+            TVerificationResultCollection VerificationResult;
             TPartnerFileImport importer = new TPartnerFileImport();
-            PartnerImportExportTDS MainDS = importer.ImportAllData(lines, SelectedEventCode, true);
+            PartnerImportExportTDS MainDS = importer.ImportAllData(lines, SelectedEventCode, true, out VerificationResult);
+
+            if (VerificationResult.HasCriticalError())
+            {
+                TLogging.Log(VerificationResult.BuildVerificationResultString());
+            }
 
             foreach (PPartnerRow PartnerRow in MainDS.PPartner.Rows)
             {
@@ -91,8 +97,6 @@ namespace Tests.MPartner.Server.PartnerExports
 
             try
             {
-                TVerificationResultCollection VerificationResult;
-
                 if (TSubmitChangesResult.scrOK == PartnerImportExportTDSAccess.SubmitChanges(MainDS, out VerificationResult))
                 {
                     //return;

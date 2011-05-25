@@ -306,6 +306,7 @@
         <Table sqltable="p_occupation"/>
 
         <Table sqltable="p_partner"/>
+        <Table sqltable="p_location_type"/>
         <Table sqltable="p_location"/>
         <Table sqltable="p_partner_location"/>
 
@@ -336,12 +337,14 @@
         <Table sqltable="pm_person_language"/>
         <Table sqltable="pm_person_ability"/>
         <Table sqltable="pm_person_vision"/>
+        <Table sqltable="pm_commitment_status"/>
         <Table sqltable="pm_staff_data"/>
         <Table sqltable="pm_job_assignment"/>
         <Table sqltable="pm_person_evaluation"/>
         <Table sqltable="pt_application_type"/>
         <Table sqltable="pt_arrival_point"/>
         <Table sqltable="pm_general_application"/>
+        <Table sqltable="pt_congress_code"/>
         <Table sqltable="pm_short_term_application"/>
         <Table sqltable="pm_year_program_application"/>
         <Table sqltable="pt_app_form_types"/>

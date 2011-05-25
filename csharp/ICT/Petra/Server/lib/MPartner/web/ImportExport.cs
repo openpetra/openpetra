@@ -240,10 +240,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static PartnerImportExportTDS ImportFromPartnerExtract(string[] ATextFileLines, out TVerificationResultCollection AVerificationResult)
         {
-            AVerificationResult = new TVerificationResultCollection();
-
             TPartnerFileImport Importer = new TPartnerFileImport();
-            PartnerImportExportTDS MainDS = Importer.ImportAllData(ATextFileLines, string.Empty, true);
+            PartnerImportExportTDS MainDS = Importer.ImportAllData(ATextFileLines, string.Empty, true, out AVerificationResult);
 
             // TODO: check for updated partners, matching addresses etc.
 

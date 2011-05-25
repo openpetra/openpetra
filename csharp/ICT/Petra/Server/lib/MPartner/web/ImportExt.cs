@@ -29,6 +29,7 @@ using Ict.Common.IO;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Data;
+using Ict.Common.Verification;
 using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -51,6 +52,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         private List <Int64>FRequiredOfficeKeys = new List <long>();
         private List <Int64>FRequiredOptionKeys = new List <long>();
         private List <Int64>FPartnerAlreadyLoaded = new List <long>();
+        private TVerificationResultCollection FResultList = new TVerificationResultCollection();
         private string FLimitToOption = string.Empty;
         private bool FDoNotOverwrite = true;
         private int FCountLocationKeys = -1;
@@ -361,6 +363,20 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             PartnerLocationRow.DateEffective = ReadNullableDate();
             PartnerLocationRow.DateGoodUntil = ReadNullableDate();
             PartnerLocationRow.LocationType = ReadString();
+
+            // check if location type does already exist in this database
+            FMainDS.PLocationType.DefaultView.RowFilter = String.Format("{0} = '{1}'",
+                PLocationTypeTable.GetCodeDBName(), PartnerLocationRow.LocationType);
+
+            if (!FIgnoreApplication && (FMainDS.PLocationType.DefaultView.Count == 0))
+            {
+                TLogging.Log("Adding new location type " + PartnerLocationRow.LocationType);
+                PLocationTypeRow locationTypeRow = FMainDS.PLocationType.NewRowTyped();
+                locationTypeRow.Code = PartnerLocationRow.LocationType;
+                locationTypeRow.Description = "N/A";
+                FMainDS.PLocationType.Rows.Add(locationTypeRow);
+            }
+
             PartnerLocationRow.SendMail = ReadBoolean();
             PartnerLocationRow.EmailAddress = ReadString();
             PartnerLocationRow.TelephoneNumber = ReadString();
@@ -390,6 +406,30 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 PersonAbilityRow,
                 FDoNotOverwrite,
                 ATransaction);
+        }
+
+        /// <summary>
+        ///  we do not want to add new congress codes, but limit the registration offices to the existing congress codes (roles)
+        /// </summary>
+        /// <param name="ACongressCode"></param>
+        private void CheckCongressCode(string ACongressCode)
+        {
+            if (FIgnoreApplication || (ACongressCode.Length == 0))
+            {
+                return;
+            }
+
+            FMainDS.PtCongressCode.DefaultView.RowFilter = String.Format("{0} = '{1}'",
+                PtCongressCodeTable.GetCodeDBName(), ACongressCode);
+
+            if (FMainDS.PtCongressCode.DefaultView.Count == 0)
+            {
+                TLogging.Log("We do not know congress code " + ACongressCode);
+                FResultList.Add(new TVerificationResult(
+                        String.Format("importing application for partner {0}", FPartnerKey),
+                        String.Format("We do not know congress code {0}", ACongressCode),
+                        TResultSeverity.Resv_Critical));
+            }
         }
 
         private void ReadShortApplicationForm(PmGeneralApplicationRow AGeneralApplicationRow, TDBTransaction ATransaction)
@@ -438,6 +478,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
 
             ShortTermApplicationRow.StCongressCode = ReadString();
+            CheckCongressCode(ShortTermApplicationRow.StCongressCode);
             ShortTermApplicationRow.StCongressLanguage = ReadString();
             ShortTermApplicationRow.StCountryPref = ReadString();
 
@@ -450,7 +491,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
 
             ShortTermApplicationRow.XyzTbdRole = ReadString();
-
+            CheckCongressCode(ShortTermApplicationRow.XyzTbdRole);
             ShortTermApplicationRow.StFgCode = ReadString();
             ShortTermApplicationRow.StFgLeader = ReadBoolean();
             ShortTermApplicationRow.StFieldCharged = ReadInt64();
@@ -475,6 +516,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             ShortTermApplicationRow.StPartyContact = ReadInt64();
             ShortTermApplicationRow.StPartyTogether = ReadString();
             ShortTermApplicationRow.StPreCongressCode = ReadString();
+            CheckCongressCode(ShortTermApplicationRow.StPreCongressCode);
             ShortTermApplicationRow.StProgramFeeReceived = ReadBoolean();
             ShortTermApplicationRow.StRecruitEfforts = ReadString();
             ShortTermApplicationRow.StScholarshipAmount = ReadDecimal();
@@ -533,6 +575,15 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             ShortTermApplicationRow.DepartureExpHour = ReadInt32();
             ShortTermApplicationRow.DepartureExpMinute = ReadInt32();
             ShortTermApplicationRow.DepartureComments = ReadString();
+
+            if (ShortTermApplicationRow.StFieldCharged == 0)
+            {
+                // we cannot import a partner that has a field charged 0. This is an invalid application
+                TLogging.Log(
+                    "Problem, ShortTermApplication.StFieldCharged for partner " + FPartnerKey.ToString() +
+                    " is NULL or 0. We will ignore this application.");
+                return;
+            }
 
             if (!FIgnoreApplication)
             {
@@ -763,6 +814,14 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             StaffDataRow.JobTitle = ReadString();
             StaffDataRow.StaffDataComments = ReadString();
 
+            if (StaffDataRow.ReceivingField == 0)
+            {
+                // we cannot import a partner that has a receiving field 0. This is an invalid application
+                TLogging.Log(
+                    "Problem, PmStaffData.ReceivingField for partner " + FPartnerKey.ToString() + " is NULL or 0. We will ignore this commitment.");
+                return;
+            }
+
             PmStaffDataAccess.AddOrModifyRecord(StaffDataRow.SiteKey,
                 StaffDataRow.Key,
                 FMainDS.PmStaffData,
@@ -776,6 +835,19 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             if (!StaffDataRow.IsReceivingFieldOfficeNull())
             {
                 AddRequiredOffice(StaffDataRow.ReceivingFieldOffice);
+            }
+
+            // check if commitment status code does already exist in this database
+            FMainDS.PmCommitmentStatus.DefaultView.RowFilter = String.Format("{0} = '{1}'",
+                PmCommitmentStatusTable.GetCodeDBName(), StaffDataRow.StatusCode);
+
+            if (FMainDS.PmCommitmentStatus.DefaultView.Count == 0)
+            {
+                TLogging.Log("Adding new commitment status code " + StaffDataRow.StatusCode);
+                PmCommitmentStatusRow commitmentStatusRow = FMainDS.PmCommitmentStatus.NewRowTyped();
+                commitmentStatusRow.Code = StaffDataRow.StatusCode;
+                commitmentStatusRow.Desc = "N/A";
+                FMainDS.PmCommitmentStatus.Rows.Add(commitmentStatusRow);
             }
         }
 
@@ -1395,9 +1467,14 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         /// <param name="ALinesToImport"></param>
         /// <param name="ALimitToOption">if this is not an empty string, only the applications for this conference will be imported, historic applications will be ignored</param>
         /// <param name="ADoNotOverwrite">do not modify records that already exist in the database</param>
-        /// <returns></returns>
-        public PartnerImportExportTDS ImportAllData(string[] ALinesToImport, string ALimitToOption, bool ADoNotOverwrite)
+        /// <param name="AResultList">verification results. can contain critical errors and messages for the user</param>
+        /// <returns>the data to be stored by the caller</returns>
+        public PartnerImportExportTDS ImportAllData(string[] ALinesToImport,
+            string ALimitToOption,
+            bool ADoNotOverwrite,
+            out TVerificationResultCollection AResultList)
         {
+            FResultList = new TVerificationResultCollection();
             FCountLocationKeys = -1;
             FLimitToOption = ALimitToOption;
             FDoNotOverwrite = ADoNotOverwrite;
@@ -1408,8 +1485,11 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             PtArrivalPointAccess.LoadAll(FMainDS, Transaction);
             PAcquisitionAccess.LoadAll(FMainDS, Transaction);
             PTypeAccess.LoadAll(FMainDS, Transaction);
+            PLocationTypeAccess.LoadAll(FMainDS, Transaction);
             POccupationAccess.LoadAll(FMainDS, Transaction);
+            PmCommitmentStatusAccess.LoadAll(FMainDS, Transaction);
             PtAppFormTypesAccess.LoadAll(FMainDS, Transaction);
+            PtCongressCodeAccess.LoadAll(FMainDS, Transaction);
             DBAccess.GDBAccessObj.RollbackTransaction();
 
             InitReading(ALinesToImport);
@@ -1446,6 +1526,13 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             finally
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            AResultList = FResultList;
+
+            if (AResultList.HasCriticalError())
+            {
+                return new PartnerImportExportTDS();
             }
 
             return FMainDS;

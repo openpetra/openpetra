@@ -469,7 +469,7 @@ namespace Ict.Petra.WebServer.MConference
                     // TODO: rotate image
                     // TODO: allow editing of image, select the photo from a square image etc
 
-                    this.FileUploadField1.PostedFile.SaveAs(TAppSettingsManager.GetValueStatic("Server.PathData") +
+                    this.FileUploadField1.PostedFile.SaveAs(TAppSettingsManager.GetValue("Server.PathData") +
                         Path.DirectorySeparatorChar + "photos" + Path.DirectorySeparatorChar + PartnerKey.ToString() + ".jpg");
                     Random rand = new Random();
                     Image1.ImageUrl = "photos.aspx?id=" + PartnerKey.ToString() + ".jpg&" + rand.Next(1, 10000).ToString();
@@ -519,7 +519,7 @@ namespace Ict.Petra.WebServer.MConference
 
                     do
                     {
-                        filename = TAppSettingsManager.GetValueStatic("Server.PathData") +
+                        filename = TAppSettingsManager.GetValue("Server.PathData") +
                                    Path.DirectorySeparatorChar + "petraimports" + Path.DirectorySeparatorChar +
                                    rand.Next(1, 1000000).ToString() + ".csv";
                     } while (File.Exists(filename));
