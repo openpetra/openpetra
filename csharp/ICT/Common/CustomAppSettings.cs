@@ -41,7 +41,7 @@ namespace Ict.Common
         /// constant for undefined value
         /// </summary>
         public const String UNDEFINEDVALUE = "#UNDEFINED#";
-            
+
         private static String FApplicationDirectory = Environment.CurrentDirectory;
 
         /// <summary>the path where the application is started from. The name of the Configuration File that should be read from; static so it can be manipulated manually once for all (remoting nunit etc.)</summary>

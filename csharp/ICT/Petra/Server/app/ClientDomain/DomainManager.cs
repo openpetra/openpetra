@@ -352,6 +352,8 @@ namespace Ict.Petra.Server.App.ClientDomain
             System.Int16 RemotingPortInt;
             Hashtable ChannelProperties;
 
+            new TAppSettingsManager();
+
             // Console.WriteLine('TClientDomainManager.Create in AppDomain: ' + Thread.GetDomain().FriendlyName);
             DomainManager.GClientID = Convert.ToInt16(AClientID);
             DomainManager.GCacheableTablesManager = ACacheableTablesManagerRef;

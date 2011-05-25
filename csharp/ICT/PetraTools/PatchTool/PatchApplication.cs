@@ -148,7 +148,8 @@ namespace Ict.Tools.PatchTool
                 // restart Petra Client if patch was successful
                 PetraClientProcess = new System.Diagnostics.Process();
                 PetraClientProcess.EnableRaisingEvents = false;
-                PetraClientProcess.StartInfo.FileName = TAppSettingsManager.GetValue("OpenPetra.Path.Bin") + Path.DirectorySeparatorChar + "PetraClient.exe";
+                PetraClientProcess.StartInfo.FileName = TAppSettingsManager.GetValue("OpenPetra.Path.Bin") + Path.DirectorySeparatorChar +
+                                                        "PetraClient.exe";
                 PetraClientProcess.StartInfo.Arguments = "-C:\"" + TAppSettingsManager.GetValue("C") + "\"";
                 PetraClientProcess.StartInfo.WindowStyle = ProcessWindowStyle.Normal;
                 PetraClientProcess.Start();

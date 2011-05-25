@@ -121,7 +121,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                         {
                             throw new Exception(
                                 "We are currently not supporting import of PERSON records, until we have resolved the issues with household/family. "
-                               + "Please add configuration parameter AllowCreationPersonRecords with value true if you want to use PERSON records");
+                                +
+                                "Please add configuration parameter AllowCreationPersonRecords with value true if you want to use PERSON records");
                         }
 
                         // TODO

@@ -400,7 +400,8 @@ namespace Ict.Petra.Client.App.Core
             UPetra_Path_Dat = "";
             UPetra_Path_Patches = "";
             UPetraWebsite_Link = TAppSettingsManager.GetValue("OpenPetra.Website", "http://www.openpetra.org");
-            UPetraPatches_Link = TAppSettingsManager.GetValue("OpenPetra.Path.RemotePatches", "http://www.example.org/index.php?page=OpenPetraPatches");
+            UPetraPatches_Link = TAppSettingsManager.GetValue("OpenPetra.Path.RemotePatches",
+                "http://www.example.org/index.php?page=OpenPetraPatches");
             UPetraSupportTeamEmail = TAppSettingsManager.GetValue("OpenPetra.SupportTeamEmail", String.Empty);
 
             if (URunAsStandalone == true)

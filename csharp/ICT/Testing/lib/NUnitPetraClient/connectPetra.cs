@@ -65,7 +65,8 @@ namespace Ict.Testing.NUnitPetraClient
             new TClientSettings();
             TClientInfo.InitVersion();
             TCacheableTablesManager.InitializeUnit();
-            Connect(TAppSettingsManager.GetValue("AutoLogin"), TAppSettingsManager.GetValue("AutoLoginPasswd"), TAppSettingsManager.GetInt64("SiteKey"));
+            Connect(TAppSettingsManager.GetValue("AutoLogin"), TAppSettingsManager.GetValue("AutoLoginPasswd"),
+                TAppSettingsManager.GetInt64("SiteKey"));
         }
 
         public static void Connect(String AUserName, String APassword, Int64 ASiteKey)
