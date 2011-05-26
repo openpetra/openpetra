@@ -9,12 +9,12 @@
 
 <%
 new TAppSettingsManager(AppDomain.CurrentDomain.BaseDirectory + Path.DirectorySeparatorChar + "web.config");
-new TLogging(TAppSettingsManager.GetValueStatic("Server.LogFile"));
+new TLogging(TAppSettingsManager.GetValue("Server.LogFile"));
 try
 {
     if (HttpContext.Current.Request.Params["id"] != null && HttpContext.Current.Request.Params["id"].Length > 0)
     {
-        string Filename = TAppSettingsManager.GetValueStatic("Server.PathData") + Path.DirectorySeparatorChar + "photos" + Path.DirectorySeparatorChar + Path.GetFileName(HttpContext.Current.Request.Params["id"]);
+        string Filename = TAppSettingsManager.GetValue("Server.PathData") + Path.DirectorySeparatorChar + "photos" + Path.DirectorySeparatorChar + Path.GetFileName(HttpContext.Current.Request.Params["id"]);
         Console.WriteLine("Serving " + Filename);
         if (!File.Exists(Filename))
         {
