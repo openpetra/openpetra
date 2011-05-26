@@ -48,8 +48,8 @@ namespace Ict.Petra.WebServer.MConference
 {
     public partial class TPageOnlineApplication : System.Web.UI.Page
     {
-        protected string EventCode = "TODOEVENTCODE";
-        protected Int64 EventPartnerKey = 08151234;
+        protected string EventCode = String.Empty;
+        protected Int64 EventPartnerKey = -1;
         protected Ext.Net.ComboBox FilterStatus;
         protected Ext.Net.FormPanel FormPanel1;
         protected Ext.Net.Store Store1;
@@ -78,6 +78,9 @@ namespace Ict.Petra.WebServer.MConference
                 this.Response.Redirect("Default.aspx");
                 return;
             }
+
+            EventCode = TAppSettingsManager.GetValue("ConferenceTool.EventCode");
+            EventPartnerKey = TAppSettingsManager.GetInt64("ConferenceTool.EventPartnerKey");
 
             if (!X.IsAjaxRequest)
             {

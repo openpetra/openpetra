@@ -75,12 +75,9 @@
   </copy>
 
   <!-- Create config files, if missing -->
-  <copy file="${dir.incdir.template.etc}/web-${DBMS.Type}.config"
-        tofile="${WebServerConfigFile}">
-    <filterchain>
-      <expandproperties />
-    </filterchain>
-  </copy>
+  <property name="templateFile" value="${dir.incdir.template.etc}/web-${DBMS.Type}.config"/>
+  <property name="configFile" value="${WebServerConfigFile}"/>
+  <call target="initConfigFiles-internal"/>
 
 <!-- MGR: TODO: Remove copy. Should be during database work! -->
   <copy file="${path::combine(dir.db.patches, 'version.txt')}"
