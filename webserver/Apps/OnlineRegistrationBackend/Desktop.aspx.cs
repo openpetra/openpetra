@@ -42,6 +42,7 @@ using Ict.Petra.Shared.MConference.Data;
 using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Server.MPersonnel.Person.Cacheable;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MSysMan.Maintenance.WebConnectors;
 
 namespace Ict.Petra.WebServer.MConference
@@ -50,6 +51,7 @@ namespace Ict.Petra.WebServer.MConference
     {
         protected string EventCode = String.Empty;
         protected Int64 EventPartnerKey = -1;
+
         protected Ext.Net.ComboBox FilterStatus;
         protected Ext.Net.FormPanel FormPanel1;
         protected Ext.Net.Store Store1;
@@ -550,6 +552,83 @@ namespace Ict.Petra.WebServer.MConference
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+            }
+        }
+
+        protected void UploadPetraExtractClick(object sender, DirectEventArgs e)
+        {
+            try
+            {
+                if (this.FileUploadField3.HasFile)
+                {
+                    int FileLen = this.FileUploadField3.PostedFile.ContentLength;
+
+                    if (Path.GetExtension(this.FileUploadField3.PostedFile.FileName).ToLower() != ".ext")
+                    {
+                        X.Msg.Show(new MessageBoxConfig
+                            {
+                                Buttons = MessageBox.Button.OK,
+                                Icon = MessageBox.Icon.ERROR,
+                                Title = "Fail",
+                                Message = "we only support the extract files (.ext) that are written by Petra 2.x"
+                            });
+                        return;
+                    }
+
+                    Random rand = new Random();
+                    string filename = string.Empty;
+
+                    do
+                    {
+                        filename = TAppSettingsManager.GetValue("Server.PathData") +
+                                   Path.DirectorySeparatorChar + "petraimports" + Path.DirectorySeparatorChar +
+                                   rand.Next(1, 1000000).ToString() + ".ext";
+                    } while (File.Exists(filename));
+
+                    TLogging.Log(filename);
+                    this.FileUploadField3.PostedFile.SaveAs(filename);
+
+                    TVerificationResultCollection VerificationResult;
+
+                    if (!TApplicationManagement.UploadPetraExtract(filename, EventCode, out VerificationResult))
+                    {
+                        X.Msg.Show(new MessageBoxConfig
+                            {
+                                Buttons = MessageBox.Button.OK,
+                                Icon = MessageBox.Icon.ERROR,
+                                Title = "Import Failure",
+                                Message = VerificationResult.BuildVerificationResultString()
+                            });
+                        return;
+                    }
+
+                    MyData_Refresh(null, null);
+
+                    // hide wait message, uploading
+                    X.Msg.Hide();
+                }
+                else
+                {
+                    X.Msg.Show(new MessageBoxConfig
+                        {
+                            Buttons = MessageBox.Button.OK,
+                            Icon = MessageBox.Icon.ERROR,
+                            Title = "Fail",
+                            Message = "No file uploaded"
+                        });
+                }
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(ex.Message);
+                TLogging.Log(ex.StackTrace);
+                X.Msg.Show(new MessageBoxConfig
+                    {
+                        Buttons = MessageBox.Button.OK,
+                        Icon = MessageBox.Icon.ERROR,
+                        Title = "Fail",
+                        Message = "There has been a problem in the .ext file."
+                    });
             }
         }
     }

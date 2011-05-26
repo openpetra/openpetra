@@ -293,6 +293,78 @@
         </ext:DesktopWindow>
 
         <ext:DesktopWindow 
+            ID="winUploadPetraExtract" 
+            runat="server" 
+            Title="Upload a Petra Extract" 
+            Width="500"
+            Height="120"
+            PageX="200" 
+            PageY="125"
+            Layout="Border">
+            <TopBar>
+            </TopBar>           
+            <Items>
+                <ext:FormPanel 
+                            ID="PetraExtractUploadForm" 
+                            runat="server"
+                            Region="Center"
+                            Width="300"
+                            Frame="false"
+                            AutoHeight="true"
+                            MonitorValid="true"
+                            PaddingSummary="10px 10px 0 10px"
+                            LabelWidth="50">                
+                            <Defaults>
+                                <ext:Parameter Name="anchor" Value="95%" Mode="Value" />
+                                <ext:Parameter Name="allowBlank" Value="false" Mode="Raw" />
+                                <ext:Parameter Name="msgTarget" Value="side" Mode="Value" />
+                            </Defaults>
+                            <Items>
+                                <ext:FileUploadField 
+                                    ID="FileUploadField3" 
+                                    runat="server" 
+                                    EmptyText="Select a Petra Extract"
+                                    FieldLabel="Petra Extract"
+                                    ButtonText=""
+                                    Icon="ImageAdd"
+                                    />
+                            </Items>
+                            <Listeners>
+                                <ClientValidation Handler="#{UploadPetraExtractButton}.setDisabled(!valid);" />
+                            </Listeners>
+                            <Buttons>
+                                <ext:Button ID="UploadPetraExtractButton" runat="server" Text="Upload">
+                                    <DirectEvents>
+                                        <Click 
+                                            OnEvent="UploadPetraExtractClick"
+                                            Before="if (!#{PetraExtractUploadForm}.getForm().isValid()) { return false; } 
+                                                Ext.Msg.wait('Uploading your file...', 'Uploading');"
+                                            Success="#{winUploadPetraExtract}.hide(); #{PetraExtractUploadForm}.getForm().reset();"
+                                            Failure="Ext.Msg.show({ 
+                                                title   : 'Error', 
+                                                msg     : 'Error during uploading', 
+                                                minWidth: 200, 
+                                                modal   : true, 
+                                                icon    : Ext.Msg.ERROR, 
+                                                buttons : Ext.Msg.OK 
+                                            });">
+                                            <ExtraParams>
+                                            </ExtraParams>
+                                        </Click>
+                                    </DirectEvents>
+                                </ext:Button>
+                                <ext:Button runat="server" Text="Cancel">
+                                    <Listeners>
+                                        <Click Handler="#{winUploadPetraExtract}.hide();#{PetraExtractUploadForm}.getForm().reset();" />
+                                    </Listeners>
+                                </ext:Button>
+                            </Buttons>
+                        </ext:FormPanel>
+        
+            </Items>
+        </ext:DesktopWindow>
+
+        <ext:DesktopWindow 
             ID="winAcceptMany" 
             runat="server" 
             Title="Accept many applicants by Registration key" 
@@ -466,27 +538,28 @@
                             <Listeners>
                                 <Click Handler="submitValue(#{GridPanel1});" />
                             </Listeners>
-                        </ext:Button>
-                        </td>
+                        </ext:Button></td>
+                        <td><ext:Button ID="btnUploadPetraFile" runat="server" Text="Upload imported Petra File" Icon="Disk">
+                            <Listeners>
+                                <Click Handler="#{winUploadPetraFile}.show();" />
+                            </Listeners>
+                        </ext:Button></td>
                         <td><ext:Button ID="btnDownloadExcel" runat="server" Text="Export to Excel/Calc" Icon="PageAttach">
                             <DirectEvents>
                                 <Click OnEvent="DownloadExcel"/>
                             </DirectEvents>
-                        </ext:Button>
-                        </td>
-                        <td>
-                        <ext:Button ID="btnBatchAccept" runat="server" Text="Accept Many Applicants">
+                        </ext:Button></td>
+                        <td><ext:Button ID="btnBatchAccept" runat="server" Text="Accept Many Applicants">
                             <Listeners>
                                 <Click Handler="#{AcceptForm}.getForm().reset();#{winAcceptMany}.show();" />
                             </Listeners>
-                        </ext:Button>
-                        </td><td>
-                        <ext:Button ID="btnUploadPetraFile" runat="server" Text="Upload imported Petra File" Icon="Disk">
+                        </ext:Button></td>
+                        <td><ext:Button ID="btnUploadPetraExtract" runat="server" Text="Upload Petra Extract" Icon="Disk">
                             <Listeners>
-                                <Click Handler="#{winUploadPetraFile}.show();" />
+                                <Click Handler="#{winUploadPetraExtract}.show();" />
                             </Listeners>
-                        </ext:Button>
-                        </td></tr></table>
+                        </ext:Button></td>
+                        </tr></table>
                     </Content>
                 </ext:Panel>
                 <ext:GridPanel 
