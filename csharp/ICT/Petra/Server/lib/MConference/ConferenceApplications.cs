@@ -33,6 +33,7 @@ using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.IO;
 using Ict.Common.Verification;
+using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared.MConference;
@@ -65,12 +66,17 @@ namespace Ict.Petra.Server.MConference.Applications
                     PmShortTermApplicationTable.GetTableDBName()),
                 "registrationoffice", ATransaction);
 
+            // if there are no REG-... module permissions for anyone, allow all offices? this would help with a base database for testing?
+            Int32 CountRegModules =
+                Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM " + SModuleTable.GetTableDBName() + " WHERE " +
+                        SModuleTable.GetModuleNameDBName() + " LIKE 'REG-%'", ATransaction));
+
             foreach (DataRow officeRow in offices.Rows)
             {
                 Int64 RegistrationOffice = Convert.ToInt64(officeRow[0]);
                 try
                 {
-                    if (TModuleAccessManager.CheckUserModulePermissions(String.Format("REG-{0:10}",
+                    if ((CountRegModules == 0) || TModuleAccessManager.CheckUserModulePermissions(String.Format("REG-{0:10}",
                                 StringHelper.PartnerKeyToStr(RegistrationOffice))))
                     {
                         AllowedRegistrationOffices.Add(RegistrationOffice);
@@ -624,6 +630,9 @@ namespace Ict.Petra.Server.MConference.Applications
                     newNode.Attributes.Append(attr);
                     attr = myDoc.CreateAttribute("ApplicationStatus");
                     attr.Value = GeneralApplicationRow.GenApplicationStatus;
+                    newNode.Attributes.Append(attr);
+                    attr = myDoc.CreateAttribute("CommentByOffice");
+                    attr.Value = GeneralApplicationRow.Comment;
                     newNode.Attributes.Append(attr);
 
                     // now add all the values from the json data

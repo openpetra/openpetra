@@ -3,6 +3,9 @@
 
 <property name="Namespace" value="Ict.Petra.WebServer" />
 
+<!-- to avoid missing quickClean from cleanPetra task in OpenPetra.tobe.migrated.xml -->
+<target name="quickClean"/>
+
 <include buildfile="../inc/nant/OpenPetra.common.xml"/>
 
 <!-- Compat targets -->
