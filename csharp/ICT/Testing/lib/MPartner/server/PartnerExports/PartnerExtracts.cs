@@ -70,7 +70,7 @@ namespace Tests.MPartner.Server.PartnerExports
         {
             string testFile = TAppSettingsManager.GetValue("ExtractTest.file", "../../csharp/ICT/Testing/lib/MPartner/SampleData/sampleExtract.ext");
             string SelectedEventCode = TAppSettingsManager.GetValue("ImportPartnerForEventCode", String.Empty);
-            StreamReader reader = new StreamReader(testFile);
+            StreamReader reader = new StreamReader(testFile, System.Text.Encoding.GetEncoding(1252));
 
             string[] lines = reader.ReadToEnd().Replace("\r\n", "\n").Replace("\r", "\n").Split(new char[] { '\n' });
             reader.Close();

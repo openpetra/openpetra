@@ -297,7 +297,7 @@
             runat="server" 
             Title="Upload a Petra Extract" 
             Width="500"
-            Height="120"
+            Height="150"
             PageX="200" 
             PageY="125"
             Layout="Border">
@@ -328,6 +328,23 @@
                                     ButtonText=""
                                     Icon="ImageAdd"
                                     />
+                                <ext:ComboBox 
+                                    ID="FileUploadCodePage3"
+                                    runat="server" 
+                                    FieldLabel="Code Page" 
+                                    Editable="false"
+                                    ForceSelection="true"
+                                    EmptyText="Select encoding..."
+                                    Mode="Local"
+                                    Width="260"
+                                    LabelWidth="150"
+                                    SelectOnFocus="true"
+                                    SelectedIndex = "0">
+                                    <Items>
+                                        <ext:ListItem Text="Western European (1252)" Value="1252" />
+                                        <ext:ListItem Text="Central European (1250)" Value="1250" />
+                                    </Items>                        
+                                </ext:ComboBox>
                             </Items>
                             <Listeners>
                                 <ClientValidation Handler="#{UploadPetraExtractButton}.setDisabled(!valid);" />

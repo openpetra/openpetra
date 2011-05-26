@@ -60,6 +60,8 @@ namespace Ict.Petra.WebServer.MConference
         protected Ext.Net.Image Image1;
         protected Ext.Net.FileUploadField FileUploadField1;
         protected Ext.Net.FileUploadField FileUploadField2;
+        protected Ext.Net.FileUploadField FileUploadField3;
+        protected Ext.Net.ComboBox FileUploadCodePage3;
         protected Ext.Net.TextField OldPassword;
         protected Ext.Net.TextField NewPassword1;
         protected Ext.Net.TextField NewPassword2;
@@ -587,6 +589,7 @@ namespace Ict.Petra.WebServer.MConference
 
                     TLogging.Log(filename);
                     this.FileUploadField3.PostedFile.SaveAs(filename);
+                    TTextFile.ConvertToUnicode(filename, FileUploadCodePage3.SelectedItem.Value);
 
                     TVerificationResultCollection VerificationResult;
 
