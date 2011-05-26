@@ -43,6 +43,7 @@ using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MPartner.Import;
+using Ict.Petra.Server.MPartner.ImportExport;
 
 namespace Ict.Petra.Server.MConference.Applications
 {
@@ -743,6 +744,59 @@ namespace Ict.Petra.Server.MConference.Applications
             finally
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Import the applicants from a Petra extract of the local office.
+        /// This should only be used for offices that don't use the online registration.
+        /// for applicants that are already in the online database, we will only update the application status, nothing else.
+        /// </summary>
+        /// <param name="APartnerKeyFile"></param>
+        /// <param name="AEventCode">only import applications for this event</param>
+        /// <param name="AVerificationResult"></param>
+        /// <returns></returns>
+        public static bool UploadPetraExtract(string APartnerKeyFile, string AEventCode, out TVerificationResultCollection AVerificationResult)
+        {
+            StreamReader reader = new StreamReader(APartnerKeyFile);
+
+            string[] lines = reader.ReadToEnd().Replace("\r\n", "\n").Replace("\r", "\n").Split(new char[] { '\n' });
+            reader.Close();
+            TPartnerFileImport importer = new TPartnerFileImport();
+            try
+            {
+                PartnerImportExportTDS MainDS = importer.ImportAllData(lines, AEventCode, true, out AVerificationResult);
+
+                if (AVerificationResult.HasCriticalError())
+                {
+                    return false;
+                }
+
+                // TODO: check if the partners have been imported previously already
+                foreach (PPartnerRow PartnerRow in MainDS.PPartner.Rows)
+                {
+                    TLogging.Log(PartnerRow.PartnerKey.ToString() + " " + PartnerRow.PartnerShortName);
+                }
+
+                TVerificationResultCollection VerificationResult;
+
+                // TODO
+
+                if (TSubmitChangesResult.scrOK == PartnerImportExportTDSAccess.SubmitChanges(MainDS, out VerificationResult))
+                {
+                    return true;
+                }
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(e.Message);
+                TLogging.Log(e.StackTrace);
+                AVerificationResult = new TVerificationResultCollection();
+                AVerificationResult.Add(new TVerificationResult("importing .ext file", e.Message, TResultSeverity.Resv_Critical));
+
+                return false;
             }
 
             return true;
