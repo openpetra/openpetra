@@ -338,12 +338,22 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
         }
 
-        private void ImportLocation()
+        private void ImportLocation(TDBTransaction ATransaction)
         {
-            // TODO check if this location exists already in the db for this partner
+            // get all locations and partnerlocations of this partner
+            PLocationTable ExistingLocation = PLocationAccess.LoadViaPPartner(FPartnerKey, ATransaction);
+
             PLocationRow LocationRow = FMainDS.PLocation.NewRowTyped();
 
-            LocationRow.LocationKey = FCountLocationKeys--;
+            if (ExistingLocation.Count > 0)
+            {
+                LocationRow.LocationKey = ExistingLocation[0].LocationKey;
+            }
+            else
+            {
+                LocationRow.LocationKey = FCountLocationKeys--;
+            }
+
             LocationRow.SiteKey = ReadInt64();
             LocationRow.Locality = ReadString();
             LocationRow.StreetName = ReadString();
@@ -352,8 +362,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             LocationRow.County = ReadString();
             LocationRow.PostalCode = ReadString();
             LocationRow.CountryCode = ReadString();
-
-            FMainDS.PLocation.Rows.Add(LocationRow);
 
             PPartnerLocationRow PartnerLocationRow = FMainDS.PPartnerLocation.NewRowTyped();
 
@@ -384,7 +392,27 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             PartnerLocationRow.FaxNumber = ReadString();
             PartnerLocationRow.FaxExtension = ReadInt32();
 
-            FMainDS.PPartnerLocation.Rows.Add(PartnerLocationRow);
+            if (ExistingLocation.Count > 0)
+            {
+                PLocationAccess.AddOrModifyRecord(LocationRow.SiteKey,
+                    LocationRow.LocationKey,
+                    FMainDS.PLocation,
+                    LocationRow,
+                    FDoNotOverwrite,
+                    ATransaction);
+                PPartnerLocationAccess.AddOrModifyRecord(PartnerLocationRow.PartnerKey,
+                    PartnerLocationRow.SiteKey,
+                    PartnerLocationRow.LocationKey,
+                    FMainDS.PPartnerLocation,
+                    PartnerLocationRow,
+                    FDoNotOverwrite,
+                    ATransaction);
+            }
+            else
+            {
+                FMainDS.PLocation.Rows.Add(LocationRow);
+                FMainDS.PPartnerLocation.Rows.Add(PartnerLocationRow);
+            }
         }
 
         private void ImportAbility(TDBTransaction ATransaction)
@@ -1335,7 +1363,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 }
                 else if (KeyWord == "ADDRESS")
                 {
-                    ImportLocation();
+                    ImportLocation(ATransaction);
                 }
                 else if (KeyWord == "APPLCTN")
                 {
@@ -1508,7 +1536,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                     ImportPartnerClassSpecific(PartnerRow.PartnerClass, Transaction);
 
-                    ImportLocation();
+                    ImportLocation(Transaction);
 
                     ImportOptionalDetails(PartnerRow, PetraVersion, Transaction);
                 }

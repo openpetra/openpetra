@@ -774,15 +774,7 @@ namespace Ict.Petra.Server.MConference.Applications
                     return false;
                 }
 
-                // TODO: check if the partners have been imported previously already
-                foreach (PPartnerRow PartnerRow in MainDS.PPartner.Rows)
-                {
-                    TLogging.Log(PartnerRow.PartnerKey.ToString() + " " + PartnerRow.PartnerShortName);
-                }
-
                 TVerificationResultCollection VerificationResult;
-
-                // TODO
 
                 if (TSubmitChangesResult.scrOK == PartnerImportExportTDSAccess.SubmitChanges(MainDS, out VerificationResult))
                 {

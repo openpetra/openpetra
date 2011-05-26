@@ -600,7 +600,7 @@ namespace Ict.Petra.WebServer.MConference
                                 Buttons = MessageBox.Button.OK,
                                 Icon = MessageBox.Icon.ERROR,
                                 Title = "Import Failure",
-                                Message = VerificationResult.BuildVerificationResultString()
+                                Message = VerificationResult.BuildVerificationResultString().Replace("\n", "<br/>")
                             });
                         return;
                     }
