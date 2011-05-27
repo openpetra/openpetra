@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -42,6 +42,7 @@ class Program
     public static void Main(string[] args)
     {
         TCmdOpts cmd = new TCmdOpts();
+        new TAppSettingsManager(false);
 
         String YmlFileName, OutputDir;
 
