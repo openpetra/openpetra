@@ -30,6 +30,7 @@ NamespaceHierarchy:
             UIConnectors: {Description=User Interface Connectors}
             WebConnectors: {Description=Web Connectors}
     Personnel: {Description=Personnel Module}
+        WebConnectors: {Description=Web Connectors}
         Person: {Description=Person Sub-System}
             DataElements: {Description=DataElements Sub-System}
                 Applications: {Description=Applications}

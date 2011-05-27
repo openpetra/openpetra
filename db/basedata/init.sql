@@ -14,6 +14,9 @@ COPY s_logon_message FROM '{#ABSOLUTEBASEDATAPATH}/s_logon_message.csv' WITH DEL
 COPY p_addressee_type FROM '{#ABSOLUTEBASEDATAPATH}/p_addressee_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY a_currency FROM '{#ABSOLUTEBASEDATAPATH}/a_currency.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY p_acquisition FROM '{#ABSOLUTEBASEDATAPATH}/p_acquisition.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY p_occupation FROM '{#ABSOLUTEBASEDATAPATH}/p_occupation.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY p_relation_category FROM '{#ABSOLUTEBASEDATAPATH}/p_relation_category.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY p_relation FROM '{#ABSOLUTEBASEDATAPATH}/p_relation.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY s_module FROM '{#ABSOLUTEBASEDATAPATH}/s_module.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY p_type FROM '{#ABSOLUTEBASEDATAPATH}/p_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY p_partner_status FROM '{#ABSOLUTEBASEDATAPATH}/p_partner_status.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
