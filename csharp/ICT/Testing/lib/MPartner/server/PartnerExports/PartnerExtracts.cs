@@ -32,6 +32,8 @@ using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Data;
 using Ict.Common.IO;
+using Ict.Common.Verification;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.ImportExport;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 
@@ -66,18 +68,45 @@ namespace Tests.MPartner.Server.PartnerExports
         [Test]
         public void TestImportFamily()
         {
-            const string testFile = "../../csharp/ICT/Testing/lib/MPartner/SampleData/sampleExtract.ext";
-            StreamReader reader = new StreamReader(testFile);
+            string testFile = TAppSettingsManager.GetValue("ExtractTest.file", "../../csharp/ICT/Testing/lib/MPartner/SampleData/sampleExtract.ext");
+            string SelectedEventCode = TAppSettingsManager.GetValue("ImportPartnerForEventCode", String.Empty);
+            StreamReader reader = new StreamReader(testFile, System.Text.Encoding.GetEncoding(1252));
 
             string[] lines = reader.ReadToEnd().Replace("\r\n", "\n").Replace("\r", "\n").Split(new char[] { '\n' });
             reader.Close();
 
+            TVerificationResultCollection VerificationResult;
             TPartnerFileImport importer = new TPartnerFileImport();
-            PartnerImportExportTDS MainDS = importer.ImportAllData(lines);
+            PartnerImportExportTDS MainDS = importer.ImportAllData(lines, SelectedEventCode, true, out VerificationResult);
+
+            if (VerificationResult.HasCriticalError())
+            {
+                TLogging.Log(VerificationResult.BuildVerificationResultString());
+            }
 
             foreach (PPartnerRow PartnerRow in MainDS.PPartner.Rows)
             {
                 TLogging.Log(PartnerRow.PartnerKey.ToString() + " " + PartnerRow.PartnerShortName);
+            }
+
+            // TODO: check if the partners have been imported previously already
+            foreach (PPartnerRow PartnerRow in MainDS.PPartner.Rows)
+            {
+                TLogging.Log(PartnerRow.PartnerKey.ToString() + " " + PartnerRow.PartnerShortName);
+            }
+
+            try
+            {
+                if (TSubmitChangesResult.scrOK == PartnerImportExportTDSAccess.SubmitChanges(MainDS, out VerificationResult))
+                {
+                    //return;
+                }
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(e.Message);
+                TLogging.Log(e.StackTrace);
+                Assert.Fail("See log messages");
             }
 
             Assert.AreEqual(2, MainDS.PPartner.Rows.Count);
