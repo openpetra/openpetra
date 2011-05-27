@@ -1170,7 +1170,7 @@ namespace Ict.Common.DB
             }
 
 #if DEBUGMODE
-            if (FDebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
+            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
             {
                 TLogging.Log("Entering " + this.GetType().FullName + ".SelectDT()...");
             }
@@ -1189,7 +1189,7 @@ namespace Ict.Common.DB
             }
 
 #if DEBUGMODE
-            if (FDebugLevel >= DBAccess.DB_DEBUGLEVEL_RESULT)
+            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_RESULT)
             {
                 if (ATypedDataTable != null)
                 {
