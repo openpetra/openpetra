@@ -55,9 +55,9 @@ RootNode:
         txtPartnerStatusCode: {Label=Status, ReadOnly=true}
         txtLanguageCode: {Label=Language Code, ReadOnly=true}
         cmbDetailStatusCode: {Label=Status,  List=UserDefinedList, Width=400}
-        txtDetailOfficeRecruitedBy: {Label=Recruiting Office, Type=PartnerKey}
-        txtDetailHomeOffice: {Label=Home Office, Type=PartnerKey}
-        txtDetailReceivingField: {Label=Receiving Field, Type=PartnerKey}
+        txtDetailOfficeRecruitedBy: {Label=Recruiting Office, Type=PartnerKey, PartnerClass=UNIT}
+        txtDetailHomeOffice: {Label=Home Office, Type=PartnerKey, PartnerClass=UNIT}
+        txtDetailReceivingField: {Label=Receiving Field, Type=PartnerKey, PartnerClass=UNIT}
         txtDetailStaffDataComments: {Label=Comments, Multiline=true, ScrollBars=Vertical, Height=100, Width=500}
         txtDetailJobTitle: {Label=Job Title, Width=500}
     Toolbar:
