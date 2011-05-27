@@ -738,6 +738,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FTemplate.AddToCodelet("IGNOREFIRSTTABPAGESELECTIONCHANGEDEVENT", "");
             FTemplate.AddToCodelet("DYNAMICTABPAGEUSERCONTROLSETUPMETHODS", "");
             FTemplate.AddToCodelet("ELSESTATEMENT", "");
+            FTemplate.AddToCodelet("VALIDATEDETAILS", "");
 
             if (FCodeStorage.ManualFileExistsAndContains("void BeforeShowDetailsManual"))
             {
@@ -1038,6 +1039,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
             else if (FCodeStorage.ManualFileExistsAndContains("GetDataFromControlsManual("))
             {
                 FTemplate.AddToCodelet("SAVEDATA", "GetDataFromControlsManual(ARow);" + Environment.NewLine);
+            }
+
+            if (FCodeStorage.ManualFileExistsAndContains("ValidateDetailsManual"))
+            {
+                ProcessTemplate validateSnippet = FTemplate.GetSnippet("VALIDATEDETAILS");
+                FTemplate.InsertSnippet("VALIDATEDETAILS", validateSnippet);
             }
 
             if (FCodeStorage.ManualFileExistsAndContains("GetDetailDataFromControlsManual"))

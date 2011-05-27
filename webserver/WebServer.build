@@ -3,6 +3,9 @@
 
 <property name="Namespace" value="Ict.Petra.WebServer" />
 
+<!-- to avoid missing quickClean from cleanPetra task in OpenPetra.tobe.migrated.xml -->
+<target name="quickClean"/>
+
 <include buildfile="../inc/nant/OpenPetra.common.xml"/>
 
 <!-- Compat targets -->
@@ -20,7 +23,7 @@
 <target name="generateWebforms">
   <!-- Generate webforms --> 
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
-  <property name="generateWebformsParameters" value="-TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates/ExtJs -petraxml:${PetraXML.file} -deliveryPath:${dir.webserver}"/>
+  <property name="generateWebformsParameters" value="-TemplateDir:${dir.incdir.template.src}/ExtJs -petraxml:${PetraXML.file} -deliveryPath:${dir.webserver}"/>
   <property name="ClientPath" value="${dir.root}/webserver"/>
   <ExecDotNet program="${dir.bin}/GenerateExtJsForms.exe" commandline="-ymlfile:${ClientPath} ${generateWebformsParameters}"/>
 </target>
@@ -28,7 +31,7 @@
 <target name="generateWebform">
   <!-- Generate single webform -->
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
-  <property name="generateWebformsParameters" value="-TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates/ExtJs -petraxml:${PetraXML.file} -deliveryPath:${dir.webserver}"/>
+  <property name="generateWebformsParameters" value="-TemplateDir:${dir.incdir.template.src}/ExtJs -petraxml:${PetraXML.file} -deliveryPath:${dir.webserver}"/>
   <property name="ClientPath" value="${dir.root}/webserver"/>
   <ExecDotNet program="${PetraToolsExe.dir}/GenerateExtJsForms.exe" commandline="-ymlfile:${ClientPath}/${file} ${generateWebformsParameters}"/>
 </target>
@@ -72,12 +75,9 @@
   </copy>
 
   <!-- Create config files, if missing -->
-  <copy file="${dir.incdir.template.etc}/web-${DBMS.Type}.config"
-        tofile="${WebServerConfigFile}">
-    <filterchain>
-      <expandproperties />
-    </filterchain>
-  </copy>
+  <property name="templateFile" value="${dir.incdir.template.etc}/web-${DBMS.Type}.config"/>
+  <property name="configFile" value="${WebServerConfigFile}"/>
+  <call target="initConfigFiles-internal"/>
 
 <!-- MGR: TODO: Remove copy. Should be during database work! -->
   <copy file="${path::combine(dir.db.patches, 'version.txt')}"

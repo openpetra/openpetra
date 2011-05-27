@@ -327,8 +327,6 @@ namespace Ict.Petra.Server.App.Main
         /// <returns>void</returns>
         private void SetupServerSettings()
         {
-            String ODBCDsn;
-            String ODBCPassword;
             TCommandLineArguments CmdLineArgs;
             String ServerLogFile;
             String ServerName;
@@ -360,10 +358,11 @@ namespace Ict.Petra.Server.App.Main
             // Server.ODBC_DSN
             ODBCDsnAppSetting = TAppSettingsManager.GetValue("Server.ODBC_DSN", false);
 
-            string PostgreSQLServer = TAppSettingsManager.GetValue("Server.PostgreSQLServer", "localhost");
-            string PostgreSQLServerPort = TAppSettingsManager.GetValue("Server.PostgreSQLServerPort", "5432");
-            string PostgreSQLUserName = TAppSettingsManager.GetValue("Server.PostgreSQLUserName", "petraserver");
-            string PostgreSQLDatabaseName = TAppSettingsManager.GetValue("Server.PostgreSQLDatabaseName", "openpetra");
+            string DatabaseHostOrFile = TAppSettingsManager.GetValue("Server.DBHostOrFile", "localhost");
+            string DatabasePort = TAppSettingsManager.GetValue("Server.DBPort", "5432");
+            string DatabaseName = TAppSettingsManager.GetValue("Server.DBName", "openpetra");
+            string DatabaseUserName = TAppSettingsManager.GetValue("Server.DBUserName", "petraserver");
+            string DatabasePassword = TAppSettingsManager.GetValue("Server.DBPassword");
 
             if (TAppSettingsManager.HasValue("Server.LogFile"))
             {
@@ -390,9 +389,6 @@ namespace Ict.Petra.Server.App.Main
             ServerDebugLevel = TAppSettingsManager.GetInt16("Server.DebugLevel", 0);
 
             RunAsStandalone = TAppSettingsManager.GetBoolean("Server.RunAsStandalone", false);
-
-            // Server.Credentials with the password for the PostgreSQL and the Progress database for user petraserver
-            string ServerCredentials = TAppSettingsManager.GetValue("Server.Credentials");
 
             // Server.ClientIdleStatusAfterXMinutes
             ClientIdleStatusAfterXMinutes = TAppSettingsManager.GetInt16("Server.ClientIdleStatusAfterXMinutes", 5);
@@ -428,10 +424,6 @@ namespace Ict.Petra.Server.App.Main
             // Determine network configuration of the Server
             Networking.DetermineNetworkConfig(out ServerName, out ServerIPAddresses);
 
-            // Determine Database connection parameters
-            ODBCDsn = "petra2_3";
-            ODBCPassword = ServerCredentials;
-
             Version ServerAssemblyVersion;
 
             if ((System.Reflection.Assembly.GetEntryAssembly() != null) && (System.Reflection.Assembly.GetEntryAssembly().GetName() != null))
@@ -465,12 +457,12 @@ namespace Ict.Petra.Server.App.Main
                 ServerAssemblyVersion,
                 Utilities.DetermineExecutingOS(),
                 RDBMSTypeAppSetting,
-                ODBCDsn,
-                PostgreSQLServer,
-                PostgreSQLServerPort,
-                PostgreSQLDatabaseName,
-                PostgreSQLUserName,
-                ServerCredentials,
+                ODBCDsnAppSetting,
+                DatabaseHostOrFile,
+                DatabasePort,
+                DatabaseName,
+                DatabaseUserName,
+                DatabasePassword,
                 ServerIPBasePort,
                 ServerDebugLevel,
                 ServerLogFile,
@@ -648,7 +640,7 @@ namespace Ict.Petra.Server.App.Main
         /// </summary>
         private void UpdateSQLiteDatabase(TFileVersionInfo ADBVersion, TFileVersionInfo AExeVersion)
         {
-            string dbpatchfilePath = Path.GetDirectoryName(TAppSettingsManager.GetValue("Server.BaseDatabase"));
+            string dbpatchfilePath = Path.GetDirectoryName(TAppSettingsManager.GetValue("Server.SQLiteBaseFile"));
 
             TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
 

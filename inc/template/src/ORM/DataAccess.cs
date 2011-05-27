@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Odbc;
 using Ict.Common;
@@ -301,6 +302,48 @@ public class {#TABLENAME}Access : TTypedDataAccess
     {
         return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID{#SEQUENCENAMEANDFIELD});
     }
+
+{#IFDEF FORMALPARAMETERSPRIMARYKEY}
+
+    /// if a record with this primary key already exists in the database, that record will be updated. otherwise a new record will be added
+    public static void AddOrModifyRecord({#FORMALPARAMETERSPRIMARYKEY}, {#TABLENAME}Table ATable, {#TABLENAME}Row ANewRow, bool ADoNotOverwrite, TDBTransaction ATransaction)
+    {
+        if (!{#TABLENAME}Access.Exists({#ACTUALPARAMETERSPRIMARYKEY}, ATransaction))
+        {
+            ATable.Rows.Add(ANewRow);
+        }
+        else
+        {
+            {#TABLENAME}Table ExistingRecord = {#TABLENAME}Access.LoadByPrimaryKey({#ACTUALPARAMETERSPRIMARYKEY}, ATransaction);
+            
+            List<DataUtilities.TColumnDifference> Differences;
+            DataUtilities.CompareAllColumnValues(ANewRow, ExistingRecord[0], out Differences);
+            
+            if (Differences.Count > 0)
+            {
+                if (ADoNotOverwrite)
+                {
+                    TLogging.Log("ignoring differences for {#TABLENAME} " + {#ACTUALPARAMETERSPRIMARYKEYTOSTRING});
+                    foreach (DataUtilities.TColumnDifference diff in Differences)
+                    {
+                        TLogging.Log("  " + diff.FColumnName + ": current value: " + diff.FDestinationValue + " ignored new value: " + diff.FSourceValue);
+                    }
+                }
+                else
+                {
+                    TLogging.Log("overwriting differences for {#TABLENAME} " + {#ACTUALPARAMETERSPRIMARYKEYTOSTRING});
+                    foreach (DataUtilities.TColumnDifference diff in Differences)
+                    {
+                        TLogging.Log("  " + diff.FColumnName + ": old value: " + diff.FDestinationValue + " new value: " + diff.FSourceValue);
+                    }
+                    DataUtilities.CopyAllColumnValues(ANewRow, ExistingRecord[0]);
+                    ATable.Merge(ExistingRecord);
+                }
+            }
+        }
+    }
+{#ENDIF FORMALPARAMETERSPRIMARYKEY}
+
 }
 
 {##VIAOTHERTABLE}

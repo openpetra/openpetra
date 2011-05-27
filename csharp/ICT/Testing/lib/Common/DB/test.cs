@@ -51,11 +51,11 @@ namespace Ict.Common.DB.Testing
             try
             {
                 DBAccess.GDBAccessObj.EstablishDBConnection(CommonTypes.ParseDBType(TAppSettingsManager.GetValue("Server.RDBMSType")),
-                    TAppSettingsManager.GetValue("Server.PostgreSQLServer"),
-                    TAppSettingsManager.GetValue("Server.PostgreSQLServerPort"),
-                    TAppSettingsManager.GetValue("Server.PostgreSQLDatabaseName"),
-                    TAppSettingsManager.GetValue("Server.PostgreSQLUserName"),
-                    TAppSettingsManager.GetValue("Server.Credentials"),
+                    TAppSettingsManager.GetValue("Server.DBHostOrFile"),
+                    TAppSettingsManager.GetValue("Server.DBPort"),
+                    TAppSettingsManager.GetValue("Server.DBName"),
+                    TAppSettingsManager.GetValue("Server.DBUserName"),
+                    TAppSettingsManager.GetValue("Server.DBPassword"),
                     "");
             }
             catch (Exception)

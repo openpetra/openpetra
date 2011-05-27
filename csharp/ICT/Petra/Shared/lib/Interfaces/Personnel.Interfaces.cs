@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.Data;
 using Ict.Common;
 using Ict.Common.Verification;
+using Ict.Petra.Shared.Interfaces.MPersonnel.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MPersonnel.Person;
 using Ict.Petra.Shared.Interfaces.MPersonnel.TableMaintenance;
 using Ict.Petra.Shared.Interfaces.MPersonnel.Units;
@@ -57,6 +58,12 @@ namespace Ict.Petra.Shared.Interfaces.MPersonnel
     public interface IMPersonnelNamespace : IInterface
     {
         /// <summary>access to sub namespace</summary>
+        IWebConnectorsNamespace WebConnectors
+        {
+            get;
+        }
+
+        /// <summary>access to sub namespace</summary>
         IPersonNamespace Person
         {
             get;
@@ -74,6 +81,21 @@ namespace Ict.Petra.Shared.Interfaces.MPersonnel
             get;
         }
 
+    }
+
+}
+
+
+namespace Ict.Petra.Shared.Interfaces.MPersonnel.WebConnectors
+{
+    /// <summary>auto generated</summary>
+    public interface IWebConnectorsNamespace : IInterface
+    {
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPersonnel.WebConnectors.TPersonnelWebConnector)</summary>
+        TSubmitChangesResult SavePersonnelTDS(ref PersonnelTDS AInspectDS,
+                                              out TVerificationResultCollection AVerificationResult);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPersonnel.WebConnectors.TPersonnelWebConnector)</summary>
+        PersonnelTDS LoadPersonellStaffData(Int64 APartnerKey);
     }
 
 }

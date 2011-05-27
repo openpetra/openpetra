@@ -822,6 +822,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             partnerRow.PartnerKey = PartnerKey;
             partnerRow.PartnerShortName = ALedgerName;
             partnerRow.StatusCode = MPartnerConstants.PARTNERSTATUS_ACTIVE;
+            partnerRow.PartnerClass = MPartnerConstants.PARTNERCLASS_UNIT;
             MainDS.PPartner.Rows.Add(partnerRow);
 
             PPartnerTypeRow partnerTypeRow = MainDS.PPartnerType.NewRowTyped();

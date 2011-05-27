@@ -42,14 +42,15 @@ using Ict.Petra.Shared.MConference.Data;
 using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Server.MPersonnel.Person.Cacheable;
-using Ict.Petra.Server.MSysMan.Maintenance.WebConnectors;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.WebServer.MConference
 {
     public partial class TPageOnlineApplication : System.Web.UI.Page
     {
-        protected string EventCode = "TODOEVENTCODE";
-        protected Int64 EventPartnerKey = 08151234;
+        protected string EventCode = String.Empty;
+        protected Int64 EventPartnerKey = -1;
+
         protected Ext.Net.ComboBox FilterStatus;
         protected Ext.Net.FormPanel FormPanel1;
         protected Ext.Net.Store Store1;
@@ -58,6 +59,8 @@ namespace Ict.Petra.WebServer.MConference
         protected Ext.Net.Image Image1;
         protected Ext.Net.FileUploadField FileUploadField1;
         protected Ext.Net.FileUploadField FileUploadField2;
+        protected Ext.Net.FileUploadField FileUploadField3;
+        protected Ext.Net.ComboBox FileUploadCodePage3;
         protected Ext.Net.TextField OldPassword;
         protected Ext.Net.TextField NewPassword1;
         protected Ext.Net.TextField NewPassword2;
@@ -78,6 +81,9 @@ namespace Ict.Petra.WebServer.MConference
                 this.Response.Redirect("Default.aspx");
                 return;
             }
+
+            EventCode = TAppSettingsManager.GetValue("ConferenceTool.EventCode");
+            EventPartnerKey = TAppSettingsManager.GetInt64("ConferenceTool.EventPartnerKey");
 
             if (!X.IsAjaxRequest)
             {
@@ -378,45 +384,6 @@ namespace Ict.Petra.WebServer.MConference
             this.Response.End();
         }
 
-        protected void ChangePassword(Object sender, DirectEventArgs e)
-        {
-            Dictionary <string, string>values = JSON.Deserialize <Dictionary <string, string>>(e.ExtraParams["Values"]);
-            string oldPassword = values["OldPassword"].ToString().Trim();
-            string newPassword = values["NewPassword1"].ToString().Trim();
-            string newPassword2 = values["NewPassword2"].ToString().Trim();
-
-            if (newPassword != newPassword2)
-            {
-                X.Msg.Alert("Error", "Your password has NOT been changed. <br/>You have entered two different new passwords.").Show();
-                return;
-            }
-
-            TVerificationResultCollection verification;
-
-            if (!TMaintenanceWebConnector.CheckPasswordQuality(newPassword, out verification))
-            {
-                X.Msg.Alert(
-                    "Error",
-                    "Your Password has NOT been changed. <br/>Your password is not strong enough. <br/><br/>" +
-                    verification[0].ResultText)
-                .Show();
-                return;
-            }
-
-            if (TMaintenanceWebConnector.SetUserPassword(UserInfo.GUserInfo.UserID, newPassword, oldPassword) == true)
-            {
-                X.Msg.Alert("Success", "Your Password has been changed!").Show();
-                OldPassword.Text = "";
-                NewPassword1.Text = "";
-                NewPassword2.Text = "";
-                winChangePassword.Hide();
-            }
-            else
-            {
-                X.Msg.Alert("Error", "Your password has NOT been changed. <br/>You have probably entered the wrong old password").Show();
-            }
-        }
-
         protected void Logout_Click(object sender, DirectEventArgs e)
         {
             // Logout from Authenticated Session
@@ -469,7 +436,7 @@ namespace Ict.Petra.WebServer.MConference
                     // TODO: rotate image
                     // TODO: allow editing of image, select the photo from a square image etc
 
-                    this.FileUploadField1.PostedFile.SaveAs(TAppSettingsManager.GetValueStatic("Server.PathData") +
+                    this.FileUploadField1.PostedFile.SaveAs(TAppSettingsManager.GetValue("Server.PathData") +
                         Path.DirectorySeparatorChar + "photos" + Path.DirectorySeparatorChar + PartnerKey.ToString() + ".jpg");
                     Random rand = new Random();
                     Image1.ImageUrl = "photos.aspx?id=" + PartnerKey.ToString() + ".jpg&" + rand.Next(1, 10000).ToString();
@@ -519,7 +486,7 @@ namespace Ict.Petra.WebServer.MConference
 
                     do
                     {
-                        filename = TAppSettingsManager.GetValueStatic("Server.PathData") +
+                        filename = TAppSettingsManager.GetValue("Server.PathData") +
                                    Path.DirectorySeparatorChar + "petraimports" + Path.DirectorySeparatorChar +
                                    rand.Next(1, 1000000).ToString() + ".csv";
                     } while (File.Exists(filename));
@@ -547,6 +514,84 @@ namespace Ict.Petra.WebServer.MConference
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+            }
+        }
+
+        protected void UploadPetraExtractClick(object sender, DirectEventArgs e)
+        {
+            try
+            {
+                if (this.FileUploadField3.HasFile)
+                {
+                    int FileLen = this.FileUploadField3.PostedFile.ContentLength;
+
+                    if (Path.GetExtension(this.FileUploadField3.PostedFile.FileName).ToLower() != ".ext")
+                    {
+                        X.Msg.Show(new MessageBoxConfig
+                            {
+                                Buttons = MessageBox.Button.OK,
+                                Icon = MessageBox.Icon.ERROR,
+                                Title = "Fail",
+                                Message = "we only support the extract files (.ext) that are written by Petra 2.x"
+                            });
+                        return;
+                    }
+
+                    Random rand = new Random();
+                    string filename = string.Empty;
+
+                    do
+                    {
+                        filename = TAppSettingsManager.GetValue("Server.PathData") +
+                                   Path.DirectorySeparatorChar + "petraimports" + Path.DirectorySeparatorChar +
+                                   rand.Next(1, 1000000).ToString() + ".ext";
+                    } while (File.Exists(filename));
+
+                    TLogging.Log(filename);
+                    this.FileUploadField3.PostedFile.SaveAs(filename);
+                    TTextFile.ConvertToUnicode(filename, FileUploadCodePage3.SelectedItem.Value);
+
+                    TVerificationResultCollection VerificationResult;
+
+                    if (!TApplicationManagement.UploadPetraExtract(filename, EventCode, out VerificationResult))
+                    {
+                        X.Msg.Show(new MessageBoxConfig
+                            {
+                                Buttons = MessageBox.Button.OK,
+                                Icon = MessageBox.Icon.ERROR,
+                                Title = "Import Failure",
+                                Message = VerificationResult.BuildVerificationResultString().Replace("\n", "<br/>")
+                            });
+                        return;
+                    }
+
+                    MyData_Refresh(null, null);
+
+                    // hide wait message, uploading
+                    X.Msg.Hide();
+                }
+                else
+                {
+                    X.Msg.Show(new MessageBoxConfig
+                        {
+                            Buttons = MessageBox.Button.OK,
+                            Icon = MessageBox.Icon.ERROR,
+                            Title = "Fail",
+                            Message = "No file uploaded"
+                        });
+                }
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(ex.Message);
+                TLogging.Log(ex.StackTrace);
+                X.Msg.Show(new MessageBoxConfig
+                    {
+                        Buttons = MessageBox.Button.OK,
+                        Icon = MessageBox.Icon.ERROR,
+                        Title = "Fail",
+                        Message = "There has been a problem in the .ext file."
+                    });
             }
         }
     }

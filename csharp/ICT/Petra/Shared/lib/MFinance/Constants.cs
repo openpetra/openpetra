@@ -146,10 +146,6 @@ namespace Ict.Petra.Shared.MFinance
         STD,
 
         /// <summary>
-        /// ALLOC
-        /// </summary>
-
-        /// <summary>
         /// ...
         /// </summary>
             ALLOC,

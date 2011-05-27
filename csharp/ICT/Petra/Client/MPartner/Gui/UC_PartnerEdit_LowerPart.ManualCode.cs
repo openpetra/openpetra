@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -52,14 +52,66 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>todoComment</summary>
         public event THookupDataChangeEventHandler HookupDataChange;
 
+        /// <summary>
+        /// Raises Event HookupDataChange.
+        /// </summary>
+        /// <param name="e">Event parameters</param>
+        /// <returns>void</returns>
+        protected void OnHookupDataChange(System.EventArgs e)
+        {
+            if (HookupDataChange != null)
+            {
+                HookupDataChange(this, e);
+            }
+        }
+
         /// <summary>todoComment</summary>
         public event THookupPartnerEditDataChangeEventHandler HookupPartnerEditDataChange;
+
+        /// <summary>
+        /// Raises Event HookupPartnerEditDataChange.
+        /// </summary>
+        /// <param name="e">Event parameters</param>
+        /// <returns>void</returns>
+        protected void OnHookupPartnerEditDataChange(THookupPartnerEditDataChangeEventArgs e)
+        {
+            if (HookupPartnerEditDataChange != null)
+            {
+                HookupPartnerEditDataChange(this, e);
+            }
+        }
 
         /// <summary>todoComment</summary>
         public event TEnableDisableScreenPartsEventHandler EnableDisableOtherScreenParts;
 
+        /// <summary>
+        /// Raises Event EnableDisableOtherScreenParts.
+        /// </summary>
+        /// <param name="e">Event parameters</param>
+        /// <returns>void</returns>
+        protected void OnEnableDisableOtherScreenParts(TEnableDisableEventArgs e)
+        {
+            if (EnableDisableOtherScreenParts != null)
+            {
+                EnableDisableOtherScreenParts(this, e);
+            }
+        }
+
         /// <summary>todoComment</summary>
         public event TShowTabEventHandler ShowTab;
+
+        /// <summary>
+        /// Raises Event ShowTab.
+        /// </summary>
+        /// <param name="e">Event parameters</param>
+        /// <returns>void</returns>
+        protected void OnShowTab(TShowTabEventArgs e)
+        {
+            if (ShowTab != null)
+            {
+                ShowTab(this, e);
+            }
+        }
 
         #endregion
 
