@@ -146,7 +146,10 @@ namespace {#NAMESPACE}
         // get the details from the previously selected row
         if (FPreviouslySelectedDetailRow != null)
         {
-            GetDetailsFromControls(FPreviouslySelectedDetailRow);
+            if (!GetDetailsFromControls(FPreviouslySelectedDetailRow))
+            {
+                return;
+            }
         }
 {#ENDIF SAVEDETAILS}
         // display the details of the currently selected row
@@ -157,12 +160,15 @@ namespace {#NAMESPACE}
 {#ENDIF SHOWDETAILS}
     
 {#IFDEF SAVEDETAILS}
-    private void GetDetailsFromControls({#DETAILTABLE}Row ARow)
+    private bool GetDetailsFromControls({#DETAILTABLE}Row ARow)
     {
         if (ARow != null)
         {
+            {#VALIDATEDETAILS}
             {#SAVEDETAILS}
         }
+
+        return true;
     }
 {#ENDIF SAVEDETAILS}
 
@@ -215,7 +221,10 @@ namespace {#NAMESPACE}
         FPetraUtilsObject.OnDataSavingStart(this, new System.EventArgs());
 
 //TODO?  still needed?      FMainDS.AApDocument.Rows[0].BeginEdit();
-        GetDetailsFromControls(FPreviouslySelectedDetailRow);
+        if (!GetDetailsFromControls(FPreviouslySelectedDetailRow))
+        {
+            return false;
+        }
 
         // TODO: verification
 
@@ -385,3 +394,11 @@ namespace {#NAMESPACE}
 }
 
 {#INCLUDE copyvalues.cs}
+
+{##VALIDATEDETAILS}
+TVerificationResultCollection VerificationResults;
+if (!ValidateDetailsManual(ARow, out VerificationResults))
+{
+    MessageBox.Show(VerificationResults.BuildVerificationResultString(), Catalog.GetString("Please fix the errors"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+    return false;
+}
