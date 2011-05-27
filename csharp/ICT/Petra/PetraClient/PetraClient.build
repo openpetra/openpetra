@@ -29,7 +29,7 @@
 
 <target name="custdepend"> 
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
-  <property name="generateWinformsParameters" value="-TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${dir.root}/resources -petraxml:${PetraXML.file} -localisation:${GUILocalisation} -TargetPlatform:${framework::get-target-framework()}"/>
+  <property name="generateWinformsParameters" value="-TemplateDir:${dir.incdir.template.src}/Winforms -ResourceDir:${dir.root}/resources -petraxml:${PetraXML.file} -localisation:${GUILocalisation} -TargetPlatform:${framework::get-target-framework()}"/>
 
   <ExecDotNet program="${tool-generateWinForms}" commandline="-ymlfile:${dir.root}/csharp/ICT/Petra/PetraClient ${generateWinformsParameters}"/> 
 

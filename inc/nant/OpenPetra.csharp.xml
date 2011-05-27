@@ -42,7 +42,7 @@
       <echo message="Indent ${filename}:"/>
         <exec program="${external.Uncrustify}" workingdir="${project::get-base-directory()}" resultproperty="rc"> 
           <arg value="-c" />
-          <arg value="${dir.root}/inc/cfg/uncrustify-petra.cfg" />
+          <arg value="${dir.incdir.cfg}/uncrustify-petra.cfg" />
           <arg value="--no-backup" />
           <arg value="${filename}" />
         </exec>
