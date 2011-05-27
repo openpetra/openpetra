@@ -444,54 +444,12 @@
             ID="winChangePassword" 
             runat="server" 
             Title="Change your Password" 
-            Width="500"
-            Height="300"
+            Width="600"
+            Height="208"
             PageX="200" 
             PageY="100"
             Layout="Border">
-            <TopBar>
-            </TopBar>           
-            <Items>
-                <ext:FormPanel 
-                            ID="ChangePasswordForm" 
-                            runat="server"
-                            Region="Center"
-                            Frame="false"
-                            AutoHeight="true"
-                            MonitorValid="true"
-                            PaddingSummary="10px 10px 0 10px"
-                            LabelWidth="150">                
-                            <Defaults>
-                                <ext:Parameter Name="anchor" Value="95%" Mode="Value" />
-                                <ext:Parameter Name="allowBlank" Value="false" Mode="Raw" />
-                                <ext:Parameter Name="msgTarget" Value="side" Mode="Value" />
-                            </Defaults>
-                            <Items>
-                                <ext:TextField ID="OldPassword" DataIndex="OldPassword" runat="server" FieldLabel="Old Password" InputType="Password"/>
-                                <ext:TextField ID="NewPassword1" DataIndex="NewPassword1" runat="server" FieldLabel="New Password" InputType="Password"/>
-                                <ext:TextField ID="NewPassword2" DataIndex="NewPassword2" runat="server" FieldLabel="New Password (second time)" InputType="Password"/>
-                                <ext:Label runat="server" Text="Please use a secure password. At least 8 characters, and a mix of digits and letters."/>
-                            </Items>
-                            <Buttons>
-                                <ext:Button ID="ChangePasswordButton" runat="server" Text="Change Password">
-                                    <DirectEvents>
-                                        <Click OnEvent="ChangePassword">
-                                            <EventMask ShowMask="true" />
-                                            <ExtraParams>
-                                                <ext:Parameter Name="Values" Value="#{ChangePasswordForm}.getForm().getValues(false)" Mode="Raw" Encode="true" />
-                                            </ExtraParams>
-                                        </Click>
-                                    </DirectEvents>
-                                </ext:Button>
-                                <ext:Button runat="server" Text="Cancel">
-                                    <Listeners>
-                                        <Click Handler="#{winChangePassword}.hide();#{winChangePassword}.getForm().reset();" />
-                                    </Listeners>
-                                </ext:Button>
-                            </Buttons>
-                        </ext:FormPanel>
-        
-            </Items>
+            <AutoLoad Url="ChangePassword.aspx" Mode="IFrame" ShowMask="true" />
         </ext:DesktopWindow>
 
         <ext:DesktopWindow 

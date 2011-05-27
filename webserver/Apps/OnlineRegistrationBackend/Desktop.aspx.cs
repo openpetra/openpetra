@@ -43,7 +43,6 @@ using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Server.MPersonnel.Person.Cacheable;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Server.MSysMan.Maintenance.WebConnectors;
 
 namespace Ict.Petra.WebServer.MConference
 {
@@ -383,45 +382,6 @@ namespace Ict.Petra.WebServer.MConference
             m.WriteTo(this.Response.OutputStream);
             m.Close();
             this.Response.End();
-        }
-
-        protected void ChangePassword(Object sender, DirectEventArgs e)
-        {
-            Dictionary <string, string>values = JSON.Deserialize <Dictionary <string, string>>(e.ExtraParams["Values"]);
-            string oldPassword = values["OldPassword"].ToString().Trim();
-            string newPassword = values["NewPassword1"].ToString().Trim();
-            string newPassword2 = values["NewPassword2"].ToString().Trim();
-
-            if (newPassword != newPassword2)
-            {
-                X.Msg.Alert("Error", "Your password has NOT been changed. <br/>You have entered two different new passwords.").Show();
-                return;
-            }
-
-            TVerificationResultCollection verification;
-
-            if (!TMaintenanceWebConnector.CheckPasswordQuality(newPassword, out verification))
-            {
-                X.Msg.Alert(
-                    "Error",
-                    "Your Password has NOT been changed. <br/>Your password is not strong enough. <br/><br/>" +
-                    verification[0].ResultText)
-                .Show();
-                return;
-            }
-
-            if (TMaintenanceWebConnector.SetUserPassword(UserInfo.GUserInfo.UserID, newPassword, oldPassword) == true)
-            {
-                X.Msg.Alert("Success", "Your Password has been changed!").Show();
-                OldPassword.Text = "";
-                NewPassword1.Text = "";
-                NewPassword2.Text = "";
-                winChangePassword.Hide();
-            }
-            else
-            {
-                X.Msg.Alert("Error", "Your password has NOT been changed. <br/>You have probably entered the wrong old password").Show();
-            }
         }
 
         protected void Logout_Click(object sender, DirectEventArgs e)
