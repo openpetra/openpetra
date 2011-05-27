@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       markusm
+//       markusm, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -303,11 +303,6 @@ namespace Ict.Common.Controls
                 this.btnFindScreen.TextAlign = value;
             }
         }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public event TDelegateFormatText FormatText;
 
         /// <summary>
         /// todoComment
@@ -683,24 +678,6 @@ namespace Ict.Common.Controls
         ///
         /// </summary>
         public event TDelegateEvaluateText EvaluateText;
-
-        /// <summary>
-        /// This property occurs when a key is first pressed.
-        ///
-        /// </summary>
-        public event TButtonLabelKeyDown ButtonLabelKeyDown;
-
-        /// <summary>
-        /// This property occurs after the user is finished pressing a key.
-        ///
-        /// </summary>
-        public event TButtonLabelKeyPress ButtonLabelKeyPress;
-
-        /// <summary>
-        /// This property occurs after the user is finished pressing a key.
-        ///
-        /// </summary>
-        public event TButtonLabelKeyUp ButtonLabelKeyUp;
 
         #region Windows Form Designer generated code
 
@@ -2082,16 +2059,6 @@ namespace Ict.Common.Controls
     public delegate void TDelegateSetLabel(String ALookupText, out System.String ALabelText);
 
     /// <summary>
-    /// Here the hosting form has to provide means for formating the textbox text.
-    /// </summary>
-    /// <param name="TextToFormat">Text which needs formating</param>
-    /// <param name="TextFormated">Text which has been formated</param>
-    /// <param name="SelectionStart">Start of the selection in the textbox</param>
-    /// <param name="SelectionLength">Length of the selection in the textbox
-    /// </param>
-    public delegate bool TDelegateFormatText(System.String TextToFormat, out System.String TextFormated, int SelectionStart, int SelectionLength);
-
-    /// <summary>
     /// This delegate is used to notify the hosting control of an error.
     /// </summary>
     /// <param name="ATextBoxText">The text in the textbox</param>
@@ -2108,33 +2075,6 @@ namespace Ict.Common.Controls
     /// <param name="ATextValid">true if the text of the textbox is valid otherwise false.
     /// </param>
     public delegate void TDelegateEvaluateText(String ATextBoxText, out String ALabelString, out bool ATextValid);
-
-    /// <summary>
-    /// This is the declaration of the KeyDown event for the ButtonLabel TextBox.
-    /// This event is the first to be thrown after a key stroke
-    /// </summary>
-    /// <param name="sender">The sender of the event: Here TtxtButtonLabel</param>
-    /// <param name="e">Event Arguments
-    /// </param>
-    public delegate void TButtonLabelKeyDown(System.Object sender, System.Windows.Forms.KeyEventArgs e);
-
-    /// <summary>
-    /// This is the declaration of the KeyPress event for the ButtonLabel TextBox
-    /// This event is the second to be thrown after a key stroke
-    /// </summary>
-    /// <param name="sender">The sender of the event: Here TtxtButtonLabel</param>
-    /// <param name="e">Event Arguments
-    /// </param>
-    public delegate void TButtonLabelKeyPress(System.Object sender, System.Windows.Forms.KeyPressEventArgs e);
-
-    /// <summary>
-    /// This is the declaration of the KeyUp event for the ButtonLabel TextBox
-    /// This event is the third to be thrown after a key stroke
-    /// </summary>
-    /// <param name="sender">The sender of the event: Here TtxtButtonLabel</param>
-    /// <param name="e">Event Arguments
-    /// </param>
-    public delegate void TButtonLabelKeyUp(System.Object sender, System.Windows.Forms.KeyEventArgs e);
 
     /// <summary>
     /// problem with data binding

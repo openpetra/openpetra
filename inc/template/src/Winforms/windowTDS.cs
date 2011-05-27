@@ -42,8 +42,10 @@ namespace {#NAMESPACE}
 {#ENDIF UICONNECTORTYPE}
 
 {#IFDEF TABPAGECTRL}
-    private SortedList<TDynamicLoadableUserControls, UserControl> FTabSetup;       
+    private SortedList<TDynamicLoadableUserControls, UserControl> FTabSetup;
+    {#IFDEF DYNAMICTABPAGEUSERCONTROLDECLARATION}
     private event TTabPageEventHandler FTabPageEvent;
+    {#ENDIF DYNAMICTABPAGEUSERCONTROLDECLARATION}
     {#DYNAMICTABPAGEUSERCONTROLDECLARATION}
     
     /// <summary>
@@ -451,7 +453,7 @@ namespace {#NAMESPACE}
             }
         }
 
-    {#DYNAMICTABPAGEBASICS}        
+    {#DYNAMICTABPAGEBASICS}
 {#ENDIF TABPAGECTRL}
   }
 }
