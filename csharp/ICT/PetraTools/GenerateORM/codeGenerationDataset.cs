@@ -165,8 +165,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
         {
             Console.WriteLine("processing dataset " + ANameSpace);
 
-            TAppSettingsManager opts = new TAppSettingsManager(false);
-            string templateDir = opts.GetValue("TemplateDir", true);
+            string templateDir = TAppSettingsManager.GetValue("TemplateDir", true);
             ProcessTemplate Template = new ProcessTemplate(templateDir + Path.DirectorySeparatorChar +
                 "ORM" + Path.DirectorySeparatorChar +
                 "DataSet.cs");
@@ -174,7 +173,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 "ORM" + Path.DirectorySeparatorChar +
                 "DataTable.cs");
 
-            DataSetTableIdCounter = Convert.ToInt16(opts.GetValue("StartTableId"));
+            DataSetTableIdCounter = Convert.ToInt16(TAppSettingsManager.GetValue("StartTableId"));
 
             // load default header with license and copyright
             Template.SetCodelet("GPLFILEHEADER", ProcessTemplate.LoadEmptyFileComment(templateDir));

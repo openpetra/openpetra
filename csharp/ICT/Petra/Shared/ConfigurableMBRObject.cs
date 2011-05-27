@@ -47,12 +47,10 @@ namespace Ict.Petra.Shared
             ILease tmp;
             string myName = this.GetType().FullName;
 
-            TAppSettingsManager settings = new TAppSettingsManager();
-
             // if value is not in the config file, assuming default values, 60 seconds
-            string lifetime = settings.GetValue(myName + "_Lifetime", "60000");
-            string renewoncall = settings.GetValue(myName + "_RenewOnCallTime", "60000");
-            string sponsorshiptimeout = settings.GetValue(myName + "_SponsorShipTimeout", "60000");
+            string lifetime = TAppSettingsManager.GetValue(myName + "_Lifetime", "60000");
+            string renewoncall = TAppSettingsManager.GetValue(myName + "_RenewOnCallTime", "60000");
+            string sponsorshiptimeout = TAppSettingsManager.GetValue(myName + "_SponsorShipTimeout", "60000");
 
             if (lifetime == "infinity")
             {

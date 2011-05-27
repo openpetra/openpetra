@@ -22,44 +22,45 @@
   </delete>
 </target>
 
-<target name="initConfigFiles" description="write and overwrite the config files for client, server and testing, and the version.txt">
-  <copy file="${dir.incdir.template.etc}/Server-${DBMS.Type}.config"
-        tofile="${ServerConfigFile}" overwrite="true">
+<target name="initConfigFiles-internal">
+  <copy file="${templateFile}"
+        tofile="${configFile}" overwrite="true" if="${not file::exists(templateFile + '.my')}">
     <filterchain>
       <expandproperties />
     </filterchain>
   </copy>
-
-  <copy file="${dir.incdir.template.etc}/ServerAdmin.config"
-        tofile="${ServerAdminConfigFile}" overwrite="true">
+  <property name="templateFile" value="${templateFile}.my"/>
+  <copy file="${templateFile}"
+        tofile="${configFile}" overwrite="true" if="${file::exists(templateFile)}">
     <filterchain>
       <expandproperties />
-    </filterchain>  
+    </filterchain>
   </copy>
+</target>
+
+<target name="initConfigFiles" description="write and overwrite the config files for client, server and testing, and the version.txt">
+  <property name="templateFile" value="${dir.incdir.template.etc}/Server-${DBMS.Type}.config"/>
+  <property name="configFile" value="${ServerConfigFile}"/>
+  <call target="initConfigFiles-internal"/>
+
+  <property name="templateFile" value="${dir.incdir.template.etc}/ServerAdmin.config"/>
+  <property name="configFile" value="${ServerAdminConfigFile}"/>
+  <call target="initConfigFiles-internal"/>
   
   <mkdir dir="${dir.log}/PetraClient" />
 
-  <copy file="${dir.incdir.template.etc}/Client.config"
-        tofile="${ClientConfigFile}" overwrite="true">
-    <filterchain>
-      <expandproperties />
-    </filterchain>  
-  </copy>
+  <property name="templateFile" value="${dir.incdir.template.etc}/Client.config"/>
+  <property name="configFile" value="${ClientConfigFile}"/>
+  <call target="initConfigFiles-internal"/>
 
-  <copy file="${dir.incdir.template.etc}/TestServer.config"
-        tofile="${path::combine(dir.etc, 'TestServer.config')}" overwrite="true">
-    <filterchain>
-      <expandproperties />
-    </filterchain>  
-  </copy>
-
-  <copy file="${dir.incdir.template.etc}/TestClient.config"
-        tofile="${path::combine(dir.etc, 'TestClient.config')}" overwrite="true">
-    <filterchain>
-      <expandproperties />
-    </filterchain>  
-  </copy>
+  <property name="templateFile" value="${dir.incdir.template.etc}/TestServer.config"/>
+  <property name="configFile" value="${path::combine(dir.etc, 'TestServer.config')}"/>
+  <call target="initConfigFiles-internal"/>
   
+  <property name="templateFile" value="${dir.incdir.template.etc}/TestClient.config"/>
+  <property name="configFile" value="${path::combine(dir.etc, 'TestClient.config')}"/>
+  <call target="initConfigFiles-internal"/>
+
 <!-- MGR: TODO: Remove copy. Should be during database work! -->
   <copy file="${path::combine(dir.db.patches, 'version.txt')}"
       tofile="${path::combine(dir.bin, 'version.txt')}" 

@@ -631,7 +631,7 @@ public class CreateInterfaces : AutoGenerationWriter
         WriteLine("//");
 
         // load default header with license and copyright
-        string templateDir = TAppSettingsManager.GetValueStatic("TemplateDir");
+        string templateDir = TAppSettingsManager.GetValue("TemplateDir");
         WriteLine(ProcessTemplate.LoadEmptyFileComment(templateDir));
 
         WriteLine("using System;");

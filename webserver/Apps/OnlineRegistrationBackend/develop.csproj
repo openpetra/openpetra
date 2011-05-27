@@ -31,6 +31,9 @@
     <Reference Include="Ext.Net">
       <HintPath>..\..\..\csharp\ThirdParty\ext.net\Ext.Net.dll</HintPath>
     </Reference>
+    <Reference Include="Ext.Net.Utilities">
+      <HintPath>..\..\..\csharp\ThirdParty\ext.net\Ext.Net.Utilities.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Common">
       <HintPath>..\..\..\delivery\bin\Ict.Common.dll</HintPath>
     </Reference>
@@ -75,9 +78,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Desktop.aspx" />
+    <None Include="ChangePassword.aspx">
+      <DependentUpon>ChangePassword.aspx.cs</DependentUpon>
+    </None>
+    <None Include="Desktop.aspx">
+      <DependentUpon>Desktop.aspx.cs</DependentUpon>
+    </None>
+    <Compile Include="ChangePassword.aspx.cs">
+    </Compile>
     <Compile Include="Desktop.aspx.cs">
-      <DependentUpon>Desktop.aspx</DependentUpon>
     </Compile>
   </ItemGroup>
 </Project>

@@ -227,6 +227,11 @@ namespace Ict.Common.IO
                 NextItem = NextItem.Substring(QUOTE_MARKS.Length, NextItem.Length - 2 * QUOTE_MARKS.Length);
             }
 
+            if (NextItem == "?")
+            {
+                return "";
+            }
+
             return NextItem;
         }
 
@@ -446,7 +451,7 @@ namespace Ict.Common.IO
         {
             string NextItem = ReadString();
 
-            if (NextItem == "?")
+            if (NextItem.Length == 0)
             {
                 return new Nullable <DateTime>();
             }

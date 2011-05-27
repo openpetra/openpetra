@@ -89,7 +89,7 @@ if (SubmissionResult == TSubmitChangesResult.scrOK && AInspectDS.{#TABLEVARIABLE
     Int32 rowIndex = 0;
     foreach ({#TABLEROWTYPE} origRow in AInspectDS.{#TABLEVARIABLENAME}.Rows)
     {
-        if (origRow.RowState != DataRowState.Deleted)
+        if (origRow.RowState != DataRowState.Deleted && origRow.{#SEQUENCEDCOLUMNNAME} < 0)
         {
             OldSequenceValuesRow.Add(origRow.{#SEQUENCEDCOLUMNNAME}, rowIndex);
         }

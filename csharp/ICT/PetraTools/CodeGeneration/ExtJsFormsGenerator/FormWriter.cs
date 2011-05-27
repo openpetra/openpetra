@@ -113,7 +113,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         public override string CalculateDestinationFilename(string AYamlFilename)
         {
             string yamlFileDirectory = System.IO.Path.GetDirectoryName(AYamlFilename);
-            string generatedFilesPath = TAppSettingsManager.GetValueStatic("deliveryPath") +
+            string generatedFilesPath = TAppSettingsManager.GetValue("deliveryPath") +
                                         System.IO.Path.DirectorySeparatorChar +
                                         yamlFileDirectory.Substring(yamlFileDirectory.IndexOf("webserver") + "webserver".Length) +
                                         System.IO.Path.DirectorySeparatorChar +
@@ -365,8 +365,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             FFormName += "Form";
 
             // load default header with license and copyright
-            TAppSettingsManager opts = new TAppSettingsManager(false);
-            string templateDir = opts.GetValue("TemplateDir", true);
+            string templateDir = TAppSettingsManager.GetValue("TemplateDir", true);
             FTemplate.AddToCodelet("GPLFILEHEADER",
                 ProcessTemplate.LoadEmptyFileComment(templateDir + Path.DirectorySeparatorChar + ".." +
                     Path.DirectorySeparatorChar));

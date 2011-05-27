@@ -151,6 +151,7 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
 <property name="OpenPetraRoot.dir" value="${dir.root}" overwrite="true" />
 <property name="PetraRelease" value="0300" overwrite="false" />
 <property name="SQLitedb.file" value="${dir.root}/setup/petra${PetraRelease}/petra.db" overwrite="false" />
+<property name="SQLitedbWork.file" value="${dir.root}/setup/petra${PetraRelease}/demo.db" overwrite="false" />
 <property name="PetraToolsExe.dir" value="${dir.bin}" overwrite="true" />
 <property name="DBDoc.Output.dir" value="${dir.delivery}/dbdoc" overwrite="false" />
 <property name="ThirdParty.dir" value="${dir.3rdParty}" overwrite="false" />

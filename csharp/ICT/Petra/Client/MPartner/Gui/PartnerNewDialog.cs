@@ -253,14 +253,17 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (NewPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
             {
-//                MessageBox.Show("We are planning to change the Person and Family system to something more easy to understand." +
-//                    Environment.NewLine +
-//                    "To avoid problems upgrading your database, please create a FAMILY partner rather than a PERSON partner!",
-//                    "NO CREATION OF PERSONS AT THE MOMENT",
-//                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-//
-//                return;
-
+                if (TAppSettingsManager.GetValue("AllowCreationPersonRecords", "false", false).ToLower() != "true")
+                {
+                    MessageBox.Show("We are planning to change the Person and Family system to something more easy to understand." +
+                        Environment.NewLine +
+                        "To avoid problems upgrading your database, please create a FAMILY partner rather than a PERSON partner!" +
+                        Environment.NewLine +
+                        "Otherwise, please add a parameter AllowCreationPersonRecords with value true to your config files.",
+                        "NO CREATION OF PERSONS AT THE MOMENT",
+                        MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    return;
+                }
 
                 FFamilyPartnerKey = Convert.ToInt32(txtFamilyPartnerBox.Text);
 

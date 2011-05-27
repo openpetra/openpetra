@@ -208,7 +208,7 @@ namespace Plugin.BankImportFromMT940
                 // TODO; use BLZ List?
                 // see http://www.bundesbank.de/zahlungsverkehr/zahlungsverkehr_bankleitzahlen_download.php
 
-                string[] bankAccountData = TAppSettingsManager.GetValueStatic("BankAccounts").Split(new char[] { ',' });
+                string[] bankAccountData = TAppSettingsManager.GetValue("BankAccounts").Split(new char[] { ',' });
 
                 for (Int32 bankCounter = 0; bankCounter < bankAccountData.Length / 3; bankCounter++)
                 {
@@ -325,9 +325,9 @@ namespace Plugin.BankImportFromMT940
         static public void SplitFilesAndMove()
         {
             // BankAccounts contains a comma separated list of bank accounts, each with bank account number, bank id, name for legal entity
-            string[] bankAccountData = TAppSettingsManager.GetValueStatic("BankAccounts").Split(new char[] { ',' });
-            string RawPath = TAppSettingsManager.GetValueStatic("RawMT940.Path");
-            string OutputPath = TAppSettingsManager.GetValueStatic("MT940.Output.Path");
+            string[] bankAccountData = TAppSettingsManager.GetValue("BankAccounts").Split(new char[] { ',' });
+            string RawPath = TAppSettingsManager.GetValue("RawMT940.Path");
+            string OutputPath = TAppSettingsManager.GetValue("MT940.Output.Path");
             string[] RawSTAFiles = Directory.GetFiles(RawPath, "*.sta");
 
             CreateDirectories(OutputPath, bankAccountData);

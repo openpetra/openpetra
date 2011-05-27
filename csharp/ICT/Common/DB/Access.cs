@@ -2160,7 +2160,7 @@ namespace Ict.Common.DB
         /// <returns></returns>
         public static string ReadSqlFile(string ASqlFilename)
         {
-            ASqlFilename = TAppSettingsManager.GetValueStatic("SqlFiles.Path", ".") +
+            ASqlFilename = TAppSettingsManager.GetValue("SqlFiles.Path", ".") +
                            Path.DirectorySeparatorChar +
                            ASqlFilename;
 

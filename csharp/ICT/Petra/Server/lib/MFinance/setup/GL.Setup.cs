@@ -690,7 +690,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         {
             XmlDocument doc;
             TYml2Xml ymlFile;
-            string Filename = TAppSettingsManager.GetValueStatic("SqlFiles.Path", ".") +
+            string Filename = TAppSettingsManager.GetValue("SqlFiles.Path", ".") +
                               Path.DirectorySeparatorChar +
                               "DefaultAccountHierarchy.yml";
 
@@ -732,7 +732,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         {
             // load XmlCostCentreHierarchy from a default file
 
-            string Filename = TAppSettingsManager.GetValueStatic("SqlFiles.Path", ".") +
+            string Filename = TAppSettingsManager.GetValue("SqlFiles.Path", ".") +
                               Path.DirectorySeparatorChar +
                               "DefaultCostCentreHierarchy.yml";
             TextReader reader = new StreamReader(Filename, TTextFile.GetFileEncoding(Filename), false);
@@ -822,6 +822,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             partnerRow.PartnerKey = PartnerKey;
             partnerRow.PartnerShortName = ALedgerName;
             partnerRow.StatusCode = MPartnerConstants.PARTNERSTATUS_ACTIVE;
+            partnerRow.PartnerClass = MPartnerConstants.PARTNERCLASS_UNIT;
             MainDS.PPartner.Rows.Add(partnerRow);
 
             PPartnerTypeRow partnerTypeRow = MainDS.PPartnerType.NewRowTyped();
