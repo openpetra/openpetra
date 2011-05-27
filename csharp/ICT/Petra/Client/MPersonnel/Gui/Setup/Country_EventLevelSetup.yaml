@@ -2,8 +2,8 @@ RootNode:
     BaseYaml: ../../../CommonForms/PetraEditForm.yaml
     FormTitle: Maintain Country/Event Preference Levels
     Namespace: Ict.Petra.Client.MPersonnel.Gui.Setup
-    DetailTable: PtXyzTbdPreferenceLevel
-    CacheableTable: XyzTbdPreferenceLevelList
+    DetailTable: PtOutreachPreferenceLevel
+    CacheableTable: OutreachPreferenceLevelList
     UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data]
     FormType: edit
     Template: windowMaintainCacheableTable

@@ -50,8 +50,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 
         /// <summary>String holding the selected unit name</summary>
         public String FSelectedUnitName;
-        /// <summary>String that holds the selected campaign code</summary>
-        public String FSelectedCampaignCode;
+        /// <summary>String that holds the selected outreach code</summary>
+        public String FSelectedOutreachCode;
         /// <summary>PartnerKey of the selected unit</summary>
         public Int64 FSelectedPartnerKey;
 
@@ -93,7 +93,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
                 this.DialogResult = DialogResult.OK;
 
                 FSelectedUnitName = (String)((DataRowView)grdEvent.SelectedDataRows[0]).Row[PPartnerTable.GetPartnerShortNameDBName()];
-                FSelectedCampaignCode = (String)((DataRowView)grdEvent.SelectedDataRows[0]).Row[PUnitTable.GetXyzTbdCodeDBName()];
+                FSelectedOutreachCode = (String)((DataRowView)grdEvent.SelectedDataRows[0]).Row[PUnitTable.GetOutreachCodeDBName()];
                 String PartnerKey = ((DataRowView)grdEvent.SelectedDataRows[0]).Row[PPartnerTable.GetPartnerKeyDBName()].ToString();
                 FSelectedPartnerKey = Convert.ToInt64(PartnerKey);
             }
@@ -117,7 +117,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             grdEvent.Columns.Clear();
 
             grdEvent.AddTextColumn("Event Name", FEventTable.Columns[PPartnerTable.GetPartnerShortNameDBName()]);
-            grdEvent.AddTextColumn("Event Code", FEventTable.Columns[PUnitTable.GetXyzTbdCodeDBName()]);
+            grdEvent.AddTextColumn("Event Code", FEventTable.Columns[PUnitTable.GetOutreachCodeDBName()]);
             grdEvent.AddTextColumn("Country", FEventTable.Columns[PCountryTable.GetCountryNameDBName()]);
             grdEvent.AddDateColumn("Start Date", FEventTable.Columns[PPartnerLocationTable.GetDateEffectiveDBName()]);
             grdEvent.AddDateColumn("End Date", FEventTable.Columns[PPartnerLocationTable.GetDateGoodUntilDBName()]);
@@ -150,11 +150,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 
             FEventTable.Rows.Clear();
 
-            if (rbtCampaign.Checked || rbtTeenstreet.Checked || rbtAll.Checked)
+            if (rbtOutreach.Checked || rbtTeenstreet.Checked || rbtAll.Checked)
             {
-                // get all the campaigns
+                // get all the outreaches
                 DataTable TmpTable = TDataCache.TMPersonnel.GetCacheableUnitsTable(
-                    TCacheableUnitTablesEnum.CampaignList);
+                    TCacheableUnitTablesEnum.OutreachList);
 
                 AddTableToGrid(TmpTable);
             }
@@ -211,7 +211,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
                     RowFilter = RowFilter + " AND ";
                 }
 
-                RowFilter = RowFilter + PUnitTable.GetXyzTbdCodeDBName() + " LIKE 'TS%'";
+                RowFilter = RowFilter + PUnitTable.GetOutreachCodeDBName() + " LIKE 'TS%'";
             }
 
             FEventTable.DefaultView.RowFilter = RowFilter;

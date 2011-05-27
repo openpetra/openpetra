@@ -3084,29 +3084,29 @@
                 label="Part-Timers"
                 help="Enter the number of part_timers acceptable."
                 initial="0"/>
-    <tablefield name="p_xyz_tbd_code_c"
+    <tablefield name="p_outreach_code_c"
                 type="varchar"
                 descr="todo"
                 format="X(13)"
-                label="Xyz_tbd Code"
-                columnlabel="Xyz_tbd Code"
+                label="outreach Code"
+                columnlabel="outreach Code"
                 help="todo"/>
-    <tablefield name="p_xyz_tbd_cost_n"
+    <tablefield name="p_outreach_cost_n"
                 type="number"
                 length="24"
                 decimals="10"
-                descr="This is the cost of the Xyz_tbd/Event"
+                descr="This is the cost of the outreach/Event"
                 format="&gt;&gt;&gt;,&gt;&gt;&gt;,&gt;&gt;9.99"
-                label="Xyz_tbd Cost"
-                help="Enter the cost of this xyz_tbd"
+                label="outreach Cost"
+                help="Enter the cost of this outreach"
                 notnull="yes"
                 initial="0"/>
-    <tablefield name="p_xyz_tbd_cost_currency_code_c"
+    <tablefield name="p_outreach_cost_currency_code_c"
                 type="varchar"
-                descr="This is the currency that is used for the xyz_tbd cost."
+                descr="This is the currency that is used for the outreach cost."
                 format="x(8)"
-                label="Currency Code for Xyz_tbd Cost"
-                help="Currency used for the xyz_tbd cost"/>
+                label="Currency Code for outreach Cost"
+                help="Currency used for the outreach cost"/>
     <tablefield name="p_country_code_c"
                 type="varchar"
                 descr="This is a code which identifies a country.
@@ -3145,7 +3145,7 @@
                 otherFields="p_country_code_c"/>
     <foreignkey name="p_unit_fk4"
                 descr=""
-                thisFields="p_xyz_tbd_cost_currency_code_c"
+                thisFields="p_outreach_cost_currency_code_c"
                 otherTable="a_currency"
                 otherFields="a_currency_code_c"/>
     <foreignkey name="p_unit_fk7"
@@ -3154,10 +3154,10 @@
                 otherTable="p_partner"
                 otherFields="p_partner_key_n"/>
     <!-- Explicit Indexes on table p_unit  -->
-    <index name="p_xyz_tbd_k"
-           descr="Xyz_tbd index"
+    <index name="p_outreach_k"
+           descr="outreach index"
            area="Petra Index">
-      <indexfield name="p_xyz_tbd_code_c" order="ascending"/>
+      <indexfield name="p_outreach_code_c" order="ascending"/>
       <indexfield name="p_partner_key_n" order="ascending"/>
     </index>
   </table>
@@ -15721,9 +15721,9 @@
                 type="varchar"
                 descr="TODO: this field is a combination of registration office and application number. might not be needed???"
                 format="X(16)"
-                label="Xyz_tbd"
-                columnlabel="Xyz_tbd"
-                help="Indicates the xyz_tbd applied for."
+                label="outreach"
+                columnlabel="outreach"
+                help="Indicates the outreach applied for."
                 notnull="yes"/>
     <tablefield name="pm_gen_app_poss_srv_unit_key_n"
                 type="number"
@@ -16200,15 +16200,15 @@
                 thisFields="pt_code_c"/>
     <!-- Explicit Indexes on table pt_arrival_point  -->
   </table>
-  <table name="pt_xyz_tbd_preference_level"
+  <table name="pt_outreach_preference_level"
          descr="Describes the importance of the country and activity choices. "
          area="Petra Data"
-         label="Xyz_tbd Preference Level"
+         label="outreach Preference Level"
          dumpname="pt_ca_pr"
          group="personnel">
     <tablefield name="pt_code_c"
                 type="varchar"
-                descr="This code indicates the level of importance of the country and activity choice on xyz_tbds."
+                descr="This code indicates the level of importance of the country and activity choice on outreachs."
                 format="X"
                 label="Preference Level"
                 columnlabel="Preference Level"
@@ -16245,14 +16245,14 @@
                 columnlabel="Deletable"
                 help="Indicates if a record can be deleted."
                 initial="yes"/>
-    <!-- Constraints on table pt_xyz_tbd_preference_level -->
-    <primarykey name="pt_xyz_tbd_preference_level_pk"
+    <!-- Constraints on table pt_outreach_preference_level -->
+    <primarykey name="pt_outreach_preference_level_pk"
                 descr=""
                 thisFields="pt_code_c"/>
-    <!-- Explicit Indexes on table pt_xyz_tbd_preference_level  -->
+    <!-- Explicit Indexes on table pt_outreach_preference_level  -->
   </table>
   <table name="pt_congress_code"
-         descr="This table contains the codes that indicate a person&apos;s role and/or position at conferences and xyz_tbds."
+         descr="This table contains the codes that indicate a person&apos;s role and/or position at conferences and outreachs."
          area="Petra Data"
          label="Event Role"
          dumpname="pt_co_cd"
@@ -16311,13 +16311,13 @@
                 label="Discounted Fees ?"
                 help="Does someone with this role qualify for a discount ?"
                 initial="no"/>
-    <tablefield name="pt_xyz_tbd_l"
+    <tablefield name="pt_outreach_l"
                 type="bit"
-                descr="Indicates if this is a valid role during a xyz_tbd."
+                descr="Indicates if this is a valid role during a outreach."
                 format="Yes/No"
-                label="valid Xyz_tbd Role"
-                columnlabel="valid Xyz_tbd Role"
-                help="Indicates if this is a valid role during a xyz_tbd."
+                label="valid outreach Role"
+                columnlabel="valid outreach Role"
+                help="Indicates if this is a valid role during a outreach."
                 initial="no"/>
     <tablefield name="pt_conference_l"
                 type="bit"
@@ -16500,13 +16500,13 @@
                 columnlabel="Application Type"
                 help="Select a type from the list"
                 notnull="yes"/>
-    <tablefield name="pm_st_basic_xyz_tbd_identifier_c"
+    <tablefield name="pm_st_basic_outreach_id_c"
                 type="varchar"
                 descr="TODO: this field is a combination of registration office and application number. might not be needed???"
                 format="X(16)"
-                label="Xyz_tbd"
-                columnlabel="Xyz_tbd"
-                help="Indicates the xyz_tbd applied for."
+                label="outreach"
+                columnlabel="outreach"
+                help="Indicates the outreach applied for."
                 notnull="yes"/>
     <tablefield name="pm_st_basic_delete_flag_l"
                 type="bit"
@@ -16584,57 +16584,57 @@
                 help="Indicates the Leadership Rating."/>
     <tablefield name="pm_confirmed_option_code_c"
                 type="varchar"
-                descr="Indicates the xyz_tbd code of the confirmed option."
+                descr="Indicates the outreach code of the confirmed option."
                 format="X(13)"
-                label="Event Xyz_tbd Code"
-                columnlabel="Event Xyz_tbd Code"
-                help="Indicates the xyz_tbd code of the confirmed option."/>
+                label="Event outreach Code"
+                columnlabel="Event outreach Code"
+                help="Indicates the outreach code of the confirmed option."/>
     <tablefield name="pm_option1_code_c"
                 type="varchar"
-                descr="Indicates the xyz_tbd code of the first xyz_tbd choice."
+                descr="Indicates the outreach code of the first outreach choice."
                 format="X(13)"
-                label="Alternative 1 Xyz_tbd Code"
-                columnlabel="Alternative 1 Xyz_tbd Code"
-                help="Indicates the xyz_tbd code of the first xyz_tbd choice."/>
+                label="Alternative 1 outreach Code"
+                columnlabel="Alternative 1 outreach Code"
+                help="Indicates the outreach code of the first outreach choice."/>
     <tablefield name="pm_option2_code_c"
                 type="varchar"
-                descr="Indicates the xyz_tbd code of the second xyz_tbd choice."
+                descr="Indicates the outreach code of the second outreach choice."
                 format="X(13)"
-                label="Alternative 2 Xyz_tbd Code"
-                columnlabel="Alternative 2 Xyz_tbd Code"
-                help="Indicates the xyz_tbd code of the second xyz_tbd choice."/>
-    <tablefield name="pm_st_xyz_tbd_only_flag_l"
+                label="Alternative 2 outreach Code"
+                columnlabel="Alternative 2 outreach Code"
+                help="Indicates the outreach code of the second outreach choice."/>
+    <tablefield name="pm_st_outreach_only_flag_l"
                 type="bit"
-                descr="Indicates if for xyz_tbd only."
+                descr="Indicates if for outreach only."
                 format="Yes/No"
-                label="Xyz_tbd Only"
-                columnlabel="Xyz_tbd Only"
-                help="Indicates if for xyz_tbd only."
+                label="outreach Only"
+                columnlabel="outreach Only"
+                help="Indicates if for outreach only."
                 initial="no"/>
     <tablefield name="pm_st_confirmed_option_n"
                 type="number"
                 length="10"
-                descr="Indicates the confirmed xyz_tbd option."
+                descr="Indicates the confirmed outreach option."
                 format="9999999999"
                 label="Event"
                 columnlabel="Event"
-                help="Indicates the confirmed xyz_tbd option."/>
+                help="Indicates the confirmed outreach option."/>
     <tablefield name="pm_st_option1_n"
                 type="number"
                 length="10"
-                descr="Indicates the first xyz_tbd choice."
+                descr="Indicates the first outreach choice."
                 format="9999999999"
                 label="Alternative 1"
                 columnlabel="Alternative 1"
-                help="Indicates the first xyz_tbd choice."/>
+                help="Indicates the first outreach choice."/>
     <tablefield name="pm_st_option2_n"
                 type="number"
                 length="10"
-                descr="Indicates the second xyz_tbd choice."
+                descr="Indicates the second outreach choice."
                 format="9999999999"
                 label="Alternative 2"
                 columnlabel="Alternative 2"
-                help="Indicates the second xyz_tbd choice."/>
+                help="Indicates the second outreach choice."/>
     <tablefield name="pm_st_current_field_n"
                 type="number"
                 length="10"
@@ -16853,12 +16853,12 @@
                 label="Special Applicant Code"
                 columnlabel="Special Applicant Code"
                 help="Indicates any special information about the applicant."/>
-    <tablefield name="pm_xyz_tbd_role_c"
+    <tablefield name="pm_outreach_role_c"
                 type="varchar"
-                descr="The role a participant has during a xyz_tbd"
+                descr="The role a participant has during a outreach"
                 format="X(16)"
-                label="Xyz_tbd Role"
-                columnlabel="Xyz_tbd Role"/>
+                label="outreach Role"
+                columnlabel="outreach Role"/>
     <tablefield name="pm_st_party_contact_n"
                 type="number"
                 length="10"
@@ -16869,11 +16869,11 @@
                 help="This field is the partner key of the party contact person."/>
     <tablefield name="pm_st_party_together_c"
                 type="varchar"
-                descr="Indicates what parts of the xyz_tbd the party stays together."
+                descr="Indicates what parts of the outreach the party stays together."
                 format="X(16)"
                 label="Party Code"
                 columnlabel="Party Code"
-                help="Indicates what parts of the xyz_tbd the party stays together."/>
+                help="Indicates what parts of the outreach the party stays together."/>
     <tablefield name="pm_st_fg_leader_l"
                 type="bit"
                 descr="Indicates if the person is a leader of a fellowship group."
@@ -16891,11 +16891,11 @@
                 help="A free form field for group codes."/>
     <tablefield name="pm_st_cmpgn_special_cost_i"
                 type="integer"
-                descr="Special Costs related to the xyz_tbd."
+                descr="Special Costs related to the outreach."
                 format="&gt;&gt;&gt;,&gt;&gt;9"
-                label="Xyz_tbd Special Costs"
-                columnlabel="Xyz_tbd Special Costs"
-                help="Special Costs related to the xyz_tbd."
+                label="outreach Special Costs"
+                columnlabel="outreach Special Costs"
+                help="Special Costs related to the outreach."
                 initial="0"/>
     <tablefield name="pm_st_cngrss_special_cost_i"
                 type="integer"
@@ -16938,19 +16938,19 @@
                 help="Indicates how important the activity preference is."/>
     <tablefield name="pm_st_comment_c"
                 type="varchar"
-                descr="Comments pertaining to the xyz_tbd.
+                descr="Comments pertaining to the outreach.
 &lt;br/&gt;(Made obsolete: use pm_general_application.pm_comment_c)"
                 format="X(74)"
-                label="Xyz_tbd Comments"
-                columnlabel="Xyz_tbd Comments"
-                help="Comments pertaining to the xyz_tbd."/>
+                label="outreach Comments"
+                columnlabel="outreach Comments"
+                help="Comments pertaining to the outreach."/>
     <!-- Constraints on table pm_short_term_application -->
     <primarykey name="pm_short_term_application_pk"
                 descr=""
                 thisFields="p_partner_key_n, pm_application_key_i, pm_registration_office_n"/>
     <uniquekey name="pm_short_term_application_nk"
                descr=""
-               thisFields="p_partner_key_n, pm_st_app_date_d, pm_st_application_type_c, pm_st_basic_xyz_tbd_identifier_c"/>
+               thisFields="p_partner_key_n, pm_st_app_date_d, pm_st_application_type_c, pm_st_basic_outreach_id_c"/>
     <foreignkey name="pm_short_term_application_fk1"
                 descr=""
                 thisFields="p_partner_key_n, pm_application_key_i, pm_registration_office_n"
@@ -17008,7 +17008,7 @@
                 otherFields="pt_code_c"/>
     <foreignkey name="pm_short_term_application_fk12"
                 descr=""
-                thisFields="pm_xyz_tbd_role_c"
+                thisFields="pm_outreach_role_c"
                 otherTable="pt_congress_code"
                 otherFields="pt_code_c"/>
     <foreignkey name="pm_short_term_application_fk13"
@@ -17019,12 +17019,12 @@
     <foreignkey name="pm_short_term_application_fk14"
                 descr=""
                 thisFields="pm_st_country_pref_c"
-                otherTable="pt_xyz_tbd_preference_level"
+                otherTable="pt_outreach_preference_level"
                 otherFields="pt_code_c"/>
     <foreignkey name="pm_short_term_application_fk15"
                 descr=""
                 thisFields="pm_st_activity_pref_c"
-                otherTable="pt_xyz_tbd_preference_level"
+                otherTable="pt_outreach_preference_level"
                 otherFields="pt_code_c"/>
     <foreignkey name="pm_short_term_application_fk16"
                 descr=""
@@ -17064,7 +17064,7 @@
       <indexfield name="p_partner_key_n" order="ascending"/>
       <indexfield name="pm_st_app_date_d" order="ascending"/>
       <indexfield name="pm_st_application_type_c" order="ascending"/>
-      <indexfield name="pm_st_basic_xyz_tbd_identifier_c" order="ascending"/>
+      <indexfield name="pm_st_basic_outreach_id_c" order="ascending"/>
     </index>
     <index name="pm_registration_office_k"
            descr=""
@@ -17162,7 +17162,7 @@
                 length="24"
                 decimals="10"
                 descr="Indicates the agreed upon joining charge for the conference
-&lt;br/&gt;and / or the summer xyz_tbd."
+&lt;br/&gt;and / or the summer outreach."
                 format="&gt;&gt;&gt;,&gt;&gt;&gt;,&gt;&gt;&gt;.99"
                 label="Agreed Joining Charge"
                 help="Enter the agreed upon joining charge."
@@ -22456,12 +22456,12 @@
                 help="Partner Key for the conference"
                 notnull="yes"
                 initial="0"/>
-    <tablefield name="pc_xyz_tbd_prefix_c"
+    <tablefield name="pc_outreach_prefix_c"
                 type="varchar"
                 descr=""
                 format="X(5)"
-                label="Xyz_tbd Code Prefix"
-                help="5 character xyz_tbd code prefix, eg LE992"/>
+                label="outreach Code Prefix"
+                help="5 character outreach code prefix, eg LE992"/>
     <tablefield name="pc_start_d"
                 type="date"
                 descr=""
@@ -22754,12 +22754,12 @@
                 help="Home Office Partner Key"
                 notnull="yes"
                 initial="0"/>
-    <tablefield name="pc_xyz_tbd_type_c"
+    <tablefield name="pc_outreach_type_c"
                 type="varchar"
                 descr=""
                 format="X(6)"
-                label="Xyz_tbd Type"
-                help="Code for xyz_tbd type, eg GB.MUS"/>
+                label="outreach Type"
+                help="Code for outreach type, eg GB.MUS"/>
     <tablefield name="pc_actual_arr_d"
                 type="date"
                 descr=""
@@ -22840,16 +22840,16 @@
                 otherTable="p_unit"
                 otherFields="p_partner_key_n"/>
     <!-- Explicit Indexes on table pc_attendee  -->
-    <index name="pc_xyz_tbd_k"
+    <index name="pc_outreach_k"
            descr=""
            area="Petra Index">
       <indexfield name="pc_conference_key_n" order="ascending"/>
-      <indexfield name="pc_xyz_tbd_type_c" order="ascending"/>
+      <indexfield name="pc_outreach_type_c" order="ascending"/>
       <indexfield name="p_partner_key_n" order="ascending"/>
     </index>
   </table>
   <table name="pc_conference_cost"
-         descr="Charges for the various xyz_tbd options from a conference (currency held in conference master)"
+         descr="Charges for the various outreach options from a conference (currency held in conference master)"
          area="Petra Data"
          label="Conference Cost"
          dumpname="pc_ccost"
@@ -23093,7 +23093,7 @@
     </index>
   </table>
   <table name="pc_supplement"
-         descr="Xyz_tbd travel supplements (by xyz_tbd ID)"
+         descr="outreach travel supplements (by outreach ID)"
          area="Petra Data"
          label="Supplements"
          dumpname="pc_suppl"
@@ -23107,12 +23107,12 @@
                 help="Partner Key for the conference"
                 notnull="yes"
                 initial="0"/>
-    <tablefield name="pc_xyz_tbd_type_c"
+    <tablefield name="pc_outreach_type_c"
                 type="varchar"
                 descr=""
                 format="X(6)"
-                label="Xyz_tbd Type"
-                help="Code for xyz_tbd type, eg GB.MUS"
+                label="outreach Type"
+                help="Code for outreach type, eg GB.MUS"
                 notnull="yes"/>
     <tablefield name="pc_supplement_n"
                 type="number"
@@ -23121,7 +23121,7 @@
                 descr=""
                 format="-&gt;&gt;&gt;,&gt;&gt;&gt;,&gt;&gt;9.99"
                 label="Supplement"
-                help="Amount of supplement for this xyz_tbd type"
+                help="Amount of supplement for this outreach type"
                 initial="0"/>
     <tablefield name="pc_apply_discounts_l"
                 type="bit"
@@ -23130,7 +23130,7 @@
     <!-- Constraints on table pc_supplement -->
     <primarykey name="pc_supplement_pk"
                 descr=""
-                thisFields="pc_conference_key_n, pc_xyz_tbd_type_c"/>
+                thisFields="pc_conference_key_n, pc_outreach_type_c"/>
     <foreignkey name="pc_supplement_fk1"
                 descr=""
                 thisFields="pc_conference_key_n"

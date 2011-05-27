@@ -55,8 +55,8 @@
         <fielddetail>
           <value text="Selection: "></value>
         </fielddetail>
-        <fielddetail condition="eq({param_source}, Campaign)">
-          <value text="Campaign: "></value><value variable="param_event_code"></value>
+        <fielddetail condition="eq({param_source}, Outreach)">
+          <value text="Outreach: "></value><value variable="param_event_code"></value>
         </fielddetail>
         <fielddetail condition="eq({param_source}, Conference)">
           <value text="Conference: "></value><value variable="param_event_code"></value>

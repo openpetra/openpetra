@@ -421,10 +421,10 @@ namespace Ict.Petra.Server.MConference.Instantiator.WebConnectors
         }
 
         /// generated method from connector
-        public PUnitTable GetCampaignOptions(Int64 AUnitKey)
+        public PUnitTable GetOutreachOptions(Int64 AUnitKey)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions), "GetCampaignOptions", ";LONG;");
-            return Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions.GetCampaignOptions(AUnitKey);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions), "GetOutreachOptions", ";LONG;");
+            return Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions.GetOutreachOptions(AUnitKey);
         }
 
         /// generated method from connector
@@ -447,11 +447,11 @@ namespace Ict.Petra.Server.MConference.Instantiator.WebConnectors
         }
 
         /// generated method from connector
-        public System.Boolean GetCampaignOptions(long AUnitKey,
+        public System.Boolean GetOutreachOptions(long AUnitKey,
                                                  out System.Data.DataTable AConferenceTable)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions), "GetCampaignOptions", ";LONG;DATATABLE;");
-            return Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions.GetCampaignOptions(AUnitKey, out AConferenceTable);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions), "GetOutreachOptions", ";LONG;DATATABLE;");
+            return Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions.GetOutreachOptions(AUnitKey, out AConferenceTable);
         }
 
         /// generated method from connector

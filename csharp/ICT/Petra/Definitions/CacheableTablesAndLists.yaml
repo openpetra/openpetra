@@ -58,7 +58,7 @@ CachedTables:
     Personnel:
         Unit:
             CalculatedLists:
-                CampaignList: {Comment=List of all campaigns}
+                OutreachList: {Comment=List of all campaigns}
                 ConferenceList: {Comment=List of all conferences}
                 
             DatabaseTables:
@@ -75,7 +75,7 @@ CachedTables:
                 PtAbilityLevel: {Comment="Contains the degrees to which an ability is possessed, e.g. a little or professional"}
                 PtApplicantStatus: {Comment=Contains the different codes that indicate where an applicant is in the application continuum}
                 PtArrivalPoint: {Enum=ArrivalDeparturePointList, Comment=Contains the codes used to indicate where the conferee is arriving or departing}                
-                PtCongressCode: {Enum=EventRoleList, Comment=Contains the codes that indicate a person's role and/or position at conferences and xyz_tbds}                
+                PtCongressCode: {Enum=EventRoleList, Comment=Contains the codes that indicate a person's role and/or position at conferences and outreaches}                
                 PtContact: {Comment=Contains the various methods by which a person learns of our organsiation. This table can be changed to fit any field's partiular awareness programs}
                 PtDriverStatus: {Comment=Contains the codes that indicate the level of ability a drive has}
                 PtLanguageLevel: {Comment="Contains the degrees to which a language is spoken, e.g. a little, phrases, fluent"}
@@ -88,7 +88,7 @@ CachedTables:
                 PtValuableItem: {Comment="Contains the item(s) of value a person may possess which need to be accounted for various purposes, e.g. customs, or insurance"}
                 PtVisionArea: {Comment="Contains the areas a person may have vision for, e.g. children's work or a particular country"}
                 PtVisionLevel: {Comment="Contains the levels  to which a vision is possessed, e.g. a possibility, do nothing else"}
-                PtXyzTbdPreferenceLevel: {Comment=Describes the importance of the country and target choices}
+                PtOutreachPreferenceLevel: {Comment=Describes the importance of the country and target choices}
 
     Finance:
         Finance:

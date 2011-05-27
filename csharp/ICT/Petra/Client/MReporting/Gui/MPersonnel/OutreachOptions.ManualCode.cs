@@ -41,16 +41,16 @@ using Ict.Petra.Shared.MCommon.Data;
 namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 {
     /// <summary>
-    /// manual code for TFrmCampaignOptions class
+    /// manual code for TFrmOutreachOptions class
     /// </summary>
-    public partial class TFrmCampaignOptions
+    public partial class TFrmOutreachOptions
     {
         /// <summary>Marker if the last character typed in the year field was a number</summary>
         private bool FNonNumberEntered;
 
         private void InitUserControlsManually()
         {
-            this.txtCampaignCode.MaxLength = 2;
+            this.txtOutreachCode.MaxLength = 2;
             this.txtYear.MaxLength = 4;
 
             this.txtYear.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TxtYearKeyDown);
@@ -59,19 +59,19 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
-            // Matching Pattern of the campaign code for sql search.
+            // Matching Pattern of the outreach code for sql search.
             // The first two characters refer to the "prefix"
             // The 3. and 4. character refer to the year
             string MatchingPatern = "";
 
-            switch (txtCampaignCode.Text.Length)
+            switch (txtOutreachCode.Text.Length)
             {
                 case 1:
-                    MatchingPatern = txtCampaignCode.Text + "_";
+                    MatchingPatern = txtOutreachCode.Text + "_";
                     break;
 
                 case 2:
-                    MatchingPatern = txtCampaignCode.Text;
+                    MatchingPatern = txtOutreachCode.Text;
                     break;
 
                 default:

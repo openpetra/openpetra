@@ -38,8 +38,8 @@ namespace Ict.Petra.Shared.MConference
         utReceivingFields,
         /// <summary>Fields where applicants from the conference are registered</summary>
         utRegisteringFields,
-        /// <summary>All the campaign options of this conference</summary>
-        utCampaignOptions,
+        /// <summary>All the outreach options of this conference</summary>
+        utOutreachOptions,
 
         /// <summary>Undefined or unknown type </summary>
         utUnknown

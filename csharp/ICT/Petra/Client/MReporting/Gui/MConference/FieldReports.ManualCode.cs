@@ -90,7 +90,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             cmbChargedFields.SelectedIndex = 0;
 
             ucoConferenceSelection.DisableRadioButtonAllConferences(true);
-            ucoConferenceSelection.FShowSelectCampaignOptionsDialog = false;
+            ucoConferenceSelection.FShowSelectOutreachOptionsDialog = false;
         }
 
         /// <summary>
@@ -127,9 +127,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
                 // Don't add them again when the conference key changed
                 grdFields.AddCheckBoxColumn("", FUnitTableList.Columns["Selection"]);
 
-                if (FUnitType == TUnitTypeEnum.utCampaignOptions)
+                if (FUnitType == TUnitTypeEnum.utOutreachOptions)
                 {
-                    grdFields.AddTextColumn(Catalog.GetString("Campaign Code"), FUnitTableList.Columns["Campaign Code"]);
+                    grdFields.AddTextColumn(Catalog.GetString("Outreach Code"), FUnitTableList.Columns["Outreach Code"]);
                 }
                 else
                 {
@@ -317,9 +317,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
                     && (ucoConferenceSelection.AllConferenceSelected
                         || (!ucoConferenceSelection.AllConferenceSelected && (bool)Row["Used_in_Conference"])))
                 {
-                    if (FUnitType == TUnitTypeEnum.utCampaignOptions)
+                    if (FUnitType == TUnitTypeEnum.utOutreachOptions)
                     {
-                        ReturnValue = ReturnValue + Row["Campaign Code"].ToString() + ',';
+                        ReturnValue = ReturnValue + Row["Outreach Code"].ToString() + ',';
                     }
                     else
                     {

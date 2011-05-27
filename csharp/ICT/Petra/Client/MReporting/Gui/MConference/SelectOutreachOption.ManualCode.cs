@@ -41,9 +41,9 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 namespace Ict.Petra.Client.MReporting.Gui.MConference
 {
     /// <summary>
-    /// Description of TFrmSelectCampaignOption.ManualCode.
+    /// Description of TFrmSelectOutreachOption.ManualCode.
     /// </summary>
-    public partial class TFrmSelectCampaignOption
+    public partial class TFrmSelectOutreachOption
     {
         private static Int64 FUnitKey;
         private static PUnitTable FUnitTable;
@@ -53,7 +53,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
         /// </summary>
         public void InitUserControlsManually()
         {
-            FUnitTable = TRemote.MConference.WebConnectors.GetCampaignOptions(FUnitKey);
+            FUnitTable = TRemote.MConference.WebConnectors.GetOutreachOptions(FUnitKey);
             FUnitTable.Columns.Add("Is Selected", Type.GetType("System.Boolean"));
 
             for (int Counter = 0; Counter < FUnitTable.Rows.Count; ++Counter)
@@ -61,19 +61,19 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
                 FUnitTable.Rows[Counter]["Is Selected"] = false;
             }
 
-            grdCampaignOption.AddCheckBoxColumn("", FUnitTable.Columns["Is Selected"]);
-            grdCampaignOption.AddTextColumn("Campaign Code", FUnitTable.ColumnXyzTbdCode);
-            grdCampaignOption.AddTextColumn("Unit Name", FUnitTable.ColumnUnitName);
-            grdCampaignOption.AddTextColumn("Unit Key", FUnitTable.ColumnPartnerKey);
+            grdOutreachOption.AddCheckBoxColumn("", FUnitTable.Columns["Is Selected"]);
+            grdOutreachOption.AddTextColumn("Outreach Code", FUnitTable.ColumnOutreachCode);
+            grdOutreachOption.AddTextColumn("Unit Name", FUnitTable.ColumnUnitName);
+            grdOutreachOption.AddTextColumn("Unit Key", FUnitTable.ColumnPartnerKey);
 
             FUnitTable.DefaultView.AllowNew = false;
             FUnitTable.DefaultView.AllowEdit = true;
             FUnitTable.DefaultView.AllowDelete = false;
 
-            grdCampaignOption.DataSource = new DevAge.ComponentModel.BoundDataView(FUnitTable.DefaultView);
+            grdOutreachOption.DataSource = new DevAge.ComponentModel.BoundDataView(FUnitTable.DefaultView);
         }
 
-        private void grdCampaignOptionDoubleClick(System.Object sender, EventArgs e)
+        private void grdOutreachOptionDoubleClick(System.Object sender, EventArgs e)
         {
             AcceptSelection(sender, e);
         }
@@ -90,7 +90,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             this.Close();
         }
 
-        private void SelectCampaignOptions(Boolean AValue)
+        private void SelectOutreachOptions(Boolean AValue)
         {
             foreach (DataRow Row in FUnitTable.Rows)
             {
@@ -100,29 +100,29 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
 
         private void SelectAll(System.Object sender, EventArgs e)
         {
-            SelectCampaignOptions(true);
+            SelectOutreachOptions(true);
         }
 
         private void DeselectAll(System.Object sender, EventArgs e)
         {
-            SelectCampaignOptions(false);
+            SelectOutreachOptions(false);
         }
 
         /// <summary>
-        /// Returns the number of campaign options available for this conference
+        /// Returns the number of outreach options available for this conference
         /// </summary>
         /// <returns></returns>
-        public static int GetCampaignOptionsCount()
+        public static int GetOutreachOptionsCount()
         {
             return FUnitTable.Rows.Count;
         }
 
         /// <summary>
-        /// Returns all or only the selected campaign options
+        /// Returns all or only the selected outreach options
         /// </summary>
-        /// <param name="ASelection">List with Unit key and Unit name of the selected campaign options</param>
-        /// <param name="AAllOptionsInTable">True if all campaign options should be returned</param>
-        public static void GetSelectedCampaignOptions(ref List <KeyValuePair <long, String>>ASelection,
+        /// <param name="ASelection">List with Unit key and Unit name of the selected outreach options</param>
+        /// <param name="AAllOptionsInTable">True if all outreach options should be returned</param>
+        public static void GetSelectedOutreachOptions(ref List <KeyValuePair <long, String>>ASelection,
             bool AAllOptionsInTable)
         {
             foreach (DataRow Row in FUnitTable.Rows)
@@ -140,42 +140,42 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
         /// <summary>
         ///
         /// </summary>
-        /// <param name="EventKey">The UnitKey of the conference from which the campaign options are displayed</param>
+        /// <param name="EventKey">The UnitKey of the conference from which the outreach options are displayed</param>
         /// <param name="AOwner">The parent form</param>
         /// <param name="AShowOnlyIfSeveralOptions">Inidcator if the dialog is to be shown if there
-        /// is only one campaign option. True: dialog is shown only if there are more than one option.
-        /// False: dialog is shown always, indipendent of how many campaign options there are</param>
-        /// <param name="ConferenceList">The selected campaign options. It holds the Unit keys
+        /// is only one outreach option. True: dialog is shown only if there are more than one option.
+        /// False: dialog is shown always, indipendent of how many outreach options there are</param>
+        /// <param name="ConferenceList">The selected outreach options. It holds the Unit keys
         /// and the unit names.</param>
         /// <returns></returns>
-        public static DialogResult OpenSelectCampaignOptionDialog(Int64 EventKey, IWin32Window AOwner,
+        public static DialogResult OpenSelectOutreachOptionDialog(Int64 EventKey, IWin32Window AOwner,
             bool AShowOnlyIfSeveralOptions, out List <KeyValuePair <long, string>>ConferenceList)
         {
-            TFrmSelectCampaignOption SelectCampaignOptionDialog;
+            TFrmSelectOutreachOption SelectOutreachOptionDialog;
 
             FUnitKey = EventKey;
             DialogResult DlgResult = DialogResult.Cancel;
 
             ConferenceList = new List <KeyValuePair <long, String>>();
 // TODO check the handle...
-            SelectCampaignOptionDialog = new TFrmSelectCampaignOption(AOwner.Handle);
+            SelectOutreachOptionDialog = new TFrmSelectOutreachOption(AOwner.Handle);
 
-            if ((AShowOnlyIfSeveralOptions && (GetCampaignOptionsCount() > 1))
+            if ((AShowOnlyIfSeveralOptions && (GetOutreachOptionsCount() > 1))
                 || !AShowOnlyIfSeveralOptions)
             {
-                DlgResult = SelectCampaignOptionDialog.ShowDialog(AOwner);
+                DlgResult = SelectOutreachOptionDialog.ShowDialog(AOwner);
 
                 if (DlgResult == DialogResult.OK)
                 {
-                    GetSelectedCampaignOptions(ref ConferenceList, false);
+                    GetSelectedOutreachOptions(ref ConferenceList, false);
                 }
             }
 
-            if (AShowOnlyIfSeveralOptions && (GetCampaignOptionsCount() == 1))
+            if (AShowOnlyIfSeveralOptions && (GetOutreachOptionsCount() == 1))
             {
-                // We don't show the dialog and we have only one campaign option, then use
-                // this campaign option as result
-                GetSelectedCampaignOptions(ref ConferenceList, true);
+                // We don't show the dialog and we have only one outreach option, then use
+                // this outreach option as result
+                GetSelectedOutreachOptions(ref ConferenceList, true);
                 DlgResult = DialogResult.OK;
             }
 

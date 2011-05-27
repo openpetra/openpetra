@@ -310,13 +310,13 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 UnitRow.PartnerKey = FPartnerKey;
                 UnitRow.UnitName = ReadString();
                 ReadString(); // was omss code
-                UnitRow.XyzTbdCode = ReadString();
+                UnitRow.OutreachCode = ReadString();
                 UnitRow.Description = ReadString();
                 ReadInt32(); // was um_default_entry_conf_key_n
                 UnitRow.UnitTypeCode = ReadString();
                 UnitRow.CountryCode = ReadString();
-                UnitRow.XyzTbdCost = ReadDecimal();
-                UnitRow.XyzTbdCostCurrencyCode = ReadString();
+                UnitRow.OutreachCost = ReadDecimal();
+                UnitRow.OutreachCostCurrencyCode = ReadString();
                 UnitRow.PrimaryOffice = ReadInt64();
                 PUnitAccess.AddOrModifyRecord(UnitRow.PartnerKey, FMainDS.PUnit, UnitRow, FDoNotOverwrite, ATransaction);
             }
@@ -469,7 +469,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             ShortTermApplicationRow.RegistrationOffice = AGeneralApplicationRow.RegistrationOffice;
             ShortTermApplicationRow.StAppDate = AGeneralApplicationRow.GenAppDate;
             ShortTermApplicationRow.StApplicationType = AGeneralApplicationRow.AppTypeName;
-            ShortTermApplicationRow.StBasicXyzTbdIdentifier = AGeneralApplicationRow.OldLink;
+            ShortTermApplicationRow.StBasicOutreachId = AGeneralApplicationRow.OldLink;
             ShortTermApplicationRow.ConfirmedOptionCode = ReadString();
 
             if ((FLimitToOption.Length > 0) && (ShortTermApplicationRow.ConfirmedOptionCode != FLimitToOption))
@@ -492,7 +492,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             ShortTermApplicationRow.StApplicationOnHold = ReadBoolean();
             ShortTermApplicationRow.StBasicDeleteFlag = ReadBoolean();
             ShortTermApplicationRow.StBookingFeeReceived = ReadBoolean();
-            ShortTermApplicationRow.StXyzTbdOnlyFlag = ReadBoolean();
+            ShortTermApplicationRow.StOutreachOnlyFlag = ReadBoolean();
             ShortTermApplicationRow.StCmpgnSpecialCost = ReadInt32();
             ShortTermApplicationRow.StCngrssSpecialCost = ReadInt32();
 
@@ -518,8 +518,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 AddRequiredOffice(ShortTermApplicationRow.StCurrentField);
             }
 
-            ShortTermApplicationRow.XyzTbdRole = ReadString();
-            CheckCongressCode(ShortTermApplicationRow.XyzTbdRole);
+            ShortTermApplicationRow.OutreachRole = ReadString();
+            CheckCongressCode(ShortTermApplicationRow.OutreachRole);
             ShortTermApplicationRow.StFgCode = ReadString();
             ShortTermApplicationRow.StFgLeader = ReadBoolean();
             ShortTermApplicationRow.StFieldCharged = ReadInt64();

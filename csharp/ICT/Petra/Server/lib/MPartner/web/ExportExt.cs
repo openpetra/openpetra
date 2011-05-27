@@ -95,7 +95,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 Write(ShortTermApplicationRow.StApplicationOnHold);
                 Write(ShortTermApplicationRow.StBasicDeleteFlag);
                 Write(ShortTermApplicationRow.StBookingFeeReceived);
-                Write(ShortTermApplicationRow.StXyzTbdOnlyFlag);
+                Write(ShortTermApplicationRow.StOutreachOnlyFlag);
                 Write(ShortTermApplicationRow.StCmpgnSpecialCost);
                 Write(ShortTermApplicationRow.StCngrssSpecialCost);
                 WriteLine();
@@ -106,7 +106,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 Write(ShortTermApplicationRow.StCongressLanguage);
                 Write(ShortTermApplicationRow.StCountryPref);
                 Write(ShortTermApplicationRow.StCurrentField);
-                Write(ShortTermApplicationRow.XyzTbdRole);
+                Write(ShortTermApplicationRow.OutreachRole);
                 WriteLine();
                 Write(ShortTermApplicationRow.StFgCode);
                 Write(ShortTermApplicationRow.StFgLeader);
@@ -168,7 +168,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 Write(true);                 // ShortTermApplicationRow.StApplicationOnHold
                 Write(false);                 // ShortTermApplicationRow.StBasicDeleteFlag
                 Write(false);                 // ShortTermApplicationRow.StBookingFeeReceived
-                Write(false);                 // ShortTermApplicationRow.StXyzTbdOnlyFlag
+                Write(false);                 // ShortTermApplicationRow.StOutreachOnlyFlag
                 Write(0);                 // ShortTermApplicationRow.StCmpgnSpecialCost
                 Write(0);                 // ShortTermApplicationRow.StCngrssSpecialCost
                 WriteLine();
@@ -179,7 +179,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 Write("");                 // ShortTermApplicationRow.StCongressLanguage
                 Write("");                 // ShortTermApplicationRow.StCountryPref
                 Write(0);                 // ShortTermApplicationRow.StCurrentField
-                Write("");                 // ShortTermApplicationRow.XyzTbdRole
+                Write("");                 // ShortTermApplicationRow.OutreachRole
                 WriteLine();
                 Write("");                 // ShortTermApplicationRow.StFgCode
                 Write(false);                 // ShortTermApplicationRow.StFgLeader
@@ -885,13 +885,13 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 PUnitRow UnitRow = AMainDS.PUnit[0];
                 Write(UnitRow.UnitName);
                 Write("");                 // was omss code
-                Write(UnitRow.XyzTbdCode);
+                Write(UnitRow.OutreachCode);
                 Write(UnitRow.Description);
                 Write(0);                 // was um_default_entry_conf_key_n
                 Write(UnitRow.UnitTypeCode);
                 Write(UnitRow.CountryCode);
-                Write(UnitRow.XyzTbdCost);
-                Write(UnitRow.XyzTbdCostCurrencyCode);
+                Write(UnitRow.OutreachCost);
+                Write(UnitRow.OutreachCostCurrencyCode);
                 Write(UnitRow.PrimaryOffice);
                 WriteLine();
             }

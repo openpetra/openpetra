@@ -1,6 +1,6 @@
 RootNode:
     BaseYaml: ../../../CommonForms/PetraForm.yaml
-    FormTitle: Select Campaign Option
+    FormTitle: Select Outreach Option
     Namespace: Ict.Petra.Client.MReporting.Gui.MConference
     FormType: browse
     Template: window
@@ -20,15 +20,15 @@ RootNode:
     Controls:
         pnlContent:
             Dock: Fill
-            Controls: [grpCampaignOption, pnlBottom]
+            Controls: [grpOutreachOption, pnlBottom]
             # add to Controls: pnlStatementInfo
-        grpCampaignOption:
+        grpOutreachOption:
             Label: Events
             Controls:
                 Row1: [lblExplanation]
                 Row2: [lblChoose]
                 Row3: [pnlButtonSelection]
-                Row4: [grdCampaignOption]
+                Row4: [grdOutreachOption]
         
         lblExplanation:
             Text: There is more than one campaign option for this event.
@@ -43,11 +43,11 @@ RootNode:
         btnDeselectAll:
             Label: Deselect All
             Action: actDeselectAll
-        grdCampaignOption:
+        grdOutreachOption:
             Dock: Fill
             Height: 300
             Width: 500
-            ActionDoubleClick: grdCampaignOptionDoubleClick
+            ActionDoubleClick: grdOutreachOptionDoubleClick
         pnlBottom:
             Dock: Top
             Controls:

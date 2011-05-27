@@ -21,10 +21,10 @@ RootNode:
         grpEvents:
             Label: Events
             Controls:
-                Row1: [rbtCampaign, rbtConference, rbtTeenstreet, rbtAll]
+                Row1: [rbtOutreach, rbtConference, rbtTeenstreet, rbtAll]
                 Row2: [chkCurrentFutureOnly]
-        rbtCampaign:
-            Label: Campaigns Only
+        rbtOutreach:
+            Label: Outreachs Only
             OnChange: EventTypeChanged
         rbtConference:
             Label: Conferences Only

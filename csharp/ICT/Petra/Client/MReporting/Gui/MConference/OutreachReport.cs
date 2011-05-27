@@ -29,23 +29,23 @@ using Ict.Petra.Shared.MConference;
 namespace Ict.Petra.Client.MReporting.Gui.MConference
 {
     /// <summary>
-    /// Description of TFrmCampaignReport.ManualCode.
+    /// Description of TFrmOutreachReport.ManualCode.
     /// </summary>
-    public class TFrmCampaignReport : TFrmFieldReports
+    public class TFrmOutreachReport : TFrmFieldReports
     {
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="AParentFormHandle"></param>
-        public TFrmCampaignReport(IntPtr AParentFormHandle) : base(AParentFormHandle)
+        public TFrmOutreachReport(IntPtr AParentFormHandle) : base(AParentFormHandle)
         {
-            this.Text = Catalog.GetString("Campaign Report");
+            this.Text = Catalog.GetString("Outreach Report");
             BaseGrpChargedFields.Visible = false;
 
-            SetReportParameters("Conference\\\\campaignreport.xml,Conference\\\\conference.xml",
-                "Campaign Report");
+            SetReportParameters("Conference\\\\outreachreport.xml,Conference\\\\conference.xml",
+                "Outreach Report");
 
-            grdFields_InitialiseData(TUnitTypeEnum.utCampaignOptions);
+            grdFields_InitialiseData(TUnitTypeEnum.utOutreachOptions);
         }
     }
 }

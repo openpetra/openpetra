@@ -525,7 +525,7 @@ namespace Ict.Petra.Server.MPartner.Import
                     ShortTermApplicationRow.RegistrationOffice = data.registrationoffice;
                     ShortTermApplicationRow.StAppDate = DateTime.Today;
                     ShortTermApplicationRow.StApplicationType = MConferenceConstants.APPTYPE_CONFERENCE;
-                    ShortTermApplicationRow.StBasicXyzTbdIdentifier = GeneralApplicationRow.OldLink;
+                    ShortTermApplicationRow.StBasicOutreachId = GeneralApplicationRow.OldLink;
                     ShortTermApplicationRow.StCongressCode = data.role;
                     ShortTermApplicationRow.ConfirmedOptionCode = data.eventidentifier;
                     ShortTermApplicationRow.StFieldCharged = data.registrationoffice;
