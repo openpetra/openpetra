@@ -35,7 +35,7 @@ namespace {#NAMESPACE}
         public {#CACHEABLECLASS}() : base()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -48,7 +48,7 @@ namespace {#NAMESPACE}
         /// destructor
         ~{#CACHEABLECLASS}()
         {
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
                                                                                                 DateTime.Now.Ticks -
@@ -96,7 +96,7 @@ namespace {#NAMESPACE}
             String TableName = Enum.GetName(typeof(TCacheable{#SUBMODULE}TablesEnum), ACacheableTable);
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 7)
+            if (TLogging.DL >= 7)
             {
                 Console.WriteLine(this.GetType().FullName + ".GetCacheableTable called for table '" + TableName + "'.");
             }
@@ -128,7 +128,7 @@ namespace {#NAMESPACE}
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 7)
+                        if (TLogging.DL >= 7)
                         {
                             Console.WriteLine(this.GetType().FullName + ".GetCacheableTable: commited own transaction.");
                         }
@@ -273,7 +273,7 @@ public DataTable GetCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTa
 {
     string TableName = Enum.GetName(typeof(TCacheable{#SUBMODULE}TablesEnum), ACacheableTable);
 #if DEBUGMODE
-    if (TSrvSetting.DL >= 7)
+    if (TLogging.DL >= 7)
     {
         Console.WriteLine(
             this.GetType().FullName + ".GetCacheableTable called with ATableName='" + TableName + "' and ALedgerNumber=" +
@@ -283,7 +283,7 @@ public DataTable GetCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTa
 #if DEBUGMODE
     if (DomainManager.GCacheableTablesManager.IsTableCached(TableName))
     {
-        if (TSrvSetting.DL >= 7)
+        if (TLogging.DL >= 7)
         {
             Console.WriteLine("Cached DataTable has currently " +
                 DomainManager.GCacheableTablesManager.GetCachedDataTable(TableName, out AType).Rows.Count.ToString() + " rows in total.");
@@ -328,7 +328,7 @@ public DataTable GetCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTa
             {
                 DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 7)
+                if (TLogging.DL >= 7)
                 {
                     Console.WriteLine(this.GetType().FullName + ".GetCacheableTable: commited own transaction.");
                 }
