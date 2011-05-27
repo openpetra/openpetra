@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -30,7 +30,6 @@ using System.Xml;
 using System.IO;
 using System.Globalization;
 using Ict.Common;
-//using Ict.Common.IO;
 using Ict.Common.DB;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces; // Implicit reference
@@ -39,7 +38,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.UIConnectors;
 using Ict.Petra.Server.App.Core.Security;
 
-namespace Ict.Petra.Server.MPartner.Partner
+namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 {
     /// <summary>
     /// functions for a very simple partner find control
@@ -49,6 +48,7 @@ namespace Ict.Petra.Server.MPartner.Partner
         /// <summary>
         /// return all partners that match the given criteria. this is used for the partner import screen
         /// </summary>
+        [RequireModulePermission("PTNRUSER")]
         public static PartnerFindTDS FindPartners(string AFirstName, string AFamilyNameOrOrganisation, string ACity, StringCollection APartnerClasses)
         {
             TPartnerFindUIConnector UIConnector = new TPartnerFindUIConnector();
