@@ -66,7 +66,7 @@ namespace Ict.Petra.Shared.MPartner
                      || UserInfo.GUserInfo.IsInModule("SYSMAN")))
             {
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 6)
+                if (TLogging.DL >= 6)
                 {
                     Console.WriteLine("CanAccessPartner: Access DENIED - Partner " + APartnerRow.PartnerKey.ToString() +
                         " is restriced to User " + APartnerRow.UserId + "!");
@@ -79,7 +79,7 @@ namespace Ict.Petra.Shared.MPartner
                           || UserInfo.GUserInfo.IsInModule("SYSMAN")))
             {
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 6)
+                if (TLogging.DL >= 6)
                 {
                     Console.WriteLine("CanAccessPartner: Access DENIED - Partner " + APartnerRow.PartnerKey.ToString() +
                         " is restriced to Group " + APartnerRow.GroupId + "!");
@@ -97,7 +97,7 @@ namespace Ict.Petra.Shared.MPartner
                         if (!CheckFoundationSecurity(AFoundationRow))
                         {
 #if DEBUGMODE
-                            if (TSrvSetting.DL >= 6)
+                            if (TLogging.DL >= 6)
                             {
                                 Console.WriteLine("CanAccessPartner: Access DENIED - Partner " + APartnerRow.PartnerKey.ToString() +
                                     " is restriced by Foundation Ownership!");
@@ -114,7 +114,7 @@ namespace Ict.Petra.Shared.MPartner
             }
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 6)
+            if (TLogging.DL >= 6)
             {
                 Console.WriteLine("CanAccessPartner: Access to Partner " + APartnerRow.PartnerKey.ToString() +
                     " is GRANTED!");

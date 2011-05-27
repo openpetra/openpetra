@@ -99,7 +99,7 @@ namespace Ict.Petra.Server.MPartner
                         {
                             DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                            if (TSrvSetting.DL >= 7)
+                            if (TLogging.DL >= 7)
                             {
                                 Console.WriteLine("CanAccessPartnerByKey: committed own transaction.");
                             }
@@ -202,7 +202,7 @@ namespace Ict.Petra.Server.MPartner
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 7)
+                        if (TLogging.DL >= 7)
                         {
                             Console.WriteLine("CanAccessPartnerByKey: committed own transaction.");
                         }

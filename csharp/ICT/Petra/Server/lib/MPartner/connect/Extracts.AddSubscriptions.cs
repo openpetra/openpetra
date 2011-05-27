@@ -93,7 +93,7 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
                     if (ReturnValue.ProgressPercentage >= MAX_PERCENTAGE_CHECKS)
                     {
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 8)
+                        if (TLogging.DL >= 8)
                         {
                             Console.WriteLine("TTypedDataAccess.RowCount: " + TTypedDataAccess.RowCount.ToString());
                         }
@@ -149,7 +149,7 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
             TheThread = new Thread(ThreadStartDelegate);
             TheThread.Start();
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 6)
+            if (TLogging.DL >= 6)
             {
                 Console.WriteLine(this.GetType().FullName + ".SubmitChangesAsync thread started.");
             }
@@ -220,7 +220,7 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
                 {
                     SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine(
                             this.GetType().FullName + ".SubmitChangesInternal: loading Subscriptions for ExtractID " + FExtractID.ToString() + "...");
@@ -229,7 +229,7 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
                     ExtractDT = MExtractAccess.LoadViaMExtractMaster(FExtractID, RequiredColumns, SubmitChangesTransaction);
                     PartnersInExtract = ExtractDT.Rows.Count;
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine(
                             this.GetType().FullName + ".SubmitChangesInternal: ExtractID has " + PartnersInExtract.ToString() + " Partners.");
@@ -245,7 +245,7 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
                         FAsyncExecProgress.ProgressPercentage =
                             Convert.ToInt16((((double)RowCounter / (double)PartnersInExtract) * 100) * (MAX_PERCENTAGE_CHECKS / 100.0));
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 7)
+                        if (TLogging.DL >= 7)
                         {
                             Console.WriteLine(this.GetType().FullName + ".SubmitChangesInternal: loadbyPrimaryKey");
                         }
@@ -259,7 +259,7 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
                         if (SubscriptionTable.Rows.Count == 0)
                         {
 #if DEBUGMODE
-                            if (TSrvSetting.DL >= 7)
+                            if (TLogging.DL >= 7)
                             {
                                 Console.WriteLine(
                                     this.GetType().FullName + ".SubmitChangesInternal: will add Subscription to Partner with PartnerKey " +
@@ -268,7 +268,7 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
 #endif
                             FInspectDT[0].PartnerKey = ExtractRow.PartnerKey;
 #if DEBUGMODE
-                            if (TSrvSetting.DL >= 7)
+                            if (TLogging.DL >= 7)
                             {
                                 Console.WriteLine(this.GetType().FullName + ".SubmitChangesInternal: importing Row into FSubmissionDT...");
                             }
@@ -279,7 +279,7 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
                         {
                             // The partner already has this Subscription: add the partner to the ResponseTable
 #if DEBUGMODE
-                            if (TSrvSetting.DL >= 7)
+                            if (TLogging.DL >= 7)
                             {
                                 Console.WriteLine(
                                     this.GetType().FullName + ".SubmitChangesInternal: won't add Subscription to Partner with PartnerKey " +
@@ -298,7 +298,7 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
                     }
 
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine(this.GetType().FullName + ".SubmitChangesInternal: Finished checking Partner's Subscriptions.");
                     }
@@ -310,7 +310,7 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
                         FAsyncExecProgress.ProgressInformation = "Adding Subscriptions to " + FSubmissionDT.Rows.Count.ToString() + " Partners...";
                         FAsyncExecProgress.ProgressPercentage = MAX_PERCENTAGE_CHECKS;
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 7)
+                        if (TLogging.DL >= 7)
                         {
                             Console.WriteLine(this.GetType().FullName + ".SubmitChangesInternal: " + FAsyncExecProgress.ProgressInformation);
                         }
@@ -322,7 +322,7 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
                             SubmissionResult = TSubmitChangesResult.scrError;
                             FVerificationResult.AddCollection(SingleVerificationResultCollection);
 #if DEBUGMODE
-                            if (TSrvSetting.DL >= 7)
+                            if (TLogging.DL >= 7)
                             {
                                 Console.WriteLine("SubmitChangesInternal returned not ok");
                             }
@@ -336,7 +336,7 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
                     else
                     {
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 7)
+                        if (TLogging.DL >= 7)
                         {
                             Console.WriteLine(
                                 this.GetType().FullName +
@@ -359,7 +359,7 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
                 {
                     DBAccess.GDBAccessObj.RollbackTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 8)
+                    if (TLogging.DL >= 8)
                     {
                         Console.WriteLine(
                             this.GetType().FullName + ".SubmitChangesInternal: Exception occured, Transaction ROLLED BACK. Exception: " +

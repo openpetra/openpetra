@@ -479,7 +479,7 @@ namespace Ict.Petra.Server.App.Main
         /// </summary>
         ~TClientManager()
         {
-            if (TSrvSetting.DL >= 5)
+            if (TLogging.DL >= 5)
             {
                 Console.WriteLine("TClientManager: Got collected after " + (new TimeSpan(
                                                                                 DateTime.Now.Ticks - FStartTime.Ticks)).ToString() + " seconds.");
@@ -917,7 +917,7 @@ namespace Ict.Petra.Server.App.Main
                                     || (AppDomainEntry.AppDomainStatus == TAppDomainStatus.adsIdle)))
                             {
 #if DEBUGMODE
-                                if (TSrvSetting.DL >= 5)
+                                if (TLogging.DL >= 5)
                                 {
                                     Console.WriteLine(
                                         "TClientManager.QueueClientTask: queuing Task for UserID '" + AUserID + "' (ClientID: " +
@@ -1418,7 +1418,7 @@ namespace Ict.Petra.Server.App.Main
             String CantDisconnectReason;
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 10)
+            if (TLogging.DL >= 10)
             {
                 TLogging.Log(
                     "Loaded Assemblies in AppDomain " + Thread.GetDomain().FriendlyName + " (at call of ConnectClient):", TLoggingType.ToConsole |
@@ -1443,14 +1443,14 @@ namespace Ict.Petra.Server.App.Main
                 {
                     #region Logging
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 4)
+                    if (TLogging.DL >= 4)
                     {
                         Console.WriteLine(FormatClientList(false));
                         Console.WriteLine(FormatClientList(true));
                     }
 #endif
 
-                    if (TSrvSetting.DL >= 4)
+                    if (TLogging.DL >= 4)
                     {
                         TLogging.Log("Client '" + AUserName + "' is connecting...", TLoggingType.ToConsole | TLoggingType.ToLogfile);
                     }
@@ -1486,7 +1486,7 @@ namespace Ict.Petra.Server.App.Main
 
                     #region Client Version vs. Server Version check
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 9)
+                    if (TLogging.DL >= 9)
                     {
                         Console.WriteLine(
                             "Client EXE Program Version: " + AClientExeVersion.ToString() + "; Server EXE Program Version: " +
@@ -1499,7 +1499,7 @@ namespace Ict.Petra.Server.App.Main
                         ((TRunningAppDomain)UClientObjects[(object)AClientID]).AppDomainStatus = TAppDomainStatus.adsStopped;
                         #region Logging
 
-                        if (TSrvSetting.DL >= 4)
+                        if (TLogging.DL >= 4)
                         {
                             TLogging.Log(
                                 "Client '" + AUserName + "' tried to connect, but its Program Version (" + AClientExeVersion.ToString() +
@@ -1536,7 +1536,7 @@ namespace Ict.Petra.Server.App.Main
                     {
                         #region Logging
 
-                        if (TSrvSetting.DL >= 4)
+                        if (TLogging.DL >= 4)
                         {
                             TLogging.Log("Client '" + AUserName + "' tried to connect, but it failed the Login Checks. Aborting Client Connection!",
                                 TLoggingType.ToConsole | TLoggingType.ToLogfile);
@@ -1617,7 +1617,7 @@ namespace Ict.Petra.Server.App.Main
                     #endregion
                     #endregion
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 10)
+                    if (TLogging.DL >= 10)
                     {
                         TLogging.Log(
                             "Loaded Assemblies in AppDomain " + Thread.GetDomain().FriendlyName + " (before new AppDomain load):",
@@ -1638,7 +1638,7 @@ namespace Ict.Petra.Server.App.Main
                             // Client and remotes an instance of TRemoteLoader into it.
                             ClientDomainManager = new TClientAppDomainConnection(AClientName);
 #if DEBUGMODE
-                            if (TSrvSetting.DL >= 10)
+                            if (TLogging.DL >= 10)
                             {
                                 TLogging.Log(
                                     "Loaded Assemblies in AppDomain " + Thread.GetDomain().FriendlyName +
@@ -1703,7 +1703,7 @@ namespace Ict.Petra.Server.App.Main
                     }
                     #endregion
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 10)
+                    if (TLogging.DL >= 10)
                     {
                         TLogging.Log(
                             "Loaded Assemblies in AppDomain " + Thread.GetDomain().FriendlyName + " (after new AppDomain load):",
@@ -1754,7 +1754,7 @@ namespace Ict.Petra.Server.App.Main
             ClientDomainManager.LoadPetraModuleAssembly(SharedConstants.REMOTINGURL_IDENTIFIER_MSYSMAN, out RemotingURL_MSysMan);
             ARemotingURLs.Add(SharedConstants.REMOTINGURL_IDENTIFIER_MSYSMAN, RemotingURL_MSysMan);
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 5)
+            if (TLogging.DL >= 5)
             {
                 Console.WriteLine("  TMSysMan instantiated. Remoting URL: " + RemotingURL_MSysMan);
             }
@@ -1764,7 +1764,7 @@ namespace Ict.Petra.Server.App.Main
             ClientDomainManager.LoadPetraModuleAssembly(SharedConstants.REMOTINGURL_IDENTIFIER_MCOMMON, out RemotingURL_MCommon);
             ARemotingURLs.Add(SharedConstants.REMOTINGURL_IDENTIFIER_MCOMMON, RemotingURL_MCommon);
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 5)
+            if (TLogging.DL >= 5)
             {
                 Console.WriteLine("  TMCommon instantiated. Remoting URL: " + RemotingURL_MCommon);
             }
@@ -1774,7 +1774,7 @@ namespace Ict.Petra.Server.App.Main
             ClientDomainManager.LoadPetraModuleAssembly(SharedConstants.REMOTINGURL_IDENTIFIER_MCONFERENCE, out RemotingURL_MConference);
             ARemotingURLs.Add(SharedConstants.REMOTINGURL_IDENTIFIER_MCONFERENCE, RemotingURL_MConference);
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 5)
+            if (TLogging.DL >= 5)
             {
                 Console.WriteLine("  TMConference instantiated. Remoting URL: " + RemotingURL_MConference);
             }
@@ -1784,7 +1784,7 @@ namespace Ict.Petra.Server.App.Main
             ClientDomainManager.LoadPetraModuleAssembly(SharedConstants.REMOTINGURL_IDENTIFIER_MPARTNER, out RemotingURL_MPartner);
             ARemotingURLs.Add(SharedConstants.REMOTINGURL_IDENTIFIER_MPARTNER, RemotingURL_MPartner);
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 5)
+            if (TLogging.DL >= 5)
             {
                 Console.WriteLine("  TMPartner instantiated. Remoting URL: " + RemotingURL_MPartner);
             }
@@ -1794,7 +1794,7 @@ namespace Ict.Petra.Server.App.Main
             ClientDomainManager.LoadPetraModuleAssembly(SharedConstants.REMOTINGURL_IDENTIFIER_MREPORTING, out RemotingURL_MReporting);
             ARemotingURLs.Add(SharedConstants.REMOTINGURL_IDENTIFIER_MREPORTING, RemotingURL_MReporting);
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 5)
+            if (TLogging.DL >= 5)
             {
                 Console.WriteLine("  TMReporting instantiated. Remoting URL: " + RemotingURL_MReporting);
             }
@@ -1806,7 +1806,7 @@ namespace Ict.Petra.Server.App.Main
                 ClientDomainManager.LoadPetraModuleAssembly(SharedConstants.REMOTINGURL_IDENTIFIER_MPERSONNEL, out RemotingURL_MPersonnel);
                 ARemotingURLs.Add(SharedConstants.REMOTINGURL_IDENTIFIER_MPERSONNEL, RemotingURL_MPersonnel);
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 5)
+                if (TLogging.DL >= 5)
                 {
                     Console.WriteLine("  TMPersonnel instantiated. Remoting URL: " + RemotingURL_MPersonnel);
                 }
@@ -1820,7 +1820,7 @@ namespace Ict.Petra.Server.App.Main
                 ClientDomainManager.LoadPetraModuleAssembly(SharedConstants.REMOTINGURL_IDENTIFIER_MFINANCE, out RemotingURL_MFinance);
                 ARemotingURLs.Add(SharedConstants.REMOTINGURL_IDENTIFIER_MFINANCE, RemotingURL_MFinance);
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 5)
+                if (TLogging.DL >= 5)
                 {
                     Console.WriteLine("  TMFinance instantiated. Remoting URL: " + RemotingURL_MFinance);
                 }
@@ -1835,7 +1835,7 @@ namespace Ict.Petra.Server.App.Main
             //
             // Assemblies successfully loaded into Client AppDomain
             //
-            if (TSrvSetting.DL >= 4)
+            if (TLogging.DL >= 4)
             {
                 TLogging.Log(
                     "Client '" + AUserName + "' successfully connected (took " +
@@ -1889,7 +1889,7 @@ namespace Ict.Petra.Server.App.Main
             ACantDisconnectReason = "";
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 4)
+            if (TLogging.DL >= 4)
             {
                 TLogging.Log("Trying to disconnect client (ClientID: " + AClientID.ToString() + ") for the reason: " + AReason);
             }
@@ -1926,7 +1926,7 @@ namespace Ict.Petra.Server.App.Main
                                     // Start thread that does the actual disconnection
                                     DisconnectionThread = new Thread(new ThreadStart(DisconnectClientThreadObject.StartClientDisconnection));
 
-                                    if (TSrvSetting.DL >= 4)
+                                    if (TLogging.DL >= 4)
                                     {
                                         TLogging.Log(
                                             "Client disconnection Thread is about to be started for " + "'" + AppDomainEntry.FClientName +
@@ -2068,7 +2068,7 @@ namespace Ict.Petra.Server.App.Main
                 if (ClientPortArray.Count != 0)
                 {
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 4)
+                    if (TLogging.DL >= 4)
                     {
                         Console.WriteLine("FindFreeRemotingPort: ClientPortArray:");
 
@@ -2129,7 +2129,7 @@ namespace Ict.Petra.Server.App.Main
                 // there were no entries in ClientPortArray > assign lowest available Port number
                 FreeRemotingPort = LowestAvailableRemotingPort;
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 4)
+                if (TLogging.DL >= 4)
                 {
                     Console.WriteLine("FindFreeRemotingPort: there were no entries in ClientPortArray -> assign lowest available Port number");
                 }
@@ -2137,7 +2137,7 @@ namespace Ict.Petra.Server.App.Main
             }
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 4)
+            if (TLogging.DL >= 4)
             {
                 Console.WriteLine("FindFreeRemotingPort: Port number " + FreeRemotingPort.ToString() + " is free.");
             }
@@ -2558,14 +2558,14 @@ namespace Ict.Petra.Server.App.Main
             {
                 ClientInfo = "'" + FAppDomainEntry.FClientName + "' (ClientID: " + FAppDomainEntry.FClientID.ToString() + ")";
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 4)
+                if (TLogging.DL >= 4)
                 {
                     Console.WriteLine(TClientManager.FormatClientList(false));
                     Console.WriteLine(TClientManager.FormatClientList(true));
                 }
 #endif
 
-                if (TSrvSetting.DL >= 4)
+                if (TLogging.DL >= 4)
                 {
                     TLogging.Log("Disconnecting Client " + ClientInfo + " (Reason: " + FReason + ")...",
                         TLoggingType.ToConsole | TLoggingType.ToLogfile);
@@ -2579,7 +2579,7 @@ namespace Ict.Petra.Server.App.Main
                 FAppDomainEntry.FAppDomainStatus = TAppDomainStatus.adsDisconnectingDBClosing;
                 try
                 {
-                    if (TSrvSetting.DL >= 4)
+                    if (TLogging.DL >= 4)
                     {
                         TLogging.Log("Closing Client DB Connection... [Client " + ClientInfo + "]", TLoggingType.ToConsole | TLoggingType.ToLogfile);
                     }
@@ -2602,14 +2602,14 @@ namespace Ict.Petra.Server.App.Main
 
                     if (!DBConnectionAlreadyClosed)
                     {
-                        if (TSrvSetting.DL >= 4)
+                        if (TLogging.DL >= 4)
                         {
                             TLogging.Log("Closed Client DB Connection. [Client " + ClientInfo + "]", TLoggingType.ToConsole | TLoggingType.ToLogfile);
                         }
                     }
                     else
                     {
-                        if (TSrvSetting.DL >= 4)
+                        if (TLogging.DL >= 4)
                         {
                             TLogging.Log("Client DB Connection was already closed. [Client " + ClientInfo + "]",
                                 TLoggingType.ToConsole | TLoggingType.ToLogfile);
@@ -2623,7 +2623,7 @@ namespace Ict.Petra.Server.App.Main
                 }
 
                 // TODO 1 oChristianK cLogging (Console) : Put the following debug messages again in a DEBUGMODE conditional compilation directive; this was removed to trace problems in on live installations!
-                if (TSrvSetting.DL >= 5)
+                if (TLogging.DL >= 5)
                 {
                     TLogging.Log("  Before calling ClientAppDomainConnection.StopClientAppDomain...  [Client " + ClientInfo + ']',
                         TLoggingType.ToConsole | TLoggingType.ToLogfile);
@@ -2631,7 +2631,7 @@ namespace Ict.Petra.Server.App.Main
 
                 FAppDomainEntry.ClientAppDomainConnection.StopClientAppDomain();
 
-                if (TSrvSetting.DL >= 5)
+                if (TLogging.DL >= 5)
                 {
                     TLogging.Log("  After calling ClientAppDomainConnection.StopClientAppDomain...  [Client " + ClientInfo + ']',
                         TLoggingType.ToConsole | TLoggingType.ToLogfile);
@@ -2653,7 +2653,7 @@ Retry:                          //             used only for repeating Unload wh
                              * after a delay - until a maximum of retries is reached.
                              */
 #if DEBUGMODE
-                            if (TSrvSetting.DL >= 5)
+                            if (TLogging.DL >= 5)
                             {
                                 Console.WriteLine(
                                     "  Unloading AppDomain '" + FAppDomainEntry.ClientAppDomainConnection.AppDomainName + "' [Client " + ClientInfo +
@@ -2662,7 +2662,7 @@ Retry:                          //             used only for repeating Unload wh
 #endif
                             try
                             {
-                                if (TSrvSetting.DL >= 4)
+                                if (TLogging.DL >= 4)
                                 {
                                     TLogging.Log("Unloading Client Session (AppDomain)..." + "' [Client " + ClientInfo + "]",
                                         TLoggingType.ToConsole | TLoggingType.ToLogfile);
@@ -2677,7 +2677,7 @@ Retry:                          //             used only for repeating Unload wh
                                 FAppDomainEntry.ClientAppDomainConnection.Unload();
 
                                 // Everything went fine!
-                                if (TSrvSetting.DL >= 4)
+                                if (TLogging.DL >= 4)
                                 {
                                     TLogging.Log("Unloaded Client Session (AppDomain)." + "' [Client " + ClientInfo + "]",
                                         TLoggingType.ToConsole | TLoggingType.ToLogfile);
@@ -2688,7 +2688,7 @@ Retry:                          //             used only for repeating Unload wh
                                 FAppDomainEntry.FClientDisconnectionFinishedTime = DateTime.Now;
                                 FAppDomainEntry.FAppDomainStatus = TAppDomainStatus.adsStopped;
 #if DEBUGMODE
-                                if (TSrvSetting.DL >= 5)
+                                if (TLogging.DL >= 5)
                                 {
                                     Console.WriteLine("  AppDomain unloaded [Client " + ClientInfo + "]");
                                 }
@@ -2713,7 +2713,7 @@ Retry:                          //             used only for repeating Unload wh
                             }
 
 #if DEBUGMODE
-                            if (TSrvSetting.DL >= 5)
+                            if (TLogging.DL >= 5)
                             {
                                 Console.WriteLine("  AppDomain unloading finished [Client " + ClientInfo + ']');
                             }
@@ -2722,7 +2722,7 @@ Retry:                          //             used only for repeating Unload wh
                             // Logging: was Unload successful?
                             if (FAppDomainEntry.FAppDomainStatus == TAppDomainStatus.adsStopped)
                             {
-                                if (TSrvSetting.DL >= 4)
+                                if (TLogging.DL >= 4)
                                 {
                                     TLogging.Log(
                                         "Client " + ClientInfo + " has been disconnected (took " +
@@ -2737,7 +2737,7 @@ Retry:                          //             used only for repeating Unload wh
                             }
                             else
                             {
-                                if (TSrvSetting.DL >= 4)
+                                if (TLogging.DL >= 4)
                                 {
                                     TLogging.Log("Client " + ClientInfo + " could not be disconnected!",
                                         TLoggingType.ToConsole | TLoggingType.ToLogfile);
@@ -2775,7 +2775,7 @@ Retry:                          //             used only for repeating Unload wh
                         }
                         else
                         {
-                            if (TSrvSetting.DL >= 4)
+                            if (TLogging.DL >= 4)
                             {
                                 TLogging.Log(
                                     "Client disconnection Thread is blocked by another client disconnection thread. Waiting a bit... (ClientID: " +
@@ -2785,7 +2785,7 @@ Retry:                          //             used only for repeating Unload wh
 
                             Thread.Sleep(2000);
 
-                            if (TSrvSetting.DL >= 4)
+                            if (TLogging.DL >= 4)
                             {
                                 TLogging.Log(
                                     "Trying to continue Client disconnection after Thread was blocked by another client disconnection thread..." +

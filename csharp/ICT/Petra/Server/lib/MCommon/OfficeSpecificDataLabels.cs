@@ -86,7 +86,7 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
         public TOfficeSpecificDataLabelsUIConnector(Int64 APartnerKey, TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse)
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -115,7 +115,7 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
             TemplateRow.Use = ALabelUse;
             ReturnValue = PDataLabelUseAccess.CountUsingTemplate(TemplateRow, null, AReadTransaction);
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 10)
+            if (TLogging.DL >= 10)
             {
                 Console.WriteLine(this.GetType().FullName + " CountLabelUse Result: " + ReturnValue.ToString());
             }
@@ -141,7 +141,7 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
             TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse)
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -158,7 +158,7 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
         /// </summary>
         ~TOfficeSpecificDataLabelsUIConnector()
         {
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ".FINALIZE called!");
             }
@@ -360,7 +360,7 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
             {
                 DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 7)
+                if (TLogging.DL >= 7)
                 {
                     Console.WriteLine(this.GetType().FullName + ".GetData: committed own transaction.");
                 }
@@ -479,7 +479,7 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
 
-                if (TSrvSetting.DL >= 8)
+                if (TLogging.DL >= 8)
                 {
                     Console.WriteLine(
                         this.GetType().FullName + ".SubmitChanges: Exception occured, Transaction ROLLED BACK. Exception: " + Exp.ToString());
@@ -499,7 +499,7 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
             {
                 DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 8)
+                if (TLogging.DL >= 8)
                 {
                     Console.WriteLine(this.GetType().FullName + ".SubmitChanges: Transaction committed!");
                 }
@@ -509,7 +509,7 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 8)
+                if (TLogging.DL >= 8)
                 {
                     Console.WriteLine(this.GetType().FullName + ".SubmitChanges: Transaction ROLLED BACK!");
                 }
@@ -594,7 +594,7 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
                         SubmissionResult = TSubmitChangesResult.scrError;
                         AVerificationResult.AddCollection(SingleVerificationResultCollection);
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 9)
+                        if (TLogging.DL >= 9)
                         {
                             Console.WriteLine(Messages.BuildMessageFromVerificationResult(
                                     "TOfficeSpecificDataLabelsUIConnector.SubmitChanges VerificationResult: ", AVerificationResult));
@@ -616,7 +616,7 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
                         SubmissionResult = TSubmitChangesResult.scrError;
                         AVerificationResult.AddCollection(SingleVerificationResultCollection);
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 9)
+                        if (TLogging.DL >= 9)
                         {
                             Console.WriteLine(Messages.BuildMessageFromVerificationResult(
                                     "TOfficeSpecificDataLabelsUIConnector.SubmitChanges VerificationResult: ", AVerificationResult));
@@ -628,7 +628,7 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
             else
             {
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 8)
+                if (TLogging.DL >= 8)
                 {
                     Console.WriteLine("AInspectDS = nil!");
                 }

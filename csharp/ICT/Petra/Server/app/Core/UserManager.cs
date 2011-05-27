@@ -83,7 +83,7 @@ namespace Ict.Petra.Server.App.Core.Security
                     AUserID), TTableAccessPermissionManager.LoadTableAccessPermissions(
                     AUserID), TModuleAccessManager.LoadUserModules(AUserID));
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 8)
+            if (TLogging.DL >= 8)
             {
                 Console.WriteLine("APetraPrincipal.IsTableAccessOK(tapMODIFY, 'p_person'): " +
                     APetraPrincipal.IsTableAccessOK(TTableAccessPermission.tapMODIFY, "p_person").ToString());
@@ -128,7 +128,7 @@ namespace Ict.Petra.Server.App.Core.Security
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine("TUserManager.LoadUser: committed own transaction.");
                     }
@@ -155,7 +155,7 @@ namespace Ict.Petra.Server.App.Core.Security
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 7)
+                        if (TLogging.DL >= 7)
                         {
                             Console.WriteLine("TUserManager.LoadUser: committed own transaction.");
                         }
@@ -163,7 +163,7 @@ namespace Ict.Petra.Server.App.Core.Security
                     }
 
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 8)
+                    if (TLogging.DL >= 8)
                     {
                         Console.WriteLine("Exception occured while loading a s_user record: " + Exp.ToString());
                     }
@@ -175,7 +175,7 @@ namespace Ict.Petra.Server.App.Core.Security
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine("TUserManager.LoadUser: committed own transaction.");
                     }
@@ -265,7 +265,7 @@ namespace Ict.Petra.Server.App.Core.Security
                 if (!SaveUser(AUserID, (SUserTable)UserDR.Table, out VerificationResults))
                 {
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 8)
+                    if (TLogging.DL >= 8)
                     {
                         Console.WriteLine(Messages.BuildMessageFromVerificationResult("Error while trying to auto-retire user: ", VerificationResults));
                     }
@@ -291,7 +291,7 @@ namespace Ict.Petra.Server.App.Core.Security
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine("TUserManager.PerformUserAuthentication: committed own transaction.");
                     }
@@ -309,18 +309,18 @@ namespace Ict.Petra.Server.App.Core.Security
 
                 if (PetraPrincipal.IsInGroup("SYSADMIN"))
                 {
-                    // $IFDEF DEBUGMODE if TSrvSetting.DL >= 8 then Console.WriteLine('SystemLoginStatus = false; is in SYSADMIN Group');$ENDIF
+                    // $IFDEF DEBUGMODE if TLogging.DL >= 8 then Console.WriteLine('SystemLoginStatus = false; is in SYSADMIN Group');$ENDIF
                     PetraPrincipal.LoginMessage =
                         String.Format(StrSystemDisabled1,
                             SystemStatusDT[0].SystemDisabledReason) + Environment.NewLine + Environment.NewLine + StrSystemDisabled2Admin;
                 }
                 else
                 {
-                    // $IFDEF DEBUGMODE if TSrvSetting.DL >= 8 then Console.WriteLine('SystemLoginStatus = false; is NOT in SYSADMIN Group');$ENDIF
+                    // $IFDEF DEBUGMODE if TLogging.DL >= 8 then Console.WriteLine('SystemLoginStatus = false; is NOT in SYSADMIN Group');$ENDIF
 
                     if (!TLoginLog.AddLoginLogEntry(AUserID, "System disabled", true, out AProcessID, out VerificationResults))
                     {
-                        // $IFDEF DEBUGMODE if TSrvSetting.DL >= 8 then Console.WriteLine(BuildMessageFromVerificationResult('Error while trying to add a login entry: ', VerificationResults) );$ENDIF
+                        // $IFDEF DEBUGMODE if TLogging.DL >= 8 then Console.WriteLine(BuildMessageFromVerificationResult('Error while trying to add a login entry: ', VerificationResults) );$ENDIF
                     }
 
                     throw new ESystemDisabledException(String.Format(StrSystemDisabled1,
@@ -385,7 +385,7 @@ namespace Ict.Petra.Server.App.Core.Security
             if (!SaveUser(AUserID, (SUserTable)UserDR.Table, out VerificationResults))
             {
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 8)
+                if (TLogging.DL >= 8)
                 {
                     Console.WriteLine(Messages.BuildMessageFromVerificationResult("Error while trying to auto-retire user: ", VerificationResults));
                 }
@@ -400,14 +400,14 @@ namespace Ict.Petra.Server.App.Core.Security
             {
                 if (!TLoginLog.AddLoginLogEntry(AUserID, "Successful  SYSADMIN", out AProcessID, out VerificationResults))
                 {
-                    // $IFDEF DEBUGMODE if TSrvSetting.DL >= 8 then Console.WriteLine(BuildMessageFromVerificationResult('Error while trying to add a login entry: ', VerificationResults) );$ENDIF
+                    // $IFDEF DEBUGMODE if TLogging.DL >= 8 then Console.WriteLine(BuildMessageFromVerificationResult('Error while trying to add a login entry: ', VerificationResults) );$ENDIF
                 }
             }
             else
             {
                 if (!TLoginLog.AddLoginLogEntry(AUserID, "Successful", out AProcessID, out VerificationResults))
                 {
-                    // $IFDEF DEBUGMODE if TSrvSetting.DL >= 8 then Console.WriteLine(BuildMessageFromVerificationResult('Error while trying to add a login entry: ', VerificationResults) );$ENDIF
+                    // $IFDEF DEBUGMODE if TLogging.DL >= 8 then Console.WriteLine(BuildMessageFromVerificationResult('Error while trying to add a login entry: ', VerificationResults) );$ENDIF
                 }
             }
 

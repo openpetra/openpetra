@@ -142,7 +142,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         /// destructor
         ~TPartnerEditUIConnector()
         {
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ".FINALIZE called!");
             }
@@ -174,7 +174,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             {
                 DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 7)
+                if (TLogging.DL >= 7)
                 {
                     Console.WriteLine(this.GetType().FullName + ".GetBankingDetails: committed own transaction.");
                 }
@@ -260,7 +260,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             Boolean NewTransaction;
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ".GetDataAddresses called!");
             }
@@ -277,7 +277,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             {
                 DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 7)
+                if (TLogging.DL >= 7)
                 {
                     Console.WriteLine(this.GetType().FullName + ".GetDataAddresses: committed own transaction.");
                 }
@@ -301,7 +301,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             Boolean NewTransaction;
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ".GetDataFoundation called!");
             }
@@ -330,7 +330,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             {
                 DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 7)
+                if (TLogging.DL >= 7)
                 {
                     Console.WriteLine(this.GetType().FullName + ".GetDataFoundation: committed own transaction.");
                 }
@@ -385,7 +385,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             {
                 DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 7)
+                if (TLogging.DL >= 7)
                 {
                     Console.WriteLine(this.GetType().FullName + ".GetDataLocation: committed own transaction.");
                 }
@@ -421,7 +421,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             bool HasEXWORKERPartnerType = false;
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(
                     this.GetType().FullName + ": LoadData called. ADelayedDataLoading: " + ADelayedDataLoading.ToString() + "; ATabPage: " +
@@ -485,7 +485,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     if ((ADelayedDataLoading) && (ATabPage != TPartnerEditTabPageEnum.petpSubscriptions))
                     {
                         // Only count Subscriptions
-                        // $IFDEF DEBUGMODE if TSrvSetting.DL >= 0 then Console.WriteLine('TPartnerEditUIConnector.LoadData: Before Calculations.CalculateTabCountsAddresses');$ENDIF
+                        // $IFDEF DEBUGMODE if TLogging.DL >= 0 then Console.WriteLine('TPartnerEditUIConnector.LoadData: Before Calculations.CalculateTabCountsAddresses');$ENDIF
                         Calculations.CalculateTabCountsSubscriptions(FPartnerEditScreenDS.PSubscription,
                             out ItemsCountSubscriptions,
                             out ItemsCountSubscriptionsActive);
@@ -496,7 +496,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                     // Locations and PartnerLocations
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 9)
+                    if (TLogging.DL >= 9)
                     {
                         Console.WriteLine("TPartnerEditUIConnector.LoadData: Before TPPartnerAddressAggregate.LoadAll");
                     }
@@ -517,14 +517,14 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     if (((!ADelayedDataLoading)) || (ATabPage == TPartnerEditTabPageEnum.petpAddresses))
                     {
                         // Determination of the address list icons and the 'best' address (these calls change certain columns in some rows!)
-                        // $IFDEF DEBUGMODE if TSrvSetting.DL >= 0 then Console.WriteLine('TPartnerEditUIConnector.LoadData: Before Calculations.DeterminePartnerLocationsDateStatus');$ENDIF
+                        // $IFDEF DEBUGMODE if TLogging.DL >= 0 then Console.WriteLine('TPartnerEditUIConnector.LoadData: Before Calculations.DeterminePartnerLocationsDateStatus');$ENDIF
                         Calculations.DeterminePartnerLocationsDateStatus((DataSet)FPartnerEditScreenDS);
                         LocationPK = Calculations.DetermineBestAddress((DataSet)FPartnerEditScreenDS);
                     }
                     else
                     {
                         // Only count
-                        // $IFDEF DEBUGMODE if TSrvSetting.DL >= 0 then Console.WriteLine('TPartnerEditUIConnector.LoadData: Before Calculations.CalculateTabCountsAddresses');$ENDIF
+                        // $IFDEF DEBUGMODE if TLogging.DL >= 0 then Console.WriteLine('TPartnerEditUIConnector.LoadData: Before Calculations.CalculateTabCountsAddresses');$ENDIF
                         Calculations.CalculateTabCountsAddresses(FPartnerEditScreenDS.PPartnerLocation,
                             out ItemsCountAddresses,
                             out ItemsCountAddressesActive);
@@ -566,7 +566,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                             // points to PUnit
 #if DEBUGMODE
-                            if (TSrvSetting.DL >= 9)
+                            if (TLogging.DL >= 9)
                             {
                                 Console.WriteLine("Disabled Constraints in Typed DataSet PartnerEditTDS.");
                             }
@@ -762,7 +762,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     else
                     {
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 6)
+                        if (TLogging.DL >= 6)
                         {
                             Console.WriteLine(
                                 "Passed in FKeyForSelectingPartnerLocation.SiteKey and FKeyForSelectingPartnerLocation.LocationKey: " +
@@ -1029,7 +1029,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 PartnerRow.StatusChange = CreationDate;
                 #region Partner Types
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 7)
+                if (TLogging.DL >= 7)
                 {
                     Console.WriteLine("GetDataNewPartner: before PartnerClass switch");
                 }
@@ -1045,7 +1045,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                         // Create DataRow for PPerson using the default values for all DataColumns
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 7)
+                        if (TLogging.DL >= 7)
                         {
                             Console.WriteLine("GetDataNewPartner: before adding Person DataRow");
                         }
@@ -1086,7 +1086,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     case TPartnerClass.FAMILY:
                         PartnerRow.AddresseeTypeCode = SharedTypes.StdAddresseeTypeCodeEnumToString(TStdAddresseeTypeCode.satcFAMILY);
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 7)
+                        if (TLogging.DL >= 7)
                         {
                             Console.WriteLine("GetDataNewPartner: before adding Family DataRow");
                         }
@@ -1247,7 +1247,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
 
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 7)
+                if (TLogging.DL >= 7)
                 {
                     Console.WriteLine("GetDataNewPartner: before adding new Partner DataRow");
                 }
@@ -1265,7 +1265,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                      * done)
                      */
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine(
                             "Getting Family Address - AFamilyPartnerKey: " + AFamilyPartnerKey.ToString() + "; AFamilyLocationKey: " +
@@ -1280,7 +1280,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                     // Copy Special Types from the PERSON'S FAMILY to the PERSON
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine("GetDataNewPartner: before loading Special Types from FAMILY");
                     }
@@ -1289,7 +1289,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     GetPartnerTypesForNewPartnerFromFamily(AFamilyPartnerKey, ReadTransaction);
 
 #if DEBUGMODE
-                    if ((TSrvSetting.DL >= 7) && (FPartnerEditScreenDS.PPartnerType.Rows.Count > 0))
+                    if ((TLogging.DL >= 7) && (FPartnerEditScreenDS.PPartnerType.Rows.Count > 0))
                     {
                         Console.WriteLine(
                             "GetDataNewPartner: after loading Special Types from FAMILY. Rows[0].RowState: " +
@@ -1415,7 +1415,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 else
                 {
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine(
                             this.GetType().FullName + ".GetDataPartnerTypesInternal: loading Partner Types for Partner " + FPartnerKey.ToString() +
@@ -1439,7 +1439,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine(this.GetType().FullName + ".GetDataPartnerTypesInternal: committed own transaction.");
                     }
@@ -1549,7 +1549,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 {
                     // Find all Persons that belong to the Family
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine(
                             this.GetType().FullName + ".GetFamilyMembersInternal: loading Persons for Family " + AFamilyPartnerKey.ToString() + "...");
@@ -1661,7 +1661,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine(this.GetType().FullName + ".GetFamilyMembersInternal: committed own transaction.");
                     }
@@ -1696,7 +1696,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 else
                 {
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine(
                             this.GetType().FullName + ".GetPartnerInterestsInternal: loading Interests for Partner " + FPartnerKey.ToString() + "...");
@@ -1719,7 +1719,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine(this.GetType().FullName + ".GetPartnerInterestsInternal: committed own transaction.");
                     }
@@ -1757,7 +1757,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 else
                 {
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine(
                             this.GetType().FullName + ".GetInterestsInternal: loading Interests for Partner " + FPartnerKey.ToString() + "...");
@@ -1780,7 +1780,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine(this.GetType().FullName + ".GetInterestsInternal: committed own transaction.");
                     }
@@ -1831,7 +1831,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 if (AResponseDS != null)
                 {
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 8)
+                    if (TLogging.DL >= 8)
                     {
                         Console.WriteLine("AResponseDS.Tables.Count: " + AResponseDS.Tables.Count.ToString());
                     }
@@ -1840,7 +1840,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     if (AResponseDS.Tables.Contains(MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME))
                     {
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 8)
+                        if (TLogging.DL >= 8)
                         {
                             Console.WriteLine(MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME + " Type: " +
                                 AResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].GetType().ToString() + "; Rows.Count: " +
@@ -1854,7 +1854,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     TmpResponseDS.Merge(AResponseDS);
                     AResponseDS = null;
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 8)
+                    if (TLogging.DL >= 8)
                     {
                         Console.WriteLine("TmpResponseDS.Tables.Count: " + TmpResponseDS.Tables.Count.ToString());
                     }
@@ -1863,7 +1863,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     if (TmpResponseDS.Tables.Contains(MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME))
                     {
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 8)
+                        if (TLogging.DL >= 8)
                         {
                             Console.WriteLine(MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME + " Type: " +
                                 TmpResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].GetType().ToString() +
@@ -1910,7 +1910,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                             {
                                 AResponseDS = (DataSet)TmpResponseDS;
 #if DEBUGMODE
-                                if (TSrvSetting.DL >= 8)
+                                if (TLogging.DL >= 8)
                                 {
                                     Console.WriteLine("AResponseDS.Tables.Count: " + AResponseDS.Tables.Count.ToString());
                                 }
@@ -1919,7 +1919,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                                 if (AResponseDS.Tables.Contains(MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME))
                                 {
 #if DEBUGMODE
-                                    if (TSrvSetting.DL >= 8)
+                                    if (TLogging.DL >= 8)
                                     {
                                         Console.WriteLine(MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME + " Type: " +
                                             AResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].GetType().ToString());
@@ -1928,7 +1928,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 #if DEBUGMODE
                                     if (AResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].Rows.Count > 0)
                                     {
-                                        if (TSrvSetting.DL >= 8)
+                                        if (TLogging.DL >= 8)
                                         {
                                             Console.WriteLine(
                                                 MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME + "[0].AnswerProcessedClientSide: " +
@@ -1943,7 +1943,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                                 if (AResponseDS.Tables.Contains(MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME))
                                 {
 #if DEBUGMODE
-                                    if (TSrvSetting.DL >= 8)
+                                    if (TLogging.DL >= 8)
                                     {
                                         Console.WriteLine(
                                             MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME + " Type: " +
@@ -1953,7 +1953,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 #if DEBUGMODE
                                     if (AResponseDS.Tables[MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME].Rows.Count > 0)
                                     {
-                                        if (TSrvSetting.DL >= 8)
+                                        if (TLogging.DL >= 8)
                                         {
                                             Console.WriteLine(
                                                 MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME + "[0].AnswerProcessedClientSide: " +
@@ -1973,7 +1973,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     if (SubmissionResult == TSubmitChangesResult.scrOK)
                     {
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 6)
+                        if (TLogging.DL >= 6)
                         {
                             Console.WriteLine(this.GetType().FullName + ".SubmitChanges: Before check for new Partner for Recent Partner handling...");
                         }
@@ -1988,7 +1988,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                             RecentPartnersHandling = new TRecentPartnersHandling();
                             RecentPartnersHandling.AddRecentlyUsedPartner(FPartnerKey, FPartnerClass, true, TLastPartnerUse.lpuMailroomPartner);
 #if DEBUGMODE
-                            if (TSrvSetting.DL >= 6)
+                            if (TLogging.DL >= 6)
                             {
                                 Console.WriteLine(this.GetType().FullName + ".SubmitChanges: Set Partner as Recent Partner.");
                             }
@@ -2080,10 +2080,10 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         AInspectDS.AcceptChanges();
                         DBAccess.GDBAccessObj.CommitTransaction();
 
-                        /* $IFDEF DEBUGMODE if TSrvSetting.DL >= 9 then Console.WriteLine('Location[0] LocationKey: ' + FSubmissionDS.PLocation[0].LocationKey.ToString + '; PartnerLocation[0] LocationKey: ' +
+                        /* $IFDEF DEBUGMODE if TLogging.DL >= 9 then Console.WriteLine('Location[0] LocationKey: ' + FSubmissionDS.PLocation[0].LocationKey.ToString + '; PartnerLocation[0] LocationKey: ' +
                          *FSubmissionDS.PPartnerLocation[0].LocationKey.ToString);$ENDIF */
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 8)
+                        if (TLogging.DL >= 8)
                         {
                             Console.WriteLine(this.GetType().FullName + ".SubmitChanges: Transaction committed!");
                         }
@@ -2093,7 +2093,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     {
                         DBAccess.GDBAccessObj.RollbackTransaction();
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 8)
+                        if (TLogging.DL >= 8)
                         {
                             Console.WriteLine(this.GetType().FullName + ".SubmitChanges: Transaction ROLLED BACK!");
                         }
@@ -2113,7 +2113,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             else
             {
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 8)
+                if (TLogging.DL >= 8)
                 {
                     Console.WriteLine("AInspectDS = nil!");
                 }
@@ -2136,7 +2136,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
             AVerificationResult = null;
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 7)
+            if (TLogging.DL >= 7)
             {
                 Console.WriteLine(this.GetType().FullName + ".SubmitChangesAddresses: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -2163,7 +2163,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         {
                             // New PPartnerLocation exists
 #if DEBUGMODE
-                            if (TSrvSetting.DL >= 7)
+                            if (TLogging.DL >= 7)
                             {
                                 Console.WriteLine(
                                     this.GetType().FullName + ".SubmitChangesAddresses: New PPartnerLocation or changed PPartnerLocation exists.");
@@ -2180,7 +2180,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                                     // record is saved, but just to be sure it happens...)
                                     AInspectDS.PPartner[0].DateModified = DateTime.Today;
 #if DEBUGMODE
-                                    if (TSrvSetting.DL >= 7)
+                                    if (TLogging.DL >= 7)
                                     {
                                         Console.WriteLine(
                                             this.GetType().FullName +
@@ -2201,7 +2201,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                                 AInspectDS.Merge(PartnerDT);
                                 AInspectDS.InitVars();
 #if DEBUGMODE
-                                if (TSrvSetting.DL >= 7)
+                                if (TLogging.DL >= 7)
                                 {
                                     Console.WriteLine(
                                         this.GetType().FullName +
@@ -2214,7 +2214,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
 
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 9)
+                if (TLogging.DL >= 9)
                 {
                     if (SubmissionResult == TSubmitChangesResult.scrError)
                     {
@@ -2227,7 +2227,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             else
             {
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 8)
+                if (TLogging.DL >= 8)
                 {
                     Console.WriteLine("AInspectDS = nil!");
                 }
@@ -2252,13 +2252,13 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             TSubmitChangesResult ReturnValue;
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 7)
+            if (TLogging.DL >= 7)
             {
                 Console.WriteLine(this.GetType().FullName + ".SubmitChangesContinue: Instance hash is " + this.GetHashCode().ToString());
             }
 #endif
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 8)
+            if (TLogging.DL >= 8)
             {
                 Console.WriteLine("AResponseDS.Tables.Count: " + AResponseDS.Tables.Count.ToString());
             }
@@ -2267,7 +2267,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             if (AResponseDS.Tables.Contains(MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME))
             {
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 8)
+                if (TLogging.DL >= 8)
                 {
                     Console.WriteLine(MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME + " Type: " +
                         AResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].GetType().ToString() + "; Rows.Count: " +
@@ -2286,7 +2286,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                  * side (the SubmitChanges process is completed then).
                  */
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 8)
+                if (TLogging.DL >= 8)
                 {
                     Console.WriteLine("SubmitChangesContinue:  AResponseDS = nil");
                 }
@@ -2300,7 +2300,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                  * information which is specified in AResponseDS.
                  */
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 8)
+                if (TLogging.DL >= 8)
                 {
                     Console.WriteLine("SubmitChangesContinue:  AResponseDS <> nil");
                 }
@@ -2328,7 +2328,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             AVerificationResult = null;
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 7)
+            if (TLogging.DL >= 7)
             {
                 Console.WriteLine(this.GetType().FullName + ".SubmitChanges: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -2339,7 +2339,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             {
                 AVerificationResult = new TVerificationResultCollection();
 
-                // $IFDEF DEBUGMODE if TSrvSetting.DL >= 7 then Console.WriteLine('ASubmitChangesTransaction.IsolationLevel: ' + Enum(ASubmitChangesTransaction.IsolationLevel).ToString("G")) $ENDIF;
+                // $IFDEF DEBUGMODE if TLogging.DL >= 7 then Console.WriteLine('ASubmitChangesTransaction.IsolationLevel: ' + Enum(ASubmitChangesTransaction.IsolationLevel).ToString("G")) $ENDIF;
                 #region Partner
 
                 if (AInspectDS.Tables.Contains(PPartnerTable.GetTableName()))
@@ -2351,7 +2351,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         AllSubmissionsOK = false;
                         AVerificationResult.AddCollection(SingleVerificationResultCollection);
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 9)
+                        if (TLogging.DL >= 9)
                         {
                             Console.WriteLine(Messages.BuildMessageFromVerificationResult(
                                     "TPartnerEditUIConnector.SubmitChanges VerificationResult: ", AVerificationResult));
@@ -2368,7 +2368,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                             && (AInspectDS.PPartner.Rows != AInspectDS.PPartner.Rows[0][PPartnerTable.GetStatusCodeDBName(), DataRowVersion.Current]))
                         {
 #if DEBUGMODE
-                            if (TSrvSetting.DL >= 7)
+                            if (TLogging.DL >= 7)
                             {
                                 Console.WriteLine(this.GetType().FullName + ".SubmitChanges: StatusCode has changed");
                             }
@@ -2439,7 +2439,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                             // get rid of columns that are not in the DB, otherwise we get an exception from SubmitChanges
                             PersonTableSubmit.RemoveColumnsNotInTableTemplate(new PPersonTable());
 
-                            /* $IFDEF DEBUGMODE if TSrvSetting.DL >= 7 then Console.WriteLine(this.GetType().FullName +'.SubmitChanges: Before submit of PPerson: AInspectDS.PPerson[0].ModificationId ' + AInspectDS.PPerson[0].ModificationId); $ENDIF
+                            /* $IFDEF DEBUGMODE if TLogging.DL >= 7 then Console.WriteLine(this.GetType().FullName +'.SubmitChanges: Before submit of PPerson: AInspectDS.PPerson[0].ModificationId ' + AInspectDS.PPerson[0].ModificationId); $ENDIF
                             **/
                             if (!PPersonAccess.SubmitChanges(PersonTableSubmit, ASubmitChangesTransaction, out SingleVerificationResultCollection))
                             {
@@ -2455,7 +2455,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                                     AInspectDS.PPerson[Counter].ModificationId = PersonTableSubmit[Counter].ModificationId;
                                 }
 
-                                /* $IFDEF DEBUGMODE if TSrvSetting.DL >= 7 then Console.WriteLine(this.GetType().FullName +'.SubmitChanges: After submit of PPerson: AInspectDS.PPerson[0].ModificationId ' + AInspectDS.PPerson[0].ModificationId);
+                                /* $IFDEF DEBUGMODE if TLogging.DL >= 7 then Console.WriteLine(this.GetType().FullName +'.SubmitChanges: After submit of PPerson: AInspectDS.PPerson[0].ModificationId ' + AInspectDS.PPerson[0].ModificationId);
                                  *$ENDIF */
                             }
                         }
@@ -2474,7 +2474,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                             // get rid of columns that are not in the DB, otherwise we get an exception from SubmitChanges
                             FamilyTableSubmit.RemoveColumnsNotInTableTemplate(new PFamilyTable());
 
-                            // $IFDEF DEBUGMODE if TSrvSetting.DL >= 7 then Console.WriteLine(this.GetType().FullName +'.SubmitChanges: After submit of PFamily: AInspectDS.PFamily[0].ModificationId ' + AInspectDS.PFamily[0].ModificationId); $ENDIF
+                            // $IFDEF DEBUGMODE if TLogging.DL >= 7 then Console.WriteLine(this.GetType().FullName +'.SubmitChanges: After submit of PFamily: AInspectDS.PFamily[0].ModificationId ' + AInspectDS.PFamily[0].ModificationId); $ENDIF
                             if (!PFamilyAccess.SubmitChanges(FamilyTableSubmit, ASubmitChangesTransaction, out SingleVerificationResultCollection))
                             {
                                 AllSubmissionsOK = false;
@@ -2489,7 +2489,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                                     AInspectDS.PFamily[Counter].ModificationId = FamilyTableSubmit[Counter].ModificationId;
                                 }
 
-                                /* $IFDEF DEBUGMODE if TSrvSetting.DL >= 7 then Console.WriteLine(this.GetType().FullName +'.SubmitChanges: After submit of PFamily: AInspectDS.PFamily[0].ModificationId ' + AInspectDS.PFamily[0].ModificationId);
+                                /* $IFDEF DEBUGMODE if TLogging.DL >= 7 then Console.WriteLine(this.GetType().FullName +'.SubmitChanges: After submit of PFamily: AInspectDS.PFamily[0].ModificationId ' + AInspectDS.PFamily[0].ModificationId);
                                  *$ENDIF */
                             }
                         }
@@ -2498,7 +2498,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         {
                             FamilyMembersTableSubmit = AInspectDS.FamilyMembers;
 #if DEBUGMODE
-                            if (TSrvSetting.DL >= 7)
+                            if (TLogging.DL >= 7)
                             {
                                 Console.WriteLine("FamilyMembersTableSubmit.Rows.Count: " + FamilyMembersTableSubmit.Rows.Count.ToString());
                             }
@@ -2628,7 +2628,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                          * p_foundation_proposal_detail)
                          */
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 7)
+                        if (TLogging.DL >= 7)
                         {
                             Console.WriteLine(this.GetType().FullName + ".SubmitChanges: performing cascading delete for Foundation!");
                         }
@@ -2700,7 +2700,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                 // Note: Locations and PartnerLocations are done sepearately in SubmitChangesAddresses!
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 9)
+                if (TLogging.DL >= 9)
                 {
                     if (AllSubmissionsOK == false)
                     {
@@ -2713,7 +2713,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             else
             {
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 8)
+                if (TLogging.DL >= 8)
                 {
                     Console.WriteLine("AInspectDS = nil!");
                 }
@@ -2782,7 +2782,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
             PartnerSaveDT = new PPartnerTable();
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 7)
+            if (TLogging.DL >= 7)
             {
                 Console.WriteLine(
                     "SpecialSubmitProcessingPartnerStatusChange: processing " + APartnerTypeChangeFamilyMembersDT.Rows.Count.ToString() +
@@ -2859,7 +2859,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             if (AInspectDS.Tables.Contains(PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionTable.GetTableName()))
             {
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 7)
+                if (TLogging.DL >= 7)
                 {
                     Console.WriteLine(
                         "SpecialSubmitProcessingPartnerTypes: " + PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionTable.GetTableName() +
@@ -2871,7 +2871,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 if (FamilyChangePromotionTable.Rows.Count > 0)
                 {
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine(
                             "SpecialSubmitProcessingPartnerTypes: " + PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionTable.GetTableName() +
@@ -2887,7 +2887,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                             PPartnerTypeAccess.Exists(FamilyChangePromotionTable[Counter].PartnerKey,
                                 FamilyChangePromotionTable[Counter].TypeCode, ASubmitChangesTransaction);
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 7)
+                        if (TLogging.DL >= 7)
                         {
                             Console.WriteLine(
                                 "SpecialSubmitProcessingPartnerTypes: Row[" + Counter.ToString() + "]: DB Exists: " + PartnerTypeDBExists.ToString());
@@ -2922,7 +2922,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                             if (FamilyChangePromotionTable[Counter].RemoveTypeCode)
                             {
 #if DEBUGMODE
-                                if (TSrvSetting.DL >= 7)
+                                if (TLogging.DL >= 7)
                                 {
                                     Console.WriteLine(
                                         "SpecialSubmitProcessingPartnerTypes: Row[" + Counter.ToString() +
@@ -2937,7 +2937,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                             else
                             {
 #if DEBUGMODE
-                                if (TSrvSetting.DL >= 7)
+                                if (TLogging.DL >= 7)
                                 {
                                     Console.WriteLine(
                                         "SpecialSubmitProcessingPartnerTypes: Row[" + Counter.ToString() +
@@ -2953,7 +2953,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     if (PPartnerTypeSubmitTable.Rows.Count > 0)
                     {
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 7)
+                        if (TLogging.DL >= 7)
                         {
                             Console.WriteLine(
                                 "SpecialSubmitProcessingPartnerTypes: PPartnerTypeSubmitTable.Rows.Count: " +
@@ -3032,7 +3032,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 else
                 {
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine(
                             this.GetType().FullName + ".GetSubscriptionsInternal: loading Subscriptions for Partner " + FPartnerKey.ToString() +
@@ -3056,7 +3056,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine(this.GetType().FullName + ".GetSubscriptionsInternal: committed own transaction.");
                     }
@@ -3105,7 +3105,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             Boolean NewTransaction;
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 6)
+            if (TLogging.DL >= 6)
             {
                 TLogging.Log("Called HasPartnerLocationOtherPartnerReferences", TLoggingType.ToLogfile);
             }
@@ -3126,7 +3126,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine(this.GetType().FullName + ".HasPartnerLocationOtherPartnerReferences: committed own transaction.");
                     }
@@ -3177,7 +3177,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 ChangePersonRow = (PPersonRow)FamilyPersonsDT.Rows.Find(new Object[] { AFamilyMembersTable[Counter].PartnerKey });
                 ChangePersonRow.FamilyId = DummyCounter;
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 7)
+                if (TLogging.DL >= 7)
                 {
                     Console.WriteLine("Person " + ChangePersonRow.PartnerKey.ToString() + ": changed OldFamilyID to Dummy " + DummyCounter.ToString());
                 }
@@ -3199,7 +3199,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 ChangePersonRow = (PPersonRow)FamilyPersonsDT.Rows.Find(new Object[] { AFamilyMembersTable[Counter].PartnerKey });
                 ChangePersonRow.FamilyId = AFamilyMembersTable[Counter].FamilyId;
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 7)
+                if (TLogging.DL >= 7)
                 {
                     Console.WriteLine(
                         "Person " + ChangePersonRow.PartnerKey.ToString() + ": changed OldFamilyID to " + ChangePersonRow.FamilyId.ToString());

@@ -46,7 +46,7 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
         public TPartnerNewExtractUIConnector() : base()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 7)
+            if (TLogging.DL >= 7)
             {
                 Console.WriteLine(this.GetType().FullName + " called.");
             }
@@ -60,7 +60,7 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
         /// <returns>void </returns>
         ~TPartnerNewExtractUIConnector()
         {
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ".FINALIZE called!");
             }

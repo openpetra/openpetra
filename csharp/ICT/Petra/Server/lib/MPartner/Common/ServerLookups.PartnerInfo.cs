@@ -233,7 +233,7 @@ namespace Ict.Petra.Server.MPartner
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine("TServerLookups_PartnerInfo.AllPartnerInfoData: committed own transaction.");
                     }
@@ -327,7 +327,7 @@ namespace Ict.Petra.Server.MPartner
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine("TServerLookups_PartnerInfo.LocationPartnerLocationAndRestOnly: committed own transaction.");
                     }
@@ -405,7 +405,7 @@ namespace Ict.Petra.Server.MPartner
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine("TServerLookups_PartnerInfo.LocationPartnerLocationAndRestOnly: committed own transaction.");
                     }

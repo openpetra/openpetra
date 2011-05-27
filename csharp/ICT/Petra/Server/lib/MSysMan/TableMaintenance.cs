@@ -44,7 +44,7 @@ namespace Ict.Petra.Server.MSysMan.TableMaintenance.UIConnectors
         public TSysManTableMaintenanceUIConnector() : base()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 7)
+            if (TLogging.DL >= 7)
             {
                 Console.WriteLine(this.GetType().FullName + " called.");
             }
@@ -57,7 +57,7 @@ namespace Ict.Petra.Server.MSysMan.TableMaintenance.UIConnectors
         /// </summary>
         ~TSysManTableMaintenanceUIConnector()
         {
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ".FINALIZE called!");
             }

@@ -432,7 +432,7 @@ namespace Ict.Petra.Server.App.Main
         {
             // Close Database connection of the Client's AppDomain
             // TODO 1 oChristianK cLogging (Console) : Put the following debug messages in a DEBUGMODE conditional compilation directive; these logging statements were inserted to trace problems in on live installations!
-            if (TSrvSetting.DL >= 5)
+            if (TLogging.DL >= 5)
             {
                 TLogging.Log("TRemoteLoader.CloseDBConnection: Invoking Member 'CloseDBConnection' in AppDomain: " + AppDomain.CurrentDomain.ToString());
             }
@@ -440,7 +440,7 @@ namespace Ict.Petra.Server.App.Main
             FRemoteClientDomainManagerClass.InvokeMember("CloseDBConnection",
                 (BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod), null, FRemoteClientDomainManagerObject, null, null);
 
-            if (TSrvSetting.DL >= 5)
+            if (TLogging.DL >= 5)
             {
                 TLogging.Log("TRemoteLoader.CloseDBConnection: Successfully invoked Member 'CloseDBConnection' in the Client's AppDomain!");
             }
@@ -542,7 +542,7 @@ namespace Ict.Petra.Server.App.Main
             LoadInAppDomainName = AClientName + "_Domain";
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 10)
+            if (TLogging.DL >= 10)
             {
                 Console.WriteLine("Creating new AppDomain for Client '" + AClientName + "'...");
             }
@@ -551,7 +551,7 @@ namespace Ict.Petra.Server.App.Main
             FAppDomain = AppDomain.CreateDomain(LoadInAppDomainName, null, Setup);
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 10)
+            if (TLogging.DL >= 10)
             {
                 TLogging.Log(
                     "Loaded Assemblies in AppDomain " + Thread.GetDomain().FriendlyName + " (just after AppDomain creation):",
@@ -569,7 +569,7 @@ namespace Ict.Petra.Server.App.Main
             // IMPORTANT: If the following code is uncommented, the ClientDomain DLL that is loaded only in the Client's AppDomain might get loaded into the Default AppDomain  that's what we don't want!!!
             // Use this therefore only to find out what DLL's are loaded in the Client's AppDomain!!!!!!
             //
-            // if TSrvSetting.DL >= 10 then
+            // if TLogging.DL >= 10 then
             // begin
             // TLogging.Log('Loaded Assemblies in AppDomain ' + FAppDomain.FriendlyName + ': (just after AppDomain creation)', [TLoggingType.ToConsole, TLoggingType.ToLogfile]);
             // for tmpAssembly in FAppDomain.GetAssemblies() do
@@ -580,13 +580,13 @@ namespace Ict.Petra.Server.App.Main
             // Console.ReadLine;
 #endif
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 10)
+            if (TLogging.DL >= 10)
             {
                 TLogging.Log("AppDomain sucessfully created.", TLoggingType.ToConsole | TLoggingType.ToLogfile);
             }
 #endif
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 10)
+            if (TLogging.DL >= 10)
             {
                 TLogging.Log("Trying to create an instance of TRemoteLoader in Client's AppDomain...",
                     TLoggingType.ToConsole | TLoggingType.ToLogfile);
@@ -595,7 +595,7 @@ namespace Ict.Petra.Server.App.Main
             FRemoteLoader =
                 (TRemoteLoader)(FAppDomain.CreateInstanceFromAndUnwrap("Ict.Petra.Server.app.Main.dll", "Ict.Petra.Server.App.Main.TRemoteLoader"));
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 10)
+            if (TLogging.DL >= 10)
             {
                 TLogging.Log("Successfully created an instance of TRemoteLoader in Client's AppDomain '" + FAppDomain.FriendlyName,
                     TLoggingType.ToConsole | TLoggingType.ToLogfile);
@@ -605,7 +605,7 @@ namespace Ict.Petra.Server.App.Main
 
 #if DEBUGMODE
         //        Console.ReadLine;
-        //        if TSrvSetting.DL >= 10 then
+        //        if TLogging.DL >= 10 then
         //        begin
         //            TLogging.Log('Loaded Assemblies in AppDomain ' + Thread.GetDomain.FriendlyName + ': (after placing TRemoteLoader into new AppDomain)', [TLoggingType.ToConsole, TLoggingType.ToLogfile]);
         //            for tmpAssembly in Thread.GetDomain.GetAssemblies() do
@@ -617,7 +617,7 @@ namespace Ict.Petra.Server.App.Main
 //
         //        // IMPORTANT: If the following code is uncommented, the ClientDomain DLL that is loaded only in the Client's AppDomain might get loaded into the Default AppDomain  that's what we don't want!!!
         //        // Use this therefore only to find out what DLL's are loaded in the Client's AppDomain!!!!!!
-        //        if TSrvSetting.DL >= 10 then
+        //        if TLogging.DL >= 10 then
         //        begin
         //            TLogging.Log('Loaded Assemblies in AppDomain ' + FAppDomain.FriendlyName + ': (after placing TRemoteLoader into new AppDomain)', [TLoggingType.ToConsole, TLoggingType.ToLogfile]);
         //            for tmpAssembly in FAppDomain.GetAssemblies() do
@@ -626,7 +626,7 @@ namespace Ict.Petra.Server.App.Main
         //            end;
         //        end;
         //        Console.ReadLine;
-        //        $IFDEF DEBUGMODE if TSrvSetting.DL >= 10 then TLogging.Log('RemotingServices.IsTransparentProxy: ' + RemotingServices.IsTransparentProxy(FRemoteLoader).ToString, [TLoggingType.ToConsole, TLoggingType.ToLogfile]); $ENDIF
+        //        $IFDEF DEBUGMODE if TLogging.DL >= 10 then TLogging.Log('RemotingServices.IsTransparentProxy: ' + RemotingServices.IsTransparentProxy(FRemoteLoader).ToString, [TLoggingType.ToConsole, TLoggingType.ToLogfile]); $ENDIF
         //        FRemoteLoader.WhichAppDomain;
 #endif
 
@@ -698,7 +698,7 @@ namespace Ict.Petra.Server.App.Main
                                TSrvSetting.PostgreSQLServer, TSrvSetting.PostgreSQLServerPort, TSrvSetting.PostgreSQLDatabaseName,
                                TSrvSetting.DBUsername, TSrvSetting.DBPassword,
                                (object)TSrvSetting.IPBasePort,
-                               (object)TSrvSetting.DebugLevel, TSrvSetting.ServerLogFile, TSrvSetting.HostName, TSrvSetting.HostIPAddresses,
+                               (object)TLogging.DL, TSrvSetting.ServerLogFile, TSrvSetting.HostName, TSrvSetting.HostIPAddresses,
                                (object)TSrvSetting.ClientIdleStatusAfterXMinutes, (object)TSrvSetting.ClientKeepAliveCheckIntervalInSeconds,
                                (object)TSrvSetting.ClientKeepAliveTimeoutAfterXSecondsLAN,
                                (object)TSrvSetting.ClientKeepAliveTimeoutAfterXSecondsRemote,
@@ -716,7 +716,7 @@ namespace Ict.Petra.Server.App.Main
             // IMPORTANT: If the following code is uncommented, the ClientDomain DLL that is loaded only in the Client's AppDomain might get loaded into the Default AppDomain  that's what we don't want!!!
             // Use this therefore only to find out what DLL's are loaded in the Client's AppDomain!!!!!!
             //
-            // if TSrvSetting.DL >= 10 then
+            // if TLogging.DL >= 10 then
             // begin
             // TLogging.Log('Loaded Assemblies in AppDomain ' + FAppDomain.FriendlyName + ': (after instantiation of TClientDomainManager)', [TLoggingType.ToConsole, TLoggingType.ToLogfile]);
             // for tmpAssembly in FAppDomain.GetAssemblies() do
@@ -724,7 +724,7 @@ namespace Ict.Petra.Server.App.Main
             // TLogging.Log(tmpAssembly.FullName, [TLoggingType.ToConsole, TLoggingType.ToLogfile]);
             // end;
             // end;
-            if (TSrvSetting.DL >= 10)
+            if (TLogging.DL >= 10)
             {
                 TLogging.Log(
                     "Loaded Assemblies in AppDomain " + AppDomain.CurrentDomain.FriendlyName + ": (after instantiation of TClientDomainManager)",
@@ -755,7 +755,7 @@ namespace Ict.Petra.Server.App.Main
         {
             FRemoteLoader.LoadPetraModuleAssembly(APetraModule, out APetraModuleInstantiatorRemotingURL);
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 10)
+            if (TLogging.DL >= 10)
             {
                 TLogging.Log(
                     "Loaded Assemblies in AppDomain " + AppDomain.CurrentDomain.FriendlyName + ": (after instantiation of " + APetraModule +
@@ -787,7 +787,7 @@ namespace Ict.Petra.Server.App.Main
         public void CloseDBConnection()
         {
             // TODO 1 oChristianK cLogging (Console) : Put the following debug messages in a DEBUGMODE conditional compilation directive and raise the DL to >=9; these logging statements were inserted to trace problems in on live installations!
-            if (TSrvSetting.DL >= 5)
+            if (TLogging.DL >= 5)
             {
                 TLogging.Log("TClientAppDomainConnection.CloseDBConnection: before calling FRemoteLoader.CloseDBConnection",
                     TLoggingType.ToConsole | TLoggingType.ToLogfile);
@@ -795,7 +795,7 @@ namespace Ict.Petra.Server.App.Main
 
             FRemoteLoader.CloseDBConnection();
 
-            if (TSrvSetting.DL >= 5)
+            if (TLogging.DL >= 5)
             {
                 TLogging.Log("TClientAppDomainConnection.CloseDBConnection: after calling FRemoteLoader.CloseDBConnection",
                     TLoggingType.ToConsole | TLoggingType.ToLogfile);

@@ -67,7 +67,7 @@ namespace Ict.Petra.Server.App.Core.Security
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 8)
+                    if (TLogging.DL >= 8)
                     {
                         Console.WriteLine("TTableAccessPermissionManager.LoadTableAccessPermissions: committed own transaction.");
                     }

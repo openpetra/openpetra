@@ -67,7 +67,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
         public TPersonnelCacheable() : base()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -80,7 +80,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
         /// destructor
         ~TPersonnelCacheable()
         {
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
                                                                                                 DateTime.Now.Ticks -
@@ -128,7 +128,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
             String TableName = Enum.GetName(typeof(TCacheablePersonTablesEnum), ACacheableTable);
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 7)
+            if (TLogging.DL >= 7)
             {
                 Console.WriteLine(this.GetType().FullName + ".GetCacheableTable called for table '" + TableName + "'.");
             }
@@ -285,7 +285,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 7)
+                        if (TLogging.DL >= 7)
                         {
                             Console.WriteLine(this.GetType().FullName + ".GetCacheableTable: commited own transaction.");
                         }

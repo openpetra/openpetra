@@ -76,7 +76,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
             AVerificationResults = null;
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("CreateNewExtract called!");
             }
@@ -123,7 +123,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
             {
                 ReturnValue = false;
 
-                if (TSrvSetting.DL >= 8)
+                if (TLogging.DL >= 8)
                 {
                     Console.WriteLine(
                         "TExtractsHandling.CreateNewExtract: Exception occured, Transaction ROLLED BACK. Exception: " +
@@ -206,7 +206,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
 #if DEBUGMODE
             catch (Exception Exp)
             {
-                if (TSrvSetting.DL >= 8)
+                if (TLogging.DL >= 8)
                 {
                     Console.WriteLine("TExtractsHandling.DeleteExtract: Exception occured. Exception: " + Exp.ToString());
                 }
@@ -222,7 +222,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 8)
+                        if (TLogging.DL >= 8)
                         {
                             Console.WriteLine("TExtractsHandling.DeleteExtract: committed own transaction!");
                         }
@@ -235,7 +235,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
                     {
                         DBAccess.GDBAccessObj.RollbackTransaction();
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 8)
+                        if (TLogging.DL >= 8)
                         {
                             Console.WriteLine("TExtractsHandling.DeleteExtract: ROLLED BACK own transaction!");
                         }
@@ -278,7 +278,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
 #if DEBUGMODE
             catch (Exception Exp)
             {
-                if (TSrvSetting.DL >= 8)
+                if (TLogging.DL >= 8)
                 {
                     Console.WriteLine("TExtractsHandling.CheckExtractExists(AExtractName): Exception occured. Exception: " + Exp.ToString());
                 }
@@ -292,7 +292,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 8)
+                    if (TLogging.DL >= 8)
                     {
                         Console.WriteLine("TExtractsHandling.CheckExtractExists(AExtractName): committed own transaction!");
                     }
@@ -413,7 +413,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
 #if DEBUGMODE
             catch (Exception Exp)
             {
-                if (TSrvSetting.DL >= 8)
+                if (TLogging.DL >= 8)
                 {
                     Console.WriteLine("TExtractsHandling.UpdateExtractCount: Exception occured. Exception: " + Exp.ToString());
                 }
@@ -429,7 +429,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 8)
+                        if (TLogging.DL >= 8)
                         {
                             Console.WriteLine("TExtractsHandling.UpdateExtractCount: committed own transaction!");
                         }
@@ -442,7 +442,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
                     {
                         DBAccess.GDBAccessObj.RollbackTransaction();
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 8)
+                        if (TLogging.DL >= 8)
                         {
                             Console.WriteLine("TExtractsHandling.UpdateExtractCount: ROLLED BACK own transaction!");
                         }
@@ -473,7 +473,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
 
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 8)
+            if (TLogging.DL >= 8)
             {
                 Console.WriteLine(
                     "TExtractsHandling.AddPartnerToExtract:  BestAddressPK: " + BestAddressPK.SiteKey.ToString() + ", " +
@@ -567,7 +567,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
 #if DEBUGMODE
                 catch (Exception Exp)
                 {
-                    if (TSrvSetting.DL >= 8)
+                    if (TLogging.DL >= 8)
                     {
                         Console.WriteLine("TExtractsHandling.AddPartnerToExtract: Exception occured. Exception: " + Exp.ToString());
                     }
@@ -583,7 +583,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
                         {
                             DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                            if (TSrvSetting.DL >= 8)
+                            if (TLogging.DL >= 8)
                             {
                                 Console.WriteLine("TExtractsHandling.AddPartnerToExtract: committed own transaction!");
                             }
@@ -596,7 +596,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
                         {
                             DBAccess.GDBAccessObj.RollbackTransaction();
 #if DEBUGMODE
-                            if (TSrvSetting.DL >= 8)
+                            if (TLogging.DL >= 8)
                             {
                                 Console.WriteLine("TExtractsHandling.AddPartnerToExtract: ROLLED BACK own transaction!");
                             }

@@ -61,7 +61,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             get
             {
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 7)
+                if (TLogging.DL >= 7)
                 {
                     Console.WriteLine("TPartnerLocationSearchUIConnector: AsyncExecProgress reqeusted.");
                 }
@@ -195,7 +195,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         /// destructor
         ~TPartnerLocationFindUIConnector()
         {
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ".FINALIZE called!");
             }
@@ -217,7 +217,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             DataTable ReturnValue;
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 7)
+            if (TLogging.DL >= 7)
             {
                 Console.WriteLine(this.GetType().FullName + ".GetDataPagedResult called.");
             }
