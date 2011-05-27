@@ -76,11 +76,12 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
         {
             PersonnelTDS MainDS = new PersonnelTDS();
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-            PPartnerAccess.LoadByPrimaryKey(MainDS,APartnerKey,Transaction);
 
-            PmCommitmentStatusAccess.LoadAll(MainDS,Transaction);
+            PPartnerAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
+
+            PmCommitmentStatusAccess.LoadAll(MainDS, Transaction);
             PmStaffDataAccess.LoadViaPPerson(MainDS, APartnerKey, Transaction);
-            
+
             DBAccess.GDBAccessObj.RollbackTransaction();
             return MainDS;
         }
