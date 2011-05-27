@@ -76,13 +76,8 @@ namespace Ict.Common.Controls
         /// <summary>Keeps track of the collapsed/expanded state</summary>
         private bool FIsCollapsed = false;
 
-#pragma warning disable 0169
         /// <summary>Caches the translated text for several ToolTips</summary>
         private string FToolTipText;
-#pragma warning restore 0169
-
-        /// <summary></summary>
-        private string FTitleText;
 
         /// <summary> collapse direction </summary>
         private TCollapseDirection FCollapseDirection;
@@ -618,6 +613,9 @@ namespace Ict.Common.Controls
     {
     }
 
+    /// <summary>
+    /// there is a mismatch of the visual style and the direction
+    /// </summary>
     public class EVisualStyleAndDirectionMismatchException : ApplicationException
     {
     }

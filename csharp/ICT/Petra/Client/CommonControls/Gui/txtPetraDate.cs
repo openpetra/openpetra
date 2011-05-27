@@ -287,7 +287,7 @@ namespace Ict.Petra.Client.CommonControls
         /// Default of minimalDateValue is the system Constant DateTime.MinValue
         /// Here you can override ...
         /// </summary>
-        /// <param name="maximalValue">The new minimal value ...</param>
+        /// <param name="minimalValue">The new minimal value ...</param>
         public void SetMinimalDate(DateTime minimalValue)
         {
             minimalDateValue = minimalValue;

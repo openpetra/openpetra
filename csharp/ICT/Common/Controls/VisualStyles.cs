@@ -33,10 +33,15 @@ namespace Ict.Common.Controls
     /// </summary>
     public enum TVisualStylesEnum
     {
+        /// <summary>Accordion Panel</summary>
         vsAccordionPanel,
+        /// <summary>Task Panel</summary>
         vsTaskPanel,
+        /// <summary>Dashboard</summary>
         vsDashboard,
+        /// <summary>Shepherd/Assistant</summary>
         vsShepherd,
+        /// <summary>Horizontal Collapse</summary>
         vsHorizontalCollapse
     }
     /// <summary>
@@ -321,6 +326,7 @@ namespace Ict.Common.Controls
 
                     //BackgroundVariables
                     InternalContentBackgroundColour = Color.FromArgb(212, 221, 249);
+                    InternalTitleBackgroundColour = Color.FromArgb(212, 221, 249);
 
                     //Gradient Variables
                     InternalPanelGradientStart = Color.FromArgb(255, 255, 255);
@@ -349,6 +355,7 @@ namespace Ict.Common.Controls
 
                     //BackgroundVariables
                     InternalContentBackgroundColour = Color.FromArgb(212, 221, 249);
+                    InternalTitleBackgroundColour = Color.FromArgb(212, 221, 249);
 
                     //Gradient Variables
                     InternalPanelGradientStart = Color.FromArgb(255, 255, 255);
@@ -387,6 +394,7 @@ namespace Ict.Common.Controls
 
                     //Background variables
                     InternalContentBackgroundColour = Color.FromArgb(255, 255, 255);
+                    InternalTitleBackgroundColour = Color.FromArgb(212, 221, 249);
                     InternalContentHoverBackgroundColour = Color.FromArgb(210, 210, 210);
                     InternalContentActivatedBackgroundColour = Color.FromArgb(0, 80, 160);
 
@@ -412,6 +420,7 @@ namespace Ict.Common.Controls
 
                     //BackgroundVariables
                     InternalContentBackgroundColour = Color.FromArgb(212, 221, 249);
+                    InternalTitleBackgroundColour = Color.FromArgb(212, 221, 249);
 
                     //Gradient Variables
                     InternalPanelGradientStart = Color.FromArgb(255, 255, 255);
