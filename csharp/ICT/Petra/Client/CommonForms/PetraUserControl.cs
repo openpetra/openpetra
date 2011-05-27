@@ -164,6 +164,9 @@ namespace Ict.Petra.Client.CommonForms
             set;
         }
 
+        /// <summary>
+        /// used to initialize the user control
+        /// </summary>
         void InitUserControl();
     }
 
@@ -182,6 +185,9 @@ namespace Ict.Petra.Client.CommonForms
             set;
         }
 
+        /// <summary>
+        /// used to initialize the user control
+        /// </summary>
         void InitUserControl();
     }
 }

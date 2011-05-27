@@ -125,15 +125,18 @@ namespace Ict.Tools.CodeGeneration.DataStore
         /// <param name="formalParametersKey"></param>
         /// <param name="actualParametersKey"></param>
         /// <param name="numberKeyColumns"></param>
+        /// <param name="actualParametersToString"></param>
         private static void PrepareCodeletsKey(
             TTable ACurrentTable,
             TConstraint AConstraint,
             out string formalParametersKey,
             out string actualParametersKey,
+            out string actualParametersToString,
             out int numberKeyColumns)
         {
             formalParametersKey = "";
             actualParametersKey = "";
+            actualParametersToString = "";
 
             numberKeyColumns = AConstraint.strThisFields.Count;
 
@@ -145,14 +148,25 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 {
                     formalParametersKey += ", ";
                     actualParametersKey += ", ";
+                    actualParametersToString += " + \" \" + ";
                 }
 
                 TTableField typedField = ACurrentTable.GetField(field);
 
                 formalParametersKey += typedField.GetDotNetType() + " A" + TTable.NiceFieldName(field);
                 actualParametersKey += "A" + TTable.NiceFieldName(field);
+                actualParametersToString += "A" + TTable.NiceFieldName(field) + ".ToString()";
 
                 counterKeyField++;
+            }
+
+            // for partners, show their names as well. This is used in function AddOrModifyRecord to show the users which values are different
+            foreach (TTableField column in ACurrentTable.grpTableField.List)
+            {
+                if (column.strName.Contains("_name_"))
+                {
+                    actualParametersToString += " + ExistingRecord[0]." + TTable.NiceFieldName(column) + ".ToString()";
+                }
             }
         }
 
@@ -160,10 +174,12 @@ namespace Ict.Tools.CodeGeneration.DataStore
             TTable ACurrentTable,
             out string formalParametersPrimaryKey,
             out string actualParametersPrimaryKey,
+            out string actualParametersPrimaryKeyToString,
             out int numberPrimaryKeyColumns)
         {
             formalParametersPrimaryKey = "";
             actualParametersPrimaryKey = "";
+            actualParametersPrimaryKeyToString = "";
             numberPrimaryKeyColumns = 0;
 
             if (!ACurrentTable.HasPrimaryKey())
@@ -175,6 +191,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 ACurrentTable.GetPrimaryKey(),
                 out formalParametersPrimaryKey,
                 out actualParametersPrimaryKey,
+                out actualParametersPrimaryKeyToString,
                 out numberPrimaryKeyColumns);
         }
 
@@ -187,6 +204,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
             formalParametersUniqueKey = "";
             actualParametersUniqueKey = "";
             numberUniqueKeyColumns = 0;
+            string dummy = "";
 
             if (!ACurrentTable.HasUniqueKey())
             {
@@ -197,6 +215,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 ACurrentTable.GetFirstUniqueKey(),
                 out formalParametersUniqueKey,
                 out actualParametersUniqueKey,
+                out dummy,
                 out numberUniqueKeyColumns);
         }
 
@@ -343,10 +362,12 @@ namespace Ict.Tools.CodeGeneration.DataStore
             int notUsedInt;
             string formalParametersOtherPrimaryKey;
             string actualParametersOtherPrimaryKey;
+            string dummy;
 
             PrepareCodeletsPrimaryKey(AOtherTable,
                 out formalParametersOtherPrimaryKey,
                 out actualParametersOtherPrimaryKey,
+                out dummy,
                 out notUsedInt);
 
             int numberFields;
@@ -603,9 +624,11 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 PrepareCodeletsPrimaryKey(OtherTable,
                     out formalParametersOtherPrimaryKey,
                     out actualParametersOtherPrimaryKey,
+                    out notUsed,
                     out notUsedInt);
 
                 PrepareCodeletsPrimaryKey(ACurrentTable,
+                    out notUsed,
                     out notUsed,
                     out notUsed,
                     out notUsedInt);
@@ -655,15 +678,18 @@ namespace Ict.Tools.CodeGeneration.DataStore
 
             string formalParametersPrimaryKey;
             string actualParametersPrimaryKey;
+            string actualParametersPrimaryKeyToString;
             int numberPrimaryKeyColumns;
 
             PrepareCodeletsPrimaryKey(ACurrentTable,
                 out formalParametersPrimaryKey,
                 out actualParametersPrimaryKey,
+                out actualParametersPrimaryKeyToString,
                 out numberPrimaryKeyColumns);
 
             ASnippet.SetCodelet("FORMALPARAMETERSPRIMARYKEY", formalParametersPrimaryKey);
             ASnippet.SetCodelet("ACTUALPARAMETERSPRIMARYKEY", actualParametersPrimaryKey);
+            ASnippet.SetCodelet("ACTUALPARAMETERSPRIMARYKEYTOSTRING", actualParametersPrimaryKeyToString);
             ASnippet.SetCodelet("PRIMARYKEYNUMBERCOLUMNS", numberPrimaryKeyColumns.ToString());
 
             string formalParametersUniqueKey;

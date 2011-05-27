@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, matthiash
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -151,7 +151,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static GLBatchTDS CreateABatch(Int32 ALedgerNumber)
         {
-            return CreateABatch(ALedgerNumber);
+            return TGLPosting.CreateABatch(ALedgerNumber);
         }
 
         /// <summary>

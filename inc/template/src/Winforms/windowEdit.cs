@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from {#XAMLSRCFILE} and template windowTDS
+// auto generated with nant generateWinforms from {#XAMLSRCFILE} and template windowEdit
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -6,9 +6,6 @@
 using System;
 using System.Drawing;
 using System.Collections;
-{#IFDEF TABPAGECTRL}
-using System.Collections.Generic;
-{#ENDIF TABPAGECTRL}
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Data;
@@ -31,30 +28,7 @@ namespace {#NAMESPACE}
   public partial class {#CLASSNAME}: System.Windows.Forms.Form, {#INTERFACENAME}
   {
     private {#UTILOBJECTCLASS} FPetraUtilsObject;
-{#IFDEF DATASETTYPE}
     private {#DATASETTYPE} FMainDS;
-{#ENDIF DATASETTYPE}
-
-{#IFDEF UICONNECTORTYPE}
-
-    /// <summary>holds a reference to the Proxy object of the Serverside UIConnector</summary>
-    private {#UICONNECTORTYPE} FUIConnector = null;
-{#ENDIF UICONNECTORTYPE}
-
-{#IFDEF TABPAGECTRL}
-    private SortedList<TDynamicLoadableUserControls, UserControl> FTabSetup;       
-    private event TTabPageEventHandler FTabPageEvent;
-    {#DYNAMICTABPAGEUSERCONTROLDECLARATION}
-    
-    /// <summary>
-    /// Enumeration of dynamic loadable UserControls which are used
-    /// on the Tabs of a TabControl. AUTO-GENERATED, don't modify by hand!
-    /// </summary>
-    public enum TDynamicLoadableUserControls
-    {
-        {#DYNAMICTABPAGEUSERCONTROLENUM}
-    }
-{#ENDIF TABPAGECTRL}
 
     /// constructor
     public {#CLASSNAME}(IntPtr AParentFormHandle) : base()
@@ -68,26 +42,20 @@ namespace {#NAMESPACE}
       // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
       {#CATALOGI18N}
       #endregion
-      
+
       {#ASSIGNFONTATTRIBUTES}
       
       FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentFormHandle, this, stbMain);
-{#IFDEF DATASETTYPE}
       FMainDS = new {#DATASETTYPE}();
-{#ENDIF DATASETTYPE}
       {#INITUSERCONTROLS}
       {#INITMANUALCODE}
-{#IFDEF ACTIONENABLING}
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
-{#ENDIF ACTIONENABLING}
+      
+      DataView myDataView = FMainDS.{#DETAILTABLE}.DefaultView;
+      myDataView.AllowNew = false;
+      grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
 
       {#INITACTIONSTATE}
-      
-{#IFDEF UICONNECTORCREATE}
-      FUIConnector = {#UICONNECTORCREATE}();
-      // Register Object with the TEnsureKeepAlive Class so that it doesn't get GC'd
-      TEnsureKeepAlive.Register(FUIConnector);
-{#ENDIF UICONNECTORCREATE}
     }
 
     {#EVENTHANDLERSIMPLEMENTATION}
@@ -96,65 +64,119 @@ namespace {#NAMESPACE}
     {
         // TODO? Save Window position
 
-{#IFDEF UICONNECTORCREATE}
-        if (FUIConnector != null)
-        {
-            // UnRegister Object from the TEnsureKeepAlive Class so that the Object can get GC'd on the PetraServer
-            TEnsureKeepAlive.UnRegister(FUIConnector);
-            FUIConnector = null;
-        }
-{#ENDIF UICONNECTORCREATE}
     }
 
+    /// automatically generated, create a new record of {#DETAILTABLE} and display on the edit screen
+    /// we create the table locally, no dataset
+    public bool CreateNew{#DETAILTABLE}()
+    {
+        {#DETAILTABLE}Row NewRow = FMainDS.{#DETAILTABLE}.NewRowTyped();
+        {#INITNEWROWMANUAL}
+        FMainDS.{#DETAILTABLE}.Rows.Add(NewRow);
+        
+        FPetraUtilsObject.SetChangedFlag();
+
+        grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.{#DETAILTABLE}.DefaultView);
+        grdDetails.Refresh();
+        SelectDetailRowByDataTableIndex(FMainDS.{#DETAILTABLE}.Rows.Count - 1);
+        
+        return true;
+    }
+
+    private void SelectDetailRowByDataTableIndex(Int32 ARowNumberInTable)
+    {
+        Int32 RowNumberGrid = -1;
+        for (int Counter = 0; Counter < grdDetails.DataSource.Count; Counter++)
+        {
+            bool found = true;
+            foreach (DataColumn myColumn in FMainDS.{#DETAILTABLE}.PrimaryKey)
+            {
+                string value1 = FMainDS.{#DETAILTABLE}.Rows[ARowNumberInTable][myColumn].ToString();
+                string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView[Counter][myColumn.Ordinal].ToString();
+                if (value1 != value2)
+                {
+                    found = false;
+                }
+            }
+            if (found)
+            {
+                RowNumberGrid = Counter + 1;
+            }
+        }
+        grdDetails.Selection.ResetSelection(false);
+        grdDetails.Selection.SelectRow(RowNumberGrid, true);
+        // scroll to the row
+        grdDetails.ShowCell(new SourceGrid.Position(RowNumberGrid, 0), true);
+
+        FocusedRowChanged(this, new SourceGrid.RowEventArgs(RowNumberGrid));
+    }
+
+    /// return the selected row
+    private {#DETAILTABLE}Row GetSelectedDetailRow()
+    {
+        DataRowView[] SelectedGridRow = grdDetails.SelectedDataRowsAsDataRowView;
+
+        if (SelectedGridRow.Length >= 1)
+        {
+            return ({#DETAILTABLE}Row)SelectedGridRow[0].Row;
+        }
+
+        return null;
+    }
+
+{#IFDEF PRIMARYKEYCONTROLSREADONLY}
     private void SetPrimaryKeyReadOnly(bool AReadOnly)
     {
         {#PRIMARYKEYCONTROLSREADONLY}
     }
-
-{#IFDEF SHOWDATA}
-    private void ShowData({#MASTERTABLETYPE}Row ARow)
-    {
-        {#SHOWDATA}
-    }
-{#ENDIF SHOWDATA}
+{#ENDIF PRIMARYKEYCONTROLSREADONLY}
 
 {#IFDEF SHOWDETAILS}
-    private void ShowDetails({#DETAILTABLETYPE}Row ARow)
+    private void ShowDetails({#DETAILTABLE}Row ARow)
     {
+        FPetraUtilsObject.DisableDataChangedEvent();
         {#SHOWDETAILS}
+        FPetraUtilsObject.EnableDataChangedEvent();
+    }
+
+    private {#DETAILTABLE}Row FPreviouslySelectedDetailRow = null;
+    private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
+    {
+{#IFDEF SAVEDETAILS}
+        // get the details from the previously selected row
+        if (FPreviouslySelectedDetailRow != null)
+        {
+            if (!GetDetailsFromControls(FPreviouslySelectedDetailRow))
+            {
+                return;
+            }
+        }
+{#ENDIF SAVEDETAILS}
+        // display the details of the currently selected row
+        FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+        ShowDetails(FPreviouslySelectedDetailRow);
+        pnlDetails.Enabled = true;
     }
 {#ENDIF SHOWDETAILS}
-{#IFDEF MASTERTABLE}
-
-    private void GetDataFromControls({#MASTERTABLETYPE}Row ARow)
-    {
-        {#SAVEDATA}
-    }
-{#ENDIF MASTERTABLE}
-{#IFNDEF MASTERTABLE}
-
-    private void GetDataFromControls()
-    {
-        {#SAVEDATA}
-    }
-{#ENDIFN MASTERTABLE}
+    
 {#IFDEF SAVEDETAILS}
-
-    private void GetDetailsFromControls({#DETAILTABLETYPE}Row ARow)
+    private bool GetDetailsFromControls({#DETAILTABLE}Row ARow)
     {
         if (ARow != null)
         {
+            {#VALIDATEDETAILS}
             {#SAVEDETAILS}
         }
+
+        return true;
     }
 {#ENDIF SAVEDETAILS}
-    
+
 #region Implement interface functions
 
     /// auto generated
     public void RunOnceOnActivation()
     {
-        {#RUNONCEONACTIVATIONMANUAL}
         {#RUNONCEINTERFACEIMPLEMENTATION}
     }
 
@@ -187,9 +209,7 @@ namespace {#NAMESPACE}
     /// auto generated
     public void FileSave(object sender, EventArgs e)
     {
-      try {
-         SaveChanges();
-      } catch (CancelSaveException) {}
+        SaveChanges();
     }
 
     /// <summary>
@@ -201,12 +221,10 @@ namespace {#NAMESPACE}
         FPetraUtilsObject.OnDataSavingStart(this, new System.EventArgs());
 
 //TODO?  still needed?      FMainDS.AApDocument.Rows[0].BeginEdit();
-{#IFDEF MASTERTABLE}
-        GetDataFromControls(FMainDS.{#MASTERTABLE}[0]);
-{#ENDIF MASTERTABLE}
-{#IFNDEF MASTERTABLE}
-        GetDataFromControls();
-{#ENDIFN MASTERTABLE}
+        if (!GetDetailsFromControls(FPreviouslySelectedDetailRow))
+        {
+            return false;
+        }
 
         // TODO: verification
 
@@ -246,16 +264,12 @@ namespace {#NAMESPACE}
 
                     return true;
                 }
-                
+
                 // Submit changes to the PETRAServer
                 try
                 {
-{#IFDEF STOREMANUALCODE}
+                    // SubmissionResult = WEBCONNECTORMASTER.Save{#DETAILTABLE}(ref SubmitDS, out VerificationResult);
                     {#STOREMANUALCODE}
-{#ENDIF STOREMANUALCODE}
-{#IFNDEF STOREMANUALCODE}
-                    SubmissionResult = {#WEBCONNECTORTDS}.Save{#SHORTDATASETTYPE}(ref SubmitDS, out VerificationResult);
-{#ENDIFN STOREMANUALCODE}
                 }
                 catch (System.Net.Sockets.SocketException)
                 {
@@ -332,7 +346,9 @@ namespace {#NAMESPACE}
                         // We don't have unsaved changes anymore
                         FPetraUtilsObject.DisableSaveButton();
 
+{#IFDEF PRIMARYKEYCONTROLSREADONLY}
                         SetPrimaryKeyReadOnly(true);
+{#ENDIF PRIMARYKEYCONTROLSREADONLY}
 
                         // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                         return true;
@@ -361,7 +377,6 @@ namespace {#NAMESPACE}
         return false;
     }
 #endregion
-{#IFDEF ACTIONENABLING}
 
 #region Action Handling
 
@@ -375,89 +390,15 @@ namespace {#NAMESPACE}
     {#ACTIONHANDLERS}
 
 #endregion
-{#ENDIF ACTIONENABLING}
-{#IFDEF TABPAGECTRL}
-
-        private ToolStrip PreviouslyMergedToolbarItems = null;
-        private ToolStrip PreviouslyMergedMenuItems = null;
-        
-        /// <summary>
-        /// Changes the toolbars that are associated with the Tabs.
-        /// Optionally dynamically loads UserControls that are associated with the Tabs. 
-        /// AUTO-GENERATED, don't modify by hand!
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void TabSelectionChanged(System.Object sender, EventArgs e)
-        {
-{#IFDEF FIRSTTABPAGESELECTIONCHANGEDVAR}
-            bool FirstTabPageSelectionChanged = false;
-{#ENDIF FIRSTTABPAGESELECTIONCHANGEDVAR}
-            TabPage currentTab = {#TABPAGECTRL}.TabPages[{#TABPAGECTRL}.SelectedIndex];
-            
-            if (FTabSetup == null)
-            {
-                FTabSetup = new SortedList<TDynamicLoadableUserControls, UserControl>();
-{#IFDEF FIRSTTABPAGESELECTIONCHANGEDVAR}
-                FirstTabPageSelectionChanged = true;
-{#ENDIF FIRSTTABPAGESELECTIONCHANGEDVAR}
-            }
-
-            {#IGNOREFIRSTTABPAGESELECTIONCHANGEDEVENT}            
-            
-            {#DYNAMICTABPAGEUSERCONTROLSELECTIONCHANGED}
-
-            
-            if (PreviouslyMergedToolbarItems != null)
-            {
-                ToolStripManager.RevertMerge(tbrMain, PreviouslyMergedToolbarItems);
-                PreviouslyMergedToolbarItems = null;
-            }
-
-            if (PreviouslyMergedMenuItems != null)
-            {
-                ToolStripManager.RevertMerge(mnuMain, PreviouslyMergedMenuItems);
-                PreviouslyMergedMenuItems = null;
-            }
-            
-            Control[] tabToolbar = currentTab.Controls.Find("tbrTabPage", true);
-            if (tabToolbar.Length == 1)
-            {
-                ToolStrip ItemsToMerge = (ToolStrip) tabToolbar[0];
-                ItemsToMerge.Visible = false;
-                foreach (ToolStripItem item in ItemsToMerge.Items)
-                {
-                    item.MergeAction = MergeAction.Append;
-                }
-                ToolStripManager.Merge(ItemsToMerge, tbrMain);
-                
-                PreviouslyMergedToolbarItems = ItemsToMerge;
-            }
-
-            Control[] tabMenu = currentTab.Controls.Find("mnuTabPage", true);
-            if (tabMenu.Length == 1)
-            {
-                ToolStrip ItemsToMerge = (ToolStrip) tabMenu[0];
-                ItemsToMerge.Visible = false;
-                Int32 NewPosition = mnuMain.Items.IndexOf(mniHelp);
-                foreach (ToolStripItem item in ItemsToMerge.Items)
-                {
-                    item.MergeAction = MergeAction.Insert;
-                    item.MergeIndex = NewPosition++;
-                }
-                ToolStripManager.Merge(ItemsToMerge, mnuMain);
-                
-                PreviouslyMergedMenuItems = ItemsToMerge;
-            }
-        }
-
-    {#DYNAMICTABPAGEBASICS}        
-{#ENDIF TABPAGECTRL}
   }
 }
 
 {#INCLUDE copyvalues.cs}
 
-{#INCLUDE dynamictabpage_basics.cs}
-{#INCLUDE dynamictabpage_usercontrol_selectionchanged.cs}
-{#INCLUDE dynamictabpage_usercontrol_loading.cs}
+{##VALIDATEDETAILS}
+TVerificationResultCollection VerificationResults;
+if (!ValidateDetailsManual(ARow, out VerificationResults))
+{
+    MessageBox.Show(VerificationResults.BuildVerificationResultString(), Catalog.GetString("Please fix the errors"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+    return false;
+}

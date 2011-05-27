@@ -41,6 +41,11 @@ namespace Ict.Common.IO
         /// <returns></returns>
         public static string DataToHTMLTable(string AJsonData)
         {
+            if (AJsonData.Length == 0)
+            {
+                return String.Empty;
+            }
+
             string Result = "<table cellspacing=\"2\">";
             JsonObject list = (JsonObject)JsonConvert.Import(AJsonData);
 
@@ -64,6 +69,11 @@ namespace Ict.Common.IO
         /// <param name="AOverwrite"></param>
         public static void DataToXml(string AJsonData, ref XmlNode ANode, XmlDocument ADoc, bool AOverwrite)
         {
+            if (AJsonData.Length == 0)
+            {
+                return;
+            }
+
             JsonObject list = (JsonObject)JsonConvert.Import(AJsonData);
 
             foreach (string key in list.Names)
@@ -87,6 +97,11 @@ namespace Ict.Common.IO
         /// <returns></returns>
         public static string ReplaceKeywordsWithData(string AJsonData, string ATemplate)
         {
+            if (AJsonData.Length == 0)
+            {
+                return ATemplate;
+            }
+
             JsonObject list = (JsonObject)JsonConvert.Import(AJsonData);
 
             foreach (DictionaryEntry entry in list)
@@ -174,8 +189,42 @@ namespace Ict.Common.IO
         /// <returns>an object of the given type, you just have to cast it to your type</returns>
         public static Object ImportIntoTypedStructure(System.Type ATypeOfStructure, string AJSONFormData)
         {
+            if (AJSONFormData.Length == 0)
+            {
+                return new Jayrock.Json.JsonObject();
+            }
+
             return Jayrock.Json.Conversion.JsonConvert.Import(ATypeOfStructure,
                 RemoveContainerControls(AJSONFormData));
+        }
+
+        /// <summary>
+        /// parse the string to a JsonObject which can be iterated like this:
+        ///     foreach (string key in MyJsonObject.Names)
+        ///     {
+        ///             Console.WriteLine(key + " " + MyJsonObject[key].ToString());
+        ///     }
+        /// </summary>
+        /// <param name="AJSONFormData">it is recommended to run RemoveContainerControls on that parameter first</param>
+        /// <returns></returns>
+        public static JsonObject ParseValues(string AJSONFormData)
+        {
+            if (AJSONFormData.Length == 0)
+            {
+                return new Jayrock.Json.JsonObject();
+            }
+
+            return (JsonObject)Jayrock.Json.Conversion.JsonConvert.Import(AJSONFormData);
+        }
+
+        /// <summary>
+        /// reverse of ParseValues
+        /// </summary>
+        /// <param name="AParsedObject"></param>
+        /// <returns></returns>
+        public static string ToJsonString(JsonObject AParsedObject)
+        {
+            return Jayrock.Json.Conversion.JsonConvert.ExportToString(AParsedObject);
         }
     }
 }

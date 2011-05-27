@@ -75,6 +75,8 @@
           overwrite="false" />
 <property name="dir.incdir.template.etc" value="${path::combine(dir.incdir.template, 'etc')}"
           overwrite="false" />
+<property name="dir.incdir.template.src" value="${path::combine(dir.incdir.template, 'src')}"
+          overwrite="false" />
 <property name="dir.incdir.cfg" value="${path::combine(dir.incdir, 'cfg')}"
           overwrite="false" />
 
