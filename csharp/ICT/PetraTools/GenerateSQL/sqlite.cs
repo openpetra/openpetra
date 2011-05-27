@@ -51,13 +51,6 @@ public class TSQLiteWriter
             throw new Exception("cannot overwrite existing file " + ADBFilename);
         }
 
-        if (ADBPwd.Length > 0)
-        {
-            System.Console.WriteLine(
-                "Error: we do not support sqlite databases with passwords at the moment, since that does not seem to work on Windows");
-            return false;
-        }
-
         System.Console.WriteLine("Writing file to {0}...", ADBFilename);
 
         // see also tutorial http://sqlite.phxsoftware.com/forums/p/130/452.aspx#452
