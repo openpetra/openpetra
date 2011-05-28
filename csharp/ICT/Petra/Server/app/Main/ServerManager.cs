@@ -661,7 +661,7 @@ namespace Ict.Petra.Server.App.Main
 
                     foreach (string sqlFile in sqlFiles)
                     {
-                        if (ADBVersion.PatchApplies(sqlFile, AExeVersion))
+                        if (!sqlFile.EndsWith("pg.sql") && ADBVersion.PatchApplies(sqlFile, AExeVersion))
                         {
                             foundUpdate = true;
                             StreamReader sr = new StreamReader(sqlFile);
