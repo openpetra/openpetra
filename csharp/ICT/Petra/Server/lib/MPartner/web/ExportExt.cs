@@ -96,7 +96,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 Write(ShortTermApplicationRow.StBasicDeleteFlag);
                 Write(ShortTermApplicationRow.StBookingFeeReceived);
                 Write(ShortTermApplicationRow.StOutreachOnlyFlag);
-                Write(ShortTermApplicationRow.StCmpgnSpecialCost);
+                Write(ShortTermApplicationRow.StOutreachSpecialCost);
                 Write(ShortTermApplicationRow.StCngrssSpecialCost);
                 WriteLine();
                 Write(ShortTermApplicationRow.StComment);
@@ -169,7 +169,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 Write(false);                 // ShortTermApplicationRow.StBasicDeleteFlag
                 Write(false);                 // ShortTermApplicationRow.StBookingFeeReceived
                 Write(false);                 // ShortTermApplicationRow.StOutreachOnlyFlag
-                Write(0);                 // ShortTermApplicationRow.StCmpgnSpecialCost
+                Write(0);                 // ShortTermApplicationRow.StOutreachSpecialCost
                 Write(0);                 // ShortTermApplicationRow.StCngrssSpecialCost
                 WriteLine();
                 Write("");                 // ShortTermApplicationRow.StComment

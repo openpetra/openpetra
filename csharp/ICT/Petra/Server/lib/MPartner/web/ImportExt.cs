@@ -493,7 +493,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             ShortTermApplicationRow.StBasicDeleteFlag = ReadBoolean();
             ShortTermApplicationRow.StBookingFeeReceived = ReadBoolean();
             ShortTermApplicationRow.StOutreachOnlyFlag = ReadBoolean();
-            ShortTermApplicationRow.StCmpgnSpecialCost = ReadInt32();
+            ShortTermApplicationRow.StOutreachSpecialCost = ReadInt32();
             ShortTermApplicationRow.StCngrssSpecialCost = ReadInt32();
 
             ShortTermApplicationRow.StComment = ReadString();

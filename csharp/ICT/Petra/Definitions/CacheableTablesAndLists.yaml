@@ -58,7 +58,7 @@ CachedTables:
     Personnel:
         Unit:
             CalculatedLists:
-                OutreachList: {Comment=List of all campaigns}
+                OutreachList: {Comment=List of all outreaches}
                 ConferenceList: {Comment=List of all conferences}
                 
             DatabaseTables:

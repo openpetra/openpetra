@@ -16889,7 +16889,7 @@
                 label="Fellowship Group Code"
                 columnlabel="Fellowship Group Code"
                 help="A free form field for group codes."/>
-    <tablefield name="pm_st_cmpgn_special_cost_i"
+    <tablefield name="pm_st_outreach_special_cost_i"
                 type="integer"
                 descr="Special Costs related to the outreach."
                 format="&gt;&gt;&gt;,&gt;&gt;9"
