@@ -43,6 +43,7 @@ using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.MCommon;
+using Ict.Petra.Client.MFinance.Gui.Gift;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -557,10 +558,17 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 BtnSearch_Click(this, new EventArgs());
             }
-            else
+            else if (AToolStripItem.Name == "mniMaintainDonorHistory")
             {
-                throw new NotImplementedException();
-            }
+            	OpenDonorRecipientHistory(AToolStripItem.Name);
+        	}
+        	else if (AToolStripItem.Name == "mniMaintainRecipientHistory")
+        	{
+        		OpenDonorRecipientHistory(AToolStripItem.Name);
+        	}
+        	else 
+            throw new NotImplementedException();
+        
 
 #if TODO
             String ClickedMenuItemText;
@@ -1745,7 +1753,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.Cursor = Cursors.Default;
 //#endif
         }
-
+		private void OpenDonorRecipientHistory(String Name)
+		{
+			 this.Cursor = Cursors.WaitCursor;
+			 Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory frmDRH = new  Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory(this.Handle);
+			frmDRH.Show();
+			this.Cursor = Cursors.Default;	
+		}
+		
+			
         /// <summary>todoComment</summary>
         public void StopTimer()
         {
