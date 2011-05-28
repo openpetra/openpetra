@@ -82,8 +82,12 @@ namespace Ict.Common
         /// </summary>
         public static string GetString(string AEnglishMessage)
         {
-//            return catalog.GetString(AEnglishMessage); @TODO Fix this (Catalog is coming up null)
-            return AEnglishMessage;
+            if (catalog == null)
+            {
+                return AEnglishMessage;
+            }
+
+            return catalog.GetString(AEnglishMessage);
         }
 
         /// <summary>

@@ -63,7 +63,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
             cmbCulture.ValueMember = "Value";
 
             // TODO: load languages from names of language sub directories
-            cmbLanguage.SetDataSourceStringList("en-GB,es-ES,de-DE");
+            cmbLanguage.SetDataSourceStringList("en-GB,es-ES,da-DK,de-DE");
 
             string LanguageCode;
             string CultureCode;
