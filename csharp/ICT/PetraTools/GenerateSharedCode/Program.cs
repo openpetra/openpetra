@@ -42,6 +42,7 @@ class Program
     public static void Main(string[] args)
     {
         TCmdOpts cmd = new TCmdOpts();
+
         new TAppSettingsManager(false);
 
         String YmlFileName, OutputDir;
