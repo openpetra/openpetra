@@ -79,7 +79,10 @@ ENDLOCAL
         <arg value="--resource=OpenPetra" />
         <arg value="--csharp" />
         <environment>
-          <variable name="PATH" path="${framework::get-framework-directory(framework::get-target-framework())}" />
+          <!-- /usr/bin/msgfmt: C# compiler not found, try installing pnet
+               solution: ln -s /usr/bin/gmcs /usr/bin/mcs
+          -->
+          <variable name="PATH" path="${environment::get-variable('PATH')}:${framework::get-framework-directory(framework::get-target-framework())}" />
           <variable name="GETTEXTCSHARPLIBDIR" value="${dir.bin}" />
           <variable name="TMPDIR" value="${tempdir}" />
         </environment>
