@@ -479,7 +479,7 @@ public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
         <ExecCmd program="sh" commandline="/C &quot;for f in ${setupDir}/*.sh; do dos2unix -o $f; done;&quot;"/>
         <ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}/etc30; ln -s PetraServerConsole-postgresql.config PetraServerConsole.config&quot;"/>
         
-        <ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}/..; tar czpf ${dir.delivery}/openpetraorg-mono-${ReleaseID}.tar.gz *&quot;"/>
+        <ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}/..; tar czpf ${dir.delivery}/openpetraorg-mono-${ReleaseID}.tar.gz openpetraorg-${ReleaseID}&quot;"/>
 
         <!-- to avoid problem with symbolic link with delete dir task -->
         <ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}/etc30; rm PetraServerConsole.config&quot;"/>
