@@ -166,7 +166,7 @@ namespace Ict.Tools.NAntTasks
                 throw new Exception("cannot start " + process.StartInfo.FileName + Environment.NewLine + exp.Message);
             }
 
-            string[] output = process.StandardOutput.ReadToEnd().Split('\n');
+            string[] output = process.StandardError.ReadToEnd().Split('\n');
 
             foreach (string line in output)
             {
