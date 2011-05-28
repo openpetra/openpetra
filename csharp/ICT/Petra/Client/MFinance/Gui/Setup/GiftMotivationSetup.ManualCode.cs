@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -58,9 +58,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
 //
                 TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber, true, false, false, false);
 
-                // including summary cost centres: this is useful for sponsoring children etc.
-                // TODO: system wide setting to only support posting costcentres or not
-                TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, false, false, false, true);
+                // Do not include summary cost centres: we want to use one cost centre for each Motivation Details
+                TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, false, true);
 //
 //                DataView myDataView = FMainDS.AMotivationDetail.DefaultView;
 //                myDataView.AllowNew = false;
