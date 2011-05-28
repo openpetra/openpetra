@@ -113,6 +113,10 @@ namespace Ict.Petra.Server.MPartner.Import
         /// </summary>
         public DateTime dateofbirth;
         /// <summary>
+        /// for the children
+        /// </summary>
+        public string parentname;
+        /// <summary>
         /// partner key of registration office
         /// </summary>
         public Int64 registrationoffice;
@@ -132,8 +136,32 @@ namespace Ict.Petra.Server.MPartner.Import
         /// relationship to the person which should be called if there are problems
         /// </summary>
         public string emergencyrelationship;
+        /// <summary>
+        /// used for de-CH, bus details
+        /// </summary>
+        public string busfrom;
+        /// used for fr-CH, bus details
+        public string travel;
         /// avoid default string when nothing gets entered
         public string groupwish;
+        /// avoid default string when nothing gets entered
+        public string jobwish1;
+        /// avoid default string when nothing gets entered
+        public string jobwish2;
+        /// avoid default string when nothing gets entered
+        public string jobwishpray;
+        /// avoid default string when nothing gets entered
+        public string dateofarrival;
+        /// has the applicant been here before?
+        public string numberprevconfparticipant;
+        /// has the applicant been here before?
+        public string numberprevconfadult;
+        /// has the applicant been here before?
+        public string numberprevconfleader;
+        /// has the applicant been here before?
+        public string numberprevconfhelper;
+        /// has the applicant been here before?
+        public string numberprevconf;
         /// <summary>
         /// last year's partner key
         /// </summary>
@@ -278,14 +306,11 @@ namespace Ict.Petra.Server.MPartner.Import
         /// create PDF
         public static string GeneratePDF(Int64 APartnerKey, string ACountryCode, TApplicationFormData AData, out string ADownloadIdentifier)
         {
-            string FileName = TAppSettingsManager.GetValue("Formletters.Path") +
-                              Path.DirectorySeparatorChar + "ApplicationPDF." + ACountryCode + "." + AData.formsid + ".html";
-
-            if (!File.Exists(FileName))
-            {
-                FileName = TAppSettingsManager.GetValue("Formletters.Path") +
-                           Path.DirectorySeparatorChar + "ApplicationPDF." + ACountryCode + ".html";
-            }
+            string FileName = TFormLettersTools.GetRoleSpecificFile(TAppSettingsManager.GetValue("Formletters.Path"),
+                "ApplicationPDF",
+                AData.registrationcountrycode,
+                AData.formsid,
+                "html");
 
             string HTMLText = string.Empty;
 
@@ -298,6 +323,12 @@ namespace Ict.Petra.Server.MPartner.Import
                 StreamReader r = new StreamReader(FileName);
                 HTMLText = r.ReadToEnd();
                 r.Close();
+            }
+
+            if (AData.existingpartnerkey.StartsWith("If you cannot find it"))
+            {
+                AData.RawData = AData.RawData.Replace(AData.existingpartnerkey, "N/A");
+                AData.existingpartnerkey = "";
             }
 
             if (AData.groupwish == null)
@@ -359,14 +390,11 @@ namespace Ict.Petra.Server.MPartner.Import
         /// send an email to the applicant and the registration office
         public static bool SendEmail(Int64 APartnerKey, string ACountryCode, TApplicationFormData AData, string APDFFilename)
         {
-            string FileName = TAppSettingsManager.GetValue("Formletters.Path") +
-                              Path.DirectorySeparatorChar + "ApplicationReceivedEmail." + ACountryCode + "." + AData.formsid + ".html";
-
-            if (!File.Exists(FileName))
-            {
-                FileName = TAppSettingsManager.GetValue("Formletters.Path") +
-                           Path.DirectorySeparatorChar + "ApplicationReceivedEmail." + ACountryCode + ".html";
-            }
+            string FileName = TFormLettersTools.GetRoleSpecificFile(TAppSettingsManager.GetValue("Formletters.Path"),
+                "ApplicationReceivedEmail",
+                AData.registrationcountrycode,
+                AData.formsid,
+                "html");
 
             string HTMLText = string.Empty;
             string SenderAddress = string.Empty;

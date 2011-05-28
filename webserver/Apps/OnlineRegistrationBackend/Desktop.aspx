@@ -112,6 +112,7 @@
                 <ext:ArrayReader>
                     <Fields>
                         <ext:RecordField Name="PartnerKey" />
+                        <ext:RecordField Name="PersonKey" />
                         <ext:RecordField Name="FirstName" />
                         <ext:RecordField Name="FamilyName" />
                         <ext:RecordField Name="Gender"/>
@@ -142,6 +143,17 @@
                     <Fields>
                         <ext:RecordField Name="StatusCode" />
                         <ext:RecordField Name="StatusDescription" />
+                    </Fields>
+                </ext:ArrayReader>
+            </Reader>
+        </ext:Store>
+
+        <ext:Store ID="StoreRegistrationOffice" runat="server" OnRefreshData="RegistrationOffice_Refresh">
+            <Reader>
+                <ext:ArrayReader>
+                    <Fields>
+                        <ext:RecordField Name="PartnerKey" />
+                        <ext:RecordField Name="PartnerShortName" />
                     </Fields>
                 </ext:ArrayReader>
             </Reader>
@@ -497,7 +509,9 @@
                                 <ext:ListItem Text="Cancelled" Value="cancelled" />
                             </Items>                        
                             <DirectEvents>
-                                <Select OnEvent="ChangeFilter"/>
+                                <Select OnEvent="ChangeFilter">
+                                  <EventMask ShowMask="true" Msg="Loading data..." MinDelay="1000" />
+                                </Select>
                             </DirectEvents>
                         </ext:ComboBox>
                         </td>
@@ -506,6 +520,53 @@
                                 <Change OnEvent="SearchApplicant"/>
                             </DirectEvents>
                         </ext:TextField>
+                        </td>
+                        </tr>
+                        <tr><td colspan="3">
+                        <ext:ComboBox 
+                            ID="FilterRegistrationOffice"
+                            runat="server" 
+                            FieldLabel="Filter by Registration Office" 
+                            Editable="false"
+                            ForceSelection="true"
+                            EmptyText="Filter by..."
+                            Mode="Local"
+                            Width="260"
+                            LabelWidth="150"
+                            StoreID="StoreRegistrationOffice"
+                            DisplayField="PartnerShortName"
+                            ValueField="PartnerKey"
+                            SelectOnFocus="true"
+                            SelectedIndex = "0">
+                            <DirectEvents>
+                                <Select OnEvent="ChangeFilter">
+                                  <EventMask ShowMask="true" Msg="Loading data..." MinDelay="1000" />
+                                </Select>
+                            </DirectEvents>
+                        </ext:ComboBox>
+                        </td>
+                        <td colspan="3">
+                        <ext:ComboBox 
+                            ID="FilterRole"
+                            runat="server" 
+                            FieldLabel="Filter by Role"
+                            Editable="false"
+                            ForceSelection="true"
+                            EmptyText="Filter by..."
+                            Mode="Local"
+                            Width="260"
+                            LabelWidth="150"
+                            StoreID="StoreRole"
+                            DisplayField="RoleCode"
+                            ValueField="RoleCode"
+                            SelectOnFocus="true"
+                            SelectedIndex = "0">
+                            <DirectEvents>
+                                <Select OnEvent="ChangeFilter">
+                                  <EventMask ShowMask="true" Msg="Loading data..." MinDelay="1000" />
+                                </Select>
+                            </DirectEvents>
+                        </ext:ComboBox>
                         </td>
                         </tr>
                         <tr>
@@ -548,7 +609,7 @@
                     <ColumnModel runat="server">
                         <Columns>
                             <ext:RowNumbererColumn />
-                            <ext:Column Header="Person Key" Width="80" DataIndex="PartnerKey"/>
+                            <ext:Column Header="Registration Key" Width="80" DataIndex="PartnerKey"/>
                             <ext:Column ColumnID="FamilyName" Header="Family Name" Width="90" DataIndex="FamilyName" />
                             <ext:Column Header="First Name" Width="90" DataIndex="FirstName"/>
                             <ext:Column Header="Gender" Width="90" DataIndex="Gender"/>
@@ -594,9 +655,10 @@
                     Margins="0 5 5 5"
                     Title="Application Details" 
                     Height="280"
+                    Layout="Border"
                     Icon="User">
                     <Items>
-                        <ext:Toolbar ID="ToolBar1" runat="server">
+                        <ext:Toolbar ID="ToolBar1" runat="server" Region="North" AutoHeight="true">
                             <Items>
                                 <ext:Button ID="btnSave" runat="server" Text="Save" Icon="Disk">
                                     <DirectEvents>
@@ -610,119 +672,153 @@
                                 </ext:Button>
                             </Items>
                         </ext:Toolbar>
-                        <ext:Container runat="server" Height="400" Width="800">
+                        <ext:TabPanel ID="TabPanelApplication" runat="server" Region="Center" EnableTabScroll="true">   
                           <Items>
-                            <ext:TabPanel ID="TabPanelApplication" runat="server" Height="500" Width="800" EnableTabScroll="true">   
+                            <ext:Panel ID="TabApplicantDetails" runat="server" Title="Applicant Details" AutoScroll="true">
                               <Items>
-                                <ext:Panel ID="TabApplicantDetails" runat="server" Title="Applicant Details" Padding="5">
-                                  <Items>
-                                    <ext:Container runat="server" Layout="Column" Height="400">
+                                <ext:BorderLayout runat="server">
+                                  <Center>
+                                    <ext:Container runat="server" LabelAlign="Left" Layout="Form">
                                       <Items>
-                                        <ext:Container runat="server" LabelAlign="Left" Layout="Form" ColumnWidth=".7">
+                                        <ext:TextField ID="PartnerKey" runat="server" FieldLabel="Registration Key" DataIndex="PartnerKey" ReadOnly="true"/>
+                                        <ext:TextField ID="PersonKey" runat="server" FieldLabel="Petra Person Key" DataIndex="PersonKey" ReadOnly="true"/>
+                                        <ext:TextField ID="FirstName" runat="server" FieldLabel="First Name" DataIndex="FirstName" />
+                                        <ext:TextField ID="FamilyName" runat="server" FieldLabel="Family Name" DataIndex="FamilyName" />
+                                        <ext:ComboBox 
+                                            ID="Gender"
+                                            runat="server" 
+                                            FieldLabel="Gender" 
+                                            DataIndex="Gender"
+                                            Editable="false"
+                                            TypeAhead="true" 
+                                            ForceSelection="true"
+                                            EmptyText="Select a gender..."
+                                            Mode="Local"
+                                            Resizable="true"
+                                            SelectOnFocus="true">
                                             <Items>
-                                              <ext:TextField ID="FirstName" runat="server" FieldLabel="First Name" DataIndex="FirstName" />
-                                              <ext:TextField ID="FamilyName" runat="server" FieldLabel="Family Name" DataIndex="FamilyName" />
-                                              <ext:ComboBox 
-                                                  ID="Gender"
-                                                  runat="server" 
-                                                  FieldLabel="Gender" 
-                                                  DataIndex="Gender"
-                                                  Editable="false"
-                                                  TypeAhead="true" 
-                                                  ForceSelection="true"
-                                                  EmptyText="Select a gender..."
-                                                  Mode="Local"
-                                                  Resizable="true"
-                                                  SelectOnFocus="true">
-                                                  <Items>
-                                                      <ext:ListItem Text="Male" Value="Male" />
-                                                      <ext:ListItem Text="Female" Value="Female" />
-                                                      <ext:ListItem Text="Unknown" Value="Unknown" />
-                                                  </Items>                        
-                                              </ext:ComboBox>
-                                              <ext:DateField ID="DateOfBirth" runat="server" FieldLabel="Date of Birth" DataIndex="DateOfBirth" Format="dd-MMM-yyyy"/>
-                                              <ext:DateField ID="GenAppDate" runat="server" FieldLabel="Date of Application" DataIndex="GenAppDate" Format="dd-MMM-yyyy" />
-                                              <ext:ComboBox 
-                                                  ID="GenApplicationStatus"
-                                                  runat="server" 
-                                                  FieldLabel="Application Status" 
-                                                  DataIndex="GenApplicationStatus"
-                                                  StoreID="StoreApplicationStatus"
-                                                  Editable="false"
-                                                  TypeAhead="true" 
-                                                  ForceSelection="true"
-                                                  EmptyText="Select a status..."
-                                                  DisplayField="StatusDescription"
-                                                  ValueField="StatusCode"
-                                                  Mode="Local"
-                                                  Width="300"
-                                                  Resizable="true"
-                                                  SelectOnFocus="true"                            
-                                              />
-                                              <ext:ComboBox 
-                                                  ID="StCongressCode"
-                                                  runat="server" 
-                                                  FieldLabel="Role" 
-                                                  DataIndex="StCongressCode"
-                                                  StoreID="StoreRole"
-                                                  Editable="false"
-                                                  TypeAhead="true" 
-                                                  ForceSelection="true"
-                                                  EmptyText="Select a role..."
-                                                  DisplayField="RoleCode"
-                                                  ValueField="RoleCode"
-                                                  Mode="Local"
-                                                  Resizable="true"
-                                                  SelectOnFocus="true"                            
-                                              />
-                                              <ext:TextArea
-                                                  ID="Comment"
-                                                  runat="Server"
-                                                  Width="300"
-                                                  FieldLabel="Comment By Registration Office"
-                                                  />
-                                              <ext:CheckBox
-                                                  ID="StFgLeader"
-                                                  runat="Server"
-                                                  FieldLabel="Fellowship Group Leader"
-                                                  />
-                                              <ext:TextField
-                                                  ID="StFgCode"
-                                                  runat="Server"
-                                                  FieldLabel="Fellowship Group Code"
-                                                  />
-                                            </Items>
-                                        </ext:Container>
-                                        <ext:Container runat="server" LabelAlign="Top" Layout="Form" ColumnWidth=".3">
-                                            <Items>
-                                                <ext:Image ID="Image1" runat="server"
-                                                        Width="100"
-                                                        ImageUrl="../../img/default_blank.gif"
-                                                    >
-                                                    <Listeners>
-                                                    </Listeners>
-                                                </ext:Image>   
-                                                <ext:Button ID="btnUpload" runat="server" Text="Upload new Photo" Icon="Disk">
-                                                    <Listeners>
-                                                        <Click Handler="#{winUploadPhoto}.show();" />
-                                                    </Listeners>
-                                                </ext:Button>
-                                            </Items>
-                                        </ext:Container>
+                                                <ext:ListItem Text="Male" Value="Male" />
+                                                <ext:ListItem Text="Female" Value="Female" />
+                                                <ext:ListItem Text="Unknown" Value="Unknown" />
+                                            </Items>                        
+                                        </ext:ComboBox>
+                                        <ext:DateField ID="DateOfBirth" runat="server" FieldLabel="Date of Birth" DataIndex="DateOfBirth" Format="dd-MMM-yyyy"/>
+                                        <ext:DateField ID="GenAppDate" runat="server" FieldLabel="Date of Application" DataIndex="GenAppDate" Format="dd-MMM-yyyy" />
+                                        <ext:ComboBox 
+                                            ID="GenApplicationStatus"
+                                            runat="server" 
+                                            FieldLabel="Application Status" 
+                                            DataIndex="GenApplicationStatus"
+                                            StoreID="StoreApplicationStatus"
+                                            Editable="false"
+                                            TypeAhead="true" 
+                                            ForceSelection="true"
+                                            EmptyText="Select a status..."
+                                            DisplayField="StatusDescription"
+                                            ValueField="StatusCode"
+                                            Mode="Local"
+                                            Width="300"
+                                            Resizable="true"
+                                            SelectOnFocus="true"                            
+                                        />
+                                        <ext:ComboBox 
+                                            ID="StCongressCode"
+                                            runat="server" 
+                                            FieldLabel="Role" 
+                                            DataIndex="StCongressCode"
+                                            StoreID="StoreRole"
+                                            Editable="false"
+                                            TypeAhead="true" 
+                                            ForceSelection="true"
+                                            EmptyText="Select a role..."
+                                            DisplayField="RoleCode"
+                                            ValueField="RoleCode"
+                                            Mode="Local"
+                                            Resizable="true"
+                                            SelectOnFocus="true"                            
+                                        />
+                                        <ext:ComboBox 
+                                            ID="TShirtStyle"
+                                            runat="server" 
+                                            FieldLabel="T-Shirt Style" 
+                                            DataIndex="TShirtStyle"
+                                            Editable="false"
+                                            TypeAhead="true" 
+                                            ForceSelection="true"
+                                            Mode="Local"
+                                            Resizable="true"
+                                            SelectOnFocus="true">
+                                          <Items>
+                                              <ext:ListItem Text="M (Boys Cut)" Value="M (Boys Cut)" />
+                                              <ext:ListItem Text="F (Girls Cut)" Value="F (Girls Cut)" />
+                                          </Items>   
+                                        </ext:ComboBox>
+                                        <ext:ComboBox 
+                                            ID="TShirtSize"
+                                            runat="server" 
+                                            FieldLabel="T-Shirt Size" 
+                                            DataIndex="TShirtSize"
+                                            Editable="false"
+                                            TypeAhead="true" 
+                                            ForceSelection="true"
+                                            Mode="Local"
+                                            Resizable="true"
+                                            SelectOnFocus="true">
+                                          <Items>
+                                              <ext:ListItem Text="S (Small)" />
+                                              <ext:ListItem Text="M (Medium)" />
+                                              <ext:ListItem Text="L (Large)" />
+                                              <ext:ListItem Text="XL (Very Large)" />
+                                          </Items>   
+                                        </ext:ComboBox>
+                                        <ext:TextArea
+                                            ID="Comment"
+                                            runat="Server"
+                                            Width="300"
+                                            FieldLabel="Comment By Registration Office"
+                                            />
+                                        <ext:CheckBox
+                                            ID="StFgLeader"
+                                            runat="Server"
+                                            FieldLabel="Fellowship Group Leader"
+                                            />
+                                        <ext:TextField
+                                            ID="StFgCode"
+                                            runat="Server"
+                                            FieldLabel="Fellowship Group Code"
+                                            />
                                       </Items>
                                     </ext:Container>
-                                  </Items>
-                                </ext:Panel>
-                                <ext:Panel ID="TabRawApplicationData" runat="server" Title="Data Entered" Padding="5" AutoScroll="true">
-                                  <DirectEvents>
-                                      <Show OnEvent="ShowRawApplicationData"/>
-                                  </DirectEvents>
-                                </ext:Panel>
-                              </Items>
-                            </ext:TabPanel>
+                                  </Center>
+                                  <East>
+                                    <ext:Container runat="server" LabelAlign="Top" Layout="Form" ColumnWidth=".3">                                          
+                                      <Items>
+                                        <ext:Image ID="Image1" runat="server"
+                                                Width="100"
+                                                ImageUrl="../../img/default_blank.gif"
+                                            >
+                                            <Listeners>
+                                            </Listeners>
+                                        </ext:Image>   
+                                        <ext:Button ID="btnUpload" runat="server" Text="Upload new Photo" Icon="Disk">
+                                            <Listeners>
+                                                <Click Handler="#{winUploadPhoto}.show();" />
+                                            </Listeners>
+                                        </ext:Button>
+                                      </Items>
+                                    </ext:Container>
+                                  </East>
+                                </ext:BorderLayout>
+                                </Items>
+                            </ext:Panel>
+                            <ext:Panel ID="TabRawApplicationData" runat="server" Title="Data Entered" AutoScroll="true">
+                              <DirectEvents>
+                                  <Show OnEvent="ShowRawApplicationData"/>
+                              </DirectEvents>
+                            </ext:Panel>
                           </Items>
-                        </ext:Container>
-                        
+                        </ext:TabPanel>
+                              
                      </Items>
                 </ext:FormPanel>
             </Items>

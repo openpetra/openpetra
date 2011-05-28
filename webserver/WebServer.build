@@ -48,10 +48,10 @@
     </fileset>
   </copy>
   
-  <get src="http://extjs.cachefly.net/ext-3.2.1/adapter/ext/ext-base.js" dest="${dir.webserver}/js/ext-base.js"/>
-  <get src="http://extjs.cachefly.net/ext-3.2.1/ext-all.js" dest="${dir.webserver}/js/ext-all.js"/>
-  <get src="http://extjs.cachefly.net/ext-3.2.1/ext-all-debug.js" dest="${dir.webserver}/js/ext-all-debug.js"/>
-  <get src="http://extjs.cachefly.net/ext-3.2.1/resources/css/ext-all.css" dest="${dir.webserver}/css/ext-all.css"/>
+  <get src="http://extjs.cachefly.net/ext-3.3.1/adapter/ext/ext-base.js" dest="${dir.webserver}/js/ext-base.js"/>
+  <get src="http://extjs.cachefly.net/ext-3.3.1/ext-all.js" dest="${dir.webserver}/js/ext-all.js"/>
+  <get src="http://extjs.cachefly.net/ext-3.3.1/ext-all-debug.js" dest="${dir.webserver}/js/ext-all-debug.js"/>
+  <get src="http://extjs.cachefly.net/ext-3.3.1/resources/css/ext-all.css" dest="${dir.webserver}/css/ext-all.css"/>
   <unzip zipfile="${dir.root}/csharp/ThirdParty/extjs/ext-images-default.zip" todir="${dir.webserver}/images"/>
   <unzip zipfile="${dir.root}/csharp/ThirdParty/extjs/ext-lang.zip" todir="${dir.webserver}/js"/>
 
@@ -144,6 +144,8 @@
 
     <fileset basedir="${dir.root}/demodata/formletters" prefix="formletters">
       <include name="*.*" />
+      <exclude name="*.bak"/>
+      <exclude name="*.~*"/>
     </fileset>
   </zip>
   <delete file="${tempdir}/web-sample.config"/>
@@ -160,6 +162,8 @@
       <fileset basedir="${dir.root}/demodata/formletters">
         <include name="ApplicationPDF.${country}*.*" />
         <include name="ApplicationReceivedEmail.${country}*.*" />
+        <exclude name="*.bak"/>
+        <exclude name="*.~*"/>
       </fileset>
     </copy>
     <copy todir="${dir.delivery}/translationPack/${country}" overwrite="true">
@@ -168,11 +172,15 @@
         <include name="main.${country}*.*" />
         <exclude name="*-template.js" />
         <exclude name="*.yaml.xml" />
+        <exclude name="*.bak"/>
+        <exclude name="*.~*"/>
       </fileset>
     </copy>
     <copy todir="${dir.delivery}/translationPack/${country}" overwrite="true">
       <fileset basedir="${dir.root}/webserver/Apps/OnlineRegistration/doc">
         <include name="*${country}*.*" />
+        <exclude name="*.bak"/>
+        <exclude name="*.~*"/>
       </fileset>
     </copy>
     <!-- todo: country index.html for docs??? -->
@@ -214,11 +222,15 @@
   <move file="${source}/main.${country-id}.coach.txt" tofile="${destination}/main.${country-id}.coach.yaml" overwrite="true" failonerror="false"/>
   <move file="${source}/main.${country-id}.pray.txt" tofile="${destination}/main.${country-id}.pray.yaml" overwrite="true" failonerror="false"/>
   <move file="${source}/main.${country-id}.mm.txt" tofile="${destination}/main.${country-id}.mm.yaml" overwrite="true" failonerror="false"/>
+  <move file="${source}/main.${country-id}.staff.txt" tofile="${destination}/main.${country-id}.staff.yaml" overwrite="true" failonerror="false"/>
+  <move file="${source}/main.${country-id}.child.txt" tofile="${destination}/main.${country-id}.child.yaml" overwrite="true" failonerror="false"/>
   <move file="${source}/main.${country-id}-lang.txt" tofile="${destination}/main.${country-id}-lang.js" overwrite="true" failonerror="false"/>
   <move file="${source}/ApplicationReceivedEmail.${country-id}.txt" tofile="${formletterspath}/ApplicationReceivedEmail.${country-id}.html" overwrite="true" failonerror="false"/>
   <move file="${source}/ApplicationReceivedEmail.${country-id}.adult.txt" tofile="${formletterspath}/ApplicationReceivedEmail.${country-id}.adult.html" overwrite="true" failonerror="false"/>
   <move file="${source}/ApplicationPDF.${country-id}.txt" tofile="${formletterspath}/ApplicationPDF.${country-id}.html" overwrite="true" failonerror="false"/>
   <move file="${source}/ApplicationPDF.${country-id}.adult.txt" tofile="${formletterspath}/ApplicationPDF.${country-id}.adult.html" overwrite="true" failonerror="false"/>
+  <move file="${source}/ApplicationPDF.${country-id}.child.txt" tofile="${formletterspath}/ApplicationPDF.${country-id}.child.html" overwrite="true" failonerror="false"/>
+  <move file="${source}/ApplicationPDF.${country-id}.staff.txt" tofile="${formletterspath}/ApplicationPDF.${country-id}.staff.html" overwrite="true" failonerror="false"/>
   <move file="${source}/dresscode.${country-id}.txt" tofile="${destination}/doc/dresscode.${country-id}.html" overwrite="true" failonerror="false"/>
   <move file="${source}/CLS.${country-id}.txt" tofile="${destination}/doc/CLS.${country-id}.html" overwrite="true" failonerror="false"/>
   
