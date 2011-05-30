@@ -72,7 +72,7 @@ namespace Ict.Petra.Server.MConference.Applications
             // if there are no REG-... module permissions for anyone, allow all offices? this would help with a base database for testing?
             Int32 CountRegModules =
                 Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM " + SModuleTable.GetTableDBName() + " WHERE " +
-                        SModuleTable.GetModuleNameDBName() + " LIKE 'REG-%'", ATransaction));
+                        SModuleTable.GetModuleIdDBName() + " LIKE 'REG-%'", ATransaction));
 
             foreach (DataRow officeRow in offices.Rows)
             {
