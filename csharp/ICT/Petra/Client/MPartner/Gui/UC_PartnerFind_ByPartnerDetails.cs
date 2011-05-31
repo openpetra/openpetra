@@ -1755,10 +1755,22 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 		private void OpenDonorRecipientHistory(String Name)
 		{
-			 this.Cursor = Cursors.WaitCursor;
+			 if ( PartnerKey == -1)
+			 {
+			 	
+			 	MessageBox.Show(Catalog.GetString("No current partner seleted"));
+			 	return;
+			}
+			//this.Cursor = Cursors.WaitCursor;
 			 Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory frmDRH = new  Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory(this.Handle);
-			frmDRH.Show();
-			this.Cursor = Cursors.Default;	
+			
+			 	
+			 if (Name.Equals("mniMaintainDonorHistory"))
+			     frmDRH.Donor= PartnerKey;
+			 else
+			 	frmDRH.Recipient= PartnerKey;
+			 frmDRH.Show();
+			//this.Cursor = Cursors.Default;	
 		}
 		
 			

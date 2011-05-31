@@ -23,6 +23,7 @@
 //
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 
@@ -457,7 +458,111 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             return MainDS;
         }
+		  /// <summary>
+        /// loads a list of gift transactions and details for the given ledger and batch
+        /// </summary>
+        /// <param name="requestParams"></param>
+        /// <param name="AMessages"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GiftBatchTDS LoadDonorRecipientHistory( Hashtable requestParams,
+                         out TVerificationResultCollection AMessages)
+        {
+            GiftBatchTDS MainDS = new GiftBatchTDS();
+            TDBTransaction Transaction = null;
+            AMessages = new TVerificationResultCollection();
+			long Recipient = (Int64)requestParams["Recipient"];
+			long Donor = (Int64)requestParams["Donor"];
+            try
+            {
+                Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+                // Case 1 : DOnor Given : go via AGift
+                // Case 2 : Recipient given go via AGiftDetail
+                // Case 3 : Both given ?
 
+                //AGiftAccess.LoadViaAGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                if (Recipient >0)
+                { //Case 2, Case 3
+
+                	AGiftDetailAccess.LoadViaPPartnerRecipientKey(MainDS,Recipient,Transaction);
+                	foreach (GiftBatchTDSAGiftDetailRow giftDetail in MainDS.AGiftDetail.Rows)
+                	{
+                		if (Donor == 0)
+                		{
+                		AGiftAccess.LoadByPrimaryKey(MainDS, giftDetail.LedgerNumber, giftDetail.BatchNumber,giftDetail.GiftTransactionNumber, Transaction);
+                		}
+                		else
+                		{
+                			//TODO Case 3 
+                		}
+                	}
+                }
+                else //Case 1 
+                {
+                	AGiftAccess.LoadViaPPartner(MainDS, Donor, Transaction);
+                	foreach ( AGiftRow giftRow in MainDS.AGift.Rows)
+                	{
+                		AGiftDetailAccess.LoadViaAGift(MainDS,giftRow.LedgerNumber,giftRow.BatchNumber,giftRow.GiftTransactionNumber,Transaction);
+                	}
+                }
+                	
+
+                DataView giftView = new DataView(MainDS.AGift);
+
+                // fill the columns in the modified GiftDetail Table to show donorkey, dateentered etc in the grid
+                foreach (GiftBatchTDSAGiftDetailRow giftDetail in MainDS.AGiftDetail.Rows)
+                {
+                    // get the gift
+                    giftView.RowFilter = AGiftTable.GetGiftTransactionNumberDBName() + " = " + giftDetail.GiftTransactionNumber.ToString();
+
+                    AGiftRow giftRow = (AGiftRow)giftView[0].Row;
+
+                    StringCollection shortName = new StringCollection();
+                    shortName.Add(PPartnerTable.GetPartnerShortNameDBName());
+                    shortName.Add(PPartnerTable.GetPartnerClassDBName());
+                    PPartnerTable partner = PPartnerAccess.LoadByPrimaryKey(giftRow.DonorKey, shortName, Transaction);
+
+                    giftDetail.DonorKey = giftRow.DonorKey;
+                    giftDetail.DonorName = partner[0].PartnerShortName;
+                    giftDetail.DonorClass = partner[0].PartnerClass;
+                    giftDetail.MethodOfGivingCode = giftRow.MethodOfGivingCode;
+                    giftDetail.MethodOfPaymentCode = giftRow.MethodOfPaymentCode;
+                    giftDetail.ReceiptNumber = giftRow.ReceiptNumber;
+                    giftDetail.ReceiptPrinted = giftRow.ReceiptPrinted;
+                    giftDetail.Reference = giftRow.Reference;
+                    // This may be not very fast we can optimize later
+                    Ict.Petra.Shared.MPartner.Partner.Data.PUnitTable unitTable = null;
+
+
+                    //do the same for the Recipient
+                    partner.Clear();
+                    Int64 fieldNumber;
+
+                    LoadKeyMinistryInsideTrans(ref Transaction, ref unitTable, ref partner, giftDetail.RecipientKey, out fieldNumber);
+                    giftDetail.RecipientField = fieldNumber;
+
+                    //partner = PPartnerAccess.LoadByPrimaryKey(giftDetail.RecipientKey, shortName, Transaction);
+                    if (partner.Count > 0)
+                    {
+                        giftDetail.RecipientDescription = partner[0].PartnerShortName;
+                    }
+                    else
+                    {
+                        giftDetail.RecipientDescription = "INVALID";
+                    }
+
+                    giftDetail.DateEntered = giftRow.DateEntered;
+                }
+            }
+            finally
+            {
+                if (Transaction != null)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+            }
+            return MainDS;
+        }	
         /// <summary>
         /// loads a list of recurring gift transactions and details for the given ledger and recurring batch
         /// </summary>

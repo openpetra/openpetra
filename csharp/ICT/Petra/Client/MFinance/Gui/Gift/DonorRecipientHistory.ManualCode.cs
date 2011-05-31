@@ -29,8 +29,10 @@ using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
+
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
@@ -39,11 +41,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     /// </summary>
     public partial class TFrmDonorRecipientHistory
     {
-        private Int32 FPartnerKey;
+        private long FDonor=0;
         
-		public int PartnerKey 
+		public long Donor 
 		{
-			set { FPartnerKey = value; } //injected
+			set { FDonor = value; 
+			txtDonor.Text = String.Format("{0:0000000000}", value);
+			} //injected
+			
+		}
+		
+        private long FRecipient=0;
+        
+		public long Recipient 
+		{
+			set {
+				FRecipient = value;
+				txtRecipient.Text = String.Format("{0:0000000000}", value);
+			
+			} //injected
 			
 		}
 
@@ -58,9 +74,40 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void InitializeManualCode()
         {
-        	//TODO
+        	
+        	browse();
+        	
         }
+        private void browse()
+        {
+        	TVerificationResultCollection AMessages;
+        	Hashtable requestParams = new Hashtable();
+			long donor=	Convert.ToInt64(txtDonor.Text);
+			long recipient=Convert.ToInt64(txtRecipient.Text);
+			if (donor==0 && recipient == 0)
+			{
+				 MessageBox.Show(Catalog.GetString("You have to restrict via donor or via recipient"));
+				 return;
+			}
+        	 requestParams.Add("Donor", donor);
+        	 requestParams.Add("Recipient", recipient);
+             requestParams.Add("From", dtpDateFrom.Text);
+             requestParams.Add("To", dtpDateTo);
 
+                     GiftBatchTDS newTDS = TRemote.MFinance.Gift.WebConnectors.LoadDonorRecipientHistory(
+                        requestParams,
+                         out AMessages);
+                      
+            if (AMessages != null && AMessages.Count>0)
+            {
+           
+                MessageBox.Show(Messages.BuildMessageFromVerificationResult(Catalog.GetString("Error calling Donnor/Recipient history"), AMessages));
+            }
+            else
+            	FMainDS=newTDS;
+            	
+            
+        }
     
 
         private void BtnCloseClick(object sender, EventArgs e)
@@ -75,7 +122,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         
         private void BtnViewClick(object sender, EventArgs e)
         {
-            // TODO
+            // TODO Pop up a "normal" gift batch/gift/Giftdetail window where the gift shown this table and selected is selected
+            // all the details are disabled (readonly)
         }
 
        

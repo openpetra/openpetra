@@ -27,10 +27,15 @@ namespace {#NAMESPACE}
   public partial class {#CLASSNAME}: System.Windows.Forms.Form, {#INTERFACENAME}
   {
     private {#UTILOBJECTCLASS} FPetraUtilsObject;
+{#IFDEF DATASETTYPE}
+    private {#DATASETTYPE} FMainDS;
+{#ENDIF DATASETTYPE}
+{#IFNDEF DATASETTYPE}
     private class FMainDS
     {
         public static {#DETAILTABLE}Table {#DETAILTABLE};
     }
+{#ENDIFN DATASETTYPE}    
     /// constructor
     public {#CLASSNAME}(IntPtr AParentFormHandle) : base()
     {
@@ -47,11 +52,16 @@ namespace {#NAMESPACE}
       {#ASSIGNFONTATTRIBUTES}
       
       FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentFormHandle, this, stbMain);
-      {#INITUSERCONTROLS}
-      FMainDS.{#DETAILTABLE} = new {#DETAILTABLE}Table();
+{#IFDEF DATASETTYPE}
+      FMainDS = new {#DATASETTYPE}();
+{#ENDIF DATASETTYPE}
+      {#INITUSERCONTROLS}    
+{#IFNDEF DATASETTYPE}      
+      FMainDS.{#DETAILTABLE} = new {#DETAILTABLE}Table();   
       Ict.Common.Data.TTypedDataTable TypedTable;
       TRemote.MCommon.DataReader.GetData({#DETAILTABLE}Table.GetTableDBName(), null, out TypedTable);
       FMainDS.{#DETAILTABLE}.Merge(TypedTable);
+{#ENDIFN DATASETTYPE}      
       {#INITMANUALCODE}
 {#IFDEF ACTIONENABLING}
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
