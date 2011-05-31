@@ -358,7 +358,8 @@ namespace Ict.Petra.Server.App.Main
             // Server.ODBC_DSN
             ODBCDsnAppSetting = TAppSettingsManager.GetValue("Server.ODBC_DSN", false);
 
-            string DatabaseHostOrFile = TAppSettingsManager.GetValue("Server.DBHostOrFile", "localhost");
+            string DatabaseHostOrFile = TAppSettingsManager.GetValue("Server.DBHostOrFile", "localhost").
+                                        Replace("{userappdata}", Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
             string DatabasePort = TAppSettingsManager.GetValue("Server.DBPort", "5432");
             string DatabaseName = TAppSettingsManager.GetValue("Server.DBName", "openpetra");
             string DatabaseUserName = TAppSettingsManager.GetValue("Server.DBUserName", "petraserver");
@@ -640,6 +641,23 @@ namespace Ict.Petra.Server.App.Main
         /// </summary>
         private void UpdateSQLiteDatabase(TFileVersionInfo ADBVersion, TFileVersionInfo AExeVersion)
         {
+            // there have been drastic changes to the database after 0.2.8-1, which means we have to start with a clean database
+            // otherwise there are definitely errors with the s_login sequence, and outreach tables might cause a problem as well
+            if (ADBVersion.Compare(new TFileVersionInfo("0.2.8-1")) == 0)
+            {
+                DBAccess.GDBAccessObj.CloseDBConnection();
+
+                TLogging.Log("Please find your old data in " + TFileHelper.MoveToBackup(TSrvSetting.PostgreSQLServer));
+
+                DBAccess.GDBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
+                    TSrvSetting.PostgreSQLServer,
+                    TSrvSetting.PostgreSQLServerPort,
+                    TSrvSetting.PostgreSQLDatabaseName,
+                    TSrvSetting.DBUsername,
+                    TSrvSetting.DBPassword,
+                    "");
+            }
+
             string dbpatchfilePath = Path.GetDirectoryName(TAppSettingsManager.GetValue("Server.SQLiteBaseFile"));
 
             TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
