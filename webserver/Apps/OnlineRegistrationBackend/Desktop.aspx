@@ -1,5 +1,6 @@
 <%@ Page Language="C#"
     Inherits="Ict.Petra.WebServer.MConference.TPageOnlineApplication"
+    validateRequest="false"
     src="Desktop.aspx.cs" %>
 
 <%@ Register assembly="Ext.Net" namespace="Ext.Net" tagprefix="ext" %>

@@ -310,37 +310,94 @@ namespace Ict.Petra.WebServer.MConference
             string RawData = TApplicationManagement.GetRawApplicationData(row.PartnerKey, row.ApplicationKey, row.RegistrationOffice);
             TabRawApplicationData.Html = TJsonTools.DataToHTMLTable(RawData);
 
+            Ext.Net.Panel panel = this.X().Panel()
+                                  .ID("TabMoreDetails")
+                                  .Title("Edit more details")
+                                  .Padding(5)
+                                  .AutoScroll(true);
+            panel.Render("TabPanelApplication", 1, RenderMode.InsertTo);
+
+            Ext.Net.Label label = this.X().Label()
+                                  .ID("lblWarningEdit")
+                                  .Html(
+                "<b>Please be very careful</b>, only edit data if you are sure. Drop Down boxes or Dates might not work anymore.<br/><br/>");
+
+            label.Render("TabMoreDetails", RenderMode.AddTo);
+
             Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(RawData);
 
-            string TShirtStyle = String.Empty;
-            string TShirtSize = String.Empty;
+            var dictionary = new Dictionary <string, object>();
+            dictionary.Add("PartnerKey", row.PartnerKey);
+            dictionary.Add("PersonKey", row.IsPersonKeyNull() ? "" : row.PersonKey.ToString());
+            dictionary.Add("FirstName", row.FirstName);
+            dictionary.Add("FamilyName", row.FamilyName);
+            dictionary.Add("Gender", row.Gender);
+            dictionary.Add("DateOfBirth", row.DateOfBirth);
+            dictionary.Add("GenAppDate", row.GenAppDate);
+            dictionary.Add("GenApplicationStatus", row.GenApplicationStatus);
+            dictionary.Add("StCongressCode", row.StCongressCode);
+            dictionary.Add("Comment", row.Comment);
+            dictionary.Add("StFgLeader", row.StFgLeader);
+            dictionary.Add("StFgCode", row.StFgCode);
 
-            try
+            List <string>FieldsOnFirstTab = new List <string>(new string[] {
+                                                                  "TShirtStyle", "TShirtSize"
+                                                              });
+
+            foreach (string key in rawDataObject.Names)
             {
-                TShirtStyle = rawDataObject["TShirtStyle"].ToString();
-                TShirtSize = rawDataObject["TShirtSize"].ToString();
-            }
-            catch
-            {
-                // exhibitors and late applicants do not have tshirt size and style
+                if (!dictionary.ContainsKey(key)
+                    && FieldsOnFirstTab.Contains(key))
+                {
+                    dictionary.Add(key, rawDataObject[key]);
+                }
             }
 
-            this.FormPanel1.SetValues(new {
-                    row.PartnerKey,
-                    PersonKey = row.IsPersonKeyNull() ? "" : row.PersonKey.ToString(),
-                    row.FirstName,
-                    row.FamilyName,
-                    row.Gender,
-                    row.DateOfBirth,
-                    row.GenAppDate,
-                    row.GenApplicationStatus,
-                    row.StCongressCode,
-                    TShirtStyle = TShirtStyle,
-                    TShirtSize = TShirtSize,
-                    row.Comment,
-                    row.StFgLeader,
-                    row.StFgCode
-                });
+            List <string>FieldsNotToBeEdited = new List <string>(new string[] {
+                                                                     "Role", "FormsId", "EventIdentifier", "RegistrationOffice", "LastName",
+                                                                     "RegistrationCountryCode", "ImageID",
+                                                                     "CLS", "Dresscode", "LegalImprint"
+                                                                 });
+
+            foreach (string key in rawDataObject.Names)
+            {
+                if (!dictionary.ContainsKey(key)
+                    && !FieldsNotToBeEdited.Contains(key)
+                    && !FieldsOnFirstTab.Contains(key)
+                    && !key.EndsWith("_SelIndex")
+                    && !key.EndsWith("_Value")
+                    && !key.EndsWith("_ActiveTab"))
+                {
+                    dictionary.Add(key, rawDataObject[key]);
+
+                    if (rawDataObject[key].ToString().Length > 40)
+                    {
+                        TextArea text = this.X().TextArea()
+                                        .ID(key)
+                                        .LabelWidth(200)
+                                        .Width(700)
+                                        .Height(150)
+                                        .FieldLabel(key);
+
+                        text.Render("TabMoreDetails", RenderMode.AddTo);
+                    }
+                    else
+                    {
+                        TextField text = this.X().TextField()
+                                         .ID(key)
+                                         .LabelWidth(200)
+                                         .Width(500)
+                                         .FieldLabel(key);
+
+                        text.Render("TabMoreDetails", RenderMode.AddTo);
+                    }
+                }
+            }
+
+            // SetValues: new {}; anonymous type: http://msdn.microsoft.com/en-us/library/bb397696.aspx
+            // instead a Dictionary can be used as well
+            // See also StackOverflow ObjectExtensions::ToDictionary for converting an anonymous type to a dictionary
+            this.FormPanel1.SetValues(dictionary);
 
             Random rand = new Random();
             Image1.ImageUrl = "photos.aspx?id=" + PartnerKey.ToString() + ".jpg&" + rand.Next(1, 10000).ToString();
@@ -362,8 +419,27 @@ namespace Ict.Petra.WebServer.MConference
             string RawData = TApplicationManagement.GetRawApplicationData(row.PartnerKey, row.ApplicationKey, row.RegistrationOffice);
             Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(RawData);
 
-            rawDataObject["TShirtStyle"] = values["TShirtStyle"];
-            rawDataObject["TShirtSize"] = values["TShirtSize"];
+            foreach (string key in values.Keys)
+            {
+                // TODO: typecast dates?
+                object value = values[key];
+
+                if (rawDataObject.Contains(key))
+                {
+                    rawDataObject[key] = value;
+                }
+                else if (key.EndsWith("_ActiveTab")
+                         || key.EndsWith("_SelIndex")
+                         || key.EndsWith("_Value"))
+                {
+                    // do not add all values, eg. _Value or _SelIndex for comboboxes or _ActiveTab, cause trouble otherwise
+                }
+                else if (key == "JobAssigned")
+                {
+                    rawDataObject.Put(key, value);
+                }
+            }
+
             row.JSONData = TJsonTools.ToJsonString(rawDataObject);
 
             row.FamilyName = values["FamilyName"];
