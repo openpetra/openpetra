@@ -462,14 +462,13 @@ namespace Ict.Petra.WebServer.MConference
             row.StFgCode = values["StFgCode"];
             row.Comment = values["Comment"];
 
-            ConferenceApplicationTDS CurrentApplicants = (ConferenceApplicationTDS)Session["CURRENTAPPLICANTS"];
-
-            if (TApplicationManagement.SaveApplications(ref CurrentApplicants) != TSubmitChangesResult.scrOK)
+            if (TApplicationManagement.SaveApplication(EventCode, row) != TSubmitChangesResult.scrOK)
             {
                 X.Msg.Alert("Error", "Saving did not work").Show();
             }
 
-            MyData_Refresh(null, null);
+            // save some time? user can click refresh himself. 
+            // MyData_Refresh(null, null);
         }
 
         protected void AcceptManyApplicants(object sender, DirectEventArgs e)
