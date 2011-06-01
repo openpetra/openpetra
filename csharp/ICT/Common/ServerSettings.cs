@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -49,7 +49,6 @@ namespace Ict.Common
         private static String UHostIPAddresses;
         private static System.Version UApplicationVersion;
         private static System.Int16 UIPBasePort;
-        private static System.Int16 UDebugLevel;
         private static System.Int16 UClientIdleStatusAfterXMinutes;
         private static System.Int16 UClientKeepAliveCheckIntervalInSeconds;
         private static System.Int16 UClientKeepAliveTimeoutAfterXSecondsLAN;
@@ -164,30 +163,12 @@ namespace Ict.Common
             }
         }
 
-        /// <summary>Debuglevel (can be specified via command line options) [usually only taken into consideration if DEBUGMODE is specified as compiler option for a certain project .dll) of the Server!]</summary>
-        public static System.Int16 DebugLevel
-        {
-            get
-            {
-                return UDebugLevel;
-            }
-        }
-
         /// <summary>This is the path to the server log file</summary>
         public static String ServerLogFile
         {
             get
             {
                 return UServerLogFile;
-            }
-        }
-
-        /// <summary>DL is a abbreviated synonym for DebugLevel (more convenient)</summary>
-        public static System.Int16 DL
-        {
-            get
-            {
-                return UDebugLevel;
             }
         }
 
@@ -354,7 +335,7 @@ namespace Ict.Common
             String ADBUsername,
             String ADBPassword,
             System.Int16 AIPBasePort,
-            System.Int16 ADebugLevel,
+            System.Int32 ADebugLevel,
             String AServerLogFile,
             String AHostName,
             String AHostIPAddresses,
@@ -381,7 +362,7 @@ namespace Ict.Common
             UDBUsername = ADBUsername;
             UDBPassword = ADBPassword;
             UIPBasePort = AIPBasePort;
-            UDebugLevel = ADebugLevel;
+            TLogging.DebugLevel = ADebugLevel;
             UServerLogFile = AServerLogFile;
             UHostName = AHostName;
             UHostIPAddresses = AHostIPAddresses;

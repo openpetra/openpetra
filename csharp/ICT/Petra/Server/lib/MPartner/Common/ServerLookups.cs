@@ -58,7 +58,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
         public TPartnerServerLookups() : base()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -72,7 +72,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
         /// </summary>
         ~TPartnerServerLookups()
         {
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
                                                                                                 DateTime.Now.Ticks -
@@ -112,7 +112,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
                 ReturnValue = false;
             }
 
-            // $IFDEF DEBUGMODE if TSrvSetting.DL >= 7 then Console.WriteLine('GetPartnerShortName: APartnerClass: ' + PartnerClassEnumToString(APartnerClass)); $ENDIF
+            // $IFDEF DEBUGMODE if TLogging.DL >= 7 then Console.WriteLine('GetPartnerShortName: APartnerClass: ' + PartnerClassEnumToString(APartnerClass)); $ENDIF
             return ReturnValue;
         }
 
@@ -156,7 +156,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
 
             ReturnValue = MCommonMain.RetrievePartnerShortName(APartnerKey, out APartnerShortName, out APartnerClass, out PartnerStatus);
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 7)
+            if (TLogging.DL >= 7)
             {
                 Console.WriteLine(Convert.ToInt32(AValidPartnerClasses.Length));
             }
@@ -179,7 +179,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
                 AIsMergedPartner = false;
             }
 
-            // $IFDEF DEBUGMODE if TSrvSetting.DL >= 7 then Console.WriteLine('VerifyPartner: APartnerClass: ' + PartnerClassEnumToString(APartnerClass)); $ENDIF
+            // $IFDEF DEBUGMODE if TLogging.DL >= 7 then Console.WriteLine('VerifyPartner: APartnerClass: ' + PartnerClassEnumToString(APartnerClass)); $ENDIF
             return ReturnValue;
         }
 
@@ -239,7 +239,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 7)
+                        if (TLogging.DL >= 7)
                         {
                             Console.WriteLine("VerifyPartner: committed own transaction.");
                         }
@@ -416,7 +416,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 7)
+                        if (TLogging.DL >= 7)
                         {
                             Console.WriteLine("MergedPartnerDetails: committed own transaction.");
                         }
@@ -580,7 +580,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
             AExtractDescription = "Can not retrieve description";
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("GetExtractDescription called!");
             }
@@ -608,7 +608,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine("GetExtractDescription: committed own transaction.");
                     }
@@ -656,7 +656,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
             AIsFoundation = false;
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("GetPartnerFoundationStatus called!");
             }
@@ -679,7 +679,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine("GetPartnerFoundationStatus: committed own transaction.");
                     }
@@ -740,7 +740,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
             ARecentlyUsedPartners = new Dictionary <long, string>();
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("GetRecentlyUsedPartner called!");
             }
@@ -763,7 +763,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine("GetRecentUsedPartners: committed own transaction.");
                     }
@@ -799,7 +799,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 7)
+                        if (TLogging.DL >= 7)
                         {
                             Console.WriteLine("GetRecentUsedPartners: committed own transaction.");
                         }

@@ -34,7 +34,7 @@
   <Parameter id="ColumnWidth" column="6" value="3" />
   <Parameter id="param_calculation" column="7" value="Charged Office" />
   <Parameter id="ColumnWidth" column="7" value="3" />
-  <Parameter id="param_calculation" column="8" value="Campaign Code" />
+  <Parameter id="param_calculation" column="8" value="Outreach Code" />
   <Parameter id="ColumnWidth" column="8" value="3" />
   <Parameter id="param_calculation" column="9" value="Arrival Date" />
   <Parameter id="ColumnWidth" column="9" value="2" />

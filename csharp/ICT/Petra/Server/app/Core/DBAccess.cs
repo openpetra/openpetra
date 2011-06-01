@@ -127,7 +127,7 @@ namespace Ict.Petra.Server.App.Core.Security
 
                     SQLStatement = ASQLStatement.Trim().ToUpper();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 10)
+                    if (TLogging.DL >= 10)
                     {
                         Console.WriteLine("TDataBasePetra.HasAccess: SQLStatement: " + SQLStatement);
                     }
@@ -153,7 +153,7 @@ namespace Ict.Petra.Server.App.Core.Security
                         RequiredAccessPermission4GLName = "INQUIRE";
                         SQLTablePrecedingKeyword = "FROM";
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 10)
+                        if (TLogging.DL >= 10)
                         {
                             Console.WriteLine("TDataBasePetra.HasAccess: Access permission: " + RequiredAccessPermission4GLName);
                         }
@@ -165,7 +165,7 @@ namespace Ict.Petra.Server.App.Core.Security
                         RequiredAccessPermission4GLName = "MODIFY";
                         SQLTablePrecedingKeyword = " ";
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 10)
+                        if (TLogging.DL >= 10)
                         {
                             Console.WriteLine("TDataBasePetra.HasAccess: Access permission: " + RequiredAccessPermission4GLName);
                         }
@@ -177,7 +177,7 @@ namespace Ict.Petra.Server.App.Core.Security
                         RequiredAccessPermission4GLName = "CREATE";
                         SQLTablePrecedingKeyword = "INTO";
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 10)
+                        if (TLogging.DL >= 10)
                         {
                             Console.WriteLine("TDataBasePetra.HasAccess: Access permission: " + RequiredAccessPermission4GLName);
                         }
@@ -189,7 +189,7 @@ namespace Ict.Petra.Server.App.Core.Security
                         RequiredAccessPermission4GLName = "DELETE";
                         SQLTablePrecedingKeyword = "FROM";
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 10)
+                        if (TLogging.DL >= 10)
                         {
                             Console.WriteLine("TDataBasePetra.HasAccess: Access permission: " + RequiredAccessPermission4GLName);
                         }
@@ -204,7 +204,7 @@ namespace Ict.Petra.Server.App.Core.Security
                     if (RequiredAccessPermission.Length != 0)
                     {
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 10)
+                        if (TLogging.DL >= 10)
                         {
                             Console.WriteLine("TDataBasePetra.HasAccess: RequiredAccessPermission.Length <> 0");
                         }
@@ -241,7 +241,7 @@ namespace Ict.Petra.Server.App.Core.Security
 
                                 TableName = SQLStatement.Substring(Counter + 4, EndOfNamePos - Counter - 4).Trim();
 #if DEBUGMODE
-                                if (TSrvSetting.DL >= 10)
+                                if (TLogging.DL >= 10)
                                 {
                                     Console.WriteLine("TDataBasePetra.HasAccess: Table name: " + TableName);
                                 }
@@ -271,7 +271,7 @@ namespace Ict.Petra.Server.App.Core.Security
                                         TLogging.Log(StrAccessDeniedLogPrefix + ErrorMessage);
                                         LogInPetraErrorLog(ErrorMessage);
 #if DEBUGMODE
-                                        if (TSrvSetting.DL >= 10)
+                                        if (TLogging.DL >= 10)
                                         {
                                             Console.WriteLine("TDataBasePetra.HasAccess: logged access error in DB Log Table.");
                                         }
@@ -290,7 +290,7 @@ namespace Ict.Petra.Server.App.Core.Security
                                         TLogging.Log(StrAccessDeniedLogPrefix + ErrorMessage);
                                         LogInPetraErrorLog(ErrorMessage);
 #if DEBUGMODE
-                                        if (TSrvSetting.DL >= 10)
+                                        if (TLogging.DL >= 10)
                                         {
                                             Console.WriteLine("TDataBasePetra.HasAccess: logged access error in DB Log Table.");
                                         }

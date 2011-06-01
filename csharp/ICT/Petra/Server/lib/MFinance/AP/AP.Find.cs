@@ -236,7 +236,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             DataTable ReturnValue;
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 7)
+            if (TLogging.DL >= 7)
             {
                 Console.WriteLine(this.GetType().FullName + ".GetDataPagedResult called.");
             }

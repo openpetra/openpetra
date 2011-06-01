@@ -560,15 +560,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else if (AToolStripItem.Name == "mniMaintainDonorHistory")
             {
-            	OpenDonorRecipientHistory(AToolStripItem.Name);
-        	}
-        	else if (AToolStripItem.Name == "mniMaintainRecipientHistory")
-        	{
-        		OpenDonorRecipientHistory(AToolStripItem.Name);
-        	}
-        	else 
-            throw new NotImplementedException();
-        
+                OpenDonorRecipientHistory(AToolStripItem.Name);
+            }
+            else if (AToolStripItem.Name == "mniMaintainRecipientHistory")
+            {
+                OpenDonorRecipientHistory(AToolStripItem.Name);
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
 
 #if TODO
             String ClickedMenuItemText;
@@ -1753,27 +1754,33 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.Cursor = Cursors.Default;
 //#endif
         }
-		private void OpenDonorRecipientHistory(String Name)
-		{
-			 if ( PartnerKey == -1)
-			 {
-			 	
-			 	MessageBox.Show(Catalog.GetString("No current partner seleted"));
-			 	return;
-			}
-			//this.Cursor = Cursors.WaitCursor;
-			 Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory frmDRH = new  Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory(this.Handle);
-			
-			 	
-			 if (Name.Equals("mniMaintainDonorHistory"))
-			     frmDRH.Donor= PartnerKey;
-			 else
-			 	frmDRH.Recipient= PartnerKey;
-			 frmDRH.Show();
-			//this.Cursor = Cursors.Default;	
-		}
-		
-			
+
+        private void OpenDonorRecipientHistory(String Name)
+        {
+            if (PartnerKey == -1)
+            {
+                MessageBox.Show(Catalog.GetString("No current partner seleted"));
+                return;
+            }
+
+            //this.Cursor = Cursors.WaitCursor;
+            Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory frmDRH = new  Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory(
+                this.Handle);
+
+            if (Name.Equals("mniMaintainDonorHistory"))
+            {
+                frmDRH.Donor = PartnerKey;
+            }
+            else
+            {
+                frmDRH.Recipient = PartnerKey;
+            }
+
+            frmDRH.Browse();
+            frmDRH.Show();
+            //this.Cursor = Cursors.Default;
+        }
+
         /// <summary>todoComment</summary>
         public void StopTimer()
         {

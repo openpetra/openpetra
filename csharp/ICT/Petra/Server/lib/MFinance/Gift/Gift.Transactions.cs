@@ -458,21 +458,23 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             return MainDS;
         }
-		  /// <summary>
+
+        /// <summary>
         /// loads a list of gift transactions and details for the given ledger and batch
         /// </summary>
         /// <param name="requestParams"></param>
         /// <param name="AMessages"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GiftBatchTDS LoadDonorRecipientHistory( Hashtable requestParams,
-                         out TVerificationResultCollection AMessages)
+        public static GiftBatchTDS LoadDonorRecipientHistory(Hashtable requestParams,
+            out TVerificationResultCollection AMessages)
         {
             GiftBatchTDS MainDS = new GiftBatchTDS();
             TDBTransaction Transaction = null;
+
             AMessages = new TVerificationResultCollection();
-			long Recipient = (Int64)requestParams["Recipient"];
-			long Donor = (Int64)requestParams["Donor"];
+            long Recipient = (Int64)requestParams["Recipient"];
+            long Donor = (Int64)requestParams["Donor"];
             try
             {
                 Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
@@ -481,31 +483,36 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 // Case 3 : Both given ?
 
                 //AGiftAccess.LoadViaAGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
-                if (Recipient >0)
-                { //Case 2, Case 3
+                if (Recipient > 0) //Case 2, Case 3
 
-                	AGiftDetailAccess.LoadViaPPartnerRecipientKey(MainDS,Recipient,Transaction);
-                	foreach (GiftBatchTDSAGiftDetailRow giftDetail in MainDS.AGiftDetail.Rows)
-                	{
-                		if (Donor == 0)
-                		{
-                		AGiftAccess.LoadByPrimaryKey(MainDS, giftDetail.LedgerNumber, giftDetail.BatchNumber,giftDetail.GiftTransactionNumber, Transaction);
-                		}
-                		else
-                		{
-                			//TODO Case 3 
-                		}
-                	}
-                }
-                else //Case 1 
                 {
-                	AGiftAccess.LoadViaPPartner(MainDS, Donor, Transaction);
-                	foreach ( AGiftRow giftRow in MainDS.AGift.Rows)
-                	{
-                		AGiftDetailAccess.LoadViaAGift(MainDS,giftRow.LedgerNumber,giftRow.BatchNumber,giftRow.GiftTransactionNumber,Transaction);
-                	}
+                    AGiftDetailAccess.LoadViaPPartnerRecipientKey(MainDS, Recipient, Transaction);
+
+                    foreach (GiftBatchTDSAGiftDetailRow giftDetail in MainDS.AGiftDetail.Rows)
+                    {
+                        if (Donor == 0)
+                        {
+                            AGiftAccess.LoadByPrimaryKey(MainDS,
+                                giftDetail.LedgerNumber,
+                                giftDetail.BatchNumber,
+                                giftDetail.GiftTransactionNumber,
+                                Transaction);
+                        }
+                        else
+                        {
+                            //TODO Case 3
+                        }
+                    }
                 }
-                	
+                else //Case 1
+                {
+                    AGiftAccess.LoadViaPPartner(MainDS, Donor, Transaction);
+
+                    foreach (AGiftRow giftRow in MainDS.AGift.Rows)
+                    {
+                        AGiftDetailAccess.LoadViaAGift(MainDS, giftRow.LedgerNumber, giftRow.BatchNumber, giftRow.GiftTransactionNumber, Transaction);
+                    }
+                }
 
                 DataView giftView = new DataView(MainDS.AGift);
 
@@ -562,7 +569,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 }
             }
             return MainDS;
-        }	
+        }
+
         /// <summary>
         /// loads a list of recurring gift transactions and details for the given ledger and recurring batch
         /// </summary>

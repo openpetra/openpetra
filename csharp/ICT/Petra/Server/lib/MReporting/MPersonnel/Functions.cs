@@ -379,14 +379,14 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
         /// This function is called by the "UnitHierarchyReport"
         /// </summary>
         /// <param name="AUnitKey">Parent unit to get the child unit from</param>
-        /// <param name="AWithCampaigns">Indicates if campaigns and conferences should
+        /// <param name="AWithOutreaches">Indicates if outreaches and conferences should
         /// be included in the result.</param>
         /// <returns>True</returns>
-        private bool GenerateUnitHierarchy(long AUnitKey, string AWithCampaigns)
+        private bool GenerateUnitHierarchy(long AUnitKey, string AWithOutreaches)
         {
             int ChildRow = 1;
 
-            GetChildUnits(AUnitKey, 0, (AWithCampaigns == "true"), ref ChildRow);
+            GetChildUnits(AUnitKey, 0, (AWithOutreaches == "true"), ref ChildRow);
 
             DataTable table = situation.GetResults().ToDataTable(parameters);
 
@@ -399,12 +399,12 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
         /// </summary>
         /// <param name="AUnitKey">Parent unit to get the child unit from</param>
         /// <param name="AChildLevel">Indicates how deep we are in the recursion</param>
-        /// <param name="AWithCampaigns">Indicates if campaigns and conferences should
+        /// <param name="AWithOutreaches">Indicates if outreaches and conferences should
         /// be included in the result</param>
         /// <param name="AChildRow">the number of the row</param>
         /// <returns>False if the parent unit is not active.
         /// Otherwise true</returns>
-        private bool GetChildUnits(long AUnitKey, int AChildLevel, bool AWithCampaigns, ref int AChildRow)
+        private bool GetChildUnits(long AUnitKey, int AChildLevel, bool AWithOutreaches, ref int AChildRow)
         {
             UmUnitStructureTable UnitStructure;
             PUnitTable UnitTable;
@@ -491,7 +491,7 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
                 string UnitName = UnitRow.UnitName;
                 string UnitTypeName = UnitRow.UnitTypeCode;
 
-                if (!AWithCampaigns
+                if (!AWithOutreaches
                     && ((UnitTypeName.StartsWith("GA"))
                         || (UnitTypeName.StartsWith("GC"))
                         || (UnitTypeName.StartsWith("TN"))
@@ -507,7 +507,7 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
 
             foreach (KeyValuePair <string, long>kvp in ChildList)
             {
-                GetChildUnits(kvp.Value, AChildLevel, AWithCampaigns, ref AChildRow);
+                GetChildUnits(kvp.Value, AChildLevel, AWithOutreaches, ref AChildRow);
             }
 
             return true;

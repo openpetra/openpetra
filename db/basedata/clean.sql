@@ -224,7 +224,7 @@ DELETE FROM pt_app_form_types;
 DELETE FROM pt_travel_type;
 DELETE FROM pt_party_type;
 DELETE FROM pt_congress_code;
-DELETE FROM pt_xyz_tbd_preference_level;
+DELETE FROM pt_outreach_preference_level;
 DELETE FROM pt_arrival_point;
 DELETE FROM pt_leadership_rating;
 DELETE FROM pt_special_applicant;

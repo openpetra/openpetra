@@ -44,7 +44,7 @@ class TSQLiteConsole
         db = new TDataBase();
 
         new TLogging("debug.log");
-        db.DebugLevel = TAppSettingsManager.GetInt16("DebugLevel", 0);
+        TLogging.DebugLevel = TAppSettingsManager.GetInt16("DebugLevel", 0);
 
         db.EstablishDBConnection(TDBType.SQLite,
             ADBFile,

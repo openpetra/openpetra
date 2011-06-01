@@ -28,10 +28,12 @@ using System.Data;
 using System.Data.Odbc;
 using System.Net.Mail;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.IO;
+using Ict.Common.Printing;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -97,8 +99,10 @@ namespace Ict.Petra.Server.MConference.Applications
         /// </summary>
         /// <param name="AEventCode"></param>
         /// <param name="AApplicationStatus"></param>
+        /// <param name="ARegistrationOffice"></param>
+        /// <param name="ARole"></param>
         /// <returns></returns>
-        public static ConferenceApplicationTDS GetApplications(string AEventCode, string AApplicationStatus)
+        public static ConferenceApplicationTDS GetApplications(string AEventCode, string AApplicationStatus, Int64 ARegistrationOffice, string ARole)
         {
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
@@ -110,7 +114,10 @@ namespace Ict.Petra.Server.MConference.Applications
 
                 foreach (Int64 RegistrationOffice in AllowedRegistrationOffices)
                 {
-                    MainDS.Merge(GetApplications(AEventCode, RegistrationOffice, AApplicationStatus, Transaction));
+                    if ((ARegistrationOffice == RegistrationOffice) || (ARegistrationOffice == -1))
+                    {
+                        MainDS.Merge(GetApplications(AEventCode, RegistrationOffice, AApplicationStatus, ARole, Transaction));
+                    }
                 }
             }
             finally
@@ -129,11 +136,13 @@ namespace Ict.Petra.Server.MConference.Applications
         /// <param name="AEventCode"></param>
         /// <param name="ARegisteringOffice"></param>
         /// <param name="AApplicationStatus"></param>
+        /// <param name="ARole"></param>
         /// <param name="ATransaction"></param>
         /// <returns></returns>
         private static ConferenceApplicationTDS GetApplications(string AEventCode,
             Int64 ARegisteringOffice,
             string AApplicationStatus,
+            string ARole,
             TDBTransaction ATransaction)
         {
             ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
@@ -146,11 +155,15 @@ namespace Ict.Petra.Server.MConference.Applications
             parameter = new OdbcParameter("eventcode", OdbcType.VarChar, PmShortTermApplicationTable.GetConfirmedOptionCodeLength());
             parameter.Value = AEventCode;
             parameters.Add(parameter);
+            parameter = new OdbcParameter("role", OdbcType.VarChar, PmShortTermApplicationTable.GetStCongressCodeLength());
+            parameter.Value = ARole;
+            parameters.Add(parameter);
 
             string queryShortTermApplication = "SELECT PUB_pm_short_term_application.* " +
                                                "FROM PUB_pm_short_term_application " +
                                                "WHERE PUB_pm_short_term_application.pm_registration_office_n = ? " +
-                                               "  AND PUB_pm_short_term_application.pm_confirmed_option_code_c = ?";
+                                               "  AND PUB_pm_short_term_application.pm_confirmed_option_code_c = ? ";
+
             string queryGeneralApplication = "SELECT PUB_pm_general_application.* " +
                                              "FROM PUB_pm_short_term_application, PUB_pm_general_application " +
                                              "WHERE PUB_pm_short_term_application.pm_registration_office_n = ? " +
@@ -165,6 +178,12 @@ namespace Ict.Petra.Server.MConference.Applications
                                  "  AND PUB_pm_short_term_application.pm_confirmed_option_code_c = ? " +
                                  "  AND PUB_p_person.p_partner_key_n = PUB_pm_short_term_application.p_partner_key_n";
 
+            if ((ARole != null) && (ARole.Length > 0))
+            {
+                queryGeneralApplication += "  AND PUB_pm_short_term_application.pm_st_congress_code_c = ?";
+                queryShortTermApplication += "  AND PUB_pm_short_term_application.pm_st_congress_code_c = ?";
+                queryPerson += "  AND PUB_pm_short_term_application.pm_st_congress_code_c = ?";
+            }
 
             DBAccess.GDBAccessObj.Select(MainDS,
                 queryShortTermApplication,
@@ -194,6 +213,12 @@ namespace Ict.Petra.Server.MConference.Applications
 
                 ConferenceApplicationTDSApplicationGridRow newRow = MainDS.ApplicationGrid.NewRowTyped();
                 newRow.PartnerKey = shortTermRow.PartnerKey;
+
+                if (!GeneralApplication.IsLocalPartnerKeyNull())
+                {
+                    newRow.PersonKey = GeneralApplication.LocalPartnerKey;
+                }
+
                 newRow.ApplicationKey = GeneralApplication.ApplicationKey;
                 newRow.RegistrationOffice = GeneralApplication.RegistrationOffice;
                 newRow.FirstName = Person.FirstName;
@@ -267,6 +292,56 @@ namespace Ict.Petra.Server.MConference.Applications
         }
 
         /// <summary>
+        /// get the number and name of the registration offices that the current user has access for
+        /// </summary>
+        /// <returns></returns>
+        public static PPartnerTable GetRegistrationOffices()
+        {
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            PPartnerTable result = new PPartnerTable();
+
+            try
+            {
+                List <Int64>offices = GetRegistrationOfficeKeysOfUser(Transaction);
+
+                StringCollection FieldList = new StringCollection();
+                FieldList.Add(PPartnerTable.GetPartnerKeyDBName());
+                FieldList.Add(PPartnerTable.GetPartnerShortNameDBName());
+
+                // get the short names of the registration offices
+                foreach (Int64 OfficeKey in offices)
+                {
+                    PPartnerTable partnerTable = PPartnerAccess.LoadByPrimaryKey(OfficeKey, FieldList, Transaction);
+
+                    result.Merge(partnerTable);
+                }
+
+                // remove unwanted columns
+                List <string>ColumnNames = new List <string>();
+
+                foreach (DataColumn column in result.Columns)
+                {
+                    ColumnNames.Add(column.ColumnName);
+                }
+
+                foreach (string columnName in ColumnNames)
+                {
+                    if (!FieldList.Contains(columnName))
+                    {
+                        result.Columns.Remove(columnName.ToString());
+                    }
+                }
+            }
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// get the data entered by the applicant
         /// </summary>
         /// <param name="APartnerKey"></param>
@@ -285,7 +360,9 @@ namespace Ict.Petra.Server.MConference.Applications
                     AApplicationKey,
                     ARegistrationOfficeKey,
                     Transaction);
-                Result = application[0].RawApplicationData;
+
+                // to avoid the error on the ext.js client: Status Text: BADRESPONSE: Parse Error
+                Result = application[0].RawApplicationData.Replace("&quot;", "\\\"");
             }
             finally
             {
@@ -299,15 +376,11 @@ namespace Ict.Petra.Server.MConference.Applications
         /// only sends an email if the template exists
         public static bool SendEmail(TApplicationFormData AData)
         {
-            string FileName = TAppSettingsManager.GetValue("Formletters.Path") +
-                              Path.DirectorySeparatorChar + "ApplicationAcceptedEmail." + AData.registrationcountrycode + "." + AData.formsid +
-                              ".html";
-
-            if (!File.Exists(FileName))
-            {
-                FileName = TAppSettingsManager.GetValue("Formletters.Path") +
-                           Path.DirectorySeparatorChar + "ApplicationAcceptedEmail." + AData.registrationcountrycode + ".html";
-            }
+            string FileName = TFormLettersTools.GetRoleSpecificFile(TAppSettingsManager.GetValue("Formletters.Path"),
+                "ApplicationAcceptedEmail",
+                AData.registrationcountrycode,
+                AData.formsid,
+                "html");
 
             string HTMLText = string.Empty;
             string SenderAddress = string.Empty;
@@ -422,6 +495,7 @@ namespace Ict.Petra.Server.MConference.Applications
 
                         Person.Gender = row.Gender;
                         GeneralApplication.Comment = row.Comment;
+                        GeneralApplication.RawApplicationData = row.JSONData;
                         ShortTermApplication.StFgLeader = row.StFgLeader;
                         ShortTermApplication.StFgCode = row.StFgCode;
 
@@ -436,6 +510,11 @@ namespace Ict.Petra.Server.MConference.Applications
                             TApplicationFormData data = (TApplicationFormData)TJsonTools.ImportIntoTypedStructure(typeof(TApplicationFormData),
                                 GeneralApplication.RawApplicationData);
                             data.RawData = GeneralApplication.RawApplicationData;
+
+                            if (GeneralApplication.IsGenAppSendFldAcceptDateNull())
+                            {
+                                GeneralApplication.GenAppSendFldAcceptDate = DateTime.Today;
+                            }
 
                             SendEmail(data);
                         }
@@ -461,14 +540,12 @@ namespace Ict.Petra.Server.MConference.Applications
         }
 
         /// <summary>
-        /// export accepted applications to Petra
+        /// export accepted and cancelled applications to Petra
         /// </summary>
         /// <returns></returns>
-        public static string DownloadApplications(Int64 AEventPartnerKey, string AEventCode, ref ConferenceApplicationTDS AMainDS)
+        public static string DownloadApplications(Int64 AEventPartnerKey, string AEventCode, Int64 ARegistrationOffice)
         {
             // TODO: export all partners that have not been imported to the local database yet
-            // TODO: export all partners where application status has changed, cancelled etc
-            // TODO: currently exporting all partners that are part of the currently displayed list
             string result = string.Empty;
 
             result += "PersonPartnerKey;EventPartnerKey;ApplicationDate;AcquisitionCode;Title;FirstName;FamilyName;Street;PostCode;City;";
@@ -476,13 +553,16 @@ namespace Ict.Petra.Server.MConference.Applications
             result += "EventRole;AppStatus;PreviousAttendance;AppComments;NotesPerson;HorstID;FamilyPartnerKey;RecordImported";
             result = "\"" + result.Replace(";", "\";\"") + "\"\n";
 
+            ConferenceApplicationTDS MainDS = GetApplications(AEventCode, "cancelled", ARegistrationOffice, null);
+            MainDS.Merge(GetApplications(AEventCode, "accepted", ARegistrationOffice, null));
+
             try
             {
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
-                foreach (ConferenceApplicationTDSApplicationGridRow row in AMainDS.ApplicationGrid.Rows)
+                foreach (ConferenceApplicationTDSApplicationGridRow row in MainDS.ApplicationGrid.Rows)
                 {
-                    PmShortTermApplicationRow TemplateRow = AMainDS.PmShortTermApplication.NewRowTyped(false);
+                    PmShortTermApplicationRow TemplateRow = MainDS.PmShortTermApplication.NewRowTyped(false);
 
                     // one person is only registered once for the same event. each registration is a new partner key
                     TemplateRow.PartnerKey = row.PartnerKey;
@@ -509,7 +589,35 @@ namespace Ict.Petra.Server.MConference.Applications
                         result += "\"" + GeneralApplicationRow.LocalPartnerKey.ToString() + "\";";
                     }
 
-                    // TODO event partner key in config file? not different for each country
+                    TApplicationFormData data = (TApplicationFormData)TJsonTools.ImportIntoTypedStructure(typeof(TApplicationFormData),
+                        GeneralApplicationRow.RawApplicationData);
+                    string prevConf = string.Empty;
+
+                    if (data.numberprevconfadult != null)
+                    {
+                        prevConf = StringHelper.AddCSV(prevConf, data.numberprevconfadult);
+                    }
+
+                    if (data.numberprevconfparticipant != null)
+                    {
+                        prevConf = StringHelper.AddCSV(prevConf, data.numberprevconfparticipant);
+                    }
+
+                    if (data.numberprevconfleader != null)
+                    {
+                        prevConf = StringHelper.AddCSV(prevConf, data.numberprevconfleader);
+                    }
+
+                    if (data.numberprevconfhelper != null)
+                    {
+                        prevConf = StringHelper.AddCSV(prevConf, data.numberprevconfhelper);
+                    }
+
+                    if (data.numberprevconf != null)
+                    {
+                        prevConf = StringHelper.AddCSV(prevConf, data.numberprevconf);
+                    }
+
                     result += "\"" + AEventPartnerKey.ToString() + "\";";
                     result += "\"" + GeneralApplicationRow.GenAppDate.ToString("dd-MM-yyyy") + "\";";
                     // TODO AcquisitionCode
@@ -533,7 +641,7 @@ namespace Ict.Petra.Server.MConference.Applications
                     result += "\"" + /* DepartureDate + */ "\";";
                     result += "\"" + ShortTermApplicationRow.StCongressCode + "\";";
                     result += "\"" + GeneralApplicationRow.GenApplicationStatus + "\";";
-                    result += "\"" + /* PreviousAttendance + */ "\";";
+                    result += "\"" + prevConf + "\";";
                     result += "\"" + /* AppComments + */ "\";";
                     result += "\"" + /* NotesPerson + */ "\";";
                     result += "\"" + PersonRow.PartnerKey.ToString() + "\";";
@@ -620,6 +728,9 @@ namespace Ict.Petra.Server.MConference.Applications
                     attr = myDoc.CreateAttribute("DateOfBirth");
                     attr.Value = PersonRow.DateOfBirth.Value.ToString("dd-MM-yyyy");
                     newNode.Attributes.Append(attr);
+                    attr = myDoc.CreateAttribute("DayOfBirth");
+                    attr.Value = PersonRow.DateOfBirth.Value.ToString("MMdd");
+                    newNode.Attributes.Append(attr);
                     attr = myDoc.CreateAttribute("Gender");
                     attr.Value = PersonRow.Gender;
                     newNode.Attributes.Append(attr);
@@ -635,6 +746,24 @@ namespace Ict.Petra.Server.MConference.Applications
                     attr = myDoc.CreateAttribute("CommentByOffice");
                     attr.Value = GeneralApplicationRow.Comment;
                     newNode.Attributes.Append(attr);
+
+                    if (GeneralApplicationRow.GenApplicationStatus.StartsWith("A"))
+                    {
+                        attr = myDoc.CreateAttribute("AcceptedDate");
+                        DateTime DateAccepted = GeneralApplicationRow.GenAppDate;
+
+                        if (!GeneralApplicationRow.IsGenAppSendFldAcceptDateNull())
+                        {
+                            DateAccepted = GeneralApplicationRow.GenAppSendFldAcceptDate.Value;
+                        }
+                        else if (!GeneralApplicationRow.IsGenAppRecvgFldAcceptNull())
+                        {
+                            DateAccepted = GeneralApplicationRow.GenAppRecvgFldAccept.Value;
+                        }
+
+                        attr.Value = DateAccepted.ToString("dd-MM-yyyy");
+                        newNode.Attributes.Append(attr);
+                    }
 
                     // now add all the values from the json data
                     TJsonTools.DataToXml(GeneralApplicationRow.RawApplicationData, ref newNode, myDoc, false);
@@ -707,11 +836,12 @@ namespace Ict.Petra.Server.MConference.Applications
                 foreach (XmlNode applicant in partnerKeys.DocumentElement.ChildNodes)
                 {
                     Int64 RegistrationID = Convert.ToInt64(TXMLParser.GetAttribute(applicant, "HorstID"));
-                    Int64 LocalOfficePartnerKey = Convert.ToInt64(TXMLParser.GetAttribute(applicant, "PersonPartnerKey"));
                     bool RecordImported = (TXMLParser.GetAttribute(applicant, "RecordImported").ToLower() == "yes");
 
                     if (RecordImported)
                     {
+                        Int64 LocalOfficePartnerKey = Convert.ToInt64(TXMLParser.GetAttribute(applicant, "PersonPartnerKey"));
+
                         applicationTable.DefaultView.RowFilter = String.Format(
                             "{0} = {1}",
                             PmGeneralApplicationTable.GetPartnerKeyDBName(),

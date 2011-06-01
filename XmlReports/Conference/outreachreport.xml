@@ -2,9 +2,9 @@
 <!DOCTYPE reports SYSTEM "../reports.dtd" >
 <reports>
 
-  <report id="Campaign Report">
+  <report id="Outreach Report">
 	<description>
-		Report for the conference campaigns.
+		Report for the conference outreaches.
 		depends on conference.xml
 	</description>
 	<reportparameters>
@@ -20,7 +20,7 @@
 
     <reportheader></reportheader>
     <pageheader>
-      <field whichfield="title1"><value text="Campaign Report"></value></field>
+      <field whichfield="title1"><value text="Outreach Report"></value></field>
       <field whichfield="title2"><value function="getSiteName()"></value></field>
       <field whichfield="period1">
         <fielddetail>
@@ -38,7 +38,7 @@
       <!--field whichfield="period2">
         <fielddetail>
           <switch><case condition="eq({param_conferenceselection}, one conference)">
-              <value text="Selected Campaign Options: "></value>
+              <value text="Selected Outreach Options: "></value>
               <value variable="param_conferenceoptionscode"></value>
           </case></switch>
         </fielddetail>
@@ -62,13 +62,13 @@
 
 		<calculations>
 	
-			<calculation id="SelectCampaigns" returns="automatic" returnsFormat="row">
+			<calculation id="SelectOutreaches" returns="automatic" returnsFormat="row">
 				<query>
 					<queryDetail><value>
 						SELECT DISTINCT
-							PUB_p_unit.p_xyz_tbd_code_c AS CampaignCode,
-							PUB_p_unit.p_unit_name_c AS CampaignName,
-							PUB_p_unit.p_partner_key_n AS CampaignKey
+							PUB_p_unit.p_xyz_tbd_code_c AS OutreachCode,
+							PUB_p_unit.p_unit_name_c AS OutreachName,
+							PUB_p_unit.p_partner_key_n AS OutreachKey
 						FROM   
 							PUB_p_unit
 						WHERE
@@ -82,7 +82,7 @@
 						ORDER BY PUB_p_unit.p_unit_name_c
 					</value></queryDetail>
 				</query>
-			</calculation> <!-- SelectCampaigns -->
+			</calculation> <!-- SelectOutreaches -->
 			
 			<calculation id="Select Attendees for field" returns="automatic" returnsFormat="row">
 				<query>
@@ -135,7 +135,7 @@
 							PUB_pm_general_application.pm_application_key_i AS ApplicationKey,
 							PUB_pm_general_application.pm_registration_office_n AS RegistrationOffice,
 					
-							PUB_pc_attendee.pc_xyz_tbd_type_c AS CampaignType,
+							PUB_pc_attendee.pc_xyz_tbd_type_c AS OutreachType,
 							PUB_pc_attendee.pc_discovery_group_c AS DiscoveryGroup,
 							PUB_pc_attendee.pc_work_group_c AS WorkGroup,
 							PUB_pc_attendee.pc_arrival_group_c AS ArrivalGroup,
@@ -177,7 +177,7 @@
 					<queryDetail condition="eq({param_conferenceselection}, one conference)"><value>
 							AND PUB_pc_conference.pc_conference_key_n = {{param_conferencekey}}
 							AND PUB_pc_attendee.pc_conference_key_n = {{param_conferencekey}}
-							AND PUB_pm_short_term_application.pm_st_confirmed_option_n = {CampaignKey}
+							AND PUB_pm_short_term_application.pm_st_confirmed_option_n = {OutreachKey}
 					</value></queryDetail>
 					
 					<queryDetail condition="eq({param_conferenceselection}, all conferences))"><value>
@@ -218,7 +218,7 @@
 				<query>
 					<queryDetail condition="eq({param_chkFinancialReport}, true)">
 						<value text="NO-SQL"/>
-						<value function="PrintFieldFinancialCosts({CampaignName})"/>
+						<value function="PrintFieldFinancialCosts({OutreachName})"/>
 					</queryDetail>
 				</query>
 			</calculation>
@@ -236,11 +236,11 @@
 				<query>
 					<queryDetail condition="eq({param_cmbSignOffLines}, print Financial Sign Off Lines)">
 						<value text="NO-SQL"/>
-						<value function="PrintFinancialSignOffLines({CampaignName})"/>
+						<value function="PrintFinancialSignOffLines({OutreachName})"/>
 					</queryDetail>
 					<queryDetail condition="eq({param_cmbSignOffLines}, print Attendance Sign Off Lines)">
 						<value text="NO-SQL"/>
-						<value function="PrintAttendanceSignOffLines({CampaignName})"/>
+						<value function="PrintAttendanceSignOffLines({OutreachName})"/>
 					</queryDetail>
 				</query>
 			</calculation>
@@ -294,7 +294,7 @@
 						<value function="assign(GroupLeader, No)" condition="not({pm_st_fg_leader_l})"/>
 						<value function="assign(MissingInformation, GetMissingInfo({AttendeeKey}, {ApplicationKey}, {RegistrationOffice}))"/>
 						<value function="assign(DriverStatus, GetDriverStatus({AttendeeKey}))"/>
-						<value function="CalculateOneAttendeeFieldCost({Age}, {AttendeeKey}, {ApplicationKey}, {RegistrationOffice}, {CampaignKey}, {CampaignType}, {RegistrationDate} )"/>
+						<value function="CalculateOneAttendeeFieldCost({Age}, {AttendeeKey}, {ApplicationKey}, {RegistrationOffice}, {OutreachKey}, {OutreachType}, {RegistrationDate} )"/>
 					</queryDetail>
 				</query>
 			</calculation>
@@ -362,11 +362,11 @@
 				</query>
 			</calculation>
 			
-			<calculation align="left" id="Campaign Code" returns="text" returnsFormat="text">
-				<caption><value text="Campaign Code"></value></caption>
+			<calculation align="left" id="Outreach Code" returns="text" returnsFormat="text">
+				<caption><value text="Outreach Code"></value></caption>
 				<query>
 					<queryDetail>
-						<value variable="CampaignCode"></value>
+						<value variable="OutreachCode"></value>
 					</queryDetail>
 				</query>
 			</calculation>
@@ -489,7 +489,7 @@
     <levels>    
 	<level name="main">
 		<detail>
-			<lowerLevelReport level="main2" calculation="SelectCampaigns"></lowerLevelReport>
+			<lowerLevelReport level="main2" calculation="SelectOutreaches"></lowerLevelReport>
 			<lowerLevelReport level="NoFieldLevel"></lowerLevelReport>
 			<lowerLevelReport level="DicountFlagExplanationLevel" condition="eq({param_report_detail}, Full)"></lowerLevelReport>
 			<lowerLevelReport level="DicountChildFlagExplanationLevel" condition="and(eq({param_report_detail}, Full), HasFieldReportDiscount(C))"></lowerLevelReport>
@@ -506,9 +506,9 @@
 	<level name="main2">
 		<header>
 			<field whichfield="header 0" pos="0.0cm" width="12.0cm">
-				<value variable="CampaignCode"/>
+				<value variable="OutreachCode"/>
 				<value text="   "/>
-				<value variable="CampaignName"/>
+				<value variable="OutreachName"/>
 			</field>
 		</header>
 		<detail>

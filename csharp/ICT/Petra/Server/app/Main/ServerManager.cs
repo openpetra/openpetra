@@ -327,8 +327,6 @@ namespace Ict.Petra.Server.App.Main
         /// <returns>void</returns>
         private void SetupServerSettings()
         {
-            String ODBCDsn;
-            String ODBCPassword;
             TCommandLineArguments CmdLineArgs;
             String ServerLogFile;
             String ServerName;
@@ -360,10 +358,12 @@ namespace Ict.Petra.Server.App.Main
             // Server.ODBC_DSN
             ODBCDsnAppSetting = TAppSettingsManager.GetValue("Server.ODBC_DSN", false);
 
-            string PostgreSQLServer = TAppSettingsManager.GetValue("Server.PostgreSQLServer", "localhost");
-            string PostgreSQLServerPort = TAppSettingsManager.GetValue("Server.PostgreSQLServerPort", "5432");
-            string PostgreSQLUserName = TAppSettingsManager.GetValue("Server.PostgreSQLUserName", "petraserver");
-            string PostgreSQLDatabaseName = TAppSettingsManager.GetValue("Server.PostgreSQLDatabaseName", "openpetra");
+            string DatabaseHostOrFile = TAppSettingsManager.GetValue("Server.DBHostOrFile", "localhost").
+                                        Replace("{userappdata}", Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
+            string DatabasePort = TAppSettingsManager.GetValue("Server.DBPort", "5432");
+            string DatabaseName = TAppSettingsManager.GetValue("Server.DBName", "openpetra");
+            string DatabaseUserName = TAppSettingsManager.GetValue("Server.DBUserName", "petraserver");
+            string DatabasePassword = TAppSettingsManager.GetValue("Server.DBPassword");
 
             if (TAppSettingsManager.HasValue("Server.LogFile"))
             {
@@ -390,9 +390,6 @@ namespace Ict.Petra.Server.App.Main
             ServerDebugLevel = TAppSettingsManager.GetInt16("Server.DebugLevel", 0);
 
             RunAsStandalone = TAppSettingsManager.GetBoolean("Server.RunAsStandalone", false);
-
-            // Server.Credentials with the password for the PostgreSQL and the Progress database for user petraserver
-            string ServerCredentials = TAppSettingsManager.GetValue("Server.Credentials");
 
             // Server.ClientIdleStatusAfterXMinutes
             ClientIdleStatusAfterXMinutes = TAppSettingsManager.GetInt16("Server.ClientIdleStatusAfterXMinutes", 5);
@@ -428,10 +425,6 @@ namespace Ict.Petra.Server.App.Main
             // Determine network configuration of the Server
             Networking.DetermineNetworkConfig(out ServerName, out ServerIPAddresses);
 
-            // Determine Database connection parameters
-            ODBCDsn = "petra2_3";
-            ODBCPassword = ServerCredentials;
-
             Version ServerAssemblyVersion;
 
             if ((System.Reflection.Assembly.GetEntryAssembly() != null) && (System.Reflection.Assembly.GetEntryAssembly().GetName() != null))
@@ -465,12 +458,12 @@ namespace Ict.Petra.Server.App.Main
                 ServerAssemblyVersion,
                 Utilities.DetermineExecutingOS(),
                 RDBMSTypeAppSetting,
-                ODBCDsn,
-                PostgreSQLServer,
-                PostgreSQLServerPort,
-                PostgreSQLDatabaseName,
-                PostgreSQLUserName,
-                ServerCredentials,
+                ODBCDsnAppSetting,
+                DatabaseHostOrFile,
+                DatabasePort,
+                DatabaseName,
+                DatabaseUserName,
+                DatabasePassword,
                 ServerIPBasePort,
                 ServerDebugLevel,
                 ServerLogFile,
@@ -578,7 +571,6 @@ namespace Ict.Petra.Server.App.Main
         public void EstablishDBConnection()
         {
             DBAccess.GDBAccessObj = new TDataBase();
-            DBAccess.GDBAccessObj.DebugLevel = TSrvSetting.DebugLevel;
             try
             {
                 DBAccess.GDBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
@@ -649,7 +641,24 @@ namespace Ict.Petra.Server.App.Main
         /// </summary>
         private void UpdateSQLiteDatabase(TFileVersionInfo ADBVersion, TFileVersionInfo AExeVersion)
         {
-            string dbpatchfilePath = Path.GetDirectoryName(TAppSettingsManager.GetValue("Server.BaseDatabase"));
+            // there have been drastic changes to the database after 0.2.8-1, which means we have to start with a clean database
+            // otherwise there are definitely errors with the s_login sequence, and outreach tables might cause a problem as well
+            if (ADBVersion.Compare(new TFileVersionInfo("0.2.8-1")) == 0)
+            {
+                DBAccess.GDBAccessObj.CloseDBConnection();
+
+                TLogging.Log("Please find your old data in " + TFileHelper.MoveToBackup(TSrvSetting.PostgreSQLServer));
+
+                DBAccess.GDBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
+                    TSrvSetting.PostgreSQLServer,
+                    TSrvSetting.PostgreSQLServerPort,
+                    TSrvSetting.PostgreSQLDatabaseName,
+                    TSrvSetting.DBUsername,
+                    TSrvSetting.DBPassword,
+                    "");
+            }
+
+            string dbpatchfilePath = Path.GetDirectoryName(TAppSettingsManager.GetValue("Server.SQLiteBaseFile"));
 
             TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
 
@@ -670,7 +679,7 @@ namespace Ict.Petra.Server.App.Main
 
                     foreach (string sqlFile in sqlFiles)
                     {
-                        if (ADBVersion.PatchApplies(sqlFile, AExeVersion))
+                        if (!sqlFile.EndsWith("pg.sql") && ADBVersion.PatchApplies(sqlFile, AExeVersion))
                         {
                             foundUpdate = true;
                             StreamReader sr = new StreamReader(sqlFile);

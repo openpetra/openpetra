@@ -92,7 +92,7 @@ namespace Ict.Testing.NUnitPetraServer
                 TSrvSetting.PostgreSQLDatabaseName,
                 TSrvSetting.DBUsername, TSrvSetting.DBPassword,
                 TSrvSetting.IPBasePort,
-                TSrvSetting.DebugLevel, TSrvSetting.ServerLogFile, TSrvSetting.HostName, TSrvSetting.HostIPAddresses,
+                TLogging.DebugLevel, TSrvSetting.ServerLogFile, TSrvSetting.HostName, TSrvSetting.HostIPAddresses,
                 TSrvSetting.ClientIdleStatusAfterXMinutes, TSrvSetting.ClientKeepAliveCheckIntervalInSeconds,
                 TSrvSetting.ClientKeepAliveTimeoutAfterXSecondsLAN,
                 TSrvSetting.ClientKeepAliveTimeoutAfterXSecondsRemote,

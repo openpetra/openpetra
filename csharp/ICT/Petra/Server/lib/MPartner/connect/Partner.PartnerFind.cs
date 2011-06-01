@@ -80,7 +80,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             get
             {
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 7)
+                if (TLogging.DL >= 7)
                 {
                     Console.WriteLine("TPartnerFindUIConnector: AsyncExecProgress reqeusted.");
                 }
@@ -97,7 +97,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         public TPartnerFindUIConnector() : base()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 7)
+            if (TLogging.DL >= 7)
             {
                 Console.WriteLine(this.GetType().FullName + " called.");
             }
@@ -110,7 +110,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         /// </summary>
         ~TPartnerFindUIConnector()
         {
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ".FINALIZE called!");
             }
@@ -142,7 +142,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             System.Text.StringBuilder sb;
             DataRow CriteriaRow;
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 7)
+            if (TLogging.DL >= 7)
             {
                 Console.WriteLine(this.GetType().FullName + ".PerformSearch called.");
             }
@@ -330,7 +330,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             DataTable ReturnValue;
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 7)
+            if (TLogging.DL >= 7)
             {
                 Console.WriteLine(this.GetType().FullName + ".GetDataPagedResult called.");
             }
@@ -678,7 +678,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             #endregion
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 7)
+            if (TLogging.DL >= 7)
             {
                 Console.WriteLine("CustomWhereCriteria: " + CustomWhereCriteria);
             }
@@ -718,7 +718,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             /* Start a separate Thread that should cancel the executing query
              * (Microsoft recommends doing it this way!) */
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 7)
+            if (TLogging.DL >= 7)
             {
                 Console.WriteLine("TPartnerFindUIConnector.StopSearch: Starting StopQuery thread...");
             }
@@ -733,7 +733,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
              * while the other is stopping - this leads to ADO.NET errors that state that
              * a ADO.NET command is still executing! */
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 7)
+            if (TLogging.DL >= 7)
             {
                 Console.WriteLine("TPartnerFindUIConnector.StopSearch: Query cancelled!");
             }
@@ -763,7 +763,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             AVerificationResult = null;
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 8)
+            if (TLogging.DL >= 8)
             {
                 Console.WriteLine(this.GetType().FullName + ".AddAllFoundPartnersToExtract: requesting Partner data of found Partners");
             }
@@ -787,7 +787,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 DistinctPartners = new ArrayList();
 
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 8)
+                if (TLogging.DL >= 8)
                 {
                     Console.WriteLine(this.GetType().FullName + ".AddAllFoundPartnersToExtract: building distinct list of Partners");
                 }
@@ -807,7 +807,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
 
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 8)
+                if (TLogging.DL >= 8)
                 {
                     Console.WriteLine(this.GetType().FullName + ".AddAllFoundPartnersToExtract: Add all Partners to the desired Extract");
                 }
@@ -835,7 +835,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         {
                             // Partner could not get added to the Extract
 #if DEBUGMODE
-                            if (TSrvSetting.DL >= 8)
+                            if (TLogging.DL >= 8)
                             {
                                 Console.WriteLine(
                                     this.GetType().FullName + ".AddAllFoundPartnersToExtract: Partner with PartnerKey " +
@@ -847,7 +847,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     }
 
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 8)
+                    if (TLogging.DL >= 8)
                     {
                         Console.WriteLine(
                             this.GetType().FullName + ".AddAllFoundPartnersToExtract: Added " + AddedPartners.ToString() +
@@ -879,7 +879,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         {
                             DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                            if (TSrvSetting.DL >= 8)
+                            if (TLogging.DL >= 8)
                             {
                                 Console.WriteLine(this.GetType().FullName + ".AddAllFoundPartnersToExtract: committed own transaction!");
                             }
@@ -892,7 +892,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         {
                             DBAccess.GDBAccessObj.RollbackTransaction();
 #if DEBUGMODE
-                            if (TSrvSetting.DL >= 8)
+                            if (TLogging.DL >= 8)
                             {
                                 Console.WriteLine(this.GetType().FullName + ".AddAllFoundPartnersToExtract: ROLLED BACK own transaction!");
                             }

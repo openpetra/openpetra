@@ -9,7 +9,7 @@ RootNode:
     MasterTable: PUnit
     Controls:
         pnlContent:
-            Controls: [grpNames, grpMisc, grpCampaignInfo]
+            Controls: [grpNames, grpMisc, grpOutreachInfo]
             Dock: Fill
 
         grpNames: {Dock=Top}
@@ -39,20 +39,20 @@ RootNode:
         
         cmbAcquisitionCode: {DataField=PPartner.AcquisitionCode, List=AcquisitionCodeList}
 
-        grpCampaignInfo: {Label=Campaign Information, Dock=Top}
+        grpOutreachInfo: {Label=Outreach Information, Dock=Top}
             Controls: 
-                Row0: [txtXyzTbdCode]
-                Row1: [txtXyzTbdCost, cmbXyzTbdCostCurrencyCode]
+                Row0: [txtOutreachCode]
+                Row1: [txtOutreachCost, cmbOutreachCostCurrencyCode]
             ColWidths: [0=Fixed:120, 1=Fixed:100, 2=Fixed:65]
             
-        txtXyzTbdCode:
+        txtOutreachCode:
             Witdh: 170
             ColSpan: 2
             
-        txtXyzTbdCost:
+        txtOutreachCost:
             Width: 90
 
-        cmbXyzTbdCostCurrencyCode: {List=CurrencyCodeList}
+        cmbOutreachCostCurrencyCode: {List=CurrencyCodeList}
             Width: 60
 
             NoLabel: true

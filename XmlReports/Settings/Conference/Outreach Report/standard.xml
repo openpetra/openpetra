@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <Parameters>
   <Parameter id="systemsettings" value="True" />
-  <Parameter id="xmlfiles" value="Conference\\campaignreport.xml,Conference\\conference.xml" />
-  <Parameter id="currentReport" value="Campaign Report" />
+  <Parameter id="xmlfiles" value="Conference\\outreachreport.xml,Conference\\conference.xml" />
+  <Parameter id="currentReport" value="Outreach Report" />
   <Parameter id="MaxDisplayColumns" value="14" />
   <Parameter id="param_conferenceselection" value="one conference" />
   <Parameter id="param_attendeeselection" value="all attendees" />
@@ -36,7 +36,7 @@
   <Parameter id="ColumnWidth" column="7" value="1.5" />
   <Parameter id="param_calculation" column="8" value="Application Status" />
   <Parameter id="ColumnWidth" column="8" value="1" />
-  <Parameter id="param_calculation" column="9" value="Campaign Code" />
+  <Parameter id="param_calculation" column="9" value="Outreach Code" />
   <Parameter id="ColumnWidth" column="9" value="3" />
   <Parameter id="param_calculation" column="10" value="Fellowship Group" />
   <Parameter id="ColumnWidth" column="10" value="1.5" />

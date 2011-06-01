@@ -373,12 +373,13 @@ public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
   <call target="setupLinuxServer" unless="${target::has-executed('setupLinuxServer')}"/>
 </target>
 
-<target name="setupLinuxServer">
+<target name="setupLinuxServer" depends="init">
 <!-- for the moment, just create a tar.gz file, with sub directories manuals30 containing the release notes, 
      bin30 with just the server binaries, db30 with the demo sqlite database, demo30 with some sample files,
      reports30, sql30 with the sql scripts, etc30 with the 2 config files; start and maintain script in the root
      LICENSE file in the root, INSTALL file with instructions, required packages, firewall etc? -->
   <property name="setupDir" value="${dir.bin}/tmp/openpetraorg-${ReleaseID}"/>
+  <delete file="${setupDir}/etc30/PetraServerConsole-postgresql.config"/>
   <delete dir="${setupDir}"/>
   <mkdir dir="${setupDir}"/>
 
@@ -415,7 +416,7 @@ public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
       <include name="*/*.dll" /> <!-- i18n DLLs-->
     </fileset>
   </copy>
-  <copy file="${dir.bin}/csharp/ICT/Petra/Definitions/UINavigation.yml"
+  <copy file="${dir.root}/csharp/ICT/Petra/Definitions/UINavigation.yml"
               tofile="${setupDir}/bin30/UINavigation.yml"/>
   <copy todir="${setupDir}/resources30">
     <fileset basedir="${dir.bin}/resources">
@@ -425,10 +426,10 @@ public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
   </copy>       
   <if test="${BuildClientArchive}">
     <copy todir="${setupDir}/etc30" 
-          file="${dir.bin}/setup/petra${PetraRelease}/remoteclientWin/PetraClientRemote.config" />
+          file="${dir.root}/setup/petra${PetraRelease}/remoteclientWin/PetraClientRemote.config" />
   </if>
   <copy todir="${setupDir}/manuals30">
-    <fileset basedir="${dir.bin}/setup/petra${PetraRelease}/releasenotes/">
+    <fileset basedir="${dir.root}/setup/petra${PetraRelease}/releasenotes/">
       <include name="*.html" />
     </fileset>
   </copy>
@@ -438,40 +439,38 @@ public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
       <include name="**/*.xml" />
     </fileset>
   </copy>
-  <copy file="${dir.bin}/LICENSE" tofile="${setupDir}/LICENSE"/>
+  <copy file="${dir.root}/LICENSE" tofile="${setupDir}/LICENSE"/>
   <if test="${not BuildClientArchive}">
     <copy todir="${setupDir}/sql30">
-      <fileset basedir="${dir.bin}/csharp/ICT/Petra/Server/sql/">
+      <fileset basedir="${dir.root}/csharp/ICT/Petra/Server/sql/">
           <include name="*.sql" />
           <include name="*.yml" />
       </fileset>
     </copy>
     <if test="${SkipDatabases!='true'}">
-      <copy file="${dir.bin}/setup/petra${PetraRelease}/demo.db"
+      <copy file="${dir.root}/setup/petra${PetraRelease}/demo.db"
                   tofile="${setupDir}/db30/demo.db"/>
-      <copy file="${dir.bin}/setup/petra${PetraRelease}/createtables-PostgreSQL.sql"
+      <copy file="${dir.root}/setup/petra${PetraRelease}/createtables-PostgreSQL.sql"
                   tofile="${setupDir}/db30/createtables-PostgreSQL.sql"/>
-      <copy file="${dir.bin}/setup/petra${PetraRelease}/createconstraints-PostgreSQL.sql"
+      <copy file="${dir.root}/setup/petra${PetraRelease}/createconstraints-PostgreSQL.sql"
                   tofile="${setupDir}/db30/createconstraints-PostgreSQL.sql"/>
-      <copy file="${dir.bin}/setup/petra${PetraRelease}/demodata-PostgreSQL.sql"
+      <copy file="${dir.root}/setup/petra${PetraRelease}/demodata-PostgreSQL.sql"
                   tofile="${setupDir}/db30/demodata-PostgreSQL.sql"/>
-      <copy file="${dir.bin}/setup/petra${PetraRelease}/createtables-MySQL.sql"
+      <copy file="${dir.root}/setup/petra${PetraRelease}/createtables-MySQL.sql"
                   tofile="${setupDir}/db30/createtables-MySQL.sql"/>
-      <copy file="${dir.bin}/setup/petra${PetraRelease}/createconstraints-MySQL.sql"
+      <copy file="${dir.root}/setup/petra${PetraRelease}/createconstraints-MySQL.sql"
                   tofile="${setupDir}/db30/createconstraints-MySQL.sql"/>
-      <copy file="${dir.bin}/setup/petra${PetraRelease}/demodata-MySQL.sql"
+      <copy file="${dir.root}/setup/petra${PetraRelease}/demodata-MySQL.sql"
                   tofile="${setupDir}/db30/demodata-MySQL.sql"/>
-      <copy file="${dir.bin}/setup/petra${PetraRelease}/linuxserver/INSTALL"
+      <copy file="${dir.root}/setup/petra${PetraRelease}/linuxserver/INSTALL"
                   tofile="${setupDir}/INSTALL"/>
-      <if test="${SkipCompileClient!='true'}">
-        <copy file="${dir.bin}/setup/petra${PetraRelease}/linuxserver/startClient.sh"
-                tofile="${setupDir}/startClient.sh"/>
-      </if>
-      <copy file="${dir.bin}/setup/petra${PetraRelease}/linuxserver/openpetraorg-server.sh"
+      <copy file="${dir.root}/setup/petra${PetraRelease}/linuxserver/startClient.sh"
+                  tofile="${setupDir}/startClient.sh"/>
+      <copy file="${dir.root}/setup/petra${PetraRelease}/linuxserver/openpetraorg-server.sh"
                   tofile="${setupDir}/openpetraorg-server.sh"/>
-      <copy file="${dir.bin}/setup/petra${PetraRelease}/linuxserver/initpg.sh"
+      <copy file="${dir.root}/setup/petra${PetraRelease}/linuxserver/initpg.sh"
                   tofile="${setupDir}/initpg.sh"/>
-      <copy file="${dir.bin}/setup/petra${PetraRelease}/linuxserver/initmysql.sh"
+      <copy file="${dir.root}/setup/petra${PetraRelease}/linuxserver/initmysql.sh"
                   tofile="${setupDir}/initmysql.sh"/>
       <if test="${platform::is-unix()}">
         <!-- change the executable flag -->
@@ -480,7 +479,7 @@ public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
         <ExecCmd program="sh" commandline="/C &quot;for f in ${setupDir}/*.sh; do dos2unix -o $f; done;&quot;"/>
         <ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}/etc30; ln -s PetraServerConsole-postgresql.config PetraServerConsole.config&quot;"/>
         
-        <ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}/..; tar czpf ${dir.setup}/openpetraorg-mono-${ReleaseID}.tar.gz *&quot;"/>
+        <ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}/..; tar czpf ${dir.delivery}/openpetraorg-mono-${ReleaseID}.tar.gz openpetraorg-${ReleaseID}&quot;"/>
 
         <!-- to avoid problem with symbolic link with delete dir task -->
         <ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}/etc30; rm PetraServerConsole.config&quot;"/>
@@ -488,7 +487,7 @@ public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
     </if>
     <if test="${SkipDatabases=='true'}">
       <!-- this can be useful if we just need the binary files and not the scripts for an existing Linux OpenPetra server to update -->
-      <tar destfile="${dir.setup}/openpetraorg-server-update-${ReleaseID}.tar.gz" compression="GZip">
+      <tar destfile="${dir.delivery}/openpetraorg-server-update-${ReleaseID}.tar.gz" compression="GZip">
           <fileset basedir="${setupDir}" prefix="openpetraorg-${ReleaseID}">
               <include name="**/*" />
           </fileset>
@@ -497,7 +496,7 @@ public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
   </if>
   <if test="${BuildClientArchive}">
     <!-- this does not keep the executable flag; need this to make the patch for windows clients -->
-    <tar destfile="${dir.setup}/openpetraorg-client-backup-${ReleaseID}.tar.gz" compression="GZip">
+    <tar destfile="${dir.delivery}/openpetraorg-client-backup-${ReleaseID}.tar.gz" compression="GZip">
         <fileset basedir="${setupDir}" prefix="openpetraorg-${ReleaseID}">
             <include name="**/*" />
         </fileset>

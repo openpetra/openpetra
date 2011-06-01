@@ -46,7 +46,7 @@ public class TM{#MODULE}NamespaceLoader : TConfigurableMBRObject
     public TM{#MODULE}NamespaceLoader()
     {
 #if DEBUGMODE
-        if (TSrvSetting.DL >= 9)
+        if (TLogging.DL >= 9)
         {
             Console.WriteLine(this.GetType().FullName + " created in application domain: " + Thread.GetDomain().FriendlyName);
         }
@@ -79,7 +79,7 @@ public class TM{#MODULE}NamespaceLoader : TConfigurableMBRObject
         Byte[] rndbytes = new Byte[5];
 
 #if DEBUGMODE
-        if (TSrvSetting.DL >= 9)
+        if (TLogging.DL >= 9)
         {
             Console.WriteLine("TM{#MODULE}NamespaceLoader.GetRemotingURL in AppDomain: " + Thread.GetDomain().FriendlyName);
         }
@@ -104,7 +104,7 @@ public class TM{#MODULE}NamespaceLoader : TConfigurableMBRObject
         FRemotingURL = RemoteAtURI; // FRemotedObject.URI;
 
 #if DEBUGMODE
-        if (TSrvSetting.DL >= 9)
+        if (TLogging.DL >= 9)
         {
             Console.WriteLine("TM{#MODULE}.URI: " + FRemotedObject.URI);
         }
@@ -136,7 +136,7 @@ public class {#LOCALCLASSNAME} : MarshalByRefObject, I{#NAMESPACE}Namespace
     public {#LOCALCLASSNAME}()
     {
 #if DEBUGMODE
-        if (TSrvSetting.DL >= 9)
+        if (TLogging.DL >= 9)
         {
             Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
         }
@@ -157,7 +157,7 @@ public class {#LOCALCLASSNAME} : MarshalByRefObject, I{#NAMESPACE}Namespace
         object MyObject;
         object MyObject2;
 #endif
-        if (TSrvSetting.DL >= 9)
+        if (TLogging.DL >= 9)
         {
             Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
                                                                                             DateTime.Now.Ticks -
@@ -166,7 +166,7 @@ public class {#LOCALCLASSNAME} : MarshalByRefObject, I{#NAMESPACE}Namespace
 
 #if DEBUGMODELONGRUNNINGFINALIZERS
         MyObject = new object();
-        if (TSrvSetting.DL >= 9)
+        if (TLogging.DL >= 9)
         {
             Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
         }
@@ -177,7 +177,7 @@ public class {#LOCALCLASSNAME} : MarshalByRefObject, I{#NAMESPACE}Namespace
             GC.KeepAlive(MyObject);
         }
 
-        if (TSrvSetting.DL >= 9)
+        if (TLogging.DL >= 9)
         {
             Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
         }
@@ -266,7 +266,7 @@ TModuleAccessManager.CheckUserPermissionsForMethod(typeof({#CONNECTORWITHNAMESPA
 
 {##CALLPROCEDUREWITHGETDATA}
 #if DEBUGMODE
-if (TSrvSetting.DL >= 9)
+if (TLogging.DL >= 9)
 {
     Console.WriteLine(this.GetType().FullName + ": Creating T{#CONNECTORTYPE}...");
 }
@@ -274,7 +274,7 @@ if (TSrvSetting.DL >= 9)
 #endif
 {#CALLPROCEDUREINTERNAL}
 #if DEBUGMODE
-if (TSrvSetting.DL >= 9)
+if (TLogging.DL >= 9)
 {
     Console.WriteLine(this.GetType().FullName + ": Calling T{#CONNECTORTYPE}.GetData...");
 }
@@ -282,7 +282,7 @@ if (TSrvSetting.DL >= 9)
 #endif
 {#GETDATA}
 #if DEBUGMODE
-if (TSrvSetting.DL >= 9)
+if (TLogging.DL >= 9)
 {
     Console.WriteLine(this.GetType().FullName + ": Calling T{#CONNECTORTYPE}.GetData finished.");
 }

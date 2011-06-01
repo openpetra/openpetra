@@ -50,6 +50,16 @@ namespace Ict.Common
         /// </summary>
         public static void Init(string ALanguageCode, string ACultureCode)
         {
+            if (ALanguageCode.ToLower() == "en-en")
+            {
+                ALanguageCode = "en-GB";
+            }
+
+            if (ACultureCode.ToLower() == "en-en")
+            {
+                ACultureCode = "en-GB";
+            }
+
             // modify current locale for the given language
             Thread.CurrentThread.CurrentUICulture = new CultureInfo(ALanguageCode);
 
@@ -72,8 +82,12 @@ namespace Ict.Common
         /// </summary>
         public static string GetString(string AEnglishMessage)
         {
-//            return catalog.GetString(AEnglishMessage); @TODO Fix this (Catalog is coming up null)
-            return AEnglishMessage;
+            if (catalog == null)
+            {
+                return AEnglishMessage;
+            }
+
+            return catalog.GetString(AEnglishMessage);
         }
 
         /// <summary>

@@ -257,11 +257,18 @@ namespace Ict.Common.IO
         /// <returns></returns>
         public Boolean PatchApplies(String APatchZipFile, TFileVersionInfo AMaxVersion)
         {
-            StringCollection versions = GetVersionsFromDiffZipName(APatchZipFile);
-            TFileVersionInfo patchStartVersion = new TFileVersionInfo(versions[0]);
-            TFileVersionInfo patchEndVersion = new TFileVersionInfo(versions[1]);
+            try
+            {
+                StringCollection versions = GetVersionsFromDiffZipName(APatchZipFile);
+                TFileVersionInfo patchStartVersion = new TFileVersionInfo(versions[0]);
+                TFileVersionInfo patchEndVersion = new TFileVersionInfo(versions[1]);
 
-            return patchStartVersion.Compare(this) == 0 && patchEndVersion.Compare(AMaxVersion) <= 0;
+                return patchStartVersion.Compare(this) == 0 && patchEndVersion.Compare(AMaxVersion) <= 0;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
     }
 

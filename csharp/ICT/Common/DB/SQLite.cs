@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -74,7 +74,7 @@ namespace Ict.Common.DB
                 // see also http://www.vincenzo.net/isxkb/index.php?title=Vista_considerations#Best_Practices
 
                 // copy the base database
-                string baseDatabase = TAppSettingsManager.GetValue("Server.BaseDatabase");
+                string baseDatabase = TAppSettingsManager.GetValue("Server.SQLiteBaseFile");
 
                 if (!Directory.Exists(Path.GetDirectoryName(AServer)))
                 {
@@ -224,7 +224,7 @@ namespace Ict.Common.DB
 
             ACommandText = FormatQueryRDBMSSpecific(ACommandText);
 
-            if (DBAccess.GDBAccessObj.DebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
+            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
             {
                 TLogging.Log("Query formatted for SQLite: " + ACommandText);
             }

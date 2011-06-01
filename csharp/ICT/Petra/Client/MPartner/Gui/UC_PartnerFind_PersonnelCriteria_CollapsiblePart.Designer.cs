@@ -70,10 +70,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.chkFOOnlyCurrentCommitments = new System.Windows.Forms.CheckBox();
             this.btnChooseCommitmentFieldOffice = new System.Windows.Forms.Button();
             this.txtPartnerKey = new System.Windows.Forms.TextBox();
-            this.pnlEventConferenceCampaign = new System.Windows.Forms.Panel();
-            this.btnChooseEventConferenceCampaign = new System.Windows.Forms.Button();
-            this.txtEventConferenceCampaign = new System.Windows.Forms.TextBox();
-            this.lblEventConferenceCampaign = new System.Windows.Forms.Label();
+            this.pnlEventConferenceOutreach = new System.Windows.Forms.Panel();
+            this.btnChooseEventConferenceOutreach = new System.Windows.Forms.Button();
+            this.txtEventConferenceOutreach = new System.Windows.Forms.TextBox();
+            this.lblEventConferenceOutreach = new System.Windows.Forms.Label();
             this.pnlPersonLanguage = new System.Windows.Forms.Panel();
             this.cmbPersonLanguage = new System.Windows.Forms.ComboBox();
             this.lblPersonLanguage = new System.Windows.Forms.Label();
@@ -81,7 +81,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 this.components);
             this.pnlCommitmentFieldOffice.SuspendLayout();
             this.pnlFromTo.SuspendLayout();
-            this.pnlEventConferenceCampaign.SuspendLayout();
+            this.pnlEventConferenceOutreach.SuspendLayout();
             this.pnlPersonLanguage.SuspendLayout();
             this.SuspendLayout();
 
@@ -196,49 +196,49 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtPartnerKey.Text = "";
 
             //
-            // pnlEventConferenceCampaign
+            // pnlEventConferenceOutreach
             //
-            this.pnlEventConferenceCampaign.Controls.Add(this.btnChooseEventConferenceCampaign);
-            this.pnlEventConferenceCampaign.Controls.Add(this.txtEventConferenceCampaign);
-            this.pnlEventConferenceCampaign.Controls.Add(this.lblEventConferenceCampaign);
-            this.pnlEventConferenceCampaign.Location = new System.Drawing.Point(2, 76);
-            this.pnlEventConferenceCampaign.Name = "pnlEventConferenceCampaign";
-            this.pnlEventConferenceCampaign.Size = new System.Drawing.Size(294, 21);
-            this.pnlEventConferenceCampaign.TabIndex = 5;
+            this.pnlEventConferenceOutreach.Controls.Add(this.btnChooseEventConferenceOutreach);
+            this.pnlEventConferenceOutreach.Controls.Add(this.txtEventConferenceOutreach);
+            this.pnlEventConferenceOutreach.Controls.Add(this.lblEventConferenceOutreach);
+            this.pnlEventConferenceOutreach.Location = new System.Drawing.Point(2, 76);
+            this.pnlEventConferenceOutreach.Name = "pnlEventConferenceOutreach";
+            this.pnlEventConferenceOutreach.Size = new System.Drawing.Size(294, 21);
+            this.pnlEventConferenceOutreach.TabIndex = 5;
 
             //
-            // btnChooseEventConferenceCampaign
+            // btnChooseEventConferenceOutreach
             //
-            this.btnChooseEventConferenceCampaign.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnChooseEventConferenceCampaign.Location = new System.Drawing.Point(234, 0);
-            this.btnChooseEventConferenceCampaign.Name = "btnChooseEventConferenceCam" + "paign";
-            this.btnChooseEventConferenceCampaign.Size = new System.Drawing.Size(20, 20);
-            this.btnChooseEventConferenceCampaign.TabIndex = 6;
-            this.btnChooseEventConferenceCampaign.Text = "...";
+            this.btnChooseEventConferenceOutreach.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.btnChooseEventConferenceOutreach.Location = new System.Drawing.Point(234, 0);
+            this.btnChooseEventConferenceOutreach.Name = "btnChooseEventConferenceCam" + "paign";
+            this.btnChooseEventConferenceOutreach.Size = new System.Drawing.Size(20, 20);
+            this.btnChooseEventConferenceOutreach.TabIndex = 6;
+            this.btnChooseEventConferenceOutreach.Text = "...";
 
             //
-            // txtEventConferenceCampaign
+            // txtEventConferenceOutreach
             //
-            this.txtEventConferenceCampaign.Font = new System.Drawing.Font("Verdan" + 'a',
+            this.txtEventConferenceOutreach.Font = new System.Drawing.Font("Verdan" + 'a',
                 8.25f,
                 System.Drawing.FontStyle.Bold,
                 System.Drawing.GraphicsUnit.Point,
                 (byte)0);
-            this.txtEventConferenceCampaign.Location = new System.Drawing.Point(146, 0);
-            this.txtEventConferenceCampaign.Name = "txtEventConferenceCampaign";
-            this.txtEventConferenceCampaign.Size = new System.Drawing.Size(86, 21);
-            this.txtEventConferenceCampaign.TabIndex = 1;
-            this.txtEventConferenceCampaign.Text = "";
+            this.txtEventConferenceOutreach.Location = new System.Drawing.Point(146, 0);
+            this.txtEventConferenceOutreach.Name = "txtEventConferenceOutreach";
+            this.txtEventConferenceOutreach.Size = new System.Drawing.Size(86, 21);
+            this.txtEventConferenceOutreach.TabIndex = 1;
+            this.txtEventConferenceOutreach.Text = "";
 
             //
-            // lblEventConferenceCampaign
+            // lblEventConferenceOutreach
             //
-            this.lblEventConferenceCampaign.Location = new System.Drawing.Point(2, 2);
-            this.lblEventConferenceCampaign.Name = "lblEventConferenceCampaign";
-            this.lblEventConferenceCampaign.Size = new System.Drawing.Size(142, 23);
-            this.lblEventConferenceCampaign.TabIndex = 0;
-            this.lblEventConferenceCampaign.Text = "Eve&nt/Confer./Camp.:";
-            this.lblEventConferenceCampaign.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblEventConferenceOutreach.Location = new System.Drawing.Point(2, 2);
+            this.lblEventConferenceOutreach.Name = "lblEventConferenceOutreach";
+            this.lblEventConferenceOutreach.Size = new System.Drawing.Size(142, 23);
+            this.lblEventConferenceOutreach.TabIndex = 0;
+            this.lblEventConferenceOutreach.Text = "Eve&nt/Confer./Camp.:";
+            this.lblEventConferenceOutreach.TextAlign = System.Drawing.ContentAlignment.TopRight;
 
             //
             // pnlPersonLanguage
@@ -278,16 +278,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.Caption = "Personnel Criteria";
             this.Controls.Add(this.pnlPersonLanguage);
-            this.Controls.Add(this.pnlEventConferenceCampaign);
+            this.Controls.Add(this.pnlEventConferenceOutreach);
             this.Controls.Add(this.pnlCommitmentFieldOffice);
             this.Name = "TUC_PartnerFind_PersonnelCriteria_CollapsiblePart";
             this.Size = new System.Drawing.Size(302, 126);
             this.Controls.SetChildIndex(this.pnlCommitmentFieldOffice, 0);
-            this.Controls.SetChildIndex(this.pnlEventConferenceCampaign, 0);
+            this.Controls.SetChildIndex(this.pnlEventConferenceOutreach, 0);
             this.Controls.SetChildIndex(this.pnlPersonLanguage, 0);
             this.pnlCommitmentFieldOffice.ResumeLayout(false);
             this.pnlFromTo.ResumeLayout(false);
-            this.pnlEventConferenceCampaign.ResumeLayout(false);
+            this.pnlEventConferenceOutreach.ResumeLayout(false);
             this.pnlPersonLanguage.ResumeLayout(false);
             this.ResumeLayout(false);
         }
@@ -301,10 +301,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         private System.Windows.Forms.Label lblCommitmentFOFromTo;
         private System.Windows.Forms.TextBox TextBox2;
         private System.Windows.Forms.Label Label3;
-        private System.Windows.Forms.Panel pnlEventConferenceCampaign;
-        private System.Windows.Forms.TextBox txtEventConferenceCampaign;
-        private System.Windows.Forms.Label lblEventConferenceCampaign;
-        private System.Windows.Forms.Button btnChooseEventConferenceCampaign;
+        private System.Windows.Forms.Panel pnlEventConferenceOutreach;
+        private System.Windows.Forms.TextBox txtEventConferenceOutreach;
+        private System.Windows.Forms.Label lblEventConferenceOutreach;
+        private System.Windows.Forms.Button btnChooseEventConferenceOutreach;
         private System.Windows.Forms.Panel pnlPersonLanguage;
         private System.Windows.Forms.ComboBox cmbPersonLanguage;
         private System.Windows.Forms.Label lblPersonLanguage;
