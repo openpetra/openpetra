@@ -548,12 +548,21 @@ namespace Ict.Petra.Server.MConference.Applications
                         GeneralApplication.GenAppSendFldAcceptDate = DateTime.Today;
                     }
 
-                    TApplicationFormData data = (TApplicationFormData)TJsonTools.ImportIntoTypedStructure(typeof(TApplicationFormData),
-                        GeneralApplication.RawApplicationData);
-                    data.RawData = GeneralApplication.RawApplicationData;
+                    try
+                    {
+                        TApplicationFormData data = (TApplicationFormData)TJsonTools.ImportIntoTypedStructure(typeof(TApplicationFormData),
+                            GeneralApplication.RawApplicationData);
+                        data.RawData = GeneralApplication.RawApplicationData;
 
-                    // attempt to send an email to that applicant, telling about the accepted application
-                    SendEmail(data);
+                        // attempt to send an email to that applicant, telling about the accepted application
+                        SendEmail(data);
+                    }
+                    catch (Exception e)
+                    {
+                        TLogging.Log("Problem sending acceptance email " + e.Message);
+                        TLogging.Log(GeneralApplication.RawApplicationData);
+                        throw;
+                    }
                 }
 
                 GeneralApplication.GenApplicationStatus = AChangedRow.GenApplicationStatus;
@@ -600,19 +609,21 @@ namespace Ict.Petra.Server.MConference.Applications
         {
             ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
 
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
             try
             {
-                TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-
                 InsertDataIntoConferenceApplicationTDS(ARow, ref MainDS, AEventCode, Transaction);
-
-                DBAccess.GDBAccessObj.RollbackTransaction();
             }
             catch (Exception e)
             {
                 TLogging.Log(e.Message);
                 TLogging.Log(e.StackTrace);
                 return TSubmitChangesResult.scrError;
+            }
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
             }
 
             TVerificationResultCollection VerificationResult;

@@ -417,7 +417,10 @@ namespace Ict.Petra.WebServer.MConference
             Dictionary <string, string>values = JSON.Deserialize <Dictionary <string, string>>(e.ExtraParams["Values"]);
 
             string RawData = TApplicationManagement.GetRawApplicationData(row.PartnerKey, row.ApplicationKey, row.RegistrationOffice);
-            Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(RawData);
+            Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(TJsonTools.RemoveContainerControls(RawData));
+
+            // avoid problems with different formatting of dates, could cause parsing errors later, into the typed class
+            values["DateOfBirth"] = Convert.ToDateTime(values["DateOfBirth"]).ToShortDateString();
 
             foreach (string key in values.Keys)
             {
