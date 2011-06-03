@@ -29,6 +29,7 @@ using System.Threading;
 using GNU.Gettext;
 
 using Ict.Common;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.App.Main;
 using Ict.Petra.Shared.Interfaces.ServerAdminInterface;

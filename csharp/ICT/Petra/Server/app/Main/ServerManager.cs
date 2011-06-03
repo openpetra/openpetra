@@ -40,6 +40,7 @@ using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.IO;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Shared.Interfaces.ServerAdminInterface;
 using Ict.Petra.Shared.Security;
@@ -60,15 +61,9 @@ namespace Ict.Petra.Server.App.Main
     /// </summary>
     public class TServerManager : MarshalByRefObject, IServerAdminInterface
     {
-        /// <summary>Reference to the Logging object</summary>
-        public static TLogging ULogger;
-
         /// <summary>Keeps track of the number of times this Class has been
         /// instantiated</summary>
         private Int32 FNumberServerManagerInstances;
-
-        /// <summary>Reference to the global TSrvSettings object</summary>
-        private TSrvSetting FServerSettings;
 
         /// <summary>System wide defaults</summary>
         private TSystemDefaultsCache FSystemDefaultsCache;
@@ -188,8 +183,10 @@ namespace Ict.Petra.Server.App.Main
         {
             FNumberServerManagerInstances = 0;
 
-            SetupServerSettings();
-            ULogger = new TLogging(TSrvSetting.ServerLogFile);
+            new TAppSettingsManager();
+            new TSrvSetting();
+            new TLogging(TSrvSetting.ServerLogFile);
+            TLogging.DebugLevel = TAppSettingsManager.GetInt16("Server.DebugLevel", 0);
 
             // Create SystemDefaults Cache
             FSystemDefaultsCache = new TSystemDefaultsCache();
@@ -280,166 +277,6 @@ namespace Ict.Petra.Server.App.Main
             Environment.Exit(0);
 
             // Server application stops here !!!
-        }
-
-        /// <summary>
-        /// Parses settings from the Application Configuration File, determines network
-        /// configuration of the Server and Database connection parameters and stores
-        /// all these settings in the global TSrvSettings object.
-        ///
-        /// </summary>
-        /// <returns>void</returns>
-        private void SetupServerSettings()
-        {
-            String ServerLogFile;
-            String ServerName;
-            String ServerIPAddresses;
-            String ODBCDsnAppSetting;
-            TDBType RDBMSTypeAppSetting;
-            Int16 ServerIPBasePort;
-            Int16 ServerDebugLevel;
-            Int16 ClientIdleStatusAfterXMinutes;
-            Int16 ClientKeepAliveCheckIntervalInSeconds;
-            Int16 ClientKeepAliveTimeoutAfterXSecondsLAN;
-            Int16 ClientKeepAliveTimeoutAfterXSecondsRemote;
-            Int16 ClientConnectionTimeoutAfterXSeconds;
-            Boolean ClientAppDomainShutdownAfterKeepAliveTimeout;
-            string SMTPServer;
-            bool AutomaticIntranetExportEnabled;
-            bool RunAsStandalone;
-            string IntranetDataDestinationEmail;
-            string IntranetDataSenderEmail;
-
-            #region Parse settings from the Application Configuration File
-
-            // Server.RDBMSType
-            RDBMSTypeAppSetting = CommonTypes.ParseDBType(TAppSettingsManager.GetValue("Server.RDBMSType"));
-
-            // Server.ODBC_DSN
-            ODBCDsnAppSetting = TAppSettingsManager.GetValue("Server.ODBC_DSN", false);
-
-            string DatabaseHostOrFile = TAppSettingsManager.GetValue("Server.DBHostOrFile", "localhost").
-                                        Replace("{userappdata}", Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
-            string DatabasePort = TAppSettingsManager.GetValue("Server.DBPort", "5432");
-            string DatabaseName = TAppSettingsManager.GetValue("Server.DBName", "openpetra");
-            string DatabaseUserName = TAppSettingsManager.GetValue("Server.DBUserName", "petraserver");
-            string DatabasePassword = TAppSettingsManager.GetValue("Server.DBPassword");
-
-            if (TAppSettingsManager.HasValue("Server.LogFile"))
-            {
-                ServerLogFile =
-                    TAppSettingsManager.GetValue("Server.LogFile", false).Replace("{userappdata}",
-                        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
-            }
-            else
-            {
-                // maybe the log file has already been set, eg. by the NUnit Server Test
-                ServerLogFile = TLogging.GetLogFileName();
-
-                if (ServerLogFile.Length == 0)
-                {
-                    // this is effectively the bin directory (current directory)
-                    ServerLogFile = "Server.log";
-                }
-            }
-
-            // Server.IPBasePort
-            ServerIPBasePort = TAppSettingsManager.GetInt16("Server.IPBasePort", 9000);
-
-            // Server.DebugLevel
-            ServerDebugLevel = TAppSettingsManager.GetInt16("Server.DebugLevel", 0);
-
-            RunAsStandalone = TAppSettingsManager.GetBoolean("Server.RunAsStandalone", false);
-
-            // Server.ClientIdleStatusAfterXMinutes
-            ClientIdleStatusAfterXMinutes = TAppSettingsManager.GetInt16("Server.ClientIdleStatusAfterXMinutes", 5);
-
-            // Server.ClientKeepAliveCheckIntervalInSeconds
-            ClientKeepAliveCheckIntervalInSeconds = TAppSettingsManager.GetInt16("Server.ClientKeepAliveCheckIntervalInSeconds", 60);
-
-            // Server.ClientKeepAliveTimeoutAfterXSeconds_LAN
-            ClientKeepAliveTimeoutAfterXSecondsLAN = TAppSettingsManager.GetInt16("Server.ClientKeepAliveTimeoutAfterXSeconds_LAN", 60);
-
-            // Server.ClientKeepAliveTimeoutAfterXSeconds_Remote
-            ClientKeepAliveTimeoutAfterXSecondsRemote =
-                TAppSettingsManager.GetInt16("Server.ClientKeepAliveTimeoutAfterXSeconds_Remote", (short)(ClientKeepAliveTimeoutAfterXSecondsLAN * 2));
-
-            // Server.ClientConnectionTimeoutAfterXSeconds
-            ClientConnectionTimeoutAfterXSeconds = TAppSettingsManager.GetInt16("Server.ClientConnectionTimeoutAfterXSeconds", 20);
-
-            // Server.ClientAppDomainShutdownAfterKeepAliveTimeout
-            ClientAppDomainShutdownAfterKeepAliveTimeout = TAppSettingsManager.GetBoolean("Server.ClientAppDomainShutdownAfterKeepAliveTimeout", true);
-
-            SMTPServer = TAppSettingsManager.GetValue("Server.SMTPServer", "localhost");
-
-            // This is disabled in processing at the moment, so we reflect that here. When it works change to true
-            AutomaticIntranetExportEnabled = TAppSettingsManager.GetBoolean("Server.AutomaticIntranetExportEnabled", false);
-
-            // The following setting specifies the email address where the Intranet Data emails are sent to when "Server.AutomaticIntranetExportEnabled" is true.
-            IntranetDataDestinationEmail = TAppSettingsManager.GetValue("Server.IntranetDataDestinationEmail", "???@???.org");
-
-            // The following setting is temporary - until we have created a GUI where users can specify the email address for the
-            // responsible Personnel and Finance persons themselves. Those will be stored in SystemDefaults then.
-            IntranetDataSenderEmail = TAppSettingsManager.GetValue("Server.IntranetDataSenderEmail", "???@???.org");
-
-            // Determine network configuration of the Server
-            Networking.DetermineNetworkConfig(out ServerName, out ServerIPAddresses);
-
-            Version ServerAssemblyVersion;
-
-            if ((System.Reflection.Assembly.GetEntryAssembly() != null) && (System.Reflection.Assembly.GetEntryAssembly().GetName() != null))
-            {
-                ServerAssemblyVersion = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
-
-                // retrieve the current version of the server from the file version.txt in the bin directory
-                // this is easier to manage than to check the assembly version in case you only need to quickly update the client
-                string BinPath = Environment.CurrentDirectory;
-
-                if (File.Exists(BinPath + Path.DirectorySeparatorChar + "version.txt"))
-                {
-                    StreamReader srVersion = new StreamReader(BinPath + Path.DirectorySeparatorChar + "version.txt");
-                    TFileVersionInfo v = new TFileVersionInfo(srVersion.ReadLine());
-                    ServerAssemblyVersion = new Version(v.FileMajorPart, v.FileMinorPart, v.FileBuildPart, v.FilePrivatePart);
-                    srVersion.Close();
-                }
-            }
-            else
-            {
-                // this is with the web services, started with xsp.exe
-                ServerAssemblyVersion = new Version(0, 0, 0, 0);
-            }
-
-            #endregion
-
-            // Store Server configuration in the static TSrvSetting class
-            FServerSettings = new TSrvSetting(
-                TAppSettingsManager.ApplicationName,
-                TAppSettingsManager.ConfigFileName,
-                ServerAssemblyVersion,
-                Utilities.DetermineExecutingOS(),
-                RDBMSTypeAppSetting,
-                ODBCDsnAppSetting,
-                DatabaseHostOrFile,
-                DatabasePort,
-                DatabaseName,
-                DatabaseUserName,
-                DatabasePassword,
-                ServerIPBasePort,
-                ServerDebugLevel,
-                ServerLogFile,
-                ServerName,
-                ServerIPAddresses,
-                ClientIdleStatusAfterXMinutes,
-                ClientKeepAliveCheckIntervalInSeconds,
-                ClientKeepAliveTimeoutAfterXSecondsLAN,
-                ClientKeepAliveTimeoutAfterXSecondsRemote,
-                ClientConnectionTimeoutAfterXSeconds,
-                ClientAppDomainShutdownAfterKeepAliveTimeout,
-                SMTPServer,
-                AutomaticIntranetExportEnabled,
-                RunAsStandalone,
-                IntranetDataDestinationEmail,
-                IntranetDataSenderEmail);
         }
 
         /// <summary>

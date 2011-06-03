@@ -23,6 +23,7 @@
 //
 using System;
 using Ict.Common;
+using Ict.Common.Remoting.Server;
 using System.Threading;
 using Ict.Petra.Server.App.ClientDomain;
 

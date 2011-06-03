@@ -27,6 +27,7 @@ using System.Configuration;
 using System.IO;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Server.App.Main;
 using Ict.Petra.Server.App.ClientDomain;
@@ -82,27 +83,7 @@ namespace Ict.Testing.NUnitPetraServer
                 TClientManager.SystemDefaultsCache,
                 TClientManager.UCacheableTablesManager,
                 UserInfo);
-            FDomain.TakeoverServerSettings(TSrvSetting.ApplicationName,
-                TSrvSetting.ConfigurationFile,
-                TSrvSetting.ApplicationVersion,
-                TSrvSetting.ExecutingOS,
-                TSrvSetting.RDMBSType,
-                TSrvSetting.ODBCDsn,
-                TSrvSetting.PostgreSQLServer, TSrvSetting.PostgreSQLServerPort,
-                TSrvSetting.PostgreSQLDatabaseName,
-                TSrvSetting.DBUsername, TSrvSetting.DBPassword,
-                TSrvSetting.IPBasePort,
-                TLogging.DebugLevel, TSrvSetting.ServerLogFile, TSrvSetting.HostName, TSrvSetting.HostIPAddresses,
-                TSrvSetting.ClientIdleStatusAfterXMinutes, TSrvSetting.ClientKeepAliveCheckIntervalInSeconds,
-                TSrvSetting.ClientKeepAliveTimeoutAfterXSecondsLAN,
-                TSrvSetting.ClientKeepAliveTimeoutAfterXSecondsRemote,
-                TSrvSetting.ClientConnectionTimeoutAfterXSeconds,
-                TSrvSetting.ClientAppDomainShutdownAfterKeepAliveTimeout,
-                TSrvSetting.SMTPServer,
-                TSrvSetting.AutomaticIntranetExportEnabled,
-                TSrvSetting.RunAsStandalone,
-                TSrvSetting.IntranetDataDestinationEmail,
-                TSrvSetting.IntranetDataSenderEmail);
+            FDomain.InitAppDomain(TSrvSetting.ServerSettings);
 
             // we don't need to establish the database connection anymore
             // FDomain.EstablishDBConnection();

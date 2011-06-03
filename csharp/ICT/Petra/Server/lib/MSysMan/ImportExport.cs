@@ -33,6 +33,7 @@ using System.Globalization;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.DB;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.App.ClientDomain;

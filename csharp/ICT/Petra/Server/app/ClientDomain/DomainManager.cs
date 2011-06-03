@@ -33,6 +33,7 @@ using System.Runtime.Remoting.Services;
 using System.Security.Cryptography;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces;
 using Ict.Petra.Shared.Interfaces.AsynchronousExecution;
@@ -514,93 +515,15 @@ namespace Ict.Petra.Server.App.ClientDomain
         /// inaccessible in this AppDomain!
         ///
         /// </summary>
-        /// <param name="AApplicationName">ApplicationName setting</param>
-        /// <param name="AApplicationVersion"></param>
-        /// <param name="AConfigurationFile">ConfigurationFile setting</param>
-        /// <param name="AExecutingOS">ExecutingOS setting</param>
-        /// <param name="ARDMBSType">RDMBSType setting</param>
-        /// <param name="AODBCDsn">ODBC Dsn setting</param>
-        /// <param name="APostgreSQLServer"></param>
-        /// <param name="APostgreSQLServerPort"></param>
-        /// <param name="APostgreSQLDatabaseName"></param>
-        /// <param name="ADBUsername">DB Username</param>
-        /// <param name="ADBPassword">DB Password</param>
-        /// <param name="AIPBasePort">IPBasePort setting</param>
-        /// <param name="ADebugLevel">DebugLevel setting</param>
-        /// <param name="AServerLogFile">complete path for log file to write logging to</param>
-        /// <param name="AHostName">HostName setting</param>
-        /// <param name="AHostIPAddresses">HostIPAddresses setting</param>
-        /// <param name="AClientIdleStatusAfterXMinutes">ClientIdleStatusAfterXMinutes setting</param>
-        /// <param name="AClientKeepAliveCheckIntervalInSeconds"></param>
-        /// <param name="AClientKeepAliveTimeoutAfterXSecondsLAN">ClientKeepAliveTimeoutAfterXSecondsLAN
-        /// setting</param>
-        /// <param name="AClientKeepAliveTimeoutAfterXSecondsRemote">ClientKeepAliveTimeoutAfterXSecondsRemote
-        /// setting</param>
-        /// <param name="AClientConnectionTimeoutAfterXSeconds"></param>
-        /// <param name="AClientAppDomainShutdownAfterKeepAliveTimeout">ClientAppDomainShutdownAfterKeepAliveTimeout
-        /// setting</param>
-        /// <param name="ASMTPServer">ASMTPServer setting</param>
-        /// <param name="AAutomaticIntranetExportEnabled">AAutomaticIntranetExportEnabled setting</param>
-        /// <param name="ARunAsStandalone">ARunAsStandalone setting</param>
-        /// <param name="AIntranetDataDestinationEmail">AIntranetDataDestinationEmail setting</param>
-        /// <param name="AIntranetDataSenderEmail">AIntranetDataSenderEmail setting</param>
         /// <returns>void</returns>
-        public void TakeoverServerSettings(String AApplicationName,
-            String AConfigurationFile,
-            System.Version AApplicationVersion,
-            TExecutingOSEnum AExecutingOS,
-            TDBType ARDMBSType,
-            String AODBCDsn,
-            String APostgreSQLServer,
-            String APostgreSQLServerPort,
-            String APostgreSQLDatabaseName,
-            String ADBUsername,
-            String ADBPassword,
-            System.Int16 AIPBasePort,
-            System.Int32 ADebugLevel,
-            String AServerLogFile,
-            String AHostName,
-            String AHostIPAddresses,
-            System.Int16 AClientIdleStatusAfterXMinutes,
-            System.Int16 AClientKeepAliveCheckIntervalInSeconds,
-            System.Int16 AClientKeepAliveTimeoutAfterXSecondsLAN,
-            System.Int16 AClientKeepAliveTimeoutAfterXSecondsRemote,
-            System.Int16 AClientConnectionTimeoutAfterXSeconds,
-            bool AClientAppDomainShutdownAfterKeepAliveTimeout,
-            string ASMTPServer,
-            bool AAutomaticIntranetExportEnabled,
-            bool ARunAsStandalone,
-            string AIntranetDataDestinationEmail,
-            string AIntranetDataSenderEmail)
+        public void InitAppDomain(TSrvSetting ASettings)
         {
-            // Console.WriteLine('TClientDomainManager.TakeoverServerSettings in AppDomain: ' + Thread.GetDomain().FriendlyName);
-            FServerSettings = new TSrvSetting(AApplicationName,
-                AConfigurationFile,
-                AApplicationVersion,
-                AExecutingOS,
-                ARDMBSType,
-                AODBCDsn,
-                APostgreSQLServer,
-                APostgreSQLServerPort,
-                APostgreSQLDatabaseName,
-                ADBUsername,
-                ADBPassword,
-                AIPBasePort,
-                ADebugLevel,
-                AServerLogFile,
-                AHostName,
-                AHostIPAddresses,
-                AClientIdleStatusAfterXMinutes,
-                AClientKeepAliveCheckIntervalInSeconds,
-                AClientKeepAliveTimeoutAfterXSecondsLAN,
-                AClientKeepAliveTimeoutAfterXSecondsRemote,
-                AClientConnectionTimeoutAfterXSeconds,
-                AClientAppDomainShutdownAfterKeepAliveTimeout,
-                ASMTPServer,
-                AAutomaticIntranetExportEnabled,
-                ARunAsStandalone,
-                AIntranetDataDestinationEmail,
-                AIntranetDataSenderEmail);
+            // Console.WriteLine('TClientDomainManager.InitAppDomain in AppDomain: ' + Thread.GetDomain().FriendlyName);
+
+            new TAppSettingsManager();
+
+            FServerSettings = new TSrvSetting(ASettings);
+            TLogging.DebugLevel = TAppSettingsManager.GetInt16("Server.DebugLevel", 0);
         }
 
         /// <summary>

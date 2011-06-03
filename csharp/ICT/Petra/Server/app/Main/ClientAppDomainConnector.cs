@@ -23,6 +23,7 @@
 //
 using System;
 using Ict.Common;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Server.App.Core;
@@ -218,7 +219,7 @@ namespace Ict.Petra.Server.App.Main
         /// <param name="ACacheableTablesManagerRef"></param>
         /// <param name="AUserInfo">An instantiated PetraPrincipal Object, containing User
         /// information</param>
-        /// <param name="AServerSettingsArray">Needs to contain all ServerSettings as TObjects</param>
+        /// <param name="AServerSettings">A copy of the ServerSettings</param>
         /// <param name="ARemotingURLPollClientTasks">The .NET Remoting URL of the
         /// TPollClientTasks Class which the Client needs to calls to retrieve
         /// ClientTasks.</param>
@@ -233,7 +234,7 @@ namespace Ict.Petra.Server.App.Main
             TSystemDefaultsCache ASystemDefaultsCacheRef,
             TCacheableTablesManager ACacheableTablesManagerRef,
             TPetraPrincipal AUserInfo,
-            System.Object[] AServerSettingsArray,
+            TSrvSetting AServerSettings,
             out String ARemotingURLPollClientTasks,
             out String ARemotingURLTestObject)
         {
@@ -271,14 +272,14 @@ namespace Ict.Petra.Server.App.Main
             #endregion
             #region Initialise AppDomain for Client
 
-            // $IFDEF DEBUGMODE Console.WriteLine('Invoking Member ''TakeoverServerSettings'' in Client''s AppDomain...'); $ENDIF
-            FRemoteClientDomainManagerClass.InvokeMember("TakeoverServerSettings",
+            // $IFDEF DEBUGMODE Console.WriteLine('Invoking Member ''InitAppDomain'' in Client''s AppDomain...'); $ENDIF
+            FRemoteClientDomainManagerClass.InvokeMember("InitAppDomain",
                 (BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod),
                 null,
                 FRemoteClientDomainManagerObject,
-                AServerSettingsArray);
+                new Object[] { AServerSettings });
 
-            // $IFDEF DEBUGMODE Console.WriteLine('Successfully invoked Member ''TakeoverServerSettings'' in Client''s AppDomain...'); $ENDIF
+            // $IFDEF DEBUGMODE Console.WriteLine('Successfully invoked Member ''InitAppDomain'' in Client''s AppDomain...'); $ENDIF
             // Create and remote the TPollClientTasks Class
             // $IFDEF DEBUGMODE Console.WriteLine('Invoking Member ''GetPollClientTasksURL'' in Client''s AppDomain...'); $ENDIF
             ARemotingURLPollClientTasks =
@@ -692,23 +693,7 @@ namespace Ict.Petra.Server.App.Main
                 ASystemDefaultsCacheRef,
                 ACacheableTablesManagerRef,
                 AUserInfo,
-                new Object[] { TSrvSetting.ApplicationName, TSrvSetting.ConfigurationFile, (object)TSrvSetting.ApplicationVersion,
-                               TSrvSetting.ExecutingOS,
-                               TSrvSetting.RDMBSType, TSrvSetting.ODBCDsn,
-                               TSrvSetting.PostgreSQLServer, TSrvSetting.PostgreSQLServerPort, TSrvSetting.PostgreSQLDatabaseName,
-                               TSrvSetting.DBUsername, TSrvSetting.DBPassword,
-                               (object)TSrvSetting.IPBasePort,
-                               (object)TLogging.DL, TSrvSetting.ServerLogFile, TSrvSetting.HostName, TSrvSetting.HostIPAddresses,
-                               (object)TSrvSetting.ClientIdleStatusAfterXMinutes, (object)TSrvSetting.ClientKeepAliveCheckIntervalInSeconds,
-                               (object)TSrvSetting.ClientKeepAliveTimeoutAfterXSecondsLAN,
-                               (object)TSrvSetting.ClientKeepAliveTimeoutAfterXSecondsRemote,
-                               (object)TSrvSetting.ClientConnectionTimeoutAfterXSeconds,
-                               (object)TSrvSetting.ClientAppDomainShutdownAfterKeepAliveTimeout,
-                               (object)TSrvSetting.SMTPServer,
-                               (object)TSrvSetting.AutomaticIntranetExportEnabled,
-                               (object)TSrvSetting.RunAsStandalone,
-                               (object)TSrvSetting.IntranetDataDestinationEmail,
-                               (object)TSrvSetting.IntranetDataSenderEmail },
+                TSrvSetting.ServerSettings,
                 out ARemotingURLPollClientTasks,
                 out ARemotingURLTestObject);
 #if DEBUGMODE
