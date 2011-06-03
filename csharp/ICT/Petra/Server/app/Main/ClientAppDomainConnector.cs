@@ -223,9 +223,6 @@ namespace Ict.Petra.Server.App.Main
         /// <param name="ARemotingURLPollClientTasks">The .NET Remoting URL of the
         /// TPollClientTasks Class which the Client needs to calls to retrieve
         /// ClientTasks.</param>
-        /// <param name="ARemotingURLTestObject">The .NET Remoting URL which the Client needs
-        /// to make calls to the TestObject.
-        /// </param>
         /// <returns>void</returns>
         public void LoadDomainManagerAssembly(Int32 AClientID,
             Int16 ARemotingPort,
@@ -235,8 +232,7 @@ namespace Ict.Petra.Server.App.Main
             TCacheableTablesManager ACacheableTablesManagerRef,
             TPetraPrincipal AUserInfo,
             TSrvSetting AServerSettings,
-            out String ARemotingURLPollClientTasks,
-            out String ARemotingURLTestObject)
+            out String ARemotingURLPollClientTasks)
         {
             Assembly LoadedAssembly;
 
@@ -287,13 +283,6 @@ namespace Ict.Petra.Server.App.Main
                         (BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod), null, FRemoteClientDomainManagerObject, null, null));
 
             // $IFDEF DEBUGMODE Console.WriteLine('Successfully invoked Member ''GetPollClientTasksURL'' in Client''s AppDomain! Returned value: ' + ARemotingURLPollClientTasks); $ENDIF
-            // Create and remote a Object from the AppDomain (for testing purposes)
-            // $IFDEF DEBUGMODE Console.WriteLine('Invoking Member ''GetRemotedObjectRemotingURL'' in Client''s AppDomain...'); $ENDIF
-            ARemotingURLTestObject =
-                Convert.ToString(FRemoteClientDomainManagerClass.InvokeMember("GetRemotedObjectRemotingURL",
-                        (BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod), null, FRemoteClientDomainManagerObject, null, null));
-
-            // $IFDEF DEBUGMODE Console.WriteLine('Successfully invoked Member ''GetRemotedObjectRemotingURL'' in Client''s AppDomain! Returned value: ' + ARemotingURLTestObject); $ENDIF
             // Establish (separate) DataBase connection for the AppDomain
             // $IFDEF DEBUGMODE Console.WriteLine('Invoking Member ''EstablishDBConnection'' in Client''s AppDomain...'); $ENDIF
             Convert.ToString(FRemoteClientDomainManagerClass.InvokeMember("EstablishDBConnection",
@@ -672,9 +661,6 @@ namespace Ict.Petra.Server.App.Main
         /// <param name="ARemotingURLPollClientTasks">he .NET Remoting URL of the
         /// TPollClientTasks Class which the Client needs to calls to retrieve
         /// ClientTasks.</param>
-        /// <param name="ARemotingURLTestObject">The .NET Remoting URL which the Client needs
-        /// to make calls to the TestObject.
-        /// </param>
         /// <returns>void</returns>
         public void LoadDomainManagerAssembly(Int32 AClientID,
             Int16 ARemotingPort,
@@ -683,8 +669,7 @@ namespace Ict.Petra.Server.App.Main
             TSystemDefaultsCache ASystemDefaultsCacheRef,
             TCacheableTablesManager ACacheableTablesManagerRef,
             TPetraPrincipal AUserInfo,
-            out String ARemotingURLPollClientTasks,
-            out String ARemotingURLTestObject)
+            out String ARemotingURLPollClientTasks)
         {
             FRemoteLoader.LoadDomainManagerAssembly(AClientID,
                 ARemotingPort,
@@ -694,8 +679,7 @@ namespace Ict.Petra.Server.App.Main
                 ACacheableTablesManagerRef,
                 AUserInfo,
                 TSrvSetting.ServerSettings,
-                out ARemotingURLPollClientTasks,
-                out ARemotingURLTestObject);
+                out ARemotingURLPollClientTasks);
 #if DEBUGMODE
             //
             // IMPORTANT: If the following code is uncommented, the ClientDomain DLL that is loaded only in the Client's AppDomain might get loaded into the Default AppDomain  that's what we don't want!!!

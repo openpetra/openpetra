@@ -212,18 +212,6 @@ namespace Ict.Petra.Server.App.Main
         }
 
         /// <summary>
-        /// Returns the ASCII code value of a Character.
-        ///
-        /// </summary>
-        /// <param name="AChar">Character for which the ASCII code value should be returned</param>
-        /// <returns>ASCII code value
-        /// </returns>
-        private Int16 Asc(Char AChar)
-        {
-            return System.Int16.Parse((Encoding.ASCII.GetBytes(new char[] { AChar })[0].ToString()));
-        }
-
-        /// <summary>
         /// Ensures Logging and an 'ordered cooperative shutdown' in case an Unhandled Exception is
         /// thrown in Threads, ThreadPool work items or Finalizers anywhere in the PetraServer.
         /// </summary>

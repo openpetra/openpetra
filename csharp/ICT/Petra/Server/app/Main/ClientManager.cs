@@ -1663,9 +1663,7 @@ namespace Ict.Petra.Server.App.Main
                                 USystemDefaultsCache,
                                 UCacheableTablesManager,
                                 AUserInfo,
-                                out RemotingURL_PollClientTasks,
-                                out RemotingURL_RemotedObject);
-                            ARemotingURLs.Add(SharedConstants.REMOTINGURL_IDENTIFIER_TESTOBJECT, RemotingURL_RemotedObject);
+                                out RemotingURL_PollClientTasks);
                             ARemotingURLs.Add(SharedConstants.REMOTINGURL_IDENTIFIER_POLLCLIENTTASKS, RemotingURL_PollClientTasks);
                         }
                         catch (TargetInvocationException exp)
