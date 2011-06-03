@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -115,7 +115,12 @@ namespace Ict.Petra.Server.App.Main
         {
             get
             {
-                return Get_LastActionTime();
+                return Convert.ToDateTime(
+                    FRemoteClientDomainManagerClass.InvokeMember("LastActionTime",
+                        (BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty),
+                        null,
+                        FRemoteClientDomainManagerObject,
+                        null, null));
             }
         }
 
@@ -160,21 +165,9 @@ namespace Ict.Petra.Server.App.Main
         }
 
         /// <summary>
-        /// Creates a new AppDomain for a Client and remotes an instance of
-        /// TRemoteLoader into it.
+        /// needed for remoting
         ///
         /// </summary>
-        /// <returns>void</returns>
-        /// <summary>
-        /// Creates a new AppDomain for a Client and remotes an instance of
-        /// TRemoteLoader into it.
-        ///
-        /// /
-        /// public TRemoteLoader() : base()
-        /// {
-        /// }
-        /// </summary>
-        /// <returns>void</returns>
         public override object InitializeLifetimeService()
         {
             // make sure that the TRemoteLoader object exists until this AppDomain is unloaded!
@@ -182,24 +175,6 @@ namespace Ict.Petra.Server.App.Main
         }
 
         /// <summary>
-        /// Property accessor
-        /// </summary>
-        /// <returns>void</returns>
-        public DateTime Get_LastActionTime()
-        {
-            // $IFDEF DEBUGMODE Console.WriteLine('Accessing Property ''LastActionTime'' in AppDomain: ' + AppDomain.CurrentDomain.ToString); $ENDIF
-            return Convert.ToDateTime(
-                FRemoteClientDomainManagerClass.InvokeMember("LastActionTime",
-                    (BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty),
-                    null,
-                    FRemoteClientDomainManagerObject,
-                    null, null));
-
-            // $IFDEF DEBUGMODE Console.WriteLine('Successfully accessed Property ''LastActionTime'' in the Client''s AppDomain!'); $ENDIF
-        }
-
-        /// <summary>
-        /// procedure WhichAppDomain(); virtual;
         /// Loads the ClientDomain DLL into the Client's AppDomain, instantiates the
         /// main Class (TClientDomainManager) and initialises the AppDomain by calling
         /// several functions of that Class.
@@ -234,21 +209,18 @@ namespace Ict.Petra.Server.App.Main
             TSrvSetting AServerSettings,
             out String ARemotingURLPollClientTasks)
         {
-            Assembly LoadedAssembly;
-
-            // tmpAssembly: Assembly;
             // Console.WriteLine('TRemoteLoader.LoadDomainManagerAssembly in AppDomain: ' + AppDomain.CurrentDomain.ToString);
             #region Load ClientDomain DLL into AppDomain of Client, create instance of main Object
 
             // $IFDEF DEBUGMODE Console.WriteLine('Trying to load ' + CLIENTDOMAIN_DLLNAME + '.dll into Client''s AppDomain...'); $ENDIF
-            LoadedAssembly = Assembly.Load(CLIENTDOMAIN_DLLNAME);
+            Assembly LoadedAssembly = Assembly.Load(CLIENTDOMAIN_DLLNAME);
 
             // $IFDEF DEBUGMODE Console.WriteLine('Successfully loaded ' + CLIENTDOMAIN_DLLNAME + '.dll into Client''s AppDomain.'); $ENDIF
             FRemoteClientDomainManagerClass = LoadedAssembly.GetType(CLIENTDOMAIN_CLASSNAME);
 
             // $IFDEF DEBUGMODE
             // Console.WriteLine('Loaded Assemblies in AppDomain ' + Thread.GetDomain.FriendlyName + ' (after DLL loading into new AppDomain):');
-            // for tmpAssembly in Thread.GetDomain.GetAssemblies() do
+            // foreach Assembly tmpAssembly in Thread.GetDomain.GetAssemblies() do
             // begin
             // Console.WriteLine(tmpAssembly.FullName);
             // end;
@@ -435,11 +407,6 @@ namespace Ict.Petra.Server.App.Main
                 TLogging.Log("TRemoteLoader.CloseDBConnection: Successfully invoked Member 'CloseDBConnection' in the Client's AppDomain!");
             }
         }
-
-        // procedure TRemoteLoader.WhichAppDomain;
-        // begin
-        // Console.WriteLine('TRemoteLoader.WhichAppDomain: ' + AppDomain.CurrentDomain.ToString);
-        // end;
     }
 
     /// <summary>
@@ -464,7 +431,7 @@ namespace Ict.Petra.Server.App.Main
         {
             get
             {
-                return Get_AppDomainName();
+                return FAppDomain.FriendlyName;
             }
         }
 
@@ -473,7 +440,7 @@ namespace Ict.Petra.Server.App.Main
         {
             get
             {
-                return Get_LastActionTime();
+                return FRemoteLoader.LastActionTime;
             }
         }
 
@@ -591,51 +558,6 @@ namespace Ict.Petra.Server.App.Main
                     TLoggingType.ToConsole | TLoggingType.ToLogfile);
             }
 #endif
-        }
-
-#if DEBUGMODE
-        //        Console.ReadLine;
-        //        if TLogging.DL >= 10 then
-        //        begin
-        //            TLogging.Log('Loaded Assemblies in AppDomain ' + Thread.GetDomain.FriendlyName + ': (after placing TRemoteLoader into new AppDomain)', [TLoggingType.ToConsole, TLoggingType.ToLogfile]);
-        //            for tmpAssembly in Thread.GetDomain.GetAssemblies() do
-        //            begin
-        //                TLogging.Log(tmpAssembly.FullName, [TLoggingType.ToConsole, TLoggingType.ToLogfile]);
-        //            end;
-        //        end;
-        //        Console.ReadLine;
-//
-        //        // IMPORTANT: If the following code is uncommented, the ClientDomain DLL that is loaded only in the Client's AppDomain might get loaded into the Default AppDomain  that's what we don't want!!!
-        //        // Use this therefore only to find out what DLL's are loaded in the Client's AppDomain!!!!!!
-        //        if TLogging.DL >= 10 then
-        //        begin
-        //            TLogging.Log('Loaded Assemblies in AppDomain ' + FAppDomain.FriendlyName + ': (after placing TRemoteLoader into new AppDomain)', [TLoggingType.ToConsole, TLoggingType.ToLogfile]);
-        //            for tmpAssembly in FAppDomain.GetAssemblies() do
-        //            begin
-        //                TLogging.Log(tmpAssembly.FullName, [TLoggingType.ToConsole, TLoggingType.ToLogfile]);
-        //            end;
-        //        end;
-        //        Console.ReadLine;
-        //        $IFDEF DEBUGMODE if TLogging.DL >= 10 then TLogging.Log('RemotingServices.IsTransparentProxy: ' + RemotingServices.IsTransparentProxy(FRemoteLoader).ToString, [TLoggingType.ToConsole, TLoggingType.ToLogfile]); $ENDIF
-        //        FRemoteLoader.WhichAppDomain;
-#endif
-
-        /// <summary>
-        /// Property accessor
-        /// </summary>
-        /// <returns>void</returns>
-        public String Get_AppDomainName()
-        {
-            return FAppDomain.FriendlyName;
-        }
-
-        /// <summary>
-        /// Property accessor
-        /// </summary>
-        /// <returns>void</returns>
-        public DateTime Get_LastActionTime()
-        {
-            return FRemoteLoader.LastActionTime;
         }
 
         /// <summary>

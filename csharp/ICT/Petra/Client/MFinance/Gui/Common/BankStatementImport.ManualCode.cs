@@ -28,9 +28,9 @@ using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Data; // Implicit reference
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Core;
-using Ict.Petra.Shared.Interfaces;
 using Ict.Petra.Shared.Interfaces.Plugins.MFinance;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;

@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,10 +23,10 @@
 //
 using System;
 using System.Collections;
+using System.Security.Principal;
 using Ict.Common;
-using Ict.Petra.Shared.Security;
 
-namespace Ict.Petra.Shared.Interfaces
+namespace Ict.Common.Remoting.Shared
 {
     /**
      * This is the first interface the Client connects to
@@ -59,7 +59,7 @@ namespace Ict.Petra.Shared.Interfaces
             out Int32 AProcessID,
             out String AWelcomeMessage,
             out Boolean ASystemEnabled,
-            out TPetraPrincipal AUserInfo);
+            out IPrincipal AUserInfo);
 
 
         /**

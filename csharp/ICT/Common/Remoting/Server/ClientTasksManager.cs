@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,8 +23,9 @@
 //
 using System;
 using System.Data;
+using Ict.Common.Remoting.Shared;
 
-namespace Ict.Petra.Shared
+namespace Ict.Common.Remoting.Server
 {
     /// <summary>
     /// Handles Server-to-Client messaging.
@@ -37,11 +38,8 @@ namespace Ict.Petra.Shared
     /// @todo Not thread save yet!
     ///
     /// </summary>
-    public class TClientTasksManager : object
+    public class TClientTasksManager
     {
-        /// <summary>Used as a 'separator character' when there is a need to concatenate values in a String.</summary>
-        public const String GCLIENTTASKPARAMETER_SEPARATOR = "�";
-
         /// <summary>DataTable holding added Tasks.</summary>
         private DataTable FClientTasksNewDataTable;
 

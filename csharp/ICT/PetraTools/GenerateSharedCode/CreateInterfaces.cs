@@ -640,6 +640,7 @@ public class CreateInterfaces : AutoGenerationWriter
         WriteLine("using System.Data;");
         WriteLine("using Ict.Common;");
         WriteLine("using Ict.Common.Verification;");
+        WriteLine("using Ict.Common.Remoting.Shared;");
 
         foreach (TNamespace sn in tn.Children)
         {

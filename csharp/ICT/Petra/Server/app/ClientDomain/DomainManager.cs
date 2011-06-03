@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -34,9 +34,8 @@ using System.Security.Cryptography;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Remoting.Server;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces;
-using Ict.Petra.Shared.Interfaces.AsynchronousExecution;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared.RemotingSinks.Encryption;
 using Ict.Petra.Server.App.Core.Security;

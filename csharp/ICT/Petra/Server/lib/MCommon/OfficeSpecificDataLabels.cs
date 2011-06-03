@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangb
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,6 +27,7 @@ using System.Data.Odbc;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.DataElements.UIConnectors;

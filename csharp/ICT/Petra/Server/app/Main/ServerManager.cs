@@ -41,8 +41,8 @@ using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.IO;
 using Ict.Common.Remoting.Server;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Server.App.Core;
-using Ict.Petra.Shared.Interfaces.ServerAdminInterface;
 using Ict.Petra.Shared.Security;
 
 namespace Ict.Petra.Server.App.Main

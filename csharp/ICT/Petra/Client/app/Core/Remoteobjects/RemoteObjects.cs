@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,6 +23,7 @@
 //
 using System;
 using Ict.Common;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared.Interfaces.MCommon;
 using Ict.Petra.Shared.Interfaces.MConference;
 using Ict.Petra.Shared.Interfaces.MPartner;
@@ -30,7 +31,6 @@ using Ict.Petra.Shared.Interfaces.MPersonnel;
 using Ict.Petra.Shared.Interfaces.MSysMan;
 using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Shared.Interfaces.MReporting;
-using Ict.Petra.Shared.Interfaces;
 
 namespace Ict.Petra.Client.App.Core.RemoteObjects
 {

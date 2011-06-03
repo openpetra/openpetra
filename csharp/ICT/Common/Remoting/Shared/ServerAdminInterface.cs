@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -25,7 +25,7 @@ using System;
 using System.Collections;
 using Ict.Common;
 
-namespace Ict.Petra.Shared.Interfaces.ServerAdminInterface
+namespace Ict.Common.Remoting.Shared
 {
     /// <comment>IServerAdminInterface is the main interface for Server Admin applications (like PetraServerAdminConsole.exe).
     /// Its purpose is to allow execution of certain Server functions, including disconnecting Clients and Server shutdown.

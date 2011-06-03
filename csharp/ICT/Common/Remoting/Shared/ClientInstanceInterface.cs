@@ -1,12 +1,8 @@
-// Auto generated with nant generateGlue, based on csharp\ICT\Petra\Definitions\NamespaceHierarchy.yml
-// and the Server c# files (eg. UIConnector implementations)
-// Do not change this file manually.
-//
 //
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       auto generated
+//       christiank, timop
 //
 // Copyright 2004-2011 by OM International
 //
@@ -25,20 +21,18 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
-
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Data;
-using Ict.Common;
-using Ict.Common.Verification;
-using Ict.Common.Remoting.Shared;
-namespace Ict.Petra.Shared.Interfaces.MFinDev
+
+namespace Ict.Common.Remoting.Shared
 {
-    /// <summary>auto generated</summary>
-    public interface IMFinDevNamespace : IInterface
+    /// Used by the Client to poll for ClientTasks.
+    public interface IPollClientTasksInterface : IInterface
     {
+        /// <summary>
+        /// check which tasks are available
+        /// </summary>
+        /// <returns></returns>
+        DataTable PollClientTasks();
     }
-
 }
-

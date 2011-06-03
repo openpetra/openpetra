@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,6 +27,7 @@ using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Tcp;
 using System.Runtime.Remoting.Lifetime;
 using Ict.Common;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared.Interfaces.MCommon;
 using Ict.Petra.Shared.Interfaces.MConference;
 using Ict.Petra.Shared.Interfaces.MFinance;
@@ -34,7 +35,6 @@ using Ict.Petra.Shared.Interfaces.MReporting;
 using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.Interfaces.MPersonnel;
 using Ict.Petra.Shared.Interfaces.MSysMan;
-using Ict.Petra.Shared.Interfaces;
 
 namespace Ict.Petra.Client.App.Core
 {
@@ -157,54 +157,6 @@ namespace Ict.Petra.Client.App.Core
             catch (Exception exp)
             {
                 TLogging.Log("Error in GetRemotePollClientTasks(), Possible reasons :-" + exp.ToString(), TLoggingType.ToLogfile);
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Retrieves a Remoting Proxy object for a generic Server-side object factory
-        /// (used only for development purposes)
-        ///
-        /// </summary>
-        /// <param name="RemotingURL">The Server-assigned URL for the generic Server-side object
-        /// factory</param>
-        /// <param name="ARemote">.NET Remoting Proxy object for the generic Server-side object
-        /// factory
-        /// </param>
-        /// <returns>void</returns>
-        public void GetRemoteTestObject(string RemotingURL, out IRemoteFactory ARemote)
-        {
-            string strTCP;
-            string strServer;
-
-            ARemote = null;
-            strServer = null;
-#if DEBUGMODE
-            TLogging.Log("Entering GetRemoteTestObject()...", TLoggingType.ToLogfile);
-#endif
-            try
-            {
-                strServer = DetermineServerIPAddress() + ':' + FServerIPPort.ToString();
-                strTCP = (("tcp://" + strServer) + '/' + RemotingURL);
-#if DEBUGMODE
-                TLogging.Log("Connecting to: " + strTCP, TLoggingType.ToLogfile);
-#endif
-                ARemote = (IRemoteFactory)RemotingServices.Connect(typeof(IRemoteFactory), strTCP);
-
-                if (ARemote == null)
-                {
-                    TLogging.Log("GetRemoteTestObject: Connection failed!", TLoggingType.ToLogfile);
-                }
-                else
-                {
-#if DEBUGMODE
-                    TLogging.Log("GetRemoteTestObject: connected.", TLoggingType.ToLogfile);
-#endif
-                }
-            }
-            catch (Exception exp)
-            {
-                TLogging.Log("Error in GetRemoteTestObject(), Possible reasons :-" + exp.ToString(), TLoggingType.ToLogfile);
                 throw;
             }
         }

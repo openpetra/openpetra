@@ -27,7 +27,7 @@ using System.Collections;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Verification;
-using Ict.Petra.Shared.Interfaces.AsynchronousExecution;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner.Extracts.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner;

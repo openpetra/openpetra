@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,12 +22,12 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using Ict.Petra.Shared.Interfaces;
 using System.Net.Sockets;
 using System.Data;
 using System.Threading;
 using System.Runtime.Remoting;
 using Ict.Common;
+using Ict.Common.Remoting.Shared;
 
 namespace Ict.Petra.Client.App.Core
 {

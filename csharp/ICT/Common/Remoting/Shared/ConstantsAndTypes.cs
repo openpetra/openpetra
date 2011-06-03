@@ -1,12 +1,8 @@
-// Auto generated with nant generateGlue, based on csharp\ICT\Petra\Definitions\NamespaceHierarchy.yml
-// and the Server c# files (eg. UIConnector implementations)
-// Do not change this file manually.
-//
 //
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       auto generated
+//       timop
 //
 // Copyright 2004-2011 by OM International
 //
@@ -25,20 +21,30 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
-
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Data;
 using Ict.Common;
-using Ict.Common.Verification;
-using Ict.Common.Remoting.Shared;
-namespace Ict.Petra.Shared.Interfaces.MFinDev
+
+namespace Ict.Common.Remoting.Shared
 {
-    /// <summary>auto generated</summary>
-    public interface IMFinDevNamespace : IInterface
+    /// <summary>
+    /// Surrogate Base Interface
+    /// All Interfaces can safely derive from this Interface. The reason why we have this is:
+    /// that all Types that implement any Interfaces that themselves derives from IInterface
+    /// can be cast to IInterface (and passed as Function Argument: eg. IInterface AnObject).
+    /// This is important for .NET Remoting scenarios.
+    ///
+    /// </summary>
+    public interface IInterface
     {
     }
 
+    /// <summary>
+    /// some constants that are useful for Remoting
+    /// </summary>
+    public class RemotingConstants
+    {
+        /// <summary>Used as a 'separator character' for TClientTasksManager when there is a need to concatenate values in a String.</summary>
+        public const String GCLIENTTASKPARAMETER_SEPARATOR = "?";
+    }
 }
-

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,10 +28,10 @@ using System.IO;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Remoting.Server;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Server.App.Main;
 using Ict.Petra.Server.App.ClientDomain;
-using Ict.Petra.Shared.Interfaces.ServerAdminInterface;
 using Ict.Petra.Server.App.Core;
 
 namespace Ict.Testing.NUnitPetraServer

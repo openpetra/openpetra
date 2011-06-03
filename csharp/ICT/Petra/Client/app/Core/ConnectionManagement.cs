@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,11 +26,12 @@ using System.Collections;
 using System.Net.Sockets;
 using System.Runtime.Remoting;
 using System.Runtime.Remoting.Lifetime;
+using System.Security.Principal;
 using System.IO;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.IO;
-using Ict.Petra.Shared.Interfaces;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared.Interfaces.MCommon;
 using Ict.Petra.Shared.Interfaces.MConference;
 using Ict.Petra.Shared.Interfaces.MPartner;
@@ -38,6 +39,7 @@ using Ict.Petra.Shared.Interfaces.MPersonnel;
 using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Shared.Interfaces.MReporting;
 using Ict.Petra.Shared.Interfaces.MSysMan;
+using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
@@ -63,7 +65,6 @@ namespace Ict.Petra.Client.App.Core
         private Int32 FClientID;
         private Int16 FRemotingPort;
         private TExecutingOSEnum FServerOS;
-        private String FRemotingURL_TestObject;
         private String FRemotingURL_PollClientTasks;
         private String FRemotingURL_MConference;
         private String FRemotingURL_MPartner;
@@ -72,7 +73,6 @@ namespace Ict.Petra.Client.App.Core
         private String FRemotingURL_MFinance;
         private String FRemotingURL_MReporting;
         private String FRemotingURL_MSysMan;
-        private IRemoteFactory FRemoteFactoryObject;
         private IPollClientTasksInterface FRemotePollClientTasks;
         private IMCommonNamespace FRemoteCommonObjects;
         private IMConferenceNamespace FRemoteConferenceObjects;
@@ -127,15 +127,6 @@ namespace Ict.Petra.Client.App.Core
             get
             {
                 return FServerOS;
-            }
-        }
-
-        /// <summary>todoComment</summary>
-        public IRemoteFactory RemoteFactoryObject
-        {
-            get
-            {
-                return FRemoteFactoryObject;
             }
         }
 
@@ -254,17 +245,10 @@ namespace Ict.Petra.Client.App.Core
                 throw new EServerConnectionGeneralException(exp.ToString());
             }
 
-            // MessageBox.Show( 'Connected to Server (OS: ' + Enum(FServerOS).ToString("G") + ').' + Environment.NewLine +
-            // 'ClientName: ' + FClientName + '; ClientID: ' + FClientID.ToString + Environment.NewLine +
-            // 'Port: ' + FRemotingPort.ToString + '; FRemotingURL_TestObject: ' + FRemotingURL_TestObject + '; FRemotingURL_MPartner: ' + FRemotingURL_MPartner + '; FRemotingURL_MFinance: ' + FRemotingURL_MFinance);
             //
             // acquire .NET Remoting Proxy objects for remoted Server objects
             //
             FConnector.ServerIPPort = FRemotingPort;
-
-#if DEBUGMODE
-            FConnector.GetRemoteTestObject(FRemotingURL_TestObject, out FRemoteFactoryObject);
-#endif
 
             // FConnector.GetRemoteServerSponsor(FRemotingURL_ServerSponsor, out FRemoteSponsor);
             FConnector.GetRemotePollClientTasks(FRemotingURL_PollClientTasks, out FRemotePollClientTasks);
@@ -316,7 +300,7 @@ namespace Ict.Petra.Client.App.Core
             Hashtable ARemotingURLs;
             try
             {
-                Ict.Petra.Shared.Security.TPetraPrincipal LocalUserInfo;
+                IPrincipal LocalUserInfo;
 
                 AClientManager.ConnectClient(AUserName, APassword,
                     TClientInfo.ClientComputerName,
@@ -333,12 +317,7 @@ namespace Ict.Petra.Client.App.Core
                     out ASystemEnabled,
                     out LocalUserInfo);
 
-                Ict.Petra.Shared.UserInfo.GUserInfo = LocalUserInfo;
-
-                if (ARemotingURLs.ContainsKey(SharedConstants.REMOTINGURL_IDENTIFIER_TESTOBJECT))
-                {
-                    FRemotingURL_TestObject = (String)ARemotingURLs[SharedConstants.REMOTINGURL_IDENTIFIER_TESTOBJECT];
-                }
+                Ict.Petra.Shared.UserInfo.GUserInfo = (TPetraPrincipal)LocalUserInfo;
 
                 if (ARemotingURLs.ContainsKey(SharedConstants.REMOTINGURL_IDENTIFIER_POLLCLIENTTASKS))
                 {

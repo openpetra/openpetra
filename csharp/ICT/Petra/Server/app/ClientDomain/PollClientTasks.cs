@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,9 +23,9 @@
 //
 using System;
 using System.Data;
-using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces;
 using Ict.Common;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Server;
 
 namespace Ict.Petra.Server.App.ClientDomain
 {

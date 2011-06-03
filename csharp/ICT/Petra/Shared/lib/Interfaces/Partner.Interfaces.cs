@@ -40,9 +40,9 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
-using Ict.Petra.Shared.Interfaces.AsynchronousExecution;
 using System.Collections.Specialized;
 #endregion ManualCode
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner.Extracts;
 using Ict.Petra.Shared.Interfaces.MPartner.ImportExport;
 using Ict.Petra.Shared.Interfaces.MPartner.Mailing;

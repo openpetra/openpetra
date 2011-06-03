@@ -28,10 +28,11 @@ using System.Windows.Forms;
 using System.Threading;
 using GNU.Gettext;
 using Ict.Common;
+using Ict.Common.Remoting.Shared;
+using Ict.Petra.Shared.Interfaces.MSysMan;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces;
 
 namespace Ict.Petra.Client.MSysMan.Gui
 {

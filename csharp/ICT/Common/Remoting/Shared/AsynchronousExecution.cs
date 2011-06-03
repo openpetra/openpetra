@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,7 +24,7 @@
 using System;
 using Ict.Common;
 
-namespace Ict.Petra.Shared.Interfaces.AsynchronousExecution
+namespace Ict.Common.Remoting.Shared
 {
     /// <summary>
     /// IAsynchronousExecutionProgress is an interface that is used by the Client

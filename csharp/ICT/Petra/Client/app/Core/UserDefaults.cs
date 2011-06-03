@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,6 +27,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.UserDefaults;
 using Ict.Petra.Shared.MSysMan.Data;
@@ -440,9 +441,9 @@ namespace Ict.Petra.Client.App.Core
 
             // TLogging.Log('Refreshing DefaultCode ''' + AChangedUserDefaultCode + ''' with Value: ''' + AChangedUserDefaultValue + '''');
             // Split String into String Array
-            ChangedUserDefaultCodes = AChangedUserDefaultCode.Split(new Char[TClientTasksManager.GCLIENTTASKPARAMETER_SEPARATOR[0]]);
-            ChangedUserDefaultValues = AChangedUserDefaultValue.Split(new Char[TClientTasksManager.GCLIENTTASKPARAMETER_SEPARATOR[0]]);
-            ChangedUserDefaultModIds = AChangedUserDefaultModId.Split(new Char[TClientTasksManager.GCLIENTTASKPARAMETER_SEPARATOR[0]]);
+            ChangedUserDefaultCodes = AChangedUserDefaultCode.Split(new Char[RemotingConstants.GCLIENTTASKPARAMETER_SEPARATOR[0]]);
+            ChangedUserDefaultValues = AChangedUserDefaultValue.Split(new Char[RemotingConstants.GCLIENTTASKPARAMETER_SEPARATOR[0]]);
+            ChangedUserDefaultModIds = AChangedUserDefaultModId.Split(new Char[RemotingConstants.GCLIENTTASKPARAMETER_SEPARATOR[0]]);
 
             for (Counter = 0; Counter <= ChangedUserDefaultCodes.Length - 1; Counter += 1)
             {

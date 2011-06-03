@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,7 +26,7 @@ using System.Configuration;
 using System.Runtime.Remoting.Lifetime;
 using Ict.Common;
 
-namespace Ict.Petra.Shared
+namespace Ict.Common.Remoting.Server
 {
     /// <summary>
     /// Allows remotable objects that are derived from it (instead of MarshalByRefObject) to make their lifetime configurable via the application's config file.

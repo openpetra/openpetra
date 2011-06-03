@@ -35,8 +35,8 @@ using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Server;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared.RemotedExceptions;
 using Ict.Petra.Shared.MSysMan;
@@ -1402,7 +1402,7 @@ namespace Ict.Petra.Server.App.Main
             out Int32 AProcessID,
             out String AWelcomeMessage,
             out Boolean ASystemEnabled,
-            out TPetraPrincipal AUserInfo)
+            out IPrincipal AUserInfo)
         {
             String LoadInAppDomainName;
             TClientAppDomainConnection ClientDomainManager = null;
@@ -1417,6 +1417,7 @@ namespace Ict.Petra.Server.App.Main
             String RemotingURL_MReporting;
             TRunningAppDomain AppDomainEntry;
             String CantDisconnectReason;
+            TPetraPrincipal UserInfo;
 
 #if DEBUGMODE
             if (TLogging.DL >= 10)
@@ -1531,6 +1532,7 @@ namespace Ict.Petra.Server.App.Main
                             AClientIPAddress,
                             out AProcessID,
                             out ASystemEnabled);
+                        UserInfo = (TPetraPrincipal)AUserInfo;
                     }
                     catch (EPetraSecurityException)
                     #region Exception handling
@@ -1594,7 +1596,7 @@ namespace Ict.Petra.Server.App.Main
                     // Retrieve Welcome message
                     try
                     {
-                        AWelcomeMessage = TMaintenanceLogonMessage.GetLogonMessage(AUserInfo.PetraIdentity.LanguageCode, true);
+                        AWelcomeMessage = TMaintenanceLogonMessage.GetLogonMessage(UserInfo.PetraIdentity.LanguageCode, true);
                     }
                     catch (Exception)
                     #region Exception handling
@@ -1662,7 +1664,7 @@ namespace Ict.Petra.Server.App.Main
                                 FClientManagerCallForwarder,
                                 USystemDefaultsCache,
                                 UCacheableTablesManager,
-                                AUserInfo,
+                                UserInfo,
                                 out RemotingURL_PollClientTasks);
                             ARemotingURLs.Add(SharedConstants.REMOTINGURL_IDENTIFIER_POLLCLIENTTASKS, RemotingURL_PollClientTasks);
                         }
@@ -1800,7 +1802,7 @@ namespace Ict.Petra.Server.App.Main
 #endif
 
             // Load PERSONNEL Module assembly (loaded only for users that have personnel privileges)
-            if (AUserInfo.IsInModule(SharedConstants.PETRAMODULE_PERSONNEL))
+            if (UserInfo.IsInModule(SharedConstants.PETRAMODULE_PERSONNEL))
             {
                 ClientDomainManager.LoadPetraModuleAssembly(SharedConstants.REMOTINGURL_IDENTIFIER_MPERSONNEL, out RemotingURL_MPersonnel);
                 ARemotingURLs.Add(SharedConstants.REMOTINGURL_IDENTIFIER_MPERSONNEL, RemotingURL_MPersonnel);
@@ -1813,8 +1815,8 @@ namespace Ict.Petra.Server.App.Main
             }
 
             // Load FINANCE Module assembly (loaded only for users that have finance privileges)
-            if ((AUserInfo.IsInModule(SharedConstants.PETRAMODULE_FINANCE1)) || (AUserInfo.IsInModule(SharedConstants.PETRAMODULE_FINANCE2))
-                || (AUserInfo.IsInModule(SharedConstants.PETRAMODULE_FINANCE3)))
+            if ((UserInfo.IsInModule(SharedConstants.PETRAMODULE_FINANCE1)) || (UserInfo.IsInModule(SharedConstants.PETRAMODULE_FINANCE2))
+                || (UserInfo.IsInModule(SharedConstants.PETRAMODULE_FINANCE3)))
             {
                 ClientDomainManager.LoadPetraModuleAssembly(SharedConstants.REMOTINGURL_IDENTIFIER_MFINANCE, out RemotingURL_MFinance);
                 ARemotingURLs.Add(SharedConstants.REMOTINGURL_IDENTIFIER_MFINANCE, RemotingURL_MFinance);

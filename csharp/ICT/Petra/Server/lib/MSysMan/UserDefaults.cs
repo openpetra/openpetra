@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,6 +28,7 @@ using System.Threading;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MSysMan.Data.Access;
 using Ict.Common.Data;
@@ -1284,11 +1285,11 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
             {
                 for (Counter = 0; Counter <= AChangedUserDefaultsDT.Rows.Count - 1; Counter += 1)
                 {
-                    ChangedUserDefaultCodes = ChangedUserDefaultCodes + TClientTasksManager.GCLIENTTASKPARAMETER_SEPARATOR +
+                    ChangedUserDefaultCodes = ChangedUserDefaultCodes + RemotingConstants.GCLIENTTASKPARAMETER_SEPARATOR +
                                               AChangedUserDefaultsDT[Counter].DefaultCode;
-                    ChangedUserDefaultValues = ChangedUserDefaultValues + TClientTasksManager.GCLIENTTASKPARAMETER_SEPARATOR +
+                    ChangedUserDefaultValues = ChangedUserDefaultValues + RemotingConstants.GCLIENTTASKPARAMETER_SEPARATOR +
                                                AChangedUserDefaultsDT[Counter].DefaultValue;
-                    ChangedUserDefaultModIds = ChangedUserDefaultModIds + TClientTasksManager.GCLIENTTASKPARAMETER_SEPARATOR +
+                    ChangedUserDefaultModIds = ChangedUserDefaultModIds + RemotingConstants.GCLIENTTASKPARAMETER_SEPARATOR +
                                                AChangedUserDefaultsDT[Counter].ModificationId;
                 }
 
