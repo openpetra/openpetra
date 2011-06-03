@@ -74,6 +74,8 @@ public class TServer
             // end;
             // $ENDIF
 
+            new TAppSettingsManager();
+
             TLanguageCulture.Init();
 
             TheServerManager = new TServerManager();
@@ -95,7 +97,7 @@ public class TServer
             {
                 TLogging.Log(ex.Message);
                 TLogging.Log("Please check your OpenPetra.build.config file ...");
-                TLogging.Log("May be a nant initConfigFile helps ...");
+                TLogging.Log("Maybe a nant initConfigFile helps ...");
                 throw new ApplicationException();
             }
             catch (Exception)
@@ -110,14 +112,7 @@ public class TServer
             {
                 TLogging.Log(Catalog.GetString("Reading server remote configuration from config file..."));
 
-                if (TheServerManager.ConfigurationFileName == "")
-                {
-                    RemotingConfiguration.Configure(Environment.GetCommandLineArgs()[0] + ".config", false);
-                }
-                else
-                {
-                    RemotingConfiguration.Configure(TheServerManager.ConfigurationFileName, false);
-                }
+                RemotingConfiguration.Configure(TAppSettingsManager.ConfigFileName, false);
             }
             catch (RemotingException rex)
             {

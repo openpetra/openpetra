@@ -115,15 +115,6 @@ namespace Ict.Petra.Server.App.Main
             }
         }
 
-        /// <summary>Server setting: Name of the Server configuration file</summary>
-        public String ConfigurationFileName
-        {
-            get
-            {
-                return TSrvSetting.ConfigurationFile;
-            }
-        }
-
         /// <summary>Server setting: IP Port that the Server listens for .NET Remoting calls</summary>
         public int IPPort
         {
