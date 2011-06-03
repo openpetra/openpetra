@@ -224,33 +224,6 @@ namespace Ict.Petra.Server.App.Main
         }
 
         /// <summary>
-        /// Reads Command Line Arguments and stores them in a TCommandLineArguments
-        /// object.
-        ///
-        /// </summary>
-        /// <returns>Instantiated TCommandLineArguments object
-        /// </returns>
-        private TCommandLineArguments ReadCommandLineArguments()
-        {
-            TCmdOpts CommandOptionsProcessor;
-            TCommandLineArguments CommandLineArguments;
-
-            CommandLineArguments = new TCommandLineArguments();
-            CommandLineArguments.ApplicationName = Environment.GetCommandLineArgs()[0];
-            CommandOptionsProcessor = new TCmdOpts();
-
-            CommandLineArguments.ConfigurationFile = TAppSettingsManager.ConfigFileName;
-
-            // Store command line options in TCommandLineArguments object
-            if (CommandOptionsProcessor.IsFlagSet("C"))
-            {
-                CommandLineArguments.ConfigurationFile = CommandOptionsProcessor.GetOptValue("C");
-            }
-
-            return CommandLineArguments;
-        }
-
-        /// <summary>
         /// Returns the ASCII code value of a Character.
         ///
         /// </summary>
@@ -327,7 +300,6 @@ namespace Ict.Petra.Server.App.Main
         /// <returns>void</returns>
         private void SetupServerSettings()
         {
-            TCommandLineArguments CmdLineArgs;
             String ServerLogFile;
             String ServerName;
             String ServerIPAddresses;
@@ -346,9 +318,6 @@ namespace Ict.Petra.Server.App.Main
             bool RunAsStandalone;
             string IntranetDataDestinationEmail;
             string IntranetDataSenderEmail;
-
-            CmdLineArgs = ReadCommandLineArguments();
-            new TAppSettingsManager(CmdLineArgs.ConfigurationFile);
 
             #region Parse settings from the Application Configuration File
 
@@ -453,8 +422,8 @@ namespace Ict.Petra.Server.App.Main
 
             // Store Server configuration in the static TSrvSetting class
             FServerSettings = new TSrvSetting(
-                CmdLineArgs.ApplicationName,
-                CmdLineArgs.ConfigurationFile,
+                TAppSettingsManager.ApplicationName,
+                TAppSettingsManager.ConfigFileName,
                 ServerAssemblyVersion,
                 Utilities.DetermineExecutingOS(),
                 RDBMSTypeAppSetting,
@@ -787,92 +756,6 @@ namespace Ict.Petra.Server.App.Main
             }
 
             return ReturnValue;
-        }
-
-        /// <summary>
-        /// Allows loading of a 'fake' Client AppDomain.
-        /// *** For development testing purposes only ***
-        /// </summary>
-        /// <param name="AUserName">Fake Username for the Client AppDomain</param>
-        /// <returns></returns>
-        public bool LoadClientAppDomain(String AUserName)
-        {
-            String ClientName;
-
-            System.Int32 ClientID;
-            System.Int16 RemotingPort;
-            TExecutingOSEnum ServerOS;
-            TClientManager ClientManagerObj;
-            Hashtable RemotingURLs;
-            String WelcomeMessage;
-            Int32 ProcessID;
-            TPetraPrincipal UserInfo;
-            Boolean SystemEnabled;
-            try
-            {
-                ClientManagerObj = new TClientManager();
-                ClientManagerObj.ConnectClient(AUserName,
-                    "password",
-                    "FAKEClient ",
-                    "Cli.ent.IP",
-                    new System.Version("0.9.0.2"),
-                    TClientServerConnectionType.csctLAN,
-                    out ClientName,
-                    out ClientID,
-                    out RemotingPort,
-                    out RemotingURLs,
-                    out ServerOS,
-                    out ProcessID,
-                    out WelcomeMessage,
-                    out SystemEnabled,
-                    out UserInfo);
-                return true;
-            }
-            catch (Exception exp)
-            {
-                Console.WriteLine(String.Format(Catalog.GetString("Exception occured during manual load of Client AppDomain: {0}"), exp.Message));
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Stores Command Line Arguments in a structured way.
-        /// </summary>
-        private class TCommandLineArguments : object
-        {
-            /// <summary>.EXE file name of the Application</summary>
-            private String FApplicationName;
-
-            /// <summary>ConfigurationFile ('C') Command Line Argument</summary>
-            private String FConfigurationFile = "";
-
-            /// <summary>ConfigurationFile ('C') Command Line Argument</summary>
-            public String ConfigurationFile
-            {
-                get
-                {
-                    return FConfigurationFile;
-                }
-
-                set
-                {
-                    FConfigurationFile = value;
-                }
-            }
-
-            /// <summary>.EXE file name of the Application</summary>
-            public String ApplicationName
-            {
-                get
-                {
-                    return FApplicationName;
-                }
-
-                set
-                {
-                    FApplicationName = value;
-                }
-            }
         }
     }
 }
