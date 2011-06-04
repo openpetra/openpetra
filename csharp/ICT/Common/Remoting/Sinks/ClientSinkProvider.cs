@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -31,7 +31,7 @@ using System.Xml;
 using Ict.Common;
 using Ict.Common.IO;
 
-namespace Ict.Petra.Shared.RemotingSinks.Encryption
+namespace Ict.Common.Remoting.Sinks.Encryption
 {
     /// <summary>
     /// the channel sink provider, hard coded for our encryption sink

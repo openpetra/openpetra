@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,7 +28,7 @@ using System.Runtime.Remoting.Messaging;
 using System.Security.Cryptography;
 using Ict.Common.IO;
 
-namespace Ict.Petra.Shared.RemotingSinks.Encryption
+namespace Ict.Common.Remoting.Sinks.Encryption
 {
     /// <summary>
     /// This sink adds encryption to the channel

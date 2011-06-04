@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -29,7 +29,7 @@ using System.Security.Cryptography;
 using Ict.Common.IO;
 using Ict.Common;
 
-namespace Ict.Petra.Shared.RemotingSinks.Encryption
+namespace Ict.Common.Remoting.Sinks.Encryption
 {
     internal class EncryptionClientSink : BaseChannelSinkWithProperties, IClientChannelSink
     {
