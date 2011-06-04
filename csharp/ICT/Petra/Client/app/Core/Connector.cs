@@ -514,7 +514,7 @@ namespace Ict.Petra.Client.App.Core
         /// </returns>
         private String DetermineServerIPAddress()
         {
-            const String CLIENTMANAGERENTRY = "Ict.Petra.Shared.Interfaces.IClientManagerInterface";
+            const String CLIENTMANAGERENTRY = "Ict.Common.Remoting.Shared.IClientManagerInterface";
 
             System.Int16 strServerIPAddrStart;
             string strServerIPAddr = "";
