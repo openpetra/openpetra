@@ -796,6 +796,7 @@
                                       <Items>
                                         <ext:Image ID="Image1" runat="server"
                                                 Width="100"
+                                                Height="133"
                                                 ImageUrl="../../img/default_blank.gif"
                                             >
                                             <Listeners>
