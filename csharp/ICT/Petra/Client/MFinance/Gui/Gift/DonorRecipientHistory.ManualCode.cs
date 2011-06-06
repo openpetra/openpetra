@@ -76,8 +76,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             TVerificationResultCollection AMessages;
             Hashtable requestParams = new Hashtable();
-            long donor = Convert.ToInt64(txtDonor.Text);
-            long recipient = Convert.ToInt64(txtRecipient.Text);
+            Int64 donor = Convert.ToInt64(txtDonor.Text);
+            Int64 recipient = Convert.ToInt64(txtRecipient.Text);
 
             if ((donor == 0) && (recipient == 0))
             {
@@ -87,9 +87,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             requestParams.Add("Donor", donor);
             requestParams.Add("Recipient", recipient);
+          	
             requestParams.Add("From", dtpDateFrom.Text);
-            requestParams.Add("To", dtpDateTo);
-
+            requestParams.Add("To", dtpDateTo.Text);
+			
             GiftBatchTDS newTDS = TRemote.MFinance.Gift.WebConnectors.LoadDonorRecipientHistory(
                 requestParams,
                 out AMessages);
