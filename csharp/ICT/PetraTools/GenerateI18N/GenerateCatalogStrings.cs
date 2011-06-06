@@ -287,9 +287,9 @@ public class TGenerateCatalogStrings
                         {
                             ATranslationWriter.WriteLine("Catalog.GetString(\"" + GetLabelOrName(TaskNode) + "\");");
 
-                            if (TYml2Xml.HasAttribute(TaskNode, "description"))
+                            if (TYml2Xml.HasAttribute(TaskNode, "Description"))
                             {
-                                ATranslationWriter.WriteLine("Catalog.GetString(\"" + TYml2Xml.GetAttribute(TaskNode, "description") + "\");");
+                                ATranslationWriter.WriteLine("Catalog.GetString(\"" + TYml2Xml.GetAttribute(TaskNode, "Description") + "\");");
                             }
 
                             TaskNode = TaskNode.NextSibling;

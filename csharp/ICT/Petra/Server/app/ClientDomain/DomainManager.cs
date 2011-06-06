@@ -250,7 +250,7 @@ namespace Ict.Petra.Server.App.ClientDomain
         /// <summary>Random Security Token (to prevent unauthorised AppDomain shutdown)</summary>
         private String FRandomAppDomainTearDownToken;
         private System.Object FTearDownAppDomainMonitor;
-        private TcpChannel FTcpChannel;
+        private TcpChannel FTcpChannel = null;
 
         /// <summary>Tells when the last Client Action occured (either the last time when a remoteable object was marshaled (remoted) or when the last DB action occured).</summary>
         public DateTime LastActionTime
@@ -349,9 +349,6 @@ namespace Ict.Petra.Server.App.ClientDomain
             TCacheableTablesManager ACacheableTablesManagerRef,
             TPetraPrincipal AUserInfo)
         {
-            System.Int16 RemotingPortInt;
-            Hashtable ChannelProperties;
-
             new TAppSettingsManager();
 
             // Console.WriteLine('TClientDomainManager.Create in AppDomain: ' + Thread.GetDomain().FriendlyName);
@@ -371,7 +368,7 @@ namespace Ict.Petra.Server.App.ClientDomain
             // Note: .NET Remoting needs to be set up separately for each AppDomain, and settings in
             // the .NET (Remoting) Configuration File are valid only for the Default AppDomain.
             //
-            RemotingPortInt = Convert.ToInt16(ARemotingPort);
+            Int16 RemotingPortInt = Convert.ToInt16(ARemotingPort);
             try
             {
                 // The following settings equal to a config file's
@@ -403,28 +400,32 @@ namespace Ict.Petra.Server.App.ClientDomain
                     // this happens in the Server NUnit test, when running several tests, therefore reconnecting with the same AppDomain.
                 }
 
-                BinaryServerFormatterSinkProvider TCPSink = new BinaryServerFormatterSinkProvider();
-                TCPSink.TypeFilterLevel = TypeFilterLevel.Low;
-                IServerChannelSinkProvider EncryptionSink = TCPSink;
-
-                if (TAppSettingsManager.GetValue("Server.ChannelEncryption.PrivateKeyfile", "", false).Length > 0)
+                // for NUnit Server testing, we do not need .net remoting
+                if (RemotingPortInt != -1)
                 {
-                    EncryptionSink = new EncryptionServerSinkProvider();
-                    EncryptionSink.Next = TCPSink;
+                    BinaryServerFormatterSinkProvider TCPSink = new BinaryServerFormatterSinkProvider();
+                    TCPSink.TypeFilterLevel = TypeFilterLevel.Low;
+                    IServerChannelSinkProvider EncryptionSink = TCPSink;
+
+                    if (TAppSettingsManager.GetValue("Server.ChannelEncryption.PrivateKeyfile", "", false).Length > 0)
+                    {
+                        EncryptionSink = new EncryptionServerSinkProvider();
+                        EncryptionSink.Next = TCPSink;
+                    }
+
+                    Hashtable ChannelProperties = new Hashtable();
+                    ChannelProperties.Add("port", RemotingPortInt.ToString());
+
+                    string SpecificIPAddress = TAppSettingsManager.GetValue("ListenOnIPAddress", "", false);
+
+                    if (SpecificIPAddress.Length > 0)
+                    {
+                        ChannelProperties.Add("machineName", SpecificIPAddress);
+                    }
+
+                    FTcpChannel = new TcpChannel(ChannelProperties, null, EncryptionSink);
+                    ChannelServices.RegisterChannel(FTcpChannel, false);
                 }
-
-                ChannelProperties = new Hashtable();
-                ChannelProperties.Add("port", RemotingPortInt.ToString());
-
-                string SpecificIPAddress = TAppSettingsManager.GetValue("ListenOnIPAddress", "", false);
-
-                if (SpecificIPAddress.Length > 0)
-                {
-                    ChannelProperties.Add("machineName", SpecificIPAddress);
-                }
-
-                FTcpChannel = new TcpChannel(ChannelProperties, null, EncryptionSink);
-                ChannelServices.RegisterChannel(FTcpChannel, false);
             }
             catch (Exception)
             {
@@ -494,7 +495,10 @@ namespace Ict.Petra.Server.App.ClientDomain
                     TLoggingType.ToConsole | TLoggingType.ToLogfile);
             }
 
-            ChannelServices.UnregisterChannel(FTcpChannel);
+            if (FTcpChannel != null)
+            {
+                ChannelServices.UnregisterChannel(FTcpChannel);
+            }
         }
 
         /// <summary>
