@@ -560,11 +560,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else if (AToolStripItem.Name == "mniMaintainDonorHistory")
             {
-                OpenDonorRecipientHistory(AToolStripItem.Name);
+                Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory.OpenWindowDonorRecipientHistory(AToolStripItem.Name,PartnerKey,this.Handle);
             }
             else if (AToolStripItem.Name == "mniMaintainRecipientHistory")
             {
-                OpenDonorRecipientHistory(AToolStripItem.Name);
+                Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory.OpenWindowDonorRecipientHistory(AToolStripItem.Name,PartnerKey,this.Handle);
             }
             else
             {
@@ -1755,31 +1755,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 //#endif
         }
 
-        private void OpenDonorRecipientHistory(String Name)
-        {
-            if (PartnerKey == -1)
-            {
-                MessageBox.Show(Catalog.GetString("No current partner seleted"));
-                return;
-            }
-
-            //this.Cursor = Cursors.WaitCursor;
-            Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory frmDRH = new  Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory(
-                this.Handle);
-
-            if (Name.Equals("mniMaintainDonorHistory"))
-            {
-                frmDRH.Donor = PartnerKey;
-            }
-            else
-            {
-                frmDRH.Recipient = PartnerKey;
-            }
-
-            frmDRH.Browse();
-            frmDRH.Show();
-            //this.Cursor = Cursors.Default;
-        }
+        
 
         /// <summary>todoComment</summary>
         public void StopTimer()

@@ -478,7 +478,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             try
             {
                 Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-                // Case 1 : DOnor Given : go via AGift
+                // Case 1 : Donor Given : go via AGift
                 // Case 2 : Recipient given go via AGiftDetail
                 // Case 3 : Both given ?
 
@@ -538,17 +538,17 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     giftDetail.ReceiptPrinted = giftRow.ReceiptPrinted;
                     giftDetail.Reference = giftRow.Reference;
                     // This may be not very fast we can optimize later
-                    Ict.Petra.Shared.MPartner.Partner.Data.PUnitTable unitTable = null;
+                    //Ict.Petra.Shared.MPartner.Partner.Data.PUnitTable unitTable = null;
 
 
                     //do the same for the Recipient
                     partner.Clear();
-                    Int64 fieldNumber;
+                    //Int64 fieldNumber;
 
-                    LoadKeyMinistryInsideTrans(ref Transaction, ref unitTable, ref partner, giftDetail.RecipientKey, out fieldNumber);
-                    giftDetail.RecipientField = fieldNumber;
+                    //LoadKeyMinistryInsideTrans(ref Transaction, ref unitTable, ref partner, giftDetail.RecipientKey, out fieldNumber);
+                    //giftDetail.RecipientField = fieldNumber;
 
-                    //partner = PPartnerAccess.LoadByPrimaryKey(giftDetail.RecipientKey, shortName, Transaction);
+                    partner = PPartnerAccess.LoadByPrimaryKey(giftDetail.RecipientKey, shortName, Transaction);
                     if (partner.Count > 0)
                     {
                         giftDetail.RecipientDescription = partner[0].PartnerShortName;

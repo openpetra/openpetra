@@ -1793,14 +1793,15 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void MaintainDonorHistory(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory.OpenWindowDonorRecipientHistory("mniMaintainDonorHistory",PartnerKey,this.Handle);
+   
         }
-
+		
         private void MaintainRecipientHistory(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory.OpenWindowDonorRecipientHistory("mniMaintainRecipientHistory",PartnerKey,this.Handle);
         }
-
+		
         private void MaintainFinanceReports(System.Object sender, System.EventArgs e)
         {
             throw new NotImplementedException();

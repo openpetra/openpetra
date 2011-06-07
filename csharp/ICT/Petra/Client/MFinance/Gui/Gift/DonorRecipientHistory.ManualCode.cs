@@ -23,16 +23,14 @@
 //
 using System;
 using System.Collections;
+using System.Data;
 using System.Windows.Forms;
 
 using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
-using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
-
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
@@ -42,7 +40,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     public partial class TFrmDonorRecipientHistory
     {
         private long FDonor = 0;
-
+    	/// the Donor
         public long Donor
         {
             set
@@ -53,7 +51,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         private long FRecipient = 0;
-
+	    /// the recipient
         public long Recipient
         {
             set
@@ -97,12 +95,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if ((AMessages != null) && (AMessages.Count > 0))
             {
-                MessageBox.Show(Messages.BuildMessageFromVerificationResult(Catalog.GetString("Error calling Donnor/Recipient history"), AMessages));
+                MessageBox.Show(Messages.BuildMessageFromVerificationResult(Catalog.GetString("Error calling Donor/Recipient history"), AMessages));
+            	return;
             }
             else
             {
                 FMainDS = newTDS;
             }
+            if (FMainDS != null)
+            {
+                DataView myDataView = FMainDS.AGiftDetail.DefaultView;
+                myDataView.AllowNew = false;
+                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+            }
+                
         }
 
         private void BtnCloseClick(object sender, EventArgs e)
@@ -119,6 +125,37 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             // TODO Pop up a "normal" gift batch/gift/Giftdetail window where the gift shown this table and selected is selected
             // all the details are disabled (readonly)
+        }
+        /// <summary>
+        /// static method for opening the window from partner module
+        /// </summary>
+        /// <param name="Name"></param>
+        /// <param name="PartnerKey"></param>
+        /// <param name="theHandle"></param>
+        public static void OpenWindowDonorRecipientHistory(String Name, Int64 PartnerKey, IntPtr theHandle)
+        {
+            if (PartnerKey == -1)
+            {
+                MessageBox.Show(Catalog.GetString("No current partner seleted"));
+                return;
+            }
+
+            //this.Cursor = Cursors.WaitCursor;
+            Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory frmDRH = new  Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory(
+                theHandle);
+
+            if (Name.Equals("mniMaintainDonorHistory"))
+            {
+                frmDRH.Donor = PartnerKey;
+            }
+            else
+            {
+                frmDRH.Recipient = PartnerKey;
+            }
+
+            frmDRH.Browse();
+            frmDRH.Show();
+            //this.Cursor = Cursors.Default;
         }
     }
 }
