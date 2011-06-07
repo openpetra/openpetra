@@ -28,6 +28,7 @@ using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.DB;
+using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
@@ -887,7 +888,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                             if ((InspectDT.TableName != PLocationTable.GetTableName()) && (InspectDT.TableName != PPartnerLocationTable.GetTableName()))
                             {
                                 MaxColumn = InspectDT.Columns.Count;
-                                ChangedColumns = SharedDataUtilities.AcceptChangesForUnmodifiedRows(InspectDT, MaxColumn);
+                                ChangedColumns = DataUtilities.AcceptChangesForUnmodifiedRows(InspectDT, MaxColumn);
 #if SHOWCHANGES
                                 if (ChangedColumns != 0)
                                 {
@@ -900,7 +901,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                                 MaxColumn = new PLocationTable().Columns.Count;
 
                                 // MessageBox.Show('PLocation MaxColumn: ' + MaxColumn.ToString);
-                                ChangedColumns = SharedDataUtilities.AcceptChangesForUnmodifiedRows(AInspectDS.PLocation, MaxColumn, true);
+                                ChangedColumns = DataUtilities.AcceptChangesForUnmodifiedRows(AInspectDS.PLocation, MaxColumn, true);
 #if SHOWCHANGES
                                 if (ChangedColumns != 0)
                                 {
@@ -913,7 +914,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                                 MaxColumn = new PPartnerLocationTable().Columns.Count;
 
                                 // MessageBox.Show('PPartnerLocation MaxColumn: ' + MaxColumn.ToString);
-                                ChangedColumns = SharedDataUtilities.AcceptChangesForUnmodifiedRows(AInspectDS.PPartnerLocation, MaxColumn, true);
+                                ChangedColumns = DataUtilities.AcceptChangesForUnmodifiedRows(AInspectDS.PPartnerLocation, MaxColumn, true);
 #if SHOWCHANGES
                                 if (ChangedColumns != 0)
                                 {

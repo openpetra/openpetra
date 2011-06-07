@@ -24,7 +24,7 @@
 using System;
 using Ict.Common.Remoting.Shared;
 
-namespace Ict.Petra.Server.App.ClientDomain
+namespace Ict.Common.Remoting.Server
 {
     /// <summary>
     /// The TClientManagerCallForwarder class forwards calls from within a Client's

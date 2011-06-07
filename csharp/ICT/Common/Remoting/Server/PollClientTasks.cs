@@ -25,9 +25,8 @@ using System;
 using System.Data;
 using Ict.Common;
 using Ict.Common.Remoting.Shared;
-using Ict.Common.Remoting.Server;
 
-namespace Ict.Petra.Server.App.ClientDomain
+namespace Ict.Common.Remoting.Server
 {
     /**
      * The TPollClientTasks Class contains a Method that returns a DataTable that

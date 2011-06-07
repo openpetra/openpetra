@@ -23,10 +23,9 @@
 //
 using System;
 using Ict.Common;
-using Ict.Common.Remoting.Server;
 using System.Threading;
 
-namespace Ict.Petra.Server.App.ClientDomain
+namespace Ict.Common.Remoting.Server
 {
     /// <summary>Delegate declaration</summary>
     public delegate void TDelegateTearDownAppDomain(String AToken, String AReason);
@@ -38,7 +37,7 @@ namespace Ict.Petra.Server.App.ClientDomain
     /// If this Class finds out that the connected PetraClient isn't 'alive'
     /// anymore, it will initiate the tearing down of the Client's AppDomain!
     /// </remarks>
-    class ClientStillAliveCheck
+    public class ClientStillAliveCheck
     {
         public const String StrClientFailedToContact1 = "Client failed to contact PetraServer regularl" + "y (last contact was ";
         public const String StrClientFailedToContact2 = " ago [Format: hh:mm:ss]): ClientStillAliveCheck mechanism found " + "timeout expired!";
