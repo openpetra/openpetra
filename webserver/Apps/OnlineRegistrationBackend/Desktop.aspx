@@ -47,6 +47,17 @@
         var submitValue = function (grid) {
             grid.submitData(false);
         };
+
+        function ShowTabPanelServiceTeam()
+        {
+            Ext.getCmp('TabPanelApplication').unhideTabStripItem('TabServiceTeam');
+        }
+
+        function HideTabPanelServiceTeam()
+        {
+            Ext.getCmp('TabPanelApplication').hideTabStripItem('TabServiceTeam');
+            Ext.getCmp('TabPanelApplication').setActiveTab(0);
+        }
 </script>        
 </head>
 <body>
@@ -144,6 +155,16 @@
                     <Fields>
                         <ext:RecordField Name="StatusCode" />
                         <ext:RecordField Name="StatusDescription" />
+                    </Fields>
+                </ext:ArrayReader>
+            </Reader>
+        </ext:Store>
+
+        <ext:Store ID="StoreServiceTeamJob" runat="server" OnRefreshData="ServiceTeamJobs_Refresh">
+            <Reader>
+                <ext:ArrayReader>
+                    <Fields>
+                        <ext:RecordField Name="JobTitle" />
                     </Fields>
                 </ext:ArrayReader>
             </Reader>
@@ -792,7 +813,7 @@
                                     </ext:Container>
                                   </Center>
                                   <East>
-                                    <ext:Container runat="server" LabelAlign="Top" Layout="Form" ColumnWidth=".3">                                          
+                                    <ext:Container runat="server" LabelAlign="Top" Layout="Form" ColumnWidth=".3">
                                       <Items>
                                         <ext:Image ID="Image1" runat="server"
                                                 Width="100"
@@ -812,6 +833,67 @@
                                   </East>
                                 </ext:BorderLayout>
                                 </Items>
+                            </ext:Panel>
+                            <ext:Panel ID="TabServiceTeam" runat="server" Title="Service Team" AutoScroll="true">
+                              <Items>
+                              <ext:Container runat="server" LabelAlign="Left" Layout="Form">
+                                <Items>
+                                <ext:ComboBox
+                                    ID="JobWish1"
+                                    runat="server" 
+                                    FieldLabel="Job Wish 1"
+                                    DataIndex="JobWish1"
+                                    Editable="false"
+                                    TypeAhead="true"
+                                    ForceSelection="true"
+                                    Mode="Local"
+                                    Resizable="true"
+                                    Width="300"
+                                    Displayfield="JobTitle"
+                                    ValueField="JobTitle"
+                                    StoreID="StoreServiceTeamJob"                                    
+                                    SelectOnFocus="true">
+                                </ext:ComboBox>
+                                <ext:ComboBox
+                                    ID="JobWish2"
+                                    runat="server" 
+                                    FieldLabel="Job Wish 2" 
+                                    DataIndex="JobWish2"
+                                    Editable="false"
+                                    TypeAhead="true"
+                                    ForceSelection="true"
+                                    Mode="Local"
+                                    Resizable="true"
+                                    Width="300"
+                                    DisplayField="JobTitle"
+                                    ValueField="JobTitle"
+                                    StoreID="StoreServiceTeamJob"                                    
+                                    SelectOnFocus="true">
+                                </ext:ComboBox>
+                                <ext:ComboBox
+                                    ID="JobAssigned"
+                                    runat="server" 
+                                    FieldLabel="Assigned Job" 
+                                    DataIndex="JobAssigned"
+                                    Editable="false"
+                                    TypeAhead="true"
+                                    ForceSelection="true"
+                                    Mode="Local"
+                                    Resizable="true"
+                                    Width="300"
+                                    DisplayField="JobTitle"
+                                    ValueField="JobTitle"
+                                    StoreID="StoreServiceTeamJob"                                    
+                                    SelectOnFocus="true">
+                                </ext:ComboBox>
+                                <ext:TextArea ID="CommentRegistrationOfficeReadOnly" runat="server" 
+                                    FieldLabel="Comment Registration Office" 
+                                    Width="300"
+                                    Height="80"
+                                    ReadOnly="true"/>
+                                </Items>
+                              </ext:Container>
+                              </Items>
                             </ext:Panel>
                             <ext:Panel ID="TabRawApplicationData" runat="server" Title="Data Entered" AutoScroll="true">
                               <DirectEvents>

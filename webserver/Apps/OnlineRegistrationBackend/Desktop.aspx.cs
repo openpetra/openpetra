@@ -1,4 +1,4 @@
-//
+﻿//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -59,20 +59,24 @@ namespace Ict.Petra.WebServer.MConference
         protected Ext.Net.Store StoreRole;
         protected Ext.Net.Store StoreApplicationStatus;
         protected Ext.Net.Store StoreRegistrationOffice;
+        protected Ext.Net.Store StoreServiceTeamJob;
         protected Ext.Net.Image Image1;
         protected Ext.Net.FileUploadField FileUploadField1;
         protected Ext.Net.FileUploadField FileUploadField2;
         protected Ext.Net.FileUploadField FileUploadField3;
         protected Ext.Net.ComboBox FileUploadCodePage3;
-        protected Ext.Net.TextField OldPassword;
-        protected Ext.Net.TextField NewPassword1;
-        protected Ext.Net.TextField NewPassword2;
-        protected Ext.Net.DesktopWindow winChangePassword;
         protected Ext.Net.TextField txtSearchApplicant;
         protected Ext.Net.GridPanel GridPanel1;
         protected Ext.Net.GridFilters GridFilters1;
         protected Ext.Net.Panel TabRawApplicationData;
         protected Ext.Net.TabPanel TabPanelApplication;
+        protected Ext.Net.ComboBox JobWish1;
+        protected Ext.Net.ComboBox JobWish2;
+        protected Ext.Net.ComboBox JobAssigned;
+        protected Ext.Net.TextArea Comment;
+        protected Ext.Net.TextArea CommentRegistrationOfficeReadOnly;
+        protected Ext.Net.Panel TabServiceTeam;
+        protected Ext.Net.Panel TabMoreDetails;
 
         protected bool ConferenceOrganisingOffice = false;
 
@@ -96,6 +100,7 @@ namespace Ict.Petra.WebServer.MConference
                 RoleData_Refresh(null, null);
                 ApplicationStatus_Refresh(null, null);
                 RegistrationOffice_Refresh(null, null);
+                ServiceTeamJobs_Refresh(null, null);
 
                 if (ConferenceOrganisingOffice)
                 {
@@ -260,6 +265,77 @@ namespace Ict.Petra.WebServer.MConference
             }
         }
 
+        protected void ServiceTeamJobs_Refresh(object sender, StoreRefreshDataEventArgs e)
+        {
+            StoreServiceTeamJob.DataSource =
+                new object[] {
+                new object[] {
+                    "Kiosk"
+                },
+                new object[] {
+                    "Sports Team"
+                },
+                new object[] {
+                    "Bookshop"
+                },
+                new object[] {
+                    "Info Point"
+                },
+                new object[] {
+                    "Office"
+                },
+                new object[] {
+                    "Medical Team"
+                },
+                new object[] {
+                    "CleanStreet"
+                },
+                new object[] {
+                    "Fruit Table"
+                },
+                new object[] {
+                    "Staff Café"
+                },
+                new object[] {
+                    "Kitchen"
+                },
+                new object[] {
+                    "Security"
+                },
+                new object[] {
+                    "Main Hall Team"
+                },
+                new object[] {
+                    "Cyber Café"
+                },
+                new object[] {
+                    "Kids Program"
+                },
+                new object[] {
+                    "Fun Food"
+                },
+                new object[] {
+                    "ArtZone"
+                },
+                new object[] {
+                    "Cocktail Lounge"
+                },
+                new object[] {
+                    "Head-set-Team"
+                },
+                new object[] {
+                    "Communication Team"
+                },
+                new object[] {
+                    "ToddlerStreet"
+                },
+                new object[] {
+                    "InBetweens"
+                }
+            };
+            StoreServiceTeamJob.DataBind();
+        }
+
         protected void ApplicationStatus_Refresh(object sender, StoreRefreshDataEventArgs e)
         {
             TPersonnelCacheable cache = new TPersonnelCacheable();
@@ -315,7 +391,7 @@ namespace Ict.Petra.WebServer.MConference
                                   .Title("Edit more details")
                                   .Padding(5)
                                   .AutoScroll(true);
-            panel.Render("TabPanelApplication", 1, RenderMode.InsertTo);
+            panel.Render("TabPanelApplication", 2, RenderMode.InsertTo);
 
             Ext.Net.Label label = this.X().Label()
                                   .ID("lblWarningEdit")
@@ -341,7 +417,7 @@ namespace Ict.Petra.WebServer.MConference
             dictionary.Add("StFgCode", row.StFgCode);
 
             List <string>FieldsOnFirstTab = new List <string>(new string[] {
-                                                                  "TShirtStyle", "TShirtSize"
+                                                                  "TShirtStyle", "TShirtSize", "JobWish1", "JobWish2", "JobAssigned"
                                                               });
 
             foreach (string key in rawDataObject.Names)
@@ -394,10 +470,29 @@ namespace Ict.Petra.WebServer.MConference
                 }
             }
 
+            JobWish1.Reset();
+            JobWish2.Reset();
+            JobAssigned.Reset();
+
             // SetValues: new {}; anonymous type: http://msdn.microsoft.com/en-us/library/bb397696.aspx
             // instead a Dictionary can be used as well
             // See also StackOverflow ObjectExtensions::ToDictionary for converting an anonymous type to a dictionary
             this.FormPanel1.SetValues(dictionary);
+
+            CommentRegistrationOfficeReadOnly.Text = row.Comment;
+
+            // only allow the logistics office to assign jobs
+            JobAssigned.ReadOnly = !ConferenceOrganisingOffice;
+
+            // only show service team panel for TS-STAFF and TS-SERVE
+            if ((row.StCongressCode == "TS-STAFF") || (row.StCongressCode == "TS-SERVE"))
+            {
+                X.Js.Call("ShowTabPanelServiceTeam");
+            }
+            else
+            {
+                X.Js.Call("HideTabPanelServiceTeam");
+            }
 
             Random rand = new Random();
             Image1.ImageUrl = "photos.aspx?id=" + PartnerKey.ToString() + ".jpg&" + rand.Next(1, 10000).ToString();
@@ -470,7 +565,7 @@ namespace Ict.Petra.WebServer.MConference
                 X.Msg.Alert("Error", "Saving did not work").Show();
             }
 
-            // save some time? user can click refresh himself. 
+            // save some time? user can click refresh himself.
             // MyData_Refresh(null, null);
         }
 
