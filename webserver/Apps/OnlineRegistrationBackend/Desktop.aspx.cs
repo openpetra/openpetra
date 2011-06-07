@@ -73,6 +73,7 @@ namespace Ict.Petra.WebServer.MConference
         protected Ext.Net.ComboBox JobWish1;
         protected Ext.Net.ComboBox JobWish2;
         protected Ext.Net.ComboBox JobAssigned;
+        protected Ext.Net.ComboBox StFieldCharged;
         protected Ext.Net.TextArea Comment;
         protected Ext.Net.TextArea CommentRegistrationOfficeReadOnly;
         protected Ext.Net.Panel TabServiceTeam;
@@ -357,6 +358,8 @@ namespace Ict.Petra.WebServer.MConference
                 ConferenceOrganisingOffice = true;
             }
 
+            Session["CONFERENCEORGANISINGOFFICE"] = ConferenceOrganisingOffice;
+
             if (offices.Count > 0)
             {
                 this.StoreRegistrationOffice.DataSource = DataTableToArray(offices, -1, "All");
@@ -371,131 +374,142 @@ namespace Ict.Petra.WebServer.MConference
 
         protected void RowSelect(object sender, DirectEventArgs e)
         {
-            Int64 PartnerKey = Convert.ToInt64(e.ExtraParams["PartnerKey"]);
-
-            ConferenceApplicationTDS CurrentApplicants = (ConferenceApplicationTDS)Session["CURRENTAPPLICANTS"];
-
-            CurrentApplicants.ApplicationGrid.DefaultView.RowFilter = "p_partner_key_n = " + PartnerKey.ToString();
-
-            ConferenceApplicationTDSApplicationGridRow row =
-                (ConferenceApplicationTDSApplicationGridRow)CurrentApplicants.ApplicationGrid.DefaultView[0].Row;
-            Session["CURRENTROW"] = row;
-
-            this.FormPanel1.Disabled = false;
-
-            string RawData = TApplicationManagement.GetRawApplicationData(row.PartnerKey, row.ApplicationKey, row.RegistrationOffice);
-            TabRawApplicationData.Html = TJsonTools.DataToHTMLTable(RawData);
-
-            Ext.Net.Panel panel = this.X().Panel()
-                                  .ID("TabMoreDetails")
-                                  .Title("Edit more details")
-                                  .Padding(5)
-                                  .AutoScroll(true);
-            panel.Render("TabPanelApplication", 2, RenderMode.InsertTo);
-
-            Ext.Net.Label label = this.X().Label()
-                                  .ID("lblWarningEdit")
-                                  .Html(
-                "<b>Please be very careful</b>, only edit data if you are sure. Drop Down boxes or Dates might not work anymore.<br/><br/>");
-
-            label.Render("TabMoreDetails", RenderMode.AddTo);
-
-            Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(RawData);
-
-            var dictionary = new Dictionary <string, object>();
-            dictionary.Add("PartnerKey", row.PartnerKey);
-            dictionary.Add("PersonKey", row.IsPersonKeyNull() ? "" : row.PersonKey.ToString());
-            dictionary.Add("FirstName", row.FirstName);
-            dictionary.Add("FamilyName", row.FamilyName);
-            dictionary.Add("Gender", row.Gender);
-            dictionary.Add("DateOfBirth", row.DateOfBirth);
-            dictionary.Add("GenAppDate", row.GenAppDate);
-            dictionary.Add("GenApplicationStatus", row.GenApplicationStatus);
-            dictionary.Add("StCongressCode", row.StCongressCode);
-            dictionary.Add("Comment", row.Comment);
-            dictionary.Add("StFgLeader", row.StFgLeader);
-            dictionary.Add("StFgCode", row.StFgCode);
-
-            List <string>FieldsOnFirstTab = new List <string>(new string[] {
-                                                                  "TShirtStyle", "TShirtSize", "JobWish1", "JobWish2", "JobAssigned"
-                                                              });
-
-            foreach (string key in rawDataObject.Names)
+            try
             {
-                if (!dictionary.ContainsKey(key)
-                    && FieldsOnFirstTab.Contains(key))
+                Int64 PartnerKey = Convert.ToInt64(e.ExtraParams["PartnerKey"]);
+
+                ConferenceApplicationTDS CurrentApplicants = (ConferenceApplicationTDS)Session["CURRENTAPPLICANTS"];
+                ConferenceOrganisingOffice = Convert.ToBoolean(Session["CONFERENCEORGANISINGOFFICE"]);
+
+                CurrentApplicants.ApplicationGrid.DefaultView.RowFilter = "p_partner_key_n = " + PartnerKey.ToString();
+
+                ConferenceApplicationTDSApplicationGridRow row =
+                    (ConferenceApplicationTDSApplicationGridRow)CurrentApplicants.ApplicationGrid.DefaultView[0].Row;
+                Session["CURRENTROW"] = row;
+
+                this.FormPanel1.Disabled = false;
+
+                string RawData = TApplicationManagement.GetRawApplicationData(row.PartnerKey, row.ApplicationKey, row.RegistrationOffice);
+                TabRawApplicationData.Html = TJsonTools.DataToHTMLTable(RawData);
+
+                Ext.Net.Panel panel = this.X().Panel()
+                                      .ID("TabMoreDetails")
+                                      .Title("Edit more details")
+                                      .Padding(5)
+                                      .AutoScroll(true);
+                panel.Render("TabPanelApplication", 3, RenderMode.InsertTo);
+
+                Ext.Net.Label label = this.X().Label()
+                                      .ID("lblWarningEdit")
+                                      .Html(
+                    "<b>Please be very careful</b>, only edit data if you are sure. Drop Down boxes or Dates might not work anymore.<br/><br/>");
+
+                label.Render("TabMoreDetails", RenderMode.AddTo);
+
+                Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(RawData);
+
+                var dictionary = new Dictionary <string, object>();
+                dictionary.Add("PartnerKey", row.PartnerKey);
+                dictionary.Add("PersonKey", row.IsPersonKeyNull() ? "" : row.PersonKey.ToString());
+                dictionary.Add("FirstName", row.FirstName);
+                dictionary.Add("FamilyName", row.FamilyName);
+                dictionary.Add("Gender", row.Gender);
+                dictionary.Add("DateOfBirth", row.DateOfBirth);
+                dictionary.Add("GenAppDate", row.GenAppDate);
+                dictionary.Add("GenApplicationStatus", row.GenApplicationStatus);
+                dictionary.Add("StCongressCode", row.StCongressCode);
+                dictionary.Add("Comment", row.Comment);
+                dictionary.Add("StFgLeader", row.StFgLeader);
+                dictionary.Add("StFgCode", row.StFgCode);
+                dictionary.Add("StFieldCharged", row.StFieldCharged);
+
+                List <string>FieldsOnFirstTab = new List <string>(new string[] {
+                                                                      "TShirtStyle", "TShirtSize", "JobWish1", "JobWish2", "JobAssigned"
+                                                                  });
+
+                foreach (string key in rawDataObject.Names)
                 {
-                    dictionary.Add(key, rawDataObject[key]);
-                }
-            }
-
-            List <string>FieldsNotToBeEdited = new List <string>(new string[] {
-                                                                     "Role", "FormsId", "EventIdentifier", "RegistrationOffice", "LastName",
-                                                                     "RegistrationCountryCode", "ImageID",
-                                                                     "CLS", "Dresscode", "LegalImprint"
-                                                                 });
-
-            foreach (string key in rawDataObject.Names)
-            {
-                if (!dictionary.ContainsKey(key)
-                    && !FieldsNotToBeEdited.Contains(key)
-                    && !FieldsOnFirstTab.Contains(key)
-                    && !key.EndsWith("_SelIndex")
-                    && !key.EndsWith("_Value")
-                    && !key.EndsWith("_ActiveTab"))
-                {
-                    dictionary.Add(key, rawDataObject[key]);
-
-                    if (rawDataObject[key].ToString().Length > 40)
+                    if (!dictionary.ContainsKey(key)
+                        && FieldsOnFirstTab.Contains(key))
                     {
-                        TextArea text = this.X().TextArea()
-                                        .ID(key)
-                                        .LabelWidth(200)
-                                        .Width(700)
-                                        .Height(150)
-                                        .FieldLabel(key);
-
-                        text.Render("TabMoreDetails", RenderMode.AddTo);
-                    }
-                    else
-                    {
-                        TextField text = this.X().TextField()
-                                         .ID(key)
-                                         .LabelWidth(200)
-                                         .Width(500)
-                                         .FieldLabel(key);
-
-                        text.Render("TabMoreDetails", RenderMode.AddTo);
+                        dictionary.Add(key, rawDataObject[key]);
                     }
                 }
+
+                List <string>FieldsNotToBeEdited = new List <string>(new string[] {
+                                                                         "Role", "FormsId", "EventIdentifier", "RegistrationOffice", "LastName",
+                                                                         "RegistrationCountryCode", "ImageID",
+                                                                         "CLS", "Dresscode", "LegalImprint"
+                                                                     });
+
+                foreach (string key in rawDataObject.Names)
+                {
+                    if (!dictionary.ContainsKey(key)
+                        && !FieldsNotToBeEdited.Contains(key)
+                        && !FieldsOnFirstTab.Contains(key)
+                        && !key.EndsWith("_SelIndex")
+                        && !key.EndsWith("_Value")
+                        && !key.EndsWith("_ActiveTab"))
+                    {
+                        dictionary.Add(key, rawDataObject[key]);
+
+                        if (rawDataObject[key].ToString().Length > 40)
+                        {
+                            TextArea text = this.X().TextArea()
+                                            .ID(key)
+                                            .LabelWidth(200)
+                                            .Width(700)
+                                            .Height(150)
+                                            .FieldLabel(key);
+
+                            text.Render("TabMoreDetails", RenderMode.AddTo);
+                        }
+                        else
+                        {
+                            TextField text = this.X().TextField()
+                                             .ID(key)
+                                             .LabelWidth(200)
+                                             .Width(500)
+                                             .FieldLabel(key);
+
+                            text.Render("TabMoreDetails", RenderMode.AddTo);
+                        }
+                    }
+                }
+
+                JobWish1.Reset();
+                JobWish2.Reset();
+                JobAssigned.Reset();
+
+                // SetValues: new {}; anonymous type: http://msdn.microsoft.com/en-us/library/bb397696.aspx
+                // instead a Dictionary can be used as well
+                // See also StackOverflow ObjectExtensions::ToDictionary for converting an anonymous type to a dictionary
+                this.FormPanel1.SetValues(dictionary);
+
+                CommentRegistrationOfficeReadOnly.Text = row.Comment;
+
+                // only allow the logistics office to assign jobs
+                JobAssigned.ReadOnly = !ConferenceOrganisingOffice;
+                StFieldCharged.ReadOnly = !ConferenceOrganisingOffice;
+
+                // only show service team panel for TS-STAFF and TS-SERVE
+                if ((row.StCongressCode == "TS-STAFF") || (row.StCongressCode == "TS-SERVE"))
+                {
+                    X.Js.Call("ShowTabPanel", "TabServiceTeam");
+                }
+                else
+                {
+                    X.Js.Call("HideTabPanel", "TabServiceTeam");
+                }
+
+                Random rand = new Random();
+                Image1.ImageUrl = "photos.aspx?id=" + PartnerKey.ToString() + ".jpg&" + rand.Next(1, 10000).ToString();
             }
-
-            JobWish1.Reset();
-            JobWish2.Reset();
-            JobAssigned.Reset();
-
-            // SetValues: new {}; anonymous type: http://msdn.microsoft.com/en-us/library/bb397696.aspx
-            // instead a Dictionary can be used as well
-            // See also StackOverflow ObjectExtensions::ToDictionary for converting an anonymous type to a dictionary
-            this.FormPanel1.SetValues(dictionary);
-
-            CommentRegistrationOfficeReadOnly.Text = row.Comment;
-
-            // only allow the logistics office to assign jobs
-            JobAssigned.ReadOnly = !ConferenceOrganisingOffice;
-
-            // only show service team panel for TS-STAFF and TS-SERVE
-            if ((row.StCongressCode == "TS-STAFF") || (row.StCongressCode == "TS-SERVE"))
+            catch (Exception ex)
             {
-                X.Js.Call("ShowTabPanelServiceTeam");
+                TLogging.Log("Exception in RowSelect: " + ex.ToString() + " " + ex.Message);
+                TLogging.Log(ex.StackTrace);
             }
-            else
-            {
-                X.Js.Call("HideTabPanelServiceTeam");
-            }
-
-            Random rand = new Random();
-            Image1.ImageUrl = "photos.aspx?id=" + PartnerKey.ToString() + ".jpg&" + rand.Next(1, 10000).ToString();
         }
 
         protected void ShowRawApplicationData(object sender, DirectEventArgs e)
@@ -558,6 +572,7 @@ namespace Ict.Petra.WebServer.MConference
             row.GenApplicationStatus = values["GenApplicationStatus_Value"];
             row.StFgLeader = values.ContainsKey("StFgLeader");
             row.StFgCode = values["StFgCode"];
+            row.StFieldCharged = Convert.ToInt64(values["StFieldCharged_Value"]);
             row.Comment = values["Comment"];
 
             if (TApplicationManagement.SaveApplication(EventCode, row) != TSubmitChangesResult.scrOK)

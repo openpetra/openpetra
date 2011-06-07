@@ -173,10 +173,15 @@ namespace Ict.Petra.Server.MConference.Applications
 
             if (ARegisteringOffice.HasValue && (ARegisteringOffice.Value != 0))
             {
-                queryGeneralApplication += "  AND PUB_pm_short_term_application.pm_registration_office_n = ?";
-                queryShortTermApplication += "  AND PUB_pm_short_term_application.pm_registration_office_n = ?";
-                queryPerson += "  AND PUB_pm_short_term_application.pm_registration_office_n = ?";
+                string queryRegistrationOffice =
+                    "  AND (PUB_pm_short_term_application.pm_st_field_charged_n = ? OR PUB_pm_short_term_application.pm_registration_office_n = ?)";
+                queryGeneralApplication += queryRegistrationOffice;
+                queryShortTermApplication += queryRegistrationOffice;
+                queryPerson += queryRegistrationOffice;
 
+                parameter = new OdbcParameter("fieldCharged", OdbcType.Decimal, 10);
+                parameter.Value = ARegisteringOffice.Value;
+                parameters.Add(parameter);
                 parameter = new OdbcParameter("registrationOffice", OdbcType.Decimal, 10);
                 parameter.Value = ARegisteringOffice.Value;
                 parameters.Add(parameter);
@@ -264,6 +269,7 @@ namespace Ict.Petra.Server.MConference.Applications
                 newRow.Comment = GeneralApplication.Comment;
                 newRow.StFgCode = shortTermRow.StFgCode;
                 newRow.StFgLeader = shortTermRow.StFgLeader;
+                newRow.StFieldCharged = shortTermRow.StFieldCharged;
 
                 // TODO: display the description of that application status
                 newRow.GenApplicationStatus = GeneralApplication.GenApplicationStatus;
@@ -540,6 +546,7 @@ namespace Ict.Petra.Server.MConference.Applications
 
                 ShortTermApplication.StFgLeader = AChangedRow.StFgLeader;
                 ShortTermApplication.StFgCode = AChangedRow.StFgCode;
+                ShortTermApplication.StFieldCharged = AChangedRow.StFieldCharged;
 
                 if ((GeneralApplication.GenApplicationStatus != AChangedRow.GenApplicationStatus) && (AChangedRow.GenApplicationStatus == "A"))
                 {
@@ -859,6 +866,10 @@ namespace Ict.Petra.Server.MConference.Applications
                         attr.Value = DateAccepted.ToString("dd-MM-yyyy");
                         newNode.Attributes.Append(attr);
                     }
+
+                    attr = myDoc.CreateAttribute("FieldCharged");
+                    attr.Value = ShortTermApplicationRow.StFieldCharged.ToString();
+                    newNode.Attributes.Append(attr);
 
                     // now add all the values from the json data
                     TJsonTools.DataToXml(GeneralApplicationRow.RawApplicationData, ref newNode, myDoc, false);

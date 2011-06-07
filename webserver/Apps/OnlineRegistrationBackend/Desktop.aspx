@@ -48,14 +48,14 @@
             grid.submitData(false);
         };
 
-        function ShowTabPanelServiceTeam()
+        function ShowTabPanel(panelName)
         {
-            Ext.getCmp('TabPanelApplication').unhideTabStripItem('TabServiceTeam');
+            Ext.getCmp('TabPanelApplication').unhideTabStripItem(panelName);
         }
 
-        function HideTabPanelServiceTeam()
+        function HideTabPanel(panelName)
         {
-            Ext.getCmp('TabPanelApplication').hideTabStripItem('TabServiceTeam');
+            Ext.getCmp('TabPanelApplication').hideTabStripItem(panelName);
             Ext.getCmp('TabPanelApplication').setActiveTab(0);
         }
 </script>        
@@ -891,6 +891,29 @@
                                     Width="300"
                                     Height="80"
                                     ReadOnly="true"/>
+                                </Items>
+                              </ext:Container>
+                              </Items>
+                            </ext:Panel>
+                            <ext:Panel ID="TabFinance" runat="server" Title="Finance" AutoScroll="true">
+                              <Items>
+                              <ext:Container runat="server" LabelAlign="Left" Layout="Form">
+                                <Items>
+                                <ext:ComboBox 
+                                    ID="StFieldCharged"
+                                    runat="server" 
+                                    FieldLabel="Field Charged" 
+                                    Editable="false"
+                                    ForceSelection="true"
+                                    Mode="Local"
+                                    Width="260"
+                                    LabelWidth="150"
+                                    StoreID="StoreRegistrationOffice"
+                                    DisplayField="PartnerShortName"
+                                    ValueField="PartnerKey"
+                                    SelectOnFocus="true"
+                                    SelectedIndex = "0">
+                                </ext:ComboBox>
                                 </Items>
                               </ext:Container>
                               </Items>

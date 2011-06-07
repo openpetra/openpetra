@@ -25,6 +25,7 @@
             <Field sqltable="pm_short_term_application" sqlfield="pm_st_congress_code_c"/>
             <Field sqltable="pm_short_term_application" sqlfield="pm_st_fg_code_c"/>
             <Field sqltable="pm_short_term_application" sqlfield="pm_st_fg_leader_l"/>
+            <Field sqltable="pm_short_term_application" sqlfield="pm_st_field_charged_n"/>
             <Field sqltable="pm_general_application" sqlfield="pm_application_key_i"/>
             <Field sqltable="pm_general_application" sqlfield="pm_registration_office_n"/>
             <Field sqltable="pm_general_application" sqlfield="pm_comment_c"/>
