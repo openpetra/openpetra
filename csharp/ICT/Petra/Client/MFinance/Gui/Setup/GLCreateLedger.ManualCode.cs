@@ -49,9 +49,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             cmbBaseCurrency.SetSelectedString("EUR");
             cmbIntlCurrency.SetSelectedString("USD");
             cmbCountryCode.SetSelectedString("DE");
+            
+            btnOK.Text = "C&reate Ledger";
         }
 
-        private void CreateLedger(System.Object sender, EventArgs e)
+        private void BtnOK_Click(System.Object sender, EventArgs e)
         {
             TVerificationResultCollection VerificationResult;
 
@@ -85,16 +87,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 {
                     MessageBox.Show(Catalog.GetString("Problem: No Ledger has been created"),
                         Catalog.GetString("Error"));
-                }
+                }                
             }
             else
-            {
+            {                
                 MessageBox.Show(String.Format(Catalog.GetString(
                             "The ledger {0} ({1}) has been created successfully. Please assign permissions to the users in System Manager."),
                         txtLedgerName.Text,
                         nudLedgerNumber.Value),
                     Catalog.GetString("Success"),
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                
+                Close();                                                
             }
         }
     }
