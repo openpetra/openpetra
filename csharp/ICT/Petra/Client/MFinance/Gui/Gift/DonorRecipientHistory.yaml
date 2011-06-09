@@ -7,7 +7,7 @@ RootNode:
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Gift.Data]
     FormType: browse
     Template: windowSingleTable
-    WindowWidth: 660
+    WindowWidth: 1000
     WindowHeight: 800
     Actions:
         actClose:  {Label=Close, ActionClick=BtnCloseClick}
@@ -47,7 +47,7 @@ RootNode:
         grdDetails:
             TableName: AGiftDetail
             Dock: Fill
-            Columns: [DateEntered, MotivationGroupCode, MotivationDetailCode, ReceiptNumber, GiftAmount, ConfidentialGiftFlag, BatchNumber, GiftTransactionNumber, RecipientDescription, Reference, GiftCommentOne, CommentOneType, RecipientLedgerNumber, RecipientKey, ChargeFlag, MethodOfPaymentCode, MethodOfGivingCode, CostCentreCode, GiftCommentTwo, GiftCommentThree, MailingCode]
+            Columns: [DateEntered, MotivationGroupCode, MotivationDetailCode, ReceiptNumber, GiftTransactionAmount, ConfidentialGiftFlag, BatchNumber, GiftTransactionNumber, RecipientDescription, Reference, GiftCommentOne, CommentOneType, RecipientLedgerNumber, RecipientKey, ChargeFlag, MethodOfPaymentCode, MethodOfGivingCode, CostCentreCode, GiftCommentTwo, GiftCommentThree, MailingCode]
             CustomColumns:
                 ConfidentialGiftFlag: {Label=C, Type=Boolean}
                 DateEntered: {Label=Date Entered, Type=DateTime}
@@ -56,7 +56,7 @@ RootNode:
                 DonorClass: {Label=Class, Type=String}
                 RecipientDescription: {Label=Recipient, Type=String}
                 RecipientLedgerNumber: {Label=Recipient Ledger, type=Int}
-                GiftAmount: {Label=Gift Amount (Base), Type=Decimal}
+                GiftAmount: {Label=Gift Amount, Type=Decimal}
                 MethodOfGivingCode: {Label=Method of Giving, Type=String}
                 MethodOfPaymentCode: {Label=Method of Payment, Type=String}
                 ReceiptNumber: {Label=Receipt, Type=Int32}
@@ -65,9 +65,9 @@ RootNode:
         pnlDetails:
             Dock: Top
             Controls:
-                Row0: [txtTotal,txtNumberOfGifts]
+                Row0: [txtGiftTotal,txtNumberOfGifts]
                 Row1: [btnView]
-        txtTotal: {Label=Total, ReadOnly=true}
+        txtGiftTotal: {Label=Total, Format=Currency, ReadOnly=true}
         txtNumberOfGifts: {Label=Number of Gifts, ReadOnly=true}
         btnView:
             Action: actView               

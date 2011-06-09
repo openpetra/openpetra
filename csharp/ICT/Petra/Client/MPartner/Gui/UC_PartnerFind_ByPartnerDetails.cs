@@ -560,11 +560,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else if (AToolStripItem.Name == "mniMaintainDonorHistory")
             {
-                Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory.OpenWindowDonorRecipientHistory(AToolStripItem.Name,PartnerKey,this.Handle);
+                Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory.OpenWindowDonorRecipientHistory(AToolStripItem.Name,
+                    PartnerKey,
+                    this.Handle);
             }
             else if (AToolStripItem.Name == "mniMaintainRecipientHistory")
             {
-                Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory.OpenWindowDonorRecipientHistory(AToolStripItem.Name,PartnerKey,this.Handle);
+                Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory.OpenWindowDonorRecipientHistory(AToolStripItem.Name,
+                    PartnerKey,
+                    this.Handle);
             }
             else
             {
@@ -1754,8 +1758,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.Cursor = Cursors.Default;
 //#endif
         }
-
-        
 
         /// <summary>todoComment</summary>
         public void StopTimer()

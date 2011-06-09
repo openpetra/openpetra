@@ -25,7 +25,7 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Windows.Forms;
-
+using System.Globalization;
 using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
@@ -40,7 +40,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     public partial class TFrmDonorRecipientHistory
     {
         private long FDonor = 0;
-    	/// the Donor
+        /// the Donor
         public long Donor
         {
             set
@@ -51,7 +51,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         private long FRecipient = 0;
-	    /// the recipient
+        /// the recipient
         public long Recipient
         {
             set
@@ -70,7 +70,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// Browse: (Re)LoadTableContents, called after injection of parameters or manual via button
         /// </summary>
-        public void Browse()
+        public void Browse(bool loading)
         {
             TVerificationResultCollection AMessages;
             Hashtable requestParams = new Hashtable();
@@ -85,10 +85,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             requestParams.Add("Donor", donor);
             requestParams.Add("Recipient", recipient);
-          	
-            requestParams.Add("From", dtpDateFrom.Text);
-            requestParams.Add("To", dtpDateTo.Text);
-			
+
+
             GiftBatchTDS newTDS = TRemote.MFinance.Gift.WebConnectors.LoadDonorRecipientHistory(
                 requestParams,
                 out AMessages);
@@ -96,19 +94,60 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if ((AMessages != null) && (AMessages.Count > 0))
             {
                 MessageBox.Show(Messages.BuildMessageFromVerificationResult(Catalog.GetString("Error calling Donor/Recipient history"), AMessages));
-            	return;
+                return;
             }
             else
             {
                 FMainDS = newTDS;
             }
+
             if (FMainDS != null)
             {
                 DataView myDataView = FMainDS.AGiftDetail.DefaultView;
+                myDataView.Sort = "DateEntered DESC";
                 myDataView.AllowNew = false;
+                RowFilter = "";
+
+                if (txtMotivationDetail.Text.Length > 0)
+                {
+                    AddRowFilter(AGiftDetailTable.GetMotivationDetailCodeDBName() + " LIKE '" + txtMotivationDetail.Text + "%'");
+                }
+
+                if (txtMotivationGroup.Text.Length > 0)
+                {
+                    AddRowFilter(AGiftDetailTable.GetMotivationGroupCodeDBName() + " LIKE '" + txtMotivationGroup.Text + "%'");
+                }
+
+                if (loading && (FMainDS.AGiftDetail.Count > 0))
+                {
+                    GiftBatchTDSAGiftDetailRow gdr = (GiftBatchTDSAGiftDetailRow)myDataView[myDataView.Count - 1].Row;
+                    dtpDateFrom.Date = gdr.DateEntered;
+                    txtLedger.Text = Convert.ToString(FMainDS.AGiftDetail[0].LedgerNumber);
+                }
+
+                AddRowFilter(String.Format(CultureInfo.InvariantCulture.DateTimeFormat,
+                        "DateEntered  >= #{0}#", dtpDateFrom.Date));
+                AddRowFilter(String.Format(CultureInfo.InvariantCulture.DateTimeFormat,
+                        "DateEntered <= #{0}#", dtpDateTo.Date));
+
+                myDataView.RowFilter = RowFilter;
+
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+                SelectByIndex(0);
+                txtNumberOfGifts.Text = Convert.ToString(FMainDS.AGift.Count);
+                UpdateTotals();
             }
-                
+        }
+
+        private String RowFilter = "";
+        private void AddRowFilter(String filterCondition)
+        {
+            if (RowFilter.Length > 0)
+            {
+                RowFilter = RowFilter + " AND ";
+            }
+
+            RowFilter += filterCondition;
         }
 
         private void BtnCloseClick(object sender, EventArgs e)
@@ -118,7 +157,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void BtnBrowseClick(object sender, EventArgs e)
         {
-            Browse();
+            Browse(false);
         }
 
         private void BtnViewClick(object sender, EventArgs e)
@@ -126,6 +165,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // TODO Pop up a "normal" gift batch/gift/Giftdetail window where the gift shown this table and selected is selected
             // all the details are disabled (readonly)
         }
+
         /// <summary>
         /// static method for opening the window from partner module
         /// </summary>
@@ -153,9 +193,53 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 frmDRH.Recipient = PartnerKey;
             }
 
-            frmDRH.Browse();
+            frmDRH.Browse(true);
             frmDRH.Show();
             //this.Cursor = Cursors.Default;
+        }
+
+        private void UpdateTotals()
+        {
+            Decimal sum = 0;
+
+            foreach (AGiftDetailRow gdr in FMainDS.AGiftDetail.Rows)
+            {
+                sum += gdr.GiftTransactionAmount;
+                //TODO Convert currencies
+            }
+
+            txtGiftTotal.NumberValueDecimal = sum;
+
+            if (FMainDS.AGiftBatch.Count > 0)
+            {
+                txtGiftTotal.CurrencySymbol = FMainDS.AGiftBatch[0].CurrencyCode;
+            }
+
+            txtGiftTotal.ReadOnly = true;
+        }
+
+        private void SelectByIndex(int rowIndex)
+        {
+            if (rowIndex >= grdDetails.Rows.Count)
+            {
+                rowIndex = grdDetails.Rows.Count - 1;
+            }
+
+            if ((rowIndex < 1) && (grdDetails.Rows.Count > 1))
+            {
+                rowIndex = 1;
+            }
+
+            if ((rowIndex >= 1) && (grdDetails.Rows.Count > 1))
+            {
+                grdDetails.Selection.SelectRow(rowIndex, true);
+                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+            }
+            else
+            {
+                grdDetails.Selection.ResetSelection(false);
+                FPreviouslySelectedDetailRow = null;
+            }
         }
     }
 }

@@ -487,6 +487,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 {
                     AGiftDetailAccess.LoadViaPPartnerRecipientKey(MainDS, Recipient, Transaction);
+                    
 
                     foreach (GiftBatchTDSAGiftDetailRow giftDetail in MainDS.AGiftDetail.Rows)
                     {
@@ -523,11 +524,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     giftView.RowFilter = AGiftTable.GetGiftTransactionNumberDBName() + " = " + giftDetail.GiftTransactionNumber.ToString();
 
                     AGiftRow giftRow = (AGiftRow)giftView[0].Row;
-
+                    AGiftBatchAccess.LoadByPrimaryKey(MainDS, giftRow.LedgerNumber, giftRow.BatchNumber, Transaction);
                     StringCollection shortName = new StringCollection();
                     shortName.Add(PPartnerTable.GetPartnerShortNameDBName());
                     shortName.Add(PPartnerTable.GetPartnerClassDBName());
                     PPartnerTable partner = PPartnerAccess.LoadByPrimaryKey(giftRow.DonorKey, shortName, Transaction);
+                    //TODO replace values for Confidential gift
 
                     giftDetail.DonorKey = giftRow.DonorKey;
                     giftDetail.DonorName = partner[0].PartnerShortName;
@@ -549,6 +551,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     //giftDetail.RecipientField = fieldNumber;
 
                     partner = PPartnerAccess.LoadByPrimaryKey(giftDetail.RecipientKey, shortName, Transaction);
+
                     if (partner.Count > 0)
                     {
                         giftDetail.RecipientDescription = partner[0].PartnerShortName;
