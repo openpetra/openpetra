@@ -268,72 +268,23 @@ namespace Ict.Petra.WebServer.MConference
 
         protected void ServiceTeamJobs_Refresh(object sender, StoreRefreshDataEventArgs e)
         {
-            StoreServiceTeamJob.DataSource =
-                new object[] {
-                new object[] {
-                    "Kiosk"
-                },
-                new object[] {
-                    "Sports Team"
-                },
-                new object[] {
-                    "Bookshop"
-                },
-                new object[] {
-                    "Info Point"
-                },
-                new object[] {
-                    "Office"
-                },
-                new object[] {
-                    "Medical Team"
-                },
-                new object[] {
-                    "CleanStreet"
-                },
-                new object[] {
-                    "Fruit Table"
-                },
-                new object[] {
-                    "Staff Café"
-                },
-                new object[] {
-                    "Kitchen"
-                },
-                new object[] {
-                    "Security"
-                },
-                new object[] {
-                    "Main Hall Team"
-                },
-                new object[] {
-                    "Cyber Café"
-                },
-                new object[] {
-                    "Kids Program"
-                },
-                new object[] {
-                    "Fun Food"
-                },
-                new object[] {
-                    "ArtZone"
-                },
-                new object[] {
-                    "Cocktail Lounge"
-                },
-                new object[] {
-                    "Head-set-Team"
-                },
-                new object[] {
-                    "Communication Team"
-                },
-                new object[] {
-                    "ToddlerStreet"
-                },
-                new object[] {
-                    "InBetweens"
-                }
+            string[] availableJobs = new string[] {
+                "Kitchen", "Kiosk", "StaffCafe", "FunFood", "FruitStand", "Cocktail Lounge", "CoffeeBar", "Information", "TS Office",
+                "Technical Support", "CleanStreet", "Security", "MainHall Security", "OmniVision", "Medical Team", "Sports Team", "CyberCafe",
+                "KidsStreet", "InBetweens", "ToddlerStreet", "BookShop", "Communications", "Heatset Team", "Outreach", "RAG", "Dayvisitors",
+                "ArtZone",
+                "Others"
             };
+
+            List <object[]>datasource = new List <object[]>();
+
+            foreach (string job in availableJobs)
+            {
+                datasource.Add(new object[] { job });
+            }
+
+            StoreServiceTeamJob.DataSource = datasource.ToArray();
+
             StoreServiceTeamJob.DataBind();
         }
 
