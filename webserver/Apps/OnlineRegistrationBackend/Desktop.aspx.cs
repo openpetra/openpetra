@@ -572,7 +572,12 @@ namespace Ict.Petra.WebServer.MConference
             row.GenApplicationStatus = values["GenApplicationStatus_Value"];
             row.StFgLeader = values.ContainsKey("StFgLeader");
             row.StFgCode = values["StFgCode"];
-            row.StFieldCharged = Convert.ToInt64(values["StFieldCharged_Value"]);
+
+            if (values.ContainsKey("StFieldCharged_Value"))
+            {
+                row.StFieldCharged = Convert.ToInt64(values["StFieldCharged_Value"]);
+            }
+
             row.Comment = values["Comment"];
 
             if (TApplicationManagement.SaveApplication(EventCode, row) != TSubmitChangesResult.scrOK)
