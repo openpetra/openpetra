@@ -52,6 +52,9 @@
     <Reference Include="Ict.Petra.Server.lib.MConference">
       <HintPath>..\..\..\delivery\bin\Ict.Petra.Server.lib.MConference.dll</HintPath>
     </Reference>
+    <Reference Include="Ict.Petra.Server.lib.MPartner.Common">
+      <HintPath>..\..\..\delivery\bin\Ict.Petra.Server.lib.MPartner.Common.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Petra.Server.lib.MPersonnel">
       <HintPath>..\..\..\delivery\bin\Ict.Petra.Server.lib.MPersonnel.dll</HintPath>
     </Reference>

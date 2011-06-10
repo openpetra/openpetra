@@ -37,6 +37,7 @@ using Ict.Common.IO;
 using Ict.Common.Verification;
 using PetraWebService;
 using Ict.Petra.Server.MConference.Applications;
+using Ict.Petra.Server.MPartner.Import;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MConference.Data;
 using Ict.Petra.Shared.MPersonnel;
@@ -78,6 +79,7 @@ namespace Ict.Petra.WebServer.MConference
         protected Ext.Net.TextArea CommentRegistrationOfficeReadOnly;
         protected Ext.Net.Panel TabServiceTeam;
         protected Ext.Net.Panel TabMoreDetails;
+        protected Ext.Net.Button btnJSONApplication;
 
         protected bool ConferenceOrganisingOffice = false;
 
@@ -108,6 +110,8 @@ namespace Ict.Petra.WebServer.MConference
                     // for the organising office, only show the accepted applicants by default.
                     FilterStatus.SelectedItem.Value = "accepted";
                 }
+
+                btnJSONApplication.Visible = ConferenceOrganisingOffice;
 
                 MyData_Refresh(null, null);
             }
@@ -861,6 +865,36 @@ namespace Ict.Petra.WebServer.MConference
                         Title = "Fail",
                         Message = "There has been a problem in the .ext file."
                     });
+            }
+        }
+
+        /// this is used for applications made by mistake on the demo website, to import into the live application website
+        protected void ImportJSONApplication(object sender, DirectEventArgs e)
+        {
+            Dictionary <string, string>values = JSON.Deserialize <Dictionary <string, string>>(e.ExtraParams["Values"]);
+
+            string AJSONFormData = values["JSONData"].ToString();
+            AJSONFormData = TJsonTools.RemoveContainerControls(AJSONFormData);
+
+            AJSONFormData = AJSONFormData.Replace("\"txt", "\"").
+                            Replace("\"chk", "\"").
+                            Replace("\"rbt", "\"").
+                            Replace("\"cmb", "\"").
+                            Replace("\"hid", "\"").
+                            Replace("\"dtp", "\"").
+                            Replace("\n", " ").Replace("\r", "");
+
+            TLogging.Log(AJSONFormData);
+
+            try
+            {
+                // should not be able to create a PDF since the picture is missing, and not send an email
+                TImportPartnerForm.DataImportFromForm("RegisterPerson", AJSONFormData);
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(ex.Message);
+                TLogging.Log(ex.StackTrace);
             }
         }
     }

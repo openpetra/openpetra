@@ -475,6 +475,62 @@
         </ext:DesktopWindow>
 
         <ext:DesktopWindow 
+            ID="winJSONApplication" 
+            runat="server" 
+            Title="Import Application from JSON data" 
+            Width="500"
+            Height="600"
+            PageX="200" 
+            PageY="100"
+            Layout="Border">
+            <TopBar>
+            </TopBar>           
+            <Items>
+                <ext:FormPanel 
+                            ID="JSONApplicationForm" 
+                            runat="server"
+                            Region="Center"
+                            Width="300"
+                            Frame="false"
+                            AutoHeight="true"
+                            MonitorValid="true"
+                            PaddingSummary="10px 10px 0 10px"
+                            LabelWidth="50">
+                            <Defaults>
+                                <ext:Parameter Name="anchor" Value="95%" Mode="Value" />
+                                <ext:Parameter Name="allowBlank" Value="false" Mode="Raw" />
+                                <ext:Parameter Name="msgTarget" Value="side" Mode="Value" />
+                            </Defaults>
+                            <Items>
+                                <ext:TextArea ID="JSONData" DataIndex="JSONData" runat="server" FieldLabel="JSON Data" Height="360"/>
+                                <ext:Label runat="server" Text="This is only for the data administrator to be used. We can import logged applications again."/>
+                            </Items>
+                            <Buttons>
+                                <ext:Button ID="ImportJSONButton" runat="server" Text="Import Application">
+                                    <DirectEvents>
+                                        <Click OnEvent="ImportJSONApplication">
+                                            <EventMask ShowMask="true" />
+                                            <ExtraParams>
+                                                <ext:Parameter Name="Values" Value="#{JSONApplicationForm}.getForm().getValues(false)" Mode="Raw" Encode="true" />
+                                            </ExtraParams>
+                                        </Click>
+                                    </DirectEvents>
+                                    <Listeners>
+                                        <Click Handler="#{winJSONApplication}.hide();" />
+                                    </Listeners>
+                                </ext:Button>
+                                <ext:Button runat="server" Text="Cancel">
+                                    <Listeners>
+                                        <Click Handler="#{winJSONApplication}.hide();#{JSONApplicationForm}.getForm().reset();" />
+                                    </Listeners>
+                                </ext:Button>
+                            </Buttons>
+                        </ext:FormPanel>
+        
+            </Items>
+        </ext:DesktopWindow>
+
+        <ext:DesktopWindow 
             ID="winChangePassword" 
             runat="server" 
             Title="Change your Password" 
@@ -615,6 +671,11 @@
                         <td><ext:Button ID="btnUploadPetraExtract" runat="server" Text="Upload Petra Extract" Icon="Disk">
                             <Listeners>
                                 <Click Handler="#{winUploadPetraExtract}.show();" />
+                            </Listeners>
+                        </ext:Button></td>
+                        <td><ext:Button ID="btnJSONApplication" runat="server" Text="Direct JSON" Icon="Disk">
+                            <Listeners>
+                                <Click Handler="#{JSONApplicationForm}.getForm().reset();#{winJSONApplication}.show();" />
                             </Listeners>
                         </ext:Button></td>
                         </tr></table>
