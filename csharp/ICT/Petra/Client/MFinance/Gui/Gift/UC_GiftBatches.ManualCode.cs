@@ -62,7 +62,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ((TFrmGiftBatch)ParentForm).ClearCurrentSelections();
 
             // TODO: more criteria: state of batch, period, etc
-            FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(ALedgerNumber));
+            if (ViewMode)
+            {
+                FMainDS.Merge(ViewModeTDS);
+                rbtAll.Checked = true;
+            }
+            else
+            {
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(ALedgerNumber));
+            }
 
             // Load Motivation detail in this central place; it will be used by UC_GiftTransactions
             AMotivationDetailTable motivationDetail = (AMotivationDetailTable)TDataCache.TMFinance.GetCacheableFinanceTable(
@@ -117,16 +125,30 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ShowDetailsManual(AGiftBatchRow ARow)
         {
-            FPetraUtilsObject.DetailProtectedMode = (ARow.BatchStatus.Equals("Posted") || ARow.BatchStatus.Equals("Cancelled"));
+            FPetraUtilsObject.DetailProtectedMode = (ARow.BatchStatus.Equals("Posted") || ARow.BatchStatus.Equals("Cancelled")) || ViewMode;
             ((TFrmGiftBatch)ParentForm).EnableTransactionsTab();
             UpdateChangeableStatus();
-            FPetraUtilsObject.DetailProtectedMode = (ARow.BatchStatus.Equals("Posted") || ARow.BatchStatus.Equals("Cancelled"));
+            FPetraUtilsObject.DetailProtectedMode = (ARow.BatchStatus.Equals("Posted") || ARow.BatchStatus.Equals("Cancelled")) || ViewMode;
             ((TFrmGiftBatch)ParentForm).LoadTransactions(
                 ARow.LedgerNumber,
                 ARow.BatchNumber);
             FSelectedBatchNumber = ARow.BatchNumber;
         }
 
+        private Boolean ViewMode
+        {
+            get
+            {
+                return ((TFrmGiftBatch)ParentForm).ViewMode;
+            }
+        }
+        private GiftBatchTDS ViewModeTDS
+        {
+            get
+            {
+                return ((TFrmGiftBatch)ParentForm).ViewModeTDS;
+            }
+        }
         private void ShowTransactionTab(Object sender, EventArgs e)
         {
             ((TFrmGiftBatch)ParentForm).SelectTab(TFrmGiftBatch.eGiftTabs.Transactions);
@@ -259,8 +281,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void UpdateChangeableStatus()
         {
-            Boolean changeable = (FPreviouslySelectedDetailRow != null)
-                                 && (FPreviouslySelectedDetailRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
+            Boolean changeable = (FPreviouslySelectedDetailRow != null) && !ViewMode
+                                 && (FPreviouslySelectedDetailRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED) && (!ViewMode);
 
             this.btnDelete.Enabled = changeable;
             this.btnPostBatch.Enabled = changeable;
@@ -302,6 +324,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (t != null)
                 {
                     t.UpdateHashTotal(HashTotal);
+                }
+            }
+        }
+
+        /// Select a special batch number from outside
+        public void SelectBatchNumber(Int32 ABatchNumber)
+        {
+            for (int i = 0; (i < FMainDS.AGiftBatch.Rows.Count); i++)
+            {
+                if (FMainDS.AGiftBatch[i].BatchNumber == ABatchNumber)
+                {
+                    SelectDetailRowByDataTableIndex(i);
+                    break;
                 }
             }
         }

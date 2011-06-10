@@ -484,10 +484,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 //AGiftAccess.LoadViaAGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
                 if (Recipient > 0) //Case 2, Case 3
-
                 {
                     AGiftDetailAccess.LoadViaPPartnerRecipientKey(MainDS, Recipient, Transaction);
-                    
 
                     foreach (GiftBatchTDSAGiftDetailRow giftDetail in MainDS.AGiftDetail.Rows)
                     {
@@ -522,7 +520,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 {
                     // get the gift
                     giftView.RowFilter = AGiftTable.GetGiftTransactionNumberDBName() + " = " + giftDetail.GiftTransactionNumber.ToString();
-
+                    giftView.RowFilter += " AND " + AGiftTable.GetBatchNumberDBName() + " = " + giftDetail.BatchNumber.ToString();
                     AGiftRow giftRow = (AGiftRow)giftView[0].Row;
                     AGiftBatchAccess.LoadByPrimaryKey(MainDS, giftRow.LedgerNumber, giftRow.BatchNumber, Transaction);
                     StringCollection shortName = new StringCollection();
@@ -563,6 +561,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                     giftDetail.DateEntered = giftRow.DateEntered;
                 }
+
+                MainDS.AcceptChanges();
             }
             finally
             {

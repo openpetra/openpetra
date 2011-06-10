@@ -55,9 +55,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             FLedgerNumber = ALedgerNumber;
             FBatchNumber = ABatchNumber;
-            btnDeleteDetail.Enabled = !FPetraUtilsObject.DetailProtectedMode;
-            btnNewDetail.Enabled = !FPetraUtilsObject.DetailProtectedMode;
-            btnNewGift.Enabled = !FPetraUtilsObject.DetailProtectedMode;
+            btnDeleteDetail.Enabled = !FPetraUtilsObject.DetailProtectedMode && !ViewMode;
+            btnNewDetail.Enabled = !FPetraUtilsObject.DetailProtectedMode && !ViewMode;
+            btnNewGift.Enabled = !FPetraUtilsObject.DetailProtectedMode && !ViewMode;
 
             FPreviouslySelectedDetailRow = null;
 
@@ -686,7 +686,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void UpdateControlsProtection(AGiftDetailRow ARow)
         {
-            bool firstIsEnabled = (ARow != null) && (ARow.DetailNumber == 1);
+            bool firstIsEnabled = (ARow != null) && (ARow.DetailNumber == 1) && !ViewMode;
 
             dtpDateEntered.Enabled = firstIsEnabled;
             txtDetailDonorKey.Enabled = firstIsEnabled;
@@ -695,13 +695,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             cmbDetailMethodOfPaymentCode.Enabled = firstIsEnabled && !BatchHasMethodOfPayment();
             txtDetailReference.Enabled = firstIsEnabled;
             cmbDetailReceiptLetterCode.Enabled = firstIsEnabled;
-            PnlDetailsProtected = (ARow != null) && (ARow.GiftTransactionAmount < 0)
-                                  && // taken from old petra
-                                  (GetGiftRow(ARow.GiftTransactionNumber).ReceiptNumber != 0);
-
-            //	&& (ARow.ReceiptNumber) This is not
+            PnlDetailsProtected = ViewMode || ((ARow != null) && (ARow.GiftTransactionAmount < 0)
+                                               && // taken from old petra
+                                               (GetGiftRow(ARow.GiftTransactionNumber).ReceiptNumber != 0));
         }
 
+        private Boolean ViewMode
+        {
+            get
+            {
+                return ((TFrmGiftBatch)ParentForm).ViewMode;
+            }
+        }
         private Boolean BatchHasMethodOfPayment()
         {
             String batchMop =
@@ -775,6 +780,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             else
             {
                 giftRow.ReceiptLetterCode = cmbDetailReceiptLetterCode.GetSelectedString();
+            }
+        }
+
+        /// Select a special gift detail number from outside
+        public void SelectGiftDetailNumber(Int32 AGiftNumber, Int32 AGiftDetailNumber)
+        {
+            for (int i = 0; (i < FMainDS.AGiftDetail.Rows.Count); i++)
+            {
+                GiftBatchTDSAGiftDetailRow gdr = FMainDS.AGiftDetail[i];
+
+                if ((gdr.GiftTransactionNumber == AGiftNumber) && (gdr.DetailNumber == AGiftDetailNumber))
+                {
+                    SelectDetailRowByDataTableIndex(i);
+                    break;
+                }
             }
         }
     }

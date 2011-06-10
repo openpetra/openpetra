@@ -26,12 +26,39 @@ using System;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Shared.MFinance.Gift.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
     public partial class TFrmGiftBatch
     {
         private Int32 FLedgerNumber;
+        private Boolean FViewMode = false;
+        /// ViewMode is a special mode where the whole window with all tabs is in a readonly mode
+        public bool ViewMode {
+            get
+            {
+                return FViewMode;
+            }
+            set
+            {
+                FViewMode = value;
+            }
+        }
+        private GiftBatchTDS FViewModeTDS;
+        /// ViewModeTDS is for injection of the Datasets in the View Mode
+        public GiftBatchTDS ViewModeTDS
+        {
+            get
+            {
+                return FViewModeTDS;
+            }
+            set
+            {
+                FViewModeTDS = value;
+            }
+        }
+
 
         /// <summary>
         /// use this ledger
@@ -106,6 +133,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public TUC_GiftBatches GetBatchControl()
         {
             return ucoBatches;
+        }
+
+        public void FindGiftDetail(AGiftDetailRow gdr)
+        {
+            ucoBatches.SelectBatchNumber(gdr.BatchNumber);
+            ucoTransactions.SelectGiftDetailNumber(gdr.GiftTransactionNumber, gdr.DetailNumber);
         }
 
         /// <summary>

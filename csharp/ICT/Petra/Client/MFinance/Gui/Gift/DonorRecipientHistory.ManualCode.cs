@@ -162,8 +162,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void BtnViewClick(object sender, EventArgs e)
         {
-            // TODO Pop up a "normal" gift batch/gift/Giftdetail window where the gift shown this table and selected is selected
-            // all the details are disabled (readonly)
+            if ((FPreviouslySelectedDetailRow != null) && (FMainDS != null))
+            {
+                try
+                {
+                    this.Cursor = Cursors.WaitCursor;
+
+                    TFrmGiftBatch gb = new TFrmGiftBatch(this.Handle);
+                    gb.ViewMode = true;
+                    gb.ViewModeTDS = FMainDS;
+                    gb.LedgerNumber = Convert.ToInt32(txtLedger.Text);
+                    gb.FindGiftDetail(FPreviouslySelectedDetailRow);
+                    gb.Show();
+                }
+                finally
+                {
+                    this.Cursor = Cursors.Default;
+                }
+            }
         }
 
         /// <summary>
@@ -180,22 +196,28 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            //this.Cursor = Cursors.WaitCursor;
             Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory frmDRH = new  Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory(
                 theHandle);
-
-            if (Name.Equals("mniMaintainDonorHistory"))
+            try
             {
-                frmDRH.Donor = PartnerKey;
-            }
-            else
-            {
-                frmDRH.Recipient = PartnerKey;
-            }
+                frmDRH.Cursor = Cursors.WaitCursor;
 
-            frmDRH.Browse(true);
-            frmDRH.Show();
-            //this.Cursor = Cursors.Default;
+                if (Name.Equals("mniMaintainDonorHistory"))
+                {
+                    frmDRH.Donor = PartnerKey;
+                }
+                else
+                {
+                    frmDRH.Recipient = PartnerKey;
+                }
+
+                frmDRH.Browse(true);
+                frmDRH.Show();
+            }
+            finally
+            {
+                frmDRH.Cursor = Cursors.Default;
+            }
         }
 
         private void UpdateTotals()
