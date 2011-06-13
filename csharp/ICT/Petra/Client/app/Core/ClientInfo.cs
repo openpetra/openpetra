@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -50,8 +50,7 @@ namespace Ict.Petra.Client.App.Core
         {
             Networking.DetermineNetworkConfig(out UClientComputerName, out UClientIPAddress);
             UClientOS = Utilities.DetermineExecutingOS();
-
-            InitVersion();
+            UClientAssemblyVersion = TFileVersionInfo.GetApplicationVersion();
 
             if (TClientSettings.RunAsRemote)
             {
@@ -70,35 +69,6 @@ namespace Ict.Petra.Client.App.Core
             }
         }
 
-        /// find out the current version of the client
-        public static void InitVersion()
-        {
-            Assembly entryAssembly = System.Reflection.Assembly.GetEntryAssembly();
-
-            if (entryAssembly == null)
-            {
-                // this is when the client is run with NUnit
-                // assume the version is 0.9.0 for the moment
-                entryAssembly = System.Reflection.Assembly.GetAssembly(typeof(TConnectionManagement));
-            }
-
-            UClientAssemblyVersion = entryAssembly.GetName().Version.ToString();
-
-            // if there is a version.txt in the bin directory, use that.
-            // this allows better debugging etc
-
-            string VersionTxtFile = Path.GetDirectoryName(entryAssembly.CodeBase.Replace("file:///", "")) +
-                                    Path.DirectorySeparatorChar + "version.txt";
-
-            if (File.Exists(VersionTxtFile))
-            {
-                StreamReader srVersion = new StreamReader(VersionTxtFile);
-                TFileVersionInfo v = new TFileVersionInfo(srVersion.ReadLine());
-                UClientAssemblyVersion = v.ToString();
-                srVersion.Close();
-            }
-        }
-
         /// <summary>
         /// todoComment
         /// </summary>
@@ -106,7 +76,7 @@ namespace Ict.Petra.Client.App.Core
         {
             get
             {
-                return Get_ClientOS();
+                return UClientOS;
             }
         }
 
@@ -117,7 +87,7 @@ namespace Ict.Petra.Client.App.Core
         {
             get
             {
-                return Get_ClientIPAddress();
+                return UClientIPAddress;
             }
         }
 
@@ -128,7 +98,7 @@ namespace Ict.Petra.Client.App.Core
         {
             get
             {
-                return Get_ClientComputerName();
+                return UClientComputerName;
             }
         }
 
@@ -139,7 +109,7 @@ namespace Ict.Petra.Client.App.Core
         {
             get
             {
-                return Get_ClientAssemblyVersion();
+                return UClientAssemblyVersion;
             }
         }
 
@@ -150,53 +120,8 @@ namespace Ict.Petra.Client.App.Core
         {
             get
             {
-                return Get_InstallationKind();
+                return UInstallationKind;
             }
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        /// <returns></returns>
-        public static String Get_ClientComputerName()
-        {
-            return UClientComputerName;
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        /// <returns></returns>
-        public static String Get_ClientIPAddress()
-        {
-            return UClientIPAddress;
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        /// <returns></returns>
-        public static String Get_ClientAssemblyVersion()
-        {
-            return UClientAssemblyVersion;
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        /// <returns></returns>
-        public static String Get_InstallationKind()
-        {
-            return UInstallationKind;
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        /// <returns></returns>
-        public static TExecutingOSEnum Get_ClientOS()
-        {
-            return UClientOS;
         }
     }
 }

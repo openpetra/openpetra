@@ -190,28 +190,33 @@ namespace Ict.Common
             return FileMajorPart.ToString() + '.' + FileMinorPart.ToString() + '.' + FileBuildPart.ToString() + '-' + FilePrivatePart.ToString();
         }
 
+        /// <summary>
+        /// get the version of the current application.
+        /// Parse version.txt in the same directory if that file exists.
+        /// Otherwise use the version of the exe or dll file
+        /// </summary>
+        /// <returns></returns>
         public static TFileVersionInfo GetApplicationVersion()
         {
             TFileVersionInfo Result = new TFileVersionInfo();
 
-            if ((System.Reflection.Assembly.GetEntryAssembly() != null) && (System.Reflection.Assembly.GetEntryAssembly().GetName() != null))
+            // retrieve the current version of the server from the file version.txt in the bin directory
+            // this is easier to manage than to check the assembly version in case you only need to quickly update the client
+            string BinPath = TAppSettingsManager.ApplicationDirectory;
+
+            if (File.Exists(BinPath + Path.DirectorySeparatorChar + "version.txt"))
+            {
+                StreamReader srVersion = new StreamReader(BinPath + Path.DirectorySeparatorChar + "version.txt");
+                Result = new TFileVersionInfo(srVersion.ReadLine());
+                srVersion.Close();
+            }
+            else if ((System.Reflection.Assembly.GetEntryAssembly() != null) && (System.Reflection.Assembly.GetEntryAssembly().GetName() != null))
             {
                 Result = new TFileVersionInfo(System.Reflection.Assembly.GetEntryAssembly().GetName().Version);
-
-                // retrieve the current version of the server from the file version.txt in the bin directory
-                // this is easier to manage than to check the assembly version in case you only need to quickly update the client
-                string BinPath = Environment.CurrentDirectory;
-
-                if (File.Exists(BinPath + Path.DirectorySeparatorChar + "version.txt"))
-                {
-                    StreamReader srVersion = new StreamReader(BinPath + Path.DirectorySeparatorChar + "version.txt");
-                    Result = new TFileVersionInfo(srVersion.ReadLine());
-                    srVersion.Close();
-                }
             }
             else
             {
-                // this is with the web services, started with xsp.exe
+                // this is with the web services, started with xsp.exe, or running from NUnit
                 Result = new TFileVersionInfo(new Version(0, 0, 0, 0));
             }
 

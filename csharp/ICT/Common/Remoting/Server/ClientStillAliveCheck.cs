@@ -39,8 +39,8 @@ namespace Ict.Common.Remoting.Server
     /// </remarks>
     public class ClientStillAliveCheck
     {
-        public const String StrClientFailedToContact1 = "Client failed to contact PetraServer regularl" + "y (last contact was ";
-        public const String StrClientFailedToContact2 = " ago [Format: hh:mm:ss]): ClientStillAliveCheck mechanism found " + "timeout expired!";
+        private const String StrClientFailedToContact1 = "Client failed to contact PetraServer regularl" + "y (last contact was ";
+        private const String StrClientFailedToContact2 = " ago [Format: hh:mm:ss]): ClientStillAliveCheck mechanism found " + "timeout expired!";
         private static TDelegateTearDownAppDomain UTearDownAppDomain;
         private static String UTearDownAppDomainToken;
         private static Thread UClientStillAliveCheckThread;

@@ -61,9 +61,6 @@ namespace Ict.Petra.Server.App.ClientDomain
         /// <summary>used internally to hold SiteKey Information (for convenience)</summary>
         public static Int64 GSiteKey;
 
-        /// <summary>used internally for logging purposes</summary>
-        public static TLogging ULogger;
-
         /// <summary>used internally to hold a proxy reference to the ClientManager in the Server's Default AppDomain</summary>
         public static TClientManagerCallForwarder UClientManagerCallForwarderRef;
 
@@ -579,7 +576,7 @@ namespace Ict.Petra.Server.App.ClientDomain
         /// <returns>void</returns>
         public void EstablishDBConnection()
         {
-            DomainManager.ULogger = new TLogging(TSrvSetting.ServerLogFile);
+            new TLogging(TSrvSetting.ServerLogFile);
 
             TLanguageCulture.Init();
 

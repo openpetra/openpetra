@@ -76,6 +76,17 @@ namespace Ict.Common
             }
         }
 
+        /// <summary>
+        /// read only property for the directory where the application is started from
+        /// </summary>
+        public static string ApplicationDirectory
+        {
+            get
+            {
+                return FApplicationDirectory;
+            }
+        }
+
         #region TAppSettingsManager
 
         /// <summary>
