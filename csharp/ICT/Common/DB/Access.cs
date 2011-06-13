@@ -31,6 +31,7 @@ using System.Threading;
 using System.IO;
 using System.Xml;
 using System.Web;
+using Ict.Common;
 using Ict.Common.DB.DBCaching;
 using Ict.Common.IO;
 
@@ -235,6 +236,10 @@ namespace Ict.Common.DB
         /// restart a sequence with the given value
         /// </summary>
         void RestartSequence(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase, IDbConnection AConnection, Int64 ARestartValue);
+
+        /// update a database when starting the OpenPetra server. otherwise throw an exception
+        void UpdateDatabase(TFileVersionInfo ADBVersion, TFileVersionInfo AExeVersion,
+            string AHostOrFile, string ADatabasePort, string ADatabaseName, string AUsername, string APassword);
     }
 
     /// <summary>
@@ -254,7 +259,7 @@ namespace Ict.Common.DB
     ///   executing SQL batch statements from which multiple DataTable objects would
     ///   be expected! TODO: this comment needs revising, with native drivers
     /// </summary>
-    public class TDataBase : MarshalByRefObject
+    public class TDataBase
     {
         /// <summary>References the DBConnection instance</summary>
         private TDBConnection FDBConnectionInstance;
@@ -492,6 +497,47 @@ namespace Ict.Common.DB
                     String.Format("Exception occured while establishing a connection to Database Server. DB Type: {0}", FDbType));
 
                 throw new EDBConnectionNotEstablishedException(CurrentConnectionInstance.GetConnectionString() + ' ' + exp.ToString());
+            }
+
+            CheckDatabaseVersion();
+        }
+
+        /// <summary>
+        /// Application and Database should have the same version, otherwise all sorts of things can go wrong.
+        /// this is specific to the OpenPetra database, for all other databases it will just ignore the database version check
+        /// </summary>
+        private void CheckDatabaseVersion()
+        {
+            string DBPatchVersion;
+            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+
+            try
+            {
+                // now check if the database is uptodate; otherwise run db patch against it
+                DBPatchVersion =
+                    Convert.ToString(DBAccess.GDBAccessObj.ExecuteScalar(
+                            "SELECT s_default_value_c FROM PUB_s_system_defaults WHERE s_default_code_c = 'CurrentDatabaseVersion'",
+                            transaction));
+            }
+            catch (Exception)
+            {
+                // this can happen when connecting to an old Petra 2.x database, or a completely different database
+                return;
+            }
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            TFileVersionInfo dbversion = new TFileVersionInfo(DBPatchVersion);
+            TFileVersionInfo serverExeInfo = new TFileVersionInfo(TFileVersionInfo.GetApplicationVersion());
+
+            if (dbversion.Compare(serverExeInfo) < 0)
+            {
+                // for a proper server, the patchtool should have already updated the database
+
+                // for standalone versions, we update the database on the fly when starting the server
+                FDataBaseRDBMS.UpdateDatabase(dbversion, serverExeInfo, FDsnOrServer, FDBPort, FDatabaseName, FUsername, FPassword);
             }
         }
 

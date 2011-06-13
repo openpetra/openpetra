@@ -249,7 +249,7 @@ namespace Ict.Tools.PatchTool
                 }
 
                 // also needs to call the progress patch program for the last build of each patch that is installed now
-                currentPatchVersion = TFileVersionInfo.GetLatestPatchVersionFromDiffZipName(patch);
+                currentPatchVersion = TPatchFileVersionInfo.GetLatestPatchVersionFromDiffZipName(patch);
 
                 previousPatchVersion = currentPatchVersion;
                 ReturnValue = true;

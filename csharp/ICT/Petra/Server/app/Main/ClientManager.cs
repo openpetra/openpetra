@@ -1496,7 +1496,7 @@ namespace Ict.Petra.Server.App.Main
                     }
 #endif
 
-                    if (AClientExeVersion != TSrvSetting.ApplicationVersion)
+                    if (TSrvSetting.ApplicationVersion.Compare(new TFileVersionInfo(AClientExeVersion)) != 0)
                     {
                         ((TRunningAppDomain)UClientObjects[(object)AClientID]).AppDomainStatus = TAppDomainStatus.adsStopped;
                         #region Logging

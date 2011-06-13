@@ -28,6 +28,7 @@ using System.Runtime.Remoting.Channels.Tcp;
 using System.Runtime.Remoting.Lifetime;
 using Ict.Common;
 using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Client;
 
 namespace Ict.Petra.ServerAdmin.App.Core
 {
@@ -48,7 +49,7 @@ namespace Ict.Petra.ServerAdmin.App.Core
             try
             {
                 RemotingConfiguration.Configure(ConfigFile, false);
-                iRemote = (IServerAdminInterface)(Ict.Common.TRemotingHelper.GetObject(typeof(IServerAdminInterface)));
+                iRemote = (IServerAdminInterface)(TRemotingHelper.GetObject(typeof(IServerAdminInterface)));
 
                 if (iRemote == null)
                 {

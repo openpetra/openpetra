@@ -25,7 +25,7 @@ using System;
 using System.Collections;
 using System.Runtime.Remoting;
 
-namespace Ict.Common
+namespace Ict.Common.Remoting.Client
 {
     /// <summary>
     /// Remoting helper class for ICT applications.

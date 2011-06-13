@@ -28,6 +28,7 @@ using System.Runtime.Remoting.Channels.Tcp;
 using System.Runtime.Remoting.Lifetime;
 using Ict.Common;
 using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared.Interfaces.MCommon;
 using Ict.Petra.Shared.Interfaces.MConference;
 using Ict.Petra.Shared.Interfaces.MFinance;

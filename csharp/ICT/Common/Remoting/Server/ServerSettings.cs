@@ -24,7 +24,6 @@
 using System;
 using System.IO;
 using Ict.Common;
-using Ict.Common.IO;
 
 namespace Ict.Common.Remoting.Server
 {
@@ -42,7 +41,6 @@ namespace Ict.Common.Remoting.Server
         private String FConfigurationFile;
         private String FApplicationName;
         private TDBType FRDBMSType;
-        private String FODBCDsn;
         private String FDatabaseHostOrFile;
         private String FDatabasePort;
         private String FDatabaseName;
@@ -51,7 +49,7 @@ namespace Ict.Common.Remoting.Server
         private String FServerLogFile;
         private String FHostName;
         private String FHostIPAddresses;
-        private System.Version FApplicationVersion;
+        private TFileVersionInfo FApplicationVersion;
         private System.Int16 FIPBasePort;
         private System.Int16 FClientIdleStatusAfterXMinutes;
         private System.Int16 FClientKeepAliveCheckIntervalInSeconds;
@@ -97,7 +95,7 @@ namespace Ict.Common.Remoting.Server
         }
 
         /// <summary>Assembly Version of the Server's .exe</summary>
-        public static System.Version ApplicationVersion
+        public static TFileVersionInfo ApplicationVersion
         {
             get
             {
@@ -120,15 +118,6 @@ namespace Ict.Common.Remoting.Server
             get
             {
                 return USingletonSrvSetting.FRDBMSType;
-            }
-        }
-
-        /// <summary>ODBC DSN used to connect to the RDBMS</summary>
-        public static String ODBCDsn
-        {
-            get
-            {
-                return USingletonSrvSetting.FODBCDsn;
             }
         }
 
@@ -343,7 +332,6 @@ namespace Ict.Common.Remoting.Server
             FConfigurationFile = ACopyFrom.FConfigurationFile;
             FExecutingOS = ACopyFrom.FExecutingOS;
             FRDBMSType = ACopyFrom.FRDBMSType;
-            FODBCDsn = ACopyFrom.FODBCDsn;
             FDatabaseHostOrFile = ACopyFrom.FDatabaseHostOrFile;
             FDatabasePort = ACopyFrom.FDatabasePort;
             FDatabaseName = ACopyFrom.FDatabaseName;
@@ -385,9 +373,6 @@ namespace Ict.Common.Remoting.Server
 
             // Server.RDBMSType
             FRDBMSType = CommonTypes.ParseDBType(TAppSettingsManager.GetValue("Server.RDBMSType"));
-
-            // Server.ODBC_DSN
-            FODBCDsn = TAppSettingsManager.GetValue("Server.ODBC_DSN", false);
 
             FDatabaseHostOrFile = TAppSettingsManager.GetValue("Server.DBHostOrFile", "localhost").
                                   Replace("{userappdata}", Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
@@ -454,27 +439,7 @@ namespace Ict.Common.Remoting.Server
             // Determine network configuration of the Server
             Networking.DetermineNetworkConfig(out FHostName, out FHostIPAddresses);
 
-            if ((System.Reflection.Assembly.GetEntryAssembly() != null) && (System.Reflection.Assembly.GetEntryAssembly().GetName() != null))
-            {
-                FApplicationVersion = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
-
-                // retrieve the current version of the server from the file version.txt in the bin directory
-                // this is easier to manage than to check the assembly version in case you only need to quickly update the client
-                string BinPath = Environment.CurrentDirectory;
-
-                if (File.Exists(BinPath + Path.DirectorySeparatorChar + "version.txt"))
-                {
-                    StreamReader srVersion = new StreamReader(BinPath + Path.DirectorySeparatorChar + "version.txt");
-                    TFileVersionInfo v = new TFileVersionInfo(srVersion.ReadLine());
-                    FApplicationVersion = new Version(v.FileMajorPart, v.FileMinorPart, v.FileBuildPart, v.FilePrivatePart);
-                    srVersion.Close();
-                }
-            }
-            else
-            {
-                // this is with the web services, started with xsp.exe
-                FApplicationVersion = new Version(0, 0, 0, 0);
-            }
+            FApplicationVersion = TFileVersionInfo.GetApplicationVersion();
         }
     }
 }

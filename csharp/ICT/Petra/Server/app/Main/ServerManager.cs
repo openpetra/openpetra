@@ -356,157 +356,16 @@ namespace Ict.Petra.Server.App.Main
         public void EstablishDBConnection()
         {
             DBAccess.GDBAccessObj = new TDataBase();
-            try
-            {
-                DBAccess.GDBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
-                    TSrvSetting.PostgreSQLServer,
-                    TSrvSetting.PostgreSQLServerPort,
-                    TSrvSetting.PostgreSQLDatabaseName,
-                    TSrvSetting.DBUsername,
-                    TSrvSetting.DBPassword,
-                    "");
 
-                string DBPatchVersion = "0.0.9-0";
-                bool oldLegacyDB = false;
-                TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
-
-                try
-                {
-                    // now check if the database is uptodate; otherwise run db patch against it
-                    DBPatchVersion =
-                        Convert.ToString(DBAccess.GDBAccessObj.ExecuteScalar(
-                                "SELECT s_default_value_c FROM PUB_s_system_defaults WHERE s_default_code_c = 'CurrentDatabaseVersion'",
-                                transaction));
-                }
-                catch (Exception)
-                {
-                    // this can happen when connecting to an old Petra 2.x database
-                    oldLegacyDB = true;
-                }
-                DBAccess.GDBAccessObj.RollbackTransaction();
-
-                TFileVersionInfo dbversion = new TFileVersionInfo(DBPatchVersion);
-                TFileVersionInfo serverExeInfo = new TFileVersionInfo(TSrvSetting.ApplicationVersion);
-
-                if (serverExeInfo.Compare(new TFileVersionInfo("0.0.9-0")) == 0)
-                {
-                    // this is a developer version; database patching has to be done manually
-                }
-                else if (!oldLegacyDB)
-                {
-                    if (dbversion.Compare(serverExeInfo) < 0)
-                    {
-                        // for a proper server, the patchtool should have already updated the database
-
-                        // for standalone versions, we update the database on the fly when starting the server
-                        if (CommonTypes.ParseDBType(DBAccess.GDBAccessObj.DBType) == TDBType.SQLite)
-                        {
-                            UpdateSQLiteDatabase(dbversion, serverExeInfo);
-                        }
-                        else
-                        {
-                            throw new Exception(
-                                "Cannot connect to old database, please restore the latest clean demo database or run nant patchDatabase");
-                        }
-                    }
-                }
-
-                // $IFDEF DEBUGMODE Console.WriteLine('SystemDefault "LocalisedCountyLabel": ' + FSystemDefaultsCache.GetSystemDefault('LocalisedCountyLabel'));$ENDIF
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            DBAccess.GDBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
+                TSrvSetting.PostgreSQLServer,
+                TSrvSetting.PostgreSQLServerPort,
+                TSrvSetting.PostgreSQLDatabaseName,
+                TSrvSetting.DBUsername,
+                TSrvSetting.DBPassword,
+                "");
 
             TLogging.Log("  " + Catalog.GetString("Connected to Database."));
-        }
-
-        /// <summary>
-        /// For standalone installations, we update the SQLite database on the fly
-        /// </summary>
-        private void UpdateSQLiteDatabase(TFileVersionInfo ADBVersion, TFileVersionInfo AExeVersion)
-        {
-            // there have been drastic changes to the database after 0.2.8-1, which means we have to start with a clean database
-            // otherwise there are definitely errors with the s_login sequence, and outreach tables might cause a problem as well
-            if (ADBVersion.Compare(new TFileVersionInfo("0.2.8-1")) == 0)
-            {
-                DBAccess.GDBAccessObj.CloseDBConnection();
-
-                TLogging.Log("Please find your old data in " + TFileHelper.MoveToBackup(TSrvSetting.PostgreSQLServer));
-
-                DBAccess.GDBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
-                    TSrvSetting.PostgreSQLServer,
-                    TSrvSetting.PostgreSQLServerPort,
-                    TSrvSetting.PostgreSQLDatabaseName,
-                    TSrvSetting.DBUsername,
-                    TSrvSetting.DBPassword,
-                    "");
-            }
-
-            string dbpatchfilePath = Path.GetDirectoryName(TAppSettingsManager.GetValue("Server.SQLiteBaseFile"));
-
-            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
-
-            ADBVersion.FilePrivatePart = 0;
-            AExeVersion.FilePrivatePart = 0;
-
-            try
-            {
-                // run all available patches. for each release there could be a patch file
-                string[] sqlFiles = Directory.GetFiles(dbpatchfilePath, "*.sql");
-
-                bool foundUpdate = true;
-
-                // run through all sql files until we have no matching update files anymore
-                while (foundUpdate)
-                {
-                    foundUpdate = false;
-
-                    foreach (string sqlFile in sqlFiles)
-                    {
-                        if (!sqlFile.EndsWith("pg.sql") && ADBVersion.PatchApplies(sqlFile, AExeVersion))
-                        {
-                            foundUpdate = true;
-                            StreamReader sr = new StreamReader(sqlFile);
-
-                            while (!sr.EndOfStream)
-                            {
-                                string line = sr.ReadLine().Trim();
-
-                                if (!line.StartsWith("--"))
-                                {
-                                    DBAccess.GDBAccessObj.ExecuteNonQuery(line, transaction, false);
-                                }
-                            }
-
-                            sr.Close();
-                            ADBVersion = TFileVersionInfo.GetLatestPatchVersionFromDiffZipName(sqlFile);
-                        }
-                    }
-                }
-
-                if (ADBVersion.Compare(AExeVersion) == 0)
-                {
-                    // if patches have been applied successfully, update the database version
-                    string newVersionSql =
-                        String.Format("UPDATE s_system_defaults SET s_default_value_c = '{0}' WHERE s_default_code_c = 'CurrentDatabaseVersion';",
-                            AExeVersion.ToStringDotsHyphen());
-                    DBAccess.GDBAccessObj.ExecuteNonQuery(newVersionSql, transaction, false);
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
-                else
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                    throw new Exception(String.Format("Cannot connect to old database (version {0}), there are some missing sql patch files",
-                            ADBVersion));
-                }
-            }
-            catch (Exception e)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-
-                throw e;
-            }
         }
 
         /// <summary>
@@ -540,38 +399,6 @@ namespace Ict.Petra.Server.App.Main
         {
             GC.Collect();
             return GC.GetTotalMemory(false);
-        }
-
-        /// <summary>
-        /// Causes PetraServer to send a test e-mail to a recipient with the current Server Email Settings.
-        /// </summary>
-        public string SendServerTestEmail(string ARecipients)
-        {
-            bool result;
-            string ReturnValue;
-
-//            Console.WriteLine("Server Email Settings:" + Environment.NewLine +
-//                "SmtpServer: " + TSrvSetting.SMTPServer + Environment.NewLine +
-//                "AutoIntranetExportSetting: " + TSrvSetting.AutomaticIntranetExportEnabled.ToString());
-
-
-            result = Ict.Common.EMailing.SMTPEmail.SendEmail(
-                ARecipients, ARecipients, ARecipients,
-                "Test Email from PetraServer",
-                "PetraServer Test Email, as requested on " + DateTime.Now.ToString() + ".");
-
-            ReturnValue = "Email sending result: ";
-
-            if (result)
-            {
-                ReturnValue = ReturnValue + "OK";
-            }
-            else
-            {
-                ReturnValue = ReturnValue + "FAILURE";
-            }
-
-            return ReturnValue;
         }
     }
 }
