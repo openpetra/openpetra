@@ -64,7 +64,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void InitializeManualCode()
         {
-            // needed?
+            txtLedger.Text = "" + Ict.Petra.Client.MFinance.Logic.TLedgerSelection.DetermineDefaultLedger();
         }
 
         /// <summary>
@@ -118,17 +118,31 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     AddRowFilter(AGiftDetailTable.GetMotivationGroupCodeDBName() + " LIKE '" + txtMotivationGroup.Text + "%'");
                 }
 
-                if (loading && (FMainDS.AGiftDetail.Count > 0))
+                if (loading)
                 {
-                    GiftBatchTDSAGiftDetailRow gdr = (GiftBatchTDSAGiftDetailRow)myDataView[myDataView.Count - 1].Row;
-                    dtpDateFrom.Date = gdr.DateEntered;
-                    txtLedger.Text = Convert.ToString(FMainDS.AGiftDetail[0].LedgerNumber);
+                    if (FMainDS.AGiftDetail.Count > 0)
+                    {
+                        GiftBatchTDSAGiftDetailRow gdr = (GiftBatchTDSAGiftDetailRow)myDataView[myDataView.Count - 1].Row;
+                        dtpDateFrom.Date = gdr.DateEntered;
+                    }
+                    else
+                    {
+                        dtpDateFrom.Date = null;
+                        dtpDateTo.Date = null;
+                    }
                 }
 
-                AddRowFilter(String.Format(CultureInfo.InvariantCulture.DateTimeFormat,
-                        "DateEntered  >= #{0}#", dtpDateFrom.Date));
-                AddRowFilter(String.Format(CultureInfo.InvariantCulture.DateTimeFormat,
-                        "DateEntered <= #{0}#", dtpDateTo.Date));
+                if (dtpDateFrom.Date.HasValue)
+                {
+                    AddRowFilter(String.Format(CultureInfo.InvariantCulture.DateTimeFormat,
+                            "DateEntered  >= #{0}#", dtpDateFrom.Date));
+                }
+
+                if (dtpDateTo.Date.HasValue)
+                {
+                    AddRowFilter(String.Format(CultureInfo.InvariantCulture.DateTimeFormat,
+                            "DateEntered <= #{0}#", dtpDateTo.Date));
+                }
 
                 myDataView.RowFilter = RowFilter;
 

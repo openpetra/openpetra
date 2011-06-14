@@ -287,6 +287,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.btnDelete.Enabled = changeable;
             this.btnPostBatch.Enabled = changeable;
             pnlDetails.Enabled = changeable;
+            mniBatch.Enabled = !ViewMode;
+            mniPost.Enabled = !ViewMode;
+            tbbExportBatches.Enabled = !ViewMode;
+            tbbImportBatches.Enabled = !ViewMode;
+            tbbPostBatch.Enabled = !ViewMode;
         }
 
         /// <summary>

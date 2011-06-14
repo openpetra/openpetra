@@ -489,17 +489,27 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                     foreach (GiftBatchTDSAGiftDetailRow giftDetail in MainDS.AGiftDetail.Rows)
                     {
-                        if (Donor == 0)
+                        AGiftAccess.LoadByPrimaryKey(MainDS,
+                            giftDetail.LedgerNumber,
+                            giftDetail.BatchNumber,
+                            giftDetail.GiftTransactionNumber,
+                            Transaction);
+
+                        if (Donor != 0)
                         {
-                            AGiftAccess.LoadByPrimaryKey(MainDS,
-                                giftDetail.LedgerNumber,
-                                giftDetail.BatchNumber,
-                                giftDetail.GiftTransactionNumber,
-                                Transaction);
-                        }
-                        else
-                        {
-                            //TODO Case 3
+                            AGiftRow newGiftRow = (AGiftRow)MainDS.AGift.Rows.Find(new object[] { giftDetail.LedgerNumber,
+                                                                                                  giftDetail.BatchNumber,
+                                                                                                  giftDetail.GiftTransactionNumber });
+
+                            if (newGiftRow.DonorKey != Donor)
+                            {
+                                if (newGiftRow.RowState != DataRowState.Deleted)
+                                {
+                                    newGiftRow.Delete();
+                                }
+
+                                giftDetail.Delete();
+                            }
                         }
                     }
                 }
@@ -513,6 +523,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     }
                 }
 
+                MainDS.AcceptChanges();
                 DataView giftView = new DataView(MainDS.AGift);
 
                 // fill the columns in the modified GiftDetail Table to show donorkey, dateentered etc in the grid
