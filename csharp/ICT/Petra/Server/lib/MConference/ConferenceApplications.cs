@@ -531,6 +531,7 @@ namespace Ict.Petra.Server.MConference.Applications
 
                 Person.Gender = AChangedRow.Gender;
                 GeneralApplication.Comment = AChangedRow.Comment;
+                GeneralApplication.GenAppDate = AChangedRow.GenAppDate;
 
                 if (!AChangedRow.IsJSONDataNull() && (AChangedRow.JSONData.Length > 0))
                 {

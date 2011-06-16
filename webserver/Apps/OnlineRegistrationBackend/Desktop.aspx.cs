@@ -275,7 +275,7 @@ namespace Ict.Petra.WebServer.MConference
             string[] availableJobs = new string[] {
                 "Kitchen", "Kiosk", "StaffCafe", "FunFood", "FruitStand", "Cocktail Lounge", "CoffeeBar", "Information", "TS Office",
                 "Technical Support", "CleanStreet", "Security", "MainHall Security", "OmniVision", "Medical Team", "Sports Team", "CyberCafe",
-                "KidsStreet", "InBetweens", "ToddlerStreet", "BookShop", "Communications", "Heatset Team", "Outreach", "RAG", "Dayvisitors",
+                "KidsStreet", "InBetweens", "ToddlerStreet", "BookShop", "Communications", "Headset Team", "Outreach", "RAG", "Dayvisitors",
                 "ArtZone",
                 "Others"
             };
@@ -432,9 +432,9 @@ namespace Ict.Petra.WebServer.MConference
                     }
                 }
 
-                JobWish1.Reset();
-                JobWish2.Reset();
-                JobAssigned.Reset();
+                JobWish1.ClearValue();
+                JobWish2.ClearValue();
+                JobAssigned.ClearValue();
 
                 // SetValues: new {}; anonymous type: http://msdn.microsoft.com/en-us/library/bb397696.aspx
                 // instead a Dictionary can be used as well
@@ -506,6 +506,8 @@ namespace Ict.Petra.WebServer.MConference
                     rawDataObject.Put(key, value);
                 }
             }
+
+            rawDataObject["Role"] = values["StCongressCode_Value"];
 
             row.JSONData = TJsonTools.ToJsonString(rawDataObject);
 
