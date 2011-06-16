@@ -2,9 +2,9 @@
 # you have to run this as user with sudo rights
 
 echo "creating database..."
-sudo -u postgres psql -c "DROP DATABASE IF EXISTS openpetra{#ORGNAMEWITHOUTSPACE};"
-sudo -u postgres psql -c "DROP USER IF EXISTS petraserver{#ORGNAMEWITHOUTSPACE};"
-sudo -u postgres psql -c "CREATE USER petraserver{#ORGNAMEWITHOUTSPACE} PASSWORD '{#DBPASSWORD}'; "
+sudo -u postgres psql -c "DROP DATABASE IF EXISTS \"openpetra{#ORGNAMEWITHOUTSPACE}\";"
+sudo -u postgres psql -c "DROP USER IF EXISTS \"petraserver{#ORGNAMEWITHOUTSPACE}\";"
+sudo -u postgres psql -c "CREATE USER \"petraserver{#ORGNAMEWITHOUTSPACE}\" PASSWORD '{#DBPASSWORD}'; "
 sudo -u postgres createdb -T template0 openpetra{#ORGNAMEWITHOUTSPACE}
 
 echo "creating tables..."
