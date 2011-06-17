@@ -112,7 +112,9 @@ namespace Ict.Petra.Client.CommonDialogs
             this.btnCancel.Text = Catalog.GetString(" &Cancel");
             this.lblDatabase.Text = Catalog.GetString("Database:");
             this.chkRememberUserName.Text = Catalog.GetString("Remember the username");
-            this.Text = Catalog.GetString("Petra Login");
+            this.label1.Text = Catalog.GetString("Initial Login: demo/demo or sysadmin/CHANGEME");
+            this.label2.Text = Catalog.GetString("Please change the passwords immediately!");
+            this.Text = Catalog.GetString("OpenPetra Login");
             #endregion
 
             this.Text = PETRA_LOGIN_FORMTITLE;

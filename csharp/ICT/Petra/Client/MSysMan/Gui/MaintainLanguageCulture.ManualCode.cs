@@ -74,7 +74,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
             cmbLanguage.SetSelectedString(LanguageCode);
         }
 
-        private void Apply(Object Sender, EventArgs e)
+        private void BtnOK_Click(Object Sender, EventArgs e)
         {
             string LanguageCode = cmbLanguage.GetSelectedString();
             string CultureCode = cmbCulture.GetSelectedString();
