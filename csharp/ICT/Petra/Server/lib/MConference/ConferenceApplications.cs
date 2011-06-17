@@ -155,7 +155,7 @@ namespace Ict.Petra.Server.MConference.Applications
                                              "  AND PUB_pm_general_application.pm_application_key_i = PUB_pm_short_term_application.pm_application_key_i "
                                              +
                                              "  AND PUB_pm_general_application.pm_registration_office_n = PUB_pm_short_term_application.pm_registration_office_n";
-            string queryPerson = "SELECT PUB_p_person.* " +
+            string queryPerson = "SELECT DISTINCT PUB_p_person.* " +
                                  "FROM PUB_pm_short_term_application, PUB_p_person " +
                                  "WHERE PUB_pm_short_term_application.pm_confirmed_option_code_c = ? " +
                                  "  AND PUB_p_person.p_partner_key_n = PUB_pm_short_term_application.p_partner_key_n";

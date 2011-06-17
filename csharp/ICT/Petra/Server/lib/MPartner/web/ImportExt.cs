@@ -126,6 +126,20 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             PPartnerRow PartnerRow = FMainDS.PPartner.NewRowTyped();
             PartnerRow.PartnerKey = FPartnerKey;
 
+            if (!PPartnerAccess.Exists(FPartnerKey, ATransaction))
+            {
+                // look for partners that have the same original key.
+                // this can happen when partners are exported from the online registration, and then imported again into the online registration
+                PmGeneralApplicationRow LocalPartnerKeyRow = FMainDS.PmGeneralApplication.NewRowTyped(false);
+                LocalPartnerKeyRow.LocalPartnerKey = FPartnerKey;
+                PmGeneralApplicationTable ExistingApplication = PmGeneralApplicationAccess.LoadUsingTemplate(LocalPartnerKeyRow, ATransaction);
+
+                if (ExistingApplication.Count > 0)
+                {
+                    FPartnerKey = ExistingApplication[0].PartnerKey;
+                }
+            }
+
             if (PPartnerAccess.Exists(FPartnerKey, ATransaction))
             {
                 FMainDS.Merge(PPartnerAccess.LoadByPrimaryKey(FPartnerKey, ATransaction));
@@ -606,11 +620,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             if (ShortTermApplicationRow.StFieldCharged == 0)
             {
-                // we cannot import a partner that has a field charged 0. This is an invalid application
-                TLogging.Log(
-                    "Problem, ShortTermApplication.StFieldCharged for partner " + FPartnerKey.ToString() +
-                    " is NULL or 0. We will ignore this application.");
-                return;
+                // we cannot import a partner that has a field charged 0. This would be an invalid application.
+                // we assume that the registration office will be charged
+                ShortTermApplicationRow.StFieldCharged = ShortTermApplicationRow.RegistrationOffice;
             }
 
             if (!FIgnoreApplication)
