@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -55,11 +55,16 @@ public class CreateInterfaces : AutoGenerationWriter
         {
             foreach (ClassNode t in CSFile.GetClasses())
             {
-                foreach (IType ti in t.BaseClasses)
+                string FullClassNameWithNamespace = CSFile.GetFullClassNameWithNamespace(t);
+
+                if (FullClassNameWithNamespace.Contains("Connector"))
                 {
-                    if (CSParser.GetName(ti).StartsWith("I"))
+                    foreach (IType ti in t.BaseClasses)
                     {
-                        Result.Add(CSParser.GetName(ti), CSFile.GetFullClassNameWithNamespace(t));
+                        if (CSParser.GetName(ti).StartsWith("I"))
+                        {
+                            Result.Add(CSParser.GetName(ti), FullClassNameWithNamespace);
+                        }
                     }
                 }
             }
