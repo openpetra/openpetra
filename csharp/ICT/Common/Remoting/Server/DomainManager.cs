@@ -31,32 +31,21 @@ using System.Runtime.Remoting.Channels.Tcp;
 using System.Runtime.Serialization.Formatters;
 using System.Runtime.Remoting.Services;
 using System.Security.Cryptography;
+using System.Security.Principal;
 using Ict.Common;
-using Ict.Common.DB;
 using Ict.Common.Remoting.Server;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Sinks.Encryption;
-using Ict.Petra.Shared;
-using Ict.Petra.Shared.Security;
-using Ict.Petra.Server.App.Core.Security;
-using Ict.Petra.Server.App.Core;
-using Ict.Petra.Server.App.ClientDomain;
 
-namespace Ict.Petra.Server.App.ClientDomain
+namespace Ict.Common.Remoting.Server
 {
     /// <summary>
     /// collection of static functions and variables for the appdomain management
     /// </summary>
-    public class DomainManager
+    public class DomainManagerBase
     {
         /// <summary>used internally to store the ClientID for which this AppDomain was created</summary>
         public static Int32 GClientID;
-
-        /// <summary>used internally to hold a proxy reference to the SystemDefaultsCache in the Server's Default AppDomain</summary>
-        public static TSystemDefaultsCache GSystemDefaultsCache;
-
-        /// <summary>used internally to hold a proxy reference to the CacheableTablesManager in the Server's Default AppDomain</summary>
-        public static TCacheableTablesManager GCacheableTablesManager;
 
         /// <summary>used internally to hold SiteKey Information (for convenience)</summary>
         public static Int64 GSiteKey;
@@ -224,7 +213,7 @@ namespace Ict.Petra.Server.App.ClientDomain
     /// TClientAppDomainConnection!
     ///
     /// </summary>
-    public class TClientDomainManager : MarshalByRefObject
+    public class TClientDomainManagerBase : MarshalByRefObject
     {
         /// <summary>A copy of the TSrvSetting class (including property values) from the Server's Default AppDomain</summary>
         private TSrvSetting FServerSettings;
@@ -243,23 +232,13 @@ namespace Ict.Petra.Server.App.ClientDomain
         private System.Object FTearDownAppDomainMonitor;
         private TcpChannel FTcpChannel = null;
 
-        /// <summary>Tells when the last Client Action occured (either the last time when a remoteable object was marshaled (remoted) or when the last DB action occured).</summary>
-        public DateTime LastActionTime
+        /// <summary>Tells when the last Client Action occured (the last time when a remoteable object was marshaled (remoted)).
+        /// Can be overloaded by a server with database access to see when the last DB action occured</summary>
+        public virtual DateTime LastActionTime
         {
             get
             {
-                DateTime ReturnValue;
-
-                if (DBAccess.GDBAccessObj.LastDBAction > DomainManager.ULastObjectRemotingAction)
-                {
-                    ReturnValue = DBAccess.GDBAccessObj.LastDBAction;
-                }
-                else
-                {
-                    ReturnValue = DomainManager.ULastObjectRemotingAction;
-                }
-
-                return ReturnValue;
+                return DomainManagerBase.ULastObjectRemotingAction;
             }
         }
 
@@ -321,29 +300,21 @@ namespace Ict.Petra.Server.App.ClientDomain
         /// <param name="AClientManagerRef">A reference to the ClientManager object
         /// (Note: .NET Remoting will be working behind the scenes since calls to
         /// this Object will cross AppDomains!)</param>
-        /// <param name="ASystemDefaultsCacheRef">A reference to the SystemDefaultsCache object
-        /// (Note: .NET Remoting will be working behind the scenes since calls to
-        /// this Object will cross AppDomains!)</param>
-        /// <param name="ACacheableTablesManagerRef"></param>
-        /// <param name="AUserInfo">An instantiated PetraPrincipal Object, containing User
-        /// information
-        /// </param>
+        /// <param name="AUserID"></param>
         /// <returns>void</returns>
-        public TClientDomainManager(String AClientID,
+        public TClientDomainManagerBase(String AClientID,
             String ARemotingPort,
             TClientServerConnectionType AClientServerConnectionType,
             TClientManagerCallForwarder AClientManagerRef,
-            TSystemDefaultsCache ASystemDefaultsCacheRef,
-            TCacheableTablesManager ACacheableTablesManagerRef,
-            TPetraPrincipal AUserInfo)
+            string AUserID)
         {
             new TAppSettingsManager();
 
+            FUserID = AUserID;
+
             // Console.WriteLine('TClientDomainManager.Create in AppDomain: ' + Thread.GetDomain().FriendlyName);
-            DomainManager.GClientID = Convert.ToInt16(AClientID);
-            DomainManager.GCacheableTablesManager = ACacheableTablesManagerRef;
-            DomainManager.UClientManagerCallForwarderRef = AClientManagerRef;
-            FUserID = AUserInfo.UserID;
+            DomainManagerBase.GClientID = Convert.ToInt16(AClientID);
+            DomainManagerBase.UClientManagerCallForwarderRef = AClientManagerRef;
             FClientServerConnectionType = AClientServerConnectionType;
             FClientTasksManager = new TClientTasksManager();
             FTearDownAppDomainMonitor = new System.Object();
@@ -418,24 +389,6 @@ namespace Ict.Petra.Server.App.ClientDomain
             {
                 throw;
             }
-            UserInfo.GUserInfo = AUserInfo;
-            DomainManager.GSystemDefaultsCache = ASystemDefaultsCacheRef;
-            DomainManager.GSiteKey = DomainManager.GSystemDefaultsCache.GetInt64Default(SharedConstants.SYSDEFAULT_SITEKEY);
-
-            if (DomainManager.GSiteKey <= 0)
-            {
-                // this is for connecting to legacy database format
-                // we cannot add SiteKey to SystemDefaults, because Petra 2.3 would have a conflict since it adds it on startup already to the in-memory defaults, but not to the database
-                // see also https://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=114
-                DomainManager.GSiteKey = DomainManager.GSystemDefaultsCache.GetInt64Default("SiteKeyPetra2");
-            }
-
-            if (DomainManager.GSiteKey <= 0)
-            {
-                // this can happen either with a legacy Petra 2.x database or with a fresh OpenPetra database without any ledger yet
-                Console.WriteLine("there is no SiteKey or SiteKeyPetra2 record in s_system_defaults");
-                DomainManager.GSiteKey = 99000000;
-            }
 
 #if DEBUGMODE
             if (TLogging.DL >= 4)
@@ -474,7 +427,7 @@ namespace Ict.Petra.Server.App.ClientDomain
             // if TLogging.DL >= 5 then TLogging.Log('TClientDomainManager.StopClientAppDomain: before ChannelServices.UnregisterChannel(FTcpChannel)', [ToConsole, ToLogfile]);
             // ChannelServices.UnregisterChannel(FTcpChannel);
             // if TLogging.DL >= 5 then TLogging.Log('TClientDomainManager.StopClientAppDomain: after ChannelServices.UnregisterChannel(FTcpChannel)', [ToConsole, ToLogfile]);
-            DomainManager.UClientManagerCallForwarderRef = null;
+            DomainManagerBase.UClientManagerCallForwarderRef = null;
 
             if (TLogging.DL >= 5)
             {
@@ -551,114 +504,10 @@ namespace Ict.Petra.Server.App.ClientDomain
                         // The AppDomain and all the objects that are instantiated in it cease
                         // to exist after the following call!!!
                         // > No further code can be executed in the AppDomain after that!
-                        DomainManager.UClientManagerCallForwarderRef.DisconnectClient((short)DomainManager.GClientID, AReason);
+                        DomainManagerBase.UClientManagerCallForwarderRef.DisconnectClient((short)DomainManagerBase.GClientID, AReason);
                         Monitor.Exit(FTearDownAppDomainMonitor);
                     }
                 }
-            }
-        }
-
-        /// <summary>
-        /// Establishes a new Database connection for this AppDomain.
-        /// For every Client AppDomain a separate DB Connection needs to be opened.
-        ///
-        /// @comment WARNING: If you need to rename this procedure or change its parameters,
-        /// you also need to change the String with its name and the parameters in the
-        /// .NET Reflection call in TClientAppDomainConnection!
-        ///
-        /// @comment The global Ict.Common.DB.DBAccess.DBAccessObj object in the Default
-        /// AppDomain is inaccessible in this AppDomain!
-        ///
-        /// </summary>
-        /// <returns>void</returns>
-        public void EstablishDBConnection()
-        {
-            new TLogging(TSrvSetting.ServerLogFile);
-
-            TLanguageCulture.Init();
-
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine("  Connecting to Database...");
-            }
-#endif
-            DBAccess.GDBAccessObj = new TDataBasePetra();
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine("DBAccessObj object created.");
-            }
-#endif
-
-            ((TDataBasePetra)DBAccess.GDBAccessObj).AddErrorLogEntryCallback += new TDelegateAddErrorLogEntry(this.AddErrorLogEntry);
-            try
-            {
-                ((TDataBasePetra)DBAccess.GDBAccessObj).EstablishDBConnection(TSrvSetting.RDMBSType,
-                    TSrvSetting.PostgreSQLServer,
-                    TSrvSetting.PostgreSQLServerPort,
-                    TSrvSetting.PostgreSQLDatabaseName,
-                    TSrvSetting.DBUsername,
-                    TSrvSetting.DBPassword,
-                    "",
-                    UserInfo.GUserInfo.UserID);
-#if DEBUGMODE
-                if (TLogging.DL >= 9)
-                {
-                    Console.WriteLine("  Connected to Database.");
-                }
-#endif
-
-                // $IFDEF DEBUGMODE Console.WriteLine('SystemDefault "CalebEmail": ' + GSystemDefaultsCache.GetSystemDefault('CalebEmail'));$ENDIF
-            }
-            catch (Exception)
-            {
-                // TLogging.Log('Exception occured while establishing connection to Database Server: ' + exp.ToString);
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Closes the Database connection for this AppDomain.
-        ///
-        /// @comment WARNING: If you need to rename this procedure or change its parameters,
-        /// you also need to change the String with its name and the parameters in the
-        /// .NET Reflection call in TClientAppDomainConnection!
-        ///
-        /// </summary>
-        /// <returns>void</returns>
-        public void CloseDBConnection()
-        {
-            // Console.WriteLine('TClientDomainManager.CloseDBConnection in AppDomain: ' + Thread.GetDomain().FriendlyName);
-            // TODO 1 oChristianK cLogging (Console) : Put the following debug messages in a DEBUGMODE conditional compilation directive and raise the DL to >=9; these logging statements were inserted to trace problems in on live installations!
-            if (TLogging.DL >= 5)
-            {
-                TLogging.Log("TClientDomainManager.CloseDBConnection: before calling GDBAccessObj.CloseDBConnection",
-                    TLoggingType.ToConsole | TLoggingType.ToLogfile);
-            }
-
-            try
-            {
-                DBAccess.GDBAccessObj.CloseDBConnection();
-            }
-            catch (EDBConnectionNotAvailableException)
-            {
-                // The DB connection was never opened  since this is no problem here, ignore this Exception.
-                if (TLogging.DL >= 5)
-                {
-                    TLogging.Log("TClientDomainManager.CloseDBConnection: Info: DB Connection was never opened, therefore no need to close it.",
-                        TLoggingType.ToConsole | TLoggingType.ToLogfile);
-                }
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-
-            if (TLogging.DL >= 5)
-            {
-                TLogging.Log("TClientDomainManager.CloseDBConnection: after calling GDBAccessObj.CloseDBConnection",
-                    TLoggingType.ToConsole | TLoggingType.ToLogfile);
             }
         }
 
@@ -724,25 +573,6 @@ namespace Ict.Petra.Server.App.ClientDomain
             }
 #endif
             return ReturnValue;
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        /// <param name="AErrorCode"></param>
-        /// <param name="AContext"></param>
-        /// <param name="AMessageLine1"></param>
-        /// <param name="AMessageLine2"></param>
-        /// <param name="AMessageLine3"></param>
-        public void AddErrorLogEntry(String AErrorCode, String AContext, String AMessageLine1, String AMessageLine2, String AMessageLine3)
-        {
-            DomainManager.UClientManagerCallForwarderRef.AddErrorLogEntry(AErrorCode,
-                AContext,
-                AMessageLine1,
-                AMessageLine2,
-                AMessageLine3,
-                UserInfo.GUserInfo.UserID,
-                UserInfo.GUserInfo.ProcessID);
         }
 
         /// <summary>

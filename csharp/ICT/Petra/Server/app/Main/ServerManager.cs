@@ -45,7 +45,6 @@ using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Server.App.Core;
-using Ict.Petra.Server.App.ClientDomain;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MSysMan.Maintenance;
 
@@ -196,10 +195,10 @@ namespace Ict.Petra.Server.App.Main
             FSystemDefaultsCache = new TSystemDefaultsCache();
 
             TCacheableTablesManager.InitializeUnit();
-            DomainManager.GCacheableTablesManager = new TCacheableTablesManager(new TDelegateSendClientTask(TClientManager.QueueClientTask));
+            TCacheableTablesManager.GCacheableTablesManager = new TCacheableTablesManager(new TDelegateSendClientTask(TClientManager.QueueClientTask));
 
             TClientManager.InitializeStaticVariables(FSystemDefaultsCache,
-                DomainManager.GCacheableTablesManager,
+                TCacheableTablesManager.GCacheableTablesManager,
                 new TUserManager(),
                 new TErrorLog(),
                 new TMaintenanceLogonMessage(),

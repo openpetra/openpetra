@@ -33,6 +33,8 @@ using Ict.Common.IO;
 using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Common.Data;
+using Ict.Common.Remoting.Server;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -45,7 +47,7 @@ using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.App.Core.Security;
-using Ict.Petra.Server.App.ClientDomain;
+using Ict.Petra.Server.App.Core;
 
 namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 {
@@ -245,9 +247,9 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             TSubmitChangesResult returnValue = GLSetupTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
 
-            DomainManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+            TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
                 TCacheableFinanceTablesEnum.AccountList.ToString());
-            DomainManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+            TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
                 TCacheableFinanceTablesEnum.AnalysisTypeList.ToString());
 
             return returnValue;

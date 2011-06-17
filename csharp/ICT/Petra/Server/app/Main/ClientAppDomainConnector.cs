@@ -29,7 +29,6 @@ using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Server.App.Core;
-using Ict.Petra.Server.App.ClientDomain;
 using System.Reflection;
 using System.Runtime.Remoting;
 using System.Threading;
@@ -58,10 +57,10 @@ namespace Ict.Petra.Server.App.Main
     public class TRemoteLoader : MarshalByRefObject
     {
         /// <summary>need to leave out '.dll' suffix so that .NET can find the Assembly!</summary>
-        public const String CLIENTDOMAIN_DLLNAME = "Ict.Petra.Server.app.ClientDomain";
+        public const String CLIENTDOMAIN_DLLNAME = "Ict.Petra.Server.app.Core";
 
         /// <summary>need to leave out the last part of the Namespace so that .NET can find the Class!</summary>
-        public const String CLIENTDOMAIN_CLASSNAME = "Ict.Petra.Server.App.ClientDomain.TClientDomainManager";
+        public const String CLIENTDOMAIN_CLASSNAME = "Ict.Petra.Server.App.Core.TClientDomainManager";
 
         /// <summary>need to leave out '.dll' suffix so that .NET can find the Assembly!</summary>
         public const String MCOMMON_DLLNAME = "Ict.Petra.Server.lib.MCommon";
@@ -550,7 +549,8 @@ namespace Ict.Petra.Server.App.Main
             }
 #endif
             NewAppDomainConnection.FRemoteLoader =
-                (TRemoteLoader)(NewAppDomainConnection.FAppDomain.CreateInstanceFromAndUnwrap("Ict.Petra.Server.app.Main.dll", "Ict.Petra.Server.App.Main.TRemoteLoader"));
+                (TRemoteLoader)(NewAppDomainConnection.FAppDomain.CreateInstanceFromAndUnwrap("Ict.Petra.Server.app.Main.dll",
+                                    "Ict.Petra.Server.App.Main.TRemoteLoader"));
 #if DEBUGMODE
             if (TLogging.DL >= 10)
             {

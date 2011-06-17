@@ -33,7 +33,6 @@ using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Server.App.Main;
-using Ict.Petra.Server.App.ClientDomain;
 using Ict.Petra.Server.App.Core;
 
 namespace Ict.Testing.NUnitPetraServer
@@ -82,8 +81,6 @@ namespace Ict.Testing.NUnitPetraServer
                 "-1",
                 TClientServerConnectionType.csctLocal,
                 DomainManager.UClientManagerCallForwarderRef,
-                (TSystemDefaultsCache)TClientManager.SystemDefaultsCache,
-                (TCacheableTablesManager)DomainManager.GCacheableTablesManager,
                 UserInfo);
             FDomain.InitAppDomain(TSrvSetting.ServerSettings);
 

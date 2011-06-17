@@ -49,7 +49,6 @@ using Ict.Petra.Server.MFinance.Gift;
 using Ict.Petra.Server.MPartner.Partner;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Server.App.Core;
-using Ict.Petra.Server.App.ClientDomain;
 using Ict.Petra.Server.MCommon.UIConnectors;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.MPartner;
@@ -956,7 +955,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 #region Calculations
 
                 // Determine Gift Receipting settings
-                GiftReceiptingDefaults = DomainManager.GSystemDefaultsCache.GetStringDefault(TSystemDefaultsCache.PARTNER_GIFTRECEIPTINGDEFAULTS);
+                GiftReceiptingDefaults = TSystemDefaultsCache.GSystemDefaultsCache.GetStringDefault(
+                    TSystemDefaultsCache.PARTNER_GIFTRECEIPTINGDEFAULTS);
 
                 if (GiftReceiptingDefaults != "")
                 {

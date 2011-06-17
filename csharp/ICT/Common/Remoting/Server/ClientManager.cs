@@ -75,10 +75,10 @@ namespace Ict.Common.Remoting.Server
         private static TClientManager UClientManagerObj;
 
         /// <summary>Holds reference to an instance of TSystemDefaultsCache (for System Defaults lookups)</summary>
-        private static object USystemDefaultsCache;
+        private static ISystemDefaultsCache USystemDefaultsCache;
 
         /// <summary>Holds reference to an instance of TCacheableTablesManager (for caching of DataTables)</summary>
-        private static object UCacheableTablesManager;
+        private static ICacheableTablesManager UCacheableTablesManager;
 
         private static IUserManager UUserManager = null;
         private static IErrorLog UErrorLog = null;
@@ -167,7 +167,7 @@ namespace Ict.Common.Remoting.Server
         /// ClientDomain to give each ClientDomain access to the System Defaults cache.
         ///
         /// </summary>
-        public static object SystemDefaultsCache
+        public static ISystemDefaultsCache SystemDefaultsCache
         {
             get
             {
@@ -401,8 +401,8 @@ namespace Ict.Common.Remoting.Server
         /// <summary>
         /// initialize variables that are initialized from classes specific to the server, eg. with access to OpenPetra database
         /// </summary>
-        public static void InitializeStaticVariables(object ASystemDefaultsCache,
-            object ACacheableTablesManager,
+        public static void InitializeStaticVariables(ISystemDefaultsCache ASystemDefaultsCache,
+            ICacheableTablesManager ACacheableTablesManager,
             IUserManager AUserManager,
             IErrorLog AErrorLog,
             IMaintenanceLogonMessage AMaintenanceLogonMessage,

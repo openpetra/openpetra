@@ -189,4 +189,18 @@ namespace Ict.Common.Remoting.Server
         /// </summary>
         void Unload();
     }
+
+    /// an interface for system defaults cache
+    public interface ISystemDefaultsCache
+    {
+        /// <summary>
+        /// get boolean default value
+        /// </summary>
+        bool GetBooleanDefault(String AKey, bool ADefault);
+
+        /// <summary>
+        /// get int default
+        /// </summary>
+        System.Int64 GetInt64Default(String AKey);
+    }
 }

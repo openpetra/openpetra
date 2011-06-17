@@ -34,8 +34,9 @@ using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
-using Ict.Petra.Server.App.ClientDomain;
+using Ict.Petra.Server.App.Core;
 
 #region ManualCode
 using Ict.Petra.Shared.MPartner;
@@ -70,7 +71,7 @@ namespace Ict.Petra.Server.MPartner.Mailing.Cacheable
             }
 #endif
             FStartTime = DateTime.Now;
-            FCacheableTablesManager = DomainManager.GCacheableTablesManager;
+            FCacheableTablesManager = TCacheableTablesManager.GCacheableTablesManager;
         }
 
 #if DEBUGMODE
@@ -131,7 +132,7 @@ namespace Ict.Petra.Server.MPartner.Mailing.Cacheable
             }
 #endif
 
-            if ((ARefreshFromDB) || ((!DomainManager.GCacheableTablesManager.IsTableCached(TableName))))
+            if ((ARefreshFromDB) || ((!FCacheableTablesManager.IsTableCached(TableName))))
             {
                 Boolean NewTransaction;
                 TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
@@ -146,43 +147,43 @@ namespace Ict.Petra.Server.MPartner.Mailing.Cacheable
                         case TCacheableMailingTablesEnum.ContactAttributeList:
                         {
                             DataTable TmpTable = PContactAttributeAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
                         case TCacheableMailingTablesEnum.ContactAttributeDetailList:
                         {
                             DataTable TmpTable = PContactAttributeDetailAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
                         case TCacheableMailingTablesEnum.MethodOfContactList:
                         {
                             DataTable TmpTable = PMethodOfContactAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
                         case TCacheableMailingTablesEnum.MergeFormList:
                         {
                             DataTable TmpTable = PMergeFormAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
                         case TCacheableMailingTablesEnum.MergeFieldList:
                         {
                             DataTable TmpTable = PMergeFieldAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
                         case TCacheableMailingTablesEnum.MailingList:
                         {
                             DataTable TmpTable = PMailingAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
                         case TCacheableMailingTablesEnum.PostCodeRegionList:
                         {
                             DataTable TmpTable = GetPostCodeRegionListTable(ReadTransaction, TableName);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
 

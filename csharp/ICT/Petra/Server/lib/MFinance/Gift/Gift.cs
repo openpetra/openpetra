@@ -36,7 +36,7 @@ using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MSysMan.Data.Access;
 using Ict.Petra.Shared.MSysMan.Data;
-using Ict.Petra.Server.App.ClientDomain;
+using Ict.Petra.Server.App.Core;
 
 namespace Ict.Petra.Server.MFinance.Gift
 {
@@ -92,7 +92,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             {
                 ALastGiftDate = LastGiftDate;
 
-                if (DomainManager.GSystemDefaultsCache.GetStringDefault(SharedConstants.SYSDEFAULT_DISPLAYGIFTAMOUNT) == "true")
+                if (TSystemDefaultsCache.GSystemDefaultsCache.GetStringDefault(SharedConstants.SYSDEFAULT_DISPLAYGIFTAMOUNT) == "true")
                 {
                     if ((UserInfo.GUserInfo.IsInGroup(SharedConstants.PETRAGROUP_FINANCE1))
                         || (UserInfo.GUserInfo.IsInGroup(SharedConstants.PETRAGROUP_FINANCE2))
@@ -113,8 +113,8 @@ namespace Ict.Petra.Server.MFinance.Gift
                 if (LastGiftGivenToPartnerKey == -1)
                 {
                     // Split Gift
-                    if ((DomainManager.GSystemDefaultsCache.GetBooleanDefault(SharedConstants.SYSDEFAULT_DISPLAYGIFTRECIPIENT))
-                        || (DomainManager.GSystemDefaultsCache.GetBooleanDefault(SharedConstants.SYSDEFAULT_DISPLAYGIFTFIELD)))
+                    if ((TSystemDefaultsCache.GSystemDefaultsCache.GetBooleanDefault(SharedConstants.SYSDEFAULT_DISPLAYGIFTRECIPIENT))
+                        || (TSystemDefaultsCache.GSystemDefaultsCache.GetBooleanDefault(SharedConstants.SYSDEFAULT_DISPLAYGIFTFIELD)))
                     {
                         AGiftInfo = AGiftInfo + StrSplitGift;
                     }
@@ -122,7 +122,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                 else
                 {
                     // Not a Split Gift
-                    if (DomainManager.GSystemDefaultsCache.GetBooleanDefault(SharedConstants.SYSDEFAULT_DISPLAYGIFTRECIPIENT))
+                    if (TSystemDefaultsCache.GSystemDefaultsCache.GetBooleanDefault(SharedConstants.SYSDEFAULT_DISPLAYGIFTRECIPIENT))
                     {
                         if (LastGiftGivenToPartnerKey != -1)
                         {
@@ -134,7 +134,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                         }
                     }
 
-                    if (DomainManager.GSystemDefaultsCache.GetBooleanDefault(SharedConstants.SYSDEFAULT_DISPLAYGIFTFIELD))
+                    if (TSystemDefaultsCache.GSystemDefaultsCache.GetBooleanDefault(SharedConstants.SYSDEFAULT_DISPLAYGIFTFIELD))
                     {
                         if (LastGiftRecipientLedger != -1)
                         {

@@ -34,8 +34,9 @@ using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
-using Ict.Petra.Server.App.ClientDomain;
+using Ict.Petra.Server.App.Core;
 
 #region ManualCode
 using Ict.Petra.Shared.MCommon;
@@ -73,7 +74,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
             }
 #endif
             FStartTime = DateTime.Now;
-            FCacheableTablesManager = DomainManager.GCacheableTablesManager;
+            FCacheableTablesManager = TCacheableTablesManager.GCacheableTablesManager;
         }
 
 #if DEBUGMODE
@@ -134,7 +135,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
             }
 #endif
 
-            if ((ARefreshFromDB) || ((!DomainManager.GCacheableTablesManager.IsTableCached(TableName))))
+            if ((ARefreshFromDB) || ((!FCacheableTablesManager.IsTableCached(TableName))))
             {
                 Boolean NewTransaction;
                 TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
@@ -149,127 +150,127 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                         case TCacheablePersonTablesEnum.CommitmentStatusList:
                         {
                             DataTable TmpTable = PmCommitmentStatusAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
                         case TCacheablePersonTablesEnum.DocumentTypeList:
                         {
                             DataTable TmpTable = PmDocumentTypeAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
                         case TCacheablePersonTablesEnum.DocumentTypeCategoryList:
                         {
                             DataTable TmpTable = PmDocumentCategoryAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
                         case TCacheablePersonTablesEnum.AbilityAreaList:
                         {
                             DataTable TmpTable = PtAbilityAreaAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
                         case TCacheablePersonTablesEnum.AbilityLevelList:
                         {
                             DataTable TmpTable = PtAbilityLevelAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
                         case TCacheablePersonTablesEnum.ApplicantStatusList:
                         {
                             DataTable TmpTable = PtApplicantStatusAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
                         case TCacheablePersonTablesEnum.ArrivalDeparturePointList:
                         {
                             DataTable TmpTable = PtArrivalPointAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
                         case TCacheablePersonTablesEnum.EventRoleList:
                         {
                             DataTable TmpTable = PtCongressCodeAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
                         case TCacheablePersonTablesEnum.ContactList:
                         {
                             DataTable TmpTable = PtContactAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
                         case TCacheablePersonTablesEnum.DriverStatusList:
                         {
                             DataTable TmpTable = PtDriverStatusAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
                         case TCacheablePersonTablesEnum.LanguageLevelList:
                         {
                             DataTable TmpTable = PtLanguageLevelAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
                         case TCacheablePersonTablesEnum.LeadershipRatingList:
                         {
                             DataTable TmpTable = PtLeadershipRatingAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
                         case TCacheablePersonTablesEnum.PartyTypeList:
                         {
                             DataTable TmpTable = PtPartyTypeAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
                         case TCacheablePersonTablesEnum.PassportTypeList:
                         {
                             DataTable TmpTable = PtPassportTypeAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
                         case TCacheablePersonTablesEnum.TransportTypeList:
                         {
                             DataTable TmpTable = PtTravelTypeAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
                         case TCacheablePersonTablesEnum.QualificationAreaList:
                         {
                             DataTable TmpTable = PtQualificationAreaAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
                         case TCacheablePersonTablesEnum.QualificationLevelList:
                         {
                             DataTable TmpTable = PtQualificationLevelAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
                         case TCacheablePersonTablesEnum.ValuableItemList:
                         {
                             DataTable TmpTable = PtValuableItemAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
                         case TCacheablePersonTablesEnum.VisionAreaList:
                         {
                             DataTable TmpTable = PtVisionAreaAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
                         case TCacheablePersonTablesEnum.VisionLevelList:
                         {
                             DataTable TmpTable = PtVisionLevelAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
                         case TCacheablePersonTablesEnum.OutreachPreferenceLevelList:
                         {
                             DataTable TmpTable = PtOutreachPreferenceLevelAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
 

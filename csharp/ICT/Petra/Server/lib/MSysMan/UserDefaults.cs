@@ -1198,12 +1198,12 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                 if (AUserName == UserInfo.GUserInfo.UserID)
                 {
                     // Queue a ClientTask to the current User's PetraClient
-                    Ict.Petra.Server.App.ClientDomain.DomainManager.ClientTaskAdd(SharedConstants.CLIENTTASKGROUP_USERDEFAULTSREFRESH, "All", 1);
+                    Ict.Petra.Server.App.Core.DomainManager.ClientTaskAdd(SharedConstants.CLIENTTASKGROUP_USERDEFAULTSREFRESH, "All", 1);
                 }
                 else
                 {
                     // Queue a ClientTask to any but the current User's PetraClient
-                    Ict.Petra.Server.App.ClientDomain.DomainManager.ClientTaskAddToOtherClient(AUserName,
+                    Ict.Petra.Server.App.Core.DomainManager.ClientTaskAddToOtherClient(AUserName,
                         SharedConstants.CLIENTTASKGROUP_USERDEFAULTSREFRESH,
                         "All",
                         1);
@@ -1223,7 +1223,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                 if (AUserName == UserInfo.GUserInfo.UserID)
                 {
                     // Queue a ClientTask to the current User's PetraClient
-                    Ict.Petra.Server.App.ClientDomain.DomainManager.ClientTaskAdd(SharedConstants.CLIENTTASKGROUP_USERDEFAULTSREFRESH,
+                    Ict.Petra.Server.App.Core.DomainManager.ClientTaskAdd(SharedConstants.CLIENTTASKGROUP_USERDEFAULTSREFRESH,
                         SingleOrMultipleIndicator,
                         AChangedUserDefaultCode,
                         AChangedUserDefaultValue,
@@ -1234,7 +1234,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
 
                 // Send the same ClientTask to all other running PetraClient instances where
                 // the same user is logged in!
-                Ict.Petra.Server.App.ClientDomain.DomainManager.ClientTaskAddToOtherClient(AUserName,
+                Ict.Petra.Server.App.Core.DomainManager.ClientTaskAddToOtherClient(AUserName,
                     SharedConstants.CLIENTTASKGROUP_USERDEFAULTSREFRESH,
                     SingleOrMultipleIndicator,
                     AChangedUserDefaultCode,

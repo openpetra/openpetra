@@ -84,7 +84,7 @@ NamespaceHierarchy:
         Application: {Description=Application Sub-System}
             UIConnectors: {Description=User Interface Connectors}
             ServerLookups: {Description=ServerLookups}
-            Cacheable: {Description=Cacheable DataTables}
+        Cacheable: {Description=Cacheable DataTables}
         Maintenance: {Description=Maintenance Sub-System}
             SystemDefaults:
             UIConnectors:

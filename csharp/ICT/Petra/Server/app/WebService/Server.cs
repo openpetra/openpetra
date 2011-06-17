@@ -35,7 +35,6 @@ using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.App.Main;
 using Ict.Petra.Server.App.Core;
-using Ict.Petra.Server.App.ClientDomain;
 using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Server.MFinance.AP.UIConnectors;
@@ -82,8 +81,9 @@ public class TOpenPetraOrg : WebService
             {
                 TheServerManager.EstablishDBConnection();
 
-                DomainManager.GSystemDefaultsCache = new TSystemDefaultsCache();
-                DomainManager.GSiteKey = DomainManager.GSystemDefaultsCache.GetInt64Default(Ict.Petra.Shared.SharedConstants.SYSDEFAULT_SITEKEY);
+                TSystemDefaultsCache.GSystemDefaultsCache = new TSystemDefaultsCache();
+                DomainManager.GSiteKey = TSystemDefaultsCache.GSystemDefaultsCache.GetInt64Default(
+                    Ict.Petra.Shared.SharedConstants.SYSDEFAULT_SITEKEY);
             }
             catch (Exception e)
             {

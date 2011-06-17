@@ -50,4 +50,9 @@ namespace Ict.Common.Remoting.Shared
         /// <summary>Remoting URL Identifiers</summary>
         public const String REMOTINGURL_IDENTIFIER_POLLCLIENTTASKS = "PollClientTasks";
     }
+
+    /// an interface for cacheable tables manager
+    public interface ICacheableTablesManager
+    {
+    }
 }

@@ -51,6 +51,7 @@ using Ict.Petra.Server.App.Core.Security;
 
 using Ict.Petra.Shared.Interfaces.MSysMan;
 using Ict.Petra.Shared.Interfaces.MSysMan.Application;
+using Ict.Petra.Shared.Interfaces.MSysMan.Cacheable;
 using Ict.Petra.Shared.Interfaces.MSysMan.Maintenance;
 using Ict.Petra.Shared.Interfaces.MSysMan.TableMaintenance;
 using Ict.Petra.Shared.Interfaces.MSysMan.ImportExport;
@@ -58,7 +59,6 @@ using Ict.Petra.Shared.Interfaces.MSysMan.PrintManagement;
 using Ict.Petra.Shared.Interfaces.MSysMan.Security;
 using Ict.Petra.Shared.Interfaces.MSysMan.Application.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MSysMan.Application.ServerLookups;
-using Ict.Petra.Shared.Interfaces.MSysMan.Application.Cacheable;
 using Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.SystemDefaults;
 using Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.UserDefaults;
@@ -69,6 +69,7 @@ using Ict.Petra.Shared.Interfaces.MSysMan.PrintManagement.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MSysMan.Security.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MSysMan.Security.UserManager;
 using Ict.Petra.Server.MSysMan.Instantiator.Application;
+using Ict.Petra.Server.MSysMan.Instantiator.Cacheable;
 using Ict.Petra.Server.MSysMan.Instantiator.Maintenance;
 using Ict.Petra.Server.MSysMan.Instantiator.TableMaintenance;
 using Ict.Petra.Server.MSysMan.Instantiator.ImportExport;
@@ -76,7 +77,6 @@ using Ict.Petra.Server.MSysMan.Instantiator.PrintManagement;
 using Ict.Petra.Server.MSysMan.Instantiator.Security;
 using Ict.Petra.Server.MSysMan.Instantiator.Application.UIConnectors;
 using Ict.Petra.Server.MSysMan.Instantiator.Application.ServerLookups;
-using Ict.Petra.Server.MSysMan.Instantiator.Application.Cacheable;
 using Ict.Petra.Server.MSysMan.Instantiator.Maintenance.SystemDefaults;
 using Ict.Petra.Server.MSysMan.Instantiator.Maintenance.UIConnectors;
 using Ict.Petra.Server.MSysMan.Instantiator.Maintenance.UserDefaults;
@@ -87,6 +87,7 @@ using Ict.Petra.Server.MSysMan.Instantiator.PrintManagement.UIConnectors;
 using Ict.Petra.Server.MSysMan.Instantiator.Security.UIConnectors;
 using Ict.Petra.Server.MSysMan.Instantiator.Security.UserManager;
 //using Ict.Petra.Server.MSysMan.Application;
+using Ict.Petra.Server.MSysMan.Cacheable;
 using Ict.Petra.Server.MSysMan.Maintenance;
 //using Ict.Petra.Server.MSysMan.TableMaintenance;
 //using Ict.Petra.Server.MSysMan.ImportExport;
@@ -94,7 +95,6 @@ using Ict.Petra.Server.MSysMan.Maintenance;
 using Ict.Petra.Server.MSysMan.Security;
 //using Ict.Petra.Server.MSysMan.Application.UIConnectors;
 using Ict.Petra.Server.MSysMan.Application.ServerLookups;
-using Ict.Petra.Server.MSysMan.Application.Cacheable;
 //using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults;
 //using Ict.Petra.Server.MSysMan.Maintenance.UIConnectors;
 //using Ict.Petra.Server.MSysMan.Maintenance.UserDefaults;
@@ -205,6 +205,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator
         private DateTime FStartTime;
 #endif
         private TApplicationNamespace FApplicationSubNamespace;
+        private TCacheableNamespace FCacheableSubNamespace;
         private TMaintenanceNamespace FMaintenanceSubNamespace;
         private TTableMaintenanceNamespace FTableMaintenanceSubNamespace;
         private TImportExportNamespace FImportExportSubNamespace;
@@ -298,6 +299,35 @@ namespace Ict.Petra.Server.MSysMan.Instantiator
                 }
 
                 return FApplicationSubNamespace;
+            }
+
+        }
+
+        /// <summary>The 'Cacheable' subnamespace contains further subnamespaces.</summary>
+        public ICacheableNamespace Cacheable
+        {
+            get
+            {
+                //
+                // Creates or passes a reference to an instantiator of sub-namespaces that
+                // reside in the 'MSysMan.Cacheable' sub-namespace.
+                // A call to this function is done everytime a Client uses an object of this
+                // sub-namespace - this is fully transparent to the Client.
+                //
+                // @return A reference to an instantiator of sub-namespaces that reside in
+                //         the 'MSysMan.Cacheable' sub-namespace
+                //
+
+                // accessing TCacheableNamespace the first time? > instantiate the object
+                if (FCacheableSubNamespace == null)
+                {
+                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
+                    //      * for the Generator: the name of this Type ('TCacheableNamespace') needs to come out of the XML definition,
+                    //      * The Namespace where it resides in ('Ict.Petra.Server.MSysMan.Instantiator.Cacheable') should be automatically contructable.
+                    FCacheableSubNamespace = new TCacheableNamespace();
+                }
+
+                return FCacheableSubNamespace;
             }
 
         }
@@ -459,7 +489,6 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Application
 #endif
         private TApplicationUIConnectorsNamespace FApplicationUIConnectorsSubNamespace;
         private TApplicationServerLookupsNamespace FApplicationServerLookupsSubNamespace;
-        private TApplicationCacheableNamespace FApplicationCacheableSubNamespace;
 
         /// <summary>Constructor</summary>
         public TApplicationNamespace()
@@ -577,35 +606,6 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Application
                 }
 
                 return FApplicationServerLookupsSubNamespace;
-            }
-
-        }
-
-        /// <summary>The 'ApplicationCacheable' subnamespace contains further subnamespaces.</summary>
-        public IApplicationCacheableNamespace Cacheable
-        {
-            get
-            {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'Application.Cacheable' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'Application.Cacheable' sub-namespace
-                //
-
-                // accessing TCacheableNamespace the first time? > instantiate the object
-                if (FApplicationCacheableSubNamespace == null)
-                {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TApplicationCacheableNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.Application.Instantiator.Cacheable') should be automatically contructable.
-                    FApplicationCacheableSubNamespace = new TApplicationCacheableNamespace();
-                }
-
-                return FApplicationCacheableSubNamespace;
             }
 
         }
@@ -771,10 +771,10 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Application.ServerLookups
     }
 }
 
-namespace Ict.Petra.Server.MSysMan.Instantiator.Application.Cacheable
+namespace Ict.Petra.Server.MSysMan.Instantiator.Cacheable
 {
     /// <summary>auto generated class </summary>
-    public class TApplicationCacheableNamespace : MarshalByRefObject, IApplicationCacheableNamespace
+    public class TCacheableNamespace : MarshalByRefObject, ICacheableNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -782,10 +782,10 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Application.Cacheable
 
 		#region ManualCode
         /// <summary>holds reference to the CachePopulator object (only once instantiated)</summary>
-        private Ict.Petra.Server.MSysMan.Application.Cacheable.TSysManCacheable FCachePopulator;
+        private Ict.Petra.Server.MSysMan.Cacheable.TCacheable FCachePopulator;
         #endregion ManualCode
         /// <summary>Constructor</summary>
-        public TApplicationCacheableNamespace()
+        public TCacheableNamespace()
         {
 #if DEBUGMODE
             if (TLogging.DL >= 9)
@@ -796,14 +796,14 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Application.Cacheable
             FStartTime = DateTime.Now;
 #endif
 			#region ManualCode
-            FCachePopulator = new Ict.Petra.Server.MSysMan.Application.Cacheable.TSysManCacheable();
+            FCachePopulator = new Ict.Petra.Server.MSysMan.Cacheable.TCacheable();
             #endregion ManualCode
         }
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
         /// <summary>Destructor</summary>
-        ~TApplicationCacheableNamespace()
+        ~TCacheableNamespace()
         {
 #if DEBUGMODELONGRUNNINGFINALIZERS
             const Int32 MAX_ITERATIONS = 100000;
@@ -844,7 +844,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Application.Cacheable
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
-            return null; // make sure that the TApplicationCacheableNamespace object exists until this AppDomain is unloaded!
+            return null; // make sure that the TCacheableNamespace object exists until this AppDomain is unloaded!
         }
 
         #region ManualCode
@@ -877,17 +877,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Application.Cacheable
             switch (ACacheableTable)
             {
                 case TCacheableSysManTablesEnum.UserList:
-                    ReturnValue = FCachePopulator.GetStandardCacheableTable(
-            			ACacheableTable, AHashCode, ARefreshFromDB, out AType);
-            		
-                    // Ict.Petra.Shared.MPartner.Cacheable.AddresseeTypeList:
-                    // begin
-                    // Result := FCachePopulator.ReasonSubscriptionGivenList(Enum(ACacheableTable).ToString("G"));
-                    // end;
-                    // Ict.Petra.Shared.MPartner.Cacheable.AcquisitionCodeList:
-                    // begin
-                    // Result := FCachePopulator.ReasonSubscriptionCancelledList(Enum(ACacheableTable).ToString("G"));
-                    // end;
+                    ReturnValue = FCachePopulator.GetCacheableTable(ACacheableTable, AHashCode, ARefreshFromDB, out AType);
                     break;
 
                 default:

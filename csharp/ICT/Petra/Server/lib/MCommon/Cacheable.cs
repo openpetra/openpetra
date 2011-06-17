@@ -34,14 +34,15 @@ using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
-using Ict.Petra.Server.App.ClientDomain;
 #region ManualCode
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.MCommon;
 #endregion ManualCode
+using Ict.Petra.Server.App.Core;
 
 namespace Ict.Petra.Server.MCommon.Cacheable
 {
@@ -70,7 +71,7 @@ namespace Ict.Petra.Server.MCommon.Cacheable
             }
 #endif
             FStartTime = DateTime.Now;
-            FCacheableTablesManager = DomainManager.GCacheableTablesManager;
+            FCacheableTablesManager = TCacheableTablesManager.GCacheableTablesManager;
         }
 
 #if DEBUGMODE
@@ -131,7 +132,7 @@ namespace Ict.Petra.Server.MCommon.Cacheable
             }
 #endif
 
-            if ((ARefreshFromDB) || ((!DomainManager.GCacheableTablesManager.IsTableCached(TableName))))
+            if ((ARefreshFromDB) || ((!FCacheableTablesManager.IsTableCached(TableName))))
             {
                 Boolean NewTransaction;
                 TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
@@ -146,19 +147,19 @@ namespace Ict.Petra.Server.MCommon.Cacheable
                         case TCacheableCommonTablesEnum.CountryList:
                         {
                             DataTable TmpTable = PCountryAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
                         case TCacheableCommonTablesEnum.FrequencyList:
                         {
                             DataTable TmpTable = AFrequencyAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
                         case TCacheableCommonTablesEnum.LanguageCodeList:
                         {
                             DataTable TmpTable = PLanguageAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
 
