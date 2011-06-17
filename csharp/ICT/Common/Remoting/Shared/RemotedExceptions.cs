@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,7 +23,6 @@
 //
 using System;
 using System.Runtime.Serialization;
-using Ict.Petra.Shared.Security;
 
 /*
  * Contains Exceptions that can be passed from the Server to the Client via
@@ -37,7 +36,7 @@ using Ict.Petra.Shared.Security;
  *          Ict_Petra_Shared_MFinance...
  *
  */
-namespace Ict.Petra.Shared.RemotedExceptions
+namespace Ict.Common.Remoting.Shared
 {
     #region OutOfRangeException
 
@@ -641,124 +640,6 @@ namespace Ict.Petra.Shared.RemotedExceptions
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             base.GetObjectData(info, context);
-        }
-    }
-    #endregion
-
-    #region ESecurityPartnerAccessDeniedException
-
-    /// <summary>
-    /// Thrown if a Partner cannot be opened for security reasons
-    /// </summary>
-    [Serializable()]
-    public class ESecurityPartnerAccessDeniedException : ESecurityAccessDeniedException
-    {
-        /// <summary>PartnerKey of Partner to which access is denied.</summary>
-        private Int64 FPartnerKey;
-
-        /// <summary>ShortName of Partner to which access is denied.</summary>
-        private String FPartnerShortName;
-
-        private byte FAccessLevel;
-
-        /// <summary>PartnerKey of Partner to which access is denied.</summary>
-        public Int64 PartnerKey
-        {
-            get
-            {
-                return FPartnerKey;
-            }
-
-            set
-            {
-                FPartnerKey = value;
-            }
-        }
-
-        /// <summary>ShortName of Partner to which access is denied.</summary>
-        public String PartnerShortName
-        {
-            get
-            {
-                return FPartnerShortName;
-            }
-
-            set
-            {
-                FPartnerShortName = value;
-            }
-        }
-
-        /// <summary>
-        /// level of access that is denied
-        /// </summary>
-        public byte AccessLevel
-        {
-            get
-            {
-                return FAccessLevel;
-            }
-
-            set
-            {
-                FAccessLevel = value;
-            }
-        }
-
-        /// <summary>
-        /// constructor
-        /// </summary>
-        public ESecurityPartnerAccessDeniedException() : base()
-        {
-        }
-
-        /// <summary>
-        /// constructor
-        /// </summary>
-        /// <param name="msg"></param>
-        public ESecurityPartnerAccessDeniedException(String msg) : base(msg)
-        {
-        }
-
-        /// <summary>
-        /// constructor
-        /// </summary>
-        /// <param name="msg"></param>
-        /// <param name="APartnerKey"></param>
-        /// <param name="APartnerShortName"></param>
-        /// <param name="AAccessLevel"></param>
-        public ESecurityPartnerAccessDeniedException(String msg, Int64 APartnerKey,
-            string APartnerShortName,
-            TPartnerAccessLevelEnum AAccessLevel) : base(msg)
-        {
-            FPartnerKey = APartnerKey;
-            FPartnerShortName = APartnerShortName;
-            FAccessLevel = (byte)AAccessLevel; // (byte)Enum.Parse(typeof(TPartnerAccessLevelEnum), Enum.GetName(typeof(TPartnerAccessLevelEnum), AAccessLevel));
-        }
-
-        /// <summary>
-        /// constructor
-        /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        public ESecurityPartnerAccessDeniedException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-            FPartnerKey = info.GetInt64("PartnerKey");
-            FPartnerShortName = info.GetString("PartnerShortName");
-            FAccessLevel = info.GetByte("AccessLevel");
-        }
-
-        /// <summary>
-        /// needed for remoting, serialization
-        /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            base.GetObjectData(info, context);
-            info.AddValue("PartnerKey", FPartnerKey);
-            info.AddValue("PartnerShortName", FPartnerShortName);
-            info.AddValue("AccessLevel", FAccessLevel);
         }
     }
     #endregion

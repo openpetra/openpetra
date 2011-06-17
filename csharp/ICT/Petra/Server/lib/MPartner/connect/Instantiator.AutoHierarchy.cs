@@ -133,7 +133,6 @@ using Ict.Common.Verification;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
-using Ict.Petra.Shared.RemotedExceptions;
 using Ict.Petra.Server.MCommon.UIConnectors;
 #endregion ManualCode
 namespace Ict.Petra.Server.MPartner.Instantiator

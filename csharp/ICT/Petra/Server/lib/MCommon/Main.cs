@@ -35,7 +35,6 @@ using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
-using Ict.Petra.Shared.RemotedExceptions;
 
 namespace Ict.Petra.Server.MCommon
 {

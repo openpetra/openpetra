@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -78,7 +78,8 @@ namespace Ict.Petra.Server.MSysMan.Security
         /// <returns></returns>
         public static TPetraPrincipal PerformUserAuthentication(String AUserID, String APassword, ref Int32 AProcessID, ref Boolean ASystemEnabled)
         {
-            return Ict.Petra.Server.App.Core.Security.TUserManager.PerformUserAuthentication(AUserID, APassword, out AProcessID, out ASystemEnabled);
+            Server.App.Core.Security.TUserManager UserManager = new Server.App.Core.Security.TUserManager();
+            return (TPetraPrincipal)UserManager.PerformUserAuthentication(AUserID, APassword, out AProcessID, out ASystemEnabled);
         }
 
         /// <summary>

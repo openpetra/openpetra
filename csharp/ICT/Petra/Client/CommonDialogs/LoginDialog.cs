@@ -40,8 +40,8 @@ using Ict.Petra.Client.App.Core;
 using System.Threading;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.RemotedExceptions;
 using Ict.Petra.Shared.MSysMan;
 using Ict.Petra.Client.CommonForms;
 

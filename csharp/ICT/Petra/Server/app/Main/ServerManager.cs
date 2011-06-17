@@ -42,8 +42,12 @@ using Ict.Common.DB;
 using Ict.Common.IO;
 using Ict.Common.Remoting.Server;
 using Ict.Common.Remoting.Shared;
-using Ict.Petra.Server.App.Core;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;
+using Ict.Petra.Server.App.Core;
+using Ict.Petra.Server.App.ClientDomain;
+using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Server.MSysMan.Maintenance;
 
 namespace Ict.Petra.Server.App.Main
 {
@@ -191,8 +195,16 @@ namespace Ict.Petra.Server.App.Main
             // Create SystemDefaults Cache
             FSystemDefaultsCache = new TSystemDefaultsCache();
 
-            ClientManager.InitializeUnit();
-            TClientManager.SystemDefaultsCache = FSystemDefaultsCache;
+            TCacheableTablesManager.InitializeUnit();
+            DomainManager.GCacheableTablesManager = new TCacheableTablesManager(new TDelegateSendClientTask(TClientManager.QueueClientTask));
+
+            TClientManager.InitializeStaticVariables(FSystemDefaultsCache,
+                DomainManager.GCacheableTablesManager,
+                new TUserManager(),
+                new TErrorLog(),
+                new TMaintenanceLogonMessage(),
+                new TClientAppDomainConnection());
+
             FFirstInstance = (FNumberServerManagerInstances == 0);
             FNumberServerManagerInstances++;
         }

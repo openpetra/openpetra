@@ -50,7 +50,7 @@ namespace Ict.Petra.Client.App.Core
         {
             Networking.DetermineNetworkConfig(out UClientComputerName, out UClientIPAddress);
             UClientOS = Utilities.DetermineExecutingOS();
-            UClientAssemblyVersion = TFileVersionInfo.GetApplicationVersion();
+            UClientAssemblyVersion = TFileVersionInfo.GetApplicationVersion().ToString();
 
             if (TClientSettings.RunAsRemote)
             {

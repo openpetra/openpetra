@@ -67,7 +67,6 @@ using Ict.Common.DB;
 using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Server.MCommon;
-using Ict.Petra.Shared.RemotedExceptions;
 #endregion ManualCode
 namespace Ict.Petra.Server.MCommon.Instantiator
 {

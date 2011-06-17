@@ -31,13 +31,13 @@ using Ict.Common.Controls;
 using SourceGrid;
 using SourceGrid.Cells;
 using Ict.Common;
+using Ict.Common.Remoting.Shared;
 using System.Windows.Forms;
 using System.Collections;
 using System.Collections.Specialized;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Shared.MPartner;
-using Ict.Petra.Shared.RemotedExceptions;
 using Ict.Petra.Shared;
 
 namespace Ict.Petra.Client.MPartner

@@ -31,7 +31,6 @@ using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.RemotedExceptions;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Server.MCommon.Data.Cascading;

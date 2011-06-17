@@ -44,7 +44,6 @@ using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.RemotedExceptions;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Server.MFinance.Gift;
 using Ict.Petra.Server.MPartner.Partner;

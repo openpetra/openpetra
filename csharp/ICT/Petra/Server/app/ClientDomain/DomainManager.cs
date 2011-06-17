@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
 // Copyright 2004-2011 by OM International
 //
@@ -250,14 +250,11 @@ namespace Ict.Petra.Server.App.ClientDomain
             {
                 DateTime ReturnValue;
 
-#if  TESTMODE_WITHOUT_ODBC
-#else
                 if (DBAccess.GDBAccessObj.LastDBAction > DomainManager.ULastObjectRemotingAction)
                 {
                     ReturnValue = DBAccess.GDBAccessObj.LastDBAction;
                 }
                 else
-#endif
                 {
                     ReturnValue = DomainManager.ULastObjectRemotingAction;
                 }
@@ -580,8 +577,6 @@ namespace Ict.Petra.Server.App.ClientDomain
 
             TLanguageCulture.Init();
 
-#if  TESTMODE_WITHOUT_ODBC
-#else
 #if DEBUGMODE
             if (TLogging.DL >= 9)
             {
@@ -621,7 +616,6 @@ namespace Ict.Petra.Server.App.ClientDomain
                 // TLogging.Log('Exception occured while establishing connection to Database Server: ' + exp.ToString);
                 throw;
             }
-#endif
         }
 
         /// <summary>
@@ -636,8 +630,6 @@ namespace Ict.Petra.Server.App.ClientDomain
         public void CloseDBConnection()
         {
             // Console.WriteLine('TClientDomainManager.CloseDBConnection in AppDomain: ' + Thread.GetDomain().FriendlyName);
-#if  TESTMODE_WITHOUT_ODBC
-#else
             // TODO 1 oChristianK cLogging (Console) : Put the following debug messages in a DEBUGMODE conditional compilation directive and raise the DL to >=9; these logging statements were inserted to trace problems in on live installations!
             if (TLogging.DL >= 5)
             {
@@ -668,7 +660,6 @@ namespace Ict.Petra.Server.App.ClientDomain
                 TLogging.Log("TClientDomainManager.CloseDBConnection: after calling GDBAccessObj.CloseDBConnection",
                     TLoggingType.ToConsole | TLoggingType.ToLogfile);
             }
-#endif
         }
 
         /// <summary>

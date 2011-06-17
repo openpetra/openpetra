@@ -129,7 +129,6 @@ using System.Xml;
 using System.Collections.Specialized;
 using Ict.Common.Data;
 using Ict.Common.Verification;
-using Ict.Petra.Shared.RemotedExceptions;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;

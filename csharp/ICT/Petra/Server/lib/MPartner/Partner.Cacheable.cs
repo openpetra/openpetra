@@ -33,8 +33,8 @@ using Ict.Common.Data;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.RemotedExceptions;
 using Ict.Petra.Server.App.ClientDomain;
 #region ManualCode
 using Ict.Petra.Shared.MCommon;

@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -32,85 +32,12 @@ using System.Security.Principal;
 using System.Resources;
 using GNU.Gettext;
 using Ict.Common;
-using Ict.Common.DB;
 using Ict.Common.Verification;
-using Ict.Common.Remoting.Server;
 using Ict.Common.Remoting.Shared;
-using Ict.Petra.Shared;
-using Ict.Petra.Shared.Security;
-using Ict.Petra.Shared.RemotedExceptions;
-using Ict.Petra.Shared.MSysMan;
-using Ict.Petra.Server.App.Core;
-using Ict.Petra.Server.App.ClientDomain;
-using Ict.Petra.Server.App.Core.Security;
-using Ict.Petra.Server.App.Main;
 using System.Threading;
-using Ict.Petra.Server.MSysMan.Maintenance;
-using Ict.Petra.Server.MSysMan.Security;
 
-namespace Ict.Petra.Server.App.Main
+namespace Ict.Common.Remoting.Server
 {
-    /// <summary>
-    /// several states for app domains
-    /// </summary>
-    public enum TAppDomainStatus
-    {
-        /// <summary>
-        /// during login verification
-        /// </summary>
-        adsConnectingLoginVerification,
-
-        /// <summary>
-        /// login was successful
-        /// </summary>
-        adsConnectingLoginOK,
-
-        /// <summary>
-        /// app domain has been setup
-        /// </summary>
-        adsConnectingAppDomainSetupOK,
-
-        /// <summary>
-        /// app domain is active
-        /// </summary>
-        adsActive,
-
-        /// <summary>
-        /// app domain is not busy
-        /// </summary>
-        adsIdle,
-
-        /// <summary>
-        /// the db connection is being closed
-        /// </summary>
-        adsDisconnectingDBClosing,
-
-        /// <summary>
-        /// app domain is shutting down
-        /// </summary>
-        adsDisconnectingAppDomainUnloading,
-
-        /// <summary>
-        /// app domain has been stopped
-        /// </summary>
-        adsStopped
-    };
-
-    /// <summary>
-    /// some global variables
-    /// </summary>
-    class ClientManager
-    {
-        public static System.Object UAppDomainUnloadMonitor;
-
-        public static void InitializeUnit()
-        {
-            TCacheableTablesManager.InitializeUnit();
-            TClientManager.UCacheableTablesManager = new TCacheableTablesManager(new TDelegateSendClientTask(TClientManager.QueueClientTask));
-            DomainManager.GCacheableTablesManager = TClientManager.UCacheableTablesManager;
-        }
-    }
-
     /// <summary>
     /// Main class for Client connection and disconnection and other Client actions.
     ///
@@ -148,10 +75,15 @@ namespace Ict.Petra.Server.App.Main
         private static TClientManager UClientManagerObj;
 
         /// <summary>Holds reference to an instance of TSystemDefaultsCache (for System Defaults lookups)</summary>
-        private static TSystemDefaultsCache USystemDefaultsCache;
+        private static object USystemDefaultsCache;
 
         /// <summary>Holds reference to an instance of TCacheableTablesManager (for caching of DataTables)</summary>
-        public static TCacheableTablesManager UCacheableTablesManager;
+        private static object UCacheableTablesManager;
+
+        private static IUserManager UUserManager = null;
+        private static IErrorLog UErrorLog = null;
+        private static IMaintenanceLogonMessage UMaintenanceLogonMessage = null;
+        private static IClientAppDomainConnection UClientDomainManager = null;
 
         /// <summary>Used for ThreadLocking a critical part of the Client Connection code to make sure that this code is executed by exactly one Client at any given time</summary>
         private static System.Object UConnectClientMonitor;
@@ -235,16 +167,11 @@ namespace Ict.Petra.Server.App.Main
         /// ClientDomain to give each ClientDomain access to the System Defaults cache.
         ///
         /// </summary>
-        public static TSystemDefaultsCache SystemDefaultsCache
+        public static object SystemDefaultsCache
         {
             get
             {
                 return USystemDefaultsCache;
-            }
-
-            set
-            {
-                USystemDefaultsCache = value;
             }
         }
 
@@ -455,14 +382,12 @@ namespace Ict.Petra.Server.App.Main
             return ReturnValue;
         }
 
-        #region TClientManager
-
         /// <summary>
         /// Initialises variables.
         ///
         /// </summary>
         /// <returns>void</returns>
-        public TClientManager() : base()
+        public TClientManager()
         {
             FClientManagerCallForwarder = new TClientManagerCallForwarder(this);
             UClientObjects = SortedList.Synchronized(new SortedList());
@@ -470,11 +395,27 @@ namespace Ict.Petra.Server.App.Main
             // Console.WriteLine('UClientObjects.IsSynchronized: ' + UClientObjects.IsSynchronized.ToString);
             FStartTime = DateTime.Now;
             UConnectClientMonitor = new System.Object();
-            ClientManager.UAppDomainUnloadMonitor = new System.Object();
             UClientManagerObj = this;
         }
 
-#if DEBUGMODE
+        /// <summary>
+        /// initialize variables that are initialized from classes specific to the server, eg. with access to OpenPetra database
+        /// </summary>
+        public static void InitializeStaticVariables(object ASystemDefaultsCache,
+            object ACacheableTablesManager,
+            IUserManager AUserManager,
+            IErrorLog AErrorLog,
+            IMaintenanceLogonMessage AMaintenanceLogonMessage,
+            IClientAppDomainConnection AClientDomainManager)
+        {
+            USystemDefaultsCache = ASystemDefaultsCache;
+            UCacheableTablesManager = ACacheableTablesManager;
+            UUserManager = AUserManager;
+            UErrorLog = AErrorLog;
+            UMaintenanceLogonMessage = AMaintenanceLogonMessage;
+            UClientDomainManager = AClientDomainManager;
+        }
+
         /// <summary>
         /// destructor
         /// </summary>
@@ -486,9 +427,6 @@ namespace Ict.Petra.Server.App.Main
                                                                                 DateTime.Now.Ticks - FStartTime.Ticks)).ToString() + " seconds.");
             }
         }
-#endif
-
-
 
         /// <summary>
         /// needed for remoting
@@ -510,21 +448,26 @@ namespace Ict.Petra.Server.App.Main
         /// <param name="AProcessID"></param>
         /// <param name="ASystemEnabled"></param>
         /// <returns></returns>
-        static public TPetraPrincipal PerformLoginChecks(String AUserName,
+        static public IPrincipal PerformLoginChecks(String AUserName,
             String APassword,
             String AClientComputerName,
             String AClientIPAddress,
             out Int32 AProcessID,
             out Boolean ASystemEnabled)
         {
-            TPetraPrincipal ReturnValue;
+            IPrincipal ReturnValue;
             const String AUTHENTICATION_FAILED = "Authentication for User '{0}' failed! " +
                                                  "Reason: {1}. Connect request came from Computer '{2}' " + "(IP Address: {3})";
+
+            if (UUserManager == null)
+            {
+                throw new Exception("TClientManager.PerformLoginChecks Configuration error: no valid IUserManager has been installed for the server!");
+            }
 
             try
             {
                 // This function call will throw Exceptions if the User cannot be authenticated
-                ReturnValue = Ict.Petra.Server.App.Core.Security.TUserManager.PerformUserAuthentication(AUserName,
+                ReturnValue = UUserManager.PerformUserAuthentication(AUserName,
                     APassword,
                     out AProcessID,
                     out ASystemEnabled);
@@ -1115,7 +1058,7 @@ namespace Ict.Petra.Server.App.Main
         }
 
         /// <summary>
-        /// add error to log, using Ict.Petra.Server.App.Core.Security.TErrorLog.AddErrorLogEntry
+        /// add error to log, using IErrorLog
         /// </summary>
         /// <param name="AErrorCode"></param>
         /// <param name="AContext"></param>
@@ -1134,14 +1077,17 @@ namespace Ict.Petra.Server.App.Main
         {
             TVerificationResultCollection VerificationResult;
 
-            Ict.Petra.Server.App.Core.Security.TErrorLog.AddErrorLogEntry(AErrorCode,
-                AContext,
-                AMessageLine1,
-                AMessageLine2,
-                AMessageLine3,
-                AUserID,
-                AProcessID,
-                out VerificationResult);
+            if (UErrorLog != null)
+            {
+                UErrorLog.AddErrorLogEntry(AErrorCode,
+                    AContext,
+                    AMessageLine1,
+                    AMessageLine2,
+                    AMessageLine3,
+                    AUserID,
+                    AProcessID,
+                    out VerificationResult);
+            }
         }
 
         /// <summary>
@@ -1405,19 +1351,11 @@ namespace Ict.Petra.Server.App.Main
             out IPrincipal AUserInfo)
         {
             String LoadInAppDomainName;
-            TClientAppDomainConnection ClientDomainManager = null;
+            IClientAppDomainConnection ClientDomainManager = null;
             String RemotingURL_RemotedObject = "";
             String RemotingURL_PollClientTasks;
-            String RemotingURL_MCommon;
-            String RemotingURL_MConference;
-            String RemotingURL_MSysMan;
-            String RemotingURL_MPartner;
-            String RemotingURL_MPersonnel;
-            String RemotingURL_MFinance;
-            String RemotingURL_MReporting;
             TRunningAppDomain AppDomainEntry;
             String CantDisconnectReason;
-            TPetraPrincipal UserInfo;
 
 #if DEBUGMODE
             if (TLogging.DL >= 10)
@@ -1532,7 +1470,6 @@ namespace Ict.Petra.Server.App.Main
                             AClientIPAddress,
                             out AProcessID,
                             out ASystemEnabled);
-                        UserInfo = (TPetraPrincipal)AUserInfo;
                     }
                     catch (EPetraSecurityException)
                     #region Exception handling
@@ -1552,40 +1489,11 @@ namespace Ict.Petra.Server.App.Main
 
                         #endregion
                         ((TRunningAppDomain)UClientObjects[(object)AClientID]).AppDomainStatus = TAppDomainStatus.adsStopped;
-                        try
-                        {
-                            if (DBAccess.GDBAccessObj != null)
-                            {
-                                DBAccess.GDBAccessObj.RollbackTransaction();
-                            }
-                        }
-                        catch (System.InvalidOperationException)
-                        {
-                            // ignore this exception since the RollBack is just a safety net,
-                            // and if it fails it means there was no running transaction.
-                        }
-                        catch (Exception)
-                        {
-                            throw;
-                        }
                         throw;
                     }
                     catch (Exception)
                     {
                         ((TRunningAppDomain)UClientObjects[(object)AClientID]).AppDomainStatus = TAppDomainStatus.adsStopped;
-                        try
-                        {
-                            DBAccess.GDBAccessObj.RollbackTransaction();
-                        }
-                        catch (System.InvalidOperationException)
-                        {
-                            // ignore this exception since the RollBack is just a safety net,
-                            // and if it fails it means there was no running transaction.
-                        }
-                        catch (Exception)
-                        {
-                            throw;
-                        }
                         throw;
                     }
                     #endregion
@@ -1596,29 +1504,20 @@ namespace Ict.Petra.Server.App.Main
                     // Retrieve Welcome message
                     try
                     {
-                        AWelcomeMessage = TMaintenanceLogonMessage.GetLogonMessage(UserInfo.PetraIdentity.LanguageCode, true);
+                        if (UMaintenanceLogonMessage != null)
+                        {
+                            AWelcomeMessage = UMaintenanceLogonMessage.GetLogonMessage(AUserInfo, true);
+                        }
+                        else
+                        {
+                            AWelcomeMessage = "Welcome";
+                        }
                     }
                     catch (Exception)
-                    #region Exception handling
                     {
                         ((TRunningAppDomain)UClientObjects[(object)AClientID]).AppDomainStatus = TAppDomainStatus.adsStopped;
-                        try
-                        {
-                            DBAccess.GDBAccessObj.RollbackTransaction();
-                        }
-                        catch (System.InvalidOperationException)
-                        {
-                        }
-                        // ignore this exception since the RollBack is just a safety net,
-                        // and if it fails it means there was no running transaction.
-                        catch (Exception)
-                        {
-                            throw;
-                        }
                         throw;
                     }
-                    #endregion
-                    #endregion
 #if DEBUGMODE
                     if (TLogging.DL >= 10)
                     {
@@ -1639,7 +1538,7 @@ namespace Ict.Petra.Server.App.Main
                         {
                             // The following statement creates a new AppDomain for the connecting
                             // Client and remotes an instance of TRemoteLoader into it.
-                            ClientDomainManager = new TClientAppDomainConnection(AClientName);
+                            ClientDomainManager = UClientDomainManager.CreateAppDomain(AClientName);
 #if DEBUGMODE
                             if (TLogging.DL >= 10)
                             {
@@ -1664,9 +1563,9 @@ namespace Ict.Petra.Server.App.Main
                                 FClientManagerCallForwarder,
                                 USystemDefaultsCache,
                                 UCacheableTablesManager,
-                                UserInfo,
+                                AUserInfo,
                                 out RemotingURL_PollClientTasks);
-                            ARemotingURLs.Add(SharedConstants.REMOTINGURL_IDENTIFIER_POLLCLIENTTASKS, RemotingURL_PollClientTasks);
+                            ARemotingURLs.Add(RemotingConstants.REMOTINGURL_IDENTIFIER_POLLCLIENTTASKS, RemotingURL_PollClientTasks);
                         }
                         catch (TargetInvocationException exp)
                         {
@@ -1749,86 +1648,9 @@ namespace Ict.Petra.Server.App.Main
             {
                 Monitor.Exit(UConnectClientMonitor);
             }
-            #region Load Petra Module DLLs into Clients AppDomain, initialise them and remote an Instantiator Object
 
-            // Load SYSMAN Module assembly (always loaded)
-            ClientDomainManager.LoadPetraModuleAssembly(SharedConstants.REMOTINGURL_IDENTIFIER_MSYSMAN, out RemotingURL_MSysMan);
-            ARemotingURLs.Add(SharedConstants.REMOTINGURL_IDENTIFIER_MSYSMAN, RemotingURL_MSysMan);
-#if DEBUGMODE
-            if (TLogging.DL >= 5)
-            {
-                Console.WriteLine("  TMSysMan instantiated. Remoting URL: " + RemotingURL_MSysMan);
-            }
-#endif
+            ClientDomainManager.LoadAssemblies(AUserInfo, ref ARemotingURLs);
 
-            // Load COMMON Module assembly (always loaded)
-            ClientDomainManager.LoadPetraModuleAssembly(SharedConstants.REMOTINGURL_IDENTIFIER_MCOMMON, out RemotingURL_MCommon);
-            ARemotingURLs.Add(SharedConstants.REMOTINGURL_IDENTIFIER_MCOMMON, RemotingURL_MCommon);
-#if DEBUGMODE
-            if (TLogging.DL >= 5)
-            {
-                Console.WriteLine("  TMCommon instantiated. Remoting URL: " + RemotingURL_MCommon);
-            }
-#endif
-
-            // Load CONFERENCE Module assembly (always loaded)
-            ClientDomainManager.LoadPetraModuleAssembly(SharedConstants.REMOTINGURL_IDENTIFIER_MCONFERENCE, out RemotingURL_MConference);
-            ARemotingURLs.Add(SharedConstants.REMOTINGURL_IDENTIFIER_MCONFERENCE, RemotingURL_MConference);
-#if DEBUGMODE
-            if (TLogging.DL >= 5)
-            {
-                Console.WriteLine("  TMConference instantiated. Remoting URL: " + RemotingURL_MConference);
-            }
-#endif
-
-            // Load PARTNER Module assembly (always loaded)
-            ClientDomainManager.LoadPetraModuleAssembly(SharedConstants.REMOTINGURL_IDENTIFIER_MPARTNER, out RemotingURL_MPartner);
-            ARemotingURLs.Add(SharedConstants.REMOTINGURL_IDENTIFIER_MPARTNER, RemotingURL_MPartner);
-#if DEBUGMODE
-            if (TLogging.DL >= 5)
-            {
-                Console.WriteLine("  TMPartner instantiated. Remoting URL: " + RemotingURL_MPartner);
-            }
-#endif
-
-            // Load REPORTING Module assembly (always loaded)
-            ClientDomainManager.LoadPetraModuleAssembly(SharedConstants.REMOTINGURL_IDENTIFIER_MREPORTING, out RemotingURL_MReporting);
-            ARemotingURLs.Add(SharedConstants.REMOTINGURL_IDENTIFIER_MREPORTING, RemotingURL_MReporting);
-#if DEBUGMODE
-            if (TLogging.DL >= 5)
-            {
-                Console.WriteLine("  TMReporting instantiated. Remoting URL: " + RemotingURL_MReporting);
-            }
-#endif
-
-            // Load PERSONNEL Module assembly (loaded only for users that have personnel privileges)
-            if (UserInfo.IsInModule(SharedConstants.PETRAMODULE_PERSONNEL))
-            {
-                ClientDomainManager.LoadPetraModuleAssembly(SharedConstants.REMOTINGURL_IDENTIFIER_MPERSONNEL, out RemotingURL_MPersonnel);
-                ARemotingURLs.Add(SharedConstants.REMOTINGURL_IDENTIFIER_MPERSONNEL, RemotingURL_MPersonnel);
-#if DEBUGMODE
-                if (TLogging.DL >= 5)
-                {
-                    Console.WriteLine("  TMPersonnel instantiated. Remoting URL: " + RemotingURL_MPersonnel);
-                }
-#endif
-            }
-
-            // Load FINANCE Module assembly (loaded only for users that have finance privileges)
-            if ((UserInfo.IsInModule(SharedConstants.PETRAMODULE_FINANCE1)) || (UserInfo.IsInModule(SharedConstants.PETRAMODULE_FINANCE2))
-                || (UserInfo.IsInModule(SharedConstants.PETRAMODULE_FINANCE3)))
-            {
-                ClientDomainManager.LoadPetraModuleAssembly(SharedConstants.REMOTINGURL_IDENTIFIER_MFINANCE, out RemotingURL_MFinance);
-                ARemotingURLs.Add(SharedConstants.REMOTINGURL_IDENTIFIER_MFINANCE, RemotingURL_MFinance);
-#if DEBUGMODE
-                if (TLogging.DL >= 5)
-                {
-                    Console.WriteLine("  TMFinance instantiated. Remoting URL: " + RemotingURL_MFinance);
-                }
-#endif
-            }
-
-            #endregion
             ((TRunningAppDomain)UClientObjects[(object)AClientID]).AppDomainStatus = TAppDomainStatus.adsActive;
             ((TRunningAppDomain)UClientObjects[(object)AClientID]).FClientConnectionFinishedTime = DateTime.Now;
             #region Logging
@@ -2201,613 +2023,6 @@ namespace Ict.Petra.Server.App.Main
             GC.Collect();
             Console.WriteLine("TClientManager.PerformGC: GC performed");
             return (int)GC.GetTotalMemory(false);
-        }
-
-        #endregion
-    }
-
-    /// <summary>
-    /// TAppDomainStatus and TRunningAppDomain have been moved from the implementation to the interface section, due to problems with DelphiCodeToDoc Enum with statuses that a AppDomain can have
-    /// This class holds details about a connected Client.
-    /// It is stored as an entry in the UClientObjects HashTable (one entry for each
-    /// current Client connection).
-    ///
-    /// </summary>
-    public class TRunningAppDomain : object
-    {
-        /// <summary> todoComment </summary>
-        public System.Int32 FClientID;
-
-        /// <summary> todoComment </summary>
-        public String FUserID;
-
-        /// <summary> todoComment </summary>
-        public String FClientName;
-
-        /// <summary> todoComment </summary>
-        public DateTime FClientConnectionStartTime;
-
-        /// <summary> todoComment </summary>
-        public DateTime FClientConnectionFinishedTime;
-
-        /// <summary> todoComment </summary>
-        public DateTime FClientDisconnectionStartTime;
-
-        /// <summary> todoComment </summary>
-        public DateTime FClientDisconnectionFinishedTime;
-
-        /// <summary> todoComment </summary>
-        public String FClientComputerName;
-
-        /// <summary> todoComment </summary>
-        public String FClientIPAddress;
-
-        /// <summary> todoComment </summary>
-        public TClientServerConnectionType FClientServerConnectionType;
-
-        /// <summary> todoComment </summary>
-        public String FAppDomainName;
-
-        /// <summary> todoComment </summary>
-        public String FAppDomainRemotedObjectURL;
-
-        /// <summary> todoComment </summary>
-        public Int32 FAppDomainRemotingPort;
-
-        /// <summary> todoComment </summary>
-        public TClientAppDomainConnection FClientAppDomainConnection;
-        private System.Object FDisconnectClientMonitor;
-        private Boolean FClientDisconnectionScheduled;
-
-        /// <summary> todoComment </summary>
-        public TAppDomainStatus FAppDomainStatus;
-
-        /// <summary>Serverassigned ID of the Client</summary>
-        public System.Int32 ClientID
-        {
-            get
-            {
-                return FClientID;
-            }
-        }
-
-        /// <summary>UserID for which the AppDomain was created</summary>
-        public String UserID
-        {
-            get
-            {
-                return FUserID;
-            }
-        }
-
-        /// <summary>Serverassigned name of the Client</summary>
-        public String ClientName
-        {
-            get
-            {
-                return FClientName;
-            }
-        }
-
-        /// <summary>Time when the Client connected to the Server.</summary>
-        public DateTime ClientConnectionTime
-        {
-            get
-            {
-                return FClientConnectionStartTime;
-            }
-        }
-
-        /// <summary>Computer name of the Client</summary>
-        public String ClientComputerName
-        {
-            get
-            {
-                return FClientComputerName;
-            }
-        }
-
-        /// <summary>IP Address of the Client</summary>
-        public String ClientIPAddress
-        {
-            get
-            {
-                return FClientIPAddress;
-            }
-        }
-
-        /// <summary>Type of the connection (eg. LAN, Remote)</summary>
-        public TClientServerConnectionType ClientServerConnectionType
-        {
-            get
-            {
-                return FClientServerConnectionType;
-            }
-        }
-
-        /// <summary>Serverassigned name of the Client AppDomain</summary>
-        public String AppDomainName
-        {
-            get
-            {
-                return FAppDomainName;
-            }
-
-            set
-            {
-                FAppDomainName = value;
-            }
-        }
-
-        /// <summary>.NET Remoting URL of a Test object (for testing purposes only)</summary>
-        public String AppDomainRemotedObjectURL
-        {
-            get
-            {
-                return FAppDomainRemotedObjectURL;
-            }
-
-            set
-            {
-                FAppDomainRemotedObjectURL = value;
-            }
-        }
-
-        /// <summary>.NET Remoting Port on which the Server will remote objects for the Client</summary>
-        public Int32 AppDomainRemotingPort
-        {
-            get
-            {
-                return FAppDomainRemotingPort;
-            }
-
-            set
-            {
-                FAppDomainRemotingPort = value;
-            }
-        }
-
-        /// <summary>Connection object to the Client's AppDomain</summary>
-        public TClientAppDomainConnection ClientAppDomainConnection
-        {
-            get
-            {
-                return FClientAppDomainConnection;
-            }
-
-            set
-            {
-                FClientAppDomainConnection = value;
-            }
-        }
-
-        /// <summary>Status that the Client AppDomain has</summary>
-        public TAppDomainStatus AppDomainStatus
-        {
-            get
-            {
-                return FAppDomainStatus;
-            }
-
-            set
-            {
-                FAppDomainStatus = value;
-            }
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public System.Object DisconnectClientMonitor
-        {
-            get
-            {
-                return FDisconnectClientMonitor;
-            }
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public Boolean ClientDisconnectionScheduled
-        {
-            get
-            {
-                return FClientDisconnectionScheduled;
-            }
-
-            set
-            {
-                FClientDisconnectionScheduled = value;
-            }
-        }
-
-
-        #region TRunningAppDomain
-
-        /// <summary>
-        /// Initialises fields.
-        ///
-        /// </summary>
-        /// <param name="AClientID">Server-assigned ID of the Client</param>
-        /// <param name="AUserID">AUserID for which the AppDomain was created</param>
-        /// <param name="AClientName">Server-assigned name of the Client</param>
-        /// <param name="AClientComputerName">Computer name of the Client</param>
-        /// <param name="AClientIPAddress">IP Address of the Client</param>
-        /// <param name="AClientServerConnectionType">Type of the connection (eg. LAN, Remote)</param>
-        /// <param name="AAppDomainName">Server-assigned name of the Client AppDomain
-        /// </param>
-        /// <returns>void</returns>
-        public TRunningAppDomain(System.Int32 AClientID,
-            String AUserID,
-            String AClientName,
-            String AClientComputerName,
-            String AClientIPAddress,
-            TClientServerConnectionType AClientServerConnectionType,
-            String AAppDomainName)
-        {
-            FClientID = AClientID;
-            FUserID = AUserID;
-            FClientName = AClientName;
-            FClientComputerName = AClientComputerName;
-            FClientIPAddress = AClientIPAddress;
-            FClientServerConnectionType = AClientServerConnectionType;
-            FClientConnectionStartTime = DateTime.Now;
-            FAppDomainName = AAppDomainName;
-            FAppDomainStatus = TAppDomainStatus.adsConnectingLoginVerification;
-            FDisconnectClientMonitor = new System.Object();
-        }
-
-        /// <summary>
-        /// Comment
-        ///
-        /// </summary>
-        /// <param name="AAppDomainRemotedObjectURL">.NET Remoting URL of a Test object (for
-        /// testing purposes only)</param>
-        /// <param name="AAppDomainRemotingPort"></param>
-        /// <param name="AClientAppDomainConnection">Object that allows a connection to the
-        /// Client's AppDomain without causing a load of the Assemblies that are
-        /// loaded in the Client's AppDomain into the Default AppDomain.
-        /// </param>
-        /// <returns>void</returns>
-        public void PassInClientRemotingInfo(String AAppDomainRemotedObjectURL,
-            Int32 AAppDomainRemotingPort,
-            TClientAppDomainConnection AClientAppDomainConnection)
-        {
-            FAppDomainRemotedObjectURL = AAppDomainRemotedObjectURL;
-            FAppDomainRemotingPort = AAppDomainRemotingPort;
-            FClientAppDomainConnection = AClientAppDomainConnection;
-        }
-
-        #endregion
-    }
-
-    /// <summary>
-    /// Class for threaded disconnection of Clients.
-    ///
-    /// </summary>
-    public class TDisconnectClientThread
-    {
-        private TRunningAppDomain FAppDomainEntry;
-        private Int32 FClientID;
-        private String FReason;
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public TRunningAppDomain AppDomainEntry
-        {
-            get
-            {
-                return FAppDomainEntry;
-            }
-
-            set
-            {
-                FAppDomainEntry = value;
-            }
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public Int32 ClientID
-        {
-            get
-            {
-                return FClientID;
-            }
-
-            set
-            {
-                FClientID = value;
-            }
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public String Reason
-        {
-            get
-            {
-                return FReason;
-            }
-
-            set
-            {
-                FReason = value;
-            }
-        }
-
-        #region TDisconnectClientThread
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public void StartClientDisconnection()
-        {
-            const Int32 UNLOAD_RETRIES = 20;
-            Int32 UnloadExceptionCount;
-            String ClientInfo;
-            Boolean DBConnectionAlreadyClosed;
-            Boolean UnloadFinished;
-
-            DBConnectionAlreadyClosed = false;
-            UnloadExceptionCount = 0;
-            try
-            {
-                ClientInfo = "'" + FAppDomainEntry.FClientName + "' (ClientID: " + FAppDomainEntry.FClientID.ToString() + ")";
-#if DEBUGMODE
-                if (TLogging.DL >= 4)
-                {
-                    Console.WriteLine(TClientManager.FormatClientList(false));
-                    Console.WriteLine(TClientManager.FormatClientList(true));
-                }
-#endif
-
-                if (TLogging.DL >= 4)
-                {
-                    TLogging.Log("Disconnecting Client " + ClientInfo + " (Reason: " + FReason + ")...",
-                        TLoggingType.ToConsole | TLoggingType.ToLogfile);
-                }
-                else
-                {
-                    TLogging.Log("Disconnecting Client " + ClientInfo + " (Reason: " + FReason + ")...", TLoggingType.ToLogfile);
-                }
-
-                FAppDomainEntry.FClientDisconnectionStartTime = DateTime.Now;
-                FAppDomainEntry.FAppDomainStatus = TAppDomainStatus.adsDisconnectingDBClosing;
-                try
-                {
-                    if (TLogging.DL >= 4)
-                    {
-                        TLogging.Log("Closing Client DB Connection... [Client " + ClientInfo + "]", TLoggingType.ToConsole | TLoggingType.ToLogfile);
-                    }
-
-                    try
-                    {
-                        FAppDomainEntry.ClientAppDomainConnection.CloseDBConnection();
-                    }
-                    catch (System.ArgumentNullException)
-                    {
-                        // don't do anything here: this Exception only indicates that the
-                        // DB connection was already closed.
-                        DBConnectionAlreadyClosed = true;
-                    }
-                    catch (Exception Exp)
-                    {
-                        // make sure any other Exception is going to be handled
-                        throw Exp;
-                    }
-
-                    if (!DBConnectionAlreadyClosed)
-                    {
-                        if (TLogging.DL >= 4)
-                        {
-                            TLogging.Log("Closed Client DB Connection. [Client " + ClientInfo + "]", TLoggingType.ToConsole | TLoggingType.ToLogfile);
-                        }
-                    }
-                    else
-                    {
-                        if (TLogging.DL >= 4)
-                        {
-                            TLogging.Log("Client DB Connection was already closed. [Client " + ClientInfo + "]",
-                                TLoggingType.ToConsole | TLoggingType.ToLogfile);
-                        }
-                    }
-                }
-                catch (Exception exp)
-                {
-                    TLogging.Log(
-                        "Error closing Database connection on Client disconnection!" + " [Client " + ClientInfo + "]" + "Exception: " + exp.ToString());
-                }
-
-                // TODO 1 oChristianK cLogging (Console) : Put the following debug messages again in a DEBUGMODE conditional compilation directive; this was removed to trace problems in on live installations!
-                if (TLogging.DL >= 5)
-                {
-                    TLogging.Log("  Before calling ClientAppDomainConnection.StopClientAppDomain...  [Client " + ClientInfo + ']',
-                        TLoggingType.ToConsole | TLoggingType.ToLogfile);
-                }
-
-                FAppDomainEntry.ClientAppDomainConnection.StopClientAppDomain();
-
-                if (TLogging.DL >= 5)
-                {
-                    TLogging.Log("  After calling ClientAppDomainConnection.StopClientAppDomain...  [Client " + ClientInfo + ']',
-                        TLoggingType.ToConsole | TLoggingType.ToLogfile);
-                }
-
-                FAppDomainEntry.FAppDomainStatus = TAppDomainStatus.adsDisconnectingAppDomainUnloading;
-                UnloadFinished = false;
-
-                while (!UnloadFinished)
-                {
-                    try
-                    {
-Retry:                          //             used only for repeating Unload when an Exception happened
-
-                        if (Monitor.TryEnter(ClientManager.UAppDomainUnloadMonitor, 250))
-                        {
-                            /*
-                             * Try to unload the AppDomain. If an Exception occurs, retries are made
-                             * after a delay - until a maximum of retries is reached.
-                             */
-#if DEBUGMODE
-                            if (TLogging.DL >= 5)
-                            {
-                                Console.WriteLine(
-                                    "  Unloading AppDomain '" + FAppDomainEntry.ClientAppDomainConnection.AppDomainName + "' [Client " + ClientInfo +
-                                    "]");
-                            }
-#endif
-                            try
-                            {
-                                if (TLogging.DL >= 4)
-                                {
-                                    TLogging.Log("Unloading Client Session (AppDomain)..." + "' [Client " + ClientInfo + "]",
-                                        TLoggingType.ToConsole | TLoggingType.ToLogfile);
-                                }
-
-                                // Note for developers: uncomment the following code to see that the retrying of Unload really works in case Exceptions are thrown,,,
-                                // if UnloadExceptionCount < 4 then
-                                // begin
-                                // raise Exception.Create();
-                                // end;
-                                // Unload the AppDomain
-                                FAppDomainEntry.ClientAppDomainConnection.Unload();
-
-                                // Everything went fine!
-                                if (TLogging.DL >= 4)
-                                {
-                                    TLogging.Log("Unloaded Client Session (AppDomain)." + "' [Client " + ClientInfo + "]",
-                                        TLoggingType.ToConsole | TLoggingType.ToLogfile);
-                                }
-
-                                UnloadExceptionCount = 0;
-                                FAppDomainEntry.FClientAppDomainConnection = null;
-                                FAppDomainEntry.FClientDisconnectionFinishedTime = DateTime.Now;
-                                FAppDomainEntry.FAppDomainStatus = TAppDomainStatus.adsStopped;
-#if DEBUGMODE
-                                if (TLogging.DL >= 5)
-                                {
-                                    Console.WriteLine("  AppDomain unloaded [Client " + ClientInfo + "]");
-                                }
-#endif
-                            }
-                            catch (Exception UnloadException)
-                            {
-                                // Something went wrong during Unload; log this, wait a bit and
-                                // try again!
-                                UnloadExceptionCount = UnloadExceptionCount + 1;
-                                TLogging.Log(
-                                    "Error unloading Client Session (AppDomain) [Client " + ClientInfo + "] on Client disconnection   (try #" +
-                                    UnloadExceptionCount.ToString() + ")!  " + "Exception: " + UnloadException.ToString());
-                                Monitor.PulseAll(ClientManager.UAppDomainUnloadMonitor);
-                                Monitor.Exit(ClientManager.UAppDomainUnloadMonitor);
-                                Thread.Sleep(UnloadExceptionCount * 1000);
-                            }
-
-                            if ((UnloadExceptionCount != 0) && (UnloadExceptionCount < UNLOAD_RETRIES))
-                            {
-                                goto Retry;
-                            }
-
-#if DEBUGMODE
-                            if (TLogging.DL >= 5)
-                            {
-                                Console.WriteLine("  AppDomain unloading finished [Client " + ClientInfo + ']');
-                            }
-#endif
-
-                            // Logging: was Unload successful?
-                            if (FAppDomainEntry.FAppDomainStatus == TAppDomainStatus.adsStopped)
-                            {
-                                if (TLogging.DL >= 4)
-                                {
-                                    TLogging.Log(
-                                        "Client " + ClientInfo + " has been disconnected (took " +
-                                        FAppDomainEntry.FClientDisconnectionFinishedTime.Subtract(
-                                            FAppDomainEntry.FClientDisconnectionStartTime).TotalSeconds.ToString() + " sec).",
-                                        TLoggingType.ToConsole | TLoggingType.ToLogfile);
-                                }
-                                else
-                                {
-                                    TLogging.Log("Client " + ClientInfo + " has been disconnected.", TLoggingType.ToLogfile);
-                                }
-                            }
-                            else
-                            {
-                                if (TLogging.DL >= 4)
-                                {
-                                    TLogging.Log("Client " + ClientInfo + " could not be disconnected!",
-                                        TLoggingType.ToConsole | TLoggingType.ToLogfile);
-                                }
-                                else
-                                {
-                                    TLogging.Log("Client " + ClientInfo + " could not be disconnected!", TLoggingType.ToLogfile);
-                                }
-                            }
-
-                            UnloadFinished = true;
-
-                            // Notify any other waiting Threads that they can proceed with the
-                            // Unloading of their AppDomain
-                            try
-                            {
-                                Monitor.PulseAll(ClientManager.UAppDomainUnloadMonitor);
-                            }
-                            catch (System.Threading.SynchronizationLockException Exp)
-                            {
-                                if (UnloadExceptionCount == UNLOAD_RETRIES)
-                                {
-                                }
-                                // ignore this Exception if the amount of retries is reached
-                                // the Monitor is already Exited in this case
-                                else
-                                {
-                                    throw Exp;
-                                }
-                            }
-                            catch (Exception Exp)
-                            {
-                                throw Exp;
-                            }
-                        }
-                        else
-                        {
-                            if (TLogging.DL >= 4)
-                            {
-                                TLogging.Log(
-                                    "Client disconnection Thread is blocked by another client disconnection thread. Waiting a bit... (ClientID: " +
-                                    AppDomainEntry.FClientID.ToString() + ")...",
-                                    TLoggingType.ToConsole | TLoggingType.ToLogfile);
-                            }
-
-                            Thread.Sleep(2000);
-
-                            if (TLogging.DL >= 4)
-                            {
-                                TLogging.Log(
-                                    "Trying to continue Client disconnection after Thread was blocked by another client disconnection thread..." +
-                                    "' (ClientID: " + AppDomainEntry.FClientID.ToString() + ")...",
-                                    TLoggingType.ToConsole | TLoggingType.ToLogfile);
-                            }
-                        }
-                    }
-                    finally
-                    {
-                        Monitor.Exit(ClientManager.UAppDomainUnloadMonitor);
-                    }
-                }
-            }
-            catch (Exception Exp)
-            {
-                TLogging.Log(
-                    "StartClientDisconnection for ClientID: " + FClientID.ToString() + ": Exception occured: " + Exp.ToString(),
-                    TLoggingType.ToConsole |
-                    TLoggingType.ToLogfile);
-            }
         }
 
         #endregion

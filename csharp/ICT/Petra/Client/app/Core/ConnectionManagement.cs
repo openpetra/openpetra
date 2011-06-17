@@ -44,7 +44,6 @@ using Ict.Petra.Shared;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using System.Reflection;
-using Ict.Petra.Shared.RemotedExceptions;
 using Ict.Petra.Shared.MSysMan;
 
 namespace Ict.Petra.Client.App.Core
@@ -319,9 +318,9 @@ namespace Ict.Petra.Client.App.Core
 
                 Ict.Petra.Shared.UserInfo.GUserInfo = (TPetraPrincipal)LocalUserInfo;
 
-                if (ARemotingURLs.ContainsKey(SharedConstants.REMOTINGURL_IDENTIFIER_POLLCLIENTTASKS))
+                if (ARemotingURLs.ContainsKey(RemotingConstants.REMOTINGURL_IDENTIFIER_POLLCLIENTTASKS))
                 {
-                    FRemotingURL_PollClientTasks = (String)ARemotingURLs[SharedConstants.REMOTINGURL_IDENTIFIER_POLLCLIENTTASKS];
+                    FRemotingURL_PollClientTasks = (String)ARemotingURLs[RemotingConstants.REMOTINGURL_IDENTIFIER_POLLCLIENTTASKS];
                 }
 
                 if (ARemotingURLs.ContainsKey(SharedConstants.REMOTINGURL_IDENTIFIER_MSYSMAN))

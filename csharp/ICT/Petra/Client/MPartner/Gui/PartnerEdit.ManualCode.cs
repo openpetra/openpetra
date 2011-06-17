@@ -30,6 +30,7 @@ using Ict.Common.Controls;
 using Ict.Common.DB;
 using Ict.Common.Data;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Gui;
@@ -39,7 +40,6 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.RemotedExceptions;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {

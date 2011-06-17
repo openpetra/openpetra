@@ -40,9 +40,9 @@ using System.Windows.Forms;
 
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.RemotedExceptions;
 using Ict.Common;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 

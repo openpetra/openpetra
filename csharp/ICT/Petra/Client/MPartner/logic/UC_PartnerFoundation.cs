@@ -27,6 +27,7 @@ using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
 using Ict.Common;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -36,7 +37,6 @@ using SourceGrid.Cells.Editors;
 using Ict.Common.Controls;
 using DevAge.ComponentModel.Validator;
 using Ict.Petra.Client.App.Core;
-using Ict.Petra.Shared.RemotedExceptions;
 
 namespace Ict.Petra.Client.MPartner
 {

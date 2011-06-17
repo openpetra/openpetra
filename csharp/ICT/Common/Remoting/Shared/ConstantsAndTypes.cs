@@ -46,5 +46,8 @@ namespace Ict.Common.Remoting.Shared
     {
         /// <summary>Used as a 'separator character' for TClientTasksManager when there is a need to concatenate values in a String.</summary>
         public const String GCLIENTTASKPARAMETER_SEPARATOR = "?";
+
+        /// <summary>Remoting URL Identifiers</summary>
+        public const String REMOTINGURL_IDENTIFIER_POLLCLIENTTASKS = "PollClientTasks";
     }
 }

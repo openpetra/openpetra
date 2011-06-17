@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,7 +24,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace Ict.Petra.Shared.MSysMan
+namespace Ict.Common.Remoting.Shared
 {
     #region EPetraSecurityException
 

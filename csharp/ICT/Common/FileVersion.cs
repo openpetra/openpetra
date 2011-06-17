@@ -30,6 +30,7 @@ namespace Ict.Common
     /// <summary>
     /// our own type for version information for a file
     /// </summary>
+    [Serializable()]
     public class TFileVersionInfo
     {
         /// <summary>MajorPart.MinorPart.BuildPart-PrivatePart</summary>

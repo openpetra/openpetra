@@ -118,9 +118,6 @@ namespace Ict.Petra.Shared
         public const String PETRAGROUP_ADDRESSCAN = "ADDRESSCAN";
 
         /// <summary>Remoting URL Identifiers</summary>
-        public const String REMOTINGURL_IDENTIFIER_POLLCLIENTTASKS = "PollClientTasks";
-
-        /// <summary>Remoting URL Identifiers</summary>
         public const String REMOTINGURL_IDENTIFIER_MSYSMAN = "MSysMan";
 
         /// <summary>Remoting URL Identifiers</summary>

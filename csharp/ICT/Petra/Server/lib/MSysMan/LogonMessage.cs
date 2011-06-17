@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,8 +23,11 @@
 //
 using System;
 using System.Data;
+using System.Security.Principal;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Remoting.Server;
+using Ict.Petra.Shared.Security;
 using Ict.Petra.Server.MSysMan.Data.Access;
 using Ict.Petra.Shared.MSysMan.Data;
 
@@ -33,7 +36,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
     /// <summary>
     /// Reads and saves the Logon Message.
     /// </summary>
-    public class TMaintenanceLogonMessage
+    public class TMaintenanceLogonMessage : IMaintenanceLogonMessage
     {
         /// <summary>time when this object was instantiated</summary>
         private DateTime FStartTime;
@@ -41,7 +44,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// <summary>
         /// constructor
         /// </summary>
-        public TMaintenanceLogonMessage() : base()
+        public TMaintenanceLogonMessage()
         {
             // $IFDEF DEBUGMODE if TLogging.DL >= 9 then Console.WriteLine(this.GetType.FullName + ' created: Instance hash is ' + this.GetHashCode().ToString()); $ENDIF
             FStartTime = DateTime.Now;
@@ -67,9 +70,20 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// <returns>The LogonMessage, or an empty String if no LogonMessage was found for
         /// the specified LanguageCode
         /// </returns>
-        public static String GetLogonMessage(String ALanguageCode)
+        public String GetLogonMessage(String ALanguageCode)
         {
             return GetLogonMessage(ALanguageCode, false);
+        }
+
+        /// <summary>
+        /// overload. language code is part of TPetraPrincipal
+        /// </summary>
+        /// <param name="AUserInfo"></param>
+        /// <param name="AReturnEnglishIfNotFound"></param>
+        /// <returns></returns>
+        public String GetLogonMessage(IPrincipal AUserInfo, Boolean AReturnEnglishIfNotFound)
+        {
+            return GetLogonMessage(((TPetraPrincipal)AUserInfo).PetraIdentity.LanguageCode, false);
         }
 
         /// <summary>
@@ -81,7 +95,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// LogonMessage was found for the specified LanguageCode</param>
         /// <returns>The LogonMessage
         /// </returns>
-        public static String GetLogonMessage(String ALanguageCode, Boolean AReturnEnglishIfNotFound)
+        public String GetLogonMessage(String ALanguageCode, Boolean AReturnEnglishIfNotFound)
         {
             String ReturnValue;
             TDBTransaction ReadTransaction;
