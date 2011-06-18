@@ -87,11 +87,15 @@
     <None Include="ChangePassword.aspx">
       <DependentUpon>ChangePassword.aspx.cs</DependentUpon>
     </None>
+    <None Include="CreateGiftBatch.aspx">
+      <DependentUpon>CreateGiftBatch.aspx.cs</DependentUpon>
+    </None>
     <None Include="Desktop.aspx">
       <DependentUpon>Desktop.aspx.cs</DependentUpon>
     </None>
     <Compile Include="ChangePassword.aspx.cs">
     </Compile>
+    <Compile Include="CreateGiftBatch.aspx.cs" />
     <Compile Include="Desktop.aspx.cs">
     </Compile>
   </ItemGroup>

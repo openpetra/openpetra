@@ -487,6 +487,26 @@ namespace Ict.Common
         }
 
         /// <summary>
+        /// overload for GetNextCSV.
+        /// if the value is empty, the default value will be used
+        /// </summary>
+        /// <param name="list">separated values; the first value will be removed</param>
+        /// <param name="separator">delimiter to be used</param>
+        /// <param name="ADefaultValue">to be used if the csv value is empty</param>
+        /// <returns>the first value of the string</returns>
+        public static string GetNextCSV(ref string list, string separator, string ADefaultValue)
+        {
+            string result = GetNextCSV(ref list, separator, false);
+
+            if (result.Length == 0)
+            {
+                result = ADefaultValue;
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// try to use different separators; first fitting separator is used
         /// </summary>
         /// <param name="list"></param>

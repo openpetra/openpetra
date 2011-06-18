@@ -543,6 +543,18 @@
         </ext:DesktopWindow>
 
         <ext:DesktopWindow 
+            ID="winCreateGiftBatch" 
+            runat="server" 
+            Title="Create Gift Batch with Payments for Participants" 
+            Width="600"
+            Height="608"
+            PageX="200" 
+            PageY="100"
+            Layout="Border">
+            <AutoLoad Url="CreateGiftBatch.aspx" Mode="IFrame" ShowMask="true" />
+        </ext:DesktopWindow>
+
+        <ext:DesktopWindow 
             ID="winApplications" 
             runat="server" 
             InitCenter="false"
@@ -666,6 +678,11 @@
                         <td><ext:Button ID="btnBatchAccept" runat="server" Text="Accept Many Applicants">
                             <Listeners>
                                 <Click Handler="#{AcceptForm}.getForm().reset();#{winAcceptMany}.show();" />
+                            </Listeners>
+                        </ext:Button></td>
+                        <td><ext:Button ID="btnCreateGiftBatch" runat="server" Text="Create Gift Batch">
+                            <Listeners>
+                                <Click Handler="#{winCreateGiftBatch}.show();" />
                             </Listeners>
                         </ext:Button></td>
                         <td><ext:Button ID="btnUploadPetraExtract" runat="server" Text="Upload Petra Extract" Icon="Disk">

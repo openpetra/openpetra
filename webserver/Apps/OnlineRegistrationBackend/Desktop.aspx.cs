@@ -80,6 +80,7 @@ namespace Ict.Petra.WebServer.MConference
         protected Ext.Net.Panel TabServiceTeam;
         protected Ext.Net.Panel TabMoreDetails;
         protected Ext.Net.Button btnJSONApplication;
+        protected Ext.Net.Button btnCreateGiftBatch;
 
         protected bool ConferenceOrganisingOffice = false;
 
@@ -112,6 +113,9 @@ namespace Ict.Petra.WebServer.MConference
                 }
 
                 btnJSONApplication.Visible = ConferenceOrganisingOffice;
+
+                // for the moment, do not confuse all offices with this button
+                btnCreateGiftBatch.Visible = ConferenceOrganisingOffice;
 
                 MyData_Refresh(null, null);
             }
