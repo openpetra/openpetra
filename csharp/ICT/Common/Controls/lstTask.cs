@@ -235,7 +235,7 @@ namespace Ict.Common.Controls
                         {
                             // leave it as string
                         }
-                        else if (prop.PropertyType.ToString().Contains("Enum"))
+                        else if (prop.PropertyType.IsEnum)
                         {
                             obj = Enum.Parse(prop.PropertyType, obj.ToString(), true);
                         }
