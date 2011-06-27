@@ -773,7 +773,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             {
                 ReadShortApplicationForm(GeneralApplicationRow, ATransaction);
             }
-            else if (ApplicationTypeRow.AppFormType == MPersonnelConstants.APPLICATIONFORMTYPE_SHORTFORM)
+            else if (ApplicationTypeRow.AppFormType == MPersonnelConstants.APPLICATIONFORMTYPE_LONGFORM)
             {
                 ReadLongApplicationForm(GeneralApplicationRow, ATransaction);
             }
