@@ -641,6 +641,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             YearProgramApplicationRow.PartnerKey = FPartnerKey;
             YearProgramApplicationRow.ApplicationKey = AGeneralApplicationRow.ApplicationKey;
+            YearProgramApplicationRow.YpAppDate = AGeneralApplicationRow.GenAppDate;
+            YearProgramApplicationRow.YpBasicAppType = AGeneralApplicationRow.AppTypeName;
+            YearProgramApplicationRow.RegistrationOffice = AGeneralApplicationRow.RegistrationOffice;
 
             YearProgramApplicationRow.HoOrientConfBookingKey = ReadString();
             YearProgramApplicationRow.YpAgreedJoiningCharge = ReadDecimal();
