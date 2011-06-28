@@ -1030,6 +1030,17 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             PersonQualificationRow.QualificationDate = ReadNullableDate();
             PersonQualificationRow.QualificationExpiry = ReadNullableDate();
 
+            // check if type code does already exist in this database
+            FMainDS.PtQualificationArea.DefaultView.RowFilter = String.Format("{0} = '{1}'",
+                PtQualificationAreaTable.GetQualificationAreaNameDBName(), PersonQualificationRow.QualificationAreaName);
+
+            if (FMainDS.PtQualificationArea.DefaultView.Count == 0)
+            {
+                TLogging.Log(
+                    "Ignoring PersonQualification because of non existing qualification area " + PersonQualificationRow.QualificationAreaName);
+                return;
+            }
+
             PmPersonQualificationAccess.AddOrModifyRecord(PersonQualificationRow.PartnerKey,
                 PersonQualificationRow.QualificationAreaName,
                 FMainDS.PmPersonQualification,
@@ -1530,6 +1541,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             PmCommitmentStatusAccess.LoadAll(FMainDS, Transaction);
             PtAppFormTypesAccess.LoadAll(FMainDS, Transaction);
             PtCongressCodeAccess.LoadAll(FMainDS, Transaction);
+            PtQualificationAreaAccess.LoadAll(FMainDS, Transaction);
             DBAccess.GDBAccessObj.RollbackTransaction();
 
             InitReading(ALinesToImport);
