@@ -872,6 +872,20 @@ namespace Ict.Petra.Server.MConference.Applications
                     attr.Value = ShortTermApplicationRow.StFieldCharged.ToString();
                     newNode.Attributes.Append(attr);
 
+                    if (!ShortTermApplicationRow.IsStFgCodeNull())
+                    {
+                        attr = myDoc.CreateAttribute("FGroup");
+                        attr.Value = ShortTermApplicationRow.StFgCode.ToString();
+                        newNode.Attributes.Append(attr);
+                    }
+
+                    if (!ShortTermApplicationRow.IsStFgLeaderNull())
+                    {
+                        attr = myDoc.CreateAttribute("FGLeader");
+                        attr.Value = ShortTermApplicationRow.StFgLeader.ToString();
+                        newNode.Attributes.Append(attr);
+                    }
+
                     // now add all the values from the json data
                     TJsonTools.DataToXml(GeneralApplicationRow.RawApplicationData, ref newNode, myDoc, false);
                 }
