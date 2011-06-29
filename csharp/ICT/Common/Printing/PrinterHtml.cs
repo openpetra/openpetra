@@ -26,6 +26,7 @@ using System.IO;
 using System.Xml;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Printing;
 using Ict.Common.IO;
 
 namespace Ict.Common.Printing
@@ -122,6 +123,107 @@ namespace Ict.Common.Printing
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// get the page size defined in the css styles of body
+        /// </summary>
+        /// <param name="APaperKind"></param>
+        /// <param name="AMargins"></param>
+        /// <param name="AWidthInPoint"></param>
+        /// <param name="AHeightInPoint"></param>
+        /// <returns></returns>
+        public override bool GetPageSize(out PaperKind APaperKind, out Margins AMargins, out float AWidthInPoint, out float AHeightInPoint)
+        {
+            bool Result = false;
+            XmlNode BodyNode = TXMLParser.FindNodeRecursive(FHtmlDoc.DocumentElement, "body");
+
+            APaperKind = PaperKind.A4;
+            AMargins = new Margins(20, 20, 20, 39);
+            AWidthInPoint = -1;
+            AHeightInPoint = -1;
+
+            if (TXMLParser.HasAttribute(BodyNode, "style"))
+            {
+                string styles = TXMLParser.GetAttribute(BodyNode, "style");
+                string[] namevaluepairs = styles.Split(',');
+
+                foreach (string namevaluepair in namevaluepairs)
+                {
+                    string[] detail = namevaluepair.Split(':');
+
+                    if (detail[0].Trim() == "margin")
+                    {
+                        Result = true;
+
+                        // TODO support more than just 0px
+                        if (detail[1] == "0px")
+                        {
+                            AMargins = new Margins(0, 0, 0, 0);
+                        }
+                    }
+                    else if (detail[0].Trim() == "size")
+                    {
+                        // http://www.w3.org/TR/css3-page/#page-size
+                        // currently support: either a name of PaperKind enum, or width and height in inches or cm
+                        // eg size: 8.5in 11in;
+                        // eg size: A4;
+                        Result = true;
+
+                        PaperKind FoundPaperKind = PaperKind.Custom;
+
+                        foreach (PaperKind MyPaperKind in Enum.GetValues(typeof(PaperKind)))
+                        {
+                            if (MyPaperKind.ToString() == detail[1])
+                            {
+                                FoundPaperKind = MyPaperKind;
+                                break;
+                            }
+                        }
+
+                        if (FoundPaperKind != PaperKind.Custom)
+                        {
+                            APaperKind = FoundPaperKind;
+                        }
+                        else
+                        {
+                            string[] dimensions = detail[1].Trim().Split(' ');
+
+                            if (dimensions.Length != 2)
+                            {
+                                TLogging.Log("body styles must contain 2 numbers for page size: " + styles);
+                                TLogging.Log(detail[1]);
+                                return false;
+                            }
+
+                            dimensions[0] = dimensions[0].Trim().ToLower();
+                            dimensions[1] = dimensions[1].Trim().ToLower();
+
+                            if (dimensions[0].EndsWith("in"))
+                            {
+                                AWidthInPoint = (float)Convert.ToDouble(dimensions[0].Substring(0, dimensions[0].Length - 2)) * 72.0f;
+                            }
+
+                            if (dimensions[1].EndsWith("in"))
+                            {
+                                AHeightInPoint = (float)Convert.ToDouble(dimensions[1].Substring(0, dimensions[1].Length - 2)) * 72.0f;
+                            }
+
+                            if (dimensions[0].EndsWith("cm"))
+                            {
+                                AWidthInPoint = (float)Convert.ToDouble(dimensions[0].Substring(0, dimensions[0].Length - 2)) / 2.54f;
+                            }
+
+                            if (dimensions[1].EndsWith("cm"))
+                            {
+                                AHeightInPoint = (float)Convert.ToDouble(dimensions[1].Substring(0, dimensions[1].Length - 2)) / 2.54f;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return Result;
         }
 
         /// <summary>
@@ -227,6 +329,15 @@ namespace Ict.Common.Printing
                             // TODO: PixelToInch? support not just 0px right margin
                             if (detail[1] == "0px")
                             {
+                                pageRightMargin = printer.RightMargin;
+                            }
+                        }
+                        else if (detail[0].Trim() == "margin")
+                        {
+                            // TODO: PixelToInch? support not just 0px
+                            if (detail[1] == "0px")
+                            {
+                                pageLeftMargin = printer.LeftMargin;
                                 pageRightMargin = printer.RightMargin;
                             }
                         }

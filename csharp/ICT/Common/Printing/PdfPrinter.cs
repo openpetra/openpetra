@@ -492,10 +492,30 @@ namespace Ict.Common.Printing
         }
 
         /// <summary>
-        /// store a pdf to a file. will call PrintPage automatically
+        /// store a pdf to file. will check for paper size using the PrinterLayout. By default A4 is chosen
         /// </summary>
         /// <param name="AFilename"></param>
         public void SavePDF(string AFilename)
+        {
+            PaperKind MyPaperKind;
+            Margins MyMargins;
+            float WidthInPoint;
+            float HeightInPoint;
+
+            if (FPrinterLayout.GetPageSize(out MyPaperKind, out MyMargins, out WidthInPoint, out HeightInPoint))
+            {
+                SavePDF(AFilename, MyPaperKind, MyMargins, WidthInPoint, HeightInPoint);
+            }
+            else
+            {
+                SavePDF(AFilename, PaperKind.A4, new Margins(20, 20, 20, 39), -1, -1);
+            }
+        }
+
+        /// <summary>
+        /// store a pdf to a file. will call PrintPage automatically
+        /// </summary>
+        public void SavePDF(string AFilename, PaperKind APaperKind, Margins AMargins, float AWidthInPoint, float AHeightInPoint)
         {
             if (Directory.Exists("/usr/share/fonts/"))
             {
@@ -514,7 +534,27 @@ namespace Ict.Common.Printing
             do
             {
                 PdfPage page = FPdfDocument.AddPage();
-                page.Size = PageSize.A4;
+
+                if (APaperKind != PaperKind.Custom)
+                {
+                    // see if we can match PaperKind to PageSize by name
+                    foreach (PageSize MyPageSize in Enum.GetValues(typeof(PageSize)))
+                    {
+                        if (MyPageSize.ToString() == APaperKind.ToString())
+                        {
+                            page.Size = MyPageSize;
+                            break;
+                        }
+                    }
+                }
+
+                if ((AWidthInPoint != -1) && (AHeightInPoint != -1))
+                {
+                    // to get the points, eg. inch * 72
+                    page.Width = AWidthInPoint;
+                    page.Height = AHeightInPoint;
+                }
+
                 FXGraphics = XGraphics.FromPdfPage(page, XGraphicsUnit.Inch);
 
                 if (FEv == null)
@@ -523,8 +563,10 @@ namespace Ict.Common.Printing
                     PageSettings myPageSettings = new PageSettings(myPrinterSettings);
                     myPageSettings.Color = true;
                     myPageSettings.Landscape = false;
-                    myPageSettings.Margins = new Margins(20, 20, 20, 39);
-                    myPageSettings.PaperSize = new PaperSize("A4", 900, 827);
+                    myPageSettings.Margins = AMargins;
+                    myPageSettings.PaperSize =
+                        new PaperSize(page.Size.ToString(), Convert.ToInt32(page.Width.Point), Convert.ToInt32(page.Height.Point));
+
                     try
                     {
                         myPageSettings.PrinterResolution.X = 600;
