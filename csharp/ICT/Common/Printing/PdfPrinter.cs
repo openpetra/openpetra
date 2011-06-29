@@ -309,20 +309,10 @@ namespace Ict.Common.Printing
 
             Bitmap img = new System.Drawing.Bitmap(APath);
 
-            if ((img != null) && (PrintingMode == ePrintingMode.eDoPrint))
+            if (img != null)
             {
-                FXGraphics.DrawImage(img, AXPos, AYPos, img.Size.Width / img.HorizontalResolution, img.Size.Height / img.VerticalResolution);
+                DrawBitmapInternal(img, AXPos, AYPos, img.Size.Width, img.Size.Height);
             }
-
-            // FEv.Graphics.PageUnit is inch; therefore need to convert pixel to inch
-            // pixel/inch = dpi <=> inch = pixel/dpi
-            CurrentYPos += img.Size.Height / img.VerticalResolution;
-            CurrentXPos += img.Size.Width / img.HorizontalResolution;
-        }
-
-        float Pixel2Twips(float APixelNumber)
-        {
-            return APixelNumber / 100.0f;
         }
 
         /// <summary>
@@ -350,33 +340,47 @@ namespace Ict.Common.Printing
 
             if (AHeightPercentage != 0.0f)
             {
-                Height = Height / img.VerticalResolution * AHeightPercentage;
+                Height = Height * AHeightPercentage;
             }
             else
             {
-                Height = Pixel2Twips(AHeight);
+                Height = AHeight;
             }
 
             float Width = img.Size.Width;
 
             if (AHeightPercentage != 0.0f)
             {
-                Width = Width / img.HorizontalResolution * AWidthPercentage;
+                Width = Width * AWidthPercentage;
             }
             else
             {
-                Width = Pixel2Twips(AWidth);
+                Width = AWidth;
             }
+
+            DrawBitmapInternal(img, AXPos, AYPos, Width, Height);
+        }
+
+        /// <summary>
+        /// Draw the bitmap and move the cursor position
+        /// </summary>
+        /// <param name="img"></param>
+        /// <param name="AXPos">in page units</param>
+        /// <param name="AYPos">in page units</param>
+        /// <param name="AWidth">in pixel</param>
+        /// <param name="AHeight">in pixel</param>
+        private void DrawBitmapInternal(Bitmap img, float AXPos, float AYPos, float AWidth, float AHeight)
+        {
+            AWidth = PixelHorizontal(AWidth);
+            AHeight = PixelVertical(AHeight);
 
             if (PrintingMode == ePrintingMode.eDoPrint)
             {
-                FXGraphics.DrawImage(img, AXPos, AYPos, Width, Height);
+                FXGraphics.DrawImage(img, AXPos, AYPos, AWidth, AHeight);
             }
 
-            // FEv.Graphics.PageUnit is inch; therefore need to convert pixel to inch
-            // pixel/inch = dpi <=> inch = pixel/dpi
-            CurrentYPos += Height;
-            CurrentXPos += Width;
+            CurrentYPos += AHeight;
+            CurrentXPos += AWidth;
         }
 
         private float GetFontHeight(eFont AFont)
@@ -569,8 +573,8 @@ namespace Ict.Common.Printing
 
                     try
                     {
-                        myPageSettings.PrinterResolution.X = 600;
-                        myPageSettings.PrinterResolution.Y = 600;
+                        myPageSettings.PrinterResolution.X = 300;
+                        myPageSettings.PrinterResolution.Y = 300;
                     }
                     catch (Exception)
                     {

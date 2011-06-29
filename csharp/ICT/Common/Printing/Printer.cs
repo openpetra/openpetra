@@ -458,10 +458,18 @@ namespace Ict.Common.Printing
 
         /// <summary>
         /// Converts the given value in cm to the currently used measurement unit
-        ///
         /// </summary>
-        /// <returns>void</returns>
         public abstract float Cm(float AValueInCm);
+
+        /// <summary>
+        /// Converts the given value in pixel to the currently used measurement unit, using the horizontal resolution
+        /// </summary>
+        public abstract float PixelHorizontal(float AValueInPixel);
+
+        /// <summary>
+        /// Converts the given value in pixel to the currently used measurement unit, using the vertical resolution
+        /// </summary>
+        public abstract float PixelVertical(float AValueInPixel);
 
         #endregion
         #region Print String

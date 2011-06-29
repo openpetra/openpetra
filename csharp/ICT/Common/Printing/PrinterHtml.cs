@@ -146,7 +146,7 @@ namespace Ict.Common.Printing
             if (TXMLParser.HasAttribute(BodyNode, "style"))
             {
                 string styles = TXMLParser.GetAttribute(BodyNode, "style");
-                string[] namevaluepairs = styles.Split(',');
+                string[] namevaluepairs = styles.Split(new char[] { ',', ';' });
 
                 foreach (string namevaluepair in namevaluepairs)
                 {
@@ -310,7 +310,7 @@ namespace Ict.Common.Printing
                 if (TXMLParser.HasAttribute(BodyNode, "style"))
                 {
                     string styles = TXMLParser.GetAttribute(BodyNode, "style");
-                    string[] namevaluepairs = styles.Split(',');
+                    string[] namevaluepairs = styles.Split(new char[] { ',', ';' });
 
                     foreach (string namevaluepair in namevaluepairs)
                     {
@@ -515,6 +515,58 @@ namespace Ict.Common.Printing
             return ((float)Convert.ToDouble(APixel) * 7.87f) / 800.0f;
         }
 
+        private float PixelStringToPixelNumber(string AStyleValue)
+        {
+            if (AStyleValue.EndsWith("px"))
+            {
+                AStyleValue = AStyleValue.Substring(0, AStyleValue.Length - 2);
+            }
+
+            return (float)Convert.ToDouble(AStyleValue);
+        }
+
+        /// <summary>
+        /// set the current position if there is a CSS definition for the current node;
+        /// eg. position:absolute, top:35px, left:240px,
+        /// </summary>
+        /// <param name="curNode"></param>
+        private bool SetPositionFromStyle(XmlNode curNode)
+        {
+            bool absolutePosition = false;
+
+            if (TXMLParser.HasAttribute(curNode, "style"))
+            {
+                string styles = TXMLParser.GetAttribute(curNode, "style");
+                string[] namevaluepairs = styles.Split(new char[] { ',', ';' });
+
+                foreach (string namevaluepair in namevaluepairs)
+                {
+                    string[] detail = namevaluepair.Split(':');
+
+                    if ((detail[0].Trim().ToLower() == "position") && (detail[1].Trim().ToLower() == "absolute"))
+                    {
+                        absolutePosition = true;
+                    }
+                    else if (detail[0].Trim().ToLower() == "top")
+                    {
+                        if (absolutePosition)
+                        {
+                            FPrinter.CurrentYPos = FPrinter.PixelVertical(PixelStringToPixelNumber(detail[1].Trim().ToLower()));
+                        }
+                    }
+                    else if (detail[0].Trim().ToLower() == "left")
+                    {
+                        if (absolutePosition)
+                        {
+                            FPrinter.CurrentXPos = FPrinter.PixelHorizontal(PixelStringToPixelNumber(detail[1].Trim().ToLower()));
+                        }
+                    }
+                }
+            }
+
+            return absolutePosition;
+        }
+
         /// <summary>
         /// interpret HTML code
         /// </summary>
@@ -532,6 +584,13 @@ namespace Ict.Common.Printing
 
             while (curNode != null && FPrinter.ValidYPos() && FContinueNextPageNode == null)
             {
+                bool HasAbsolutePosition = SetPositionFromStyle(curNode);
+
+                if (HasAbsolutePosition)
+                {
+                    AXPos = FPrinter.CurrentXPos;
+                }
+
                 if (curNode.Name == "table")
                 {
                     PrintTable(AXPos, AWidthAvailable, ref curNode);
@@ -574,7 +633,7 @@ namespace Ict.Common.Printing
                         }
                         else
                         {
-                            Width = (float)Convert.ToDouble(WidthString);
+                            Width = PixelStringToPixelNumber(WidthString);
                         }
 
                         if (HeightString.EndsWith("%"))
@@ -583,7 +642,7 @@ namespace Ict.Common.Printing
                         }
                         else
                         {
-                            Height = (float)Convert.ToDouble(HeightString);
+                            Height = PixelStringToPixelNumber(HeightString);
                         }
 
                         FPrinter.DrawBitmap(src, FPrinter.CurrentXPos, FPrinter.CurrentYPos, Width, Height, WidthPercentage, HeightPercentage);
@@ -674,7 +733,11 @@ namespace Ict.Common.Printing
                 }
                 else if (curNode.Name == "ul")
                 {
-                    FPrinter.LineFeed();
+                    if (!HasAbsolutePosition)
+                    {
+                        FPrinter.LineFeed();
+                    }
+
                     FPrinter.CurrentXPos = AXPos;
 
                     // list with bullet points
@@ -733,7 +796,12 @@ namespace Ict.Common.Printing
                     }
 
                     XmlNode child = curNode.FirstChild;
-                    FPrinter.LineFeed();
+
+                    if (!HasAbsolutePosition)
+                    {
+                        FPrinter.LineFeed();
+                    }
+
                     FPrinter.CurrentXPos = AXPos;
                     RenderContent(AXPos, AWidthAvailable, ref child);
 
@@ -806,6 +874,12 @@ namespace Ict.Common.Printing
                 else
                 {
                     curNode = curNode.NextSibling;
+                }
+
+                if (HasAbsolutePosition)
+                {
+                    // reset to top of paper, so that there is no unintended page break
+                    FPrinter.CurrentYPos = 0;
                 }
 
                 // todo: h1, etc headings???

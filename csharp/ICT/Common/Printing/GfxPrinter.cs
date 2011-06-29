@@ -845,9 +845,7 @@ namespace Ict.Common.Printing
         /// <returns>void</returns>
         public override float Cm(float AValueInCm)
         {
-            float ReturnValue;
-
-            ReturnValue = 0;
+            float ReturnValue = 0;
 
             if (FEv != null)
             {
@@ -866,6 +864,40 @@ namespace Ict.Common.Printing
             }
 
             return ReturnValue;
+        }
+
+        /// <summary>
+        /// convert pixels to inches or other unit used for output
+        /// </summary>
+        /// <param name="AWidth"></param>
+        /// <returns></returns>
+        public override float PixelHorizontal(float AWidth)
+        {
+            if ((FEv != null) && (FEv.Graphics.PageUnit == GraphicsUnit.Inch))
+            {
+                // FEv.Graphics.PageUnit is inch; therefore need to convert pixel to inch
+                // pixel/inch = dpi <=> inch = pixel/dpi
+                return AWidth / FEv.PageSettings.PrinterResolution.X * FEv.PageSettings.PrinterResolution.X / 300;
+            }
+
+            // TODO other units
+            return AWidth;
+        }
+
+        /// <summary>
+        /// convert pixels to inches or other unit used for output
+        /// </summary>
+        public override float PixelVertical(float AHeight)
+        {
+            if ((FEv != null) && (FEv.Graphics.PageUnit == GraphicsUnit.Inch))
+            {
+                // FEv.Graphics.PageUnit is inch; therefore need to convert pixel to inch
+                // pixel/inch = dpi <=> inch = pixel/dpi
+                return AHeight / FEv.PageSettings.PrinterResolution.Y * FEv.PageSettings.PrinterResolution.Y / 300;
+            }
+
+            // TODO other units
+            return AHeight;
         }
 
         /// <summary>
