@@ -311,7 +311,7 @@ namespace Ict.Common.Printing
 
             if ((img != null) && (PrintingMode == ePrintingMode.eDoPrint))
             {
-                FXGraphics.DrawImage(img, AXPos, AYPos);
+                FXGraphics.DrawImage(img, AXPos, AYPos, img.Size.Width / img.HorizontalResolution, img.Size.Height / img.VerticalResolution);
             }
 
             // FEv.Graphics.PageUnit is inch; therefore need to convert pixel to inch

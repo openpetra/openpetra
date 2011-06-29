@@ -214,7 +214,7 @@ namespace Ict.Common.Printing
                     {
                         string[] detail = namevaluepair.Split(':');
 
-                        if (detail[0] == "margin-left")
+                        if (detail[0].Trim() == "margin-left")
                         {
                             // TODO: PixelToInch? support not just 0px left margin
                             if (detail[1] == "0px")
@@ -222,12 +222,30 @@ namespace Ict.Common.Printing
                                 pageLeftMargin = printer.LeftMargin;
                             }
                         }
-                        else if (detail[0] == "margin-right")
+                        else if (detail[0].Trim() == "margin-right")
                         {
                             // TODO: PixelToInch? support not just 0px right margin
                             if (detail[1] == "0px")
                             {
                                 pageRightMargin = printer.RightMargin;
+                            }
+                        }
+                        else if (detail[0].Trim() == "background-image")
+                        {
+                            // only supporting url(...) at the moment
+                            if (detail[1].StartsWith("url(") && detail[1].EndsWith(")"))
+                            {
+                                if (FPath.Length == 0)
+                                {
+                                    FPath = Environment.CurrentDirectory;
+                                }
+
+                                string filename = System.IO.Path.Combine(FPath, detail[1].Substring(4, detail[1].Length - 5));
+                                float oldXPos = FPrinter.CurrentXPos;
+                                float oldYPos = FPrinter.CurrentYPos;
+                                FPrinter.DrawBitmap(filename, oldXPos, oldYPos);
+                                FPrinter.CurrentXPos = oldXPos;
+                                FPrinter.CurrentYPos = oldYPos;
                             }
                         }
                     }
