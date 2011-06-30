@@ -97,7 +97,10 @@ namespace Ict.Common.Printing
         eHeadingFont,
 
         /// <summary>todoComment</summary>
-        eSmallPrintFont
+        eSmallPrintFont,
+
+        /// <summary>useful for printing bar codes. usually code128.ttf</summary>
+        eBarCodeFont
     };
 
     /// <summary>todoComment</summary>

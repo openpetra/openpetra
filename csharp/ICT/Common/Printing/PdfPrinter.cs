@@ -57,6 +57,11 @@ namespace Ict.Common.Printing
         /// todoComment
         public XFont FXSmallPrintFont;
 
+        /// <summary>
+        /// for printing bar codes
+        /// </summary>
+        public XFont FXBarCodeFont;
+
         /// todoComment
         public XFont FXBiggestLastUsedFont;
         private XStringFormat FXLeft;
@@ -87,6 +92,10 @@ namespace Ict.Common.Printing
             FXDefaultFont = new XFont("Arial", 0.14); // Point(8 + XFONTSIZE)
             FXDefaultBoldFont = new XFont("Arial", 0.14, XFontStyle.Bold); // Point(8 + XFONTSIZE)
             FXHeadingFont = new XFont("Arial", 0.16, XFontStyle.Bold); // Point(10 + XFONTSIZE)
+
+            // using GPL Font Code 128 from Grand Zebu http://grandzebu.net/
+            FXBarCodeFont = new XFont("Code 128", 0.3); // Point(10 + XFONTSIZE)
+
             FXBiggestLastUsedFont = FXDefaultFont;
             FXRight = new XStringFormat();
             FXRight.Alignment = XStringAlignment.Far;
@@ -118,6 +127,10 @@ namespace Ict.Common.Printing
 
                 case eFont.eSmallPrintFont:
                     ReturnValue = FXSmallPrintFont;
+                    break;
+
+                case eFont.eBarCodeFont:
+                    ReturnValue = FXBarCodeFont;
                     break;
             }
 
@@ -405,7 +418,7 @@ namespace Ict.Common.Printing
             // on Windows, base.GetWidthString is too long.
             if (Environment.OSVersion.ToString().StartsWith("Unix"))
             {
-                return base.GetWidthString(ATxt, AFont);;
+                return base.GetWidthString(ATxt, AFont);
             }
 
             return (float)FXGraphics.MeasureString(ATxt, GetXFont(AFont), XStringFormats.Default).Width;

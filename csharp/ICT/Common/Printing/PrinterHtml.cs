@@ -658,10 +658,23 @@ namespace Ict.Common.Printing
                 {
                     // TODO change font name and/or size
                     Int32 previousFontSize = FPrinter.CurrentRelativeFontSize;
+                    eFont previousFont = FPrinter.CurrentFont;
 
                     if (TXMLParser.HasAttribute(curNode, "size"))
                     {
                         FPrinter.CurrentRelativeFontSize += TXMLParser.GetIntAttribute(curNode, "size");
+                    }
+
+                    if (TXMLParser.HasAttribute(curNode, "face"))
+                    {
+                        foreach (eFont MyFont in Enum.GetValues(typeof(eFont)))
+                        {
+                            if (MyFont.ToString() == TXMLParser.GetAttribute(curNode, "face"))
+                            {
+                                FPrinter.CurrentFont = MyFont;
+                                break;
+                            }
+                        }
                     }
 
                     // recursively call RenderContent
@@ -681,6 +694,8 @@ namespace Ict.Common.Printing
 
                     // reset font
                     FPrinter.CurrentRelativeFontSize = previousFontSize;
+                    FPrinter.CurrentFont = previousFont;
+
                     curNode = curNode.NextSibling;
                 }
                 else if (curNode.Name == "b")
