@@ -187,15 +187,26 @@ namespace Ict.Common.Printing
             return ReturnValue;
         }
 
+        private RectangleF CalculatePrintStringRectangle(float ALeft, float ATop, float AWidth, eFont AFont)
+        {
+            float MyYPos = ATop;
+
+            if (Environment.OSVersion.ToString().StartsWith("Unix"))
+            {
+                // on Mono/Unix, we have problems with the y position being too high on the page
+                MyYPos += GetFontHeight(AFont);
+            }
+
+            return new RectangleF(ALeft, MyYPos, AWidth, GetFontHeight(AFont));
+        }
+
         /// <summary>
         /// prints into the current line, aligned x position
         ///
         /// </summary>
         public override Boolean PrintString(String ATxt, eFont AFont, eAlignment AAlign)
         {
-            RectangleF rect;
-
-            rect = new RectangleF(FLeftMargin, CurrentYPos, FWidth, (float)GetXFont(AFont).GetHeight(FXGraphics));
+            RectangleF rect = CalculatePrintStringRectangle(FLeftMargin, CurrentYPos, FWidth, AFont);
 
             if (PrintingMode == ePrintingMode.eDoPrint)
             {
@@ -226,7 +237,7 @@ namespace Ict.Common.Printing
         /// <returns>true if something was printed</returns>
         public override Boolean PrintString(String ATxt, eFont AFont, float AXPos, float AWidth, eAlignment AAlign)
         {
-            RectangleF rect = new RectangleF(AXPos, CurrentYPos, AWidth, (float)GetXFont(AFont).GetHeight(FXGraphics));
+            RectangleF rect = CalculatePrintStringRectangle(AXPos, CurrentYPos, AWidth, AFont);
 
             if (PrintingMode == ePrintingMode.eDoPrint)
             {
@@ -262,7 +273,7 @@ namespace Ict.Common.Printing
 
             if (ALinePosition == eLinePosition.eBelow)
             {
-                YPos = CurrentYPos + (float)GetXFont(AFont).GetHeight(FXGraphics);
+                YPos = CurrentYPos + GetFontHeight(AFont);
             }
             else if (ALinePosition == eLinePosition.eAbove)
             {

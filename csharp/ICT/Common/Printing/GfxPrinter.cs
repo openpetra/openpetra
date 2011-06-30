@@ -973,6 +973,15 @@ namespace Ict.Common.Printing
                 // PaperSize: Height and Width in hundreds of an inch
                 FDocument.DefaultPageSettings.PaperSize =
                     new PaperSize("Custom", Convert.ToInt32(WidthInPoint / 72.0f * 100.0f), Convert.ToInt32(HeightInPoint / 72.0f * 100.0f));
+
+                FLeftMargin = MyMargins.Left;
+                FTopMargin = MyMargins.Top;
+                FRightMargin = MyMargins.Right;
+                FBottomMargin = MyMargins.Bottom;
+                FWidth = WidthInPoint / 72.0f * 100.0f;
+                FHeight = HeightInPoint / 72.0f * 100.0f;
+
+                FMarginType = eMarginType.eCalculatedMargins;
             }
         }
 
@@ -1030,6 +1039,10 @@ namespace Ict.Common.Printing
                     FBottomMargin = FEv.MarginBounds.Bottom / 100.0f;
                     FWidth = FEv.MarginBounds.Width / 100.0f;
                     FHeight = FEv.MarginBounds.Height / 100.0f;
+                }
+                else if (FMarginType == eMarginType.eCalculatedMargins)
+                {
+                    // the margins have been set in SetPageSize
                 }
 
                 FBlackPen = new Pen(Color.Black, Cm(0.05f));

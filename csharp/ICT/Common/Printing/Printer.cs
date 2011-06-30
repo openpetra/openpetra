@@ -45,7 +45,10 @@ namespace Ict.Common.Printing
         eDefaultMargins,
 
         /// <summary>use the full printable area. the margins are managed by the rendering method, eg HTML renderer</summary>
-        ePrintableArea
+        ePrintableArea,
+
+        /// <summary>the margins have been set in SetPageSize</summary>
+        eCalculatedMargins
     };
 
     /// <summary>todoComment</summary>
