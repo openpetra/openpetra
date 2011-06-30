@@ -567,9 +567,8 @@ namespace Ict.Common.Printing
                     PageSettings myPageSettings = new PageSettings(myPrinterSettings);
                     myPageSettings.Color = true;
                     myPageSettings.Landscape = false;
-                    myPageSettings.Margins = AMargins;
-                    myPageSettings.PaperSize =
-                        new PaperSize(page.Size.ToString(), Convert.ToInt32(page.Width.Point), Convert.ToInt32(page.Height.Point));
+                    myPageSettings.Margins = FDocument.DefaultPageSettings.Margins;
+                    myPageSettings.PaperSize = FDocument.DefaultPageSettings.PaperSize;
 
                     try
                     {

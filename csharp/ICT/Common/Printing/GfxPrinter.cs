@@ -41,7 +41,10 @@ namespace Ict.Common.Printing
     /// </summary>
     public class TGfxPrinter : TPrinter
     {
-        private System.Drawing.Printing.PrintDocument FDocument;
+        /// <summary>
+        /// the graphical document
+        /// </summary>
+        protected System.Drawing.Printing.PrintDocument FDocument;
 
         /// we have some different behaviour when printing the columns of a report and when printing a form letter
         public enum ePrinterBehaviour
@@ -126,6 +129,7 @@ namespace Ict.Common.Printing
         public override void Init(eOrientation AOrientation, TPrinterLayout APrinterLayout, eMarginType AMarginType)
         {
             base.Init(AOrientation, APrinterLayout, AMarginType);
+            SetPageSize();
 
             try
             {
@@ -946,6 +950,23 @@ namespace Ict.Common.Printing
         public static Int32 Inch2Twips(float AInch)
         {
             return Convert.ToInt32(AInch * 1440);
+        }
+
+        private void SetPageSize()
+        {
+            PaperKind MyPaperKind;
+            Margins MyMargins;
+            float WidthInPoint;
+            float HeightInPoint;
+
+            if (FPrinterLayout.GetPageSize(out MyPaperKind, out MyMargins, out WidthInPoint, out HeightInPoint))
+            {
+                FDocument.DefaultPageSettings.Margins = MyMargins;
+
+                // PaperSize: Height and Width in hundreds of an inch
+                FDocument.DefaultPageSettings.PaperSize =
+                    new PaperSize("Custom", Convert.ToInt32(WidthInPoint / 72.0f * 100.0f), Convert.ToInt32(HeightInPoint / 72.0f * 100.0f));
+            }
         }
 
         /// <summary>
