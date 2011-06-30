@@ -871,6 +871,11 @@ namespace Ict.Common.Printing
         }
 
         /// <summary>
+        /// default printer resolution
+        /// </summary>
+        public static Int32 DEFAULTPRINTERRESOLUTION = 300;
+
+        /// <summary>
         /// convert pixels to inches or other unit used for output
         /// </summary>
         /// <param name="AWidth"></param>
@@ -881,7 +886,8 @@ namespace Ict.Common.Printing
             {
                 // FEv.Graphics.PageUnit is inch; therefore need to convert pixel to inch
                 // pixel/inch = dpi <=> inch = pixel/dpi
-                return AWidth / FEv.PageSettings.PrinterResolution.X * FEv.PageSettings.PrinterResolution.X / 300;
+                // cannot use FEv.PageSettings.PrinterResolution.X since that only works if a printer is available.
+                return AWidth / DEFAULTPRINTERRESOLUTION;
             }
 
             // TODO other units
@@ -897,7 +903,8 @@ namespace Ict.Common.Printing
             {
                 // FEv.Graphics.PageUnit is inch; therefore need to convert pixel to inch
                 // pixel/inch = dpi <=> inch = pixel/dpi
-                return AHeight / FEv.PageSettings.PrinterResolution.Y * FEv.PageSettings.PrinterResolution.Y / 300;
+                // cannot use FEv.PageSettings.PrinterResolution.Y since that only works if a printer is available.
+                return AHeight / DEFAULTPRINTERRESOLUTION;
             }
 
             // TODO other units

@@ -580,13 +580,15 @@ namespace Ict.Common.Printing
                     PageSettings myPageSettings = new PageSettings(myPrinterSettings);
                     myPageSettings.Color = true;
                     myPageSettings.Landscape = false;
-                    myPageSettings.Margins = FDocument.DefaultPageSettings.Margins;
-                    myPageSettings.PaperSize = FDocument.DefaultPageSettings.PaperSize;
+                    myPageSettings.Margins = AMargins;
+                    myPageSettings.PaperSize =
+                        new PaperSize(page.Size.ToString(), Convert.ToInt32(page.Width.Point / 72.0f * 100.0f),
+                            Convert.ToInt32(page.Height.Point / 72.0f * 100.0f));
 
                     try
                     {
-                        myPageSettings.PrinterResolution.X = 300;
-                        myPageSettings.PrinterResolution.Y = 300;
+                        myPageSettings.PrinterResolution.X = DEFAULTPRINTERRESOLUTION;
+                        myPageSettings.PrinterResolution.Y = DEFAULTPRINTERRESOLUTION;
                     }
                     catch (Exception)
                     {
