@@ -500,6 +500,17 @@ namespace Ict.Petra.Server.MConference.Applications
                             ATransaction));
                 }
 
+                if (AChangedRow.GenApplicationStatus == "I")
+                {
+                    // load duplicate applications, in case they should be set to ignore as well. see below
+                    ConferenceApplicationTDS DuplicatesDS = new ConferenceApplicationTDS();
+                    PmGeneralApplicationRow TemplateRow = AMainDS.PmGeneralApplication.NewRowTyped(false);
+                    TemplateRow.GenApplicationStatus = "H";
+                    TemplateRow.RawApplicationData = AChangedRow.JSONData;
+                    PmGeneralApplicationAccess.LoadUsingTemplate(DuplicatesDS, TemplateRow, ATransaction);
+                    AMainDS.Merge(DuplicatesDS);
+                }
+
                 AMainDS.PPerson.DefaultView.RowFilter =
                     String.Format("{0}={1}",
                         PPersonTable.GetPartnerKeyDBName(),
@@ -584,6 +595,24 @@ namespace Ict.Petra.Server.MConference.Applications
                         if (GeneralApplication.IsGenAppCancelledNull())
                         {
                             GeneralApplication.GenAppCancelled = DateTime.Today;
+                        }
+                    }
+                    else if (AChangedRow.GenApplicationStatus == "I")
+                    {
+                        // drop all other applications of this person, that are on hold.
+                        // data has been loaded above already.
+                        DataView DuplicateView = new DataView(AMainDS.PmGeneralApplication);
+
+                        DuplicateView.RowFilter =
+                            String.Format("{0} = '{1}' AND {2} = 'H'",
+                                PmGeneralApplicationTable.GetRawApplicationDataDBName(),
+                                AChangedRow.JSONData,
+                                PmGeneralApplicationTable.GetGenApplicationStatusDBName());
+
+                        foreach (DataRowView rv in DuplicateView)
+                        {
+                            PmGeneralApplicationRow DuplicateApplication = (PmGeneralApplicationRow)rv.Row;
+                            DuplicateApplication.GenApplicationStatus = "I";
                         }
                     }
                 }
