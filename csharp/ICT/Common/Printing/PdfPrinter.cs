@@ -87,14 +87,16 @@ namespace Ict.Common.Printing
         {
             FXBlackPen = new XPen(XColor.FromKnownColor(XKnownColor.Black), Cm(0.05f));
 
+            XPdfFontOptions options = new XPdfFontOptions(PdfFontEncoding.Unicode, PdfFontEmbedding.Always);
+
             // the fonts need to be a little bit bigger so that they have the same size as the GfxPrinter?
-            FXSmallPrintFont = new XFont("Arial", 0.12); // Point(6 + XFONTSIZE)
-            FXDefaultFont = new XFont("Arial", 0.14); // Point(8 + XFONTSIZE)
-            FXDefaultBoldFont = new XFont("Arial", 0.14, XFontStyle.Bold); // Point(8 + XFONTSIZE)
-            FXHeadingFont = new XFont("Arial", 0.16, XFontStyle.Bold); // Point(10 + XFONTSIZE)
+            FXSmallPrintFont = new XFont("Arial", 0.12, XFontStyle.Regular, options); // Point(6 + XFONTSIZE)
+            FXDefaultFont = new XFont("Arial", 0.14, XFontStyle.Regular, options); // Point(8 + XFONTSIZE)
+            FXDefaultBoldFont = new XFont("Arial", 0.14, XFontStyle.Bold, options); // Point(8 + XFONTSIZE)
+            FXHeadingFont = new XFont("Arial", 0.16, XFontStyle.Bold, options); // Point(10 + XFONTSIZE)
 
             // using GPL Font Code 128 from Grand Zebu http://grandzebu.net/
-            FXBarCodeFont = new XFont("Code 128", 0.3); // Point(10 + XFONTSIZE)
+            FXBarCodeFont = new XFont("Code 128", 0.3, XFontStyle.Regular, options); // Point(10 + XFONTSIZE)
 
             FXBiggestLastUsedFont = FXDefaultFont;
             FXRight = new XStringFormat();
