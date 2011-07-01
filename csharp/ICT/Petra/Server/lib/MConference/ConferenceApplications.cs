@@ -549,27 +549,42 @@ namespace Ict.Petra.Server.MConference.Applications
                 ShortTermApplication.StFgCode = AChangedRow.StFgCode;
                 ShortTermApplication.StFieldCharged = AChangedRow.StFieldCharged;
 
-                if ((GeneralApplication.GenApplicationStatus != AChangedRow.GenApplicationStatus) && (AChangedRow.GenApplicationStatus == "A"))
+                if (GeneralApplication.GenApplicationStatus != AChangedRow.GenApplicationStatus)
                 {
-                    if (GeneralApplication.IsGenAppSendFldAcceptDateNull())
+                    if (AChangedRow.GenApplicationStatus == "A")
                     {
-                        GeneralApplication.GenAppSendFldAcceptDate = DateTime.Today;
-                    }
+                        if (GeneralApplication.IsGenAppSendFldAcceptDateNull())
+                        {
+                            GeneralApplication.GenAppSendFldAcceptDate = DateTime.Today;
+                        }
 
-                    try
-                    {
-                        TApplicationFormData data = (TApplicationFormData)TJsonTools.ImportIntoTypedStructure(typeof(TApplicationFormData),
-                            GeneralApplication.RawApplicationData);
-                        data.RawData = GeneralApplication.RawApplicationData;
+                        GeneralApplication.SetGenAppCancelledNull();
+                        GeneralApplication.GenCancelledApp = false;
 
-                        // attempt to send an email to that applicant, telling about the accepted application
-                        SendEmail(data);
+                        try
+                        {
+                            TApplicationFormData data = (TApplicationFormData)TJsonTools.ImportIntoTypedStructure(typeof(TApplicationFormData),
+                                GeneralApplication.RawApplicationData);
+                            data.RawData = GeneralApplication.RawApplicationData;
+
+                            // attempt to send an email to that applicant, telling about the accepted application
+                            SendEmail(data);
+                        }
+                        catch (Exception e)
+                        {
+                            TLogging.Log("Problem sending acceptance email " + e.Message);
+                            TLogging.Log(GeneralApplication.RawApplicationData);
+                            throw;
+                        }
                     }
-                    catch (Exception e)
+                    else if (AChangedRow.GenApplicationStatus.StartsWith("C") || AChangedRow.GenApplicationStatus.StartsWith("R"))
                     {
-                        TLogging.Log("Problem sending acceptance email " + e.Message);
-                        TLogging.Log(GeneralApplication.RawApplicationData);
-                        throw;
+                        GeneralApplication.GenCancelledApp = true;
+
+                        if (GeneralApplication.IsGenAppCancelledNull())
+                        {
+                            GeneralApplication.GenAppCancelled = DateTime.Today;
+                        }
                     }
                 }
 
