@@ -631,7 +631,11 @@ namespace Ict.Petra.WebServer.MConference
             this.Response.Clear();
             // TODO: this is a problem with old Petra 2.x, importing ANSI only
             this.Response.ContentEncoding = Encoding.GetEncoding("Windows-1252");
-            this.Response.ContentType = "application/csv";
+
+            // Some browsers (Safari on Mac?) process the file and confuse the separators
+            //this.Response.ContentType = "application/csv";
+
+            this.Response.ContentType = "text/plain";
             this.Response.AddHeader("Content-Disposition", "attachment; filename=petra-import.csv");
             this.Response.Write(csvLines);
             this.Response.End();
