@@ -333,14 +333,16 @@ namespace Ict.Petra.WebServer.MConference
             try
             {
                 Int64 PartnerKey = Convert.ToInt64(e.ExtraParams["PartnerKey"]);
-
+                Int32 ApplicationKey = Convert.ToInt32(e.ExtraParams["ApplicationKey"]);
                 ConferenceApplicationTDS CurrentApplicants = (ConferenceApplicationTDS)Session["CURRENTAPPLICANTS"];
                 ConferenceOrganisingOffice = Convert.ToBoolean(Session["CONFERENCEORGANISINGOFFICE"]);
 
-                CurrentApplicants.ApplicationGrid.DefaultView.RowFilter = "p_partner_key_n = " + PartnerKey.ToString();
+                System.Data.DataView ApplicationView = CurrentApplicants.ApplicationGrid.DefaultView;
+                ApplicationView.Sort = ConferenceApplicationTDSApplicationGridTable.GetPartnerKeyDBName() + ","
+                    + ConferenceApplicationTDSApplicationGridTable.GetApplicationKeyDBName();
 
                 ConferenceApplicationTDSApplicationGridRow row =
-                    (ConferenceApplicationTDSApplicationGridRow)CurrentApplicants.ApplicationGrid.DefaultView[0].Row;
+                    (ConferenceApplicationTDSApplicationGridRow)ApplicationView[ApplicationView.Find(new object[]{PartnerKey, ApplicationKey})].Row;
                 Session["CURRENTROW"] = row;
 
                 this.FormPanel1.Disabled = false;

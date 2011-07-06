@@ -275,12 +275,13 @@ namespace Ict.Petra.Server.MConference.Applications
             PersonView.Sort = PPersonTable.GetPartnerKeyDBName();
 
             DataView GenAppView = MainDS.PmGeneralApplication.DefaultView;
-            GenAppView.Sort = PmGeneralApplicationTable.GetPartnerKeyDBName();
+            GenAppView.Sort = PmGeneralApplicationTable.GetPartnerKeyDBName() + "," + PmGeneralApplicationTable.GetApplicationKeyDBName();
 
             foreach (PmShortTermApplicationRow shortTermRow in MainDS.PmShortTermApplication.Rows)
             {
                 PPersonRow Person = (PPersonRow)PersonView[PersonView.Find(shortTermRow.PartnerKey)].Row;
-                PmGeneralApplicationRow GeneralApplication = (PmGeneralApplicationRow)GenAppView[GenAppView.Find(shortTermRow.PartnerKey)].Row;
+                PmGeneralApplicationRow GeneralApplication =
+                    (PmGeneralApplicationRow)GenAppView[GenAppView.Find(new Object[] { shortTermRow.PartnerKey, shortTermRow.ApplicationKey })].Row;
 
                 ConferenceApplicationTDSApplicationGridRow newRow = MainDS.ApplicationGrid.NewRowTyped();
                 newRow.PartnerKey = shortTermRow.PartnerKey;
@@ -553,22 +554,22 @@ namespace Ict.Petra.Server.MConference.Applications
                     AMainDS.Merge(DuplicatesDS);
                 }
 
-                AMainDS.PPerson.DefaultView.RowFilter =
-                    String.Format("{0}={1}",
-                        PPersonTable.GetPartnerKeyDBName(),
-                        AChangedRow.PartnerKey);
-                AMainDS.PmShortTermApplication.DefaultView.RowFilter =
-                    String.Format("{0}={1}",
-                        PmShortTermApplicationTable.GetPartnerKeyDBName(),
-                        AChangedRow.PartnerKey);
-                AMainDS.PmGeneralApplication.DefaultView.RowFilter =
-                    String.Format("{0}={1}",
-                        PmGeneralApplicationTable.GetPartnerKeyDBName(),
-                        AChangedRow.PartnerKey);
+                AMainDS.PPerson.DefaultView.Sort = PPersonTable.GetPartnerKeyDBName();
+                AMainDS.PmShortTermApplication.DefaultView.Sort = PmShortTermApplicationTable.GetPartnerKeyDBName() + "," +
+                                                                  PmShortTermApplicationTable.GetApplicationKeyDBName();
+                AMainDS.PmGeneralApplication.DefaultView.Sort = PmGeneralApplicationTable.GetPartnerKeyDBName() + "," +
+                                                                PmGeneralApplicationTable.GetApplicationKeyDBName();
 
-                PPersonRow Person = (PPersonRow)AMainDS.PPerson.DefaultView[0].Row;
-                PmShortTermApplicationRow ShortTermApplication = (PmShortTermApplicationRow)AMainDS.PmShortTermApplication.DefaultView[0].Row;
-                PmGeneralApplicationRow GeneralApplication = (PmGeneralApplicationRow)AMainDS.PmGeneralApplication.DefaultView[0].Row;
+                PPersonRow Person = (PPersonRow)AMainDS.PPerson.DefaultView[AMainDS.PPerson.DefaultView.Find(AChangedRow.PartnerKey)].Row;
+                PmShortTermApplicationRow ShortTermApplication =
+                    (PmShortTermApplicationRow)AMainDS.PmShortTermApplication.DefaultView[AMainDS.PmShortTermApplication.DefaultView.Find(new object
+                                                                                              [] {
+                                                                                                  AChangedRow.PartnerKey,
+                                                                                                  AChangedRow.ApplicationKey })].Row;
+                PmGeneralApplicationRow GeneralApplication =
+                    (PmGeneralApplicationRow)AMainDS.PmGeneralApplication.DefaultView[AMainDS.PmGeneralApplication.DefaultView.Find(new object[] {
+                                                                                              AChangedRow.PartnerKey,
+                                                                                              AChangedRow.ApplicationKey })].Row;
 
                 Person.FirstName = AChangedRow.FirstName;
                 Person.FamilyName = AChangedRow.FamilyName;

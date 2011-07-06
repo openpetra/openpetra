@@ -134,6 +134,8 @@
                         <ext:RecordField Name="Role" />
                         <ext:RecordField Name="StFgCode" />
                         <ext:RecordField Name="StFgLeader" />
+                        <ext:RecordField Name="FieldCharged" />
+                        <ext:RecordField Name="ApplicationKey" />
                     </Fields>
                 </ext:ArrayReader>
             </Reader>
@@ -728,6 +730,7 @@
                                     <EventMask ShowMask="true" Target="CustomTarget" CustomTarget="#{FormPanel1}" />
                                     <ExtraParams>
                                         <ext:Parameter Name="PartnerKey" Value="this.getSelected().data['PartnerKey']" Mode="Raw" />
+                                        <ext:Parameter Name="ApplicationKey" Value="this.getSelected().data['ApplicationKey']" Mode="Raw" />
                                     </ExtraParams>
                                 </RowSelect>
                             </DirectEvents>
