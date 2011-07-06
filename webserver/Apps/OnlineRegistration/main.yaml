@@ -23,6 +23,7 @@ RootNode:
         lblWelcome3: {Label="Please click on &quot;next&quot; to start your application!"}
         hidRegistrationOffice: {value=43000000}
         hidEventIdentifier: {value=SC001CNGRSS08}
+        hidEventPartnerKey: {value=1110198}
         hidRegistrationCountryCode: {value=en-US}
         hidRole: {value=TS-SERVE}
         aspPersonalDetails:

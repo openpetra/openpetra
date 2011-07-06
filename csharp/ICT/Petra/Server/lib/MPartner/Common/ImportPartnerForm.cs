@@ -129,6 +129,10 @@ namespace Ict.Petra.Server.MPartner.Import
         /// </summary>
         public string eventidentifier;
         /// <summary>
+        /// identifies the event with the partner key
+        /// </summary>
+        public string eventpartnerkey;
+        /// <summary>
         /// each applicant is given a role at the event (participant, volunteer, etc)
         /// </summary>
         public string role;
@@ -556,6 +560,7 @@ namespace Ict.Petra.Server.MPartner.Import
                     ShortTermApplicationRow.StBasicOutreachId = GeneralApplicationRow.OldLink;
                     ShortTermApplicationRow.StCongressCode = data.role;
                     ShortTermApplicationRow.ConfirmedOptionCode = data.eventidentifier;
+                    ShortTermApplicationRow.StConfirmedOption = Convert.ToInt64(data.eventpartnerkey);
                     ShortTermApplicationRow.StFieldCharged = data.registrationoffice;
                     ConfDS.PmShortTermApplication.Rows.Add(ShortTermApplicationRow);
 

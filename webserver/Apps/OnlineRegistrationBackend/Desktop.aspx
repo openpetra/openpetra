@@ -697,6 +697,13 @@
                                 <Click Handler="#{JSONApplicationForm}.getForm().reset();#{winJSONApplication}.show();" />
                             </Listeners>
                         </ext:Button></td>
+                        <td><ext:Button ID="btnLoadRefreshApplicants" runat="server" Text="Refresh Applicants">
+                            <DirectEvents>
+                                <Click OnEvent="LoadRefreshApplicants">
+                                    <EventMask ShowMask="true" Msg="Refreshing Applicants..." MinDelay="1000" />
+                                </Click>
+                            </DirectEvents>
+                        </ext:Button></td>
                         </tr></table>
                     </Content>
                 </ext:Panel>

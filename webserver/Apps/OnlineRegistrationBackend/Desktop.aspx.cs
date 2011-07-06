@@ -81,6 +81,7 @@ namespace Ict.Petra.WebServer.MConference
         protected Ext.Net.Panel TabMoreDetails;
         protected Ext.Net.Button btnJSONApplication;
         protected Ext.Net.Button btnCreateGiftBatch;
+        protected Ext.Net.Button btnLoadRefreshApplicants;
 
         protected bool ConferenceOrganisingOffice = false;
 
@@ -113,6 +114,7 @@ namespace Ict.Petra.WebServer.MConference
                 }
 
                 btnJSONApplication.Visible = ConferenceOrganisingOffice;
+                btnLoadRefreshApplicants.Visible = ConferenceOrganisingOffice;
 
                 // for the moment, do not confuse all offices with this button
                 btnCreateGiftBatch.Visible = ConferenceOrganisingOffice;
@@ -653,6 +655,11 @@ namespace Ict.Petra.WebServer.MConference
             m.WriteTo(this.Response.OutputStream);
             m.Close();
             this.Response.End();
+        }
+
+        protected void LoadRefreshApplicants(object sender, DirectEventArgs e)
+        {
+            TAttendeeManagement.RefreshAttendees(EventPartnerKey, EventCode);
         }
 
         protected void Logout_Click(object sender, DirectEventArgs e)
