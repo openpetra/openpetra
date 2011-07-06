@@ -23,12 +23,18 @@
 //
 using System;
 using System.Data;
+using System.IO;
+using System.Drawing.Printing;
 using Ict.Common;
+using Ict.Common.IO;
 using Ict.Common.DB;
+using Ict.Common.Printing;
 using Ict.Common.Verification;
 using Ict.Petra.Server.MConference.Data.Access;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Petra.Shared.MConference.Data;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 
 namespace Ict.Petra.Server.MConference.Applications
@@ -86,21 +92,7 @@ namespace Ict.Petra.Server.MConference.Applications
                     PmGeneralApplicationTable.GetApplicationKeyDBName() + "," +
                     PmGeneralApplicationTable.GetRegistrationOfficeDBName();
 
-                Transaction = DBAccess.GDBAccessObj.BeginTransaction();
-
-                try
-                {
-                    // load all attendees of this conference
-                    MainDS.PcAttendee.Clear();
-                    PcAttendeeRow templateAttendeeRow = MainDS.PcAttendee.NewRowTyped(false);
-                    templateAttendeeRow.ConferenceKey = ConferenceRow.ConferenceKey;
-                    PcAttendeeAccess.LoadUsingTemplate(MainDS, templateAttendeeRow, Transaction);
-                    MainDS.PcAttendee.DefaultView.Sort = PcAttendeeTable.GetConferenceKeyDBName() + ", " + PcAttendeeTable.GetPartnerKeyDBName();
-                }
-                finally
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
+                LoadAttendees(ref MainDS, ConferenceRow.ConferenceKey);
 
                 foreach (PmShortTermApplicationRow ShortTermAppRow in MainDS.PmShortTermApplication.Rows)
                 {
@@ -155,6 +147,30 @@ namespace Ict.Petra.Server.MConference.Applications
         }
 
         /// <summary>
+        /// load all attendees of this conference
+        /// </summary>
+        /// <param name="AMainDS"></param>
+        /// <param name="AConferenceKey"></param>
+        private static void LoadAttendees(ref ConferenceApplicationTDS AMainDS, Int64 AConferenceKey)
+        {
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
+
+            try
+            {
+                // load all attendees of this conference
+                AMainDS.PcAttendee.Clear();
+                PcAttendeeRow templateAttendeeRow = AMainDS.PcAttendee.NewRowTyped(false);
+                templateAttendeeRow.ConferenceKey = AConferenceKey;
+                PcAttendeeAccess.LoadUsingTemplate(AMainDS, templateAttendeeRow, Transaction);
+                AMainDS.PcAttendee.DefaultView.Sort = PcAttendeeTable.GetConferenceKeyDBName() + ", " + PcAttendeeTable.GetPartnerKeyDBName();
+            }
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+        }
+
+        /// <summary>
         /// if attendee is not valid anymore, the attendee should be removed from pc_attendee table
         /// </summary>
         /// <returns></returns>
@@ -203,6 +219,184 @@ namespace Ict.Petra.Server.MConference.Applications
             }
 
             return true;
+        }
+
+        private static PUnitTable Units = null;
+
+        private static string FormatBadge(ConferenceApplicationTDSApplicationGridRow AApplicant)
+        {
+            string FileName = TFormLettersTools.GetRoleSpecificFile(TAppSettingsManager.GetValue("Formletters.Path"),
+                "Badge",
+                "",
+                AApplicant.StCongressCode,
+                "html");
+
+            if (!File.Exists(FileName))
+            {
+                return string.Empty;
+            }
+
+            StreamReader r = new StreamReader(FileName);
+            string HTMLText = r.ReadToEnd();
+            r.Close();
+
+            HTMLText = HTMLText.Replace("#FORMLETTERPATH", TAppSettingsManager.GetValue("Formletters.Path"));
+            HTMLText = HTMLText.Replace("#FIRSTNAME", AApplicant.FirstName);
+            HTMLText = HTMLText.Replace("#LASTNAME", AApplicant.FamilyName);
+
+            // TODO: use passport country?
+
+            if (Units == null)
+            {
+                TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
+                try
+                {
+                    Units = PUnitAccess.LoadViaUUnitType("F", Transaction);
+                }
+                finally
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+
+                Units.DefaultView.Sort = PUnitTable.GetPartnerKeyDBName();
+            }
+
+            HTMLText = HTMLText.Replace("#COUNTRY", ((PUnitRow)Units.DefaultView[Units.DefaultView.Find(
+                                                                                     AApplicant.RegistrationOffice)].Row).Description);
+
+            if (AApplicant.PersonKey > 0)
+            {
+                HTMLText = HTMLText.Replace("#PERSONKEY", AApplicant.PersonKey.ToString());
+            }
+            else
+            {
+                HTMLText = HTMLText.Replace("#PERSONKEY", AApplicant.PartnerKey.ToString());
+            }
+
+            HTMLText = HTMLText.Replace("#BARCODEKEY", AApplicant.PartnerKey.ToString());
+
+            string PhotoPath = TAppSettingsManager.GetValue("Server.PathData") +
+                               Path.DirectorySeparatorChar + "photos" +
+                               Path.DirectorySeparatorChar + AApplicant.PartnerKey.ToString() + ".jpg";
+
+            if (!File.Exists(PhotoPath))
+            {
+                // don't print the badge if there is no photo
+                return string.Empty;
+            }
+
+            // TODO: scale photo, so that the PDF does not get that big. just a temp file, do not modify the original file.
+            // should this happen in the PDF printer?
+            HTMLText = HTMLText.Replace("#PHOTOPARTICIPANT", PhotoPath);
+
+            return HTMLText;
+        }
+
+        /// <summary>
+        /// generate a PDF from an HTML Document, can contain several pages
+        /// </summary>
+        /// <param name="AHTMLDoc"></param>
+        /// <returns>path of the temporary PDF file</returns>
+        private static string GeneratePDFFromHTML(string AHTMLDoc)
+        {
+            PrintDocument doc = new PrintDocument();
+
+            TPdfPrinter pdfPrinter = new TPdfPrinter(doc, TGfxPrinter.ePrinterBehaviour.eFormLetter);
+            TPrinterHtml htmlPrinter = new TPrinterHtml(AHTMLDoc,
+                String.Empty,
+                pdfPrinter);
+
+            pdfPrinter.Init(eOrientation.ePortrait, htmlPrinter, eMarginType.ePrintableArea);
+
+            string pdfPath = TAppSettingsManager.GetValue("Server.PathData") + Path.DirectorySeparatorChar +
+                             "badges";
+
+            if (!Directory.Exists(pdfPath))
+            {
+                Directory.CreateDirectory(pdfPath);
+            }
+
+            Random rand = new Random();
+            string filename = string.Empty;
+
+            do
+            {
+                filename = pdfPath + Path.DirectorySeparatorChar +
+                           rand.Next(1, 1000000).ToString() + ".pdf";
+            } while (File.Exists(filename));
+
+            TLogging.Log(filename);
+
+            pdfPrinter.SavePDF(filename);
+
+            return filename;
+        }
+
+        /// <summary>
+        /// print the badges, using HTML template files
+        /// </summary>
+        /// <param name="AEventPartnerKey"></param>
+        /// <param name="AEventCode"></param>
+        /// <param name="ASelectedRegistrationOffice"></param>
+        /// <param name="ASelectedRole"></param>
+        /// <param name="ADoNotReprint"></param>
+        public static void PrintBadges(Int64 AEventPartnerKey,
+            string AEventCode,
+            Int64 ASelectedRegistrationOffice,
+            string ASelectedRole,
+            bool ADoNotReprint)
+        {
+            RefreshAttendees(AEventPartnerKey, AEventCode);
+
+            ConferenceApplicationTDS MainDS = TApplicationManagement.GetApplications(AEventCode,
+                "accepted",
+                ASelectedRegistrationOffice,
+                ASelectedRole);
+
+            LoadAttendees(ref MainDS, AEventPartnerKey);
+
+            // we want one timestamp for the whole batch of badges. this makes it easier to reverse/reprint if we must.
+            DateTime DatePrinted = DateTime.Now;
+            string ResultDocument = string.Empty;
+
+            // go through all accepted applicants
+            foreach (ConferenceApplicationTDSApplicationGridRow applicant in MainDS.ApplicationGrid.Rows)
+            {
+                int AttendeeIndex = MainDS.PcAttendee.DefaultView.Find(new Object[] { AEventPartnerKey, applicant.PartnerKey });
+
+                if (AttendeeIndex == -1)
+                {
+                    continue;
+                }
+
+                PcAttendeeRow AttendeeRow = (PcAttendeeRow)MainDS.PcAttendee.DefaultView[AttendeeIndex].Row;
+
+                if (ADoNotReprint && AttendeeRow.BadgePrint.HasValue)
+                {
+                    // check if this badge has been printed already
+                    // skip the current badge
+                    continue;
+                }
+
+                // create an HTML file using the template files
+                bool BatchPrinted = TFormLettersTools.AttachNextPage(ref ResultDocument, FormatBadge(applicant));
+
+                if (BatchPrinted)
+                {
+                    AttendeeRow.BadgePrint = DatePrinted;
+                }
+            }
+
+            TFormLettersTools.CloseDocument(ref ResultDocument);
+
+            string PDFPath = GeneratePDFFromHTML(ResultDocument);
+
+            if (ADoNotReprint)
+            {
+                // store modified date printed for badges
+                TVerificationResultCollection VerificationResult;
+                ConferenceApplicationTDSAccess.SubmitChanges(MainDS, out VerificationResult);
+            }
         }
     }
 }

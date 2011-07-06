@@ -76,5 +76,50 @@ namespace Ict.Common.Printing
 
             return FileName + ACountryCode + AExtension;
         }
+
+        /// <summary>
+        /// attach a new page to the overall document that will be printed later
+        /// </summary>
+        /// <param name="AResultDocument"></param>
+        /// <param name="ANewPage"></param>
+        /// <returns>false if the new page was empty</returns>
+        public static bool AttachNextPage(ref string AResultDocument, string ANewPage)
+        {
+            if (ANewPage.Length > 0)
+            {
+                if (AResultDocument.Length > 0)
+                {
+                    // AResultDocument += "<div style=\"page-break-before: always;\"/>";
+                    string body = ANewPage.Substring(ANewPage.IndexOf("<body"));
+                    body = body.Substring(0, body.IndexOf("</html"));
+                    AResultDocument += body;
+                }
+                else
+                {
+                    // without closing html
+                    AResultDocument += ANewPage.Substring(0, ANewPage.IndexOf("</html"));
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// close the document after one or several pages have been inserted.
+        /// </summary>
+        /// <param name="AResultDocument"></param>
+        /// <returns>false if the document is empty</returns>
+        public static bool CloseDocument(ref string AResultDocument)
+        {
+            if (AResultDocument.Length > 0)
+            {
+                AResultDocument += "</html>";
+                return true;
+            }
+
+            return false;
+        }
     }
 }

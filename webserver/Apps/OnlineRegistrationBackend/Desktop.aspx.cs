@@ -82,6 +82,8 @@ namespace Ict.Petra.WebServer.MConference
         protected Ext.Net.Button btnJSONApplication;
         protected Ext.Net.Button btnCreateGiftBatch;
         protected Ext.Net.Button btnLoadRefreshApplicants;
+        protected Ext.Net.Button btnTestPrintBadges;
+        protected Ext.Net.Button btnPrintBadges;
 
         protected bool ConferenceOrganisingOffice = false;
 
@@ -114,7 +116,9 @@ namespace Ict.Petra.WebServer.MConference
                 }
 
                 btnJSONApplication.Visible = ConferenceOrganisingOffice;
-                btnLoadRefreshApplicants.Visible = ConferenceOrganisingOffice;
+                btnLoadRefreshApplicants.Visible = false;
+                btnTestPrintBadges.Visible = ConferenceOrganisingOffice;
+                btnPrintBadges.Visible = ConferenceOrganisingOffice;
 
                 // for the moment, do not confuse all offices with this button
                 btnCreateGiftBatch.Visible = ConferenceOrganisingOffice;
@@ -340,11 +344,12 @@ namespace Ict.Petra.WebServer.MConference
                 ConferenceOrganisingOffice = Convert.ToBoolean(Session["CONFERENCEORGANISINGOFFICE"]);
 
                 System.Data.DataView ApplicationView = CurrentApplicants.ApplicationGrid.DefaultView;
-                ApplicationView.Sort = ConferenceApplicationTDSApplicationGridTable.GetPartnerKeyDBName() + ","
-                    + ConferenceApplicationTDSApplicationGridTable.GetApplicationKeyDBName();
+                ApplicationView.Sort = ConferenceApplicationTDSApplicationGridTable.GetPartnerKeyDBName() + "," +
+                                       ConferenceApplicationTDSApplicationGridTable.GetApplicationKeyDBName();
 
                 ConferenceApplicationTDSApplicationGridRow row =
-                    (ConferenceApplicationTDSApplicationGridRow)ApplicationView[ApplicationView.Find(new object[]{PartnerKey, ApplicationKey})].Row;
+                    (ConferenceApplicationTDSApplicationGridRow)ApplicationView[ApplicationView.Find(new object[] { PartnerKey,
+                                                                                                                    ApplicationKey })].Row;
                 Session["CURRENTROW"] = row;
 
                 this.FormPanel1.Disabled = false;
@@ -660,6 +665,24 @@ namespace Ict.Petra.WebServer.MConference
         protected void LoadRefreshApplicants(object sender, DirectEventArgs e)
         {
             TAttendeeManagement.RefreshAttendees(EventPartnerKey, EventCode);
+        }
+
+        protected void PrintBadges(object sender, DirectEventArgs e)
+        {
+            TAttendeeManagement.PrintBadges(EventPartnerKey,
+                EventCode,
+                GetSelectedRegistrationOffice(),
+                GetSelectedRole(),
+                true);
+        }
+
+        protected void TestPrintBadges(object sender, DirectEventArgs e)
+        {
+            TAttendeeManagement.PrintBadges(EventPartnerKey,
+                EventCode,
+                GetSelectedRegistrationOffice(),
+                GetSelectedRole(),
+                false);
         }
 
         protected void Logout_Click(object sender, DirectEventArgs e)

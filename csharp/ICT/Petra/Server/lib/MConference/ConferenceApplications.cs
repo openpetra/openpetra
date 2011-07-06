@@ -565,11 +565,13 @@ namespace Ict.Petra.Server.MConference.Applications
                     (PmShortTermApplicationRow)AMainDS.PmShortTermApplication.DefaultView[AMainDS.PmShortTermApplication.DefaultView.Find(new object
                                                                                               [] {
                                                                                                   AChangedRow.PartnerKey,
-                                                                                                  AChangedRow.ApplicationKey })].Row;
+                                                                                                  AChangedRow.ApplicationKey
+                                                                                              })].Row;
                 PmGeneralApplicationRow GeneralApplication =
                     (PmGeneralApplicationRow)AMainDS.PmGeneralApplication.DefaultView[AMainDS.PmGeneralApplication.DefaultView.Find(new object[] {
                                                                                               AChangedRow.PartnerKey,
-                                                                                              AChangedRow.ApplicationKey })].Row;
+                                                                                              AChangedRow.ApplicationKey
+                                                                                          })].Row;
 
                 Person.FirstName = AChangedRow.FirstName;
                 Person.FamilyName = AChangedRow.FamilyName;
