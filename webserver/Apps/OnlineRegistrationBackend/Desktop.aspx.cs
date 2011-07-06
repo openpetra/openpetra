@@ -312,10 +312,7 @@ namespace Ict.Petra.WebServer.MConference
         {
             PPartnerTable offices = TApplicationManagement.GetRegistrationOffices();
 
-            if (offices.Count > 3)
-            {
-                ConferenceOrganisingOffice = true;
-            }
+            ConferenceOrganisingOffice = TApplicationManagement.IsConferenceOrganisingOffice();
 
             Session["CONFERENCEORGANISINGOFFICE"] = ConferenceOrganisingOffice;
 
