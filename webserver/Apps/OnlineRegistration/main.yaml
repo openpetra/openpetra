@@ -16,7 +16,7 @@ RootNode:
         aspWelcome:
             Height: 300
             Label: Welcome
-            HiddenValues: [hidRegistrationOffice, hidRegistrationCountryCode, hidEventIdentifier, hidRole, hidFormsId]
+            HiddenValues: [hidRegistrationOffice, hidRegistrationCountryCode, hidEventIdentifier, hidEventPartnerKey, hidRole, hidFormsId]
             Controls: [lblWelcome, lblWelcome2, lblWelcome3]
         lblWelcome: {Label="Welcome to the registration for participants aged between 23 and 28. For other age groups, please go back to the main website."}
         lblWelcome2: {Label="You will need to have a photo of yourself ready to upload for this application, so before you start make sure you have got one at hand."}
