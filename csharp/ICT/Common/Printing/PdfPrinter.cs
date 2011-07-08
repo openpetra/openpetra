@@ -634,7 +634,9 @@ namespace Ict.Common.Printing
                 FXGraphics = XGraphics.FromPdfPage(page, XGraphicsUnit.Inch);
                 FXGraphics.MFEH = PdfFontEmbedding.Always;
 
-                if (FEv == null)
+                // it seems for Linux we better reset the FEv, otherwise the positions are only correct on the first page, but wrong on the following pages
+                // was: if (FEv == null)
+                if (true)
                 {
                     PrinterSettings myPrinterSettings = new PrinterSettings();
                     PageSettings myPageSettings = new PageSettings(myPrinterSettings);
