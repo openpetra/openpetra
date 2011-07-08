@@ -125,8 +125,13 @@ namespace Ict.Petra.Server.MConference.Applications
         /// <param name="AApplicationStatus"></param>
         /// <param name="ARegistrationOffice">if -1, then show all offices that the user has permission for</param>
         /// <param name="ARole"></param>
+        /// <param name="AClearJSONData"></param>
         /// <returns></returns>
-        public static ConferenceApplicationTDS GetApplications(string AEventCode, string AApplicationStatus, Int64 ARegistrationOffice, string ARole)
+        public static ConferenceApplicationTDS GetApplications(string AEventCode,
+            string AApplicationStatus,
+            Int64 ARegistrationOffice,
+            string ARole,
+            bool AClearJSONData)
         {
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
@@ -139,7 +144,7 @@ namespace Ict.Petra.Server.MConference.Applications
                 if (ConferenceOrganisingOffice && (ARegistrationOffice == -1))
                 {
                     // avoid duplicates, who are registered by one office, but charged to another office
-                    MainDS = GetApplications(AEventCode, -1, AApplicationStatus, ARole, Transaction);
+                    MainDS = GetApplications(AEventCode, -1, AApplicationStatus, ARole, AClearJSONData, Transaction);
                 }
                 else
                 {
@@ -149,7 +154,7 @@ namespace Ict.Petra.Server.MConference.Applications
                     {
                         if ((ARegistrationOffice == RegistrationOffice) || (ARegistrationOffice == -1))
                         {
-                            MainDS.Merge(GetApplications(AEventCode, RegistrationOffice, AApplicationStatus, ARole, Transaction));
+                            MainDS.Merge(GetApplications(AEventCode, RegistrationOffice, AApplicationStatus, ARole, AClearJSONData, Transaction));
                         }
                     }
                 }
@@ -258,12 +263,14 @@ namespace Ict.Petra.Server.MConference.Applications
         /// <param name="ARegisteringOffice"></param>
         /// <param name="AApplicationStatus"></param>
         /// <param name="ARole"></param>
+        /// <param name="AClearJSONData"></param>
         /// <param name="ATransaction"></param>
         /// <returns></returns>
         private static ConferenceApplicationTDS GetApplications(string AEventCode,
             Int64 ARegisteringOffice,
             string AApplicationStatus,
             string ARole,
+            bool AClearJSONData,
             TDBTransaction ATransaction)
         {
             ConferenceApplicationTDS MainDS = LoadApplicationsFromDB(AEventCode, ARegisteringOffice,
@@ -311,7 +318,16 @@ namespace Ict.Petra.Server.MConference.Applications
                 // TODO: display the description of that application status
                 newRow.GenApplicationStatus = GeneralApplication.GenApplicationStatus;
                 newRow.StCongressCode = shortTermRow.StCongressCode;
-                newRow.JSONData = StringHelper.MD5Sum(GeneralApplication.RawApplicationData);
+
+                if (AClearJSONData)
+                {
+                    // only if the json data is cleared anyway, search for duplicate applications using the md5sum
+                    newRow.JSONData = StringHelper.MD5Sum(GeneralApplication.RawApplicationData);
+                }
+                else
+                {
+                    newRow.JSONData = GeneralApplication.RawApplicationData;
+                }
 
                 if (AApplicationStatus.Length == 0)
                 {
@@ -353,10 +369,13 @@ namespace Ict.Petra.Server.MConference.Applications
                 }
             }
 
-            // clear raw data, otherwise this is too big for the javascript client
-            foreach (ConferenceApplicationTDSApplicationGridRow row in MainDS.ApplicationGrid.Rows)
+            if (AClearJSONData)
             {
-                row.JSONData = string.Empty;
+                // clear raw data, otherwise this is too big for the javascript client
+                foreach (ConferenceApplicationTDSApplicationGridRow row in MainDS.ApplicationGrid.Rows)
+                {
+                    row.JSONData = string.Empty;
+                }
             }
 
             MainDS.ApplicationGrid.AcceptChanges();
@@ -745,8 +764,8 @@ namespace Ict.Petra.Server.MConference.Applications
             result += "EventRole;AppStatus;PreviousAttendance;AppComments;NotesPerson;HorstID;FamilyPartnerKey;RecordImported";
             result = "\"" + result.Replace(";", "\";\"") + "\"\n";
 
-            ConferenceApplicationTDS MainDS = GetApplications(AEventCode, "cancelled", ARegistrationOffice, null);
-            MainDS.Merge(GetApplications(AEventCode, "accepted", ARegistrationOffice, null));
+            ConferenceApplicationTDS MainDS = GetApplications(AEventCode, "cancelled", ARegistrationOffice, null, true);
+            MainDS.Merge(GetApplications(AEventCode, "accepted", ARegistrationOffice, null, true));
 
             try
             {

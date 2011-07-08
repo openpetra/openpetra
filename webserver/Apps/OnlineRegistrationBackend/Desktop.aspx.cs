@@ -208,7 +208,8 @@ namespace Ict.Petra.WebServer.MConference
                 CurrentApplicants = TApplicationManagement.GetApplications(EventCode,
                     this.FilterStatus.SelectedItem.Value,
                     GetSelectedRegistrationOffice(),
-                    GetSelectedRole());
+                    GetSelectedRole(),
+                    true);
                 Session["CURRENTAPPLICANTS"] = CurrentApplicants;
                 this.FormPanel1.SetValues(new { });
                 this.FormPanel1.Disabled = true;
@@ -587,7 +588,7 @@ namespace Ict.Petra.WebServer.MConference
                 }
             }
 
-            ConferenceApplicationTDS CurrentApplicants = TApplicationManagement.GetApplications(EventCode, "all", -1, null);
+            ConferenceApplicationTDS CurrentApplicants = TApplicationManagement.GetApplications(EventCode, "all", -1, null, true);
 
             // first do a test run to test the keys
             List <Int64>RegistrationKeysBackup = new List <Int64>();
@@ -667,22 +668,44 @@ namespace Ict.Petra.WebServer.MConference
             TAttendeeManagement.RefreshAttendees(EventPartnerKey, EventCode);
         }
 
-        protected void PrintBadges(object sender, DirectEventArgs e)
+        protected void PrintBadges(bool ADoNotReprint)
         {
-            TAttendeeManagement.PrintBadges(EventPartnerKey,
+            string OutputName = "badges.pdf";
+
+            try
+            {
+                OutputName = this.FilterRegistrationOffice.SelectedItem.Text + "_" + this.FilterRole.SelectedItem.Text + ".pdf";
+            }
+            catch (Exception)
+            {
+            }
+
+            string PDFPath = TAttendeeManagement.PrintBadges(EventPartnerKey,
                 EventCode,
                 GetSelectedRegistrationOffice(),
                 GetSelectedRole(),
-                true);
+                ADoNotReprint);
+
+            if (File.Exists(PDFPath))
+            {
+                this.Response.Clear();
+                this.Response.ContentType = "application/pdf";
+                this.Response.AddHeader("Content-Type", "application/pdf");
+                this.Response.AddHeader("Content-Disposition", "attachment; filename=" + OutputName);
+                this.Response.TransmitFile(PDFPath);
+                File.Delete(PDFPath);
+                // this.Response.End(); avoid System.Threading.ThreadAbortException
+            }
+        }
+
+        protected void PrintBadges(object sender, DirectEventArgs e)
+        {
+            PrintBadges(true);
         }
 
         protected void TestPrintBadges(object sender, DirectEventArgs e)
         {
-            TAttendeeManagement.PrintBadges(EventPartnerKey,
-                EventCode,
-                GetSelectedRegistrationOffice(),
-                GetSelectedRole(),
-                false);
+            PrintBadges(false);
         }
 
         protected void Logout_Click(object sender, DirectEventArgs e)

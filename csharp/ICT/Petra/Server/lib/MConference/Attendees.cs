@@ -25,6 +25,7 @@ using System;
 using System.Data;
 using System.IO;
 using System.Drawing.Printing;
+using System.Collections.Generic;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.DB;
@@ -81,7 +82,7 @@ namespace Ict.Petra.Server.MConference.Applications
             foreach (PcConferenceRow ConferenceRow in ConferenceTable.Rows)
             {
                 // get all applications for this conference
-                ConferenceApplicationTDS MainDS = TApplicationManagement.GetApplications(AEventCode, "all", -1, null);
+                ConferenceApplicationTDS MainDS = TApplicationManagement.GetApplications(AEventCode, "all", -1, null, false);
 
                 // required for DefaultView.Find
                 MainDS.PmShortTermApplication.DefaultView.Sort =
@@ -103,7 +104,7 @@ namespace Ict.Petra.Server.MConference.Applications
                     }
 
                     // Do we have a record for this attendee yet?
-                    if (MainDS.PcAttendee.DefaultView.Find(new object[] { ConferenceRow.ConferenceKey, ShortTermAppRow.PartnerKey }) == -1)
+                    if (MainDS.PcAttendee.DefaultView.Find(ShortTermAppRow.PartnerKey) == -1)
                     {
                         PcAttendeeRow AttendeeRow = MainDS.PcAttendee.NewRowTyped();
                         AttendeeRow.ConferenceKey = ConferenceRow.ConferenceKey;
@@ -115,7 +116,18 @@ namespace Ict.Petra.Server.MConference.Applications
 
                         PmGeneralApplicationRow GeneralAppRow = (PmGeneralApplicationRow)GenAppView[GenAppIndex].Row;
 
-                        AttendeeRow.Registered = GeneralAppRow.GenAppSendFldAcceptDate;
+                        DateTime DateAccepted = GeneralAppRow.GenAppDate;
+
+                        if (!GeneralAppRow.IsGenAppSendFldAcceptDateNull())
+                        {
+                            DateAccepted = GeneralAppRow.GenAppSendFldAcceptDate.Value;
+                        }
+                        else if (!GeneralAppRow.IsGenAppRecvgFldAcceptNull())
+                        {
+                            DateAccepted = GeneralAppRow.GenAppRecvgFldAccept.Value;
+                        }
+
+                        AttendeeRow.Registered = DateAccepted;
 
                         // TODO: in Petra 2.x, this was calculated from pm_staff_data, or from the partner key / 1000000
                         AttendeeRow.HomeOfficeKey = ShortTermAppRow.RegistrationOffice;
@@ -162,7 +174,7 @@ namespace Ict.Petra.Server.MConference.Applications
                 PcAttendeeRow templateAttendeeRow = AMainDS.PcAttendee.NewRowTyped(false);
                 templateAttendeeRow.ConferenceKey = AConferenceKey;
                 PcAttendeeAccess.LoadUsingTemplate(AMainDS, templateAttendeeRow, Transaction);
-                AMainDS.PcAttendee.DefaultView.Sort = PcAttendeeTable.GetConferenceKeyDBName() + ", " + PcAttendeeTable.GetPartnerKeyDBName();
+                AMainDS.PcAttendee.DefaultView.Sort = PcAttendeeTable.GetPartnerKeyDBName();
             }
             finally
             {
@@ -223,8 +235,9 @@ namespace Ict.Petra.Server.MConference.Applications
 
         private static PUnitTable Units = null;
 
-        private static string FormatBadge(ConferenceApplicationTDSApplicationGridRow AApplicant)
+        private static string FormatBadge(ConferenceApplicationTDS AMainDS, ConferenceApplicationTDSApplicationGridRow AApplicant)
         {
+            TLogging.Log(AApplicant.PartnerKey.ToString());
             string FileName = TFormLettersTools.GetRoleSpecificFile(TAppSettingsManager.GetValue("Formletters.Path"),
                 "Badge",
                 "",
@@ -233,6 +246,7 @@ namespace Ict.Petra.Server.MConference.Applications
 
             if (!File.Exists(FileName))
             {
+                TLogging.Log("badge: cannot find template " + FileName);
                 return string.Empty;
             }
 
@@ -262,9 +276,9 @@ namespace Ict.Petra.Server.MConference.Applications
             }
 
             HTMLText = HTMLText.Replace("#COUNTRY", ((PUnitRow)Units.DefaultView[Units.DefaultView.Find(
-                                                                                     AApplicant.RegistrationOffice)].Row).Description);
+                                                                                     AApplicant.RegistrationOffice)].Row).UnitName);
 
-            if (AApplicant.PersonKey > 0)
+            if (!AApplicant.IsPersonKeyNull())
             {
                 HTMLText = HTMLText.Replace("#PERSONKEY", AApplicant.PersonKey.ToString());
             }
@@ -282,6 +296,7 @@ namespace Ict.Petra.Server.MConference.Applications
             if (!File.Exists(PhotoPath))
             {
                 // don't print the badge if there is no photo
+                TLogging.Log("badge has no photo: " + AApplicant.PartnerKey.ToString());
                 return string.Empty;
             }
 
@@ -299,14 +314,10 @@ namespace Ict.Petra.Server.MConference.Applications
         /// <returns>path of the temporary PDF file</returns>
         private static string GeneratePDFFromHTML(string AHTMLDoc)
         {
-            PrintDocument doc = new PrintDocument();
-
-            TPdfPrinter pdfPrinter = new TPdfPrinter(doc, TGfxPrinter.ePrinterBehaviour.eFormLetter);
-            TPrinterHtml htmlPrinter = new TPrinterHtml(AHTMLDoc,
-                String.Empty,
-                pdfPrinter);
-
-            pdfPrinter.Init(eOrientation.ePortrait, htmlPrinter, eMarginType.ePrintableArea);
+            if (AHTMLDoc.Length == 0)
+            {
+                return string.Empty;
+            }
 
             string pdfPath = TAppSettingsManager.GetValue("Server.PathData") + Path.DirectorySeparatorChar +
                              "badges";
@@ -327,7 +338,29 @@ namespace Ict.Petra.Server.MConference.Applications
 
             TLogging.Log(filename);
 
-            pdfPrinter.SavePDF(filename);
+            StreamWriter sw = new StreamWriter(filename.Replace(".pdf", ".txt"));
+            sw.WriteLine(AHTMLDoc);
+            sw.Close();
+
+            try
+            {
+                PrintDocument doc = new PrintDocument();
+
+                TPdfPrinter pdfPrinter = new TPdfPrinter(doc, TGfxPrinter.ePrinterBehaviour.eFormLetter);
+                TPrinterHtml htmlPrinter = new TPrinterHtml(AHTMLDoc,
+                    String.Empty,
+                    pdfPrinter);
+
+                pdfPrinter.Init(eOrientation.ePortrait, htmlPrinter, eMarginType.ePrintableArea);
+
+                pdfPrinter.SavePDF(filename);
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("Exception while printing badge: " + e.Message);
+                TLogging.Log(e.StackTrace);
+                throw e;
+            }
 
             return filename;
         }
@@ -340,62 +373,86 @@ namespace Ict.Petra.Server.MConference.Applications
         /// <param name="ASelectedRegistrationOffice"></param>
         /// <param name="ASelectedRole"></param>
         /// <param name="ADoNotReprint"></param>
-        public static void PrintBadges(Int64 AEventPartnerKey,
+        public static string PrintBadges(Int64 AEventPartnerKey,
             string AEventCode,
             Int64 ASelectedRegistrationOffice,
             string ASelectedRole,
             bool ADoNotReprint)
         {
-            RefreshAttendees(AEventPartnerKey, AEventCode);
-
-            ConferenceApplicationTDS MainDS = TApplicationManagement.GetApplications(AEventCode,
-                "accepted",
-                ASelectedRegistrationOffice,
-                ASelectedRole);
-
-            LoadAttendees(ref MainDS, AEventPartnerKey);
-
-            // we want one timestamp for the whole batch of badges. this makes it easier to reverse/reprint if we must.
-            DateTime DatePrinted = DateTime.Now;
-            string ResultDocument = string.Empty;
-
-            // go through all accepted applicants
-            foreach (ConferenceApplicationTDSApplicationGridRow applicant in MainDS.ApplicationGrid.Rows)
+            try
             {
-                int AttendeeIndex = MainDS.PcAttendee.DefaultView.Find(new Object[] { AEventPartnerKey, applicant.PartnerKey });
+                RefreshAttendees(AEventPartnerKey, AEventCode);
 
-                if (AttendeeIndex == -1)
+                ConferenceApplicationTDS MainDS = TApplicationManagement.GetApplications(AEventCode,
+                    "accepted",
+                    ASelectedRegistrationOffice,
+                    ASelectedRole,
+                    false);
+
+                LoadAttendees(ref MainDS, AEventPartnerKey);
+
+                // we want one timestamp for the whole batch of badges. this makes it easier to reverse/reprint if we must.
+                DateTime DatePrinted = DateTime.Now;
+                string ResultDocument = string.Empty;
+
+                MainDS.ApplicationGrid.DefaultView.Sort =
+                    ConferenceApplicationTDSApplicationGridTable.GetRegistrationOfficeDBName() + "," +
+                    ConferenceApplicationTDSApplicationGridTable.GetStCongressCodeDBName() + "," +
+                    ConferenceApplicationTDSApplicationGridTable.GetFamilyNameDBName() + "," +
+                    ConferenceApplicationTDSApplicationGridTable.GetFirstNameDBName();
+
+                // go through all accepted applicants
+                foreach (DataRowView rv in MainDS.ApplicationGrid.DefaultView)
                 {
-                    continue;
+                    ConferenceApplicationTDSApplicationGridRow applicant = (ConferenceApplicationTDSApplicationGridRow)rv.Row;
+                    int AttendeeIndex = MainDS.PcAttendee.DefaultView.Find(applicant.PartnerKey);
+
+                    if (AttendeeIndex == -1)
+                    {
+                        continue;
+                    }
+
+                    PcAttendeeRow AttendeeRow = (PcAttendeeRow)MainDS.PcAttendee.DefaultView[AttendeeIndex].Row;
+
+                    if (ADoNotReprint && AttendeeRow.BadgePrint.HasValue)
+                    {
+                        // check if this badge has been printed already
+                        // skip the current badge
+                        continue;
+                    }
+
+                    // create an HTML file using the template files
+                    bool BatchPrinted = TFormLettersTools.AttachNextPage(ref ResultDocument, FormatBadge(MainDS, applicant));
+
+                    if (BatchPrinted)
+                    {
+                        AttendeeRow.BadgePrint = DatePrinted;
+                    }
                 }
 
-                PcAttendeeRow AttendeeRow = (PcAttendeeRow)MainDS.PcAttendee.DefaultView[AttendeeIndex].Row;
+                TFormLettersTools.CloseDocument(ref ResultDocument);
 
-                if (ADoNotReprint && AttendeeRow.BadgePrint.HasValue)
+                if (ResultDocument.Length == 0)
                 {
-                    // check if this badge has been printed already
-                    // skip the current badge
-                    continue;
+                    return String.Empty;
                 }
 
-                // create an HTML file using the template files
-                bool BatchPrinted = TFormLettersTools.AttachNextPage(ref ResultDocument, FormatBadge(applicant));
+                string PDFPath = GeneratePDFFromHTML(ResultDocument);
 
-                if (BatchPrinted)
+                if (ADoNotReprint)
                 {
-                    AttendeeRow.BadgePrint = DatePrinted;
+                    // store modified date printed for badges
+                    TVerificationResultCollection VerificationResult;
+                    ConferenceApplicationTDSAccess.SubmitChanges(MainDS, out VerificationResult);
                 }
+
+                return PDFPath;
             }
-
-            TFormLettersTools.CloseDocument(ref ResultDocument);
-
-            string PDFPath = GeneratePDFFromHTML(ResultDocument);
-
-            if (ADoNotReprint)
+            catch (Exception e)
             {
-                // store modified date printed for badges
-                TVerificationResultCollection VerificationResult;
-                ConferenceApplicationTDSAccess.SubmitChanges(MainDS, out VerificationResult);
+                TLogging.Log("Exception while printing badges: " + e.Message);
+                TLogging.Log(e.StackTrace);
+                throw e;
             }
         }
     }
