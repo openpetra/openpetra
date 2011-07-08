@@ -26,6 +26,7 @@ using System.IO;
 using Ict.Common.Printing;
 using System.Drawing;
 using System.Drawing.Printing;
+using System.Drawing.Imaging;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
@@ -384,7 +385,52 @@ namespace Ict.Common.Printing
                 Width = AWidth;
             }
 
+// there seem to be too many problems with this on Linux. On Linux, the size of the PDF is quite small anyway
+#if DEACTIVATED
+            if (false && (Width / img.Size.Width * 100 < 80))
+            {
+                // we should scale down the picture to make the result pdf smaller
+                try
+                {
+                    Bitmap SmallerImg = new Bitmap(Convert.ToInt32(Width), Convert.ToInt32(Height));
+                    using (Graphics g = Graphics.FromImage((Image)SmallerImg))
+                    {
+                        g.DrawImage(img, 0, 0, Convert.ToInt32(Width), Convert.ToInt32(Height));
+                    }
+
+                    // saving as PNG file because I get GDI+ status: InvalidParameter in Mono/XSP when trying to save to jpg
+                    string ThumbPath = APath.Replace(Path.GetExtension(APath), "thumb.png");
+
+                    ImageCodecInfo[] codecs = ImageCodecInfo.GetImageDecoders();
+                    ImageCodecInfo jpegCodecInfo = codecs[0];
+
+                    foreach (ImageCodecInfo codec in codecs)
+                    {
+                        if (codec.FormatID == ImageFormat.Png.Guid)
+                        {
+                            jpegCodecInfo = codec;
+                        }
+                    }
+
+                    EncoderParameters codecParams = new EncoderParameters(1);
+                    codecParams.Param[0] = new EncoderParameter(Encoder.Quality, 75);
+                    SmallerImg.Save(ThumbPath, jpegCodecInfo, codecParams);
+                    SmallerImg.Dispose();
+                    img.Dispose();
+
+                    File.Delete(ThumbPath);
+
+                    img = new System.Drawing.Bitmap(ThumbPath);
+                }
+                catch (Exception)
+                {
+                }
+            }
+#endif
+
             DrawBitmapInternal(img, AXPos, AYPos, Width, Height);
+
+            img.Dispose();
         }
 
         /// <summary>
