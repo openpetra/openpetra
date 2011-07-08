@@ -704,18 +704,16 @@
                                 </Click>
                             </DirectEvents>
                         </ext:Button></td>
+                        </tr>
+                        <tr>
                         <td><ext:Button ID="btnTestPrintBadges" runat="server" Text="Test Badges">
                             <DirectEvents>
-                                <Click OnEvent="TestPrintBadges">
-                                    <EventMask ShowMask="true" Msg="Preparing the badges..." MinDelay="1000" />
-                                </Click>
+                                <Click OnEvent="TestPrintBadges"/>
                             </DirectEvents>
                         </ext:Button></td>
                         <td><ext:Button ID="btnPrintBadges" runat="server" Text="Print Badges">
                             <DirectEvents>
-                                <Click OnEvent="PrintBadges">
-                                    <EventMask ShowMask="true" Msg="Preparing the badges..." MinDelay="1000" />
-                                </Click>
+                                <Click OnEvent="PrintBadges"/>
                             </DirectEvents>
                         </ext:Button></td>
                         </tr></table>
