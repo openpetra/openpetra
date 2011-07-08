@@ -97,7 +97,7 @@ namespace Ict.Common.Printing
             FXHeadingFont = new XFont("Arial", 0.16, XFontStyle.Bold, options); // Point(10 + XFONTSIZE)
 
             // using GPL Font Code 128 from Grand Zebu http://grandzebu.net/
-            FXBarCodeFont = new XFont("Code 128", 0.3, XFontStyle.Regular, options); // Point(10 + XFONTSIZE)
+            FXBarCodeFont = new XFont("Code 128", 0.45, XFontStyle.Regular, options); // Point(10 + XFONTSIZE)
 
             FXBiggestLastUsedFont = FXDefaultFont;
             FXRight = new XStringFormat();
@@ -200,7 +200,7 @@ namespace Ict.Common.Printing
                 MyYPos += GetFontHeight(AFont);
             }
 
-            return new RectangleF(ALeft, MyYPos, AWidth, GetFontHeight(AFont));
+            return new RectangleF(ALeft, MyYPos, AWidth, GetFontHeight(AFont) + 0.2f);
         }
 
         /// <summary>
@@ -632,6 +632,7 @@ namespace Ict.Common.Printing
                 }
 
                 FXGraphics = XGraphics.FromPdfPage(page, XGraphicsUnit.Inch);
+                FXGraphics.MFEH = PdfFontEmbedding.Always;
 
                 if (FEv == null)
                 {
