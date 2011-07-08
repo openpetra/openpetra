@@ -918,7 +918,7 @@ namespace Ict.Petra.Server.MConference.Applications
                     attr.Value = PartnerLocationRow.EmailAddress;
                     newNode.Attributes.Append(attr);
                     attr = myDoc.CreateAttribute("DateOfBirth");
-                    attr.Value = PersonRow.DateOfBirth.Value.ToString("dd-MM-yyyy");
+                    attr.Value = new TVariant(PersonRow.DateOfBirth.Value).EncodeToString();
                     newNode.Attributes.Append(attr);
                     attr = myDoc.CreateAttribute("DayOfBirth");
                     attr.Value = PersonRow.DateOfBirth.Value.ToString("MMdd");
@@ -930,7 +930,7 @@ namespace Ict.Petra.Server.MConference.Applications
                     attr.Value = ShortTermApplicationRow.StCongressCode;
                     newNode.Attributes.Append(attr);
                     attr = myDoc.CreateAttribute("ApplicationDate");
-                    attr.Value = GeneralApplicationRow.GenAppDate.ToString("dd-MM-yyyy");
+                    attr.Value = new TVariant(GeneralApplicationRow.GenAppDate).EncodeToString();
                     newNode.Attributes.Append(attr);
                     attr = myDoc.CreateAttribute("ApplicationStatus");
                     attr.Value = GeneralApplicationRow.GenApplicationStatus;
@@ -953,7 +953,7 @@ namespace Ict.Petra.Server.MConference.Applications
                             DateAccepted = GeneralApplicationRow.GenAppRecvgFldAccept.Value;
                         }
 
-                        attr.Value = DateAccepted.ToString("dd-MM-yyyy");
+                        attr.Value = new TVariant(DateAccepted).EncodeToString();
                         newNode.Attributes.Append(attr);
                     }
 

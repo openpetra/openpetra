@@ -176,7 +176,16 @@ namespace Ict.Common.IO
                     }
                     else
                     {
-                        worksheet.Cells[rowCounter, colCounter] = new Cell(TXMLParser.GetAttribute(node, attrName));
+                        string value = TXMLParser.GetAttribute(node, attrName);
+
+                        if (value.StartsWith(eVariantTypes.eDateTime.ToString() + ":"))
+                        {
+                            worksheet.Cells[rowCounter, colCounter] = new Cell(TVariant.DecodeFromString(value).ToObject(), CellFormat.Date);
+                        }
+                        else
+                        {
+                            worksheet.Cells[rowCounter, colCounter] = new Cell(value);
+                        }
                     }
 
                     colCounter++;
