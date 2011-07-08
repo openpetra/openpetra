@@ -57,24 +57,32 @@ namespace Ict.Common.Printing
                 AExtension = "." + AExtension;
             }
 
+            if (ACountryCode.Length > 0)
+            {
+                ACountryCode += ".";
+            }
+
             string FileName = Path.Combine(APath, AFileID);
 
-            if (File.Exists(FileName + ACountryCode + "." + AFormsID + AExtension))
+            if (File.Exists(FileName + ACountryCode + AFormsID + AExtension))
             {
-                return FileName + ACountryCode + "." + AFormsID + AExtension;
+                return FileName + ACountryCode + AFormsID + AExtension;
             }
+
+            string OrigFormsID = AFormsID;
 
             while (AFormsID != null && AFormsID.Contains("."))
             {
                 AFormsID = AFormsID.Substring(0, AFormsID.LastIndexOf('.'));
 
-                if (File.Exists(FileName + ACountryCode + "." + AFormsID + AExtension))
+                if (File.Exists((FileName + ACountryCode + AFormsID + AExtension).Replace("..", ".")))
                 {
-                    return FileName + ACountryCode + "." + AFormsID + AExtension;
+                    return (FileName + ACountryCode + AFormsID + AExtension).Replace("..", ".");
                 }
             }
 
-            return FileName + ACountryCode + AExtension;
+            // we cannot find the file, so we just return a filename for the error message
+            return FileName + ACountryCode + OrigFormsID + AExtension;
         }
 
         /// <summary>
