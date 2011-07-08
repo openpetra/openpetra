@@ -27,6 +27,7 @@ using System.Xml;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Printing;
+using System.Globalization;
 using Ict.Common.IO;
 
 namespace Ict.Common.Printing
@@ -199,6 +200,8 @@ namespace Ict.Common.Printing
                             dimensions[0] = dimensions[0].Trim().ToLower();
                             dimensions[1] = dimensions[1].Trim().ToLower();
 
+                            CultureInfo OrigCulture = Catalog.SetCulture(CultureInfo.InvariantCulture);
+
                             if (dimensions[0].EndsWith("in"))
                             {
                                 AWidthInPoint = (float)Convert.ToDouble(dimensions[0].Substring(0, dimensions[0].Length - 2)) * 72.0f;
@@ -218,6 +221,8 @@ namespace Ict.Common.Printing
                             {
                                 AHeightInPoint = (float)Convert.ToDouble(dimensions[1].Substring(0, dimensions[1].Length - 2)) / 2.54f;
                             }
+
+                            Catalog.SetCulture(OrigCulture);
                         }
                     }
                 }
@@ -314,7 +319,11 @@ namespace Ict.Common.Printing
 
                     foreach (string namevaluepair in namevaluepairs)
                     {
-                        string[] detail = namevaluepair.Split(':');
+                        string DetailName = namevaluepair.Substring(0, namevaluepair.IndexOf(':'));
+                        string DetailValue = namevaluepair.Substring(namevaluepair.IndexOf(':') + 1);
+                        string[] detail = new string[] {
+                            DetailName, DetailValue
+                        };
 
                         if (detail[0].Trim() == "margin-left")
                         {

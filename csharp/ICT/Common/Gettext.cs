@@ -69,6 +69,20 @@ namespace Ict.Common
         }
 
         /// <summary>
+        /// set the given culture
+        /// </summary>
+        /// <param name="ACulture"></param>
+        /// <returns>the previously set culture</returns>
+        public static CultureInfo SetCulture(CultureInfo ACulture)
+        {
+            CultureInfo OrigCulture = Thread.CurrentThread.CurrentCulture;
+
+            Thread.CurrentThread.CurrentCulture = ACulture;
+
+            return OrigCulture;
+        }
+
+        /// <summary>
         /// set the new language
         /// </summary>
         public static void SetLanguage(string ALanguageCode)
