@@ -81,6 +81,11 @@ namespace Ict.Common.Printing
                 }
             }
 
+            if (File.Exists((FileName + ACountryCode + AExtension).Replace("..", ".")))
+            {
+                return (FileName + ACountryCode + AExtension).Replace("..", ".");
+            }
+
             // we cannot find the file, so we just return a filename for the error message
             return FileName + ACountryCode + OrigFormsID + AExtension;
         }
