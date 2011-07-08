@@ -155,9 +155,12 @@ OpenPetra:
                 Setup:  {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
                     GLSetup:
                         CreateLedger: {ActionOpenScreen=TFrmGLCreateLedger}
-                        SetupCurrencies: {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmSetupCurrency}
-                        SetupDailyExchangeRate: {ActionOpenScreen=TFrmSetupDailyExchangeRate}
                         SetupAnalysisTypes: {ActionOpenScreen=TFrmSetupAnalysisTypes}
+                        SetupCostCentreTypes: {ActionOpenScreen=TFrmSetupCostCentreTypes}
+                        SetupCurrencies: {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmSetupCurrency}
+                        SetupCorporateExchangeRate: {ActionOpenScreen=TFrmSetupCorporateExchangeRate}
+                        SetupDailyExchangeRate: {ActionOpenScreen=TFrmSetupDailyExchangeRate}
+                        SetupMethodOfGiving: {ActionOpenScreen=TFrmSetupMethodOfGiving}
                         ManageAccounts: {Description:Add accounts and modify the hierarchy, ActionOpenScreen=TFrmGLAccountHierarchy}
                         ManageCostCentres: {Description:Add and maintain cost centres, ActionOpenScreen=TFrmGLCostCentreHierarchy}
                     #Accounts:
@@ -178,6 +181,10 @@ OpenPetra:
                         #LedgerSetupShepherd:
                         #SetupCalendar:
                         #ChangeNumberOfForwardingPeriods:
+                    CrossLedgerSetup: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
+                        SetupAdminGrantsPayable: {ActionOpenScreen=TFrmSetupAdminGrantsPayable}
+                        SetupAdminGrantsReceivable: {ActionOpenScreen=TFrmSetupAdminGrantsReceivable}
+                        SetupMethodOfPayment: {ActionOpenScreen=TFrmSetupMethodOfPayment}
                     GiftSetup: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
                         SetupMotivationDetails: {Description: "Maintain motivation details towards which donations can be assigned", ActionOpenScreen=Gift.TFrmGiftMotivationSetup}
         Personnel: {Icon=personel_small.ico, PermissionsRequired=PERSONNEL}

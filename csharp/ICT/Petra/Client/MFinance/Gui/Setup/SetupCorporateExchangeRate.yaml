@@ -1,8 +1,8 @@
 RootNode:
     BaseYaml: ../../../CommonForms/PetraEditForm.yaml
-    FormTitle: Maintain Daily Exchange Rates
+    FormTitle: Maintain Corporate Exchange Rates
     Namespace: Ict.Petra.Client.MFinance.Gui.Setup
-    DetailTable: ADailyExchangeRate
+    DetailTable: ACorporateExchangeRate
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data]
     FormType: edit
     Template: windowMaintainTable
@@ -10,10 +10,7 @@ RootNode:
     WindowHeight: 500
     Actions:
         actNew: {Label=&New, ActionClick=NewRow}
-#        actDelete: {Label=&Delete, ActionClick=DeleteRow}
         actImport: {ActionClick=Import}
-        actClose:  {Label=Close, ActionClick=CloseDialog}
-        actCancel:  {Label=Cancel, ActionClick=CancelDialog}
     Controls:
         pnlContent:
             Controls: [pnlGrid, pnlDetails]
@@ -23,15 +20,9 @@ RootNode:
             Controls: [grdDetails, pnlButtons]
         pnlButtons:
             Dock: Right
-            Controls: [btnNew, btnClose, btnCancel]
+            Controls: [btnNew]
         btnNew:
             Action: actNew
-#        btnDelete:
-#            Action: actDelete
-        btnClose: 
-            Action: actClose
-        btnCancel: 
-            Action: actCancel
         grdDetails:
             Dock: Fill
             Columns: [DetailFromCurrencyCode, DetailToCurrencyCode, DetailDateEffectiveFrom, DetailRateOfExchange]
@@ -47,10 +38,10 @@ RootNode:
                 Row3: [txtDetailRateOfExchange, btnInvertExchangeRate]
                 Row4: [lblValueOneDirection]
                 Row5: [lblValueOtherDirection]
-        cmbDetailFromCurrencyCode: {OnlySetOnce=true, Label=&From Currency Code, List=CurrencyCodeList}
-        cmbDetailToCurrencyCode: {OnlySetOnce=true, Label=&To Currency Code, List=CurrencyCodeList}
+        cmbDetailFromCurrencyCode: {OnlySetOnce=true, Label=&From Currency Code, List=CurrencyCodeList, OnLeave=ValueChangedCurrencyCode}
+        cmbDetailToCurrencyCode: {OnlySetOnce=true, Label=&To Currency Code, List=CurrencyCodeList, OnLeave=ValueChangedCurrencyCode}
         dtpDetailDateEffectiveFrom: {OnlySetOnce=true, Label=D&ate}
-        txtDetailRateOfExchange: {OnlySetOnce=true, Label=&Rate of exchange, Format=Decimal(6)}
+        txtDetailRateOfExchange: {OnlySetOnce=true, Label=&Rate of exchange, Format=Decimal(6), OnLeave=ValueChangedCurrencyCode}
         btnInvertExchangeRate: {Label=&Invert value}
         btnUseDateToFilter: {Label=Use Date To Filter}
         lblValueOneDirection: 

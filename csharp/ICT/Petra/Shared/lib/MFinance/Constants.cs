@@ -116,5 +116,12 @@ namespace Ict.Petra.Shared.MFinance
 
         /// <summary>Unit-Type is key-min</summary>
         public const String GROUP_DETAIL_KEY_MIN = "KEYMIN";
+        
+        /// <summary>Used in Admin Grants Payable and Receivable</summary>
+        public const int ADMIN_FEE_INCOME_ACCT = 3400;
+
+        /// <summary>Used in Admin Grants Payable and Receivable</summary>
+        public const int ADMIN_FEE_EXPENSE_ACCT = 4900;
+
     }
 }

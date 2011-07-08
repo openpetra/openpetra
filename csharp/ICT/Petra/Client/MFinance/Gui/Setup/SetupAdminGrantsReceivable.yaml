@@ -1,0 +1,62 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain Admin. Grants Receivable
+    Namespace: Ict.Petra.Client.MFinance.Gui.Setup
+    DetailTable: AFeesReceivable
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data]
+    FormType: edit
+    Template: windowMaintainTable
+    WindowWidth: 760
+    WindowHeight: 500
+    Actions:
+        actNew: {Label=&New, ActionClick=NewRow}
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew]
+        btnNew:
+            Action: actNew
+        grdDetails:
+            Dock: Fill
+            Columns: [AFeesReceivable.FeeCode, AFeesReceivable.FeeDescription, AFeesReceivable.ChargeOption, AFeesReceivable.ChargePercentage, AFeesReceivable.ChargeAmount]
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtDetailFeeCode, txtDetailFeeDescription]
+                Row1: [cmbDetailChargeOption, txtDetailChargePercentage, txtDetailChargeAmount]
+                Row2: [grpAssignment]
+            ColWidths: [4=Fixed:123]
+        txtDetailFeeCode: {Label=Fee Code, CharacterCasing=Upper}
+        txtDetailFeeDescription: {Label=Description, ColSpan=3, Width=290}
+        cmbDetailChargeOption:  {Label=Charge Option, OnChange=ChargeOptionChanged}
+            OptionalValues: [Minimum, Maximum, Fixed, Percentage]
+        txtDetailChargePercentage:  {Label=Charge Percentage, Format=Decimal}
+        txtDetailChargeAmount:  {Label=Charge Amount, Format=Decimal}
+        cmbDetailCostCentreCode:  {NoLabel=True, List=UserDefinedList}
+        cmbDetailAccountCode:  {Label=Account, List=UserDefinedList, Width=250}
+        cmbDetailDrAccountCode:  {NoLabel=True, List=UserDefinedList}
+        txtForeignReceivingFund: {Label=Cost Centre, Enabled=False, Width=200}
+        lblToBeDebited: 
+            Padding:96,0,0,0
+        lblToBeCredited:
+        Empty1:
+        Empty2:
+        Empty3:
+        Empty4:
+        grpAssignment: {ColSpan=5}
+            Controls: 
+                Row0: [lblToBeDebited, lblToBeCredited]
+                Row1: [txtForeignReceivingFund, cmbDetailCostCentreCode]
+                Row2: [cmbDetailAccountCode, cmbDetailDrAccountCode]
+            ColWidths: [0=Fixed:96, 1=Fixed:284, 2=Fixed:289]
+
+    Toolbar:
+        tbbNew:
+            Label: New Admin. Grant Receivable
