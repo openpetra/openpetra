@@ -577,7 +577,8 @@
                     Region="North"
                     Split="true"
                     Margins="0 5 5 5"
-                    Title="" 
+                    Title=""
+                    AutoScroll="true"
                     Height="120">
                     <Content>
                         <table>
@@ -714,6 +715,11 @@
                         <td><ext:Button ID="btnPrintBadges" runat="server" Text="Print Badges">
                             <DirectEvents>
                                 <Click OnEvent="PrintBadges"/>
+                            </DirectEvents>
+                        </ext:Button></td>
+                        <td><ext:Button ID="btnExportTShirtNumbers" runat="server" Text="Get T-Shirt Numbers">
+                            <DirectEvents>
+                                <Click OnEvent="ExportTShirtNumbers" IsUpload="true"/>
                             </DirectEvents>
                         </ext:Button></td>
                         </tr></table>

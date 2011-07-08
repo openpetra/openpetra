@@ -84,6 +84,7 @@ namespace Ict.Petra.WebServer.MConference
         protected Ext.Net.Button btnLoadRefreshApplicants;
         protected Ext.Net.Button btnTestPrintBadges;
         protected Ext.Net.Button btnPrintBadges;
+        protected Ext.Net.Button btnExportTShirtNumbers;
 
         protected bool ConferenceOrganisingOffice = false;
 
@@ -119,6 +120,7 @@ namespace Ict.Petra.WebServer.MConference
                 btnLoadRefreshApplicants.Visible = false;
                 btnTestPrintBadges.Visible = ConferenceOrganisingOffice;
                 btnPrintBadges.Visible = ConferenceOrganisingOffice;
+                btnExportTShirtNumbers.Visible = ConferenceOrganisingOffice;
 
                 // for the moment, do not confuse all offices with this button
                 btnCreateGiftBatch.Visible = ConferenceOrganisingOffice;
@@ -655,7 +657,7 @@ namespace Ict.Petra.WebServer.MConference
             this.Response.Clear();
             this.Response.ContentType = "application/xls";
             this.Response.AddHeader("Content-Type", "application/xls");
-            this.Response.AddHeader("Content-Disposition", "attachment; filename=TeenStreetApplicants.xls");
+            this.Response.AddHeader("Content-Disposition", "attachment; filename=Applicants.xls");
             MemoryStream m = new MemoryStream();
             TApplicationManagement.DownloadApplications(EventCode, ref CurrentApplicants, m);
             m.WriteTo(this.Response.OutputStream);
@@ -706,6 +708,19 @@ namespace Ict.Petra.WebServer.MConference
         protected void TestPrintBadges(object sender, DirectEventArgs e)
         {
             PrintBadges(false);
+        }
+
+        protected void ExportTShirtNumbers(object sender, DirectEventArgs e)
+        {
+            this.Response.Clear();
+            this.Response.ContentType = "application/xls";
+            this.Response.AddHeader("Content-Type", "application/xls");
+            this.Response.AddHeader("Content-Disposition", "attachment; filename=TShirtNumbers.xls");
+            MemoryStream m = new MemoryStream();
+            TAttendeeManagement.DownloadTShirtNumbers(EventPartnerKey, EventCode, m);
+            m.WriteTo(this.Response.OutputStream);
+            m.Close();
+            this.Response.End();
         }
 
         protected void Logout_Click(object sender, DirectEventArgs e)

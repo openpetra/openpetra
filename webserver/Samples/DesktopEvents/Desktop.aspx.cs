@@ -40,11 +40,10 @@ namespace Ict.Petra.WebServer.MConference
 {
     public partial class TPageOnlineApplication : System.Web.UI.Page
     {
-
         protected void Page_Load(object sender, EventArgs e)
         {
         }
-        
+
         protected void TestDownload(object sender, DirectEventArgs e)
         {
             // EventMask ShowMask is not hidden after download: http://forums.ext.net/showthread.php?4331-CLOSED-Write-HttpResonse-OnEvent-Click
@@ -61,7 +60,7 @@ namespace Ict.Petra.WebServer.MConference
             // this.Response.TransmitFile(PDFPath);
             this.Response.End();
         }
-        
+
         protected void TestAlert(object sender, DirectEventArgs e)
         {
             //X.Js.Call("TestAlert", "Preparing the download...");
@@ -70,11 +69,12 @@ namespace Ict.Petra.WebServer.MConference
             //X.Js.Call("ShowMask", "Preparing the download...");
 
             MaskConfig Config = new MaskConfig();
-            Config.Msg ="Preparing the download...";
+
+            Config.Msg = "Preparing the download...";
             X.Mask.Show(Config);
             X.Js.Call("TestAlert", "Preparing the download...");
             System.Threading.Thread.Sleep(2000);
             X.Mask.Hide();
-        }        
-   }
+        }
+    }
 }

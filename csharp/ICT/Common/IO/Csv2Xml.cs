@@ -182,6 +182,10 @@ namespace Ict.Common.IO
                         {
                             worksheet.Cells[rowCounter, colCounter] = new Cell(TVariant.DecodeFromString(value).ToObject(), CellFormat.Date);
                         }
+                        else if (value.StartsWith(eVariantTypes.eInteger.ToString() + ":"))
+                        {
+                            worksheet.Cells[rowCounter, colCounter] = new Cell(TVariant.DecodeFromString(value).ToObject());
+                        }
                         else
                         {
                             worksheet.Cells[rowCounter, colCounter] = new Cell(value);

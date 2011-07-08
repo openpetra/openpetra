@@ -26,6 +26,7 @@ using System.Data;
 using System.IO;
 using System.Drawing.Printing;
 using System.Collections.Generic;
+using System.Xml;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.DB;
@@ -233,6 +234,169 @@ namespace Ict.Petra.Server.MConference.Applications
             return true;
         }
 
+        private static SortedList <Int64, DateTime>TShirtDeadLines = null;
+
+        private static bool AcceptedBeforeTShirtDeadLine(PcAttendeeRow AAttendeeRow, ConferenceApplicationTDSApplicationGridRow AApplicant)
+        {
+            if (TShirtDeadLines == null)
+            {
+                TShirtDeadLines = new SortedList <Int64, DateTime>();
+
+                // load T-Shirt Deadlines from text file
+                // format: Partnerkey of Registration office, year, month, day
+                // key 0 is the default date
+
+                if (!TAppSettingsManager.HasValue("ConferenceTool.TShirtDeadlines.Path"))
+                {
+                    throw new Exception("Cannot find ConferenceTool.TShirtDeadlines.Path in config file");
+                }
+
+                StreamReader sr = new StreamReader(TAppSettingsManager.GetValue("ConferenceTool.TShirtDeadlines.Path"));
+
+                while (!sr.EndOfStream)
+                {
+                    string line = sr.ReadLine();
+
+                    if (!line.Trim().StartsWith("#"))
+                    {
+                        TShirtDeadLines.Add(Convert.ToInt64(StringHelper.GetNextCSV(ref line)),
+                            new DateTime(Convert.ToInt32(StringHelper.GetNextCSV(ref line)),
+                                Convert.ToInt32(StringHelper.GetNextCSV(ref line)),
+                                Convert.ToInt32(StringHelper.GetNextCSV(ref line))));
+                    }
+                }
+            }
+
+            DateTime DeadLine = TShirtDeadLines[0];
+
+            if (TShirtDeadLines.ContainsKey(AApplicant.RegistrationOffice))
+            {
+                DeadLine = TShirtDeadLines[AApplicant.RegistrationOffice];
+            }
+
+            return AAttendeeRow.Registered.Value.CompareTo(DeadLine) <= 0;
+        }
+
+        /// <summary>
+        /// we need to know how many applicants from which country will get a T-Shirt,
+        /// using the same algorithm as the badge printing procedure
+        /// </summary>
+        /// <param name="AConferenceKey"></param>
+        /// <param name="AEventCode"></param>
+        /// <param name="AStream">write the Excel file into this stream</param>
+        public static bool DownloadTShirtNumbers(Int64 AConferenceKey, string AEventCode, MemoryStream AStream)
+        {
+            // get all applications for this conference
+            ConferenceApplicationTDS MainDS = TApplicationManagement.GetApplications(AEventCode, "all", -1, null, false);
+
+            // required for DefaultView.Find
+            MainDS.PmShortTermApplication.DefaultView.Sort =
+                PmShortTermApplicationTable.GetStConfirmedOptionDBName() + "," +
+                PmShortTermApplicationTable.GetPartnerKeyDBName();
+            MainDS.PmGeneralApplication.DefaultView.Sort =
+                PmGeneralApplicationTable.GetPartnerKeyDBName() + "," +
+                PmGeneralApplicationTable.GetApplicationKeyDBName() + "," +
+                PmGeneralApplicationTable.GetRegistrationOfficeDBName();
+
+            LoadAttendees(ref MainDS, AConferenceKey);
+
+            // count the T-Shirts
+            SortedList <string, Int32>TShirtCountPerCountry = new SortedList <string, int>();
+            SortedList <string, Int32>TShirtCount = new SortedList <string, int>();
+            MainDS.ApplicationGrid.DefaultView.Sort = ConferenceApplicationTDSApplicationGridTable.GetPartnerKeyDBName();
+
+            foreach (PcAttendeeRow attendee in MainDS.PcAttendee.Rows)
+            {
+                ConferenceApplicationTDSApplicationGridRow applicant =
+                    (ConferenceApplicationTDSApplicationGridRow)MainDS.ApplicationGrid.DefaultView[MainDS.ApplicationGrid.DefaultView.Find(attendee
+                                                                                                       .PartnerKey)].Row;
+
+                Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(TJsonTools.RemoveContainerControls(applicant.JSONData));
+
+                if (!rawDataObject.Contains("TShirtSize") || !rawDataObject.Contains("TShirtStyle"))
+                {
+                    continue;
+                }
+
+                if (AcceptedBeforeTShirtDeadLine(attendee, applicant))
+                {
+                    string TShirtId = applicant.RegistrationOffice.ToString() + ", " +
+                                      rawDataObject["TShirtStyle"].ToString() + ", " +
+                                      rawDataObject["TShirtSize"].ToString();
+
+                    if (TShirtCountPerCountry.ContainsKey(TShirtId))
+                    {
+                        TShirtCountPerCountry[TShirtId]++;
+                    }
+                    else
+                    {
+                        TShirtCountPerCountry.Add(TShirtId, 1);
+                    }
+
+                    TShirtId = "Total," + rawDataObject["TShirtStyle"].ToString() + ", " +
+                               rawDataObject["TShirtSize"].ToString();
+
+                    if (TShirtCount.ContainsKey(TShirtId))
+                    {
+                        TShirtCount[TShirtId]++;
+                    }
+                    else
+                    {
+                        TShirtCount.Add(TShirtId, 1);
+                    }
+                }
+            }
+
+            // write the result to an Excel file
+            XmlDocument myDoc = TYml2Xml.CreateXmlDocument();
+
+            foreach (string key in TShirtCountPerCountry.Keys)
+            {
+                XmlNode newNode = myDoc.CreateElement("", "ELEMENT", "");
+                myDoc.DocumentElement.AppendChild(newNode);
+                XmlAttribute attr;
+
+                int Counter = 1;
+                string list = key;
+
+                while (list.Length > 0)
+                {
+                    attr = myDoc.CreateAttribute("column" + Counter.ToString());
+                    attr.Value = StringHelper.GetNextCSV(ref list);
+                    newNode.Attributes.Append(attr);
+                    Counter++;
+                }
+
+                attr = myDoc.CreateAttribute("columnCount");
+                attr.Value = new TVariant(TShirtCountPerCountry[key]).EncodeToString();
+                newNode.Attributes.Append(attr);
+            }
+
+            foreach (string key in TShirtCount.Keys)
+            {
+                XmlNode newNode = myDoc.CreateElement("", "ELEMENT", "");
+                myDoc.DocumentElement.AppendChild(newNode);
+                XmlAttribute attr;
+
+                int Counter = 1;
+                string list = key;
+
+                while (list.Length > 0)
+                {
+                    attr = myDoc.CreateAttribute("column" + Counter.ToString());
+                    attr.Value = StringHelper.GetNextCSV(ref list);
+                    newNode.Attributes.Append(attr);
+                    Counter++;
+                }
+
+                attr = myDoc.CreateAttribute("columnCount");
+                attr.Value = new TVariant(TShirtCount[key]).EncodeToString();
+                newNode.Attributes.Append(attr);
+            }
+
+            return TCsv2Xml.Xml2ExcelStream(myDoc, AStream);
+        }
+
         private static PUnitTable Units = null;
 
         private static string FormatBadge(ConferenceApplicationTDS AMainDS, ConferenceApplicationTDSApplicationGridRow AApplicant)
@@ -300,9 +464,54 @@ namespace Ict.Petra.Server.MConference.Applications
                 return string.Empty;
             }
 
-            // TODO: scale photo, so that the PDF does not get that big. just a temp file, do not modify the original file.
-            // should this happen in the PDF printer?
             HTMLText = HTMLText.Replace("#PHOTOPARTICIPANT", PhotoPath);
+
+            string RolesThatRequireFellowshipGroupCode = TAppSettingsManager.GetValue("ConferenceTool.RolesThatRequireFellowshipGroupCode");
+            RolesThatRequireFellowshipGroupCode = RolesThatRequireFellowshipGroupCode.Replace(" ", "") + ",";
+
+            if (RolesThatRequireFellowshipGroupCode.Contains(AApplicant.StCongressCode + ","))
+            {
+                // eg: we need a fellowship group code for teenagers and coaches
+                if (AApplicant.StFgCode.Length == 0)
+                {
+                    TLogging.Log("badge has no FG: " + AApplicant.PartnerKey.ToString());
+                    return string.Empty;
+                }
+
+                HTMLText = HTMLText.Replace("#FELLOWSHIPGROUP", AApplicant.StFgCode);
+            }
+
+            Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(TJsonTools.RemoveContainerControls(AApplicant.JSONData));
+
+            if (rawDataObject.Contains("TShirtSize") && rawDataObject.Contains("TShirtStyle"))
+            {
+                string tsstyle = rawDataObject["TShirtStyle"].ToString();
+
+                if (tsstyle.IndexOf("(") != -1)
+                {
+                    tsstyle = tsstyle.Substring(0, tsstyle.IndexOf("(") - 1);
+                }
+
+                string tssize = rawDataObject["TShirtSize"].ToString();
+
+                if (tssize.IndexOf("(") != -1)
+                {
+                    tssize = tssize.Substring(0, tssize.IndexOf("(") - 1);
+                }
+
+                PcAttendeeRow AttendeeRow =
+                    (PcAttendeeRow)AMainDS.PcAttendee.DefaultView[AMainDS.PcAttendee.DefaultView.Find(AApplicant.PartnerKey)].Row;
+
+                // TShirt only for applicants who have registered before the TShirt deadline
+                if (AcceptedBeforeTShirtDeadLine(AttendeeRow, AApplicant))
+                {
+                    HTMLText = HTMLText.Replace("#TSHIRT", tsstyle + " " + tssize);
+                }
+                else
+                {
+                    HTMLText = HTMLText.Replace("#TSHIRT", string.Empty);
+                }
+            }
 
             return HTMLText;
         }
