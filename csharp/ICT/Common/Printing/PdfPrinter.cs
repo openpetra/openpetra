@@ -244,16 +244,25 @@ namespace Ict.Common.Printing
 
             if (PrintingMode == ePrintingMode.eDoPrint)
             {
-                XStringFormat f = GetXStringFormat(AAlign);
-                f.FormatFlags = XStringFormatFlags.MeasureTrailingSpaces;
-
                 if (FPrinterBehaviour == ePrinterBehaviour.eReport)
                 {
                     ATxt = GetFittedText(ATxt, AFont, rect.Width);
                 }
 
-                //TLogging.Log("curr ypos " + CurrentYPos.ToString() + " " + AXPos.ToString() + " " + ATxt + AWidth.ToString());
-                FXGraphics.DrawString(ATxt, GetXFont(AFont), Brushes.Black, rect, f);
+                if ((AAlign == eAlignment.eCenter) && Environment.OSVersion.ToString().StartsWith("Unix"))
+                {
+                    // it seems on Mono/Unix, the string aligning to the center does not work properly. so we do it manually
+                    rect = new RectangleF(rect.Left + (AWidth - GetWidthString(ATxt, AFont)) / 2.0f, rect.Top, rect.Height, rect.Width);
+                    FXGraphics.DrawString(ATxt, GetXFont(AFont), Brushes.Black, rect, GetXStringFormat(eAlignment.eLeft));
+                }
+                else
+                {
+                    XStringFormat f = GetXStringFormat(AAlign);
+                    f.FormatFlags = XStringFormatFlags.MeasureTrailingSpaces;
+
+                    //TLogging.Log("curr ypos " + CurrentYPos.ToString() + " " + AXPos.ToString() + " " + ATxt + AWidth.ToString());
+                    FXGraphics.DrawString(ATxt, GetXFont(AFont), Brushes.Black, rect, f);
+                }
             }
 
             return (ATxt != null) && (ATxt.Length != 0);
@@ -477,6 +486,8 @@ namespace Ict.Common.Printing
             // on Windows, base.GetWidthString is too long.
             if (Environment.OSVersion.ToString().StartsWith("Unix"))
             {
+                // FXGraphics.MeasureString seems to be useless on Mono/Unix.
+                // it returns 0 for single letters, for more letters there is a huge factor of difference to the desired value
                 return base.GetWidthString(ATxt, AFont);
             }
 

@@ -575,7 +575,7 @@ namespace Ict.Common.Printing
         /// <returns>Return the width of the string, if it was printed in one line, using the given Font</returns>
         public override float GetWidthString(String ATxt, eFont AFont)
         {
-            return FEv.Graphics.MeasureString(ATxt, GetFont(AFont), Convert.ToInt32(Cm(30))).Width;
+            return FEv.Graphics.MeasureString(ATxt, GetFont(AFont)).Width;
         }
 
         /// <summary>
