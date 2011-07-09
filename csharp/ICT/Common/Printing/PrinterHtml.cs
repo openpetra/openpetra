@@ -539,7 +539,8 @@ namespace Ict.Common.Printing
         /// eg. position:absolute, top:35px, left:240px,
         /// </summary>
         /// <param name="curNode"></param>
-        private bool SetPositionFromStyle(XmlNode curNode)
+        /// <param name="AWidthAvailable"></param>
+        private bool SetPositionFromStyle(XmlNode curNode, ref float AWidthAvailable)
         {
             bool absolutePosition = false;
 
@@ -570,6 +571,13 @@ namespace Ict.Common.Printing
                             FPrinter.CurrentXPos = FPrinter.PixelHorizontal(PixelStringToPixelNumber(detail[1].Trim().ToLower()));
                         }
                     }
+                    else if (detail[0].Trim().ToLower() == "width")
+                    {
+                        if (absolutePosition)
+                        {
+                            AWidthAvailable = FPrinter.PixelHorizontal(PixelStringToPixelNumber(detail[1].Trim().ToLower()));
+                        }
+                    }
                 }
             }
 
@@ -590,10 +598,12 @@ namespace Ict.Common.Printing
             float oldYPos = FPrinter.CurrentYPos;
 
             XmlNode origNode = curNode;
+            float OrigWidthAvailable = AWidthAvailable;
 
             while (curNode != null && FPrinter.ValidYPos() && FContinueNextPageNode == null)
             {
-                bool HasAbsolutePosition = SetPositionFromStyle(curNode);
+                AWidthAvailable = OrigWidthAvailable;
+                bool HasAbsolutePosition = SetPositionFromStyle(curNode, ref AWidthAvailable);
 
                 if (HasAbsolutePosition)
                 {
