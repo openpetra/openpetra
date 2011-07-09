@@ -361,7 +361,11 @@ namespace Ict.Petra.Server.MConference.Applications
 
         private static string FormatBadge(ConferenceApplicationTDS AMainDS, ConferenceApplicationTDSApplicationGridRow AApplicant)
         {
-            TLogging.Log(AApplicant.PartnerKey.ToString());
+            if (TLogging.DebugLevel > 5)
+            {
+                TLogging.Log("Printing badge " + AApplicant.PartnerKey.ToString());
+            }
+
             string FileName = TFormLettersTools.GetRoleSpecificFile(TAppSettingsManager.GetValue("Formletters.Path"),
                 "Badge",
                 "",
@@ -430,17 +434,17 @@ namespace Ict.Petra.Server.MConference.Applications
             string RolesThatRequireFellowshipGroupCode = TAppSettingsManager.GetValue("ConferenceTool.RolesThatRequireFellowshipGroupCode");
             RolesThatRequireFellowshipGroupCode = RolesThatRequireFellowshipGroupCode.Replace(" ", "") + ",";
 
-            if (RolesThatRequireFellowshipGroupCode.Contains(AApplicant.StCongressCode + ","))
+            if (AApplicant.StFgCode.Length == 0)
             {
                 // eg: we need a fellowship group code for teenagers and coaches
-                if (AApplicant.StFgCode.Length == 0)
+                if (RolesThatRequireFellowshipGroupCode.Contains(AApplicant.StCongressCode + ","))
                 {
                     TLogging.Log("badge has no FG: " + AApplicant.PartnerKey.ToString());
                     return string.Empty;
                 }
-
-                HTMLText = HTMLText.Replace("#FELLOWSHIPGROUP", AApplicant.StFgCode);
             }
+
+            HTMLText = HTMLText.Replace("#FELLOWSHIPGROUP", AApplicant.StFgCode);
 
             Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(TJsonTools.RemoveContainerControls(AApplicant.JSONData));
 
@@ -472,6 +476,10 @@ namespace Ict.Petra.Server.MConference.Applications
                 {
                     HTMLText = HTMLText.Replace("#TSHIRT", string.Empty);
                 }
+            }
+            else
+            {
+                HTMLText = HTMLText.Replace("#TSHIRT", string.Empty);
             }
 
             // check for all image paths, if the images actually exist
