@@ -379,6 +379,7 @@ namespace Ict.Petra.Server.MConference.Applications
             r.Close();
 
             HTMLText = HTMLText.Replace("#FORMLETTERPATH", TAppSettingsManager.GetValue("Formletters.Path"));
+            HTMLText = HTMLText.Replace("#ROLE", AApplicant.StCongressCode);
             HTMLText = HTMLText.Replace("#FIRSTNAME", AApplicant.FirstName);
             HTMLText = HTMLText.Replace("#LASTNAME", AApplicant.FamilyName);
 
@@ -471,6 +472,13 @@ namespace Ict.Petra.Server.MConference.Applications
                 {
                     HTMLText = HTMLText.Replace("#TSHIRT", string.Empty);
                 }
+            }
+
+            // check for all image paths, if the images actually exist
+            if (!TFormLettersTools.CheckImagesFileExist(HTMLText))
+            {
+                // CheckImagesFileExist does some logging
+                return string.Empty;
             }
 
             return HTMLText;

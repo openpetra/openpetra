@@ -119,6 +119,32 @@ namespace Ict.Common.Printing
             return false;
         }
 
+        /// check for all image paths, if the images actually exist
+        public static bool CheckImagesFileExist(string AHTMLText)
+        {
+            string CheckImages = AHTMLText;
+            int IndexImg;
+            bool MissingImage = false;
+
+            while ((IndexImg = CheckImages.ToLower().IndexOf("img src=")) != -1)
+            {
+                CheckImages = CheckImages.Substring(IndexImg + 1);
+
+                int PosQuote1 = CheckImages.IndexOf('"');
+                int LengthPath = CheckImages.Substring(PosQuote1 + 1).IndexOf('"');
+
+                string path = CheckImages.Substring(PosQuote1 + 1, LengthPath);
+
+                if (!File.Exists(path))
+                {
+                    TLogging.Log("Cannot find path " + path);
+                    MissingImage = true;
+                }
+            }
+
+            return !MissingImage;
+        }
+
         /// <summary>
         /// close the document after one or several pages have been inserted.
         /// </summary>
