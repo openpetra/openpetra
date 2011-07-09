@@ -369,6 +369,8 @@ namespace Ict.Petra.Server.MConference.Applications
                 }
             }
 
+            MainDS.ApplicationGrid.DefaultView.RowFilter = String.Empty;
+
             if (AClearJSONData)
             {
                 // clear raw data, otherwise this is too big for the javascript client
@@ -1062,6 +1064,8 @@ namespace Ict.Petra.Server.MConference.Applications
                     RegistrationIDs);
                 DBAccess.GDBAccessObj.SelectDT(applicationTable, stmt, Transaction, null, 0, 0);
 
+                applicationTable.DefaultView.Sort = PmGeneralApplicationTable.GetPartnerKeyDBName();
+
                 foreach (XmlNode applicant in partnerKeys.DocumentElement.ChildNodes)
                 {
                     Int64 RegistrationID = Convert.ToInt64(TXMLParser.GetAttribute(applicant, "HorstID"));
@@ -1071,14 +1075,11 @@ namespace Ict.Petra.Server.MConference.Applications
                     {
                         Int64 LocalOfficePartnerKey = Convert.ToInt64(TXMLParser.GetAttribute(applicant, "PersonPartnerKey"));
 
-                        applicationTable.DefaultView.RowFilter = String.Format(
-                            "{0} = {1}",
-                            PmGeneralApplicationTable.GetPartnerKeyDBName(),
-                            RegistrationID);
+                        Int32 index = applicationTable.DefaultView.Find(RegistrationID);
 
-                        if (applicationTable.DefaultView.Count > 0)
+                        if (index != -1)
                         {
-                            PmGeneralApplicationRow row = (PmGeneralApplicationRow)applicationTable.DefaultView[0].Row;
+                            PmGeneralApplicationRow row = (PmGeneralApplicationRow)applicationTable.DefaultView[index].Row;
                             row.LocalPartnerKey = LocalOfficePartnerKey;
                             row.ImportedLocalPetra = true;
                         }
