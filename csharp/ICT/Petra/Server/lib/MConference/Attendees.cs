@@ -83,18 +83,11 @@ namespace Ict.Petra.Server.MConference.Applications
             foreach (PcConferenceRow ConferenceRow in ConferenceTable.Rows)
             {
                 // get all applications for this conference
-                ConferenceApplicationTDS MainDS = TApplicationManagement.GetApplications(AEventCode, "all", -1, null, false);
-
-                // required for DefaultView.Find
-                MainDS.PmShortTermApplication.DefaultView.Sort =
-                    PmShortTermApplicationTable.GetStConfirmedOptionDBName() + "," +
-                    PmShortTermApplicationTable.GetPartnerKeyDBName();
-                MainDS.PmGeneralApplication.DefaultView.Sort =
-                    PmGeneralApplicationTable.GetPartnerKeyDBName() + "," +
-                    PmGeneralApplicationTable.GetApplicationKeyDBName() + "," +
-                    PmGeneralApplicationTable.GetRegistrationOfficeDBName();
-
-                LoadAttendees(ref MainDS, ConferenceRow.ConferenceKey);
+                ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
+                TApplicationManagement.GetApplications(
+                    ref MainDS,
+                    ConferenceRow.ConferenceKey,
+                    AEventCode, "all", -1, null, false);
 
                 foreach (PmShortTermApplicationRow ShortTermAppRow in MainDS.PmShortTermApplication.Rows)
                 {
@@ -156,30 +149,6 @@ namespace Ict.Petra.Server.MConference.Applications
                 TLogging.Log(String.Format(
                         "RefreshAttendees: finished. OutreachPrefix: {0}, {1} Shortterm Applications, {2} Attendees",
                         OutreachPrefix, MainDS.PmShortTermApplication.Count, MainDS.PcAttendee.Count));
-            }
-        }
-
-        /// <summary>
-        /// load all attendees of this conference
-        /// </summary>
-        /// <param name="AMainDS"></param>
-        /// <param name="AConferenceKey"></param>
-        private static void LoadAttendees(ref ConferenceApplicationTDS AMainDS, Int64 AConferenceKey)
-        {
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
-
-            try
-            {
-                // load all attendees of this conference
-                AMainDS.PcAttendee.Clear();
-                PcAttendeeRow templateAttendeeRow = AMainDS.PcAttendee.NewRowTyped(false);
-                templateAttendeeRow.ConferenceKey = AConferenceKey;
-                PcAttendeeAccess.LoadUsingTemplate(AMainDS, templateAttendeeRow, Transaction);
-                AMainDS.PcAttendee.DefaultView.Sort = PcAttendeeTable.GetPartnerKeyDBName();
-            }
-            finally
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
             }
         }
 
@@ -287,18 +256,9 @@ namespace Ict.Petra.Server.MConference.Applications
         public static bool DownloadTShirtNumbers(Int64 AConferenceKey, string AEventCode, MemoryStream AStream)
         {
             // get all applications for this conference
-            ConferenceApplicationTDS MainDS = TApplicationManagement.GetApplications(AEventCode, "all", -1, null, false);
+            ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
 
-            // required for DefaultView.Find
-            MainDS.PmShortTermApplication.DefaultView.Sort =
-                PmShortTermApplicationTable.GetStConfirmedOptionDBName() + "," +
-                PmShortTermApplicationTable.GetPartnerKeyDBName();
-            MainDS.PmGeneralApplication.DefaultView.Sort =
-                PmGeneralApplicationTable.GetPartnerKeyDBName() + "," +
-                PmGeneralApplicationTable.GetApplicationKeyDBName() + "," +
-                PmGeneralApplicationTable.GetRegistrationOfficeDBName();
-
-            LoadAttendees(ref MainDS, AConferenceKey);
+            TApplicationManagement.GetApplications(ref MainDS, AConferenceKey, AEventCode, "all", -1, null, false);
 
             // count the T-Shirts
             SortedList <string, Int32>TShirtCountPerCountry = new SortedList <string, int>();
@@ -592,13 +552,15 @@ namespace Ict.Petra.Server.MConference.Applications
             {
                 RefreshAttendees(AEventPartnerKey, AEventCode);
 
-                ConferenceApplicationTDS MainDS = TApplicationManagement.GetApplications(AEventCode,
+                ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
+                TApplicationManagement.GetApplications(
+                    ref MainDS,
+                    AEventPartnerKey,
+                    AEventCode,
                     "accepted",
                     ASelectedRegistrationOffice,
                     ASelectedRole,
                     false);
-
-                LoadAttendees(ref MainDS, AEventPartnerKey);
 
                 // we want one timestamp for the whole batch of badges. this makes it easier to reverse/reprint if we must.
                 DateTime DatePrinted = DateTime.Now;

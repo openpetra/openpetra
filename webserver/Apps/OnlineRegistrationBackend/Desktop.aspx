@@ -134,6 +134,7 @@
                         <ext:RecordField Name="Role" />
                         <ext:RecordField Name="StFgCode" />
                         <ext:RecordField Name="StFgLeader" />
+                        <ext:RecordField Name="BadgePrint" />
                         <ext:RecordField Name="FieldCharged" />
                         <ext:RecordField Name="ApplicationKey" />
                     </Fields>
@@ -746,6 +747,7 @@
                             <ext:Column Header="Role" Width="120" DataIndex="Role"/>
                             <ext:Column Header="FGroup" Width="120" DataIndex="StFgCode"/>
                             <ext:Column Header="FGLeader" Width="120" DataIndex="StFgLeader"/>
+                            <ext:DateColumn Header="Badge Printed" Width="100" DataIndex="BadgePrint" Format="dd-MMM-yyyy"/>
                         </Columns>
                     </ColumnModel>
                     <SelectionModel>

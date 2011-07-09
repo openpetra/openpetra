@@ -118,7 +118,6 @@ namespace Ict.Petra.WebServer.MConference
 
                 btnJSONApplication.Visible = ConferenceOrganisingOffice;
                 btnLoadRefreshApplicants.Visible = false;
-                btnTestPrintBadges.Visible = ConferenceOrganisingOffice;
                 btnPrintBadges.Visible = ConferenceOrganisingOffice;
                 btnExportTShirtNumbers.Visible = ConferenceOrganisingOffice;
 
@@ -207,7 +206,11 @@ namespace Ict.Petra.WebServer.MConference
 
             if ((CurrentApplicants == null) || (sender != null) || (Session["CURRENTROW"] == null))
             {
-                CurrentApplicants = TApplicationManagement.GetApplications(EventCode,
+                CurrentApplicants = new ConferenceApplicationTDS();
+                TApplicationManagement.GetApplications(
+                    ref CurrentApplicants,
+                    EventPartnerKey,
+                    EventCode,
                     this.FilterStatus.SelectedItem.Value,
                     GetSelectedRegistrationOffice(),
                     GetSelectedRole(),
@@ -590,7 +593,12 @@ namespace Ict.Petra.WebServer.MConference
                 }
             }
 
-            ConferenceApplicationTDS CurrentApplicants = TApplicationManagement.GetApplications(EventCode, "all", -1, null, true);
+            ConferenceApplicationTDS CurrentApplicants = new ConferenceApplicationTDS();
+            TApplicationManagement.GetApplications(
+                ref CurrentApplicants,
+                EventPartnerKey,
+                EventCode,
+                "all", -1, null, true);
 
             // first do a test run to test the keys
             List <Int64>RegistrationKeysBackup = new List <Int64>();

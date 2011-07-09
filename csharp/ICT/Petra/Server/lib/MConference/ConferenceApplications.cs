@@ -121,13 +121,18 @@ namespace Ict.Petra.Server.MConference.Applications
         /// <summary>
         /// return a list of all applicants for a given event, but only the registration office that the user has permissions for, ie. Module REG-00xx0000000
         /// </summary>
+        /// <param name="AMainDS"></param>
+        /// <param name="AEventPartnerKey"></param>
         /// <param name="AEventCode"></param>
         /// <param name="AApplicationStatus"></param>
         /// <param name="ARegistrationOffice">if -1, then show all offices that the user has permission for</param>
         /// <param name="ARole"></param>
         /// <param name="AClearJSONData"></param>
         /// <returns></returns>
-        public static ConferenceApplicationTDS GetApplications(string AEventCode,
+        public static bool GetApplications(
+            ref ConferenceApplicationTDS AMainDS,
+            Int64 AEventPartnerKey,
+            string AEventCode,
             string AApplicationStatus,
             Int64 ARegistrationOffice,
             string ARole,
@@ -135,16 +140,24 @@ namespace Ict.Petra.Server.MConference.Applications
         {
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
-            ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
-
             try
             {
+                // load all attendees of this conference.
+                // only load once: GetApplications might be called for several application stati
+                if (AMainDS.PcAttendee.Rows.Count == 0)
+                {
+                    PcAttendeeRow templateAttendeeRow = AMainDS.PcAttendee.NewRowTyped(false);
+                    templateAttendeeRow.ConferenceKey = AEventPartnerKey;
+                    PcAttendeeAccess.LoadUsingTemplate(AMainDS, templateAttendeeRow, Transaction);
+                    AMainDS.PcAttendee.DefaultView.Sort = PcAttendeeTable.GetPartnerKeyDBName();
+                }
+
                 bool ConferenceOrganisingOffice = IsConferenceOrganisingOffice();
 
                 if (ConferenceOrganisingOffice && (ARegistrationOffice == -1))
                 {
                     // avoid duplicates, who are registered by one office, but charged to another office
-                    MainDS = GetApplications(AEventCode, -1, AApplicationStatus, ARole, AClearJSONData, Transaction);
+                    GetApplications(ref AMainDS, AEventCode, -1, AApplicationStatus, ARole, AClearJSONData, Transaction);
                 }
                 else
                 {
@@ -154,26 +167,37 @@ namespace Ict.Petra.Server.MConference.Applications
                     {
                         if ((ARegistrationOffice == RegistrationOffice) || (ARegistrationOffice == -1))
                         {
-                            MainDS.Merge(GetApplications(AEventCode, RegistrationOffice, AApplicationStatus, ARole, AClearJSONData, Transaction));
+                            GetApplications(ref AMainDS, AEventCode, RegistrationOffice, AApplicationStatus, ARole, AClearJSONData, Transaction);
                         }
                     }
                 }
+
+                // required for DefaultView.Find
+                AMainDS.PmShortTermApplication.DefaultView.Sort =
+                    PmShortTermApplicationTable.GetStConfirmedOptionDBName() + "," +
+                    PmShortTermApplicationTable.GetPartnerKeyDBName();
+                AMainDS.PmGeneralApplication.DefaultView.Sort =
+                    PmGeneralApplicationTable.GetPartnerKeyDBName() + "," +
+                    PmGeneralApplicationTable.GetApplicationKeyDBName() + "," +
+                    PmGeneralApplicationTable.GetRegistrationOfficeDBName();
             }
             finally
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
 
-            if (MainDS.HasChanges())
+            if (AMainDS.HasChanges())
             {
-                MainDS.EnforceConstraints = false;
-                MainDS.AcceptChanges();
+                AMainDS.EnforceConstraints = false;
+                AMainDS.AcceptChanges();
             }
 
-            return MainDS;
+            return true;
         }
 
-        private static ConferenceApplicationTDS LoadApplicationsFromDB(string AEventCode,
+        private static bool LoadApplicationsFromDB(
+            ref ConferenceApplicationTDS AMainDS,
+            string AEventCode,
             Int64? ARegisteringOffice,
             string ARole,
             Int64? APartnerKey,
@@ -253,12 +277,15 @@ namespace Ict.Petra.Server.MConference.Applications
                 queryGeneralApplication,
                 MainDS.PmGeneralApplication.TableName, ATransaction, parameters.ToArray());
 
-            return MainDS;
+            AMainDS.Merge(MainDS);
+
+            return true;
         }
 
         /// <summary>
         /// return a list of all applicants for a given event
         /// </summary>
+        /// <param name="AMainDS"></param>
         /// <param name="AEventCode"></param>
         /// <param name="ARegisteringOffice"></param>
         /// <param name="AApplicationStatus"></param>
@@ -266,31 +293,34 @@ namespace Ict.Petra.Server.MConference.Applications
         /// <param name="AClearJSONData"></param>
         /// <param name="ATransaction"></param>
         /// <returns></returns>
-        private static ConferenceApplicationTDS GetApplications(string AEventCode,
+        private static ConferenceApplicationTDS GetApplications(
+            ref ConferenceApplicationTDS AMainDS,
+            string AEventCode,
             Int64 ARegisteringOffice,
             string AApplicationStatus,
             string ARole,
             bool AClearJSONData,
             TDBTransaction ATransaction)
         {
-            ConferenceApplicationTDS MainDS = LoadApplicationsFromDB(AEventCode, ARegisteringOffice,
+            LoadApplicationsFromDB(ref AMainDS,
+                AEventCode, ARegisteringOffice,
                 ARole, new Nullable <Int64>(),
                 ATransaction);
 
-            DataView PersonView = MainDS.PPerson.DefaultView;
+            DataView PersonView = AMainDS.PPerson.DefaultView;
 
             PersonView.Sort = PPersonTable.GetPartnerKeyDBName();
 
-            DataView GenAppView = MainDS.PmGeneralApplication.DefaultView;
+            DataView GenAppView = AMainDS.PmGeneralApplication.DefaultView;
             GenAppView.Sort = PmGeneralApplicationTable.GetPartnerKeyDBName() + "," + PmGeneralApplicationTable.GetApplicationKeyDBName();
 
-            foreach (PmShortTermApplicationRow shortTermRow in MainDS.PmShortTermApplication.Rows)
+            foreach (PmShortTermApplicationRow shortTermRow in AMainDS.PmShortTermApplication.Rows)
             {
                 PPersonRow Person = (PPersonRow)PersonView[PersonView.Find(shortTermRow.PartnerKey)].Row;
                 PmGeneralApplicationRow GeneralApplication =
                     (PmGeneralApplicationRow)GenAppView[GenAppView.Find(new Object[] { shortTermRow.PartnerKey, shortTermRow.ApplicationKey })].Row;
 
-                ConferenceApplicationTDSApplicationGridRow newRow = MainDS.ApplicationGrid.NewRowTyped();
+                ConferenceApplicationTDSApplicationGridRow newRow = AMainDS.ApplicationGrid.NewRowTyped();
                 newRow.PartnerKey = shortTermRow.PartnerKey;
 
                 if (!GeneralApplication.IsLocalPartnerKeyNull())
@@ -319,6 +349,13 @@ namespace Ict.Petra.Server.MConference.Applications
                 newRow.GenApplicationStatus = GeneralApplication.GenApplicationStatus;
                 newRow.StCongressCode = shortTermRow.StCongressCode;
 
+                int indexAttendee = AMainDS.PcAttendee.DefaultView.Find(shortTermRow.PartnerKey);
+
+                if (indexAttendee != -1)
+                {
+                    newRow.BadgePrint = ((PcAttendeeRow)AMainDS.PcAttendee.DefaultView[indexAttendee].Row).BadgePrint;
+                }
+
                 if (AClearJSONData)
                 {
                     // only if the json data is cleared anyway, search for duplicate applications using the md5sum
@@ -337,14 +374,14 @@ namespace Ict.Petra.Server.MConference.Applications
                 if (AApplicationStatus == "on hold")
                 {
                     // if there is already an application on hold for that person, drop the old row
-                    MainDS.ApplicationGrid.DefaultView.RowFilter =
+                    AMainDS.ApplicationGrid.DefaultView.RowFilter =
                         String.Format("JSONData = '{0}' AND {1} = 'H'", newRow.JSONData,
                             ConferenceApplicationTDSApplicationGridTable.GetGenApplicationStatusDBName());
 
-                    while (MainDS.ApplicationGrid.DefaultView.Count > 0)
+                    while (AMainDS.ApplicationGrid.DefaultView.Count > 0)
                     {
                         ConferenceApplicationTDSApplicationGridRow RowToDrop =
-                            (ConferenceApplicationTDSApplicationGridRow)MainDS.ApplicationGrid.DefaultView[0].Row;
+                            (ConferenceApplicationTDSApplicationGridRow)AMainDS.ApplicationGrid.DefaultView[0].Row;
                         //Console.WriteLine("dropping " + RowToDrop.FamilyName + " " + RowToDrop.FirstName + " " + RowToDrop.PartnerKey.ToString());
                         RowToDrop.Delete();
                     }
@@ -352,43 +389,43 @@ namespace Ict.Petra.Server.MConference.Applications
 
                 if ((AApplicationStatus == "on hold") && newRow.GenApplicationStatus.StartsWith("H"))
                 {
-                    MainDS.ApplicationGrid.Rows.Add(newRow);
+                    AMainDS.ApplicationGrid.Rows.Add(newRow);
                 }
                 else if ((AApplicationStatus == "accepted") && newRow.GenApplicationStatus.StartsWith("A"))
                 {
-                    MainDS.ApplicationGrid.Rows.Add(newRow);
+                    AMainDS.ApplicationGrid.Rows.Add(newRow);
                 }
                 else if ((AApplicationStatus == "cancelled")
                          && ((newRow.GenApplicationStatus.StartsWith("R") || newRow.GenApplicationStatus.StartsWith("C"))))
                 {
-                    MainDS.ApplicationGrid.Rows.Add(newRow);
+                    AMainDS.ApplicationGrid.Rows.Add(newRow);
                 }
                 else if (AApplicationStatus == "all")
                 {
-                    MainDS.ApplicationGrid.Rows.Add(newRow);
+                    AMainDS.ApplicationGrid.Rows.Add(newRow);
                 }
             }
 
-            MainDS.ApplicationGrid.DefaultView.RowFilter = String.Empty;
+            AMainDS.ApplicationGrid.DefaultView.RowFilter = String.Empty;
 
             if (AClearJSONData)
             {
                 // clear raw data, otherwise this is too big for the javascript client
-                foreach (ConferenceApplicationTDSApplicationGridRow row in MainDS.ApplicationGrid.Rows)
+                foreach (ConferenceApplicationTDSApplicationGridRow row in AMainDS.ApplicationGrid.Rows)
                 {
                     row.JSONData = string.Empty;
                 }
             }
 
-            MainDS.ApplicationGrid.AcceptChanges();
+            AMainDS.ApplicationGrid.AcceptChanges();
 
-            if (MainDS.HasChanges())
+            if (AMainDS.HasChanges())
             {
-                MainDS.EnforceConstraints = false;
-                MainDS.AcceptChanges();
+                AMainDS.EnforceConstraints = false;
+                AMainDS.AcceptChanges();
             }
 
-            return MainDS;
+            return AMainDS;
         }
 
         /// <summary>
@@ -559,9 +596,9 @@ namespace Ict.Petra.Server.MConference.Applications
             {
                 if (ATransaction != null)
                 {
-                    AMainDS.Merge(LoadApplicationsFromDB(AEventCode, null,
-                            null, AChangedRow.PartnerKey,
-                            ATransaction));
+                    LoadApplicationsFromDB(ref AMainDS, AEventCode, null,
+                        null, AChangedRow.PartnerKey,
+                        ATransaction);
                 }
 
                 if (AChangedRow.GenApplicationStatus == "I")
@@ -766,8 +803,9 @@ namespace Ict.Petra.Server.MConference.Applications
             result += "EventRole;AppStatus;PreviousAttendance;AppComments;NotesPerson;HorstID;FamilyPartnerKey;RecordImported";
             result = "\"" + result.Replace(";", "\";\"") + "\"\n";
 
-            ConferenceApplicationTDS MainDS = GetApplications(AEventCode, "cancelled", ARegistrationOffice, null, true);
-            MainDS.Merge(GetApplications(AEventCode, "accepted", ARegistrationOffice, null, true));
+            ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
+            GetApplications(ref MainDS, AEventPartnerKey, AEventCode, "cancelled", ARegistrationOffice, null, true);
+            GetApplications(ref MainDS, AEventPartnerKey, AEventCode, "accepted", ARegistrationOffice, null, true);
 
             try
             {
