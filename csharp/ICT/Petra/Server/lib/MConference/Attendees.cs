@@ -564,6 +564,13 @@ namespace Ict.Petra.Server.MConference.Applications
             string ASelectedRole,
             bool ADoNotReprint)
         {
+            // we want to avoid that all badges get printed by accident
+            if (ADoNotReprint && ((ASelectedRegistrationOffice == -1) || (ASelectedRole == null) || (ASelectedRole.Length == 0)))
+            {
+                TLogging.Log("PrintBadges: only per country and per role");
+                return string.Empty;
+            }
+
             try
             {
                 RefreshAttendees(AEventPartnerKey, AEventCode);
