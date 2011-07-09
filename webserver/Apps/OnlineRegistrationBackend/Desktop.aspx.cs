@@ -32,6 +32,7 @@ using System.Web.UI.WebControls;
 using System.Text;
 
 using Ext.Net;
+using Jayrock.Json.Conversion;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.Verification;
@@ -560,6 +561,47 @@ namespace Ict.Petra.WebServer.MConference
 
             // save some time? user can click refresh himself.
             // MyData_Refresh(null, null);
+        }
+
+        protected void ReprintPDF(object sender, DirectEventArgs e)
+        {
+            try
+            {
+                ConferenceApplicationTDSApplicationGridRow row = (ConferenceApplicationTDSApplicationGridRow)Session["CURRENTROW"];
+                string RawData = TApplicationManagement.GetRawApplicationData(row.PartnerKey, row.ApplicationKey, row.RegistrationOffice);
+
+                // will set the correct language code for parsing dates in the json data string
+                RawData = TJsonTools.RemoveContainerControls(RawData);
+
+                TApplicationFormData data = (TApplicationFormData)JsonConvert.Import(typeof(TApplicationFormData),
+                    RawData);
+                data.RawData = RawData;
+
+                string pdfIdentifier;
+                string pdfFilename = TImportPartnerForm.GeneratePDF(row.PartnerKey, data.registrationcountrycode, data, out pdfIdentifier);
+                try
+                {
+                    // TImportPartnerForm.SendEmail(row.PartnerKey, data.registrationcountrycode, data, pdfFilename);
+                }
+                catch (Exception ex)
+                {
+                    TLogging.Log(ex.Message);
+                    TLogging.Log(ex.StackTrace);
+                }
+                TLogging.Log(pdfFilename);
+                this.Response.Clear();
+                this.Response.ContentType = "application/pdf";
+                this.Response.AddHeader("Content-Type", "application/pdf");
+                this.Response.AddHeader("Content-Disposition", "attachment; filename=" + row.PartnerKey.ToString());
+                this.Response.TransmitFile(pdfFilename);
+                // this.Response.End(); avoid System.Threading.ThreadAbortException
+            }
+            catch (Exception ex2)
+            {
+                TLogging.Log(ex2.Message);
+                TLogging.Log(ex2.StackTrace);
+                throw;
+            }
         }
 
         protected void AcceptManyApplicants(object sender, DirectEventArgs e)

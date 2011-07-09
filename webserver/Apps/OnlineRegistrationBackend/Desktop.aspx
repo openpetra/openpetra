@@ -800,6 +800,11 @@
                                         </Click>
                                     </DirectEvents>
                                 </ext:Button>
+                                <ext:Button ID="btnReprintPDF" runat="server" Text="Reprint PDF" Icon="Printer">
+                                    <DirectEvents>
+                                        <Click OnEvent="ReprintPDF" IsUpload="true"/>
+                                    </DirectEvents>
+                                </ext:Button>
                             </Items>
                         </ext:Toolbar>
                         <ext:TabPanel ID="TabPanelApplication" runat="server" Region="Center" EnableTabScroll="true">   
