@@ -920,13 +920,17 @@ namespace Ict.Petra.Server.MConference.Applications
         /// export accepted applications to an Excel file
         /// </summary>
         /// <returns></returns>
-        public static bool DownloadApplications(string AEventCode, ref ConferenceApplicationTDS AMainDS, MemoryStream AStream)
+        public static bool DownloadApplications(Int64 AConferenceKey, string AEventCode, ref ConferenceApplicationTDS AMainDS, MemoryStream AStream)
         {
             XmlDocument myDoc = TYml2Xml.CreateXmlDocument();
 
             try
             {
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+                PcConferenceTable ConferenceTable = PcConferenceAccess.LoadByPrimaryKey(AConferenceKey, Transaction);
+                DateTime ConferenceStartDate = ConferenceTable[0].Start.Value;
+                DateTime ConferenceEndDate = ConferenceTable[0].End.Value;
 
                 foreach (ConferenceApplicationTDSApplicationGridRow row in AMainDS.ApplicationGrid.Rows)
                 {
@@ -982,6 +986,34 @@ namespace Ict.Petra.Server.MConference.Applications
                     attr = myDoc.CreateAttribute("DayOfBirth");
                     attr.Value = PersonRow.DateOfBirth.Value.ToString("MMdd");
                     newNode.Attributes.Append(attr);
+
+                    if (PersonRow.DateOfBirth.HasValue)
+                    {
+                        Int32 AgeAtStartOfConference = ConferenceStartDate.Year - PersonRow.DateOfBirth.Value.Year;
+
+                        if (PersonRow.DateOfBirth.Value.DayOfYear > ConferenceStartDate.DayOfYear)
+                        {
+                            // BirthdayDuringOrAfterConference
+                            AgeAtStartOfConference--;
+                        }
+
+                        Int32 AgeAtEndOfConference = AgeAtStartOfConference;
+
+                        if ((PersonRow.DateOfBirth.Value.DayOfYear > ConferenceStartDate.DayOfYear)
+                            && (PersonRow.DateOfBirth.Value.DayOfYear <= ConferenceEndDate.DayOfYear))
+                        {
+                            // BirthdayDuringConference
+                            AgeAtEndOfConference++;
+                        }
+
+                        attr = myDoc.CreateAttribute("AgeAtStartOfConference");
+                        attr.Value = new TVariant(AgeAtStartOfConference).EncodeToString();
+                        newNode.Attributes.Append(attr);
+                        attr = myDoc.CreateAttribute("AgeAtEndOfConference");
+                        attr.Value = new TVariant(AgeAtEndOfConference).EncodeToString();
+                        newNode.Attributes.Append(attr);
+                    }
+
                     attr = myDoc.CreateAttribute("Gender");
                     attr.Value = PersonRow.Gender;
                     newNode.Attributes.Append(attr);

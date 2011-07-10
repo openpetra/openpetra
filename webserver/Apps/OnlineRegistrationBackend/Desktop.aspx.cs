@@ -709,7 +709,7 @@ namespace Ict.Petra.WebServer.MConference
             this.Response.AddHeader("Content-Type", "application/xls");
             this.Response.AddHeader("Content-Disposition", "attachment; filename=Applicants.xls");
             MemoryStream m = new MemoryStream();
-            TApplicationManagement.DownloadApplications(EventCode, ref CurrentApplicants, m);
+            TApplicationManagement.DownloadApplications(EventPartnerKey, EventCode, ref CurrentApplicants, m);
             m.WriteTo(this.Response.OutputStream);
             m.Close();
             this.Response.End();
