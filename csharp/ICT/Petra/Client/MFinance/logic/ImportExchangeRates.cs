@@ -47,12 +47,12 @@ namespace Ict.Petra.Client.MFinance.Logic
     public class TImportExchangeRates
     {   
 
-    
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="exchangeRateDT">Determines whether corporate or daily exchange rates specified</param>
         /// <param name="mode">Determines whether corporate or daily exchange rates specified</param>
-        public static void Import (TTypedDataTable exchangeRateDT, string mode)
+        public static void ImportCurrencyExRates (TTypedDataTable exchangeRateDT, string mode)
         {
 
             OpenFileDialog dialog = new OpenFileDialog();
@@ -91,16 +91,18 @@ namespace Ict.Petra.Client.MFinance.Logic
 
                     if (Path.GetExtension(dialog.FileName).ToLower() == ".csv")
                     {
-                        ImportFromCSVFile(exchangeRateDT, dialog.FileName, RootNode, mode);
+                        ImportCurrencyExRatesFromCSV(exchangeRateDT, dialog.FileName, RootNode, mode);
                     }
                 }
             }
             
         }
         
-        private static void ImportFromCSVFile(TTypedDataTable exchangeRDT, string ADataFilename, XmlNode ARootNode, string mode)
+        private static void ImportCurrencyExRatesFromCSV(TTypedDataTable exchangeRDT, string ADataFilename, XmlNode ARootNode, string mode)
         {
+            bool isShortFileFormat;
             int x, y;
+            string[] Currencies = new string[2];
             
             if (mode != "Corporate" && mode != "Daily")
             {
@@ -123,25 +125,77 @@ namespace Ict.Petra.Client.MFinance.Logic
             string ThousandsSeparator = TXMLParser.GetAttribute(ARootNode, "ThousandsSeparator");
             string DecimalSeparator = TXMLParser.GetAttribute(ARootNode, "DecimalSeparator");
 
-            // assumes date in first column, exchange rate in second column
-            // picks the names of the currencies from the file name: CUR1_CUR2.csv
-            string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(ADataFilename);
-
-            if (!fileNameWithoutExtension.Contains("_"))
-            {
-                MessageBox.Show(Catalog.GetString("Cannot import exchange rates, please name the file after the currencies involved, eg. KES_EUR.csv"));
-            }
-
-            string[] Currencies = fileNameWithoutExtension.Split(new char[] { '_' });
-
             // TODO: check for valid currency codes? at the moment should fail on foreign key
             // TODO: disconnect the grid from the datasource to avoid flickering?
 
+            string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(ADataFilename);
+
+            if (fileNameWithoutExtension.IndexOf("_") == 3
+                    && fileNameWithoutExtension.LastIndexOf("_") == 3    
+                    && fileNameWithoutExtension.Length == 7) {
+
+                // File name format assumed to be like this: USD_HKD.csv
+                isShortFileFormat = true;
+                Currencies = fileNameWithoutExtension.Split(new char[] { '_' });
+            
+            } else {
+
+                isShortFileFormat = false;
+            }
+                
+//            MessageBox.Show(Catalog.GetString("Cannot import exchange rates, please name the file after the currencies involved, eg. KES_EUR.csv"));
+            
+
+            // To store the From and To currencies
+            // Use an array to store these to make for easy
+            //   inverting of the two currencies when calculating
+            //   the inverse value.
+            
 
             while (!dataFile.EndOfStream)
             {
                 string line = dataFile.ReadLine();
+                
+                //Convert separator to a char
+                char sep = Separator[0];
+                //Turn current line into string array of column values
+                string[] csvColumns = line.Split(sep);
+                
+                int numCols = csvColumns.Length;
+                
+                //If number of columns is not 4 then import csv file is wrongly formed.
+                if (isShortFileFormat && numCols != 2 ) {
+                    MessageBox.Show(Catalog.GetString("Failed to import the CSV currency file:\r\n\r\n" + 
+                                                        "   " + ADataFilename + "\r\n\r\n" +
+                                                        "It contains " + numCols.ToString() + " columns. " +
+                                                        "Import files with names like 'USD_HKD.csv', where the From and To currencies" +
+                                                        " are given in the name, should contain 2 columns:\r\n\r\n" +
+                                                        "  1. Effective Date\r\n" + 
+                                                        "  2. Exchange Rate"
+                                       ), mode + " Exchange Rates Import Error");
+                    return;
+                }
+                else if (!isShortFileFormat && numCols != 4 ) {
+                    MessageBox.Show(Catalog.GetString("Failed to import the CSV currency file:\r\n\r\n" + 
+                                                        "    " + ADataFilename + "\r\n\r\n" +
+                                                        "It contains " + numCols.ToString() + " columns. It should be 4:\r\n\r\n" +
+                                                        "    1. From Currency\r\n" + 
+                                                        "    2. To Currency\r\n" + 
+                                                        "    3. Effective Date\r\n" + 
+                                                        "    4. Exchange Rate"
+                                       ), mode + " Exchange Rates Import Error");
+                    return;
+                }
+                
+                if (!isShortFileFormat) {
+                    //Read the values for the current line
+                    //From currency
+                    Currencies[0] = StringHelper.GetNextCSV(ref line, Separator, false).ToString();
+                    //To currency
+                    Currencies[1] = StringHelper.GetNextCSV(ref line, Separator, false).ToString();
+                }
 
+                //TODO: Perform validation on the From and To currencies at ths point!!
                 //TODO: Date parsing as in Petra 2.x instead of using XML date format!!!
                 DateTime dateEffective = XmlConvert.ToDateTime(StringHelper.GetNextCSV(ref line, Separator, false), DateFormat);
                 string ExchangeRateString = StringHelper.GetNextCSV(ref line, Separator, false).Replace(ThousandsSeparator, "").Replace(DecimalSeparator, ".");
@@ -213,6 +267,7 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             dataFile.Close();
         }
-        
+
+    
     }
 }

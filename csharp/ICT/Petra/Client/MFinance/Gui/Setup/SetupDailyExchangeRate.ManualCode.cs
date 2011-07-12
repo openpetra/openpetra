@@ -661,7 +661,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void Import(System.Object sender, EventArgs e)
         {
-            TImportExchangeRates.Import(FMainDS.ADailyExchangeRate, "Daily");
+            TImportExchangeRates.ImportCurrencyExRates(FMainDS.ADailyExchangeRate, "Daily");
             FPetraUtilsObject.SetChangedFlag();
         }
 

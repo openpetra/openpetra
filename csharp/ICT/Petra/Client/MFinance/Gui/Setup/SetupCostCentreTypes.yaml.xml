@@ -1,0 +1,120 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RootNodeInternal>
+  <base />
+  <RootNode BaseYaml="../../../CommonForms/PetraEditForm.yaml" FormTitle="Maintain Cost Centre Types" Namespace="Ict.Petra.Client.MFinance.Gui.Setup" DetailTable="ACostCentreTypes" CacheableTable="CostCentreTypesList" FormType="edit" Template="windowMaintainCacheableTable" WindowWidth="660" WindowHeight="500">
+    <base depth="-2" BaseClass="System.Windows.Forms.Form" Template="window" FormType="abstract" Icon="petraico-big.ico" WindowWidth="700" WindowHeight="500" BaseYaml="PetraForm.yaml" UtilObjectClass="TFrmPetraEditUtils" InterfaceName="IFrmPetraEdit" />
+    <Events>
+      <base depth="-2">
+        <Activated depth="-2" class="System.EventHandler" method="FPetraUtilsObject.TFrmPetra_Activated" />
+        <Load depth="-2" class="System.EventHandler" method="FPetraUtilsObject.TFrmPetra_Load" />
+        <Closing depth="-2" class="System.ComponentModel.CancelEventHandler" method="FPetraUtilsObject.TFrmPetra_Closing" />
+        <KeyDown depth="-2" class="System.Windows.Forms.KeyEventHandler" method="FPetraUtilsObject.Form_KeyDown" />
+        <Closed depth="-2" class="System.EventHandler" method="TFrmPetra_Closed" />
+      </base>
+    </Events>
+    <Actions>
+      <base depth="-2">
+        <actClose depth="-2" Label="&amp;Close" ActionId="eClose" Tooltip="Closes this window" Image="Close.ico" />
+        <actSave depth="-1" Label="&amp;Save" ActionClick="FileSave" Tooltip="Saves changed data" Image="Save.ico">
+        </actSave>
+      </base>
+      <actNew depth="0" Label="&amp;New" ActionClick="NewRow" />
+    </Actions>
+    <Controls>
+      <base depth="-2">
+        <mnuMain depth="-2" />
+        <tbrMain depth="-2" />
+        <stbMain depth="-2" />
+      </base>
+      <pnlContent depth="0" Dock="Fill">
+        <Controls depth="0">
+          <Element name="pnlGrid" />
+          <Element name="pnlDetails" />
+        </Controls>
+      </pnlContent>
+      <pnlGrid depth="0" Dock="Fill">
+        <Controls depth="0">
+          <Element name="grdDetails" />
+          <Element name="pnlButtons" />
+        </Controls>
+      </pnlGrid>
+      <pnlButtons depth="0" Dock="Right">
+        <Controls depth="0">
+          <Element name="btnNew" />
+        </Controls>
+      </pnlButtons>
+      <btnNew depth="0" Action="actNew">
+      </btnNew>
+      <grdDetails depth="0" Dock="Fill" ActionFocusRow="FocusedRowChanged">
+        <Columns depth="0">
+          <Element name="CostCentreType" />
+          <Element name="CcDescription" />
+          <Element name="Deletable" />
+        </Columns>
+        <CustomColumns depth="0">
+          <CostCentreType depth="0" Label="Cost Centre Type" />
+          <CcDescription depth="0" Label="Description" />
+          <Deletable depth="0" Label="Deletable" />
+        </CustomColumns>
+      </grdDetails>
+      <pnlDetails depth="0" Dock="Bottom">
+        <Controls depth="0">
+          <Row0 depth="0">
+            <Element name="txtDetailCostCentreType" />
+            <Element name="txtDetailCcDescription" />
+          </Row0>
+          <Row1 depth="0">
+            <Element name="chkDetailDeletable" />
+          </Row1>
+        </Controls>
+      </pnlDetails>
+      <txtDetailCostCentreType depth="0" Label="Cost Centre Type" CharacterCasing="Upper" />
+      <txtDetailCcDescription depth="0" Label="Description" Width="219" />
+      <chkDetailDeletable depth="0" Label="Deletable" />
+    </Controls>
+    <Menu>
+      <base depth="-2" />
+      <mniFile>
+        <base depth="-2" Label="&amp;File" Order="AlwaysFirst">
+          <mniClose depth="-2" Action="actClose" Order="AlwaysLast" />
+          <mniFileSave depth="-1" Action="actSave" />
+          <mniSeparator depth="-1" Label="-" />
+          <mniFilePrint depth="-1" Label="&amp;Print..." Image="Print.ico">
+          </mniFilePrint>
+          <mniSeparator depth="-1" Label="-" />
+        </base>
+      </mniFile>
+      <mniHelp>
+        <base depth="-2" Label="&amp;Help" Order="AlwaysLast">
+          <mniHelpPetraHelp depth="-2" Label="&amp;Petra Help" ActionId="eHelp" Image="Help2.ico" />
+          <mniSeparator depth="-2" Label="-" />
+          <mniHelpBugReport depth="-2" Label="Bug &amp;Report" ActionId="eBugReport" Image="BugReport.ico" />
+          <mniSeparator depth="-2" Label="-" />
+          <mniHelpAboutPetra depth="-2" Label="&amp;About Petra" ActionId="eAHelpbout" Image="PetraInformation.ico" />
+          <mniHelpDevelopmentTeam depth="-2" Label="&amp;The Development Team..." ActionId="eHelpDevelopmentTeam" Image="DevelopmentTeam.ico" />
+        </base>
+      </mniHelp>
+      <mniEdit>
+        <base depth="-1" Label="&amp;Edit">
+          <mniEditUndoCurrentField depth="-1" Label="Undo &amp;Current Field">
+          </mniEditUndoCurrentField>
+          <mniEditUndoScreen depth="-1" Label="&amp;Undo Screen">
+          </mniEditUndoScreen>
+          <mniSeparator depth="-1" Label="-" />
+          <mniEditFind depth="-1" Label="&amp;Find...">
+          </mniEditFind>
+        </base>
+      </mniEdit>
+    </Menu>
+    <Toolbar>
+      <base depth="-1">
+        <tbbSave depth="-1" Action="actSave" Order="AlwaysFirst" />
+      </base>
+      <tbbNew depth="0" Label="New Cost Centre Type">
+      </tbbNew>
+    </Toolbar>
+    <UsingNamespaces depth="0">
+      <Element name="Ict.Petra.Shared.MFinance.Account.Data" />
+    </UsingNamespaces>
+  </RootNode>
+</RootNodeInternal>

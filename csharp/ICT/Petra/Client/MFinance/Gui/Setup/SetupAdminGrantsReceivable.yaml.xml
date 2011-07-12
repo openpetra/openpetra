@@ -1,0 +1,166 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RootNodeInternal>
+  <base />
+  <RootNode BaseYaml="../../../CommonForms/PetraEditForm.yaml" FormTitle="Maintain Admin. Grants Receivable" Namespace="Ict.Petra.Client.MFinance.Gui.Setup" DetailTable="AFeesReceivable" FormType="edit" Template="windowMaintainTable" WindowWidth="760" WindowHeight="500">
+    <base depth="-2" BaseClass="System.Windows.Forms.Form" Template="window" FormType="abstract" Icon="petraico-big.ico" WindowWidth="700" WindowHeight="500" BaseYaml="PetraForm.yaml" UtilObjectClass="TFrmPetraEditUtils" InterfaceName="IFrmPetraEdit" />
+    <Events>
+      <base depth="-2">
+        <Activated depth="-2" class="System.EventHandler" method="FPetraUtilsObject.TFrmPetra_Activated" />
+        <Load depth="-2" class="System.EventHandler" method="FPetraUtilsObject.TFrmPetra_Load" />
+        <Closing depth="-2" class="System.ComponentModel.CancelEventHandler" method="FPetraUtilsObject.TFrmPetra_Closing" />
+        <KeyDown depth="-2" class="System.Windows.Forms.KeyEventHandler" method="FPetraUtilsObject.Form_KeyDown" />
+        <Closed depth="-2" class="System.EventHandler" method="TFrmPetra_Closed" />
+      </base>
+    </Events>
+    <Actions>
+      <base depth="-2">
+        <actClose depth="-2" Label="&amp;Close" ActionId="eClose" Tooltip="Closes this window" Image="Close.ico" />
+        <actSave depth="-1" Label="&amp;Save" ActionClick="FileSave" Tooltip="Saves changed data" Image="Save.ico">
+        </actSave>
+      </base>
+      <actNew depth="0" Label="&amp;New" ActionClick="NewRow" />
+    </Actions>
+    <Controls>
+      <base depth="-2">
+        <mnuMain depth="-2" />
+        <tbrMain depth="-2" />
+        <stbMain depth="-2" />
+      </base>
+      <pnlContent depth="0" Dock="Fill">
+        <Controls depth="0">
+          <Element name="pnlGrid" />
+          <Element name="pnlDetails" />
+        </Controls>
+      </pnlContent>
+      <pnlGrid depth="0" Dock="Fill">
+        <Controls depth="0">
+          <Element name="grdDetails" />
+          <Element name="pnlButtons" />
+        </Controls>
+      </pnlGrid>
+      <pnlButtons depth="0" Dock="Right">
+        <Controls depth="0">
+          <Element name="btnNew" />
+        </Controls>
+      </pnlButtons>
+      <btnNew depth="0" Action="actNew">
+      </btnNew>
+      <grdDetails depth="0" Dock="Fill" ActionFocusRow="FocusedRowChanged">
+        <Columns depth="0">
+          <Element name="AFeesReceivable.FeeCode" />
+          <Element name="AFeesReceivable.FeeDescription" />
+          <Element name="AFeesReceivable.ChargeOption" />
+          <Element name="AFeesReceivable.ChargePercentage" />
+          <Element name="AFeesReceivable.ChargeAmount" />
+        </Columns>
+      </grdDetails>
+      <pnlDetails depth="0" Dock="Bottom">
+        <Controls depth="0">
+          <Row0 depth="0">
+            <Element name="txtDetailFeeCode" />
+            <Element name="txtDetailFeeDescription" />
+          </Row0>
+          <Row1 depth="0">
+            <Element name="cmbDetailChargeOption" />
+            <Element name="txtDetailChargePercentage" />
+            <Element name="txtDetailChargeAmount" />
+          </Row1>
+          <Row2 depth="0">
+            <Element name="grpAssignment" />
+          </Row2>
+        </Controls>
+        <ColWidths depth="0">
+          <Element name="4=Fixed:123" />
+        </ColWidths>
+      </pnlDetails>
+      <txtDetailFeeCode depth="0" Label="Fee Code" CharacterCasing="Upper" />
+      <txtDetailFeeDescription depth="0" Label="Description" ColSpan="3" Width="290" />
+      <cmbDetailChargeOption depth="0" Label="Charge Option" OnChange="ChargeOptionChanged">
+        <OptionalValues depth="0">
+          <Element name="Minimum" />
+          <Element name="Maximum" />
+          <Element name="Fixed" />
+          <Element name="Percentage" />
+        </OptionalValues>
+      </cmbDetailChargeOption>
+      <txtDetailChargePercentage depth="0" Label="Charge Percentage" Format="Decimal" />
+      <txtDetailChargeAmount depth="0" Label="Charge Amount" Format="Decimal" />
+      <cmbDetailCostCentreCode depth="0" NoLabel="True" List="UserDefinedList" />
+      <cmbDetailAccountCode depth="0" Label="Account" List="UserDefinedList" Width="250" />
+      <cmbDetailDrAccountCode depth="0" NoLabel="True" List="UserDefinedList" />
+      <txtForeignReceivingFund depth="0" Label="Cost Centre" Enabled="False" Width="200" />
+      <lblToBeDebited depth="0" Padding="96,0,0,0">
+      </lblToBeDebited>
+      <lblToBeCredited depth="0" />
+      <Empty1 depth="0" />
+      <Empty2 depth="0" />
+      <Empty3 depth="0" />
+      <Empty4 depth="0" />
+      <grpAssignment depth="0" ColSpan="5">
+        <Controls depth="0">
+          <Row0 depth="0">
+            <Element name="lblToBeDebited" />
+            <Element name="lblToBeCredited" />
+          </Row0>
+          <Row1 depth="0">
+            <Element name="txtForeignReceivingFund" />
+            <Element name="cmbDetailCostCentreCode" />
+          </Row1>
+          <Row2 depth="0">
+            <Element name="cmbDetailAccountCode" />
+            <Element name="cmbDetailDrAccountCode" />
+          </Row2>
+        </Controls>
+        <ColWidths depth="0">
+          <Element name="0=Fixed:96" />
+          <Element name="1=Fixed:284" />
+          <Element name="2=Fixed:289" />
+        </ColWidths>
+      </grpAssignment>
+    </Controls>
+    <Menu>
+      <base depth="-2" />
+      <mniFile>
+        <base depth="-2" Label="&amp;File" Order="AlwaysFirst">
+          <mniClose depth="-2" Action="actClose" Order="AlwaysLast" />
+          <mniFileSave depth="-1" Action="actSave" />
+          <mniSeparator depth="-1" Label="-" />
+          <mniFilePrint depth="-1" Label="&amp;Print..." Image="Print.ico">
+          </mniFilePrint>
+          <mniSeparator depth="-1" Label="-" />
+        </base>
+      </mniFile>
+      <mniHelp>
+        <base depth="-2" Label="&amp;Help" Order="AlwaysLast">
+          <mniHelpPetraHelp depth="-2" Label="&amp;Petra Help" ActionId="eHelp" Image="Help2.ico" />
+          <mniSeparator depth="-2" Label="-" />
+          <mniHelpBugReport depth="-2" Label="Bug &amp;Report" ActionId="eBugReport" Image="BugReport.ico" />
+          <mniSeparator depth="-2" Label="-" />
+          <mniHelpAboutPetra depth="-2" Label="&amp;About Petra" ActionId="eAHelpbout" Image="PetraInformation.ico" />
+          <mniHelpDevelopmentTeam depth="-2" Label="&amp;The Development Team..." ActionId="eHelpDevelopmentTeam" Image="DevelopmentTeam.ico" />
+        </base>
+      </mniHelp>
+      <mniEdit>
+        <base depth="-1" Label="&amp;Edit">
+          <mniEditUndoCurrentField depth="-1" Label="Undo &amp;Current Field">
+          </mniEditUndoCurrentField>
+          <mniEditUndoScreen depth="-1" Label="&amp;Undo Screen">
+          </mniEditUndoScreen>
+          <mniSeparator depth="-1" Label="-" />
+          <mniEditFind depth="-1" Label="&amp;Find...">
+          </mniEditFind>
+        </base>
+      </mniEdit>
+    </Menu>
+    <Toolbar>
+      <base depth="-1">
+        <tbbSave depth="-1" Action="actSave" Order="AlwaysFirst" />
+      </base>
+      <tbbNew depth="0" Label="New Admin. Grant Receivable">
+      </tbbNew>
+    </Toolbar>
+    <UsingNamespaces depth="0">
+      <Element name="Ict.Petra.Shared.MFinance.Account.Data" />
+    </UsingNamespaces>
+  </RootNode>
+</RootNodeInternal>
