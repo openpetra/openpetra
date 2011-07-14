@@ -246,50 +246,6 @@ namespace Ict.Petra.Server.MFinance.Gift
             return true; //true=complete TODO (if needed) find reasonable limit for FStringWriter in main memory, interrupt
         }
 
-        private bool GiftRestricted(AGiftRow GiftDR)
-        {
-            SGroupGiftTable GroupGiftDT;
-            SUserGroupTable UserGroupDT;
-            Int16 Counter;
-
-            DataRow[] FoundUserGroups;
-
-            if (GiftDR.Restricted)
-            {
-                GroupGiftDT = SGroupGiftAccess.LoadViaAGift(
-                    GiftDR.LedgerNumber,
-                    GiftDR.BatchNumber,
-                    GiftDR.GiftTransactionNumber,
-                    FTransaction);
-                UserGroupDT = SUserGroupAccess.LoadViaSUser(UserInfo.GUserInfo.UserID, FTransaction);
-
-                // Loop over all rows of GroupGiftDT
-                for (Counter = 0; Counter <= GroupGiftDT.Rows.Count - 1; Counter += 1)
-                {
-                    // To be able to view a Gift, ReadAccess must be granted
-                    if (GroupGiftDT[Counter].ReadAccess)
-                    {
-                        // Find out whether the user has a row in s_user_group with the
-                        // GroupID of the GroupGift row
-                        FoundUserGroups = UserGroupDT.Select(SUserGroupTable.GetGroupIdDBName() + " = '" + GroupGiftDT[Counter].GroupId + "'");
-
-                        if (FoundUserGroups.Length != 0)
-                        {
-                            // The gift is not restricted because there is a read access for the group
-                            return false;
-                            // don't evaluate further GroupGiftDT rows
-                        }
-                    }
-                }
-            }
-            else
-            {
-                return false;
-            }
-
-            return true;
-        }
-
         private String PartnerShortName(Int64 partnerKey)
         {
             if (partnerKey > 0)
@@ -340,7 +296,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                 WriteStringQuoted("T");
             }
 
-            if (GiftRestricted(gift))
+            if (TGift.GiftRestricted(gift, FTransaction))
             {
                 WriteGeneralNumber(0);
                 WriteStringQuoted("Confidential");
