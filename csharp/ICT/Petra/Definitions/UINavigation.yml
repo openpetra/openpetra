@@ -150,7 +150,7 @@ OpenPetra:
                         OneYearMonthlyGiving: {ActionOpenScreen=TFrmOneYearMonthlyGiving}
                     #YearEnd:
                     ICHProcessing: {Namespace=Ict.Petra.Client.MFinance.Gui.ICH}
-                        ICHStewardshipCalculation: {ActionOpenScreen=TFrmReportingPeriodSelectionDialog}
+                        ICHStewardshipCalculation: {ActionOpenScreen=TFrmReportingPeriodSelectionDialog, ReportingPeriodSelectionMode=rpsmICHStewardshipCalc}
                 #Budgets:
                 #ICH:
                 #Reports:

@@ -10,5 +10,5 @@ RootNode:
                 Row0: [cmbReportPeriod]
                 Row1: [chkEmailReport]
                 
-        cmbReportPeriod: {Width=50}
+        cmbReportPeriod: {Width=100, List=UserDefinedList}
         chkEmailReport:
