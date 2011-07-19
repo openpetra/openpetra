@@ -62,6 +62,7 @@ namespace Ict.Common.Printing
                 ACountryCode += ".";
             }
 
+            APath = Path.GetFullPath(APath);
             string FileName = Path.Combine(APath, AFileID);
 
             if (File.Exists(FileName + ACountryCode + AFormsID + AExtension))

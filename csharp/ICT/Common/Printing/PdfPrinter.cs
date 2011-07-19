@@ -343,7 +343,18 @@ namespace Ict.Common.Printing
                 return;
             }
 
-            Bitmap img = new System.Drawing.Bitmap(APath);
+            Bitmap img;
+
+            try
+            {
+                img = new System.Drawing.Bitmap(APath);
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("Problem reading image for printing to PDF: " + APath);
+                TLogging.Log(e.ToString());
+                throw new Exception("Problem reading image for printing to PDF: " + APath);
+            }
 
             if (img != null)
             {
@@ -371,7 +382,19 @@ namespace Ict.Common.Printing
                 throw new Exception("TGfxPrinter.DrawBitmap: cannot find image file " + APath);
             }
 
-            Bitmap img = new System.Drawing.Bitmap(APath);
+            Bitmap img;
+
+            try
+            {
+                img = new System.Drawing.Bitmap(APath);
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("Problem reading image for printing to PDF: " + APath);
+                TLogging.Log(e.ToString());
+                throw new Exception("Problem reading image for printing to PDF: " + APath);
+            }
+
             float Height = img.Size.Height;
 
             if (AHeightPercentage != 0.0f)

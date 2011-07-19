@@ -732,21 +732,34 @@ namespace Ict.Petra.WebServer.MConference
             {
             }
 
-            string PDFPath = TAttendeeManagement.PrintBadges(EventPartnerKey,
-                EventCode,
-                GetSelectedRegistrationOffice(),
-                GetSelectedRole(),
-                ADoNotReprint);
-
-            if (File.Exists(PDFPath))
+            try
             {
-                this.Response.Clear();
-                this.Response.ContentType = "application/pdf";
-                this.Response.AddHeader("Content-Type", "application/pdf");
-                this.Response.AddHeader("Content-Disposition", "attachment; filename=" + OutputName);
-                this.Response.TransmitFile(PDFPath);
-                File.Delete(PDFPath);
-                // this.Response.End(); avoid System.Threading.ThreadAbortException
+                string PDFPath = TAttendeeManagement.PrintBadges(EventPartnerKey,
+                    EventCode,
+                    GetSelectedRegistrationOffice(),
+                    GetSelectedRole(),
+                    ADoNotReprint);
+
+                if (File.Exists(PDFPath))
+                {
+                    this.Response.Clear();
+                    this.Response.ContentType = "application/pdf";
+                    this.Response.AddHeader("Content-Type", "application/pdf");
+                    this.Response.AddHeader("Content-Disposition", "attachment; filename=" + OutputName);
+                    this.Response.TransmitFile(PDFPath);
+                    File.Delete(PDFPath);
+                    // this.Response.End(); avoid System.Threading.ThreadAbortException
+                }
+            }
+            catch (Exception e)
+            {
+                X.Msg.Show(new MessageBoxConfig
+                    {
+                        Buttons = MessageBox.Button.OK,
+                        Icon = MessageBox.Icon.ERROR,
+                        Title = "Fail",
+                        Message = e.Message
+                    });
             }
         }
 
