@@ -52,28 +52,31 @@ namespace Ict.Petra.Server.MConference.Applications
     /// <summary>
     /// For creating gift batches for conference payments
     /// </summary>
-    public class TImportFellowshipGroups
+    public class TImportPrintedBadges
     {
         /// <summary>
-        /// import fellowship groups.
-        /// Column1 is Lastname, Column2 is Firstname, Column3 is PartnerKey, Column4 is GroupCode
+        /// this is needed for reproducing the date printed of the badges, which seems to have been lost.
+        /// it is also useful to compare what has been printed before, and if the fellowship groups have changed, the badges need to be reprinted.
+        /// Column1 is Date Printed, Column2 is Firstname, Column3 is LastName, Column4 is PartnerKey, Column5 is fellowshipgroupcode.
         /// </summary>
-        static public bool ImportFellowshipGroups(
-            string AFellowshipGroupsCSV,
+        static public bool ImportPrintedBadges(
+            string APrintedBadgesCSV,
             Int64 AEventPartnerKey,
             string AEventCode,
             Int64 ARegisteringOffice)
         {
             string InputSeparator = ",";
 
-            if (AFellowshipGroupsCSV.Contains("\t"))
+            if (APrintedBadgesCSV.Contains("\t"))
             {
                 InputSeparator = "\t";
             }
-            else if (AFellowshipGroupsCSV.Contains(";"))
+            else if (APrintedBadgesCSV.Contains(";"))
             {
                 InputSeparator = ";";
             }
+
+            TAttendeeManagement.RefreshAttendees(AEventPartnerKey, AEventCode);
 
             ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
             TApplicationManagement.GetApplications(
@@ -83,13 +86,13 @@ namespace Ict.Petra.Server.MConference.Applications
                 "accepted",
                 ARegisteringOffice,
                 String.Empty,
-                true);
+                false);
 
             try
             {
                 MainDS.PmShortTermApplication.DefaultView.Sort = PmShortTermApplicationTable.GetPartnerKeyDBName();
 
-                string[] InputLines = AFellowshipGroupsCSV.Replace("\r", "").Split(new char[] { '\n' });
+                string[] InputLines = APrintedBadgesCSV.Replace("\r", "").Split(new char[] { '\n' });
 
                 int RowCount = 0;
 
@@ -98,9 +101,9 @@ namespace Ict.Petra.Server.MConference.Applications
                     RowCount++;
 
                     string line = InputLine;
-
-                    string LastName = StringHelper.GetNextCSV(ref line, InputSeparator, "");
+                    DateTime DatePrinted = DateTime.ParseExact(StringHelper.GetNextCSV(ref line, InputSeparator, ""), "yyyy/MM/dd", null);
                     string FirstName = StringHelper.GetNextCSV(ref line, InputSeparator, "");
+                    string LastName = StringHelper.GetNextCSV(ref line, InputSeparator, "");
                     Int64 PartnerKey = StringHelper.TryStrToInt(StringHelper.GetNextCSV(ref line, InputSeparator, ""), -1);
                     string GroupCode = StringHelper.GetNextCSV(ref line, InputSeparator, "");
 
@@ -112,18 +115,13 @@ namespace Ict.Petra.Server.MConference.Applications
                     if (ShorttermAppRow == null)
                     {
                         TLogging.Log(
-                            "Import Fellowship groups: Cannot find shortterm application for attendee " + FirstName + " " + LastName + " " +
+                            "Import PrintedBadges: Cannot find shortterm application for attendee " + FirstName + " " + LastName + " " +
                             PartnerKey.ToString());
                         continue;
                     }
 
-                    if (ShorttermAppRow.StFgCode.Length == 0)
+                    try
                     {
-                        ShorttermAppRow.StFgCode = GroupCode;
-                    }
-                    else if (ShorttermAppRow.StFgCode != GroupCode)
-                    {
-                        ShorttermAppRow.StFgCode = GroupCode;
                         Int32 AttendeeIndex = MainDS.PcAttendee.DefaultView.Find(PartnerKey);
 
                         if (AttendeeIndex == -1)
@@ -136,9 +134,35 @@ namespace Ict.Petra.Server.MConference.Applications
 
                         if (AttendeeRow != null)
                         {
-                            // we should reprint this badge, since the group has changed
+                            AttendeeRow.BadgePrint = DatePrinted;
+                        }
+
+                        if (ShorttermAppRow.StFgCode != GroupCode)
+                        {
                             AttendeeRow.SetBadgePrintNull();
                         }
+
+                        ConferenceApplicationTDSApplicationGridRow ApplicationRow =
+                            (ConferenceApplicationTDSApplicationGridRow)MainDS.ApplicationGrid.DefaultView[MainDS.ApplicationGrid.DefaultView.Find(
+                                                                                                               new object[] { ShorttermAppRow.
+                                                                                                                              PartnerKey,
+                                                                                                                              ShorttermAppRow.ApplicationKey })].Row;
+
+                        Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(TJsonTools.RemoveContainerControls(ApplicationRow.JSONData));
+
+                        if (rawDataObject.Contains("NickName"))
+                        {
+                            string NickName = rawDataObject["NickName"].ToString();
+
+                            if (FirstName != NickName)
+                            {
+                                AttendeeRow.SetBadgePrintNull();
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        TLogging.Log("Importing PrintedBadges: " + e.Message + " " + e.ToString());
                     }
                 }
 
@@ -148,7 +172,7 @@ namespace Ict.Petra.Server.MConference.Applications
             }
             catch (Exception ex)
             {
-                TLogging.Log("Importing Fellowship groups: " + ex.Message);
+                TLogging.Log("Importing PrintedBadges groups: " + ex.Message);
                 return false;
             }
 

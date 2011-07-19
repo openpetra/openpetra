@@ -96,11 +96,15 @@
     <None Include="ImportFellowshipGroups.aspx">
       <DependentUpon>ImportFellowshipGroups.aspx.cs</DependentUpon>
     </None>
+    <None Include="ImportPrintedBadges.aspx">
+      <DependentUpon>ImportPrintedBadges.aspx.cs</DependentUpon>
+    </None>
     <Compile Include="ChangePassword.aspx.cs">
     </Compile>
     <Compile Include="CreateGiftBatch.aspx.cs" />
     <Compile Include="Desktop.aspx.cs">
     </Compile>
     <Compile Include="ImportFellowshipGroups.aspx.cs" />
+    <Compile Include="ImportPrintedBadges.aspx.cs" />
   </ItemGroup>
 </Project>

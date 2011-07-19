@@ -570,6 +570,18 @@
         </ext:DesktopWindow>
 
         <ext:DesktopWindow 
+            ID="winImportPrintedBadges" 
+            runat="server" 
+            Title="Import Printed Badges" 
+            Width="600"
+            Height="608"
+            PageX="200" 
+            PageY="100"
+            Layout="Border">
+            <AutoLoad Url="ImportPrintedBadges.aspx" Mode="IFrame" ShowMask="true" />
+        </ext:DesktopWindow>
+
+        <ext:DesktopWindow 
             ID="winApplications" 
             runat="server" 
             InitCenter="false"
@@ -704,6 +716,11 @@
                         <td><ext:Button ID="btnImportFellowshipGroups" runat="server" Text="Import Fellowship Groups">
                             <Listeners>
                                 <Click Handler="#{winImportFellowshipGroups}.show();" />
+                            </Listeners>
+                        </ext:Button></td>
+                        <td><ext:Button ID="btnImportPrintedBadges" runat="server" Text="Import Printed Badges">
+                            <Listeners>
+                                <Click Handler="#{winImportPrintedBadges}.show();" />
                             </Listeners>
                         </ext:Button></td>
                         <td><ext:Button ID="btnUploadPetraExtract" runat="server" Text="Upload Petra Extract" Icon="Disk">

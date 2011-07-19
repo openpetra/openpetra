@@ -86,6 +86,7 @@ namespace Ict.Petra.WebServer.MConference
         protected Ext.Net.Button btnTestPrintBadges;
         protected Ext.Net.Button btnPrintBadges;
         protected Ext.Net.Button btnExportTShirtNumbers;
+        protected Ext.Net.Button btnImportPrintedBadges;
 
         protected bool ConferenceOrganisingOffice = false;
 
@@ -121,6 +122,7 @@ namespace Ict.Petra.WebServer.MConference
                 btnLoadRefreshApplicants.Visible = false;
                 btnPrintBadges.Visible = ConferenceOrganisingOffice;
                 btnExportTShirtNumbers.Visible = ConferenceOrganisingOffice;
+                btnImportPrintedBadges.Visible = ConferenceOrganisingOffice;
 
                 // for the moment, do not confuse all offices with this button
                 btnCreateGiftBatch.Visible = ConferenceOrganisingOffice;
@@ -351,8 +353,6 @@ namespace Ict.Petra.WebServer.MConference
                 ConferenceOrganisingOffice = Convert.ToBoolean(Session["CONFERENCEORGANISINGOFFICE"]);
 
                 System.Data.DataView ApplicationView = CurrentApplicants.ApplicationGrid.DefaultView;
-                ApplicationView.Sort = ConferenceApplicationTDSApplicationGridTable.GetPartnerKeyDBName() + "," +
-                                       ConferenceApplicationTDSApplicationGridTable.GetApplicationKeyDBName();
 
                 ConferenceApplicationTDSApplicationGridRow row =
                     (ConferenceApplicationTDSApplicationGridRow)ApplicationView[ApplicationView.Find(new object[] { PartnerKey,

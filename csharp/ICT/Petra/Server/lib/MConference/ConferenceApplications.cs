@@ -180,6 +180,9 @@ namespace Ict.Petra.Server.MConference.Applications
                     PmGeneralApplicationTable.GetPartnerKeyDBName() + "," +
                     PmGeneralApplicationTable.GetApplicationKeyDBName() + "," +
                     PmGeneralApplicationTable.GetRegistrationOfficeDBName();
+                AMainDS.ApplicationGrid.DefaultView.Sort =
+                    ConferenceApplicationTDSApplicationGridTable.GetPartnerKeyDBName() + "," +
+                    ConferenceApplicationTDSApplicationGridTable.GetApplicationKeyDBName();
             }
             finally
             {
@@ -507,6 +510,75 @@ namespace Ict.Petra.Server.MConference.Applications
             }
 
             return Result;
+        }
+
+        /// <summary>
+        /// find the short term application for an applicant, by registration key, partner key, or first and last name;
+        /// </summary>
+        /// <param name="AMainDS"></param>
+        /// <param name="APartnerKey"></param>
+        /// <param name="LastName"></param>
+        /// <param name="FirstName"></param>
+        /// <returns></returns>
+        public static PmShortTermApplicationRow FindShortTermApplication(ConferenceApplicationTDS AMainDS,
+            ref Int64 APartnerKey,
+            string LastName,
+            string FirstName)
+        {
+            if ((APartnerKey <= 0) && (LastName.Length > 0) && (FirstName.Length > 0))
+            {
+                // try to find the partner key from the name
+                string OldSort = AMainDS.ApplicationGrid.DefaultView.Sort;
+                AMainDS.ApplicationGrid.DefaultView.Sort = ConferenceApplicationTDSApplicationGridTable.GetFamilyNameDBName() + "," +
+                                                           ConferenceApplicationTDSApplicationGridTable.GetFirstNameDBName();
+                Int32 index = AMainDS.ApplicationGrid.DefaultView.Find(new object[] { LastName, FirstName });
+
+                if (index == -1)
+                {
+                    TLogging.Log("Import Fellowship groups: Cannot find attendee " + FirstName + " " + LastName);
+                    AMainDS.ApplicationGrid.DefaultView.Sort = OldSort;
+                    return null;
+                }
+
+                ConferenceApplicationTDSApplicationGridRow ApplicantRow =
+                    (ConferenceApplicationTDSApplicationGridRow)AMainDS.ApplicationGrid.DefaultView[index].Row;
+                APartnerKey = ApplicantRow.PartnerKey;
+
+                AMainDS.ApplicationGrid.DefaultView.Sort = OldSort;
+            }
+            else
+            {
+                // is this the person key from the local Petra database, or the registration key?
+                string OldSort = AMainDS.ApplicationGrid.DefaultView.Sort;
+                AMainDS.ApplicationGrid.DefaultView.Sort = ConferenceApplicationTDSApplicationGridTable.GetPersonKeyDBName();
+                Int32 index = AMainDS.ApplicationGrid.DefaultView.Find(APartnerKey);
+
+                if (index != -1)
+                {
+                    ConferenceApplicationTDSApplicationGridRow ApplicantRow =
+                        (ConferenceApplicationTDSApplicationGridRow)AMainDS.ApplicationGrid.DefaultView[index].Row;
+                    APartnerKey = ApplicantRow.PartnerKey;
+                }
+
+                AMainDS.ApplicationGrid.DefaultView.Sort = OldSort;
+            }
+
+            Int32 indexShorttermApp = AMainDS.PmShortTermApplication.DefaultView.Find(APartnerKey);
+
+            if (indexShorttermApp == -1)
+            {
+                if (APartnerKey > 0)
+                {
+                    APartnerKey = -1;
+                    TLogging.Log("search for -1 ");
+
+                    return FindShortTermApplication(AMainDS, ref APartnerKey, LastName, FirstName);
+                }
+
+                return null;
+            }
+
+            return (PmShortTermApplicationRow)AMainDS.PmShortTermApplication.DefaultView[indexShorttermApp].Row;
         }
 
         /// send an email to the applicant telling him that the application was accepted;
