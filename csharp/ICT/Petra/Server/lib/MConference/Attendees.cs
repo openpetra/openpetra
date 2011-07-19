@@ -565,9 +565,9 @@ namespace Ict.Petra.Server.MConference.Applications
             bool ADoNotReprint)
         {
             // we want to avoid that all badges get printed by accident
-            if (ADoNotReprint && ((ASelectedRegistrationOffice == -1) || (ASelectedRole == null) || (ASelectedRole.Length == 0)))
+            if (ADoNotReprint && ((ASelectedRole == null) || (ASelectedRole.Length == 0)))
             {
-                TLogging.Log("PrintBadges: only per country and per role");
+                TLogging.Log("PrintBadges: only per role");
                 return string.Empty;
             }
 
@@ -595,6 +595,8 @@ namespace Ict.Petra.Server.MConference.Applications
                     ConferenceApplicationTDSApplicationGridTable.GetFamilyNameDBName() + "," +
                     ConferenceApplicationTDSApplicationGridTable.GetFirstNameDBName();
 
+                Int32 CountPrinted = 0;
+
                 // go through all accepted applicants
                 foreach (DataRowView rv in MainDS.ApplicationGrid.DefaultView)
                 {
@@ -608,7 +610,7 @@ namespace Ict.Petra.Server.MConference.Applications
 
                     PcAttendeeRow AttendeeRow = (PcAttendeeRow)MainDS.PcAttendee.DefaultView[AttendeeIndex].Row;
 
-                    if (ADoNotReprint && AttendeeRow.BadgePrint.HasValue)
+                    if (AttendeeRow.BadgePrint.HasValue)
                     {
                         // check if this badge has been printed already
                         // skip the current badge
@@ -621,7 +623,18 @@ namespace Ict.Petra.Server.MConference.Applications
                     if (BatchPrinted)
                     {
                         AttendeeRow.BadgePrint = DatePrinted;
+                        CountPrinted++;
                     }
+                }
+
+                const Int32 MAXPRINTALLBADGES = 500;
+
+                if ((CountPrinted > MAXPRINTALLBADGES) && ADoNotReprint
+                    && ((ASelectedRegistrationOffice == -1) || (ASelectedRole == null) || (ASelectedRole.Length == 0)))
+                {
+                    TLogging.Log(
+                        String.Format("PrintBadges: if more than {0} badges, print only per role and registration office", MAXPRINTALLBADGES));
+                    return string.Empty;
                 }
 
                 TFormLettersTools.CloseDocument(ref ResultDocument);
