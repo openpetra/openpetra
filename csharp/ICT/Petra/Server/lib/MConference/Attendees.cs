@@ -382,9 +382,19 @@ namespace Ict.Petra.Server.MConference.Applications
             string HTMLText = r.ReadToEnd();
             r.Close();
 
+            Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(TJsonTools.RemoveContainerControls(AApplicant.JSONData));
+
             HTMLText = HTMLText.Replace("#FORMLETTERPATH", TAppSettingsManager.GetValue("Formletters.Path"));
             HTMLText = HTMLText.Replace("#ROLE", AApplicant.StCongressCode);
-            HTMLText = HTMLText.Replace("#FIRSTNAME", AApplicant.FirstName);
+
+            string FirstName = AApplicant.FirstName;
+
+            if (rawDataObject.Contains("NickName") && (rawDataObject["NickName"].ToString().Trim().Length > 0))
+            {
+                FirstName = rawDataObject["NickName"].ToString();
+            }
+
+            HTMLText = HTMLText.Replace("#FIRSTNAME", FirstName);
             HTMLText = HTMLText.Replace("#LASTNAME", AApplicant.FamilyName);
 
             // TODO: use passport country?
@@ -445,8 +455,6 @@ namespace Ict.Petra.Server.MConference.Applications
             }
 
             HTMLText = HTMLText.Replace("#FELLOWSHIPGROUP", AApplicant.StFgCode);
-
-            Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(TJsonTools.RemoveContainerControls(AApplicant.JSONData));
 
             if (rawDataObject.Contains("TShirtSize") && rawDataObject.Contains("TShirtStyle"))
             {

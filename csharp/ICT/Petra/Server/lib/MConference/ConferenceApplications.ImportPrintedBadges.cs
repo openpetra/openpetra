@@ -146,11 +146,12 @@ namespace Ict.Petra.Server.MConference.Applications
                             (ConferenceApplicationTDSApplicationGridRow)MainDS.ApplicationGrid.DefaultView[MainDS.ApplicationGrid.DefaultView.Find(
                                                                                                                new object[] { ShorttermAppRow.
                                                                                                                               PartnerKey,
-                                                                                                                              ShorttermAppRow.ApplicationKey })].Row;
+                                                                                                                              ShorttermAppRow.
+                                                                                                                              ApplicationKey })].Row;
 
                         Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(TJsonTools.RemoveContainerControls(ApplicationRow.JSONData));
 
-                        if (rawDataObject.Contains("NickName"))
+                        if (rawDataObject.Contains("NickName") && (rawDataObject["NickName"].ToString().Trim().Length > 0))
                         {
                             string NickName = rawDataObject["NickName"].ToString();
 
