@@ -130,7 +130,7 @@ namespace Ict.Petra.Server.MConference.Applications
 
             HTMLText = HTMLText.Replace("#PHOTOPARTICIPANT", PhotoPath);
 
-            string RolesThatRequireFellowshipGroupCode = TAppSettingsManager.GetValue("ConferenceTool.RolesThatRequireFellowshipGroupCode");
+            string RolesThatRequireFellowshipGroupCode = TAppSettingsManager.GetValue("ConferenceTool.RolesThatRequireFellowshipGroupCode", "", false);
             RolesThatRequireFellowshipGroupCode = RolesThatRequireFellowshipGroupCode.Replace(" ", "") + ",";
 
             if (AApplicant.StFgCode.Length == 0)
