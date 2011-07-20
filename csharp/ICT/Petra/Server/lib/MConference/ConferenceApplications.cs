@@ -570,7 +570,6 @@ namespace Ict.Petra.Server.MConference.Applications
                 if (APartnerKey > 0)
                 {
                     APartnerKey = -1;
-                    TLogging.Log("search for -1 ");
 
                     return FindShortTermApplication(AMainDS, ref APartnerKey, LastName, FirstName);
                 }

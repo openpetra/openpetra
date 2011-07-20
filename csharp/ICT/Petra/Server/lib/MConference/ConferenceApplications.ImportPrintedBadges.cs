@@ -157,7 +157,8 @@ namespace Ict.Petra.Server.MConference.Applications
 
                             if (FirstName != NickName)
                             {
-                                AttendeeRow.SetBadgePrintNull();
+                            	// don't reprint badges if nickname was not printed the last time
+								// AttendeeRow.SetBadgePrintNull();
                             }
                         }
                     }
