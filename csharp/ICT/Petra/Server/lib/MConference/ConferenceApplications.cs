@@ -119,13 +119,16 @@ namespace Ict.Petra.Server.MConference.Applications
         }
 
         /// <summary>
-        /// return a list of all applicants for a given event, but only the registration office that the user has permissions for, ie. Module REG-00xx0000000
+        /// return a list of all applicants for a given event,
+        /// but if AConferenceOrganisingOffice is false,
+        /// consider only the registration office that the user has permissions for, ie. Module REG-00xx0000000
         /// </summary>
         /// <param name="AMainDS"></param>
         /// <param name="AEventPartnerKey"></param>
         /// <param name="AEventCode"></param>
         /// <param name="AApplicationStatus"></param>
         /// <param name="ARegistrationOffice">if -1, then show all offices that the user has permission for</param>
+        /// <param name="AConferenceOrganisingOffice">if true, all offices are considered</param>
         /// <param name="ARole"></param>
         /// <param name="AClearJSONData"></param>
         /// <returns></returns>
@@ -135,6 +138,7 @@ namespace Ict.Petra.Server.MConference.Applications
             string AEventCode,
             string AApplicationStatus,
             Int64 ARegistrationOffice,
+            bool AConferenceOrganisingOffice,
             string ARole,
             bool AClearJSONData)
         {
@@ -152,9 +156,7 @@ namespace Ict.Petra.Server.MConference.Applications
                     AMainDS.PcAttendee.DefaultView.Sort = PcAttendeeTable.GetPartnerKeyDBName();
                 }
 
-                bool ConferenceOrganisingOffice = IsConferenceOrganisingOffice();
-
-                if (ConferenceOrganisingOffice && (ARegistrationOffice == -1))
+                if (AConferenceOrganisingOffice && (ARegistrationOffice == -1))
                 {
                     // avoid duplicates, who are registered by one office, but charged to another office
                     GetApplications(ref AMainDS, AEventCode, -1, AApplicationStatus, ARole, AClearJSONData, Transaction);
@@ -196,6 +198,36 @@ namespace Ict.Petra.Server.MConference.Applications
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// return a list of all applicants for a given event, but only the registration office that the user has permissions for, ie. Module REG-00xx0000000
+        /// </summary>
+        /// <param name="AMainDS"></param>
+        /// <param name="AEventPartnerKey"></param>
+        /// <param name="AEventCode"></param>
+        /// <param name="AApplicationStatus"></param>
+        /// <param name="ARegistrationOffice">if -1, then show all offices that the user has permission for</param>
+        /// <param name="ARole"></param>
+        /// <param name="AClearJSONData"></param>
+        /// <returns></returns>
+        public static bool GetApplications(
+            ref ConferenceApplicationTDS AMainDS,
+            Int64 AEventPartnerKey,
+            string AEventCode,
+            string AApplicationStatus,
+            Int64 ARegistrationOffice,
+            string ARole,
+            bool AClearJSONData)
+        {
+            return GetApplications(ref AMainDS,
+                AEventPartnerKey,
+                AEventCode,
+                AApplicationStatus,
+                ARegistrationOffice,
+                IsConferenceOrganisingOffice(),
+                ARole,
+                AClearJSONData);
         }
 
         private static bool LoadApplicationsFromDB(

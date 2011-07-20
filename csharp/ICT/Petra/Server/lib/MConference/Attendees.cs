@@ -82,12 +82,13 @@ namespace Ict.Petra.Server.MConference.Applications
             // Run over all conference that are related to the given one
             foreach (PcConferenceRow ConferenceRow in ConferenceTable.Rows)
             {
-                // get all applications for this conference
+                // get all applications for this conference;
+                // important: this might be called by registration offices, but here we need to get all applications for all offices
                 ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
                 TApplicationManagement.GetApplications(
                     ref MainDS,
                     ConferenceRow.ConferenceKey,
-                    AEventCode, "all", -1, null, false);
+                    AEventCode, "all", -1, true, null, false);
 
                 foreach (PmShortTermApplicationRow ShortTermAppRow in MainDS.PmShortTermApplication.Rows)
                 {
