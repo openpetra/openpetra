@@ -4,6 +4,10 @@ RootNode:
     Namespace: Ict.Petra.Client.MFinance.Gui.ICH
     FormType: dialog
     Template: window
+    
+    Events:
+        Closing: {class=System.ComponentModel.CancelEventHandler,method=CustomClosingHandler}
+
     Controls:
         pnlDialogContent:
             Controls:
@@ -11,4 +15,5 @@ RootNode:
                 Row1: [chkEmailReport]
                 
         cmbReportPeriod: {Width=100, List=UserDefinedList}
+            
         chkEmailReport:
