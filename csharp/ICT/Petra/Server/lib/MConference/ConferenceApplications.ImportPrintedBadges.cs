@@ -109,8 +109,8 @@ namespace Ict.Petra.Server.MConference.Applications
 
                     PmShortTermApplicationRow ShorttermAppRow = TApplicationManagement.FindShortTermApplication(MainDS,
                         ref PartnerKey,
-                        String.Empty,
-                        string.Empty);
+                        LastName,
+                        FirstName);
 
                     if (ShorttermAppRow == null)
                     {
@@ -157,8 +157,8 @@ namespace Ict.Petra.Server.MConference.Applications
 
                             if (FirstName != NickName)
                             {
-                            	// don't reprint badges if nickname was not printed the last time
-								// AttendeeRow.SetBadgePrintNull();
+                                // don't reprint badges if nickname was not printed the last time
+                                // AttendeeRow.SetBadgePrintNull();
                             }
                         }
                     }

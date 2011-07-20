@@ -106,8 +106,8 @@ namespace Ict.Petra.Server.MConference.Applications
 
                     PmShortTermApplicationRow ShorttermAppRow = TApplicationManagement.FindShortTermApplication(MainDS,
                         ref PartnerKey,
-                        String.Empty,
-                        string.Empty);
+                        LastName,
+                        FirstName);
 
                     if (ShorttermAppRow == null)
                     {
