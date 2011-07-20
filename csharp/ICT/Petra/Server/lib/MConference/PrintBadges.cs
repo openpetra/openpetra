@@ -215,12 +215,12 @@ namespace Ict.Petra.Server.MConference.Applications
             do
             {
                 filename = pdfPath + Path.DirectorySeparatorChar +
-                           rand.Next(1, 1000000).ToString() + ".pdf";
+                           rand.Next(1, 1000000).ToString() + ".txt";
             } while (File.Exists(filename));
 
             TLogging.Log(filename);
 
-            StreamWriter sw = new StreamWriter(filename.Replace(".pdf", ".txt"));
+            StreamWriter sw = new StreamWriter(filename);
             sw.WriteLine(AHTMLDoc);
             sw.Close();
 
@@ -235,7 +235,7 @@ namespace Ict.Petra.Server.MConference.Applications
 
                 pdfPrinter.Init(eOrientation.ePortrait, htmlPrinter, eMarginType.ePrintableArea);
 
-                pdfPrinter.SavePDF(filename);
+                pdfPrinter.SavePDF(filename.Replace(".txt", ".pdf"));
             }
             catch (Exception e)
             {
@@ -244,7 +244,7 @@ namespace Ict.Petra.Server.MConference.Applications
                 throw e;
             }
 
-            return filename;
+            return filename.Replace(".txt", ".pdf");
         }
 
         /// <summary>
