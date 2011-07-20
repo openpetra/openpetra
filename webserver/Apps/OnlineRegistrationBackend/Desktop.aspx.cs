@@ -734,7 +734,7 @@ namespace Ict.Petra.WebServer.MConference
 
             try
             {
-                string PDFPath = TAttendeeManagement.PrintBadges(EventPartnerKey,
+                string PDFPath = TConferenceBadges.PrintBadges(EventPartnerKey,
                     EventCode,
                     GetSelectedRegistrationOffice(),
                     GetSelectedRole(),
@@ -780,7 +780,7 @@ namespace Ict.Petra.WebServer.MConference
             this.Response.AddHeader("Content-Type", "application/xls");
             this.Response.AddHeader("Content-Disposition", "attachment; filename=TShirtNumbers.xls");
             MemoryStream m = new MemoryStream();
-            TAttendeeManagement.DownloadTShirtNumbers(EventPartnerKey, EventCode, m);
+            TConferenceFreeTShirt.DownloadTShirtNumbers(EventPartnerKey, EventCode, m);
             m.WriteTo(this.Response.OutputStream);
             m.Close();
             this.Response.End();
