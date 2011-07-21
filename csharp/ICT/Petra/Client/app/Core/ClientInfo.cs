@@ -87,7 +87,7 @@ namespace Ict.Petra.Client.App.Core
             // if there is a version.txt in the bin directory, use that.
             // this allows better debugging etc
 
-            string VersionTxtFile = Path.GetDirectoryName(entryAssembly.CodeBase.Replace("file:///", "")) +
+            string VersionTxtFile = Path.GetDirectoryName(entryAssembly.Location) +
                                     Path.DirectorySeparatorChar + "version.txt";
 
             if (File.Exists(VersionTxtFile))
