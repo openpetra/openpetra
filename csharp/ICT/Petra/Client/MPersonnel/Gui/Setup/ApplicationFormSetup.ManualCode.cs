@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       christiank
 //
 // Copyright 2004-2010 by OM International
 //
@@ -32,25 +32,21 @@ using Ict.Common;
 using Ict.Common.IO;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MPersonnel;
-using Ict.Petra.Shared.MPersonnel.Units.Data;
+using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 
 namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 {
-    public partial class TFrmLeavingCodeSetup
+    public partial class TFrmApplicationFormSetup
     {
-        private void RunOnceOnActivationManual()
+        private void NewRowManual(ref PtAppFormTypesRow ARow)
         {
-            chkDetailDeletableFlag.Enabled = false;
-        }
-
-        private void NewRowManual(ref PtLeavingCodeRow ARow)
-        {
+            // Deal with primary key.  FormName is primary key
             string newName = Catalog.GetString("NEWCODE");
             Int32 countNewDetail = 0;
 
-            if (FMainDS.PtLeavingCode.Rows.Find(new object[] { newName }) != null)
+            if (FMainDS.PtAppFormTypes.Rows.Find(new object[] { newName }) != null)
             {
-                while (FMainDS.PtLeavingCode.Rows.Find(new object[] { newName + countNewDetail.ToString() }) != null)
+                while (FMainDS.PtAppFormTypes.Rows.Find(new object[] { newName + countNewDetail.ToString() }) != null)
                 {
                     countNewDetail++;
                 }
@@ -58,26 +54,14 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
                 newName += countNewDetail.ToString();
             }
 
-            ARow.LeavingCodeInd = newName;
+            ARow.FormName = newName;
+            
+            ARow.AppUsedBy = "Both";
         }
 
         private void NewRecord(Object sender, EventArgs e)
         {
-            CreateNewPtLeavingCode();
-        }
-
-        private void EnableDisableUnassignableDate(Object sender, EventArgs e)
-        {
-            dtpDetailUnassignableDate.Enabled = chkDetailUnassignableFlag.Checked;
-
-            if (!chkDetailUnassignableFlag.Checked)
-            {
-                dtpDetailUnassignableDate.Date = null;
-            }
-            else
-            {
-                dtpDetailUnassignableDate.Date = DateTime.Now.Date;
-            }
+            CreateNewPtAppFormTypes();
         }
     }
 }

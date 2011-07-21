@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       christiank
 //
 // Copyright 2004-2010 by OM International
 //
@@ -32,38 +32,38 @@ using Ict.Common;
 using Ict.Common.IO;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MPersonnel;
-using Ict.Petra.Shared.MPersonnel.Units.Data;
+using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 
 namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 {
-    public partial class TFrmLeavingCodeSetup
+    public partial class TFrmLeadershipRatingSetup
     {
-        private void RunOnceOnActivationManual()
+        private void NewRowManual(ref PtLeadershipRatingRow ARow)
         {
-            chkDetailDeletableFlag.Enabled = false;
-        }
-
-        private void NewRowManual(ref PtLeavingCodeRow ARow)
-        {
-            string newName = Catalog.GetString("NEWCODE");
-            Int32 countNewDetail = 0;
-
-            if (FMainDS.PtLeavingCode.Rows.Find(new object[] { newName }) != null)
+            // Deal with primary key.  Code is unique and is a single character.
+            // Default suggestion is 0..9, A..Z
+            char code = '0';
+            if (FMainDS.PtLeadershipRating.Rows.Find(new object[] { code }) != null)
             {
-                while (FMainDS.PtLeavingCode.Rows.Find(new object[] { newName + countNewDetail.ToString() }) != null)
+                while (FMainDS.PtLeadershipRating.Rows.Find(new object[] { code }) != null)
                 {
-                    countNewDetail++;
+                    if (code == '9')
+                    {
+                        code = 'A';
+                    }
+                    else
+                    {
+                        code++;
+                    }
                 }
-
-                newName += countNewDetail.ToString();
             }
 
-            ARow.LeavingCodeInd = newName;
+            ARow.Code = code.ToString();
         }
 
         private void NewRecord(Object sender, EventArgs e)
         {
-            CreateNewPtLeavingCode();
+            CreateNewPtLeadershipRating();
         }
 
         private void EnableDisableUnassignableDate(Object sender, EventArgs e)

@@ -30,54 +30,40 @@ using GNU.Gettext;
 using Ict.Common.Verification;
 using Ict.Common;
 using Ict.Common.IO;
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
-using Ict.Petra.Shared.MPersonnel;
-using Ict.Petra.Shared.MPersonnel.Units.Data;
+using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MPartner.Mailroom.Data;
 
-namespace Ict.Petra.Client.MPersonnel.Gui.Setup
+namespace Ict.Petra.Client.MPartner.Gui.Setup
 {
-    public partial class TFrmLeavingCodeSetup
+    public partial class TFrmMailingSetup
     {
-        private void RunOnceOnActivationManual()
+        private void NewRowManual(ref PMailingRow ARow)
         {
-            chkDetailDeletableFlag.Enabled = false;
-        }
-
-        private void NewRowManual(ref PtLeavingCodeRow ARow)
-        {
-            string newName = Catalog.GetString("NEWCODE");
+            // Deal with the primary key - we need a unique mailing code
+            string newName = Catalog.GetString("NEWVALUE");
             Int32 countNewDetail = 0;
 
-            if (FMainDS.PtLeavingCode.Rows.Find(new object[] { newName }) != null)
+            if (FMainDS.PMailing.Rows.Find(new object[] { newName }) != null)
             {
-                while (FMainDS.PtLeavingCode.Rows.Find(new object[] { newName + countNewDetail.ToString() }) != null)
+                while (FMainDS.PMailing.Rows.Find(new object[] { newName + countNewDetail.ToString() }) != null)
                 {
                     countNewDetail++;
                 }
 
                 newName += countNewDetail.ToString();
             }
-
-            ARow.LeavingCodeInd = newName;
+            ARow.MailingCode = newName;
+            
+            // Initialise the date to today
+            ARow.MailingDate = DateTime.Today;
         }
 
         private void NewRecord(Object sender, EventArgs e)
         {
-            CreateNewPtLeavingCode();
-        }
-
-        private void EnableDisableUnassignableDate(Object sender, EventArgs e)
-        {
-            dtpDetailUnassignableDate.Enabled = chkDetailUnassignableFlag.Checked;
-
-            if (!chkDetailUnassignableFlag.Checked)
-            {
-                dtpDetailUnassignableDate.Date = null;
-            }
-            else
-            {
-                dtpDetailUnassignableDate.Date = DateTime.Now.Date;
-            }
+            CreateNewPMailing();
         }
     }
 }

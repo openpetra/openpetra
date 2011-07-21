@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       christiank
 //
 // Copyright 2004-2010 by OM International
 //
@@ -30,27 +30,24 @@ using GNU.Gettext;
 using Ict.Common.Verification;
 using Ict.Common;
 using Ict.Common.IO;
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MPersonnel;
-using Ict.Petra.Shared.MPersonnel.Units.Data;
+using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 
 namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 {
-    public partial class TFrmLeavingCodeSetup
+    public partial class TFrmDocumentTypeSetup
     {
-        private void RunOnceOnActivationManual()
+        private void NewRowManual(ref PmDocumentTypeRow ARow)
         {
-            chkDetailDeletableFlag.Enabled = false;
-        }
-
-        private void NewRowManual(ref PtLeavingCodeRow ARow)
-        {
+            // Deal with primary key.  DocCode is a unique string
             string newName = Catalog.GetString("NEWCODE");
             Int32 countNewDetail = 0;
 
-            if (FMainDS.PtLeavingCode.Rows.Find(new object[] { newName }) != null)
+            if (FMainDS.PmDocumentType.Rows.Find(new object[] { newName }) != null)
             {
-                while (FMainDS.PtLeavingCode.Rows.Find(new object[] { newName + countNewDetail.ToString() }) != null)
+                while (FMainDS.PmDocumentType.Rows.Find(new object[] { newName + countNewDetail.ToString() }) != null)
                 {
                     countNewDetail++;
                 }
@@ -58,12 +55,27 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
                 newName += countNewDetail.ToString();
             }
 
-            ARow.LeavingCodeInd = newName;
+            ARow.DocCode = newName;
         }
 
         private void NewRecord(Object sender, EventArgs e)
         {
-            CreateNewPtLeavingCode();
+            // Deal with the possibility that we have no categories set up for the comboBox
+            Type DataTableType;
+            
+            // Load Data
+            PmDocumentCategoryTable allCategories = new PmDocumentCategoryTable();
+            DataTable CacheDT = TDataCache.GetCacheableDataTableFromCache("DocumentTypeCategoryList", String.Empty, null, out DataTableType);
+            allCategories.Merge(CacheDT);
+            
+            if (allCategories.Rows.Count == 0)
+            {
+                string Msg = "Before you attempt to create a New Document Type you should return to the Personnel Setup screen and create a new 'Document Type Category'.";
+                MessageBox.Show(Msg, "Open Petra Client", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            
+            CreateNewPmDocumentType();
         }
 
         private void EnableDisableUnassignableDate(Object sender, EventArgs e)
