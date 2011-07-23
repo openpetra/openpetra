@@ -256,13 +256,15 @@ namespace Ict.Petra.WebServer.MConference
 
         protected void SearchApplicant(object sender, DirectEventArgs e)
         {
-            NumericFilter nf = (NumericFilter)GridFilters1.Filters[0];
-            StringFilter sf = (StringFilter)GridFilters1.Filters[1];
+            NumericFilter nfRegistrationKey = (NumericFilter)GridFilters1.Filters[0];
+            NumericFilter nfPersonKey = (NumericFilter)GridFilters1.Filters[1];
+            StringFilter sfFamilyName = (StringFilter)GridFilters1.Filters[2];
 
             if (txtSearchApplicant.Text.Length == 0)
             {
-                nf.SetActive(false);
-                sf.SetActive(false);
+                nfRegistrationKey.SetActive(false);
+                nfPersonKey.SetActive(false);
+                sfFamilyName.SetActive(false);
                 return;
             }
 
@@ -276,16 +278,34 @@ namespace Ict.Petra.WebServer.MConference
                     Partnerkey += 4000000;
                 }
 
-                nf.SetValue(Partnerkey);
-                sf.SetActive(false);
-                nf.SetActive(true);
+                nfRegistrationKey.SetValue(Partnerkey);
+                sfFamilyName.SetActive(false);
+                nfPersonKey.SetActive(false);
+                nfRegistrationKey.SetActive(true);
+
+                ConferenceApplicationTDS CurrentApplicants = (ConferenceApplicationTDS)Session["CURRENTAPPLICANTS"];
+
+                CurrentApplicants.ApplicationGrid.DefaultView.RowFilter =
+                    ConferenceApplicationTDSApplicationGridTable.GetPartnerKeyDBName() + " = " + Partnerkey.ToString();
+
+                if (CurrentApplicants.ApplicationGrid.DefaultView.Count == 0)
+                {
+                    // search for the person key from the home office
+                    nfPersonKey.SetValue(Partnerkey);
+                    sfFamilyName.SetActive(false);
+                    nfRegistrationKey.SetActive(false);
+                    nfPersonKey.SetActive(true);
+                }
+
+                CurrentApplicants.ApplicationGrid.DefaultView.RowFilter = "";
             }
             catch
             {
                 // search for a name starting with this text
-                sf.SetValue(txtSearchApplicant.Text);
-                sf.SetActive(true);
-                nf.SetActive(false);
+                sfFamilyName.SetValue(txtSearchApplicant.Text);
+                sfFamilyName.SetActive(true);
+                nfPersonKey.SetActive(false);
+                nfRegistrationKey.SetActive(false);
             }
         }
 

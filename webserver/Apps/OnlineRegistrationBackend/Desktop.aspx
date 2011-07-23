@@ -772,6 +772,7 @@
                         <Columns>
                             <ext:RowNumbererColumn />
                             <ext:Column Header="Registration Key" Width="80" DataIndex="PartnerKey"/>
+                            <ext:Column Header="Person Key" Width="80" DataIndex="PersonKey"/>
                             <ext:Column ColumnID="FamilyName" Header="Family Name" Width="90" DataIndex="FamilyName" />
                             <ext:Column Header="First Name" Width="90" DataIndex="FirstName"/>
                             <ext:Column Header="Gender" Width="90" DataIndex="Gender"/>
@@ -802,6 +803,7 @@
                         <ext:GridFilters runat="server" ID="GridFilters1" Local="true">
                             <Filters>
                                 <ext:NumericFilter DataIndex="PartnerKey" />
+                                <ext:NumericFilter DataIndex="PersonKey" />
                                 <ext:StringFilter DataIndex="FamilyName" />
                                 <ext:StringFilter DataIndex="FirstName" />
                             </Filters>
