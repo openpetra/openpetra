@@ -101,6 +101,13 @@ namespace Ict.Petra.Server.MConference.Applications
                     RowCount++;
 
                     string line = InputLine;
+
+                    if ((line.Trim().Length == 0) || line.Trim().StartsWith("#"))
+                    {
+                        // skip empty lines and comments
+                        continue;
+                    }
+
                     DateTime DatePrinted = DateTime.ParseExact(StringHelper.GetNextCSV(ref line, InputSeparator, ""), "yyyy/MM/dd", null);
                     string FirstName = StringHelper.GetNextCSV(ref line, InputSeparator, "");
                     string LastName = StringHelper.GetNextCSV(ref line, InputSeparator, "");
@@ -174,8 +181,9 @@ namespace Ict.Petra.Server.MConference.Applications
             }
             catch (Exception ex)
             {
-                TLogging.Log("Importing PrintedBadges groups: " + ex.Message);
-                return false;
+                TLogging.Log("Importing PrintedBadges: " + ex.Message);
+                TLogging.Log(ex.ToString());
+                throw ex;
             }
 
             return true;
