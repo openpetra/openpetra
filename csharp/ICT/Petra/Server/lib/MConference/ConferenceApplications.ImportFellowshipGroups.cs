@@ -64,16 +64,7 @@ namespace Ict.Petra.Server.MConference.Applications
             string AEventCode,
             Int64 ARegisteringOffice)
         {
-            string InputSeparator = ",";
-
-            if (AFellowshipGroupsCSV.Contains("\t"))
-            {
-                InputSeparator = "\t";
-            }
-            else if (AFellowshipGroupsCSV.Contains(";"))
-            {
-                InputSeparator = ";";
-            }
+            string InputSeparator = StringHelper.GetCSVSeparator(AFellowshipGroupsCSV);
 
             ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
             TApplicationManagement.GetApplications(

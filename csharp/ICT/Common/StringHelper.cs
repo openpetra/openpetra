@@ -373,6 +373,35 @@ namespace Ict.Common
         }
 
         /// <summary>
+        /// get the separator from the first line of CSV Data.
+        /// first test for tab, then for semicolon. otherwise default to comma
+        /// </summary>
+        /// <param name="ACSVData"></param>
+        /// <returns></returns>
+        public static string GetCSVSeparator(string ACSVData)
+        {
+            string InputSeparator = ",";
+
+            string FirstLine = ACSVData;
+
+            if (ACSVData.IndexOf("\n") > 0)
+            {
+                FirstLine = ACSVData.Substring(0, ACSVData.IndexOf("\n"));
+            }
+
+            if (FirstLine.Contains("\t"))
+            {
+                InputSeparator = "\t";
+            }
+            else if (FirstLine.Contains(";"))
+            {
+                InputSeparator = ";";
+            }
+
+            return InputSeparator;
+        }
+
+        /// <summary>
         /// retrieves the first value of the comma separated list, and removes the value from the list
         /// </summary>
         /// <param name="list">the comma separated list that will get the first value removed</param>

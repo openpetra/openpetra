@@ -65,16 +65,7 @@ namespace Ict.Petra.Server.MConference.Applications
             string AEventCode,
             Int64 ARegisteringOffice)
         {
-            string InputSeparator = ",";
-
-            if (APrintedBadgesCSV.Contains("\t"))
-            {
-                InputSeparator = "\t";
-            }
-            else if (APrintedBadgesCSV.Contains(";"))
-            {
-                InputSeparator = ";";
-            }
+            string InputSeparator = StringHelper.GetCSVSeparator(APrintedBadgesCSV);
 
             TAttendeeManagement.RefreshAttendees(AEventPartnerKey, AEventCode);
 
