@@ -278,7 +278,16 @@ namespace Ict.Petra.WebServer.MConference
                     Partnerkey += 4000000;
                 }
 
-                nfRegistrationKey.SetValue(Partnerkey);
+                if (Math.Abs((Int64)(float)Partnerkey - Partnerkey) >= 1)
+                {
+                    // for some reason, the conversion to float changes the value by one
+                    nfRegistrationKey.SetValue(Partnerkey - 2, Partnerkey + 2);
+                }
+                else
+                {
+                    nfRegistrationKey.SetValue(Partnerkey);
+                }
+
                 sfFamilyName.SetActive(false);
                 nfPersonKey.SetActive(false);
                 nfRegistrationKey.SetActive(true);
@@ -291,7 +300,16 @@ namespace Ict.Petra.WebServer.MConference
                 if (CurrentApplicants.ApplicationGrid.DefaultView.Count == 0)
                 {
                     // search for the person key from the home office
-                    nfPersonKey.SetValue(Partnerkey);
+                    if (Math.Abs((Int64)(float)Partnerkey - Partnerkey) >= 1)
+                    {
+                        // for some reason, the conversion to float changes the value by one
+                        nfPersonKey.SetValue(Partnerkey - 2, Partnerkey + 2);
+                    }
+                    else
+                    {
+                        nfPersonKey.SetValue(Partnerkey);
+                    }
+
                     sfFamilyName.SetActive(false);
                     nfRegistrationKey.SetActive(false);
                     nfPersonKey.SetActive(true);
