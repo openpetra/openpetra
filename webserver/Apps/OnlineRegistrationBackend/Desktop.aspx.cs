@@ -87,6 +87,7 @@ namespace Ict.Petra.WebServer.MConference
         protected Ext.Net.Button btnPrintBadges;
         protected Ext.Net.Button btnExportTShirtNumbers;
         protected Ext.Net.Button btnImportPrintedBadges;
+        protected Ext.Net.Button btnExcelArrivalRegistration;
 
         protected bool ConferenceOrganisingOffice = false;
 
@@ -123,6 +124,7 @@ namespace Ict.Petra.WebServer.MConference
                 btnPrintBadges.Visible = ConferenceOrganisingOffice;
                 btnExportTShirtNumbers.Visible = ConferenceOrganisingOffice;
                 btnImportPrintedBadges.Visible = ConferenceOrganisingOffice;
+                btnExcelArrivalRegistration.Visible = ConferenceOrganisingOffice;
 
                 // for the moment, do not confuse all offices with this button
                 btnCreateGiftBatch.Visible = ConferenceOrganisingOffice;
@@ -819,6 +821,19 @@ namespace Ict.Petra.WebServer.MConference
             this.Response.AddHeader("Content-Disposition", "attachment; filename=TShirtNumbers.xls");
             MemoryStream m = new MemoryStream();
             TConferenceFreeTShirt.DownloadTShirtNumbers(EventPartnerKey, EventCode, m);
+            m.WriteTo(this.Response.OutputStream);
+            m.Close();
+            this.Response.End();
+        }
+
+        protected void ExportArrivalRegistrationList(object sender, DirectEventArgs e)
+        {
+            this.Response.Clear();
+            this.Response.ContentType = "application/xls";
+            this.Response.AddHeader("Content-Type", "application/xls");
+            this.Response.AddHeader("Content-Disposition", "attachment; filename=ArrivalRegistration.xls");
+            MemoryStream m = new MemoryStream();
+            TConferenceExcelReports.DownloadArrivalRegistration(EventPartnerKey, EventCode, m);
             m.WriteTo(this.Response.OutputStream);
             m.Close();
             this.Response.End();

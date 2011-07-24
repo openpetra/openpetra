@@ -141,13 +141,9 @@ namespace Ict.Common.IO
         /// this makes use of the ExcelLibrary, see ThirdParty directory.
         /// http://code.google.com/p/excellibrary/
         /// </summary>
-        /// <param name="ADoc"></param>
-        /// <param name="AStream"></param>
-        /// <returns></returns>
-        public static bool Xml2ExcelStream(XmlDocument ADoc, MemoryStream AStream)
+        private static Worksheet Xml2ExcelWorksheet(XmlDocument ADoc, string ATitle)
         {
-            Workbook workbook = new Workbook();
-            Worksheet worksheet = new Worksheet("Data Export");
+            Worksheet worksheet = new Worksheet(ATitle);
 
             Int32 rowCounter = 0;
             Int16 colCounter = 0;
@@ -199,7 +195,50 @@ namespace Ict.Common.IO
                 colCounter = 0;
             }
 
+            return worksheet;
+        }
+
+        /// <summary>
+        /// store the data into Excel format, Biff8, Excel 5.0
+        ///
+        /// this makes use of the ExcelLibrary, see ThirdParty directory.
+        /// http://code.google.com/p/excellibrary/
+        /// </summary>
+        /// <param name="ADoc"></param>
+        /// <param name="AStream"></param>
+        /// <returns></returns>
+        public static bool Xml2ExcelStream(XmlDocument ADoc, MemoryStream AStream)
+        {
+            Workbook workbook = new Workbook();
+
+            Worksheet worksheet = Xml2ExcelWorksheet(ADoc, "Data Export");
+
             workbook.Worksheets.Add(worksheet);
+
+            workbook.Save(AStream);
+            return true;
+        }
+
+        /// <summary>
+        /// store the data into Excel format, Biff8, Excel 5.0
+        ///
+        /// this makes use of the ExcelLibrary, see ThirdParty directory.
+        /// http://code.google.com/p/excellibrary/
+        ///
+        /// this overload stores several worksheets
+        /// </summary>
+        /// <param name="ADocs"></param>
+        /// <param name="AStream"></param>
+        /// <returns></returns>
+        public static bool Xml2ExcelStream(SortedList <string, XmlDocument>ADocs, MemoryStream AStream)
+        {
+            Workbook workbook = new Workbook();
+
+            foreach (string WorksheetTitle in ADocs.Keys)
+            {
+                Worksheet worksheet = Xml2ExcelWorksheet(ADocs[WorksheetTitle], WorksheetTitle);
+                workbook.Worksheets.Add(worksheet);
+            }
 
             workbook.Save(AStream);
             return true;

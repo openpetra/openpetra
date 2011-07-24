@@ -757,6 +757,11 @@
                                 <Click OnEvent="ExportTShirtNumbers" IsUpload="true"/>
                             </DirectEvents>
                         </ext:Button></td>
+                        <td><ext:Button ID="btnExcelArrivalRegistration" runat="server" Text="Excel List for Arrival Registration">
+                            <DirectEvents>
+                                <Click OnEvent="ExportArrivalRegistrationList" IsUpload="true"/>
+                            </DirectEvents>
+                        </ext:Button></td>
                         </tr></table>
                     </Content>
                 </ext:Panel>
