@@ -359,5 +359,61 @@ namespace Ict.Petra.Server.MConference.Applications
                 throw e;
             }
         }
+
+        /// <summary>
+        /// reprint a badge per applicant
+        /// </summary>
+        /// <param name="AEventPartnerKey"></param>
+        /// <param name="AEventCode"></param>
+        /// <param name="APartnerKey"></param>
+        public static string ReprintBadge(Int64 AEventPartnerKey,
+            string AEventCode,
+            Int64 APartnerKey)
+        {
+            try
+            {
+                ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
+                TApplicationManagement.GetApplications(
+                    ref MainDS,
+                    AEventPartnerKey,
+                    AEventCode,
+                    "accepted",
+                    -1,
+                    null,
+                    false);
+
+                string ResultDocument = string.Empty;
+
+                MainDS.ApplicationGrid.DefaultView.Sort = ConferenceApplicationTDSApplicationGridTable.GetPartnerKeyDBName();
+
+                int PartnerIndex = MainDS.ApplicationGrid.DefaultView.Find(APartnerKey);
+
+                if (PartnerIndex > -1)
+                {
+                    ConferenceApplicationTDSApplicationGridRow applicant =
+                        (ConferenceApplicationTDSApplicationGridRow)MainDS.ApplicationGrid.DefaultView[PartnerIndex].Row;
+
+                    // create an HTML file using the template files
+                    bool BatchPrinted = TFormLettersTools.AttachNextPage(ref ResultDocument, FormatBadge(MainDS, applicant));
+                }
+
+                TFormLettersTools.CloseDocument(ref ResultDocument);
+
+                if (ResultDocument.Length == 0)
+                {
+                    return String.Empty;
+                }
+
+                string PDFPath = GeneratePDFFromHTML(ResultDocument);
+
+                return PDFPath;
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("Exception while reprinting badge: " + e.Message);
+                TLogging.Log(e.StackTrace);
+                throw e;
+            }
+        }
     }
 }

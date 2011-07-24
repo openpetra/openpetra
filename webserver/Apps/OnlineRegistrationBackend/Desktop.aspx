@@ -846,6 +846,11 @@
                                         <Click OnEvent="ReprintPDF" IsUpload="true"/>
                                     </DirectEvents>
                                 </ext:Button>
+                                <ext:Button ID="btnReprintBadge" runat="server" Text="Reprint Badge" Icon="Printer">
+                                    <DirectEvents>
+                                        <Click OnEvent="ReprintBadge" IsUpload="true"/>
+                                    </DirectEvents>
+                                </ext:Button>
                             </Items>
                         </ext:Toolbar>
                         <ext:TabPanel ID="TabPanelApplication" runat="server" Region="Center" EnableTabScroll="true">   

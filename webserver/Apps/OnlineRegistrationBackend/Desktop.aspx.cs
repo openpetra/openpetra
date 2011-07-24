@@ -644,6 +644,39 @@ namespace Ict.Petra.WebServer.MConference
             }
         }
 
+        protected void ReprintBadge(object sender, DirectEventArgs e)
+        {
+            try
+            {
+                ConferenceApplicationTDSApplicationGridRow row = (ConferenceApplicationTDSApplicationGridRow)Session["CURRENTROW"];
+
+                string PDFPath = TConferenceBadges.ReprintBadge(EventPartnerKey,
+                    EventCode,
+                    row.PartnerKey);
+
+                if (File.Exists(PDFPath))
+                {
+                    this.Response.Clear();
+                    this.Response.ContentType = "application/pdf";
+                    this.Response.AddHeader("Content-Type", "application/pdf");
+                    this.Response.AddHeader("Content-Disposition", "attachment; filename=Badge_" + row.FirstName + "_" + row.FamilyName + ".pdf");
+                    this.Response.TransmitFile(PDFPath);
+                    File.Delete(PDFPath);
+                    // this.Response.End(); avoid System.Threading.ThreadAbortException
+                }
+            }
+            catch (Exception ex)
+            {
+                X.Msg.Show(new MessageBoxConfig
+                    {
+                        Buttons = MessageBox.Button.OK,
+                        Icon = MessageBox.Icon.ERROR,
+                        Title = "Fail",
+                        Message = ex.Message
+                    });
+            }
+        }
+
         protected void AcceptManyApplicants(object sender, DirectEventArgs e)
         {
             Dictionary <string, string>values = JSON.Deserialize <Dictionary <string, string>>(e.ExtraParams["Values"]);
