@@ -487,7 +487,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 // eg UC_GLJournals.ManualCode.cs, BeforeShowDetailsManual
                 // or UC_GLTransactions.ManualCode.cs, LoadTransactions
             }
-
+            
+            if (ctrl.HasAttribute("ComboBoxWidth"))
+            {
+                writer.SetControlProperty(ctrl, "ComboBoxWidth", ctrl.GetAttribute("ComboBoxWidth"));
+            }
+            
             return writer.FTemplate;
         }
     }
@@ -1508,6 +1513,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.SetControlProperty(ctrl, "Padding", "new System.Windows.Forms.Padding(0, 2, 0, 0)");
             }
 
+            if (TYml2Xml.HasAttribute(ctrl.xmlNode, "DefaultValue"))
+            {
+                writer.SetControlProperty(ctrl,
+                    "Text",
+                    "\"" + TXMLParser.GetAttribute(ctrl.xmlNode, "DefaultValue") + "\"");
+            }
+                        
             return writer.FTemplate;
         }
     }
