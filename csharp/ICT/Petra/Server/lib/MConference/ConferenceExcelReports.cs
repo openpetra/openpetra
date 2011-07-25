@@ -123,6 +123,10 @@ namespace Ict.Petra.Server.MConference.Applications
                     attr.Value = applicant.StCongressCode;
                     newNode.Attributes.Append(attr);
 
+                    attr = myDoc.CreateAttribute("FGroup");
+                    attr.Value = applicant.StFgCode;
+                    newNode.Attributes.Append(attr);
+
                     if (TConferenceFreeTShirt.AcceptedBeforeTShirtDeadLine(attendee, applicant))
                     {
                         Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(TJsonTools.RemoveContainerControls(applicant.JSONData));
@@ -130,8 +134,23 @@ namespace Ict.Petra.Server.MConference.Applications
                         if (rawDataObject.Contains("TShirtStyle") && rawDataObject.Contains("TShirtSize"))
                         {
                             attr = myDoc.CreateAttribute("FreeTShirt");
-                            attr.Value = rawDataObject["TShirtStyle"].ToString() + ", " +
-                                         rawDataObject["TShirtSize"].ToString();
+
+                            string tsstyle = rawDataObject["TShirtStyle"].ToString();
+
+                            if (tsstyle.IndexOf("(") != -1)
+                            {
+                                tsstyle = tsstyle.Substring(0, tsstyle.IndexOf("(") - 1);
+                            }
+
+                            string tssize = rawDataObject["TShirtSize"].ToString();
+
+                            if (tssize.IndexOf("(") != -1)
+                            {
+                                tssize = tssize.Substring(0, tssize.IndexOf("(") - 1);
+                            }
+
+                            attr.Value = tsstyle + ", " +
+                                         tssize;
                             newNode.Attributes.Append(attr);
                         }
                     }
