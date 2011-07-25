@@ -89,6 +89,7 @@ namespace Ict.Petra.WebServer.MConference
         protected Ext.Net.Button btnImportPrintedBadges;
         protected Ext.Net.Button btnExcelArrivalRegistration;
         protected Ext.Net.Button btnFixArrivalDepartureDates;
+        protected Ext.Net.Button btnLateRegistration;
 
         protected bool ConferenceOrganisingOffice = false;
 
@@ -127,6 +128,7 @@ namespace Ict.Petra.WebServer.MConference
                 btnImportPrintedBadges.Visible = ConferenceOrganisingOffice;
                 btnExcelArrivalRegistration.Visible = ConferenceOrganisingOffice;
                 btnFixArrivalDepartureDates.Visible = ConferenceOrganisingOffice;
+                btnLateRegistration.Visible = ConferenceOrganisingOffice;
 
                 // for the moment, do not confuse all offices with this button
                 btnCreateGiftBatch.Visible = ConferenceOrganisingOffice;

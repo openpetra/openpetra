@@ -572,6 +572,18 @@
         </ext:DesktopWindow>
 
         <ext:DesktopWindow 
+            ID="winLateRegistration" 
+            runat="server" 
+            Title="Late Registration" 
+            Width="600"
+            Height="608"
+            PageX="200" 
+            PageY="100"
+            Layout="Border">
+            <AutoLoad Url="LateRegistration.aspx" Mode="IFrame" ShowMask="true" />
+        </ext:DesktopWindow>
+
+        <ext:DesktopWindow 
             ID="winImportPrintedBadges" 
             runat="server" 
             Title="Import Printed Badges" 
@@ -746,6 +758,11 @@
                             <DirectEvents>
                                 <Click OnEvent="FixArrivalDepartureDates" />
                             </DirectEvents>
+                        </ext:Button></td>
+                        <td><ext:Button ID="btnLateRegistration" runat="server" Text="Late Registration">
+                            <Listeners>
+                                <Click Handler="#{winLateRegistration}.show();" />
+                            </Listeners>
                         </ext:Button></td>
                         </tr>
                         <tr>
