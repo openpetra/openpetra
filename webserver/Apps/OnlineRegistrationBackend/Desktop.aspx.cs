@@ -546,8 +546,6 @@ namespace Ict.Petra.WebServer.MConference
 
             // avoid problems with different formatting of dates, could cause parsing errors later, into the typed class
             values["DateOfBirth"] = Convert.ToDateTime(values["DateOfBirth"]).ToShortDateString();
-            values["Arrival"] = Convert.ToDateTime(values["Arrival"]).ToShortDateString();
-            values["Departure"] = Convert.ToDateTime(values["Departure"]).ToShortDateString();
 
             foreach (string key in values.Keys)
             {
@@ -593,6 +591,7 @@ namespace Ict.Petra.WebServer.MConference
             }
             else
             {
+                values["Arrival"] = Convert.ToDateTime(values["Arrival"]).ToShortDateString();
                 row.Arrival = Convert.ToDateTime(values["Arrival"]);
             }
 
@@ -602,6 +601,7 @@ namespace Ict.Petra.WebServer.MConference
             }
             else
             {
+                values["Departure"] = Convert.ToDateTime(values["Departure"]).ToShortDateString();
                 row.Departure = Convert.ToDateTime(values["Departure"]);
             }
 
