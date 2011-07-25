@@ -137,6 +137,8 @@
                         <ext:RecordField Name="BadgePrint" />
                         <ext:RecordField Name="FieldCharged" />
                         <ext:RecordField Name="ApplicationKey" />
+                        <ext:RecordField Name="Arrival" Type="Date"/>
+                        <ext:RecordField Name="Departure" Type="Date"/>
                     </Fields>
                 </ext:ArrayReader>
             </Reader>
@@ -740,6 +742,11 @@
                                 </Click>
                             </DirectEvents>
                         </ext:Button></td>
+                        <td><ext:Button ID="btnFixArrivalDepartureDates" runat="server" Text="Fix Arrival Departure Dates">
+                            <DirectEvents>
+                                <Click OnEvent="FixArrivalDepartureDates" />
+                            </DirectEvents>
+                        </ext:Button></td>
                         </tr>
                         <tr>
                         <td><ext:Button ID="btnTestPrintBadges" runat="server" Text="Test Badges">
@@ -968,6 +975,8 @@
                                             runat="Server"
                                             FieldLabel="Fellowship Group Code"
                                             />
+                                        <ext:DateField ID="Arrival" runat="server" FieldLabel="Date of Arrival" DataIndex="Arrival" Format="dd-MMM-yyyy"/>
+                                        <ext:DateField ID="Departure" runat="server" FieldLabel="Date of Departure" DataIndex="Departure" Format="dd-MMM-yyyy"/>
                                       </Items>
                                     </ext:Container>
                                   </Center>

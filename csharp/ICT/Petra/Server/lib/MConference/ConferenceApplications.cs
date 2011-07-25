@@ -379,6 +379,8 @@ namespace Ict.Petra.Server.MConference.Applications
                 newRow.StFgCode = shortTermRow.StFgCode;
                 newRow.StFgLeader = shortTermRow.StFgLeader;
                 newRow.StFieldCharged = shortTermRow.StFieldCharged;
+                newRow.Arrival = shortTermRow.Arrival;
+                newRow.Departure = shortTermRow.Departure;
 
                 // TODO: display the description of that application status
                 newRow.GenApplicationStatus = GeneralApplication.GenApplicationStatus;
@@ -595,10 +597,14 @@ namespace Ict.Petra.Server.MConference.Applications
                 AMainDS.ApplicationGrid.DefaultView.Sort = OldSort;
             }
 
+            string OldSortShortterm = AMainDS.PmShortTermApplication.DefaultView.Sort;
+            AMainDS.PmShortTermApplication.DefaultView.Sort = PmShortTermApplicationTable.GetPartnerKeyDBName();
             Int32 indexShorttermApp = AMainDS.PmShortTermApplication.DefaultView.Find(APartnerKey);
 
             if (indexShorttermApp == -1)
             {
+                AMainDS.PmShortTermApplication.DefaultView.Sort = OldSortShortterm;
+
                 if (APartnerKey > 0)
                 {
                     APartnerKey = -1;
@@ -609,7 +615,9 @@ namespace Ict.Petra.Server.MConference.Applications
                 return null;
             }
 
-            return (PmShortTermApplicationRow)AMainDS.PmShortTermApplication.DefaultView[indexShorttermApp].Row;
+            PmShortTermApplicationRow shorttermRow = (PmShortTermApplicationRow)AMainDS.PmShortTermApplication.DefaultView[indexShorttermApp].Row;
+            AMainDS.PmShortTermApplication.DefaultView.Sort = OldSortShortterm;
+            return shorttermRow;
         }
 
         /// send an email to the applicant telling him that the application was accepted;

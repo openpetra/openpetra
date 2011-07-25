@@ -67,6 +67,7 @@ namespace Ict.Petra.Server.MConference.Applications
             string InputSeparator = StringHelper.GetCSVSeparator(AFellowshipGroupsCSV);
 
             ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
+
             TApplicationManagement.GetApplications(
                 ref MainDS,
                 AEventPartnerKey,

@@ -88,6 +88,7 @@ namespace Ict.Petra.WebServer.MConference
         protected Ext.Net.Button btnExportTShirtNumbers;
         protected Ext.Net.Button btnImportPrintedBadges;
         protected Ext.Net.Button btnExcelArrivalRegistration;
+        protected Ext.Net.Button btnFixArrivalDepartureDates;
 
         protected bool ConferenceOrganisingOffice = false;
 
@@ -125,6 +126,7 @@ namespace Ict.Petra.WebServer.MConference
                 btnExportTShirtNumbers.Visible = ConferenceOrganisingOffice;
                 btnImportPrintedBadges.Visible = ConferenceOrganisingOffice;
                 btnExcelArrivalRegistration.Visible = ConferenceOrganisingOffice;
+                btnFixArrivalDepartureDates.Visible = ConferenceOrganisingOffice;
 
                 // for the moment, do not confuse all offices with this button
                 btnCreateGiftBatch.Visible = ConferenceOrganisingOffice;
@@ -427,6 +429,8 @@ namespace Ict.Petra.WebServer.MConference
                 dictionary.Add("FamilyName", row.FamilyName);
                 dictionary.Add("Gender", row.Gender);
                 dictionary.Add("DateOfBirth", row.DateOfBirth);
+                dictionary.Add("Arrival", row.Arrival);
+                dictionary.Add("Departure", row.Departure);
                 dictionary.Add("GenAppDate", row.GenAppDate);
                 dictionary.Add("GenApplicationStatus", row.GenApplicationStatus);
                 dictionary.Add("StCongressCode", row.StCongressCode);
@@ -542,6 +546,8 @@ namespace Ict.Petra.WebServer.MConference
 
             // avoid problems with different formatting of dates, could cause parsing errors later, into the typed class
             values["DateOfBirth"] = Convert.ToDateTime(values["DateOfBirth"]).ToShortDateString();
+            values["Arrival"] = Convert.ToDateTime(values["Arrival"]).ToShortDateString();
+            values["Departure"] = Convert.ToDateTime(values["Departure"]).ToShortDateString();
 
             foreach (string key in values.Keys)
             {
@@ -579,6 +585,24 @@ namespace Ict.Petra.WebServer.MConference
             else
             {
                 row.DateOfBirth = Convert.ToDateTime(values["DateOfBirth"]);
+            }
+
+            if (values["Arrival"].Length == 0)
+            {
+                row.SetArrivalNull();
+            }
+            else
+            {
+                row.Arrival = Convert.ToDateTime(values["Arrival"]);
+            }
+
+            if (values["Departure"].Length == 0)
+            {
+                row.SetDepartureNull();
+            }
+            else
+            {
+                row.Departure = Convert.ToDateTime(values["Departure"]);
             }
 
             row.GenAppDate = Convert.ToDateTime(values["GenAppDate"]);
@@ -844,6 +868,11 @@ namespace Ict.Petra.WebServer.MConference
         protected void TestPrintBadges(object sender, DirectEventArgs e)
         {
             PrintBadges(false);
+        }
+
+        protected void FixArrivalDepartureDates(object sender, DirectEventArgs e)
+        {
+            TConferenceToolsRawData.FixArrivalDepartureDates(EventPartnerKey, EventCode);
         }
 
         protected void ExportTShirtNumbers(object sender, DirectEventArgs e)
