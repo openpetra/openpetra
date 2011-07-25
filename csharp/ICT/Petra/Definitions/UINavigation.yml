@@ -250,7 +250,7 @@ OpenPetra:
                         GroupReports: {ActionOpenScreen=TFrmGroupReports}
                         LanguageReport: {ActionOpenScreen=TFrmLanguagesReport}
                         NationalitySummaryReport: {ActionOpenScreen=TFrmNationalitySummaryReport}
-                        PressentAttenddeeReport: {ActionOpenScreen=TFrmPresentAttendeeReport}
+                        PresentAttenddeeReport: {ActionOpenScreen=TFrmPresentAttendeeReport}
                         TransportReport: {ActionOpenScreen=TFrmTransportReport}
                     FieldReports:
                         ChargedFieldReport: {ActionOpenScreen=TFrmChargedFieldReport}
