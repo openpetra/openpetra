@@ -66,6 +66,7 @@
                 <ext:TextField ID="Country" runat="server" FieldLabel="Country Code" DataIndex="Country" />
                 <ext:DateField ID="DateOfBirth" runat="server" FieldLabel="Date of Birth" DataIndex="DateOfBirth" Format="dd-MMM-yyyy"/>
                 <ext:DateField ID="DateOfArrival" runat="server" FieldLabel="Date of Arrival" DataIndex="DateOfArrival" Format="dd-MMM-yyyy" />
+                <ext:DateField ID="DateOfDeparture" runat="server" FieldLabel="Date of Departure" DataIndex="DateOfDeparture" Format="dd-MMM-yyyy" />
                 <ext:CheckBox ID="Vegetarian" runat="server" FieldLabel="Vegetarian" DataIndex="Vegetarian" />
                 <ext:TextField ID="MedicalNeeds" runat="server" FieldLabel="MedicalNeeds" DataIndex="MedicalNeeds" />
                 <ext:TextField ID="RegistrationOffice" runat="server" FieldLabel="Registration Office Number" DataIndex="RegistrationOffice" />

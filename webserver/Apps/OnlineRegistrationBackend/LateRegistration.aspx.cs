@@ -66,7 +66,8 @@ namespace Ict.Petra.WebServer.MConference
                                   "'RegistrationCountryCode':'','EventPartnerKey':'#EVENTPARTNERKEY'," +
                                   "'Role':'#ROLE','FirstName':'#FIRSTNAME','LastName':'#LASTNAME'," +
                                   "'Street':'#STREET','Postcode':'#POSTCODE','City':'#CITY','Country':'#COUNTRY'," +
-                                  "'Phone':'#PHONE','Email':'#EMAIL','DateOfBirth':'#DATEOFBIRTH','DateOfArrival':'#DATEOFARRIVAL'," +
+                                  "'Phone':'#PHONE','Email':'#EMAIL','DateOfBirth':'#DATEOFBIRTH'," +
+            					  "'DateOfArrival':'#DATEOFARRIVAL','DateOfDeparture':'#DATEOFDEPARTURE'," +
                                   "'Gender':'#GENDER','Vegetarian':'#VEGETARIAN','MedicalNeeds':'#MEDICALNEEDS','PaymentInfo':'#PAYMENTINFO'}";
 
             JSONFormData = JSONFormData.Replace("'", "\"");
@@ -88,6 +89,7 @@ namespace Ict.Petra.WebServer.MConference
             Catalog.Init("en-GB", "en-GB");
             JSONFormData = JSONFormData.Replace("#DATEOFBIRTH", DateTime.ParseExact(values["DateOfBirth"], "dd-MMM-yyyy", null).ToShortDateString());
             JSONFormData = JSONFormData.Replace("#DATEOFARRIVAL", DateTime.ParseExact(values["DateOfArrival"], "dd-MMM-yyyy", null).ToShortDateString());
+            JSONFormData = JSONFormData.Replace("#DATEOFDEPARTURE", DateTime.ParseExact(values["DateOfDeparture"], "dd-MMM-yyyy", null).ToShortDateString());
 
             foreach (string key in values.Keys)
             {
