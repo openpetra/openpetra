@@ -88,6 +88,7 @@ namespace Ict.Petra.WebServer.MConference
         protected Ext.Net.Button btnExportTShirtNumbers;
         protected Ext.Net.Button btnImportPrintedBadges;
         protected Ext.Net.Button btnExcelArrivalRegistration;
+        protected Ext.Net.Button btnExcelRolesPerCountry;
         protected Ext.Net.Button btnFixArrivalDepartureDates;
         protected Ext.Net.Button btnLateRegistration;
 
@@ -127,6 +128,7 @@ namespace Ict.Petra.WebServer.MConference
                 btnExportTShirtNumbers.Visible = ConferenceOrganisingOffice;
                 btnImportPrintedBadges.Visible = ConferenceOrganisingOffice;
                 btnExcelArrivalRegistration.Visible = ConferenceOrganisingOffice;
+                btnExcelRolesPerCountry.Visible = ConferenceOrganisingOffice;
                 btnFixArrivalDepartureDates.Visible = ConferenceOrganisingOffice;
                 btnLateRegistration.Visible = ConferenceOrganisingOffice;
 
@@ -898,6 +900,19 @@ namespace Ict.Petra.WebServer.MConference
             this.Response.AddHeader("Content-Disposition", "attachment; filename=ArrivalRegistration.xls");
             MemoryStream m = new MemoryStream();
             TConferenceExcelReports.DownloadArrivalRegistration(EventPartnerKey, EventCode, m);
+            m.WriteTo(this.Response.OutputStream);
+            m.Close();
+            this.Response.End();
+        }
+
+        protected void ExportRolesPerCountry(object sender, DirectEventArgs e)
+        {
+            this.Response.Clear();
+            this.Response.ContentType = "application/xls";
+            this.Response.AddHeader("Content-Type", "application/xls");
+            this.Response.AddHeader("Content-Disposition", "attachment; filename=RolesPerCountry.xls");
+            MemoryStream m = new MemoryStream();
+            TConferenceExcelReports.GetNumbersOfRolesPerCountry(EventPartnerKey, EventCode, m);
             m.WriteTo(this.Response.OutputStream);
             m.Close();
             this.Response.End();

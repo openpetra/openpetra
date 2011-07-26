@@ -164,5 +164,126 @@ namespace Ict.Petra.Server.MConference.Applications
                 throw;
             }
         }
+
+        /// <summary>
+        /// a chart with numbers of roles per country
+        /// </summary>
+        /// <param name="AConferenceKey"></param>
+        /// <param name="AEventCode"></param>
+        /// <param name="AStream">write the Excel file into this stream</param>
+        public static bool GetNumbersOfRolesPerCountry(Int64 AConferenceKey, string AEventCode, MemoryStream AStream)
+        {
+            TAttendeeManagement.RefreshAttendees(AConferenceKey, AEventCode);
+
+            PPartnerTable RegistrationOffices = TApplicationManagement.GetRegistrationOffices();
+
+            ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
+            TApplicationManagement.GetApplications(ref MainDS, AConferenceKey, AEventCode, "accepted", -1, null, false);
+
+            PPartnerTable offices = TApplicationManagement.GetRegistrationOffices();
+
+            try
+            {
+                SortedList <string, Int32>Counter = new SortedList <string, int>();
+
+                MainDS.ApplicationGrid.DefaultView.Sort =
+                    ConferenceApplicationTDSApplicationGridTable.GetRegistrationOfficeDBName() + "," +
+                    ConferenceApplicationTDSApplicationGridTable.GetFamilyNameDBName() + "," +
+                    ConferenceApplicationTDSApplicationGridTable.GetFirstNameDBName();
+
+                // go through all accepted applicants
+                foreach (DataRowView rv in MainDS.ApplicationGrid.DefaultView)
+                {
+                    ConferenceApplicationTDSApplicationGridRow applicant = (ConferenceApplicationTDSApplicationGridRow)rv.Row;
+                    int AttendeeIndex = MainDS.PcAttendee.DefaultView.Find(applicant.PartnerKey);
+
+                    if (AttendeeIndex == -1)
+                    {
+                        TLogging.Log("cannot find " + applicant.PartnerKey);
+                        continue;
+                    }
+
+                    PcAttendeeRow attendee = (PcAttendeeRow)MainDS.PcAttendee.DefaultView[AttendeeIndex].Row;
+
+                    string CounterId = applicant.RegistrationOffice.ToString() + " - " + applicant.StCongressCode;
+
+                    if (!Counter.ContainsKey(CounterId))
+                    {
+                        Counter.Add(CounterId, 1);
+                    }
+                    else
+                    {
+                        Counter[CounterId]++;
+                    }
+
+                    CounterId = "ALL - " + applicant.StCongressCode;
+
+                    if (!Counter.ContainsKey(CounterId))
+                    {
+                        Counter.Add(CounterId, 1);
+                    }
+                    else
+                    {
+                        Counter[CounterId]++;
+                    }
+                }
+
+                XmlDocument myDoc = TYml2Xml.CreateXmlDocument();
+                XmlAttribute attr;
+                XmlNode newNode;
+
+                foreach (PPartnerRow office in offices.Rows)
+                {
+                    newNode = myDoc.CreateElement("", "ELEMENT", "");
+                    myDoc.DocumentElement.AppendChild(newNode);
+
+                    attr = myDoc.CreateAttribute("Office");
+                    attr.Value = office.PartnerKey.ToString();
+                    newNode.Attributes.Append(attr);
+
+                    attr = myDoc.CreateAttribute("Country");
+                    attr.Value = office.PartnerShortName.ToString();
+                    newNode.Attributes.Append(attr);
+
+                    foreach (string key in Counter.Keys)
+                    {
+                        if (key.StartsWith(office.PartnerKey.ToString()))
+                        {
+                            attr = myDoc.CreateAttribute(key.Substring(key.IndexOf(" - ") + 3));
+                            attr.Value = new TVariant(Counter[key]).EncodeToString();
+                            newNode.Attributes.Append(attr);
+                        }
+                    }
+                }
+
+                newNode = myDoc.CreateElement("", "ELEMENT", "");
+                myDoc.DocumentElement.AppendChild(newNode);
+
+                attr = myDoc.CreateAttribute("Office");
+                attr.Value = "Total";
+                newNode.Attributes.Append(attr);
+
+                attr = myDoc.CreateAttribute("Country");
+                attr.Value = "Total";
+                newNode.Attributes.Append(attr);
+
+                foreach (string key in Counter.Keys)
+                {
+                    if (key.StartsWith("ALL"))
+                    {
+                        attr = myDoc.CreateAttribute(key.Substring(key.IndexOf(" - ") + 3));
+                        attr.Value = new TVariant(Counter[key]).EncodeToString();
+                        newNode.Attributes.Append(attr);
+                    }
+                }
+
+                return TCsv2Xml.Xml2ExcelStream(myDoc, AStream);
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(e.ToString());
+                throw;
+            }
+        }
     }
 }

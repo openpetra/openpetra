@@ -786,6 +786,11 @@
                                 <Click OnEvent="ExportArrivalRegistrationList" IsUpload="true"/>
                             </DirectEvents>
                         </ext:Button></td>
+                        <td><ext:Button ID="btnExcelRolesPerCountry" runat="server" Text="Excel List for Roles per Country">
+                            <DirectEvents>
+                                <Click OnEvent="ExportRolesPerCountry" IsUpload="true"/>
+                            </DirectEvents>
+                        </ext:Button></td>
                         </tr></table>
                     </Content>
                 </ext:Panel>
