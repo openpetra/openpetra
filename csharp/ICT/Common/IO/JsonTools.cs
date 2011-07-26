@@ -146,7 +146,7 @@ namespace Ict.Common.IO
                         result += ",";
                     }
 
-                    if (key.EndsWith("CountryCode"))
+                    if (key.EndsWith("CountryCode") && (ARoot[key].ToString().Trim().Length > 0))
                     {
                         // we need this so that we can parse the dates correctly from json
                         Ict.Common.Catalog.Init(ARoot[key].ToString(), ARoot[key].ToString());

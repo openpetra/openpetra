@@ -57,6 +57,11 @@ namespace Ict.Common.Printing
                 AExtension = "." + AExtension;
             }
 
+            if (ACountryCode == null)
+            {
+                ACountryCode = string.Empty;
+            }
+
             if (ACountryCode.Length > 0)
             {
                 ACountryCode += ".";

@@ -63,10 +63,11 @@ namespace Ict.Petra.WebServer.MConference
         {
             string JSONFormData = "{'RegistrationOffice':'#REGISTRATIONOFFICE'," +
                                   "'EventIdentifier':'#EVENTCODE','EventPartnerKey':'#EVENTPARTNERKEY'," +
+                                  "'RegistrationCountryCode':'','EventPartnerKey':'#EVENTPARTNERKEY'," +
                                   "'Role':'#ROLE','FirstName':'#FIRSTNAME','LastName':'#LASTNAME'," +
                                   "'Street':'#STREET','Postcode':'#POSTCODE','City':'#CITY','Country':'#COUNTRY'," +
                                   "'Phone':'#PHONE','Email':'#EMAIL','DateOfBirth':'#DATEOFBIRTH','DateOfArrival':'#DATEOFARRIVAL'," +
-                                  "'Gender':'#GENDER','Vegetarian':'#VEGETARIAN','MedicalNeeds':'#MEDICALNEEDS'}";
+                                  "'Gender':'#GENDER','Vegetarian':'#VEGETARIAN','MedicalNeeds':'#MEDICALNEEDS','PaymentInfo':'#PAYMENTINFO'}";
 
             JSONFormData = JSONFormData.Replace("'", "\"");
 
@@ -74,6 +75,19 @@ namespace Ict.Petra.WebServer.MConference
 
             JSONFormData = JSONFormData.Replace("#EVENTCODE", TAppSettingsManager.GetValue("ConferenceTool.EventCode"));
             JSONFormData = JSONFormData.Replace("#EVENTPARTNERKEY", TAppSettingsManager.GetValue("ConferenceTool.EventPartnerKey"));
+
+            if (values.ContainsKey("Vegetarian") && (values["Vegetarian"] == "Vegetarian"))
+            {
+                JSONFormData = JSONFormData.Replace("#VEGETARIAN", "Yes");
+            }
+            else
+            {
+                JSONFormData = JSONFormData.Replace("#VEGETARIAN", "No");
+            }
+
+            Catalog.Init("en-GB", "en-GB");
+            JSONFormData = JSONFormData.Replace("#DATEOFBIRTH", DateTime.ParseExact(values["DateOfBirth"], "dd-MMM-yyyy", null).ToShortDateString());
+            JSONFormData = JSONFormData.Replace("#DATEOFARRIVAL", DateTime.ParseExact(values["DateOfArrival"], "dd-MMM-yyyy", null).ToShortDateString());
 
             foreach (string key in values.Keys)
             {
@@ -91,6 +105,14 @@ namespace Ict.Petra.WebServer.MConference
             {
                 TLogging.Log(ex.Message);
                 TLogging.Log(ex.StackTrace);
+
+                X.Msg.Show(new MessageBoxConfig
+                    {
+                        Buttons = MessageBox.Button.OK,
+                        Icon = MessageBox.Icon.ERROR,
+                        Title = "Expected: Email not sent",
+                        Message = ex.Message
+                    });
             }
         }
     }

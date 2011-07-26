@@ -26,12 +26,12 @@
             ID="LateRegistrationForm" 
             runat="server"
             Region="Center"
-            Width="300"
+            Width="400"
             Frame="false"
             AutoHeight="true"
             MonitorValid="true"
             PaddingSummary="10px 10px 0 10px"
-            LabelWidth="50">                
+            LabelWidth="100">                
             <Defaults>
                 <ext:Parameter Name="anchor" Value="95%" Mode="Value" />
                 <ext:Parameter Name="allowBlank" Value="false" Mode="Raw" />
@@ -57,6 +57,7 @@
                         <ext:ListItem Text="Female" Value="Female" />
                     </Items>                        
                 </ext:ComboBox>
+                <ext:TextField ID="Role" runat="server" FieldLabel="TS-Role" DataIndex="Role" />
                 <ext:TextField ID="Email" runat="server" FieldLabel="Email" DataIndex="Email" />
                 <ext:TextField ID="Phone" runat="server" FieldLabel="Phone" DataIndex="Phone" />
                 <ext:TextField ID="Street" runat="server" FieldLabel="Street" DataIndex="Street" />
@@ -68,6 +69,7 @@
                 <ext:CheckBox ID="Vegetarian" runat="server" FieldLabel="Vegetarian" DataIndex="Vegetarian" />
                 <ext:TextField ID="MedicalNeeds" runat="server" FieldLabel="MedicalNeeds" DataIndex="MedicalNeeds" />
                 <ext:TextField ID="RegistrationOffice" runat="server" FieldLabel="Registration Office Number" DataIndex="RegistrationOffice" />
+                <ext:TextField ID="PaymentInfo" runat="server" FieldLabel="PaymentInfo" DataIndex="PaymentInfo" />
             </Items>
             <Buttons>
                 <ext:Button ID="btnSubmit" runat="server" Text="Submit Late Registration">

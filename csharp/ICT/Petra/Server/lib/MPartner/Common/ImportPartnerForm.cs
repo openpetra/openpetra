@@ -331,7 +331,7 @@ namespace Ict.Petra.Server.MPartner.Import
                 r.Close();
             }
 
-            if (AData.existingpartnerkey.StartsWith("If you cannot find it"))
+            if ((AData.existingpartnerkey != null) && AData.existingpartnerkey.StartsWith("If you cannot find it"))
             {
                 AData.RawData = AData.RawData.Replace(AData.existingpartnerkey, "N/A");
                 AData.existingpartnerkey = "";
