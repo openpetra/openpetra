@@ -115,7 +115,7 @@ namespace Ict.Petra.Server.MConference.Applications
                 HTMLText = HTMLText.Replace("#PERSONKEY", AApplicant.PartnerKey.ToString());
             }
 
-            HTMLText = HTMLText.Replace("#BARCODEKEY", AApplicant.PartnerKey.ToString());
+            HTMLText = HTMLText.Replace("#BARCODEKEY", TBarCode128.Encode(AApplicant.PartnerKey.ToString()));
 
             string PhotoPath = TAppSettingsManager.GetValue("Server.PathData") +
                                Path.DirectorySeparatorChar + "photos" +
