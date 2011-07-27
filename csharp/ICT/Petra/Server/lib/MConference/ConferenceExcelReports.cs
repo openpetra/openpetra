@@ -35,9 +35,11 @@ using Ict.Common.Verification;
 using Ict.Petra.Server.MConference.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
+using Ict.Petra.Server.MPersonnel.Person.Cacheable;
 using Ict.Petra.Shared.MConference.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
+using Ict.Petra.Shared.MPersonnel;
 
 namespace Ict.Petra.Server.MConference.Applications
 {
@@ -180,8 +182,6 @@ namespace Ict.Petra.Server.MConference.Applications
             ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
             TApplicationManagement.GetApplications(ref MainDS, AConferenceKey, AEventCode, "accepted", -1, null, false);
 
-            PPartnerTable offices = TApplicationManagement.GetRegistrationOffices();
-
             try
             {
                 SortedList <string, Int32>Counter = new SortedList <string, int>();
@@ -195,15 +195,6 @@ namespace Ict.Petra.Server.MConference.Applications
                 foreach (DataRowView rv in MainDS.ApplicationGrid.DefaultView)
                 {
                     ConferenceApplicationTDSApplicationGridRow applicant = (ConferenceApplicationTDSApplicationGridRow)rv.Row;
-                    int AttendeeIndex = MainDS.PcAttendee.DefaultView.Find(applicant.PartnerKey);
-
-                    if (AttendeeIndex == -1)
-                    {
-                        TLogging.Log("cannot find " + applicant.PartnerKey);
-                        continue;
-                    }
-
-                    PcAttendeeRow attendee = (PcAttendeeRow)MainDS.PcAttendee.DefaultView[AttendeeIndex].Row;
 
                     string CounterId = applicant.RegistrationOffice.ToString() + " - " + applicant.StCongressCode;
 
@@ -232,8 +223,19 @@ namespace Ict.Petra.Server.MConference.Applications
                 XmlAttribute attr;
                 XmlNode newNode;
 
-                foreach (PPartnerRow office in offices.Rows)
+                PPartnerTable offices = TApplicationManagement.GetRegistrationOffices();
+                offices.DefaultView.Sort = PPartnerTable.GetPartnerShortNameDBName();
+
+                TPersonnelCacheable cache = new TPersonnelCacheable();
+                Type dummy;
+                PtCongressCodeTable roleTable = (PtCongressCodeTable)cache.GetCacheableTable(TCacheablePersonTablesEnum.EventRoleList,
+                    String.Empty, true, out dummy);
+                roleTable.DefaultView.Sort = PtCongressCodeTable.GetCodeDBName();
+
+                foreach (DataRowView rv in offices.DefaultView)
                 {
+                    PPartnerRow office = (PPartnerRow)rv.Row;
+
                     newNode = myDoc.CreateElement("", "ELEMENT", "");
                     myDoc.DocumentElement.AppendChild(newNode);
 
@@ -245,12 +247,27 @@ namespace Ict.Petra.Server.MConference.Applications
                     attr.Value = office.PartnerShortName.ToString();
                     newNode.Attributes.Append(attr);
 
-                    foreach (string key in Counter.Keys)
+                    foreach (DataRowView rv2 in roleTable.DefaultView)
                     {
-                        if (key.StartsWith(office.PartnerKey.ToString()))
+                        PtCongressCodeRow roleRow = (PtCongressCodeRow)rv2.Row;
+
+                        bool found = false;
+
+                        foreach (string key in Counter.Keys)
                         {
-                            attr = myDoc.CreateAttribute(key.Substring(key.IndexOf(" - ") + 3));
-                            attr.Value = new TVariant(Counter[key]).EncodeToString();
+                            if (key.StartsWith(office.PartnerKey.ToString()) && key.EndsWith(roleRow.Code))
+                            {
+                                found = true;
+                                attr = myDoc.CreateAttribute(key.Substring(key.IndexOf(" - ") + 3));
+                                attr.Value = new TVariant(Counter[key]).EncodeToString();
+                                newNode.Attributes.Append(attr);
+                            }
+                        }
+
+                        if (!found)
+                        {
+                            attr = myDoc.CreateAttribute(roleRow.Code);
+                            attr.Value = new TVariant(0).EncodeToString();
                             newNode.Attributes.Append(attr);
                         }
                     }
