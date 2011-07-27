@@ -251,6 +251,17 @@ namespace Ict.Petra.WebServer.MConference
             PtCongressCodeTable roleTable = (PtCongressCodeTable)cache.GetCacheableTable(TCacheablePersonTablesEnum.EventRoleList,
                 String.Empty, true, out dummy);
 
+            roleTable.DefaultView.Sort = PtCongressCodeTable.GetCodeDBName();
+
+            if (roleTable.DefaultView.Find("TS-TEEN-A") != -1)
+            {
+                PtCongressCodeRow AllTeenagers = roleTable.NewRowTyped();
+
+                AllTeenagers.Code = "TS-TEEN";
+                AllTeenagers.Description = "all teenagers";
+                roleTable.Rows.Add(AllTeenagers);
+            }
+
             this.StoreRole.DataSource = DataTableToArray(roleTable, "All", "All");
 
             this.StoreRole.DataBind();

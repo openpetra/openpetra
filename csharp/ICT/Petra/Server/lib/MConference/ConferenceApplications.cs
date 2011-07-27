@@ -264,13 +264,9 @@ namespace Ict.Petra.Server.MConference.Applications
 
             if ((ARole != null) && (ARole.Length > 0))
             {
-                queryGeneralApplication += "  AND PUB_pm_short_term_application.pm_st_congress_code_c = ?";
-                queryShortTermApplication += "  AND PUB_pm_short_term_application.pm_st_congress_code_c = ?";
-                queryPerson += "  AND PUB_pm_short_term_application.pm_st_congress_code_c = ?";
-
-                parameter = new OdbcParameter("role", OdbcType.VarChar, PmShortTermApplicationTable.GetStCongressCodeLength());
-                parameter.Value = ARole;
-                parameters.Add(parameter);
+                queryGeneralApplication += "  AND PUB_pm_short_term_application.pm_st_congress_code_c LIKE '" + ARole + "%'";
+                queryShortTermApplication += "  AND PUB_pm_short_term_application.pm_st_congress_code_c LIKE '" + ARole + "%'";
+                queryPerson += "  AND PUB_pm_short_term_application.pm_st_congress_code_c LIKE '" + ARole + "%'";
             }
 
             if (ARegisteringOffice.HasValue && (ARegisteringOffice.Value > 0))
