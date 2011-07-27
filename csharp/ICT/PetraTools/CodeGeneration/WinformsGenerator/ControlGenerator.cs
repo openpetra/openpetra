@@ -1552,7 +1552,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 NumberFormat = TYml2Xml.GetAttribute(curNode, "Format");
 
 //Console.WriteLine("TTxtNumericTextBoxGenerator Format: '" + NumberFormat + "'");
-                if (NumberFormat == "Integer")
+                if ((NumberFormat == "Integer") 
+                    || (NumberFormat == "PercentInteger"))
                 {
                     FControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Integer;
 
@@ -1560,7 +1561,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
 
                 if ((NumberFormat == "Decimal")
-                    || (NumberFormat.StartsWith("Decimal(")))
+                    || (NumberFormat == "PercentDecimal")
+                    || (NumberFormat.StartsWith("Decimal("))
+                    || (NumberFormat.StartsWith("PercentDecimal(")))
                 {
                     FControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Decimal;
 
@@ -1578,6 +1581,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 if (ReturnValue)
                 {
                     if ((NumberFormat.StartsWith("Decimal("))
+                        || (NumberFormat.StartsWith("PercentDecimal("))
                         || (NumberFormat.StartsWith("Currency(")))
                     {
                         PotentialDecimalPrecision = NumberFormat.Substring(NumberFormat.IndexOf('(') + 1,
@@ -1714,10 +1718,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
+            string NumberFormat = String.Empty;
+            
             base.SetControlProperties(writer, ctrl);
 
             if ((ctrl.HasAttribute("ShowLabel") && (ctrl.GetAttribute("ShowLabel").ToLower() == "false")))
-            {
+            {                
                 writer.SetControlProperty(ctrl, "ShowLabel", "false");
             }
 
@@ -1727,6 +1733,17 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 Enum.GetName(typeof(TTxtNumericTextBox.TNumericTextBoxMode), FControlMode));
             writer.SetControlProperty(ctrl, "DecimalPlaces", FDecimalPrecision.ToString());
             writer.SetControlProperty(ctrl, "NullValueAllowed", FNullValueAllowed.ToString().ToLower());
+            
+            if(ctrl.HasAttribute("Format"))
+            {
+                NumberFormat = ctrl.GetAttribute("Format");
+            }
+
+            if((NumberFormat.StartsWith("PercentInteger"))
+                || (NumberFormat.StartsWith("PercentDecimal")))
+            {
+                writer.SetControlProperty(ctrl, "ShowPercentSign", "true");
+            }
 
             return writer.FTemplate;
         }
