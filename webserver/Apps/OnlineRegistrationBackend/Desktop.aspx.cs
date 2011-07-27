@@ -151,7 +151,7 @@ namespace Ict.Petra.WebServer.MConference
                 Result.Add(NewRow);
             }
 
-            foreach (DataRow row in ATable.Rows)
+            foreach (DataRowView row in ATable.DefaultView)
             {
                 object[] NewRow = new object[ATable.Columns.Count];
 
@@ -383,6 +383,8 @@ namespace Ict.Petra.WebServer.MConference
         protected void RegistrationOffice_Refresh(object sender, StoreRefreshDataEventArgs e)
         {
             PPartnerTable offices = TApplicationManagement.GetRegistrationOffices();
+
+            offices.DefaultView.Sort = PPartnerTable.GetPartnerShortNameDBName();
 
             ConferenceOrganisingOffice = TApplicationManagement.IsConferenceOrganisingOffice();
 
