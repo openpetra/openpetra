@@ -480,7 +480,7 @@ namespace Ict.Common.Printing
         }
 
         /// <summary>
-        /// todoComment
+        /// special codes need to be converted from HTML to printable text
         /// </summary>
         /// <param name="sOrig"></param>
         /// <returns></returns>
@@ -503,8 +503,8 @@ namespace Ict.Common.Printing
             // replace special codes
             s = s.Replace("&amp;", "&");
             s = s.Replace("&nbsp;", "  ");
-            s = s.Replace("&gt;", "<");
-            s = s.Replace("&lt;", ">");
+            s = s.Replace("&gt;", ">");
+            s = s.Replace("&lt;", "<");
 
             // other special characters? e.g. &uuml; etc
             // solution: use UTF-8 in the text editor when editing the template
