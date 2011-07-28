@@ -25,6 +25,7 @@ using System;
 using System.IO;
 using System.Xml;
 using System.Collections.Generic;
+using System.Globalization;
 using Ict.Common.IO;
 
 namespace Ict.Common.Printing
@@ -193,14 +194,21 @@ namespace Ict.Common.Printing
             string styles = TXMLParser.GetAttribute(ANode, "style");
             string[] namevaluepairs = styles.Split(new char[] { ',', ';' });
 
-            foreach (string namevaluepair in namevaluepairs)
+            try
             {
-                string DetailName = namevaluepair.Substring(0, namevaluepair.IndexOf(':'));
-                string DetailValue = namevaluepair.Substring(namevaluepair.IndexOf(':') + 1);
+                foreach (string namevaluepair in namevaluepairs)
+                {
+                    string DetailName = namevaluepair.Substring(0, namevaluepair.IndexOf(':'));
+                    string DetailValue = namevaluepair.Substring(namevaluepair.IndexOf(':') + 1);
 
-                Result.Add(DetailName.Trim(), DetailValue.Trim());
+                    Result.Add(DetailName.Trim(), DetailValue.Trim());
+                }
             }
-
+            catch (Exception ex)
+            {
+                TLogging.Log(styles);
+                TLogging.Log(ex.ToString());
+            }
             return Result;
         }
 
@@ -240,6 +248,8 @@ namespace Ict.Common.Printing
                 unit = "cm";
             }
 
+            CultureInfo OrigCulture = Catalog.SetCulture(CultureInfo.InvariantCulture);
+
             // we need to use the margin-left and margin-top of the body for the position of the first label
             float marginLeft = (float)Convert.ToDouble(styles["margin-left"].Replace(unit, ""));
             float marginTop = (float)Convert.ToDouble(styles["margin-top"].Replace(unit, ""));
@@ -257,14 +267,14 @@ namespace Ict.Common.Printing
 
             int maxLabelsHorizontal = (int)Math.Floor((pageWidth - marginLeft) / (labelWidth + paddingLeft));
             int maxLabelsVertical = (int)Math.Floor((pageHeight - marginTop) / (labelHeight + paddingBottom));
-            TLogging.Log(maxLabelsHorizontal + " " + maxLabelsVertical);
+
             int currentLabelX = 0;
             int currentLabelY = 0;
 
             string ResultDocument =
                 "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">" +
                 Environment.NewLine +
-                "<html><body>";
+                "<html><body>" + Environment.NewLine;
 
             foreach (string label in ALabels)
             {
@@ -277,20 +287,23 @@ namespace Ict.Common.Printing
                 if (currentLabelY == maxLabelsVertical)
                 {
                     currentLabelY = 0;
-                    ResultDocument += "</body><body>";
+                    ResultDocument += "</body><body>" + Environment.NewLine;
                 }
 
-                ResultDocument += String.Format("<div style='position:absolute, left:{0}{2}, top:{1}{2}'>",
+                ResultDocument += Environment.NewLine +
+                                  String.Format("<div style='position:absolute, left:{0}{2}, top:{1}{2}'>",
                     marginLeft + currentLabelX * (labelWidth + paddingLeft),
                     marginTop + currentLabelY * (labelHeight + paddingBottom),
                     unit);
                 ResultDocument += label;
-                ResultDocument += "</div>";
+                ResultDocument += "</div>" + Environment.NewLine;
 
                 currentLabelX++;
             }
 
             ResultDocument += "</body></html>";
+
+            Catalog.SetCulture(OrigCulture);
 
             return ResultDocument;
         }

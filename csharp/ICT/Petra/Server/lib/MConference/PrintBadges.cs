@@ -481,6 +481,13 @@ namespace Ict.Petra.Server.MConference.Applications
                     return String.Empty;
                 }
 
+                string pdfTxtFile = TAppSettingsManager.GetValue("Server.PathData") + Path.DirectorySeparatorChar +
+                                    "badges/test.html";
+
+                StreamWriter sw = new StreamWriter(pdfTxtFile);
+                sw.WriteLine(ResultDocument);
+                sw.Close();
+
                 string PDFPath = GeneratePDFFromHTML(ResultDocument);
 
                 return PDFPath;

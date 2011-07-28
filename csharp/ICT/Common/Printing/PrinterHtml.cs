@@ -497,6 +497,27 @@ namespace Ict.Common.Printing
             return ((float)Convert.ToDouble(APixel) * 7.87f) / 800.0f;
         }
 
+        private float GetFloat(string AStyleValue)
+        {
+            CultureInfo OrigCulture = Catalog.SetCulture(CultureInfo.InvariantCulture);
+
+            AStyleValue = AStyleValue.Trim().ToLower();
+            float DoubleValue = 0.0f;
+
+            if (AStyleValue.EndsWith("cm") || AStyleValue.EndsWith("in") || AStyleValue.EndsWith("px"))
+            {
+                DoubleValue = (float)Convert.ToDouble(AStyleValue.Substring(0, AStyleValue.Length - 2).Trim());
+            }
+            else
+            {
+                DoubleValue = (float)Convert.ToDouble(AStyleValue);
+            }
+
+            Catalog.SetCulture(OrigCulture);
+
+            return DoubleValue;
+        }
+
         /// <summary>
         /// convert any given position measurement to points
         /// </summary>
@@ -505,30 +526,27 @@ namespace Ict.Common.Printing
         /// <returns></returns>
         private float ToPoint(string AStyleValue, eResolution AResolution)
         {
-            AStyleValue = AStyleValue.Trim().ToLower();
+            float FloatValue = GetFloat(AStyleValue);
 
             if (AStyleValue.EndsWith("cm"))
             {
-                AStyleValue = AStyleValue.Substring(0, AStyleValue.Length - 2);
-                return (float)Convert.ToDouble(AStyleValue) / 2.54f * 72.0f;
+                return FloatValue / 2.54f * 72.0f;
             }
             else if (AStyleValue.EndsWith("in"))
             {
-                AStyleValue = AStyleValue.Substring(0, AStyleValue.Length - 2);
-                return (float)Convert.ToDouble(AStyleValue) * 72.0f;
+                return FloatValue * 72.0f;
             }
             else if (AStyleValue.EndsWith("px"))
             {
-                AStyleValue = AStyleValue.Substring(0, AStyleValue.Length - 2);
             }
 
             // assume default unit to be pixel
             if (AResolution == eResolution.eHorizontal)
             {
-                return FPrinter.PixelHorizontal((float)Convert.ToDouble(AStyleValue));
+                return FPrinter.PixelHorizontal(FloatValue);
             }
 
-            return FPrinter.PixelVertical((float)Convert.ToDouble(AStyleValue));
+            return FPrinter.PixelVertical(FloatValue);
         }
 
         /// <summary>
@@ -539,30 +557,27 @@ namespace Ict.Common.Printing
         /// <returns></returns>
         private float ToInch(string AStyleValue, eResolution AResolution)
         {
-            AStyleValue = AStyleValue.Trim().ToLower();
+            float FloatValue = GetFloat(AStyleValue);
 
             if (AStyleValue.EndsWith("cm"))
             {
-                AStyleValue = AStyleValue.Substring(0, AStyleValue.Length - 2);
-                return (float)Convert.ToDouble(AStyleValue) / 2.54f;
+                return FloatValue / 2.54f;
             }
             else if (AStyleValue.EndsWith("in"))
             {
-                AStyleValue = AStyleValue.Substring(0, AStyleValue.Length - 2);
-                return (float)Convert.ToDouble(AStyleValue);
+                return FloatValue;
             }
             else if (AStyleValue.EndsWith("px"))
             {
-                AStyleValue = AStyleValue.Substring(0, AStyleValue.Length - 2);
             }
 
             // assume default unit to be pixel
             if (AResolution == eResolution.eHorizontal)
             {
-                return FPrinter.PixelHorizontal((float)Convert.ToDouble(AStyleValue));
+                return FPrinter.PixelHorizontal(FloatValue);
             }
 
-            return FPrinter.PixelVertical((float)Convert.ToDouble(AStyleValue));
+            return FPrinter.PixelVertical(FloatValue);
         }
 
         /// <summary>
@@ -572,12 +587,11 @@ namespace Ict.Common.Printing
         /// <returns></returns>
         private float ToPixel(string AStyleValue)
         {
-            AStyleValue = AStyleValue.Trim().ToLower();
+            float FloatValue = GetFloat(AStyleValue);
 
             if (AStyleValue.EndsWith("px"))
             {
-                AStyleValue = AStyleValue.Substring(0, AStyleValue.Length - 2);
-                return (float)Convert.ToDouble(AStyleValue);
+                return FloatValue;
             }
             else if (AStyleValue.EndsWith("cm"))
             {
@@ -588,7 +602,7 @@ namespace Ict.Common.Printing
                 throw new Exception("TPrinterHtml.ToPixel: TODO inch");
             }
 
-            return (float)Convert.ToDouble(AStyleValue);
+            return FloatValue;
         }
 
         /// <summary>
