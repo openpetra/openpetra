@@ -3,7 +3,7 @@ RootNode:
     FormTitle: Maintain Mailings
     Namespace: Ict.Petra.Client.MPartner.Gui.Setup
     DetailTable: PMailing
-    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data, Ict.Petra.Shared.MPartner.Mailroom.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data, Ict.Petra.Shared.MPartner.Mailroom.Data, Ict.Petra.Shared.Interfaces.MCommon]
     FormType: edit
     Template: windowMaintainTable
     WindowWidth: 800
