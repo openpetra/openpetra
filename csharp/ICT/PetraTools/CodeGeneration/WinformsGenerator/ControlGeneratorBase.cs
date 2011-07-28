@@ -898,7 +898,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 writer.Template.AddToCodelet("INITUSERCONTROLS", "FPetraUtilsObject.SetStatusBarText(" + ctrl.controlName +
                     ", Catalog.GetString(\"" +
-                    helpText +
+                    helpText.Replace("\"", "\\\"") +  // properly escape double quotation marks
                     "\"));" + Environment.NewLine);
             }
         }

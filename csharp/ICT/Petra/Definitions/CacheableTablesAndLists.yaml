@@ -114,4 +114,8 @@ CachedTables:
         Conference:
             DatabaseTables:
                 PcConferenceOptionType:
-    #SysMan:
+    SysMan:
+        SysMan:
+            DatabaseTables:
+                SUser:
+                SLanguageSpecific:
