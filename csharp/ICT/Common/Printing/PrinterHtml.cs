@@ -146,24 +146,21 @@ namespace Ict.Common.Printing
 
             if (TXMLParser.HasAttribute(BodyNode, "style"))
             {
-                string styles = TXMLParser.GetAttribute(BodyNode, "style");
-                string[] namevaluepairs = styles.Split(new char[] { ',', ';' });
+                Dictionary <string, string>Styles = TFormLettersTools.GetStyles(BodyNode);
 
-                foreach (string namevaluepair in namevaluepairs)
+                foreach (string StyleName in Styles.Keys)
                 {
-                    string[] detail = namevaluepair.Split(':');
-
-                    if (detail[0].Trim() == "margin")
+                    if (StyleName == "margin")
                     {
                         Result = true;
 
                         // TODO support more than just 0px
-                        if (detail[1] == "0px")
+                        if (Styles[StyleName] == "0px")
                         {
                             AMargins = new Margins(0, 0, 0, 0);
                         }
                     }
-                    else if (detail[0].Trim() == "size")
+                    else if (StyleName == "size")
                     {
                         // http://www.w3.org/TR/css3-page/#page-size
                         // currently support: either a name of PaperKind enum, or width and height in inches or cm
@@ -175,7 +172,7 @@ namespace Ict.Common.Printing
 
                         foreach (PaperKind MyPaperKind in Enum.GetValues(typeof(PaperKind)))
                         {
-                            if (MyPaperKind.ToString() == detail[1])
+                            if (MyPaperKind.ToString() == Styles[StyleName])
                             {
                                 FoundPaperKind = MyPaperKind;
                                 break;
@@ -188,12 +185,12 @@ namespace Ict.Common.Printing
                         }
                         else
                         {
-                            string[] dimensions = detail[1].Trim().Split(' ');
+                            string[] dimensions = Styles[StyleName].Trim().Split(' ');
 
                             if (dimensions.Length != 2)
                             {
-                                TLogging.Log("body styles must contain 2 numbers for page size: " + styles);
-                                TLogging.Log(detail[1]);
+                                TLogging.Log("body styles must contain 2 numbers for page size: " + Styles[StyleName]);
+                                TLogging.Log(Styles[StyleName]);
                                 return false;
                             }
 
@@ -202,25 +199,8 @@ namespace Ict.Common.Printing
 
                             CultureInfo OrigCulture = Catalog.SetCulture(CultureInfo.InvariantCulture);
 
-                            if (dimensions[0].EndsWith("in"))
-                            {
-                                AWidthInPoint = (float)Convert.ToDouble(dimensions[0].Substring(0, dimensions[0].Length - 2)) * 72.0f;
-                            }
-
-                            if (dimensions[1].EndsWith("in"))
-                            {
-                                AHeightInPoint = (float)Convert.ToDouble(dimensions[1].Substring(0, dimensions[1].Length - 2)) * 72.0f;
-                            }
-
-                            if (dimensions[0].EndsWith("cm"))
-                            {
-                                AWidthInPoint = (float)Convert.ToDouble(dimensions[0].Substring(0, dimensions[0].Length - 2)) / 2.54f;
-                            }
-
-                            if (dimensions[1].EndsWith("cm"))
-                            {
-                                AHeightInPoint = (float)Convert.ToDouble(dimensions[1].Substring(0, dimensions[1].Length - 2)) / 2.54f;
-                            }
+                            AWidthInPoint = ToPoint(dimensions[0], eResolution.eHorizontal);
+                            AHeightInPoint = ToPoint(dimensions[1], eResolution.eVertical);
 
                             Catalog.SetCulture(OrigCulture);
                         }
@@ -314,53 +294,46 @@ namespace Ict.Common.Printing
 
                 if (TXMLParser.HasAttribute(BodyNode, "style"))
                 {
-                    string styles = TXMLParser.GetAttribute(BodyNode, "style");
-                    string[] namevaluepairs = styles.Split(new char[] { ',', ';' });
+                    Dictionary <string, string>Styles = TFormLettersTools.GetStyles(BodyNode);
 
-                    foreach (string namevaluepair in namevaluepairs)
+                    foreach (string StyleName in Styles.Keys)
                     {
-                        string DetailName = namevaluepair.Substring(0, namevaluepair.IndexOf(':'));
-                        string DetailValue = namevaluepair.Substring(namevaluepair.IndexOf(':') + 1);
-                        string[] detail = new string[] {
-                            DetailName, DetailValue
-                        };
-
-                        if (detail[0].Trim() == "margin-left")
+                        if (StyleName == "margin-left")
                         {
                             // TODO: PixelToInch? support not just 0px left margin
-                            if (detail[1] == "0px")
+                            if (Styles[StyleName] == "0px")
                             {
                                 pageLeftMargin = printer.LeftMargin;
                             }
                         }
-                        else if (detail[0].Trim() == "margin-right")
+                        else if (StyleName == "margin-right")
                         {
                             // TODO: PixelToInch? support not just 0px right margin
-                            if (detail[1] == "0px")
+                            if (Styles[StyleName] == "0px")
                             {
                                 pageRightMargin = printer.RightMargin;
                             }
                         }
-                        else if (detail[0].Trim() == "margin")
+                        else if (StyleName == "margin")
                         {
                             // TODO: PixelToInch? support not just 0px
-                            if (detail[1] == "0px")
+                            if (Styles[StyleName] == "0px")
                             {
                                 pageLeftMargin = printer.LeftMargin;
                                 pageRightMargin = printer.RightMargin;
                             }
                         }
-                        else if (detail[0].Trim() == "background-image")
+                        else if (StyleName == "background-image")
                         {
                             // only supporting url(...) at the moment
-                            if (detail[1].StartsWith("url(") && detail[1].EndsWith(")"))
+                            if (Styles[StyleName].StartsWith("url(") && Styles[StyleName].EndsWith(")"))
                             {
                                 if (FPath.Length == 0)
                                 {
                                     FPath = Environment.CurrentDirectory;
                                 }
 
-                                string filename = System.IO.Path.Combine(FPath, detail[1].Substring(4, detail[1].Length - 5));
+                                string filename = System.IO.Path.Combine(FPath, Styles[StyleName].Substring(4, Styles[StyleName].Length - 5));
                                 float oldXPos = FPrinter.CurrentXPos;
                                 float oldYPos = FPrinter.CurrentYPos;
                                 FPrinter.DrawBitmap(filename, oldXPos, oldYPos);
@@ -524,11 +497,95 @@ namespace Ict.Common.Printing
             return ((float)Convert.ToDouble(APixel) * 7.87f) / 800.0f;
         }
 
-        private float PixelStringToPixelNumber(string AStyleValue)
+        /// <summary>
+        /// convert any given position measurement to points
+        /// </summary>
+        /// <param name="AStyleValue"></param>
+        /// <param name="AResolution"></param>
+        /// <returns></returns>
+        private float ToPoint(string AStyleValue, eResolution AResolution)
         {
+            AStyleValue = AStyleValue.Trim().ToLower();
+
+            if (AStyleValue.EndsWith("cm"))
+            {
+                AStyleValue = AStyleValue.Substring(0, AStyleValue.Length - 2);
+                return (float)Convert.ToDouble(AStyleValue) / 2.54f * 72.0f;
+            }
+            else if (AStyleValue.EndsWith("in"))
+            {
+                AStyleValue = AStyleValue.Substring(0, AStyleValue.Length - 2);
+                return (float)Convert.ToDouble(AStyleValue) * 72.0f;
+            }
+            else if (AStyleValue.EndsWith("px"))
+            {
+                AStyleValue = AStyleValue.Substring(0, AStyleValue.Length - 2);
+            }
+
+            // assume default unit to be pixel
+            if (AResolution == eResolution.eHorizontal)
+            {
+                return FPrinter.PixelHorizontal((float)Convert.ToDouble(AStyleValue));
+            }
+
+            return FPrinter.PixelVertical((float)Convert.ToDouble(AStyleValue));
+        }
+
+        /// <summary>
+        /// convert any given position measurement to inches
+        /// </summary>
+        /// <param name="AStyleValue"></param>
+        /// <param name="AResolution"></param>
+        /// <returns></returns>
+        private float ToInch(string AStyleValue, eResolution AResolution)
+        {
+            AStyleValue = AStyleValue.Trim().ToLower();
+
+            if (AStyleValue.EndsWith("cm"))
+            {
+                AStyleValue = AStyleValue.Substring(0, AStyleValue.Length - 2);
+                return (float)Convert.ToDouble(AStyleValue) / 2.54f;
+            }
+            else if (AStyleValue.EndsWith("in"))
+            {
+                AStyleValue = AStyleValue.Substring(0, AStyleValue.Length - 2);
+                return (float)Convert.ToDouble(AStyleValue);
+            }
+            else if (AStyleValue.EndsWith("px"))
+            {
+                AStyleValue = AStyleValue.Substring(0, AStyleValue.Length - 2);
+            }
+
+            // assume default unit to be pixel
+            if (AResolution == eResolution.eHorizontal)
+            {
+                return FPrinter.PixelHorizontal((float)Convert.ToDouble(AStyleValue));
+            }
+
+            return FPrinter.PixelVertical((float)Convert.ToDouble(AStyleValue));
+        }
+
+        /// <summary>
+        /// convert any given position measurement to pixel
+        /// </summary>
+        /// <param name="AStyleValue"></param>
+        /// <returns></returns>
+        private float ToPixel(string AStyleValue)
+        {
+            AStyleValue = AStyleValue.Trim().ToLower();
+
             if (AStyleValue.EndsWith("px"))
             {
                 AStyleValue = AStyleValue.Substring(0, AStyleValue.Length - 2);
+                return (float)Convert.ToDouble(AStyleValue);
+            }
+            else if (AStyleValue.EndsWith("cm"))
+            {
+                throw new Exception("TPrinterHtml.ToPixel: TODO cm");
+            }
+            else if (AStyleValue.EndsWith("in"))
+            {
+                throw new Exception("TPrinterHtml.ToPixel: TODO inch");
             }
 
             return (float)Convert.ToDouble(AStyleValue);
@@ -543,45 +600,62 @@ namespace Ict.Common.Printing
         private bool SetPositionFromStyle(XmlNode curNode, ref float AWidthAvailable)
         {
             bool absolutePosition = false;
+            bool PositionWasSet = false;
 
             if (TXMLParser.HasAttribute(curNode, "style"))
             {
-                string styles = TXMLParser.GetAttribute(curNode, "style");
-                string[] namevaluepairs = styles.Split(new char[] { ',', ';' });
+                Dictionary <string, string>Styles = TFormLettersTools.GetStyles(curNode);
 
-                foreach (string namevaluepair in namevaluepairs)
+                foreach (string StyleName in Styles.Keys)
                 {
-                    string[] detail = namevaluepair.Split(':');
-
-                    if ((detail[0].Trim().ToLower() == "position") && (detail[1].Trim().ToLower() == "absolute"))
+                    if ((StyleName.ToLower() == "position") && (Styles[StyleName].Trim().ToLower() == "absolute"))
                     {
                         absolutePosition = true;
                     }
-                    else if (detail[0].Trim().ToLower() == "top")
+                    else if ((StyleName.ToLower() == "position") && (Styles[StyleName].Trim().ToLower() == "relative"))
                     {
-                        if (absolutePosition)
-                        {
-                            FPrinter.CurrentYPos = FPrinter.PixelVertical(PixelStringToPixelNumber(detail[1].Trim().ToLower()));
-                        }
+                        absolutePosition = false;
                     }
-                    else if (detail[0].Trim().ToLower() == "left")
+                    else if (StyleName.ToLower() == "top")
                     {
                         if (absolutePosition)
                         {
-                            FPrinter.CurrentXPos = FPrinter.PixelHorizontal(PixelStringToPixelNumber(detail[1].Trim().ToLower()));
+                            FPrinter.CurrentYPos = ToInch(Styles[StyleName], eResolution.eVertical);
                         }
+                        else
+                        {
+                            FPrinter.CurrentYPos = FPrinter.AnchorYPos + ToInch(Styles[StyleName], eResolution.eVertical);
+                        }
+
+                        PositionWasSet = true;
                     }
-                    else if (detail[0].Trim().ToLower() == "width")
+                    else if (StyleName.ToLower() == "left")
                     {
                         if (absolutePosition)
                         {
-                            AWidthAvailable = FPrinter.PixelHorizontal(PixelStringToPixelNumber(detail[1].Trim().ToLower()));
+                            FPrinter.CurrentXPos = ToInch(Styles[StyleName], eResolution.eHorizontal);
                         }
+                        else
+                        {
+                            FPrinter.CurrentXPos = FPrinter.AnchorXPos + ToInch(Styles[StyleName], eResolution.eHorizontal);
+                        }
+
+                        PositionWasSet = true;
+                    }
+                    else if (StyleName.ToLower() == "width")
+                    {
+                        AWidthAvailable = ToInch(Styles[StyleName], eResolution.eHorizontal);
                     }
                 }
             }
 
-            return absolutePosition;
+            if (absolutePosition)
+            {
+                FPrinter.AnchorXPos = FPrinter.CurrentXPos;
+                FPrinter.AnchorYPos = FPrinter.CurrentYPos;
+            }
+
+            return PositionWasSet;
         }
 
         /// <summary>
@@ -603,9 +677,9 @@ namespace Ict.Common.Printing
             while (curNode != null && FPrinter.ValidYPos() && FContinueNextPageNode == null)
             {
                 AWidthAvailable = OrigWidthAvailable;
-                bool HasAbsolutePosition = SetPositionFromStyle(curNode, ref AWidthAvailable);
+                bool HasPositionInfo = SetPositionFromStyle(curNode, ref AWidthAvailable);
 
-                if (HasAbsolutePosition)
+                if (HasPositionInfo)
                 {
                     AXPos = FPrinter.CurrentXPos;
                 }
@@ -652,7 +726,7 @@ namespace Ict.Common.Printing
                         }
                         else
                         {
-                            Width = PixelStringToPixelNumber(WidthString);
+                            Width = ToPixel(WidthString);
                         }
 
                         if (HeightString.EndsWith("%"))
@@ -661,7 +735,7 @@ namespace Ict.Common.Printing
                         }
                         else
                         {
-                            Height = PixelStringToPixelNumber(HeightString);
+                            Height = ToPixel(HeightString);
                         }
 
                         FPrinter.DrawBitmap(src, FPrinter.CurrentXPos, FPrinter.CurrentYPos, Width, Height, WidthPercentage, HeightPercentage);
@@ -767,7 +841,7 @@ namespace Ict.Common.Printing
                 }
                 else if (curNode.Name == "ul")
                 {
-                    if (!HasAbsolutePosition)
+                    if (!HasPositionInfo)
                     {
                         FPrinter.LineFeed();
                     }
@@ -831,7 +905,7 @@ namespace Ict.Common.Printing
 
                     XmlNode child = curNode.FirstChild;
 
-                    if (!HasAbsolutePosition)
+                    if (!HasPositionInfo)
                     {
                         FPrinter.LineFeed();
                     }
@@ -910,7 +984,7 @@ namespace Ict.Common.Printing
                     curNode = curNode.NextSibling;
                 }
 
-                if (HasAbsolutePosition)
+                if (HasPositionInfo)
                 {
                     // reset to top of paper, so that there is no unintended page break
                     FPrinter.CurrentYPos = 0;

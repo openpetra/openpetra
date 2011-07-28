@@ -418,13 +418,45 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
-        /// find a node somewhere in the xml document by its name
+        /// find a node somewhere in the xml document by its tag name
         /// </summary>
         /// <param name="AParentNode"></param>
         /// <param name="ANodeNameToSearch"></param>
         /// <returns></returns>
         public static XmlNode FindNodeRecursive(XmlNode AParentNode, string ANodeNameToSearch)
         {
+            return FindNodeRecursive(AParentNode, ANodeNameToSearch, "");
+        }
+
+        /// <summary>
+        /// find a node somewhere in the xml document by its tag name and attribute name
+        /// </summary>
+        /// <param name="AParentNode"></param>
+        /// <param name="ANodeNameToSearch"></param>
+        /// <param name="ANameAttribute"></param>
+        /// <returns></returns>
+        public static XmlNode FindNodeRecursive(XmlNode AParentNode, string ANodeNameToSearch, string ANameAttribute)
+        {
+            for (Int32 counter = 0; counter < AParentNode.ChildNodes.Count; counter++)
+            {
+                XmlNode ChildNode = AParentNode.ChildNodes[counter];
+
+                if (ChildNode.Name == ANodeNameToSearch)
+                {
+                    if (ANameAttribute.Length > 0)
+                    {
+                        if (TXMLParser.HasAttribute(ChildNode, "name") && (TXMLParser.GetAttribute(ChildNode, "name") == ANameAttribute))
+                        {
+                            return ChildNode;
+                        }
+                    }
+                    else
+                    {
+                        return ChildNode;
+                    }
+                }
+            }
+
             XmlNode ResultNode = GetChild(AParentNode, ANodeNameToSearch);
 
             if (ResultNode == null)
@@ -435,7 +467,17 @@ namespace Ict.Common.IO
 
                     if (ResultNode != null)
                     {
-                        return ResultNode;
+                        if (ANameAttribute.Length > 0)
+                        {
+                            if (TXMLParser.HasAttribute(ResultNode, "name") && (TXMLParser.GetAttribute(ResultNode, "name") == ANameAttribute))
+                            {
+                                return ResultNode;
+                            }
+                        }
+                        else
+                        {
+                            return ResultNode;
+                        }
                     }
                 }
             }

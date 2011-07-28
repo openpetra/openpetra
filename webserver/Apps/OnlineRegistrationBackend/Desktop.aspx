@@ -776,6 +776,11 @@
                                 <Click OnEvent="PrintBadges"/>
                             </DirectEvents>
                         </ext:Button></td>
+                        <td><ext:Button ID="btnPrintBadgeLabels" runat="server" Text="Print Barcode Labels">
+                            <DirectEvents>
+                                <Click OnEvent="PrintBarcodeLabels"/>
+                            </DirectEvents>
+                        </ext:Button></td>
                         <td><ext:Button ID="btnExportTShirtNumbers" runat="server" Text="Get T-Shirt Numbers">
                             <DirectEvents>
                                 <Click OnEvent="ExportTShirtNumbers" IsUpload="true"/>

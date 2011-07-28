@@ -887,6 +887,48 @@ namespace Ict.Petra.WebServer.MConference
             PrintBadges(false);
         }
 
+        protected void PrintBarcodeLabels(object sender, DirectEventArgs e)
+        {
+            string OutputName = "badgeLabels.pdf";
+
+            try
+            {
+                OutputName = this.FilterRegistrationOffice.SelectedItem.Text + "_" + this.FilterRole.SelectedItem.Text + "_Labels.pdf";
+            }
+            catch (Exception)
+            {
+            }
+
+            try
+            {
+                string PDFPath = TConferenceBadges.PrintBadgeLabels(EventPartnerKey,
+                    EventCode,
+                    GetSelectedRegistrationOffice(),
+                    GetSelectedRole());
+
+                if (File.Exists(PDFPath))
+                {
+                    this.Response.Clear();
+                    this.Response.ContentType = "application/pdf";
+                    this.Response.AddHeader("Content-Type", "application/pdf");
+                    this.Response.AddHeader("Content-Disposition", "attachment; filename=" + OutputName);
+                    this.Response.TransmitFile(PDFPath);
+                    File.Delete(PDFPath);
+                    // this.Response.End(); avoid System.Threading.ThreadAbortException
+                }
+            }
+            catch (Exception ex)
+            {
+                X.Msg.Show(new MessageBoxConfig
+                    {
+                        Buttons = MessageBox.Button.OK,
+                        Icon = MessageBox.Icon.ERROR,
+                        Title = "Fail",
+                        Message = ex.Message
+                    });
+            }
+        }
+
         protected void FixArrivalDepartureDates(object sender, DirectEventArgs e)
         {
             TConferenceToolsRawData.FixArrivalDepartureDates(EventPartnerKey, EventCode);

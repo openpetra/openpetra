@@ -48,7 +48,7 @@ namespace Ict.Petra.Server.MConference.Applications
     {
         private static PUnitTable Units = null;
 
-        private static string FormatBadge(ConferenceApplicationTDS AMainDS, ConferenceApplicationTDSApplicationGridRow AApplicant)
+        private static string FormatBadge(string ABadgeID, ConferenceApplicationTDS AMainDS, ConferenceApplicationTDSApplicationGridRow AApplicant)
         {
             if (TLogging.DebugLevel > 5)
             {
@@ -56,7 +56,7 @@ namespace Ict.Petra.Server.MConference.Applications
             }
 
             string FileName = TFormLettersTools.GetRoleSpecificFile(TAppSettingsManager.GetValue("Formletters.Path"),
-                "Badge",
+                ABadgeID,
                 "",
                 AApplicant.StCongressCode,
                 "html");
@@ -291,7 +291,6 @@ namespace Ict.Petra.Server.MConference.Applications
 
                 MainDS.ApplicationGrid.DefaultView.Sort =
                     ConferenceApplicationTDSApplicationGridTable.GetRegistrationOfficeDBName() + "," +
-                    ConferenceApplicationTDSApplicationGridTable.GetStCongressCodeDBName() + "," +
                     ConferenceApplicationTDSApplicationGridTable.GetFamilyNameDBName() + "," +
                     ConferenceApplicationTDSApplicationGridTable.GetFirstNameDBName();
 
@@ -318,7 +317,7 @@ namespace Ict.Petra.Server.MConference.Applications
                     }
 
                     // create an HTML file using the template files
-                    bool BatchPrinted = TFormLettersTools.AttachNextPage(ref ResultDocument, FormatBadge(MainDS, applicant));
+                    bool BatchPrinted = TFormLettersTools.AttachNextPage(ref ResultDocument, FormatBadge("Badge", MainDS, applicant));
 
                     if (BatchPrinted)
                     {
@@ -397,7 +396,7 @@ namespace Ict.Petra.Server.MConference.Applications
                         (ConferenceApplicationTDSApplicationGridRow)MainDS.ApplicationGrid.DefaultView[PartnerIndex].Row;
 
                     // create an HTML file using the template files
-                    bool BatchPrinted = TFormLettersTools.AttachNextPage(ref ResultDocument, FormatBadge(MainDS, applicant));
+                    bool BatchPrinted = TFormLettersTools.AttachNextPage(ref ResultDocument, FormatBadge("Badge", MainDS, applicant));
                 }
 
                 TFormLettersTools.CloseDocument(ref ResultDocument);
@@ -414,6 +413,81 @@ namespace Ict.Petra.Server.MConference.Applications
             catch (Exception e)
             {
                 TLogging.Log("Exception while reprinting badge: " + e.Message);
+                TLogging.Log(e.StackTrace);
+                throw e;
+            }
+        }
+
+        /// <summary>
+        /// print the badges, using HTML template files.
+        /// several badges are printed on one page
+        /// </summary>
+        /// <param name="AEventPartnerKey"></param>
+        /// <param name="AEventCode"></param>
+        /// <param name="ASelectedRegistrationOffice"></param>
+        /// <param name="ASelectedRole"></param>
+        public static string PrintBadgeLabels(Int64 AEventPartnerKey,
+            string AEventCode,
+            Int64 ASelectedRegistrationOffice,
+            string ASelectedRole)
+        {
+            try
+            {
+                TAttendeeManagement.RefreshAttendees(AEventPartnerKey, AEventCode);
+
+                ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
+                TApplicationManagement.GetApplications(
+                    ref MainDS,
+                    AEventPartnerKey,
+                    AEventCode,
+                    "accepted",
+                    ASelectedRegistrationOffice,
+                    ASelectedRole,
+                    false);
+
+                MainDS.ApplicationGrid.DefaultView.Sort =
+                    ConferenceApplicationTDSApplicationGridTable.GetRegistrationOfficeDBName() + "," +
+                    ConferenceApplicationTDSApplicationGridTable.GetFamilyNameDBName() + "," +
+                    ConferenceApplicationTDSApplicationGridTable.GetFirstNameDBName();
+
+                // Load label template. this knows where to print the next label, and when to start a new page
+
+                List <string>Labels = new List <string>();
+
+                // go through all accepted applicants
+                foreach (DataRowView rv in MainDS.ApplicationGrid.DefaultView)
+                {
+                    ConferenceApplicationTDSApplicationGridRow applicant = (ConferenceApplicationTDSApplicationGridRow)rv.Row;
+
+                    // create an HTML file using the template files
+                    string label = TFormLettersTools.GetContentsOfDiv(FormatBadge("BadgeLabel", MainDS, applicant), "label");
+
+                    if (label.Length > 0)
+                    {
+                        Labels.Add(label);
+                    }
+                }
+
+                string BadgeLabelTemplateFilename = TFormLettersTools.GetRoleSpecificFile(TAppSettingsManager.GetValue("Formletters.Path"),
+                    "BadgeLabel",
+                    "",
+                    "",
+                    "html");
+
+                string ResultDocument = TFormLettersTools.PrintLabels(BadgeLabelTemplateFilename, Labels);
+
+                if (ResultDocument.Length == 0)
+                {
+                    return String.Empty;
+                }
+
+                string PDFPath = GeneratePDFFromHTML(ResultDocument);
+
+                return PDFPath;
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("Exception while printing badge labels: " + e.Message);
                 TLogging.Log(e.StackTrace);
                 throw e;
             }
