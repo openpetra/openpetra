@@ -21,21 +21,14 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
+
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.IO;
-using System.Xml;
-using Ict.Common;
-using Ict.Common.IO;
-using Ict.Common.Data;
+
+using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Server.MPartner.Common;
-using Ict.Petra.Shared.MCommon;
-using Ict.Petra.Shared.MCommon.Data;
-using System.Data;
-using System.Configuration;
 
 namespace SampleDataConstructor
 {
@@ -218,72 +211,6 @@ class TSampleDataConstructor
             Console.WriteLine("Mobile Phones: " + rawData.Mobilephones.Count);
             Console.WriteLine("Countries:     " + rawData.Countries.Count);
 			
-			/*
-            if (!System.IO.File.Exists(csvInputFileName))
-            {
-                Console.WriteLine("cannot find file " + csvInputFileName);
-                Environment.Exit(-1);
-            }
-
-            // load initial csv file.
-            // it was generated from generateData (http://www.generatedata.com/#generator),
-            // and has a line with the column captions
-            // the separator is |
-            XmlDocument doc = TCsv2Xml.ParseCSV2Xml(csvInputFileName, "|");
-
-            XmlNode partner = doc.DocumentElement.FirstChild;
-
-            while (partner != null)
-            {
-                TXMLParser.SetAttribute(partner, MPartnerConstants.PARTNERIMPORT_FIRSTNAME, "");
-
-                // TODO: if partner class is PERSON, need to create both FAMILY and PERSON record, if couples this will create several lines?
-
-                // rename the columns
-                TXMLParser.RenameAttribute(partner, "Country", MPartnerConstants.PARTNERIMPORT_COUNTRYCODE);
-                TXMLParser.RenameAttribute(partner, "Family", MPartnerConstants.PARTNERIMPORT_FAMILYNAME);
-                TXMLParser.RenameAttribute(partner, "Address", MPartnerConstants.PARTNERIMPORT_STREETNAME);
-                TXMLParser.RenameAttribute(partner, "PostCode", MPartnerConstants.PARTNERIMPORT_POSTALCODE);
-
-                // calculate first name, using the gender. use male first name or female first name, etc
-                if (partner.Attributes["Gender"].Value == "Male")
-                {
-                    partner.Attributes[MPartnerConstants.PARTNERIMPORT_FIRSTNAME].Value = partner.Attributes["FirstnameMale"].Value;
-                    TXMLParser.SetAttribute(partner, MPartnerConstants.PARTNERIMPORT_TITLE, "Mr");
-                }
-                else if (partner.Attributes["Gender"].Value == "Female")
-                {
-                    partner.Attributes[MPartnerConstants.PARTNERIMPORT_FIRSTNAME].Value = partner.Attributes["FirstnameFemale"].Value;
-                    TXMLParser.SetAttribute(partner, MPartnerConstants.PARTNERIMPORT_TITLE, "Mrs");
-                }
-                else
-                {
-                    partner.Attributes[MPartnerConstants.PARTNERIMPORT_FIRSTNAME].Value =
-                        partner.Attributes["FirstnameMale"].Value + " and " +
-                        partner.Attributes["FirstnameFemale"].Value;
-                    TXMLParser.SetAttribute(partner, MPartnerConstants.PARTNERIMPORT_TITLE, "Mr and Mrs");
-                }
-
-                // drop unwanted columns
-                partner.Attributes.Remove(partner.Attributes["FirstnameMale"]);
-                partner.Attributes.Remove(partner.Attributes["FirstnameFemale"]);
-                partner.Attributes.Remove(partner.Attributes["Child1"]);
-                partner.Attributes.Remove(partner.Attributes["DonationDate1"]);
-                partner.Attributes.Remove(partner.Attributes["DonationRecipient1"]);
-                partner.Attributes.Remove(partner.Attributes["DonationAmount1"]);
-                partner.Attributes.Remove(partner.Attributes["PartnerClass"]);
-                partner = partner.NextSibling;
-            }
-
-            // TODO generate separate donation import files???
-
-            // store csv file with correct column captions, and use local default CSV separator
-            string csvOutputFileName = Path.GetDirectoryName(csvInputFileName) +
-                                       Path.DirectorySeparatorChar +
-                                       Path.GetFileNameWithoutExtension(csvInputFileName) + "2.csv";
-            TCsv2Xml.Xml2Csv(doc, csvOutputFileName);
-            Console.WriteLine(csvOutputFileName + " was written.");
-			*/
         }
         catch (Exception e)
         {
