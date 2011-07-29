@@ -1,0 +1,12 @@
+Observed during development and questions regarding "how to do it properly"
+===========================================================================
+
+Regarding my own code:
+
+- where to place temporary data properly?
+
+
+Not regarding my own code:
+
+- Table structure of OpenPetra seems a bit "weird" when dealing with contact information: Emails and Telephonenumbers are connected to partner_location (which is connected to a realworld location). This does not seem true anymore in comparison to 15 years back. Especially Mobile numbers and Emails are kept while the user moves around the country... One possibility might be placing Emails and Mobilenumbers (but others as well) in their own tables (which is simpler as well) - or deciding, that people need not have more than one mobile phone and connecting it to the person (unrealistic). Btw, familfy -> person?
+ 
