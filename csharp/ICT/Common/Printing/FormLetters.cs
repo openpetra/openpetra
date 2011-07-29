@@ -212,13 +212,26 @@ namespace Ict.Common.Printing
             return Result;
         }
 
+        private static float GetFloat(Dictionary <string, string>AStyles, string AName, string AUnit)
+        {
+            try
+            {
+                return (float)Convert.ToDouble(AStyles[AName].Replace(AUnit, ""));
+            }
+            catch (Exception)
+            {
+                return 0.0f;
+            }
+        }
+
         /// <summary>
         /// print HTML labels into an HTML template, create pages
         /// </summary>
         /// <param name="AFilename"></param>
         /// <param name="ALabels"></param>
+        /// <param name="AFooterTitle">title to print in the page footer</param>
         /// <returns></returns>
-        public static string PrintLabels(string AFilename, List <string>ALabels)
+        public static string PrintLabels(string AFilename, List <string>ALabels, string AFooterTitle)
         {
             StreamReader sr = new StreamReader(AFilename);
             string Template = sr.ReadToEnd();
@@ -251,25 +264,39 @@ namespace Ict.Common.Printing
             CultureInfo OrigCulture = Catalog.SetCulture(CultureInfo.InvariantCulture);
 
             // we need to use the margin-left and margin-top of the body for the position of the first label
-            float marginLeft = (float)Convert.ToDouble(styles["margin-left"].Replace(unit, ""));
-            float marginTop = (float)Convert.ToDouble(styles["margin-top"].Replace(unit, ""));
+            float marginLeft = GetFloat(styles, "margin-left", unit);
+            float marginTop = GetFloat(styles, "margin-top", unit);
+            float marginBottom = GetFloat(styles, "margin-bottom", unit);
 
             // we need the width and height of body to know how many labels will fit on one page
-            float pageWidth = (float)Convert.ToDouble(styles["width"].Replace(unit, ""));
-            float pageHeight = (float)Convert.ToDouble(styles["height"].Replace(unit, ""));
+            float pageWidth = GetFloat(styles, "width", unit);
+            float pageHeight = GetFloat(styles, "height", unit);
 
             // we need padding-left and padding-bottom for the space between labels
             styles = GetStyles(TXMLParser.FindNodeRecursive(TemplateDoc.DocumentElement, "div", "label"));
-            float paddingLeft = (float)Convert.ToDouble(styles["padding-left"].Replace(unit, ""));
-            float paddingBottom = (float)Convert.ToDouble(styles["padding-bottom"].Replace(unit, ""));
-            float labelWidth = (float)Convert.ToDouble(styles["width"].Replace(unit, ""));
-            float labelHeight = (float)Convert.ToDouble(styles["height"].Replace(unit, ""));
+            float paddingLeft = GetFloat(styles, "padding-left", unit);
+            float paddingBottom = GetFloat(styles, "padding-bottom", unit);
+            float labelWidth = GetFloat(styles, "width", unit);
+            float labelHeight = GetFloat(styles, "height", unit);
+
+            float footerLeft = 0.0f;
+            float footerHeight = 0.0f;
+            XmlNode footerNode = TXMLParser.FindNodeRecursive(TemplateDoc.DocumentElement, "div", "footer");
+
+            if (footerNode != null)
+            {
+                styles = GetStyles(footerNode);
+                footerLeft = GetFloat(styles, "left", unit);;
+                footerHeight = GetFloat(styles, "height", unit);;
+            }
 
             int maxLabelsHorizontal = (int)Math.Floor((pageWidth - marginLeft) / (labelWidth + paddingLeft));
-            int maxLabelsVertical = (int)Math.Floor((pageHeight - marginTop) / (labelHeight + paddingBottom));
+            int maxLabelsVertical = (int)Math.Floor((pageHeight - footerHeight - marginTop - marginBottom) / (labelHeight + paddingBottom));
 
             int currentLabelX = 0;
             int currentLabelY = 0;
+            int currentPage = 1;
+            string footer;
 
             string ResultDocument =
                 "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">" +
@@ -287,7 +314,19 @@ namespace Ict.Common.Printing
                 if (currentLabelY == maxLabelsVertical)
                 {
                     currentLabelY = 0;
+
+                    // add footer
+                    if (footerNode != null)
+                    {
+                        footer = footerNode.OuterXml;
+                        footer = footer.Replace("#TITLE", AFooterTitle);
+                        footer = footer.Replace("#CURRENTPAGE", currentPage.ToString());
+                        ResultDocument += footer;
+                    }
+
                     ResultDocument += "</body><body>" + Environment.NewLine;
+
+                    currentPage++;
                 }
 
                 ResultDocument += Environment.NewLine +
@@ -299,6 +338,17 @@ namespace Ict.Common.Printing
                 ResultDocument += "</div>" + Environment.NewLine;
 
                 currentLabelX++;
+            }
+
+            // add footer
+            if (ResultDocument.Length > 0)
+            {
+                footer = footerNode.OuterXml;
+                footer = footer.Replace("#TITLE", AFooterTitle);
+                footer = footer.Replace("#CURRENTPAGE", currentPage.ToString());
+                ResultDocument += footer;
+
+                ResultDocument = ResultDocument.Replace("#TOTALPAGES", currentPage.ToString());
             }
 
             ResultDocument += "</body></html>";

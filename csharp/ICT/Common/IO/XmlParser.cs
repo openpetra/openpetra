@@ -463,23 +463,18 @@ namespace Ict.Common.IO
             {
                 foreach (XmlNode childNode in AParentNode.ChildNodes)
                 {
-                    ResultNode = FindNodeRecursive(childNode, ANodeNameToSearch);
+                    ResultNode = FindNodeRecursive(childNode, ANodeNameToSearch, ANameAttribute);
 
                     if (ResultNode != null)
                     {
-                        if (ANameAttribute.Length > 0)
-                        {
-                            if (TXMLParser.HasAttribute(ResultNode, "name") && (TXMLParser.GetAttribute(ResultNode, "name") == ANameAttribute))
-                            {
-                                return ResultNode;
-                            }
-                        }
-                        else
-                        {
-                            return ResultNode;
-                        }
+                        return ResultNode;
                     }
                 }
+            }
+
+            if (ANameAttribute.Length > 0)
+            {
+                return null;
             }
 
             return ResultNode;

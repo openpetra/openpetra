@@ -67,11 +67,12 @@ namespace Ict.Petra.Server.MConference.Applications
             try
             {
                 SortedList <string, XmlDocument>Worksheets = new SortedList <string, XmlDocument>();
+                PPartnerTable regOffices = TApplicationManagement.GetRegistrationOffices();
 
                 foreach (PPartnerRow regOffice in RegistrationOffices.Rows)
                 {
                     XmlDocument myDoc = TYml2Xml.CreateXmlDocument();
-                    Worksheets.Add(regOffice.PartnerKey.ToString(), myDoc);
+                    Worksheets.Add(regOffice.PartnerShortName + " " + regOffice.PartnerKey.ToString(), myDoc);
                 }
 
                 MainDS.ApplicationGrid.DefaultView.Sort =
@@ -92,7 +93,16 @@ namespace Ict.Petra.Server.MConference.Applications
                     }
 
                     PcAttendeeRow attendee = (PcAttendeeRow)MainDS.PcAttendee.DefaultView[AttendeeIndex].Row;
-                    XmlDocument myDoc = Worksheets[applicant.RegistrationOffice.ToString()];
+                    XmlDocument myDoc = null;
+
+                    foreach (string key in Worksheets.Keys)
+                    {
+                        if (key.Contains(applicant.RegistrationOffice.ToString()))
+                        {
+                            myDoc = Worksheets[key];
+                            break;
+                        }
+                    }
 
                     XmlNode newNode = myDoc.CreateElement("", "ELEMENT", "");
                     myDoc.DocumentElement.AppendChild(newNode);

@@ -508,6 +508,8 @@ namespace Ict.Petra.Server.MConference.Applications
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
 
+            result.DefaultView.Sort = PPartnerTable.GetPartnerKeyDBName();
+
             return result;
         }
 

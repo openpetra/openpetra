@@ -91,6 +91,7 @@ namespace Ict.Petra.WebServer.MConference
         protected Ext.Net.Button btnExcelRolesPerCountry;
         protected Ext.Net.Button btnFixArrivalDepartureDates;
         protected Ext.Net.Button btnLateRegistration;
+        protected Ext.Net.Button btnPrintArrivalRegistration;
 
         protected bool ConferenceOrganisingOffice = false;
 
@@ -128,6 +129,7 @@ namespace Ict.Petra.WebServer.MConference
                 btnExportTShirtNumbers.Visible = ConferenceOrganisingOffice;
                 btnImportPrintedBadges.Visible = ConferenceOrganisingOffice;
                 btnExcelArrivalRegistration.Visible = ConferenceOrganisingOffice;
+                btnPrintArrivalRegistration.Visible = ConferenceOrganisingOffice;
                 btnExcelRolesPerCountry.Visible = ConferenceOrganisingOffice;
                 btnFixArrivalDepartureDates.Visible = ConferenceOrganisingOffice;
                 btnLateRegistration.Visible = ConferenceOrganisingOffice;
@@ -904,7 +906,51 @@ namespace Ict.Petra.WebServer.MConference
                 string PDFPath = TConferenceBadges.PrintBadgeLabels(EventPartnerKey,
                     EventCode,
                     GetSelectedRegistrationOffice(),
-                    GetSelectedRole());
+                    GetSelectedRole(),
+                    "BadgeLabel", false);
+
+                if (File.Exists(PDFPath))
+                {
+                    this.Response.Clear();
+                    this.Response.ContentType = "application/pdf";
+                    this.Response.AddHeader("Content-Type", "application/pdf");
+                    this.Response.AddHeader("Content-Disposition", "attachment; filename=" + OutputName);
+                    this.Response.TransmitFile(PDFPath);
+                    File.Delete(PDFPath);
+                    // this.Response.End(); avoid System.Threading.ThreadAbortException
+                }
+            }
+            catch (Exception ex)
+            {
+                X.Msg.Show(new MessageBoxConfig
+                    {
+                        Buttons = MessageBox.Button.OK,
+                        Icon = MessageBox.Icon.ERROR,
+                        Title = "Fail",
+                        Message = ex.Message
+                    });
+            }
+        }
+
+        protected void PrintArrivalRegistration(object sender, DirectEventArgs e)
+        {
+            string OutputName = "arrivalsList.pdf";
+
+            try
+            {
+                OutputName = this.FilterRegistrationOffice.SelectedItem.Text + "_" + this.FilterRole.SelectedItem.Text + "_arrivals.pdf";
+            }
+            catch (Exception)
+            {
+            }
+
+            try
+            {
+                string PDFPath = TConferenceBadges.PrintBadgeLabels(EventPartnerKey,
+                    EventCode,
+                    GetSelectedRegistrationOffice(),
+                    GetSelectedRole(),
+                    "ArrivalsList", true);
 
                 if (File.Exists(PDFPath))
                 {

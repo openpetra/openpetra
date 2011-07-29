@@ -48,7 +48,10 @@ namespace Ict.Petra.Server.MConference.Applications
     {
         private static PUnitTable Units = null;
 
-        private static string FormatBadge(string ABadgeID, ConferenceApplicationTDS AMainDS, ConferenceApplicationTDSApplicationGridRow AApplicant)
+        private static string FormatBadge(string ABadgeID,
+            ConferenceApplicationTDS AMainDS,
+            ConferenceApplicationTDSApplicationGridRow AApplicant,
+            bool APrintAll)
         {
             if (TLogging.DebugLevel > 5)
             {
@@ -77,12 +80,14 @@ namespace Ict.Petra.Server.MConference.Applications
             HTMLText = HTMLText.Replace("#ROLE", AApplicant.StCongressCode);
 
             string FirstName = AApplicant.FirstName;
+            string NickName = AApplicant.FirstName;
 
             if (rawDataObject.Contains("NickName") && (rawDataObject["NickName"].ToString().Trim().Length > 0))
             {
-                FirstName = rawDataObject["NickName"].ToString();
+                NickName = rawDataObject["NickName"].ToString();
             }
 
+            HTMLText = HTMLText.Replace("#NICKNAME", NickName);
             HTMLText = HTMLText.Replace("#FIRSTNAME", FirstName);
             HTMLText = HTMLText.Replace("#LASTNAME", AApplicant.FamilyName);
 
@@ -106,6 +111,8 @@ namespace Ict.Petra.Server.MConference.Applications
             HTMLText = HTMLText.Replace("#COUNTRY", ((PUnitRow)Units.DefaultView[Units.DefaultView.Find(
                                                                                      AApplicant.RegistrationOffice)].Row).UnitName);
 
+            HTMLText = HTMLText.Replace("#REGISTRATIONKEY", AApplicant.PartnerKey.ToString());
+
             if (!AApplicant.IsPersonKeyNull())
             {
                 HTMLText = HTMLText.Replace("#PERSONKEY", AApplicant.PersonKey.ToString());
@@ -126,17 +133,26 @@ namespace Ict.Petra.Server.MConference.Applications
 
             if (!File.Exists(PhotoPath))
             {
-                // don't print the badge if there is no photo
-                TLogging.Log("badge has no photo: " + AApplicant.PartnerKey.ToString());
-                return string.Empty;
+                if (APrintAll)
+                {
+                    HTMLText = HTMLText.Replace("#PHOTOPARTICIPANT", "");
+                }
+                else
+                {
+                    // don't print the badge if there is no photo
+                    TLogging.Log("badge has no photo: " + AApplicant.PartnerKey.ToString());
+                    return string.Empty;
+                }
             }
-
-            HTMLText = HTMLText.Replace("#PHOTOPARTICIPANT", PhotoPath);
+            else
+            {
+                HTMLText = HTMLText.Replace("#PHOTOPARTICIPANT", PhotoPath);
+            }
 
             string RolesThatRequireFellowshipGroupCode = TAppSettingsManager.GetValue("ConferenceTool.RolesThatRequireFellowshipGroupCode", "", false);
             RolesThatRequireFellowshipGroupCode = RolesThatRequireFellowshipGroupCode.Replace(" ", "") + ",";
 
-            if (AApplicant.StFgCode.Length == 0)
+            if ((AApplicant.StFgCode.Length == 0) && !APrintAll)
             {
                 // eg: we need a fellowship group code for teenagers and coaches
                 if (RolesThatRequireFellowshipGroupCode.Contains(AApplicant.StCongressCode + ","))
@@ -183,7 +199,7 @@ namespace Ict.Petra.Server.MConference.Applications
             }
 
             // check for all image paths, if the images actually exist
-            if (!TFormLettersTools.CheckImagesFileExist(HTMLText))
+            if (!APrintAll && !TFormLettersTools.CheckImagesFileExist(HTMLText))
             {
                 // CheckImagesFileExist does some logging
                 return string.Empty;
@@ -317,7 +333,7 @@ namespace Ict.Petra.Server.MConference.Applications
                     }
 
                     // create an HTML file using the template files
-                    bool BatchPrinted = TFormLettersTools.AttachNextPage(ref ResultDocument, FormatBadge("Badge", MainDS, applicant));
+                    bool BatchPrinted = TFormLettersTools.AttachNextPage(ref ResultDocument, FormatBadge("Badge", MainDS, applicant, false));
 
                     if (BatchPrinted)
                     {
@@ -396,7 +412,7 @@ namespace Ict.Petra.Server.MConference.Applications
                         (ConferenceApplicationTDSApplicationGridRow)MainDS.ApplicationGrid.DefaultView[PartnerIndex].Row;
 
                     // create an HTML file using the template files
-                    bool BatchPrinted = TFormLettersTools.AttachNextPage(ref ResultDocument, FormatBadge("Badge", MainDS, applicant));
+                    bool BatchPrinted = TFormLettersTools.AttachNextPage(ref ResultDocument, FormatBadge("Badge", MainDS, applicant, true));
                 }
 
                 TFormLettersTools.CloseDocument(ref ResultDocument);
@@ -426,10 +442,14 @@ namespace Ict.Petra.Server.MConference.Applications
         /// <param name="AEventCode"></param>
         /// <param name="ASelectedRegistrationOffice"></param>
         /// <param name="ASelectedRole"></param>
+        /// <param name="ATemplate">Template file in the formletters directory. without file extension html</param>
+        /// <param name="APrintAll">if true, print badge even if fellowship group or photo is missing</param>
         public static string PrintBadgeLabels(Int64 AEventPartnerKey,
             string AEventCode,
             Int64 ASelectedRegistrationOffice,
-            string ASelectedRole)
+            string ASelectedRole,
+            string ATemplate,
+            bool APrintAll)
         {
             try
             {
@@ -460,7 +480,7 @@ namespace Ict.Petra.Server.MConference.Applications
                     ConferenceApplicationTDSApplicationGridRow applicant = (ConferenceApplicationTDSApplicationGridRow)rv.Row;
 
                     // create an HTML file using the template files
-                    string label = TFormLettersTools.GetContentsOfDiv(FormatBadge("BadgeLabel", MainDS, applicant), "label");
+                    string label = TFormLettersTools.GetContentsOfDiv(FormatBadge(ATemplate, MainDS, applicant, APrintAll), "label");
 
                     if (label.Length > 0)
                     {
@@ -468,13 +488,35 @@ namespace Ict.Petra.Server.MConference.Applications
                     }
                 }
 
+                // create a title, for the footer
+                string FooterTitle = string.Empty;
+
+                if (MainDS.ApplicationGrid.Count > 1)
+                {
+                    // if the first and the last applicant have same registration office, add the name to the title
+                    if (MainDS.ApplicationGrid[0].RegistrationOffice == MainDS.ApplicationGrid[MainDS.ApplicationGrid.Count - 1].RegistrationOffice)
+                    {
+                        PPartnerTable regOffices = TApplicationManagement.GetRegistrationOffices();
+                        FooterTitle += " " +
+                                       ((PPartnerRow)regOffices.DefaultView[regOffices.DefaultView.Find(MainDS.ApplicationGrid[0].RegistrationOffice)
+                                        ].Row).
+                                       PartnerShortName;
+                    }
+
+                    // if the first and the last applicant have the same role, add the role to the title
+                    if (MainDS.ApplicationGrid[0].StCongressCode == MainDS.ApplicationGrid[MainDS.ApplicationGrid.Count - 1].StCongressCode)
+                    {
+                        FooterTitle += " " + MainDS.ApplicationGrid[0].StCongressCode;
+                    }
+                }
+
                 string BadgeLabelTemplateFilename = TFormLettersTools.GetRoleSpecificFile(TAppSettingsManager.GetValue("Formletters.Path"),
-                    "BadgeLabel",
+                    ATemplate,
                     "",
                     "",
                     "html");
 
-                string ResultDocument = TFormLettersTools.PrintLabels(BadgeLabelTemplateFilename, Labels);
+                string ResultDocument = TFormLettersTools.PrintLabels(BadgeLabelTemplateFilename, Labels, FooterTitle);
 
                 if (ResultDocument.Length == 0)
                 {
