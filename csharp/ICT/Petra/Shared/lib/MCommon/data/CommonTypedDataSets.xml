@@ -1,7 +1,9 @@
 <PetraDataSets>
-        <ImportUnit name="Ict.Petra.Shared.MPartner.Partner.Data"/>
+    <ImportUnit name="Ict.Petra.Shared.MPartner.Partner.Data"/>
     <ImportUnit name="Ict.Petra.Shared.MPersonnel.Personnel.Data"/>
+	<!-- <ImportUnit name="Ict.Petra.Shared.MCommon.Data"/> -->
 
+	
     <DataSet name="OfficeSpecificDataLabelsTDS">
         <Table sqltable="p_data_label" name="DataLabelList"/>
         <Table sqltable="p_data_label_use" name="DataLabelUseList"/>
@@ -38,5 +40,15 @@
         <Table sqltable="p_family"/>
         <Table sqltable="pm_staff_data"/>
     </DataSet>
+
+	<DataSet name="SampleDataConstructorTDS">
+        <Table sqltable="p_partner"/>
+        <Table sqltable="p_partner_type"/>	
+        <Table sqltable="p_family"/>
+        <Table sqltable="p_organisation"/>
+        <Table sqltable="p_location"/>
+        <Table sqltable="p_partner_location"/>
+        <Table sqltable="p_country"/>		
+    </DataSet>   
 
 </PetraDataSets>
