@@ -164,6 +164,15 @@ namespace Ict.Petra.Server.MConference.Applications
 
             HTMLText = HTMLText.Replace("#FELLOWSHIPGROUP", AApplicant.StFgCode);
 
+            if (rawDataObject.Contains("JobAssigned"))
+            {
+                HTMLText = HTMLText.Replace("#JOBASSIGNED", rawDataObject["JobAssigned"].ToString());
+            }
+            else
+            {
+                HTMLText = HTMLText.Replace("#JOBASSIGNED", "");
+            }
+
             if (rawDataObject.Contains("TShirtSize") && rawDataObject.Contains("TShirtStyle"))
             {
                 string tsstyle = rawDataObject["TShirtStyle"].ToString();
