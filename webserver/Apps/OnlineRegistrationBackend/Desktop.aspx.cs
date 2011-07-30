@@ -71,6 +71,8 @@ namespace Ict.Petra.WebServer.MConference
         protected Ext.Net.GridPanel GridPanel1;
         protected Ext.Net.GridFilters GridFilters1;
         protected Ext.Net.Panel TabRawApplicationData;
+        protected Ext.Net.Panel TabMedicalLog;
+        protected Ext.Net.Panel TabRebukes;
         protected Ext.Net.TabPanel TabPanelApplication;
         protected Ext.Net.ComboBox JobWish1;
         protected Ext.Net.ComboBox JobWish2;
@@ -93,6 +95,8 @@ namespace Ict.Petra.WebServer.MConference
         protected Ext.Net.Button btnLateRegistration;
         protected Ext.Net.Button btnPrintArrivalRegistration;
         protected Ext.Net.Store StoreRebukes;
+        protected Ext.Net.TextArea MedicalLog;
+        protected Ext.Net.Button btnNewRebuke;
 
         protected bool ConferenceOrganisingOffice = false;
 
@@ -137,6 +141,21 @@ namespace Ict.Petra.WebServer.MConference
 
                 // for the moment, do not confuse all offices with this button
                 btnCreateGiftBatch.Visible = ConferenceOrganisingOffice;
+
+                if (!UserInfo.GUserInfo.IsInModule("MEDICAL"))
+                {
+                    TabMedicalLog.Enabled = false;
+                    TabMedicalLog.Visible = false;
+                    MedicalLog.Visible = false;
+                    MedicalLog.Enabled = false;
+                }
+
+                if (!UserInfo.GUserInfo.IsInModule("BOUNDARIES"))
+                {
+                    TabRebukes.Enabled = false;
+                    TabRebukes.Visible = false;
+                    btnNewRebuke.Visible = false;
+                }
 
                 MyData_Refresh(null, null);
             }
@@ -458,6 +477,7 @@ namespace Ict.Petra.WebServer.MConference
                 dictionary.Add("StFgLeader", row.StFgLeader);
                 dictionary.Add("StFgCode", row.StFgCode);
                 dictionary.Add("StFieldCharged", row.StFieldCharged);
+                dictionary.Add("MedicalLog", row.MedicalNotes);
 
                 List <string>FieldsOnFirstTab = new List <string>(new string[] {
                                                                       "TShirtStyle", "TShirtSize", "JobWish1", "JobWish2", "JobAssigned"
@@ -642,6 +662,7 @@ namespace Ict.Petra.WebServer.MConference
             row.Comment = values["Comment"];
 
             row.RebukeNotes = RebukeValues;
+            row.MedicalNotes = values["MedicalLog"];
 
             if (TApplicationManagement.SaveApplication(EventCode, row) != TSubmitChangesResult.scrOK)
             {

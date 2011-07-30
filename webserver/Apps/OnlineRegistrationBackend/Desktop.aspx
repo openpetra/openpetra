@@ -1139,7 +1139,7 @@
                             </ext:Panel>
                             <ext:Panel ID="TabRebukes" runat="server" Title="Rebukes" AutoScroll="true">
                                 <Items>
-                              <ext:Button runat="server" Text="New Rebuke">
+                              <ext:Button ID="btnNewRebuke" runat="server" Text="New Rebuke">
                                   <DirectEvents>
                                       <Click OnEvent="AddNewRebuke"/>
                                   </DirectEvents>
@@ -1179,9 +1179,13 @@
                               </ext:GridPanel>          
                               </Items>
                             </ext:Panel>
+                            <ext:Panel ID="TabMedicalLog" runat="server" Title="Medical Log" AutoScroll="true">
+                              <Items>
+                                <ext:TextArea ID="MedicalLog" DataIndex="MedicalLog" runat="server" Width="400" Height="360"/>
+                              </Items>
+                            </ext:Panel>
                           </Items>
                         </ext:TabPanel>
-
                      </Items>
                 </ext:FormPanel>
             </Items>
