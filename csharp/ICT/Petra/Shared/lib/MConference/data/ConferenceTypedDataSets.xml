@@ -15,6 +15,8 @@
         <Table sqltable="pm_short_term_application"/>
         <Table sqltable="pc_conference"/>
         <Table sqltable="pc_attendee"/>
+        <Table sqltable="p_data_label_value_partner"/>
+        <Table sqltable="p_data_label"/>
         <CustomTable name="ApplicationGrid">
             <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>
             <CustomField name="PersonKey" type="Int64"/>
@@ -34,6 +36,8 @@
             <Field sqltable="pm_general_application" sqlfield="pm_comment_c"/>
             <Field sqltable="pm_short_term_application" sqlfield="pm_arrival_d"/>
             <Field sqltable="pm_short_term_application" sqlfield="pm_departure_d"/>
+            <CustomField name="RebukeNotes" type="string"/>
+            <CustomField name="MedicalNotes" type="string"/>
             <CustomField name="JSONData" type="string"/>
         </CustomTable>
         

@@ -92,6 +92,7 @@ namespace Ict.Petra.WebServer.MConference
         protected Ext.Net.Button btnFixArrivalDepartureDates;
         protected Ext.Net.Button btnLateRegistration;
         protected Ext.Net.Button btnPrintArrivalRegistration;
+        protected Ext.Net.Store StoreRebukes;
 
         protected bool ConferenceOrganisingOffice = false;
 
@@ -537,6 +538,8 @@ namespace Ict.Petra.WebServer.MConference
                     X.Js.Call("HideTabPanel", "TabServiceTeam");
                 }
 
+                RefreshRebukesStore(row.RebukeNotes);
+
                 Random rand = new Random();
                 Image1.ImageUrl = "photos.aspx?id=" + PartnerKey.ToString() + ".jpg&" + rand.Next(1, 10000).ToString();
             }
@@ -559,6 +562,7 @@ namespace Ict.Petra.WebServer.MConference
             //Console.WriteLine(e.ExtraParams["Values"]);
 
             Dictionary <string, string>values = JSON.Deserialize <Dictionary <string, string>>(e.ExtraParams["Values"]);
+            string RebukeValues = e.ExtraParams["RebukeValues"];
 
             string RawData = TApplicationManagement.GetRawApplicationData(row.PartnerKey, row.ApplicationKey, row.RegistrationOffice);
             Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(TJsonTools.RemoveContainerControls(RawData));
@@ -636,6 +640,8 @@ namespace Ict.Petra.WebServer.MConference
             }
 
             row.Comment = values["Comment"];
+
+            row.RebukeNotes = RebukeValues;
 
             if (TApplicationManagement.SaveApplication(EventCode, row) != TSubmitChangesResult.scrOK)
             {
@@ -1269,6 +1275,70 @@ namespace Ict.Petra.WebServer.MConference
                 TLogging.Log(ex.Message);
                 TLogging.Log(ex.StackTrace);
             }
+        }
+
+        public class Rebuke
+        {
+            public int ID {
+                get; set;
+            }
+            public DateTime When {
+                get; set;
+            }
+            public string What {
+                get; set;
+            }
+            public string Consequence {
+                get; set;
+            }
+
+            public Rebuke(int AID)
+            {
+                this.ID = AID;
+                this.When = DateTime.Now;
+                this.What = string.Empty;
+                this.Consequence = "TBD";
+            }
+
+            public Rebuke(int AID, DateTime ADate, string AWhat, string AConsequence)
+            {
+                this.ID = AID;
+                this.When = ADate;
+                this.What = AWhat;
+                this.Consequence = AConsequence;
+            }
+        }
+
+        private static int NewId = 1;
+
+        private void RefreshRebukesStore(string AData)
+        {
+            List <Rebuke>store = new List <Rebuke>();
+
+            if (AData.Length > 0)
+            {
+                //string test = "[{\"ID\":1,\"When\":\"2011-07-21T16:55:04\",\"What\":\"\",\"Consequence\":\"TBD\"}]";
+
+                Jayrock.Json.JsonArray list = (Jayrock.Json.JsonArray)Jayrock.Json.Conversion.JsonConvert.Import(AData);
+
+                foreach (Jayrock.Json.JsonObject element in list)
+                {
+                    store.Add(new Rebuke(Convert.ToInt32(element["ID"]),
+                            Convert.ToDateTime(element["When"]),
+                            element["What"].ToString(),
+                            element["Consequence"].ToString()));
+                }
+            }
+
+            this.StoreRebukes.DataSource = store;
+            this.StoreRebukes.DataBind();
+        }
+
+        protected void AddNewRebuke(Object sender, DirectEventArgs e)
+        {
+            NewId++;
+            this.StoreRebukes.AddRecord(new Rebuke(NewId));
+            this.StoreRebukes.CommitChanges();
         }
     }
 }

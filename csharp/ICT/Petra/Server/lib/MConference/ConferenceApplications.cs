@@ -35,6 +35,7 @@ using Ict.Common.DB;
 using Ict.Common.IO;
 using Ict.Common.Printing;
 using Ict.Common.Verification;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
@@ -246,6 +247,8 @@ namespace Ict.Petra.Server.MConference.Applications
             parameter.Value = AEventCode;
             parameters.Add(parameter);
 
+            string DataLabels = "(PUB_p_data_label.p_text_c = 'MEDICAL' OR PUB_p_data_label.p_text_c = 'BOUNDARIES')";
+
             string queryShortTermApplication = "SELECT PUB_pm_short_term_application.* " +
                                                "FROM PUB_pm_short_term_application " +
                                                "WHERE PUB_pm_short_term_application.pm_confirmed_option_code_c = ? ";
@@ -261,12 +264,19 @@ namespace Ict.Petra.Server.MConference.Applications
                                  "FROM PUB_pm_short_term_application, PUB_p_person " +
                                  "WHERE PUB_pm_short_term_application.pm_confirmed_option_code_c = ? " +
                                  "  AND PUB_p_person.p_partner_key_n = PUB_pm_short_term_application.p_partner_key_n";
+            string queryDataLabel = "SELECT DISTINCT PUB_p_data_label_value_partner.* " +
+                                    "FROM PUB_pm_short_term_application, PUB_p_data_label_value_partner, PUB_p_data_label " +
+                                    "WHERE PUB_pm_short_term_application.pm_confirmed_option_code_c = ? " +
+                                    "  AND PUB_p_data_label_value_partner.p_partner_key_n = PUB_pm_short_term_application.p_partner_key_n" +
+                                    "  AND PUB_p_data_label_value_partner.p_data_label_key_i = PUB_p_data_label.p_key_i" +
+                                    " AND " + DataLabels;
 
             if ((ARole != null) && (ARole.Length > 0))
             {
                 queryGeneralApplication += "  AND PUB_pm_short_term_application.pm_st_congress_code_c LIKE '" + ARole + "%'";
                 queryShortTermApplication += "  AND PUB_pm_short_term_application.pm_st_congress_code_c LIKE '" + ARole + "%'";
                 queryPerson += "  AND PUB_pm_short_term_application.pm_st_congress_code_c LIKE '" + ARole + "%'";
+                queryDataLabel += "  AND PUB_pm_short_term_application.pm_st_congress_code_c LIKE '" + ARole + "%'";
             }
 
             if (ARegisteringOffice.HasValue && (ARegisteringOffice.Value > 0))
@@ -276,6 +286,7 @@ namespace Ict.Petra.Server.MConference.Applications
                 queryGeneralApplication += queryRegistrationOffice;
                 queryShortTermApplication += queryRegistrationOffice;
                 queryPerson += queryRegistrationOffice;
+                queryDataLabel += queryRegistrationOffice;
 
                 parameter = new OdbcParameter("fieldCharged", OdbcType.Decimal, 10);
                 parameter.Value = ARegisteringOffice.Value;
@@ -290,6 +301,7 @@ namespace Ict.Petra.Server.MConference.Applications
                 queryGeneralApplication += "  AND PUB_pm_short_term_application.p_partner_key_n = ?";
                 queryShortTermApplication += "  AND PUB_pm_short_term_application.p_partner_key_n = ?";
                 queryPerson += "  AND PUB_pm_short_term_application.p_partner_key_n = ?";
+                queryDataLabel += "  AND PUB_pm_short_term_application.p_partner_key_n = ?";
 
                 parameter = new OdbcParameter("partnerkey", OdbcType.Decimal, 10);
                 parameter.Value = APartnerKey.Value;
@@ -307,6 +319,14 @@ namespace Ict.Petra.Server.MConference.Applications
             DBAccess.GDBAccessObj.Select(MainDS,
                 queryGeneralApplication,
                 MainDS.PmGeneralApplication.TableName, ATransaction, parameters.ToArray());
+
+            DBAccess.GDBAccessObj.Select(MainDS,
+                queryDataLabel,
+                MainDS.PDataLabelValuePartner.TableName, ATransaction, parameters.ToArray());
+
+            DBAccess.GDBAccessObj.Select(MainDS,
+                "SELECT * FROM PUB_p_data_label WHERE " + DataLabels,
+                MainDS.PDataLabel.TableName, ATransaction);
 
             AMainDS.Merge(MainDS);
 
@@ -337,6 +357,10 @@ namespace Ict.Petra.Server.MConference.Applications
                 AEventCode, ARegisteringOffice,
                 ARole, new Nullable <Int64>(),
                 ATransaction);
+
+            AMainDS.PDataLabelValuePartner.DefaultView.Sort = PDataLabelValuePartnerTable.GetDataLabelKeyDBName() + "," +
+                                                              PDataLabelValuePartnerTable.GetPartnerKeyDBName();
+            AMainDS.PDataLabel.DefaultView.Sort = PDataLabelTable.GetTextDBName();
 
             DataView PersonView = AMainDS.PPerson.DefaultView;
 
@@ -381,6 +405,38 @@ namespace Ict.Petra.Server.MConference.Applications
                 // TODO: display the description of that application status
                 newRow.GenApplicationStatus = GeneralApplication.GenApplicationStatus;
                 newRow.StCongressCode = shortTermRow.StCongressCode;
+
+                // only allow the medical team to read and write
+                if (UserInfo.GUserInfo.IsInModule("MEDICAL"))
+                {
+                    Int32 IndexLabelMedical = AMainDS.PDataLabel.DefaultView.Find("MedicalNotes");
+
+                    if (IndexLabelMedical != -1)
+                    {
+                        Int32 MedicalLabelID = ((PDataLabelRow)AMainDS.PDataLabel.DefaultView[IndexLabelMedical].Row).Key;
+
+                        int IndexLabel = AMainDS.PDataLabelValuePartner.DefaultView.Find(new object[] { MedicalLabelID, newRow.PartnerKey });
+
+                        if (IndexLabel != -1)
+                        {
+                            newRow.MedicalNotes = ((PDataLabelValuePartnerRow)AMainDS.PDataLabelValuePartner.DefaultView[IndexLabel].Row).ValueChar;
+                        }
+                    }
+                }
+
+                Int32 IndexLabelRebuke = AMainDS.PDataLabel.DefaultView.Find("Rebukes");
+
+                if (IndexLabelRebuke != -1)
+                {
+                    Int32 RebukeLabelID = ((PDataLabelRow)AMainDS.PDataLabel.DefaultView[IndexLabelRebuke].Row).Key;
+
+                    int IndexLabel = AMainDS.PDataLabelValuePartner.DefaultView.Find(new object[] { RebukeLabelID, newRow.PartnerKey });
+
+                    if (IndexLabel != -1)
+                    {
+                        newRow.RebukeNotes = ((PDataLabelValuePartnerRow)AMainDS.PDataLabelValuePartner.DefaultView[IndexLabel].Row).ValueChar;
+                    }
+                }
 
                 int indexAttendee = AMainDS.PcAttendee.DefaultView.Find(shortTermRow.PartnerKey);
 
@@ -831,6 +887,60 @@ namespace Ict.Petra.Server.MConference.Applications
 
                 GeneralApplication.GenApplicationStatus = AChangedRow.GenApplicationStatus;
                 ShortTermApplication.StCongressCode = AChangedRow.StCongressCode;
+
+                // only allow the medical team to save
+                if ((AChangedRow.MedicalNotes.Length > 0) && UserInfo.GUserInfo.IsInModule("MEDICAL"))
+                {
+                    Int32 IndexLabelMedical = AMainDS.PDataLabel.DefaultView.Find("MedicalNotes");
+
+                    if (IndexLabelMedical != -1)
+                    {
+                        Int32 MedicalLabelID = ((PDataLabelRow)AMainDS.PDataLabel.DefaultView[IndexLabelMedical].Row).Key;
+
+                        int IndexLabel = AMainDS.PDataLabelValuePartner.DefaultView.Find(new object[] { MedicalLabelID, AChangedRow.PartnerKey });
+
+                        if (IndexLabel != -1)
+                        {
+                            ((PDataLabelValuePartnerRow)AMainDS.PDataLabelValuePartner.DefaultView[IndexLabel].Row).ValueChar =
+                                AChangedRow.MedicalNotes;
+                        }
+                        else
+                        {
+                            PDataLabelValuePartnerRow newLabel = AMainDS.PDataLabelValuePartner.NewRowTyped();
+                            newLabel.DataLabelKey = MedicalLabelID;
+                            newLabel.PartnerKey = AChangedRow.PartnerKey;
+                            newLabel.ValueChar = AChangedRow.MedicalNotes;
+                            AMainDS.PDataLabelValuePartner.Rows.Add(newLabel);
+                        }
+                    }
+                }
+
+                // only allow the boundaries team to modify rebukes
+                if ((AChangedRow.RebukeNotes.Length > 0) && UserInfo.GUserInfo.IsInModule("BOUNDARIES"))
+                {
+                    Int32 IndexLabelRebuke = AMainDS.PDataLabel.DefaultView.Find("Rebukes");
+
+                    if (IndexLabelRebuke != -1)
+                    {
+                        Int32 RebukeLabelID = ((PDataLabelRow)AMainDS.PDataLabel.DefaultView[IndexLabelRebuke].Row).Key;
+
+                        int IndexLabel = AMainDS.PDataLabelValuePartner.DefaultView.Find(new object[] { RebukeLabelID, AChangedRow.PartnerKey });
+
+                        if (IndexLabel != -1)
+                        {
+                            ((PDataLabelValuePartnerRow)AMainDS.PDataLabelValuePartner.DefaultView[IndexLabel].Row).ValueChar =
+                                AChangedRow.RebukeNotes;
+                        }
+                        else
+                        {
+                            PDataLabelValuePartnerRow newLabel = AMainDS.PDataLabelValuePartner.NewRowTyped();
+                            newLabel.DataLabelKey = RebukeLabelID;
+                            newLabel.PartnerKey = AChangedRow.PartnerKey;
+                            newLabel.ValueChar = AChangedRow.RebukeNotes;
+                            AMainDS.PDataLabelValuePartner.Rows.Add(newLabel);
+                        }
+                    }
+                }
             }
         }
 

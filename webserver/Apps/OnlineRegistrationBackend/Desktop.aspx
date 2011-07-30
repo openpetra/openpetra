@@ -186,6 +186,19 @@
             </Reader>
         </ext:Store>
 
+        <ext:Store ID="StoreRebukes" runat="server">
+            <Reader>
+                <ext:JsonReader IDProperty="ID">
+                    <Fields>
+                        <ext:RecordField Name="ID" Type="Int" />
+                        <ext:RecordField Name="When" Type="Date"/>
+                        <ext:RecordField Name="What"/>
+                        <ext:RecordField Name="Consequence"/>
+                    </Fields>
+                </ext:JsonReader>
+            </Reader>
+        </ext:Store>
+
         <ext:DesktopWindow 
             ID="winUploadPhoto" 
             runat="server" 
@@ -876,6 +889,7 @@
                                             <EventMask ShowMask="true" />
                                             <ExtraParams>
                                                 <ext:Parameter Name="Values" Value="FormPanel1.getForm().getValues(false)" Mode="Raw" Encode="true" />
+                                                <ext:Parameter Name="RebukeValues" Value="GridPanelRebukes.getRowsValues()" Mode="Raw" Encode="true" />
                                             </ExtraParams>
                                         </Click>
                                     </DirectEvents>
@@ -1123,9 +1137,51 @@
                                   <Show OnEvent="ShowRawApplicationData"/>
                               </DirectEvents>
                             </ext:Panel>
+                            <ext:Panel ID="TabRebukes" runat="server" Title="Rebukes" AutoScroll="true">
+                                <Items>
+                              <ext:Button runat="server" Text="New Rebuke">
+                                  <DirectEvents>
+                                      <Click OnEvent="AddNewRebuke"/>
+                                  </DirectEvents>
+                              </ext:Button>
+                              <ext:GridPanel 
+                                  ID="GridPanelRebukes"
+                                  runat="server" 
+                                  Title="Rebukes" 
+                                  StripeRows="true"
+                                  TrackMouseOver="true"
+                                  Width="600" 
+                                  Height="350"
+                                  StoreID="StoreRebukes"
+                                  AutoExpandColumn="What">
+                                  <ColumnModel runat="server">
+                                      <Columns>
+                                          <ext:DateColumn Header="When" DataIndex="When" Format="dd-MMM-yyyy">
+                                              <Editor>
+                                                  <ext:DateField runat="server" />
+                                              </Editor>
+                                          </ext:DateColumn>
+                                          <ext:Column ColumnID="What" Header="What" DataIndex="What">
+                                              <Editor>
+                                                  <ext:TextField runat="server" />
+                                              </Editor>
+                                          </ext:Column>
+                                          <ext:Column ColumnID="Consequence" Header="Consequence" DataIndex="Consequence">
+                                              <Editor>
+                                                  <ext:TextField runat="server" />
+                                              </Editor>
+                                          </ext:Column>
+                                      </Columns>
+                                  </ColumnModel>
+                                  <SelectionModel>
+                                      <ext:RowSelectionModel runat="server" SingleSelect="true" />
+                                  </SelectionModel>
+                              </ext:GridPanel>          
+                              </Items>
+                            </ext:Panel>
                           </Items>
                         </ext:TabPanel>
-                              
+
                      </Items>
                 </ext:FormPanel>
             </Items>
