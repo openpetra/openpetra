@@ -256,7 +256,11 @@ namespace Ict.Common.Printing
 
             string unit = "in";
 
-            if (styles["margin-left"].EndsWith("cm"))
+            if (!styles.ContainsKey("margin-left"))
+            {
+                TLogging.Log("missing margin-left for getting the unit. assuming inch for now.");
+            }
+            else if (styles["margin-left"].EndsWith("cm"))
             {
                 unit = "cm";
             }
@@ -341,7 +345,7 @@ namespace Ict.Common.Printing
             }
 
             // add footer
-            if (ResultDocument.Length > 0)
+            if ((ResultDocument.Length > 0) && (footerNode != null))
             {
                 footer = footerNode.OuterXml;
                 footer = footer.Replace("#TITLE", AFooterTitle);
