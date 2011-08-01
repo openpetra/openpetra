@@ -1149,6 +1149,11 @@
                                     SelectOnFocus="true"
                                     SelectedIndex = "0">
                                 </ext:ComboBox>
+                                <ext:CheckBox
+                                    ID="SecondSibling"
+                                    runat="Server"
+                                    FieldLabel="Reduced price because of sibling"
+                                    />
                                 </Items>
                               </ext:Container>
                               </Items>

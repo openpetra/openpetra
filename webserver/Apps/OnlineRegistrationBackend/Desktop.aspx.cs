@@ -78,6 +78,7 @@ namespace Ict.Petra.WebServer.MConference
         protected Ext.Net.ComboBox JobWish2;
         protected Ext.Net.ComboBox JobAssigned;
         protected Ext.Net.ComboBox StFieldCharged;
+        protected Ext.Net.Checkbox SecondSibling;
         protected Ext.Net.TextArea Comment;
         protected Ext.Net.TextArea CommentRegistrationOfficeReadOnly;
         protected Ext.Net.Panel TabServiceTeam;
@@ -482,7 +483,8 @@ namespace Ict.Petra.WebServer.MConference
                 dictionary.Add("MedicalLog", row.MedicalNotes);
 
                 List <string>FieldsOnFirstTab = new List <string>(new string[] {
-                                                                      "TShirtStyle", "TShirtSize", "JobWish1", "JobWish2", "JobAssigned"
+                                                                      "TShirtStyle", "TShirtSize", "JobWish1", "JobWish2", "JobAssigned",
+                                                                      "SecondSibling"
                                                                   });
 
                 foreach (string key in rawDataObject.Names)
@@ -538,6 +540,7 @@ namespace Ict.Petra.WebServer.MConference
                 JobWish1.ClearValue();
                 JobWish2.ClearValue();
                 JobAssigned.ClearValue();
+                SecondSibling.Clear();
 
                 // SetValues: new {}; anonymous type: http://msdn.microsoft.com/en-us/library/bb397696.aspx
                 // instead a Dictionary can be used as well
@@ -600,6 +603,8 @@ namespace Ict.Petra.WebServer.MConference
             // avoid problems with different formatting of dates, could cause parsing errors later, into the typed class
             values["DateOfBirth"] = Convert.ToDateTime(values["DateOfBirth"]).ToShortDateString();
 
+            bool SecondSibling = false;
+
             foreach (string key in values.Keys)
             {
                 // TODO: typecast dates?
@@ -619,9 +624,20 @@ namespace Ict.Petra.WebServer.MConference
                 {
                     rawDataObject.Put(key, value);
                 }
+                else if (key == "SecondSibling")
+                {
+                    SecondSibling = true;
+                    rawDataObject.Put(key, true);
+                }
+            }
+
+            if (!SecondSibling)
+            {
+                rawDataObject.Put("SecondSibling", false);
             }
 
             rawDataObject["Role"] = values["StCongressCode_Value"];
+            rawDataObject["SecondSibling"] = values.ContainsKey("SecondSibling");
 
             row.JSONData = TJsonTools.ToJsonString(rawDataObject);
 
