@@ -582,7 +582,15 @@ namespace Ict.Petra.WebServer.MConference
             //Console.WriteLine(e.ExtraParams["Values"]);
 
             Dictionary <string, string>values = JSON.Deserialize <Dictionary <string, string>>(e.ExtraParams["Values"]);
-            string RebukeValues = e.ExtraParams["RebukeValues"];
+            string RebukeValues = string.Empty;
+
+            try
+            {
+                RebukeValues = e.ExtraParams["RebukeValues"].ToString();
+            }
+            catch (Exception)
+            {
+            }
 
             string RawData = TApplicationManagement.GetRawApplicationData(row.PartnerKey, row.ApplicationKey, row.RegistrationOffice);
             Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(TJsonTools.RemoveContainerControls(RawData));
@@ -662,7 +670,11 @@ namespace Ict.Petra.WebServer.MConference
             row.Comment = values["Comment"];
 
             row.RebukeNotes = RebukeValues;
-            row.MedicalNotes = values["MedicalLog"];
+
+            if (values.ContainsKey("MedicalLog"))
+            {
+                row.MedicalNotes = values["MedicalLog"];
+            }
 
             if (TApplicationManagement.SaveApplication(EventCode, row) != TSubmitChangesResult.scrOK)
             {

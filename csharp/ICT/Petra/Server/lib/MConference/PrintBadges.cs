@@ -460,36 +460,131 @@ namespace Ict.Petra.Server.MConference.Applications
             string ATemplate,
             bool APrintAll)
         {
+            TAttendeeManagement.RefreshAttendees(AEventPartnerKey, AEventCode);
+
+            ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
+            TApplicationManagement.GetApplications(
+                ref MainDS,
+                AEventPartnerKey,
+                AEventCode,
+                "accepted",
+                ASelectedRegistrationOffice,
+                ASelectedRole,
+                false);
+
+            MainDS.ApplicationGrid.DefaultView.Sort =
+                ConferenceApplicationTDSApplicationGridTable.GetRegistrationOfficeDBName() + "," +
+                ConferenceApplicationTDSApplicationGridTable.GetFamilyNameDBName() + "," +
+                ConferenceApplicationTDSApplicationGridTable.GetFirstNameDBName();
+
+            return PrintBadgeLabels(MainDS, ATemplate, APrintAll);
+        }
+
+        /// <summary>
+        /// print the badges, using HTML template files.
+        /// several badges are printed on one page.
+        /// print for specified partner and person keys.
+        /// </summary>
+        /// <param name="AEventPartnerKey"></param>
+        /// <param name="AEventCode"></param>
+        /// <param name="ASelectedPartnerKeys"></param>
+        /// <param name="ATemplate">Template file in the formletters directory. without file extension html</param>
+        public static string PrintBadgeLabels(Int64 AEventPartnerKey,
+            string AEventCode,
+            string ASelectedPartnerKeys,
+            string ATemplate)
+        {
+            ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
+
+            TApplicationManagement.GetApplications(
+                ref MainDS,
+                AEventPartnerKey,
+                AEventCode,
+                "accepted",
+                -1,
+                null,
+                false);
+
+            string[] InputLines = ASelectedPartnerKeys.Replace("\r", "").Split(new char[] { '\n' });
+
+            MainDS.ApplicationGrid.DefaultView.Sort =
+                ConferenceApplicationTDSApplicationGridTable.GetPersonKeyDBName();
+
+            List <Int64>Keys = new List <long>();
+
+            foreach (string PartnerKeyString in InputLines)
+            {
+                Int64 Partnerkey = Convert.ToInt64(PartnerKeyString.Trim());
+
+                int Index = MainDS.ApplicationGrid.DefaultView.Find(Partnerkey);
+
+                if (Index != -1)
+                {
+                    // this is the person key. add the registration key
+                    Keys.Add(((ConferenceApplicationTDSApplicationGridRow)MainDS.ApplicationGrid.DefaultView[Index].Row).PartnerKey);
+                }
+                else
+                {
+                    Keys.Add(Partnerkey);
+                }
+            }
+
+            ConferenceApplicationTDSApplicationGridTable old = (ConferenceApplicationTDSApplicationGridTable)MainDS.ApplicationGrid.Copy();
+            MainDS.ApplicationGrid.Clear();
+
+            old.DefaultView.Sort =
+                ConferenceApplicationTDSApplicationGridTable.GetPartnerKeyDBName();
+
+            foreach (int key in Keys)
+            {
+                int Index = old.DefaultView.Find(key);
+
+                if (Index == -1)
+                {
+                    TLogging.Log("cannot find " + key);
+                    continue;
+                }
+
+                ConferenceApplicationTDSApplicationGridRow row = (ConferenceApplicationTDSApplicationGridRow)old.DefaultView[Index].Row;
+
+                MainDS.ApplicationGrid.ImportRow(row);
+            }
+
+            MainDS.ApplicationGrid.AcceptChanges();
+
+            MainDS.ApplicationGrid.DefaultView.Sort =
+                ConferenceApplicationTDSApplicationGridTable.GetFamilyNameDBName() + "," +
+                ConferenceApplicationTDSApplicationGridTable.GetFirstNameDBName();
+
+            return PrintBadgeLabels(MainDS, ATemplate, true);
+        }
+
+        /// <summary>
+        /// print the badges, using HTML template files.
+        /// several badges are printed on one page.
+        /// print for all applicants in the MainDS.
+        /// </summary>
+        /// <param name="AMainDS"></param>
+        /// <param name="ATemplate">Template file in the formletters directory. without file extension html</param>
+        /// <param name="APrintAll">if true, print badge even if fellowship group or photo is missing</param>
+        private static string PrintBadgeLabels(
+            ConferenceApplicationTDS AMainDS,
+            string ATemplate,
+            bool APrintAll)
+        {
             try
             {
-                TAttendeeManagement.RefreshAttendees(AEventPartnerKey, AEventCode);
-
-                ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
-                TApplicationManagement.GetApplications(
-                    ref MainDS,
-                    AEventPartnerKey,
-                    AEventCode,
-                    "accepted",
-                    ASelectedRegistrationOffice,
-                    ASelectedRole,
-                    false);
-
-                MainDS.ApplicationGrid.DefaultView.Sort =
-                    ConferenceApplicationTDSApplicationGridTable.GetRegistrationOfficeDBName() + "," +
-                    ConferenceApplicationTDSApplicationGridTable.GetFamilyNameDBName() + "," +
-                    ConferenceApplicationTDSApplicationGridTable.GetFirstNameDBName();
-
                 // Load label template. this knows where to print the next label, and when to start a new page
 
                 List <string>Labels = new List <string>();
 
                 // go through all accepted applicants
-                foreach (DataRowView rv in MainDS.ApplicationGrid.DefaultView)
+                foreach (DataRowView rv in AMainDS.ApplicationGrid.DefaultView)
                 {
                     ConferenceApplicationTDSApplicationGridRow applicant = (ConferenceApplicationTDSApplicationGridRow)rv.Row;
 
                     // create an HTML file using the template files
-                    string label = TFormLettersTools.GetContentsOfDiv(FormatBadge(ATemplate, MainDS, applicant, APrintAll), "label");
+                    string label = TFormLettersTools.GetContentsOfDiv(FormatBadge(ATemplate, AMainDS, applicant, APrintAll), "label");
 
                     if (label.Length > 0)
                     {
@@ -500,22 +595,23 @@ namespace Ict.Petra.Server.MConference.Applications
                 // create a title, for the footer
                 string FooterTitle = string.Empty;
 
-                if (MainDS.ApplicationGrid.Count > 1)
+                if (AMainDS.ApplicationGrid.Count > 1)
                 {
                     // if the first and the last applicant have same registration office, add the name to the title
-                    if (MainDS.ApplicationGrid[0].RegistrationOffice == MainDS.ApplicationGrid[MainDS.ApplicationGrid.Count - 1].RegistrationOffice)
+                    if (AMainDS.ApplicationGrid[0].RegistrationOffice ==
+                        AMainDS.ApplicationGrid[AMainDS.ApplicationGrid.Count - 1].RegistrationOffice)
                     {
                         PPartnerTable regOffices = TApplicationManagement.GetRegistrationOffices();
                         FooterTitle += " " +
-                                       ((PPartnerRow)regOffices.DefaultView[regOffices.DefaultView.Find(MainDS.ApplicationGrid[0].RegistrationOffice)
+                                       ((PPartnerRow)regOffices.DefaultView[regOffices.DefaultView.Find(AMainDS.ApplicationGrid[0].RegistrationOffice)
                                         ].Row).
                                        PartnerShortName;
                     }
 
                     // if the first and the last applicant have the same role, add the role to the title
-                    if (MainDS.ApplicationGrid[0].StCongressCode == MainDS.ApplicationGrid[MainDS.ApplicationGrid.Count - 1].StCongressCode)
+                    if (AMainDS.ApplicationGrid[0].StCongressCode == AMainDS.ApplicationGrid[AMainDS.ApplicationGrid.Count - 1].StCongressCode)
                     {
-                        FooterTitle += " " + MainDS.ApplicationGrid[0].StCongressCode;
+                        FooterTitle += " " + AMainDS.ApplicationGrid[0].StCongressCode;
                     }
                 }
 
@@ -531,13 +627,6 @@ namespace Ict.Petra.Server.MConference.Applications
                 {
                     return String.Empty;
                 }
-
-                string pdfTxtFile = TAppSettingsManager.GetValue("Server.PathData") + Path.DirectorySeparatorChar +
-                                    "badges/test.html";
-
-                StreamWriter sw = new StreamWriter(pdfTxtFile);
-                sw.WriteLine(ResultDocument);
-                sw.Close();
 
                 string PDFPath = GeneratePDFFromHTML(ResultDocument);
 

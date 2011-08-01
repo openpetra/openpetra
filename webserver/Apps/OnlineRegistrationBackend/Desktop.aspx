@@ -571,6 +571,18 @@
             Layout="Border">
             <AutoLoad Url="CreateGiftBatch.aspx" Mode="IFrame" ShowMask="true" />
         </ext:DesktopWindow>
+        
+        <ext:DesktopWindow 
+            ID="winPrintBadgeLabelsByKey" 
+            runat="server" 
+            Title="Print Badge Labels By Key" 
+            Width="600"
+            Height="608"
+            PageX="200" 
+            PageY="100"
+            Layout="Border">
+            <AutoLoad Url="PrintBadgeLabelsByKey.aspx" Mode="IFrame" ShowMask="true" />
+        </ext:DesktopWindow>
 
         <ext:DesktopWindow 
             ID="winImportFellowshipGroups" 
@@ -794,6 +806,11 @@
                                 <Click OnEvent="PrintBarcodeLabels"/>
                             </DirectEvents>
                         </ext:Button></td>
+                        <td><ext:Button ID="btnPrintBadgeLabelsByKey" runat="server" Text="Badge Labels By Key">
+                            <Listeners>
+                                <Click Handler="#{winPrintBadgeLabelsByKey}.show();" />
+                            </Listeners>
+                        </ext:Button></td>
                         <td><ext:Button ID="btnExportTShirtNumbers" runat="server" Text="Get T-Shirt Numbers">
                             <DirectEvents>
                                 <Click OnEvent="ExportTShirtNumbers" IsUpload="true"/>
@@ -889,7 +906,6 @@
                                             <EventMask ShowMask="true" />
                                             <ExtraParams>
                                                 <ext:Parameter Name="Values" Value="FormPanel1.getForm().getValues(false)" Mode="Raw" Encode="true" />
-                                                <ext:Parameter Name="RebukeValues" Value="GridPanelRebukes.getRowsValues()" Mode="Raw" Encode="true" />
                                             </ExtraParams>
                                         </Click>
                                     </DirectEvents>
@@ -1150,7 +1166,7 @@
                                   Title="Rebukes" 
                                   StripeRows="true"
                                   TrackMouseOver="true"
-                                  Width="600" 
+                                  Width="800" 
                                   Height="350"
                                   StoreID="StoreRebukes"
                                   AutoExpandColumn="What">
@@ -1161,12 +1177,12 @@
                                                   <ext:DateField runat="server" />
                                               </Editor>
                                           </ext:DateColumn>
-                                          <ext:Column ColumnID="What" Header="What" DataIndex="What">
+                                          <ext:Column ColumnID="What" Header="What" DataIndex="What" Width="300">
                                               <Editor>
                                                   <ext:TextField runat="server" />
                                               </Editor>
                                           </ext:Column>
-                                          <ext:Column ColumnID="Consequence" Header="Consequence" DataIndex="Consequence">
+                                          <ext:Column ColumnID="Consequence" Header="Consequence" DataIndex="Consequence" Width="300">
                                               <Editor>
                                                   <ext:TextField runat="server" />
                                               </Editor>
