@@ -796,6 +796,11 @@
                                 <Click OnEvent="TestPrintBadges"/>
                             </DirectEvents>
                         </ext:Button></td>
+                        <td><ext:Button ID="btnReprintBadges" runat="server" Text="Reprint Badges">
+                            <DirectEvents>
+                                <Click OnEvent="ReprintBadges"/>
+                            </DirectEvents>
+                        </ext:Button></td>
                         <td><ext:Button ID="btnPrintBadges" runat="server" Text="Print Badges">
                             <DirectEvents>
                                 <Click OnEvent="PrintBadges"/>

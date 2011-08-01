@@ -87,6 +87,7 @@ namespace Ict.Petra.WebServer.MConference
         protected Ext.Net.Button btnLoadRefreshApplicants;
         protected Ext.Net.Button btnTestPrintBadges;
         protected Ext.Net.Button btnPrintBadges;
+        protected Ext.Net.Button btnReprintBadges;
         protected Ext.Net.Button btnExportTShirtNumbers;
         protected Ext.Net.Button btnImportPrintedBadges;
         protected Ext.Net.Button btnExcelArrivalRegistration;
@@ -131,6 +132,7 @@ namespace Ict.Petra.WebServer.MConference
                 btnJSONApplication.Visible = ConferenceOrganisingOffice;
                 btnLoadRefreshApplicants.Visible = false;
                 btnPrintBadges.Visible = ConferenceOrganisingOffice;
+                btnReprintBadges.Visible = ConferenceOrganisingOffice;
                 btnExportTShirtNumbers.Visible = ConferenceOrganisingOffice;
                 btnImportPrintedBadges.Visible = ConferenceOrganisingOffice;
                 btnExcelArrivalRegistration.Visible = ConferenceOrganisingOffice;
@@ -875,7 +877,7 @@ namespace Ict.Petra.WebServer.MConference
             TAttendeeManagement.RefreshAttendees(EventPartnerKey, EventCode);
         }
 
-        protected void PrintBadges(bool ADoNotReprint)
+        protected void PrintBadges(bool AReprintPrinted, bool ADoNotReprint)
         {
             string OutputName = "badges.pdf";
 
@@ -893,6 +895,7 @@ namespace Ict.Petra.WebServer.MConference
                     EventCode,
                     GetSelectedRegistrationOffice(),
                     GetSelectedRole(),
+                    AReprintPrinted,
                     ADoNotReprint);
 
                 if (File.Exists(PDFPath))
@@ -920,12 +923,17 @@ namespace Ict.Petra.WebServer.MConference
 
         protected void PrintBadges(object sender, DirectEventArgs e)
         {
-            PrintBadges(true);
+            PrintBadges(false, true);
         }
 
         protected void TestPrintBadges(object sender, DirectEventArgs e)
         {
-            PrintBadges(false);
+            PrintBadges(false, false);
+        }
+
+        protected void ReprintBadges(object sender, DirectEventArgs e)
+        {
+            PrintBadges(true, false);
         }
 
         protected void PrintBarcodeLabels(object sender, DirectEventArgs e)

@@ -282,11 +282,13 @@ namespace Ict.Petra.Server.MConference.Applications
         /// <param name="AEventCode"></param>
         /// <param name="ASelectedRegistrationOffice"></param>
         /// <param name="ASelectedRole"></param>
-        /// <param name="ADoNotReprint"></param>
+        /// <param name="AReprintPrinted">Reprint badges that have already been printed</param>
+        /// <param name="ADoNotReprint">Store the current date so that badges will not be printed again</param>
         public static string PrintBadges(Int64 AEventPartnerKey,
             string AEventCode,
             Int64 ASelectedRegistrationOffice,
             string ASelectedRole,
+            bool AReprintPrinted,
             bool ADoNotReprint)
         {
             // we want to avoid that all badges get printed by accident
@@ -334,7 +336,7 @@ namespace Ict.Petra.Server.MConference.Applications
 
                     PcAttendeeRow AttendeeRow = (PcAttendeeRow)MainDS.PcAttendee.DefaultView[AttendeeIndex].Row;
 
-                    if (AttendeeRow.BadgePrint.HasValue)
+                    if (AttendeeRow.BadgePrint.HasValue && !AReprintPrinted)
                     {
                         // check if this badge has been printed already
                         // skip the current badge
