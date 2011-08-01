@@ -218,64 +218,6 @@ namespace Ict.Petra.Server.MConference.Applications
         }
 
         /// <summary>
-        /// generate a PDF from an HTML Document, can contain several pages
-        /// </summary>
-        /// <param name="AHTMLDoc"></param>
-        /// <returns>path of the temporary PDF file</returns>
-        private static string GeneratePDFFromHTML(string AHTMLDoc)
-        {
-            if (AHTMLDoc.Length == 0)
-            {
-                return string.Empty;
-            }
-
-            string pdfPath = TAppSettingsManager.GetValue("Server.PathData") + Path.DirectorySeparatorChar +
-                             "badges";
-
-            if (!Directory.Exists(pdfPath))
-            {
-                Directory.CreateDirectory(pdfPath);
-            }
-
-            Random rand = new Random();
-            string filename = string.Empty;
-
-            do
-            {
-                filename = pdfPath + Path.DirectorySeparatorChar +
-                           rand.Next(1, 1000000).ToString() + ".txt";
-            } while (File.Exists(filename));
-
-            TLogging.Log(filename);
-
-            StreamWriter sw = new StreamWriter(filename);
-            sw.WriteLine(AHTMLDoc);
-            sw.Close();
-
-            try
-            {
-                PrintDocument doc = new PrintDocument();
-
-                TPdfPrinter pdfPrinter = new TPdfPrinter(doc, TGfxPrinter.ePrinterBehaviour.eFormLetter);
-                TPrinterHtml htmlPrinter = new TPrinterHtml(AHTMLDoc,
-                    String.Empty,
-                    pdfPrinter);
-
-                pdfPrinter.Init(eOrientation.ePortrait, htmlPrinter, eMarginType.ePrintableArea);
-
-                pdfPrinter.SavePDF(filename.Replace(".txt", ".pdf"));
-            }
-            catch (Exception e)
-            {
-                TLogging.Log("Exception while printing badge: " + e.Message);
-                TLogging.Log(e.StackTrace);
-                throw e;
-            }
-
-            return filename.Replace(".txt", ".pdf");
-        }
-
-        /// <summary>
         /// print the badges, using HTML template files
         /// </summary>
         /// <param name="AEventPartnerKey"></param>
@@ -370,7 +312,9 @@ namespace Ict.Petra.Server.MConference.Applications
                     return String.Empty;
                 }
 
-                string PDFPath = GeneratePDFFromHTML(ResultDocument);
+                string PDFPath = TFormLettersTools.GeneratePDFFromHTML(ResultDocument,
+                    TAppSettingsManager.GetValue("Server.PathData") + Path.DirectorySeparatorChar +
+                    "badges");
 
                 if (ADoNotReprint)
                 {
@@ -433,7 +377,9 @@ namespace Ict.Petra.Server.MConference.Applications
                     return String.Empty;
                 }
 
-                string PDFPath = GeneratePDFFromHTML(ResultDocument);
+                string PDFPath = TFormLettersTools.GeneratePDFFromHTML(ResultDocument,
+                    TAppSettingsManager.GetValue("Server.PathData") + Path.DirectorySeparatorChar +
+                    "badges");
 
                 return PDFPath;
             }
@@ -630,7 +576,10 @@ namespace Ict.Petra.Server.MConference.Applications
                     return String.Empty;
                 }
 
-                string PDFPath = GeneratePDFFromHTML(ResultDocument);
+                string PDFPath = TFormLettersTools.GeneratePDFFromHTML(ResultDocument,
+                    TAppSettingsManager.GetValue("Server.PathData") + Path.DirectorySeparatorChar +
+                    "badges");
+
 
                 return PDFPath;
             }

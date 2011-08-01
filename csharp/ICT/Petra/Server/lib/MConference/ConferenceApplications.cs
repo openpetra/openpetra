@@ -1136,6 +1136,31 @@ namespace Ict.Petra.Server.MConference.Applications
         }
 
         /// <summary>
+        /// Calculate the age in years at a reference date
+        /// </summary>
+        /// <param name="ADateOfBirth"></param>
+        /// <param name="AReferenceDate"></param>
+        /// <returns></returns>
+        public static Int32 CalculateAge(DateTime? ADateOfBirth, DateTime AReferenceDate)
+        {
+            if (!ADateOfBirth.HasValue)
+            {
+                return -1;
+            }
+
+            Int32 AgeInYears =
+                AReferenceDate.Year - ADateOfBirth.Value.Year;
+
+            if (ADateOfBirth.Value.DayOfYear > AReferenceDate.DayOfYear)
+            {
+                // BirthdayDuringOrAfter Reference Date
+                AgeInYears--;
+            }
+
+            return AgeInYears;
+        }
+
+        /// <summary>
         /// export accepted applications to an Excel file
         /// </summary>
         /// <returns></returns>
@@ -1208,22 +1233,8 @@ namespace Ict.Petra.Server.MConference.Applications
 
                     if (PersonRow.DateOfBirth.HasValue)
                     {
-                        Int32 AgeAtStartOfConference = ConferenceStartDate.Year - PersonRow.DateOfBirth.Value.Year;
-
-                        if (PersonRow.DateOfBirth.Value.DayOfYear > ConferenceStartDate.DayOfYear)
-                        {
-                            // BirthdayDuringOrAfterConference
-                            AgeAtStartOfConference--;
-                        }
-
-                        Int32 AgeAtEndOfConference = AgeAtStartOfConference;
-
-                        if ((PersonRow.DateOfBirth.Value.DayOfYear > ConferenceStartDate.DayOfYear)
-                            && (PersonRow.DateOfBirth.Value.DayOfYear <= ConferenceEndDate.DayOfYear))
-                        {
-                            // BirthdayDuringConference
-                            AgeAtEndOfConference++;
-                        }
+                        Int32 AgeAtStartOfConference = CalculateAge(PersonRow.DateOfBirth.Value, ConferenceStartDate);
+                        Int32 AgeAtEndOfConference = CalculateAge(PersonRow.DateOfBirth.Value, ConferenceEndDate);
 
                         attr = myDoc.CreateAttribute("AgeAtStartOfConference");
                         attr.Value = new TVariant(AgeAtStartOfConference).EncodeToString();

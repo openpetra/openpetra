@@ -585,24 +585,24 @@ namespace Ict.Common.Printing
         /// </summary>
         /// <param name="AStyleValue"></param>
         /// <returns></returns>
-        private float ToPixel(string AStyleValue)
+        private Int32 ToPixel(string AStyleValue)
         {
             float FloatValue = GetFloat(AStyleValue);
 
             if (AStyleValue.EndsWith("px"))
             {
-                return FloatValue;
+                return (Int32)Math.Round(FloatValue);
             }
             else if (AStyleValue.EndsWith("cm"))
             {
-                throw new Exception("TPrinterHtml.ToPixel: TODO cm");
+                return (Int32)Math.Round(((float)TGfxPrinter.DEFAULTPRINTERRESOLUTION * 2.54f) / FloatValue);
             }
             else if (AStyleValue.EndsWith("in"))
             {
-                throw new Exception("TPrinterHtml.ToPixel: TODO inch");
+                return (Int32)Math.Round(TGfxPrinter.DEFAULTPRINTERRESOLUTION / FloatValue);
             }
 
-            return FloatValue;
+            return (Int32)Math.Round(FloatValue);
         }
 
         /// <summary>
@@ -1094,7 +1094,7 @@ namespace Ict.Common.Printing
                     {
                         if (TXMLParser.HasAttribute(colNode, "width"))
                         {
-                            Int32 width = Convert.ToInt32(TXMLParser.GetAttribute(colNode, "width"));
+                            Int32 width = ToPixel(TXMLParser.GetAttribute(colNode, "width"));
                             colWidth.Add(width);
                             TableWidth += width;
                         }

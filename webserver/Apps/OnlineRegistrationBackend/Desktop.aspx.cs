@@ -952,6 +952,47 @@ namespace Ict.Petra.WebServer.MConference
             PrintBadges(true, false);
         }
 
+        protected void PrintFinanceReport(object sender, DirectEventArgs e)
+        {
+            string OutputName = "FinanceReport.pdf";
+
+            try
+            {
+                OutputName = "FinanceReport_" + this.FilterRegistrationOffice.SelectedItem.Text + ".pdf";
+            }
+            catch (Exception)
+            {
+            }
+
+            try
+            {
+                string PDFPath = TConferenceFinanceReports.PrintFinanceReport(EventPartnerKey,
+                    EventCode,
+                    GetSelectedRegistrationOffice());
+
+                if (File.Exists(PDFPath))
+                {
+                    this.Response.Clear();
+                    this.Response.ContentType = "application/pdf";
+                    this.Response.AddHeader("Content-Type", "application/pdf");
+                    this.Response.AddHeader("Content-Disposition", "attachment; filename=" + OutputName);
+                    this.Response.TransmitFile(PDFPath);
+                    File.Delete(PDFPath);
+                    // this.Response.End(); avoid System.Threading.ThreadAbortException
+                }
+            }
+            catch (Exception ex)
+            {
+                X.Msg.Show(new MessageBoxConfig
+                    {
+                        Buttons = MessageBox.Button.OK,
+                        Icon = MessageBox.Icon.ERROR,
+                        Title = "Fail",
+                        Message = ex.Message
+                    });
+            }
+        }
+
         protected void PrintBarcodeLabels(object sender, DirectEventArgs e)
         {
             string OutputName = "badgeLabels.pdf";

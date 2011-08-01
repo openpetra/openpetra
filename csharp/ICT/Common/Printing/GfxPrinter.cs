@@ -491,9 +491,13 @@ namespace Ict.Common.Printing
         /// <returns>true if any text was printed</returns>
         public override bool PrintStringWrap(String ATxt, eFont AFont, float AXPos, float AWidth, eAlignment AAlign)
         {
+            int PreviousLength = -1;
+
             while (ATxt.Length > 0)
             {
                 Int32 length = -1;
+
+                PreviousLength = ATxt.Length;
 
                 if (FPrinterBehaviour == ePrinterBehaviour.eFormLetter)
                 {
@@ -539,6 +543,12 @@ namespace Ict.Common.Printing
                     // the first word did not fit the space; needs a new line
                     CurrentXPos = AXPos;
                     LineFeed();
+                }
+
+                if (ATxt.Length == PreviousLength)
+                {
+                    TLogging.Log("No space for " + ATxt);
+                    return false;
                 }
             }
 

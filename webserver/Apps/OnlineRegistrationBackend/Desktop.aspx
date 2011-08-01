@@ -836,6 +836,11 @@
                                 <Click OnEvent="ExportRolesPerCountry" IsUpload="true"/>
                             </DirectEvents>
                         </ext:Button></td>
+                        <td><ext:Button ID="btnFinanceReport" runat="server" Text="Print Finance Report">
+                            <DirectEvents>
+                                <Click OnEvent="PrintFinanceReport"/>
+                            </DirectEvents>
+                        </ext:Button></td>
                         </tr></table>
                     </Content>
                 </ext:Panel>
