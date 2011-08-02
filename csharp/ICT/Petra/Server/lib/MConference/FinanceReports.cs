@@ -96,6 +96,12 @@ namespace Ict.Petra.Server.MConference.Applications
 
                     DateTime? DateCancelled = new Nullable <DateTime>();
 
+                    if (shorttermRow.StFieldCharged != ASelectedRegistrationOffice)
+                    {
+                        // only consider applications that are charged to this office
+                        continue;
+                    }
+
                     if (applicant.GenApplicationStatus.StartsWith("C") || applicant.GenApplicationStatus.StartsWith("R"))
                     {
                         DateTime LatestFreeCancelledDate = DateTime.ParseExact(TAppSettingsManager.GetValue(
