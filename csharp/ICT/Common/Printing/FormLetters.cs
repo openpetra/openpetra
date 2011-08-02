@@ -358,15 +358,15 @@ namespace Ict.Common.Printing
                 }
             }
 
-            public void AddPageBreak()
+            public virtual void AddPageBreak()
             {
                 AddFooter();
 
                 ResultDocument += "</body><body>" + Environment.NewLine;
 
-                AddHeader();
-
                 currentPage++;
+
+                AddHeader();
             }
 
             public void FinishDocument()
@@ -464,12 +464,19 @@ namespace Ict.Common.Printing
 
             public void ConditionalPageBreak(float AHeightToAdd)
             {
-                if (currentY + AHeightToAdd >= pageHeight - footerHeight)
+                if (currentY + AHeightToAdd >= pageHeight - footerHeight - headerHeight)
                 {
                     currentY = 0;
 
                     AddPageBreak();
                 }
+            }
+
+            public override void AddPageBreak()
+            {
+                base.AddPageBreak();
+
+                currentY = marginTop + headerHeight;
             }
 
             public void PrintDocument(SortedList <string, List <string>>AData)
