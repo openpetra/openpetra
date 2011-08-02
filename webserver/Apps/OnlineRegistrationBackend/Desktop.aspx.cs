@@ -79,6 +79,7 @@ namespace Ict.Petra.WebServer.MConference
         protected Ext.Net.ComboBox JobAssigned;
         protected Ext.Net.ComboBox StFieldCharged;
         protected Ext.Net.Checkbox SecondSibling;
+        protected Ext.Net.Checkbox CancelledByFinanceOffice;
         protected Ext.Net.TextArea Comment;
         protected Ext.Net.TextArea CommentRegistrationOfficeReadOnly;
         protected Ext.Net.Panel TabServiceTeam;
@@ -484,7 +485,7 @@ namespace Ict.Petra.WebServer.MConference
 
                 List <string>FieldsOnFirstTab = new List <string>(new string[] {
                                                                       "TShirtStyle", "TShirtSize", "JobWish1", "JobWish2", "JobAssigned",
-                                                                      "SecondSibling"
+                                                                      "SecondSibling", "CancelledByFinanceOffice"
                                                                   });
 
                 foreach (string key in rawDataObject.Names)
@@ -541,6 +542,7 @@ namespace Ict.Petra.WebServer.MConference
                 JobWish2.ClearValue();
                 JobAssigned.ClearValue();
                 SecondSibling.Clear();
+                CancelledByFinanceOffice.Clear();
 
                 // SetValues: new {}; anonymous type: http://msdn.microsoft.com/en-us/library/bb397696.aspx
                 // instead a Dictionary can be used as well
@@ -552,6 +554,9 @@ namespace Ict.Petra.WebServer.MConference
                 // only allow the logistics office to assign jobs
                 JobAssigned.ReadOnly = !ConferenceOrganisingOffice;
                 StFieldCharged.ReadOnly = !ConferenceOrganisingOffice;
+
+                // ReadOnly does not seem to work to make the checkbox readonly. use disabled instead.
+                CancelledByFinanceOffice.Disabled = !UserInfo.GUserInfo.IsInModule("FINANCE-3");
 
                 // only show service team panel for TS-STAFF and TS-SERVE
                 if ((row.StCongressCode == "TS-STAFF") || (row.StCongressCode == "TS-SERVE"))
@@ -604,6 +609,7 @@ namespace Ict.Petra.WebServer.MConference
             values["DateOfBirth"] = Convert.ToDateTime(values["DateOfBirth"]).ToShortDateString();
 
             bool SecondSibling = false;
+            bool CancelledByFinanceOffice = false;
 
             foreach (string key in values.Keys)
             {
@@ -629,6 +635,11 @@ namespace Ict.Petra.WebServer.MConference
                     SecondSibling = true;
                     rawDataObject.Put(key, true);
                 }
+                else if (key == "CancelledByFinanceOffice")
+                {
+                    CancelledByFinanceOffice = true;
+                    rawDataObject.Put(key, true);
+                }
             }
 
             if (!SecondSibling)
@@ -636,8 +647,14 @@ namespace Ict.Petra.WebServer.MConference
                 rawDataObject.Put("SecondSibling", false);
             }
 
+            if (!CancelledByFinanceOffice)
+            {
+                rawDataObject.Put("CancelledByFinanceOffice", false);
+            }
+
             rawDataObject["Role"] = values["StCongressCode_Value"];
             rawDataObject["SecondSibling"] = values.ContainsKey("SecondSibling");
+            rawDataObject["CancelledByFinanceOffice"] = values.ContainsKey("CancelledByFinanceOffice");
 
             row.JSONData = TJsonTools.ToJsonString(rawDataObject);
 

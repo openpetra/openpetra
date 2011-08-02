@@ -139,10 +139,12 @@ namespace Ict.Petra.Server.MConference.Applications
                         (TApplicationManagement.CalculateAge(applicant.DateOfBirth, shorttermRow.Arrival.Value) >=
                          TAppSettingsManager.GetInt32("ConferenceTool.OldieIncreasedTaxes")) ? "X" : string.Empty);
                     participantValues = StringHelper.AddCSV(participantValues,
-                        (rawDataObject.Contains("SecondSibling") && (bool)rawDataObject["SecondSibling"] == true) ? "X" : string.Empty);
+                        (rawDataObject.Contains(
+                             "SecondSibling") && rawDataObject["SecondSibling"].ToString().ToLower() == "true") ? "X" : string.Empty);
                     participantValues = StringHelper.AddCSV(participantValues,
                         (rawDataObject.Contains(
-                             "CancelledFinanceOffice") && (bool)rawDataObject["CancelledFinanceOffice"] == true) ? "X" : string.Empty);
+                             "CancelledByFinanceOffice") && rawDataObject["CancelledByFinanceOffice"].ToString().ToLower() ==
+                         "true") ? "X" : string.Empty);
 
                     roles[applicant.StCongressCode].Add(participantValues);
                 }

@@ -1159,6 +1159,11 @@
                                     runat="Server"
                                     FieldLabel="Reduced price because of sibling"
                                     />
+                                <ext:CheckBox
+                                    ID="CancelledByFinanceOffice"
+                                    runat="Server"
+                                    FieldLabel="Cancelled by Finance Office, no payment required"
+                                    />
                                 </Items>
                               </ext:Container>
                               </Items>
