@@ -4,7 +4,7 @@
   <Parameter id="xmlfiles" value="Partner\\validbankaccountreport.xml" />
   <Parameter id="currentReport" value="Valid Bank Account Report" />
   <Parameter id="MaxDisplayColumns" value="5" />
-  <Parameter id="param_selection" value="one partner" />
+  <Parameter id="param_selection" value="an extract" />
   <Parameter id="param_extract" value="" />
   <Parameter id="param_partnerkey" value="0" />
   <Parameter id="orderby0" value="Partner Class" />

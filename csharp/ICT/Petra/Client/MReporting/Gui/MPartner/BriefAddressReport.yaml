@@ -40,7 +40,7 @@ RootNode:
         rbtBestAddress:
             Label: Get best address for partner
         rbtAllAddresses: 
-            Label: Get all addresses for partner
+            Label: Get all addresses for partner (including expired addresses)
     ReportParameters:{ColumnFunction=TPartnerColumnFunction}
         Para1:
             Name: Address Type

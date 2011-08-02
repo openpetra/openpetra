@@ -29,9 +29,6 @@
 				<value text = "All current Staff at date "/>
 					<value variable = "param_currentstaffdate" format="formatteddate"/>
 			</fielddetail>
-			<fielddetail condition="eq({param_selection},all staff)">
-				<value text = "All Staff"/>
-			</fielddetail>
 		</field>
 		<field whichfield="descr2">
 			<fielddetail condition="ne({param_selection}, one partner)">

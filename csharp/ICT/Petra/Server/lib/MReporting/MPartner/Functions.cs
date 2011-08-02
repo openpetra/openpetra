@@ -1162,7 +1162,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
                         if (LocationRow.County.Length > 0)
                         {
                             // County
-                            RowName = LocationRow.County.ToLower();
+                            RowName = LocationRow.County.ToLower().Trim();
                         }
                         else
                         {
@@ -1179,19 +1179,18 @@ namespace Ict.Petra.Server.MReporting.MPartner
                     {
                         PSubscriptionRow SubscriptionRow = (PSubscriptionRow)Row;
 
-                        if (!SubscriptionRow.IsDateCancelledNull())
-                        {
-                            // if there is a cancelled date, then don't use this subscription in the report
-                            continue;
-                        }
-
-                        // Add Value to Table
-                        AddToStatisticalReportTable(CountyRowList[RowName], SubscriptionRow.PublicationCode, 1);
-
-                        if (SubscriptionRow.PublicationCopies > 1)
-                        {
-                            AddToStatisticalReportTable(CountyRowList[ROW_COUNT], SubscriptionRow.PublicationCode, SubscriptionRow.PublicationCopies);
-                        }
+						// if there is a cancelled date set, then don't use this subscription in the report
+						if (   SubscriptionRow.IsDateCancelledNull()
+						    && (   SubscriptionRow.SubscriptionStatus == "PROVISIONAL"
+						        || SubscriptionRow.SubscriptionStatus == "PERMANENT"
+						        || SubscriptionRow.SubscriptionStatus == "GIFT"))
+						{
+			        		// Add Value to Table
+			        		AddToStatisticalReportTable(CountyRowList[RowName], SubscriptionRow.PublicationCode, 1);
+			        		
+			        		// Add number of copies to overall "Count:" column
+		        			AddToStatisticalReportTable(CountyRowList[ROW_COUNT], SubscriptionRow.PublicationCode, SubscriptionRow.PublicationCopies);
+						}
                     }
 
                     if (CheckPartnerGift(PartnerRow.PartnerKey))
@@ -1416,7 +1415,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
         }
 
         /// <summary>
-        /// Calculates the Row "Percent", "Totals" and "Counts" for the publication statistical report
+		/// Calculates the Row "Percent" and "Totals" for the publication statistical report
         /// </summary>
         private void CalculateTotals()
         {
@@ -1443,10 +1442,6 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 FStatisticalReportPercentage.Add(FStatisticalReportDataTable.Columns[ColumnIndex].ColumnName,
                     CalcPercent.ToString("F"));
 
-                // Counts:
-                FStatisticalReportDataTable.Rows[RowIndex + 2][ColumnIndex] = (int)
-                                                                              ((int)FStatisticalReportDataTable.Rows[RowIndex +
-                                                                                                                     2][ColumnIndex] + Totals);
             }
         }
 
