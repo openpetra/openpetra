@@ -257,8 +257,8 @@ namespace Ict.Petra.Client.MFinance.Logic
             AControl.Filter = PrepareCostCentreFilter(APostingOnly, AExcludePosting, AActiveOnly, ALocalOnly);
         }
 
-        // Adapter for the modules which have been developed before multy currency support
-        // was required
+        /// Adapter for the modules which have been developed before multi-currency support
+        /// was required
         public static void InitialiseAccountList(ref TCmbAutoPopulated AControl,
             Int32 ALedgerNumber,
             bool APostingOnly,
@@ -518,12 +518,15 @@ namespace Ict.Petra.Client.MFinance.Logic
         }
 
         static PUnitTable FKeyMinTable = null;
-        static Int64 fieldNumber = -1;
+        static Int64 FFieldNumber = -1;
 
+        /// <summary>
+        /// Field number of key ministry gift
+        /// </summary>
         public static long FieldNumber {
             get
             {
-                return fieldNumber;
+                return FFieldNumber;
             }
         }
 
@@ -531,8 +534,9 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <summary>
         /// This function fills the combobox for the key ministry depending on the partnerkey
         /// </summary>
-        /// <param name="AControl"></param>
-        /// <param name="ALedgerNr"></param>
+        /// <param name="cmbMinistry"></param>
+        /// <param name="txtField"></param>
+        /// <param name="APartnerKey"></param>
         public static void GetRecipientData(ref TCmbAutoPopulated cmbMinistry, ref TtxtAutoPopulatedButtonLabel txtField, System.Int64 APartnerKey)
         {
             if (FKeyMinTable != null)
@@ -545,8 +549,8 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             string DisplayMember = PUnitTable.GetUnitNameDBName();
             string ValueMember = PUnitTable.GetPartnerKeyDBName();
-            FKeyMinTable = TRemote.MFinance.Gift.WebConnectors.LoadKeyMinistry(APartnerKey, out fieldNumber);
-            txtField.Text = fieldNumber.ToString();
+            FKeyMinTable = TRemote.MFinance.Gift.WebConnectors.LoadKeyMinistry(APartnerKey, out FFieldNumber);
+            txtField.Text = FFieldNumber.ToString();
             FKeyMinTable.DefaultView.Sort = DisplayMember + " Desc";
 
             cmbMinistry.InitialiseUserControl(FKeyMinTable,

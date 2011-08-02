@@ -31,11 +31,11 @@ RootNode:
             Action: actSearch
         grdConferences:
             Dock: Fill
-            Columns: [PPartner.PartnerShortName, PcConference.ConferenceKey, PcConference.XyzTbdPrefix, PcConference.Start, PcConference.End]
+            Columns: [PPartner.PartnerShortName, PcConference.ConferenceKey, PcConference.OutreachPrefix, PcConference.Start, PcConference.End]
             CustomColumns:
                 PartnerShortName: {Label=Conference Name}
                 ConferenceKey: {Label=Conference Key}
-                XyzTbdPrefix: {Label=Campaign Code Prefix}
+                OutreachPrefix: {Label=Outreach Code Prefix}
             ActionDoubleClick: actAccept
             Width: 500
             Height: 200

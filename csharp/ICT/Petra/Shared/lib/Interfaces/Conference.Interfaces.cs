@@ -77,7 +77,7 @@ namespace Ict.Petra.Shared.Interfaces.MConference.WebConnectors
     public interface IWebConnectorsNamespace : IInterface
     {
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions)</summary>
-        PUnitTable GetCampaignOptions(Int64 AUnitKey);
+        PUnitTable GetOutreachOptions(Int64 AUnitKey);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions)</summary>
         SelectConferenceTDS GetConferences(String AConferenceName,
                                            String APrefix);
@@ -88,7 +88,7 @@ namespace Ict.Petra.Shared.Interfaces.MConference.WebConnectors
                                       out DateTime AStartDate,
                                       out DateTime AEndDate);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions)</summary>
-        System.Boolean GetCampaignOptions(long AUnitKey,
+        System.Boolean GetOutreachOptions(long AUnitKey,
                                           out System.Data.DataTable AConferenceTable);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions)</summary>
         bool GetFieldUnits(Int64 AConferenceKey,

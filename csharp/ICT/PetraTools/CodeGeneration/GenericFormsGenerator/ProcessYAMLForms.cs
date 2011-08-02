@@ -96,7 +96,7 @@ namespace Ict.Tools.CodeGeneration
             }
             else
             {
-                TAppSettingsManager opts = new TAppSettingsManager(false);
+                new TAppSettingsManager(false);
 
                 //******************
                 //* parsing *******
@@ -105,7 +105,7 @@ namespace Ict.Tools.CodeGeneration
                 TCodeStorage codeStorage = new TCodeStorage(myDoc, FXmlNodes);
                 TParseYAMLFormsDefinition yamlParser = new TParseYAMLFormsDefinition(ref codeStorage);
 
-                codeStorage.FTargetWinforms = opts.GetValue("TargetPlatform", "net-2.0");
+                codeStorage.FTargetWinforms = TAppSettingsManager.GetValue("TargetPlatform", "net-2.0");
 
                 // should not need to be specific to special forms
                 yamlParser.LoadRecursively(FYamlFilename, FSelectedLocalisation);
@@ -138,7 +138,7 @@ namespace Ict.Tools.CodeGeneration
                     return false;
                 }
 
-                string templateDir = opts.GetValue("TemplateDir", true);
+                string templateDir = TAppSettingsManager.GetValue("TemplateDir", true);
                 string template = TYml2Xml.GetAttribute(rootNode, "Template");
 
                 if (template.Length > 0)

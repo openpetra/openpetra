@@ -1,2 +1,14 @@
 <PetraDataSets>
+ <ImportUnit name="Ict.Petra.Shared.MPartner.Partner.Data"/>
+  <ImportUnit name="Ict.Petra.Shared.MPartner.Mailroom.Data"/>
+  <ImportUnit name="Ict.Petra.Shared.MPersonnel.Personnel.Data"/>
+  <ImportUnit name="Ict.Petra.Shared.MPersonnel.Units.Data"/>
+  <ImportUnit name="Ict.Petra.Shared.MFinance.Account.Data"/>
+  <ImportUnit name="Ict.Petra.Shared.MHospitality.Data"/>
+  <ImportUnit name="Ict.Petra.Shared.MCommon.Data"/>
+   <DataSet name="PersonnelTDS">
+          <Table sqltable="p_partner"/>
+          <Table sqltable="pm_staff_data"/> 
+          <Table sqltable="pm_commitment_status"/>
+   </DataSet>    
 </PetraDataSets>

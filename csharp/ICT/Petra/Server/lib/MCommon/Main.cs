@@ -95,7 +95,7 @@ namespace Ict.Petra.Server.MCommon
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 7)
+                        if (TLogging.DL >= 7)
                         {
                             Console.WriteLine("RetrievePartnerShortName: committed own transaction.");
                         }
@@ -113,7 +113,7 @@ namespace Ict.Petra.Server.MCommon
                     APartnerShortName = PartnerTable[0].PartnerShortName;
                     APartnerClass = SharedTypes.PartnerClassStringToEnum(PartnerTable[0].PartnerClass);
 
-                    // $IFDEF DEBUGMODE if TSrvSetting.DL >= 7 then Console.WriteLine('RetrievePartnerShortName: PartnerClass: ' + PartnerTable.Row[0].PartnerClass + '; APartnerClass: ' + PartnerClassEnumToString(APartnerClass)); $ENDIF
+                    // $IFDEF DEBUGMODE if TLogging.DL >= 7 then Console.WriteLine('RetrievePartnerShortName: PartnerClass: ' + PartnerTable.Row[0].PartnerClass + '; APartnerClass: ' + PartnerClassEnumToString(APartnerClass)); $ENDIF
                     APartnerStatus = SharedTypes.StdPartnerStatusCodeStringToEnum(PartnerTable[0].StatusCode);
                     ReturnValue = true;
                 }
@@ -171,7 +171,7 @@ namespace Ict.Petra.Server.MCommon
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 7)
+                        if (TLogging.DL >= 7)
                         {
                             Console.WriteLine("CheckPartnerExists: committed own transaction.");
                         }
@@ -307,7 +307,7 @@ namespace Ict.Petra.Server.MCommon
             }
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 7)
+            if (TLogging.DL >= 7)
             {
                 Console.WriteLine(this.GetType().FullName + " called.");
             }
@@ -320,7 +320,7 @@ namespace Ict.Petra.Server.MCommon
         /// </summary>
         ~TPagedDataSet()
         {
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ".FINALIZE called!");
             }
@@ -387,7 +387,7 @@ namespace Ict.Petra.Server.MCommon
                          ' ' +
                          SQLWhereCriteria + SQLOrderBy;
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 TDataBase.LogSqlStatement(this.GetType().FullName + ".GetData", FSelectSQL, FFindParameters.FParametersArray);
             }
@@ -418,7 +418,7 @@ namespace Ict.Petra.Server.MCommon
 //                {
 //                    DBAccess.GDBAccessObj.CommitTransaction();
 //#if DEBUGMODE
-//                    if (TSrvSetting.DL >= 7)
+//                    if (TLogging.DL >= 7)
 //                    {
 //                        Console.WriteLine(this.GetType().FullName + ".ClassName: committed own transaction.");
 //                    }
@@ -455,7 +455,7 @@ namespace Ict.Petra.Server.MCommon
             if (FAsyncExecProgress.FCancelExecution)
             {
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 7)
+                if (TLogging.DL >= 7)
                 {
                     Console.WriteLine("Query got cancelled!");
                 }
@@ -466,7 +466,7 @@ namespace Ict.Petra.Server.MCommon
             }
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 7)
+            if (TLogging.DL >= 7)
             {
                 Console.WriteLine(this.GetType().FullName + "  FDataAdapter.Fill finished. FTotalRecords: " + FTotalRecords.ToString());
             }
@@ -491,7 +491,7 @@ namespace Ict.Petra.Server.MCommon
         public DataTable GetData(Int16 APage, Int16 APageSize)
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 7)
+            if (TLogging.DL >= 7)
             {
                 Console.WriteLine(this.GetType().FullName + ".GetData(" + APage.ToString() + ") called.");
             }
@@ -511,7 +511,7 @@ namespace Ict.Petra.Server.MCommon
                 {
                     FTotalPages = Convert.ToInt16(Math.Ceiling(((double)FTotalRecords) / ((double)APageSize)));
 
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine("FTotalPages: " + FTotalPages.ToString());
                     }
@@ -550,7 +550,7 @@ namespace Ict.Petra.Server.MCommon
                 }
 
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 9)
+                if (TLogging.DL >= 9)
                 {
                     Console.WriteLine("Select done in " + this.GetType().FullName + ".GetData(" + APage.ToString() + "). Result: ");
 
@@ -609,7 +609,7 @@ namespace Ict.Petra.Server.MCommon
             Int32 MaxRowInPage;
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 7)
+            if (TLogging.DL >= 7)
             {
                 Console.WriteLine(
                     "TPagedDataSet.CopyRowsInPage called.  APage: " + APage.ToString() + "; APageSize: " + APageSize.ToString() +
@@ -661,14 +661,14 @@ namespace Ict.Petra.Server.MCommon
             {
                 // Cancel the executing query.
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 7)
+                if (TLogging.DL >= 7)
                 {
                     Console.WriteLine("TPagedDataSet.StopQuery called...");
                 }
 #endif
                 FDataAdapter.SelectCommand.Cancel();
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 7)
+                if (TLogging.DL >= 7)
                 {
                     Console.WriteLine("TPagedDataSet.StopQuery finished.");
                 }
@@ -877,7 +877,7 @@ namespace Ict.Petra.Server.MCommon
         public void Cancel()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 6)
+            if (TLogging.DL >= 6)
             {
                 Console.WriteLine("TAsynchronousExecutionProgress.Cancel called!");
             }

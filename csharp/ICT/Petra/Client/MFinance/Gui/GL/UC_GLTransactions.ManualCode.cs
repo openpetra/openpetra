@@ -43,7 +43,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Int32 FJournalNumber = -1;
 
 
-        ForeignCurrencyCalculationss foreignCurrencyCalculations;
+        //ForeignCurrencyCalculationss foreignCurrencyCalculations;
 
 
         /// <summary>
@@ -180,8 +180,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 txtDebitTotalAmountBase.CurrencySymbol = BaseCurrency;
                 txtCreditTotalAmount.CurrencySymbol = TransactionCurrency;
                 txtDebitTotalAmount.CurrencySymbol = TransactionCurrency;
-                foreignCurrencyCalculations = new ForeignCurrencyCalculationss(
-                    TransactionCurrency, GetJournalRow().DateEffective);
             }
         }
 
@@ -309,6 +307,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ((TFrmGLBatch)ParentForm).GetBatchControl().UpdateTotals();
         }
 
+        /// <summary>
+        /// WorkAroundInitialization
+        /// </summary>
         public void WorkAroundInitialization()
         {
             txtCreditAmount.Validated += new EventHandler(ControlHasChanged);

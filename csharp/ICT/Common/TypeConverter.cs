@@ -39,16 +39,35 @@ namespace Ict.Common
         /// </summary>
         public class TDateConverter : System.ComponentModel.TypeConverter
         {
+            /// <summary>
+            /// Test if we can convert from a given type to Date
+            /// </summary>
+            /// <param name="context"></param>
+            /// <param name="sourceType"></param>
+            /// <returns></returns>
             public override Boolean CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
             {
                 return sourceType == typeof(string);
             }
 
+            /// <summary>
+            /// Test if we can convert the date to a given type
+            /// </summary>
+            /// <param name="context"></param>
+            /// <param name="sourceType"></param>
+            /// <returns></returns>
             public override Boolean CanConvertTo(ITypeDescriptorContext context, Type sourceType)
             {
                 return sourceType == typeof(string);
             }
 
+            /// <summary>
+            /// convert an object into a date
+            /// </summary>
+            /// <param name="context"></param>
+            /// <param name="culture"></param>
+            /// <param name="value"></param>
+            /// <returns></returns>
             public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
             {
                 if (value.GetType() == typeof(string))
@@ -72,6 +91,14 @@ namespace Ict.Common
                 return null;
             }
 
+            /// <summary>
+            /// convert a date into another type
+            /// </summary>
+            /// <param name="context"></param>
+            /// <param name="culture"></param>
+            /// <param name="value"></param>
+            /// <param name="destinationType"></param>
+            /// <returns></returns>
             public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
             {
                 if ((destinationType == typeof(string)) && (value != null))
@@ -89,6 +116,9 @@ namespace Ict.Common
                 return null;
             }
 
+            /// <summary>
+            /// default constructor
+            /// </summary>
             public TDateConverter() : base()
             {
             }
@@ -105,16 +135,35 @@ namespace Ict.Common
         /// <remarks>TODO: In need of I8N support!</remarks>
         public class TBooleanToYesNoConverter : System.ComponentModel.TypeConverter
         {
+            /// <summary>
+            /// Test if we can convert from a given type to Boolean
+            /// </summary>
+            /// <param name="context"></param>
+            /// <param name="sourceType"></param>
+            /// <returns></returns>
             public override Boolean CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
             {
                 return sourceType == typeof(string);
             }
 
+            /// <summary>
+            /// Test if we can convert the boolean to a given type
+            /// </summary>
+            /// <param name="context"></param>
+            /// <param name="sourceType"></param>
+            /// <returns></returns>
             public override Boolean CanConvertTo(ITypeDescriptorContext context, Type sourceType)
             {
                 return sourceType == typeof(string);
             }
 
+            /// <summary>
+            /// convert an object into a boolean
+            /// </summary>
+            /// <param name="context"></param>
+            /// <param name="culture"></param>
+            /// <param name="value"></param>
+            /// <returns></returns>
             public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
             {
                 if (value == typeof(string))
@@ -125,6 +174,14 @@ namespace Ict.Common
                 return null;
             }
 
+            /// <summary>
+            /// convert a boolean into another type
+            /// </summary>
+            /// <param name="context"></param>
+            /// <param name="culture"></param>
+            /// <param name="value"></param>
+            /// <param name="destinationType"></param>
+            /// <returns></returns>
             public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
             {
                 if (value.GetType() == typeof(Boolean))
@@ -143,6 +200,9 @@ namespace Ict.Common
                 return null;
             }
 
+            /// <summary>
+            /// default constructor
+            /// </summary>
             public TBooleanToYesNoConverter() : base()
             {
             }

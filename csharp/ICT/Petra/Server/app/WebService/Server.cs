@@ -293,56 +293,6 @@ public class TOpenPetraOrg : WebService
         return new TCombinedSubmitChangesResult(TSubmitChangesResult.scrError, new DataSet(), new TVerificationResultCollection());
     }
 
-    private string parseJSonValues(JsonObject ARoot)
-    {
-        string result = "";
-
-        foreach (string key in ARoot.Names)
-        {
-            if (key.ToString().StartsWith("ext-comp"))
-            {
-                string content = parseJSonValues((JsonObject)ARoot[key]);
-
-                if (content.Length > 0)
-                {
-                    if (result.Length > 0)
-                    {
-                        result += ",";
-                    }
-
-                    result += content;
-                }
-            }
-            else
-            {
-                if (result.Length > 0)
-                {
-                    result += ",";
-                }
-
-                if (key.EndsWith("CountryCode"))
-                {
-                    // we need this so that we can parse the dates correctly from json
-                    Ict.Common.Catalog.Init(ARoot[key].ToString(), ARoot[key].ToString());
-                }
-
-                result += "\"" + key + "\":\"" + ARoot[key].ToString().Replace("\n", "<br/>").Replace("\"", "&quot;") + "\"";
-            }
-        }
-
-        return result;
-    }
-
-    /// remove ext-comp controls, for multi-page forms
-    private string RemoveContainerControls(string AJSONFormData)
-    {
-        JsonObject root = (JsonObject)Jayrock.Json.Conversion.JsonConvert.Import(AJSONFormData);
-
-        string result = "{" + parseJSonValues(root) + "}";
-
-        return result;
-    }
-
     /// <summary>
     /// import data from a web form, ie partners are entering their own data
     /// </summary>
@@ -355,7 +305,7 @@ public class TOpenPetraOrg : WebService
         // user ANONYMOUS, can only write, not read
         if (!IsUserLoggedIn())
         {
-            if (!LoginInternal("ANONYMOUS", TAppSettingsManager.GetValueStatic("AnonymousUserPasswd")))
+            if (!LoginInternal("ANONYMOUS", TAppSettingsManager.GetValue("AnonymousUserPasswd")))
             {
                 string message =
                     "In order to process anonymous submission of data from the web, we need to have a user ANONYMOUS which does not have any read permissions";
@@ -373,7 +323,7 @@ public class TOpenPetraOrg : WebService
 
         try
         {
-            AJSONFormData = RemoveContainerControls(AJSONFormData);
+            AJSONFormData = TJsonTools.RemoveContainerControls(AJSONFormData);
 
             AJSONFormData = AJSONFormData.Replace("\"txt", "\"").
                             Replace("\"chk", "\"").
@@ -397,6 +347,41 @@ public class TOpenPetraOrg : WebService
 
             Logout();
 
+            return "{\"failure\":true, \"data\":{\"result\":\"Unexpected failure\"}}";
+        }
+    }
+
+    /// <summary>
+    /// testing function for web forms
+    /// </summary>
+    /// <param name="AFormID"></param>
+    /// <param name="AJSONFormData"></param>
+    /// <returns></returns>
+    [WebMethod(EnableSession = true)]
+    public string TestingForms(string AFormID, string AJSONFormData)
+    {
+        // remove ext-comp controls, for multi-page forms
+        TLogging.Log(AJSONFormData);
+
+        try
+        {
+            AJSONFormData = TJsonTools.RemoveContainerControls(AJSONFormData);
+
+            AJSONFormData = AJSONFormData.Replace("\"txt", "\"").
+                            Replace("\"chk", "\"").
+                            Replace("\"rbt", "\"").
+                            Replace("\"cmb", "\"").
+                            Replace("\"hid", "\"").
+                            Replace("\"dtp", "\"").
+                            Replace("\n", " ").Replace("\r", "");
+
+            TLogging.Log(AJSONFormData);
+            return "{\"failure\":true, \"data\":{\"result\":\"Nothing happened, just a test\"}}";
+        }
+        catch (Exception e)
+        {
+            TLogging.Log(e.Message);
+            TLogging.Log(e.StackTrace);
             return "{\"failure\":true, \"data\":{\"result\":\"Unexpected failure\"}}";
         }
     }

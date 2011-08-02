@@ -327,10 +327,7 @@ namespace Ict.Petra.Server.App.Main
         /// <returns>void</returns>
         private void SetupServerSettings()
         {
-            String ODBCDsn;
-            String ODBCPassword;
             TCommandLineArguments CmdLineArgs;
-            TAppSettingsManager AppSettingsManager;
             String ServerLogFile;
             String ServerName;
             String ServerIPAddresses;
@@ -351,25 +348,27 @@ namespace Ict.Petra.Server.App.Main
             string IntranetDataSenderEmail;
 
             CmdLineArgs = ReadCommandLineArguments();
-            AppSettingsManager = new TAppSettingsManager(CmdLineArgs.ConfigurationFile);
+            new TAppSettingsManager(CmdLineArgs.ConfigurationFile);
 
             #region Parse settings from the Application Configuration File
 
             // Server.RDBMSType
-            RDBMSTypeAppSetting = CommonTypes.ParseDBType(AppSettingsManager.GetValue("Server.RDBMSType"));
+            RDBMSTypeAppSetting = CommonTypes.ParseDBType(TAppSettingsManager.GetValue("Server.RDBMSType"));
 
             // Server.ODBC_DSN
-            ODBCDsnAppSetting = AppSettingsManager.GetValue("Server.ODBC_DSN", false);
+            ODBCDsnAppSetting = TAppSettingsManager.GetValue("Server.ODBC_DSN", false);
 
-            string PostgreSQLServer = AppSettingsManager.GetValue("Server.PostgreSQLServer", "localhost");
-            string PostgreSQLServerPort = AppSettingsManager.GetValue("Server.PostgreSQLServerPort", "5432");
-            string PostgreSQLUserName = AppSettingsManager.GetValue("Server.PostgreSQLUserName", "petraserver");
-            string PostgreSQLDatabaseName = AppSettingsManager.GetValue("Server.PostgreSQLDatabaseName", "openpetra");
+            string DatabaseHostOrFile = TAppSettingsManager.GetValue("Server.DBHostOrFile", "localhost").
+                                        Replace("{userappdata}", Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
+            string DatabasePort = TAppSettingsManager.GetValue("Server.DBPort", "5432");
+            string DatabaseName = TAppSettingsManager.GetValue("Server.DBName", "openpetra");
+            string DatabaseUserName = TAppSettingsManager.GetValue("Server.DBUserName", "petraserver");
+            string DatabasePassword = TAppSettingsManager.GetValue("Server.DBPassword");
 
-            if (AppSettingsManager.HasValue("Server.LogFile"))
+            if (TAppSettingsManager.HasValue("Server.LogFile"))
             {
                 ServerLogFile =
-                    AppSettingsManager.GetValue("Server.LogFile", false).Replace("{userappdata}",
+                    TAppSettingsManager.GetValue("Server.LogFile", false).Replace("{userappdata}",
                         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
             }
             else
@@ -385,53 +384,46 @@ namespace Ict.Petra.Server.App.Main
             }
 
             // Server.IPBasePort
-            ServerIPBasePort = AppSettingsManager.GetInt16("Server.IPBasePort", 9000);
+            ServerIPBasePort = TAppSettingsManager.GetInt16("Server.IPBasePort", 9000);
 
             // Server.DebugLevel
-            ServerDebugLevel = AppSettingsManager.GetInt16("Server.DebugLevel", 0);
+            ServerDebugLevel = TAppSettingsManager.GetInt16("Server.DebugLevel", 0);
 
-            RunAsStandalone = AppSettingsManager.GetBoolean("Server.RunAsStandalone", false);
-
-            // Server.Credentials with the password for the PostgreSQL and the Progress database for user petraserver
-            string ServerCredentials = AppSettingsManager.GetValue("Server.Credentials");
+            RunAsStandalone = TAppSettingsManager.GetBoolean("Server.RunAsStandalone", false);
 
             // Server.ClientIdleStatusAfterXMinutes
-            ClientIdleStatusAfterXMinutes = AppSettingsManager.GetInt16("Server.ClientIdleStatusAfterXMinutes", 5);
+            ClientIdleStatusAfterXMinutes = TAppSettingsManager.GetInt16("Server.ClientIdleStatusAfterXMinutes", 5);
 
             // Server.ClientKeepAliveCheckIntervalInSeconds
-            ClientKeepAliveCheckIntervalInSeconds = AppSettingsManager.GetInt16("Server.ClientKeepAliveCheckIntervalInSeconds", 60);
+            ClientKeepAliveCheckIntervalInSeconds = TAppSettingsManager.GetInt16("Server.ClientKeepAliveCheckIntervalInSeconds", 60);
 
             // Server.ClientKeepAliveTimeoutAfterXSeconds_LAN
-            ClientKeepAliveTimeoutAfterXSecondsLAN = AppSettingsManager.GetInt16("Server.ClientKeepAliveTimeoutAfterXSeconds_LAN", 60);
+            ClientKeepAliveTimeoutAfterXSecondsLAN = TAppSettingsManager.GetInt16("Server.ClientKeepAliveTimeoutAfterXSeconds_LAN", 60);
 
             // Server.ClientKeepAliveTimeoutAfterXSeconds_Remote
             ClientKeepAliveTimeoutAfterXSecondsRemote =
-                AppSettingsManager.GetInt16("Server.ClientKeepAliveTimeoutAfterXSeconds_Remote", (short)(ClientKeepAliveTimeoutAfterXSecondsLAN * 2));
+                TAppSettingsManager.GetInt16("Server.ClientKeepAliveTimeoutAfterXSeconds_Remote", (short)(ClientKeepAliveTimeoutAfterXSecondsLAN * 2));
 
             // Server.ClientConnectionTimeoutAfterXSeconds
-            ClientConnectionTimeoutAfterXSeconds = AppSettingsManager.GetInt16("Server.ClientConnectionTimeoutAfterXSeconds", 20);
+            ClientConnectionTimeoutAfterXSeconds = TAppSettingsManager.GetInt16("Server.ClientConnectionTimeoutAfterXSeconds", 20);
 
             // Server.ClientAppDomainShutdownAfterKeepAliveTimeout
-            ClientAppDomainShutdownAfterKeepAliveTimeout = AppSettingsManager.GetBoolean("Server.ClientAppDomainShutdownAfterKeepAliveTimeout", true);
+            ClientAppDomainShutdownAfterKeepAliveTimeout = TAppSettingsManager.GetBoolean("Server.ClientAppDomainShutdownAfterKeepAliveTimeout", true);
 
-            SMTPServer = AppSettingsManager.GetValue("Server.SMTPServer", "localhost");
+            SMTPServer = TAppSettingsManager.GetValue("Server.SMTPServer", "localhost");
 
             // This is disabled in processing at the moment, so we reflect that here. When it works change to true
-            AutomaticIntranetExportEnabled = AppSettingsManager.GetBoolean("Server.AutomaticIntranetExportEnabled", false);
+            AutomaticIntranetExportEnabled = TAppSettingsManager.GetBoolean("Server.AutomaticIntranetExportEnabled", false);
 
             // The following setting specifies the email address where the Intranet Data emails are sent to when "Server.AutomaticIntranetExportEnabled" is true.
-            IntranetDataDestinationEmail = AppSettingsManager.GetValue("Server.IntranetDataDestinationEmail", "???@???.org");
+            IntranetDataDestinationEmail = TAppSettingsManager.GetValue("Server.IntranetDataDestinationEmail", "???@???.org");
 
             // The following setting is temporary - until we have created a GUI where users can specify the email address for the
             // responsible Personnel and Finance persons themselves. Those will be stored in SystemDefaults then.
-            IntranetDataSenderEmail = AppSettingsManager.GetValue("Server.IntranetDataSenderEmail", "???@???.org");
+            IntranetDataSenderEmail = TAppSettingsManager.GetValue("Server.IntranetDataSenderEmail", "???@???.org");
 
             // Determine network configuration of the Server
             Networking.DetermineNetworkConfig(out ServerName, out ServerIPAddresses);
-
-            // Determine Database connection parameters
-            ODBCDsn = "petra2_3";
-            ODBCPassword = ServerCredentials;
 
             Version ServerAssemblyVersion;
 
@@ -466,12 +458,12 @@ namespace Ict.Petra.Server.App.Main
                 ServerAssemblyVersion,
                 Utilities.DetermineExecutingOS(),
                 RDBMSTypeAppSetting,
-                ODBCDsn,
-                PostgreSQLServer,
-                PostgreSQLServerPort,
-                PostgreSQLDatabaseName,
-                PostgreSQLUserName,
-                ServerCredentials,
+                ODBCDsnAppSetting,
+                DatabaseHostOrFile,
+                DatabasePort,
+                DatabaseName,
+                DatabaseUserName,
+                DatabasePassword,
                 ServerIPBasePort,
                 ServerDebugLevel,
                 ServerLogFile,
@@ -579,7 +571,6 @@ namespace Ict.Petra.Server.App.Main
         public void EstablishDBConnection()
         {
             DBAccess.GDBAccessObj = new TDataBase();
-            DBAccess.GDBAccessObj.DebugLevel = TSrvSetting.DebugLevel;
             try
             {
                 DBAccess.GDBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
@@ -650,8 +641,24 @@ namespace Ict.Petra.Server.App.Main
         /// </summary>
         private void UpdateSQLiteDatabase(TFileVersionInfo ADBVersion, TFileVersionInfo AExeVersion)
         {
-            TAppSettingsManager settings = new TAppSettingsManager();
-            string dbpatchfilePath = Path.GetDirectoryName(settings.GetValue("Server.BaseDatabase"));
+            // there have been drastic changes to the database after 0.2.8-1, which means we have to start with a clean database
+            // otherwise there are definitely errors with the s_login sequence, and outreach tables might cause a problem as well
+            if (ADBVersion.Compare(new TFileVersionInfo("0.2.8-1")) == 0)
+            {
+                DBAccess.GDBAccessObj.CloseDBConnection();
+
+                TLogging.Log("Please find your old data in " + TFileHelper.MoveToBackup(TSrvSetting.PostgreSQLServer));
+
+                DBAccess.GDBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
+                    TSrvSetting.PostgreSQLServer,
+                    TSrvSetting.PostgreSQLServerPort,
+                    TSrvSetting.PostgreSQLDatabaseName,
+                    TSrvSetting.DBUsername,
+                    TSrvSetting.DBPassword,
+                    "");
+            }
+
+            string dbpatchfilePath = Path.GetDirectoryName(TAppSettingsManager.GetValue("Server.SQLiteBaseFile"));
 
             TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
 
@@ -672,7 +679,7 @@ namespace Ict.Petra.Server.App.Main
 
                     foreach (string sqlFile in sqlFiles)
                     {
-                        if (ADBVersion.PatchApplies(sqlFile, AExeVersion))
+                        if (!sqlFile.EndsWith("pg.sql") && ADBVersion.PatchApplies(sqlFile, AExeVersion))
                         {
                             foundUpdate = true;
                             StreamReader sr = new StreamReader(sqlFile);

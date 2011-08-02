@@ -14,12 +14,13 @@ private void CalculatePreferredLanguage()
 {
     string CountrySelectionPage = "~/index.html?error=PleaseSelectValidCountry";
 
-    if (HttpContext.Current.Request.Params["country-id"] == null || HttpContext.Current.Request.Params["country-id"].Length == 0)
-    {
-        Response.Redirect(CountrySelectionPage);
-    }
-    
     FSelectedCountry = HttpContext.Current.Request.Params["country-id"];
+
+    if (FSelectedCountry == null || FSelectedCountry.Length == 0)
+    {
+        FSelectedCountry = "en-gb";
+    }
+
     string SupportedCountries = "de-at, nl-be, fr-be, cs, fi, fr-fr, de-de, en-ie, it, nl-nl, no, pt, es, sv, fr-ch, de-ch, en-gb";
     if (!StringHelper.StrSplit(SupportedCountries, ",").Contains(FSelectedCountry))
     {

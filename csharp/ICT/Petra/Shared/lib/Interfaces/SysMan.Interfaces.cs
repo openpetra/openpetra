@@ -40,7 +40,7 @@ using Ict.Petra.Shared.Interfaces.MSysMan.PrintManagement;
 using Ict.Petra.Shared.Interfaces.MSysMan.Security;
 using Ict.Petra.Shared.Interfaces.MSysMan.Application.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MSysMan.Application.ServerLookups;
-using Ict.Petra.Shared.Interfaces.MSysMan.Application.Cacheable;
+using Ict.Petra.Shared.Interfaces.MSysMan.Cacheable;
 using Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.SystemDefaults;
 using Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.UserDefaults;
@@ -95,8 +95,12 @@ namespace Ict.Petra.Shared.Interfaces.MSysMan
             get;
         }
 
+        /// <summary>access to sub namespace</summary>
+        ICacheableNamespace Cacheable
+        {
+            get;
+        }      
     }
-
 }
 
 
@@ -115,14 +119,7 @@ namespace Ict.Petra.Shared.Interfaces.MSysMan.Application
         IApplicationServerLookupsNamespace ServerLookups
         {
             get;
-        }
-
-        /// <summary>access to sub namespace</summary>
-        IApplicationCacheableNamespace Cacheable
-        {
-            get;
-        }
-
+        } 
     }
 
 }
@@ -152,10 +149,10 @@ namespace Ict.Petra.Shared.Interfaces.MSysMan.Application.ServerLookups
 }
 
 
-namespace Ict.Petra.Shared.Interfaces.MSysMan.Application.Cacheable
+namespace Ict.Petra.Shared.Interfaces.MSysMan.Cacheable
 {
     /// <summary>auto generated</summary>
-    public interface IApplicationCacheableNamespace : IInterface
+    public interface ICacheableNamespace : IInterface
     {
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Application.Cacheable.TApplicationCacheableNamespace)</summary>
         System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MSysMan.TCacheableSysManTablesEnum ACacheableTable,
@@ -267,6 +264,9 @@ namespace Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.WebConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector)</summary>
         bool SetUserPassword(string AUsername,
                              string APassword);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector)</summary>
+        bool CheckPasswordQuality(string APassword,
+                                  out TVerificationResultCollection AVerification);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector)</summary>
         bool SetUserPassword(string AUsername,
                              string APassword,

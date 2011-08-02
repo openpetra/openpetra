@@ -42,6 +42,9 @@ using NUnit.Framework.Constraints;
 
 namespace Tests.MFinance.GLBatches
 {
+    /// <summary>
+    /// ...
+    /// </summary>
     [TestFixture]
     public class GLAccountHierarchy_test : CommonNUnitFunctions
     {
@@ -189,6 +192,9 @@ namespace Tests.MFinance.GLBatches
             }
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         [Test]
         public void T03_CreateANewAccount()
         {
@@ -240,6 +246,9 @@ namespace Tests.MFinance.GLBatches
             hierarchyTester.txtDetailAccountCode.Properties.Text = strName1;
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         [Test]
         public void T04_CreateNewAccountAndChangeTreeViewSelection()
         {
@@ -276,6 +285,9 @@ namespace Tests.MFinance.GLBatches
             hierarchyTester.mniClose.Click();
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         [Test]
         public void T05_CreateBankAccount()
         {
@@ -329,14 +341,20 @@ namespace Tests.MFinance.GLBatches
             hierarchyTester.mainForm.Close();
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         [TestFixtureSetUp]
         public void Init()
         {
             new TLogging("PetraClient.log");
             TPetraConnector.Connect("../../../../../etc/TestClient.config");
-            fLedgerNumber = Convert.ToInt32(TAppSettingsManager.GetValueStatic("LedgerNumber"));
+            fLedgerNumber = Convert.ToInt32(TAppSettingsManager.GetValue("LedgerNumber"));
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         [TestFixtureTearDown]
         public void Dispose()
         {

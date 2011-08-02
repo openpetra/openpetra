@@ -38,9 +38,9 @@ class TGenerateSampleData
 {
     public static void Main(string[] args)
     {
-        TAppSettingsManager settings = new TAppSettingsManager(false);
+        new TAppSettingsManager(false);
 
-        string csvInputFileName = settings.GetValue("file", true);
+        string csvInputFileName = TAppSettingsManager.GetValue("file", true);
 
         try
         {

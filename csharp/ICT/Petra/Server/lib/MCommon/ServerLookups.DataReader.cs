@@ -33,6 +33,8 @@ using Ict.Petra.Server.MFinance.AP.Data.Access;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
@@ -99,6 +101,10 @@ namespace Ict.Petra.Server.MCommon.DataReader
                 else if (ATablename == PtApplicationTypeTable.GetTableDBName())
                 {
                     tempTable = PtApplicationTypeAccess.LoadAll(ReadTransaction);
+                }
+                else if (ATablename == AGiftBatchTable.GetTableDBName())
+                {
+                    tempTable = AGiftBatchAccess.LoadAll(ReadTransaction);
                 }
                 else
                 {

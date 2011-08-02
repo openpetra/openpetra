@@ -60,7 +60,7 @@ namespace Ict.Petra.Shared.RemotingSinks.Encryption
 
         private void Init()
         {
-            string KeyFile = TAppSettingsManager.GetValueStatic("Server.ChannelEncryption.PrivateKeyfile");
+            string KeyFile = TAppSettingsManager.GetValue("Server.ChannelEncryption.PrivateKeyfile");
 
             // read the encryption key from the specified file
             FileInfo fi = new FileInfo(KeyFile);

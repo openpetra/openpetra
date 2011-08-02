@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -44,15 +44,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ucoBatches.LoadBatches(FLedgerNumber);
             }
         }
+        /// <summary>
+        /// show the actual data of the database after server has changed data
+        /// </summary>
+        public void RefreshAll()
+        {
+            ucoBatches.RefreshAll();
+        }
 
         private void InitializeManualCode()
         {
             this.tpgTransactions.Enabled = false;
-
-            if (FTabPageEvent == null)
-            {
-                FTabPageEvent += this.TabPageEventHandler;
-            }
         }
 
         private void TFrmGiftBatch_Load(object sender, EventArgs e)
@@ -142,22 +144,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         ucoBatches.GetSelectedDetailRow().BatchNumber);
                     this.tabGiftBatch.SelectedTab = this.tpgTransactions;
                 }
-            }
-        }
-
-        private void TabPageEventHandler(object sender, TTabPageEventArgs ATabPageEventArgs)
-        {
-            if (ATabPageEventArgs.Event == "InitialActivation")
-            {
-                if (ATabPageEventArgs.Tab == tpgBatches)
-                {
-                    ucoBatches.LoadBatches(FLedgerNumber);
-                }
-            }
-
-            if (ATabPageEventArgs.Tab == tpgTransactions)
-            {
-                SelectTab(eGiftTabs.Transactions);
             }
         }
     }

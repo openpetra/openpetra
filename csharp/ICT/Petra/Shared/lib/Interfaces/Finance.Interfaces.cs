@@ -452,6 +452,9 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors
                                     Int64 AOldField,
                                     DateTime ADateCorrection,
                                     bool AWithReceipt);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TAdjustmentWebConnector)</summary>
+        bool GiftRevertAdjust(Hashtable requestParams,
+                              out TVerificationResultCollection AMessages);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TGuiTools)</summary>
         Boolean GetMotivationGroupAndDetail(Int64 partnerKey,
                                             ref String motivationGroup,
@@ -561,6 +564,14 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors
     /// <summary>auto generated</summary>
     public interface IGLWebConnectorsNamespace : IInterface
     {
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodIntervallConnector)</summary>
+        bool TPeriodMonthEnd(int ALedgerNum,
+                             bool AIsInInfoMode,
+                             out TVerificationResultCollection AVerificationResult);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodIntervallConnector)</summary>
+        bool TPeriodYearEnd(int ALedgerNum,
+                            bool AIsInInfoMode,
+                            out TVerificationResultCollection AVerificationResult);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TRevaluationWebConnector)</summary>
         bool Revaluate(int ALedgerNum,
                        int AAccoutingPeriod,

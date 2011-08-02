@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -257,11 +257,18 @@ namespace Ict.Common.IO
         /// <returns></returns>
         public Boolean PatchApplies(String APatchZipFile, TFileVersionInfo AMaxVersion)
         {
-            StringCollection versions = GetVersionsFromDiffZipName(APatchZipFile);
-            TFileVersionInfo patchStartVersion = new TFileVersionInfo(versions[0]);
-            TFileVersionInfo patchEndVersion = new TFileVersionInfo(versions[1]);
+            try
+            {
+                StringCollection versions = GetVersionsFromDiffZipName(APatchZipFile);
+                TFileVersionInfo patchStartVersion = new TFileVersionInfo(versions[0]);
+                TFileVersionInfo patchEndVersion = new TFileVersionInfo(versions[1]);
 
-            return patchStartVersion.Compare(this) == 0 && patchEndVersion.Compare(AMaxVersion) <= 0;
+                return patchStartVersion.Compare(this) == 0 && patchEndVersion.Compare(AMaxVersion) <= 0;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
     }
 
@@ -833,7 +840,7 @@ namespace Ict.Common.IO
                 }
                 else
                 {
-                    throw new Exception("different base file, md5sum does not match");
+                    throw new Exception("different base file, md5sum does not match. Expected: " + patchFileInfo.OldMd5sum);
                 }
             }
 
@@ -1362,6 +1369,7 @@ namespace Ict.Common.IO
             PatchExecutableFiles.Add(binPath + "Ict.Common.IO.dll");
             PatchExecutableFiles.Add(binPath + "ICSharpCode.SharpZipLib.dll");
             PatchExecutableFiles.Add(binPath + "PatchTool.exe");
+            PatchExecutableFiles.Add(binPath + "GNU.Gettext.dll");
             PatchExecutableFiles.Add(binPath + "intl.dll");
             PatchExecutableFiles.Add(binPath + "Mono.Posix.dll");
             PatchExecutableFiles.Add(binPath + "Mono.Security.dll");

@@ -15,6 +15,7 @@
         <Table sqltable="pm_short_term_application"/>
         <CustomTable name="ApplicationGrid">
             <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>
+            <CustomField name="PersonKey" type="Int64"/>
             <Field sqltable="p_person" sqlfield="p_first_name_c"/>
             <Field sqltable="p_person" sqlfield="p_family_name_c"/>
             <Field sqltable="p_person" sqlfield="p_gender_c"/>
@@ -22,6 +23,11 @@
             <Field sqltable="pm_general_application" sqlfield="pm_gen_app_date_d"/>
             <Field sqltable="pm_general_application" sqlfield="pm_gen_application_status_c"/>
             <Field sqltable="pm_short_term_application" sqlfield="pm_st_congress_code_c"/>
+            <Field sqltable="pm_short_term_application" sqlfield="pm_st_fg_code_c"/>
+            <Field sqltable="pm_short_term_application" sqlfield="pm_st_fg_leader_l"/>
+            <Field sqltable="pm_general_application" sqlfield="pm_application_key_i"/>
+            <Field sqltable="pm_general_application" sqlfield="pm_registration_office_n"/>
+            <Field sqltable="pm_general_application" sqlfield="pm_comment_c"/>
             <CustomField name="JSONData" type="string"/>
         </CustomTable>
         

@@ -83,6 +83,7 @@
     <target name="recreateDatabase" depends="init,createSQLStatements">
         <if test="${DBMS.Type=='sqlite'}">
              <delete file="${SQLitedb.file}" if="${file::exists(SQLitedb.file)}"/>
+             <move file="${SQLitedbWork.file}" tofile="${SQLitedbWork.file}.bak" if="${file::exists(SQLitedbWork.file)}"/>
              <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:sql -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -password:${DBMS.Password}" failonerror="true"/>
         </if>
         <if test="${DBMS.Type=='postgresql'}">
@@ -90,24 +91,24 @@
                  <echo message="please run sudo ls before calling this, then you don't need to enter a password for postgres user"/>
              </if>
              <psql exe="${PostgreSQL.exe}" sqlcommand="DROP DATABASE IF EXISTS ${DBMS.DBName};" database="template1" password="${DBMS.Password}"/>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="DROP OWNED BY ${DBMS.UserName}; DROP USER IF EXISTS ${DBMS.UserName};" database="template1" failonerror="false" password="${DBMS.Password}"/>
              <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE DATABASE ${DBMS.DBName};" database="template1" password="${DBMS.Password}"/>
              <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" database="${DBMS.DBName}" password="${DBMS.Password}"/>
-             <psql exe="${PostgreSQL.exe}" sqlcommand="DROP OWNED BY petraserver; DROP USER IF EXISTS petraserver;" database="${DBMS.DBName}" failonerror="false" password="${DBMS.Password}"/>
-             <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE USER petraserver PASSWORD 'TOBESETBYINSTALLER';" database="${DBMS.DBName}" failonerror="false" password="${DBMS.Password}"/>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE USER ${DBMS.UserName} PASSWORD '${DBMS.Password}';" database="${DBMS.DBName}" failonerror="false" password="${DBMS.Password}"/>
              <property name="tempfile" value="${path::get-temp-path()}/userpermissions.sql"/>
              <if test="${framework::get-target-framework() == 'mono-2.0'}" >
                  <!-- at least on Mac, the tmp directory of the current user is returned, which the postgres user has no access to -->
                  <property name="tempfile" value="/tmp/userpermissions.sql"/>
              </if>
              <psql exe="${PostgreSQL.exe}" 
-                sqlcommand="select 'GRANT SELECT,UPDATE,DELETE,INSERT ON ' || c.relname || ' TO petraserver;' from pg_class AS c LEFT JOIN pg_namespace n ON n.oid = c.relnamespace where c.relkind = 'r' and n.nspname NOT IN('pg_catalog', 'pg_toast') and pg_table_is_visible(c.oid);"
+                sqlcommand="select 'GRANT SELECT,UPDATE,DELETE,INSERT ON ' || c.relname || ' TO ${DBMS.UserName};' from pg_class AS c LEFT JOIN pg_namespace n ON n.oid = c.relnamespace where c.relkind = 'r' and n.nspname NOT IN('pg_catalog', 'pg_toast') and pg_table_is_visible(c.oid);"
                 outputfile="${tempfile}"
                 database="${DBMS.DBName}"
                 password="${DBMS.Password}"/>
              <psql exe="${PostgreSQL.exe}" sqlfile="${tempfile}" database="${DBMS.DBName}" password="${DBMS.Password}"/>
 
              <psql exe="${PostgreSQL.exe}" 
-                sqlcommand="select 'GRANT SELECT,UPDATE,USAGE ON ' || c.relname || ' TO petraserver;' from pg_class AS c LEFT JOIN pg_namespace n ON n.oid = c.relnamespace where c.relkind = 'S' and n.nspname NOT IN('pg_catalog', 'pg_toast') and pg_table_is_visible(c.oid);"
+                sqlcommand="select 'GRANT SELECT,UPDATE,USAGE ON ' || c.relname || ' TO ${DBMS.UserName};' from pg_class AS c LEFT JOIN pg_namespace n ON n.oid = c.relnamespace where c.relkind = 'S' and n.nspname NOT IN('pg_catalog', 'pg_toast') and pg_table_is_visible(c.oid);"
                 outputfile="${tempfile}"
                 database="${DBMS.DBName}"
                 password="${DBMS.Password}"/>
@@ -118,7 +119,7 @@
              <mysql exe="${MySQL.exe}" sqlcommand="drop database if exists ${DBMS.DBName};" user="root" password="${DBMS.Password}"/>
              <mysql exe="${MySQL.exe}" sqlcommand="create database if not exists ${DBMS.DBName};" user="root" password="${DBMS.Password}"/>
              <mysql exe="${MySQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" database="${DBMS.DBName}" user="root" password="${DBMS.Password}"/>
-             <mysql exe="${MySQL.exe}" sqlcommand="GRANT SELECT,UPDATE,DELETE,INSERT ON * TO petraserver IDENTIFIED BY 'TOBESETBYINSTALLER';" database="${DBMS.DBName}" user="root" password="${DBMS.Password}"/>
+             <mysql exe="${MySQL.exe}" sqlcommand="GRANT SELECT,UPDATE,DELETE,INSERT ON * TO ${DBMS.UserName} IDENTIFIED BY 'TOBESETBYINSTALLER';" database="${DBMS.DBName}" user="root" password="${DBMS.Password}"/>
         </if>
     </target>
 

@@ -84,7 +84,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator
         public TMCommonNamespaceLoader()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created in application domain: " + Thread.GetDomain().FriendlyName);
             }
@@ -116,7 +116,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator
             Byte[] rndbytes = new Byte[5];
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("TMCommonNamespaceLoader.GetRemotingURL in AppDomain: " + Thread.GetDomain().FriendlyName);
             }
@@ -140,7 +140,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator
             FRemotingURL = RemoteAtURI; // FRemotedObject.URI;
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("TMCommon.URI: " + FRemotedObject.URI);
             }
@@ -169,7 +169,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator
         public TMCommon()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -189,7 +189,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator
             object MyObject;
             object MyObject2;
 #endif
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
                                                                                                 DateTime.Now.Ticks -
@@ -198,7 +198,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator
 
 #if DEBUGMODELONGRUNNINGFINALIZERS
             MyObject = new object();
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
             }
@@ -209,7 +209,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator
                 GC.KeepAlive(MyObject);
             }
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
             }
@@ -334,7 +334,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator.Cacheable
         public TCacheableNamespace()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -357,7 +357,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator.Cacheable
             object MyObject;
             object MyObject2;
 #endif
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
                                                                                                 DateTime.Now.Ticks -
@@ -366,7 +366,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator.Cacheable
 
 #if DEBUGMODELONGRUNNINGFINALIZERS
             MyObject = new object();
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
             }
@@ -377,7 +377,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator.Cacheable
                 GC.KeepAlive(MyObject);
             }
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
             }
@@ -488,7 +488,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator.UIConnectors
         public TUIConnectorsNamespace()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -508,7 +508,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator.UIConnectors
             object MyObject;
             object MyObject2;
 #endif
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
                                                                                                 DateTime.Now.Ticks -
@@ -517,7 +517,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator.UIConnectors
 
 #if DEBUGMODELONGRUNNINGFINALIZERS
             MyObject = new object();
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
             }
@@ -528,7 +528,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator.UIConnectors
                 GC.KeepAlive(MyObject);
             }
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
             }
@@ -558,7 +558,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator.UIConnectors
                                                                                           TDBTransaction AReadTransaction)
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Creating TOfficeSpecificDataLabelsUIConnector...");
             }
@@ -567,7 +567,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator.UIConnectors
             TOfficeSpecificDataLabelsUIConnector ReturnValue = new TOfficeSpecificDataLabelsUIConnector(APartnerKey, AOfficeSpecificDataLabelUse);
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Calling TOfficeSpecificDataLabelsUIConnector.GetData...");
             }
@@ -575,7 +575,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator.UIConnectors
 #endif
             ADataSet = ReturnValue.GetData(AReadTransaction);
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Calling TOfficeSpecificDataLabelsUIConnector.GetData finished.");
             }
@@ -602,7 +602,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator.UIConnectors
                                                                                           TDBTransaction AReadTransaction)
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Creating TOfficeSpecificDataLabelsUIConnector...");
             }
@@ -614,7 +614,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator.UIConnectors
                AOfficeSpecificDataLabelUse);
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Calling TOfficeSpecificDataLabelsUIConnector.GetData...");
             }
@@ -622,7 +622,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator.UIConnectors
 #endif
             ADataSet = ReturnValue.GetData(AReadTransaction);
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Calling TOfficeSpecificDataLabelsUIConnector.GetData finished.");
             }
@@ -642,7 +642,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator.UIConnectors
                                                                  ref FieldOfServiceTDS ADataSet)
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Creating TFieldOfServiceUIConnector...");
             }
@@ -651,7 +651,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator.UIConnectors
             TFieldOfServiceUIConnector ReturnValue = new TFieldOfServiceUIConnector(APartnerKey);
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Calling TFieldOfServiceUIConnector.GetData...");
             }
@@ -659,7 +659,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator.UIConnectors
 #endif
             ADataSet = ReturnValue.GetData();
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Calling TFieldOfServiceUIConnector.GetData finished.");
             }
@@ -683,7 +683,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator.DataReader
         public TDataReaderNamespace()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -703,7 +703,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator.DataReader
             object MyObject;
             object MyObject2;
 #endif
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
                                                                                                 DateTime.Now.Ticks -
@@ -712,7 +712,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator.DataReader
 
 #if DEBUGMODELONGRUNNINGFINALIZERS
             MyObject = new object();
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
             }
@@ -723,7 +723,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator.DataReader
                 GC.KeepAlive(MyObject);
             }
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
             }

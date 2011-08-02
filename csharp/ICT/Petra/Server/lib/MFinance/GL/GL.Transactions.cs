@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, matthiash
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -42,6 +42,7 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.GL.Data.Access;
 using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Server.MFinance.Common;
 
 namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 {
@@ -150,28 +151,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static GLBatchTDS CreateABatch(Int32 ALedgerNumber)
         {
-            GLBatchTDS MainDS = new GLBatchTDS();
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
-            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
-
-            DBAccess.GDBAccessObj.RollbackTransaction();
-
-            ABatchRow NewRow = MainDS.ABatch.NewRowTyped(true);
-            NewRow.LedgerNumber = ALedgerNumber;
-            MainDS.ALedger[0].LastBatchNumber++;
-            NewRow.BatchNumber = MainDS.ALedger[0].LastBatchNumber;
-            NewRow.BatchPeriod = MainDS.ALedger[0].CurrentPeriod;
-            MainDS.ABatch.Rows.Add(NewRow);
-
-            TVerificationResultCollection VerificationResult;
-
-            if (GLBatchTDSAccess.SubmitChanges(MainDS, out VerificationResult) == TSubmitChangesResult.scrOK)
-            {
-                MainDS.AcceptChanges();
-            }
-
-            return MainDS;
+            return TGLPosting.CreateABatch(ALedgerNumber);
         }
 
         /// <summary>

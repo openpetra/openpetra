@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -180,7 +180,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
         {
             // look for available plugin for importing a bank statement.
             // the plugin will upload the data into the tables a_ep_statement and a_ep_transaction on the server/database
-            string BankStatementImportPlugin = TAppSettingsManager.GetValueStatic("Plugin.BankStatementImport", "");
+            string BankStatementImportPlugin = TAppSettingsManager.GetValue("Plugin.BankStatementImport", "");
 
             if (BankStatementImportPlugin.Length == 0)
             {
@@ -225,9 +225,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             cmbGiftAccount.Enabled = false;
 
             // look for the motivation detail.
-            // if the associated cost centre is a summary cost centre,
-            // the user can select from a list of the reporting costcentres
-            // else make the costcentre readonly.
             if (cmbMotivationDetail.SelectedIndex == -1)
             {
                 return;
@@ -239,37 +236,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
 
             if (v.Count == 0)
             {
-                cmbGiftCostCentre.Enabled = false;
                 return;
             }
 
             AMotivationDetailRow motivationDetailRow = (AMotivationDetailRow)v[0].Row;
 
             cmbGiftAccount.Filter = AAccountTable.GetAccountCodeDBName() + " = '" + motivationDetailRow.AccountCode + "'";
-
-            v = new DataView(FMainDS.ACostCentre);
-            v.RowFilter = ACostCentreTable.GetCostCentreCodeDBName() +
-                          " = '" + motivationDetailRow.CostCentreCode + "'";
-
-            if (v.Count == 0)
-            {
-                cmbGiftCostCentre.Enabled = false;
-                return;
-            }
-
-            ACostCentreRow costCentreRow = (ACostCentreRow)v[0].Row;
-
-            if (costCentreRow.PostingCostCentreFlag)
-            {
-                cmbGiftCostCentre.Filter = ACostCentreTable.GetCostCentreCodeDBName() +
-                                           " = '" + costCentreRow.CostCentreCode + "'";
-            }
-            else
-            {
-                cmbGiftCostCentre.Filter = ACostCentreTable.GetCostCentreToReportToDBName() +
-                                           " = '" + costCentreRow.CostCentreCode + "'";
-                cmbGiftCostCentre.Enabled = true;
-            }
+            cmbGiftCostCentre.Filter = ACostCentreTable.GetCostCentreCodeDBName() + " = '" + motivationDetailRow.CostCentreCode + "'";
         }
 
         private void NewTransactionCategory(System.Object sender, EventArgs e)

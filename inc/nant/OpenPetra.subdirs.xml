@@ -12,8 +12,16 @@
   <call target="internal-subdirs" />
 </target>
 
-<target name="uncrustify">
-  <property name="target" value="uncrustify" />
+<target name="uncrustify" depends="indent" 
+        description="indent the code, so it adheres the formatting guidelines" />
+
+<target name="indent">
+  <property name="target" value="indent" />
+  <call target="internal-subdirs" />
+</target>
+
+<target name="depend" >
+  <property name="target" value="compile" />
   <call target="internal-subdirs" />
 </target>
 

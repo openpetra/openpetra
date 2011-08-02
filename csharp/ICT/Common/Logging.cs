@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -61,6 +61,21 @@ namespace Ict.Common
         /// this is related to the mono bug described in the code
         /// </summary>
         public const int DEBUGLEVEL_TRACE = 10;
+
+        /// <summary>
+        /// some log messages will be only displayed at a certain DebugLevel
+        /// </summary>
+        public static int DebugLevel = 0;
+
+        /// <summary>DL is a abbreviated synonym for DebugLevel (more convenient)</summary>
+        public static int DL
+        {
+            get
+            {
+                return DebugLevel;
+            }
+        }
+
 
         /// <summary>
         /// this is the default prefix for the username
@@ -236,12 +251,10 @@ namespace Ict.Common
 
                     if (TLogging.Context.Length != 0)
                     {
-                        StatusBarProcedure(Text + "; Context: " + TLogging.Context);
+                        Text += "; Context: " + TLogging.Context;
                     }
-                    else
-                    {
-                        StatusBarProcedure(Text);
-                    }
+
+                    StatusBarProcedure(Text);
                 }
             }
 

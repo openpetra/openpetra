@@ -281,10 +281,6 @@ namespace Ict.Common.DB
         /// <summary> this is a reference to the specific database functions which can be different for each RDBMS</summary>
         private IDataBaseRDBMS FDataBaseRDBMS;
 
-        /// <summary>For logging purposes.</summary>
-        /// <remarks>See <see cref="DebugLevel" /> for details.</remarks>
-        private static Int16 FDebugLevel;
-
         /// <summary>Tracks the last DB action; is updated with every creation of a Command.</summary>
         private DateTime FLastDBAction;
 
@@ -339,38 +335,6 @@ namespace Ict.Common.DB
             get
             {
                 return FDbType.ToString("G");
-            }
-        }
-
-        /// <summary>
-        /// Sets the DebugLevel (for logging purposes).
-        /// </summary>
-        /// <remarks>
-        /// <list type="table">
-        /// <item>
-        ///     <term><b>Level DB_DEBUGLEVEL_QUERY</b></term>
-        ///     <description>Prints the SQL Query Level</description>
-        /// </item>
-        /// <item>
-        ///     <term><b>Level DB_DEBUGLEVEL_RESULT</b></term>
-        ///     <description>Prints the results Level</description>
-        /// </item>
-        /// <item>
-        ///     <term><b>Level DB_DEBUGLEVEL_TRACE</b></term>
-        ///     <description>Prints a trace of all database activities (very verbose!)</description>
-        /// </item>
-        /// </list>
-        /// </remarks>
-        public Int16 DebugLevel
-        {
-            get
-            {
-                return FDebugLevel;
-            }
-
-            set
-            {
-                FDebugLevel = value;
             }
         }
 
@@ -539,7 +503,10 @@ namespace Ict.Common.DB
         /// already/still closed connection.</exception>
         public void CloseDBConnection()
         {
-            CloseDBConnectionInternal(FDbType);
+            if ((FSqlConnection != null) && (FSqlConnection.State != ConnectionState.Closed))
+            {
+                CloseDBConnectionInternal(FDbType);
+            }
         }
 
         /// <summary>
@@ -554,7 +521,7 @@ namespace Ict.Common.DB
             if (ConnectionReady())
             {
 #if DEBUGMODE
-                if (FDebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                 {
                     TLogging.Log("  Closing Database connection...");
                 }
@@ -564,7 +531,7 @@ namespace Ict.Common.DB
                 {
                     /* TODO 1 oChristianK cLogging (Console) : Put the following debug messages in a DEBUGMODE conditional compilation directive and raise the DL to >=DB_DEBUGLEVEL_TRACE; these logging statements were inserted to trace problems
                      *in on live installations! */
-                    if (FDebugLevel >= 5)
+                    if (TLogging.DL >= 5)
                     {
                         TLogging.Log("TDataBase.CloseDBConnectionInternal: before calling this.RollbackTransaction",
                             TLoggingType.ToConsole | TLoggingType.ToLogfile);
@@ -572,7 +539,7 @@ namespace Ict.Common.DB
 
                     this.RollbackTransaction();
 
-                    if (FDebugLevel >= 5)
+                    if (TLogging.DL >= 5)
                     {
                         TLogging.Log("TDataBase.CloseDBConnectionInternal: after calling this.RollbackTransaction",
                             TLoggingType.ToConsole | TLoggingType.ToLogfile);
@@ -581,7 +548,7 @@ namespace Ict.Common.DB
 
                 /* TODO 1 oChristianK cLogging (Console) : Put the following debug messages in a DEBUGMODE conditional compilation directive and raise the DL to >=DB_DEBUGLEVEL_TRACE; these logging statements were inserted to trace problems in on
                  *live installations! */
-                if (FDebugLevel >= 5)
+                if (TLogging.DL >= 5)
                 {
                     TLogging.Log(
                         "TDataBase.CloseDBConnectionInternal: before calling FDBConnectionInstance.CloseODBCConnection(FConnection) in AppDomain: "
@@ -593,14 +560,14 @@ namespace Ict.Common.DB
                 FDBConnectionInstance.CloseDBConnection(FSqlConnection);
                 FSqlConnection = null;
 #if DEBUGMODE
-                if (FDebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                 {
                     TLogging.Log(
                         "TDataBase.CloseDBConnectionInternal: closed DB Connection.");
                 }
 #endif
 
-                if (FDebugLevel >= 5)
+                if (TLogging.DL >= 5)
                 {
                     TLogging.Log(
                         "TDataBase.CloseDBConnectionInternal: after calling FDBConnectionInstance.CloseODBCConnection(FConnection) in AppDomain: "
@@ -687,7 +654,7 @@ namespace Ict.Common.DB
             IDbCommand ObjReturn = null;
 
 #if DEBUGMODE
-            if (FDebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
+            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
             {
                 TLogging.Log("Entering " + this.GetType().FullName + ".Command()...");
             }
@@ -701,7 +668,7 @@ namespace Ict.Common.DB
             try
             {
 #if DEBUGMODE
-                if (FDebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                 {
                     TLogging.Log(this.GetType().FullName + ".Command: now getting IDbCommand(" + ACommandText + ")...");
                 }
@@ -727,7 +694,7 @@ namespace Ict.Common.DB
                     FPrepareNextCommand = false;
 
 #if DEBUGMODE
-                    if (FDebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                     {
                         TLogging.Log(this.GetType().FullName + ".Command: will 'Prepare' this Command.");
                     }
@@ -744,7 +711,7 @@ namespace Ict.Common.DB
                     FTimeoutForNextCommand = -1;
 
 #if DEBUGMODE
-                    if (FDebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                     {
                         TLogging.Log(
                             this.GetType().FullName + ".Command: set Timeout for this Command to " + ObjReturn.CommandTimeout.ToString() + ".");
@@ -911,7 +878,7 @@ namespace Ict.Common.DB
             }
 
 #if DEBUGMODE
-            if (FDebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
+            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
             {
                 TLogging.Log("Entering " + this.GetType().FullName + ".Select()...");
             }
@@ -924,7 +891,7 @@ namespace Ict.Common.DB
             {
                 IDbDataAdapter TheAdapter = SelectDA(ASqlStatement, AReadTransaction, AParametersArray);
 #if DEBUGMODE
-                if (FDebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                 {
                     TLogging.Log(((this.GetType().FullName + ".Select: now filling IDbDataAdapter('" + ADataTableName) + "')..."));
                 }
@@ -932,7 +899,7 @@ namespace Ict.Common.DB
 
                 FDataBaseRDBMS.FillAdapter(TheAdapter, ref AFillDataSet, AStartRecord, AMaxRecords, ADataTableName);
 #if DEBUGMODE
-                if (FDebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                 {
                     TLogging.Log(((this.GetType().FullName + ".Select: finished filling IDbDataAdapter(DataTable '" +
                                    ADataTableName) + "'). DT Row Count: " + AFillDataSet.Tables[ADataTableName].Rows.Count.ToString()));
@@ -949,7 +916,7 @@ namespace Ict.Common.DB
             }
 
 #if DEBUGMODE
-            if (FDebugLevel >= DBAccess.DB_DEBUGLEVEL_RESULT)
+            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_RESULT)
             {
                 if ((ObjReturn != null) && (ObjReturn.Tables[ADataTableName] != null))
                 {
@@ -1027,7 +994,7 @@ namespace Ict.Common.DB
             return SelectDA(ASqlStatement, AReadTransaction, new OdbcParameter[0]);
 #if WITH_POSTGRESQL_LOGGING
 #if DEBUGMODE
-            if (FDebugLevel >= DB_DEBUGLEVEL_TRACE)
+            if (TLogging.DL >= DB_DEBUGLEVEL_TRACE)
             {
                 NpgsqlEventLog.Level = LogLevel.None;
             }
@@ -1051,7 +1018,7 @@ namespace Ict.Common.DB
         public IDbDataAdapter SelectDA(String ASqlStatement, TDBTransaction AReadTransaction, DbParameter[] AParametersArray)
         {
 #if DEBUGMODE
-            if (FDebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
+            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
             {
                 TLogging.Log("Entering " + this.GetType().FullName + ".SelectDA()...");
             }
@@ -1063,7 +1030,7 @@ namespace Ict.Common.DB
             }
 
 #if DEBUGMODE
-            if (FDebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
+            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
             {
                 TLogging.Log(this.GetType().FullName + ".SelectDA: now opening IDbDataAdapter(" + ASqlStatement + ")...");
             }
@@ -1134,7 +1101,7 @@ namespace Ict.Common.DB
             DbParameter[] AParametersArray)
         {
 #if DEBUGMODE
-            if (FDebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
+            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
             {
                 TLogging.Log("Entering " + this.GetType().FullName + ".SelectDTInternal()...");
             }
@@ -1150,7 +1117,7 @@ namespace Ict.Common.DB
             try
             {
 #if DEBUGMODE
-                if (FDebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                 {
                     TLogging.Log(this.GetType().FullName + ".SelectDTInternal: now opening IDbDataAdapter(" + ASqlStatement + ")...");
                 }
@@ -1161,7 +1128,7 @@ namespace Ict.Common.DB
                 FDataBaseRDBMS.FillAdapter(TheAdapter, ref ObjReturn, 0, 0);
 
 #if DEBUGMODE
-                if (FDebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                 {
                     TLogging.Log(((this.GetType().FullName + ".SelectDTInternal: finished filling IDbDataAdapter(DataTable " +
                                    ADataTableName) + "). DT Row Count: " + ObjReturn.Rows.Count.ToString()));
@@ -1174,7 +1141,7 @@ namespace Ict.Common.DB
             }
 
 #if DEBUGMODE
-            if (FDebugLevel >= DBAccess.DB_DEBUGLEVEL_RESULT)
+            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_RESULT)
             {
                 LogTable(ObjReturn);
             }
@@ -1202,6 +1169,14 @@ namespace Ict.Common.DB
                 throw new Exception("Security Violation: Access Permission failed");
             }
 
+#if DEBUGMODE
+            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+            {
+                TLogging.Log("Entering " + this.GetType().FullName + ".SelectDT()...");
+            }
+            LogSqlStatement(this.GetType().FullName + ".SelectDT()", ASqlStatement, AParametersArray);
+#endif
+
             try
             {
                 IDbDataAdapter TheAdapter = FDataBaseRDBMS.NewAdapter();
@@ -1212,6 +1187,16 @@ namespace Ict.Common.DB
             {
                 LogExceptionAndThrow(exp, ASqlStatement, AParametersArray, "Error fetching records.");
             }
+
+#if DEBUGMODE
+            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_RESULT)
+            {
+                if (ATypedDataTable != null)
+                {
+                    LogTable(ATypedDataTable);
+                }
+            }
+#endif
 
             return ATypedDataTable;
         }
@@ -1238,7 +1223,7 @@ namespace Ict.Common.DB
             try
             {
 #if DEBUGMODE
-                if (FDebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                 {
                     TLogging.Log(
                         "Trying to open a DB Transaction... (in Appdomain " +
@@ -1248,7 +1233,7 @@ namespace Ict.Common.DB
                 FTransaction = FSqlConnection.BeginTransaction();
 
 #if DEBUGMODE
-                if (FDebugLevel >= DBAccess.DB_DEBUGLEVEL_QUERY)
+                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_QUERY)
                 {
                     TLogging.Log("DB Transaction started (in Appdomain " + AppDomain.CurrentDomain.ToString() + " ).");
                 }
@@ -1332,7 +1317,7 @@ namespace Ict.Common.DB
             try
             {
 #if DEBUGMODE
-                if (FDebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                 {
                     TLogging.Log(
                         "Trying to open an DB Transaction with IsolationLevel '" + AIsolationLevel.ToString() +
@@ -1343,7 +1328,7 @@ namespace Ict.Common.DB
                 FTransaction = FSqlConnection.BeginTransaction(AIsolationLevel);
 
 #if DEBUGMODE
-                if (FDebugLevel >= DBAccess.DB_DEBUGLEVEL_QUERY)
+                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_QUERY)
                 {
                     TLogging.Log(
                         "DB Transaction with IsolationLevel '" + AIsolationLevel.ToString() + "' started (in Appdomain " +
@@ -1441,7 +1426,7 @@ namespace Ict.Common.DB
                 String msg = "";
 #endif
 #if DEBUGMODE
-                if (FDebugLevel >= DBAccess.DB_DEBUGLEVEL_QUERY)
+                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_QUERY)
                 {
                     msg = "DB Transaction with IsolationLevel '" + FTransaction.IsolationLevel.ToString() + "' committed (in Appdomain " +
                           AppDomain.CurrentDomain.ToString() + " ).";
@@ -1451,7 +1436,7 @@ namespace Ict.Common.DB
                 FTransaction.Commit();
 
 #if DEBUGMODE
-                if (FDebugLevel >= DBAccess.DB_DEBUGLEVEL_QUERY)
+                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_QUERY)
                 {
                     TLogging.Log(msg);
                 }
@@ -1477,7 +1462,7 @@ namespace Ict.Common.DB
             }
 
 #if DEBUGMODE
-            if (FDebugLevel >= DBAccess.DB_DEBUGLEVEL_QUERY)
+            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_QUERY)
             {
                 msg = "DB Transaction with IsolationLevel '" + FTransaction.IsolationLevel.ToString() + "' rolled back (in Appdomain " +
                       AppDomain.CurrentDomain.ToString() + " ).";
@@ -1487,7 +1472,7 @@ namespace Ict.Common.DB
             FTransaction.Rollback();
 
 #if DEBUGMODE
-            if (FDebugLevel >= DBAccess.DB_DEBUGLEVEL_QUERY)
+            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_QUERY)
             {
                 TLogging.Log(msg);
             }
@@ -1582,7 +1567,7 @@ namespace Ict.Common.DB
             if (TheTransaction == null)
             {
 #if DEBUGMODE
-                if (FDebugLevel >= 7)
+                if (TLogging.DL >= 7)
                 {
                     Console.WriteLine("GetNewOrExistingTransaction: creating new transaction. IsolationLevel: " + ADesiredIsolationLevel.ToString());
                 }
@@ -1593,7 +1578,7 @@ namespace Ict.Common.DB
             else
             {
 #if DEBUGMODE
-                if (FDebugLevel >= 7)
+                if (TLogging.DL >= 7)
                 {
                     Console.WriteLine(
                         "GetNewOrExistingTransaction: using existing transaction. IsolationLevel: " + TheTransaction.IsolationLevel.ToString());
@@ -2069,7 +2054,7 @@ namespace Ict.Common.DB
             if (ConnectionReady())
             {
 #if DEBUGMODE
-                if (FDebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                 {
                     TLogging.Log(this.GetType().FullName + ".ExecuteScalar: now opening Command(" + ASqlStatement + ")...");
                 }
@@ -2085,7 +2070,7 @@ namespace Ict.Common.DB
                 try
                 {
 #if DEBUGMODE
-                    if (FDebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                     {
                         TLogging.Log(this.GetType().FullName + ".ExecuteScalar: now calling Command.ExecuteScalar...");
                     }
@@ -2099,7 +2084,7 @@ namespace Ict.Common.DB
                     }
 
 #if DEBUGMODE
-                    if (FDebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                     {
                         TLogging.Log(this.GetType().FullName + ".ExecuteScalar: finished calling Command.ExecuteScalar");
                     }
@@ -2116,7 +2101,7 @@ namespace Ict.Common.DB
                 }
 
 #if DEBUGMODE
-                if (FDebugLevel >= DBAccess.DB_DEBUGLEVEL_RESULT)
+                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_RESULT)
                 {
                     TLogging.Log("Result from ExecuteScalar is " + ReturnValue.ToString() + " " + ReturnValue.GetType().ToString());
                 }
@@ -2139,7 +2124,7 @@ namespace Ict.Common.DB
         /// <returns></returns>
         public static string ReadSqlFile(string ASqlFilename)
         {
-            ASqlFilename = TAppSettingsManager.GetValueStatic("SqlFiles.Path", ".") +
+            ASqlFilename = TAppSettingsManager.GetValue("SqlFiles.Path", ".") +
                            Path.DirectorySeparatorChar +
                            ASqlFilename;
 
@@ -2347,13 +2332,13 @@ namespace Ict.Common.DB
                 PrintContext = "(Context '" + AContext + "')" + Environment.NewLine;
             }
 
-            if (FDebugLevel >= DBAccess.DB_DEBUGLEVEL_QUERY)
+            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_QUERY)
             {
                 TLogging.Log(PrintContext +
                     "The SQL query is: " + Environment.NewLine + FormatSQLStatement(ASqlStatement));
             }
 
-            if ((FDebugLevel >= DBAccess.DB_DEBUGLEVEL_RESULT)
+            if ((TLogging.DL >= DBAccess.DB_DEBUGLEVEL_RESULT)
                 && (AParametersArray != null))
             {
                 Int32 Counter = 1;

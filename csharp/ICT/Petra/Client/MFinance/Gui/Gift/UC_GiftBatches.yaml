@@ -13,6 +13,7 @@ RootNode:
         actPostBatch: {Label=&Post Batch, ActionClick=PostBatch}
         actExportBatches: {Label=&Export Batches, ActionClick=ExportBatches}
         actImportBatches: {Label=&Import Batches, ActionClick=ImportBatches}
+        actReverseGiftBatch: {Label=&Reverse Gift Batch, ActionClick=ReverseGiftBatch}
     Controls:
         pnlContent:
             Dock: Fill
@@ -74,6 +75,7 @@ RootNode:
         mniBatch:
             Label: &Batch
             mniPost: {Action=actPostBatch}
+            mniReverseGiftBatch: {Action=actReverseGiftBatch}
     Toolbar:
         tbbPostBatch: {Action=actPostBatch}
         tbbExportBatches: {Action=actExportBatches}

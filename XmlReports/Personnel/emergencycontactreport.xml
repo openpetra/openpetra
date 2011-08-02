@@ -4,7 +4,7 @@
 
   <report id="Emergency Contact Report">
 	<description>
-		Emergency Contact Report for conferences / campaigns / shorttermers
+		Emergency Contact Report for conferences / outreaches / shorttermers
 	</description>
 	<reportparameters>
 		<reportparameter name="param_source"></reportparameter>

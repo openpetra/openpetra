@@ -7,7 +7,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -35,9 +35,9 @@ namespace Ict.Petra.Shared.MPersonnel
     public enum TCacheableUnitTablesEnum
     {
         /// <summary>
-        /// List of all campaigns
+        /// List of all outreaches
         /// </summary>
-        CampaignList,
+        OutreachList,
 
         /// <summary>
         /// List of all conferences
@@ -99,7 +99,7 @@ namespace Ict.Petra.Shared.MPersonnel
         ArrivalDeparturePointList,
 
         /// <summary>
-        /// Contains the codes that indicate a person's role and/or position at conferences and xyz_tbds
+        /// Contains the codes that indicate a person's role and/or position at conferences and outreaches
         /// </summary>
         EventRoleList,
 
@@ -166,6 +166,6 @@ namespace Ict.Petra.Shared.MPersonnel
         /// <summary>
         /// Describes the importance of the country and target choices
         /// </summary>
-        XyzTbdPreferenceLevelList
+        OutreachPreferenceLevelList
     };
 }

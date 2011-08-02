@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       timop, wolfgangu
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -41,27 +41,6 @@ namespace Ict.Petra.Shared.MFinance
 
         /// <summary>GL Batch</summary>
         public const String BATCH_HAS_TRANSACTIONS = "HasTransactions";
-
-        /// <summary>GL Batch</summary>
-        public const String TRANSACTION_REVAL = "REVAL";
-
-        /// <summary>GL Batch</summary>
-        public const String TRANSACTION_FX_REVAL = "FX REVAL";
-
-        /// <summary>GL Batch</summary>
-        public const String TRANSACTION_STD = "STD";
-
-        /// <summary>GL Batch</summary>
-        public const String TRANSACTION_ALLOC = "ALLOC";
-
-        /// <summary>GL Batch</summary>
-        public const String TRANSACTION_REALLOC = "REALLOC";
-
-        /// <summary>GL Batch</summary>
-        public const String TRANSACTION_GIFT = "GR";
-
-        /// <summary>GL Batch</summary>
-        public const String TRANSACTION_AP = "INV";
 
         /// <summary>General Ledger</summary>
         public const String ACCOUNT_HIERARCHY_STANDARD = "STANDARD";
@@ -116,5 +95,79 @@ namespace Ict.Petra.Shared.MFinance
 
         /// <summary>Unit-Type is key-min</summary>
         public const String GROUP_DETAIL_KEY_MIN = "KEYMIN";
+
+        /// <summary>Sets the transaction to a debit transaction</summary>
+        public const bool IS_DEBIT = true;
+
+        /// <summary>Sets the transaction to a credit transaction</summary>
+        public const bool IS_CREDIT = false;
+    }
+
+    /// <summary>
+    /// Some E-Nums for the TCommonAccountingTool i.E. for the transaction property
+    /// Sub-System.
+    /// (The enum.toString() is used for the database entry so you must not change the
+    /// values if you do not want to change the entries.)
+    /// </summary>
+    public enum CommonAccountingSubSystemsEnum
+    {
+        /// <summary>
+        /// Sub Systems, General Ledger
+        /// </summary>
+        GL,
+
+        /// <summary>
+        /// Sub Systems, Accounts Payable
+        /// </summary>
+        AP,
+
+        /// <summary>
+        /// Sub Systems, Accounts Receivable
+        /// </summary>
+        AR,
+
+        /// <summary>
+        /// Sub Systems, Gifts receivable
+        /// </summary>
+        GR
+    }
+
+    /// <summary>
+    /// Some E-Nums for the TCommonAccountingTool i.E. for the transaction property
+    /// Transaction Type.
+    /// (The enum.toString() is used for the database entry so you must not change the
+    /// values if you do not want to change the entries.)
+    /// </summary>
+    public enum CommonAccountingTransactionTypesEnum
+    {
+        /// <summary>
+        /// GL-Batch-Standard
+        /// </summary>
+        STD,
+
+        /// <summary>
+        /// ...
+        /// </summary>
+            ALLOC,
+
+        /// <summary>
+        /// ...
+        /// </summary>
+            GR,
+
+        /// <summary>
+        /// ...
+        /// </summary>
+            INV,
+
+        /// <summary>
+        /// Reallloc
+        /// </summary>
+            REALLOC,
+
+        /// <summary>
+        /// Used in a revaluation only ...
+        /// </summary>
+            REVAL
     }
 }

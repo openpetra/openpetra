@@ -50,8 +50,6 @@ namespace Ict.Testing.NUnitForms
     /// </summary>
     public class CommonNUnitFunctions : NUnitFormTest
     {
-        private Int32 FLedgerNumber;
-
         /// <summary>
         /// Empty Constructor ...
         /// </summary>
@@ -131,9 +129,34 @@ namespace Ict.Testing.NUnitForms
             TPetraServerConnector.Connect(strNameConfig);
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         public void DisconnectServerConnection()
         {
             TPetraServerConnector.Disconnect();
+        }
+
+        /// <summary>
+        /// ...
+        /// </summary>
+        public string LoadCSVFileToString(string fileName)
+        {
+            using (FileStream fs = new FileStream(rootPath + "/" + fileName, FileMode.Open))
+            {
+                using (StreamReader sr = new StreamReader(fs))
+                {
+                    return sr.ReadToEnd();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Resets the data base to its initial value ...
+        /// </summary>
+        public void ResetDatabase()
+        {
+            nant("resetDatabase", false);
         }
 
         /// <summary>
@@ -163,7 +186,6 @@ namespace Ict.Testing.NUnitForms
             NantProcess.EnableRaisingEvents = false;
             NantProcess.StartInfo.FileName = "cmd";
             NantProcess.StartInfo.Arguments = "/c " + pathAndFileNameToNantExe + " " + argument;
-            NantProcess.StartInfo.CreateNoWindow = true;
             NantProcess.StartInfo.WorkingDirectory = rootPath;
             NantProcess.StartInfo.UseShellExecute = true;
             NantProcess.EnableRaisingEvents = true;
@@ -192,6 +214,9 @@ namespace Ict.Testing.NUnitForms
         MatchCollection matchCollection;
         Regex regex;
 
+        /// <summary>
+        /// ...
+        /// </summary>
         public DateConverter()
         {
             regex = new Regex("[0-3][0-9]-" +

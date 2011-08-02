@@ -815,49 +815,25 @@ namespace Ict.Common
         /// <returns>the string in new convention</returns>
         public static string UpperCamelCase(String AStr, String ASeparator, bool AIgnorePrefix, bool AIgnorePostfix)
         {
-            string ReturnValue = "";
-            int underscore;
-            String s;
+            string[] parts = AStr.Split(new string[] { ASeparator }, StringSplitOptions.None);
 
-            s = AStr;
-            underscore = s.IndexOf(ASeparator);
-
-            if (underscore == -1)
+            if (parts.Length <= 1)       // Handle string without seperator
             {
-                if (s.Length > 1)
+                return AStr.Length > 1 ? char.ToUpper(AStr[0]).ToString() + AStr.Substring(1) : AStr;
+            }
+
+            int start = (AIgnorePrefix ? 1 : 0);     // ignore the first part
+            int last = (AIgnorePostfix ? 1 : 0);     // ignore the last part
+
+            for (int idx = start; idx < parts.Length - last; ++idx)
+            {
+                if (parts[idx].Length > 0)
                 {
-                    return s.Substring(0, 1).ToUpper() + s.Substring(1);
+                    parts[idx] = char.ToUpper(parts[idx][0]).ToString() + parts[idx].Substring(1);
                 }
-
-                return s;
             }
 
-            if (AIgnorePrefix)
-            {
-                s = s.Substring(underscore + 1);
-            }
-
-            underscore = s.IndexOf(ASeparator);
-
-            while (underscore != -1)
-            {
-                ReturnValue = ReturnValue + s.Substring(0, 1).ToUpper() + s.Substring(1, underscore - 1);
-                s = s.Substring(underscore + 1);
-                underscore = s.IndexOf(ASeparator);
-            }
-
-            if ((!AIgnorePostfix))
-            {
-                // last part of the name
-                ReturnValue = ReturnValue + s.Substring(0, 1).ToUpper();
-                ReturnValue = ReturnValue + s.Substring(1);
-            }
-            else
-            {
-            }
-
-            // drop last part of the name, which identifies the type
-            return ReturnValue;
+            return string.Join("", parts, start, parts.Length - start - last);
         }
 
         /// <summary>

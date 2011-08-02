@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -30,6 +30,7 @@ using System.Collections.Specialized;
 using Ict.Common;
 using Ict.Common.IO;
 using GNU.Gettext;
+using ExcelLibrary.SpreadSheet;
 
 namespace Ict.Common.IO
 {
@@ -81,12 +82,26 @@ namespace Ict.Common.IO
         {
             StreamWriter sw = new StreamWriter(AOutCSVFile);
 
+            sw.Write(Xml2CsvString(ADoc));
+
+            sw.Close();
+
+            return true;
+        }
+
+        /// <summary>
+        /// format the XML into CSV so that it can be opened as a spreadsheet;
+        /// this only works for quite simple files;
+        /// hierarchical structures are flattened (using childOf column)
+        /// </summary>
+        public static string Xml2CsvString(XmlDocument ADoc)
+        {
             // first write the header of the csv file
             List <string>AllAttributes = new List <string>();
             List <XmlNode>AllNodes = new List <XmlNode>();
             GetAllAttributesAndNodes(ADoc.DocumentElement, ref AllAttributes, ref AllNodes);
 
-            string separator = TAppSettingsManager.GetValueStatic("CSVSeparator",
+            string separator = TAppSettingsManager.GetValue("CSVSeparator",
                 System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator);
 
             string headerLine = "";
@@ -96,7 +111,7 @@ namespace Ict.Common.IO
                 headerLine = StringHelper.AddCSV(headerLine, "#" + attrName, separator);
             }
 
-            sw.WriteLine(headerLine);
+            string result = headerLine + Environment.NewLine;
 
             foreach (XmlNode node in AllNodes)
             {
@@ -114,11 +129,66 @@ namespace Ict.Common.IO
                     }
                 }
 
-                sw.WriteLine(line);
+                result += line + Environment.NewLine;
             }
 
-            sw.Close();
+            return result;
+        }
 
+        /// <summary>
+        /// store the data into Excel format, Biff8, Excel 5.0
+        ///
+        /// this makes use of the ExcelLibrary, see ThirdParty directory.
+        /// http://code.google.com/p/excellibrary/
+        /// </summary>
+        /// <param name="ADoc"></param>
+        /// <param name="AStream"></param>
+        /// <returns></returns>
+        public static bool Xml2ExcelStream(XmlDocument ADoc, MemoryStream AStream)
+        {
+            Workbook workbook = new Workbook();
+            Worksheet worksheet = new Worksheet("Data Export");
+
+            Int32 rowCounter = 0;
+            Int16 colCounter = 0;
+
+            // first write the header of the csv file
+            List <string>AllAttributes = new List <string>();
+            List <XmlNode>AllNodes = new List <XmlNode>();
+            GetAllAttributesAndNodes(ADoc.DocumentElement, ref AllAttributes, ref AllNodes);
+
+            foreach (string attrName in AllAttributes)
+            {
+                worksheet.Cells[rowCounter, colCounter] = new Cell("#" + attrName);
+                colCounter++;
+            }
+
+            rowCounter++;
+            colCounter = 0;
+
+            foreach (XmlNode node in AllNodes)
+            {
+                foreach (string attrName in AllAttributes)
+                {
+                    if (attrName == "childOf")
+                    {
+                        worksheet.Cells[rowCounter, colCounter] = new Cell(TXMLParser.GetAttribute(node.ParentNode, "name"));
+                    }
+                    else
+                    {
+                        worksheet.Cells[rowCounter, colCounter] = new Cell(TXMLParser.GetAttribute(node, attrName));
+                    }
+
+                    colCounter++;
+                }
+
+                rowCounter++;
+                colCounter = 0;
+            }
+
+            workbook.Worksheets.Add(worksheet);
+
+            workbook.Save(AStream);
             return true;
         }
 

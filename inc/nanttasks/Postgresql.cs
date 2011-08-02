@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -111,6 +111,7 @@ namespace Ict.Tools.NAntTasks
 
         protected override void ExecuteTask()
         {
+            bool Failure = false;
             System.Diagnostics.Process process;
             process = new System.Diagnostics.Process();
             process.EnableRaisingEvents = false;
@@ -151,7 +152,7 @@ namespace Ict.Tools.NAntTasks
 
             process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             process.StartInfo.UseShellExecute = false;
-            process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.RedirectStandardError = true;
             process.EnableRaisingEvents = true;
             try
             {
@@ -165,7 +166,7 @@ namespace Ict.Tools.NAntTasks
                 throw new Exception("cannot start " + process.StartInfo.FileName + Environment.NewLine + exp.Message);
             }
 
-            string[] output = process.StandardOutput.ReadToEnd().Split('\n');
+            string[] output = process.StandardError.ReadToEnd().Split('\n');
 
             foreach (string line in output)
             {
@@ -173,6 +174,11 @@ namespace Ict.Tools.NAntTasks
                       || line.Trim().StartsWith("DELETE")))
                 {
                     Console.WriteLine(line);
+                }
+
+                if (line.Contains(" error at"))
+                {
+                    Failure = true;
                 }
             }
 
@@ -184,6 +190,11 @@ namespace Ict.Tools.NAntTasks
             if (FailOnError && (process.ExitCode != 0))
             {
                 throw new Exception("Exit Code " + process.ExitCode.ToString() + " shows that something went wrong");
+            }
+
+            if (FailOnError && Failure)
+            {
+                throw new Exception("Output shows that something went wrong");
             }
         }
     }

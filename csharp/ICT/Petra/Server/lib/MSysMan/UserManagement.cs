@@ -26,6 +26,7 @@ using System.Data;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Web.Security;
+using System.Text.RegularExpressions;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Verification;
@@ -74,7 +75,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         [RequireModulePermission("SYSMAN")]
         public static bool SetUserPassword(string AUsername, string APassword)
         {
-            string UserAuthenticationMethod = TAppSettingsManager.GetValueStatic("UserAuthenticationMethod", "OpenPetraDBSUser", false);
+            string UserAuthenticationMethod = TAppSettingsManager.GetValue("UserAuthenticationMethod", "OpenPetraDBSUser", false);
 
             if (UserAuthenticationMethod == "OpenPetraDBSUser")
             {
@@ -102,6 +103,34 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         }
 
         /// <summary>
+        /// this will do some simple checks and return false if the password is not strong enough
+        /// </summary>
+        /// <returns></returns>
+        public static bool CheckPasswordQuality(string APassword, out TVerificationResultCollection AVerification)
+        {
+            // at least 8 characters, at least one digit, at least one letter
+            string passwordPattern = @"^.*(?=.{8,})(?=.*\d)((?=.*[a-z])|(?=.*[A-Z])).*$";
+            Regex regex = new Regex(passwordPattern);
+
+            AVerification = null;
+
+            if (regex.Match(APassword).Success == false)
+            {
+                AVerification = new TVerificationResultCollection();
+                AVerification.Add(new TVerificationResult("password quality check",
+                        String.Format(
+                            Catalog.GetString(
+                                "Your password must have at least {0} characters, and must contain at least one digit and one letter."),
+                            8),
+                        TResultSeverity.Resv_Critical));
+                return false;
+            }
+
+            // TODO: could do some lexical check?
+            return true;
+        }
+
+        /// <summary>
         /// set the password of the current user. this takes into consideration how users are authenticated in this system, by
         /// using an optional authentication plugin dll.
         /// any user can call this, but they need to know the old password.
@@ -109,7 +138,14 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         [RequireModulePermission("NONE")]
         public static bool SetUserPassword(string AUsername, string APassword, string AOldPassword)
         {
-            string UserAuthenticationMethod = TAppSettingsManager.GetValueStatic("UserAuthenticationMethod", "OpenPetraDBSUser", false);
+            string UserAuthenticationMethod = TAppSettingsManager.GetValue("UserAuthenticationMethod", "OpenPetraDBSUser", false);
+
+            TVerificationResultCollection verification;
+
+            if (!CheckPasswordQuality(APassword, out verification))
+            {
+                return false;
+            }
 
             if (UserAuthenticationMethod == "OpenPetraDBSUser")
             {
@@ -158,7 +194,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             newUser.UserId = AUsername.ToUpper();
             userTable.Rows.Add(newUser);
 
-            string UserAuthenticationMethod = TAppSettingsManager.GetValueStatic("UserAuthenticationMethod", "OpenPetraDBSUser", false);
+            string UserAuthenticationMethod = TAppSettingsManager.GetValue("UserAuthenticationMethod", "OpenPetraDBSUser", false);
 
             if (UserAuthenticationMethod == "OpenPetraDBSUser")
             {
@@ -271,7 +307,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             ACanChangePassword = true;
             ACanChangePermissions = true;
 
-            string UserAuthenticationMethod = TAppSettingsManager.GetValueStatic("UserAuthenticationMethod", "OpenPetraDBSUser", false);
+            string UserAuthenticationMethod = TAppSettingsManager.GetValue("UserAuthenticationMethod", "OpenPetraDBSUser", false);
 
             if (UserAuthenticationMethod != "OpenPetraDBSUser")
             {

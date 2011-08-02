@@ -114,7 +114,7 @@ namespace Ict.Petra.Server.MSysMan.Security
         /// <returns>void</returns>
         public static void SignalReloadCachedUserInfo(String AUserID)
         {
-            // $IFDEF DEBUGMODE if TSrvSetting.DL >= 7 then Console.WriteLine(this.GetType.FullName + '.SignalReloadCachedUserInfo: calling DomainManager.ClientTaskAddToOtherClient...'); $ENDIF
+            // $IFDEF DEBUGMODE if TLogging.DL >= 7 then Console.WriteLine(this.GetType.FullName + '.SignalReloadCachedUserInfo: calling DomainManager.ClientTaskAddToOtherClient...'); $ENDIF
             Ict.Petra.Server.App.ClientDomain.DomainManager.ClientTaskAddToOtherClient(AUserID,
                 SharedConstants.CLIENTTASKGROUP_USERINFOREFRESH,
                 "",

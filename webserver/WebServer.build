@@ -3,6 +3,9 @@
 
 <property name="Namespace" value="Ict.Petra.WebServer" />
 
+<!-- to avoid missing quickClean from cleanPetra task in OpenPetra.tobe.migrated.xml -->
+<target name="quickClean"/>
+
 <include buildfile="../inc/nant/OpenPetra.common.xml"/>
 
 <!-- Compat targets -->
@@ -11,6 +14,7 @@
 <target name="custclean"> 
   <!-- Remove generated files from generateWebForms -->
   <delete failonerror="false"><fileset><include name="${dir.root}/webserver/**.bak" /></fileset></delete>
+  <delete failonerror="false"><fileset><include name="${dir.root}/webserver/**-template.js" /></fileset></delete>
   <delete failonerror="false"><fileset><include name="${dir.root}/webserver/**.error" /></fileset></delete>
   <delete failonerror="false"><fileset><include name="${dir.root}/webserver/**.yaml.xml" /></fileset></delete>
   <delete failonerror="false" dir="${dir.delivery}/webserver" />
@@ -19,7 +23,7 @@
 <target name="generateWebforms">
   <!-- Generate webforms --> 
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
-  <property name="generateWebformsParameters" value="-TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates/ExtJs -petraxml:${PetraXML.file} -deliveryPath:${dir.webserver}"/>
+  <property name="generateWebformsParameters" value="-TemplateDir:${dir.incdir.template.src}/ExtJs -petraxml:${PetraXML.file} -deliveryPath:${dir.webserver}"/>
   <property name="ClientPath" value="${dir.root}/webserver"/>
   <ExecDotNet program="${dir.bin}/GenerateExtJsForms.exe" commandline="-ymlfile:${ClientPath} ${generateWebformsParameters}"/>
 </target>
@@ -27,7 +31,7 @@
 <target name="generateWebform">
   <!-- Generate single webform -->
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
-  <property name="generateWebformsParameters" value="-TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates/ExtJs -petraxml:${PetraXML.file} -deliveryPath:${dir.webserver}"/>
+  <property name="generateWebformsParameters" value="-TemplateDir:${dir.incdir.template.src}/ExtJs -petraxml:${PetraXML.file} -deliveryPath:${dir.webserver}"/>
   <property name="ClientPath" value="${dir.root}/webserver"/>
   <ExecDotNet program="${PetraToolsExe.dir}/GenerateExtJsForms.exe" commandline="-ymlfile:${ClientPath}/${file} ${generateWebformsParameters}"/>
 </target>
@@ -38,13 +42,16 @@
     <fileset basedir="${dir.root}/webserver/">
       <include name="**.*" />
       <exclude name="WebServer.build" />
+      <exclude name="**/*.yaml" />
+      <exclude name="**/*.xml" />
+      <exclude name="**/*-template.js" />
     </fileset>
   </copy>
   
-  <get src="http://extjs.cachefly.net/ext-3.2.1/adapter/ext/ext-base.js" dest="${dir.webserver}/js/ext-base.js"/>
-  <get src="http://extjs.cachefly.net/ext-3.2.1/ext-all.js" dest="${dir.webserver}/js/ext-all.js"/>
-  <get src="http://extjs.cachefly.net/ext-3.2.1/ext-all-debug.js" dest="${dir.webserver}/js/ext-all-debug.js"/>
-  <get src="http://extjs.cachefly.net/ext-3.2.1/resources/css/ext-all.css" dest="${dir.webserver}/css/ext-all.css"/>
+  <get src="http://extjs.cachefly.net/ext-3.3.1/adapter/ext/ext-base.js" dest="${dir.webserver}/js/ext-base.js"/>
+  <get src="http://extjs.cachefly.net/ext-3.3.1/ext-all.js" dest="${dir.webserver}/js/ext-all.js"/>
+  <get src="http://extjs.cachefly.net/ext-3.3.1/ext-all-debug.js" dest="${dir.webserver}/js/ext-all-debug.js"/>
+  <get src="http://extjs.cachefly.net/ext-3.3.1/resources/css/ext-all.css" dest="${dir.webserver}/css/ext-all.css"/>
   <unzip zipfile="${dir.root}/csharp/ThirdParty/extjs/ext-images-default.zip" todir="${dir.webserver}/images"/>
   <unzip zipfile="${dir.root}/csharp/ThirdParty/extjs/ext-lang.zip" todir="${dir.webserver}/js"/>
 
@@ -68,12 +75,9 @@
   </copy>
 
   <!-- Create config files, if missing -->
-  <copy file="${dir.incdir.template.etc}/web-${DBMS.Type}.config"
-        tofile="${WebServerConfigFile}">
-    <filterchain>
-      <expandproperties />
-    </filterchain>
-  </copy>
+  <property name="templateFile" value="${dir.incdir.template.etc}/web-${DBMS.Type}.config"/>
+  <property name="configFile" value="${WebServerConfigFile}"/>
+  <call target="initConfigFiles-internal"/>
 
 <!-- MGR: TODO: Remove copy. Should be during database work! -->
   <copy file="${path::combine(dir.db.patches, 'version.txt')}"
@@ -123,6 +127,8 @@
       <include name="**.js" />
       <include name="**.html" />
       <include name="**.png" />
+      <include name="**.gif" />
+      <include name="**.jpg" />
       <include name="**.aspx" />
       <include name="**.aspx.cs" />
     </fileset>
@@ -138,33 +144,106 @@
 
     <fileset basedir="${dir.root}/demodata/formletters" prefix="formletters">
       <include name="*.*" />
+      <exclude name="*.bak"/>
+      <exclude name="*.~*"/>
     </fileset>
-
-    <!-- special files for quick links to the legal documents, for each country -->
-    <fileset basedir="${OpenPetraRoot.dir}/webserver/de" prefix="webserver/de">
-      <include name="**.*" />
-    </fileset>
-    <fileset basedir="${OpenPetraRoot.dir}/webserver/at" prefix="webserver/at">
-      <include name="**.*" />
-    </fileset>
-    <fileset basedir="${OpenPetraRoot.dir}/webserver/uk" prefix="webserver/uk">
-      <include name="**.*" />
-    </fileset>
-    <fileset basedir="${OpenPetraRoot.dir}/webserver/fi" prefix="webserver/fi">
-      <include name="**.*" />
-    </fileset>
-    <fileset basedir="${OpenPetraRoot.dir}/webserver/nl" prefix="webserver/nl">
-      <include name="**.*" />
-    </fileset>
-    <fileset basedir="${OpenPetraRoot.dir}/webserver/fo" prefix="webserver/fo">
-      <include name="**.*" />
-    </fileset>
-    <fileset basedir="${OpenPetraRoot.dir}/webserver/ch" prefix="webserver/ch">
-      <include name="**.*" />
-    </fileset>
-
   </zip>
   <delete file="${tempdir}/web-sample.config"/>
+</target>
+
+<target name="packTranslation">
+  <property name="country-id" value="de-DE,en-GB,nl-BE,nl-NL,fo-FO" overwrite="false"/>
+
+  <delete dir="${dir.delivery}/translationPack"/>
+  
+  <foreach item="String" property="country" delim="," in="${country-id}" >
+    <mkdir dir="${dir.delivery}/translationPack/${country}" failonerror="false"/>
+    <copy todir="${dir.delivery}/translationPack/${country}" overwrite="true">
+      <fileset basedir="${dir.root}/demodata/formletters">
+        <include name="ApplicationPDF.${country}*.*" />
+        <include name="ApplicationReceivedEmail.${country}*.*" />
+        <exclude name="*.bak"/>
+        <exclude name="*.~*"/>
+      </fileset>
+    </copy>
+    <copy todir="${dir.delivery}/translationPack/${country}" overwrite="true">
+      <fileset basedir="${dir.root}/webserver/Apps/OnlineRegistration">
+        <include name="success.${country}*.*" />
+        <include name="main.${country}*.*" />
+        <exclude name="*-template.js" />
+        <exclude name="*.yaml.xml" />
+        <exclude name="*.bak"/>
+        <exclude name="*.~*"/>
+      </fileset>
+    </copy>
+    <copy todir="${dir.delivery}/translationPack/${country}" overwrite="true">
+      <fileset basedir="${dir.root}/webserver/Apps/OnlineRegistration/doc">
+        <include name="*${country}*.*" />
+        <exclude name="*.bak"/>
+        <exclude name="*.~*"/>
+      </fileset>
+    </copy>
+    <!-- todo: country index.html for docs??? -->
+    
+    <!-- rename to text file -->
+    <foreach item="File" property="OldName">
+      <in>
+        <items basedir="${dir.delivery}/translationPack/${country}">
+          <include name="*.*"/>
+        </items>
+      </in>
+      <do>
+        <move file="${OldName}" tofile="${dir.delivery}/translationPack/${country}/${path::get-file-name-without-extension(OldName)}.txt"/>
+      </do>
+    </foreach>
+  </foreach>
+
+  
+  
+  <zip zipfile="${dir.delivery}/ForHomeOfficeTranslators.zip">
+    <fileset basedir="${dir.delivery}/translationPack">
+      <include name="**.*" />
+    </fileset>
+  </zip>
+</target>
+
+<target name="unpackTranslation">
+  <unzip zipfile="${zipfile}" todir="${dir.delivery}"/> 
+
+  <property name="source" value="${dir.delivery}/${country-id}"/>
+  <property name="destination" value="${dir.root}/webserver/Apps/OnlineRegistration"/>
+  <property name="formletterspath" value="${dir.root}/demodata/formletters"/>
+  <move file="${source}/success.${country-id}.txt" tofile="${destination}/success.${country-id}.aspx" overwrite="true" failonerror="false"/>
+  <move file="${source}/success.${country-id}.adult.txt" tofile="${destination}/success.${country-id}.adult.aspx" overwrite="true" failonerror="false"/>
+  <move file="${source}/main.${country-id}.txt" tofile="${destination}/main.${country-id}.yaml" overwrite="true" failonerror="false"/>
+  <move file="${source}/main.${country-id}.teen.txt" tofile="${destination}/main.${country-id}.teen.yaml" overwrite="true" failonerror="false"/>
+  <move file="${source}/main.${country-id}.adult.txt" tofile="${destination}/main.${country-id}.adult.yaml" overwrite="true" failonerror="false"/>
+  <move file="${source}/main.${country-id}.serve.txt" tofile="${destination}/main.${country-id}.serve.yaml" overwrite="true" failonerror="false"/>
+  <move file="${source}/main.${country-id}.coach.txt" tofile="${destination}/main.${country-id}.coach.yaml" overwrite="true" failonerror="false"/>
+  <move file="${source}/main.${country-id}.pray.txt" tofile="${destination}/main.${country-id}.pray.yaml" overwrite="true" failonerror="false"/>
+  <move file="${source}/main.${country-id}.mm.txt" tofile="${destination}/main.${country-id}.mm.yaml" overwrite="true" failonerror="false"/>
+  <move file="${source}/main.${country-id}.staff.txt" tofile="${destination}/main.${country-id}.staff.yaml" overwrite="true" failonerror="false"/>
+  <move file="${source}/main.${country-id}.child.txt" tofile="${destination}/main.${country-id}.child.yaml" overwrite="true" failonerror="false"/>
+  <move file="${source}/main.${country-id}-lang.txt" tofile="${destination}/main.${country-id}-lang.js" overwrite="true" failonerror="false"/>
+  <move file="${source}/ApplicationReceivedEmail.${country-id}.txt" tofile="${formletterspath}/ApplicationReceivedEmail.${country-id}.html" overwrite="true" failonerror="false"/>
+  <move file="${source}/ApplicationReceivedEmail.${country-id}.adult.txt" tofile="${formletterspath}/ApplicationReceivedEmail.${country-id}.adult.html" overwrite="true" failonerror="false"/>
+  <move file="${source}/ApplicationPDF.${country-id}.txt" tofile="${formletterspath}/ApplicationPDF.${country-id}.html" overwrite="true" failonerror="false"/>
+  <move file="${source}/ApplicationPDF.${country-id}.adult.txt" tofile="${formletterspath}/ApplicationPDF.${country-id}.adult.html" overwrite="true" failonerror="false"/>
+  <move file="${source}/ApplicationPDF.${country-id}.child.txt" tofile="${formletterspath}/ApplicationPDF.${country-id}.child.html" overwrite="true" failonerror="false"/>
+  <move file="${source}/ApplicationPDF.${country-id}.staff.txt" tofile="${formletterspath}/ApplicationPDF.${country-id}.staff.html" overwrite="true" failonerror="false"/>
+  <move file="${source}/dresscode.${country-id}.txt" tofile="${destination}/doc/dresscode.${country-id}.html" overwrite="true" failonerror="false"/>
+  <move file="${source}/CLS.${country-id}.txt" tofile="${destination}/doc/CLS.${country-id}.html" overwrite="true" failonerror="false"/>
+  
+    <foreach item="File" property="filename">
+      <in>
+        <items basedir="${source}">
+          <include name="*.*"/>
+        </items>
+      </in>
+      <do>
+        <echo message="what about ${filename}"/>
+      </do>
+    </foreach>
 </target>
 
 <include buildfile="../inc/nant/OpenPetra.csharp.xml"/> 

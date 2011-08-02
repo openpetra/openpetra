@@ -56,7 +56,7 @@ namespace Ict.Common.Controls
         /// constructor
         public TLstFolderNavigation()
         {
-            ResourceDirectory = TAppSettingsManager.GetValueStatic("Resource.Dir");
+            ResourceDirectory = TAppSettingsManager.GetValue("Resource.Dir");
 
             InitializeComponent();
             #region CATALOGI18N

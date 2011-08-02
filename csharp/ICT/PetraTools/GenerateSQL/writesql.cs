@@ -39,10 +39,30 @@ namespace GenerateSQL
 /// </summary>
 public class TWriteSQL
 {
+    /// <summary>
+    /// list of all supported database types
+    /// </summary>
     public enum eDatabaseType
     {
-        PostgreSQL, MySQL, Sqlite
+        /// <summary>
+        /// PostgreSQL
+        /// </summary>
+        PostgreSQL,
+        /// <summary>
+        /// MySQL
+        /// </summary>
+        MySQL,
+        /// <summary>
+        /// SQLite
+        /// </summary>
+        Sqlite
     };
+
+    /// <summary>
+    /// parse the database type from a string
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
     public static eDatabaseType StringToDBMS(string name)
     {
         if (name.ToLower() == "postgresql")
@@ -64,6 +84,14 @@ public class TWriteSQL
         return eDatabaseType.PostgreSQL;
     }
 
+    /// <summary>
+    /// create a database file or the scripts for creating a database.
+    /// for SQLite that is directly the file,
+    /// for the other database systems the sql create table scripts etc are written
+    /// </summary>
+    /// <param name="AStore"></param>
+    /// <param name="ATargetDatabase"></param>
+    /// <param name="AOutputFile"></param>
     public static void WriteSQL(TDataDefinitionStore AStore, eDatabaseType ATargetDatabase, String AOutputFile)
     {
         System.Console.WriteLine("Writing file to {0}...", AOutputFile);
@@ -284,7 +312,7 @@ public class TWriteSQL
         return true;
     }
 
-    public static Boolean WriteSequence(StreamWriter ASw, TSequence ASequence)
+    private static Boolean WriteSequence(StreamWriter ASw, TSequence ASequence)
     {
         ASw.WriteLine("CREATE SEQUENCE \"{0}\"", ASequence.strName);
         ASw.WriteLine("  INCREMENT BY {0}", ASequence.iIncrement.ToString());
@@ -302,7 +330,7 @@ public class TWriteSQL
         return true;
     }
 
-    public static Boolean WriteTable(eDatabaseType ATargetDatabase, StreamWriter ASw, TTable ATable)
+    private static Boolean WriteTable(eDatabaseType ATargetDatabase, StreamWriter ASw, TTable ATable)
     {
         // Show the table info
         ASw.WriteLine("-- {0}", ATable.strDescription.Replace("\r", " ").Replace("\n", " "));
@@ -326,7 +354,7 @@ public class TWriteSQL
         return true;
     }
 
-    public static void DumpFields(eDatabaseType ATargetDatabase, StreamWriter ASw, TTable ATable)
+    private static void DumpFields(eDatabaseType ATargetDatabase, StreamWriter ASw, TTable ATable)
     {
         // Run over all fields
         bool first = true;
@@ -338,6 +366,15 @@ public class TWriteSQL
         }
     }
 
+    /// <summary>
+    /// write the part of the sql creation script for a specific column
+    /// </summary>
+    /// <param name="ATargetDatabase"></param>
+    /// <param name="ATable"></param>
+    /// <param name="field"></param>
+    /// <param name="first"></param>
+    /// <param name="AWithComments"></param>
+    /// <returns></returns>
     public static string WriteField(eDatabaseType ATargetDatabase, TTable ATable, TTableField field, bool first, bool AWithComments)
     {
         string result = "";
@@ -460,7 +497,7 @@ public class TWriteSQL
         return result;
     }
 
-    public static void DumpConstraints(StreamWriter ASw, TTable ATable, Boolean onlyForeign, Boolean AAdd)
+    private static void DumpConstraints(StreamWriter ASw, TTable ATable, Boolean onlyForeign, Boolean AAdd)
     {
         foreach (TConstraint constr in ATable.grpConstraint.List)
         {
@@ -468,7 +505,7 @@ public class TWriteSQL
         }
     }
 
-    public static void WriteConstraint(StreamWriter ASw, TTable ATable, TConstraint constr, Boolean onlyForeign, Boolean AAdd)
+    private static void WriteConstraint(StreamWriter ASw, TTable ATable, TConstraint constr, Boolean onlyForeign, Boolean AAdd)
     {
         if (!onlyForeign && (constr.strType == "primarykey"))
         {
@@ -502,7 +539,7 @@ public class TWriteSQL
     }
 
     static Int32 countGeneratedIndex = 0;
-    public static void DumpIndexes(StreamWriter ASw, TTable ATable, Boolean AAdd)
+    private static void DumpIndexes(StreamWriter ASw, TTable ATable, Boolean AAdd)
     {
         for (System.Int32 implicit_ = 0; implicit_ <= 1; implicit_ += 1)
         {

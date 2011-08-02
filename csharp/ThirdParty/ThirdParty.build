@@ -16,6 +16,10 @@
   <!-- nothing to do here -->
 </target>
 
+<target name="indent">
+  <!-- nothing to do here -->
+</target>
+
 <target name="compile" description="Copy Thirdparty DLLs to bin directory">
   <foreach item="Folder" in="${dir.3rdParty}" property="foldername">
     <copy todir="${dir.bin}">
@@ -31,6 +35,8 @@
   <copy file="SQLite/System.Data.SQLite.dll" tofile="${dir.bin}/System.Data.SQLite.dll" if="${platform::is-windows()}" />
   <copy file="SQLite/System.Data.SQLite.ManagedOnly.dll" tofile="${dir.bin}/System.Data.SQLite.dll" if="${not platform::is-windows()}" />
 </target>
+
+<target name="prepareProjects"/>
 
 <target name="generateCsproject" />
 

@@ -54,9 +54,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
         public TWinFormsWriter(string AFormType)
         {
-            TAppSettingsManager settings = new TAppSettingsManager(false);
-
-            FResourceDirectory = settings.GetValue("ResourceDir", true);
+            FResourceDirectory = TAppSettingsManager.GetValue("ResourceDir", true);
 
             FImageResources = new XmlDocument();
             XmlElement root = FImageResources.CreateElement("root");
@@ -712,8 +710,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FTemplate = new ProcessTemplate(ATemplateFile);
 
             // load default header with license and copyright
-            TAppSettingsManager opts = new TAppSettingsManager(false);
-            string templateDir = opts.GetValue("TemplateDir", true);
+            string templateDir = TAppSettingsManager.GetValue("TemplateDir", true);
             FTemplate.AddToCodelet("GPLFILEHEADER",
                 ProcessTemplate.LoadEmptyFileComment(templateDir + Path.DirectorySeparatorChar + ".." +
                     Path.DirectorySeparatorChar));
@@ -741,6 +738,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FTemplate.AddToCodelet("IGNOREFIRSTTABPAGESELECTIONCHANGEDEVENT", "");
             FTemplate.AddToCodelet("DYNAMICTABPAGEUSERCONTROLSETUPMETHODS", "");
             FTemplate.AddToCodelet("ELSESTATEMENT", "");
+            FTemplate.AddToCodelet("VALIDATEDETAILS", "");
 
             if (FCodeStorage.ManualFileExistsAndContains("void BeforeShowDetailsManual"))
             {
@@ -1041,6 +1039,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
             else if (FCodeStorage.ManualFileExistsAndContains("GetDataFromControlsManual("))
             {
                 FTemplate.AddToCodelet("SAVEDATA", "GetDataFromControlsManual(ARow);" + Environment.NewLine);
+            }
+
+            if (FCodeStorage.ManualFileExistsAndContains("ValidateDetailsManual"))
+            {
+                ProcessTemplate validateSnippet = FTemplate.GetSnippet("VALIDATEDETAILS");
+                FTemplate.InsertSnippet("VALIDATEDETAILS", validateSnippet);
             }
 
             if (FCodeStorage.ManualFileExistsAndContains("GetDetailDataFromControlsManual"))
