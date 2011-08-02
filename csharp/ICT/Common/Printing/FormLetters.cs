@@ -443,17 +443,23 @@ namespace Ict.Common.Printing
         {
             public float currentY;
             public float detailHeight;
+            public float detailLeft;
             public float groupTopHeight;
+            public float groupTopLeft;
             public float groupBottomHeight;
+            public float groupBottomLeft;
 
             public THTMLFormReport(string AFilename) : base(AFilename)
             {
                 Dictionary <string, string>styles = GetStyles(TXMLParser.FindNodeRecursive(TemplateDoc.DocumentElement, "div", "detail"));
                 detailHeight = GetFloat(styles, "height", unit);
+                detailLeft = GetFloat(styles, "left", unit);
                 styles = GetStyles(TXMLParser.FindNodeRecursive(TemplateDoc.DocumentElement, "div", "groupTop"));
                 groupTopHeight = GetFloat(styles, "height", unit);
+                groupTopLeft = GetFloat(styles, "left", unit);
                 styles = GetStyles(TXMLParser.FindNodeRecursive(TemplateDoc.DocumentElement, "div", "groupBottom"));
                 groupBottomHeight = GetFloat(styles, "height", unit);
+                groupBottomLeft = GetFloat(styles, "left", unit);
             }
 
             public override void StartDocument()
@@ -498,7 +504,7 @@ namespace Ict.Common.Printing
 
                     ResultDocument += Environment.NewLine +
                                       String.Format("<div style='position:absolute, left:{0}{2}, top:{1}{2}'>",
-                        marginLeft,
+                        groupTopLeft,
                         currentY,
                         unit);
                     ResultDocument += GroupTopText;
@@ -534,7 +540,7 @@ namespace Ict.Common.Printing
 
                         ResultDocument += Environment.NewLine +
                                           String.Format("<div style='position:absolute, left:{0}{2}, top:{1}{2}'>",
-                            marginLeft,
+                            detailLeft,
                             currentY,
                             unit);
                         ResultDocument += DetailText;
@@ -554,7 +560,7 @@ namespace Ict.Common.Printing
 
                     ResultDocument += Environment.NewLine +
                                       String.Format("<div style='position:absolute, left:{0}{2}, top:{1}{2}'>",
-                        marginLeft,
+                        groupBottomLeft,
                         currentY,
                         unit);
                     ResultDocument += GroupBottomText;
@@ -571,7 +577,7 @@ namespace Ict.Common.Printing
 
                     ResultDocument += Environment.NewLine +
                                       String.Format("<div style='position:absolute, left:{0}{2}, top:{1}{2}'>",
-                        marginLeft,
+                        groupBottomLeft,
                         currentY,
                         unit);
                     ResultDocument += footer;
