@@ -26,6 +26,7 @@ using System.Data;
 using System.IO;
 using System.Drawing.Printing;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Xml;
 using Ict.Common;
 using Ict.Common.IO;
@@ -53,6 +54,8 @@ namespace Ict.Petra.Server.MConference.Applications
             string AEventCode,
             Int64 ASelectedRegistrationOffice)
         {
+            CultureInfo OrigCulture = Catalog.SetCulture(CultureInfo.InvariantCulture);
+
             try
             {
                 ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
@@ -130,14 +133,41 @@ namespace Ict.Petra.Server.MConference.Applications
                         participantValues = StringHelper.AddCSV(participantValues, applicant.PartnerKey.ToString());
                     }
 
+                    Catalog.SetCulture(CultureInfo.InvariantCulture);
+
                     participantValues = StringHelper.AddCSV(participantValues, applicant.FamilyName);
                     participantValues = StringHelper.AddCSV(participantValues, applicant.FirstName);
                     participantValues = StringHelper.AddCSV(participantValues, applicant.Gender);
-                    participantValues = StringHelper.AddCSV(participantValues, applicant.DateOfBirth.Value.ToString("dd-MMM-yyyy"));
-                    participantValues = StringHelper.AddCSV(participantValues, shorttermRow.Arrival.Value.ToString("dd-MMM-yyyy"));
-                    participantValues = StringHelper.AddCSV(participantValues,
-                        (TApplicationManagement.CalculateAge(applicant.DateOfBirth, shorttermRow.Arrival.Value) >=
-                         TAppSettingsManager.GetInt32("ConferenceTool.OldieIncreasedTaxes")) ? "X" : string.Empty);
+
+                    if (applicant.DateOfBirth.HasValue)
+                    {
+                        participantValues = StringHelper.AddCSV(participantValues, applicant.DateOfBirth.Value.ToString("dd-MMM-yyyy"));
+                    }
+                    else
+                    {
+                        participantValues = StringHelper.AddCSV(participantValues, "N/A");
+                    }
+
+                    if (shorttermRow.Arrival.HasValue)
+                    {
+                        participantValues = StringHelper.AddCSV(participantValues, shorttermRow.Arrival.Value.ToString("dd-MMM-yyyy"));
+                    }
+                    else
+                    {
+                        participantValues = StringHelper.AddCSV(participantValues, "N/A");
+                    }
+
+                    if (applicant.DateOfBirth.HasValue)
+                    {
+                        participantValues = StringHelper.AddCSV(participantValues,
+                            (TApplicationManagement.CalculateAge(applicant.DateOfBirth, shorttermRow.Arrival.Value) >=
+                             TAppSettingsManager.GetInt32("ConferenceTool.OldieIncreasedTaxes")) ? "X" : string.Empty);
+                    }
+                    else
+                    {
+                        participantValues = StringHelper.AddCSV(participantValues, "X");
+                    }
+
                     participantValues = StringHelper.AddCSV(participantValues,
                         (rawDataObject.Contains(
                              "SecondSibling") && rawDataObject["SecondSibling"].ToString().ToLower() == "true") ? "X" : string.Empty);
@@ -176,6 +206,10 @@ namespace Ict.Petra.Server.MConference.Applications
             {
                 TLogging.Log(ex.ToString());
                 throw ex;
+            }
+            finally
+            {
+                Catalog.SetCulture(OrigCulture);
             }
         }
     }
