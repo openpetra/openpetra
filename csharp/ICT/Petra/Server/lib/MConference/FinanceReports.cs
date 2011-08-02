@@ -83,14 +83,6 @@ namespace Ict.Petra.Server.MConference.Applications
                 foreach (DataRowView rv in MainDS.ApplicationGrid.DefaultView)
                 {
                     ConferenceApplicationTDSApplicationGridRow applicant = (ConferenceApplicationTDSApplicationGridRow)rv.Row;
-                    int AttendeeIndex = MainDS.PcAttendee.DefaultView.Find(applicant.PartnerKey);
-
-                    if (AttendeeIndex == -1)
-                    {
-                        continue;
-                    }
-
-                    PcAttendeeRow AttendeeRow = (PcAttendeeRow)MainDS.PcAttendee.DefaultView[AttendeeIndex].Row;
 
                     int IndexGeneralApp = MainDS.PmGeneralApplication.DefaultView.Find(
                         new object[] { applicant.PartnerKey, applicant.ApplicationKey, applicant.RegistrationOffice });
@@ -102,12 +94,20 @@ namespace Ict.Petra.Server.MConference.Applications
 
                     Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(TJsonTools.RemoveContainerControls(applicant.JSONData));
 
+                    DateTime? DateCancelled = new Nullable <DateTime>();
+
                     if (applicant.GenApplicationStatus.StartsWith("C") || applicant.GenApplicationStatus.StartsWith("R"))
                     {
                         DateTime LatestFreeCancelledDate = DateTime.ParseExact(TAppSettingsManager.GetValue(
                                 "ConferenceTool.LatestFreeCancelledDate"), "yyyy/MM/dd", null);
 
-                        if (appRow.GenAppCancelled.Value <= LatestFreeCancelledDate)
+                        DateCancelled = appRow.GenAppCancelled;
+
+                        if (!appRow.GenAppCancelled.HasValue)
+                        {
+                            TLogging.Log("no GenAppCancelled Value " + applicant.PartnerKey.ToString());
+                        }
+                        else if (appRow.GenAppCancelled.Value <= LatestFreeCancelledDate)
                         {
                             continue;
                         }
@@ -152,12 +152,16 @@ namespace Ict.Petra.Server.MConference.Applications
                     {
                         participantValues = StringHelper.AddCSV(participantValues, shorttermRow.Arrival.Value.ToString("dd-MMM-yyyy"));
                     }
+                    else if (DateCancelled.HasValue)
+                    {
+                        participantValues = StringHelper.AddCSV(participantValues, DateCancelled.Value.ToString("dd-MMM-yyyy") + " C");
+                    }
                     else
                     {
                         participantValues = StringHelper.AddCSV(participantValues, "N/A");
                     }
 
-                    if (applicant.DateOfBirth.HasValue)
+                    if (applicant.DateOfBirth.HasValue && shorttermRow.Arrival.HasValue)
                     {
                         participantValues = StringHelper.AddCSV(participantValues,
                             (TApplicationManagement.CalculateAge(applicant.DateOfBirth, shorttermRow.Arrival.Value) >=
