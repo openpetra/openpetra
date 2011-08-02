@@ -148,13 +148,13 @@ namespace Ict.Petra.Server.MConference.Applications
                         participantValues = StringHelper.AddCSV(participantValues, "N/A");
                     }
 
-                    if (shorttermRow.Arrival.HasValue)
-                    {
-                        participantValues = StringHelper.AddCSV(participantValues, shorttermRow.Arrival.Value.ToString("dd-MMM-yyyy"));
-                    }
-                    else if (DateCancelled.HasValue)
+                    if (DateCancelled.HasValue)
                     {
                         participantValues = StringHelper.AddCSV(participantValues, DateCancelled.Value.ToString("dd-MMM-yyyy") + " C");
+                    }
+                    else if (shorttermRow.Arrival.HasValue)
+                    {
+                        participantValues = StringHelper.AddCSV(participantValues, shorttermRow.Arrival.Value.ToString("dd-MMM-yyyy"));
                     }
                     else
                     {
