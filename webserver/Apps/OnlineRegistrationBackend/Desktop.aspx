@@ -645,8 +645,9 @@
                     AutoScroll="true"
                     Height="120">
                     <Content>
+                        <table><tr><td>
                         <table>
-                            <tr><td colspan="3">
+                            <tr><td>
                         <ext:ComboBox 
                             ID="FilterStatus"
                             runat="server" 
@@ -679,7 +680,7 @@
                         </ext:TextField>
                         </td>
                         </tr>
-                        <tr><td colspan="3">
+                        <tr><td>
                         <ext:ComboBox 
                             ID="FilterRegistrationOffice"
                             runat="server" 
@@ -702,7 +703,7 @@
                             </DirectEvents>
                         </ext:ComboBox>
                         </td>
-                        <td colspan="3">
+                        <td>
                         <ext:ComboBox 
                             ID="FilterRole"
                             runat="server" 
@@ -726,122 +727,162 @@
                         </ext:ComboBox>
                         </td>
                         </tr>
-                        <tr>
-                        <td><ext:Button ID="btnDownloadPetra" runat="server" Text="Download for Petra" Icon="PageAttach">
-                            <Listeners>
-                                <Click Handler="submitValue(#{GridPanel1});" />
-                            </Listeners>
-                        </ext:Button></td>
-                        <td><ext:Button ID="btnUploadPetraFile" runat="server" Text="Upload imported Petra File" Icon="Disk">
-                            <Listeners>
-                                <Click Handler="#{winUploadPetraFile}.show();" />
-                            </Listeners>
-                        </ext:Button></td>
-                        <td><ext:Button ID="btnDownloadExcel" runat="server" Text="Export to Excel/Calc" Icon="PageAttach">
-                            <DirectEvents>
-                                <Click OnEvent="DownloadExcel"/>
-                            </DirectEvents>
-                        </ext:Button></td>
-                        <td><ext:Button ID="btnBatchAccept" runat="server" Text="Accept Many Applicants">
-                            <Listeners>
-                                <Click Handler="#{AcceptForm}.getForm().reset();#{winAcceptMany}.show();" />
-                            </Listeners>
-                        </ext:Button></td>
-                        <td><ext:Button ID="btnCreateGiftBatch" runat="server" Text="Create Gift Batch">
-                            <Listeners>
-                                <Click Handler="#{winCreateGiftBatch}.show();" />
-                            </Listeners>
-                        </ext:Button></td>
-                        <td><ext:Button ID="btnImportFellowshipGroups" runat="server" Text="Import Fellowship Groups">
-                            <Listeners>
-                                <Click Handler="#{winImportFellowshipGroups}.show();" />
-                            </Listeners>
-                        </ext:Button></td>
-                        <td><ext:Button ID="btnImportPrintedBadges" runat="server" Text="Import Printed Badges">
-                            <Listeners>
-                                <Click Handler="#{winImportPrintedBadges}.show();" />
-                            </Listeners>
-                        </ext:Button></td>
-                        <td><ext:Button ID="btnUploadPetraExtract" runat="server" Text="Upload Petra Extract" Icon="Disk">
-                            <Listeners>
-                                <Click Handler="#{winUploadPetraExtract}.show();" />
-                            </Listeners>
-                        </ext:Button></td>
-                        <td><ext:Button ID="btnJSONApplication" runat="server" Text="Direct JSON" Icon="Disk">
-                            <Listeners>
-                                <Click Handler="#{JSONApplicationForm}.getForm().reset();#{winJSONApplication}.show();" />
-                            </Listeners>
-                        </ext:Button></td>
-                        <td><ext:Button ID="btnLoadRefreshApplicants" runat="server" Text="Refresh Applicants">
-                            <DirectEvents>
-                                <Click OnEvent="LoadRefreshApplicants">
-                                    <EventMask ShowMask="true" Msg="Refreshing Applicants..." MinDelay="1000" />
-                                </Click>
-                            </DirectEvents>
-                        </ext:Button></td>
-                        <td><ext:Button ID="btnFixArrivalDepartureDates" runat="server" Text="Fix Arrival Departure Dates">
-                            <DirectEvents>
-                                <Click OnEvent="FixArrivalDepartureDates" />
-                            </DirectEvents>
-                        </ext:Button></td>
-                        <td><ext:Button ID="btnLateRegistration" runat="server" Text="Late Registration">
-                            <Listeners>
-                                <Click Handler="#{winLateRegistration}.show();" />
-                            </Listeners>
-                        </ext:Button></td>
-                        </tr>
-                        <tr>
-                        <td><ext:Button ID="btnTestPrintBadges" runat="server" Text="Test Badges">
-                            <DirectEvents>
-                                <Click OnEvent="TestPrintBadges"/>
-                            </DirectEvents>
-                        </ext:Button></td>
-                        <td><ext:Button ID="btnReprintBadges" runat="server" Text="Reprint Badges">
-                            <DirectEvents>
-                                <Click OnEvent="ReprintBadges"/>
-                            </DirectEvents>
-                        </ext:Button></td>
-                        <td><ext:Button ID="btnPrintBadges" runat="server" Text="Print Badges">
-                            <DirectEvents>
-                                <Click OnEvent="PrintBadges"/>
-                            </DirectEvents>
-                        </ext:Button></td>
-                        <td><ext:Button ID="btnPrintBadgeLabels" runat="server" Text="Print Barcode Labels">
-                            <DirectEvents>
-                                <Click OnEvent="PrintBarcodeLabels"/>
-                            </DirectEvents>
-                        </ext:Button></td>
-                        <td><ext:Button ID="btnPrintBadgeLabelsByKey" runat="server" Text="Badge Labels By Key">
-                            <Listeners>
-                                <Click Handler="#{winPrintBadgeLabelsByKey}.show();" />
-                            </Listeners>
-                        </ext:Button></td>
-                        <td><ext:Button ID="btnExportTShirtNumbers" runat="server" Text="Get T-Shirt Numbers">
-                            <DirectEvents>
-                                <Click OnEvent="ExportTShirtNumbers" IsUpload="true"/>
-                            </DirectEvents>
-                        </ext:Button></td>
-                        <td><ext:Button ID="btnExcelArrivalRegistration" runat="server" Text="Excel List for Arrival Registration">
-                            <DirectEvents>
-                                <Click OnEvent="ExportArrivalRegistrationList" IsUpload="true"/>
-                            </DirectEvents>
-                        </ext:Button></td>
-                        <td><ext:Button ID="btnPrintArrivalRegistration" runat="server" Text="Print List for Arrival Registration">
-                            <DirectEvents>
-                                <Click OnEvent="PrintArrivalRegistration"/>
-                            </DirectEvents>
-                        </ext:Button></td>
-                        <td><ext:Button ID="btnExcelRolesPerCountry" runat="server" Text="Excel List for Roles per Country">
-                            <DirectEvents>
-                                <Click OnEvent="ExportRolesPerCountry" IsUpload="true"/>
-                            </DirectEvents>
-                        </ext:Button></td>
-                        <td><ext:Button ID="btnFinanceReport" runat="server" Text="Print Finance Report">
-                            <DirectEvents>
-                                <Click OnEvent="PrintFinanceReport"/>
-                            </DirectEvents>
-                        </ext:Button></td>
-                        </tr></table>
+                        </table>
+                        </td>
+                        <td>
+                        <ext:TabPanel ID="TabButtons" runat="server" EnableTabScroll="true" Height="90" Width="400">   
+                          <Items>
+                            <ext:Panel ID="TabPetra" runat="server" Title="Petra" AutoScroll="true">
+                              <Content>
+                                <table>
+                                <tr>
+                                  <td><ext:Button ID="btnDownloadPetra" runat="server" Text="Download for Petra" Icon="PageAttach">
+                                    <Listeners>
+                                        <Click Handler="submitValue(#{GridPanel1});" />
+                                    </Listeners>
+                                  </ext:Button></td>
+                                  <td><ext:Button ID="btnUploadPetraFile" runat="server" Text="Upload imported Petra File" Icon="Disk">
+                                      <Listeners>
+                                          <Click Handler="#{winUploadPetraFile}.show();" />
+                                      </Listeners>
+                                  </ext:Button></td>
+                                  <td><ext:Button ID="btnUploadPetraExtract" runat="server" Text="Upload Petra Extract" Icon="Disk">
+                                      <Listeners>
+                                          <Click Handler="#{winUploadPetraExtract}.show();" />
+                                      </Listeners>
+                                  </ext:Button></td>
+                                </tr>
+                                </table>
+                              </Content>
+
+                            </ext:Panel>
+                            <ext:Panel ID="TabTopFinance" runat="server" Title="Finance" AutoScroll="true">
+                              <Items>
+                                <ext:Button ID="btnFinanceReport" runat="server" Text="Print Finance Report">
+                                    <DirectEvents>
+                                        <Click OnEvent="PrintFinanceReport"/>
+                                    </DirectEvents>
+                                </ext:Button>
+                              </Items>
+                            </ext:Panel>
+                            <ext:Panel ID="TabBadges" runat="server" Title="Badges" AutoScroll="true">
+                              <Content>
+                                <table>
+                                <tr>
+                                  <td><ext:Button ID="btnTestPrintBadges" runat="server" Text="Test Badges">
+                                        <DirectEvents>
+                                            <Click OnEvent="TestPrintBadges"/>
+                                        </DirectEvents>
+                                  </ext:Button></td>
+                                  <td><ext:Button ID="btnReprintBadges" runat="server" Text="Reprint Badges">
+                                      <DirectEvents>
+                                          <Click OnEvent="ReprintBadges"/>
+                                      </DirectEvents>
+                                  </ext:Button></td>
+                                  <td><ext:Button ID="btnPrintBadges" runat="server" Text="Print Badges">
+                                      <DirectEvents>
+                                          <Click OnEvent="PrintBadges"/>
+                                      </DirectEvents>
+                                  </ext:Button></td>
+                                  <td><ext:Button ID="btnPrintBadgeLabels" runat="server" Text="Print Barcode Labels">
+                                      <DirectEvents>
+                                          <Click OnEvent="PrintBarcodeLabels"/>
+                                      </DirectEvents>
+                                  </ext:Button></td>
+                                  <td><ext:Button ID="btnPrintBadgeLabelsByKey" runat="server" Text="Badge Labels By Key">
+                                      <Listeners>
+                                          <Click Handler="#{winPrintBadgeLabelsByKey}.show();" />
+                                      </Listeners>
+                                  </ext:Button></td>
+                                  <td><ext:Button ID="btnImportPrintedBadges" runat="server" Text="Import Printed Badges">
+                                      <Listeners>
+                                          <Click Handler="#{winImportPrintedBadges}.show();" />
+                                      </Listeners>
+                                  </ext:Button></td>
+                              </tr>
+                              </table>
+                              </Content>
+                            </ext:Panel>
+                            <ext:Panel ID="TabExport" runat="server" Title="Export" AutoScroll="true">
+                              <Content>
+                                <table>
+                                <tr>
+                                  <td><ext:Button ID="btnDownloadExcel" runat="server" Text="Export to Excel/Calc" Icon="PageAttach">
+                                      <DirectEvents>
+                                          <Click OnEvent="DownloadExcel"/>
+                                      </DirectEvents>
+                                  </ext:Button></td>
+                                  <td><ext:Button ID="btnExportTShirtNumbers" runat="server" Text="Get T-Shirt Numbers">
+                                      <DirectEvents>
+                                          <Click OnEvent="ExportTShirtNumbers" IsUpload="true"/>
+                                      </DirectEvents>
+                                  </ext:Button></td>
+                                  <td><ext:Button ID="btnExcelArrivalRegistration" runat="server" Text="Excel List for Arrival Registration">
+                                      <DirectEvents>
+                                          <Click OnEvent="ExportArrivalRegistrationList" IsUpload="true"/>
+                                      </DirectEvents>
+                                  </ext:Button></td>
+                                  <td><ext:Button ID="btnPrintArrivalRegistration" runat="server" Text="Print List for Arrival Registration">
+                                      <DirectEvents>
+                                          <Click OnEvent="PrintArrivalRegistration"/>
+                                      </DirectEvents>
+                                  </ext:Button></td>
+                                  <td><ext:Button ID="btnExcelRolesPerCountry" runat="server" Text="Excel List for Roles per Country">
+                                      <DirectEvents>
+                                          <Click OnEvent="ExportRolesPerCountry" IsUpload="true"/>
+                                      </DirectEvents>
+                                  </ext:Button></td>
+                                </tr>
+                                </table>
+                              </Content>
+                            </ext:Panel>
+                            <ext:Panel ID="TODO" runat="server" Title="TODO" AutoScroll="true">
+                              <Content>
+                                <table>
+                                <tr>
+                                <td><ext:Button ID="btnBatchAccept" runat="server" Text="Accept Many Applicants">
+                                    <Listeners>
+                                        <Click Handler="#{AcceptForm}.getForm().reset();#{winAcceptMany}.show();" />
+                                    </Listeners>
+                                </ext:Button></td>
+                                <td><ext:Button ID="btnCreateGiftBatch" runat="server" Text="Create Gift Batch">
+                                    <Listeners>
+                                        <Click Handler="#{winCreateGiftBatch}.show();" />
+                                    </Listeners>
+                                </ext:Button></td>
+                                <td><ext:Button ID="btnImportFellowshipGroups" runat="server" Text="Import Fellowship Groups">
+                                    <Listeners>
+                                        <Click Handler="#{winImportFellowshipGroups}.show();" />
+                                    </Listeners>
+                                </ext:Button></td>
+                                <td><ext:Button ID="btnJSONApplication" runat="server" Text="Direct JSON" Icon="Disk">
+                                    <Listeners>
+                                        <Click Handler="#{JSONApplicationForm}.getForm().reset();#{winJSONApplication}.show();" />
+                                    </Listeners>
+                                </ext:Button></td>
+                                <td><ext:Button ID="btnLoadRefreshApplicants" runat="server" Text="Refresh Applicants">
+                                    <DirectEvents>
+                                        <Click OnEvent="LoadRefreshApplicants">
+                                            <EventMask ShowMask="true" Msg="Refreshing Applicants..." MinDelay="1000" />
+                                        </Click>
+                                    </DirectEvents>
+                                </ext:Button></td>
+                                <td><ext:Button ID="btnFixArrivalDepartureDates" runat="server" Text="Fix Arrival Departure Dates">
+                                    <DirectEvents>
+                                        <Click OnEvent="FixArrivalDepartureDates" />
+                                    </DirectEvents>
+                                </ext:Button></td>
+                                <td><ext:Button ID="btnLateRegistration" runat="server" Text="Late Registration">
+                                    <Listeners>
+                                        <Click Handler="#{winLateRegistration}.show();" />
+                                    </Listeners>
+                                </ext:Button></td>
+                                </tr></table>
+                                </Content>
+                            </ext:Panel>
+                           </Items>
+                        </ext:TabPanel>
+                        </td></tr></table>
                     </Content>
                 </ext:Panel>
                 <ext:GridPanel 
