@@ -2,7 +2,7 @@ RootNode:
     BaseYaml: ShortTermReportingForm.yaml
     FormType: report
     FormTitle: Languages Report
-    Namespace: Ict.Petra.Client.MReporting.Gui.MPersonnel
+    Namespace: Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm
     TemplateParameters:
         XMLFILES: [Personnel\\\\languagesreport.xml]
         REPORTNAME: Languages Report

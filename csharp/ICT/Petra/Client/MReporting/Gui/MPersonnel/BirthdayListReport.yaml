@@ -40,7 +40,7 @@ RootNode:
             Dock: Fill
             Controls: [chkIncludeFamily, chkSelectTypes, grdTypes]           
         chkUseDate:
-            Label: Use date
+            Label: Use date range
             CheckBoxAttachedLabel: right
             OnChange: UseDateChanged
         dtpFromDate:

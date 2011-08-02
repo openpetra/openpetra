@@ -376,7 +376,7 @@
 		</query>
 	</calculation>
 	
-	<calculation align="left" id="Arrival Date" returns="text" returnsFormat="text">
+	<calculation align="left" id="Arrival Date" returns="text" returnsFormat="formatteddate">
 		<caption><value text="Arrival Date"></value></caption>
 		<query>
 			<queryDetail>
@@ -610,7 +610,7 @@
 		</query>
 	</calculation>
 	
-	<calculation align="left" id="Date of birth" returns="text" returnsFormat="text">
+	<calculation align="left" id="Date of birth" returns="text" returnsFormat="formatteddate">
 		<caption><value text="DOB"></value></caption>
 		<query>
 			<queryDetail>
@@ -619,7 +619,7 @@
 		</query>
 	</calculation>
 	
-	<calculation align="left" id="Departure Date" returns="text" returnsFormat="text">
+	<calculation align="left" id="Departure Date" returns="text" returnsFormat="formatteddate">
 		<caption><value text="Departure Date"></value></caption>
 		<query>
 			<queryDetail>
@@ -897,7 +897,7 @@
 		</query>
 	</calculation>
 	
-	<calculation align="left" id="Passport Date of Birth" returns="text" returnsFormat="text">
+	<calculation align="left" id="Passport Date of Birth" returns="text" returnsFormat="formatteddate">
 		<caption><value text="Passport Date of Birth"></value></caption>
 		<query>
 			<queryDetail>
@@ -906,7 +906,7 @@
 		</query>
 	</calculation>
 	
-	<calculation align="left" id="Passport Date of Issue" returns="text" returnsFormat="text">
+	<calculation align="left" id="Passport Date of Issue" returns="text" returnsFormat="formatteddate">
 		<caption><value text="Passport Date of Issue"></value></caption>
 		<query>
 			<queryDetail>
@@ -915,7 +915,7 @@
 		</query>
 	</calculation>
 	
-	<calculation align="left" id="Passport Expiry Date" returns="text" returnsFormat="text">
+	<calculation align="left" id="Passport Expiry Date" returns="text" returnsFormat="formatteddate">
 		<caption><value text="Passport Expiry Date"></value></caption>
 		<query>
 			<queryDetail>
