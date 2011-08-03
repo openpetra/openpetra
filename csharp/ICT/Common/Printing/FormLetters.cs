@@ -515,15 +515,22 @@ namespace Ict.Common.Printing
 
                 int TotalOverall = 0;
 
+                // remove empty groups
+                for (int Counter = 0; Counter < AData.Count; )
+                {
+                    if (AData[AData.Keys[Counter]].Count == 0)
+                    {
+                        AData.Remove(AData.Keys[Counter]);
+                    }
+                    else
+                    {
+                        Counter++;
+                    }
+                }
+
                 foreach (string group in AData.Keys)
                 {
                     List <int>Total = new List <int>();
-
-                    if (AData[group].Count == 0)
-                    {
-                        // ignore empty groups
-                        continue;
-                    }
 
                     if (GroupTopNode != null)
                     {
