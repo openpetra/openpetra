@@ -131,8 +131,21 @@ namespace Ict.Petra.Server.MConference.Applications
                             rebukeValues = StringHelper.AddCSV(rebukeValues, applicant.FamilyName);
                             rebukeValues = StringHelper.AddCSV(rebukeValues, applicant.FirstName);
                             rebukeValues = StringHelper.AddCSV(rebukeValues, applicant.Gender);
-                            rebukeValues = StringHelper.AddCSV(rebukeValues, applicant.StFgCode);
 
+                            Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(TJsonTools.RemoveContainerControls(applicant.JSONData));
+
+                            if (rawDataObject.Contains("JobAssigned"))
+                            {
+                                rebukeValues = StringHelper.AddCSV(rebukeValues, rawDataObject["JobAssigned"].ToString());
+                            }
+                            else
+                            {
+                                rebukeValues = StringHelper.AddCSV(rebukeValues, applicant.StFgCode);
+                            }
+
+                            rebukeValues = StringHelper.AddCSV(rebukeValues, applicant.StCongressCode);
+
+                            rebukeValues = StringHelper.AddCSV(rebukeValues, element.Contains("Time") ? element["Time"].ToString() : string.Empty);
                             rebukeValues = StringHelper.AddCSV(rebukeValues, element["What"].ToString());
                             rebukeValues = StringHelper.AddCSV(rebukeValues, element["Consequence"].ToString());
 

@@ -192,6 +192,7 @@
                     <Fields>
                         <ext:RecordField Name="ID" Type="Int" />
                         <ext:RecordField Name="When" Type="Date"/>
+                        <ext:RecordField Name="Time"/>
                         <ext:RecordField Name="What"/>
                         <ext:RecordField Name="Consequence"/>
                     </Fields>
@@ -1250,6 +1251,11 @@
                                                   <ext:DateField runat="server" />
                                               </Editor>
                                           </ext:DateColumn>
+                                          <ext:Column ColumnID="Time" Header="Time" DataIndex="Time" Width="100">
+                                              <Editor>
+                                                  <ext:TextField runat="server" />
+                                              </Editor>
+                                          </ext:Column>
                                           <ext:Column ColumnID="What" Header="What" DataIndex="What" Width="300">
                                               <Editor>
                                                   <ext:TextField runat="server" />

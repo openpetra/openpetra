@@ -1510,6 +1510,9 @@ namespace Ict.Petra.WebServer.MConference
             public DateTime When {
                 get; set;
             }
+            public string Time {
+                get; set;
+            }
             public string What {
                 get; set;
             }
@@ -1521,14 +1524,16 @@ namespace Ict.Petra.WebServer.MConference
             {
                 this.ID = AID;
                 this.When = DateTime.Now;
+                this.Time = string.Empty;
                 this.What = string.Empty;
                 this.Consequence = "TBD";
             }
 
-            public Rebuke(int AID, DateTime ADate, string AWhat, string AConsequence)
+            public Rebuke(int AID, DateTime ADate, string ATime, string AWhat, string AConsequence)
             {
                 this.ID = AID;
                 this.When = ADate;
+                this.Time = ATime;
                 this.What = AWhat;
                 this.Consequence = AConsequence;
             }
@@ -1548,8 +1553,19 @@ namespace Ict.Petra.WebServer.MConference
 
                 foreach (Jayrock.Json.JsonObject element in list)
                 {
+                    string time = string.Empty;
+
+                    try
+                    {
+                        time = element["Time"].ToString();
+                    }
+                    catch (Exception)
+                    {
+                    }
+
                     store.Add(new Rebuke(Convert.ToInt32(element["ID"]),
                             Convert.ToDateTime(element["When"]),
+                            time,
                             element["What"].ToString(),
                             element["Consequence"].ToString()));
                 }

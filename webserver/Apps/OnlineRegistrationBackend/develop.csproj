@@ -105,9 +105,6 @@
     <None Include="PrintBadgeLabelsByKey.aspx">
       <DependentUpon>PrintBadgeLabelsByKey.aspx.cs</DependentUpon>
     </None>
-    <None Include="Rebuke.aspx">
-      <DependentUpon>Rebuke.aspx.cs</DependentUpon>
-    </None>
     <Compile Include="ChangePassword.aspx.cs">
     </Compile>
     <Compile Include="CreateGiftBatch.aspx.cs" />
@@ -117,6 +114,5 @@
     <Compile Include="ImportPrintedBadges.aspx.cs" />
     <Compile Include="LateRegistration.aspx.cs" />
     <Compile Include="PrintBadgeLabelsByKey.aspx.cs" />
-    <Compile Include="Rebuke.aspx.cs" />
   </ItemGroup>
 </Project>
