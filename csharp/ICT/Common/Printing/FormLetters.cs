@@ -192,6 +192,11 @@ namespace Ict.Common.Printing
         {
             Dictionary <string, string>Result = new Dictionary <string, string>();
 
+            if (ANode == null)
+            {
+                return Result;
+            }
+
             string styles = TXMLParser.GetAttribute(ANode, "style");
             string[] namevaluepairs = styles.Split(new char[] { ',', ';' });
 
@@ -358,22 +363,39 @@ namespace Ict.Common.Printing
                 }
             }
 
-            public virtual void AddPageBreak()
+            public void EndPage()
             {
                 AddFooter();
 
-                ResultDocument += "</body><body>" + Environment.NewLine;
+                ResultDocument += "</body>" + Environment.NewLine;
+            }
+
+            public virtual void StartPage()
+            {
+                ResultDocument += "<body>" + Environment.NewLine;
 
                 currentPage++;
 
                 AddHeader();
             }
 
+            public void AddPageBreak()
+            {
+                EndPage();
+                StartPage();
+            }
+
             public void FinishDocument()
             {
                 ResultDocument = ResultDocument.Replace("#TOTALPAGES", currentPage.ToString());
                 ResultDocument = ResultDocument.Replace("#TODAY", DateTime.Now.ToString("dd-MMM-yyyy"));
-                ResultDocument += "</body></html>";
+
+                if (!ResultDocument.EndsWith("</body>" + Environment.NewLine))
+                {
+                    ResultDocument += "</body>" + Environment.NewLine;
+                }
+
+                ResultDocument += "</html>";
 
                 Catalog.SetCulture(OrigCulture);
             }
@@ -478,14 +500,14 @@ namespace Ict.Common.Printing
                 }
             }
 
-            public override void AddPageBreak()
+            public override void StartPage()
             {
-                base.AddPageBreak();
+                base.StartPage();
 
                 currentY = marginTop + headerHeight;
             }
 
-            public void PrintDocument(SortedList <string, List <string>>AData)
+            public void PrintDocument(SortedList <string, List <string>>AData, bool ASeparatePagesPerGroup)
             {
                 XmlNode GroupTopNode = TXMLParser.FindNodeRecursive(TemplateDoc.DocumentElement, "div", "groupTop");
                 XmlNode GroupBottomNode = TXMLParser.FindNodeRecursive(TemplateDoc.DocumentElement, "div", "groupBottom");
@@ -497,19 +519,27 @@ namespace Ict.Common.Printing
                 {
                     List <int>Total = new List <int>();
 
-                    ConditionalPageBreak(groupTopHeight + detailHeight * 3);
+                    if (AData[group].Count == 0)
+                    {
+                        // ignore empty groups
+                        continue;
+                    }
 
-                    string GroupTopText = GroupTopNode.InnerXml;
-                    GroupTopText = GroupTopText.Replace("#GROUPNAME", group);
+                    if (GroupTopNode != null)
+                    {
+                        ConditionalPageBreak(groupTopHeight + detailHeight * 3);
 
-                    ResultDocument += Environment.NewLine +
-                                      String.Format("<div style='position:absolute, left:{0}{2}, top:{1}{2}'>",
-                        groupTopLeft,
-                        currentY,
-                        unit);
-                    ResultDocument += GroupTopText;
-                    ResultDocument += "</div>" + Environment.NewLine;
-                    currentY += groupTopHeight;
+                        string GroupTopText = GroupTopNode.InnerXml;
+
+                        ResultDocument += Environment.NewLine +
+                                          String.Format("<div style='position:absolute, left:{0}{2}, top:{1}{2}'>",
+                            groupTopLeft,
+                            currentY,
+                            unit);
+                        ResultDocument += GroupTopText;
+                        ResultDocument += "</div>" + Environment.NewLine;
+                        currentY += groupTopHeight;
+                    }
 
                     foreach (string line in AData[group])
                     {
@@ -548,44 +578,63 @@ namespace Ict.Common.Printing
                         currentY += detailHeight;
                     }
 
-                    ConditionalPageBreak(groupBottomHeight);
-                    string GroupBottomText = GroupBottomNode.InnerXml;
-                    GroupBottomText = GroupBottomText.Replace("#TOTALPERGROUP", AData[group].Count.ToString());
-                    TotalOverall += AData[group].Count;
-
-                    for (int TotalCount = 0; TotalCount < Total.Count; TotalCount++)
+                    if (GroupBottomNode != null)
                     {
-                        GroupBottomText = GroupBottomText.Replace("#TOTAL" + (TotalCount + 1).ToString(), Total[TotalCount].ToString());
+                        ConditionalPageBreak(groupBottomHeight);
+                        string GroupBottomText = GroupBottomNode.InnerXml;
+                        GroupBottomText = GroupBottomText.Replace("#TOTALPERGROUP", AData[group].Count.ToString());
+                        TotalOverall += AData[group].Count;
+
+                        for (int TotalCount = 0; TotalCount < Total.Count; TotalCount++)
+                        {
+                            GroupBottomText = GroupBottomText.Replace("#TOTAL" + (TotalCount + 1).ToString(), Total[TotalCount].ToString());
+                        }
+
+                        ResultDocument += Environment.NewLine +
+                                          String.Format("<div style='position:absolute, left:{0}{2}, top:{1}{2}'>",
+                            groupBottomLeft,
+                            currentY,
+                            unit);
+                        ResultDocument += GroupBottomText;
+                        ResultDocument += "</div>" + Environment.NewLine;
+                        currentY += groupBottomHeight;
                     }
 
-                    ResultDocument += Environment.NewLine +
-                                      String.Format("<div style='position:absolute, left:{0}{2}, top:{1}{2}'>",
-                        groupBottomLeft,
-                        currentY,
-                        unit);
-                    ResultDocument += GroupBottomText;
-                    ResultDocument += "</div>" + Environment.NewLine;
-                    currentY += groupBottomHeight;
+                    if (ASeparatePagesPerGroup)
+                    {
+                        EndPage();
+                        ResultDocument = ResultDocument.Replace("#TOTALPAGES", currentPage.ToString());
+                        ResultDocument = ResultDocument.Replace("#GROUPNAME", group);
+
+                        if (AData.Keys.IndexOf(group) < AData.Keys.Count - 1)
+                        {
+                            StartPage();
+                            currentPage = 1;
+                        }
+                    }
                 }
 
-                ConditionalPageBreak(reportFooterHeight);
-
-                if ((ResultDocument.Length > 0) && (ReportFooterNode != null))
+                if (!ASeparatePagesPerGroup)
                 {
-                    string footer = ReportFooterNode.OuterXml;
-                    footer = footer.Replace("#TOTALOVERALL", TotalOverall.ToString());
+                    ConditionalPageBreak(reportFooterHeight);
 
-                    ResultDocument += Environment.NewLine +
-                                      String.Format("<div style='position:absolute, left:{0}{2}, top:{1}{2}'>",
-                        groupBottomLeft,
-                        currentY,
-                        unit);
-                    ResultDocument += footer;
-                    ResultDocument += "</div>" + Environment.NewLine;
-                    currentY += groupBottomHeight;
+                    if ((ResultDocument.Length > 0) && (ReportFooterNode != null))
+                    {
+                        string footer = ReportFooterNode.OuterXml;
+                        footer = footer.Replace("#TOTALOVERALL", TotalOverall.ToString());
+
+                        ResultDocument += Environment.NewLine +
+                                          String.Format("<div style='position:absolute, left:{0}{2}, top:{1}{2}'>",
+                            groupBottomLeft,
+                            currentY,
+                            unit);
+                        ResultDocument += footer;
+                        ResultDocument += "</div>" + Environment.NewLine;
+                        currentY += reportFooterHeight;
+                    }
+
+                    AddFooter();
                 }
-
-                AddFooter();
             }
         }
 
@@ -618,14 +667,15 @@ namespace Ict.Common.Printing
         /// <param name="AFilename"></param>
         /// <param name="AData"></param>
         /// <param name="ATitle">title to print in the page footer</param>
+        /// <param name="ASeparatePagesPerGroup">page break for each group</param>
         /// <returns></returns>
-        public static string PrintReport(string AFilename, SortedList <string, List <string>>AData, string ATitle)
+        public static string PrintReport(string AFilename, SortedList <string, List <string>>AData, string ATitle, bool ASeparatePagesPerGroup)
         {
             THTMLFormReport formletter = new THTMLFormReport(AFilename);
 
             formletter.StartDocument();
 
-            formletter.PrintDocument(AData);
+            formletter.PrintDocument(AData, ASeparatePagesPerGroup);
 
             formletter.FinishDocument();
 

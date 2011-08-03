@@ -186,6 +186,9 @@ namespace Ict.Petra.Server.MConference.Applications
                 AMainDS.ApplicationGrid.DefaultView.Sort =
                     ConferenceApplicationTDSApplicationGridTable.GetPartnerKeyDBName() + "," +
                     ConferenceApplicationTDSApplicationGridTable.GetApplicationKeyDBName();
+                AMainDS.PDataLabelValuePartner.DefaultView.Sort = PDataLabelValuePartnerTable.GetDataLabelKeyDBName() + "," +
+                                                                  PDataLabelValuePartnerTable.GetPartnerKeyDBName();
+                AMainDS.PDataLabel.DefaultView.Sort = PDataLabelTable.GetTextDBName();
             }
             finally
             {

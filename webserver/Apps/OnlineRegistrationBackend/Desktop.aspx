@@ -765,6 +765,15 @@
                                 </ext:Button>
                               </Items>
                             </ext:Panel>
+                            <ext:Panel ID="TabBoundaries" runat="server" Title="Boundaries" AutoScroll="true">
+                              <Items>
+                                <ext:Button ID="btnRebukesReport" runat="server" Text="Print Rebukes Report">
+                                    <DirectEvents>
+                                        <Click OnEvent="PrintRebukesReport"/>
+                                    </DirectEvents>
+                                </ext:Button>
+                              </Items>
+                            </ext:Panel>
                             <ext:Panel ID="TabBadges" runat="server" Title="Badges" AutoScroll="true">
                               <Content>
                                 <table>

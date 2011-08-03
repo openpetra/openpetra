@@ -1010,6 +1010,56 @@ namespace Ict.Petra.WebServer.MConference
             }
         }
 
+        protected void PrintRebukesReport(object sender, DirectEventArgs e)
+        {
+            DateTime PrintDate = DateTime.Today;
+
+            if (PrintDate.Hour < 8)
+            {
+                // if rebukes are printed in the early morning, print of last day
+                PrintDate.AddDays(-1);
+            }
+
+            string OutputName = "RebukesReport_" + PrintDate.ToString("yyyy-MM-dd") + ".pdf";
+
+            try
+            {
+                OutputName = "RebukesReport_" + this.FilterRegistrationOffice.SelectedItem.Text + "_" + PrintDate.ToString("yyyy-MM-dd") + ".pdf";
+            }
+            catch (Exception)
+            {
+            }
+
+            try
+            {
+                string PDFPath = TRebukeReport.PrintRebukeReport(EventPartnerKey,
+                    EventCode,
+                    GetSelectedRegistrationOffice(),
+                    PrintDate);
+
+                if (File.Exists(PDFPath))
+                {
+                    this.Response.Clear();
+                    this.Response.ContentType = "application/pdf";
+                    this.Response.AddHeader("Content-Type", "application/pdf");
+                    this.Response.AddHeader("Content-Disposition", "attachment; filename=" + OutputName);
+                    this.Response.TransmitFile(PDFPath);
+                    File.Delete(PDFPath);
+                    // this.Response.End(); avoid System.Threading.ThreadAbortException
+                }
+            }
+            catch (Exception ex)
+            {
+                X.Msg.Show(new MessageBoxConfig
+                    {
+                        Buttons = MessageBox.Button.OK,
+                        Icon = MessageBox.Icon.ERROR,
+                        Title = "Fail",
+                        Message = ex.Message
+                    });
+            }
+        }
+
         protected void PrintBarcodeLabels(object sender, DirectEventArgs e)
         {
             string OutputName = "badgeLabels.pdf";

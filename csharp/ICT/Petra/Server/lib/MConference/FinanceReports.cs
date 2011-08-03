@@ -199,7 +199,7 @@ namespace Ict.Petra.Server.MConference.Applications
                 string RegistrationOfficeName =
                     ((PPartnerRow)regOffices.DefaultView[regOffices.DefaultView.Find(ASelectedRegistrationOffice)].Row).PartnerShortName;
 
-                string ResultDocument = TFormLettersTools.PrintReport(TemplateFilename, roles, RegistrationOfficeName);
+                string ResultDocument = TFormLettersTools.PrintReport(TemplateFilename, roles, RegistrationOfficeName, false);
 
                 if (ResultDocument.Length == 0)
                 {
