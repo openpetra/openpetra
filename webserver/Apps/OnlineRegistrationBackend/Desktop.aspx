@@ -957,6 +957,7 @@
                                             <EventMask ShowMask="true" />
                                             <ExtraParams>
                                                 <ext:Parameter Name="Values" Value="FormPanel1.getForm().getValues(false)" Mode="Raw" Encode="true" />
+                                                <ext:Parameter Name="RebukeValues" Value="Ext.get('GridPanelRebukes') != null?#{GridPanelRebukes}.getRowsValues({selectedOnly : false}):''" Mode="Raw" Encode="true"/>
                                             </ExtraParams>
                                         </Click>
                                     </DirectEvents>

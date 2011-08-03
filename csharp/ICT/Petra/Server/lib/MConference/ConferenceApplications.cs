@@ -247,7 +247,7 @@ namespace Ict.Petra.Server.MConference.Applications
             parameter.Value = AEventCode;
             parameters.Add(parameter);
 
-            string DataLabels = "(PUB_p_data_label.p_text_c = 'MEDICAL' OR PUB_p_data_label.p_text_c = 'BOUNDARIES')";
+            string DataLabels = "(PUB_p_data_label.p_text_c = 'MedicalNotes' OR PUB_p_data_label.p_text_c = 'Rebukes')";
 
             string queryShortTermApplication = "SELECT PUB_pm_short_term_application.* " +
                                                "FROM PUB_pm_short_term_application " +
@@ -765,6 +765,10 @@ namespace Ict.Petra.Server.MConference.Applications
                         null, AChangedRow.PartnerKey,
                         ATransaction);
                 }
+
+                AMainDS.PDataLabel.DefaultView.Sort = PDataLabelTable.GetTextDBName();
+                AMainDS.PDataLabelValuePartner.DefaultView.Sort = PDataLabelValuePartnerTable.GetDataLabelKeyDBName() + "," +
+                                                                  PDataLabelValuePartnerTable.GetPartnerKeyDBName();
 
                 if (AChangedRow.GenApplicationStatus == "I")
                 {
