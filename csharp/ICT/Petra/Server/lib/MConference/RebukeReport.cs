@@ -145,7 +145,9 @@ namespace Ict.Petra.Server.MConference.Applications
 
                             rebukeValues = StringHelper.AddCSV(rebukeValues, applicant.StCongressCode);
 
-                            rebukeValues = StringHelper.AddCSV(rebukeValues, element.Contains("Time") ? element["Time"].ToString() : string.Empty);
+                            rebukeValues =
+                                StringHelper.AddCSV(rebukeValues, AAllRebukesOnThisDay.ToString("dd-MMM-yyyy") + " " +
+                                    (element.Contains("Time") ? element["Time"].ToString() : string.Empty));
                             rebukeValues = StringHelper.AddCSV(rebukeValues, element["What"].ToString());
                             rebukeValues = StringHelper.AddCSV(rebukeValues, element["Consequence"].ToString());
 
