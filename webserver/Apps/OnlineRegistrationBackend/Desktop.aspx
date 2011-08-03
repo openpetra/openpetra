@@ -673,7 +673,7 @@
                             </DirectEvents>
                         </ext:ComboBox>
                         </td>
-                        <td><ext:TextField ID="txtSearchApplicant" runat="server" FieldLabel="Search for Applicant">
+                        <td><ext:TextField ID="txtSearchApplicant" runat="server" FieldLabel="Search for Applicant" EmptyText="Key, Name, FGroup">
                             <DirectEvents>
                                 <Change OnEvent="SearchApplicant"/>
                             </DirectEvents>
@@ -941,6 +941,7 @@
                                 <ext:NumericFilter DataIndex="PersonKey" />
                                 <ext:StringFilter DataIndex="FamilyName" />
                                 <ext:StringFilter DataIndex="FirstName" />
+                                <ext:StringFilter DataIndex="StFgCode" />
                             </Filters>
                         </ext:GridFilters>
                     </Plugins>

@@ -315,14 +315,20 @@ namespace Ict.Petra.WebServer.MConference
             NumericFilter nfRegistrationKey = (NumericFilter)GridFilters1.Filters[0];
             NumericFilter nfPersonKey = (NumericFilter)GridFilters1.Filters[1];
             StringFilter sfFamilyName = (StringFilter)GridFilters1.Filters[2];
+            StringFilter sfFirstName = (StringFilter)GridFilters1.Filters[3];
+            StringFilter sfFGroupName = (StringFilter)GridFilters1.Filters[4];
 
             if (txtSearchApplicant.Text.Length == 0)
             {
                 nfRegistrationKey.SetActive(false);
                 nfPersonKey.SetActive(false);
                 sfFamilyName.SetActive(false);
+                sfFirstName.SetActive(false);
+                sfFGroupName.SetActive(false);
                 return;
             }
+
+            ConferenceApplicationTDS CurrentApplicants = (ConferenceApplicationTDS)Session["CURRENTAPPLICANTS"];
 
             try
             {
@@ -345,10 +351,10 @@ namespace Ict.Petra.WebServer.MConference
                 }
 
                 sfFamilyName.SetActive(false);
+                sfFirstName.SetActive(false);
                 nfPersonKey.SetActive(false);
                 nfRegistrationKey.SetActive(true);
-
-                ConferenceApplicationTDS CurrentApplicants = (ConferenceApplicationTDS)Session["CURRENTAPPLICANTS"];
+                sfFGroupName.SetActive(false);
 
                 CurrentApplicants.ApplicationGrid.DefaultView.RowFilter =
                     ConferenceApplicationTDSApplicationGridTable.GetPartnerKeyDBName() + " = " + Partnerkey.ToString();
@@ -367,20 +373,69 @@ namespace Ict.Petra.WebServer.MConference
                     }
 
                     sfFamilyName.SetActive(false);
+                    sfFirstName.SetActive(false);
                     nfRegistrationKey.SetActive(false);
                     nfPersonKey.SetActive(true);
+                    sfFGroupName.SetActive(false);
                 }
-
-                CurrentApplicants.ApplicationGrid.DefaultView.RowFilter = "";
             }
             catch
             {
-                // search for a name starting with this text
-                sfFamilyName.SetValue(txtSearchApplicant.Text);
-                sfFamilyName.SetActive(true);
-                nfPersonKey.SetActive(false);
-                nfRegistrationKey.SetActive(false);
+                bool found = false;
+
+                // search for a family name starting with this text
+                CurrentApplicants.ApplicationGrid.DefaultView.RowFilter =
+                    ConferenceApplicationTDSApplicationGridTable.GetFamilyNameDBName() + " LIKE '*" + txtSearchApplicant.Text + "*'";
+
+                if (CurrentApplicants.ApplicationGrid.DefaultView.Count != 0)
+                {
+                    found = true;
+                    sfFamilyName.SetValue(txtSearchApplicant.Text);
+                    sfFamilyName.SetActive(true);
+                    sfFirstName.SetActive(false);
+                    nfPersonKey.SetActive(false);
+                    nfRegistrationKey.SetActive(false);
+                    sfFGroupName.SetActive(false);
+                }
+
+                if (!found)
+                {
+                    // search for a group name with this text
+                    CurrentApplicants.ApplicationGrid.DefaultView.RowFilter =
+                        ConferenceApplicationTDSApplicationGridTable.GetStFgCodeDBName() + " LIKE '*" + txtSearchApplicant.Text + "*'";
+
+                    if (CurrentApplicants.ApplicationGrid.DefaultView.Count != 0)
+                    {
+                        found = true;
+                        sfFGroupName.SetValue(txtSearchApplicant.Text);
+                        sfFamilyName.SetActive(false);
+                        sfFirstName.SetActive(false);
+                        nfPersonKey.SetActive(false);
+                        nfRegistrationKey.SetActive(false);
+                        sfFGroupName.SetActive(true);
+                    }
+                }
+
+                if (!found)
+                {
+                    // search for first name
+                    CurrentApplicants.ApplicationGrid.DefaultView.RowFilter =
+                        ConferenceApplicationTDSApplicationGridTable.GetFirstNameDBName() + " LIKE '*" + txtSearchApplicant.Text + "*'";
+
+                    if (CurrentApplicants.ApplicationGrid.DefaultView.Count != 0)
+                    {
+                        found = true;
+                        sfFirstName.SetValue(txtSearchApplicant.Text);
+                        sfFamilyName.SetActive(false);
+                        sfFirstName.SetActive(true);
+                        nfPersonKey.SetActive(false);
+                        nfRegistrationKey.SetActive(false);
+                        sfFGroupName.SetActive(false);
+                    }
+                }
             }
+
+            CurrentApplicants.ApplicationGrid.DefaultView.RowFilter = "";
         }
 
         protected void ServiceTeamJobs_Refresh(object sender, StoreRefreshDataEventArgs e)
