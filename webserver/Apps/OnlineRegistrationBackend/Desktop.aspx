@@ -767,6 +767,7 @@
                             </ext:Panel>
                             <ext:Panel ID="TabBoundaries" runat="server" Title="Boundaries" AutoScroll="true">
                               <Items>
+                                <ext:DateField ID="dtpRebukesReportForDate" runat="server" FieldLabel="Print for Date" Format="dd-MMM-yyyy" width="230"/>
                                 <ext:Button ID="btnRebukesReport" runat="server" Text="Print Rebukes Report">
                                     <DirectEvents>
                                         <Click OnEvent="PrintRebukesReport"/>

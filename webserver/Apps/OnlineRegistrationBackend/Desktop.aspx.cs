@@ -100,6 +100,7 @@ namespace Ict.Petra.WebServer.MConference
         protected Ext.Net.Store StoreRebukes;
         protected Ext.Net.TextArea MedicalLog;
         protected Ext.Net.Button btnNewRebuke;
+        protected Ext.Net.DateField dtpRebukesReportForDate;
 
         protected bool ConferenceOrganisingOffice = false;
 
@@ -160,6 +161,16 @@ namespace Ict.Petra.WebServer.MConference
                     TabRebukes.Visible = false;
                     btnNewRebuke.Visible = false;
                 }
+
+                DateTime PrintDate = DateTime.Today;
+
+                if (PrintDate.Hour < 8)
+                {
+                    // if rebukes are printed in the early morning, print of last day
+                    PrintDate.AddDays(-1);
+                }
+
+                dtpRebukesReportForDate.Value = PrintDate;
 
                 MyData_Refresh(null, null);
             }
@@ -1012,13 +1023,7 @@ namespace Ict.Petra.WebServer.MConference
 
         protected void PrintRebukesReport(object sender, DirectEventArgs e)
         {
-            DateTime PrintDate = DateTime.Today;
-
-            if (PrintDate.Hour < 8)
-            {
-                // if rebukes are printed in the early morning, print of last day
-                PrintDate.AddDays(-1);
-            }
+            DateTime PrintDate = (DateTime)dtpRebukesReportForDate.Value;
 
             string OutputName = "RebukesReport_" + PrintDate.ToString("yyyy-MM-dd") + ".pdf";
 
