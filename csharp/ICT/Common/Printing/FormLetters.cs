@@ -619,6 +619,10 @@ namespace Ict.Common.Printing
                             currentPage = 1;
                         }
                     }
+                    else
+                    {
+                        ResultDocument = ResultDocument.Replace("#GROUPNAME", group);
+                    }
                 }
 
                 if (!ASeparatePagesPerGroup)
