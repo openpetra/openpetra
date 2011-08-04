@@ -88,6 +88,7 @@ namespace SampleDataConstructor
         public string PostCode;
         public string City;
         public string Province;
+        public string CountryCode;
 
         // later in OpenPetra: these will be in PartnerLocation (p_partner_location)
         public string Phone;
@@ -99,6 +100,7 @@ namespace SampleDataConstructor
             dL.mustSet(ref Addr2,       "Addr2");
             dL.mustSet(ref PostCode,    "PostCode");
             dL.mustSet(ref City,        "City");
+            dL.mustSet(ref CountryCode, "CountryCode");
             dL.maySet(ref Province,    "Province");
             dL.maySet(ref Phone,       "Phone");
             dL.maySet(ref Alternate,   "Alternate");

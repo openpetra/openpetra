@@ -64,118 +64,7 @@ namespace SampleDataConstructor
 class TSampleDataConstructor
 {       
 
-	private static Int64 newPartnerKey = -1; 
-	/// <summary>
-	/// This gets a new Partner Key.
-	/// </summary>
-	/// <remarks>
-	/// Done this way in ImportExportYml.cs
-	/// TODO: where should the partnerKey _actually_ come from?
-	/// </remarks>
-	protected Int64 getNewPartnerKey()
-	{
-		Int64 partnerKey = newPartnerKey;
-        newPartnerKey--;
-        return partnerKey;
-	}
-	
 
-	PPartnerRow createNewPartner(SampleDataConstructorTDS dataTDS)
-	{
-		PPartnerRow partner = dataTDS.PPartner.NewRowTyped();
-		partner.PartnerKey = getNewPartnerKey();
-		// partner.StatusCode
-		return partner;
-	}
-
-	PFamilyRow createNewFamily(SampleDataConstructorTDS dataTDS, RPerson person)
-	{
-		PFamilyRow family = dataTDS.PFamily.NewRowTyped();
-		family.FirstName  = person.FirstName;
-		family.FamilyName = person.FamilyName;
-		family.Title      = person.Title;
-		family.CreatedBy  = "DemoData";
-		family.DateCreated = DateTime.Now;
-		//// family.FieldKey
-		//// family.MaritalStatus
-		//// family.MaritalStatusComment
-		//// family.MaritalStatusSince
-		return family;
-	}
-	
-	void couple(PPartnerRow partner, PFamilyRow family)
-	{
-		// partner: data associated with family
-        partner.PartnerClass = MPartnerConstants.PARTNERCLASS_FAMILY;
-        partner.AddresseeTypeCode = MPartnerConstants.PARTNERCLASS_FAMILY;
-
-        partner.PartnerShortName =
-        	Calculations.DeterminePartnerShortName(family.FamilyName,family.Title,family.FirstName);
- 		family.PartnerKey = partner.PartnerKey;
-	}
-	
-	List<PPartnerTypeRow> createSpecialTypes(SampleDataConstructorTDS dataTDS, RPerson person)
-	{
-		// new StringCollection("VOLUNTEER","SUPPORTER");
-		// No Special Types are created for now.
-		StringCollection specialTypes = new StringCollection();
-		var partnerTypes = new List<PPartnerTypeRow>();
-		foreach (string specialType in specialTypes) {
-			PPartnerTypeRow partnerType = dataTDS.PPartnerType.NewRowTyped();
-	        partnerType.TypeCode = specialType.Trim();
-	        partnerTypes.Add(partnerType);
-		}
-		return partnerTypes;
-	}
-
-	void couple(PPartnerRow partner, List<PPartnerTypeRow> specialTypes)
-	{
-        foreach (PPartnerTypeRow partnerType in specialTypes)
-        {
-            partnerType.PartnerKey = partner.PartnerKey;                 
-            // TODO: check if special type does not exist yet, and create it
-        }				
-	}
-
-	/// <summary>
-	/// Creates a TDS in memory from the given RawData and returns it.
-	/// This is supposed to be used to save the created raw data in memory.
-	/// </summary>
-	/// <remarks>
-	/// Based on ImportExportYml.cs 
-	/// </remarks>
-	public SampleDataConstructorTDS createTDSFromRawData(RawData rawData)
-	{
-		SampleDataConstructorTDS dataTDS = new SampleDataConstructorTDS();
-		
-		foreach (RPerson rPerson in rawData.People) {
-			var partner = createNewPartner(dataTDS);
-			var family = createNewFamily(dataTDS,rPerson);
-			couple(partner,family);
-		 	
-			dataTDS.PPartner.Rows.Add(partner);
-			dataTDS.PFamily.Rows.Add(family);
-
-			var specialTypes = createSpecialTypes(dataTDS,rPerson);			
-			couple(partner,specialTypes);
-	
-
-			dataTDS.PPartner.Rows.Add(partner);
-			dataTDS.PFamily.Rows.Add(family);
-			foreach (PPartnerTypeRow specialType in specialTypes) {
-				dataTDS.PPartnerType.Rows.Add(specialType);
-			}
-				
-				
-			
-			
-			
-			//// unused: 
-			// person.DateOfBirth
-			// person.Email
-		}
-		return dataTDS;
-	}
 	
 	/// <summary>
 	/// data directory containing the raw data files created by benerator
@@ -188,7 +77,18 @@ class TSampleDataConstructor
 	const string fileOrganisations = "organisations.csv";
 	const string fileAddresses = "addresses.csv";
 
-
+	public static void doReport(ExecutionReport report)
+	{
+		Console.WriteLine(report);
+	}
+	
+	/// <summary>
+	/// Creates Sample Data using the raw data provided and exports this to the Petra Server
+	/// </summary>
+	/// <remarks>
+	/// TODO: use standard OpenPetra logging instead of the prelimanary "Report"
+	/// </remarks>
+	/// <param name="args"></param>
     public static void Main(string[] args)
     {
 		// SampleDataConstructor
@@ -198,9 +98,10 @@ class TSampleDataConstructor
 		//// new TAppSettingsManager(false);
         //// string csvInputFileName = TAppSettingsManager.GetValue("file", true);
 
-		
+        ExecutionReport report;
         try
         {
+        	Console.WriteLine("Reading Raw Data Files...");
 			RawData rawData = new RawData();
             rawData.readRawDataFromFile(filePeople, RawData.filetypes.people, dd);
             rawData.readRawDataFromFile(fileOrganisations, RawData.filetypes.organizations, dd);
@@ -210,7 +111,31 @@ class TSampleDataConstructor
             Console.WriteLine("Locations:     " + rawData.Locations.Count);
             Console.WriteLine("Mobile Phones: " + rawData.Mobilephones.Count);
             Console.WriteLine("Countries:     " + rawData.Countries.Count);
-			
+            
+            Console.WriteLine("Creating TDS from Raw Data...");
+            var dataTDS = new SampleDataConstructorTDS();
+            var unusedDataTDS = new SampleDataConstructorTDS();
+            var constructionStats = new ConstructionStats();
+            
+            DataBuilder.initPeople(dataTDS,rawData, out report); doReport(report);
+            DataBuilder.initOrganisations(dataTDS,rawData, out report); doReport(report);
+            // Units? No units for now (could be copied from ImportExportYML)
+            //
+            // Subscriptions? No Subscriptions for now
+            //
+            
+            DataBuilder.initLocations(unusedDataTDS,rawData, out report); doReport(report);
+			/*            
+			DataBuilder.initMobilePhones(dataTDS,rawData, out report);
+            DataBuilder.initCountries(dataTDS,rawData, out report);
+            */
+			// DataBuilder.GivePeopleHomes(dataTDS,unusedDataTDS,constructionStats,out report);
+            /*
+         	DataBuilder.assignSpecialTypesToPeople(dataTDS,rawData,supporterStats,out report);
+           	*/
+            Console.WriteLine("Completed.");
+
+            
         }
         catch (Exception e)
         {
