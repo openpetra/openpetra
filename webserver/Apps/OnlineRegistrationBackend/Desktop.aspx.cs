@@ -1539,7 +1539,7 @@ namespace Ict.Petra.WebServer.MConference
             }
         }
 
-        private static int NewId = 1;
+        private static int NewRebukeId = 1;
 
         private void RefreshRebukesStore(string AData)
         {
@@ -1563,6 +1563,11 @@ namespace Ict.Petra.WebServer.MConference
                     {
                     }
 
+                    if (Convert.ToInt32(element["ID"]) > NewRebukeId)
+                    {
+                        NewRebukeId = Convert.ToInt32(element["ID"]) + 1;
+                    }
+
                     store.Add(new Rebuke(Convert.ToInt32(element["ID"]),
                             Convert.ToDateTime(element["When"]),
                             time,
@@ -1577,8 +1582,8 @@ namespace Ict.Petra.WebServer.MConference
 
         protected void AddNewRebuke(Object sender, DirectEventArgs e)
         {
-            NewId++;
-            this.StoreRebukes.AddRecord(new Rebuke(NewId));
+            NewRebukeId++;
+            this.StoreRebukes.AddRecord(new Rebuke(NewRebukeId));
             this.StoreRebukes.CommitChanges();
         }
     }
