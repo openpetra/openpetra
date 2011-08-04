@@ -1563,7 +1563,7 @@ namespace Ict.Petra.WebServer.MConference
                     {
                     }
 
-                    if (Convert.ToInt32(element["ID"]) > NewRebukeId)
+                    if (Convert.ToInt32(element["ID"]) >= NewRebukeId)
                     {
                         NewRebukeId = Convert.ToInt32(element["ID"]) + 1;
                     }
