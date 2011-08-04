@@ -58,6 +58,12 @@
             Ext.getCmp('TabPanelApplication').hideTabStripItem(panelName);
             Ext.getCmp('TabPanelApplication').setActiveTab(0);
         }
+
+        function SetActiveMedicalIncident(panelId)
+        {
+            Ext.getCmp('MedicalPanel').setActiveTab(panelId);
+        }
+
 </script>        
 </head>
 <body>
@@ -1274,9 +1280,22 @@
                               </ext:GridPanel>          
                               </Items>
                             </ext:Panel>
+                            <ext:Panel ID="TabMedicalInfo" runat="server" Title="Medical Info" AutoScroll="true">
+                              <Items>
+                                <ext:TextArea ID="MedicalInfo" DataIndex="MedicalInfo" runat="server" Width="400" Height="360"/>
+                              </Items>
+                            </ext:Panel>
                             <ext:Panel ID="TabMedicalLog" runat="server" Title="Medical Log" AutoScroll="true">
                               <Items>
-                                <ext:TextArea ID="MedicalLog" DataIndex="MedicalLog" runat="server" Width="400" Height="360"/>
+                                <ext:Button ID="btnAddMedicalIncidence" runat="server" Text="Add Incidence" Icon="PageAttach">
+                                  <DirectEvents>
+                                      <Click OnEvent="AddMedicalIncidence"/>
+                                  </DirectEvents>
+                                </ext:Button>
+                                <ext:TabPanel ID="MedicalPanel" runat="server" EnableTabScroll="true" Height="400" Width="800">
+                                  <Items>
+                                  </Items>
+                                </ext:TabPanel>
                               </Items>
                             </ext:Panel>
                           </Items>

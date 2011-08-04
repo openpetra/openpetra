@@ -71,7 +71,10 @@ namespace Ict.Petra.WebServer.MConference
         protected Ext.Net.GridPanel GridPanel1;
         protected Ext.Net.GridFilters GridFilters1;
         protected Ext.Net.Panel TabRawApplicationData;
+        protected Ext.Net.Panel TabApplicantDetails;
+        protected Ext.Net.Panel TabFinance;
         protected Ext.Net.Panel TabMedicalLog;
+        protected Ext.Net.Panel TabMedicalInfo;
         protected Ext.Net.Panel TabRebukes;
         protected Ext.Net.TabPanel TabPanelApplication;
         protected Ext.Net.ComboBox JobWish1;
@@ -98,9 +101,10 @@ namespace Ict.Petra.WebServer.MConference
         protected Ext.Net.Button btnLateRegistration;
         protected Ext.Net.Button btnPrintArrivalRegistration;
         protected Ext.Net.Store StoreRebukes;
-        protected Ext.Net.TextArea MedicalLog;
+        protected Ext.Net.TextArea MedicalInfo;
         protected Ext.Net.Button btnNewRebuke;
         protected Ext.Net.DateField dtpRebukesReportForDate;
+        protected Ext.Net.TabPanel MedicalPanel;
 
         protected bool ConferenceOrganisingOffice = false;
 
@@ -151,8 +155,17 @@ namespace Ict.Petra.WebServer.MConference
                 {
                     TabMedicalLog.Enabled = false;
                     TabMedicalLog.Visible = false;
-                    MedicalLog.Visible = false;
-                    MedicalLog.Enabled = false;
+                    TabMedicalInfo.Enabled = false;
+                    TabMedicalInfo.Visible = false;
+                    MedicalInfo.Visible = false;
+                    MedicalInfo.Enabled = false;
+                }
+                else
+                {
+                    TabRawApplicationData.Visible = false;
+                    TabFinance.Visible = false;
+                    TabServiceTeam.Visible = false;
+                    TabApplicantDetails.Visible = false;
                 }
 
                 if (!UserInfo.GUserInfo.IsInModule("BOUNDARIES"))
@@ -513,21 +526,30 @@ namespace Ict.Petra.WebServer.MConference
                 this.FormPanel1.Disabled = false;
 
                 string RawData = TApplicationManagement.GetRawApplicationData(row.PartnerKey, row.ApplicationKey, row.RegistrationOffice);
-                TabRawApplicationData.Html = TJsonTools.DataToHTMLTable(RawData);
 
-                Ext.Net.Panel panel = this.X().Panel()
-                                      .ID("TabMoreDetails")
-                                      .Title("Edit more details")
-                                      .Padding(5)
-                                      .AutoScroll(true);
-                panel.Render("TabPanelApplication", 3, RenderMode.InsertTo);
+                if (UserInfo.GUserInfo.IsInModule("MEDICAL"))
+                {
+                    // TODO: fill MedicalLog TextArea with Info about the participant
+                    Session["NewMedicalId"] = 1;
+                }
+                else
+                {
+                    TabRawApplicationData.Html = TJsonTools.DataToHTMLTable(RawData);
 
-                Ext.Net.Label label = this.X().Label()
-                                      .ID("lblWarningEdit")
-                                      .Html(
-                    "<b>Please be very careful</b>, only edit data if you are sure. Drop Down boxes or Dates might not work anymore.<br/><br/>");
+                    Ext.Net.Panel panel = this.X().Panel()
+                                          .ID("TabMoreDetails")
+                                          .Title("Edit more details")
+                                          .Padding(5)
+                                          .AutoScroll(true);
+                    panel.Render("TabPanelApplication", 3, RenderMode.InsertTo);
 
-                label.Render("TabMoreDetails", RenderMode.AddTo);
+                    Ext.Net.Label label = this.X().Label()
+                                          .ID("lblWarningEdit")
+                                          .Html(
+                        "<b>Please be very careful</b>, only edit data if you are sure. Drop Down boxes or Dates might not work anymore.<br/><br/>");
+
+                    label.Render("TabMoreDetails", RenderMode.AddTo);
+                }
 
                 Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(RawData);
 
@@ -569,37 +591,40 @@ namespace Ict.Petra.WebServer.MConference
                                                                          "CLS", "Dresscode", "LegalImprint"
                                                                      });
 
-                foreach (string key in rawDataObject.Names)
+                if (!UserInfo.GUserInfo.IsInModule("MEDICAL"))
                 {
-                    if (!dictionary.ContainsKey(key)
-                        && !FieldsNotToBeEdited.Contains(key)
-                        && !FieldsOnFirstTab.Contains(key)
-                        && !key.EndsWith("_SelIndex")
-                        && !key.EndsWith("_Value")
-                        && !key.EndsWith("_ActiveTab"))
+                    foreach (string key in rawDataObject.Names)
                     {
-                        dictionary.Add(key, rawDataObject[key]);
-
-                        if (rawDataObject[key].ToString().Length > 40)
+                        if (!dictionary.ContainsKey(key)
+                            && !FieldsNotToBeEdited.Contains(key)
+                            && !FieldsOnFirstTab.Contains(key)
+                            && !key.EndsWith("_SelIndex")
+                            && !key.EndsWith("_Value")
+                            && !key.EndsWith("_ActiveTab"))
                         {
-                            TextArea text = this.X().TextArea()
-                                            .ID(key)
-                                            .LabelWidth(200)
-                                            .Width(700)
-                                            .Height(150)
-                                            .FieldLabel(key);
+                            dictionary.Add(key, rawDataObject[key]);
 
-                            text.Render("TabMoreDetails", RenderMode.AddTo);
-                        }
-                        else
-                        {
-                            TextField text = this.X().TextField()
-                                             .ID(key)
-                                             .LabelWidth(200)
-                                             .Width(500)
-                                             .FieldLabel(key);
+                            if (rawDataObject[key].ToString().Length > 40)
+                            {
+                                TextArea text = this.X().TextArea()
+                                                .ID(key)
+                                                .LabelWidth(200)
+                                                .Width(700)
+                                                .Height(150)
+                                                .FieldLabel(key);
 
-                            text.Render("TabMoreDetails", RenderMode.AddTo);
+                                text.Render("TabMoreDetails", RenderMode.AddTo);
+                            }
+                            else
+                            {
+                                TextField text = this.X().TextField()
+                                                 .ID(key)
+                                                 .LabelWidth(200)
+                                                 .Width(500)
+                                                 .FieldLabel(key);
+
+                                text.Render("TabMoreDetails", RenderMode.AddTo);
+                            }
                         }
                     }
                 }
@@ -1585,6 +1610,94 @@ namespace Ict.Petra.WebServer.MConference
             NewRebukeId++;
             this.StoreRebukes.AddRecord(new Rebuke(NewRebukeId));
             this.StoreRebukes.CommitChanges();
+        }
+
+        protected void AddMedicalIncidence(Object sender, DirectEventArgs e)
+        {
+            Int32 NewIncidenceId = (Int32)Session["NewMedicalId"];
+
+            Session["NewMedicalId"] = NewIncidenceId + 1;
+
+            string TabId = "TabMedicalIncidence" + NewIncidenceId.ToString();
+            Ext.Net.Panel panel = this.X().Panel()
+                                  .ID(TabId)
+                                  .Title("Incidence " + NewIncidenceId.ToString())
+                                  .Padding(5)
+                                  .AutoScroll(true);
+
+            Ext.Net.TableLayout tblMedicalIncidence = this.X().TableLayout()
+                                                      .ID("tblMedicalIncidence")
+                                                      .Columns(3);
+
+            Ext.Net.TextField txtPulse = this.X().TextField()
+                                         .ID("txtPulse" + NewIncidenceId.ToString())
+                                         .FieldLabel("Pulse");
+
+            Ext.Net.Cell cPulse = new Cell();
+            cPulse.Items.Add(txtPulse);
+            tblMedicalIncidence.Cells.Add(cPulse);
+
+            Ext.Net.TextField txtBloodPressure = this.X().TextField()
+                                                 .ID("txtBloodPressure" + NewIncidenceId.ToString())
+                                                 .FieldLabel("Blood Pressure");
+
+            Ext.Net.Cell cBloodPressure = new Cell();
+            cBloodPressure.Items.Add(txtBloodPressure);
+            tblMedicalIncidence.Cells.Add(cBloodPressure);
+
+            Ext.Net.TextField txtTemperature = this.X().TextField()
+                                               .ID("txtTemperature" + NewIncidenceId.ToString())
+                                               .FieldLabel("Temperature");
+
+            Ext.Net.Cell cTemperature = new Cell();
+            cTemperature.Items.Add(txtTemperature);
+            tblMedicalIncidence.Cells.Add(cTemperature);
+
+            Ext.Net.TextArea txtDiagnosis = this.X().TextArea()
+                                            .ID("txtDiagnosis" + NewIncidenceId.ToString())
+                                            .Height(100)
+                                            .Width(500)
+                                            .FieldLabel("Diagnosis");
+
+            Ext.Net.Cell cDiagnosis = new Cell();
+            cDiagnosis.ColSpan = 3;
+            cDiagnosis.Items.Add(txtDiagnosis);
+            tblMedicalIncidence.Cells.Add(cDiagnosis);
+
+            Ext.Net.TextArea txtTherapy = this.X().TextArea()
+                                          .ID("txtTherapy" + NewIncidenceId.ToString())
+                                          .Height(100)
+                                          .Width(500)
+                                          .FieldLabel("Therapy");
+
+            Ext.Net.Cell cTherapy = new Cell();
+            cTherapy.ColSpan = 3;
+            cTherapy.Items.Add(txtTherapy);
+            tblMedicalIncidence.Cells.Add(cTherapy);
+
+            Ext.Net.TextField txtExaminer = this.X().TextField()
+                                            .ID("txtExaminer" + NewIncidenceId.ToString())
+                                            .FieldLabel("Examiner");
+
+            Ext.Net.Cell cExaminer = new Cell();
+            cExaminer.ColSpan = 3;
+            cExaminer.Items.Add(txtExaminer);
+            tblMedicalIncidence.Cells.Add(cExaminer);
+
+            Ext.Net.TextField txtKeywords = this.X().TextField()
+                                            .ID("txtKeywords" + NewIncidenceId.ToString())
+                                            .Width(500)
+                                            .EmptyText("for statistics, separated by comma")
+                                            .FieldLabel("Keywords");
+
+            Ext.Net.Cell cKeywords = new Cell();
+            cKeywords.ColSpan = 3;
+            cKeywords.Items.Add(txtKeywords);
+            tblMedicalIncidence.Cells.Add(cKeywords);
+
+            panel.ContentControls.Add(tblMedicalIncidence);
+            panel.Render("MedicalPanel", RenderMode.AddTo);
+            X.Js.Call("SetActiveMedicalIncident", NewIncidenceId - 1);
         }
     }
 }
