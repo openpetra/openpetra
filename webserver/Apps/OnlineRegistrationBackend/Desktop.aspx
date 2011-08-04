@@ -1280,11 +1280,7 @@
                               </ext:GridPanel>          
                               </Items>
                             </ext:Panel>
-                            <ext:Panel ID="TabMedicalInfo" runat="server" Title="Medical Info" AutoScroll="true">
-                              <Items>
-                                <ext:TextArea ID="MedicalInfo" DataIndex="MedicalInfo" runat="server" Width="400" Height="360"/>
-                              </Items>
-                            </ext:Panel>
+                            <ext:Panel ID="TabMedicalInfo" runat="server" Title="Medical Info" AutoScroll="true"/>
                             <ext:Panel ID="TabMedicalLog" runat="server" Title="Medical Log" AutoScroll="true">
                               <Items>
                                 <ext:Button ID="btnAddMedicalIncidence" runat="server" Text="Add Incidence" Icon="PageAttach">

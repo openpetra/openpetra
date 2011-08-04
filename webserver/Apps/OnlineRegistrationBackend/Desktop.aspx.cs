@@ -101,7 +101,6 @@ namespace Ict.Petra.WebServer.MConference
         protected Ext.Net.Button btnLateRegistration;
         protected Ext.Net.Button btnPrintArrivalRegistration;
         protected Ext.Net.Store StoreRebukes;
-        protected Ext.Net.TextArea MedicalInfo;
         protected Ext.Net.Button btnNewRebuke;
         protected Ext.Net.DateField dtpRebukesReportForDate;
         protected Ext.Net.TabPanel MedicalPanel;
@@ -157,8 +156,6 @@ namespace Ict.Petra.WebServer.MConference
                     TabMedicalLog.Visible = false;
                     TabMedicalInfo.Enabled = false;
                     TabMedicalInfo.Visible = false;
-                    MedicalInfo.Visible = false;
-                    MedicalInfo.Enabled = false;
                 }
                 else
                 {
@@ -526,11 +523,11 @@ namespace Ict.Petra.WebServer.MConference
                 this.FormPanel1.Disabled = false;
 
                 string RawData = TApplicationManagement.GetRawApplicationData(row.PartnerKey, row.ApplicationKey, row.RegistrationOffice);
+                Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(RawData);
 
                 if (UserInfo.GUserInfo.IsInModule("MEDICAL"))
                 {
-                    // TODO: fill MedicalLog TextArea with Info about the participant
-                    Session["NewMedicalId"] = 1;
+                    LoadDataForMedicalTeam(row, rawDataObject);
                 }
                 else
                 {
@@ -550,8 +547,6 @@ namespace Ict.Petra.WebServer.MConference
 
                     label.Render("TabMoreDetails", RenderMode.AddTo);
                 }
-
-                Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(RawData);
 
                 var dictionary = new Dictionary <string, object>();
                 dictionary.Add("PartnerKey", row.PartnerKey);
@@ -1698,6 +1693,67 @@ namespace Ict.Petra.WebServer.MConference
             panel.ContentControls.Add(tblMedicalIncidence);
             panel.Render("MedicalPanel", RenderMode.AddTo);
             X.Js.Call("SetActiveMedicalIncident", NewIncidenceId - 1);
+        }
+
+        private void LoadDataForMedicalTeam(ConferenceApplicationTDSApplicationGridRow ARow, Jayrock.Json.JsonObject ARawDataObject)
+        {
+            // fill MedicalLog TextArea with Info about the participant
+            string MedicalInfo = "<table>";
+
+            MedicalInfo += "<tr><th>Name</th><td>" + ARow.FamilyName + ", " + ARow.FirstName + "</td></tr>";
+
+            if (ARow.DateOfBirth.HasValue)
+            {
+                MedicalInfo += "<tr><th>Date of Birth</th><td>" + ARow.DateOfBirth.Value.ToString("dd-MMM-yyyy") + "</td></tr>";
+            }
+
+            MedicalInfo += "<tr><th>Country</th><td>" + ARawDataObject["Country"].ToString() + "</td></tr>";
+
+            PPartnerTable offices = TApplicationManagement.GetRegistrationOffices();
+            offices.DefaultView.Sort = PPartnerTable.GetPartnerKeyDBName();
+            PPartnerRow office =
+                (PPartnerRow)offices.DefaultView[offices.DefaultView.Find(Convert.ToInt64(ARawDataObject["RegistrationOffice"]))].Row;
+            MedicalInfo += "<tr><th>Registration Office</th><td>" + office.PartnerShortName + "</td></tr>";
+
+            MedicalInfo += "<tr><th>Fellowship Group</th><td>" + ARow.StFgCode + "</td></tr>";
+
+            if (ARawDataObject.Contains("Phone"))
+            {
+                MedicalInfo += "<tr><th>Phone</th><td>" + ARawDataObject["Phone"].ToString() + "</td></tr>";
+            }
+
+            if (ARawDataObject.Contains("Mobile"))
+            {
+                MedicalInfo += "<tr><th>Mobile</th><td>" + ARawDataObject["Mobile"].ToString() + "</td></tr>";
+            }
+
+            foreach (string key in ARawDataObject.Names)
+            {
+                if (key.ToLower().Contains("health")
+                    || key.ToLower().Contains("emergency")
+                    || key.ToLower().Contains("medical")
+                    || key.ToLower().Contains("vegetarian"))
+                {
+                    MedicalInfo += "<tr><th>" + key + "</th><td>" + ARawDataObject[key].ToString() + "</td></tr>";
+                }
+            }
+
+            foreach (string key in ARawDataObject.Names)
+            {
+                // show the answers to these personal questions, since the applicants might write about past health issues
+                if (key.ToLower().Contains("why")
+                    || key.ToLower().Contains("daily")
+                    || key.ToLower().Contains("what"))
+                {
+                    MedicalInfo += "<tr><th>" + key + "</th><td>" + ARawDataObject[key].ToString() + "</td></tr>";
+                }
+            }
+
+            MedicalInfo += "</table>";
+            TabMedicalInfo.Html = MedicalInfo;
+
+            // load medical log
+            Session["NewMedicalId"] = 1;
         }
     }
 }
