@@ -190,4 +190,51 @@ namespace Ict.Petra.Server.MConference.Applications
             }
         }
     }
+
+    /// <summary>
+    /// structure for the rebukes for the data grid
+    /// </summary>
+    public class TRebuke
+    {
+        /// <summary>ID, not visible</summary>
+        public int ID {
+            get; set;
+        }
+        /// <summary>Which day were the rules violated</summary>
+        public DateTime When {
+            get; set;
+        }
+        /// <summary>the time of the offence</summary>
+        public string Time {
+            get; set;
+        }
+        /// <summary>what happened</summary>
+        public string What {
+            get; set;
+        }
+        /// <summary>what will be done</summary>
+        public string Consequence {
+            get; set;
+        }
+
+        /// <summary>constructor</summary>
+        public TRebuke(int AID)
+        {
+            this.ID = AID;
+            this.When = DateTime.Now;
+            this.Time = string.Empty;
+            this.What = string.Empty;
+            this.Consequence = "TBD";
+        }
+
+        /// <summary>constructor</summary>
+        public TRebuke(int AID, DateTime ADate, string ATime, string AWhat, string AConsequence)
+        {
+            this.ID = AID;
+            this.When = ADate;
+            this.Time = ATime;
+            this.What = AWhat;
+            this.Consequence = AConsequence;
+        }
+    }
 }

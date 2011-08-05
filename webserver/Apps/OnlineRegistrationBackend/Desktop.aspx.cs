@@ -1524,48 +1524,11 @@ namespace Ict.Petra.WebServer.MConference
             }
         }
 
-        public class Rebuke
-        {
-            public int ID {
-                get; set;
-            }
-            public DateTime When {
-                get; set;
-            }
-            public string Time {
-                get; set;
-            }
-            public string What {
-                get; set;
-            }
-            public string Consequence {
-                get; set;
-            }
-
-            public Rebuke(int AID)
-            {
-                this.ID = AID;
-                this.When = DateTime.Now;
-                this.Time = string.Empty;
-                this.What = string.Empty;
-                this.Consequence = "TBD";
-            }
-
-            public Rebuke(int AID, DateTime ADate, string ATime, string AWhat, string AConsequence)
-            {
-                this.ID = AID;
-                this.When = ADate;
-                this.Time = ATime;
-                this.What = AWhat;
-                this.Consequence = AConsequence;
-            }
-        }
-
         private static int NewRebukeId = 1;
 
         private void RefreshRebukesStore(string AData)
         {
-            List <Rebuke>store = new List <Rebuke>();
+            List <TRebuke>store = new List <TRebuke>();
 
             if (AData.Length > 0)
             {
@@ -1590,7 +1553,7 @@ namespace Ict.Petra.WebServer.MConference
                         NewRebukeId = Convert.ToInt32(element["ID"]) + 1;
                     }
 
-                    store.Add(new Rebuke(Convert.ToInt32(element["ID"]),
+                    store.Add(new TRebuke(Convert.ToInt32(element["ID"]),
                             Convert.ToDateTime(element["When"]),
                             time,
                             element["What"].ToString(),
@@ -1605,7 +1568,7 @@ namespace Ict.Petra.WebServer.MConference
         protected void AddNewRebuke(Object sender, DirectEventArgs e)
         {
             NewRebukeId++;
-            this.StoreRebukes.AddRecord(new Rebuke(NewRebukeId));
+            this.StoreRebukes.AddRecord(new TRebuke(NewRebukeId));
             this.StoreRebukes.CommitChanges();
         }
 
@@ -1615,10 +1578,10 @@ namespace Ict.Petra.WebServer.MConference
 
             Session["NewMedicalId"] = NewIncidentID + 1;
 
-            AddMedicalIncidentData(new MedicalIncident(NewIncidentID));
+            AddMedicalIncidentData(new TMedicalIncident(NewIncidentID));
         }
 
-        protected void AddMedicalIncidentData(MedicalIncident ARow)
+        protected void AddMedicalIncidentData(TMedicalIncident ARow)
         {
             string TabId = "TabMedicalIncident" + ARow.ID.ToString();
 
@@ -1776,7 +1739,7 @@ namespace Ict.Petra.WebServer.MConference
                         NewMedicalId = Convert.ToInt32(element["ID"]) + 1;
                     }
 
-                    AddMedicalIncidentData(new MedicalIncident(Convert.ToInt32(element["ID"]),
+                    AddMedicalIncidentData(new TMedicalIncident(Convert.ToInt32(element["ID"]),
                             Convert.ToDateTime(element["dtpDate"]),
                             element["txtExaminer"].ToString(),
                             element["txtPulse"].ToString(),
@@ -1789,62 +1752,6 @@ namespace Ict.Petra.WebServer.MConference
             }
 
             Session["NewMedicalId"] = NewMedicalId;
-        }
-
-        public class MedicalIncident
-        {
-            public int ID {
-                get; set;
-            }
-            public DateTime Date {
-                get; set;
-            }
-            public string Examiner {
-                get; set;
-            }
-            public string Pulse {
-                get; set;
-            }
-            public string BloodPressure {
-                get; set;
-            }
-            public string Temperature {
-                get; set;
-            }
-            public string Diagnosis {
-                get; set;
-            }
-            public string Therapy {
-                get; set;
-            }
-            public string Keywords {
-                get; set;
-            }
-
-            public MedicalIncident(int AID)
-            {
-                this.ID = AID;
-                this.Date = DateTime.Now;
-            }
-
-            public MedicalIncident(int AID, DateTime ADate, string AExaminer,
-                string APulse,
-                string ABloodPressure,
-                string ATemperature,
-                string ADiagnosis,
-                string ATherapy,
-                string AKeywords)
-            {
-                this.ID = AID;
-                this.Date = ADate;
-                this.Examiner = AExaminer;
-                this.Pulse = APulse;
-                this.BloodPressure = ABloodPressure;
-                this.Temperature = ATemperature;
-                this.Diagnosis = ADiagnosis;
-                this.Therapy = ATherapy;
-                this.Keywords = AKeywords;
-            }
         }
 
         private void LoadDataForMedicalTeam(ConferenceApplicationTDSApplicationGridRow ARow, Jayrock.Json.JsonObject ARawDataObject)
