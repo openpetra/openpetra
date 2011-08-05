@@ -604,15 +604,15 @@
         </ext:DesktopWindow>
 
         <ext:DesktopWindow 
-            ID="winLateRegistration" 
+            ID="winManualRegistration" 
             runat="server" 
-            Title="Late Registration" 
+            Title="Manual Registration" 
             Width="600"
             Height="608"
             PageX="200" 
             PageY="100"
             Layout="Border">
-            <AutoLoad Url="LateRegistration.aspx" Mode="IFrame" ShowMask="true" />
+            <AutoLoad Url="ManualRegistration.aspx" Mode="IFrame" ShowMask="true" />
         </ext:DesktopWindow>
 
         <ext:DesktopWindow 
@@ -889,9 +889,9 @@
                                         <Click OnEvent="FixArrivalDepartureDates" />
                                     </DirectEvents>
                                 </ext:Button></td>
-                                <td><ext:Button ID="btnLateRegistration" runat="server" Text="Late Registration">
+                                <td><ext:Button ID="btnManualRegistration" runat="server" Text="Manual Registration">
                                     <Listeners>
-                                        <Click Handler="#{winLateRegistration}.show();" />
+                                        <Click Handler="#{winManualRegistration}.show();" />
                                     </Listeners>
                                 </ext:Button></td>
                                 </tr></table>

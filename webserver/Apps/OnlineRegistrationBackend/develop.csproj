@@ -99,8 +99,8 @@
     <None Include="ImportPrintedBadges.aspx">
       <DependentUpon>ImportPrintedBadges.aspx.cs</DependentUpon>
     </None>
-    <None Include="LateRegistration.aspx">
-      <DependentUpon>LateRegistration.aspx.cs</DependentUpon>
+    <None Include="ManualRegistration.aspx">
+      <DependentUpon>ManualRegistration.aspx.cs</DependentUpon>
     </None>
     <None Include="PrintBadgeLabelsByKey.aspx">
       <DependentUpon>PrintBadgeLabelsByKey.aspx.cs</DependentUpon>
@@ -112,7 +112,7 @@
     </Compile>
     <Compile Include="ImportFellowshipGroups.aspx.cs" />
     <Compile Include="ImportPrintedBadges.aspx.cs" />
-    <Compile Include="LateRegistration.aspx.cs" />
+    <Compile Include="ManualRegistration.aspx.cs" />
     <Compile Include="PrintBadgeLabelsByKey.aspx.cs" />
   </ItemGroup>
 </Project>

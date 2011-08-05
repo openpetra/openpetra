@@ -42,7 +42,7 @@ using Ict.Petra.Server.MPartner.Import;
 
 namespace Ict.Petra.WebServer.MConference
 {
-    public partial class TLateRegistrationUI : System.Web.UI.Page
+    public partial class TManualRegistrationUI : System.Web.UI.Page
     {
         protected Ext.Net.TextArea RegistrationsKeys;
         protected Ext.Net.FormPanel FellowshipForm;
@@ -59,7 +59,7 @@ namespace Ict.Petra.WebServer.MConference
             }
         }
 
-        protected void SubmitLateRegistration(Object sender, DirectEventArgs e)
+        protected void SubmitManualRegistration(Object sender, DirectEventArgs e)
         {
             string JSONFormData = "{'RegistrationOffice':'#REGISTRATIONOFFICE'," +
                                   "'EventIdentifier':'#EVENTCODE','EventPartnerKey':'#EVENTPARTNERKEY'," +

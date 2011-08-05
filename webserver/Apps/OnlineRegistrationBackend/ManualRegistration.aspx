@@ -1,6 +1,6 @@
 <%@ Page Language="C#"
-    Inherits="Ict.Petra.WebServer.MConference.TLateRegistrationUI"
-    src="LateRegistration.aspx.cs" %>
+    Inherits="Ict.Petra.WebServer.MConference.TManualRegistrationUI"
+    src="ManualRegistration.aspx.cs" %>
 
 <%@ Register assembly="Ext.Net" namespace="Ext.Net" tagprefix="ext" %>
 
@@ -10,11 +10,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
     <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
-    <title>Late Registration</title>
+    <title>Manual Registration</title>
 <script type="text/javascript">
         function HideDialog() {
-            parent.winLateRegistration.hide();
-            LateRegistrationForm.getForm().reset();
+            parent.winManualRegistration.hide();
+            ManualRegistrationForm.getForm().reset();
         };
 </script>        
     
@@ -23,7 +23,7 @@
     <form runat="server">
         <ext:ResourceManager runat="server" />
 		<ext:FormPanel 
-            ID="LateRegistrationForm" 
+            ID="ManualRegistrationForm" 
             runat="server"
             Region="Center"
             Width="400"
@@ -73,12 +73,12 @@
                 <ext:TextField ID="PaymentInfo" runat="server" FieldLabel="PaymentInfo" DataIndex="PaymentInfo" />
             </Items>
             <Buttons>
-                <ext:Button ID="btnSubmit" runat="server" Text="Submit Late Registration">
+                <ext:Button ID="btnSubmit" runat="server" Text="Submit Manual Registration">
                     <DirectEvents>
-                        <Click OnEvent="SubmitLateRegistration">
+                        <Click OnEvent="SubmitManualRegistration">
                             <EventMask ShowMask="true" />
                             <ExtraParams>
-                                <ext:Parameter Name="Values" Value="#{LateRegistrationForm}.getForm().getValues(false)" Mode="Raw" Encode="true" />
+                                <ext:Parameter Name="Values" Value="#{ManualRegistrationForm}.getForm().getValues(false)" Mode="Raw" Encode="true" />
                             </ExtraParams>
                         </Click>
                     </DirectEvents>
