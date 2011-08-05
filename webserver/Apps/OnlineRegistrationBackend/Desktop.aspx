@@ -1283,9 +1283,9 @@
                             <ext:Panel ID="TabMedicalInfo" runat="server" Title="Medical Info" AutoScroll="true"/>
                             <ext:Panel ID="TabMedicalLog" runat="server" Title="Medical Log" AutoScroll="true">
                               <Items>
-                                <ext:Button ID="btnAddMedicalIncidence" runat="server" Text="Add Incidence" Icon="PageAttach">
+                                <ext:Button ID="btnAddMedicalIncident" runat="server" Text="Add incident" Icon="PageAttach">
                                   <DirectEvents>
-                                      <Click OnEvent="AddMedicalIncidence"/>
+                                      <Click OnEvent="AddMedicalIncident"/>
                                   </DirectEvents>
                                 </ext:Button>
                                 <ext:TabPanel ID="MedicalPanel" runat="server" EnableTabScroll="true" Height="400" Width="800">

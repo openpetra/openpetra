@@ -688,113 +688,115 @@ namespace Ict.Petra.WebServer.MConference
             {
             }
 
-            string RawData = TApplicationManagement.GetRawApplicationData(row.PartnerKey, row.ApplicationKey, row.RegistrationOffice);
-            Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(TJsonTools.RemoveContainerControls(RawData));
-
-            // avoid problems with different formatting of dates, could cause parsing errors later, into the typed class
-            values["DateOfBirth"] = Convert.ToDateTime(values["DateOfBirth"]).ToShortDateString();
-
-            bool SecondSibling = false;
-            bool CancelledByFinanceOffice = false;
-
-            foreach (string key in values.Keys)
+            if (UserInfo.GUserInfo.IsInModule("MEDICAL"))
             {
-                // TODO: typecast dates?
-                object value = values[key];
-
-                if (rawDataObject.Contains(key))
-                {
-                    rawDataObject[key] = value;
-                }
-                else if (key.EndsWith("_ActiveTab")
-                         || key.EndsWith("_SelIndex")
-                         || key.EndsWith("_Value"))
-                {
-                    // do not add all values, eg. _Value or _SelIndex for comboboxes or _ActiveTab, cause trouble otherwise
-                }
-                else if (key == "JobAssigned")
-                {
-                    rawDataObject.Put(key, value);
-                }
-                else if (key == "SecondSibling")
-                {
-                    SecondSibling = true;
-                    rawDataObject.Put(key, true);
-                }
-                else if (key == "CancelledByFinanceOffice")
-                {
-                    CancelledByFinanceOffice = true;
-                    rawDataObject.Put(key, true);
-                }
-            }
-
-            if (!SecondSibling)
-            {
-                rawDataObject.Put("SecondSibling", false);
-            }
-
-            if (!CancelledByFinanceOffice)
-            {
-                rawDataObject.Put("CancelledByFinanceOffice", false);
-            }
-
-            rawDataObject["Role"] = values["StCongressCode_Value"];
-            rawDataObject["SecondSibling"] = values.ContainsKey("SecondSibling");
-            rawDataObject["CancelledByFinanceOffice"] = values.ContainsKey("CancelledByFinanceOffice");
-
-            row.JSONData = TJsonTools.ToJsonString(rawDataObject);
-
-            row.FamilyName = values["FamilyName"];
-            row.FirstName = values["FirstName"];
-            row.Gender = values["Gender"];
-
-            if (values["DateOfBirth"].Length == 0)
-            {
-                row.SetDateOfBirthNull();
+                row.MedicalNotes = GetMedicalLogsFromScreen(values);
             }
             else
             {
-                row.DateOfBirth = Convert.ToDateTime(values["DateOfBirth"]);
-            }
+                string RawData = TApplicationManagement.GetRawApplicationData(row.PartnerKey, row.ApplicationKey, row.RegistrationOffice);
+                Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(TJsonTools.RemoveContainerControls(RawData));
 
-            if (values["Arrival"].Length == 0)
-            {
-                row.SetArrivalNull();
-            }
-            else
-            {
-                values["Arrival"] = Convert.ToDateTime(values["Arrival"]).ToShortDateString();
-                row.Arrival = Convert.ToDateTime(values["Arrival"]);
-            }
+                // avoid problems with different formatting of dates, could cause parsing errors later, into the typed class
+                values["DateOfBirth"] = Convert.ToDateTime(values["DateOfBirth"]).ToShortDateString();
 
-            if (values["Departure"].Length == 0)
-            {
-                row.SetDepartureNull();
-            }
-            else
-            {
-                values["Departure"] = Convert.ToDateTime(values["Departure"]).ToShortDateString();
-                row.Departure = Convert.ToDateTime(values["Departure"]);
-            }
+                bool SecondSibling = false;
+                bool CancelledByFinanceOffice = false;
 
-            row.GenAppDate = Convert.ToDateTime(values["GenAppDate"]);
-            row.StCongressCode = values["StCongressCode_Value"];
-            row.GenApplicationStatus = values["GenApplicationStatus_Value"];
-            row.StFgLeader = values.ContainsKey("StFgLeader");
-            row.StFgCode = values["StFgCode"];
+                foreach (string key in values.Keys)
+                {
+                    // TODO: typecast dates?
+                    object value = values[key];
 
-            if (values.ContainsKey("StFieldCharged_Value"))
-            {
-                row.StFieldCharged = Convert.ToInt64(values["StFieldCharged_Value"]);
-            }
+                    if (rawDataObject.Contains(key))
+                    {
+                        rawDataObject[key] = value;
+                    }
+                    else if (key.EndsWith("_ActiveTab")
+                             || key.EndsWith("_SelIndex")
+                             || key.EndsWith("_Value"))
+                    {
+                        // do not add all values, eg. _Value or _SelIndex for comboboxes or _ActiveTab, cause trouble otherwise
+                    }
+                    else if (key == "JobAssigned")
+                    {
+                        rawDataObject.Put(key, value);
+                    }
+                    else if (key == "SecondSibling")
+                    {
+                        SecondSibling = true;
+                        rawDataObject.Put(key, true);
+                    }
+                    else if (key == "CancelledByFinanceOffice")
+                    {
+                        CancelledByFinanceOffice = true;
+                        rawDataObject.Put(key, true);
+                    }
+                }
 
-            row.Comment = values["Comment"];
+                if (!SecondSibling)
+                {
+                    rawDataObject.Put("SecondSibling", false);
+                }
 
-            row.RebukeNotes = RebukeValues;
+                if (!CancelledByFinanceOffice)
+                {
+                    rawDataObject.Put("CancelledByFinanceOffice", false);
+                }
 
-            if (values.ContainsKey("MedicalLog"))
-            {
-                row.MedicalNotes = values["MedicalLog"];
+                rawDataObject["Role"] = values["StCongressCode_Value"];
+                rawDataObject["SecondSibling"] = values.ContainsKey("SecondSibling");
+                rawDataObject["CancelledByFinanceOffice"] = values.ContainsKey("CancelledByFinanceOffice");
+
+                row.JSONData = TJsonTools.ToJsonString(rawDataObject);
+
+                row.FamilyName = values["FamilyName"];
+                row.FirstName = values["FirstName"];
+                row.Gender = values["Gender"];
+
+                if (values["DateOfBirth"].Length == 0)
+                {
+                    row.SetDateOfBirthNull();
+                }
+                else
+                {
+                    row.DateOfBirth = Convert.ToDateTime(values["DateOfBirth"]);
+                }
+
+                if (values["Arrival"].Length == 0)
+                {
+                    row.SetArrivalNull();
+                }
+                else
+                {
+                    values["Arrival"] = Convert.ToDateTime(values["Arrival"]).ToShortDateString();
+                    row.Arrival = Convert.ToDateTime(values["Arrival"]);
+                }
+
+                if (values["Departure"].Length == 0)
+                {
+                    row.SetDepartureNull();
+                }
+                else
+                {
+                    values["Departure"] = Convert.ToDateTime(values["Departure"]).ToShortDateString();
+                    row.Departure = Convert.ToDateTime(values["Departure"]);
+                }
+
+                row.GenAppDate = Convert.ToDateTime(values["GenAppDate"]);
+                row.StCongressCode = values["StCongressCode_Value"];
+                row.GenApplicationStatus = values["GenApplicationStatus_Value"];
+                row.StFgLeader = values.ContainsKey("StFgLeader");
+                row.StFgCode = values["StFgCode"];
+
+                if (values.ContainsKey("StFieldCharged_Value"))
+                {
+                    row.StFieldCharged = Convert.ToInt64(values["StFieldCharged_Value"]);
+                }
+
+                row.Comment = values["Comment"];
+
+                row.RebukeNotes = RebukeValues;
             }
 
             if (TApplicationManagement.SaveApplication(EventCode, row) != TSubmitChangesResult.scrOK)
@@ -1607,92 +1609,242 @@ namespace Ict.Petra.WebServer.MConference
             this.StoreRebukes.CommitChanges();
         }
 
-        protected void AddMedicalIncidence(Object sender, DirectEventArgs e)
+        protected void AddMedicalIncident(Object sender, DirectEventArgs e)
         {
-            Int32 NewIncidenceId = (Int32)Session["NewMedicalId"];
+            Int32 NewIncidentID = (Int32)Session["NewMedicalId"];
 
-            Session["NewMedicalId"] = NewIncidenceId + 1;
+            Session["NewMedicalId"] = NewIncidentID + 1;
 
-            string TabId = "TabMedicalIncidence" + NewIncidenceId.ToString();
+            AddMedicalIncidentData(new MedicalIncident(NewIncidentID));
+        }
+
+        protected void AddMedicalIncidentData(MedicalIncident ARow)
+        {
+            string TabId = "TabMedicalIncident" + ARow.ID.ToString();
+
             Ext.Net.Panel panel = this.X().Panel()
                                   .ID(TabId)
-                                  .Title("Incidence " + NewIncidenceId.ToString())
+                                  .Title("incident " + ARow.ID.ToString())
                                   .Padding(5)
                                   .AutoScroll(true);
 
-            Ext.Net.TableLayout tblMedicalIncidence = this.X().TableLayout()
-                                                      .ID("tblMedicalIncidence")
-                                                      .Columns(3);
+            Ext.Net.TableLayout tblMedicalIncident = this.X().TableLayout()
+                                                     .ID("tblMedicalIncident")
+                                                     .Columns(3);
+
+            Ext.Net.DateField dtpDate = this.X().DateField()
+                                        .ID("dtpDate" + ARow.ID.ToString())
+                                        .Width(300)
+                                        .Value(ARow.Date)
+                                        .Format("dd-MMM-yyyy")
+                                        .FieldLabel("Date");
+
+            Ext.Net.Cell cDate = new Cell();
+            cDate.ColSpan = 2;
+            cDate.Items.Add(dtpDate);
+            tblMedicalIncident.Cells.Add(cDate);
+
+            Ext.Net.TextField txtExaminer = this.X().TextField()
+                                            .ID("txtExaminer" + ARow.ID.ToString())
+                                            .Value(ARow.Examiner)
+                                            .FieldLabel("Examiner");
+
+            Ext.Net.Cell cExaminer = new Cell();
+            cExaminer.ColSpan = 1;
+            cExaminer.Items.Add(txtExaminer);
+            tblMedicalIncident.Cells.Add(cExaminer);
 
             Ext.Net.TextField txtPulse = this.X().TextField()
-                                         .ID("txtPulse" + NewIncidenceId.ToString())
+                                         .ID("txtPulse" + ARow.ID.ToString())
+                                         .Value(ARow.Pulse)
                                          .FieldLabel("Pulse");
 
             Ext.Net.Cell cPulse = new Cell();
             cPulse.Items.Add(txtPulse);
-            tblMedicalIncidence.Cells.Add(cPulse);
+            tblMedicalIncident.Cells.Add(cPulse);
 
             Ext.Net.TextField txtBloodPressure = this.X().TextField()
-                                                 .ID("txtBloodPressure" + NewIncidenceId.ToString())
+                                                 .ID("txtBloodPressure" + ARow.ID.ToString())
+                                                 .Value(ARow.BloodPressure)
                                                  .FieldLabel("Blood Pressure");
 
             Ext.Net.Cell cBloodPressure = new Cell();
             cBloodPressure.Items.Add(txtBloodPressure);
-            tblMedicalIncidence.Cells.Add(cBloodPressure);
+            tblMedicalIncident.Cells.Add(cBloodPressure);
 
             Ext.Net.TextField txtTemperature = this.X().TextField()
-                                               .ID("txtTemperature" + NewIncidenceId.ToString())
+                                               .ID("txtTemperature" + ARow.ID.ToString())
+                                               .Value(ARow.Temperature)
                                                .FieldLabel("Temperature");
 
             Ext.Net.Cell cTemperature = new Cell();
             cTemperature.Items.Add(txtTemperature);
-            tblMedicalIncidence.Cells.Add(cTemperature);
+            tblMedicalIncident.Cells.Add(cTemperature);
 
             Ext.Net.TextArea txtDiagnosis = this.X().TextArea()
-                                            .ID("txtDiagnosis" + NewIncidenceId.ToString())
+                                            .ID("txtDiagnosis" + ARow.ID.ToString())
                                             .Height(100)
                                             .Width(500)
+                                            .Value(ARow.Diagnosis)
                                             .FieldLabel("Diagnosis");
 
             Ext.Net.Cell cDiagnosis = new Cell();
             cDiagnosis.ColSpan = 3;
             cDiagnosis.Items.Add(txtDiagnosis);
-            tblMedicalIncidence.Cells.Add(cDiagnosis);
+            tblMedicalIncident.Cells.Add(cDiagnosis);
 
             Ext.Net.TextArea txtTherapy = this.X().TextArea()
-                                          .ID("txtTherapy" + NewIncidenceId.ToString())
+                                          .ID("txtTherapy" + ARow.ID.ToString())
                                           .Height(100)
                                           .Width(500)
+                                          .Value(ARow.Therapy)
                                           .FieldLabel("Therapy");
 
             Ext.Net.Cell cTherapy = new Cell();
             cTherapy.ColSpan = 3;
             cTherapy.Items.Add(txtTherapy);
-            tblMedicalIncidence.Cells.Add(cTherapy);
-
-            Ext.Net.TextField txtExaminer = this.X().TextField()
-                                            .ID("txtExaminer" + NewIncidenceId.ToString())
-                                            .FieldLabel("Examiner");
-
-            Ext.Net.Cell cExaminer = new Cell();
-            cExaminer.ColSpan = 3;
-            cExaminer.Items.Add(txtExaminer);
-            tblMedicalIncidence.Cells.Add(cExaminer);
+            tblMedicalIncident.Cells.Add(cTherapy);
 
             Ext.Net.TextField txtKeywords = this.X().TextField()
-                                            .ID("txtKeywords" + NewIncidenceId.ToString())
+                                            .ID("txtKeywords" + ARow.ID.ToString())
                                             .Width(500)
                                             .EmptyText("for statistics, separated by comma")
+                                            .Value(ARow.Keywords)
                                             .FieldLabel("Keywords");
 
             Ext.Net.Cell cKeywords = new Cell();
             cKeywords.ColSpan = 3;
             cKeywords.Items.Add(txtKeywords);
-            tblMedicalIncidence.Cells.Add(cKeywords);
+            tblMedicalIncident.Cells.Add(cKeywords);
 
-            panel.ContentControls.Add(tblMedicalIncidence);
+            panel.ContentControls.Add(tblMedicalIncident);
             panel.Render("MedicalPanel", RenderMode.AddTo);
-            X.Js.Call("SetActiveMedicalIncident", NewIncidenceId - 1);
+            X.Js.Call("SetActiveMedicalIncident", ARow.ID - 1);
+        }
+
+        /// <summary>
+        /// values to JSON string
+        /// </summary>
+        /// <param name="AValues"></param>
+        /// <returns></returns>
+        private string GetMedicalLogsFromScreen(Dictionary <string, string>AValues)
+        {
+            string Result = "[";
+
+            Int32 NewIncidentID = (Int32)Session["NewMedicalId"];
+
+            for (Int32 Counter = 1; Counter < NewIncidentID; Counter++)
+            {
+                if (Result.EndsWith("}"))
+                {
+                    Result += ",";
+                }
+
+                Result += "{\"ID\":\"" + Counter.ToString() + "\"";
+
+                string[] fields = new string[] {
+                    "dtpDate", "txtExaminer", "txtPulse", "txtBloodPressure", "txtTemperature", "txtDiagnosis", "txtTherapy", "txtKeywords"
+                };
+
+                foreach (string name in fields)
+                {
+                    Result += ",\"" + name + "\":\"" + AValues[name + Counter.ToString()] + "\"";
+                }
+
+                Result += "}";
+            }
+
+            Result += "]";
+
+            return Result;
+        }
+
+        private void LoadMedicalLogs(string AData)
+        {
+            Int32 NewMedicalId = 1;
+
+            MedicalPanel.RemoveAll();
+
+            if (AData.Length > 0)
+            {
+                Jayrock.Json.JsonArray list = (Jayrock.Json.JsonArray)Jayrock.Json.Conversion.JsonConvert.Import(AData);
+
+                foreach (Jayrock.Json.JsonObject element in list)
+                {
+                    if (Convert.ToInt32(element["ID"]) >= NewMedicalId)
+                    {
+                        NewMedicalId = Convert.ToInt32(element["ID"]) + 1;
+                    }
+
+                    AddMedicalIncidentData(new MedicalIncident(Convert.ToInt32(element["ID"]),
+                            Convert.ToDateTime(element["dtpDate"]),
+                            element["txtExaminer"].ToString(),
+                            element["txtPulse"].ToString(),
+                            element["txtBloodPressure"].ToString(),
+                            element["txtTemperature"].ToString(),
+                            element["txtDiagnosis"].ToString(),
+                            element["txtTherapy"].ToString(),
+                            element["txtKeywords"].ToString()));
+                }
+            }
+
+            Session["NewMedicalId"] = NewMedicalId;
+        }
+
+        public class MedicalIncident
+        {
+            public int ID {
+                get; set;
+            }
+            public DateTime Date {
+                get; set;
+            }
+            public string Examiner {
+                get; set;
+            }
+            public string Pulse {
+                get; set;
+            }
+            public string BloodPressure {
+                get; set;
+            }
+            public string Temperature {
+                get; set;
+            }
+            public string Diagnosis {
+                get; set;
+            }
+            public string Therapy {
+                get; set;
+            }
+            public string Keywords {
+                get; set;
+            }
+
+            public MedicalIncident(int AID)
+            {
+                this.ID = AID;
+                this.Date = DateTime.Now;
+            }
+
+            public MedicalIncident(int AID, DateTime ADate, string AExaminer,
+                string APulse,
+                string ABloodPressure,
+                string ATemperature,
+                string ADiagnosis,
+                string ATherapy,
+                string AKeywords)
+            {
+                this.ID = AID;
+                this.Date = ADate;
+                this.Examiner = AExaminer;
+                this.Pulse = APulse;
+                this.BloodPressure = ABloodPressure;
+                this.Temperature = ATemperature;
+                this.Diagnosis = ADiagnosis;
+                this.Therapy = ATherapy;
+                this.Keywords = AKeywords;
+            }
         }
 
         private void LoadDataForMedicalTeam(ConferenceApplicationTDSApplicationGridRow ARow, Jayrock.Json.JsonObject ARawDataObject)
@@ -1752,8 +1904,7 @@ namespace Ict.Petra.WebServer.MConference
             MedicalInfo += "</table>";
             TabMedicalInfo.Html = MedicalInfo;
 
-            // load medical log
-            Session["NewMedicalId"] = 1;
+            LoadMedicalLogs(ARow.MedicalNotes);
         }
     }
 }

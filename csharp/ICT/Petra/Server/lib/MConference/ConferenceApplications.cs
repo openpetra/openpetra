@@ -581,7 +581,8 @@ namespace Ict.Petra.Server.MConference.Applications
         /// <returns></returns>
         public static string GetRawApplicationData(Int64 APartnerKey, Int32 AApplicationKey, Int64 ARegistrationOfficeKey)
         {
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            bool NewTransaction;
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
 
             string Result = "Failure, cannot find partner";
 
@@ -597,7 +598,10 @@ namespace Ict.Petra.Server.MConference.Applications
             }
             finally
             {
-                DBAccess.GDBAccessObj.RollbackTransaction();
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
             }
 
             return Result;
