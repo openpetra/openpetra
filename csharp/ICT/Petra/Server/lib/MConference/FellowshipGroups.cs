@@ -50,9 +50,9 @@ using Ict.Petra.Server.MPartner.ImportExport;
 namespace Ict.Petra.Server.MConference.Applications
 {
     /// <summary>
-    /// For creating gift batches for conference payments
+    /// useful functions for putting participants of a conference into groups
     /// </summary>
-    public class TImportFellowshipGroups
+    public class TFellowshipGroups
     {
         /// <summary>
         /// import fellowship groups.
@@ -145,6 +145,52 @@ namespace Ict.Petra.Server.MConference.Applications
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// assign participants to fellowship groups if they are not assigned to a group yet
+        /// </summary>
+        /// <param name="AEventPartnerKey"></param>
+        /// <param name="AEventCode"></param>
+        /// <param name="ASelectedRegistrationOffice"></param>
+        /// <param name="ASelectedRole"></param>
+        /// <param name="AMaxGroupMembersInt"></param>
+        /// <returns></returns>
+        public static bool CalculateFellowshipGroups(
+            Int64 AEventPartnerKey,
+            string AEventCode,
+            Int64 ASelectedRegistrationOffice,
+            string ASelectedRole,
+            Int32 AMaxGroupMembersInt)
+        {
+            return true;
+        }
+
+        /// <summary>
+        /// get all the members of the given group, with partner key and role
+        /// </summary>
+        public static string GetGroupMembers(string AEventCode, string AGroupCode)
+        {
+            if (AGroupCode.Trim().Length == 0)
+            {
+                return string.Empty;
+            }
+
+            // cannot use CurrentApplicants, since that might not contain the coach
+            ConferenceApplicationTDS MainDS = TApplicationManagement.GetFellowshipGroupMembers(AEventCode, AGroupCode);
+
+            MainDS.PPerson.DefaultView.Sort = PPersonTable.GetPartnerKeyDBName();
+
+            string result = string.Empty;
+
+            foreach (PmShortTermApplicationRow row in MainDS.PmShortTermApplication.Rows)
+            {
+                PPersonRow person = (PPersonRow)MainDS.PPerson.DefaultView[MainDS.PPerson.DefaultView.Find(row.PartnerKey)].Row;
+                result += person.PartnerKey.ToString() + " - " + person.FamilyName + ", " + person.FirstName + " - " + row.StCongressCode +
+                          Environment.NewLine;
+            }
+
+            return result;
         }
     }
 }

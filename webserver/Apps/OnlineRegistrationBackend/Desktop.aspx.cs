@@ -76,6 +76,7 @@ namespace Ict.Petra.WebServer.MConference
         protected Ext.Net.Panel TabMedicalLog;
         protected Ext.Net.Panel TabMedicalInfo;
         protected Ext.Net.Panel TabRebukes;
+        protected Ext.Net.Panel TabGroups;
         protected Ext.Net.TabPanel TabPanelApplication;
         protected Ext.Net.ComboBox JobWish1;
         protected Ext.Net.ComboBox JobWish2;
@@ -104,6 +105,10 @@ namespace Ict.Petra.WebServer.MConference
         protected Ext.Net.Button btnNewRebuke;
         protected Ext.Net.DateField dtpRebukesReportForDate;
         protected Ext.Net.TabPanel MedicalPanel;
+        protected Ext.Net.TextField MaxGroupMembers;
+        protected Ext.Net.TextArea GroupMembers;
+        protected Ext.Net.TextField StFgCode;
+        protected Ext.Net.TextField GroupWish;
 
         protected bool ConferenceOrganisingOffice = false;
 
@@ -163,6 +168,7 @@ namespace Ict.Petra.WebServer.MConference
                     TabFinance.Visible = false;
                     TabServiceTeam.Visible = false;
                     TabApplicantDetails.Visible = false;
+                    TabGroups.Visible = false;
                 }
 
                 if (!UserInfo.GUserInfo.IsInModule("BOUNDARIES"))
@@ -538,7 +544,7 @@ namespace Ict.Petra.WebServer.MConference
                                           .Title("Edit more details")
                                           .Padding(5)
                                           .AutoScroll(true);
-                    panel.Render("TabPanelApplication", 3, RenderMode.InsertTo);
+                    panel.Render("TabPanelApplication", 4, RenderMode.InsertTo);
 
                     Ext.Net.Label label = this.X().Label()
                                           .ID("lblWarningEdit")
@@ -568,7 +574,7 @@ namespace Ict.Petra.WebServer.MConference
 
                 List <string>FieldsOnFirstTab = new List <string>(new string[] {
                                                                       "TShirtStyle", "TShirtSize", "JobWish1", "JobWish2", "JobAssigned",
-                                                                      "SecondSibling", "CancelledByFinanceOffice"
+                                                                      "SecondSibling", "CancelledByFinanceOffice", "GroupWish"
                                                                   });
 
                 foreach (string key in rawDataObject.Names)
@@ -654,10 +660,12 @@ namespace Ict.Petra.WebServer.MConference
                     X.Js.Call("HideTabPanel", "TabServiceTeam");
                 }
 
-                RefreshRebukesStore(row.RebukeNotes);
-
                 Random rand = new Random();
                 Image1.ImageUrl = "photos.aspx?id=" + PartnerKey.ToString() + ".jpg&" + rand.Next(1, 10000).ToString();
+
+                RefreshRebukesStore(row.RebukeNotes);
+
+                GroupMembers.Text = string.Empty;
             }
             catch (Exception ex)
             {
@@ -1739,8 +1747,17 @@ namespace Ict.Petra.WebServer.MConference
                         NewMedicalId = Convert.ToInt32(element["ID"]) + 1;
                     }
 
+                    DateTime date = DateTime.Today;
+                    try
+                    {
+                        date = Convert.ToDateTime(element["dtpDate"]);
+                    }
+                    catch (Exception)
+                    {
+                    }
+
                     AddMedicalIncidentData(new TMedicalIncident(Convert.ToInt32(element["ID"]),
-                            Convert.ToDateTime(element["dtpDate"]),
+                            date,
                             element["txtExaminer"].ToString(),
                             element["txtPulse"].ToString(),
                             element["txtBloodPressure"].ToString(),
@@ -1812,6 +1829,30 @@ namespace Ict.Petra.WebServer.MConference
             TabMedicalInfo.Html = MedicalInfo;
 
             LoadMedicalLogs(ARow.MedicalNotes);
+        }
+
+        protected void CalculateFellowshipGroups(Object sender, DirectEventArgs e)
+        {
+            try
+            {
+                Int32 MaxGroupMembersInt = Convert.ToInt32(MaxGroupMembers);
+
+                TFellowshipGroups.CalculateFellowshipGroups(
+                    EventPartnerKey,
+                    EventCode,
+                    GetSelectedRegistrationOffice(),
+                    GetSelectedRole(),
+                    MaxGroupMembersInt);
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(ex.ToString());
+            }
+        }
+
+        protected void RefreshGroupMembers(Object sender, DirectEventArgs e)
+        {
+            GroupMembers.Text = TFellowshipGroups.GetGroupMembers(EventCode, StFgCode.Text);
         }
     }
 }

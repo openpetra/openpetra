@@ -761,16 +761,24 @@
                                 </tr>
                                 </table>
                               </Content>
-
                             </ext:Panel>
                             <ext:Panel ID="TabTopFinance" runat="server" Title="Finance" AutoScroll="true">
-                              <Items>
-                                <ext:Button ID="btnFinanceReport" runat="server" Text="Print Finance Report">
+                              <Content>
+                                <table>
+                                <tr>
+                                <td><ext:Button ID="btnFinanceReport" runat="server" Text="Print Finance Report">
                                     <DirectEvents>
                                         <Click OnEvent="PrintFinanceReport"/>
                                     </DirectEvents>
-                                </ext:Button>
-                              </Items>
+                                </ext:Button></td>
+                                <td><ext:Button ID="btnCreateGiftBatch" runat="server" Text="Create Gift Batch">
+                                    <Listeners>
+                                        <Click Handler="#{winCreateGiftBatch}.show();" />
+                                    </Listeners>
+                                </ext:Button></td>
+                                </tr>
+                                </table>
+                              </Content>
                             </ext:Panel>
                             <ext:Panel ID="TabBoundaries" runat="server" Title="Boundaries" AutoScroll="true">
                               <Items>
@@ -853,6 +861,27 @@
                                 </table>
                               </Content>
                             </ext:Panel>
+                            <ext:Panel ID="Groups" runat="server" Title="Groups" AutoScroll="true">
+                              <Content>
+                                <table>
+                                <tr>
+                                <td><ext:Button ID="btnImportFellowshipGroups" runat="server" Text="Import Fellowship Groups">
+                                    <Listeners>
+                                        <Click Handler="#{winImportFellowshipGroups}.show();" />
+                                    </Listeners>
+                                </ext:Button></td>
+                                <td>
+                                <ext:TextField ID="MaxGroupMembers" runat="server" FieldLabel="Max. Group Members" DataIndex="MaxGroupMembers"/>
+                                <ext:Button ID="btnCalculateFellowshipGroups" runat="server" Text="Calculate Fellowship Groups">
+                                    <DirectEvents>
+                                        <Click OnEvent="CalculateFellowshipGroups" />
+                                    </DirectEvents>
+                                </ext:Button>
+                                </td>
+                                </tr>
+                                </table>
+                              </Content>
+                            </ext:Panel>
                             <ext:Panel ID="TODO" runat="server" Title="TODO" AutoScroll="true">
                               <Content>
                                 <table>
@@ -860,16 +889,6 @@
                                 <td><ext:Button ID="btnBatchAccept" runat="server" Text="Accept Many Applicants">
                                     <Listeners>
                                         <Click Handler="#{AcceptForm}.getForm().reset();#{winAcceptMany}.show();" />
-                                    </Listeners>
-                                </ext:Button></td>
-                                <td><ext:Button ID="btnCreateGiftBatch" runat="server" Text="Create Gift Batch">
-                                    <Listeners>
-                                        <Click Handler="#{winCreateGiftBatch}.show();" />
-                                    </Listeners>
-                                </ext:Button></td>
-                                <td><ext:Button ID="btnImportFellowshipGroups" runat="server" Text="Import Fellowship Groups">
-                                    <Listeners>
-                                        <Click Handler="#{winImportFellowshipGroups}.show();" />
                                     </Listeners>
                                 </ext:Button></td>
                                 <td><ext:Button ID="btnJSONApplication" runat="server" Text="Direct JSON" Icon="Disk">
@@ -1097,16 +1116,6 @@
                                             Width="300"
                                             FieldLabel="Comment By Registration Office"
                                             />
-                                        <ext:CheckBox
-                                            ID="StFgLeader"
-                                            runat="Server"
-                                            FieldLabel="Fellowship Group Leader"
-                                            />
-                                        <ext:TextField
-                                            ID="StFgCode"
-                                            runat="Server"
-                                            FieldLabel="Fellowship Group Code"
-                                            />
                                         <ext:DateField ID="Arrival" runat="server" FieldLabel="Date of Arrival" DataIndex="Arrival" Format="dd-MMM-yyyy"/>
                                         <ext:DateField ID="Departure" runat="server" FieldLabel="Date of Departure" DataIndex="Departure" Format="dd-MMM-yyyy"/>
                                       </Items>
@@ -1226,6 +1235,51 @@
                                     />
                                 </Items>
                               </ext:Container>
+                              </Items>
+                            </ext:Panel>
+                            <ext:Panel ID="TabGroups" runat="server" Title="Group" AutoScroll="true">
+                              <Items>
+                                    <ext:TextField
+                                        ID="GroupWish"
+                                        runat="Server"
+                                        FieldLabel="Group Wish by participant"
+                                        Width="700"
+                                        />
+                                    <ext:Label runat="server"
+                                        HideLabel="true"
+                                        Html="Enter the partner keys of the people this person wants to be with in a group. <br/>Add a minus in front to avoid people, eg. -4123123.<br/>Separate the keys with a comma."
+                                        Width="500"/>
+                                    <ext:TextField
+                                        ID="GroupWishKeys"
+                                        runat="Server"
+                                        FieldLabel="Enforce Groups by key"
+                                        Width="700"
+                                        />
+                                    <ext:TextField
+                                        ID="StFgCode"
+                                        runat="Server"
+                                        FieldLabel="Fellowship Group Code"
+                                        />
+                                    <ext:CheckBox
+                                        ID="StFgLeader"
+                                        runat="Server"
+                                        LableWidth="200"
+                                        FieldLabel="This person is the Fellowship Group Leader"
+                                        />
+                                    <ext:TextArea
+                                        ID="GroupMembers"
+                                        runat="Server"
+                                        ReadOnly="true"
+                                        FieldLabel="Members of this group"
+                                        Width="400"
+                                        Height="120"
+                                        Disabled="true"
+                                        />
+                                      <ext:Button ID="btnRefreshGroupMembers" runat="server" Text="Refresh">
+                                          <DirectEvents>
+                                              <Click OnEvent="RefreshGroupMembers"/>
+                                          </DirectEvents>
+                                      </ext:Button>
                               </Items>
                             </ext:Panel>
                             <ext:Panel ID="TabRawApplicationData" runat="server" Title="Data Entered" AutoScroll="true">

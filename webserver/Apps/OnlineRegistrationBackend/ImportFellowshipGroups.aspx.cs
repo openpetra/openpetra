@@ -63,7 +63,7 @@ namespace Ict.Petra.WebServer.MConference
             Dictionary <string, string>values = JSON.Deserialize <Dictionary <string, string>>(e.ExtraParams["Values"]);
             string EnteredValues = values["RegistrationsKeys"].ToString().Trim();
 
-            TImportFellowshipGroups.ImportFellowshipGroups(
+            TFellowshipGroups.ImportFellowshipGroups(
                 EnteredValues,
                 TAppSettingsManager.GetInt64("ConferenceTool.EventPartnerKey"),
                 TAppSettingsManager.GetValue("ConferenceTool.EventCode"),

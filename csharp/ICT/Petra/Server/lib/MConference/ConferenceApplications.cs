@@ -234,6 +234,61 @@ namespace Ict.Petra.Server.MConference.Applications
                 AClearJSONData);
         }
 
+        /// <summary>
+        /// get shortterm application rows and person rows of all people in a given fellowship group
+        /// </summary>
+        /// <param name="AEventCode"></param>
+        /// <param name="AStFgCode"></param>
+        /// <returns></returns>
+        public static ConferenceApplicationTDS GetFellowshipGroupMembers(string AEventCode, string AStFgCode)
+        {
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
+
+            try
+            {
+                ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
+
+                List <OdbcParameter>parameters = new List <OdbcParameter>();
+
+                OdbcParameter parameter = new OdbcParameter("eventcode", OdbcType.VarChar, PmShortTermApplicationTable.GetConfirmedOptionCodeLength());
+                parameter.Value = AEventCode;
+                parameters.Add(parameter);
+
+                parameter = new OdbcParameter("groupcode", OdbcType.VarChar, PmShortTermApplicationTable.GetStFgCodeLength());
+                parameter.Value = AStFgCode;
+                parameters.Add(parameter);
+
+                string queryFellowshipGroupMembers =
+                    "SELECT * " +
+                    " FROM PUB_" + PmShortTermApplicationTable.GetTableDBName() +
+                    " WHERE " + PmShortTermApplicationTable.GetConfirmedOptionCodeDBName() + " = ?" +
+                    " AND " + PmShortTermApplicationTable.GetStFgCodeDBName() + " = ?";
+
+                string queryPerson =
+                    "SELECT DISTINCT PUB_p_person.* " +
+                    "FROM PUB_pm_short_term_application, PUB_p_person " +
+                    "WHERE PUB_pm_short_term_application.pm_confirmed_option_code_c = ? " +
+                    "  AND PUB_p_person.p_partner_key_n = PUB_pm_short_term_application.p_partner_key_n" +
+                    "  AND " + PmShortTermApplicationTable.GetStFgCodeDBName() + " = ?";
+
+                DBAccess.GDBAccessObj.Select(MainDS,
+                    queryFellowshipGroupMembers,
+                    MainDS.PmShortTermApplication.TableName, Transaction, parameters.ToArray());
+
+                DBAccess.GDBAccessObj.Select(MainDS,
+                    queryPerson,
+                    MainDS.PPerson.TableName, Transaction, parameters.ToArray());
+
+                return MainDS;
+            }
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return new ConferenceApplicationTDS();
+        }
+
         private static bool LoadApplicationsFromDB(
             ref ConferenceApplicationTDS AMainDS,
             string AEventCode,
