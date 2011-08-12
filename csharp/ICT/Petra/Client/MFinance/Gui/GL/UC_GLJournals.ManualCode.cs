@@ -281,7 +281,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
                 || (MessageBox.Show(String.Format(Catalog.GetString(
-                                "You have choosen to cancel this journal ({0}).\n\nDo you really want to cancel it?"),
+                                "You have chosen to cancel this journal ({0}).\n\nDo you really want to cancel it?"),
                             FPreviouslySelectedDetailRow.JournalNumber),
                         Catalog.GetString("Confirm Cancel"),
                         MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes))

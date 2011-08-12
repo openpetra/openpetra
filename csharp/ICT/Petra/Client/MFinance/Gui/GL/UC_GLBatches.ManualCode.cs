@@ -202,7 +202,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
                 ||
-                (MessageBox.Show(String.Format(Catalog.GetString("You have choosen to cancel this batch ({0}).\n\nDo you really want to cancel it?"),
+                (MessageBox.Show(String.Format(Catalog.GetString("You have chosen to cancel this batch ({0}).\n\nDo you really want to cancel it?"),
                          FSelectedBatchNumber),
                      Catalog.GetString("Confirm Cancel"),
                      MessageBoxButtons.YesNo,

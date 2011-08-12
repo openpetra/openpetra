@@ -1000,8 +1000,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     {
                         FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
                         this.Cursor = Cursors.Default;
-                        MessageBox.Show("The PETRA Server cannot be reached! Data cannot be saved!",
-                            "No Server response",
+                        MessageBox.Show(Catalog.GetString("The PETRA Server cannot be reached! Data cannot be saved!"),
+                            Catalog.GetString("No Server response"),
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Stop);
                         ReturnValue = false;

@@ -371,7 +371,7 @@ namespace Ict.Petra.Client.App.Core
                 catch (Exception ex)
                 {
                     // most probably a permission problem: System.Runtime.Remoting.RemotingException: Requested Service not found
-                    throw new Exception(Catalog.GetString("You do not have enough permissions to access the Finance module:\n") + ex);
+                    throw new Exception(Catalog.GetString("You do not have enough permissions to access the Finance module:") + "\n" + ex);
                 }
             }
         }
