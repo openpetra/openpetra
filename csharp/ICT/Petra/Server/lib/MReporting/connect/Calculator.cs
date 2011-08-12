@@ -123,7 +123,7 @@ namespace Ict.Petra.Server.MReporting.LogicConnectors
 
                 if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_REPORTING)
                 {
-                    Parameters.Save("LogParamAfterPreproc.xml", true);
+                    Parameters.Save(Path.GetDirectoryName(TSrvSetting.ServerLogFile) + Path.DirectorySeparatorChar + "LogParamAfterPreproc.xml", true);
                 }
 
                 // to avoid still having in the status line: loading common.xml, although he is already working on the report
@@ -142,7 +142,7 @@ namespace Ict.Petra.Server.MReporting.LogicConnectors
 
                 if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_REPORTING)
                 {
-                    Parameters.Save("LogAfterException.xml", true);
+                    Parameters.Save(Path.GetDirectoryName(TSrvSetting.ServerLogFile) + Path.DirectorySeparatorChar + "LogAfterException.xml", true);
                 }
 
                 System.Console.WriteLine(E.StackTrace);
