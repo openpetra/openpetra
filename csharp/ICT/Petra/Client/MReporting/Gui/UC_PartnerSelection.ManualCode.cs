@@ -90,6 +90,7 @@ namespace Ict.Petra.Client.MReporting.Gui
 
             ACalculator.AddParameter("param_extract", txtExtract.Text);
             ACalculator.AddParameter("param_partnerkey", txtPartnerKey.Text);
+
             if (rbtAllStaff.Checked)
             {
                 // in this case just use the current date

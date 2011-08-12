@@ -487,12 +487,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 // eg UC_GLJournals.ManualCode.cs, BeforeShowDetailsManual
                 // or UC_GLTransactions.ManualCode.cs, LoadTransactions
             }
-            
+
             if (ctrl.HasAttribute("ComboBoxWidth"))
             {
                 writer.SetControlProperty(ctrl, "ComboBoxWidth", ctrl.GetAttribute("ComboBoxWidth"));
             }
-            
+
             return writer.FTemplate;
         }
     }
@@ -1519,7 +1519,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     "Text",
                     "\"" + TXMLParser.GetAttribute(ctrl.xmlNode, "DefaultValue") + "\"");
             }
-                        
+
             return writer.FTemplate;
         }
     }
@@ -1552,7 +1552,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 NumberFormat = TYml2Xml.GetAttribute(curNode, "Format");
 
 //Console.WriteLine("TTxtNumericTextBoxGenerator Format: '" + NumberFormat + "'");
-                if ((NumberFormat == "Integer") 
+                if ((NumberFormat == "Integer")
                     || (NumberFormat == "PercentInteger"))
                 {
                     FControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Integer;
@@ -1719,11 +1719,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             string NumberFormat = String.Empty;
-            
+
             base.SetControlProperties(writer, ctrl);
 
             if ((ctrl.HasAttribute("ShowLabel") && (ctrl.GetAttribute("ShowLabel").ToLower() == "false")))
-            {                
+            {
                 writer.SetControlProperty(ctrl, "ShowLabel", "false");
             }
 
@@ -1733,13 +1733,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 Enum.GetName(typeof(TTxtNumericTextBox.TNumericTextBoxMode), FControlMode));
             writer.SetControlProperty(ctrl, "DecimalPlaces", FDecimalPrecision.ToString());
             writer.SetControlProperty(ctrl, "NullValueAllowed", FNullValueAllowed.ToString().ToLower());
-            
-            if(ctrl.HasAttribute("Format"))
+
+            if (ctrl.HasAttribute("Format"))
             {
                 NumberFormat = ctrl.GetAttribute("Format");
             }
 
-            if((NumberFormat.StartsWith("PercentInteger"))
+            if ((NumberFormat.StartsWith("PercentInteger"))
                 || (NumberFormat.StartsWith("PercentDecimal")))
             {
                 writer.SetControlProperty(ctrl, "ShowPercentSign", "true");

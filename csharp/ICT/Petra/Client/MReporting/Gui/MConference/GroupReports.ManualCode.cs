@@ -53,6 +53,5 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
                 rbtParticipantsAll.Checked = true;
             }
         }
-
     }
 }
