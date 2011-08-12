@@ -848,7 +848,7 @@ namespace Ict.Petra.Server.MFinance.Common
             ref GLBatchTDS AMainDS,
             ref SortedList <string, TAmount>APostingLevel)
         {
-            Int32 TempGLMSequence = -1;
+            Int32 TempGLMSequence = AMainDS.AGeneralLedgerMaster.Count * (-1) - 1;
             Int32 FromPeriod = AMainDS.ABatch[0].BatchPeriod;
 
             if (AMainDS.ALedger[0].ProvisionalYearEndFlag)
@@ -861,7 +861,9 @@ namespace Ict.Petra.Server.MFinance.Common
             }
 
             DataView GLMMasterView = AMainDS.AGeneralLedgerMaster.DefaultView;
+            GLMMasterView.Sort = AGeneralLedgerMasterTable.GetAccountCodeDBName() + "," + AGeneralLedgerMasterTable.GetCostCentreCodeDBName();
             DataView GLMPeriodView = AMainDS.AGeneralLedgerMasterPeriod.DefaultView;
+            GLMPeriodView.Sort = AGeneralLedgerMasterPeriodTable.GetGlmSequenceDBName() + "," + AGeneralLedgerMasterPeriodTable.GetPeriodNumberDBName();
 
             // Loop through the posting data collected earlier.  Summarize it to a
             // temporary table, which is much faster than finding and updating records
@@ -879,12 +881,10 @@ namespace Ict.Petra.Server.MFinance.Common
                 TAmount PostingLevelElement = APostingLevel[PostingLevelKey];
 
                 // Find the posting level, creating it if it does not already exist.
-                GLMMasterView.RowFilter = AGeneralLedgerMasterTable.GetAccountCodeDBName() + "='" + AccountCode +
-                                          "' and " +
-                                          AGeneralLedgerMasterTable.GetCostCentreCodeDBName() + "='" + CostCentreCode + "'";
+                int GLMMasterIndex = GLMMasterView.Find(new object[] { AccountCode, CostCentreCode });
                 AGeneralLedgerMasterRow GlmRow;
 
-                if (GLMMasterView.Count == 0)
+                if (GLMMasterIndex == -1)
                 {
                     TempGLMSequence--;
                     GlmRow = AMainDS.AGeneralLedgerMaster.NewRowTyped();
@@ -897,7 +897,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 }
                 else
                 {
-                    GlmRow = (AGeneralLedgerMasterRow)GLMMasterView[0].Row;
+                    GlmRow = (AGeneralLedgerMasterRow)GLMMasterView[GLMMasterIndex].Row;
                 }
 
                 GlmRow.YtdActualBase += PostingLevelElement.baseAmount;
@@ -924,13 +924,12 @@ namespace Ict.Petra.Server.MFinance.Common
                      PeriodCount <= AMainDS.ALedger[0].NumberOfAccountingPeriods + AMainDS.ALedger[0].NumberFwdPostingPeriods;
                      PeriodCount++)
                 {
-                    GLMPeriodView.RowFilter = AGeneralLedgerMasterPeriodTable.GetGlmSequenceDBName() + "=" +
-                                              TempGLMSequence.ToString() + " and " +
-                                              AGeneralLedgerMasterPeriodTable.GetPeriodNumberDBName() + "=" + PeriodCount.ToString();
+                    int GLMPeriodIndex = GLMPeriodView.Find(new object[] { TempGLMSequence, PeriodCount });
                     AGeneralLedgerMasterPeriodRow GlmPeriodRow;
 
-                    if (GLMPeriodView.Count == 0)
+                    if (GLMPeriodIndex == -1)
                     {
+                        TempGLMSequence--;
                         GlmPeriodRow = AMainDS.AGeneralLedgerMasterPeriod.NewRowTyped();
                         GlmPeriodRow.GlmSequence = TempGLMSequence;
                         GlmPeriodRow.PeriodNumber = PeriodCount;
@@ -938,7 +937,7 @@ namespace Ict.Petra.Server.MFinance.Common
                     }
                     else
                     {
-                        GlmPeriodRow = (AGeneralLedgerMasterPeriodRow)GLMPeriodView[0].Row;
+                        GlmPeriodRow = (AGeneralLedgerMasterPeriodRow)GLMPeriodView[GLMPeriodIndex].Row;
                     }
 
                     GlmPeriodRow.ActualBase += PostingLevelElement.baseAmount;
@@ -956,6 +955,9 @@ namespace Ict.Petra.Server.MFinance.Common
                     }
                 }
             }
+
+            GLMMasterView.Sort = "";
+            GLMPeriodView.Sort = "";
 
             return true;
         }
@@ -1136,7 +1138,8 @@ namespace Ict.Petra.Server.MFinance.Common
             // post each journal, each transaction; add sums for costcentre/account combinations
             SortedList <string, TAmount>PostingLevel = MarkAsPostedAndCollectData(ref MainDS);
 
-#if OLD_POSTING_WITH_TREE
+// we need the tree, because of the cost centre tree, which is not calculated by the balance sheet and other reports
+//#if OLD_POSTING_WITH_TREE
             // key is PostingAccount, the value TAccountTreeElement describes the parent account and other details of the relation
             SortedList <string, TAccountTreeElement>AccountTree;
 
@@ -1152,7 +1155,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 MainDS.ACostCentre.DefaultView);
 
             SummarizeData(ref MainDS, ref PostingLevel, ref AccountTree, ref CostCentreTree);
-#endif
+//#endif
 
 
             SummarizeDataSimple(ref MainDS, ref PostingLevel);
