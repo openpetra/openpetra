@@ -484,6 +484,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             AMainDS.AAccountHierarchyDetail.Rows.Add(newAccountHDetail);
 
+            newAccount.PostingStatus = !ACurrentNode.HasChildNodes;
+
             foreach (XmlNode child in ACurrentNode.ChildNodes)
             {
                 CreateAccountHierarchyRecursively(ref AMainDS, ALedgerNumber, ref AImportedAccountNames, child, newAccount.AccountCode);
