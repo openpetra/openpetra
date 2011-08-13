@@ -721,6 +721,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             AAccountRow accountRow = AMainDS.AAccount.NewRowTyped();
             accountRow.LedgerNumber = ALedgerNumber;
             accountRow.AccountCode = ALedgerNumber.ToString();
+            accountRow.PostingStatus = false;
             AMainDS.AAccount.Rows.Add(accountRow);
 
             XmlNode root = doc.FirstChild.NextSibling.FirstChild;
