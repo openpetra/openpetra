@@ -291,7 +291,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <param name="AVerifications"></param>
-        [RequireModulePermission("FINANCE-1")]
+//        [RequireModulePermission("FINANCE-1")]
         public static List <TVariant>TestPostGLBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out TVerificationResultCollection AVerifications)
         {
             GLBatchTDS MainDS;
