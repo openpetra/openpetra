@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -86,6 +86,7 @@ namespace Ict.Common
     ///  a class for the storage of values in different representations;
     /// Conversion functions are provided.
     /// </summary>
+    [Serializable]
     public class TVariant
     {
         /// <summary>

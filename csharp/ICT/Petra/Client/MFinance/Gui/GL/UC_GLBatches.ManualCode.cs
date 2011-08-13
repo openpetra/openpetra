@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,6 +27,8 @@ using System.IO;
 using System.Xml;
 using System.Data;
 using System.Diagnostics;
+using System.Collections.Generic;
+using System.Collections;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.IO;
@@ -87,28 +89,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void UpdateChangeableStatus(bool batchRowIsSelected)
         {
-            btnCancel.Enabled = batchRowIsSelected;
-            btnPostBatch.Enabled = batchRowIsSelected;
-
-
             dtpDetailDateEffective.Enabled = batchRowIsSelected;
             txtDetailBatchDescription.Enabled = batchRowIsSelected;
 
-            mniExportBatches.Enabled = batchRowIsSelected;
-            tbbExportBatches.Enabled = batchRowIsSelected;
+            FPetraUtilsObject.EnableAction("actExportBatches", batchRowIsSelected);
 
-            if (batchRowIsSelected)
-            {
-                Boolean postable =
-                    FPreviouslySelectedDetailRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED;
-                mniPost.Enabled = postable;
-                tbbPostBatch.Enabled = postable;
-            }
-            else
-            {
-                mniPost.Enabled = false;
-                tbbPostBatch.Enabled = false;
-            }
+            Boolean postable = batchRowIsSelected
+                               && FPreviouslySelectedDetailRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED;
+            FPetraUtilsObject.EnableAction("actPostBatch", postable);
+            FPetraUtilsObject.EnableAction("actTestPostBatch", postable);
+            FPetraUtilsObject.EnableAction("actCancel", postable);
 
             if (!batchRowIsSelected)
             {
@@ -121,7 +111,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 catch (Exception)
                 {
                 }
-                ;
             }
         }
 
@@ -277,12 +266,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FPreviouslySelectedDetailRow.BatchRunningTotal;
         }
 
-        private void PostBatch(System.Object sender, EventArgs e)
+        private bool SaveBatch()
         {
-            // TODO: show VerificationResult
-            // TODO: display progress of posting
-            TVerificationResultCollection Verifications;
-
             if (FPetraUtilsObject.HasChanges)
             {
                 // save first, then post
@@ -292,8 +277,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     MessageBox.Show(Catalog.GetString("The batch was not posted due to problems during saving; ") + Environment.NewLine +
                         Catalog.GetString("Please first save the batch, and then post it!"),
                         Catalog.GetString("Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
+                    return false;
                 }
+            }
+
+            return true;
+        }
+
+        private void PostBatch(System.Object sender, EventArgs e)
+        {
+            // TODO: show VerificationResult
+            // TODO: display progress of posting
+            TVerificationResultCollection Verifications;
+
+            if (!SaveBatch())
+            {
+                return;
             }
 
             if (MessageBox.Show(String.Format(Catalog.GetString("Are you sure you want to post batch {0}?"),
@@ -327,6 +326,59 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     // TODO: refresh the grid, to reflect that the batch has been posted
                     LoadBatches(FLedgerNumber);
                 }
+            }
+        }
+
+        /// <summary>
+        /// this function calculates the balances of the accounts involved, if this batch would be posted
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TestPostBatch(System.Object sender, EventArgs e)
+        {
+            TVerificationResultCollection Verifications;
+
+            if (!SaveBatch())
+            {
+                return;
+            }
+
+            List <TVariant>Result = TRemote.MFinance.GL.WebConnectors.TestPostGLBatch(FLedgerNumber, FSelectedBatchNumber, out Verifications);
+
+            if ((Verifications != null) && (Verifications.Count > 0))
+            {
+                string ErrorMessages = string.Empty;
+
+                foreach (TVerificationResult verif in Verifications)
+                {
+                    ErrorMessages += "[" + verif.ResultContext + "] " +
+                                     verif.ResultTextCaption + ": " +
+                                     verif.ResultText + Environment.NewLine;
+                }
+
+                System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Posting failed"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+            else
+            {
+                string message = string.Empty;
+
+                foreach (TVariant value in Result)
+                {
+                    ArrayList compValues = value.ToComposite();
+
+                    message +=
+                        string.Format(
+                            Catalog.GetString("{0} ({1}) is: {2} and would be: {3}"),
+                            ((TVariant)compValues[0]).ToString(),
+                            ((TVariant)compValues[1]).ToString(),
+                            StringHelper.FormatCurrency((TVariant)compValues[2], "currency"),
+                            StringHelper.FormatCurrency((TVariant)compValues[3], "currency")) +
+                        Environment.NewLine;
+                }
+
+                MessageBox.Show(message, Catalog.GetString("Result of Test Posting"));
             }
         }
 

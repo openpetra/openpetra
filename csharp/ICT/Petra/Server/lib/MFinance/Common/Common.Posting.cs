@@ -1109,34 +1109,33 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
         /// <summary>
-        /// post a GL Batch
+        /// prepare posting a GL Batch, without saving to database yet.
+        /// This is called by the actual PostGLBatch routine, but also by the routine for testing what would happen to the balances.
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <param name="AVerifications"></param>
-        public static bool PostGLBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out TVerificationResultCollection AVerifications)
+        public static bool PostGLBatchInternal(Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            out TVerificationResultCollection AVerifications,
+            out GLBatchTDS AMainDS)
         {
-            GLBatchTDS MainDS;
-
             // get the data from the database into the MainDS
-            if (!LoadData(out MainDS, ALedgerNumber, ABatchNumber, out AVerifications))
+            if (!LoadData(out AMainDS, ALedgerNumber, ABatchNumber, out AVerifications))
             {
                 return false;
             }
 
             // first validate Batch, and Transactions; check credit/debit totals; check currency, etc
-            if (!ValidateBatchAndTransactions(ref MainDS, ALedgerNumber, ABatchNumber, out AVerifications))
+            if (!ValidateBatchAndTransactions(ref AMainDS, ALedgerNumber, ABatchNumber, out AVerifications))
             {
                 return false;
             }
 
-            if (!ValidateAnalysisAttributes(ref MainDS, ALedgerNumber, ABatchNumber, out AVerifications))
+            if (!ValidateAnalysisAttributes(ref AMainDS, ALedgerNumber, ABatchNumber, out AVerifications))
             {
                 return false;
             }
 
             // post each journal, each transaction; add sums for costcentre/account combinations
-            SortedList <string, TAmount>PostingLevel = MarkAsPostedAndCollectData(ref MainDS);
+            SortedList <string, TAmount>PostingLevel = MarkAsPostedAndCollectData(ref AMainDS);
 
 // we need the tree, because of the cost centre tree, which is not calculated by the balance sheet and other reports
 //#if OLD_POSTING_WITH_TREE
@@ -1150,16 +1149,34 @@ namespace Ict.Petra.Server.MFinance.Common
 
             // this was in Petra 2.x; takes a lot of time, which the reports could do better
             CalculateTrees(ref PostingLevel, out AccountTree, out CostCentreTree,
-                MainDS.AAccount.DefaultView,
-                MainDS.AAccountHierarchyDetail.DefaultView,
-                MainDS.ACostCentre.DefaultView);
+                AMainDS.AAccount.DefaultView,
+                AMainDS.AAccountHierarchyDetail.DefaultView,
+                AMainDS.ACostCentre.DefaultView);
 
-            SummarizeData(ref MainDS, ref PostingLevel, ref AccountTree, ref CostCentreTree);
+            SummarizeData(ref AMainDS, ref PostingLevel, ref AccountTree, ref CostCentreTree);
 //#endif
 
+            SummarizeDataSimple(ref AMainDS, ref PostingLevel);
 
-            SummarizeDataSimple(ref MainDS, ref PostingLevel);
-            return SubmitChanges(ref MainDS, out AVerifications);
+            return true;
+        }
+
+        /// <summary>
+        /// post a GL Batch
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AVerifications"></param>
+        public static bool PostGLBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out TVerificationResultCollection AVerifications)
+        {
+            GLBatchTDS MainDS;
+
+            if (PostGLBatchInternal(ALedgerNumber, ABatchNumber, out AVerifications, out MainDS))
+            {
+                return SubmitChanges(ref MainDS, out AVerifications);
+            }
+
+            return false;
         }
 
         /// <summary>

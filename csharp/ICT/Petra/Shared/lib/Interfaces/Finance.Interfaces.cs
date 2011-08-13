@@ -621,6 +621,10 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors
                          Int32 ABatchNumber,
                          out TVerificationResultCollection AVerifications);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector)</summary>
+        List<TVariant> TestPostGLBatch(Int32 ALedgerNumber,
+                               Int32 ABatchNumber,
+                               out TVerificationResultCollection AVerifications);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector)</summary>
         string GetStandardCostCentre(Int32 ALedgerNumber);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector)</summary>
         decimal GetDailyExchangeRate(string ACurrencyFrom,
