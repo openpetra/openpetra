@@ -967,6 +967,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             string ColumnType = "Text";
             string PotentialDecimalPrecision;
+            string TrueString = string.Empty;
+            string FalseString = string.Empty;
 
             if (AColumnType.Contains("DateTime"))
             {
@@ -1004,11 +1006,34 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
             else if (AColumnType.Contains("Boolean"))
             {
-                ColumnType = "CheckBox";
+                if (AColumnType.Contains("("))
+                {
+                    string BooleanNames = AColumnType.Substring(AColumnType.IndexOf('(') + 1,
+                        AColumnType.IndexOf(')') - AColumnType.IndexOf('(') - 1);
+                    TrueString = BooleanNames.Split(',')[0];
+                    FalseString = BooleanNames.Split(',')[1];
+                }
+
+                if ((TrueString.Length > 0) || (FalseString.Length > 0))
+                {
+                    ColumnType = "Boolean";
+                }
+                else
+                {
+                    ColumnType = "CheckBox";
+                }
             }
 
-            if ((ColumnType != "Currency")
-                || ((ColumnType == "Currency") && (FDecimalPrecision == 2)))
+            if (ColumnType == "Boolean")
+            {
+                writer.Template.AddToCodelet("INITMANUALCODE",
+                    AGridControlName + ".Add" + ColumnType + "Column(\"" + ALabel + "\", " +
+                    "FMainDS." +
+                    ATableName + ".Column" +
+                    AColumnName + ", Catalog.GetString(\"" + TrueString + "\"), Catalog.GetString(\"" + FalseString + "\"));" + Environment.NewLine);
+            }
+            else if ((ColumnType != "Currency")
+                     || ((ColumnType == "Currency") && (FDecimalPrecision == 2)))
             {
                 writer.Template.AddToCodelet("INITMANUALCODE",
                     AGridControlName + ".Add" + ColumnType + "Column(\"" + ALabel + "\", " +
