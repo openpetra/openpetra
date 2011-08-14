@@ -30,7 +30,8 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Security.Cryptography;
-using DDW;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Ast;
 using Ict.Common.IO;
 using Ict.Common;
 using Ict.Tools.CodeGeneration;
@@ -609,11 +610,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
             string AMasterOrDetail,
             string ATableName,
             string AServerWebConnectorNamespace,
-            List <ClassNode>AWebConnectorClasses)
+            List <TypeDeclaration>AWebConnectorClasses)
         {
-            ClassNode WebConnectorClass;
+            TypeDeclaration WebConnectorClass;
 
-            MethodNode MethodInWebConnector = CSParser.GetWebConnectorMethod(AWebConnectorClasses, AFunctionType, ATableName, out WebConnectorClass);
+            MethodDeclaration MethodInWebConnector = CSParser.GetWebConnectorMethod(AWebConnectorClasses,
+                AFunctionType,
+                ATableName,
+                out WebConnectorClass);
 
             if (MethodInWebConnector != null)
             {
@@ -624,7 +628,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 string formalParameters = String.Empty;
                 bool firstParameter = true;
 
-                foreach (ParamDeclNode p in MethodInWebConnector.Params)
+                foreach (ParameterDeclarationExpression p in MethodInWebConnector.Parameters)
                 {
                     if (!firstParameter)
                     {
@@ -635,29 +639,29 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                     firstParameter = false;
 
-                    if ((p.Modifiers & Modifier.Out) > 0)
+                    if ((ParameterModifiers.Out & p.ParamModifier) > 0)
                     {
                         actualParameters += "out ";
                         actualParametersLocal += "out ";
                         formalParameters += "out ";
                     }
 
-                    if ((p.Modifiers & Modifier.Ref) > 0)
+                    if ((ParameterModifiers.Ref & p.ParamModifier) > 0)
                     {
                         actualParameters += "ref ";
                         actualParametersLocal += "ref ";
                         formalParameters += "ref ";
                     }
 
-                    if (CSParser.GetName(p.Type) == "TVerificationResultCollection")
+                    if (p.TypeReference.Type == "TVerificationResultCollection")
                     {
                         HasVerification = true;
                     }
                     else
                     {
-                        actualParameters += p.Name;
-                        actualParametersLocal += (p.Name[0] == 'A' ? 'F' : p.Name[0]) + p.Name.Substring(1);
-                        formalParameters += CSParser.GetName(p.Type) + " " + p.Name;
+                        actualParameters += p.ParameterName;
+                        actualParametersLocal += (p.ParameterName[0] == 'A' ? 'F' : p.ParameterName[0]) + p.ParameterName.Substring(1);
+                        formalParameters += p.TypeReference.Type + " " + p.ParameterName;
                     }
                 }
 
@@ -685,7 +689,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             // ServerWebConnectorNamespace should be Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
             string ServerWebConnectorNamespace = AGuiNamespace.Replace("Gui.", "").Replace("Client", "Server") + ".WebConnectors";
 
-            List <ClassNode>WebConnectorClasses = CSParser.GetWebConnectorClasses(ServerWebConnectorNamespace);
+            List <TypeDeclaration>WebConnectorClasses = CSParser.GetWebConnectorClasses(ServerWebConnectorNamespace);
 
             if (WebConnectorClasses != null)
             {

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,8 +28,8 @@ using System.Collections.Generic;
 using System.Xml;
 using System.IO;
 using System.Reflection;
-using DDW.Collections;
-using DDW;
+using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory;
 using NamespaceHierarchy;
 using Ict.Common;
 using Ict.Tools.CodeGeneration;
@@ -53,56 +53,59 @@ class CreateInstantiators : AutoGenerationWriter
         return loaderClassSnippet;
     }
 
-    private ProcessTemplate CreateModuleAccessPermissionCheck(ProcessTemplate ATemplate, string AConnectorClassWithNamespace, MethodNode m)
+    private ProcessTemplate CreateModuleAccessPermissionCheck(ProcessTemplate ATemplate, string AConnectorClassWithNamespace, MethodDeclaration m)
     {
         if (m.Attributes != null)
         {
-            foreach (AttributeNode attr in m.Attributes)
+            foreach (AttributeSection attrSection in m.Attributes)
             {
-                if (CSParser.GetName(attr.Name) == "RequireModulePermission")
+                foreach (ICSharpCode.NRefactory.Ast.Attribute attr in attrSection.Attributes)
                 {
-                    ProcessTemplate snippet = ATemplate.GetSnippet("CHECKUSERMODULEPERMISSIONS");
-                    snippet.SetCodelet("METHODNAME", CSParser.GetName(m.Names));
-                    snippet.SetCodelet("CONNECTORWITHNAMESPACE", AConnectorClassWithNamespace);
-
-                    string ParameterTypes = ";";
-
-                    foreach (ParamDeclNode p in m.Params)
+                    if (attr.Name == "RequireModulePermission")
                     {
-                        string ParameterName = CSParser.GetName(p.Type).Replace("&", "");
+                        ProcessTemplate snippet = ATemplate.GetSnippet("CHECKUSERMODULEPERMISSIONS");
+                        snippet.SetCodelet("METHODNAME", m.Name);
+                        snippet.SetCodelet("CONNECTORWITHNAMESPACE", AConnectorClassWithNamespace);
 
-                        if (ParameterName.Contains("."))
+                        string ParameterTypes = ";";
+
+                        foreach (ParameterDeclarationExpression p in m.Parameters)
                         {
-                            ParameterName = ParameterName.Substring(ParameterName.LastIndexOf(".") + 1);
+                            string ParameterName = p.TypeReference.Type.Replace("&", "");
+
+                            if (ParameterName.Contains("."))
+                            {
+                                ParameterName = ParameterName.Substring(ParameterName.LastIndexOf(".") + 1);
+                            }
+
+                            ParameterName = ParameterName.Replace("Boolean", "bool");
+                            ParameterName = ParameterName.Replace("Int32", "int");
+                            ParameterName = ParameterName.Replace("Int64", "long");
+
+                            ParameterTypes += ParameterName + ";";
                         }
 
-                        ParameterName = ParameterName.Replace("Boolean", "bool");
-                        ParameterName = ParameterName.Replace("Int32", "int");
-                        ParameterName = ParameterName.Replace("Int64", "long");
-
-                        ParameterTypes += ParameterName + ";";
+                        ParameterTypes = ParameterTypes.ToUpper();
+                        snippet.SetCodelet("PARAMETERTYPES", ParameterTypes);
+                        return snippet;
                     }
-
-                    ParameterTypes = ParameterTypes.ToUpper();
-                    snippet.SetCodelet("PARAMETERTYPES", ParameterTypes);
-                    return snippet;
                 }
             }
         }
 
-        TLogging.Log("Warning: Missing module access permissions for " + AConnectorClassWithNamespace + "::" + CSParser.GetName(m.Names));
+        TLogging.Log("Warning: Missing module access permissions for " + AConnectorClassWithNamespace + "::" + m.Name);
 
         return new ProcessTemplate();
     }
 
-    private ProcessTemplate CreateInstanceOfConnector(ProcessTemplate ATemplate, InterfaceMethodNode m, string ATypeConnector)
+    private ProcessTemplate CreateInstanceOfConnector(ProcessTemplate ATemplate, MethodDeclaration m, string ATypeConnector)
     {
         bool outHasBeenFound = false;
         bool firstParameter;
 
-        foreach (ParamDeclNode p in m.Params)
+        foreach (ParameterDeclarationExpression p in m.Parameters)
         {
-            if ((p.Modifiers & (Modifier.Out | Modifier.Ref)) != 0)
+            if ((p.ParamModifier & (ParameterModifiers.Out | ParameterModifiers.Ref)) != 0)
             {
                 outHasBeenFound = true;
             }
@@ -112,10 +115,10 @@ class CreateInstantiators : AutoGenerationWriter
         {
             // simple: no need to call GetData
 
-            String createObject = "return new T" + CSParser.GetName(m.Names) + ATypeConnector + "(";
+            String createObject = "return new T" + m.Name + ATypeConnector + "(";
             firstParameter = true;
 
-            foreach (ParamDeclNode p in m.Params)
+            foreach (ParameterDeclarationExpression p in m.Parameters)
             {
                 if (!firstParameter)
                 {
@@ -123,7 +126,7 @@ class CreateInstantiators : AutoGenerationWriter
                 }
 
                 firstParameter = false;
-                createObject += p.Name;
+                createObject += p.ParameterName;
             }
 
             createObject += ");";
@@ -140,22 +143,22 @@ class CreateInstantiators : AutoGenerationWriter
             // then the out parameter is for the dataset,
             // and all the following parameters are for GetData
 
-            snippet.SetCodelet("CONNECTORTYPE", CSParser.GetName(m.Names) + ATypeConnector);
+            snippet.SetCodelet("CONNECTORTYPE", m.Name + ATypeConnector);
 
-            String createObject = "T" + CSParser.GetName(m.Names) + ATypeConnector + " ReturnValue = new T" + CSParser.GetName(m.Names) +
+            String createObject = "T" + m.Name + ATypeConnector + " ReturnValue = new T" + m.Name +
                                   ATypeConnector + "(";
             StringCollection parameters = new StringCollection();
 
-            foreach (ParamDeclNode p in m.Params)
+            foreach (ParameterDeclarationExpression p in m.Parameters)
             {
-                String parameterType = CSParser.GetName(p.Type);
+                String parameterType = p.TypeReference.Type;
 
-                if ((p.Modifiers & (Modifier.Out | Modifier.Ref)) != 0)
+                if ((p.ParamModifier & (ParameterModifiers.Out | ParameterModifiers.Ref)) != 0)
                 {
                     break;
                 }
 
-                parameters.Add(p.Name);
+                parameters.Add(p.ParameterName);
             }
 
             snippet.SetCodelet("CALLPROCEDUREINTERNAL", WriteLineMethodCallToString(createObject, parameters));
@@ -165,7 +168,7 @@ class CreateInstantiators : AutoGenerationWriter
             outHasBeenFound = false;
             firstParameter = true;
 
-            foreach (ParamDeclNode p in m.Params)
+            foreach (ParameterDeclarationExpression p in m.Parameters)
             {
                 if (outHasBeenFound)
                 {
@@ -175,12 +178,12 @@ class CreateInstantiators : AutoGenerationWriter
                     }
 
                     firstParameter = false;
-                    getData += p.Name;
+                    getData += p.ParameterName;
                 }
 
-                if ((p.Modifiers & (Modifier.Out | Modifier.Ref)) != 0)
+                if ((p.ParamModifier & (ParameterModifiers.Out | ParameterModifiers.Ref)) != 0)
                 {
-                    getData += p.Name + " = ReturnValue.GetData(";
+                    getData += p.ParameterName + " = ReturnValue.GetData(";
                     outHasBeenFound = true;
                 }
             }
@@ -198,7 +201,7 @@ class CreateInstantiators : AutoGenerationWriter
         string InterfaceNamespace = AFullNamespace.Replace("Server.", "Shared.Interfaces.").Replace("Instantiator.", "");
 
         // try to implement the methods defined in the interface
-        InterfaceNode t = CSParser.FindInterface(CSFiles, InterfaceNamespace, AInterfaceName);
+        TypeDeclaration t = CSParser.FindInterface(CSFiles, InterfaceNamespace, AInterfaceName);
 
         if (t == null)
         {
@@ -208,9 +211,9 @@ class CreateInstantiators : AutoGenerationWriter
         ProcessTemplate interfacesSnippet = ATemplate.GetSnippet("INTERFACEMETHODS");
         interfacesSnippet.SetCodelet("METHOD", "");
 
-        foreach (InterfaceMethodNode m in CSParser.GetMethods(t))
+        foreach (MethodDeclaration m in CSParser.GetMethods(t))
         {
-            string MethodName = CSParser.GetName(m.Names);
+            string MethodName = m.Name;
 
             if (MethodName.Equals("InitializeLifetimeService")
                 || MethodName.Equals("GetLifetimeService")
@@ -223,7 +226,7 @@ class CreateInstantiators : AutoGenerationWriter
                 continue;
             }
 
-            String returnType = CSParser.GetName(m.Type);
+            String returnType = m.TypeReference.Type;
 
             if (returnType == "System.Void")
             {
@@ -235,9 +238,9 @@ class CreateInstantiators : AutoGenerationWriter
 
             bool firstParameter = true;
 
-            foreach (ParamDeclNode p in m.Params)
+            foreach (ParameterDeclarationExpression p in m.Parameters)
             {
-                AddParameter(ref formattedMethod, ref firstParameter, align, p.Name, p.Modifiers, p.Type);
+                AddParameter(ref formattedMethod, ref firstParameter, align, p.ParameterName, p.ParamModifier, p.TypeReference.Type);
             }
 
             formattedMethod += ")";
@@ -301,22 +304,22 @@ class CreateInstantiators : AutoGenerationWriter
         ProcessTemplate interfacesSnippet = ATemplate.GetSnippet("INTERFACEMETHODS");
         interfacesSnippet.SetCodelet("METHOD", "");
 
-        List <ClassNode>ConnectorClasses = CSParser.GetClassesInNamespace(CSFiles, ConnectorNamespace);
+        List <TypeDeclaration>ConnectorClasses = CSParser.GetClassesInNamespace(CSFiles, ConnectorNamespace);
 
-        foreach (ClassNode connectorClass in ConnectorClasses)
+        foreach (TypeDeclaration connectorClass in ConnectorClasses)
         {
-            foreach (MethodNode m in CSParser.GetMethods(connectorClass))
+            foreach (MethodDeclaration m in CSParser.GetMethods(connectorClass))
             {
-                string MethodName = CSParser.GetName(m.Names);
+                string MethodName = m.Name;
 
-                String returnType = CSParser.GetName(m.Type);
+                String returnType = m.TypeReference.Type;
 
                 if (returnType == "System.Void")
                 {
                     returnType = "void";
                 }
 
-                if ((m.Modifiers & Modifier.Public) == 0)
+                if ((m.Modifier & Modifiers.Public) == 0)
                 {
                     continue;
                 }
@@ -326,25 +329,25 @@ class CreateInstantiators : AutoGenerationWriter
                 bool firstParameter = true;
                 string actualParameters = "";
 
-                foreach (ParamDeclNode p in m.Params)
+                foreach (ParameterDeclarationExpression p in m.Parameters)
                 {
                     if (!firstParameter)
                     {
                         actualParameters += ", ";
                     }
 
-                    if ((p.Modifiers & Modifier.Out) > 0)
+                    if ((p.ParamModifier & ParameterModifiers.Out) > 0)
                     {
                         actualParameters += "out ";
                     }
 
-                    if ((p.Modifiers & Modifier.Ref) > 0)
+                    if ((p.ParamModifier & ParameterModifiers.Ref) > 0)
                     {
                         actualParameters += "ref ";
                     }
 
-                    actualParameters += p.Name;
-                    AddParameter(ref formattedMethod, ref firstParameter, align, p.Name, p.Modifiers, p.Type);
+                    actualParameters += p.ParameterName;
+                    AddParameter(ref formattedMethod, ref firstParameter, align, p.ParameterName, p.ParamModifier, p.TypeReference.Type);
                 }
 
                 formattedMethod += ")";
@@ -356,10 +359,10 @@ class CreateInstantiators : AutoGenerationWriter
                 ProcedureSnippet.InsertSnippet("CHECKUSERMODULEPERMISSIONS",
                     CreateModuleAccessPermissionCheck(
                         ATemplate,
-                        ConnectorNamespace + "." + CSParser.GetName(connectorClass.Name),
+                        ConnectorNamespace + "." + connectorClass.Name,
                         m));
                 ProcedureSnippet.SetCodelet("CALLPROCEDURE", "return " + ConnectorNamespace + "." +
-                    CSParser.GetName(connectorClass.Name) + "." +
+                    connectorClass.Name + "." +
                     MethodName + "(" + actualParameters + ");");
 
                 interfacesSnippet.InsertSnippet("METHOD", ProcedureSnippet);
