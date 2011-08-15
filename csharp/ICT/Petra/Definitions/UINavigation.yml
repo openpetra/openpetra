@@ -224,7 +224,7 @@ OpenPetra:
                         UnitHierarchy: {ActionOpenScreen=TFrmUnitHierarchy}
                         LocalPersonnelData: {ActionOpenScreen=TFrmLocalPersonnelDataReport}
                         RelationshipReport: {ActionOpenScreen=TFrmRelationshipReport}
-                    ShortTermerReports:
+                    ShortTermerReports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm}
                         GeneralShortTermerReport: {ActionOpenScreen=TFrmShortTermerReport}
                         AbilitiesReport: {ActionOpenScreen=TFrmAbilitiesReport}
                         EmergencyContactReport: {ActionOpenScreen=TFrmEmergencyContactInformationReport}
@@ -250,7 +250,7 @@ OpenPetra:
                         GroupReports: {ActionOpenScreen=TFrmGroupReports}
                         LanguageReport: {ActionOpenScreen=TFrmLanguagesReport}
                         NationalitySummaryReport: {ActionOpenScreen=TFrmNationalitySummaryReport}
-                        PresentAttenddeeReport: {ActionOpenScreen=TFrmPresentAttendeeReport}
+                        PresentAttendeeReport: {ActionOpenScreen=TFrmPresentAttendeeReport}
                         TransportReport: {ActionOpenScreen=TFrmTransportReport}
                     FieldReports:
                         ChargedFieldReport: {ActionOpenScreen=TFrmChargedFieldReport}

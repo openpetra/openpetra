@@ -2707,6 +2707,15 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
         }
 
         /// generated method from connector
+        public List<TVariant> TestPostGLBatch(Int32 ALedgerNumber,
+                                      Int32 ABatchNumber,
+                                      out TVerificationResultCollection AVerifications)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "TestPostGLBatch", ";INT;INT;TVERIFICATIONRESULTCOLLECTION;");
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.TestPostGLBatch(ALedgerNumber, ABatchNumber, out AVerifications);
+        }
+
+        /// generated method from connector
         public string GetStandardCostCentre(Int32 ALedgerNumber)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "GetStandardCostCentre", ";INT;");

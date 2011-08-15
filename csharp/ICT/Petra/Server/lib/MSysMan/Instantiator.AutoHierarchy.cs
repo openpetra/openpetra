@@ -54,9 +54,9 @@ using Ict.Petra.Shared.Interfaces.MSysMan.TableMaintenance;
 using Ict.Petra.Shared.Interfaces.MSysMan.ImportExport;
 using Ict.Petra.Shared.Interfaces.MSysMan.PrintManagement;
 using Ict.Petra.Shared.Interfaces.MSysMan.Security;
+using Ict.Petra.Shared.Interfaces.MSysMan.Cacheable;
 using Ict.Petra.Shared.Interfaces.MSysMan.Application.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MSysMan.Application.ServerLookups;
-using Ict.Petra.Shared.Interfaces.MSysMan.Application.Cacheable;
 using Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.SystemDefaults;
 using Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.UserDefaults;
@@ -72,9 +72,9 @@ using Ict.Petra.Server.MSysMan.Instantiator.TableMaintenance;
 using Ict.Petra.Server.MSysMan.Instantiator.ImportExport;
 using Ict.Petra.Server.MSysMan.Instantiator.PrintManagement;
 using Ict.Petra.Server.MSysMan.Instantiator.Security;
+using Ict.Petra.Server.MSysMan.Instantiator.Cacheable;
 using Ict.Petra.Server.MSysMan.Instantiator.Application.UIConnectors;
 using Ict.Petra.Server.MSysMan.Instantiator.Application.ServerLookups;
-using Ict.Petra.Server.MSysMan.Instantiator.Application.Cacheable;
 using Ict.Petra.Server.MSysMan.Instantiator.Maintenance.SystemDefaults;
 using Ict.Petra.Server.MSysMan.Instantiator.Maintenance.UIConnectors;
 using Ict.Petra.Server.MSysMan.Instantiator.Maintenance.UserDefaults;
@@ -90,9 +90,9 @@ using Ict.Petra.Server.MSysMan.Maintenance;
 //using Ict.Petra.Server.MSysMan.ImportExport;
 //using Ict.Petra.Server.MSysMan.PrintManagement;
 using Ict.Petra.Server.MSysMan.Security;
+using Ict.Petra.Server.MSysMan.Cacheable;
 //using Ict.Petra.Server.MSysMan.Application.UIConnectors;
 using Ict.Petra.Server.MSysMan.Application.ServerLookups;
-using Ict.Petra.Server.MSysMan.Application.Cacheable;
 //using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults;
 //using Ict.Petra.Server.MSysMan.Maintenance.UIConnectors;
 //using Ict.Petra.Server.MSysMan.Maintenance.UserDefaults;
@@ -209,6 +209,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator
         private TImportExportNamespace FImportExportSubNamespace;
         private TPrintManagementNamespace FPrintManagementSubNamespace;
         private TSecurityNamespace FSecuritySubNamespace;
+        private TCacheableNamespace FCacheableSubNamespace;
 
         /// <summary>Constructor</summary>
         public TMSysMan()
@@ -445,6 +446,35 @@ namespace Ict.Petra.Server.MSysMan.Instantiator
             }
 
         }
+
+        /// <summary>The 'Cacheable' subnamespace contains further subnamespaces.</summary>
+        public ICacheableNamespace Cacheable
+        {
+            get
+            {
+                //
+                // Creates or passes a reference to an instantiator of sub-namespaces that
+                // reside in the 'MSysMan.Cacheable' sub-namespace.
+                // A call to this function is done everytime a Client uses an object of this
+                // sub-namespace - this is fully transparent to the Client.
+                //
+                // @return A reference to an instantiator of sub-namespaces that reside in
+                //         the 'MSysMan.Cacheable' sub-namespace
+                //
+
+                // accessing TCacheableNamespace the first time? > instantiate the object
+                if (FCacheableSubNamespace == null)
+                {
+                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
+                    //      * for the Generator: the name of this Type ('TCacheableNamespace') needs to come out of the XML definition,
+                    //      * The Namespace where it resides in ('Ict.Petra.Server.MSysMan.Instantiator.Cacheable') should be automatically contructable.
+                    FCacheableSubNamespace = new TCacheableNamespace();
+                }
+
+                return FCacheableSubNamespace;
+            }
+
+        }
     }
 }
 
@@ -458,7 +488,6 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Application
 #endif
         private TApplicationUIConnectorsNamespace FApplicationUIConnectorsSubNamespace;
         private TApplicationServerLookupsNamespace FApplicationServerLookupsSubNamespace;
-        private TApplicationCacheableNamespace FApplicationCacheableSubNamespace;
 
         /// <summary>Constructor</summary>
         public TApplicationNamespace()
@@ -576,35 +605,6 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Application
                 }
 
                 return FApplicationServerLookupsSubNamespace;
-            }
-
-        }
-
-        /// <summary>The 'ApplicationCacheable' subnamespace contains further subnamespaces.</summary>
-        public IApplicationCacheableNamespace Cacheable
-        {
-            get
-            {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'Application.Cacheable' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'Application.Cacheable' sub-namespace
-                //
-
-                // accessing TCacheableNamespace the first time? > instantiate the object
-                if (FApplicationCacheableSubNamespace == null)
-                {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TApplicationCacheableNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.Application.Instantiator.Cacheable') should be automatically contructable.
-                    FApplicationCacheableSubNamespace = new TApplicationCacheableNamespace();
-                }
-
-                return FApplicationCacheableSubNamespace;
             }
 
         }
@@ -765,177 +765,6 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Application.ServerLookups
         {
             #region ManualCode
             return TSysManServerLookups.GetInstalledPatches(out APatchLogDT);
-            #endregion ManualCode
-        }
-    }
-}
-
-namespace Ict.Petra.Server.MSysMan.Instantiator.Application.Cacheable
-{
-    /// <summary>auto generated class </summary>
-    public class TApplicationCacheableNamespace : MarshalByRefObject, IApplicationCacheableNamespace
-    {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
-
-		#region ManualCode
-        /// <summary>holds reference to the CachePopulator object (only once instantiated)</summary>
-        private Ict.Petra.Server.MSysMan.Application.Cacheable.TSysManCacheable FCachePopulator;
-        #endregion ManualCode
-        /// <summary>Constructor</summary>
-        public TApplicationCacheableNamespace()
-        {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
-			#region ManualCode
-            FCachePopulator = new Ict.Petra.Server.MSysMan.Application.Cacheable.TSysManCacheable();
-            #endregion ManualCode
-        }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TApplicationCacheableNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
-
-        /// NOTE AutoGeneration: This function is all-important!!!
-        public override object InitializeLifetimeService()
-        {
-            return null; // make sure that the TApplicationCacheableNamespace object exists until this AppDomain is unloaded!
-        }
-
-        #region ManualCode
-
-        /// <summary>
-        /// Returns the desired cacheable DataTable.
-        ///
-        /// </summary>
-        /// <param name="ACacheableTable">Used to select the desired DataTable</param>
-        /// <param name="AHashCode">Hash of the cacheable DataTable that the caller has. '' can
-        /// be specified to always get a DataTable back (see @return)</param>
-        /// <param name="ARefreshFromDB">Set to true to reload the cached DataTable from the
-        /// DB and through that refresh the Table in the Cache with what is now in the
-        /// DB (this would be done when it is known that the DB Table has changed).
-        /// The CacheableTablesManager will notify other Clients that they need to
-        /// retrieve this Cacheable DataTable anew from the PetraServer the next time
-        /// the Client accesses the Cacheable DataTable. Otherwise set to false.</param>
-        /// <param name="AType">The Type of the DataTable (useful in case it's a
-        /// Typed DataTable)</param>
-        /// <returns>)
-        /// DataTable The desired DataTable
-        /// </returns>
-        private DataTable GetCacheableTableInternal(TCacheableSysManTablesEnum ACacheableTable,
-            String AHashCode,
-            Boolean ARefreshFromDB,
-            out System.Type AType)
-        {
-            DataTable ReturnValue;
-
-            switch (ACacheableTable)
-            {
-                case TCacheableSysManTablesEnum.UserList:
-                    ReturnValue = FCachePopulator.GetStandardCacheableTable(
-            			ACacheableTable, AHashCode, ARefreshFromDB, out AType);
-            		
-                    // Ict.Petra.Shared.MPartner.Cacheable.AddresseeTypeList:
-                    // begin
-                    // Result := FCachePopulator.ReasonSubscriptionGivenList(Enum(ACacheableTable).ToString("G"));
-                    // end;
-                    // Ict.Petra.Shared.MPartner.Cacheable.AcquisitionCodeList:
-                    // begin
-                    // Result := FCachePopulator.ReasonSubscriptionCancelledList(Enum(ACacheableTable).ToString("G"));
-                    // end;
-                    break;
-
-                default:
-                    throw new ECachedDataTableNotImplementedException(
-                    "Requested Cacheable DataTable '" + ACacheableTable.ToString() + "' is not (yet) implemented in the PetraServer");
-
-                    //break;
-            }
-
-            if (ReturnValue != null)
-            {
-                if (Enum.GetName(typeof(TCacheableSysManTablesEnum), ACacheableTable) != ReturnValue.TableName)
-                {
-                    throw new ECachedDataTableTableNameMismatchException(
-                        "Warning: cached table name '" + ReturnValue.TableName + "' does not match enum '" +
-                        Enum.GetName(typeof(TCacheableSysManTablesEnum), ACacheableTable) + "'");
-                }
-            }
-
-            return ReturnValue;
-        }
-
-        #endregion ManualCode
-        /// generated method from interface
-        public System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MSysMan.TCacheableSysManTablesEnum ACacheableTable,
-                                                       System.String AHashCode,
-                                                       out System.Type AType)
-        {
-            #region ManualCode
-            return GetCacheableTableInternal(ACacheableTable, AHashCode, false, out AType);
-            #endregion ManualCode
-        }
-
-        /// generated method from interface
-        public void RefreshCacheableTable(Ict.Petra.Shared.MSysMan.TCacheableSysManTablesEnum ACacheableTable)
-        {
-            #region ManualCode
-            System.Type TmpType;
-            GetCacheableTableInternal(ACacheableTable, "", true, out TmpType);
-            #endregion ManualCode
-        }
-
-        /// generated method from interface
-        public void RefreshCacheableTable(Ict.Petra.Shared.MSysMan.TCacheableSysManTablesEnum ACacheableTable,
-                                          out System.Data.DataTable ADataTable)
-        {
-            #region ManualCode
-            System.Type TmpType;
-            ADataTable = GetCacheableTableInternal(ACacheableTable, "", true, out TmpType);
             #endregion ManualCode
         }
     }
@@ -2417,6 +2246,177 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Security.UserManager
         {
             #region ManualCode
             Ict.Petra.Server.MSysMan.Security.TUserManager.SignalReloadCachedUserInfo(AUserID);
+            #endregion ManualCode
+        }
+    }
+}
+
+namespace Ict.Petra.Server.MSysMan.Instantiator.Cacheable
+{
+    /// <summary>auto generated class </summary>
+    public class TCacheableNamespace : MarshalByRefObject, ICacheableNamespace
+    {
+#if DEBUGMODE
+        private DateTime FStartTime;
+#endif
+
+		#region ManualCode
+        /// <summary>holds reference to the CachePopulator object (only once instantiated)</summary>
+        private Ict.Petra.Server.MSysMan.Cacheable.TCacheable FCachePopulator;
+        #endregion ManualCode
+        /// <summary>Constructor</summary>
+        public TCacheableNamespace()
+        {
+#if DEBUGMODE
+            if (TLogging.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
+            }
+
+            FStartTime = DateTime.Now;
+#endif
+			#region ManualCode
+            FCachePopulator = new Ict.Petra.Server.MSysMan.Cacheable.TCacheable();
+            #endregion ManualCode
+        }
+
+        // NOTE AutoGeneration: This destructor is only needed for debugging...
+#if DEBUGMODE
+        /// <summary>Destructor</summary>
+        ~TCacheableNamespace()
+        {
+#if DEBUGMODELONGRUNNINGFINALIZERS
+            const Int32 MAX_ITERATIONS = 100000;
+            System.Int32 LoopCounter;
+            object MyObject;
+            object MyObject2;
+#endif
+            if (TLogging.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
+                                                                                                DateTime.Now.Ticks -
+                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
+            }
+
+#if DEBUGMODELONGRUNNINGFINALIZERS
+            MyObject = new object();
+            if (TLogging.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
+            }
+
+            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
+            {
+                MyObject2 = new object();
+                GC.KeepAlive(MyObject);
+            }
+
+            if (TLogging.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
+            }
+
+#endif
+        }
+
+#endif
+
+        /// NOTE AutoGeneration: This function is all-important!!!
+        public override object InitializeLifetimeService()
+        {
+            return null; // make sure that the TCacheableNamespace object exists until this AppDomain is unloaded!
+        }
+
+        #region ManualCode
+
+        /// <summary>
+        /// Returns the desired cacheable DataTable.
+        ///
+        /// </summary>
+        /// <param name="ACacheableTable">Used to select the desired DataTable</param>
+        /// <param name="AHashCode">Hash of the cacheable DataTable that the caller has. '' can
+        /// be specified to always get a DataTable back (see @return)</param>
+        /// <param name="ARefreshFromDB">Set to true to reload the cached DataTable from the
+        /// DB and through that refresh the Table in the Cache with what is now in the
+        /// DB (this would be done when it is known that the DB Table has changed).
+        /// The CacheableTablesManager will notify other Clients that they need to
+        /// retrieve this Cacheable DataTable anew from the PetraServer the next time
+        /// the Client accesses the Cacheable DataTable. Otherwise set to false.</param>
+        /// <param name="AType">The Type of the DataTable (useful in case it's a
+        /// Typed DataTable)</param>
+        /// <returns>)
+        /// DataTable The desired DataTable
+        /// </returns>
+        private DataTable GetCacheableTableInternal(TCacheableSysManTablesEnum ACacheableTable,
+            String AHashCode,
+            Boolean ARefreshFromDB,
+            out System.Type AType)
+        {
+            DataTable ReturnValue;
+
+            switch (ACacheableTable)
+            {
+                case TCacheableSysManTablesEnum.UserList:
+                    ReturnValue = FCachePopulator.GetCacheableTable(
+            			ACacheableTable, AHashCode, ARefreshFromDB, out AType);
+            		
+                    // Ict.Petra.Shared.MPartner.Cacheable.AddresseeTypeList:
+                    // begin
+                    // Result := FCachePopulator.ReasonSubscriptionGivenList(Enum(ACacheableTable).ToString("G"));
+                    // end;
+                    // Ict.Petra.Shared.MPartner.Cacheable.AcquisitionCodeList:
+                    // begin
+                    // Result := FCachePopulator.ReasonSubscriptionCancelledList(Enum(ACacheableTable).ToString("G"));
+                    // end;
+                    break;
+
+                default:
+                    throw new ECachedDataTableNotImplementedException(
+                    "Requested Cacheable DataTable '" + ACacheableTable.ToString() + "' is not (yet) implemented in the PetraServer");
+
+                    //break;
+            }
+
+            if (ReturnValue != null)
+            {
+                if (Enum.GetName(typeof(TCacheableSysManTablesEnum), ACacheableTable) != ReturnValue.TableName)
+                {
+                    throw new ECachedDataTableTableNameMismatchException(
+                        "Warning: cached table name '" + ReturnValue.TableName + "' does not match enum '" +
+                        Enum.GetName(typeof(TCacheableSysManTablesEnum), ACacheableTable) + "'");
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        #endregion ManualCode
+        /// generated method from interface
+        public System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MSysMan.TCacheableSysManTablesEnum ACacheableTable,
+                                                       System.String AHashCode,
+                                                       out System.Type AType)
+        {
+            #region ManualCode
+            return GetCacheableTableInternal(ACacheableTable, AHashCode, false, out AType);
+            #endregion ManualCode
+        }
+
+        /// generated method from interface
+        public void RefreshCacheableTable(Ict.Petra.Shared.MSysMan.TCacheableSysManTablesEnum ACacheableTable)
+        {
+            #region ManualCode
+            System.Type TmpType;
+            GetCacheableTableInternal(ACacheableTable, "", true, out TmpType);
+            #endregion ManualCode
+        }
+
+        /// generated method from interface
+        public void RefreshCacheableTable(Ict.Petra.Shared.MSysMan.TCacheableSysManTablesEnum ACacheableTable,
+                                          out System.Data.DataTable ADataTable)
+        {
+            #region ManualCode
+            System.Type TmpType;
+            ADataTable = GetCacheableTableInternal(ACacheableTable, "", true, out TmpType);
             #endregion ManualCode
         }
     }

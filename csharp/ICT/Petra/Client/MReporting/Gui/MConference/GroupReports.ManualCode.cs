@@ -25,6 +25,7 @@ using System;
 using System.Windows.Forms;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Client.MReporting.Logic;
 
 namespace Ict.Petra.Client.MReporting.Gui.MConference
 {
@@ -39,6 +40,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             // when radio button "All Groups" is selected.
             rbtParticipantsIgnoreAll.Enabled = !rbtAllGroups.Checked;
 
+            if (rbtAllGroups.Checked && rbtParticipantsIgnoreAll.Checked)
+            {
+                rbtParticipantsAll.Checked = true;
+            }
+        }
+
+        private void tpgGroups_ReadControls(TRptCalculator ACalc, TReportActionEnum AReportAction)
+        {
             if (rbtAllGroups.Checked && rbtParticipantsIgnoreAll.Checked)
             {
                 rbtParticipantsAll.Checked = true;

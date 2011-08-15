@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,13 +22,15 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Reflection;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.IO;
 using Ict.Common;
 using Ict.Common.IO;
-using DDW;
+using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory;
 
 namespace Ict.Tools.CodeGeneration
 {
@@ -285,9 +287,9 @@ namespace Ict.Tools.CodeGeneration
         /// <param name="align"></param>
         /// <param name="AParamName"></param>
         /// <param name="AParamModifier"></param>
-        /// <param name="AParamType"></param>
+        /// <param name="AParamTypeName"></param>
         public void AddParameter(ref string MethodDeclaration, ref bool firstParameter, int align,
-            string AParamName, Modifier AParamModifier, IType AParamType)
+            string AParamName, ParameterModifiers AParamModifier, string AParamTypeName)
         {
             if (!firstParameter)
             {
@@ -297,14 +299,14 @@ namespace Ict.Tools.CodeGeneration
 
             firstParameter = false;
 
-            String parameterType = CSParser.GetName(AParamType);
+            String parameterType = AParamTypeName;
             String StrParameter = "";
 
-            if ((AParamModifier & Modifier.Ref) != 0)
+            if ((ParameterModifiers.Ref & AParamModifier) > 0)
             {
                 StrParameter += "ref ";
             }
-            else if ((AParamModifier & Modifier.Out) != 0)
+            else if ((ParameterModifiers.Out & AParamModifier) > 0)
             {
                 StrParameter += "out ";
             }

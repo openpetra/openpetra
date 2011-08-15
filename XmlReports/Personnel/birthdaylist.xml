@@ -4,7 +4,7 @@
 	<report id="Birthday List">      
 		<description>
 			Lists the birthday of a partner, all partners in an extract, 
-			all current staff or all staff in the database.
+			all current staff at a certain date should be printed.
 			Optionally, a date range can be given (only month and day)
 			Optionally, the family members can be included.
 			Optionally, only partners with selected partner types, included
@@ -17,7 +17,6 @@
 				<option name="one partner"/>
 				<option name="an extract"/>
 				<option name="all current staff"/>
-				<option name="all staff"/>
 			</reportparameter>
 			<reportparameter name="param_extract"
 				condition="param_selection=an extract"/>
@@ -51,9 +50,6 @@
 				</fielddetail>
 				<fielddetail condition="eq({param_selection},all current staff)">
 					<value text = "All current Staff at date "/><value variable = "param_currentstaffdate" format="formatteddate"/>
-				</fielddetail>
-				<fielddetail condition="eq({param_selection},all staff)">
-					<value text = "All Staff"/>
 				</fielddetail>
 			</field>
 			<field whichfield="descr2">
@@ -124,7 +120,7 @@
 							AND  person.p_partner_key_n = PUB_m_extract.p_partner_key_n
 							AND  partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
 					</value></queryDetail>
-					<queryDetail condition="or(eq({param_selection},all staff), eq({param_selection},all current staff))"><value>
+					<queryDetail condition="eq({param_selection},all current staff)"><value>
 							, PUB_pm_staff_data AS staff
 						WHERE	person.p_partner_key_n = staff.p_partner_key_n
 							AND person.p_partner_key_n = partner.p_partner_key_n
@@ -166,11 +162,9 @@
 							AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
 							AND PUB_m_extract_master.m_extract_name_c = {param_extract}
 					</value></queryDetail>
-					<queryDetail condition="or(eq({param_selection},all staff),eq({param_selection},all current staff))"><value>
+					<queryDetail condition="eq({param_selection},all current staff)"><value>
 							, PUB_pm_staff_data AS staff
 						WHERE person.p_partner_key_n = staff.p_partner_key_n
-					</value></queryDetail>
-					<queryDetail condition="eq({param_selection},all current staff)"><value>
 							AND staff.pm_start_of_commitment_d &lt;= {#param_currentstaffdate#}
 							AND (staff.pm_end_of_commitment_d &gt;= {#param_currentstaffdate#}
 								OR staff.pm_end_of_commitment_d IS NULL)
@@ -292,7 +286,7 @@
 				</query>
 			</calculation>
 			
-			<calculation id="Start Date of Commitment" returnsFormat="text" returns="text">
+			<calculation id="Start Date of Commitment" returnsFormat="text" returns="formatteddate">
 				<caption><value text="Start Date of\nCommitment"/></caption>
 				<query>
 					<queryDetail>
@@ -301,7 +295,7 @@
 				</query>
 			</calculation>
 			
-			<calculation id="End Date of Commitment" returnsFormat="text" returns="text">
+			<calculation id="End Date of Commitment" returnsFormat="text" returns="formatteddate">
 				<caption><value text="End Date of\nCommitment"/></caption>
 				<query>
 					<queryDetail>

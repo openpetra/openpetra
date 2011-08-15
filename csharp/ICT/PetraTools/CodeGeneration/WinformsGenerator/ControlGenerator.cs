@@ -488,6 +488,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 // or UC_GLTransactions.ManualCode.cs, LoadTransactions
             }
 
+            if (ctrl.HasAttribute("ComboBoxWidth"))
+            {
+                writer.SetControlProperty(ctrl, "ComboBoxWidth", ctrl.GetAttribute("ComboBoxWidth"));
+            }
+
             return writer.FTemplate;
         }
     }
@@ -962,6 +967,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             string ColumnType = "Text";
             string PotentialDecimalPrecision;
+            string TrueString = string.Empty;
+            string FalseString = string.Empty;
 
             if (AColumnType.Contains("DateTime"))
             {
@@ -999,11 +1006,34 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
             else if (AColumnType.Contains("Boolean"))
             {
-                ColumnType = "CheckBox";
+                if (AColumnType.Contains("("))
+                {
+                    string BooleanNames = AColumnType.Substring(AColumnType.IndexOf('(') + 1,
+                        AColumnType.IndexOf(')') - AColumnType.IndexOf('(') - 1);
+                    TrueString = BooleanNames.Split(',')[0];
+                    FalseString = BooleanNames.Split(',')[1];
+                }
+
+                if ((TrueString.Length > 0) || (FalseString.Length > 0))
+                {
+                    ColumnType = "Boolean";
+                }
+                else
+                {
+                    ColumnType = "CheckBox";
+                }
             }
 
-            if ((ColumnType != "Currency")
-                || ((ColumnType == "Currency") && (FDecimalPrecision == 2)))
+            if (ColumnType == "Boolean")
+            {
+                writer.Template.AddToCodelet("INITMANUALCODE",
+                    AGridControlName + ".Add" + ColumnType + "Column(\"" + ALabel + "\", " +
+                    "FMainDS." +
+                    ATableName + ".Column" +
+                    AColumnName + ", Catalog.GetString(\"" + TrueString + "\"), Catalog.GetString(\"" + FalseString + "\"));" + Environment.NewLine);
+            }
+            else if ((ColumnType != "Currency")
+                     || ((ColumnType == "Currency") && (FDecimalPrecision == 2)))
             {
                 writer.Template.AddToCodelet("INITMANUALCODE",
                     AGridControlName + ".Add" + ColumnType + "Column(\"" + ALabel + "\", " +
@@ -1508,6 +1538,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.SetControlProperty(ctrl, "Padding", "new System.Windows.Forms.Padding(0, 2, 0, 0)");
             }
 
+            if (TYml2Xml.HasAttribute(ctrl.xmlNode, "DefaultValue"))
+            {
+                writer.SetControlProperty(ctrl,
+                    "Text",
+                    "\"" + TXMLParser.GetAttribute(ctrl.xmlNode, "DefaultValue") + "\"");
+            }
+
             return writer.FTemplate;
         }
     }
@@ -1540,7 +1577,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 NumberFormat = TYml2Xml.GetAttribute(curNode, "Format");
 
 //Console.WriteLine("TTxtNumericTextBoxGenerator Format: '" + NumberFormat + "'");
-                if (NumberFormat == "Integer")
+                if ((NumberFormat == "Integer")
+                    || (NumberFormat == "PercentInteger"))
                 {
                     FControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Integer;
 
@@ -1548,7 +1586,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
 
                 if ((NumberFormat == "Decimal")
-                    || (NumberFormat.StartsWith("Decimal(")))
+                    || (NumberFormat == "PercentDecimal")
+                    || (NumberFormat.StartsWith("Decimal("))
+                    || (NumberFormat.StartsWith("PercentDecimal(")))
                 {
                     FControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Decimal;
 
@@ -1566,6 +1606,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 if (ReturnValue)
                 {
                     if ((NumberFormat.StartsWith("Decimal("))
+                        || (NumberFormat.StartsWith("PercentDecimal("))
                         || (NumberFormat.StartsWith("Currency(")))
                     {
                         PotentialDecimalPrecision = NumberFormat.Substring(NumberFormat.IndexOf('(') + 1,
@@ -1702,6 +1743,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
+            string NumberFormat = String.Empty;
+
             base.SetControlProperties(writer, ctrl);
 
             if ((ctrl.HasAttribute("ShowLabel") && (ctrl.GetAttribute("ShowLabel").ToLower() == "false")))
@@ -1715,6 +1758,17 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 Enum.GetName(typeof(TTxtNumericTextBox.TNumericTextBoxMode), FControlMode));
             writer.SetControlProperty(ctrl, "DecimalPlaces", FDecimalPrecision.ToString());
             writer.SetControlProperty(ctrl, "NullValueAllowed", FNullValueAllowed.ToString().ToLower());
+
+            if (ctrl.HasAttribute("Format"))
+            {
+                NumberFormat = ctrl.GetAttribute("Format");
+            }
+
+            if ((NumberFormat.StartsWith("PercentInteger"))
+                || (NumberFormat.StartsWith("PercentDecimal")))
+            {
+                writer.SetControlProperty(ctrl, "ShowPercentSign", "true");
+            }
 
             return writer.FTemplate;
         }

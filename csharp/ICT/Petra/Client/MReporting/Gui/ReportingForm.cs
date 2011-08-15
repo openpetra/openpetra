@@ -442,10 +442,11 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
             catch (Exception e)
             {
-#if DEBUGMODE
-                MessageBox.Show(e.ToString());
-                MessageBox.Show(e.Message);
-#endif
+                if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_REPORTING)
+                {
+                    MessageBox.Show(e.ToString());
+                    MessageBox.Show(e.Message);
+                }
 
                 ((IFrmReporting) this.FTheForm).EnableBusy(false);
             }
@@ -771,12 +772,14 @@ namespace Ict.Petra.Client.MReporting.Gui
             catch (Exception e)
             {
                 System.Diagnostics.Debug.WriteLine(e.ToString());
-#if DEBUGMODE
-                MessageBox.Show(e.ToString(), "DEBUGMODE: Invalid Selection");
 
-                // todo: use the verification tools from Christian
-                MessageBox.Show(e.Message, "Invalid Selection");
-#endif
+                if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_REPORTING)
+                {
+                    MessageBox.Show(e.ToString(), "DEBUGMODE: Invalid Selection");
+
+                    // todo: use the verification tools from Christian
+                    MessageBox.Show(e.Message, "Invalid Selection");
+                }
             }
             return ReturnValue;
         }

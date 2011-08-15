@@ -178,6 +178,7 @@ namespace Ict.Petra.Client.CommonControls
         private Boolean FAddNotSetValue = false;
         private String FNotSetValue;
         private String FNotSetDisplay;
+        private bool FAppearanceSetupRun = false;
 
         /// this allows to set the table manually,
         /// when it cannot come from a cache because it depends on too many other parameters on the screen
@@ -243,6 +244,40 @@ namespace Ict.Petra.Client.CommonControls
             set
             {
                 cmbAutoPopulated.ComboBoxWidth = value;
+            }
+        }
+
+        /// <summary>
+        /// Allows the caller to inquire how many Columns are shown when the user drops the Drop-Down.
+        /// Only inquire this after <see cref="AppearanceSetup" /> has been run!
+        /// </summary>
+        [Browsable(false),
+         DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public int ShownColumns
+        {
+            get
+            {
+                if (!FAppearanceSetupRun)
+                {
+                    throw new Exception("Property 'ShownColumns' may only be inquired after AppearanceSetup Method has been run!");
+                }
+
+                if (cmbAutoPopulated.ColumnWidthCol2 == 0)
+                {
+                    return 1;
+                }
+                else if (cmbAutoPopulated.ColumnWidthCol3 == 0)
+                {
+                    return 2;
+                }
+                else if (cmbAutoPopulated.ColumnWidthCol4 == 0)
+                {
+                    return 3;
+                }
+                else
+                {
+                    return 4;
+                }
             }
         }
 
@@ -850,10 +885,22 @@ namespace Ict.Petra.Client.CommonControls
                 }
             }
 
+            if (this.Width < cmbAutoPopulated.ColumnWidthCol1)
+            {
+                // Ensure that the ComboBox itself is never 'cut off'
+                cmbAutoPopulated.ComboBoxWidth = this.Width;
+            }
+            else
+            {
+                cmbAutoPopulated.ComboBoxWidth = cmbAutoPopulated.ColumnWidthCol1;
+            }
+
             if (AMaxDropDownItems > 0)
             {
                 cmbAutoPopulated.cmbCombobox.MaxDropDownItems = AMaxDropDownItems;
             }
+
+            FAppearanceSetupRun = true;
         }
 
         /// it might be better to do this in other functions, see also Client/lib/MFinance/gui/FinanceComboboxes.cs
@@ -1003,7 +1050,15 @@ namespace Ict.Petra.Client.CommonControls
 
             if (cmbAutoPopulated.ComboBoxWidth == 0)
             {
-                cmbAutoPopulated.ComboBoxWidth = cmbAutoPopulated.ColumnWidthCol1;
+                if (this.Width < cmbAutoPopulated.ColumnWidthCol1)
+                {
+                    // Ensure that the ComboBox itself is never 'cut off'
+                    cmbAutoPopulated.ComboBoxWidth = this.Width;
+                }
+                else
+                {
+                    cmbAutoPopulated.ComboBoxWidth = cmbAutoPopulated.ColumnWidthCol1;
+                }
             }
 
             if (DesignMode)
@@ -1011,6 +1066,8 @@ namespace Ict.Petra.Client.CommonControls
                 // Put text in ComboBox to make it easier to distinguish different AutoPopulatedComboBoxes on one Form
                 cmbAutoPopulated.cmbCombobox.Text = AListTable.ToString("G");
             }
+
+            FAppearanceSetupRun = true;
         }
 
         /// <summary>

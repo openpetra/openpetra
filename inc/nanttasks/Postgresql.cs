@@ -112,6 +112,7 @@ namespace Ict.Tools.NAntTasks
         protected override void ExecuteTask()
         {
             bool Failure = false;
+
             System.Diagnostics.Process process;
             process = new System.Diagnostics.Process();
             process.EnableRaisingEvents = false;

@@ -43,6 +43,21 @@ namespace Ict.Petra.Shared.MFinance
         public const String BATCH_HAS_TRANSACTIONS = "HasTransactions";
 
         /// <summary>General Ledger</summary>
+        public const String ACCOUNT_TYPE_ASSET = "Asset";
+
+        /// <summary>General Ledger</summary>
+        public const String ACCOUNT_TYPE_LIABILITY = "Liability";
+
+        /// <summary>General Ledger</summary>
+        public const String ACCOUNT_TYPE_INCOME = "Income";
+
+        /// <summary>General Ledger</summary>
+        public const String ACCOUNT_TYPE_EXPENSE = "Expense";
+
+        /// <summary>General Ledger</summary>
+        public const String ACCOUNT_TYPE_EQUITY = "Equity";
+
+        /// <summary>General Ledger</summary>
         public const String ACCOUNT_HIERARCHY_STANDARD = "STANDARD";
 
         /// <summary>Accounts Payable</summary>

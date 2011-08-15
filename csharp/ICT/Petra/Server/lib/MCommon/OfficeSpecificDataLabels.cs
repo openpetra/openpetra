@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangb
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -103,7 +103,7 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
         /// <param name="AReadTransaction">Transaction for the SELECT COUNT statement</param>
         /// <returns>Number of Labels available for a certain LabelUse.
         /// </returns>
-        /// [NO-REMOTING]
+        [NoRemoting]
         public Int32 CountLabelUse(String ALabelUse, TDBTransaction AReadTransaction)
         {
             Int32 ReturnValue;
@@ -370,7 +370,7 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
             return ReturnValue;
         }
 
-        /// [NO-REMOTING]
+        [NoRemoting]
         public OfficeSpecificDataLabelsTDS GetData(TDBTransaction AReadTransaction)
         {
             PDataLabelUseTable DataLabelUseDT;
@@ -537,7 +537,7 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
         /// <returns>true if all verifications are OK and all DB calls succeeded, false if
         /// any verification or DB call failed
         /// </returns>
-        /// [NO-REMOTING]
+        [NoRemoting]
         public TSubmitChangesResult SubmitChangesServerSide(ref DataTable AInspectDT,
             TDBTransaction ASubmitChangesTransaction,
             out TVerificationResultCollection AVerificationResult)

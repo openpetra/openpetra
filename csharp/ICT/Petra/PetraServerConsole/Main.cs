@@ -98,6 +98,25 @@ public class TServer
             TLogging.Log(TheServerManager.ServerInfoVersion);
 
             //
+            // Connect to main Database
+            //
+            try
+            {
+                TheServerManager.EstablishDBConnection();
+            }
+            catch (FileNotFoundException ex)
+            {
+                TLogging.Log(ex.Message);
+                TLogging.Log("Please check your OpenPetra.build.config file ...");
+                TLogging.Log("May be a nant initConfigFile helps ...");
+                throw new ApplicationException();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            //
             // Remote the remoteable objects
             //
             try
@@ -139,25 +158,6 @@ public class TServer
 
             Thread.Sleep(50);
             TrackingServices.RegisterTrackingHandler(new TRemotingTracker());
-
-            //
-            // Connect to main Database
-            //
-            try
-            {
-                TheServerManager.EstablishDBConnection();
-            }
-            catch (FileNotFoundException ex)
-            {
-                TLogging.Log(ex.Message);
-                TLogging.Log("Please check your OpenPetra.build.config file ...");
-                TLogging.Log("May be a nant initConfigFile helps ...");
-                throw new ApplicationException();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
 
             // Display information that the Server is ready to accept .NET Remoting requests
             TLogging.Log(TheServerManager.ServerInfoState);
