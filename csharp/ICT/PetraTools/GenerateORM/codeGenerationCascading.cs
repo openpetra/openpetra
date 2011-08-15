@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -33,7 +33,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
 {
     /// This will generate the cascading parts of the datastore;
     /// it references right across all table groups, therefore a single file is created.
-    public class codeGenerationCascading
+    public class CodeGenerationCascading
     {
         /// to avoid huge cascading deletes, which we will probably not allow anyways (e.g. s_user)
         public const Int32 CASCADING_DELETE_MAX_REFERENCES = 9;
@@ -122,7 +122,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                     // check if other foreign key exists that references the same table, e.g.
                     // PBankAccess.LoadViaPPartnerPartnerKey
                     // PBankAccess.LoadViaPPartnerContactPartnerKey
-                    string DifferentField = codeGenerationAccess.FindOtherConstraintSameOtherTable(
+                    string DifferentField = CodeGenerationAccess.FindOtherConstraintSameOtherTable(
                         OtherTable.grpConstraint.List,
                         constraint);
                     string LoadViaProcedureName = TTable.NiceTableName(ACurrentTable.strName);
@@ -165,6 +165,14 @@ namespace Ict.Tools.CodeGeneration.DataStore
             return true;
         }
 
+        /// <summary>
+        /// generate code for cascading deletions etc
+        /// </summary>
+        /// <param name="AStore"></param>
+        /// <param name="AFilePath"></param>
+        /// <param name="ANamespaceName"></param>
+        /// <param name="AFileName"></param>
+        /// <returns></returns>
         public static Boolean WriteTypedDataCascading(TDataDefinitionStore AStore, string AFilePath, string ANamespaceName, string AFileName)
         {
             Console.WriteLine("writing namespace " + ANamespaceName);
@@ -186,9 +194,9 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 if (InsertMainProcedures(AStore, currentTable, Template, snippet))
                 {
                     Template.AddToCodelet("USINGNAMESPACES",
-                        codeGenerationAccess.GetNamespace(currentTable.strGroup), false);
+                        CodeGenerationAccess.GetNamespace(currentTable.strGroup), false);
                     Template.AddToCodelet("USINGNAMESPACES",
-                        codeGenerationAccess.GetNamespace(currentTable.strGroup).Replace(
+                        CodeGenerationAccess.GetNamespace(currentTable.strGroup).Replace(
                             ".Data;", ".Data.Access;").
                         Replace("Ict.Petra.Shared.", "Ict.Petra.Server."), false);
 

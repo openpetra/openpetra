@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -36,6 +36,7 @@ namespace Ict.Tools.CodeGeneration.CachedTables
     /// </summary>
     public class TGenerateCachedTables
     {
+        /// creates a file with enums in Shared and one file per submodule in Server for cached tables
         public static void WriteCachedTables(TDataDefinitionStore AStore,
             string ACacheYamlFilename,
             string ASharedPath,
