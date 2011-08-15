@@ -47,13 +47,11 @@
       <exclude name="**/*-template.js" />
     </fileset>
   </copy>
-  
-  <get src="http://extjs.cachefly.net/ext-3.3.1/adapter/ext/ext-base.js" dest="${dir.webserver}/js/ext-base.js"/>
-  <get src="http://extjs.cachefly.net/ext-3.3.1/ext-all.js" dest="${dir.webserver}/js/ext-all.js"/>
-  <get src="http://extjs.cachefly.net/ext-3.3.1/ext-all-debug.js" dest="${dir.webserver}/js/ext-all-debug.js"/>
-  <get src="http://extjs.cachefly.net/ext-3.3.1/resources/css/ext-all.css" dest="${dir.webserver}/css/ext-all.css"/>
+
   <unzip zipfile="${dir.root}/csharp/ThirdParty/extjs/ext-images-default.zip" todir="${dir.webserver}/images"/>
   <unzip zipfile="${dir.root}/csharp/ThirdParty/extjs/ext-lang.zip" todir="${dir.webserver}/js"/>
+  <unzip zipfile="${dir.root}/csharp/ThirdParty/extjs/ext-css.zip" todir="${dir.webserver}"/>
+  <unzip zipfile="${dir.root}/csharp/ThirdParty/extjs/ext-js.zip" todir="${dir.webserver}/js"/>
 
   <copy file="${dir.root}/csharp/ICT/Petra/Server/app/WebService/server.asmx"
               tofile="${dir.webserver}/server.asmx" overwrite="true"/>

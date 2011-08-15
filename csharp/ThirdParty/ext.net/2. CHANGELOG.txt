@@ -1,6 +1,34 @@
 ﻿**************************************************************************
+*                       Version 1.1.0 CHANGELOG                          *
+**************************************************************************
+
+Release Date     : 2011-07-07
+Current Version  : 1.1.0
+Previous Version : 1.0.0
+
+1.  [UPDATE] [#3624] Update to ExtJS 3.4.0. Enhanced IE9 support.
+	http://dev.sencha.com/deploy/ext-3.4.0/release-notes.html
+
+2.  [FIX] [#3638] LinkButton .enable() and .disable() client-side functions 
+	were not working as expected. 
+
+3.  [FIX] [#3639] TreePanel .toggleChecked() client-side function had a 
+	defect and was fixed. 
+
+4.  [FIX] [#3640] ID confirmation for deleted records was defective. 
+    Now fixed. Related to Store.js. 
+
+5.  [FIX] [#3641] Client-side .isDirty() was always returning 'true' if 
+	CheckboxSelectionModel used. Defect has been fixed.
+
+
+**************************************************************************
 *                       Version 1.0.0 CHANGELOG                          *
 **************************************************************************
+
+Release Date     : 2011-06-24
+Current Version  : 1.0.0
+Previous Version : 1.0.0 RC2
 
 1.   Renamed Coolite.Ext.Web project to Ext.Net
 
@@ -23,7 +51,7 @@
 
 10.  Renamed Coolite.Ext.UX Namespace to Ext.Net.UX
 
-11.  Renamed root singleton "Ext" class to "X". 
+11.  Renamed server-side root singleton "Ext" class to "X". 
 
 	 Example (Old)
 	 
@@ -37,6 +65,9 @@
 	 if (!X.IsAjaxRequest) { }
 	 
 	 X.Msg.Alert("Title", "Message").Show();
+	 
+	 NOTE: The renaming to "X" only applies to the server-side instance. 
+	 The client-side JavaScript root class remains as "Ext". 
 
 12.  Added new feature to get server-side Property values from client id 
      Token strings.
@@ -386,4 +417,25 @@
 	
 77.  LowerCase of RendererFormat enum is renamed to Lowercase (to correct name serialization)
 
+78.  Renamed the ResourceManager property .RemoveViewState to .DisableViewState. 
+
+     Example (old)
+	 
+	 <ext:ResourceManager runat="server" RemoveViewState="true" />
+	 
+	 Example (new)
+	 
+	 <ext:ResourceManager runat="server" DisableViewState="true" />
+	 
+79.  In prior releases, the Store .Load Listener was previously delayed by
+     10 milliseconds. This delay was removed as of v1.0 RC2.
+
+	 Projects configured to use the .Load Listener may require setting a
+	 10 millisecond delay. 
+
+	 Example
+
+	 <Load Handler="..." Delay="10" />
+
+      
 --------------------------------------------------------------------------
