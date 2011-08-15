@@ -39,20 +39,32 @@ using Ict.Tools.DBXML;
 
 namespace Ict.Tools.CodeGeneration.Winforms
 {
-    /*
-     * This class writes code to a template
-     * but it is not aware of the content and the origin of the content
-     * the code generators that are loaded have the knowledge to generate proper code
-     */
+    /// <summary>
+    /// This class writes code to a template
+    /// but it is not aware of the content and the origin of the content
+    /// the code generators that are loaded have the knowledge to generate proper code
+    /// </summary>
     public class TWinFormsWriter : TFormWriter
     {
+        /// <summary>will write code into this variable</summary>
         public String FInterfaceControlHookup = "";
+        /// <summary>will write code into this variable</summary>
         public String FInterfaceRunOnce = "";
+        /// <summary>will write code into this variable</summary>
         public String FInterfaceCanClose = "";
-        public String FSuspendLayout, FResumePerformLayout;
+        /// <summary>will write code into this variable</summary>
+        public String FSuspendLayout;
+        /// <summary>will write code into this variable</summary>
+        public String FResumePerformLayout;
+        /// <summary>will write code into this variable</summary>
         public String FResourceDirectory = "";
+        /// <summary>store image resources in this xml document for the resource file</summary>
         private XmlDocument FImageResources;
 
+        /// <summary>
+        /// constructor. initialise the generators for the controls
+        /// </summary>
+        /// <param name="AFormType"></param>
         public TWinFormsWriter(string AFormType)
         {
             FResourceDirectory = TAppSettingsManager.GetValue("ResourceDir", true);
@@ -141,6 +153,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
         }
 
+        /// <summary>
+        /// get the file extension for the resulting file
+        /// </summary>
         public override string CodeFileExtension
         {
             get
@@ -149,6 +164,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
         }
 
+        /// <summary>
+        /// set the properties of the controls in the Designer file
+        /// </summary>
+        /// <param name="AControlName"></param>
+        /// <param name="APropertyName"></param>
+        /// <param name="APropertyValue"></param>
+        /// <param name="ACreateTranslationForLabel"></param>
         public override void SetControlProperty(string AControlName, string APropertyName, string APropertyValue, bool ACreateTranslationForLabel)
         {
             if (APropertyName == "Dock")
@@ -172,6 +194,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
         }
 
+        /// <summary>
+        /// deal with event handlers
+        /// </summary>
+        /// <param name="AControlName"></param>
+        /// <param name="AEvent"></param>
+        /// <param name="AEventHandlerType"></param>
+        /// <param name="AEventHandlingMethod"></param>
         public override void SetEventHandlerToControl(string AControlName, string AEvent, string AEventHandlerType, string AEventHandlingMethod)
         {
             string CodeletName = "CONTROLINITIALISATION";
@@ -209,6 +238,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
         }
 
+        /// <summary>
+        /// event handlers
+        /// </summary>
+        /// <param name="AControlName"></param>
+        /// <param name="AEvent"></param>
+        /// <param name="AEventImplementation"></param>
         public override void SetEventHandlerFunction(string AControlName, string AEvent, string AEventImplementation)
         {
             string EventArgsType = "EventArgs";
@@ -271,8 +306,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <summary>
         /// get the md5sum hash of a file
         /// </summary>
-        /// <param name="ADLLName"></param>
-        /// <returns></returns>
         private String GetMd5Sum(String AFilename)
         {
             FileStream fs = new FileStream(AFilename, FileMode.Open, FileAccess.Read);
@@ -471,6 +504,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             WriteFile(DesignerFile, designerTemplate);
         }
 
+        /// <summary>get the name of the destination generated file</summary>
         public override string CalculateDestinationFilename(string AYamlFilename)
         {
             return System.IO.Path.GetDirectoryName(AYamlFilename) +
@@ -479,6 +513,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                    "-generated" + this.CodeFileExtension;
         }
 
+        /// <summary>get the name of the file with the manual code</summary>
         public override string CalculateManualCodeFilename(string AYamlFilename)
         {
             return System.IO.Path.GetDirectoryName(AYamlFilename) +
@@ -487,26 +522,44 @@ namespace Ict.Tools.CodeGeneration.Winforms
                    ".ManualCode" + this.CodeFileExtension;
         }
 
+        /// <summary>
+        /// call a function of the control
+        /// </summary>
+        /// <param name="AControlName"></param>
+        /// <param name="AFunctionCall"></param>
         public override void CallControlFunction(string AControlName, string AFunctionCall)
         {
             FTemplate.AddToCodelet("CONTROLINITIALISATION",
                 "this." + AControlName + "." + AFunctionCall + ";" + Environment.NewLine);
         }
 
+        /// <summary>
+        /// control is a container
+        /// </summary>
+        /// <param name="AControlName"></param>
         public override void AddContainer(string AControlName)
         {
             FSuspendLayout += "this." + AControlName + ".SuspendLayout();" + Environment.NewLine;
             FResumePerformLayout = "this." + AControlName + ".ResumeLayout(false);" + Environment.NewLine + FResumePerformLayout;
         }
 
-        // returns the initialiseCode, see e.g. ProcessReportForm
+        /// returns the initialiseCode, see e.g. ProcessReportForm
         public virtual string ProcessDataSource(XmlNode curNode, string AControlName)
         {
             // todo: depends how the data source is connected; see example in WriteReportForm.cs
             return "";
         }
 
+        /// <summary>
+        /// dependancies of the controls on each other
+        /// </summary>
         public SortedList FControlDataTypes = new SortedList();
+
+        /// <summary>
+        /// get the data
+        /// </summary>
+        /// <param name="curNode"></param>
+        /// <param name="AControlName"></param>
         public override void InitialiseDataSource(XmlNode curNode, string AControlName)
         {
             string InitialiseCodelet = ProcessDataSource(curNode, AControlName);
@@ -540,6 +593,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
         }
 
+        /// <summary>
+        /// write the code for initialising the controls
+        /// </summary>
         protected void FinishUpInitialisingControls()
         {
             // if no other control depends on a combobox, e.g. cmbPostalRegionRegion, don't require any code
@@ -567,6 +623,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
             TableLayoutPanelGenerator.countTableLayoutPanel = 0;
         }
 
+        /// <summary>
+        /// is this describing a user control or a windows form?
+        /// </summary>
         public override bool IsUserControlTemplate
         {
             get
@@ -1069,6 +1128,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
             InsertCodeIntoTemplate(AXAMLFilename);
         }
 
+        /// <summary>
+        /// insert all variables into the template
+        /// </summary>
+        /// <param name="AXAMLFilename"></param>
         public virtual void InsertCodeIntoTemplate(string AXAMLFilename)
         {
             FTemplate.ReplacePlaceHolder("BASECLASSNAME", FCodeStorage.FBaseClass, "System.Windows.Forms.Form");
