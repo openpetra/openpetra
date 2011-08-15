@@ -40,7 +40,7 @@ namespace Ict.Tools.CodeGeneration
         void OnChangeDataType(TFormWriter writer, XmlNode curNode);
         /// <summary>write code for on change event</summary>
         void OnChangeDataType(TFormWriter writer, XmlNode curNode, string controlName);
-        /// <summary>check if the control is defined by the given node</summary>
+        /// <summary>check if the generator fits the given control by checking the prefix and perhaps some of the attributes</summary>
         bool ControlFitsNode(XmlNode curNode);
 
         /// <summary>

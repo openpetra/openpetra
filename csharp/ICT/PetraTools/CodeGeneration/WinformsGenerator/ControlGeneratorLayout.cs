@@ -36,28 +36,49 @@ using Ict.Common;
 
 namespace Ict.Tools.CodeGeneration.Winforms
 {
+    /// <summary>
+    /// generator for the table layout panel
+    /// </summary>
     public class TableLayoutPanelGenerator : TControlGenerator
     {
         private Int32 FColumnCount = -1, FRowCount = -1;
+
+        /// <summary>
+        /// constructor
+        /// </summary>
         public TableLayoutPanelGenerator()
             : base("tlp", typeof(TableLayoutPanel))
         {
             FAutoSize = true;
         }
 
+        /// <summary>
+        /// count the number of generated table layout panels for the names
+        /// </summary>
         public static Int32 countTableLayoutPanel = 0;
+
+        /// <summary>
+        /// generate the name for the layout panel
+        /// </summary>
+        /// <returns></returns>
         public string CalculateName()
         {
             countTableLayoutPanel++;
             return "tableLayoutPanel" + countTableLayoutPanel.ToString();
         }
 
+        /// <summary>
+        /// add container
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="ctrl"></param>
         public override void GenerateDeclaration(TFormWriter writer, TControlDef ctrl)
         {
             base.GenerateDeclaration(writer, ctrl);
             writer.AddContainer(ctrl.controlName);
         }
 
+        /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             ctrl.SetAttribute("Dock", "Fill");
@@ -311,14 +332,34 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
         }
 
+        /// <summary>
+        /// orientation of a list of controls (above each other, besides, or in a table layout)
+        /// </summary>
         public enum eOrientation
         {
-            Vertical, Horizontal, TableLayout
+            /// arrange controls above each other
+            Vertical,
+            /// arrange controls besides each other
+            Horizontal,
+            /// arrange controls in a table layout
+            TableLayout
         };
 
+        /// <summary>
+        /// how to arrange the controls
+        /// </summary>
         protected eOrientation FOrientation = eOrientation.Vertical;
+        /// <summary>
+        /// cursor to determine the current row
+        /// </summary>
         protected Int32 FCurrentRow = 0;
+        /// <summary>
+        /// cursor to determine the current column
+        /// </summary>
         protected Int32 FCurrentColumn = 0;
+        /// <summary>
+        /// name of the current table layout panel
+        /// </summary>
         protected string FTlpName = "";
 
         /// <summary>
@@ -509,6 +550,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return FTlpName;
         }
 
+        /// <summary>
+        /// create the code
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="ctrl"></param>
         public void CreateCode(TFormWriter writer, TControlDef ctrl)
         {
             XmlNode curNode = ctrl.xmlNode;
