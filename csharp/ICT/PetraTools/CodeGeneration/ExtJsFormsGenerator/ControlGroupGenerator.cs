@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -32,13 +32,15 @@ using Ict.Tools.DBXML;
 
 namespace Ict.Tools.CodeGeneration.ExtJs
 {
+    /// <summary>
+    /// base class for generators that contain controls
+    /// </summary>
     public class GroupBoxBaseGenerator : TControlGenerator
     {
         /// <summary>
         /// constructor
         /// </summary>
         /// <param name="prefix"></param>
-        /// <param name="type"></param>
         public GroupBoxBaseGenerator(string prefix)
             : base(prefix, "none")
         {
@@ -61,6 +63,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             return new StringCollection();
         }
 
+        /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             ProcessTemplate snippetRowDefinition = writer.FTemplate.GetSnippet(FControlDefinitionSnippetName);

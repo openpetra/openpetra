@@ -44,6 +44,11 @@ namespace Ict.Tools.CodeGeneration
     public class CSParser
     {
         private CompilationUnit cu;
+
+        /// <summary>
+        /// constructor, parse the given file
+        /// </summary>
+        /// <param name="filename"></param>
         public CSParser(string filename)
         {
             cu = ParseFile(filename);
@@ -55,6 +60,11 @@ namespace Ict.Tools.CodeGeneration
             Console.WriteLine(AErrors.ErrorOutput);
         }
 
+        /// <summary>
+        /// parse a c# file
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
         public CompilationUnit ParseFile(string fileName)
         {
 //        Console.WriteLine("\nParsing " + fileName);
@@ -73,16 +83,6 @@ namespace Ict.Tools.CodeGeneration
             }
 
             return cu;
-        }
-
-        public TypeDeclaration GetFirstClass()
-        {
-            foreach (TypeDeclaration cnode in GetClasses(cu))
-            {
-                return cnode;
-            }
-
-            return null;
         }
 
         /// <summary>
@@ -408,79 +408,6 @@ namespace Ict.Tools.CodeGeneration
             //return null;
         }
 
-        private static SortedList <string, List <CSParser>>CSFilesPerProject = new SortedList <string, List <CSParser>>();
-
-        /// <summary>
-        /// parse the XML csproj file and return a list of parsed cs files
-        /// </summary>
-        /// <param name="AProjName"></param>
-        /// <returns></returns>
-        public static void GetCSFilesInProject(string AProjName, ref List <CSParser>ACSFiles)
-        {
-            throw new NotImplementedException();
-
-            if (!File.Exists(AProjName))
-            {
-                return;
-            }
-
-            if (CSFilesPerProject.ContainsKey(AProjName))
-            {
-                ACSFiles = CSFilesPerProject[AProjName];
-                return;
-            }
-
-            Console.WriteLine("parsing " + AProjName);
-            TXMLParser parser = new TXMLParser(AProjName, false);
-            XmlDocument doc = parser.GetDocument();
-
-            if (doc.FirstChild.Name != "Project")
-            {
-                throw new Exception("Ict.Tools.CodeGeneration.CSParser.GetCSFilesInProject: problems parsing csproj xml file " + AProjName);
-            }
-
-            XmlNode child = doc.FirstChild.FirstChild;
-
-            while (child != null)
-            {
-                if (child.Name == "ItemGroup")
-                {
-                    XmlNode compileNode = child.FirstChild;
-
-                    while (compileNode != null && compileNode.Name == "Compile")
-                    {
-                        string filename = System.IO.Path.GetDirectoryName(AProjName) +
-                                          System.IO.Path.DirectorySeparatorChar +
-                                          TXMLParser.GetAttribute(compileNode, "Include");
-
-                        if (File.Exists(filename))
-                        {
-                            try
-                            {
-                                CSParser csfile = new CSParser(
-                                    filename);
-                                ACSFiles.Add(csfile);
-                            }
-                            catch (Exception e)
-                            {
-                                Console.WriteLine("Exception while parsing " + filename);
-                                Console.WriteLine(e.Message);
-                                throw e;
-                            }
-                        }
-
-                        compileNode = compileNode.NextSibling;
-                    }
-                }
-
-                child = child.NextSibling;
-            }
-
-            CSFilesPerProject.Add(AProjName, ACSFiles);
-
-            return;
-        }
-
         /// <summary>
         /// find a class in a list of csharp files
         /// </summary>
@@ -592,6 +519,7 @@ namespace Ict.Tools.CodeGeneration
         /// If you get the list more then one time, then you will get a cached copy
         /// </summary>
         /// <param name="dir">string with the directory to parse</param>
+        /// <param name="option">search the subdirectories or not</param>
         /// <returns>List of CSParser instances</returns>
         public static List <CSParser>GetCSFilesForDirectory(string dir, SearchOption option)
         {

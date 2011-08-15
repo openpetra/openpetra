@@ -33,14 +33,19 @@ using Ict.Tools.DBXML;
 
 namespace Ict.Tools.CodeGeneration.ExtJs
 {
+    /// <summary>
+    /// generator for a TextField
+    /// </summary>
     public class TextFieldGenerator : TControlGenerator
     {
+        /// <summary>constructor</summary>
         public TextFieldGenerator()
             : base("txt", "textfield")
         {
             FDefaultWidth = -1;
         }
 
+        /// <summary>check if the generator fits the given control by checking the prefix and perhaps some of the attributes</summary>
         public override bool ControlFitsNode(XmlNode curNode)
         {
             if (base.ControlFitsNode(curNode))
@@ -54,8 +59,13 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             return false;
         }
     }
+
+    /// <summary>
+    /// Generator for TextArea
+    /// </summary>
     public class TextAreaGenerator : TControlGenerator
     {
+        /// <summary>constructor</summary>
         public TextAreaGenerator()
             : base("txt", "textarea")
         {
@@ -63,6 +73,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             FControlDefinitionSnippetName = "TEXTAREADEFINITION";
         }
 
+        /// <summary>check if the generator fits the given control by checking the prefix and perhaps some of the attributes</summary>
         public override bool ControlFitsNode(XmlNode curNode)
         {
             if (base.ControlFitsNode(curNode))
@@ -76,14 +87,20 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             return false;
         }
     }
+
+    /// <summary>
+    /// Generator for Hidden Fields
+    /// </summary>
     public class HiddenFieldGenerator : TControlGenerator
     {
+        /// <summary>constructor</summary>
         public HiddenFieldGenerator()
             : base("hid", "hidden")
         {
             FControlDefinitionSnippetName = "HIDDENFIELDDEFINITION";
         }
 
+        /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             ProcessTemplate ctrlSnippet = base.SetControlProperties(writer, ctrl);
@@ -99,14 +116,19 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         }
     }
 
+    /// <summary>
+    /// Generator for file uploads
+    /// </summary>
     public class UploadGenerator : TControlGenerator
     {
+        /// <summary>constructor</summary>
         public UploadGenerator()
             : base("upl", "fileuploadfield")
         {
             FControlDefinitionSnippetName = "FILEUPLOADDEFINITION";
         }
 
+        /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             ProcessTemplate ctrlSnippet = base.SetControlProperties(writer, ctrl);
@@ -139,29 +161,45 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             return ctrlSnippet;
         }
     }
+
+    /// <summary>
+    /// Generator for labels
+    /// </summary>
     public class LabelGenerator : TControlGenerator
     {
+        /// <summary>constructor</summary>
         public LabelGenerator()
             : base("lbl", "displayfield")
         {
             FControlDefinitionSnippetName = "LABELDEFINITION";
         }
     }
+
+    /// <summary>
+    /// generator for panels, sets of fields
+    /// </summary>
     public class FieldSetGenerator : TControlGenerator
     {
+        /// <summary>constructor</summary>
         public FieldSetGenerator()
             : base("pnl", "fieldset")
         {
         }
     }
+
+    /// <summary>
+    /// generator for grids, ie data tables
+    /// </summary>
     public class GridGenerator : TControlGenerator
     {
+        /// <summary>constructor</summary>
         public GridGenerator()
             : base("grd", "")
         {
             FControlDefinitionSnippetName = "GRIDDEFINITION";
         }
 
+        /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             ProcessTemplate ctrlSnippet = base.SetControlProperties(writer, ctrl);
@@ -171,14 +209,20 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             return ctrlSnippet;
         }
     }
+
+    /// <summary>
+    /// generator for button
+    /// </summary>
     public class ButtonGenerator : TControlGenerator
     {
+        /// <summary>constructor</summary>
         public ButtonGenerator()
             : base("btn", "button")
         {
             FControlDefinitionSnippetName = "SUBMITBUTTONDEFINITION";
         }
 
+        /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             ProcessTemplate ctrlSnippet = base.SetControlProperties(writer, ctrl);
@@ -240,8 +284,13 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             return ctrlSnippet;
         }
     }
+
+    /// <summary>
+    /// generator for comboboxes
+    /// </summary>
     public class ComboboxGenerator : TControlGenerator
     {
+        /// <summary>constructor</summary>
         public ComboboxGenerator()
             : base("cmb", "checkbox")
         {
@@ -249,6 +298,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             FControlDefinitionSnippetName = "COMBOBOXDEFINITION";
         }
 
+        /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             ProcessTemplate ctrlSnippet = base.SetControlProperties(writer, ctrl);
@@ -293,14 +343,20 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             return ctrlSnippet;
         }
     }
+
+    /// <summary>
+    /// generator for checkboxes
+    /// </summary>
     public class CheckboxGenerator : TControlGenerator
     {
+        /// <summary>constructor</summary>
         public CheckboxGenerator()
             : base("chk", "checkbox")
         {
             FControlDefinitionSnippetName = "CHECKBOXDEFINITION";
         }
 
+        /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             ProcessTemplate ctrlSnippet = base.SetControlProperties(writer, ctrl);
@@ -310,14 +366,20 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             return ctrlSnippet;
         }
     }
+
+    /// <summary>
+    /// generator for a single radio button
+    /// </summary>
     public class RadioButtonGenerator : TControlGenerator
     {
+        /// <summary>constructor</summary>
         public RadioButtonGenerator()
             : base("rbt", "radio")
         {
             FControlDefinitionSnippetName = "CHECKBOXDEFINITION";
         }
 
+        /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             ProcessTemplate ctrlSnippet = base.SetControlProperties(writer, ctrl);
@@ -334,14 +396,20 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             return ctrlSnippet;
         }
     }
+
+    /// <summary>
+    /// generator for a date picker
+    /// </summary>
     public class DateTimePickerGenerator : TControlGenerator
     {
+        /// <summary>constructor</summary>
         public DateTimePickerGenerator()
             : base("dtp", "datefield")
         {
             FDefaultWidth = -1;
         }
 
+        /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ACtrl)
         {
             ProcessTemplate ctrlSnippet = base.SetControlProperties(writer, ACtrl);
@@ -354,14 +422,19 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         }
     }
 
+    /// <summary>
+    /// generator for HTML iFrames
+    /// </summary>
     public class InlineGenerator : TControlGenerator
     {
+        /// <summary>constructor</summary>
         public InlineGenerator()
             : base("inl", "displayfield")
         {
             FControlDefinitionSnippetName = "INLINEDEFINITION";
         }
 
+        /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ACtrl)
         {
             ProcessTemplate ctrlSnippet = base.SetControlProperties(writer, ACtrl);
@@ -390,8 +463,12 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         }
     }
 
+    /// <summary>
+    /// generator for putting several controls together
+    /// </summary>
     public class CompositeGenerator : GroupBoxBaseGenerator
     {
+        /// <summary>constructor</summary>
         public CompositeGenerator()
             : base("cmp")
         {
@@ -399,8 +476,12 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         }
     }
 
+    /// <summary>
+    /// generator for group boxes
+    /// </summary>
     public class GroupBoxGenerator : GroupBoxBaseGenerator
     {
+        /// <summary>constructor</summary>
         public GroupBoxGenerator()
             : base("grp")
         {
@@ -408,14 +489,19 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         }
     }
 
+    /// <summary>
+    /// generator for assistant driven UI
+    /// </summary>
     public class AssistantGenerator : GroupBoxBaseGenerator
     {
+        /// <summary>constructor</summary>
         public AssistantGenerator()
             : base("ass")
         {
             FControlDefinitionSnippetName = "ASSISTANTDEFINITION";
         }
 
+        /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             ProcessTemplate ctrlSnippet = base.SetControlProperties(writer, ctrl);
@@ -435,16 +521,21 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         }
     }
 
+    /// <summary>
+    /// generator for a single page of an assistant
+    /// </summary>
     public class AssistantPageGenerator : GroupBoxBaseGenerator
     {
         private static int PageCounter = 0;
 
+        /// <summary>constructor</summary>
         public AssistantPageGenerator()
             : base("asp")
         {
             FControlDefinitionSnippetName = "ASSISTANTPAGEDEFINITION";
         }
 
+        /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ACtrl)
         {
             ProcessTemplate ctrlSnippet = base.SetControlProperties(writer, ACtrl);
@@ -495,14 +586,20 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         }
     }
 
+    /// <summary>
+    /// generator for a simple group of radio buttons.
+    /// simple because they just have labels, and no controls depend on them
+    /// </summary>
     public class RadioGroupSimpleGenerator : GroupBoxBaseGenerator
     {
+        /// <summary>constructor</summary>
         public RadioGroupSimpleGenerator()
             : base("rgr")
         {
             FControlDefinitionSnippetName = "RADIOGROUPDEFINITION";
         }
 
+        /// <summary>check if the generator fits the given control by checking the prefix and perhaps some of the attributes</summary>
         public override bool ControlFitsNode(XmlNode curNode)
         {
             if (base.ControlFitsNode(curNode))
@@ -516,6 +613,12 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             return false;
         }
 
+        /// <summary>
+        /// create the radio buttons
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="curNode"></param>
+        /// <returns></returns>
         public override StringCollection FindContainedControls(TFormWriter writer, XmlNode curNode)
         {
             StringCollection optionalValues =
@@ -563,15 +666,17 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         }
     }
 
-    // this is for radiogroup with all sorts of sub controls
+    /// this is for radiogroup with all sorts of sub controls
     public class RadioGroupComplexGenerator : GroupBoxBaseGenerator
     {
+        /// <summary>constructor</summary>
         public RadioGroupComplexGenerator()
             : base("rgr")
         {
             FControlDefinitionSnippetName = "RADIOGROUPDEFINITION";
         }
 
+        /// <summary>check if the generator fits the given control by checking the prefix and perhaps some of the attributes</summary>
         public override bool ControlFitsNode(XmlNode curNode)
         {
             if (base.ControlFitsNode(curNode))
@@ -582,6 +687,12 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             return false;
         }
 
+        /// <summary>
+        /// create the radio buttons and the controls that depend on them
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="curNode"></param>
+        /// <returns></returns>
         public override StringCollection FindContainedControls(TFormWriter writer, XmlNode curNode)
         {
             StringCollection Controls =
