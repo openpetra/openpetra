@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -42,6 +42,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
 
         /// the readonly property eg of Textbox still allows tooltips and copy to clipboard, which enable=false would not allow
         public bool FHasReadOnlyProperty = false;
+        /// should the control be added to the parent container
         public bool FAddControlToContainer = true;
         public bool FRequiresChildren = false;
         public Int32 FDefaultWidth = 300;
@@ -99,6 +100,9 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             }
         }
 
+        /// <summary>
+        /// should the control be added to the parent container
+        /// </summary>
         public bool AddControlToContainer
         {
             get

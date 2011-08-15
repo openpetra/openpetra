@@ -43,6 +43,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
         /// the readonly property eg of Textbox still allows tooltips and copy to clipboard, which enable=false would not allow
         public bool FHasReadOnlyProperty = false;
+        /// should the control be added to the parent container
         public bool FAddControlToContainer = true;
         public string FTemplateSnippetName = "";
         public bool FRequiresChildren = false;
@@ -116,6 +117,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
         }
 
+        /// <summary>
+        /// should the control be added to the parent container
+        /// </summary>
         public bool AddControlToContainer
         {
             get
@@ -928,11 +932,17 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
         }
 
+        /// <summary>
+        /// write code for on change event
+        /// </summary>
         public virtual void OnChangeDataType(TFormWriter writer, XmlNode curNode)
         {
             OnChangeDataType(writer, curNode, curNode.Name);
         }
 
+        /// <summary>
+        /// write code for on change event
+        /// </summary>
         public virtual void OnChangeDataType(TFormWriter writer, XmlNode curNode, string controlName)
         {
             // the selection of this control triggers the available options in other controls

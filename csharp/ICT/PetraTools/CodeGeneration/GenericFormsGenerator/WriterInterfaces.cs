@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -25,13 +25,22 @@ using System.Xml;
 
 namespace Ict.Tools.CodeGeneration
 {
+    /// <summary>
+    /// define the methods and properties of a control generator
+    /// </summary>
     public interface IControlGenerator
     {
+        /// <summary>for implementing some functions specific to the control</summary>
         void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode);
+        /// <summary>write the code for the designer file where the control is declared</summary>
         void GenerateDeclaration(TFormWriter writer, TControlDef ctrl);
+        /// <summary>write the code for the designer file where the properties of the control are written</summary>
         ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef container);
+        /// <summary>write code for on change event</summary>
         void OnChangeDataType(TFormWriter writer, XmlNode curNode);
+        /// <summary>write code for on change event</summary>
         void OnChangeDataType(TFormWriter writer, XmlNode curNode, string controlName);
+        /// <summary>check if the control is defined by the given node</summary>
         bool ControlFitsNode(XmlNode curNode);
 
         /// <summary>
@@ -42,8 +51,14 @@ namespace Ict.Tools.CodeGeneration
             get;
         }
 
+        /// <summary>
+        /// the label is assembled
+        /// </summary>
         bool GenerateLabel(TControlDef ctrl);
 
+        /// <summary>
+        /// type of the control
+        /// </summary>
         string ControlType
         {
             set;
@@ -59,6 +74,9 @@ namespace Ict.Tools.CodeGeneration
             get;
         }
 
+        /// <summary>
+        /// should the control be added to the parent container
+        /// </summary>
         bool AddControlToContainer
         {
             set;

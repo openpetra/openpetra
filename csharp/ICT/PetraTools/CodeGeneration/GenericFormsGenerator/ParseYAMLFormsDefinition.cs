@@ -36,18 +36,30 @@ namespace Ict.Tools.CodeGeneration
     /// The code is stored in TCodeStorage
     public class TParseYAMLFormsDefinition
     {
+        /// <summary>
+        /// the storage of the code for the yaml file
+        /// </summary>
         public TCodeStorage FCodeStorage = null;
+
+        /// <summary>
+        /// constructor
+        /// </summary>
+        /// <param name="ACodeStorage"></param>
         public TParseYAMLFormsDefinition(ref TCodeStorage ACodeStorage)
         {
             this.FCodeStorage = ACodeStorage;
         }
 
+        /// <summary>
+        /// store the template parameters
+        /// </summary>
+        /// <param name="AParameters"></param>
         public void LoadTemplateParameters(XmlNode AParameters)
         {
             FCodeStorage.FTemplateParameters = AParameters;
         }
 
-        // parse basic things: BaseClass, FormTitle, Namespace
+        /// parse basic things: BaseClass, FormTitle, Namespace
         public void LoadFormProperties(XmlNode formNode)
         {
             FCodeStorage.FBaseClass = TYml2Xml.GetAttribute(formNode, "BaseClass");
@@ -82,6 +94,10 @@ namespace Ict.Tools.CodeGeneration
             }
         }
 
+        /// <summary>
+        /// load the layout
+        /// </summary>
+        /// <param name="ALayoutNode"></param>
         public void LoadLayout(XmlNode ALayoutNode)
         {
             if (ALayoutNode != null)
@@ -98,22 +114,32 @@ namespace Ict.Tools.CodeGeneration
             }
         }
 
-        // access permissions etc
+        /// access permissions etc
         public void LoadSecurity(XmlNode ASecurityNode)
         {
             // todo
         }
 
+        /// <summary>
+        /// overload for recursive loading, for initial call
+        /// </summary>
+        /// <param name="AYamlFilename"></param>
+        /// <param name="ASelectedLocalisation"></param>
+        /// <returns></returns>
         public Boolean LoadRecursively(string AYamlFilename, string ASelectedLocalisation)
         {
             return LoadRecursively(AYamlFilename, ASelectedLocalisation, false, 0);
         }
 
-        /**
-         * this loads the contents of the yaml file
-         * it supports inheritance, base elements are overwritten
-         * @param depth 0 is the last file that is derived from all base files
-         */
+        /// <summary>
+        /// this loads the contents of the yaml file.
+        /// it supports inheritance, base elements are overwritten
+        /// </summary>
+        /// <param name="AYamlFilename"></param>
+        /// <param name="ASelectedLocalisation"></param>
+        /// <param name="AAlreadyGotLocalisation"></param>
+        /// <param name="depth">0 is the last file that is derived from all base files</param>
+        /// <returns></returns>
         protected Boolean LoadRecursively(string AYamlFilename,
             string ASelectedLocalisation,
             bool AAlreadyGotLocalisation,
@@ -198,6 +224,10 @@ namespace Ict.Tools.CodeGeneration
         /// the name used for root node in yml code
         public static string ROOTNODEYML = "RootNode";
 
+        /// <summary>
+        /// summary function for processing the yaml file
+        /// </summary>
+        /// <param name="nodes"></param>
         protected void LoadData(SortedList nodes)
         {
             LoadFormProperties((XmlNode)nodes[TParseYAMLFormsDefinition.ROOTNODEYML]);
@@ -223,6 +253,13 @@ namespace Ict.Tools.CodeGeneration
         }
 
         Int32 FMenuSeparatorCount = 0;
+
+        /// <summary>
+        /// load the menu
+        /// </summary>
+        /// <param name="parentName"></param>
+        /// <param name="curNode"></param>
+        /// <returns></returns>
         public Boolean LoadMenu(string parentName,
             XmlNode curNode)
         {
@@ -270,6 +307,13 @@ namespace Ict.Tools.CodeGeneration
         }
 
         Int32 FToolbarSeparatorCount = 0;
+
+        /// <summary>
+        /// load the toolbar
+        /// </summary>
+        /// <param name="parentName"></param>
+        /// <param name="curNode"></param>
+        /// <returns></returns>
         public Boolean LoadToolbar(string parentName,
             XmlNode curNode)
         {
@@ -322,6 +366,10 @@ namespace Ict.Tools.CodeGeneration
             return true;
         }
 
+        /// <summary>
+        /// load the controls
+        /// </summary>
+        /// <param name="curNode"></param>
         protected void LoadControls(XmlNode curNode)
         {
             if (curNode != null)
@@ -335,6 +383,10 @@ namespace Ict.Tools.CodeGeneration
             }
         }
 
+        /// <summary>
+        /// load the actions
+        /// </summary>
+        /// <param name="curNode"></param>
         protected void LoadActions(XmlNode curNode)
         {
             if (curNode != null)
@@ -348,6 +400,10 @@ namespace Ict.Tools.CodeGeneration
             }
         }
 
+        /// <summary>
+        /// load the events
+        /// </summary>
+        /// <param name="curNode"></param>
         protected void LoadEvents(XmlNode curNode)
         {
             if (curNode != null)
@@ -361,6 +417,10 @@ namespace Ict.Tools.CodeGeneration
             }
         }
 
+        /// <summary>
+        /// load the parameters of a report
+        /// </summary>
+        /// <param name="curNode"></param>
         protected void LoadReportParameters(XmlNode curNode)
         {
             if (curNode != null)
@@ -374,6 +434,11 @@ namespace Ict.Tools.CodeGeneration
             }
         }
 
+        /// <summary>
+        /// process a tab page
+        /// </summary>
+        /// <param name="curNode"></param>
+        /// <returns></returns>
         public Boolean AddTabPage(XmlNode curNode)
         {
             // name of tabpage
