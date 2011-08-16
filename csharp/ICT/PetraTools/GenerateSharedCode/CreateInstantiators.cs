@@ -151,8 +151,6 @@ class CreateInstantiators : AutoGenerationWriter
 
             foreach (ParameterDeclarationExpression p in m.Parameters)
             {
-                String parameterType = p.TypeReference.Type;
-
                 if ((p.ParamModifier & (ParameterModifiers.Out | ParameterModifiers.Ref)) != 0)
                 {
                     break;

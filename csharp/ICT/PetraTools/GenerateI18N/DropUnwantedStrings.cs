@@ -134,7 +134,7 @@ public class TDropUnwantedStrings
                         throw new Exception("did expect msgstr in the line");
                     }
 
-                    string messageStr = ParsePoLine(sr, ref line, out OriginalLines);
+                    ParsePoLine(sr, ref line, out OriginalLines);
                 }
                 else
                 {

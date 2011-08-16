@@ -601,7 +601,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
             // if no other control depends on a combobox, e.g. cmbPostalRegionRegion, don't require any code
             foreach (string dependsOn in FControlDataTypes.GetKeyList())
             {
-                int index = FControlDataTypes.IndexOfKey(dependsOn);
                 string currentContent = FTemplate.AddToCodelet("INITIALISE_" + dependsOn, "");
 
                 if (currentContent.Length == 0)

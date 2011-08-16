@@ -207,7 +207,7 @@ public class TSQLiteWriter
                 stmt += ") VALUES (";
                 first = true;
 
-                foreach (TTableField field in table.grpTableField.List)
+                for (int count = 0; count < table.grpTableField.List.Count; count++)
                 {
                     if (!first)
                     {

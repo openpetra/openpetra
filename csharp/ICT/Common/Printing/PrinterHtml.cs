@@ -785,7 +785,6 @@ namespace Ict.Common.Printing
                     // calculate percentages
                     for (Int32 counter = 0; counter < colWidth.Count; counter++)
                     {
-                        int test = Convert.ToInt32((colWidth[counter] * 100.0f / TableWidth));
                         colWidth[counter] = Convert.ToInt32((colWidth[counter] * 100.0f / TableWidth));
                     }
 

@@ -222,20 +222,13 @@ namespace Ict.Tools.PatchTool
         /// <returns>true if any patch was installed</returns>
         public Boolean PatchTheFiles()
         {
-            Boolean ReturnValue;
-            TFileVersionInfo previousPatchVersion;
-            TFileVersionInfo currentPatchVersion;
-
-            ReturnValue = false;
+            Boolean ReturnValue = false;
 
             // this can only be called after CheckForRecentPatch
             if (FListOfNewPatches == null)
             {
                 throw new Exception("TPatchTools.InstallPatches: need to call CheckForRecentPatch first!");
             }
-
-            previousPatchVersion = null;
-            currentPatchVersion = null;
 
             // todo: RunDBPatch for patches that have not been applied to the database yet, although the binaries have been installed already?
             // this is probably not necessary for network; it is done by innosetup for standalone; also see RunDBPatches
@@ -248,10 +241,6 @@ namespace Ict.Tools.PatchTool
                     return false;
                 }
 
-                // also needs to call the progress patch program for the last build of each patch that is installed now
-                currentPatchVersion = TFileVersionInfo.GetLatestPatchVersionFromDiffZipName(patch);
-
-                previousPatchVersion = currentPatchVersion;
                 ReturnValue = true;
             }
 
@@ -499,7 +488,6 @@ namespace Ict.Tools.PatchTool
                 UndoPatchRecursively(APatchRootDirectory, dir);
             }
 
-            TPatchTools patch = new TPatchTools();
             string[] files = System.IO.Directory.GetFiles(APatchDirectory);
 
             foreach (string filename in files)
@@ -561,7 +549,6 @@ namespace Ict.Tools.PatchTool
                 CleanupPatchRecursively(APatchRootDirectory, dir);
             }
 
-            TPatchTools patch = new TPatchTools();
             string[] files = System.IO.Directory.GetFiles(APatchDirectory);
 
             foreach (string filename in files)

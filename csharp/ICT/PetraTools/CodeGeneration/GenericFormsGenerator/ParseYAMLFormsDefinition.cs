@@ -378,7 +378,7 @@ namespace Ict.Tools.CodeGeneration
 
                 foreach (XmlNode childNode in children)
                 {
-                    TControlDef ctrl = FCodeStorage.AddControl(childNode);
+                    FCodeStorage.AddControl(childNode);
                 }
             }
         }
@@ -395,7 +395,7 @@ namespace Ict.Tools.CodeGeneration
 
                 foreach (XmlNode childNode in children)
                 {
-                    TActionHandler ctrl = FCodeStorage.AddAction(childNode);
+                    FCodeStorage.AddAction(childNode);
                 }
             }
         }
@@ -412,7 +412,7 @@ namespace Ict.Tools.CodeGeneration
 
                 foreach (XmlNode childNode in children)
                 {
-                    TEventHandler TempEvent = FCodeStorage.AddEvent(childNode);
+                    FCodeStorage.AddEvent(childNode);
                 }
             }
         }
@@ -429,7 +429,7 @@ namespace Ict.Tools.CodeGeneration
 
                 foreach (XmlNode childNode in children)
                 {
-                    TReportParameter TempParmeter = FCodeStorage.AddReportParameter(childNode, curNode.Attributes["ColumnFunction"].Value);
+                    FCodeStorage.AddReportParameter(childNode, curNode.Attributes["ColumnFunction"].Value);
                 }
             }
         }

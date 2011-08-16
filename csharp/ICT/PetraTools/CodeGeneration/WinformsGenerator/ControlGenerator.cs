@@ -807,7 +807,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             TControlDef ttxCurrentPage = writer.CodeStorage.FindOrCreateControl("ttxCurrentPage", toolbar.controlName);
 
             ttxCurrentPage.SetAttribute("OnChange", "CurrentPageTextChanged");
-            TControlDef tblTotalNumberPages = writer.CodeStorage.FindOrCreateControl("tblTotalNumberPages", toolbar.controlName);
+            writer.CodeStorage.FindOrCreateControl("tblTotalNumberPages", toolbar.controlName);
             TControlDef tbbPrevPage = writer.CodeStorage.FindOrCreateControl("tbbPrevPage", toolbar.controlName);
             tbbPrevPage.SetAttribute("ActionClick", "PrevPageClick");
             TControlDef tbbNextPage = writer.CodeStorage.FindOrCreateControl("tbbNextPage", toolbar.controlName);
