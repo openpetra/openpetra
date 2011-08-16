@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>${ProjectGuid}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <OutputType>${OutputType}</OutputType>
+    <RootNamespace>${Namespace}</RootNamespace>
+    <AssemblyName>${Namespace}</AssemblyName>
+    <TargetFrameworkVersion>v${NETframework-version}</TargetFrameworkVersion>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <BaseIntermediateOutputPath>${dir.bin}\${Namespace}\</BaseIntermediateOutputPath>
+    <NoStdLib>False</NoStdLib>    
+    <OutputPath>${dir.bin}</OutputPath>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DocumentationFile>${dir.bin}/${Namespace}.xml</DocumentationFile>
+    <Optimize>False</Optimize>
+    <StartArguments>${DebugStartArguments}</StartArguments>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <DefineConstants>DEBUG;TRACE;DEBUGMODE</DefineConstants>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugSymbols>False</DebugSymbols>
+    <DebugType>None</DebugType>
+    <DefineConstants>TRACE;DEBUGMODE</DefineConstants>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <ItemGroup>
+${TemplateReferences}  </ItemGroup>
+  <ItemGroup>
+${TemplateCompile}${TemplateResource}  </ItemGroup>
+  <ItemGroup>
+${TemplateProjectReferences}    </ItemGroup>
+</Project>
