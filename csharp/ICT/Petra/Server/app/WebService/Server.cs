@@ -323,7 +323,8 @@ public class TOpenPetraOrg : WebService
 
         try
         {
-            AJSONFormData = TJsonTools.RemoveContainerControls(AJSONFormData);
+            string RequiredCulture = string.Empty;
+            AJSONFormData = TJsonTools.RemoveContainerControls(AJSONFormData, ref RequiredCulture);
 
             AJSONFormData = AJSONFormData.Replace("\"txt", "\"").
                             Replace("\"chk", "\"").
@@ -365,7 +366,8 @@ public class TOpenPetraOrg : WebService
 
         try
         {
-            AJSONFormData = TJsonTools.RemoveContainerControls(AJSONFormData);
+            string RequiredCulture = string.Empty;
+            AJSONFormData = TJsonTools.RemoveContainerControls(AJSONFormData, ref RequiredCulture);
 
             AJSONFormData = AJSONFormData.Replace("\"txt", "\"").
                             Replace("\"chk", "\"").
