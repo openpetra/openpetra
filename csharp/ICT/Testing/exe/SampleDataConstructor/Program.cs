@@ -38,11 +38,11 @@ namespace SampleDataConstructor
 /// <remarks>
 /// <para>
 /// The class requires raw data to have been created already by benerator, reads this data, enhances
-/// and compiles it (using the literal meaning of "compile", i.e. putting together People, Addresses, 
+/// and compiles it (using the literal meaning of "compile", i.e. putting together People, Addresses,
 /// Phonenumbers to create partners), and them imports this data to the OpenPetra Server.
 /// </para>
 /// <para>
-/// Generally, the Sample Data creator DOES NOT use the Petra Model internally, 
+/// Generally, the Sample Data creator DOES NOT use the Petra Model internally,
 /// although it tries to stay close to it ( e.g. Naming Convention).
 /// This is so it can run a simple simulation for creating events (marriages resulting in same location, children, gift entries).
 /// These can then be saved in Petra.
@@ -55,54 +55,51 @@ namespace SampleDataConstructor
 /// Goal for now:
 /// just create many Partners with Addresses and then import.
 /// This can perhaps be done with the original Petra Format.
-/// 
-/// For now, creation of 
+///
+/// For now, creation of
 /// - raw data
 /// - then putting together Petra data (no simulation)
 /// </para>
 /// </remarks>
 class TSampleDataConstructor
-{       
+{
+    /// <summary>
+    /// data directory containing the raw data files created by benerator
+    /// </summary>
+    /// <remarks>Please forgive me: dd = dataDirectory</remarks>
+    /// TODO (before shipping this testing to trunk): get this path from nant (or sth.) and not set it statically
+    const string dd = "../../tmp/Tests-exe.SampleDataConstructor/";
 
+    const string filePeople = "people.csv";
+    const string fileOrganisations = "organisations.csv";
+    const string fileAddresses = "addresses.csv";
 
-	
-	/// <summary>
-	/// data directory containing the raw data files created by benerator
-	/// </summary>
-	/// <remarks>Please forgive me: dd = dataDirectory</remarks>
-	/// TODO (before shipping this testing to trunk): get this path from nant (or sth.) and not set it statically
-	const string dd = "../../tmp/Tests-exe.SampleDataConstructor/";
+    public static void doReport(ExecutionReport report)
+    {
+        Console.WriteLine(report);
+    }
 
-	const string filePeople = "people.csv";
-	const string fileOrganisations = "organisations.csv";
-	const string fileAddresses = "addresses.csv";
-
-	public static void doReport(ExecutionReport report)
-	{
-		Console.WriteLine(report);
-	}
-	
-	/// <summary>
-	/// Creates Sample Data using the raw data provided and exports this to the Petra Server
-	/// </summary>
-	/// <remarks>
-	/// TODO: use standard OpenPetra logging instead of the prelimanary "Report"
-	/// </remarks>
-	/// <param name="args"></param>
+    /// <summary>
+    /// Creates Sample Data using the raw data provided and exports this to the Petra Server
+    /// </summary>
+    /// <remarks>
+    /// TODO: use standard OpenPetra logging instead of the prelimanary "Report"
+    /// </remarks>
+    /// <param name="args"></param>
     public static void Main(string[] args)
     {
-		// SampleDataConstructor
-		Console.WriteLine("Reading Raw Data Files...");
-		
-		
-		//// new TAppSettingsManager(false);
+        // SampleDataConstructor
+        Console.WriteLine("Reading Raw Data Files...");
+
+
+        //// new TAppSettingsManager(false);
         //// string csvInputFileName = TAppSettingsManager.GetValue("file", true);
 
         ExecutionReport report;
         try
         {
-        	Console.WriteLine("Reading Raw Data Files...");
-			RawData rawData = new RawData();
+            Console.WriteLine("Reading Raw Data Files...");
+            RawData rawData = new RawData();
             rawData.readRawDataFromFile(filePeople, RawData.filetypes.people, dd);
             rawData.readRawDataFromFile(fileOrganisations, RawData.filetypes.organizations, dd);
             rawData.readRawDataFromFile(fileAddresses, RawData.filetypes.addresses, dd);
@@ -111,31 +108,34 @@ class TSampleDataConstructor
             Console.WriteLine("Locations:     " + rawData.Locations.Count);
             Console.WriteLine("Mobile Phones: " + rawData.Mobilephones.Count);
             Console.WriteLine("Countries:     " + rawData.Countries.Count);
-            
+
             Console.WriteLine("Creating TDS from Raw Data...");
             var dataTDS = new SampleDataConstructorTDS();
-            var unusedDataTDS = new SampleDataConstructorTDS();
             var constructionStats = new ConstructionStats();
-            
-            DataBuilder.initPeople(dataTDS,rawData, out report); doReport(report);
-            DataBuilder.initOrganisations(dataTDS,rawData, out report); doReport(report);
+            var unusedLocations = new Stack <PLocationRow>();
+
+            DataBuilder.insertPeople(dataTDS, rawData, out report); doReport(report);
+            DataBuilder.insertOrganisations(dataTDS, rawData, out report); doReport(report);
             // Units? No units for now (could be copied from ImportExportYML)
             //
             // Subscriptions? No Subscriptions for now
             //
-            
-            DataBuilder.initLocations(unusedDataTDS,rawData, out report); doReport(report);
-			/*            
-			DataBuilder.initMobilePhones(dataTDS,rawData, out report);
-            DataBuilder.initCountries(dataTDS,rawData, out report);
-            */
-			// DataBuilder.GivePeopleHomes(dataTDS,unusedDataTDS,constructionStats,out report);
-            /*
-         	DataBuilder.assignSpecialTypesToPeople(dataTDS,rawData,supporterStats,out report);
-           	*/
-            Console.WriteLine("Completed.");
 
-            
+            DataBuilder.insertLocations(dataTDS, unusedLocations, rawData, out report); doReport(report);
+
+            /*
+             * DataBuilder.initMobilePhones(dataTDS,rawData, out report);
+             * DataBuilder.initCountries(dataTDS,rawData, out report);
+             */
+            DataBuilder.AssignHomesToPartners(
+                dataTDS, unusedLocations,
+                constructionStats.PeopleWithHomeKnown,
+                out report); doReport(report);
+
+            /*
+             *  DataBuilder.assignSpecialTypesToPeople(dataTDS,rawData,supporterStats,out report);
+             */
+            Console.WriteLine("Completed.");
         }
         catch (Exception e)
         {

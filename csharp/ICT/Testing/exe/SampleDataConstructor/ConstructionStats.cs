@@ -24,14 +24,14 @@ using System;
 
 namespace SampleDataConstructor
 {
-	/// <summary>
-	/// Contains Values which control the Data Creation
-	/// </summary>
-	public class ConstructionStats
-	{
-		public double PeopleWithHomeKnown = 0.8;
-		public ConstructionStats()
-		{
-		}
-	}
+/// <summary>
+/// Contains Values which control the Data Creation
+/// </summary>
+public class ConstructionStats
+{
+    /// <summary>
+    /// Fraction of people who will have a location (a home) known for them
+    /// </summary>
+    public double PeopleWithHomeKnown = 0.8;
+}
 }
