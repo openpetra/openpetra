@@ -91,7 +91,7 @@ namespace Ict.Petra.Server.MConference.Applications
                     DateTime Arrival = DefaultArrivalDate;
                     DateTime Departure = DefaultDepartureDate;
 
-                    Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(TJsonTools.RemoveContainerControls(applicant.JSONData));
+                    Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(applicant.JSONData);
 
                     if (rawDataObject.Contains("DateOfArrival") && (rawDataObject["DateOfArrival"].ToString().Trim().Length > 0))
                     {

@@ -147,7 +147,7 @@ namespace Ict.Petra.Server.MConference.Applications
                                                                                                                               ShorttermAppRow.
                                                                                                                               ApplicationKey })].Row;
 
-                        Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(TJsonTools.RemoveContainerControls(ApplicationRow.JSONData));
+                        Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(ApplicationRow.JSONData);
 
                         if (rawDataObject.Contains("NickName") && (rawDataObject["NickName"].ToString().Trim().Length > 0))
                         {

@@ -141,7 +141,7 @@ namespace Ict.Petra.Server.MConference.Applications
 
                     if (TConferenceFreeTShirt.AcceptedBeforeTShirtDeadLine(attendee, applicant))
                     {
-                        Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(TJsonTools.RemoveContainerControls(applicant.JSONData));
+                        Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(applicant.JSONData);
 
                         if (rawDataObject.Contains("TShirtStyle") && rawDataObject.Contains("TShirtSize"))
                         {
