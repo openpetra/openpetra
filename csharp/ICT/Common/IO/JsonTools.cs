@@ -24,6 +24,7 @@
 using System;
 using System.Xml;
 using System.Collections;
+using System.Globalization;
 using Jayrock.Json;
 using Jayrock.Json.Conversion;
 
@@ -115,11 +116,10 @@ namespace Ict.Common.IO
 
         /// <summary>
         /// internal function to be used by RemoveContainerControls.
-        /// important side effect: will set the current culture, so that the dates can be parsed correctly
+        /// will give information for the required culture, so that the dates can be parsed correctly
         /// </summary>
-        /// <param name="ARoot"></param>
         /// <returns></returns>
-        private static string parseJSonValues(JsonObject ARoot)
+        private static string parseJSonValues(JsonObject ARoot, ref string ACulture)
         {
             string result = "";
 
@@ -127,7 +127,7 @@ namespace Ict.Common.IO
             {
                 if (key.ToString().StartsWith("ext-comp"))
                 {
-                    string content = parseJSonValues((JsonObject)ARoot[key]);
+                    string content = parseJSonValues((JsonObject)ARoot[key], ref ACulture);
 
                     if (content.Length > 0)
                     {
@@ -149,7 +149,7 @@ namespace Ict.Common.IO
                     if (key.EndsWith("CountryCode") && (ARoot[key].ToString().Trim().Length > 0))
                     {
                         // we need this so that we can parse the dates correctly from json
-                        Ict.Common.Catalog.Init(ARoot[key].ToString(), ARoot[key].ToString());
+                        ACulture = ARoot[key].ToString();
                     }
 
                     result += "\"" + key + "\":\"" + ARoot[key].ToString().Replace("\n", "<br/>").Replace("\"", "&quot;") + "\"";
@@ -161,11 +161,10 @@ namespace Ict.Common.IO
 
         /// <summary>
         /// remove ext-comp controls, for multi-page forms.
-        /// important side effect: will set the current culture, so that the dates can be parsed correctly
+        /// will give information for the required culture, so that the dates can be parsed correctly
         /// </summary>
-        /// <param name="AJSONFormData"></param>
         /// <returns></returns>
-        public static string RemoveContainerControls(string AJSONFormData)
+        public static string RemoveContainerControls(string AJSONFormData, ref string ARequiredCulture)
         {
             // to avoid strange error messages during testing
             if (AJSONFormData.Length == 0)
@@ -175,14 +174,13 @@ namespace Ict.Common.IO
 
             JsonObject root = (JsonObject)Jayrock.Json.Conversion.JsonConvert.Import(AJSONFormData);
 
-            string result = "{" + parseJSonValues(root) + "}";
+            string result = "{" + parseJSonValues(root, ref ARequiredCulture) + "}";
 
             return result;
         }
 
         /// <summary>
         /// import JSON code into a typed structure.
-        /// important side effect: will set the current culture, so that the dates can be parsed correctly
         /// </summary>
         /// <param name="ATypeOfStructure"></param>
         /// <param name="AJSONFormData"></param>
@@ -194,8 +192,25 @@ namespace Ict.Common.IO
                 return new Jayrock.Json.JsonObject();
             }
 
-            return Jayrock.Json.Conversion.JsonConvert.Import(ATypeOfStructure,
-                RemoveContainerControls(AJSONFormData));
+            // set the current culture, so that the dates can be parsed correctly
+            string RequiredCulture = CultureInfo.CurrentCulture.Name;
+            string withoutContainers = RemoveContainerControls(AJSONFormData, ref RequiredCulture);
+            CultureInfo OrigCulture = Catalog.SetCulture(RequiredCulture);
+
+            try
+            {
+                return Jayrock.Json.Conversion.JsonConvert.Import(ATypeOfStructure,
+                    withoutContainers);
+            }
+            catch (Exception)
+            {
+                TLogging.Log("Problem parsing JSON object: " + AJSONFormData);
+                throw;
+            }
+            finally
+            {
+                Catalog.SetCulture(OrigCulture);
+            }
         }
 
         /// <summary>
@@ -214,7 +229,24 @@ namespace Ict.Common.IO
                 return new Jayrock.Json.JsonObject();
             }
 
-            return (JsonObject)Jayrock.Json.Conversion.JsonConvert.Import(AJSONFormData);
+            // set the current culture, so that the dates can be parsed correctly
+            string RequiredCulture = CultureInfo.CurrentCulture.Name;
+            RemoveContainerControls(AJSONFormData, ref RequiredCulture);
+            CultureInfo OrigCulture = Catalog.SetCulture(RequiredCulture);
+
+            try
+            {
+                return (JsonObject)Jayrock.Json.Conversion.JsonConvert.Import(AJSONFormData);
+            }
+            catch (Exception)
+            {
+                TLogging.Log("Problem parsing JSON object: " + AJSONFormData);
+                throw;
+            }
+            finally
+            {
+                Catalog.SetCulture(OrigCulture);
+            }
         }
 
         /// <summary>
@@ -224,7 +256,25 @@ namespace Ict.Common.IO
         /// <returns></returns>
         public static string ToJsonString(JsonObject AParsedObject)
         {
-            return Jayrock.Json.Conversion.JsonConvert.ExportToString(AParsedObject);
+            // look for country id
+            string RequiredCulture = CultureInfo.CurrentCulture.Name;
+
+            foreach (string key in AParsedObject.Names)
+            {
+                if (key.EndsWith("CountryCode") && (AParsedObject[key].ToString().Trim().Length > 0))
+                {
+                    // we need this so that we can format the dates correctly into the json string
+                    RequiredCulture = AParsedObject[key].ToString();
+                }
+            }
+
+            CultureInfo OrigCulture = Catalog.SetCulture(RequiredCulture);
+
+            string Result = Jayrock.Json.Conversion.JsonConvert.ExportToString(AParsedObject);
+
+            Catalog.SetCulture(OrigCulture);
+
+            return Result;
         }
     }
 }
