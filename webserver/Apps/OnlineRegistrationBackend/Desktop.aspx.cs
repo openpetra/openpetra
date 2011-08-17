@@ -703,7 +703,7 @@ namespace Ict.Petra.WebServer.MConference
             else
             {
                 string RawData = TApplicationManagement.GetRawApplicationData(row.PartnerKey, row.ApplicationKey, row.RegistrationOffice);
-                Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(TJsonTools.RemoveContainerControls(RawData));
+                Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(RawData);
 
                 // avoid problems with different formatting of dates, could cause parsing errors later, into the typed class
                 values["DateOfBirth"] = Convert.ToDateTime(values["DateOfBirth"]).ToShortDateString();
@@ -823,10 +823,8 @@ namespace Ict.Petra.WebServer.MConference
                 ConferenceApplicationTDSApplicationGridRow row = (ConferenceApplicationTDSApplicationGridRow)Session["CURRENTROW"];
                 string RawData = TApplicationManagement.GetRawApplicationData(row.PartnerKey, row.ApplicationKey, row.RegistrationOffice);
 
-                // will set the correct language code for parsing dates in the json data string
-                RawData = TJsonTools.RemoveContainerControls(RawData);
-
-                TApplicationFormData data = (TApplicationFormData)JsonConvert.Import(typeof(TApplicationFormData),
+                TApplicationFormData data = (TApplicationFormData)TJsonTools.ImportIntoTypedStructure(
+                    typeof(TApplicationFormData),
                     RawData);
                 data.RawData = RawData;
 
@@ -1508,7 +1506,8 @@ namespace Ict.Petra.WebServer.MConference
             Dictionary <string, string>values = JSON.Deserialize <Dictionary <string, string>>(e.ExtraParams["Values"]);
 
             string AJSONFormData = values["JSONData"].ToString();
-            AJSONFormData = TJsonTools.RemoveContainerControls(AJSONFormData);
+            string RequiredCulture = string.Empty;
+            AJSONFormData = TJsonTools.RemoveContainerControls(AJSONFormData, ref RequiredCulture);
 
             AJSONFormData = AJSONFormData.Replace("\"txt", "\"").
                             Replace("\"chk", "\"").
