@@ -34,7 +34,7 @@ RootNode:
                 Row0: [cmbDetailPublicationCode]
                 Row1: [dtpDetailDateEffective, txtDetailPublicationCost, txtDetailPostageCost]
                 Row2: [cmbDetailCurrencyCode]
-        cmbDetailPublicationCode: {List=PublicationList, ColSpan=4}
+        cmbDetailPublicationCode: {List=PublicationList, ColSpan=4, ComboBoxWidth=100}
         dtpDetailDateEffective: {Label=Effective Date}
         txtDetailPublicationCost: {Width=60, Format=Decimal}
         txtDetailPostageCost: {Width=60, Format=Decimal}

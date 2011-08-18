@@ -39,7 +39,7 @@ RootNode:
                 Row3: [chkDetailDeletableFlag]
         txtDetailDocCode: {Label=Document Code, CharacterCasing=Upper, Width=160}
         txtDetailDescription: {Label=Description, Width=290}
-        cmbDetailDocCategory: {Label=Document Category, List=DocumentTypeCategoryList, ColSpan=3}
+        cmbDetailDocCategory: {Label=Document Category, List=DocumentTypeCategoryList, ColSpan=3, ComboBoxWidth=130}
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
         dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false}
         chkDetailDeletableFlag: {Label=Deletable}

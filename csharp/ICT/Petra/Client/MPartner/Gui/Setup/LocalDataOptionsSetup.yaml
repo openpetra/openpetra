@@ -37,7 +37,7 @@ RootNode:
                 Row0: [cmbDetailCategoryCode]
                 Row1: [txtDetailValueCode, txtDetailValueDesc]
                 Row2: [chkDetailActive]
-        cmbDetailCategoryCode: {Label=List Name, List=DataLabelLookupCategoryList, ColSpan=3}
+        cmbDetailCategoryCode: {Label=List Name, List=DataLabelLookupCategoryList, ColSpan=3, ComboBoxWidth=130}
         txtDetailValueCode: {Label=Option, CharacterCasing=Upper, Width=180}
         txtDetailValueDesc: {Label=Description, Width=370}
         chkDetailActive: {Label=Active}
