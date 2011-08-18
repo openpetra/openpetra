@@ -1171,6 +1171,7 @@ namespace Ict.Petra.Client.App.Core
             TCacheablePartnerTablesEnum CacheableMPartnerPartnerTable;
             TCacheablePersonTablesEnum CacheableMPersonnelPersonTable;
             TCacheableUnitTablesEnum CacheableMPersonnelUnitTable;
+            TCacheableSysManTablesEnum CacheableMSysManTable;
 
             AVerificationResult = null;
 
@@ -1233,6 +1234,16 @@ namespace Ict.Petra.Client.App.Core
 
                 // PetraServer method call
                 ReturnValue = TRemote.MPersonnel.Units.DataElements.Cacheable.SaveChangedStandardCacheableTable(CacheableMPersonnelUnitTable,
+                    ref AChangedCacheableDT,
+                    out AVerificationResult);
+            }
+            else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableSysManTablesEnum)), ACacheableTableName) != -1)
+            {
+                // MSysMan.Unit Namespace
+                CacheableMSysManTable = (TCacheableSysManTablesEnum)Enum.Parse(typeof(TCacheableSysManTablesEnum), ACacheableTableName);
+
+                // PetraServer method call
+                ReturnValue = TRemote.MSysMan.Cacheable.SaveChangedStandardCacheableTable(CacheableMSysManTable,
                     ref AChangedCacheableDT,
                     out AVerificationResult);
             }
