@@ -39,6 +39,8 @@ using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
+using Ict.Petra.Shared.MSysMan.Data;
+using Ict.Petra.Server.MSysMan.Data.Access;
 
 
 namespace Ict.Petra.Server.MCommon.DataReader
@@ -117,6 +119,10 @@ namespace Ict.Petra.Server.MCommon.DataReader
                 else if (ATablename == PmDocumentTypeTable.GetTableDBName())
                 {
                     tempTable = PmDocumentTypeAccess.LoadAll(ReadTransaction);
+                }
+                else if (ATablename == SGroupTable.GetTableDBName())
+                {
+                    tempTable = SGroupAccess.LoadAll(ReadTransaction);
                 }
                 else
                 {
@@ -256,6 +262,18 @@ namespace Ict.Petra.Server.MCommon.DataReader
                     else if (ATablename == PmDocumentTypeTable.GetTableDBName())
                     {
                         if (PmDocumentTypeAccess.SubmitChanges((PmDocumentTypeTable)ASubmitTable, SubmitChangesTransaction,
+                                                               out SingleVerificationResultCollection))
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
+                    else if (ATablename == SGroupTable.GetTableDBName())
+                    {
+                        if (SGroupAccess.SubmitChanges((SGroupTable)ASubmitTable, SubmitChangesTransaction,
                                                                out SingleVerificationResultCollection))
                         {
                             SubmissionResult = TSubmitChangesResult.scrOK;

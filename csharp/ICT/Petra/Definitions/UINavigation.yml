@@ -188,8 +188,9 @@ OpenPetra:
                         #LedgerSetupShepherd:
                         #SetupCalendar:
                         #ChangeNumberOfForwardingPeriods:
-                    GiftSetup: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
-                        SetupMotivationDetails: {Description: "Maintain motivation details towards which donations can be assigned", ActionOpenScreen=Gift.TFrmGiftMotivationSetup}
+                    GiftReceipting: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
+                        MotivationDetails: {Description: "Maintain motivation details towards which donations can be assigned", ActionOpenScreen=Gift.TFrmGiftMotivationSetup}
+                        MotivationGroup: {Description=Maintain Motivation Groups, ActionOpenScreen=TFrmMotivationGroupSetup}						
         Personnel: {Icon=personel_small.ico, PermissionsRequired=PERSONNEL}
             # Module
             Main:
@@ -309,6 +310,8 @@ OpenPetra:
                         #ViewCurrentUsers:
                         #ViewLoginLog:
                 Setup:
+                    Security-related:
+                        Groups: {Label=Setup Groups, Description=Maintain Security-related Groups, Namespace=Ict.Petra.Client.MSysMan.Gui.Setup, ActionOpenScreen=TFrmSecurityGroupSetup}
             Finance:
                 #LedgerOperations: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
                     #CreateLedger: {ActionOpenScreen=TFrmGLCreateLedger}
@@ -333,4 +336,6 @@ OpenPetra:
                     #SystemParameters
                     #Sites
                     #Purging
+                    General:
+                        LanguageSpecifics: {Label=Setup Language Specifics, Description=Maintain Month Names for Different Languages, Namespace=Ict.Petra.Client.MSysMan.Gui.Setup, ActionOpenScreen=TFrmLanguageSpecificSetup}
                 
