@@ -575,7 +575,6 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TRevaluationWebConnector)</summary>
         bool Revaluate(int ALedgerNum,
                        int AAccoutingPeriod,
-                       string ARevaluationCostCenter,
                        string[] AForeignCurrency,
                        decimal[] ANewExchangeRate,
                        out TVerificationResultCollection AVerificationResult);

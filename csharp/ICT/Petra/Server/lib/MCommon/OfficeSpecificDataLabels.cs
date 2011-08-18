@@ -370,6 +370,11 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
             return ReturnValue;
         }
 
+        /// <summary>
+        /// Passes data as a Typed DataSet to the Screen, containing multiple DataTables.
+        /// </summary>
+        /// <param name="AReadTransaction"></param>
+        /// <returns></returns>
         [NoRemoting]
         public OfficeSpecificDataLabelsTDS GetData(TDBTransaction AReadTransaction)
         {

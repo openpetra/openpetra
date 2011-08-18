@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -478,7 +478,6 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
             Int16 Counter;
 
             DataColumn[] PrimaryKeyColumns;
-            object[] PrimaryKeyObj;
             SUserDefaultsRow UpdateRow;
             SUserDefaultsRow AddedRow;
 
@@ -493,7 +492,6 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
             }
 
             PrimaryKeyColumns = ASourceDT.PrimaryKey;
-            PrimaryKeyObj = new object[PrimaryKeyColumns.Length];
 
             for (Counter = 0; Counter <= ASourceDT.Rows.Count - 1; Counter += 1)
             {

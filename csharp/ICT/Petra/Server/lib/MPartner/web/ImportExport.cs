@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -75,7 +75,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     }
 
                     // get a new partner key
-                    Int64 SiteKey = Convert.ToInt64(TYml2Xml.GetAttributeRecursive(LocalNode, "SiteKey"));
                     newPartner.PartnerKey = TImportExportWebConnector.NewPartnerKey;
                     TImportExportWebConnector.NewPartnerKey--;
 

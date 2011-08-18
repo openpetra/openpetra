@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -609,8 +609,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
             String APostCodeTo,
             String ACounty)
         {
-            bool ReturnValue;
-            TDBTransaction ReadTransaction;
+            bool ReturnValue = false;
             Boolean NewTransaction;
             String postalCode;
 
@@ -636,12 +635,10 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 return (APostalRegion.Length == 0) && (APostCodeFrom.Length == 0) && (APostCodeTo.Length == 0) && (ACounty.Length == 0);
             }
 
-            ReturnValue = false;
-
             if (APostalRegion.Length > 0)
             {
                 postalCode = situation.GetParameters().Get("PostalCode").ToString();
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+                DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
                 try
                 {
 // todo, wrong combination of table/columns
@@ -1110,8 +1107,6 @@ namespace Ict.Petra.Server.MReporting.MPartner
             Dictionary <String, int>CountyRowList = InitStatisticalReportTable();
             FNumberOfAcitvePartner = 0;
 
-            String SubscriptionCodeDBName = PSubscriptionTable.GetPublicationCodeDBName();
-            String SubscriptionCopiesDBName = PSubscriptionTable.GetPublicationCopiesDBName();
             String PartnerKeyDBName = PPartnerTable.GetPartnerKeyDBName() + " = ";
 
             foreach (PPartnerRow PartnerRow in PartnerTable.Rows)
@@ -1586,8 +1581,6 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 POccupationTable OccupationTable;
 
                 OccupationTable = POccupationAccess.LoadByPrimaryKey(AOccupationCode, situation.GetDatabaseConnection().Transaction);
-
-                DataRow[] OccupationRows = OccupationTable.Select(POccupationTable.GetOccupationCodeDBName() + " = '" + AOccupationCode + "'");
 
                 if (OccupationTable.Rows.Count > 0)
                 {

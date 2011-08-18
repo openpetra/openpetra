@@ -154,37 +154,7 @@ namespace Ict.Petra.Server.MFinance.Common
                     Transaction);
             }
 
-            // get all accounts that are referenced by all transactions of this batch
-            string AccountTableName = "PUB_" + TTypedDataTable.GetTableNameSQL(AAccountTable.TableId);
-            string TransactionTableName = "PUB_" + TTypedDataTable.GetTableNameSQL(ATransactionTable.TableId);
-            string stmt = "SELECT DISTINCT " +
-                          AccountTableName + "." + AAccountTable.GetLedgerNumberDBName() + ", " +
-                          AccountTableName + "." + AAccountTable.GetAccountCodeDBName() + ", " +
-                          AccountTableName + "." + AAccountTable.GetForeignCurrencyCodeDBName() + ", " +
-                          AccountTableName + "." + AAccountTable.GetForeignCurrencyFlagDBName() + ", " +
-                          AccountTableName + "." + AAccountTable.GetDebitCreditIndicatorDBName() +
-                          " FROM " + AccountTableName + ", " +
-                          TransactionTableName +
-                          " WHERE " + TransactionTableName + "." + ATransactionTable.GetLedgerNumberDBName() + " = ? AND " +
-                          TransactionTableName + "." + ATransactionTable.GetBatchNumberDBName() + " = ? AND " +
-                          AccountTableName + "." + AAccountTable.GetLedgerNumberDBName() + " = " + TransactionTableName + "." +
-                          ATransactionTable.GetLedgerNumberDBName() + " AND " +
-                          AccountTableName + "." + AAccountTable.GetAccountCodeDBName() + " = " + TransactionTableName + "." +
-                          ATransactionTable.GetAccountCodeDBName();
-            OdbcParameter paramLedgerNumber = TTypedDataTable.CreateOdbcParameter(ATransactionTable.TableId,
-                ATransactionTable.ColumnLedgerNumberId);
-            paramLedgerNumber.Value = ALedgerNumber;
-            OdbcParameter paramBatchNumber = TTypedDataTable.CreateOdbcParameter(ATransactionTable.TableId,
-                ATransactionTable.ColumnBatchNumberId);
-            paramBatchNumber.Value = ABatchNumber;
-            OdbcParameter[] ParametersArray = new OdbcParameter[] {
-                paramLedgerNumber,
-                paramBatchNumber
-            };
-
-// TODO       DBAccess.GDBAccessObj.SelectDT(ADataSet.AAccount, stmt, Transaction, ParametersArray, -1, -1);
-
-            // load all accounts of ledger, because we need them later for the account hierachy tree for summarisation
+            // load all accounts of ledger, because we need them later for the account hierarchy tree for summarisation
             AAccountAccess.LoadViaALedger(ADataSet, ALedgerNumber, Transaction);
 
             // TODO: use cached table?

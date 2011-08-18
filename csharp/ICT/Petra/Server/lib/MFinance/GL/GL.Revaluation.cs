@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -60,7 +60,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="ALedgerNum">Number of the Ledger to be revaluated</param>
         /// <param name="AAccoutingPeriod">Number of the accouting period
         /// (other form of the date)</param>
-        /// <param name="ARevaluationCostCenter">Cost Center for the revaluation</param>
         /// <param name="AForeignCurrency">Types (Array) of the foreign currency account</param>
         /// <param name="ANewExchangeRate">Array of the exchange rates</param>
         /// <param name="AVerificationResult">A TVerificationResultCollection for possibly error messages</param>
@@ -69,13 +68,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static bool Revaluate(
             int ALedgerNum,
             int AAccoutingPeriod,
-            string ARevaluationCostCenter,
             string[] AForeignCurrency,
             decimal[] ANewExchangeRate,
             out TVerificationResultCollection AVerificationResult)
         {
             CLSRevaluation revaluation = new CLSRevaluation(ALedgerNum, AAccoutingPeriod,
-                ARevaluationCostCenter,
                 AForeignCurrency, ANewExchangeRate);
 
             bool blnReturn = revaluation.RunRevaluation();
@@ -95,7 +92,6 @@ namespace Ict.Petra.Server.MFinance.GL
     {
         private int intLedgerNum;
         private int intAccountingPeriod;
-        private string strRevaluationCostCenter;
         private string[] strArrForeignCurrencyType;
         private decimal[] decArrExchangeRate;
 
@@ -122,18 +118,15 @@ namespace Ict.Petra.Server.MFinance.GL
         /// </summary>
         /// <param name="ALedgerNum"></param>
         /// <param name="AAccoutingPeriod"></param>
-        /// <param name="ARevaluationCostCenter"></param>
         /// <param name="AForeignCurrency"></param>
         /// <param name="ANewExchangeRate"></param>
         public CLSRevaluation(int ALedgerNum,
             int AAccoutingPeriod,
-            string ARevaluationCostCenter,
             string[] AForeignCurrency,
             decimal[] ANewExchangeRate)
         {
             intLedgerNum = ALedgerNum;
             intAccountingPeriod = AAccoutingPeriod;
-            strRevaluationCostCenter = ARevaluationCostCenter;
             strArrForeignCurrencyType = AForeignCurrency;
             decArrExchangeRate = ANewExchangeRate;
         }

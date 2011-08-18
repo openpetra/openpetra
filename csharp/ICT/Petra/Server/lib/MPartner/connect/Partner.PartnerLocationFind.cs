@@ -4,7 +4,7 @@
 // @Authors:
 //       timh
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -51,7 +51,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
     public class TPartnerLocationFindUIConnector : TConfigurableMBRObject, IPartnerUIConnectorsPartnerLocationFind
     {
         private TAsynchronousExecutionProgress FAsyncExecProgress;
-        private DataTable FCriteria;
         private Thread FFindThread;
         private TPagedDataSet FPagedDataSetObject;
 
@@ -79,12 +78,10 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             Hashtable ColumnNameMapping;
             String CustomWhereCriteria;
             TDynamicSearchHelper CriteriaBuilder;
-            PLocationTable miLocationTable;
             ArrayList InternalParameters;
             OdbcParameter miParam;
             DataRow CriteriaRow;
 
-            FCriteria = ACriteriaData;
             FAsyncExecProgress = new TAsynchronousExecutionProgress();
             FPagedDataSetObject = new TPagedDataSet(new PartnerFindTDSSearchResultTable());
             FPagedDataSetObject.AsyncExecProgress = FAsyncExecProgress;
@@ -94,7 +91,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             CriteriaRow = ACriteriaData.Rows[0];
 
             // used to help with strong typing of columns
-            miLocationTable = new PLocationTable();
             InternalParameters = new ArrayList();
             CustomWhereCriteria = "";
 
