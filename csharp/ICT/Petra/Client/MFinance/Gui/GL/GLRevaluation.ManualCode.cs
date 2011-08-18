@@ -226,19 +226,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void SaveUserDefaults()
         {
-            TUserDefaults.SetDefault(REVALUATIONCOSTCENTRE, cmbCostCenter.GetSelectedString());
         }
 
         private void LoadUserDefaults()
         {
-            try
-            {
-                cmbCostCenter.SetSelectedString(
-                    TUserDefaults.GetStringDefault(REVALUATIONCOSTCENTRE));
-            }
-            catch (Exception)
-            {
-            }
         }
 
         private void CancelRevaluation(object btn, EventArgs e)
