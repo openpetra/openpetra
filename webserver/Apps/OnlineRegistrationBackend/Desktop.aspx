@@ -143,8 +143,8 @@
                         <ext:RecordField Name="BadgePrint" />
                         <ext:RecordField Name="FieldCharged" />
                         <ext:RecordField Name="ApplicationKey" />
-                        <ext:RecordField Name="Arrival" Type="Date"/>
-                        <ext:RecordField Name="Departure" Type="Date"/>
+                        <ext:RecordField Name="DateOfArrival" Type="Date"/>
+                        <ext:RecordField Name="DateOfDeparture" Type="Date"/>
                     </Fields>
                 </ext:ArrayReader>
             </Reader>
@@ -1116,8 +1116,8 @@
                                             Width="300"
                                             FieldLabel="Comment By Registration Office"
                                             />
-                                        <ext:DateField ID="Arrival" runat="server" FieldLabel="Date of Arrival" DataIndex="Arrival" Format="dd-MMM-yyyy"/>
-                                        <ext:DateField ID="Departure" runat="server" FieldLabel="Date of Departure" DataIndex="Departure" Format="dd-MMM-yyyy"/>
+                                        <ext:DateField ID="DateOfArrival" runat="server" FieldLabel="Date of Arrival" DataIndex="DateOfArrival" Format="dd-MMM-yyyy"/>
+                                        <ext:DateField ID="DateOfDeparture" runat="server" FieldLabel="Date of Departure" DataIndex="DateOfDeparture" Format="dd-MMM-yyyy"/>
                                       </Items>
                                     </ext:Container>
                                   </Center>

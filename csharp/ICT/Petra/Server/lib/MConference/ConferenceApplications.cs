@@ -457,8 +457,8 @@ namespace Ict.Petra.Server.MConference.Applications
                 newRow.StFgCode = shortTermRow.StFgCode;
                 newRow.StFgLeader = shortTermRow.StFgLeader;
                 newRow.StFieldCharged = shortTermRow.StFieldCharged;
-                newRow.Arrival = shortTermRow.Arrival;
-                newRow.Departure = shortTermRow.Departure;
+                newRow.DateOfArrival = shortTermRow.Arrival;
+                newRow.DateOfDeparture = shortTermRow.Departure;
 
                 // TODO: display the description of that application status
                 newRow.GenApplicationStatus = GeneralApplication.GenApplicationStatus;
@@ -893,6 +893,8 @@ namespace Ict.Petra.Server.MConference.Applications
                 ShortTermApplication.StFgLeader = AChangedRow.StFgLeader;
                 ShortTermApplication.StFgCode = AChangedRow.StFgCode;
                 ShortTermApplication.StFieldCharged = AChangedRow.StFieldCharged;
+                ShortTermApplication.Arrival = AChangedRow.DateOfArrival;
+                ShortTermApplication.Departure = AChangedRow.DateOfDeparture;
 
                 if (GeneralApplication.GenApplicationStatus != AChangedRow.GenApplicationStatus)
                 {

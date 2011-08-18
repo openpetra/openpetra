@@ -34,8 +34,8 @@
             <Field sqltable="pm_general_application" sqlfield="pm_application_key_i"/>
             <Field sqltable="pm_general_application" sqlfield="pm_registration_office_n"/>
             <Field sqltable="pm_general_application" sqlfield="pm_comment_c"/>
-            <Field sqltable="pm_short_term_application" sqlfield="pm_arrival_d"/>
-            <Field sqltable="pm_short_term_application" sqlfield="pm_departure_d"/>
+            <Field sqltable="pm_short_term_application" sqlfield="pm_arrival_d" name="DateOfArrival"/>
+            <Field sqltable="pm_short_term_application" sqlfield="pm_departure_d" name="DateOfDeparture"/>
             <CustomField name="RebukeNotes" type="string"/>
             <CustomField name="MedicalNotes" type="string"/>
             <CustomField name="JSONData" type="string"/>

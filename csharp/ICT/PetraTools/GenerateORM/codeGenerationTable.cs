@@ -252,7 +252,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 {
                     tempTemplate = Template.GetSnippet("ROWCOLUMNPROPERTY");
                     tempTemplate.SetCodelet("COLUMNDBNAME", col.strName);
-                    tempTemplate.SetCodelet("COLUMNNAME", TTable.NiceFieldName(col));
+                    tempTemplate.SetCodelet("COLUMNNAME", col.strNameDotNet);
                     tempTemplate.SetCodelet("COLUMNHELP", col.strDescription.Replace(Environment.NewLine, " "));
                     tempTemplate.SetCodelet("COLUMNLABEL", col.strLabel);
                     tempTemplate.SetCodelet("COLUMNLENGTH", col.iLength.ToString());
