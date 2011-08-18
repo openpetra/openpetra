@@ -142,7 +142,7 @@
         <attribute type="AssemblyVersion" value='"${ReleaseID}"' asis="true" /> 
       </attributes>
     </asminfo>
-    <if test="${dontCompile == 'true'}">
+    <if test="${not file::exists(dir.bin + '/dont_compile.txt')}">
       <!-- filealign="4096"  for csc not supported on mono -->
       <csc output="${dir.bin}/${AssemblyName}" 
            doc="${dir.bin}/${Namespace}.xml"
