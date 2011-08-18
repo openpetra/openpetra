@@ -4,7 +4,7 @@
 // @Authors:
 //       berndr
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -437,7 +437,6 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             DataTable TmpTable;
 
             PmShortTermApplicationTable ShortTermerTable = new PmShortTermApplicationTable();
-            PmShortTermApplicationRow TemplateRow = (PmShortTermApplicationRow)ShortTermerTable.NewRow();
 
             AFieldsTable.Columns.Add("Selection", System.Type.GetType("System.Boolean"));
             AFieldsTable.Columns.Add("Unit Key", System.Type.GetType("System.Int64"));
@@ -630,7 +629,6 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             PUnitTable UnitTable;
 
             PcAttendeeTable AttendeeTable = new PcAttendeeTable();
-            PcAttendeeRow TemplateRow = (PcAttendeeRow)AttendeeTable.NewRow();
 
 #if DEBUGMODE
             if (TLogging.DL >= 9)
@@ -709,7 +707,6 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             PUnitTable UnitTable;
 
             PcAttendeeTable AttendeeTable = new PcAttendeeTable();
-            PcAttendeeRow TemplateRow = (PcAttendeeRow)AttendeeTable.NewRow();
 
 #if DEBUGMODE
             if (TLogging.DL >= 9)

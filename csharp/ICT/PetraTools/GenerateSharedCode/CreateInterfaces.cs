@@ -638,7 +638,6 @@ public class CreateInterfaces : AutoGenerationWriter
         // parse Instantiator source code
         foreach (TNamespace sn in tn.Children)
         {
-            string currentNamespaceOneLevelUp = "Ict.Petra.Shared.Interfaces.M" + tn.Name + "." + sn.Name;
             WriteNamespace("Ict.Petra.Shared.Interfaces.M" + tn.Name + "." + sn.Name, sn.Name, tn, sn, sn.Children, AInterfaceNames, ACSFiles);
         }
     }

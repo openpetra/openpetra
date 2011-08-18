@@ -527,7 +527,6 @@ namespace Ict.Common.IO
             FileStream fsTemp;
             Int32 i;
             byte[] header = new byte[32];
-            byte[] buf = new byte[8];
 
             // make an external call to bsdiff, it will create a BSDIFF4.0 patch file
             BSDIFFProcess = new System.Diagnostics.Process();

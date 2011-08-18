@@ -1254,7 +1254,6 @@ namespace Ict.Petra.Server.MConference.Applications
                     PmShortTermApplicationRow ShortTermApplicationRow = PmShortTermApplicationAccess.LoadUsingTemplate(TemplateRow, Transaction)[0];
 
                     PPersonRow PersonRow = PPersonAccess.LoadByPrimaryKey(ShortTermApplicationRow.PartnerKey, Transaction)[0];
-                    PLocationRow LocationRow = PLocationAccess.LoadViaPPartner(PersonRow.FamilyKey, Transaction)[0];
                     PPartnerLocationRow PartnerLocationRow = PPartnerLocationAccess.LoadViaPPartner(PersonRow.FamilyKey, Transaction)[0];
 
                     PmGeneralApplicationRow GeneralApplicationRow =
@@ -1392,8 +1391,6 @@ namespace Ict.Petra.Server.MConference.Applications
         public static bool UploadPetraImportResult(string APartnerKeyFile)
         {
             XmlDocument partnerKeys = TCsv2Xml.ParseCSV2Xml(APartnerKeyFile);
-
-            SortedList <Int64, XmlNode>PartnerKeys = new SortedList <long, XmlNode>();
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 

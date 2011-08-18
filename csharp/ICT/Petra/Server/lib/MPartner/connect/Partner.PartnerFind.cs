@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -757,7 +757,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             Int64 CurrentPartnerKey = -1;
             Int64 LastPartnerKey = -2;
             int AddedPartners = 0;
-            TDBTransaction WriteTransaction;
             bool NewTransaction;
 
             AVerificationResult = null;
@@ -816,7 +815,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 /*
                  * Add all Partners to the desired Extract
                  */
-                WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
+                DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
                     IsolationLevel.Serializable,
                     TEnforceIsolationLevel.eilMinimum,
                     out NewTransaction);

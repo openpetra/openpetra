@@ -75,8 +75,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     }
 
                     // get a new partner key
-                    Int64 SiteKey = Convert.ToInt64(TYml2Xml.GetAttributeRecursive(LocalNode, "SiteKey"));
-
                     if (TYml2Xml.HasAttribute(LocalNode, "PartnerKey"))
                     {
                         newPartner.PartnerKey = Convert.ToInt64(TYml2Xml.GetAttribute(LocalNode, "PartnerKey"));

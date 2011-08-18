@@ -67,9 +67,6 @@ namespace Ict.Petra.Server.App.Main
         /// instantiated</summary>
         private Int32 FNumberServerManagerInstances;
 
-        /// <summary>Reference to the global TSrvSettings object</summary>
-        private TSrvSetting FServerSettings;
-
         /// <summary>System wide defaults</summary>
         private TSystemDefaultsCache FSystemDefaultsCache;
 
@@ -452,7 +449,7 @@ namespace Ict.Petra.Server.App.Main
             #endregion
 
             // Store Server configuration in the static TSrvSetting class
-            FServerSettings = new TSrvSetting(
+            new TSrvSetting(
                 CmdLineArgs.ApplicationName,
                 CmdLineArgs.ConfigurationFile,
                 ServerAssemblyVersion,

@@ -49,7 +49,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         /// <param name="AFormType"></param>
         public TExtJsFormsWriter(string AFormType)
         {
-            TAppSettingsManager settings = new TAppSettingsManager(false);
+            new TAppSettingsManager(false);
 
             AddControlGenerator(new TextFieldGenerator());
             AddControlGenerator(new TextAreaGenerator());
@@ -374,8 +374,6 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         /// <param name="AWriter"></param>
         public static void InsertButtons(TControlDef ACtrl, ProcessTemplate ATemplate, string AItemsPlaceholder, TFormWriter AWriter)
         {
-            XmlNode controlsNode = TYml2Xml.GetChild(ACtrl.xmlNode, "Buttons");
-
             StringCollection children = TYml2Xml.GetElements(ACtrl.xmlNode, "Buttons");
 
             foreach (string child in children)

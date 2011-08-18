@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -29,10 +29,17 @@ using System.Diagnostics;
 
 namespace Ict.Tools.NAntTasks
 {
+    /// <summary>
+    /// run commands against a MySQL database
+    /// </summary>
     [TaskName("mysql")]
     public class MysqlTask : NAnt.Core.Task
     {
         private string FMysqlExecutable;
+
+        /// <summary>
+        /// path to the MySQL executable
+        /// </summary>
         [TaskAttribute("exe", Required = true)]
         public string MysqlExecutable {
             get
@@ -46,6 +53,10 @@ namespace Ict.Tools.NAntTasks
         }
 
         private string FDatabase = String.Empty;
+
+        /// <summary>
+        /// name of the database
+        /// </summary>
         [TaskAttribute("database", Required = false)]
         public string Database {
             get
@@ -59,6 +70,10 @@ namespace Ict.Tools.NAntTasks
         }
 
         private string FSQLCommand = String.Empty;
+
+        /// <summary>
+        /// the sql command that should be executed
+        /// </summary>
         [TaskAttribute("sqlcommand", Required = false)]
         public string SQLCommand {
             get
@@ -72,6 +87,10 @@ namespace Ict.Tools.NAntTasks
         }
 
         private string FSQLFile = String.Empty;
+
+        /// <summary>
+        /// name of the file that contains sql statements that should be executed
+        /// </summary>
         [TaskAttribute("sqlfile", Required = false)]
         public string SQLFile {
             get
@@ -85,6 +104,10 @@ namespace Ict.Tools.NAntTasks
         }
 
         private string FOutputFile = String.Empty;
+
+        /// <summary>
+        /// name of the file that should receive the output from the MySQL command
+        /// </summary>
         [TaskAttribute("outputfile", Required = false)]
         public string OutputFile {
             get
@@ -98,6 +121,10 @@ namespace Ict.Tools.NAntTasks
         }
 
         private string FUser = String.Empty;
+
+        /// <summary>
+        /// the database user
+        /// </summary>
         [TaskAttribute("user", Required = false)]
         public string User {
             get
@@ -111,6 +138,10 @@ namespace Ict.Tools.NAntTasks
         }
 
         private string FPassword = String.Empty;
+
+        /// <summary>
+        /// the password of the database user
+        /// </summary>
         [TaskAttribute("password", Required = false)]
         public string Password {
             get
@@ -123,6 +154,9 @@ namespace Ict.Tools.NAntTasks
             }
         }
 
+        /// <summary>
+        /// run the task
+        /// </summary>
         protected override void ExecuteTask()
         {
             System.Diagnostics.Process process = new System.Diagnostics.Process();

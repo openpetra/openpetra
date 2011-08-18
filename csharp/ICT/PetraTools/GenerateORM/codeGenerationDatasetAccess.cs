@@ -211,7 +211,6 @@ namespace Ict.Tools.CodeGeneration.DataStore
                                 tabletype,
                                 variablename,
                                 store.GetTable(tabletype));
-                            XmlNode tableNodes = curChild.FirstChild;
 
                             tables.Add(table);
                         }

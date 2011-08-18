@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -46,7 +46,6 @@ namespace Ict.Common.Controls
         private System.Data.DataTable FDataTable;
         private String FCheckedColumn;
         private String FKeyColumn;
-        private String FLabelColumn;
 
         /// <summary>
         /// the number of checked items
@@ -139,7 +138,6 @@ namespace Ict.Common.Controls
             FDataView.Sort = ASortColumn;
             FCheckedColumn = ACheckedColumn;
             FKeyColumn = AKeyColumn;
-            FLabelColumn = ALabelColumn;
             FDataView.AllowNew = AAllowNew;
             FDataView.AllowEdit = AAllowEdit;
             FDataView.AllowDelete = AAllowDelete;

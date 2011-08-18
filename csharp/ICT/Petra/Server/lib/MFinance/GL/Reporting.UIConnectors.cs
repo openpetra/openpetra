@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -65,6 +65,28 @@ namespace Ict.Petra.Server.MFinance.Reporting
         private int FNumberForwardingPeriods;
         private int FCurrentPeriod;
         private int FCurrentYear;
+
+        /// <summary>
+        /// get the number of forwarding periods. needed to avoid warning about unused FNumberForwardingPeriods
+        /// </summary>
+        public int NumberForwardingPeriods
+        {
+            get
+            {
+                return FNumberForwardingPeriods;
+            }
+        }
+
+        /// <summary>
+        /// get the number of the current period. needed to avoid warning about unused FNumberForwardingPeriods
+        /// </summary>
+        public int CurrentPeriod
+        {
+            get
+            {
+                return FCurrentPeriod;
+            }
+        }
 
         /// <summary>
         /// initialise the object, select the given ledger

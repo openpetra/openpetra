@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -262,7 +262,7 @@ namespace Ict.Petra.Server.App.Core.Security
 
                     try
                     {
-                        bool hasPermission = CheckUserModulePermissions(moduleExpression);
+                        CheckUserModulePermissions(moduleExpression);
                     }
                     catch (EvaluateException evException)
                     {
