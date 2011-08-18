@@ -144,7 +144,8 @@ useful parameters
   <nant inheritall="false" target="compile" 
         buildfile="csharp/ICT/PetraTools/ICT.PetraTools.build" />
   <!-- Find all dependencies -->
-  <nant inheritall="false" target="depend" 
+  <property name="dontCompile" value="true"/>
+  <nant inheritall="true" target="depend" 
         buildfile="csharp/csharp.build" />
   <!-- Generate the project/solution files -->
   <call target="generateSolutionNoCompile" />

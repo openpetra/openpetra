@@ -118,6 +118,7 @@
 </target>
 
 <target name="compile" depends="depend">
+  <property name="dontCompile" value="false" overwrite="false"/>
   <!-- Create assembly info -->
   <if test="${bool::parse(RunCsDepend)!=true}">
     <mkdir dir="${namespace-temp-dir}" />
@@ -141,20 +142,22 @@
         <attribute type="AssemblyVersion" value='"${ReleaseID}"' asis="true" /> 
       </attributes>
     </asminfo>
-    <!-- filealign="4096"  for csc not supported on mono -->
-    <csc output="${dir.bin}/${AssemblyName}" 
-         doc="${dir.bin}/${Namespace}.xml"
-         target="${OutputType}" debug="${compile.debug}" platform="${compile.platform}"
-         noconfig="true" define="DEBUGMODE">
-      <references refid="assemblyfileset-references" /> 
-      <sources>
-        <include name="${compilefiles}" />
-        <include name="${AssemblyNameInfo.cs}" />
-      </sources>
-      <resources>
-        <include name="${resourcefiles}" />
-      </resources>
-    </csc>
+    <if test="${dontCompile == 'true'}">
+      <!-- filealign="4096"  for csc not supported on mono -->
+      <csc output="${dir.bin}/${AssemblyName}" 
+           doc="${dir.bin}/${Namespace}.xml"
+           target="${OutputType}" debug="${compile.debug}" platform="${compile.platform}"
+           noconfig="true" define="DEBUGMODE">
+        <references refid="assemblyfileset-references" /> 
+        <sources>
+          <include name="${compilefiles}" />
+          <include name="${AssemblyNameInfo.cs}" />
+        </sources>
+        <resources>
+          <include name="${resourcefiles}" />
+        </resources>
+      </csc>
+    </if>
   </if>
   <if test="${bool::parse(RunCsDepend)==true}">
     <property name="target" value="compile" />
