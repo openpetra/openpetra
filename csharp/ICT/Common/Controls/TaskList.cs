@@ -5,7 +5,7 @@
 //		 chadds
 //		 ashleyc
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -446,7 +446,6 @@ namespace Ict.Common.Controls
             XmlNode TaskNode = Node.FirstChild;
             //char[] period = {'.'};
             int CurrentLevelTaskNumber = Convert.ToInt32(TaskNumber.Split('.')[0]);
-            String Number2 = (TaskNumber.Split('.').Length > 1) ? TaskNumber.Split('.')[1] : null;
             String NextLevelTaskNumber = (TaskNumber.IndexOf(".") >= 0) ? TaskNumber.Substring(TaskNumber.IndexOf(".") + 1) : "";
 
             int counter = 1;

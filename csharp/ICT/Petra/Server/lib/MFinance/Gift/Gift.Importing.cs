@@ -60,7 +60,6 @@ namespace Ict.Petra.Server.MFinance.Gift
         String FDateFormatString;
         bool FExtraColumns;
         TDBTransaction FTransaction;
-        GLSetupTDS FSetupTDS;
         GiftBatchTDS FMainDS;
         CultureInfo FCultureInfoNumberFormat;
         CultureInfo FCultureInfoDate;
@@ -88,7 +87,6 @@ namespace Ict.Petra.Server.MFinance.Gift
         {
             AMessages = new TVerificationResultCollection();
             FMainDS = new GiftBatchTDS();
-            FSetupTDS = new GLSetupTDS();
             StringReader sr = new StringReader(importString);
 
             FDelimiter = (String)requestParams["Delimiter"];
@@ -172,10 +170,8 @@ namespace Ict.Petra.Server.MFinance.Gift
                             giftDetails.GiftTransactionNumber = gift.GiftTransactionNumber;
                             FMainDS.AGiftDetail.Rows.Add(giftDetails);
 
-
                             gift.DonorKey = ImportInt64(Catalog.GetString("donor key"));
-                            String unused = ImportString(Catalog.GetString("short name of donor (unused)"));
-
+                            ImportString(Catalog.GetString("short name of donor (unused)")); // unused
 
                             gift.MethodOfGivingCode = ImportString(Catalog.GetString("method of giving Code"));
                             gift.MethodOfPaymentCode = ImportString(Catalog.GetString("method Of Payment Code"));
@@ -190,7 +186,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                             }
 
                             giftDetails.RecipientKey = ImportInt64(Catalog.GetString("recipient key"));
-                            unused = ImportString(Catalog.GetString("short name of recipient (unused)"));
+                            ImportString(Catalog.GetString("short name of recipient (unused)")); // unused
 
                             if (FExtraColumns)
                             {

@@ -36,7 +36,7 @@ RootNode:
             TableName: ATransaction
             Columns: [TransactionNumber, TransactionDate, CostCentreCode, AccountCode, TransactionAmount, DebitCreditIndicator, Reference, Narrative, AmountInBaseCurrency, AmountInIntlCurrency, AnalysisAttributes]
             CustomColumns:
-                DebitCreditIndicator: {Label=Credit/Debit, Type=String}
+                DebitCreditIndicator: {Label=Credit/Debit, Type="Boolean(Debit,Credit)"}
                 DateEntered: {Label=Date Entered, Type=DateTime}
                 AnalysisAttributes: {Label=Analysis Attributes, Type=String}
             ActionFocusRow: FocusedRowChanged

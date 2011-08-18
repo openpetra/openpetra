@@ -154,37 +154,7 @@ namespace Ict.Petra.Server.MFinance.Common
                     Transaction);
             }
 
-            // get all accounts that are referenced by all transactions of this batch
-            string AccountTableName = "PUB_" + TTypedDataTable.GetTableNameSQL(AAccountTable.TableId);
-            string TransactionTableName = "PUB_" + TTypedDataTable.GetTableNameSQL(ATransactionTable.TableId);
-            string stmt = "SELECT DISTINCT " +
-                          AccountTableName + "." + AAccountTable.GetLedgerNumberDBName() + ", " +
-                          AccountTableName + "." + AAccountTable.GetAccountCodeDBName() + ", " +
-                          AccountTableName + "." + AAccountTable.GetForeignCurrencyCodeDBName() + ", " +
-                          AccountTableName + "." + AAccountTable.GetForeignCurrencyFlagDBName() + ", " +
-                          AccountTableName + "." + AAccountTable.GetDebitCreditIndicatorDBName() +
-                          " FROM " + AccountTableName + ", " +
-                          TransactionTableName +
-                          " WHERE " + TransactionTableName + "." + ATransactionTable.GetLedgerNumberDBName() + " = ? AND " +
-                          TransactionTableName + "." + ATransactionTable.GetBatchNumberDBName() + " = ? AND " +
-                          AccountTableName + "." + AAccountTable.GetLedgerNumberDBName() + " = " + TransactionTableName + "." +
-                          ATransactionTable.GetLedgerNumberDBName() + " AND " +
-                          AccountTableName + "." + AAccountTable.GetAccountCodeDBName() + " = " + TransactionTableName + "." +
-                          ATransactionTable.GetAccountCodeDBName();
-            OdbcParameter paramLedgerNumber = TTypedDataTable.CreateOdbcParameter(ATransactionTable.TableId,
-                ATransactionTable.ColumnLedgerNumberId);
-            paramLedgerNumber.Value = ALedgerNumber;
-            OdbcParameter paramBatchNumber = TTypedDataTable.CreateOdbcParameter(ATransactionTable.TableId,
-                ATransactionTable.ColumnBatchNumberId);
-            paramBatchNumber.Value = ABatchNumber;
-            OdbcParameter[] ParametersArray = new OdbcParameter[] {
-                paramLedgerNumber,
-                paramBatchNumber
-            };
-
-// TODO       DBAccess.GDBAccessObj.SelectDT(ADataSet.AAccount, stmt, Transaction, ParametersArray, -1, -1);
-
-            // load all accounts of ledger, because we need them later for the account hierachy tree for summarisation
+            // load all accounts of ledger, because we need them later for the account hierarchy tree for summarisation
             AAccountAccess.LoadViaALedger(ADataSet, ALedgerNumber, Transaction);
 
             // TODO: use cached table?
@@ -848,7 +818,7 @@ namespace Ict.Petra.Server.MFinance.Common
             ref GLBatchTDS AMainDS,
             ref SortedList <string, TAmount>APostingLevel)
         {
-            Int32 TempGLMSequence = -1;
+            Int32 TempGLMSequence = AMainDS.AGeneralLedgerMaster.Count * (-1) - 1;
             Int32 FromPeriod = AMainDS.ABatch[0].BatchPeriod;
 
             if (AMainDS.ALedger[0].ProvisionalYearEndFlag)
@@ -861,7 +831,9 @@ namespace Ict.Petra.Server.MFinance.Common
             }
 
             DataView GLMMasterView = AMainDS.AGeneralLedgerMaster.DefaultView;
+            GLMMasterView.Sort = AGeneralLedgerMasterTable.GetAccountCodeDBName() + "," + AGeneralLedgerMasterTable.GetCostCentreCodeDBName();
             DataView GLMPeriodView = AMainDS.AGeneralLedgerMasterPeriod.DefaultView;
+            GLMPeriodView.Sort = AGeneralLedgerMasterPeriodTable.GetGlmSequenceDBName() + "," + AGeneralLedgerMasterPeriodTable.GetPeriodNumberDBName();
 
             // Loop through the posting data collected earlier.  Summarize it to a
             // temporary table, which is much faster than finding and updating records
@@ -879,12 +851,10 @@ namespace Ict.Petra.Server.MFinance.Common
                 TAmount PostingLevelElement = APostingLevel[PostingLevelKey];
 
                 // Find the posting level, creating it if it does not already exist.
-                GLMMasterView.RowFilter = AGeneralLedgerMasterTable.GetAccountCodeDBName() + "='" + AccountCode +
-                                          "' and " +
-                                          AGeneralLedgerMasterTable.GetCostCentreCodeDBName() + "='" + CostCentreCode + "'";
+                int GLMMasterIndex = GLMMasterView.Find(new object[] { AccountCode, CostCentreCode });
                 AGeneralLedgerMasterRow GlmRow;
 
-                if (GLMMasterView.Count == 0)
+                if (GLMMasterIndex == -1)
                 {
                     TempGLMSequence--;
                     GlmRow = AMainDS.AGeneralLedgerMaster.NewRowTyped();
@@ -897,7 +867,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 }
                 else
                 {
-                    GlmRow = (AGeneralLedgerMasterRow)GLMMasterView[0].Row;
+                    GlmRow = (AGeneralLedgerMasterRow)GLMMasterView[GLMMasterIndex].Row;
                 }
 
                 GlmRow.YtdActualBase += PostingLevelElement.baseAmount;
@@ -924,13 +894,12 @@ namespace Ict.Petra.Server.MFinance.Common
                      PeriodCount <= AMainDS.ALedger[0].NumberOfAccountingPeriods + AMainDS.ALedger[0].NumberFwdPostingPeriods;
                      PeriodCount++)
                 {
-                    GLMPeriodView.RowFilter = AGeneralLedgerMasterPeriodTable.GetGlmSequenceDBName() + "=" +
-                                              TempGLMSequence.ToString() + " and " +
-                                              AGeneralLedgerMasterPeriodTable.GetPeriodNumberDBName() + "=" + PeriodCount.ToString();
+                    int GLMPeriodIndex = GLMPeriodView.Find(new object[] { TempGLMSequence, PeriodCount });
                     AGeneralLedgerMasterPeriodRow GlmPeriodRow;
 
-                    if (GLMPeriodView.Count == 0)
+                    if (GLMPeriodIndex == -1)
                     {
+                        TempGLMSequence--;
                         GlmPeriodRow = AMainDS.AGeneralLedgerMasterPeriod.NewRowTyped();
                         GlmPeriodRow.GlmSequence = TempGLMSequence;
                         GlmPeriodRow.PeriodNumber = PeriodCount;
@@ -938,7 +907,7 @@ namespace Ict.Petra.Server.MFinance.Common
                     }
                     else
                     {
-                        GlmPeriodRow = (AGeneralLedgerMasterPeriodRow)GLMPeriodView[0].Row;
+                        GlmPeriodRow = (AGeneralLedgerMasterPeriodRow)GLMPeriodView[GLMPeriodIndex].Row;
                     }
 
                     GlmPeriodRow.ActualBase += PostingLevelElement.baseAmount;
@@ -956,6 +925,9 @@ namespace Ict.Petra.Server.MFinance.Common
                     }
                 }
             }
+
+            GLMMasterView.Sort = "";
+            GLMPeriodView.Sort = "";
 
             return true;
         }
@@ -1107,36 +1079,36 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
         /// <summary>
-        /// post a GL Batch
+        /// prepare posting a GL Batch, without saving to database yet.
+        /// This is called by the actual PostGLBatch routine, but also by the routine for testing what would happen to the balances.
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <param name="AVerifications"></param>
-        public static bool PostGLBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out TVerificationResultCollection AVerifications)
+        public static bool PostGLBatchInternal(Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            out TVerificationResultCollection AVerifications,
+            out GLBatchTDS AMainDS)
         {
-            GLBatchTDS MainDS;
-
             // get the data from the database into the MainDS
-            if (!LoadData(out MainDS, ALedgerNumber, ABatchNumber, out AVerifications))
+            if (!LoadData(out AMainDS, ALedgerNumber, ABatchNumber, out AVerifications))
             {
                 return false;
             }
 
             // first validate Batch, and Transactions; check credit/debit totals; check currency, etc
-            if (!ValidateBatchAndTransactions(ref MainDS, ALedgerNumber, ABatchNumber, out AVerifications))
+            if (!ValidateBatchAndTransactions(ref AMainDS, ALedgerNumber, ABatchNumber, out AVerifications))
             {
                 return false;
             }
 
-            if (!ValidateAnalysisAttributes(ref MainDS, ALedgerNumber, ABatchNumber, out AVerifications))
+            if (!ValidateAnalysisAttributes(ref AMainDS, ALedgerNumber, ABatchNumber, out AVerifications))
             {
                 return false;
             }
 
             // post each journal, each transaction; add sums for costcentre/account combinations
-            SortedList <string, TAmount>PostingLevel = MarkAsPostedAndCollectData(ref MainDS);
+            SortedList <string, TAmount>PostingLevel = MarkAsPostedAndCollectData(ref AMainDS);
 
-#if OLD_POSTING_WITH_TREE
+// we need the tree, because of the cost centre tree, which is not calculated by the balance sheet and other reports
+//#if OLD_POSTING_WITH_TREE
             // key is PostingAccount, the value TAccountTreeElement describes the parent account and other details of the relation
             SortedList <string, TAccountTreeElement>AccountTree;
 
@@ -1147,16 +1119,34 @@ namespace Ict.Petra.Server.MFinance.Common
 
             // this was in Petra 2.x; takes a lot of time, which the reports could do better
             CalculateTrees(ref PostingLevel, out AccountTree, out CostCentreTree,
-                MainDS.AAccount.DefaultView,
-                MainDS.AAccountHierarchyDetail.DefaultView,
-                MainDS.ACostCentre.DefaultView);
+                AMainDS.AAccount.DefaultView,
+                AMainDS.AAccountHierarchyDetail.DefaultView,
+                AMainDS.ACostCentre.DefaultView);
 
-            SummarizeData(ref MainDS, ref PostingLevel, ref AccountTree, ref CostCentreTree);
-#endif
+            SummarizeData(ref AMainDS, ref PostingLevel, ref AccountTree, ref CostCentreTree);
+//#endif
 
+            SummarizeDataSimple(ref AMainDS, ref PostingLevel);
 
-            SummarizeDataSimple(ref MainDS, ref PostingLevel);
-            return SubmitChanges(ref MainDS, out AVerifications);
+            return true;
+        }
+
+        /// <summary>
+        /// post a GL Batch
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AVerifications"></param>
+        public static bool PostGLBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out TVerificationResultCollection AVerifications)
+        {
+            GLBatchTDS MainDS;
+
+            if (PostGLBatchInternal(ALedgerNumber, ABatchNumber, out AVerifications, out MainDS))
+            {
+                return SubmitChanges(ref MainDS, out AVerifications);
+            }
+
+            return false;
         }
 
         /// <summary>

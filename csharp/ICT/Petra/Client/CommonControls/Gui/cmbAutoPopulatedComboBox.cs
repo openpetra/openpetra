@@ -182,7 +182,7 @@ namespace Ict.Petra.Client.CommonControls
         private String FNotSetValue;
         private String FNotSetDisplay;
         private bool FAppearanceSetupRun = false;
-        
+
         /// this allows to set the table manually,
         /// when it cannot come from a cache because it depends on too many other parameters on the screen
         public DataTable Table
@@ -249,12 +249,12 @@ namespace Ict.Petra.Client.CommonControls
                 cmbAutoPopulated.ComboBoxWidth = value;
             }
         }
-        
+
         /// <summary>
         /// Allows the caller to inquire how many Columns are shown when the user drops the Drop-Down.
         /// Only inquire this after <see cref="AppearanceSetup" /> has been run!
         /// </summary>
-        [Browsable (false),
+        [Browsable(false),
          DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public int ShownColumns
         {
@@ -264,19 +264,19 @@ namespace Ict.Petra.Client.CommonControls
                 {
                     throw new Exception("Property 'ShownColumns' may only be inquired after AppearanceSetup Method has been run!");
                 }
-                
+
                 if (cmbAutoPopulated.ColumnWidthCol2 == 0)
                 {
                     return 1;
-                } 
+                }
                 else if (cmbAutoPopulated.ColumnWidthCol3 == 0)
                 {
                     return 2;
-                } 
+                }
                 else if (cmbAutoPopulated.ColumnWidthCol4 == 0)
                 {
                     return 3;
-                } 
+                }
                 else
                 {
                     return 4;

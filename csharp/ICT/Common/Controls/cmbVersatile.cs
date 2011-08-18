@@ -4,7 +4,7 @@
 // @Authors:
 //       markusm, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -769,8 +769,6 @@ namespace Ict.Common.Controls
             System.Drawing.SolidBrush SelectedBackGroundBrush;
             System.Drawing.SolidBrush DefaultForeGroundBrush;
             System.Drawing.SolidBrush SelectedForeGroundBrush;
-            System.Drawing.SolidBrush GridLineBrush;
-            System.Drawing.Pen GridLinePen;
             System.Drawing.StringFormat pStringFormat;
             System.Int32 mItemIndex;
             String StringColumn1 = "";
@@ -784,10 +782,6 @@ namespace Ict.Common.Controls
             SelectedBackGroundBrush = new System.Drawing.SolidBrush(System.Drawing.SystemColors.Highlight);
             DefaultForeGroundBrush = new System.Drawing.SolidBrush(this.ForeColor);
             SelectedForeGroundBrush = new System.Drawing.SolidBrush(System.Drawing.SystemColors.HighlightText);
-
-            // Sort out the grid lines
-            GridLineBrush = new System.Drawing.SolidBrush(this.FGridLineColor);
-            GridLinePen = new System.Drawing.Pen(GridLineBrush, 1);
 
             // Preset the base rectangle
             BackGroundRectangle = e.Bounds;

@@ -1703,13 +1703,11 @@ namespace Ict.Common.Controls
             bool mLabelDataMemberExists;
             bool mLookUpTableExists;
             bool mDelegateFunctionExists;
-            String mResultString;
 
             mTextBoxDataMemberExists = false;
             mLabelDataMemberExists = false;
             mLookUpTableExists = false;
             mDelegateFunctionExists = false;
-            mResultString = "";
             #region Configuration Check
 
             /*
@@ -1767,15 +1765,16 @@ namespace Ict.Common.Controls
 
             #endregion
 
-            if ((ReturnValue == TButtonLabelControlMode.None) && (DesignMode))
-            {
-                mResultString = "mTextBoxDataMemberExists: " + mTextBoxDataMemberExists.ToString() + "\n" + "mLabelDataMemberExists: " +
-                                mLabelDataMemberExists.ToString() + "\nmLookUpTableExists: " + mLookUpTableExists.ToString() +
-                                "\nmDelegateFunctionExists: " +
-                                mDelegateFunctionExists.ToString();
-
-                // messagebox.Show(mResultString);
-            }
+//            if ((ReturnValue == TButtonLabelControlMode.None) && (DesignMode))
+//            {
+//
+//                string mResultString = "mTextBoxDataMemberExists: " + mTextBoxDataMemberExists.ToString() + "\n" + "mLabelDataMemberExists: " +
+//                                mLabelDataMemberExists.ToString() + "\nmLookUpTableExists: " + mLookUpTableExists.ToString() +
+//                                "\nmDelegateFunctionExists: " +
+//                                mDelegateFunctionExists.ToString();
+//
+//                MessageBox.Show(mResultString);
+//            }
 
             return ReturnValue;
         }

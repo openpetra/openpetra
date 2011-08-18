@@ -144,13 +144,19 @@ useful parameters
   <nant inheritall="false" target="compile" 
         buildfile="csharp/ICT/PetraTools/ICT.PetraTools.build" />
   <!-- Find all dependencies -->
+  <mkdir dir="${dir.bin}" />
+  <!-- write this information to a file, since the properties are not passed through to the sub directories -->
+  <echo file="${dir.bin}/dont_compile.txt">true</echo>  
   <nant inheritall="false" target="depend" 
         buildfile="csharp/csharp.build" />
   <!-- Generate the project/solution files -->
   <call target="generateSolutionNoCompile" />
+  <delete file="${dir.bin}/dont_compile.txt"/>  
 </target>
 
-<target name="generateSolution" depends="compile" description="compiles OpenPetra and generates the project and solution files">
+<target name="generateSolution" description="compiles OpenPetra and generates the project and solution files">
+  <delete file="${dir.bin}/dont_compile.txt"/>  
+  <call target="compile" />
   <call target="generateSolutionNoCompile" />
 </target>
 

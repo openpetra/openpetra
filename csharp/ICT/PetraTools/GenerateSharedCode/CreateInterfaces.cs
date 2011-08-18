@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,8 +28,8 @@ using System.Collections.Generic;
 using System.Xml;
 using System.IO;
 using System.Text;
-using DDW;
-using DDW.Collections;
+using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory;
 using NamespaceHierarchy;
 using Ict.Common;
 using Ict.Tools.CodeGeneration;
@@ -53,13 +53,13 @@ public class CreateInterfaces : AutoGenerationWriter
 
         foreach (CSParser CSFile in ACSFiles)
         {
-            foreach (ClassNode t in CSFile.GetClasses())
+            foreach (TypeDeclaration t in CSFile.GetClasses())
             {
-                foreach (IType ti in t.BaseClasses)
+                foreach (ICSharpCode.NRefactory.Ast.TypeReference ti in t.BaseTypes)
                 {
-                    if (CSParser.GetName(ti).StartsWith("I"))
+                    if (ti.Type.StartsWith("I"))
                     {
-                        Result.Add(CSParser.GetName(ti), CSFile.GetFullClassNameWithNamespace(t));
+                        Result.Add(ti.Type, CSFile.GetFullClassNameWithNamespace(t));
                     }
                 }
             }
@@ -75,25 +75,25 @@ public class CreateInterfaces : AutoGenerationWriter
     /// <param name="AInterfaceName"></param>
     /// <param name="ANamespace">namespace name on the server</param>
     /// <returns></returns>
-    private List <ClassNode>GetClassesThatImplementInterface(
+    private List <TypeDeclaration>GetClassesThatImplementInterface(
         List <CSParser>ACSFiles, String AInterfaceName, String ANamespace)
     {
-        List <ClassNode>ClassList = new List <ClassNode>();
+        List <TypeDeclaration>ClassList = new List <TypeDeclaration>();
 
         // find all classes in that server namespace, eg. Ict.Petra.Server.MPartner.Extracts.UIConnectors
-        List <ClassNode>ConnectorClasses = CSParser.GetClassesInNamespace(ACSFiles, ANamespace);
+        List <TypeDeclaration>ConnectorClasses = CSParser.GetClassesInNamespace(ACSFiles, ANamespace);
 
-        foreach (ClassNode t in ConnectorClasses)
+        foreach (TypeDeclaration t in ConnectorClasses)
         {
-            if ((t.BaseClasses.Count == 0) && ANamespace.EndsWith("WebConnectors"))
+            if ((t.BaseTypes.Count == 0) && ANamespace.EndsWith("WebConnectors"))
             {
                 ClassList.Add(t);
                 continue;
             }
 
-            foreach (IType ti in t.BaseClasses)
+            foreach (ICSharpCode.NRefactory.Ast.TypeReference ti in t.BaseTypes)
             {
-                if (CSParser.GetName(ti) == AInterfaceName)
+                if (ti.Type == AInterfaceName)
                 {
                     ClassList.Add(t);
                     break;
@@ -145,31 +145,44 @@ public class CreateInterfaces : AutoGenerationWriter
     /// <returns></returns>
     private bool WriteConnectorMethods(
         ref StringCollection AMethodsAlreadyWritten,
-        List <ClassNode>AConnectorClasses, String AInterfaceName, String AInterfaceNamespace, String AServerNamespace)
+        List <TypeDeclaration>AConnectorClasses, String AInterfaceName, String AInterfaceNamespace, String AServerNamespace)
     {
-        foreach (ClassNode t in AConnectorClasses)
+        foreach (TypeDeclaration t in AConnectorClasses)
         {
-            string ConnectorClassName = CSParser.GetName(t.Name);
+            string ConnectorClassName = t.Name;
 
-            foreach (PropertyNode p in CSParser.GetProperties(t))
+            foreach (PropertyDeclaration p in CSParser.GetProperties(t))
             {
-                // don't write namespace hierarchy here
-                if ((CSParser.GetName(p.Type).IndexOf("Namespace") == -1)
-                    && ((p.Modifiers & Modifier.Public) != 0)
-                    && !p.DocComment.Contains("[NO-REMOTING]"))
+                bool AttributeNoRemoting = false;
+
+                foreach (AttributeSection attrSection in p.Attributes)
                 {
-                    String returnType = ShortenTypeName(CSParser.GetName(p.Type), AInterfaceNamespace);
+                    foreach (ICSharpCode.NRefactory.Ast.Attribute attr in attrSection.Attributes)
+                    {
+                        if (attr.Name == "NoRemoting")
+                        {
+                            AttributeNoRemoting = true;
+                        }
+                    }
+                }
+
+                // don't write namespace hierarchy here
+                if ((p.TypeReference.Type.IndexOf("Namespace") == -1)
+                    && ((p.Modifier & Modifiers.Public) != 0)
+                    && !AttributeNoRemoting)
+                {
+                    String returnType = ShortenTypeName(p.TypeReference.Type, AInterfaceNamespace);
 
                     // this interface got implemented somewhere on the server
                     WriteLine("/// <summary>auto generated from Connector property (" + AServerNamespace + "." + ConnectorClassName + ")</summary>");
-                    StartBlock(returnType + " " + CSParser.GetName(p.Names));
+                    StartBlock(returnType + " " + p.Name);
 
-                    if (p.Getter != null)
+                    if (p.HasGetRegion)
                     {
                         WriteLine("get;");
                     }
 
-                    if (p.Setter != null)
+                    if (p.HasSetRegion)
                     {
                         WriteLine("set;");
                     }
@@ -178,9 +191,22 @@ public class CreateInterfaces : AutoGenerationWriter
                 }
             }
 
-            foreach (MethodNode m in CSParser.GetMethods(t))
+            foreach (MethodDeclaration m in CSParser.GetMethods(t))
             {
-                string MethodName = CSParser.GetName(m.Names);
+                string MethodName = m.Name;
+
+                bool AttributeNoRemoting = false;
+
+                foreach (AttributeSection attrSection in m.Attributes)
+                {
+                    foreach (ICSharpCode.NRefactory.Ast.Attribute attr in attrSection.Attributes)
+                    {
+                        if (attr.Name == "NoRemoting")
+                        {
+                            AttributeNoRemoting = true;
+                        }
+                    }
+                }
 
                 if (MethodName.Equals("InitializeLifetimeService")
                     || MethodName.Equals("GetLifetimeService")
@@ -189,25 +215,25 @@ public class CreateInterfaces : AutoGenerationWriter
                     || MethodName.Equals("ToString")
                     || MethodName.Equals("Equals")
                     || MethodName.Equals("GetHashCode")
-                    || ((m.Modifiers & Modifier.Public) == 0)
-                    || m.DocComment.Contains("[NO-REMOTING]"))
+                    || ((m.Modifier & Modifiers.Public) == 0)
+                    || AttributeNoRemoting)
                 {
                     continue;
                 }
 
                 String formattedMethod = "";
-                String returnType = ShortenTypeName(CSParser.GetName(m.Type), AInterfaceNamespace);
+                String returnType = ShortenTypeName(m.TypeReference.Type, AInterfaceNamespace);
 
-                int align = (returnType + " " + CSParser.GetName(m.Names)).Length + 1;
+                int align = (returnType + " " + m.Name).Length + 1;
 
                 // this interface got implemented somewhere on the server
                 formattedMethod = "/// <summary> auto generated from Connector method(" + AServerNamespace + "." + ConnectorClassName +
                                   ")</summary>" + Environment.NewLine;
-                formattedMethod += returnType + " " + CSParser.GetName(m.Names) + "(";
+                formattedMethod += returnType + " " + m.Name + "(";
 
                 bool firstParameter = true;
 
-                foreach (ParamDeclNode p in m.Params)
+                foreach (ParameterDeclarationExpression p in m.Parameters)
                 {
                     if (!firstParameter)
                     {
@@ -216,18 +242,18 @@ public class CreateInterfaces : AutoGenerationWriter
                     }
 
                     firstParameter = false;
-                    String parameterType = CSParser.GetName(p.Type);
+                    String parameterType = p.TypeReference.Type;
 
-                    if ((p.Modifiers & Modifier.Ref) != 0)
+                    if ((p.ParamModifier & ParameterModifiers.Ref) != 0)
                     {
                         formattedMethod += "ref ";
                     }
-                    else if ((p.Modifiers & Modifier.Out) != 0)
+                    else if ((p.ParamModifier & ParameterModifiers.Out) != 0)
                     {
                         formattedMethod += "out ";
                     }
 
-                    formattedMethod += parameterType + " " + p.Name;
+                    formattedMethod += parameterType + " " + p.TypeReference.Type;
                 }
 
                 formattedMethod += ");";
@@ -251,21 +277,21 @@ public class CreateInterfaces : AutoGenerationWriter
     /// <returns></returns>
     private bool WriteConnectorConstructors(
         ref StringCollection AMethodsAlreadyWritten,
-        List <ClassNode>AConnectorClasses, String AInterfaceName, String AInterfaceNamespace, String AServerNamespace)
+        List <TypeDeclaration>AConnectorClasses, String AInterfaceName, String AInterfaceNamespace, String AServerNamespace)
     {
         string ServerNamespace = AInterfaceNamespace.Replace("Ict.Petra.Shared.Interfaces", "Ict.Petra.Server");
 
-        foreach (ClassNode t in AConnectorClasses)
+        foreach (TypeDeclaration t in AConnectorClasses)
         {
-            string ConnectorClassName = CSParser.GetName(t.Name);
-            MethodNode GetDataMethod = null;
+            string ConnectorClassName = t.Name;
+            MethodDeclaration GetDataMethod = null;
 
-            foreach (MethodNode m in t.Methods)
+            foreach (MethodDeclaration m in CSParser.GetMethods(t))
             {
-                if (CSParser.GetName(m.Names) == "GetData")
+                if (m.Name == "GetData")
                 {
                     // there might be overloads of GetData; use the method with the most parameters
-                    if ((GetDataMethod == null) || (GetDataMethod.Params.Count < m.Params.Count))
+                    if ((GetDataMethod == null) || (GetDataMethod.Parameters.Count < m.Parameters.Count))
                     {
                         GetDataMethod = m;
                     }
@@ -294,13 +320,13 @@ public class CreateInterfaces : AutoGenerationWriter
                     ConnectorClassName.Length - 1 - (connectorName.Length - 1));
                 string MethodType = "";
 
-                foreach (IType ti in t.BaseClasses)
+                foreach (TypeReference ti in t.BaseTypes)
                 {
                     // problem, eg. in MCommon, TOfficeSpecificDataLabelsUIConnector implements 2 interfaces
-                    if ((CSParser.GetName(ti) != "TConfigurableMBRObject")
-                        && (CSParser.GetName(ti) == AInterfaceName))
+                    if ((ti.Type != "TConfigurableMBRObject")
+                        && (ti.Type == AInterfaceName))
                     {
-                        MethodType = CSParser.GetName(ti);
+                        MethodType = ti.Type;
                     }
                 }
 
@@ -310,7 +336,9 @@ public class CreateInterfaces : AutoGenerationWriter
                     continue;
                 }
 
-                if (t.Constructors.Count == 0)
+                List <ConstructorDeclaration>constructors = CSParser.GetConstructors(t);
+
+                if (constructors.Count == 0)
                 {
                     // will cause compile error if the constructor is missing, because it is not implementing the interface completely
                     throw new Exception("missing a connector constructor in " + ServerNamespace + "." + ConnectorClassName);
@@ -323,7 +351,7 @@ public class CreateInterfaces : AutoGenerationWriter
                 else
                 {
                     // find constructor and copy the parameters
-                    foreach (ConstructorNode m in t.Constructors)
+                    foreach (ConstructorDeclaration m in constructors)
                     {
                         WriteLine(
                             "/// <summary>auto generated from Connector constructor (" + ServerNamespace + "." + ConnectorClassName + ")</summary>");
@@ -332,9 +360,9 @@ public class CreateInterfaces : AutoGenerationWriter
                         int align = MethodDeclaration.Length;
                         bool firstParameter = true;
 
-                        foreach (ParamDeclNode p in m.Params)
+                        foreach (ParameterDeclarationExpression p in m.Parameters)
                         {
-                            AddParameter(ref MethodDeclaration, ref firstParameter, align, p.Name, p.Modifiers, p.Type);
+                            AddParameter(ref MethodDeclaration, ref firstParameter, align, p.ParameterName, p.ParamModifier, p.TypeReference.Type);
                         }
 
                         MethodDeclaration += ");";
@@ -350,18 +378,23 @@ public class CreateInterfaces : AutoGenerationWriter
                             firstParameter = true;
 
                             // first add the parameters of the constructor
-                            foreach (ParamDeclNode p in m.Params)
+                            foreach (ParameterDeclarationExpression p in m.Parameters)
                             {
-                                AddParameter(ref MethodDeclaration, ref firstParameter, align, p.Name, p.Modifiers, p.Type);
+                                AddParameter(ref MethodDeclaration, ref firstParameter, align, p.ParameterName, p.ParamModifier, p.TypeReference.Type);
                             }
 
                             // then add the return value of GetData as a ref parameter
-                            AddParameter(ref MethodDeclaration, ref firstParameter, align, "ADataSet", Modifier.Ref, GetDataMethod.Type);
+                            AddParameter(ref MethodDeclaration,
+                                ref firstParameter,
+                                align,
+                                "ADataSet",
+                                ParameterModifiers.Ref,
+                                GetDataMethod.TypeReference.Type);
 
                             // then add the parameters of GetData, if they have not been added yet with the parameters of the constructor
-                            foreach (ParamDeclNode p in GetDataMethod.Params)
+                            foreach (ParameterDeclarationExpression p in GetDataMethod.Parameters)
                             {
-                                AddParameter(ref MethodDeclaration, ref firstParameter, align, p.Name, p.Modifiers, p.Type);
+                                AddParameter(ref MethodDeclaration, ref firstParameter, align, p.ParameterName, p.ParamModifier, p.TypeReference.Type);
                             }
 
                             MethodDeclaration += ");";
@@ -388,28 +421,28 @@ public class CreateInterfaces : AutoGenerationWriter
     /// <returns></returns>
     private bool WriteInstantiatorMethods(
         StringCollection AMethodsAlreadyWritten,
-        List <ClassNode>AInstantiatorClasses, String AInterfaceName, String AInterfaceNamespace, String AServerNamespace)
+        List <TypeDeclaration>AInstantiatorClasses, String AInterfaceName, String AInterfaceNamespace, String AServerNamespace)
     {
-        foreach (ClassNode t in AInstantiatorClasses)
+        foreach (TypeDeclaration t in AInstantiatorClasses)
         {
             // there should only be one class, eg. TSubscriptionsCacheableNamespace
-            foreach (MethodNode m in t.Methods)
+            foreach (MethodDeclaration m in CSParser.GetMethods(t))
             {
                 // copy all public methods that are not constructor, destructor, or InitializeLifetimeService
                 // and that are not created yet
-                if ((CSParser.GetName(m.Names) != "InitializeLifetimeService")
-                    && ((m.Modifiers & Modifier.Public) != 0)
-                    && !AMethodsAlreadyWritten.Contains(CSParser.GetName(m.Names)))
+                if ((m.Name != "InitializeLifetimeService")
+                    && ((m.Modifier & Modifiers.Public) != 0)
+                    && !AMethodsAlreadyWritten.Contains(m.Name))
                 {
-                    WriteLine("/// <summary>auto generated from Instantiator (" + AServerNamespace + "." + CSParser.GetName(t.Name) + ")</summary>");
-                    string MethodDeclaration = CSParser.GetName(m.Type) + " " + CSParser.GetName(m.Names) + "(";
+                    WriteLine("/// <summary>auto generated from Instantiator (" + AServerNamespace + "." + t.Type + ")</summary>");
+                    string MethodDeclaration = m.TypeReference.Type + " " + m.Name + "(";
                     int align = MethodDeclaration.Length;
 
                     bool firstParameter = true;
 
-                    foreach (ParamDeclNode p in m.Params)
+                    foreach (ParameterDeclarationExpression p in m.Parameters)
                     {
-                        AddParameter(ref MethodDeclaration, ref firstParameter, align, p.Name, p.Modifiers, p.Type);
+                        AddParameter(ref MethodDeclaration, ref firstParameter, align, p.ParameterName, p.ParamModifier, p.TypeReference.Type);
                     }
 
                     MethodDeclaration += ");";
@@ -451,7 +484,7 @@ public class CreateInterfaces : AutoGenerationWriter
 
         foreach (string ChildInterface in InterfacesInNamespace)
         {
-            List <ClassNode>ConnectorClasses = GetClassesThatImplementInterface(
+            List <TypeDeclaration>ConnectorClasses = GetClassesThatImplementInterface(
                 ACSFiles,
                 ChildInterface,
                 ServerConnectorNamespace);
@@ -467,7 +500,7 @@ public class CreateInterfaces : AutoGenerationWriter
             }
         }
 
-        List <ClassNode>ConnectorClasses2 = GetClassesThatImplementInterface(
+        List <TypeDeclaration>ConnectorClasses2 = GetClassesThatImplementInterface(
             ACSFiles,
             AInterfaceName,
             ServerConnectorNamespace);
@@ -489,7 +522,7 @@ public class CreateInterfaces : AutoGenerationWriter
             NamespaceSplit[3] = NamespaceSplit[4];
             NamespaceSplit[4] = "Instantiator";
             string ServerInstantiatorNamespace = StringHelper.StrMerge(NamespaceSplit, ".");
-            List <ClassNode>InstantiatorClasses = GetClassesThatImplementInterface(
+            List <TypeDeclaration>InstantiatorClasses = GetClassesThatImplementInterface(
                 ACSFiles,
                 AInterfaceName,
                 ServerInstantiatorNamespace);
@@ -605,7 +638,6 @@ public class CreateInterfaces : AutoGenerationWriter
         // parse Instantiator source code
         foreach (TNamespace sn in tn.Children)
         {
-            string currentNamespaceOneLevelUp = "Ict.Petra.Shared.Interfaces.M" + tn.Name + "." + sn.Name;
             WriteNamespace("Ict.Petra.Shared.Interfaces.M" + tn.Name + "." + sn.Name, sn.Name, tn, sn, sn.Children, AInterfaceNames, ACSFiles);
         }
     }

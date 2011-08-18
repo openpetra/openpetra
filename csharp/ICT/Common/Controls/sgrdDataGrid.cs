@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -894,6 +894,80 @@ namespace Ict.Common.Controls
                                                           });
 
             AddTextColumn(AColumnTitle, ADataColumn, -1, null, CurrencyEditor, null, view, selectedConditionNegative);
+        }
+
+        class BooleanConverter : System.ComponentModel.TypeConverter
+        {
+            /// <summary>
+            /// text that should be displayed if the value is true
+            /// </summary>
+            protected string FTextTrue;
+
+            /// <summary>
+            /// text that should be displayed if the value is false
+            /// </summary>
+            protected string FTextFalse;
+
+            /// <summary>
+            /// constructor
+            /// </summary>
+            public BooleanConverter(string ATextTrue, string ATextFalse)
+            {
+                FTextTrue = ATextTrue;
+                FTextFalse = ATextFalse;
+            }
+
+            /// <summary>
+            /// we don't need conversions to boolean, but somehow we need to return true so that the conversion works the other way
+            /// </summary>
+            public override bool CanConvertFrom(System.ComponentModel.ITypeDescriptorContext context,
+                Type sourceType)
+            {
+                return true;
+            }
+
+            /// <summary>
+            /// allow all conversions from boolean
+            /// </summary>
+            public override bool CanConvertTo(System.ComponentModel.ITypeDescriptorContext context,
+                Type destinationType)
+            {
+                return true;
+            }
+
+            /// <summary>
+            /// convert boolean to string, the destinationType is ignored
+            /// </summary>
+            public override object ConvertTo(System.ComponentModel.ITypeDescriptorContext context,
+                System.Globalization.CultureInfo culture,
+                object value,
+                Type destinationType)
+            {
+                if ((bool)value == true)
+                {
+                    return FTextTrue;
+                }
+
+                return FTextFalse;
+            }
+        }
+
+        /// <summary>
+        /// add a column that shows a boolean value.
+        /// this allows to show a specific text for true and another text for false.
+        /// </summary>
+        /// <param name="AColumnTitle">Title of the HeaderColumn</param>
+        /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
+        /// <param name="ATextTrue">text to be displayed in the column if the value is true</param>
+        /// <param name="ATextFalse">text to be displayed in the column if the value is false</param>
+        public void AddBooleanColumn(String AColumnTitle, DataColumn ADataColumn, string ATextTrue, string ATextFalse)
+        {
+            SourceGrid.Cells.Editors.TextBox BooleanEditor = new SourceGrid.Cells.Editors.TextBox(typeof(bool));
+            BooleanEditor.TypeConverter = new BooleanConverter(ATextTrue, ATextFalse);
+
+            BooleanEditor.EditableMode = EditableMode.None;
+
+            AddTextColumn(AColumnTitle, ADataColumn, -1, null, BooleanEditor, null, null, null);
         }
 
         #endregion

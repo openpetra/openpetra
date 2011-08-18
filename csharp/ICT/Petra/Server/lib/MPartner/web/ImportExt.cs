@@ -967,7 +967,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             DocumentRow.SiteKey = ReadInt64();
             DocumentRow.DocumentKey = ReadInt64();
             DocumentRow.DocCode = ReadString();
-            string DocCategory = ReadString();
+            ReadString(); // DocCategory
             DocumentRow.DocumentId = ReadString();
             DocumentRow.PlaceOfIssue = ReadString();
             DocumentRow.DateOfIssue = ReadNullableDate();
@@ -1111,7 +1111,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             PartnerInterestRow.FieldKey = ReadInt64();
             PartnerInterestRow.Country = ReadString();
             PartnerInterestRow.Interest = ReadString();
-            string Category = ReadString();
+            ReadString(); // Category
             PartnerInterestRow.Level = ReadInt32();
             PartnerInterestRow.Comment = ReadString();
 
@@ -1523,8 +1523,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             InitReading(ALinesToImport);
 
             TFileVersionInfo PetraVersion = new TFileVersionInfo(ReadString());
-            Int64 SiteKey = ReadInt64();
-            Int32 SubVersion = ReadInt32();
+            ReadInt64(); // SiteKey
+            ReadInt32(); // SubVersion
 
             try
             {

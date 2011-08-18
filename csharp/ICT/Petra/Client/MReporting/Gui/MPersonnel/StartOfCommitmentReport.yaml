@@ -38,9 +38,9 @@ RootNode:
             Controls: [chkSelectedStatus, grdStatuses, chkNoSelectedStatus]
             
         dtpStartDate:
-            Label: Commitment starts
+            Label: Commitment starts between
         dtpEndDate:
-            Label: and:
+            Label: and
         chkSelectedStatus:
             Label: Include only Persons with selected Commitment
             CheckBoxAttachedLabel: right

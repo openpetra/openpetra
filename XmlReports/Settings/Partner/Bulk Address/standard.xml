@@ -4,7 +4,7 @@
   <Parameter id="xmlfiles" value="Partner\\bulkaddressreport.xml" />
   <Parameter id="currentReport" value="Bulk Address" />
   <Parameter id="MaxDisplayColumns" value="8" />
-  <Parameter id="param_selection" value="one partner" />
+  <Parameter id="param_selection" value="an extract" />
   <Parameter id="param_partnerkey" value="0" />
   <Parameter id="param_order_by_name" value="PartnerKey" />
   <Parameter id="param_calculation" column="0" value="Partner Key" />

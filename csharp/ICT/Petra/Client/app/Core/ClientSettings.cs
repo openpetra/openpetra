@@ -338,7 +338,7 @@ namespace Ict.Petra.Client.App.Core
 
             string userSettingsPath = GetUserPath("Reporting.PathReportUserSettings", String.Empty);
 
-            UPathLog = GetUserPath("OpenPetra.PathLog", Path.GetTempPath());
+            UPathLog = GetUserPath("OpenPetra.PathLog", UPathTemp);
 
             return UPathLog;
         }

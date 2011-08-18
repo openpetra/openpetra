@@ -11,7 +11,6 @@
 			<option name="one partner"></option>
 			<option name="an extract"></option>
 			<option name="all current staff"></option>
-			<option name="all staff"></option>
 		</reportparameter>
 		<reportparameter condition="param_selection=an extract" name="param_extract"></reportparameter>
 		<reportparameter condition="param_selection=one partner" name="param_partnerkey"></reportparameter>
@@ -63,9 +62,6 @@
         <fielddetail condition="eq({param_selection},all current staff)">
           <value text="All current Staff at date "></value><value variable="param_currentstaffdate" format="formatteddate"></value>
         </fielddetail>
-        <fielddetail condition="eq({param_selection},all staff)">
-          <value text="All Staff"></value>
-        </fielddetail>
       </field>
     </pageheader>
 
@@ -106,14 +102,10 @@
 					AND PUB_m_extract_master.m_extract_name_c = {param_extract}
 				</value>
 			</queryDetail>
-			<queryDetail condition="or(eq({param_selection},all current staff),eq({param_selection},all staff))">
+			<queryDetail condition="eq({param_selection},all current staff)">
 				<value>
 					 PUB_p_partner, PUB_pm_staff_data, PUB_p_partner_contact, PUB_p_location
 					WHERE PUB_p_partner.p_partner_key_n = PUB_pm_staff_data.p_partner_key_n
-				</value>
-			</queryDetail>
-			<queryDetail condition="eq({param_selection},all current staff)">
-				<value>
 					AND PUB_pm_staff_data.pm_start_of_commitment_d &lt;= {#param_currentstaffdate#}
 					AND (PUB_pm_staff_data.pm_end_of_commitment_d &gt;= {#param_currentstaffdate#}
 					OR PUB_pm_staff_data.pm_end_of_commitment_d IS NULL) 

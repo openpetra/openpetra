@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -86,19 +86,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 FLedgerNumber = value;
 
-                Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbAccountList;
-                cmbAccountList = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
-                TFinanceControls.InitialiseCostCentreList(ref cmbCostCenter, FLedgerNumber,
-                    true, false, true, false);
-
                 TLedgerSelection.GetCurrentPostingRangeDates(FLedgerNumber,
                     out StartDateCurrentPeriod,
                     out EndDateLastForwardingPeriod,
                     out DefaultDate);
 
-
-                //TCurrencyInfo getCurrencyInfo = new TCurrencyInfo(FLedgerNumber);
-                //TCurrencyInfo
                 CreateDataGridHeader();
                 GetListOfRevaluationCurrencies();
 
@@ -234,19 +226,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void SaveUserDefaults()
         {
-            TUserDefaults.SetDefault(REVALUATIONCOSTCENTRE, cmbCostCenter.GetSelectedString());
         }
 
         private void LoadUserDefaults()
         {
-            try
-            {
-                cmbCostCenter.SetSelectedString(
-                    TUserDefaults.GetStringDefault(REVALUATIONCOSTCENTRE));
-            }
-            catch (Exception)
-            {
-            }
         }
 
         private void CancelRevaluation(object btn, EventArgs e)
@@ -284,7 +267,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             TVerificationResultCollection verificationResult;
             bool blnRevalutationState =
                 TRemote.MFinance.GL.WebConnectors.Revaluate(FLedgerNumber, 1,
-                    cmbCostCenter.GetSelectedString(),
                     currencies, rates, out verificationResult);
 
             if (blnRevalutationState)

@@ -336,7 +336,7 @@
 		</query>
 	</calculation>
 	
-	<calculation align="left" id="Date of birth" returns="text" returnsFormat="text">
+	<calculation align="left" id="Date of birth" returns="text" returnsFormat="formatteddate">
 		<caption><value text="DOB"></value></caption>
 		<query>
 			<queryDetail>

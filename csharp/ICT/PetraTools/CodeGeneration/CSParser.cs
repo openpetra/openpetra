@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -30,95 +30,59 @@ using System.Text.RegularExpressions;
 using System.IO;
 using System.Xml;
 using System.Text;
-using DDW.Collections;
-using DDW;
+using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Parser;
 using Microsoft.CSharp;
 using Ict.Common.IO;
 
 namespace Ict.Tools.CodeGeneration
 {
     /// <summary>
-    /// A wrapper around CMicroParser.dll from http://www.codeplex.com/csparser
+    /// A wrapper for NRefactory from SharpDevelop
     /// </summary>
     public class CSParser
     {
-        private CompilationUnitNode cu;
+        private CompilationUnit cu;
+
+        /// <summary>
+        /// constructor, parse the given file
+        /// </summary>
+        /// <param name="filename"></param>
         public CSParser(string filename)
         {
             cu = ParseFile(filename);
         }
 
-        private static void PrintErrors(IEnumerable <Parser.Error>errors)
+        private static void PrintErrors(string AFileName, Errors AErrors)
         {
-            foreach (Parser.Error error in errors)
-            {
-                if ((error.Token.ID == TokenID.Eof) && (error.Line == -1))
-                {
-                    Console.WriteLine(error.Message + "\nFile: " + error.FileName + "\n");
-                }
-                else
-                {
-                    Console.WriteLine(error.Message + " in token " + error.Token.ID +
-                        "\nline: " + error.Line + ", column: " + error.Column +
-                        "\nin file: " + error.FileName + "\n");
-                }
-            }
+            Console.WriteLine("File: " + AFileName + "\n");
+            Console.WriteLine(AErrors.ErrorOutput);
         }
 
-        public static string ToSource(ISourceCode code)
+        /// <summary>
+        /// parse a c# file
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        public CompilationUnit ParseFile(string fileName)
         {
-            StringBuilder sb = new StringBuilder();
-
-            code.ToSource(sb);
-            return sb.ToString();
-        }
-
-        public static string ToSource(ExpressionList code)
-        {
-            StringBuilder sb = new StringBuilder();
-
-            code.ToSource(sb);
-            return sb.ToString();
-        }
-
-        public CompilationUnitNode ParseFile(string fileName)
-        {
-            List <Parser.Error>errors = new List <Parser.Error>();
-
 //        Console.WriteLine("\nParsing " + fileName);
-            FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
-            StreamReader sr = new StreamReader(fs, true);
-            Lexer l = new Lexer(sr);
-            TokenCollection toks = l.Lex();
 
-            Parser p = null;
-            CompilationUnitNode cu = null;
+            IParser parser = ParserFactory.CreateParser(fileName);
 
-            p = new Parser(fileName);
-            cu = p.Parse(toks, l.StringLiterals);
+            parser.Parse();
 
-            if (p.Errors.Count != 0)
+            CompilationUnit cu = parser.CompilationUnit;
+
+            if (parser.Errors.Count > 0)
             {
                 Console.WriteLine();
-                PrintErrors(p.Errors);
-                errors.AddRange(p.Errors);
+                PrintErrors(fileName, parser.Errors);
                 return null;
             }
 
             return cu;
-        }
-
-        public ClassNode GetFirstClass()
-        {
-            foreach (NamespaceNode nnode in cu.Namespaces)
-            {
-                foreach (ClassNode cnode in nnode.Classes)
-                {
-                    return cnode;
-                }
-            }
-
-            return null;
         }
 
         /// <summary>
@@ -127,17 +91,17 @@ namespace Ict.Tools.CodeGeneration
         /// <param name="ACSFiles"></param>
         /// <param name="ANamespace"></param>
         /// <returns>list of classes</returns>
-        public static List <ClassNode>GetClassesInNamespace(List <CSParser>ACSFiles, string ANamespace)
+        public static List <TypeDeclaration>GetClassesInNamespace(List <CSParser>ACSFiles, string ANamespace)
         {
-            List <ClassNode>result = new List <ClassNode>();
+            List <TypeDeclaration>result = new List <TypeDeclaration>();
 
             foreach (CSParser file in ACSFiles)
             {
-                foreach (NamespaceNode nnode in file.cu.Namespaces)
+                foreach (NamespaceDeclaration nnode in GetNamespaces(file.cu))
                 {
-                    if (CSParser.GetName(nnode.Name) == ANamespace)
+                    if (nnode.Name == ANamespace)
                     {
-                        foreach (ClassNode cnode in nnode.Classes)
+                        foreach (TypeDeclaration cnode in GetClasses(nnode))
                         {
                             result.Add(cnode);
                         }
@@ -149,18 +113,24 @@ namespace Ict.Tools.CodeGeneration
         }
 
         /// <summary>
-        /// get all classes defined in this file
+        /// get all the namespaces from the file
         /// </summary>
         /// <returns></returns>
-        public List <ClassNode>GetClasses()
+        public static List <NamespaceDeclaration>GetNamespaces(CompilationUnit cu)
         {
-            List <ClassNode>result = new List <ClassNode>();
+            List <NamespaceDeclaration>result = new List <NamespaceDeclaration>();
 
-            foreach (NamespaceNode nnode in cu.Namespaces)
+            foreach (object child in cu.Children)
             {
-                foreach (ClassNode cnode in nnode.Classes)
+                if (child is INode)
                 {
-                    result.Add(cnode);
+                    INode node = (INode)child;
+                    Type type = node.GetType();
+
+                    if (type.Name == "NamespaceDeclaration")
+                    {
+                        result.Add((NamespaceDeclaration)node);
+                    }
                 }
             }
 
@@ -168,55 +138,101 @@ namespace Ict.Tools.CodeGeneration
         }
 
         /// <summary>
-        /// return the name of the class
+        /// get all classes defined in this file
         /// </summary>
-        /// <param name="AClass"></param>
         /// <returns></returns>
-        public static string GetName(IdentifierExpression AName)
+        public static List <TypeDeclaration>GetClasses(CompilationUnit cu)
         {
-            StringBuilder sb = new StringBuilder();
+            List <NamespaceDeclaration>Namespaces = GetNamespaces(cu);
 
-            AName.ToSource(sb);
-            return sb.ToString();
+            List <TypeDeclaration>result = new List <TypeDeclaration>();
+
+            foreach (NamespaceDeclaration nnode in Namespaces)
+            {
+                result.AddRange(GetClasses(nnode));
+            }
+
+            return result;
         }
 
-/// <summary>
-        /// return the name of the namespace
+        /// <summary>
+        /// overload that just uses the compilationunit of the current file
         /// </summary>
-        /// <param name="AClass"></param>
         /// <returns></returns>
-        public static string GetName(QualifiedIdentifierExpression AName)
+        public List <TypeDeclaration>GetClasses()
         {
-            StringBuilder sb = new StringBuilder();
+            return GetClasses(cu);
+        }
 
-            AName.ToSource(sb);
-            return sb.ToString();
+        /// <summary>
+        /// get all classes defined in this namespace
+        /// </summary>
+        /// <returns></returns>
+        public static List <TypeDeclaration>GetClasses(NamespaceDeclaration nd)
+        {
+            List <TypeDeclaration>result = new List <TypeDeclaration>();
+
+            foreach (object child in nd.Children)
+            {
+                if (child is INode)
+                {
+                    INode node = (INode)child;
+                    Type type = node.GetType();
+
+                    if (type.Name == "TypeDeclaration")
+                    {
+                        TypeDeclaration td = (TypeDeclaration)node;
+
+                        if (td.Type == ClassType.Class)
+                        {
+                            result.Add((TypeDeclaration)node);
+                        }
+                    }
+                }
+            }
+
+            return result;
         }
 
         /// <summary>
         /// get a specific interface
         /// </summary>
         /// <returns></returns>
-        public InterfaceNode GetInterface(string ANamespace, string AInterfaceName)
+        public TypeDeclaration GetType(ref string ANamespace, string ATypeName, ClassType AClassType)
         {
-            foreach (NamespaceNode nnode in cu.Namespaces)
+            List <NamespaceDeclaration>namespaces = GetNamespaces(cu);
+
+            foreach (NamespaceDeclaration nnode in namespaces)
             {
-                if (GetName(nnode.Name) == ANamespace)
+                if ((ANamespace.Length == 0) || (nnode.Name == ANamespace))
                 {
-                    foreach (InterfaceNode cnode in nnode.Interfaces)
+                    foreach (object child in nnode.Children)
                     {
-                        if (GetName(cnode.Name) == AInterfaceName)
+                        if (child is INode)
                         {
-                            return cnode;
-                        }
+                            INode node = (INode)child;
+                            Type type = node.GetType();
 
-                        // if the AInterfaceName contains the namespace
-                        StringBuilder sb = new StringBuilder();
-                        nnode.Name.ToSource(sb);
+                            if (type.Name == "TypeDeclaration")
+                            {
+                                TypeDeclaration td = (TypeDeclaration)node;
 
-                        if (AInterfaceName == sb.ToString() + "." + GetName(cnode.Name))
-                        {
-                            return cnode;
+                                if (td.Type == AClassType)
+                                {
+                                    ANamespace = nnode.Name;
+
+                                    if (td.Name == ATypeName)
+                                    {
+                                        return td;
+                                    }
+
+                                    // if the AInterfaceName contains the namespace
+                                    if (ATypeName == nnode.Name + "." + td.Name)
+                                    {
+                                        return td;
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -226,32 +242,23 @@ namespace Ict.Tools.CodeGeneration
         }
 
         /// <summary>
+        /// get a specific interface
+        /// </summary>
+        /// <returns></returns>
+        public TypeDeclaration GetInterface(string ANamespace, string AInterfaceName)
+        {
+            return GetType(ref ANamespace, AInterfaceName, ClassType.Interface);
+        }
+
+        /// <summary>
         /// get a specific class
         /// </summary>
         /// <returns></returns>
-        public ClassNode GetClass(string AClassName)
+        public TypeDeclaration GetClass(string AClassName)
         {
-            foreach (NamespaceNode nnode in cu.Namespaces)
-            {
-                foreach (ClassNode cnode in nnode.Classes)
-                {
-                    if (GetName(cnode.Name) == AClassName)
-                    {
-                        return cnode;
-                    }
+            string Namespace = "";
 
-                    // if the AClassName contains the namespace
-                    StringBuilder sb = new StringBuilder();
-                    nnode.Name.ToSource(sb);
-
-                    if (AClassName == sb.ToString() + "." + GetName(cnode.Name))
-                    {
-                        return cnode;
-                    }
-                }
-            }
-
-            return null;
+            return GetType(ref Namespace, AClassName, ClassType.Class);
         }
 
         /// <summary>
@@ -259,17 +266,15 @@ namespace Ict.Tools.CodeGeneration
         /// </summary>
         /// <param name="AClassNode">the node of the class</param>
         /// <returns></returns>
-        public string GetFullClassNameWithNamespace(ClassNode AClassNode)
+        public string GetFullClassNameWithNamespace(TypeDeclaration AClassNode)
         {
-            foreach (NamespaceNode nnode in cu.Namespaces)
+            foreach (NamespaceDeclaration nnode in GetNamespaces(cu))
             {
-                foreach (ClassNode cnode in nnode.Classes)
+                foreach (TypeDeclaration cnode in GetClasses(nnode))
                 {
                     if (cnode == AClassNode)
                     {
-                        StringBuilder sb = new StringBuilder();
-                        nnode.Name.ToSource(sb);
-                        return sb.ToString() + "." + GetName(AClassNode.Name);
+                        return nnode.Name + "." + AClassNode.Name;
                     }
                 }
             }
@@ -280,16 +285,27 @@ namespace Ict.Tools.CodeGeneration
         /**
          * @returns a string collection of the field names of the class
          */
-        public static StringCollection GetFields(ClassNode cnode)
+        public static StringCollection GetFields(TypeDeclaration cnode)
         {
             StringCollection list = new StringCollection();
 
-            foreach (FieldNode fnode in cnode.Fields)
+            foreach (object child in cnode.Children)
             {
-                StringBuilder sb = new StringBuilder();
-                fnode.Names.ToSource(sb);
-                string fieldname = sb.ToString();
-                list.Add(fieldname);
+                if (child is INode)
+                {
+                    INode node = (INode)child;
+                    Type type = node.GetType();
+
+                    if (type.Name == "FieldDeclaration")
+                    {
+                        FieldDeclaration fd = (FieldDeclaration)node;
+
+                        foreach (VariableDeclaration vd in fd.Fields)
+                        {
+                            list.Add(vd.Name);
+                        }
+                    }
+                }
             }
 
             return list;
@@ -298,13 +314,22 @@ namespace Ict.Tools.CodeGeneration
         /**
          * @returns a list of the properties of the class
          */
-        public static List <PropertyNode>GetProperties(ClassNode cnode)
+        public static List <PropertyDeclaration>GetProperties(TypeDeclaration cnode)
         {
-            List <PropertyNode>result = new List <PropertyNode>();
+            List <PropertyDeclaration>result = new List <PropertyDeclaration>();
 
-            foreach (PropertyNode pnode in cnode.Properties)
+            foreach (object child in cnode.Children)
             {
-                result.Add(pnode);
+                if (child is INode)
+                {
+                    INode node = (INode)child;
+                    Type type = node.GetType();
+
+                    if (type.Name == "PropertyDeclaration")
+                    {
+                        result.Add((PropertyDeclaration)node);
+                    }
+                }
             }
 
             return result;
@@ -314,170 +339,73 @@ namespace Ict.Tools.CodeGeneration
         /// get all methods of the class
         /// </summary>
         /// <returns></returns>
-        public static List <MethodNode>GetMethods(ClassNode AClass)
+        public static List <MethodDeclaration>GetMethods(TypeDeclaration AClass)
         {
-            List <MethodNode>result = new List <MethodNode>();
+            List <MethodDeclaration>result = new List <MethodDeclaration>();
 
-            foreach (MethodNode mnode in AClass.Methods)
+            foreach (object child in AClass.Children)
             {
-                result.Add(mnode);
+                if (child is INode)
+                {
+                    INode node = (INode)child;
+                    Type type = node.GetType();
+
+                    if (type.Name == "MethodDeclaration")
+                    {
+                        result.Add((MethodDeclaration)node);
+                    }
+                }
             }
 
             return result;
         }
 
         /// <summary>
-        /// get all methods of the interface
+        /// get all constructors of the class
         /// </summary>
         /// <returns></returns>
-        public static List <InterfaceMethodNode>GetMethods(InterfaceNode AInterface)
+        public static List <ConstructorDeclaration>GetConstructors(TypeDeclaration AClass)
         {
-            List <InterfaceMethodNode>result = new List <InterfaceMethodNode>();
+            List <ConstructorDeclaration>result = new List <ConstructorDeclaration>();
 
-            foreach (InterfaceMethodNode mnode in AInterface.Methods)
+            foreach (object child in AClass.Children)
             {
-                result.Add(mnode);
+                if (child is INode)
+                {
+                    INode node = (INode)child;
+                    Type type = node.GetType();
+
+                    if (type.Name == "ConstructorDeclaration")
+                    {
+                        result.Add((ConstructorDeclaration)node);
+                    }
+                }
             }
 
             return result;
-        }
-
-        /// <summary>
-        /// get all properties of the interface
-        /// </summary>
-        /// <returns></returns>
-        public static List <InterfacePropertyNode>GetProperties(InterfaceNode AInterface)
-        {
-            List <InterfacePropertyNode>result = new List <InterfacePropertyNode>();
-
-            foreach (InterfacePropertyNode mnode in AInterface.Properties)
-            {
-                result.Add(mnode);
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// the name is packed a little, here a normal string is returned
-        /// </summary>
-        /// <param name="mnode"></param>
-        /// <returns></returns>
-        public static string GetName(NodeCollection <QualifiedIdentifierExpression>ANames)
-        {
-            StringBuilder sb = new StringBuilder();
-
-            ANames.ToSource(sb);
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// get the name of a type
-        /// </summary>
-        /// <param name="AType"></param>
-        /// <returns></returns>
-        public static string GetName(IType AType)
-        {
-            StringBuilder sb = new StringBuilder();
-
-            AType.ToSource(sb);
-
-            // replace space before < to conform to uncrustify rules
-            return sb.ToString().Replace("<", " <");
         }
 
         /**
          * return the method by name
          */
-        public static MethodNode GetMethod(ClassNode cnode, string AMethodName)
+        public static MethodDeclaration GetMethod(TypeDeclaration cnode, string AMethodName)
         {
-            foreach (MethodNode mnode in cnode.Methods)
+            List <MethodDeclaration>methods = GetMethods(cnode);
+
+            foreach (MethodDeclaration md in methods)
             {
-                if (GetName(mnode.Names) == AMethodName)
+                if (md.Name == AMethodName)
                 {
-                    return mnode;
+                    return md;
                 }
             }
 
             throw new Exception(
                 "CSParser.GetMethod: cannot find method " +
                 AMethodName +
-                " in class " + cnode.Name.Identifier);
+                " in class " + cnode.Name);
 
             //return null;
-        }
-
-        private static SortedList <string, List <CSParser>>CSFilesPerProject = new SortedList <string, List <CSParser>>();
-
-        /// <summary>
-        /// parse the XML csproj file and return a list of parsed cs files
-        /// </summary>
-        /// <param name="AProjName"></param>
-        /// <returns></returns>
-        public static void GetCSFilesInProject(string AProjName, ref List <CSParser>ACSFiles)
-        {
-            throw new NotImplementedException();
-
-            if (!File.Exists(AProjName))
-            {
-                return;
-            }
-
-            if (CSFilesPerProject.ContainsKey(AProjName))
-            {
-                ACSFiles = CSFilesPerProject[AProjName];
-                return;
-            }
-
-            Console.WriteLine("parsing " + AProjName);
-            TXMLParser parser = new TXMLParser(AProjName, false);
-            XmlDocument doc = parser.GetDocument();
-
-            if (doc.FirstChild.Name != "Project")
-            {
-                throw new Exception("Ict.Tools.CodeGeneration.CSParser.GetCSFilesInProject: problems parsing csproj xml file " + AProjName);
-            }
-
-            XmlNode child = doc.FirstChild.FirstChild;
-
-            while (child != null)
-            {
-                if (child.Name == "ItemGroup")
-                {
-                    XmlNode compileNode = child.FirstChild;
-
-                    while (compileNode != null && compileNode.Name == "Compile")
-                    {
-                        string filename = System.IO.Path.GetDirectoryName(AProjName) +
-                                          System.IO.Path.DirectorySeparatorChar +
-                                          TXMLParser.GetAttribute(compileNode, "Include");
-
-                        if (File.Exists(filename))
-                        {
-                            try
-                            {
-                                CSParser csfile = new CSParser(
-                                    filename);
-                                ACSFiles.Add(csfile);
-                            }
-                            catch (Exception e)
-                            {
-                                Console.WriteLine("Exception while parsing " + filename);
-                                Console.WriteLine(e.Message);
-                                throw e;
-                            }
-                        }
-
-                        compileNode = compileNode.NextSibling;
-                    }
-                }
-
-                child = child.NextSibling;
-            }
-
-            CSFilesPerProject.Add(AProjName, ACSFiles);
-
-            return;
         }
 
         /// <summary>
@@ -486,11 +414,11 @@ namespace Ict.Tools.CodeGeneration
         /// <param name="ACSFiles"></param>
         /// <param name="AClassName"></param>
         /// <returns>null if class cannot be found</returns>
-        public static ClassNode FindClass(List <CSParser>ACSFiles, string AClassName)
+        public static TypeDeclaration FindClass(List <CSParser>ACSFiles, string AClassName)
         {
             foreach (CSParser file in ACSFiles)
             {
-                ClassNode t = file.GetClass(AClassName);
+                TypeDeclaration t = file.GetClass(AClassName);
 
                 if (t != null)
                 {
@@ -508,11 +436,11 @@ namespace Ict.Tools.CodeGeneration
         /// <param name="ANamespace"></param>
         /// <param name="AInterfaceName"></param>
         /// <returns>null if class cannot be found</returns>
-        public static InterfaceNode FindInterface(List <CSParser>ACSFiles, string ANamespace, string AInterfaceName)
+        public static TypeDeclaration FindInterface(List <CSParser>ACSFiles, string ANamespace, string AInterfaceName)
         {
             foreach (CSParser file in ACSFiles)
             {
-                InterfaceNode t = file.GetInterface(ANamespace, AInterfaceName);
+                TypeDeclaration t = file.GetInterface(ANamespace, AInterfaceName);
 
                 if (t != null)
                 {
@@ -591,6 +519,7 @@ namespace Ict.Tools.CodeGeneration
         /// If you get the list more then one time, then you will get a cached copy
         /// </summary>
         /// <param name="dir">string with the directory to parse</param>
+        /// <param name="option">search the subdirectories or not</param>
         /// <returns>List of CSParser instances</returns>
         public static List <CSParser>GetCSFilesForDirectory(string dir, SearchOption option)
         {
@@ -616,7 +545,7 @@ namespace Ict.Tools.CodeGeneration
         /// </summary>
         /// <param name="AServerNamespace"></param>
         /// <returns></returns>
-        public static List <ClassNode>GetWebConnectorClasses(string AServerNamespace)
+        public static List <TypeDeclaration>GetWebConnectorClasses(string AServerNamespace)
         {
             // Look up in nsmap for directory
             List <string>dirList = GetSourceDirectory(AServerNamespace);
@@ -650,16 +579,16 @@ namespace Ict.Tools.CodeGeneration
         /// <param name="ATablename"></param>
         /// <param name="AClassOfFoundMethod"></param>
         /// <returns></returns>
-        public static MethodNode GetWebConnectorMethod(List <ClassNode>AWebConnectorClasses,
+        public static MethodDeclaration GetWebConnectorMethod(List <TypeDeclaration>AWebConnectorClasses,
             string AWebFunction,
             string ATablename,
-            out ClassNode AClassOfFoundMethod)
+            out TypeDeclaration AClassOfFoundMethod)
         {
-            foreach (ClassNode connectorClass in AWebConnectorClasses)
+            foreach (TypeDeclaration connectorClass in AWebConnectorClasses)
             {
-                foreach (MethodNode m in CSParser.GetMethods(connectorClass))
+                foreach (MethodDeclaration m in CSParser.GetMethods(connectorClass))
                 {
-                    string MethodName = CSParser.GetName(m.Names);
+                    string MethodName = m.Name;
 
                     if (MethodName == AWebFunction + ATablename)
                     {
@@ -672,23 +601,5 @@ namespace Ict.Tools.CodeGeneration
             AClassOfFoundMethod = null;
             return null;
         }
-
-        /*
-         * todo: function that returns the lines of a method, including the line numbers???
-         */
-
-        /*
-         * int firstLine = -1;
-         * int lastLine = -1;
-         * foreach (StatementNode snode in mnode.StatementBlock.Statements)
-         * {
-         *  if (firstLine == -1)
-         *  {
-         *    firstLine = snode.RelatedToken.Line;
-         *  }
-         *  lastLine = snode.RelatedToken.Line;
-         *  string line = ACSharpfile.ToSource(snode);
-         * }
-         */
     }
 }

@@ -1080,14 +1080,9 @@ namespace Ict.Common.Controls
         /// <returns>void</returns>
         private void CheckColumnStringCollection()
         {
-            System.Collections.Specialized.StringCollection mStringCollection;
-            System.Collections.Specialized.StringCollection mColumnNamesCollection;
-            System.Data.DataColumnCollection mColumns;
-            System.Data.DataTable mDataTable;
+            System.Data.DataColumnCollection mColumns = null;
 
             // Initialization
-            mDataTable = new System.Data.DataTable();
-            mColumns = null;
             CheckDataSourceType();
 
             // Get the DataColumns of the DataSource
@@ -1106,10 +1101,10 @@ namespace Ict.Common.Controls
                 this.ColumnsToSearch = "";
             }
 
-            mStringCollection = this.FColumnsToSearch;
+            System.Collections.Specialized.StringCollection mStringCollection = this.FColumnsToSearch;
 
             // Put the Columnnames of the DataSource into a StringCollection
-            mColumnNamesCollection = new System.Collections.Specialized.StringCollection();
+            System.Collections.Specialized.StringCollection mColumnNamesCollection = new System.Collections.Specialized.StringCollection();
 
             foreach (DataColumn mColumn in mColumns)
             {
@@ -1868,7 +1863,6 @@ namespace Ict.Common.Controls
             System.Windows.Forms.ControlBindingsCollection mAllBindings;
             String mBindingField;
             String mBindingMember;
-            String mBindingPath;
             System.Int32 mBindingPosition;
             System.ComponentModel.MarshalByValueComponent mDataSource;
             System.Data.DataTable mDataTable;
@@ -1883,7 +1877,6 @@ namespace Ict.Common.Controls
                 mDataSource = (System.ComponentModel.MarshalByValueComponent)mSingleBinding.DataSource;
                 mBindingField = mSingleBinding.BindingMemberInfo.BindingField;
                 mBindingMember = mSingleBinding.BindingMemberInfo.BindingMember;
-                mBindingPath = mSingleBinding.BindingMemberInfo.BindingPath;
                 mBindingPosition = mSingleBinding.BindingManagerBase.Position;
 
                 if (mDataSource is System.Data.DataTable)

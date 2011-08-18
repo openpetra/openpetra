@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1151,10 +1151,8 @@ namespace Ict.Common.Data
         {
             OdbcParameter[] ReturnValue;
             System.Int32 i;
-            System.Int32 Counter;
+            System.Int32 Counter = 0;
             System.Object item;
-            System.Object CurrentValue;
-            Counter = 0;
 
             // find out how many template values there are, to be able to create the array in one go
             for (i = 0; i <= ANumberDBColumns - 1; i += 1)
@@ -1163,7 +1161,6 @@ namespace Ict.Common.Data
 
                 if ((item != System.DBNull.Value) && NoDefaultColumn(ADataRow.Table.Columns[i].ColumnName))
                 {
-                    CurrentValue = GetSafeValue(ADataRow, i, DataRowVersion.Current);
                     Counter = Counter + 1;
                 }
             }
@@ -1179,8 +1176,6 @@ namespace Ict.Common.Data
 
                 if ((item != System.DBNull.Value) && NoDefaultColumn(ADataRow.Table.Columns[i].ColumnName))
                 {
-                    CurrentValue = GetSafeValue(ADataRow, i, DataRowVersion.Current);
-
                     ReturnValue[Counter] = CreateOdbcParameter(ATableId, i, item);
                     ReturnValue[Counter].Value = item;
                     Counter = Counter + 1;
@@ -1337,17 +1332,11 @@ namespace Ict.Common.Data
         /// </returns>
         public static String GenerateInsertClause(String ATableName, string[] AColumnNames, DataRow ADataRow)
         {
-            String ReturnValue;
-            Int32 Counter;
-            Boolean First;
-
-            System.Object CurrentValue;
-
-            ReturnValue = "INSERT INTO " + ATableName + " (";
-            First = true;
+            String ReturnValue = "INSERT INTO " + ATableName + " (";
+            Boolean First = true;
 
             // should ignore additional fields at the end of the row
-            for (Counter = 0; Counter <= AColumnNames.Length - 1; Counter += 1)
+            for (Int32 Counter = 0; Counter <= AColumnNames.Length - 1; Counter += 1)
             {
                 if ((ADataRow[Counter] != System.DBNull.Value) && NoDefaultColumn(AColumnNames[Counter]))
                 {
@@ -1368,7 +1357,7 @@ namespace Ict.Common.Data
             ReturnValue = ReturnValue + ") VALUES (";
             First = true;
 
-            for (Counter = 0; Counter <= AColumnNames.Length - 1; Counter += 1)
+            for (Int32 Counter = 0; Counter <= AColumnNames.Length - 1; Counter += 1)
             {
                 if ((ADataRow[Counter] != System.DBNull.Value) && NoDefaultColumn(AColumnNames[Counter]))
                 {
@@ -1381,7 +1370,6 @@ namespace Ict.Common.Data
                         First = false;
                     }
 
-                    CurrentValue = GetSafeValue(ADataRow, Counter, DataRowVersion.Current);
                     ReturnValue = ReturnValue + '?';
                 }
             }

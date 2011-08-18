@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -397,14 +397,11 @@ namespace Ict.Petra.Server.MReporting.MFinance
             string ReturnValue = "";
             int start_period;
             int numberAccountingPeriods;
-            int currentFinancialYear;
-            int selectedYear;
 
             if (reportytd == "mixed")
             {
                 start_period = 1;
-                selectedYear = parameters.Get("param_year_i").ToInt();
-                currentFinancialYear = parameters.Get("param_current_financial_year_i").ToInt();
+                // currentFinancialYear = parameters.Get("param_current_financial_year_i").ToInt();
                 numberAccountingPeriods = parameters.Get("param_number_of_accounting_periods_i").ToInt();
 
                 if (end_period > numberAccountingPeriods)

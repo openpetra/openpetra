@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -97,7 +97,6 @@ namespace Ict.Common.IO
         /// the XmlDocument that is currently parsed
         /// </summary>
         protected XmlDocument myDoc;
-        static string XMLFilePathForDTD = String.Empty;
 
         /// <summary>
         /// this fixes the problem that we have the filename of the DTD with a relative path name in the XML file

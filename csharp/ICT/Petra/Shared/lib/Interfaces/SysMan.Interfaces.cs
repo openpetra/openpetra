@@ -39,9 +39,9 @@ using Ict.Petra.Shared.Interfaces.MSysMan.TableMaintenance;
 using Ict.Petra.Shared.Interfaces.MSysMan.ImportExport;
 using Ict.Petra.Shared.Interfaces.MSysMan.PrintManagement;
 using Ict.Petra.Shared.Interfaces.MSysMan.Security;
+using Ict.Petra.Shared.Interfaces.MSysMan.Cacheable;
 using Ict.Petra.Shared.Interfaces.MSysMan.Application.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MSysMan.Application.ServerLookups;
-using Ict.Petra.Shared.Interfaces.MSysMan.Cacheable;
 using Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.SystemDefaults;
 using Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.UserDefaults;
@@ -100,8 +100,10 @@ namespace Ict.Petra.Shared.Interfaces.MSysMan
         ICacheableNamespace Cacheable
         {
             get;
-        }      
+        }
+
     }
+
 }
 
 
@@ -120,7 +122,8 @@ namespace Ict.Petra.Shared.Interfaces.MSysMan.Application
         IApplicationServerLookupsNamespace ServerLookups
         {
             get;
-        } 
+        }
+
     }
 
 }
@@ -145,29 +148,6 @@ namespace Ict.Petra.Shared.Interfaces.MSysMan.Application.ServerLookups
         System.Boolean GetDBVersion(out System.String APetraDBVersion);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Application.ServerLookups.TApplicationServerLookupsNamespace)</summary>
         System.Boolean GetInstalledPatches(out Ict.Petra.Shared.MSysMan.Data.SPatchLogTable APatchLogDT);
-    }
-
-}
-
-
-namespace Ict.Petra.Shared.Interfaces.MSysMan.Cacheable
-{
-    /// <summary>auto generated</summary>
-    public interface ICacheableNamespace : IInterface
-    {
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Application.Cacheable.TApplicationCacheableNamespace)</summary>
-        System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MSysMan.TCacheableSysManTablesEnum ACacheableTable,
-                                                System.String AHashCode,
-                                                out System.Type AType);
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Application.Cacheable.TApplicationCacheableNamespace)</summary>
-        void RefreshCacheableTable(Ict.Petra.Shared.MSysMan.TCacheableSysManTablesEnum ACacheableTable);
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Application.Cacheable.TApplicationCacheableNamespace)</summary>
-        void RefreshCacheableTable(Ict.Petra.Shared.MSysMan.TCacheableSysManTablesEnum ACacheableTable,
-                                   out System.Data.DataTable ADataTable);
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Application.Cacheable.TApplicationCacheableNamespace)</summary>
-        TSubmitChangesResult SaveChangedStandardCacheableTable(Ict.Petra.Shared.MSysMan.TCacheableSysManTablesEnum ACacheableTable,
-                                                               ref TTypedDataTable ASubmitTable,
-                                                               out TVerificationResultCollection AVerificationResult);
     }
 
 }
@@ -433,6 +413,29 @@ namespace Ict.Petra.Shared.Interfaces.MSysMan.Security.UserManager
         Ict.Petra.Shared.Security.TPetraPrincipal ReloadCachedUserInfo();
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Security.UserManager.TSecurityUserManagerNamespace)</summary>
         void SignalReloadCachedUserInfo(System.String AUserID);
+    }
+
+}
+
+
+namespace Ict.Petra.Shared.Interfaces.MSysMan.Cacheable
+{
+    /// <summary>auto generated</summary>
+    public interface ICacheableNamespace : IInterface
+    {
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Cacheable.TCacheableNamespace)</summary>
+        System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MSysMan.TCacheableSysManTablesEnum ACacheableTable,
+                                                System.String AHashCode,
+                                                out System.Type AType);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Cacheable.TCacheableNamespace)</summary>
+        void RefreshCacheableTable(Ict.Petra.Shared.MSysMan.TCacheableSysManTablesEnum ACacheableTable);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Cacheable.TCacheableNamespace)</summary>
+        void RefreshCacheableTable(Ict.Petra.Shared.MSysMan.TCacheableSysManTablesEnum ACacheableTable,
+                                   out System.Data.DataTable ADataTable);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Cacheable.TApplicationCacheableNamespace)</summary>
+        TSubmitChangesResult SaveChangedStandardCacheableTable(Ict.Petra.Shared.MSysMan.TCacheableSysManTablesEnum ACacheableTable,
+                                                               ref TTypedDataTable ASubmitTable,
+                                                               out TVerificationResultCollection AVerificationResult);
     }
 
 }
