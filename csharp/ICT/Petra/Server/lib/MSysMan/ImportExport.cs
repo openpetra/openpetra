@@ -33,7 +33,10 @@ using System.Globalization;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.DB;
+using Ict.Common.Verification;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.App.ClientDomain;
 
@@ -500,6 +503,22 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
                 col.ColumnName = colName;
             }
+        }
+        
+		/// <summary>
+		/// Commits the given SampleDataConstructorTDS TDS to the database
+		/// </summary>
+		/// <remarks>
+		/// Why did I have to spend _several hours_ trying to get into how OpenPetra does things
+		/// just in order to add this one line?
+		/// </remarks>
+		/// <param name="dataTDS"></param>
+		/// <param name="AVerificationResult"></param>
+		/// <returns></returns>
+        public static bool SaveTDS(SampleDataConstructorTDS dataTDS, out TVerificationResultCollection AVerificationResult)
+        {
+       		// TODO: check with Christian
+            return SampleDataConstructorTDSAccess.SubmitChanges(dataTDS, out AVerificationResult) == TSubmitChangesResult.scrOK;
         }
     }
 }

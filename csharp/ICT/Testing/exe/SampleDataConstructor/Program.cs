@@ -29,6 +29,8 @@ using System.Collections.Specialized;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 
 namespace SampleDataConstructor
 {
@@ -60,6 +62,9 @@ namespace SampleDataConstructor
 /// - raw data
 /// - then putting together Petra data (no simulation)
 /// </para>
+///
+/// TODO: Check comment from Timo: This is actually rather a tool than a test 
+/// - so one could change it's location.
 /// </remarks>
 class TSampleDataConstructor
 {
@@ -95,6 +100,7 @@ class TSampleDataConstructor
         //// new TAppSettingsManager(false);
         //// string csvInputFileName = TAppSettingsManager.GetValue("file", true);
 
+        
         ExecutionReport report;
         try
         {
@@ -132,9 +138,18 @@ class TSampleDataConstructor
                 constructionStats.PeopleWithHomeKnown,
                 out report); doReport(report);
 
-            /*
+           	/*
              *  DataBuilder.assignSpecialTypesToPeople(dataTDS,rawData,supporterStats,out report);
              */
+        
+            
+            // Save data to Server
+            /*
+			TVerificationResultCollection VerificationResult;
+			
+            if (!TRemote.MSysMan.ImportExport.WebConnectors.SaveTDS(dataTDS, out VerificationResult))
+            	throw new Exception("Error saving to Database. No more information for now.");
+            */
             Console.WriteLine("Completed.");
         }
         catch (Exception e)
