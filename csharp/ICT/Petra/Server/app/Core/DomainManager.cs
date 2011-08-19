@@ -96,19 +96,27 @@ namespace Ict.Petra.Server.App.Core
         /// <param name="AClientManagerRef">A reference to the ClientManager object
         /// (Note: .NET Remoting will be working behind the scenes since calls to
         /// this Object will cross AppDomains!)</param>
+        /// <param name="ASystemDefaultsCacheRef">A reference to the SystemDefaultsCache object
+        /// (Note: .NET Remoting will be working behind the scenes since calls to
+        /// this Object will cross AppDomains!)</param>
+        /// <param name="ACacheableTablesManagerRef"></param>
         /// <param name="AUserInfo">An instantiated PetraPrincipal Object, containing User
         /// information
         /// </param>
-        /// <returns>void</returns>
         public TClientDomainManager(String AClientID,
             String ARemotingPort,
             TClientServerConnectionType AClientServerConnectionType,
             TClientManagerCallForwarder AClientManagerRef,
+            TSystemDefaultsCache ASystemDefaultsCacheRef,
+            TCacheableTablesManager ACacheableTablesManagerRef,
             IPrincipal AUserInfo) :
             base(AClientID, ARemotingPort,
                 AClientServerConnectionType, AClientManagerRef,
                 ((TPetraPrincipal)AUserInfo).UserID)
         {
+            TCacheableTablesManager.GCacheableTablesManager = ACacheableTablesManagerRef;
+            TSystemDefaultsCache.GSystemDefaultsCache = ASystemDefaultsCacheRef;
+
             UserInfo.GUserInfo = (TPetraPrincipal)AUserInfo;
             DomainManager.GSiteKey = TSystemDefaultsCache.GSystemDefaultsCache.GetInt64Default(SharedConstants.SYSDEFAULT_SITEKEY);
 
