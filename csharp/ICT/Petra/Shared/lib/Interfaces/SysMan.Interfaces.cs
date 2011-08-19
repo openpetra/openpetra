@@ -50,9 +50,11 @@ using Ict.Petra.Shared.Interfaces.MSysMan.ImportExport.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MSysMan.PrintManagement.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MSysMan.Security.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MSysMan.Security.UserManager;
+
 #region ManualCode
 using System.Xml;
 using Ict.Petra.Shared.MSysMan.Data;
+using Ict.Petra.Shared.MCommon.Data;
 #endregion ManualCode
 namespace Ict.Petra.Shared.Interfaces.MSysMan
 {
@@ -359,6 +361,9 @@ namespace Ict.Petra.Shared.Interfaces.MSysMan.ImportExport.WebConnectors
         string ExportAllTables();
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector)</summary>
         bool ResetDatabase(string AZippedNewDatabaseData);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector)</summary>
+        bool SaveTDS(SampleDataConstructorTDS dataTDS,
+                     out TVerificationResultCollection AVerificationResult);
     }
 
 }

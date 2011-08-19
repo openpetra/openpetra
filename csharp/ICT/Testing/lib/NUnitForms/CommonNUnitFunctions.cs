@@ -93,8 +93,8 @@ namespace Ict.Testing.NUnitForms
             {
                 MessageBoxTester tester = new MessageBoxTester(hWnd);
 
-                System.Console.WriteLine("Title: " + tester.Title);
-                System.Console.WriteLine("Message: " + tester.Text);
+                System.TLogging.Log("Title: " + tester.Title);
+                System.TLogging.Log("Message: " + tester.Text);
 
                 lastMessageTitle = tester.Title;
                 lastMessageText = tester.Text;

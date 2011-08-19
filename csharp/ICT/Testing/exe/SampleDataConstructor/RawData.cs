@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       >>>> Put your full name or just a shortname here <<<<
+//       thomass
 //
 // Copyright 2004-2011 by OM International
 //
@@ -58,7 +58,7 @@ class RawData
     }
 
     //public void readRawDataFromFile(string filename);
-    public void readRawDataFromFile(string filename, filetypes filetype, string directory)
+    public ExecutionReport readRawDataFromFile(string filename, filetypes filetype, string directory)
     {
         Console.Write("Processing File: {0,20}", filename);
         filename = directory + filename;
@@ -95,7 +95,7 @@ class RawData
         }
 
         int cntEnd = cntProcessedLines[filetype];
-        Console.WriteLine(" Lines of this filetype (before) " + cntBegin + " (after) " + cntEnd);
+        return new ExecutionReport(" Lines of this filetype (before) " + cntBegin + " (after) " + cntEnd);
     }
 }
 }

@@ -59,7 +59,7 @@ namespace Tests.MFinance.GLBatches
         [Test]
         public void T01_TreeViewFocusColor()
         {
-            System.Console.WriteLine("-------T01_TreeViewFocusColor------------");
+            System.TLogging.Log("-------T01_TreeViewFocusColor------------");
             TFrmGLAccountHierarchyTester hierarchyTester
                 = new TFrmGLAccountHierarchyTester();
             hierarchyTester.mainForm.Show();
@@ -111,7 +111,7 @@ namespace Tests.MFinance.GLBatches
         [Test]
         public void T02_SetAccountToForeigenCurrency()
         {
-            System.Console.WriteLine("-------T02_SetAccountToForeigenCurrency------------");
+            System.TLogging.Log("-------T02_SetAccountToForeigenCurrency------------");
             TFrmGLAccountHierarchyTester hierarchyTester
                 = new TFrmGLAccountHierarchyTester();
             hierarchyTester.mainForm.Show();
@@ -198,7 +198,7 @@ namespace Tests.MFinance.GLBatches
         [Test]
         public void T03_CreateANewAccount()
         {
-            System.Console.WriteLine("-------T03_CreateANewAccount------------");
+            System.TLogging.Log("-------T03_CreateANewAccount------------");
             TFrmGLAccountHierarchyTester hierarchyTester
                 = new TFrmGLAccountHierarchyTester();
             hierarchyTester.mainForm.Show();
@@ -252,7 +252,7 @@ namespace Tests.MFinance.GLBatches
         [Test]
         public void T04_CreateNewAccountAndChangeTreeViewSelection()
         {
-            System.Console.WriteLine("-------T04_CreateNewAccountAndChangeTreeViewSelection------------");
+            System.TLogging.Log("-------T04_CreateNewAccountAndChangeTreeViewSelection------------");
             TFrmGLAccountHierarchyTester hierarchyTester
                 = new TFrmGLAccountHierarchyTester();
             hierarchyTester.mainForm.Show();
@@ -291,7 +291,7 @@ namespace Tests.MFinance.GLBatches
         [Test]
         public void T05_CreateBankAccount()
         {
-            System.Console.WriteLine("-------T05_CreateBankAccount------------");
+            System.TLogging.Log("-------T05_CreateBankAccount------------");
             TFrmGLAccountHierarchyTester hierarchyTester
                 = new TFrmGLAccountHierarchyTester();
             hierarchyTester.mainForm.LedgerNumber = fLedgerNumber;

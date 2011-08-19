@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       thomass
+//       thomass (on the basis of work done by timop)
 //
 // Copyright 2004-2011 by OM International
 //
@@ -60,37 +60,72 @@ class ExecutionReport
 /// <summary>
 /// SampleDataConstructors main class: Creates a TDS from Raw Data
 /// </summary>
-/// TODO: unhappy that I duplicated all the code from ImportExportYml.cs. What should one do instead?
+/// <remarks>
+/// TODO: Unhappy that I duplicated all the code from ImportExportYml.cs. 
+///	What should one do instead?
+/// Some sort of standard "make xml to OpenPetra Objects"? Should we make some?
+/// </remarks>
 class DataBuilder : RawData
 {
-    private static Int64 newPartnerKey = -1;
+	/// <summary>
+	/// Used for the internal (non PetraServer) way of determining the next
+	/// new partner key only.
+	/// </summary>
+	private static Int64 nextNewPartnerKey = 1; // used with the internal method only
+ 
+	
     /// <summary>
     /// This gets a new Partner Key.
     /// </summary>
     /// <remarks>
     /// Done this way in ImportExportYml.cs
-    /// TODO: where should the partnerKey _actually_ come from?
     /// </remarks>
     protected static Int64 getNewPartnerKey()
     {
-        Int64 partnerKey = newPartnerKey;
-
-        newPartnerKey--;
-        return partnerKey;
+    	// 
+    	// Determines if the partner keys are created by OpenPetra or internally
+    	// 
+    	// Either we create a partner key internally "somehow" (e.g. by just counting up
+    	// from a certain number), or we ask the server to do so. Asking the server would
+    	// be the right way to do it. On the other hand, the server seems to demand from us
+    	// that we immediately use the partner keys by saving partners on the server.
+    	// Unfortunately this probibits us from "just building the data in memory on the client",
+    	// and require more server interaction. So for now, do without.
+    	// One could (a) ask the server (b) use that number as a starter - or somehow like that.
+    	// 
+    	bool openPetraCreatesNewPartnerKey = false;
+    	Int64 newPartnerKey;
+    	
+    	if (openPetraCreatesNewPartnerKey) 
+    	{
+	    	newPartnerKey = Ict.Petra.Server.MPartner.Common.TNewPartnerKey.GetNewPartnerKey(-1);
+	    	// TODO: keeping the sitekey would be helpful anyway 
+	    	// (somewhere at the start of the program)
+	    	// Using getNewPartner is probably simplest (says christiank)
+	    	Int32 SiteKey = Int32.Parse(newPartnerKey.ToString().Substring(0,4));
+	    	Ict.Petra.Server.MPartner.Common.TNewPartnerKey.SubmitNewPartnerKey(
+	    		SiteKey, newPartnerKey, ref newPartnerKey);
+    	}
+    	else 
+    	{
+    		newPartnerKey = nextNewPartnerKey++;
+        }
+        return newPartnerKey;
     }
 
-    private static Int32 newLocationKey = -1;
+    private static Int32 newLocationKey = 1;
     /// <summary>
     /// This gets a new Location Key.
     /// </summary>
     /// <remarks>
-    /// TODO: where should the locationKey _actually_ come from?
+    /// The location key is not managed by server, important :
+    /// locationkey >0 (that's all!)
     /// </remarks>
     protected static Int32 getNewLocationKey()
     {
         Int32 locationKey = newLocationKey;
 
-        newLocationKey--;
+        newLocationKey++;
         return locationKey;
     }
 
@@ -186,13 +221,16 @@ class DataBuilder : RawData
         partnerLocationRow.DateEffective = DateTime.Now;
         partnerLocationRow.LocationType = "HOME";
 
-        // TODO: fill in from person
-        // can't we just link email to family? Or have an "email" type?
+        // TODO: EmailAddress - fill in from RawData Person
+        // Chat with christiank: was suggested that both email + mobiltelefon
+        // should be place in the PartnerLocation, even though this will change
+        // in future. Just to have good sample data for now.
         // partnerlocationRow.EmailAddress =
 
         // partnerLocationRow.TelephoneNumber = location.Phone;
 
-        // TODO: fill in from mobile phone
+        // TODO: MobileNumber - fill in from RawData mobile phone
+        // (see above)
         // partnerlocationRow.MobileNumber =
     }
 
@@ -235,7 +273,7 @@ class DataBuilder : RawData
         PLocationRow locationRow
         )
     {
-        var partnerLocationRow = createNewPartnerLocation(dataTDS);
+        PPartnerLocationRow partnerLocationRow = createNewPartnerLocation(dataTDS);
 
         dataTDS.PPartnerLocation.Rows.Add(partnerLocationRow);
         fillInitialData(partnerLocationRow);
@@ -248,8 +286,8 @@ class DataBuilder : RawData
         // new StringCollection("VOLUNTEER","SUPPORTER");
         // No Special Types are created for now.
         StringCollection specialTypes = new StringCollection();
-        var partnerTypes = new List <PPartnerTypeRow>();
-
+        List <PPartnerTypeRow> partnerTypes = new List <PPartnerTypeRow>();
+        
         foreach (string specialType in specialTypes)
         {
             PPartnerTypeRow partnerType = dataTDS.PPartnerType.NewRowTyped();
@@ -285,14 +323,17 @@ class DataBuilder : RawData
 
         foreach (RPerson rPerson in rawData.People)
         {
-            var partner = createNewPartner(rawDataTDS);
-            var family = createNewFamily(rawDataTDS, rPerson);
+            PPartnerRow partner = createNewPartner(rawDataTDS);
+            PFamilyRow family = createNewFamily(rawDataTDS, rPerson);
             couple(partner, family);
 
             rawDataTDS.PPartner.Rows.Add(partner);
             rawDataTDS.PFamily.Rows.Add(family);
 
-            var specialTypes = createSpecialTypes(rawDataTDS, rPerson);
+            // TODO: add at least special type "GENERATED_SAMPLE_DATA"
+            // This would allow identification of sample data that was accidentily
+            // mixed with real data (which should never happen).
+            List<PPartnerTypeRow> specialTypes = createSpecialTypes(rawDataTDS, rPerson);
             couple(partner, specialTypes);
 
 
@@ -325,8 +366,8 @@ class DataBuilder : RawData
 
         foreach (ROrganization rOrganisation in rawData.Organizations)
         {
-            var partner = createNewPartner(rawDataTDS);
-            var organisationRow = createNewOrganisation(rawDataTDS, rOrganisation);
+            PPartnerRow partner = createNewPartner(rawDataTDS);
+            POrganisationRow organisationRow = createNewOrganisation(rawDataTDS, rOrganisation);
             couple(partner, organisationRow);
 
             rawDataTDS.PPartner.Rows.Add(partner);

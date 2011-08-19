@@ -517,8 +517,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 		/// <returns></returns>
         public static bool SaveTDS(SampleDataConstructorTDS dataTDS, out TVerificationResultCollection AVerificationResult)
         {
-       		// TODO: check with Christian
-            return SampleDataConstructorTDSAccess.SubmitChanges(dataTDS, out AVerificationResult) == TSubmitChangesResult.scrOK;
+             return SampleDataConstructorTDSAccess.SubmitChanges(dataTDS, out AVerificationResult) == TSubmitChangesResult.scrOK;
         }
     }
 }

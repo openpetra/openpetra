@@ -26,11 +26,16 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 
+using Ict.Testing.NUnitPetraServer;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.Interfaces.MSysMan.ImportExport.WebConnectors;
+using Ict.Petra.Server.MSysMan.ImportExport.WebConnectors;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Common.Verification;
+using Ict.Common;
 
 namespace SampleDataConstructor
 {
@@ -65,6 +70,7 @@ namespace SampleDataConstructor
 ///
 /// TODO: Check comment from Timo: This is actually rather a tool than a test 
 /// - so one could change it's location.
+/// TODO: Call (1) Datagenerator (2) SampleDataConstructur - from nant (timo)
 /// </remarks>
 class TSampleDataConstructor
 {
@@ -72,7 +78,11 @@ class TSampleDataConstructor
     /// data directory containing the raw data files created by benerator
     /// </summary>
     /// <remarks>Please forgive me: dd = dataDirectory</remarks>
-    /// TODO (before shipping this testing to trunk): get this path from nant (or sth.) and not set it statically
+    
+    
+    // TODO (before shipping this testing to trunk): get this path from nant (or sth.) 
+    // and not set it statically
+    // (acquire knowledge from: timo)
     const string dd = "../../tmp/Tests-exe.SampleDataConstructor/";
 
     const string filePeople = "people.csv";
@@ -81,20 +91,17 @@ class TSampleDataConstructor
 
     public static void doReport(ExecutionReport report)
     {
-        Console.WriteLine(report);
+    	TLogging.Log(report.ToString());
     }
 
     /// <summary>
     /// Creates Sample Data using the raw data provided and exports this to the Petra Server
     /// </summary>
-    /// <remarks>
-    /// TODO: use standard OpenPetra logging instead of the prelimanary "Report"
-    /// </remarks>
     /// <param name="args"></param>
     public static void Main(string[] args)
     {
         // SampleDataConstructor
-        Console.WriteLine("Reading Raw Data Files...");
+        TLogging.Log("Reading Raw Data Files...");
 
 
         //// new TAppSettingsManager(false);
@@ -104,21 +111,26 @@ class TSampleDataConstructor
         ExecutionReport report;
         try
         {
-            Console.WriteLine("Reading Raw Data Files...");
+            TLogging.Log("Reading Raw Data Files...");
             RawData rawData = new RawData();
             rawData.readRawDataFromFile(filePeople, RawData.filetypes.people, dd);
             rawData.readRawDataFromFile(fileOrganisations, RawData.filetypes.organizations, dd);
             rawData.readRawDataFromFile(fileAddresses, RawData.filetypes.addresses, dd);
-            Console.WriteLine("People:        " + rawData.People.Count);
-            Console.WriteLine("Organizations: " + rawData.Organizations.Count);
-            Console.WriteLine("Locations:     " + rawData.Locations.Count);
-            Console.WriteLine("Mobile Phones: " + rawData.Mobilephones.Count);
-            Console.WriteLine("Countries:     " + rawData.Countries.Count);
+            TLogging.Log("People:        " + rawData.People.Count);
+            TLogging.Log("Organizations: " + rawData.Organizations.Count);
+            TLogging.Log("Locations:     " + rawData.Locations.Count);
+            TLogging.Log("Mobile Phones: " + rawData.Mobilephones.Count);
+            TLogging.Log("Countries:     " + rawData.Countries.Count);
 
-            Console.WriteLine("Creating TDS from Raw Data...");
-            var dataTDS = new SampleDataConstructorTDS();
-            var constructionStats = new ConstructionStats();
-            var unusedLocations = new Stack <PLocationRow>();
+            // Save data to Server
+            TLogging.Log("Establish connection to server");
+            // TOCHECK: where should I actually get this filename from? (nant)
+            TPetraServerConnector.Connect("../../etc/TestServer.config");
+			
+            TLogging.Log("Creating TDS from Raw Data...");
+            SampleDataConstructorTDS dataTDS = new SampleDataConstructorTDS();
+            ConstructionStats constructionStats = new ConstructionStats();
+            Stack <PLocationRow> unusedLocations = new Stack <PLocationRow>();
 
             DataBuilder.insertPeople(dataTDS, rawData, out report); doReport(report);
             DataBuilder.insertOrganisations(dataTDS, rawData, out report); doReport(report);
@@ -142,21 +154,25 @@ class TSampleDataConstructor
              *  DataBuilder.assignSpecialTypesToPeople(dataTDS,rawData,supporterStats,out report);
              */
         
+            // TODO: Questions regarding how what financial data to be created is "helpful"
+            // should ask : Rob or Timo
             
-            // Save data to Server
-            /*
-			TVerificationResultCollection VerificationResult;
+            TVerificationResultCollection VerificationResult;
 			
-            if (!TRemote.MSysMan.ImportExport.WebConnectors.SaveTDS(dataTDS, out VerificationResult))
-            	throw new Exception("Error saving to Database. No more information for now.");
-            */
-            Console.WriteLine("Completed.");
+            if (!TImportExportWebConnector.SaveTDS(dataTDS, out VerificationResult))
+            {
+            	TLogging.Log(VerificationResult.BuildVerificationResultString());
+            	throw new Exception("Error saving to database: "+ VerificationResult.BuildVerificationResultString());
+            }
+			
+            TLogging.Log("Completed.");
         }
         catch (Exception e)
         {
-            Console.WriteLine(e.Message);
-            Console.WriteLine(e.StackTrace);
+            TLogging.Log(e.Message);
+            TLogging.Log(e.StackTrace);
         }
+       
     }
 }
 }

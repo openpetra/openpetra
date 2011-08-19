@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       >>>> Put your full name or just a shortname here <<<<
+//       thomass + (some parts from Microsoft .net documentation, as noted)
 //
 // Copyright 2004-2011 by OM International
 //
@@ -138,6 +138,8 @@ class QnDCSVRead
         lastAttemptedLine++;
         string[] data = line.Split(',');
 
+        // TODO: fixthis - do a proper csv readline (which also allows '"' )
+        // Shortterm fix: just ignore incorrectly read lines (sample data can be thrown away)
         if (data.GetLength(0) != headerCount)
         {
             throw new Exception(

@@ -76,8 +76,8 @@ namespace Tests.CodeGeneration
         /// <param name="s2"></param>
         static string TestHelperStrings(string s1, string s2)
         {
-            Console.WriteLine(s1);
-            Console.WriteLine(s2);
+            TLogging.Log(s1);
+            TLogging.Log(s2);
 
             string[] file1 = CharToLines(s1);
             string[] file2 = CharToLines(s2);
@@ -92,7 +92,7 @@ namespace Tests.CodeGeneration
             int[, ] matrix = TFileDiffMerge.GetLongestCommonSubsequenceMatrix(file1Indexes, file2Indexes);
 
             string result = TFileDiffMerge.GetDiffResult(matrix, file1Indexes, file2Indexes, origLines);
-            Console.WriteLine(result);
+            TLogging.Log(result);
 
             return result;
         }

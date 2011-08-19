@@ -102,7 +102,7 @@ namespace Ict.Common.Testing
             {
                 Thread.CurrentThread.CurrentCulture = new CultureInfo(s, false);
 
-                /* Console.WriteLine('currently testing: ' + CultureInfo.CurrentCulture.Name); */
+                /* TLogging.Log('currently testing: ' + CultureInfo.CurrentCulture.Name); */
                 DecimalSeparator = CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator;
                 ThousandsOperator = CultureInfo.CurrentCulture.NumberFormat.CurrencyGroupSeparator;
                 tstNr = 1;
@@ -290,7 +290,7 @@ namespace Ict.Common.Testing
             oldCulture = Thread.CurrentThread.CurrentCulture;
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB", false);
 
-            /* console.writeLine(CultureInfo.CurrentCulture.TwoLetterISOLanguageName); */
+            /* TLogging.Log(CultureInfo.CurrentCulture.TwoLetterISOLanguageName); */
             Assert.AreEqual("29/03/2004", new TVariant(new DateTime(2004, 03, 29)).ToString(), "Problem A date GB");
             Assert.AreEqual("29-MAR", new TVariant(new DateTime(2004, 03, 29)).ToFormattedString("dayofyear"), "Problem A2 day of year GB");
             Assert.AreEqual("29-MAR", new TVariant(new DateTime(2004, 03, 29), "dayofyear").ToFormattedString(
@@ -305,7 +305,7 @@ namespace Ict.Common.Testing
                     ""), "Problem formatting dates");
             Thread.CurrentThread.CurrentCulture = new CultureInfo("de-DE", false);
 
-            /* console.writeLine(CultureInfo.CurrentCulture.TwoLetterISOLanguageName); */
+            /* TLogging.Log(CultureInfo.CurrentCulture.TwoLetterISOLanguageName); */
             Assert.AreEqual("29.03.2004", new TVariant(new DateTime(2004, 03, 29)).ToString(), "Problem A date DE");
             Assert.AreEqual("29-MRZ", new TVariant(new DateTime(2004, 03, 29)).ToFormattedString("dayofyear"), "Problem A2 day of year DE");
             Assert.AreEqual("29.03." + DateTime.Now.Year.ToString(), new TVariant(new DateTime(2004, 03, 29)).ToFormattedString("dayofyear",
@@ -512,7 +512,7 @@ namespace Ict.Common.Testing
                         "CurrencyThousands"), "find correct format string thousands");
                 Assert.AreEqual("#,##0.00;(#,##0.00);0.00;0", StringHelper.GetFormatString("", "Currency"), "Problem currency string");
 
-                /* console.writeLine(CultureInfo.CurrentCulture.TwoLetterISOLanguageName); */
+                /* TLogging.Log(CultureInfo.CurrentCulture.TwoLetterISOLanguageName); */
                 Assert.AreEqual("0", new TVariant(0.00M, "Currency").ToFormattedString(
                         "CurrencyWithoutDecimals"), "format currency 0 without decimals");
                 Assert.AreEqual("0", new TVariant(0.00M, "Currency").ToFormattedString("CurrencyThousands"), "format currency 0 thousands");

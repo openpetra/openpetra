@@ -86,7 +86,7 @@ namespace Ict.Testing.NUnitForms
         public void SelectRow(int ARowNumber)
         {
             Properties.Selection.SelectRow(ARowNumber, true);
-            System.Console.WriteLine(Properties.Selection.GetSelectionRegion().ToString());
+            System.TLogging.Log(Properties.Selection.GetSelectionRegion().ToString());
 
             if (Properties.SelectedDataRowsAsDataRowView.Length == 0)
             {
