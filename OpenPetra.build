@@ -217,6 +217,7 @@ useful parameters
               property="FirstCSFile"/>
       <property name="temp" value="${script::ReplaceInFile(ProjectFile, 'xmlnsDeactivated', 'xmlns')}"/>
       
+      <property name="FirstCSFile" value="${OP::MakeAbsolute(FirstCSFile, dir.projectfiles + '/' + devenv-name + '/')}"/>
       <property name="FirstCSFile" value="${string::replace(FirstCSFile,dir.root,'')}"/>
       <property name="FirstCSFile" value="${string::replace(FirstCSFile,'\','/')}"/>
       <property name="FirstCSFile" value="${string::replace(FirstCSFile,'/csharp/ICT/','')}"/>
