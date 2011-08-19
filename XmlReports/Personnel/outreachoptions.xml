@@ -63,7 +63,7 @@
 				<query>
 					<queryDetail><value>
 					SELECT DISTINCT
-						PUB_p_unit.p_xyz_tbd_code_c AS OutreachCode,
+						PUB_p_unit.p_outreach_code_c AS OutreachCode,
 						PUB_p_unit.u_unit_type_code_c AS UnitCode,
 						PUB_p_unit.p_unit_name_c AS UnitName,
 						PUB_p_unit.p_partner_key_n AS UnitKey,
@@ -79,7 +79,7 @@
 					</value></queryDetail>
 					<queryDetail condition="gt(length({param_matching_pattern}), 1)">
 						<value>
-						AND PUB_p_unit.p_xyz_tbd_code_c LIKE {param_matching_pattern}
+						AND PUB_p_unit.p_outreach_code_c LIKE {param_matching_pattern}
 				   	</value>
 					</queryDetail>
 				</query>

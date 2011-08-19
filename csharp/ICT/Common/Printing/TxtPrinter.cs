@@ -233,6 +233,26 @@ namespace Ict.Common.Printing
             return ReturnValue * FACTOR_CM_2_LETTER;
         }
 
+        /// <summary>
+        /// convert pixels to inches or other unit used for output
+        /// </summary>
+        /// <param name="AWidth"></param>
+        /// <returns></returns>
+        public override float PixelHorizontal(float AWidth)
+        {
+            // TODO not implemented yet
+            return AWidth;
+        }
+
+        /// <summary>
+        /// convert pixels to inches or other unit used for output
+        /// </summary>
+        public override float PixelVertical(float AHeight)
+        {
+            // TODO not implemented yet
+            return AHeight;
+        }
+
         #endregion
 
         #region Text printing specific
