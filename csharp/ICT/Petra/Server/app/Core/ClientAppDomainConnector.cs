@@ -28,12 +28,11 @@ using Ict.Common;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;
-using Ict.Petra.Server.App.Core;
 using System.Reflection;
 using System.Runtime.Remoting;
 using System.Threading;
 
-namespace Ict.Petra.Server.App.Main
+namespace Ict.Petra.Server.App.Core
 {
     /// <summary>
     /// Acts as a .NET Remoting Proxy that allows loading of DLL's and instantiation
@@ -549,8 +548,8 @@ namespace Ict.Petra.Server.App.Main
             }
 #endif
             NewAppDomainConnection.FRemoteLoader =
-                (TRemoteLoader)(NewAppDomainConnection.FAppDomain.CreateInstanceFromAndUnwrap("Ict.Petra.Server.app.Main.dll",
-                                    "Ict.Petra.Server.App.Main.TRemoteLoader"));
+                (TRemoteLoader)(NewAppDomainConnection.FAppDomain.CreateInstanceFromAndUnwrap("Ict.Petra.Server.app.Core.dll",
+                                    "Ict.Petra.Server.App.Core.TRemoteLoader"));
 #if DEBUGMODE
             if (TLogging.DL >= 10)
             {

@@ -33,7 +33,6 @@ using Ict.Common.DB;
 using Ict.Common.IO;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
-using Ict.Petra.Server.App.Main;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Shared.Security;

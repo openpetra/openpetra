@@ -32,7 +32,6 @@ using Ict.Common;
 using Ict.Common.Remoting.Server;
 using Ict.Common.Remoting.Shared;
 using Ict.Petra.Server.App.Core;
-using Ict.Petra.Server.App.Main;
 
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
 

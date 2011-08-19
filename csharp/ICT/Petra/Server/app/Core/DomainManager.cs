@@ -104,10 +104,10 @@ namespace Ict.Petra.Server.App.Core
             String ARemotingPort,
             TClientServerConnectionType AClientServerConnectionType,
             TClientManagerCallForwarder AClientManagerRef,
-            TPetraPrincipal AUserInfo) :
+            IPrincipal AUserInfo) :
             base(AClientID, ARemotingPort,
                 AClientServerConnectionType, AClientManagerRef,
-                AUserInfo.UserID)
+                ((TPetraPrincipal)AUserInfo).UserID)
         {
             UserInfo.GUserInfo = (TPetraPrincipal)AUserInfo;
             DomainManager.GSiteKey = TSystemDefaultsCache.GSystemDefaultsCache.GetInt64Default(SharedConstants.SYSDEFAULT_SITEKEY);

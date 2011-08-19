@@ -44,11 +44,9 @@ using Ict.Common.Remoting.Server;
 using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;
-using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.App.Core.Security;
-using Ict.Petra.Server.MSysMan.Maintenance;
 
-namespace Ict.Petra.Server.App.Main
+namespace Ict.Petra.Server.App.Core
 {
     /// <summary>
     /// Main class for Server startup and shutdown and Server interaction

@@ -32,7 +32,6 @@ using Ict.Common.Remoting.Server;
 using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;
-using Ict.Petra.Server.App.Main;
 using Ict.Petra.Server.App.Core;
 
 namespace Ict.Testing.NUnitPetraServer

@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
 // Copyright 2004-2011 by OM International
 //
@@ -31,7 +31,7 @@ using Ict.Petra.Shared.Security;
 using Ict.Petra.Server.MSysMan.Data.Access;
 using Ict.Petra.Shared.MSysMan.Data;
 
-namespace Ict.Petra.Server.MSysMan.Maintenance
+namespace Ict.Petra.Server.App.Core
 {
     /// <summary>
     /// Reads and saves the Logon Message.
