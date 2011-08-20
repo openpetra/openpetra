@@ -230,7 +230,7 @@
         <property name="TemplateProjectReferences" value="${TemplateProjectReferences}${tempTemplateReferences}" />
       </if>
       <if test="${not file::exists(reference-project-file)}">
-        <property name="reference-with-hint" value="${not (string::contains(reference-path,'Microsoft.NET\Framework') and file::exists(path::combine(templatedir, 'template.csproj.referencenohint')))}"/>
+        <property name="reference-with-hint" value="${not ((string::contains(reference-path,'Microsoft.NET\Framework') or string::contains(reference-path,'lib/mono/')) and file::exists(path::combine(templatedir, 'template.csproj.referencenohint')))}"/>
         <if test="${not reference-with-hint}">
           <loadfile file="${path::combine(templatedir, 'template.csproj.referencenohint')}"
                     property="tempTemplateReferences" encoding="utf-8">  
