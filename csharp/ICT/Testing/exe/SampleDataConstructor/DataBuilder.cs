@@ -61,19 +61,26 @@ class ExecutionReport
 /// SampleDataConstructors main class: Creates a TDS from Raw Data
 /// </summary>
 /// <remarks>
-/// TODO: Unhappy that I duplicated all the code from ImportExportYml.cs. 
+/// TOCHECK: Unhappy that I duplicated all the code from ImportExportYml.cs.
 ///	What should one do instead?
 /// Some sort of standard "make xml to OpenPetra Objects"? Should we make some?
 /// </remarks>
 class DataBuilder : RawData
 {
-	/// <summary>
-	/// Used for the internal (non PetraServer) way of determining the next
-	/// new partner key only.
-	/// </summary>
-	private static Int64 nextNewPartnerKey = 1; // used with the internal method only
- 
-	
+    /// <summary>
+    /// Used for the internal (non PetraServer) way of determining the next
+    /// new partner key only.
+    /// </summary>
+    private static Int64 nextNewPartnerKey = 1;     // used with the internal method only
+
+    /// <summary>
+    /// The SiteKey used when creating or altering data
+    /// TODO: use it! It is not used yet.
+    /// </summary>
+    public static Int32 SiteKey {
+        get; set;
+    }
+
     /// <summary>
     /// This gets a new Partner Key.
     /// </summary>
@@ -82,34 +89,35 @@ class DataBuilder : RawData
     /// </remarks>
     protected static Int64 getNewPartnerKey()
     {
-    	// 
-    	// Determines if the partner keys are created by OpenPetra or internally
-    	// 
-    	// Either we create a partner key internally "somehow" (e.g. by just counting up
-    	// from a certain number), or we ask the server to do so. Asking the server would
-    	// be the right way to do it. On the other hand, the server seems to demand from us
-    	// that we immediately use the partner keys by saving partners on the server.
-    	// Unfortunately this probibits us from "just building the data in memory on the client",
-    	// and require more server interaction. So for now, do without.
-    	// One could (a) ask the server (b) use that number as a starter - or somehow like that.
-    	// 
-    	bool openPetraCreatesNewPartnerKey = false;
-    	Int64 newPartnerKey;
-    	
-    	if (openPetraCreatesNewPartnerKey) 
-    	{
-	    	newPartnerKey = Ict.Petra.Server.MPartner.Common.TNewPartnerKey.GetNewPartnerKey(-1);
-	    	// TODO: keeping the sitekey would be helpful anyway 
-	    	// (somewhere at the start of the program)
-	    	// Using getNewPartner is probably simplest (says christiank)
-	    	Int32 SiteKey = Int32.Parse(newPartnerKey.ToString().Substring(0,4));
-	    	Ict.Petra.Server.MPartner.Common.TNewPartnerKey.SubmitNewPartnerKey(
-	    		SiteKey, newPartnerKey, ref newPartnerKey);
-    	}
-    	else 
-    	{
-    		newPartnerKey = nextNewPartnerKey++;
+        //
+        // Determines if the partner keys are created by OpenPetra or internally
+        //
+        // Either we create a partner key internally "somehow" (e.g. by just counting up
+        // from a certain number), or we ask the server to do so. Asking the server would
+        // be the right way to do it. On the other hand, the server seems to demand from us
+        // that we immediately use the partner keys by saving partners on the server.
+        // Unfortunately this probibits us from "just building the data in memory on the client",
+        // and require more server interaction. So for now, do without.
+        // One could (a) ask the server (b) use that number as a starter - or somehow like that.
+        //
+        bool openPetraCreatesNewPartnerKey = false;
+        Int64 newPartnerKey;
+
+        if (openPetraCreatesNewPartnerKey)
+        {
+            newPartnerKey = Ict.Petra.Server.MPartner.Common.TNewPartnerKey.GetNewPartnerKey(-1);
+            // TODO: keeping the sitekey would be helpful anyway
+            // (somewhere at the start of the program)
+            // Using getNewPartner is probably simplest (says christiank)
+            Int32 SiteKey = Int32.Parse(newPartnerKey.ToString().Substring(0, 4));
+            Ict.Petra.Server.MPartner.Common.TNewPartnerKey.SubmitNewPartnerKey(
+                SiteKey, newPartnerKey, ref newPartnerKey);
         }
+        else
+        {
+            newPartnerKey = nextNewPartnerKey++;
+        }
+
         return newPartnerKey;
     }
 
@@ -281,21 +289,23 @@ class DataBuilder : RawData
         couple(locationRow, partnerLocationRow);
     }
 
-    public static List <PPartnerTypeRow>createSpecialTypes(SampleDataConstructorTDS dataTDS, RPerson person)
+    public static void InsertSpecialTypes(SampleDataConstructorTDS dataTDS)
     {
-        // new StringCollection("VOLUNTEER","SUPPORTER");
-        // No Special Types are created for now.
         StringCollection specialTypes = new StringCollection();
-        List <PPartnerTypeRow> partnerTypes = new List <PPartnerTypeRow>();
-        
+
+        specialTypes.Add("VOLUNTEER");
+        specialTypes.Add("SUPPORTER");
+        specialTypes.Add("GENERATED_SAMPLE_DATA");
+
+        // no need for a temporary list...
+        // List <PPartnerTypeRow>partnerTypes = new List <PPartnerTypeRow>();
+
         foreach (string specialType in specialTypes)
         {
             PPartnerTypeRow partnerType = dataTDS.PPartnerType.NewRowTyped();
             partnerType.TypeCode = specialType.Trim();
-            partnerTypes.Add(partnerType);
+            dataTDS.PPartnerType.Rows.Add(partnerType);
         }
-
-        return partnerTypes;
     }
 
     public static void couple(PPartnerRow partner, List <PPartnerTypeRow>specialTypes)
@@ -333,8 +343,8 @@ class DataBuilder : RawData
             // TODO: add at least special type "GENERATED_SAMPLE_DATA"
             // This would allow identification of sample data that was accidentily
             // mixed with real data (which should never happen).
-            List<PPartnerTypeRow> specialTypes = createSpecialTypes(rawDataTDS, rPerson);
-            couple(partner, specialTypes);
+            // List <PPartnerTypeRow>specialTypes = createSpecialTypes(rawDataTDS, rPerson);
+            // couple(partner, specialTypes);
 
 
             /*
@@ -408,6 +418,18 @@ class DataBuilder : RawData
             );
     }
 
+    public static void insertSpecialTypes(SampleDataConstructorTDS dataTDS)
+    {
+    }
+
+    /// <summary>
+    /// Assign Locations to Partners (people and organisations).
+    /// This also creates PartnerLocations.
+    /// </summary>
+    /// <param name="MainTDS"></param>
+    /// <param name="unusedLocations"></param>
+    /// <param name="fractionOfPeopleToBeGivenLocations"></param>
+    /// <param name="report"></param>
     public static void AssignHomesToPartners(
         SampleDataConstructorTDS MainTDS,
         Stack <PLocationRow>unusedLocations,
