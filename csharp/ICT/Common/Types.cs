@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -817,6 +817,14 @@ namespace Ict.Common
         }
 
         #endregion
+    }
+
+    /// <summary>
+    /// simple attribute for marking methods that should not be remoted.
+    /// the code generator for generateGlue will take note of this attribute.
+    /// </summary>
+    public class NoRemotingAttribute : System.Attribute
+    {
     }
 
     /// <summary>

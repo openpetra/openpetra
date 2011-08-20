@@ -32,9 +32,6 @@
 				<value text = "All current Staff at date "/>
 					<value variable = "param_currentstaffdate" format="formatteddate"/>
 			</fielddetail>
-			<fielddetail condition="eq({param_selection},all staff)">
-				<value text = "All Staff"/>
-			</fielddetail>
 		</field>
 		<field whichfield="descr2">
 			<fielddetail condition="ne({param_selection}, one partner)">
@@ -129,7 +126,7 @@
 		</query>
 	</calculation>
 	
-	<calculation align="left" id="Date of birth" returns="text" returnsFormat="text">
+	<calculation align="left" id="Date of birth" returns="text" returnsFormat="formatteddate">
 		<caption><value text="DOB"></value></caption>
 		<query>
 			<queryDetail>

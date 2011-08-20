@@ -486,6 +486,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             AMainDS.AAccountHierarchyDetail.Rows.Add(newAccountHDetail);
 
+            newAccount.PostingStatus = !ACurrentNode.HasChildNodes;
+
             foreach (XmlNode child in ACurrentNode.ChildNodes)
             {
                 CreateAccountHierarchyRecursively(ref AMainDS, ALedgerNumber, ref AImportedAccountNames, child, newAccount.AccountCode);
@@ -721,6 +723,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             AAccountRow accountRow = AMainDS.AAccount.NewRowTyped();
             accountRow.LedgerNumber = ALedgerNumber;
             accountRow.AccountCode = ALedgerNumber.ToString();
+            accountRow.PostingStatus = false;
             AMainDS.AAccount.Rows.Add(accountRow);
 
             XmlNode root = doc.FirstChild.NextSibling.FirstChild;

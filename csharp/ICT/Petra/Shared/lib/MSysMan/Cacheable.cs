@@ -37,6 +37,11 @@ namespace Ict.Petra.Shared.MSysMan
         /// <summary>
         /// List of users
         /// </summary>
-        UserList
+        UserList,
+
+        /// <summary>
+        /// Definitions of fields that are language specific.
+        /// </summary>
+        LanguageSpecificList
     };
 }

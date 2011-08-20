@@ -63,6 +63,11 @@ namespace Ict.Common
         public const int DEBUGLEVEL_TRACE = 10;
 
         /// <summary>
+        /// the debuglevel that is required for saving some detailed log files for the reporting
+        /// </summary>
+        public const int DEBUGLEVEL_REPORTING = 5;
+
+        /// <summary>
         /// some log messages will be only displayed at a certain DebugLevel
         /// </summary>
         public static int DebugLevel = 0;

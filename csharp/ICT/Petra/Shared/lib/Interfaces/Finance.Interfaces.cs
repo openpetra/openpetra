@@ -575,7 +575,6 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TRevaluationWebConnector)</summary>
         bool Revaluate(int ALedgerNum,
                        int AAccoutingPeriod,
-                       string ARevaluationCostCenter,
                        string[] AForeignCurrency,
                        decimal[] ANewExchangeRate,
                        out TVerificationResultCollection AVerificationResult);
@@ -620,6 +619,10 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors
         bool PostGLBatch(Int32 ALedgerNumber,
                          Int32 ABatchNumber,
                          out TVerificationResultCollection AVerifications);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector)</summary>
+        List<TVariant> TestPostGLBatch(Int32 ALedgerNumber,
+                               Int32 ABatchNumber,
+                               out TVerificationResultCollection AVerifications);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector)</summary>
         string GetStandardCostCentre(Int32 ALedgerNumber);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector)</summary>

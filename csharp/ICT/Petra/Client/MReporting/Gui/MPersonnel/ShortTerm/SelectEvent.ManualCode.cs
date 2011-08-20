@@ -36,7 +36,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 
-namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
+namespace Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm
 {
     /// <summary>
     /// manual code for TFrmSelectEvent class

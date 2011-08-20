@@ -63,14 +63,14 @@ public class TOpenPetraOrg : WebService
     /// </summary>
     static TServerManager TheServerManager = null;
 
-    // make sure the correct config file is used
-    static TAppSettingsManager opts = new TAppSettingsManager(AppDomain.CurrentDomain.BaseDirectory + Path.DirectorySeparatorChar + "web.config");
-
     /// <summary>Initialise the server; this can only be called once, after that it will have no effect;
     /// it will be called automatically by Login</summary>
     [WebMethod]
     public bool InitServer()
     {
+        // make sure the correct config file is used
+        new TAppSettingsManager(AppDomain.CurrentDomain.BaseDirectory + Path.DirectorySeparatorChar + "web.config");
+
         if (TheServerManager == null)
         {
             Catalog.Init();
@@ -117,7 +117,7 @@ public class TOpenPetraOrg : WebService
             InitServer();
 
             // TODO? store user principal in http cache? HttpRuntime.Cache
-            TPetraPrincipal userData = (TPetraPrincipal)TClientManager.PerformLoginChecks(
+            TClientManager.PerformLoginChecks(
                 username.ToUpper(), password.Trim(), "WEB", "127.0.0.1", out ProcessID, out ASystemEnabled);
             Session["LoggedIn"] = true;
 
@@ -243,7 +243,7 @@ public class TOpenPetraOrg : WebService
             TSupplierEditUIConnector uiconnector = new TSupplierEditUIConnector();
             TVerificationResultCollection VerificationResult;
             TSubmitChangesResult changesResult = uiconnector.SubmitChanges(ref AInspectDS, out VerificationResult);
-            return Jayrock.Json.Conversion.JsonConvert.ExportToString(new TCombinedSubmitChangesResult(changesResult, AInspectDS, VerificationResult));
+            return new TCombinedSubmitChangesResult(changesResult, AInspectDS, VerificationResult).ToJSON();
         }
 
         return "not enough permissions";
@@ -271,6 +271,14 @@ public class TOpenPetraOrg : WebService
             SubmitChangesResult = ASubmitChangesResult;
             UntypedDataSet = AUntypedDataSet;
             VerificationResultCollection = AVerificationResultCollection;
+        }
+
+        /// <summary>
+        /// encode the value in JSON
+        /// </summary>
+        public string ToJSON()
+        {
+            return Jayrock.Json.Conversion.JsonConvert.ExportToString(this);
         }
     }
 
@@ -324,7 +332,8 @@ public class TOpenPetraOrg : WebService
 
         try
         {
-            AJSONFormData = TJsonTools.RemoveContainerControls(AJSONFormData);
+            string RequiredCulture = string.Empty;
+            AJSONFormData = TJsonTools.RemoveContainerControls(AJSONFormData, ref RequiredCulture);
 
             AJSONFormData = AJSONFormData.Replace("\"txt", "\"").
                             Replace("\"chk", "\"").
@@ -366,7 +375,8 @@ public class TOpenPetraOrg : WebService
 
         try
         {
-            AJSONFormData = TJsonTools.RemoveContainerControls(AJSONFormData);
+            string RequiredCulture = string.Empty;
+            AJSONFormData = TJsonTools.RemoveContainerControls(AJSONFormData, ref RequiredCulture);
 
             AJSONFormData = AJSONFormData.Replace("\"txt", "\"").
                             Replace("\"chk", "\"").

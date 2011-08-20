@@ -146,7 +146,13 @@ namespace Ict.Petra.Server.MSysMan.Cacheable
                         case TCacheableSysManTablesEnum.UserList:
                         {
                             DataTable TmpTable = SUserAccess.LoadAll(ReadTransaction);
-                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheableSysManTablesEnum.LanguageSpecificList:
+                        {
+                            DataTable TmpTable = SLanguageSpecificAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
 
@@ -216,6 +222,13 @@ namespace Ict.Petra.Server.MSysMan.Cacheable
                     {
                         case TCacheableSysManTablesEnum.UserList:
                             if (SUserAccess.SubmitChanges((SUserTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            break;
+                        case TCacheableSysManTablesEnum.LanguageSpecificList:
+                            if (SLanguageSpecificAccess.SubmitChanges((SLanguageSpecificTable)ASubmitTable, SubmitChangesTransaction,
                                     out SingleVerificationResultCollection))
                             {
                                 SubmissionResult = TSubmitChangesResult.scrOK;

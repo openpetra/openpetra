@@ -215,9 +215,6 @@ namespace Ict.Common.Remoting.Server
     /// </summary>
     public class TClientDomainManagerBase : MarshalByRefObject
     {
-        /// <summary>A copy of the TSrvSetting class (including property values) from the Server's Default AppDomain</summary>
-        private TSrvSetting FServerSettings;
-
         /// <summary>UserID for which this AppDomain was created</summary>
         private String FUserID;
 
@@ -461,7 +458,7 @@ namespace Ict.Common.Remoting.Server
 
             new TAppSettingsManager();
 
-            FServerSettings = new TSrvSetting(ASettings);
+            new TSrvSetting(ASettings);
             TLogging.DebugLevel = TAppSettingsManager.GetInt16("Server.DebugLevel", 0);
         }
 

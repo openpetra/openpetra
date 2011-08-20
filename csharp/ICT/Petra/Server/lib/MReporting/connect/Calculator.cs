@@ -90,10 +90,12 @@ namespace Ict.Petra.Server.MReporting.LogicConnectors
         {
             Boolean ReturnValue;
 
-#if DEBUGMODE
-            // for timing of reports
-            TLogging.Log("start calculating", TLoggingType.ToLogfile);
-#endif
+            if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_REPORTING)
+            {
+                // for timing of reports
+                TLogging.Log("start calculating", TLoggingType.ToLogfile);
+            }
+
             ReturnValue = false;
             AErrorMessage = "";
             try
@@ -118,9 +120,11 @@ namespace Ict.Petra.Server.MReporting.LogicConnectors
                 }
 
                 Results.SetMaxDisplayColumns(Parameters.Get("MaxDisplayColumns").ToInt());
-#if DEBUGMODE
-                Parameters.Save("LogParamAfterPreproc.xml", true);
-#endif
+
+                if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_REPORTING)
+                {
+                    Parameters.Save(Path.GetDirectoryName(TSrvSetting.ServerLogFile) + Path.DirectorySeparatorChar + "LogParamAfterPreproc.xml", true);
+                }
 
                 // to avoid still having in the status line: loading common.xml, although he is already working on the report
                 TLogging.Log("Preparing data for the report... ", TLoggingType.ToStatusBar);
@@ -135,16 +139,22 @@ namespace Ict.Petra.Server.MReporting.LogicConnectors
             {
                 TLogging.Log(E.StackTrace);
                 TLogging.Log(E.Message);
-#if DEBUGMODE
-                Parameters.Save("LogAfterException.xml", true);
-#endif
+
+                if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_REPORTING)
+                {
+                    Parameters.Save(Path.GetDirectoryName(TSrvSetting.ServerLogFile) + Path.DirectorySeparatorChar + "LogAfterException.xml", true);
+                }
+
                 System.Console.WriteLine(E.StackTrace);
                 AErrorMessage = E.Message;
             }
-#if DEBUGMODE
-            // for timing of reports
-            TLogging.Log("finished calculating", TLoggingType.ToLogfile);
-#endif
+
+            if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_REPORTING)
+            {
+                // for timing of reports
+                TLogging.Log("finished calculating", TLoggingType.ToLogfile);
+            }
+
             return ReturnValue;
         }
 

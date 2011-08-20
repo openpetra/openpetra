@@ -151,7 +151,7 @@ namespace Ict.Petra.Server.App.Core
         /// <returns>void</returns>
         public void EstablishDBConnection()
         {
-            new TLogging(TSrvSetting.ServerLogFile);
+            DomainManager.ULogger = new TLogging(TSrvSetting.ServerLogFile);
 
             TLanguageCulture.Init();
 

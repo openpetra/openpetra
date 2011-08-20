@@ -59,9 +59,6 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// <summary>tells whether the cache is containing data, or not</summary>
         private static Boolean UTableCached;
 
-        /// <summary>time when this object was instantiated</summary>
-        private DateTime FStartTime;
-
         /// <summary>
         /// initialize some static variables
         /// </summary>
@@ -74,15 +71,6 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
             UUserDefaultsDT = (SUserDefaultsTable)UUserDefaultsDS.Tables[USERDEFAULTSDT_NAME];
             UUserDefaultsDV = new DataView(UUserDefaultsDT);
             UUserDefaultsDV.Sort = SUserDefaultsTable.GetDefaultCodeDBName();
-        }
-
-        /// <summary>
-        /// constructor
-        /// </summary>
-        public TUserDefaults() : base()
-        {
-            // $IFDEF DEBUGMODE if TLogging.DL >= 9 then Console.WriteLine(this.GetType.FullName + ' created: Instance hash is ' + this.GetHashCode().ToString()); $ENDIF
-            FStartTime = DateTime.Now;
         }
 
         /// <summary>
@@ -477,9 +465,6 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         public static void MergeChanges(SUserDefaultsTable ADestinationDT, SUserDefaultsTable ASourceDT)
         {
             Int16 Counter;
-
-            DataColumn[] PrimaryKeyColumns;
-            object[] PrimaryKeyObj;
             SUserDefaultsRow UpdateRow;
             SUserDefaultsRow AddedRow;
 
@@ -493,8 +478,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                 throw new System.ArgumentException("ASourceDT must not be nil");
             }
 
-            PrimaryKeyColumns = ASourceDT.PrimaryKey;
-            PrimaryKeyObj = new object[PrimaryKeyColumns.Length];
+            // DataColumn[] PrimaryKeyColumns = ASourceDT.PrimaryKey;
 
             for (Counter = 0; Counter <= ASourceDT.Rows.Count - 1; Counter += 1)
             {

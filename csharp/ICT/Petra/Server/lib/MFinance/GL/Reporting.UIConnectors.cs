@@ -68,6 +68,28 @@ namespace Ict.Petra.Server.MFinance.Reporting
         private int FCurrentYear;
 
         /// <summary>
+        /// get the number of forwarding periods. needed to avoid warning about unused FNumberForwardingPeriods
+        /// </summary>
+        public int NumberForwardingPeriods
+        {
+            get
+            {
+                return FNumberForwardingPeriods;
+            }
+        }
+
+        /// <summary>
+        /// get the number of the current period. needed to avoid warning about unused FNumberForwardingPeriods
+        /// </summary>
+        public int CurrentPeriod
+        {
+            get
+            {
+                return FCurrentPeriod;
+            }
+        }
+
+        /// <summary>
         /// initialise the object, select the given ledger
         /// </summary>
         /// <param name="ALedgerNr"></param>

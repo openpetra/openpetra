@@ -41,7 +41,10 @@ namespace Ict.Common.Printing
     /// </summary>
     public class TGfxPrinter : TPrinter
     {
-        private System.Drawing.Printing.PrintDocument FDocument;
+        /// <summary>
+        /// the graphical document
+        /// </summary>
+        protected System.Drawing.Printing.PrintDocument FDocument;
 
         /// we have some different behaviour when printing the columns of a report and when printing a form letter
         public enum ePrinterBehaviour
@@ -126,6 +129,7 @@ namespace Ict.Common.Printing
         public override void Init(eOrientation AOrientation, TPrinterLayout APrinterLayout, eMarginType AMarginType)
         {
             base.Init(AOrientation, APrinterLayout, AMarginType);
+            SetPageSize();
 
             try
             {
@@ -487,9 +491,13 @@ namespace Ict.Common.Printing
         /// <returns>true if any text was printed</returns>
         public override bool PrintStringWrap(String ATxt, eFont AFont, float AXPos, float AWidth, eAlignment AAlign)
         {
+            int PreviousLength = -1;
+
             while (ATxt.Length > 0)
             {
                 Int32 length = -1;
+
+                PreviousLength = ATxt.Length;
 
                 if (FPrinterBehaviour == ePrinterBehaviour.eFormLetter)
                 {
@@ -536,6 +544,12 @@ namespace Ict.Common.Printing
                     CurrentXPos = AXPos;
                     LineFeed();
                 }
+
+                if (ATxt.Length == PreviousLength)
+                {
+                    TLogging.Log("No space for " + ATxt);
+                    return false;
+                }
             }
 
             if (FPrinterBehaviour == ePrinterBehaviour.eReport)
@@ -571,7 +585,7 @@ namespace Ict.Common.Printing
         /// <returns>Return the width of the string, if it was printed in one line, using the given Font</returns>
         public override float GetWidthString(String ATxt, eFont AFont)
         {
-            return FEv.Graphics.MeasureString(ATxt, GetFont(AFont), Convert.ToInt32(Cm(30))).Width;
+            return FEv.Graphics.MeasureString(ATxt, GetFont(AFont)).Width;
         }
 
         /// <summary>
@@ -845,9 +859,7 @@ namespace Ict.Common.Printing
         /// <returns>void</returns>
         public override float Cm(float AValueInCm)
         {
-            float ReturnValue;
-
-            ReturnValue = 0;
+            float ReturnValue = 0;
 
             if (FEv != null)
             {
@@ -866,6 +878,47 @@ namespace Ict.Common.Printing
             }
 
             return ReturnValue;
+        }
+
+        /// <summary>
+        /// default printer resolution
+        /// </summary>
+        public static Int32 DEFAULTPRINTERRESOLUTION = 300;
+
+        /// <summary>
+        /// convert pixels to inches or other unit used for output
+        /// </summary>
+        /// <param name="AWidth"></param>
+        /// <returns></returns>
+        public override float PixelHorizontal(float AWidth)
+        {
+            if ((FEv != null) && (FEv.Graphics.PageUnit == GraphicsUnit.Inch))
+            {
+                // FEv.Graphics.PageUnit is inch; therefore need to convert pixel to inch
+                // pixel/inch = dpi <=> inch = pixel/dpi
+                // cannot use FEv.PageSettings.PrinterResolution.X since that only works if a printer is available.
+                return AWidth / DEFAULTPRINTERRESOLUTION;
+            }
+
+            // TODO other units
+            return AWidth;
+        }
+
+        /// <summary>
+        /// convert pixels to inches or other unit used for output
+        /// </summary>
+        public override float PixelVertical(float AHeight)
+        {
+            if ((FEv != null) && (FEv.Graphics.PageUnit == GraphicsUnit.Inch))
+            {
+                // FEv.Graphics.PageUnit is inch; therefore need to convert pixel to inch
+                // pixel/inch = dpi <=> inch = pixel/dpi
+                // cannot use FEv.PageSettings.PrinterResolution.Y since that only works if a printer is available.
+                return AHeight / DEFAULTPRINTERRESOLUTION;
+            }
+
+            // TODO other units
+            return AHeight;
         }
 
         /// <summary>
@@ -914,6 +967,32 @@ namespace Ict.Common.Printing
         public static Int32 Inch2Twips(float AInch)
         {
             return Convert.ToInt32(AInch * 1440);
+        }
+
+        private void SetPageSize()
+        {
+            PaperKind MyPaperKind;
+            Margins MyMargins;
+            float WidthInPoint;
+            float HeightInPoint;
+
+            if (FPrinterLayout.GetPageSize(out MyPaperKind, out MyMargins, out WidthInPoint, out HeightInPoint))
+            {
+                FDocument.DefaultPageSettings.Margins = MyMargins;
+
+                // PaperSize: Height and Width in hundreds of an inch
+                FDocument.DefaultPageSettings.PaperSize =
+                    new PaperSize("Custom", Convert.ToInt32(WidthInPoint / 72.0f * 100.0f), Convert.ToInt32(HeightInPoint / 72.0f * 100.0f));
+
+                FLeftMargin = MyMargins.Left;
+                FTopMargin = MyMargins.Top;
+                FRightMargin = MyMargins.Right;
+                FBottomMargin = MyMargins.Bottom;
+                FWidth = WidthInPoint / 72.0f * 100.0f;
+                FHeight = HeightInPoint / 72.0f * 100.0f;
+
+                FMarginType = eMarginType.eCalculatedMargins;
+            }
         }
 
         /// <summary>
@@ -970,6 +1049,10 @@ namespace Ict.Common.Printing
                     FBottomMargin = FEv.MarginBounds.Bottom / 100.0f;
                     FWidth = FEv.MarginBounds.Width / 100.0f;
                     FHeight = FEv.MarginBounds.Height / 100.0f;
+                }
+                else if (FMarginType == eMarginType.eCalculatedMargins)
+                {
+                    // the margins have been set in SetPageSize
                 }
 
                 FBlackPen = new Pen(Color.Black, Cm(0.05f));

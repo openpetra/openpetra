@@ -2602,13 +2602,12 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
         /// generated method from connector
         public bool Revaluate(int ALedgerNum,
                               int AAccoutingPeriod,
-                              string ARevaluationCostCenter,
                               string[] AForeignCurrency,
                               decimal[] ANewExchangeRate,
                               out TVerificationResultCollection AVerificationResult)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TRevaluationWebConnector), "Revaluate", ";INT;INT;STRING;STRING[];DECIMAL[];TVERIFICATIONRESULTCOLLECTION;");
-            return Ict.Petra.Server.MFinance.GL.WebConnectors.TRevaluationWebConnector.Revaluate(ALedgerNum, AAccoutingPeriod, ARevaluationCostCenter, AForeignCurrency, ANewExchangeRate, out AVerificationResult);
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TRevaluationWebConnector.Revaluate(ALedgerNum, AAccoutingPeriod, AForeignCurrency, ANewExchangeRate, out AVerificationResult);
         }
 
         /// generated method from connector
@@ -2705,6 +2704,15 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "PostGLBatch", ";INT;INT;TVERIFICATIONRESULTCOLLECTION;");
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.PostGLBatch(ALedgerNumber, ABatchNumber, out AVerifications);
+        }
+
+        /// generated method from connector
+        public List<TVariant> TestPostGLBatch(Int32 ALedgerNumber,
+                                      Int32 ABatchNumber,
+                                      out TVerificationResultCollection AVerifications)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "TestPostGLBatch", ";INT;INT;TVERIFICATIONRESULTCOLLECTION;");
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.TestPostGLBatch(ALedgerNumber, ABatchNumber, out AVerifications);
         }
 
         /// generated method from connector

@@ -155,7 +155,7 @@
 
 
 <!-- Set correct .NET platform -->
-<property name="NETframework-version" value ="2.0" overwrite="false" />
+<property name="NETframework-version" value ="3.5" overwrite="false" />
 <property name="nant.settings.currentframework" value="net-${NETframework-version}"
           overwrite="false" if="${platform::is-windows()}" />
 <property name="nant.settings.currentframework" value="mono-${NETframework-version}" 
@@ -200,7 +200,7 @@
 
 <if test="${'win32'==platform::get-name()}" >
   <!-- MS Windows specific -->
-  <property name="external.Uncrustify" value="${environment::get-variable('ProgramFiles')}/uncrustify-0.56-win32/uncrustify.exe" 
+  <property name="external.Uncrustify" value="${environment::get-variable('ProgramFiles')}/uncrustify/uncrustify.exe" 
             overwrite="false"/>
   <property name="external.Poedit.gettext" value="${environment::get-variable('ProgramFiles')}/Poedit/bin/xgettext.exe" overwrite="false"/>
   <property name="external.Poedit.msgfmt" value="${environment::get-variable('ProgramFiles')}/Poedit/bin/msgfmt.exe" overwrite="false"/>

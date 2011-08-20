@@ -29,7 +29,6 @@ public class {#TABLENAME}Table : {#BASECLASSTABLE}
     {#COLUMNIDS}
 
 {#IFDEF COLUMNINFO}
-    private static bool FInitInfoValues = InitInfoValues();
     private static bool InitInfoValues()
     {
         TableInfo.Add(TableId, new TTypedTableInfo(TableId, "{#TABLEVARIABLENAME}", "{#DBTABLENAME}", 
@@ -51,6 +50,12 @@ public class {#TABLENAME}Table : {#BASECLASSTABLE}
     public {#TABLENAME}Table() : 
             base("{#TABLEVARIABLENAME}")
     {
+{#IFDEF COLUMNINFO}
+        if (TableInfo.Count == 0)
+        {
+            InitInfoValues();
+        }
+{#ENDIF COLUMNINFO}
     }
     
     /// constructor

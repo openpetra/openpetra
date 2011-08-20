@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -35,8 +35,18 @@ using Ict.Tools.DBXML;
 
 namespace Ict.Tools.CodeGeneration.DataStore
 {
-    public class codeGenerationTable
+    /// <summary>
+    /// the code generator for typed tables
+    /// </summary>
+    public class CodeGenerationTable
     {
+        /// <summary>
+        /// create the code for the definition of a typed table
+        /// </summary>
+        /// <param name="Template"></param>
+        /// <param name="currentTable"></param>
+        /// <param name="origTable"></param>
+        /// <param name="WhereToInsert"></param>
         public static void InsertTableDefinition(ProcessTemplate Template, TTable currentTable, TTable origTable, string WhereToInsert)
         {
             ProcessTemplate snippet = Template.GetSnippet("TYPEDTABLE");
@@ -169,7 +179,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                     tempTemplate.SetCodelet("COLUMNNAME", TTable.NiceFieldName(col));
                     tempTemplate.SetCodelet("COLUMNDBNAME", col.strName);
                     tempTemplate.SetCodelet("COLUMNLABEL", col.strLabel);
-                    tempTemplate.SetCodelet("COLUMNODBCTYPE", codeGenerationPetra.ToOdbcTypeString(col));
+                    tempTemplate.SetCodelet("COLUMNODBCTYPE", CodeGenerationPetra.ToOdbcTypeString(col));
                     tempTemplate.SetCodelet("COLUMNLENGTH", col.iLength.ToString());
                     tempTemplate.SetCodelet("COLUMNNOTNULL", col.bNotNull.ToString().ToLower());
                     tempTemplate.SetCodelet("COLUMNCOMMA", colOrder + 1 < currentTable.grpTableField.List.Count ? "," : "");
@@ -203,6 +213,13 @@ namespace Ict.Tools.CodeGeneration.DataStore
             Template.InsertSnippet(WhereToInsert, snippet);
         }
 
+        /// <summary>
+        /// write the definition for the code of a typed row
+        /// </summary>
+        /// <param name="Template"></param>
+        /// <param name="currentTable"></param>
+        /// <param name="origTable"></param>
+        /// <param name="WhereToInsert"></param>
         public static void InsertRowDefinition(ProcessTemplate Template, TTable currentTable, TTable origTable, string WhereToInsert)
         {
             ProcessTemplate snippet = Template.GetSnippet("TYPEDROW");
@@ -235,7 +252,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 {
                     tempTemplate = Template.GetSnippet("ROWCOLUMNPROPERTY");
                     tempTemplate.SetCodelet("COLUMNDBNAME", col.strName);
-                    tempTemplate.SetCodelet("COLUMNNAME", TTable.NiceFieldName(col));
+                    tempTemplate.SetCodelet("COLUMNNAME", col.strNameDotNet);
                     tempTemplate.SetCodelet("COLUMNHELP", col.strDescription.Replace(Environment.NewLine, " "));
                     tempTemplate.SetCodelet("COLUMNLABEL", col.strLabel);
                     tempTemplate.SetCodelet("COLUMNLENGTH", col.iLength.ToString());
@@ -308,6 +325,15 @@ namespace Ict.Tools.CodeGeneration.DataStore
             Template.InsertSnippet(WhereToInsert, snippet);
         }
 
+        /// <summary>
+        /// create the code for a typed table
+        /// </summary>
+        /// <param name="AStore"></param>
+        /// <param name="strGroup"></param>
+        /// <param name="AFilePath"></param>
+        /// <param name="ANamespaceName"></param>
+        /// <param name="AFileName"></param>
+        /// <returns></returns>
         public static Boolean WriteTypedTable(TDataDefinitionStore AStore, string strGroup, string AFilePath, string ANamespaceName, string AFileName)
         {
             Console.WriteLine("processing namespace Typed Tables " + strGroup.Substring(0, 1).ToUpper() + strGroup.Substring(1));

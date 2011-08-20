@@ -118,3 +118,4 @@ CachedTables:
         SysMan:
             DatabaseTables:
                 SUser:
+                SLanguageSpecific:

@@ -100,7 +100,7 @@
 					PUB_p_unit,  PUB_pm_general_application, PUB_pm_short_term_application
 				WHERE
 					PUB_p_unit.p_partner_key_n = {param_unit_key}
-					AND PUB_pm_short_term_application.pm_confirmed_option_code_c  = PUB_p_unit.p_xyz_tbd_code_c
+					AND PUB_pm_short_term_application.pm_confirmed_option_code_c  = PUB_p_unit.p_outreach_code_c
 			</value></queryDetail>
 			
 			<!-- all events -->
@@ -118,7 +118,7 @@
 					AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
 					AND PUB_m_extract_master.m_extract_name_c = {param_extract_name}
 					AND PUB_p_unit.p_partner_key_n = {param_unit_key}
-					AND PUB_pm_short_term_application.pm_confirmed_option_code_c  = PUB_p_unit.p_xyz_tbd_code_c
+					AND PUB_pm_short_term_application.pm_confirmed_option_code_c  = PUB_p_unit.p_outreach_code_c
 			</value></queryDetail>
 			
 			<!-- extract and event related options -->
@@ -376,7 +376,7 @@
 		</query>
 	</calculation>
 	
-	<calculation align="left" id="Arrival Date" returns="text" returnsFormat="text">
+	<calculation align="left" id="Arrival Date" returns="text" returnsFormat="formatteddate">
 		<caption><value text="Arrival Date"></value></caption>
 		<query>
 			<queryDetail>
@@ -610,7 +610,7 @@
 		</query>
 	</calculation>
 	
-	<calculation align="left" id="Date of birth" returns="text" returnsFormat="text">
+	<calculation align="left" id="Date of birth" returns="text" returnsFormat="formatteddate">
 		<caption><value text="DOB"></value></caption>
 		<query>
 			<queryDetail>
@@ -619,7 +619,7 @@
 		</query>
 	</calculation>
 	
-	<calculation align="left" id="Departure Date" returns="text" returnsFormat="text">
+	<calculation align="left" id="Departure Date" returns="text" returnsFormat="formatteddate">
 		<caption><value text="Departure Date"></value></caption>
 		<query>
 			<queryDetail>
@@ -897,7 +897,7 @@
 		</query>
 	</calculation>
 	
-	<calculation align="left" id="Passport Date of Birth" returns="text" returnsFormat="text">
+	<calculation align="left" id="Passport Date of Birth" returns="text" returnsFormat="formatteddate">
 		<caption><value text="Passport Date of Birth"></value></caption>
 		<query>
 			<queryDetail>
@@ -906,7 +906,7 @@
 		</query>
 	</calculation>
 	
-	<calculation align="left" id="Passport Date of Issue" returns="text" returnsFormat="text">
+	<calculation align="left" id="Passport Date of Issue" returns="text" returnsFormat="formatteddate">
 		<caption><value text="Passport Date of Issue"></value></caption>
 		<query>
 			<queryDetail>
@@ -915,7 +915,7 @@
 		</query>
 	</calculation>
 	
-	<calculation align="left" id="Passport Expiry Date" returns="text" returnsFormat="text">
+	<calculation align="left" id="Passport Expiry Date" returns="text" returnsFormat="formatteddate">
 		<caption><value text="Passport Expiry Date"></value></caption>
 		<query>
 			<queryDetail>
