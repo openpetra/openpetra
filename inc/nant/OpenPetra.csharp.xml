@@ -261,7 +261,7 @@
     <do>
     <property name="relative-filename" value="${OP::GetRelativePath(filename, dir.projectfiles + '/' + devenv-name + '/')}"/>
     <property name="DependentUpon" value="${path::change-extension(filename,'.cs')}" />
-    <property name="relative-DependentUpon" value="${path::get-file-name(filename)}" />
+    <property name="relative-DependentUpon" value="${path::get-file-name(DependentUpon)}" />
     <property name="template" value="template.csproj.resource" />
     <if test="${file::exists(DependentUpon)}">
       <property name="template" value="template.csproj.resource.DependentUpon" />

@@ -657,7 +657,7 @@ public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
       </msbuild>
     </if>
     <if test="${not file::exists(msbuildtask.file)}">
-      <solution configuration="${Configuration}" solutionfile="${solution.file}" />
+      <fail message="you need the NAnt.Contrib.Tasks.dll for msbuild" />
     </if>
   </if>
 </target>
