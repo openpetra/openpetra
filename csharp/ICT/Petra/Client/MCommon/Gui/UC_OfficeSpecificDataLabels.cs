@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangb
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -60,7 +60,6 @@ namespace Ict.Petra.Client.MCommon.Gui
         private Int32 FApplicationKey;
         private Int64 FRegistrationOffice;
         private Boolean FUserControlInitialised;
-        private TDelegateGetPartnerShortName FDelegateGetPartnerShortName;
 
         /// <summary>
         /// constructor
@@ -102,8 +101,9 @@ namespace Ict.Petra.Client.MCommon.Gui
         /// <param name="ADelegateFunction"></param>
         public void InitializeDelegateGetPartnerShortName(TDelegateGetPartnerShortName ADelegateFunction)
         {
-            // set the delegate function from the calling System.Object
-            FDelegateGetPartnerShortName = ADelegateFunction;
+            // this variable is never actually used
+            // set the delegate function from the calling object
+            // FDelegateGetPartnerShortName = ADelegateFunction;
         }
 
         /// <summary>

@@ -4,7 +4,7 @@
 // @Authors:
 //       markusm, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -299,15 +299,7 @@ namespace Ict.Petra.Client.CommonControls
         /// <returns>void</returns>
         public bool CanExtend(System.Object AnObject)
         {
-            bool ReturnValue;
-
-            System.Object mTextBoxObject;
-            System.Windows.Forms.Control mTextBox;
-
-            // Initialization
-            ReturnValue = false;
-            mTextBox = new System.Windows.Forms.TextBox();
-            mTextBoxObject = new System.Object();
+            bool ReturnValue = false;
 
             // If the System.Object is derived from System.Windows.Forms.UserControl then we have to deal with it
             if (AnObject is System.Windows.Forms.UserControl)
@@ -462,8 +454,6 @@ namespace Ict.Petra.Client.CommonControls
         /// <returns>void</returns>
         private void ImposeMaxLength()
         {
-            String mKey;
-
             System.Object mValueObject;
             System.Windows.Forms.Control mControl;
             TTxtPartnerKeyTextBox mPartnerKey;
@@ -472,7 +462,6 @@ namespace Ict.Petra.Client.CommonControls
 
             foreach (DataRow mDataRow in this.UFoundControlTable.Rows)
             {
-                mKey = mDataRow[strFoundControlKey].ToString();
                 mValueObject = mDataRow[strFoundControlTextBox];
                 mControl = (System.Windows.Forms.Control)mValueObject;
 
@@ -675,13 +664,6 @@ namespace Ict.Petra.Client.CommonControls
         /// <returns>void</returns>
         public void RetrieveTextboxes(System.Object AnObject)
         {
-            System.Object mTextBoxObject;
-            System.Windows.Forms.Control mTextBox;
-
-            // Initialization
-            mTextBox = new System.Windows.Forms.TextBox();
-            mTextBoxObject = new System.Object();
-
             // If the System.Object is derived from System.Windows.Forms.UserControl then we have to deal with it
             if (AnObject is System.Windows.Forms.UserControl)
             {

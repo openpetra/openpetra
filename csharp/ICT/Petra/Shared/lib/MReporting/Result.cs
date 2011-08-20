@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -835,7 +835,6 @@ namespace Ict.Petra.Shared.MReporting
         /// <param name="ADebugging">if true, thent the currency and date values are written encoded, not localized</param>
         /// <param name="AExportOnlyLowestLevel">if true, only the lowest level of AParameters are exported (level with higest depth)
         /// otherwise all levels in AParameter are exported</param>
-        /// </param>
         /// <returns>true for success</returns>
         public bool WriteCSV(TParameterList AParameters, string csvfilename, string separator, Boolean ADebugging, Boolean AExportOnlyLowestLevel)
         {

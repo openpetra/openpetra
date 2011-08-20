@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -46,7 +46,7 @@ namespace Ict.Petra.Client.CommonForms
     public partial class TPetraUserControl : System.Windows.Forms.UserControl
     {
         // TODO statusbar text
-        private System.Windows.Forms.ToolTip tipUC;
+        // private System.Windows.Forms.ToolTip tipUC;
 
         /// <summary>Holds the DataSet that contains most data that is used in the UserControl</summary>
         protected DataSet FMainDS;
