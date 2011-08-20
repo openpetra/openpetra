@@ -264,8 +264,6 @@ namespace Ict.Petra.Server.MReporting.MFinDev
 
             DataTable Table;
 
-            AGiftTable GiftTable = new AGiftTable();
-
             String StrSql = "SELECT " + AGiftTable.GetDateEnteredDBName() +
                             " FROM " + AGiftTable.GetTableDBName() +
                             " , " + AGiftDetailTable.GetTableDBName() +
