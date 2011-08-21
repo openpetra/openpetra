@@ -355,8 +355,7 @@ namespace Ict.Petra.Server.App.Main
             // Server.ODBC_DSN
             ODBCDsnAppSetting = TAppSettingsManager.GetValue("Server.ODBC_DSN", false);
 
-            string DatabaseHostOrFile = TAppSettingsManager.GetValue("Server.DBHostOrFile", "localhost").
-                                        Replace("{userappdata}", Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
+            string DatabaseHostOrFile = TAppSettingsManager.GetValue("Server.DBHostOrFile", "localhost");
             string DatabasePort = TAppSettingsManager.GetValue("Server.DBPort", "5432");
             string DatabaseName = TAppSettingsManager.GetValue("Server.DBName", "openpetra");
             string DatabaseUserName = TAppSettingsManager.GetValue("Server.DBUserName", "petraserver");
@@ -364,9 +363,7 @@ namespace Ict.Petra.Server.App.Main
 
             if (TAppSettingsManager.HasValue("Server.LogFile"))
             {
-                ServerLogFile =
-                    TAppSettingsManager.GetValue("Server.LogFile", false).Replace("{userappdata}",
-                        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
+                ServerLogFile = TAppSettingsManager.GetValue("Server.LogFile");
             }
             else
             {

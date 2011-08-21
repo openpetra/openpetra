@@ -266,6 +266,9 @@ namespace Ict.Common
                 }
             }
 
+            ReturnValue = ReturnValue.Replace("{userappdata}",
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
+
             return ReturnValue;
         }
 

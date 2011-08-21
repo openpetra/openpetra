@@ -313,19 +313,13 @@ namespace Ict.Petra.Client.App.Core
         {
             string result = TAppSettingsManager.GetValue(AVariableName, ADefaultValue);
 
-            if (result.Contains("{userappdata}"))
+            // on Windows, we cannot store the database in userappdata during installation, because
+            // the setup has to be run as administrator.
+            // therefore the first time the user starts Petra, we need to prepare his environment
+            // see also http://www.vincenzo.net/isxkb/index.php?title=Vista_considerations#Best_Practices
+            if (!Directory.Exists(result))
             {
-                // on Windows, we cannot store the database in userappdata during installation, because
-                // the setup has to be run as administrator.
-                // therefore the first time the user starts Petra, we need to prepare his environment
-                // see also http://www.vincenzo.net/isxkb/index.php?title=Vista_considerations#Best_Practices
-                result = result.Replace("{userappdata}",
-                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
-
-                if (!Directory.Exists(result))
-                {
-                    Directory.CreateDirectory(result);
-                }
+                Directory.CreateDirectory(result);
             }
 
             return result;
@@ -385,8 +379,7 @@ namespace Ict.Petra.Client.App.Core
             UReportingPathReportSettings =
                 TAppSettingsManager.GetValue("Reporting.PathReportSettings");
             UReportingPathReportUserSettings =
-                TAppSettingsManager.GetValue("Reporting.PathReportUserSettings").Replace("{userappdata}",
-                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
+                TAppSettingsManager.GetValue("Reporting.PathReportUserSettings");
 
             UServerPollIntervalInSeconds = TAppSettingsManager.GetInt16("ServerPollIntervalInSeconds", 5);
             UServerObjectKeepAliveIntervalInSeconds = TAppSettingsManager.GetInt16("ServerObjectKeepAliveIntervalInSeconds", 10);
