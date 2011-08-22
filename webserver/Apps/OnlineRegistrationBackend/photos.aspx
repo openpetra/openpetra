@@ -18,7 +18,7 @@ try
         Console.WriteLine("Serving " + Filename);
         if (!File.Exists(Filename))
         {
-            Filename = "img/default_blank.gif";
+            Filename = AppDomain.CurrentDomain.BaseDirectory + Path.DirectorySeparatorChar + "img/default_blank.gif";
         }
         Response.Buffer = true;
         Response.Clear();

@@ -126,6 +126,20 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             PPartnerRow PartnerRow = FMainDS.PPartner.NewRowTyped();
             PartnerRow.PartnerKey = FPartnerKey;
 
+            if (!PPartnerAccess.Exists(FPartnerKey, ATransaction))
+            {
+                // look for partners that have the same original key.
+                // this can happen when partners are exported from the online registration, and then imported again into the online registration
+                PmGeneralApplicationRow LocalPartnerKeyRow = FMainDS.PmGeneralApplication.NewRowTyped(false);
+                LocalPartnerKeyRow.LocalPartnerKey = FPartnerKey;
+                PmGeneralApplicationTable ExistingApplication = PmGeneralApplicationAccess.LoadUsingTemplate(LocalPartnerKeyRow, ATransaction);
+
+                if (ExistingApplication.Count > 0)
+                {
+                    FPartnerKey = ExistingApplication[0].PartnerKey;
+                }
+            }
+
             if (PPartnerAccess.Exists(FPartnerKey, ATransaction))
             {
                 FMainDS.Merge(PPartnerAccess.LoadByPrimaryKey(FPartnerKey, ATransaction));
@@ -606,11 +620,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             if (ShortTermApplicationRow.StFieldCharged == 0)
             {
-                // we cannot import a partner that has a field charged 0. This is an invalid application
-                TLogging.Log(
-                    "Problem, ShortTermApplication.StFieldCharged for partner " + FPartnerKey.ToString() +
-                    " is NULL or 0. We will ignore this application.");
-                return;
+                // we cannot import a partner that has a field charged 0. This would be an invalid application.
+                // we assume that the registration office will be charged
+                ShortTermApplicationRow.StFieldCharged = ShortTermApplicationRow.RegistrationOffice;
             }
 
             if (!FIgnoreApplication)
@@ -629,6 +641,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             YearProgramApplicationRow.PartnerKey = FPartnerKey;
             YearProgramApplicationRow.ApplicationKey = AGeneralApplicationRow.ApplicationKey;
+            YearProgramApplicationRow.YpAppDate = AGeneralApplicationRow.GenAppDate;
+            YearProgramApplicationRow.YpBasicAppType = AGeneralApplicationRow.AppTypeName;
+            YearProgramApplicationRow.RegistrationOffice = AGeneralApplicationRow.RegistrationOffice;
 
             YearProgramApplicationRow.HoOrientConfBookingKey = ReadString();
             YearProgramApplicationRow.YpAgreedJoiningCharge = ReadDecimal();
@@ -761,7 +776,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             {
                 ReadShortApplicationForm(GeneralApplicationRow, ATransaction);
             }
-            else if (ApplicationTypeRow.AppFormType == MPersonnelConstants.APPLICATIONFORMTYPE_SHORTFORM)
+            else if (ApplicationTypeRow.AppFormType == MPersonnelConstants.APPLICATIONFORMTYPE_LONGFORM)
             {
                 ReadLongApplicationForm(GeneralApplicationRow, ATransaction);
             }
@@ -1017,6 +1032,17 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             PersonQualificationRow.Comment = ReadString();
             PersonQualificationRow.QualificationDate = ReadNullableDate();
             PersonQualificationRow.QualificationExpiry = ReadNullableDate();
+
+            // check if type code does already exist in this database
+            FMainDS.PtQualificationArea.DefaultView.RowFilter = String.Format("{0} = '{1}'",
+                PtQualificationAreaTable.GetQualificationAreaNameDBName(), PersonQualificationRow.QualificationAreaName);
+
+            if (FMainDS.PtQualificationArea.DefaultView.Count == 0)
+            {
+                TLogging.Log(
+                    "Ignoring PersonQualification because of non existing qualification area " + PersonQualificationRow.QualificationAreaName);
+                return;
+            }
 
             PmPersonQualificationAccess.AddOrModifyRecord(PersonQualificationRow.PartnerKey,
                 PersonQualificationRow.QualificationAreaName,
@@ -1518,6 +1544,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             PmCommitmentStatusAccess.LoadAll(FMainDS, Transaction);
             PtAppFormTypesAccess.LoadAll(FMainDS, Transaction);
             PtCongressCodeAccess.LoadAll(FMainDS, Transaction);
+            PtQualificationAreaAccess.LoadAll(FMainDS, Transaction);
             DBAccess.GDBAccessObj.RollbackTransaction();
 
             InitReading(ALinesToImport);

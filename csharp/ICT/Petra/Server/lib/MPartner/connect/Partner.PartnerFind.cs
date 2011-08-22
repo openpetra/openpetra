@@ -364,7 +364,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             String PartnerKey;
             DataTable CriteriaDataTable;
             DataRow CriteriaRow;
-            TDynamicSearchHelper CriteriaBuilder;
             ArrayList InternalParameters;
             bool ExactPartnerKeyMatch;
             Int32 pk_order;
@@ -379,7 +378,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             if (CriteriaRow["PartnerName"].ToString().Length > 0)
             {
                 // Searched DB Field: 'p_partner_short_name_c'
-                CriteriaBuilder = new TDynamicSearchHelper(PPartnerTable.TableId,
+                new TDynamicSearchHelper(PPartnerTable.TableId,
                     PPartnerTable.ColumnPartnerShortNameId, CriteriaRow, "PartnerName", "PartnerNameMatch",
                     ref CustomWhereCriteria, ref InternalParameters);
             }
@@ -390,13 +389,13 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 // Search for family or person?
                 if (CriteriaRow["PartnerClass"].ToString() == "PERSON")
                 {
-                    CriteriaBuilder = new TDynamicSearchHelper(PPersonTable.TableId,
+                    new TDynamicSearchHelper(PPersonTable.TableId,
                         PPersonTable.ColumnFirstNameId, CriteriaRow, "PersonalName", "PersonalNameMatch",
                         ref CustomWhereCriteria, ref InternalParameters);
                 }
                 else if (CriteriaRow["PartnerClass"].ToString() == "FAMILY")
                 {
-                    CriteriaBuilder = new TDynamicSearchHelper(PFamilyTable.TableId,
+                    new TDynamicSearchHelper(PFamilyTable.TableId,
                         PFamilyTable.ColumnFirstNameId, CriteriaRow, "PersonalName", "PersonalNameMatch",
                         ref CustomWhereCriteria, ref InternalParameters);
                 }
@@ -405,7 +404,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             if (CriteriaRow["PreviousName"].ToString().Length > 0)
             {
                 // Searched DB Field: 'p_previous_name_c'
-                CriteriaBuilder = new TDynamicSearchHelper(PPartnerTable.TableId,
+                new TDynamicSearchHelper(PPartnerTable.TableId,
                     PPartnerTable.ColumnPreviousNameId, CriteriaRow, "PreviousName", "PreviousNameMatch",
                     ref CustomWhereCriteria, ref InternalParameters);
             }
@@ -413,7 +412,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             if (CriteriaRow["Email"].ToString().Length > 0)
             {
                 // Searched DB Field: 'p_email_address_c'
-                CriteriaBuilder = new TDynamicSearchHelper(PPartnerLocationTable.TableId,
+                new TDynamicSearchHelper(PPartnerLocationTable.TableId,
                     PPartnerLocationTable.ColumnEmailAddressId, CriteriaRow, "Email", "EmailMatch",
                     ref CustomWhereCriteria, ref InternalParameters);
             }
@@ -432,7 +431,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             if (CriteriaRow["Address1"].ToString().Length > 0)
             {
                 // Searched DB Field: 'p_locality_c'
-                CriteriaBuilder = new TDynamicSearchHelper(PLocationTable.TableId,
+                new TDynamicSearchHelper(PLocationTable.TableId,
                     PLocationTable.ColumnLocalityId, CriteriaRow, "Address1", "Address1Match",
                     ref CustomWhereCriteria,
                     ref InternalParameters);
@@ -441,7 +440,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             if (CriteriaRow["Address2"].ToString().Length > 0)
             {
                 // Searched DB Field: 'p_street_name_c'
-                CriteriaBuilder = new TDynamicSearchHelper(PLocationTable.TableId,
+                new TDynamicSearchHelper(PLocationTable.TableId,
                     PLocationTable.ColumnStreetNameId, CriteriaRow, "Address2", "Address2Match",
                     ref CustomWhereCriteria,
                     ref InternalParameters);
@@ -450,7 +449,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             if (CriteriaRow["Address3"].ToString().Length > 0)
             {
                 // Searched DB Field: 'p_address_3_c'
-                CriteriaBuilder = new TDynamicSearchHelper(PLocationTable.TableId,
+                new TDynamicSearchHelper(PLocationTable.TableId,
                     PLocationTable.ColumnAddress3Id, CriteriaRow, "Address3", "Address3Match",
                     ref CustomWhereCriteria,
                     ref InternalParameters);
@@ -459,7 +458,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             // Searched DB Field: 'p_city_c'
             if (CriteriaRow["City"].ToString().Length > 0)
             {
-                CriteriaBuilder = new TDynamicSearchHelper(PLocationTable.TableId,
+                new TDynamicSearchHelper(PLocationTable.TableId,
                     PLocationTable.ColumnCityId, CriteriaRow, "City", "CityMatch", ref CustomWhereCriteria,
                     ref InternalParameters);
             }
@@ -467,7 +466,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             // Searched DB Field: 'p_postal_code_c'
             if (CriteriaRow["PostCode"].ToString().Length > 0)
             {
-                CriteriaBuilder = new TDynamicSearchHelper(PLocationTable.TableId,
+                new TDynamicSearchHelper(PLocationTable.TableId,
                     PLocationTable.ColumnPostalCodeId, CriteriaRow, "PostCode", "PostCodeMatch",
                     ref CustomWhereCriteria,
                     ref InternalParameters);
@@ -476,7 +475,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             // Searched DB Field: 'p_county_c'
             if (CriteriaRow["County"].ToString().Length > 0)
             {
-                CriteriaBuilder = new TDynamicSearchHelper(PLocationTable.TableId,
+                new TDynamicSearchHelper(PLocationTable.TableId,
                     PLocationTable.ColumnCountyId, CriteriaRow, "County", "CountyMatch", ref CustomWhereCriteria,
                     ref InternalParameters);
             }
@@ -495,13 +494,13 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             {
                 // these two need to be grouped as they are an OR
                 CustomWhereCriteria = CustomWhereCriteria + " AND ( ";
-                CriteriaBuilder = new TDynamicSearchHelper(PPartnerLocationTable.TableId,
+                new TDynamicSearchHelper(PPartnerLocationTable.TableId,
                     PPartnerLocationTable.ColumnTelephoneNumberId, CriteriaRow, "PhoneNumber",
                     "PhoneNumberMatch",
                     ref CustomWhereCriteria, ref InternalParameters, " ");
 
                 // prevent an AND
-                CriteriaBuilder = new TDynamicSearchHelper(PPartnerLocationTable.TableId,
+                new TDynamicSearchHelper(PPartnerLocationTable.TableId,
                     PPartnerLocationTable.ColumnAlternateTelephoneId, CriteriaRow, "PhoneNumber",
                     "PhoneNumberMatch", ref CustomWhereCriteria, ref InternalParameters, "OR");
 

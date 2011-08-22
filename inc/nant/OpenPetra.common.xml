@@ -155,7 +155,7 @@
 
 
 <!-- Set correct .NET platform -->
-<property name="NETframework-version" value ="2.0" overwrite="false" />
+<property name="NETframework-version" value ="3.5" overwrite="false" />
 <property name="nant.settings.currentframework" value="net-${NETframework-version}"
           overwrite="false" if="${platform::is-windows()}" />
 <property name="nant.settings.currentframework" value="mono-${NETframework-version}" 

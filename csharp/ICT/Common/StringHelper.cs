@@ -373,6 +373,35 @@ namespace Ict.Common
         }
 
         /// <summary>
+        /// get the separator from the first line of CSV Data.
+        /// first test for tab, then for semicolon. otherwise default to comma
+        /// </summary>
+        /// <param name="ACSVData"></param>
+        /// <returns></returns>
+        public static string GetCSVSeparator(string ACSVData)
+        {
+            string InputSeparator = ",";
+
+            string FirstLine = ACSVData;
+
+            if (ACSVData.IndexOf("\n") > 0)
+            {
+                FirstLine = ACSVData.Substring(0, ACSVData.IndexOf("\n"));
+            }
+
+            if (FirstLine.Contains("\t"))
+            {
+                InputSeparator = "\t";
+            }
+            else if (FirstLine.Contains(";"))
+            {
+                InputSeparator = ";";
+            }
+
+            return InputSeparator;
+        }
+
+        /// <summary>
         /// retrieves the first value of the comma separated list, and removes the value from the list
         /// </summary>
         /// <param name="list">the comma separated list that will get the first value removed</param>
@@ -484,6 +513,26 @@ namespace Ict.Common
         public static string GetNextCSV(ref string list, string separator)
         {
             return GetNextCSV(ref list, separator, false);
+        }
+
+        /// <summary>
+        /// overload for GetNextCSV.
+        /// if the value is empty, the default value will be used
+        /// </summary>
+        /// <param name="list">separated values; the first value will be removed</param>
+        /// <param name="separator">delimiter to be used</param>
+        /// <param name="ADefaultValue">to be used if the csv value is empty</param>
+        /// <returns>the first value of the string</returns>
+        public static string GetNextCSV(ref string list, string separator, string ADefaultValue)
+        {
+            string result = GetNextCSV(ref list, separator, false);
+
+            if (result.Length == 0)
+            {
+                result = ADefaultValue;
+            }
+
+            return result;
         }
 
         /// <summary>
