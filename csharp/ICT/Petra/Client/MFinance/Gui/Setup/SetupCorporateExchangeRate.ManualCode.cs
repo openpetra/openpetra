@@ -127,8 +127,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     "a_date_effective_from_d desc, a_time_effective_from_i desc";
                 FMainDS.ACorporateExchangeRate.DefaultView.RowFilter = "";
 
-                btnClose.Visible = false;
-                btnCancel.Visible = false;
                 btnUseDateToFilter.Visible = true;
                 mniImport.Enabled = true;
                 tbbImport.Enabled = true;
@@ -231,8 +229,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private void DefineModalSettings()
         {
             blnUseDateTimeDefault = true;
-            btnClose.Visible = true;
-            btnCancel.Visible = true;
             btnUseDateToFilter.Visible = false;
             mniImport.Enabled = false;
             tbbImport.Enabled = false;

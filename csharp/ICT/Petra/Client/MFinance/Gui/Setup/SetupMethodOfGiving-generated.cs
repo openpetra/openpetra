@@ -103,9 +103,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
       FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
             FPetraUtilsObject.SetStatusBarText(txtDetailMethodOfGivingCode, Catalog.GetString("Enter method of giving"));
       FPetraUtilsObject.SetStatusBarText(txtDetailMethodOfGivingDesc, Catalog.GetString("Enter a description"));
-      FPetraUtilsObject.SetStatusBarText(chkDetailRecurringMethodFlag, Catalog.GetString(("Enter 'YES' or 'NO'")));
-      FPetraUtilsObject.SetStatusBarText(chkDetailTaxRebateFlag, Catalog.GetString(("Enter 'YES' or 'NO'")));
-      FPetraUtilsObject.SetStatusBarText(chkDetailTrustFlag, Catalog.GetString(("Enter 'YES' or 'NO'")));
+      FPetraUtilsObject.SetStatusBarText(chkDetailRecurringMethodFlag, Catalog.GetString("Enter \"\"YES\"\" or \"\"NO\"\""));
+      FPetraUtilsObject.SetStatusBarText(chkDetailTaxRebateFlag, Catalog.GetString("Enter \"\"YES\"\" or \"\"NO\"\""));
+      FPetraUtilsObject.SetStatusBarText(chkDetailTrustFlag, Catalog.GetString("Enter \"\"YES\"\" or \"\"NO\"\""));
       FPetraUtilsObject.SetStatusBarText(chkDetailActive, Catalog.GetString("Select if this method can be used"));
 
       /*
