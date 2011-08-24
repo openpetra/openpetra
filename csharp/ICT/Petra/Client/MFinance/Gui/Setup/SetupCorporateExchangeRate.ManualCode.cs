@@ -317,40 +317,40 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             dateTimeNow = DateTime.Now;
             DateTime dateTime = DateTime.Parse(dateTimeNow.ToLongTimeString());
 
-            ACorporateExchangeRateRow aCorporateExchangeRateRow = FMainDS.ACorporateExchangeRate.NewRowTyped();
+            ACorporateExchangeRateRow ACorporateExRateRow = FMainDS.ACorporateExchangeRate.NewRowTyped();
 
-            aCorporateExchangeRateRow.FromCurrencyCode = baseCurrencyOfLedger;
+            ACorporateExRateRow.FromCurrencyCode = baseCurrencyOfLedger;
 
             if (strCurrencyToDefault == null)
             {
                 if (FPreviouslySelectedDetailRow == null)
                 {
-                    aCorporateExchangeRateRow.ToCurrencyCode = baseCurrencyOfLedger;
-                    aCorporateExchangeRateRow.RateOfExchange = 1.0m;
+                    ACorporateExRateRow.ToCurrencyCode = baseCurrencyOfLedger;
+                    ACorporateExRateRow.RateOfExchange = 1.0m;
                 }
                 else
                 {
-                    aCorporateExchangeRateRow.ToCurrencyCode = cmbDetailToCurrencyCode.GetSelectedString();
-                    aCorporateExchangeRateRow.RateOfExchange = Decimal.Parse(txtDetailRateOfExchange.Text);
+                    ACorporateExRateRow.ToCurrencyCode = cmbDetailToCurrencyCode.GetSelectedString();
+                    ACorporateExRateRow.RateOfExchange = Decimal.Parse(txtDetailRateOfExchange.Text);
                 }
             }
             else
             {
-                aCorporateExchangeRateRow.ToCurrencyCode = strCurrencyToDefault;
-                aCorporateExchangeRateRow.RateOfExchange = 1.0m;
+                ACorporateExRateRow.ToCurrencyCode = strCurrencyToDefault;
+                ACorporateExRateRow.RateOfExchange = 1.0m;
             }
 
             if (FPreviouslySelectedDetailRow == null)
             {
-                cmbDetailFromCurrencyCode.SetSelectedString(aCorporateExchangeRateRow.FromCurrencyCode);
-                cmbDetailToCurrencyCode.SetSelectedString(aCorporateExchangeRateRow.ToCurrencyCode);
+                cmbDetailFromCurrencyCode.SetSelectedString(ACorporateExRateRow.FromCurrencyCode);
+                cmbDetailToCurrencyCode.SetSelectedString(ACorporateExRateRow.ToCurrencyCode);
             }
 
-            aCorporateExchangeRateRow.DateEffectiveFrom = dateDate;
-            aCorporateExchangeRateRow.TimeEffectiveFrom =
+            ACorporateExRateRow.DateEffectiveFrom = dateDate;
+            ACorporateExRateRow.TimeEffectiveFrom =
                 (dateTime.Hour * 60 + dateTime.Minute) * 60 + dateTime.Second;
 
-            FMainDS.ACorporateExchangeRate.Rows.Add(aCorporateExchangeRateRow);
+            FMainDS.ACorporateExchangeRate.Rows.Add(ACorporateExRateRow);
             grdDetails.Refresh();
 
             FPetraUtilsObject.SetChangedFlag();
@@ -627,101 +627,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void Import(System.Object sender, EventArgs e)
         {
-            OpenFileDialog dialog = new OpenFileDialog();
-
-            dialog.Title = Catalog.GetString("Import exchange rates from spreadsheet file");
-            dialog.Filter = Catalog.GetString("Spreadsheet files (*.csv)|*.csv");
-
-            if (dialog.ShowDialog() == DialogResult.OK)
-            {
-                string directory = Path.GetDirectoryName(dialog.FileName);
-                string[] ymlFiles = Directory.GetFiles(directory, "*.yml");
-                string definitionFileName = String.Empty;
-
-                if (ymlFiles.Length == 1)
-                {
-                    definitionFileName = ymlFiles[0];
-                }
-                else
-                {
-                    // show another open file dialog for the description file
-                    OpenFileDialog dialogDefinitionFile = new OpenFileDialog();
-                    dialogDefinitionFile.Title = Catalog.GetString("Please select a yml file that describes the content of the spreadsheet");
-                    dialogDefinitionFile.Filter = Catalog.GetString("Data description files (*.yml)|*.yml");
-
-                    if (dialogDefinitionFile.ShowDialog() == DialogResult.OK)
-                    {
-                        definitionFileName = dialogDefinitionFile.FileName;
-                    }
-                }
-
-                if (File.Exists(definitionFileName))
-                {
-                    TYml2Xml parser = new TYml2Xml(definitionFileName);
-                    XmlDocument dataDescription = parser.ParseYML2XML();
-                    XmlNode RootNode = TXMLParser.FindNodeRecursive(dataDescription.DocumentElement, "RootNode");
-
-                    if (Path.GetExtension(dialog.FileName).ToLower() == ".csv")
-                    {
-                        ImportFromCSVFile(dialog.FileName, RootNode);
-                    }
-                }
-            }
-        }
-
-        private void ImportFromCSVFile(string ADataFilename, XmlNode ARootNode)
-        {
-            StreamReader dataFile = new StreamReader(ADataFilename, System.Text.Encoding.Default);
-
-            string Separator = TXMLParser.GetAttribute(ARootNode, "Separator");
-            string DateFormat = TXMLParser.GetAttribute(ARootNode, "DateFormat");
-            string ThousandsSeparator = TXMLParser.GetAttribute(ARootNode, "ThousandsSeparator");
-            string DecimalSeparator = TXMLParser.GetAttribute(ARootNode, "DecimalSeparator");
-
-            // assumes date in first column, exchange rate in second column
-            // picks the names of the currencies from the file name: CUR1_CUR2.csv
-            string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(ADataFilename);
-
-            if (!fileNameWithoutExtension.Contains("_"))
-            {
-                MessageBox.Show(Catalog.GetString("Cannot import exchange rates, please name the file after the currencies involved, eg. KES_EUR.csv"));
-            }
-
-            string[] Currencies = fileNameWithoutExtension.Split(new char[] { '_' });
-
-            // TODO: check for valid currency codes? at the moment should fail on foreign key
-            // TODO: disconnect the grid from the datasource to avoid flickering?
-
-            while (!dataFile.EndOfStream)
-            {
-                string line = dataFile.ReadLine();
-
-                DateTime dateEffective = XmlConvert.ToDateTime(StringHelper.GetNextCSV(ref line, Separator, false), DateFormat);
-                string ExchangeRateString = StringHelper.GetNextCSV(ref line, Separator, false).
-                                            Replace(ThousandsSeparator, "").
-                                            Replace(DecimalSeparator, ".");
-
-                decimal ExchangeRate = Convert.ToDecimal(ExchangeRateString, System.Globalization.CultureInfo.InvariantCulture);
-
-                ACorporateExchangeRateRow exchangeRow =
-                    (ACorporateExchangeRateRow)FMainDS.ACorporateExchangeRate.Rows.Find(new object[] { Currencies[0], Currencies[1], dateEffective,
-                                                                                               0 });
-
-                if (exchangeRow == null)
-                {
-                    exchangeRow = FMainDS.ACorporateExchangeRate.NewRowTyped();
-                    exchangeRow.FromCurrencyCode = Currencies[0];
-                    exchangeRow.ToCurrencyCode = Currencies[1];
-                    exchangeRow.DateEffectiveFrom = dateEffective;
-                    FMainDS.ACorporateExchangeRate.Rows.Add(exchangeRow);
-                }
-
-                exchangeRow.RateOfExchange = ExchangeRate;
-            }
-
-            dataFile.Close();
-
+            TImportExchangeRates.ImportCurrencyExRates(FMainDS.ACorporateExchangeRate, "Corporate");
             FPetraUtilsObject.SetChangedFlag();
         }
+
     }
+    
 }

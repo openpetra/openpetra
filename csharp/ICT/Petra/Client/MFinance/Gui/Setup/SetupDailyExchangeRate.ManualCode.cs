@@ -325,39 +325,39 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             dateTimeNow = DateTime.Now;
             DateTime dateTime = DateTime.Parse(dateTimeNow.ToLongTimeString());
 
-            ADailyExchangeRateRow aDailyExchangeRateRow = FMainDS.ADailyExchangeRate.NewRowTyped();
+            ADailyExchangeRateRow ADailyExRateRow = FMainDS.ADailyExchangeRate.NewRowTyped();
 
-            aDailyExchangeRateRow.FromCurrencyCode = baseCurrencyOfLedger;
+            ADailyExRateRow.FromCurrencyCode = baseCurrencyOfLedger;
 
             if (strCurrencyToDefault == null)
             {
                 if (FPreviouslySelectedDetailRow == null)
                 {
-                    aDailyExchangeRateRow.ToCurrencyCode = baseCurrencyOfLedger;
-                    aDailyExchangeRateRow.RateOfExchange = 1.0m;
+                    ADailyExRateRow.ToCurrencyCode = baseCurrencyOfLedger;
+                    ADailyExRateRow.RateOfExchange = 1.0m;
                 }
                 else
                 {
-                    aDailyExchangeRateRow.ToCurrencyCode = cmbDetailToCurrencyCode.GetSelectedString();
-                    aDailyExchangeRateRow.RateOfExchange = Decimal.Parse(txtDetailRateOfExchange.Text);
+                    ADailyExRateRow.ToCurrencyCode = cmbDetailToCurrencyCode.GetSelectedString();
+                    ADailyExRateRow.RateOfExchange = Decimal.Parse(txtDetailRateOfExchange.Text);
                 }
             }
             else
             {
-                aDailyExchangeRateRow.ToCurrencyCode = strCurrencyToDefault;
-                aDailyExchangeRateRow.RateOfExchange = 1.0m;
+                ADailyExRateRow.ToCurrencyCode = strCurrencyToDefault;
+                ADailyExRateRow.RateOfExchange = 1.0m;
             }
 
             if (FPreviouslySelectedDetailRow == null)
             {
-                cmbDetailFromCurrencyCode.SetSelectedString(aDailyExchangeRateRow.FromCurrencyCode);
-                cmbDetailToCurrencyCode.SetSelectedString(aDailyExchangeRateRow.ToCurrencyCode);
+                cmbDetailFromCurrencyCode.SetSelectedString(ADailyExRateRow.FromCurrencyCode);
+                cmbDetailToCurrencyCode.SetSelectedString(ADailyExRateRow.ToCurrencyCode);
             }
 
-            aDailyExchangeRateRow.DateEffectiveFrom = dateDate;
-            aDailyExchangeRateRow.TimeEffectiveFrom = (dateTime.Hour * 60 + dateTime.Minute) * 60 + dateTime.Second;
+            ADailyExRateRow.DateEffectiveFrom = dateDate;
+            ADailyExRateRow.TimeEffectiveFrom = (dateTime.Hour * 60 + dateTime.Minute) * 60 + dateTime.Second;
 
-            FMainDS.ADailyExchangeRate.Rows.Add(aDailyExchangeRateRow);
+            FMainDS.ADailyExchangeRate.Rows.Add(ADailyExRateRow);
             grdDetails.Refresh();
 
             FPetraUtilsObject.SetChangedFlag();

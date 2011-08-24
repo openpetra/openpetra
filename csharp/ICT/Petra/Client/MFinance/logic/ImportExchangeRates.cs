@@ -26,6 +26,7 @@ using System.Data;
 using System.Xml;
 using System.Windows.Forms;
 using System.IO;
+using System.Collections;
 using System.Collections.Generic;
 using Ict.Petra.Shared.Interfaces; // Implicit reference
 using Ict.Petra.Client.App.Core.RemoteObjects;
@@ -50,75 +51,83 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="exchangeRateDT">Determines whether corporate or daily exchange rates specified</param>
-        /// <param name="mode">Determines whether corporate or daily exchange rates specified</param>
-        public static void ImportCurrencyExRates (TTypedDataTable exchangeRateDT, string mode)
+        /// <param name="AExchangeRateDT">Determines whether corporate or daily exchange rates specified</param>
+        /// <param name="AImportMode">Determines whether corporate or daily exchange rates specified</param>
+        public static void ImportCurrencyExRates (TTypedDataTable AExchangeRateDT, string AImportMode)
         {
 
-            OpenFileDialog dialog = new OpenFileDialog();
+            OpenFileDialog DialogBox = new OpenFileDialog();
 
-            dialog.Title = Catalog.GetString("Import exchange rates from spreadsheet file");
-            dialog.Filter = Catalog.GetString("Spreadsheet files (*.csv)|*.csv");
+            DialogBox.Title = Catalog.GetString("Import exchange rates from spreadsheet file");
+            DialogBox.Filter = Catalog.GetString("Spreadsheet files (*.csv)|*.csv");
 
-            if (dialog.ShowDialog() == DialogResult.OK)
+            if (DialogBox.ShowDialog() == DialogResult.OK)
             {
-                string directory = Path.GetDirectoryName(dialog.FileName);
-                string[] ymlFiles = Directory.GetFiles(directory, "*.yml");
-                string definitionFileName = String.Empty;
+                string Directory = Path.GetDirectoryName(DialogBox.FileName);
+                string[] YmlFiles = System.IO.Directory.GetFiles(Directory, "*.yml");
+                string DefinitionFileName = String.Empty;
 
-                if (ymlFiles.Length == 1)
+                if (YmlFiles.Length == 1)
                 {
-                    definitionFileName = ymlFiles[0];
+                    DefinitionFileName = YmlFiles[0];
                 }
                 else
                 {
                     // show another open file dialog for the description file
-                    OpenFileDialog dialogDefinitionFile = new OpenFileDialog();
-                    dialogDefinitionFile.Title = Catalog.GetString("Please select a yml file that describes the content of the spreadsheet");
-                    dialogDefinitionFile.Filter = Catalog.GetString("Data description files (*.yml)|*.yml");
+                    OpenFileDialog DialogDefinitionFile = new OpenFileDialog();
+                    DialogDefinitionFile.Title = Catalog.GetString("Please select a yml file that describes the content of the spreadsheet");
+                    DialogDefinitionFile.Filter = Catalog.GetString("Data description files (*.yml)|*.yml");
 
-                    if (dialogDefinitionFile.ShowDialog() == DialogResult.OK)
+                    if (DialogDefinitionFile.ShowDialog() == DialogResult.OK)
                     {
-                        definitionFileName = dialogDefinitionFile.FileName;
+                        DefinitionFileName = DialogDefinitionFile.FileName;
                     }
                 }
 
-                if (File.Exists(definitionFileName))
+                if (File.Exists(DefinitionFileName))
                 {
-                    TYml2Xml parser = new TYml2Xml(definitionFileName);
+                    TYml2Xml parser = new TYml2Xml(DefinitionFileName);
                     XmlDocument dataDescription = parser.ParseYML2XML();
                     XmlNode RootNode = TXMLParser.FindNodeRecursive(dataDescription.DocumentElement, "RootNode");
 
-                    if (Path.GetExtension(dialog.FileName).ToLower() == ".csv")
+                    if (Path.GetExtension(DialogBox.FileName).ToLower() == ".csv")
                     {
-                        ImportCurrencyExRatesFromCSV(exchangeRateDT, dialog.FileName, RootNode, mode);
+                        ImportCurrencyExRatesFromCSV(AExchangeRateDT, DialogBox.FileName, RootNode, AImportMode);
                     }
                 }
             }
             
         }
         
-        private static void ImportCurrencyExRatesFromCSV(TTypedDataTable exchangeRDT, string ADataFilename, XmlNode ARootNode, string mode)
+        /// <summary>
+        /// Imports currency exchange rates, daily and corporate,
+        /// from a one-of-two-styles formatted CSV file
+        /// </summary>
+        /// <param name="AExchangeRDT">Daily or Corporate exchange rate table</param>
+        /// <param name="ADataFilename">The .CSV file to process</param>
+        /// <param name="ARootNode">Used in parsing the CSV</param>
+        /// <param name="AImportMode">Daily or Corporate</param>
+        private static void ImportCurrencyExRatesFromCSV(TTypedDataTable AExchangeRDT, string ADataFilename, XmlNode ARootNode, string AImportMode)
         {
-            bool isShortFileFormat;
+            bool IsShortFileFormat;
             int x, y;
             string[] Currencies = new string[2];
             
-            if (mode != "Corporate" && mode != "Daily")
+            if (AImportMode != "Corporate" && AImportMode != "Daily")
             {
-                throw new ArgumentException("Invalid value '" + mode + "' for mode argument: Valid values are Corporate and Daily");
+                throw new ArgumentException("Invalid value '" + AImportMode + "' for mode argument: Valid values are Corporate and Daily");
             }
-            else if (mode == "Corporate" && exchangeRDT.GetType() !=  typeof(ACorporateExchangeRateTable))
+            else if (AImportMode == "Corporate" && AExchangeRDT.GetType() !=  typeof(ACorporateExchangeRateTable))
             {
                 throw new ArgumentException("Invalid type of exchangeRateDT argument for mode: 'Corporate'. Needs to be: ACorporateExchangeRateTable");
             }
-            else if (mode == "Daily" && exchangeRDT.GetType() !=  typeof(ADailyExchangeRateTable))
+            else if (AImportMode == "Daily" && AExchangeRDT.GetType() !=  typeof(ADailyExchangeRateTable))
             {
                 throw new ArgumentException("Invalid type of exchangeRateDT argument for mode: 'Daily'. Needs to be: ADailyExchangeRateTable");
             }
 
             
-            StreamReader dataFile = new StreamReader(ADataFilename, System.Text.Encoding.Default);
+            StreamReader DataFile = new StreamReader(ADataFilename, System.Text.Encoding.Default);
 
             string Separator = TXMLParser.GetAttribute(ARootNode, "Separator");
             string DateFormat = TXMLParser.GetAttribute(ARootNode, "DateFormat");
@@ -128,23 +137,21 @@ namespace Ict.Petra.Client.MFinance.Logic
             // TODO: check for valid currency codes? at the moment should fail on foreign key
             // TODO: disconnect the grid from the datasource to avoid flickering?
 
-            string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(ADataFilename);
+            string FileNameWithoutExtension = Path.GetFileNameWithoutExtension(ADataFilename);
 
-            if (fileNameWithoutExtension.IndexOf("_") == 3
-                    && fileNameWithoutExtension.LastIndexOf("_") == 3    
-                    && fileNameWithoutExtension.Length == 7) {
-
+            if (FileNameWithoutExtension.IndexOf("_") == 3
+                    && FileNameWithoutExtension.LastIndexOf("_") == 3    
+                    && FileNameWithoutExtension.Length == 7)
+            {
                 // File name format assumed to be like this: USD_HKD.csv
-                isShortFileFormat = true;
-                Currencies = fileNameWithoutExtension.Split(new char[] { '_' });
-            
-            } else {
-
-                isShortFileFormat = false;
+                IsShortFileFormat = true;
+                Currencies = FileNameWithoutExtension.Split(new char[] { '_' });
+            }
+            else
+            {
+                IsShortFileFormat = false;
             }
                 
-//            MessageBox.Show(Catalog.GetString("Cannot import exchange rates, please name the file after the currencies involved, eg. KES_EUR.csv"));
-            
 
             // To store the From and To currencies
             // Use an array to store these to make for easy
@@ -152,59 +159,59 @@ namespace Ict.Petra.Client.MFinance.Logic
             //   the inverse value.
             
 
-            while (!dataFile.EndOfStream)
+            while (!DataFile.EndOfStream)
             {
-                string line = dataFile.ReadLine();
+                string Line = DataFile.ReadLine();
                 
                 //Convert separator to a char
-                char sep = Separator[0];
+                char Sep = Separator[0];
                 //Turn current line into string array of column values
-                string[] csvColumns = line.Split(sep);
+                string[] CsvColumns = Line.Split(Sep);
                 
-                int numCols = csvColumns.Length;
+                int NumCols = CsvColumns.Length;
                 
                 //If number of columns is not 4 then import csv file is wrongly formed.
-                if (isShortFileFormat && numCols != 2 ) {
+                if (IsShortFileFormat && NumCols != 2 ) {
                     MessageBox.Show(Catalog.GetString("Failed to import the CSV currency file:\r\n\r\n" + 
                                                         "   " + ADataFilename + "\r\n\r\n" +
-                                                        "It contains " + numCols.ToString() + " columns. " +
+                                                        "It contains " + NumCols.ToString() + " columns. " +
                                                         "Import files with names like 'USD_HKD.csv', where the From and To currencies" +
                                                         " are given in the name, should contain 2 columns:\r\n\r\n" +
                                                         "  1. Effective Date\r\n" + 
                                                         "  2. Exchange Rate"
-                                       ), mode + " Exchange Rates Import Error");
+                                                       ), AImportMode + " Exchange Rates Import Error");
                     return;
                 }
-                else if (!isShortFileFormat && numCols != 4 ) {
+                else if (!IsShortFileFormat && NumCols != 4 ) {
                     MessageBox.Show(Catalog.GetString("Failed to import the CSV currency file:\r\n\r\n" + 
                                                         "    " + ADataFilename + "\r\n\r\n" +
-                                                        "It contains " + numCols.ToString() + " columns. It should be 4:\r\n\r\n" +
+                                                        "It contains " + NumCols.ToString() + " columns. It should be 4:\r\n\r\n" +
                                                         "    1. From Currency\r\n" + 
                                                         "    2. To Currency\r\n" + 
                                                         "    3. Effective Date\r\n" + 
                                                         "    4. Exchange Rate"
-                                       ), mode + " Exchange Rates Import Error");
+                                                       ), AImportMode + " Exchange Rates Import Error");
                     return;
                 }
                 
-                if (!isShortFileFormat) {
+                if (!IsShortFileFormat) {
                     //Read the values for the current line
                     //From currency
-                    Currencies[0] = StringHelper.GetNextCSV(ref line, Separator, false).ToString();
+                    Currencies[0] = StringHelper.GetNextCSV(ref Line, Separator, false).ToString();
                     //To currency
-                    Currencies[1] = StringHelper.GetNextCSV(ref line, Separator, false).ToString();
+                    Currencies[1] = StringHelper.GetNextCSV(ref Line, Separator, false).ToString();
                 }
 
                 //TODO: Perform validation on the From and To currencies at ths point!!
                 //TODO: Date parsing as in Petra 2.x instead of using XML date format!!!
-                DateTime dateEffective = XmlConvert.ToDateTime(StringHelper.GetNextCSV(ref line, Separator, false), DateFormat);
-                string ExchangeRateString = StringHelper.GetNextCSV(ref line, Separator, false).Replace(ThousandsSeparator, "").Replace(DecimalSeparator, ".");
+                DateTime DateEffective = XmlConvert.ToDateTime(StringHelper.GetNextCSV(ref Line, Separator, false), DateFormat);
+                string ExchangeRateString = StringHelper.GetNextCSV(ref Line, Separator, false).Replace(ThousandsSeparator, "").Replace(DecimalSeparator, ".");
 
                 decimal ExchangeRate = Convert.ToDecimal(ExchangeRateString, System.Globalization.CultureInfo.InvariantCulture);
 
-                if (mode == "Corporate" && exchangeRDT is ACorporateExchangeRateTable)
+                if (AImportMode == "Corporate" && AExchangeRDT is ACorporateExchangeRateTable)
                 {
-                    ACorporateExchangeRateTable exchangeRateDT = (ACorporateExchangeRateTable)exchangeRDT;
+                    ACorporateExchangeRateTable ExchangeRateDT = (ACorporateExchangeRateTable)AExchangeRDT;
     
                     // run this code in the loop twice to get ExchangeRate value and its inverse
                     for (int i = 0; i <= 1; i++)
@@ -213,28 +220,28 @@ namespace Ict.Petra.Client.MFinance.Logic
                         x = i;
                         y = Math.Abs(i - 1);
                         
-                        ACorporateExchangeRateRow exchangeRow = (ACorporateExchangeRateRow)exchangeRateDT.Rows.
-                                                                    Find(new object[] { Currencies[x], Currencies[y], dateEffective});
+                        ACorporateExchangeRateRow ExchangeRow = (ACorporateExchangeRateRow)ExchangeRateDT.Rows.
+                                                                    Find(new object[] { Currencies[x], Currencies[y], DateEffective});
     
-                        if (exchangeRow == null)                                                                                    // remove 0 for Corporate
+                        if (ExchangeRow == null)                                                                                    // remove 0 for Corporate
                         {
-                            exchangeRow = (ACorporateExchangeRateRow)exchangeRateDT.NewRowTyped();
-                            exchangeRow.FromCurrencyCode = Currencies[x];
-                            exchangeRow.ToCurrencyCode = Currencies[y];
-                            exchangeRow.DateEffectiveFrom = dateEffective;
-                            exchangeRateDT.Rows.Add(exchangeRow);
+                            ExchangeRow = (ACorporateExchangeRateRow)ExchangeRateDT.NewRowTyped();
+                            ExchangeRow.FromCurrencyCode = Currencies[x];
+                            ExchangeRow.ToCurrencyCode = Currencies[y];
+                            ExchangeRow.DateEffectiveFrom = DateEffective;
+                            ExchangeRateDT.Rows.Add(ExchangeRow);
                         }
         
                         if (i == 0)
-                            exchangeRow.RateOfExchange = ExchangeRate;
+                            ExchangeRow.RateOfExchange = ExchangeRate;
                         else
-                            exchangeRow.RateOfExchange = 1 / ExchangeRate;
+                            ExchangeRow.RateOfExchange = 1 / ExchangeRate;
                     }
                     
                 }
-                else if (mode == "Daily" && exchangeRDT is ADailyExchangeRateTable)
+                else if (AImportMode == "Daily" && AExchangeRDT is ADailyExchangeRateTable)
                 {               
-                    ADailyExchangeRateTable exchangeRateDT = (ADailyExchangeRateTable)exchangeRDT;
+                    ADailyExchangeRateTable ExchangeRateDT = (ADailyExchangeRateTable)AExchangeRDT;
     
                     // run this code in the loop twice to get ExchangeRate value and its inverse
                     for (int i = 0; i <= 1; i++)
@@ -243,29 +250,29 @@ namespace Ict.Petra.Client.MFinance.Logic
                         x = i;
                         y = Math.Abs(i - 1);
                         
-                        ADailyExchangeRateRow exchangeRow = (ADailyExchangeRateRow)exchangeRateDT.Rows.
-                                                                Find(new object[] { Currencies[x], Currencies[y], dateEffective, 0});
+                        ADailyExchangeRateRow ExchangeRow = (ADailyExchangeRateRow)ExchangeRateDT.Rows.
+                                                                Find(new object[] { Currencies[x], Currencies[y], DateEffective, 0});
     
-                        if (exchangeRow == null)                                                                                    // remove 0 for Corporate
+                        if (ExchangeRow == null)                                                                                    // remove 0 for Corporate
                         {
-                            exchangeRow = (ADailyExchangeRateRow)exchangeRateDT.NewRowTyped();
-                            exchangeRow.FromCurrencyCode = Currencies[x];
-                            exchangeRow.ToCurrencyCode = Currencies[y];
-                            exchangeRow.DateEffectiveFrom = dateEffective;
-                            exchangeRateDT.Rows.Add(exchangeRow);
+                            ExchangeRow = (ADailyExchangeRateRow)ExchangeRateDT.NewRowTyped();
+                            ExchangeRow.FromCurrencyCode = Currencies[x];
+                            ExchangeRow.ToCurrencyCode = Currencies[y];
+                            ExchangeRow.DateEffectiveFrom = DateEffective;
+                            ExchangeRateDT.Rows.Add(ExchangeRow);
                         }
         
                         if (i == 0)
-                            exchangeRow.RateOfExchange = ExchangeRate;
+                            ExchangeRow.RateOfExchange = ExchangeRate;
                         else
-                            exchangeRow.RateOfExchange = 1 / ExchangeRate;
+                            ExchangeRow.RateOfExchange = 1 / ExchangeRate;
                     }
     
                 }
 
             }
 
-            dataFile.Close();
+            DataFile.Close();
         }
 
     

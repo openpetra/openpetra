@@ -101,15 +101,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private void ChargeOptionChanged(object sender, EventArgs e)
         {
         	
-        	TCmbAutoComplete cb;
-        	cb = (TCmbAutoComplete)sender;
+        	TCmbAutoComplete ChargeOption;
+        	ChargeOption = (TCmbAutoComplete)sender;
         	
-        	switch (cb.SelectedIndex)
+        	switch (ChargeOption.SelectedIndex)
         	{
         		case 0:
         		case 1:
         		case 2:
-        	        lblDetailChargeAmount.Text  =  cb.Items[cb.SelectedIndex] + Catalog.GetString(" Amount:");
+        	        lblDetailChargeAmount.Text  =  ChargeOption.Items[ChargeOption.SelectedIndex] + Catalog.GetString(" Amount:");
         			break;
         		default:
         			lblDetailChargeAmount.Text  =  Catalog.GetString("Amount:");
@@ -140,30 +140,29 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 //        
         private void PopulateCombos()
         {
-            TCmbAutoPopulated cb1 = cmbDetailCostCentreCode;
-            TCmbAutoPopulated cb2 = cmbDetailAccountCode;
-            TCmbAutoPopulated cb3 = cmbDetailDrAccountCode;
+            TCmbAutoPopulated CostCC = cmbDetailCostCentreCode;
+            TCmbAutoPopulated AccountCC = cmbDetailAccountCode;
+            TCmbAutoPopulated DrAccountCC = cmbDetailDrAccountCode;
 
-            DataTable Table1 = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList, FLedgerNumber);
-            Table1.DefaultView.Sort = ACostCentreTable.GetCostCentreNameDBName() + " ASC";
-            Table1.DefaultView.RowFilter = ACostCentreTable.GetPostingCostCentreFlagDBName() + " = true";
-            cb1.InitialiseUserControl(Table1, ACostCentreTable.GetCostCentreCodeDBName(), ACostCentreTable.GetCostCentreNameDBName(), null);
-            cb1.AppearanceSetup(new int[] { -1, 300 }, 20);
+            DataTable CostCentreListTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList, FLedgerNumber);
+            CostCentreListTable.DefaultView.Sort = ACostCentreTable.GetCostCentreNameDBName() + " ASC";
+            CostCentreListTable.DefaultView.RowFilter = ACostCentreTable.GetPostingCostCentreFlagDBName() + " = true";
+            CostCC.InitialiseUserControl(CostCentreListTable, ACostCentreTable.GetCostCentreCodeDBName(), ACostCentreTable.GetCostCentreNameDBName(), null);
+            CostCC.AppearanceSetup(new int[] { -1, 300 }, 20);
             
-            DataTable Table2 = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList  , FLedgerNumber);
-            Table2.DefaultView.Sort = AAccountTable.GetAccountCodeDBName() + " ASC";
-            Table2.DefaultView.RowFilter = AAccountTable.GetPostingStatusDBName() + " = true AND "
+            DataTable AccountListTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList  , FLedgerNumber);
+            AccountListTable.DefaultView.Sort = AAccountTable.GetAccountCodeDBName() + " ASC";
+            AccountListTable.DefaultView.RowFilter = AAccountTable.GetPostingStatusDBName() + " = true AND "
                                             + AAccountTable.GetAccountTypeDBName().ToUpper() + " = 'INCOME'";
-            cb2.InitialiseUserControl(Table2, AAccountTable.GetAccountCodeDBName(), AAccountTable.GetAccountCodeShortDescDBName(), null);
-            cb2.AppearanceSetup(new int[] { -1, 300 }, 20);
+            AccountCC.InitialiseUserControl(AccountListTable, AAccountTable.GetAccountCodeDBName(), AAccountTable.GetAccountCodeShortDescDBName(), null);
+            AccountCC.AppearanceSetup(new int[] { -1, 300 }, 20);
 
-            DataTable Table3 = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList  , FLedgerNumber);
-            Table3.DefaultView.Sort = AAccountTable.GetAccountCodeDBName() + " ASC";
-            Table3.DefaultView.RowFilter = AAccountTable.GetPostingStatusDBName() + " = true AND "
+            DataTable DrAccountListTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList  , FLedgerNumber);
+            DrAccountListTable.DefaultView.Sort = AAccountTable.GetAccountCodeDBName() + " ASC";
+            DrAccountListTable.DefaultView.RowFilter = AAccountTable.GetPostingStatusDBName() + " = true AND "
                                             + AAccountTable.GetAccountTypeDBName().ToUpper() + " = 'EXPENSE'";
-            cb3.InitialiseUserControl(Table3, AAccountTable.GetAccountCodeDBName(), AAccountTable.GetAccountCodeShortDescDBName(), null);
-            cb3.AppearanceSetup(new int[] { -1, 300 }, 20);
-
+            DrAccountCC.InitialiseUserControl(DrAccountListTable, AAccountTable.GetAccountCodeDBName(), AAccountTable.GetAccountCodeShortDescDBName(), null);
+            DrAccountCC.AppearanceSetup(new int[] { -1, 300 }, 20);
         }
         
         private void SelectByIndex(int rowIndex)
