@@ -1,0 +1,5 @@
+RootNode:
+    Separator: {,}
+    DateFormat: {DD/MM/YYYY}
+    ThousandsSeparator: {,}
+    DecimalSeparator: {.}
