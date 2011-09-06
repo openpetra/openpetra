@@ -640,7 +640,7 @@ public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
   <property name="solution.file" value="${path::combine(dir.projectfiles,
                                 path::combine(devenv-name, 'OpenPetra.'+solution+'.sln'))}"/>
   <property name="solution.file" value="${string::replace(solution.file, 'OpenPetra.OpenPetra.sln', 'OpenPetra.sln')}"/>
-  <if test="${framework::get-target-framework() == 'mono-2.0'}" >
+  <if test="${not platform::is-windows()}" >
     <if test="${property::exists('xbuild')}">
       <exec program="${xbuild}" commandline="${solution.file}">
          <environment>
@@ -649,7 +649,7 @@ public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
       </exec>
     </if>
   </if>
-  <if test="${string::starts-with(framework::get-target-framework(), 'net-')}" >
+  <if test="${platform::is-windows()}" >
     <if test="${file::exists(msbuildtask.file)}">
       <msbuild project="${solution.file}" verbosity="Minimal">
         <property name="Configuration" value="${Configuration}"/>
