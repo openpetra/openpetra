@@ -146,16 +146,16 @@ useful parameters
   <!-- Find all dependencies -->
   <mkdir dir="${dir.bin}" />
   <!-- write this information to a file, since the properties are not passed through to the sub directories -->
-  <echo file="${dir.bin}/dont_compile.txt">true</echo>  
+  <echo file="${dir.bin}/dont_compile.txt">true</echo>
   <nant inheritall="false" target="depend" 
         buildfile="csharp/csharp.build" />
   <!-- Generate the project/solution files -->
   <call target="generateSolutionNoCompile" />
-  <delete file="${dir.bin}/dont_compile.txt"/>  
+  <delete file="${dir.bin}/dont_compile.txt"/>
 </target>
 
 <target name="generateSolution" description="compiles OpenPetra and generates the project and solution files">
-  <delete file="${dir.bin}/dont_compile.txt"/>  
+  <delete file="${dir.bin}/dont_compile.txt"/>
   <call target="compile" />
   <call target="generateSolutionNoCompile" />
 </target>
@@ -268,6 +268,7 @@ useful parameters
 
 <!-- Windows -->
 <target name="buildReleaseWindows" if="${platform::is-windows()}">
+  <delete file="${dir.bin}/dont_compile.txt"/>
   <call target="compile" unless="${target::has-executed('compile')}" />
   <call target="createSQLiteDB" unless="${target::has-executed('createSQLiteDB')}"/>
   <call target="translationCompilePOFile" unless="${target::has-executed('translationCompilePOFile')}"/>
@@ -490,6 +491,7 @@ public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
 
 <!-- Linux -->
 <target name="buildReleaseLinux" if="${platform::is-unix()}">
+  <delete file="${dir.bin}/dont_compile.txt"/>
   <call target="refreshSudo" unless="${target::has-executed('refreshSudo')}" />
   <call target="compile" unless="${target::has-executed('compile')}" />
   <call target="createPostgreSQLDB" unless="${target::has-executed('createPostgreSQLDB')}"/>

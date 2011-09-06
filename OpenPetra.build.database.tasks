@@ -209,9 +209,11 @@
         </if>
         <if test="${DBMS.Type=='postgresql'}">
             <if test="${not platform::is-windows()}" >
-                <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createtables-PostgreSQL.sql" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createtables-PostgreSQL.sql" overwrite="true"/>
-                <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createconstraints-PostgreSQL.sql" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createconstraints-PostgreSQL.sql" overwrite="true"/>
-                <exec program="sudo" commandline="-u postgres /usr/bin/pg_dump --data-only --file=${OutputDB.file} ${DBMS.DBName}" />
+                <!-- file ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createtables-PostgreSQL.sql already exists -->
+                <!-- file ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createconstraints-PostgreSQL.sql already exists -->
+                <exec program="sudo" commandline="-u postgres /usr/bin/pg_dump --data-only --file=${tempdir}/output.sql ${DBMS.DBName}" />
+                <copy file="${tempdir}/output.sql" tofile="${OutputDB.file}" overwrite="true"/>
+                <exec program="sudo" commandline="-u postgres rm ${tempdir}/output.sql"/>
             </if>
             <if test="${platform::is-windows()}" >
                 <exec program="${pgdump.exe}" commandline="--data-only --file=&quot;${OutputDB.file}&quot; ${DBMS.DBName}">
