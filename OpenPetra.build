@@ -546,7 +546,7 @@ public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
   <copy file="${dir.root}/csharp/ICT/Petra/Definitions/UINavigation.yml"
               tofile="${setupDir}/bin30/UINavigation.yml"/>
   <copy todir="${setupDir}/resources30">
-    <fileset basedir="${dir.bin}/resources">
+    <fileset basedir="${dir.root}/resources">
         <include name="*.ico" />
         <include name="*.png" />
     </fileset>
@@ -561,7 +561,7 @@ public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
     </fileset>
   </copy>
   <copy todir="${setupDir}/reports30">
-    <fileset basedir="${dir.bin}/XmlReports/">
+    <fileset basedir="${dir.root}/XmlReports/">
       <include name="*.dtd" />
       <include name="**/*.xml" />
     </fileset>
