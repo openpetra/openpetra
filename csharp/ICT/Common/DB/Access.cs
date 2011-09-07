@@ -1334,7 +1334,7 @@ namespace Ict.Common.DB
                         "DB Transaction with IsolationLevel '" + AIsolationLevel.ToString() + "' started (in Appdomain " +
                         AppDomain.CurrentDomain.ToString() + " ).");
                     TLogging.Log("Start of stack trace.->");
-                    TLogging.Log(Environment.StackTrace);
+                    TLogging.LogStackTrace(TLoggingType.ToLogfile);
                     TLogging.Log("<- End of stack trace");
                 }
 #endif
