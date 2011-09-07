@@ -148,7 +148,7 @@ namespace Ict.Tools.DBXML
         public string strArea;
 
         /// <summary>
-        /// even shorter description than strDescription; not used at the moment
+        /// even shorter description than strDescription
         /// </summary>
         public string strLabel;
 
