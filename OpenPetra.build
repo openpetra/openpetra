@@ -455,14 +455,13 @@ public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
         <echo message='${script::ReplaceInFile(Current.File, toReplace, UINavigation.file)}'/>
     </if>
 
-    <property name="toReplace" value="{#REMOTECONFIG}"/>
-    <property name="Config.file" value="PetraClientRemote.config.my"/>
+    <property name="Config.file" value="${dir.root}/setup/petra${PetraRelease}/remoteclientWin/PetraClientRemote.config.my"/>
     <if test="${file::exists(Config.file)}">
-        <echo message='${script::ReplaceInFile(Current.File, toReplace, Config.file)}'/>
+        <copy file="${Config.file}" tofile="${dir.delivery}/PetraClientRemote.config" overwrite="true"/>
     </if>
     <if test="${not file::exists(Config.file)}">
-        <property name="Config.file" value="PetraClientRemote.config"/>
-        <echo message='${script::ReplaceInFile(Current.File, toReplace, Config.file)}'/>
+        <property name="Config.file" value="{dir.root}/setup/petra${PetraRelease}/remoteclientWin/PetraClientRemote.config"/>
+        <copy file="${Config.file}" tofile="${dir.delivery}/PetraClientRemote.config" overwrite="true"/>
     </if>
 
     <property name="toReplace" value="{#RELEASEVERSION}"/>
