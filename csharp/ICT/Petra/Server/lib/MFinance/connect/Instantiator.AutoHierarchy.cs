@@ -991,7 +991,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP.WebConnectors
 
         /// generated method from connector
         public System.Boolean PostAPDocuments(Int32 ALedgerNumber,
-                                              List AAPDocumentNumbers,
+                                              List<int> AAPDocumentNumbers,
                                               DateTime APostingDate,
                                               out TVerificationResultCollection AVerifications)
         {
@@ -2601,8 +2601,8 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
         /// generated method from connector
         public System.Boolean Revaluate(System.Int32 ALedgerNum,
                                         System.Int32 AAccoutingPeriod,
-                                        System.String AForeignCurrency,
-                                        System.Decimal ANewExchangeRate,
+                                        System.String[] AForeignCurrency,
+                                        System.Decimal[] ANewExchangeRate,
                                         out TVerificationResultCollection AVerificationResult)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TRevaluationWebConnector), "Revaluate", ";INT;INT;STRING;DECIMAL;TVERIFICATIONRESULTCOLLECTION;");
@@ -2706,7 +2706,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
         }
 
         /// generated method from connector
-        public List TestPostGLBatch(Int32 ALedgerNumber,
+        public List<TVariant> TestPostGLBatch(Int32 ALedgerNumber,
                                     Int32 ABatchNumber,
                                     out TVerificationResultCollection AVerifications)
         {

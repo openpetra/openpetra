@@ -196,7 +196,7 @@ namespace Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.SystemDefaults
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Maintenance.SystemDefaults.Class)</summary>
         System.Boolean SaveSystemDefaults(Ict.Petra.Shared.MSysMan.Data.SSystemDefaultsTable ASystemDefaultsDataTable);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Maintenance.SystemDefaults.Class)</summary>
-        System.Void ReloadSystemDefaultsTable();
+        void ReloadSystemDefaultsTable();
     }
 
 }
@@ -218,15 +218,15 @@ namespace Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.UserDefaults
     public interface IMaintenanceUserDefaultsNamespace : IInterface
     {
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Maintenance.UserDefaults.Class)</summary>
-        System.Void GetUserDefaults(System.String AUserName,
-                                    out Ict.Petra.Shared.MSysMan.Data.SUserDefaultsTable AUserDefaultsDataTable);
+        void GetUserDefaults(System.String AUserName,
+                             out Ict.Petra.Shared.MSysMan.Data.SUserDefaultsTable AUserDefaultsDataTable);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Maintenance.UserDefaults.Class)</summary>
         System.Boolean SaveUserDefaults(System.String AUserName,
                                         ref Ict.Petra.Shared.MSysMan.Data.SUserDefaultsTable AUserDefaultsDataTable,
                                         out Ict.Common.Verification.TVerificationResultCollection AVerificationResult);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Maintenance.UserDefaults.Class)</summary>
-        System.Void ReloadUserDefaults(System.String AUserName,
-                                       out Ict.Petra.Shared.MSysMan.Data.SUserDefaultsTable AUserDefaultsDataTable);
+        void ReloadUserDefaults(System.String AUserName,
+                                out Ict.Petra.Shared.MSysMan.Data.SUserDefaultsTable AUserDefaultsDataTable);
     }
 
 }
@@ -411,7 +411,7 @@ namespace Ict.Petra.Shared.Interfaces.MSysMan.Security.UserManager
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Security.UserManager.Class)</summary>
         Ict.Petra.Shared.Security.TPetraPrincipal ReloadCachedUserInfo();
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Security.UserManager.Class)</summary>
-        System.Void SignalReloadCachedUserInfo(System.String AUserID);
+        void SignalReloadCachedUserInfo(System.String AUserID);
     }
 
 }
@@ -427,10 +427,10 @@ namespace Ict.Petra.Shared.Interfaces.MSysMan.Cacheable
                                                 System.String AHashCode,
                                                 out System.Type AType);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Cacheable.Class)</summary>
-        System.Void RefreshCacheableTable(Ict.Petra.Shared.MSysMan.TCacheableSysManTablesEnum ACacheableTable);
+        void RefreshCacheableTable(Ict.Petra.Shared.MSysMan.TCacheableSysManTablesEnum ACacheableTable);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Cacheable.Class)</summary>
-        System.Void RefreshCacheableTable(Ict.Petra.Shared.MSysMan.TCacheableSysManTablesEnum ACacheableTable,
-                                          out System.Data.DataTable ADataTable);
+        void RefreshCacheableTable(Ict.Petra.Shared.MSysMan.TCacheableSysManTablesEnum ACacheableTable,
+                                   out System.Data.DataTable ADataTable);
     }
 
 }

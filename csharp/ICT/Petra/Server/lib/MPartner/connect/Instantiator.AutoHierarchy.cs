@@ -1082,7 +1082,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.ImportExport.WebConnectors
         }
 
         /// generated method from connector
-        public PartnerImportExportTDS ImportFromPartnerExtract(System.String ATextFileLines,
+        public PartnerImportExportTDS ImportFromPartnerExtract(System.String[] ATextFileLines,
                                                                out TVerificationResultCollection AVerificationResult)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector), "ImportFromPartnerExtract", ";STRING;TVERIFICATIONRESULTCOLLECTION;");
@@ -2265,7 +2265,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.ServerLookups
 
         /// generated method from interface
         public Boolean VerifyPartner(Int64 APartnerKey,
-                                     TPartnerClass AValidPartnerClasses,
+                                     TPartnerClass[] AValidPartnerClasses,
                                      out String APartnerShortName,
                                      out TPartnerClass APartnerClass,
                                      out Boolean AIsMergedPartner)
@@ -2364,7 +2364,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.ServerLookups
         /// generated method from interface
         public Boolean GetRecentlyUsedPartners(System.Int32 AMaxPartnersCount,
                                                ArrayList APartnerClasses,
-                                               out Dictionary ARecentlyUsedPartners)
+                                               out Dictionary<long, string> ARecentlyUsedPartners)
         {
             #region ManualCode
             return TPartnerServerLookups.GetRecentlyUsedPartners(AMaxPartnersCount, APartnerClasses, out ARecentlyUsedPartners);
@@ -2646,7 +2646,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
         }
 
         /// generated method from connector
-        public System.Boolean AddContact(List APartnerKeys,
+        public System.Boolean AddContact(List<long> APartnerKeys,
                                          DateTime AContactDate,
                                          System.String AMethodOfContact,
                                          System.String AComment,
@@ -2660,7 +2660,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
 
         /// generated method from connector
         public PPartnerContactTable FindContacts(System.String AContactor,
-                                                 System.Nullable AContactDate,
+                                                 DateTime? AContactDate,
                                                  System.String ACommentContains,
                                                  System.String AMethodOfContact,
                                                  System.String AModuleID,

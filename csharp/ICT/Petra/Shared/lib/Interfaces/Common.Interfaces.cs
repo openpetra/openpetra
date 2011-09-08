@@ -79,10 +79,10 @@ namespace Ict.Petra.Shared.Interfaces.MCommon.Cacheable
                                                 System.String AHashCode,
                                                 out System.Type AType);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MCommon.Instantiator.Cacheable.Class)</summary>
-        System.Void RefreshCacheableTable(Ict.Petra.Shared.MCommon.TCacheableCommonTablesEnum ACacheableTable);
+        void RefreshCacheableTable(Ict.Petra.Shared.MCommon.TCacheableCommonTablesEnum ACacheableTable);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MCommon.Instantiator.Cacheable.Class)</summary>
-        System.Void RefreshCacheableTable(Ict.Petra.Shared.MCommon.TCacheableCommonTablesEnum ACacheableTable,
-                                          out System.Data.DataTable ADataTable);
+        void RefreshCacheableTable(Ict.Petra.Shared.MCommon.TCacheableCommonTablesEnum ACacheableTable,
+                                   out System.Data.DataTable ADataTable);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MCommon.Instantiator.Cacheable.Class)</summary>
         TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableCommonTablesEnum ACacheableTable,
                                                                ref TTypedDataTable ASubmitTable,
@@ -158,7 +158,7 @@ namespace Ict.Petra.Shared.Interfaces.MCommon.DataReader
     {
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MCommon.Instantiator.DataReader.Class)</summary>
         System.Boolean GetData(System.String ATablename,
-                               TSearchCriteria ASearchCriteria,
+                               TSearchCriteria[] ASearchCriteria,
                                out Ict.Common.Data.TTypedDataTable AResultTable);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MCommon.Instantiator.DataReader.Class)</summary>
         TSubmitChangesResult SaveData(System.String ATablename,

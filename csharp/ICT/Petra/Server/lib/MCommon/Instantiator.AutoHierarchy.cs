@@ -741,7 +741,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator.DataReader
 
         /// generated method from interface
         public System.Boolean GetData(System.String ATablename,
-                                      TSearchCriteria ASearchCriteria,
+                                      TSearchCriteria[] ASearchCriteria,
                                       out Ict.Common.Data.TTypedDataTable AResultTable)
         {
             #region ManualCode
