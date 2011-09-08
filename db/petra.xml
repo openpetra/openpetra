@@ -4255,6 +4255,42 @@
                 otherFields="p_type_c"/>
     <!-- Explicit Indexes on table p_banking_details_usage  -->
   </table>
+  <table name="p_partner_tax_deductible_pct"
+         descr="Specifies the percentage of incoming gifts to this recipient that can be considered tax deductible"
+         area="Petra Data"
+         label="Recipient Deductible Pct"
+         dumpname="p_ptntxd"
+         group="partner">
+    <tablefield name="p_partner_key_n"
+                type="number"
+                length="10"
+                descr="Partner Key of recipient to which this percentage applies"
+                format=""
+                notnull="yes"/>
+    <tablefield name="p_date_valid_from_d"
+                type="date"
+                descr="The date from which this percentage is valid"
+                format="99/99/9999"
+                label="Date Valid From"
+                notnull="yes"/>
+    <tablefield name="p_percentage_tax_deductible_n"
+                type="number"
+                length="5"
+                decimals="2"
+                descr="The percentage of incoming gifts to this recipient that should be considered tax deductible"
+                label="% Tax Deductible"
+                help="The % of incoming gifts to this recipient that should be considered tax-deductible"
+                notnull="yes"/>
+    <!-- Constraints on table p_partner_tax_deductible_pct -->
+    <primarykey name="p_partner_tax_deductible_pct_pk"
+                descr=""
+                thisFields="p_partner_key_n,p_date_valid_from_d"/>
+    <foreignkey name="p_partner_tax_deductible_pct_fk1"
+                descr=""
+                thisFields="p_partner_key_n"
+                otherTable="p_partner"
+                otherFields="p_partner_key_n"/>
+  </table>
   <table name="a_ep_account"
          descr="This contains the settings for one specific bank account"
          area="Petra Data"
@@ -20570,6 +20606,76 @@
       <indexfield name="pm_evaluation_type_c" order="ascending"/>
       <indexfield name="pm_evaluator_c" order="ascending"/>
     </index>
+  </table>
+  <table name="pm_person_absence"
+         descr="This table records the absence of a person (holiday, sickness, etc.)"
+         area="Petra Data"
+         label="Absence"
+         dumpname="pm_absen"
+         group="personnel">
+    <tablefield name="pm_person_absence_key_i"
+                type="integer"
+                sequence="seq_person_absence"
+                descr=""
+                format="&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;9"
+                label=""
+                notnull="yes"/>
+    <tablefield name="p_partner_key_n"
+                type="number"
+                length="10"
+                descr="This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number."
+                format="9999999999"
+                label="Partner Key"
+                columnlabel="Partner Key"
+                help="Enter the partner key"
+                notnull="yes"
+                initial="0"/>
+    <tablefield name="pm_absence_from_d"
+                type="date"
+                descr="First day of abscence"
+                help="Enter the first day of absence"
+                format="99/99/9999"
+                columnlabel="absent from"
+                label="absent from"/>
+    <tablefield name="pm_absence_to_d"
+                type="date"
+                descr="Last day of abscence"
+                help="Enter the last day of absence"
+                format="99/99/9999"
+                columnlabel="absent to"
+                label="absent to"/>
+    <tablefield name="pm_absence_days_i"
+                type="integer"
+                descr="Total number of working days absent"
+                format="&gt;&gt;9"
+                label="Days absent"
+                columnlabel="Days absent"
+                help="Enter the total number of working days absent"/>
+    <tablefield name="pm_absence_type_c"
+                type="varchar"
+                descr="Type of Absence"
+                format="x(30)"
+                label="Absence Type"
+                columnlabel="Absence Type"
+                help="Enter the type of absence"/>
+    <tablefield name="pm_comment_c"
+                type="varchar"
+                descr=""
+                format="X(500)"
+                label="Comment"
+                columnlabel="Comment"
+                help="Enter any additional comment"/>
+    <!-- Constraints on table pm_person_absence -->
+    <primarykey name="pm_person_absence_pk"
+                descr=""
+                thisFields="pm_person_absence_key_i"/>
+    <foreignkey name="pm_person_absence_fk1"
+                descr=""
+                thisFields="p_partner_key_n"
+                otherTable="p_person"
+                otherFields="p_partner_key_n"/>
+    <!-- Triggers on table pm_person_absence -->
+    <!-- Explicit Indexes on table pm_person_absence  -->
   </table>
   <table name="pt_vision_area"
          descr="This  defines the area a person may have vision for, e.g. children&apos;s work or a particular country."

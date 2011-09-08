@@ -177,9 +177,9 @@
 
 <!-- generateWinforms -->
 <property name="tool-generateWinForms" value="${dir.bin}/GenerateWinForms.exe" overwrite="false" />
-<!-- leave this empty for MS.net and AutoSize/TableLayoutPanel, mono-2.0 needs it set! -->
-<property name="GUILocalisation" value="" overwrite="false" unless="${framework::get-target-framework() == 'mono-2.0'}"/> 
-<property name="GUILocalisation" value="en" overwrite="false" if="${framework::get-target-framework() == 'mono-2.0'}" />
+<!-- leave this empty for MS.net and AutoSize/TableLayoutPanel, mono-x.x needs it set! -->
+<property name="GUILocalisation" value="" overwrite="false" unless="${string::starts-with(framework::get-target-framework(), 'mono-')}"/> 
+<property name="GUILocalisation" value="en" overwrite="false" if="${string::starts-with(framework::get-target-framework(), 'mono-')}" />
     
 <!-- loglevel -->
 <property name="verbose" value="false"  overwrite="false" />

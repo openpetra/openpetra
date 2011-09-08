@@ -146,16 +146,16 @@ useful parameters
   <!-- Find all dependencies -->
   <mkdir dir="${dir.bin}" />
   <!-- write this information to a file, since the properties are not passed through to the sub directories -->
-  <echo file="${dir.bin}/dont_compile.txt">true</echo>  
+  <echo file="${dir.bin}/dont_compile.txt">true</echo>
   <nant inheritall="false" target="depend" 
         buildfile="csharp/csharp.build" />
   <!-- Generate the project/solution files -->
   <call target="generateSolutionNoCompile" />
-  <delete file="${dir.bin}/dont_compile.txt"/>  
+  <delete file="${dir.bin}/dont_compile.txt"/>
 </target>
 
 <target name="generateSolution" description="compiles OpenPetra and generates the project and solution files">
-  <delete file="${dir.bin}/dont_compile.txt"/>  
+  <delete file="${dir.bin}/dont_compile.txt"/>
   <call target="compile" />
   <call target="generateSolutionNoCompile" />
 </target>
@@ -268,6 +268,7 @@ useful parameters
 
 <!-- Windows -->
 <target name="buildReleaseWindows" if="${platform::is-windows()}">
+  <delete file="${dir.bin}/dont_compile.txt"/>
   <call target="compile" unless="${target::has-executed('compile')}" />
   <call target="createSQLiteDB" unless="${target::has-executed('createSQLiteDB')}"/>
   <call target="translationCompilePOFile" unless="${target::has-executed('translationCompilePOFile')}"/>
@@ -454,14 +455,13 @@ public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
         <echo message='${script::ReplaceInFile(Current.File, toReplace, UINavigation.file)}'/>
     </if>
 
-    <property name="toReplace" value="{#REMOTECONFIG}"/>
-    <property name="Config.file" value="PetraClientRemote.config.my"/>
+    <property name="Config.file" value="${dir.root}/setup/petra${PetraRelease}/remoteclientWin/PetraClientRemote.config.my"/>
     <if test="${file::exists(Config.file)}">
-        <echo message='${script::ReplaceInFile(Current.File, toReplace, Config.file)}'/>
+        <copy file="${Config.file}" tofile="${dir.delivery}/PetraClientRemote.config" overwrite="true"/>
     </if>
     <if test="${not file::exists(Config.file)}">
-        <property name="Config.file" value="PetraClientRemote.config"/>
-        <echo message='${script::ReplaceInFile(Current.File, toReplace, Config.file)}'/>
+        <property name="Config.file" value="{dir.root}/setup/petra${PetraRelease}/remoteclientWin/PetraClientRemote.config"/>
+        <copy file="${Config.file}" tofile="${dir.delivery}/PetraClientRemote.config" overwrite="true"/>
     </if>
 
     <property name="toReplace" value="{#RELEASEVERSION}"/>
@@ -490,6 +490,7 @@ public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
 
 <!-- Linux -->
 <target name="buildReleaseLinux" if="${platform::is-unix()}">
+  <delete file="${dir.bin}/dont_compile.txt"/>
   <call target="refreshSudo" unless="${target::has-executed('refreshSudo')}" />
   <call target="compile" unless="${target::has-executed('compile')}" />
   <call target="createPostgreSQLDB" unless="${target::has-executed('createPostgreSQLDB')}"/>
@@ -545,7 +546,7 @@ public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
   <copy file="${dir.root}/csharp/ICT/Petra/Definitions/UINavigation.yml"
               tofile="${setupDir}/bin30/UINavigation.yml"/>
   <copy todir="${setupDir}/resources30">
-    <fileset basedir="${dir.bin}/resources">
+    <fileset basedir="${dir.root}/resources">
         <include name="*.ico" />
         <include name="*.png" />
     </fileset>
@@ -560,7 +561,7 @@ public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
     </fileset>
   </copy>
   <copy todir="${setupDir}/reports30">
-    <fileset basedir="${dir.bin}/XmlReports/">
+    <fileset basedir="${dir.root}/XmlReports/">
       <include name="*.dtd" />
       <include name="**/*.xml" />
     </fileset>
@@ -640,7 +641,7 @@ public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
   <property name="solution.file" value="${path::combine(dir.projectfiles,
                                 path::combine(devenv-name, 'OpenPetra.'+solution+'.sln'))}"/>
   <property name="solution.file" value="${string::replace(solution.file, 'OpenPetra.OpenPetra.sln', 'OpenPetra.sln')}"/>
-  <if test="${framework::get-target-framework() == 'mono-2.0'}" >
+  <if test="${not platform::is-windows()}" >
     <if test="${property::exists('xbuild')}">
       <exec program="${xbuild}" commandline="${solution.file}">
          <environment>
@@ -649,7 +650,7 @@ public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
       </exec>
     </if>
   </if>
-  <if test="${string::starts-with(framework::get-target-framework(), 'net-')}" >
+  <if test="${platform::is-windows()}" >
     <if test="${file::exists(msbuildtask.file)}">
       <msbuild project="${solution.file}" verbosity="Minimal">
         <property name="Configuration" value="${Configuration}"/>

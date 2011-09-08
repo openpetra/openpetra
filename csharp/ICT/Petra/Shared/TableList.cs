@@ -218,6 +218,7 @@ namespace Ict.Petra.Shared
             list.Add("p_banking_details");
             list.Add("p_partner_banking_details");
             list.Add("p_banking_details_usage");
+            list.Add("p_partner_tax_deductible_pct");
             list.Add("p_partner_type");
             list.Add("p_partner_relationship");
             list.Add("p_partner_ledger");
@@ -271,6 +272,7 @@ namespace Ict.Petra.Shared
             list.Add("p_data_label_value_application");
             list.Add("pm_interview");
             list.Add("pm_person_evaluation");
+            list.Add("pm_person_absence");
             list.Add("pm_person_vision");
             list.Add("pm_special_need");
             list.Add("pm_staff_data");

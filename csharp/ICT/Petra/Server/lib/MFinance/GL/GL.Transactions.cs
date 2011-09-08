@@ -534,10 +534,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             {
                 // sort rates by date, look for rate just before the date we are looking for
                 ExchangeRates.DefaultView.Sort = ACorporateExchangeRateTable.GetDateEffectiveFromDBName();
-                ExchangeRates.DefaultView.RowFilter = ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + ">= '" +
-                                                      AStartDate.ToString("dd/MM/yyyy") + "' AND " +
-                                                      ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + "<= '" +
-                                                      AEndDate.ToString("dd/MM/yyyy") + "'";
+                ExchangeRates.DefaultView.RowFilter = ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + ">= #" +
+                                                      AStartDate.ToString("yyyy-MM-dd") + "# AND " +
+                                                      ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + "<= #" +
+                                                      AEndDate.ToString("yyyy-MM-dd") + "#";
 
                 if (ExchangeRates.DefaultView.Count > 0)
                 {
@@ -557,10 +557,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 {
                     // sort rates by date, look for rate just before the date we are looking for
                     ExchangeRates.DefaultView.Sort = ACorporateExchangeRateTable.GetDateEffectiveFromDBName();
-                    ExchangeRates.DefaultView.RowFilter = ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + ">= '" +
-                                                          AStartDate.ToString("dd/MM/yyyy") + "' AND " +
-                                                          ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + "<= '" +
-                                                          AEndDate.ToString("dd/MM/yyyy") + "'";
+                    ExchangeRates.DefaultView.RowFilter = ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + ">= #" +
+                                                          AStartDate.ToString("yyyy-MM-dd") + "# AND " +
+                                                          ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + "<= #" +
+                                                          AEndDate.ToString("yyyy-MM-dd") + "#";
 
                     if (ExchangeRates.DefaultView.Count > 0)
                     {
@@ -614,10 +614,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             {
                 // sort rates by date, look for rate just before the date we are looking for
                 PrevExchangeRates.DefaultView.Sort = APrevYearCorpExRateTable.GetDateEffectiveFromDBName();
-                PrevExchangeRates.DefaultView.RowFilter = APrevYearCorpExRateTable.GetDateEffectiveFromDBName() + ">= '" +
-                                                          AStartDate.ToString("dd/MM/yyyy") + "' AND " +
-                                                          APrevYearCorpExRateTable.GetDateEffectiveFromDBName() + "<= '" +
-                                                          AEndDate.ToString("dd/MM/yyyy") + "'";
+                PrevExchangeRates.DefaultView.RowFilter = APrevYearCorpExRateTable.GetDateEffectiveFromDBName() + ">= #" +
+                                                          AStartDate.ToString("yyyy-MM-dd") + "# AND " +
+                                                          APrevYearCorpExRateTable.GetDateEffectiveFromDBName() + "<= #" +
+                                                          AEndDate.ToString("yyyy-MM-dd") + "#";
 
                 if (PrevExchangeRates.DefaultView.Count > 0)
                 {
@@ -637,10 +637,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 {
                     // sort rates by date, look for rate just before the date we are looking for
                     PrevExchangeRates.DefaultView.Sort = APrevYearCorpExRateTable.GetDateEffectiveFromDBName();
-                    PrevExchangeRates.DefaultView.RowFilter = APrevYearCorpExRateTable.GetDateEffectiveFromDBName() + ">= '" +
-                                                              AStartDate.ToString("dd/MM/yyyy") + "' AND " +
-                                                              APrevYearCorpExRateTable.GetDateEffectiveFromDBName() + "<= '" +
-                                                              AEndDate.ToString("dd/MM/yyyy") + "'";
+                    PrevExchangeRates.DefaultView.RowFilter = APrevYearCorpExRateTable.GetDateEffectiveFromDBName() + ">= #" +
+                                                              AStartDate.ToString("yyyy-MM-dd") + "# AND " +
+                                                              APrevYearCorpExRateTable.GetDateEffectiveFromDBName() + "<= #" +
+                                                              AEndDate.ToString("yyyy-MM-dd") + "#";
 
                     if (PrevExchangeRates.DefaultView.Count > 0)
                     {

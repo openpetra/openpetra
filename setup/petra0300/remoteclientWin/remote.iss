@@ -44,7 +44,7 @@ Source: ..\..\..\delivery\bin\de-DE\OpenPetra.resources.dll; DestDir: {userappda
 Source: ..\..\..\delivery\bin\es-ES\OpenPetra.resources.dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30/es-ES
 Source: ..\..\..\delivery\bin\da-DK\OpenPetra.resources.dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30/da-DK
 Source: ..\..\..\XmlReports\Settings\*.xml; DestDir: {userappdata}/OpenPetra{#ORGNAME}/reports30/Settings; Flags: recursesubdirs createallsubdirs
-Source: {#REMOTECONFIG}; DestDir: {userappdata}/OpenPetra{#ORGNAME}/etc30
+Source: ..\..\..\delivery\PetraClientRemote.config; DestDir: {userappdata}/OpenPetra{#ORGNAME}/etc30
 Source: ..\releasenotes\releasenotes*html; DestDir: {userappdata}/OpenPetra{#ORGNAME}/manuals30
 Source: ..\..\..\resources\petraico-big.ico; DestDir: {userappdata}/OpenPetra{#ORGNAME}
 Source: ..\..\..\resources\*.ico; DestDir: {userappdata}/OpenPetra{#ORGNAME}/resources30
@@ -61,7 +61,7 @@ Name: {commondesktop}\{groupname}; Filename: {userappdata}/OpenPetra{#ORGNAME}\b
 Name: iconDesktop; Description: {cm:cmIconTask}
 
 [Run]
-Filename: {userappdata}/OpenPetra{#ORGNAME}\manuals30\{cm:cmReleaseNotesFile}; Description: {cm:cmViewReleaseNotes}; Flags: shellexec skipifdoesntexist postinstall skipifsilent
+Filename: {userappdata}\OpenPetra{#ORGNAME}\manuals30\{cm:cmReleaseNotesFile}; Description: {cm:cmViewReleaseNotes}; Flags: shellexec skipifdoesntexist postinstall skipifsilent
 
 [Code]
 #include "../utils/fileutils.iiss"

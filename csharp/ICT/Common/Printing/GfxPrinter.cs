@@ -980,16 +980,47 @@ namespace Ict.Common.Printing
             {
                 FDocument.DefaultPageSettings.Margins = MyMargins;
 
-                // PaperSize: Height and Width in hundreds of an inch
-                FDocument.DefaultPageSettings.PaperSize =
-                    new PaperSize("Custom", Convert.ToInt32(WidthInPoint / 72.0f * 100.0f), Convert.ToInt32(HeightInPoint / 72.0f * 100.0f));
+                if (MyPaperKind == PaperKind.Custom)
+                {
+                    // PaperSize: Height and Width in hundreds of an inch
+                    FDocument.DefaultPageSettings.PaperSize =
+                        new PaperSize("Custom", Convert.ToInt32(WidthInPoint / 72.0f * 100.0f), Convert.ToInt32(HeightInPoint / 72.0f * 100.0f));
+                    FWidth = WidthInPoint / 72.0f * 100.0f;
+                    FHeight = HeightInPoint / 72.0f * 100.0f;
+                    FLeftMargin = MyMargins.Left;
+                    FTopMargin = MyMargins.Top;
+                    FRightMargin = MyMargins.Right;
+                    FBottomMargin = MyMargins.Bottom;
+                }
+                else
+                {
+                    foreach (PaperSize pkSize in FDocument.PrinterSettings.PaperSizes)
+                    {
+                        if (pkSize.Kind == MyPaperKind)
+                        {
+                            FDocument.DefaultPageSettings.PaperSize = pkSize;
 
-                FLeftMargin = MyMargins.Left;
-                FTopMargin = MyMargins.Top;
-                FRightMargin = MyMargins.Right;
-                FBottomMargin = MyMargins.Bottom;
-                FWidth = WidthInPoint / 72.0f * 100.0f;
-                FHeight = HeightInPoint / 72.0f * 100.0f;
+                            if (FOrientation == eOrientation.ePortrait)
+                            {
+                                FWidth = pkSize.Width / 100.0f;
+                                FHeight = pkSize.Height / 100.0f;
+                            }
+                            else
+                            {
+                                FWidth = pkSize.Height / 100.0f;
+                                FHeight = pkSize.Width / 100.0f;
+                            }
+
+                            FLeftMargin = MyMargins.Left / 100.0f;
+                            FTopMargin = MyMargins.Top / 100.0f;
+                            FRightMargin = MyMargins.Right / 100.0f;
+                            FBottomMargin = MyMargins.Bottom / 100.0f;
+
+                            FWidth -= FLeftMargin + FRightMargin;
+                            FHeight -= FTopMargin + FBottomMargin;
+                        }
+                    }
+                }
 
                 FMarginType = eMarginType.eCalculatedMargins;
             }
