@@ -991,7 +991,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP.WebConnectors
 
         /// generated method from connector
         public System.Boolean PostAPDocuments(Int32 ALedgerNumber,
-                                              List<int> AAPDocumentNumbers,
+                                              List<Int32>AAPDocumentNumbers,
                                               DateTime APostingDate,
                                               out TVerificationResultCollection AVerifications)
         {
@@ -2707,8 +2707,8 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
 
         /// generated method from connector
         public List<TVariant> TestPostGLBatch(Int32 ALedgerNumber,
-                                    Int32 ABatchNumber,
-                                    out TVerificationResultCollection AVerifications)
+                                              Int32 ABatchNumber,
+                                              out TVerificationResultCollection AVerifications)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "TestPostGLBatch", ";INT;INT;TVERIFICATIONRESULTCOLLECTION;");
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.TestPostGLBatch(ALedgerNumber, ABatchNumber, out AVerifications);

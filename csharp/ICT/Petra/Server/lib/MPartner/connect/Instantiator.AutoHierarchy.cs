@@ -2364,7 +2364,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.ServerLookups
         /// generated method from interface
         public Boolean GetRecentlyUsedPartners(System.Int32 AMaxPartnersCount,
                                                ArrayList APartnerClasses,
-                                               out Dictionary<long, string> ARecentlyUsedPartners)
+                                               out Dictionary<System.Int64, System.String>ARecentlyUsedPartners)
         {
             #region ManualCode
             return TPartnerServerLookups.GetRecentlyUsedPartners(AMaxPartnersCount, APartnerClasses, out ARecentlyUsedPartners);
@@ -2646,7 +2646,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
         }
 
         /// generated method from connector
-        public System.Boolean AddContact(List<long> APartnerKeys,
+        public System.Boolean AddContact(List<Int64>APartnerKeys,
                                          DateTime AContactDate,
                                          System.String AMethodOfContact,
                                          System.String AComment,
@@ -2660,7 +2660,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
 
         /// generated method from connector
         public PPartnerContactTable FindContacts(System.String AContactor,
-                                                 DateTime? AContactDate,
+                                                 System.Nullable<DateTime>AContactDate,
                                                  System.String ACommentContains,
                                                  System.String AMethodOfContact,
                                                  System.String AModuleID,
