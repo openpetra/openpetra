@@ -253,7 +253,7 @@ public class CreateInterfaces : AutoGenerationWriter
                         formattedMethod += "out ";
                     }
 
-                    formattedMethod += parameterType + " " + p.TypeReference.Type;
+                    formattedMethod += parameterType + " " + p.ParameterName;
                 }
 
                 formattedMethod += ");";

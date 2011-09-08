@@ -740,9 +740,9 @@ namespace Ict.Petra.Server.MCommon.Instantiator.DataReader
         }
 
         /// generated method from interface
-        public bool GetData(string ATablename,
-                            TSearchCriteria[] ASearchCriteria,
-                            out Ict.Common.Data.TTypedDataTable AResultTable)
+        public System.Boolean GetData(System.String ATablename,
+                                      TSearchCriteria ASearchCriteria,
+                                      out Ict.Common.Data.TTypedDataTable AResultTable)
         {
             #region ManualCode
             return TCommonDataReader.GetData(ATablename, ASearchCriteria, out AResultTable);
@@ -750,7 +750,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator.DataReader
         }
 
         /// generated method from interface
-        public TSubmitChangesResult SaveData(string ATablename,
+        public TSubmitChangesResult SaveData(System.String ATablename,
                                              ref TTypedDataTable ASubmitTable,
                                              out TVerificationResultCollection AVerificationResult)
         {
