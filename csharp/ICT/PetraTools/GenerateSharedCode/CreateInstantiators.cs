@@ -224,12 +224,7 @@ class CreateInstantiators : AutoGenerationWriter
                 continue;
             }
 
-            String returnType = m.TypeReference.Type;
-
-            if (returnType == "System.Void")
-            {
-                returnType = "void";
-            }
+            String returnType = CreateInterfaces.TypeToString(m.TypeReference, "");
 
             int align = (returnType + " " + MethodName).Length + 1 + ("public ").Length;
             String formattedMethod = "public " + returnType + " " + MethodName + "(";
@@ -238,7 +233,8 @@ class CreateInstantiators : AutoGenerationWriter
 
             foreach (ParameterDeclarationExpression p in m.Parameters)
             {
-                AddParameter(ref formattedMethod, ref firstParameter, align, p.ParameterName, p.ParamModifier, p.TypeReference.Type);
+                AddParameter(ref formattedMethod, ref firstParameter, align, p.ParameterName, p.ParamModifier,
+                    CreateInterfaces.TypeToString(p.TypeReference, ""));
             }
 
             formattedMethod += ")";
@@ -310,12 +306,7 @@ class CreateInstantiators : AutoGenerationWriter
             {
                 string MethodName = m.Name;
 
-                String returnType = m.TypeReference.Type;
-
-                if (returnType == "System.Void")
-                {
-                    returnType = "void";
-                }
+                String returnType = CreateInterfaces.TypeToString(m.TypeReference, "");
 
                 if ((m.Modifier & Modifiers.Public) == 0)
                 {
@@ -345,7 +336,8 @@ class CreateInstantiators : AutoGenerationWriter
                     }
 
                     actualParameters += p.ParameterName;
-                    AddParameter(ref formattedMethod, ref firstParameter, align, p.ParameterName, p.ParamModifier, p.TypeReference.Type);
+                    AddParameter(ref formattedMethod, ref firstParameter, align, p.ParameterName, p.ParamModifier,
+                        CreateInterfaces.TypeToString(p.TypeReference, ""));
                 }
 
                 formattedMethod += ")";

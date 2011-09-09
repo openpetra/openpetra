@@ -105,32 +105,57 @@ public class CreateInterfaces : AutoGenerationWriter
     }
 
     /// <summary>
+    /// format a type name to a string.
     /// reduce the length of the type name if the namespace is unique.
     /// </summary>
-    /// <param name="ATypeName"></param>
+    /// <param name="ATypeRef"></param>
     /// <param name="ANamespace"></param>
     /// <returns></returns>
-    private string ShortenTypeName(string ATypeName, string ANamespace)
+    public static string TypeToString(TypeReference ATypeRef, string ANamespace)
     {
-        if (ATypeName == "System.Void")
+        string TypeAsString = ATypeRef.Type;
+
+        if (ATypeRef.GenericTypes.Count > 0)
         {
-            ATypeName = "void";
+            TypeAsString += "<";
+
+            foreach (TypeReference tr in ATypeRef.GenericTypes)
+            {
+                if (!TypeAsString.EndsWith("<"))
+                {
+                    TypeAsString += ", ";
+                }
+
+                TypeAsString += tr.Type;
+            }
+
+            TypeAsString += ">";
+        }
+
+        if (ATypeRef.IsArrayType)
+        {
+            TypeAsString += "[]";
+        }
+
+        if (TypeAsString == "System.Void")
+        {
+            TypeAsString = "void";
         }
 
         // ReturnType sometimes has a very long name;
         // shorten it for readability
         // test whether the namespace is contained in the current namespace
-        if (ATypeName.IndexOf(".") != -1)
+        if (TypeAsString.IndexOf(".") != -1)
         {
-            String returnTypeNS = ATypeName.Substring(0, ATypeName.LastIndexOf("."));
+            String returnTypeNS = TypeAsString.Substring(0, TypeAsString.LastIndexOf("."));
 
             if (ANamespace.IndexOf(returnTypeNS) == 0)
             {
-                ATypeName = ATypeName.Substring(ATypeName.LastIndexOf(".") + 1);
+                TypeAsString = TypeAsString.Substring(TypeAsString.LastIndexOf(".") + 1);
             }
         }
 
-        return ATypeName;
+        return TypeAsString;
     }
 
     /// <summary>
@@ -171,7 +196,7 @@ public class CreateInterfaces : AutoGenerationWriter
                     && ((p.Modifier & Modifiers.Public) != 0)
                     && !AttributeNoRemoting)
                 {
-                    String returnType = ShortenTypeName(p.TypeReference.Type, AInterfaceNamespace);
+                    String returnType = TypeToString(p.TypeReference, AInterfaceNamespace);
 
                     // this interface got implemented somewhere on the server
                     WriteLine("/// <summary>auto generated from Connector property (" + AServerNamespace + "." + ConnectorClassName + ")</summary>");
@@ -222,7 +247,7 @@ public class CreateInterfaces : AutoGenerationWriter
                 }
 
                 String formattedMethod = "";
-                String returnType = ShortenTypeName(m.TypeReference.Type, AInterfaceNamespace);
+                String returnType = TypeToString(m.TypeReference, AInterfaceNamespace);
 
                 int align = (returnType + " " + m.Name).Length + 1;
 
@@ -242,7 +267,7 @@ public class CreateInterfaces : AutoGenerationWriter
                     }
 
                     firstParameter = false;
-                    String parameterType = p.TypeReference.Type;
+                    String parameterType = TypeToString(p.TypeReference, "");
 
                     if ((p.ParamModifier & ParameterModifiers.Ref) != 0)
                     {
@@ -253,7 +278,7 @@ public class CreateInterfaces : AutoGenerationWriter
                         formattedMethod += "out ";
                     }
 
-                    formattedMethod += parameterType + " " + p.TypeReference.Type;
+                    formattedMethod += parameterType + " " + p.ParameterName;
                 }
 
                 formattedMethod += ");";
@@ -435,14 +460,15 @@ public class CreateInterfaces : AutoGenerationWriter
                     && !AMethodsAlreadyWritten.Contains(m.Name))
                 {
                     WriteLine("/// <summary>auto generated from Instantiator (" + AServerNamespace + "." + t.Type + ")</summary>");
-                    string MethodDeclaration = m.TypeReference.Type + " " + m.Name + "(";
+                    string MethodDeclaration = TypeToString(m.TypeReference, "") + " " + m.Name + "(";
                     int align = MethodDeclaration.Length;
 
                     bool firstParameter = true;
 
                     foreach (ParameterDeclarationExpression p in m.Parameters)
                     {
-                        AddParameter(ref MethodDeclaration, ref firstParameter, align, p.ParameterName, p.ParamModifier, p.TypeReference.Type);
+                        AddParameter(ref MethodDeclaration, ref firstParameter, align, p.ParameterName, p.ParamModifier,
+                            TypeToString(p.TypeReference, ""));
                     }
 
                     MethodDeclaration += ");";

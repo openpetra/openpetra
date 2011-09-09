@@ -81,7 +81,6 @@ namespace Ict.Tools.CodeGeneration.DataStore
 
             snippet.SetCodelet("DBTABLELABEL", currentTable.strLabel);
 
-            
             if (currentTable.HasPrimaryKey())
             {
                 TConstraint primKey = currentTable.GetPrimaryKey();
