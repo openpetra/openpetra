@@ -56,9 +56,8 @@ namespace Ict.Petra.Server.MFinance.Reporting
     ///          However, Server Objects that derive from these objects and that
     ///          are also UIConnectors are feasible.
     ///</summary>
-    public class TFinanceReportingUIConnector : TConfigurableMBRObject
+    public class TFinanceReportingUIConnector : TConfigurableMBRObject, IReportingUIConnectorsNamespace
     {
-//TODO: TFinanceReportingUIConnector needs to implement IFinanceUIConnectorsReporting
         /// <summary>the currently selected ledger</summary>
         private System.Int32 FLedgerNr;
         private int FNumberAccountingPeriods;
