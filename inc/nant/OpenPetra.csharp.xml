@@ -94,7 +94,7 @@
       basedir="${project::get-base-directory()}" uuidfile="${uuidFile}"
       referencesfile="${referencesFile}" buildincfile="${path::combine(dir.buildfiles, 'OpenPetra.csharp.xml')}"
       templatefile="${path::combine(dir.root,'inc/nanttasks/CsDependTemplates.txt')}" 
-      additionalRefs="${CsDependAdditionalLibReferences}" outputtpye="${OutputType}" >
+      additionalRefs="${CsDependAdditionalLibReferences}" outputtype="${OutputType}" >
       <sources>
         <include name="${csdependfiles}" />
         <exclude name="${excludecsfiles}" />
