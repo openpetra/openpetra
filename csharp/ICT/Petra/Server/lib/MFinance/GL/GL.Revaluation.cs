@@ -50,19 +50,19 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
     /// <summary>
     /// Description of GL_Revaluation.
     /// </summary>
-    public partial class TRevaluationWebConnector
+    public class TRevaluationWebConnector
     {
         /// <summary>
-        /// Main Revalutate Routine!
+        /// Main Revaluate Routine!
         /// A single call of this routine creates a batch, a journal and a twin set of transactions
         /// for each account number - cost center combination which holds a foreign currency value
         /// </summary>
         /// <param name="ALedgerNum">Number of the Ledger to be revaluated</param>
-        /// <param name="AAccoutingPeriod">Number of the accouting period
+        /// <param name="AAccoutingPeriod">Number of the accounting period
         /// (other form of the date)</param>
         /// <param name="AForeignCurrency">Types (Array) of the foreign currency account</param>
         /// <param name="ANewExchangeRate">Array of the exchange rates</param>
-        /// <param name="AVerificationResult">A TVerificationResultCollection for possibly error messages</param>
+        /// <param name="AVerificationResult">A TVerificationResultCollection for possible error messages</param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
         public static bool Revaluate(
@@ -86,7 +86,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 namespace Ict.Petra.Server.MFinance.GL
 {
     /// <summary>
-    /// Main Revaluation Class. The routine is to complex for a linear program.
+    /// Main Revaluation Class. The routine is too complex for a linear program.
     /// </summary>
     public class CLSRevaluation
     {
