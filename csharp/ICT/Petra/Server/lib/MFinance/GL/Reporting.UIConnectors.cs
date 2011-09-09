@@ -56,8 +56,10 @@ namespace Ict.Petra.Server.MFinance.Reporting
     ///          However, Server Objects that derive from these objects and that
     ///          are also UIConnectors are feasible.
     ///</summary>
-    public class TFinanceReportingUIConnector : TConfigurableMBRObject, IReportingUIConnectorsNamespace
+    public class TFinanceReportingUIConnector : TConfigurableMBRObject
     {
+// TODO: should be implementing IReportingUIConnectorsNamespace
+
         /// <summary>the currently selected ledger</summary>
         private System.Int32 FLedgerNr;
         private int FNumberAccountingPeriods;
@@ -340,6 +342,49 @@ namespace Ict.Petra.Server.MFinance.Reporting
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
             return ReturnTable;
+        }
+
+        private string GetReportingCostCentres(ACostCentreTable ACostCentres, string ASummaryCostCentreCode)
+        {
+            ACostCentres.DefaultView.Sort = ACostCentreTable.GetCostCentreToReportToDBName();
+
+            string result = string.Empty;
+
+            DataRowView[] ReportingCostCentres = ACostCentres.DefaultView.FindRows(ASummaryCostCentreCode);
+
+            foreach (DataRowView rv in ReportingCostCentres)
+            {
+                ACostCentreRow row = (ACostCentreRow)rv.Row;
+
+                if (row.PostingCostCentreFlag)
+                {
+                    result = StringHelper.AddCSV(result, row.CostCentreCode);
+                }
+                else
+                {
+                    result = StringHelper.ConcatCSV(result, GetReportingCostCentres(ACostCentres, row.CostCentreCode));
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Get all cost centres that report into the given summary cost centre
+        /// </summary>
+        /// <returns>a CSV list of the reporting cost centres</returns>
+        public string GetReportingCostCentres(String ASummaryCostCentreCode)
+        {
+            System.Type typeofTable = null;
+            TCacheable CachePopulator = new TCacheable();
+            ACostCentreTable CachedDataTable = (ACostCentreTable)CachePopulator.GetCacheableTable(
+                TCacheableFinanceTablesEnum.CostCentreList,
+                "",
+                false,
+                FLedgerNr,
+                out typeofTable);
+
+            return GetReportingCostCentres(CachedDataTable, ASummaryCostCentreCode);
         }
     }
 }

@@ -3372,6 +3372,14 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Reporting.UIConnectors
             return FFinanceReportingUIConnector.GetReceivingFields(out ADisplayMember, out AValueMember);
             #endregion ManualCode
         }
+
+        /// generated method from interface
+        public string GetReportingCostCentres(String ASummaryCostCentreCode)
+        {
+            #region ManualCode
+            return FFinanceReportingUIConnector.GetReportingCostCentres(ASummaryCostCentreCode);
+            #endregion ManualCode
+        }
     }
 }
 

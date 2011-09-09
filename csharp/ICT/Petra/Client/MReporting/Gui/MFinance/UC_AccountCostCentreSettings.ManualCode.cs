@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       berndr
+//       berndr, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -33,6 +33,7 @@ using Ict.Common.Controls;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Shared.MReporting;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 using SourceGrid.Selection;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
@@ -55,10 +56,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         {
             FLedgerNumber = -1;
             FReportWithBalance = true;
-            rbtAccountRange.Checked = false;
-            clbAccountCodes.Enabled = false;
-            rbtCostCentreRange.Checked = false;
-            clbCostCentres.Enabled = false;
+            rbtAccountRange.Checked = true;
+            rbtAccountFromListCheckedChanged(null, null);
+            rbtCostCentreRange.Checked = true;
+            rbtCostCentreFromListCheckedChanged(null, null);
         }
 
         /// <summary>
@@ -73,6 +74,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             TFinanceControls.InitialiseAccountList(ref cmbToAccountCode, FLedgerNumber, true, false, false, false);
             TFinanceControls.InitialiseCostCentreList(ref cmbFromCostCentre, FLedgerNumber, true, false, false, false);
             TFinanceControls.InitialiseCostCentreList(ref cmbToCostCentre, FLedgerNumber, true, false, false, false);
+            TFinanceControls.InitialiseCostCentreList(ref cmbSummaryCostCentres, FLedgerNumber, false, true, false, false);
             TFinanceControls.InitialiseAccountList(ref clbAccountCodes, FLedgerNumber, true, false, false, false);
             TFinanceControls.InitialiseCostCentreList(ref clbCostCentres, FLedgerNumber, true, false, false, false);
 
@@ -272,6 +274,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         private void UnselectAllAccountCodes(System.Object sender, System.EventArgs e)
         {
             clbAccountCodes.ClearSelected();
+        }
+
+        private void SelectAllReportingCostCentres(System.Object sender, System.EventArgs e)
+        {
+            string SelectedCostCentres = clbCostCentres.GetCheckedStringList();
+
+            SelectedCostCentres = StringHelper.ConcatCSV(SelectedCostCentres,
+                TRemote.MFinance.Reporting.UIConnectors.GetReportingCostCentres(cmbSummaryCostCentres.GetSelectedString()));
+            clbCostCentres.SetCheckedStringList(SelectedCostCentres);
         }
 
         #endregion
