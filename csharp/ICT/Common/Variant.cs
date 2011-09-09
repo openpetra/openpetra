@@ -26,6 +26,7 @@ using System.Collections;
 using System.Globalization;
 using System.Collections.Specialized;
 using System.Text.RegularExpressions;
+using System.Runtime.Serialization;
 using Ict.Common;
 
 
@@ -87,7 +88,7 @@ namespace Ict.Common
     /// Conversion functions are provided.
     /// </summary>
     [Serializable]
-    public class TVariant
+    public class TVariant : System.Runtime.Serialization.ISerializable
     {
         /// <summary>
         /// remove all trailing zeros, and the decimal point, if there are no decimals left
@@ -1493,6 +1494,24 @@ namespace Ict.Common
             {
                 return CompareTo(v);
             }
+        }
+
+        /// <summary>
+        /// serialize TVariant as a string. This helps to avoid problems with .net Remoting and DateTime
+        /// </summary>
+        /// <param name="info"></param>
+        /// <param name="ctx"></param>
+        public virtual void GetObjectData(SerializationInfo info, StreamingContext ctx)
+        {
+            info.AddValue("encoded", this.EncodeToString());
+        }
+
+        /// <summary>
+        /// serialize TVariant as a string. This helps to avoid problems with .net Remoting and DateTime
+        /// </summary>
+        protected TVariant(SerializationInfo info, StreamingContext ctx)
+        {
+            this.Assign(DecodeFromString(info.GetString("encoded")));
         }
     }
 }
