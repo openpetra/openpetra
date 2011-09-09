@@ -62,9 +62,12 @@
 
 
 <!-- Import user specific properties, if available -->
-<property name="userconfig.file" value="${path::combine(dir.root,'OpenPetra.build.config')}" overwrite="false" />
+<property name="userconfig.file" value="${path::combine(dir.root,'OpenPetra.build.config.my')}" overwrite="false" />
 <include buildfile="${userconfig.file}" verbose="true" if="${file::exists(userconfig.file)}"/>
-
+<if test="${not file::exists(userconfig.file)}">
+    <property name="userconfig.file" value="${path::combine(dir.root,'OpenPetra.build.config')}" overwrite="true" />
+    <include buildfile="${userconfig.file}" verbose="true" if="${file::exists(userconfig.file)}"/>
+</if>
 
 <!-- Version number -->
 <property name="ReleaseID" value="${OP::GetReleaseIDFromVersionTxt(dir.root)}" overwrite="false"  />
