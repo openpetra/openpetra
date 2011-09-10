@@ -96,7 +96,7 @@
              <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" database="${DBMS.DBName}" password="${DBMS.Password}"/>
              <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE USER ${DBMS.UserName} PASSWORD '${DBMS.Password}';" database="${DBMS.DBName}" failonerror="false" password="${DBMS.Password}"/>
              <property name="tempfile" value="${path::get-temp-path()}/userpermissions.sql"/>
-             <if test="${framework::get-target-framework() == 'mono-2.0'}" >
+             <if test="${not platform::is-windows()}" >
                  <!-- at least on Mac, the tmp directory of the current user is returned, which the postgres user has no access to -->
                  <property name="tempfile" value="/tmp/userpermissions.sql"/>
              </if>
@@ -124,10 +124,10 @@
     </target>
 
     <target name="resetDatabase" depends="init" description="useful for debugging the creation of fresh database"> <!-- depends: recreateDatabase --> 
-         <if test="${framework::get-target-framework() == 'mono-2.0'}" >
+         <if test="${not platform::is-windows()}" >
              <property name="OpenPetraRoot.dir" value="${path::get-full-path(OpenPetraRoot.dir)}"/>
          </if>
-         <if test="${framework::get-target-framework() == 'net-2.0'}" >
+         <if test="${platform::is-windows()}" >
             <!-- GetRealPath resolves problems with substed path for psql to load from; cannot find such file or path -->
             <property name="OpenPetraRoot.dir" value="${string::replace(script::GetRealPath(OpenPetraRoot.dir), '\', '/')}"/>
          </if>
@@ -208,12 +208,14 @@
             <copy file="${SQLitedb.file}" tofile="${OutputDB.file}" overwrite="true"/>
         </if>
         <if test="${DBMS.Type=='postgresql'}">
-            <if test="${framework::get-target-framework() == 'mono-2.0'}" >
-                <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createtables-PostgreSQL.sql" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createtables-PostgreSQL.sql" overwrite="true"/>
-                <copy file="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createconstraints-PostgreSQL.sql" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createconstraints-PostgreSQL.sql" overwrite="true"/>
-                <exec program="sudo" commandline="-u postgres /usr/bin/pg_dump --data-only --file=${OutputDB.file} ${DBMS.DBName}" />
+            <if test="${not platform::is-windows()}" >
+                <!-- file ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createtables-PostgreSQL.sql already exists -->
+                <!-- file ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createconstraints-PostgreSQL.sql already exists -->
+                <exec program="sudo" commandline="-u postgres /usr/bin/pg_dump --data-only --file=${tempdir}/output.sql ${DBMS.DBName}" />
+                <copy file="${tempdir}/output.sql" tofile="${OutputDB.file}" overwrite="true"/>
+                <exec program="sudo" commandline="-u postgres rm ${tempdir}/output.sql"/>
             </if>
-            <if test="${not (framework::get-target-framework() == 'mono-2.0')}" >
+            <if test="${platform::is-windows()}" >
                 <exec program="${pgdump.exe}" commandline="--data-only --file=&quot;${OutputDB.file}&quot; ${DBMS.DBName}">
                     <environment>
                         <variable name="PGPASSWORD" value="${DBMS.Password}"/>
@@ -222,10 +224,10 @@
             </if>
         </if>
         <if test="${DBMS.Type=='mysql'}">
-            <if test="${framework::get-target-framework() == 'mono-2.0'}" >
+            <if test="${not platform::is-windows()}" >
                 <exec program="mysqldump" commandline="${DBMS.DBName} --no-create-info --user=root --password=${DBMS.Password} --result-file=${OutputDB.file}" />
             </if>
-            <if test="${not (framework::get-target-framework() == 'mono-2.0')}" >
+            <if test="${platform::is-windows()}" >
                 <exec program="${MySQLDump.exe}" commandline="${DBMS.DBName} --no-create-info --user=root --password=${DBMS.Password} --result-file=&quot;${OutputDB.file}&quot;"/>
             </if>
 
@@ -271,7 +273,7 @@
     <target name="createSQLiteDB" depends="init">
         <property name="DBMS.Type" value="sqlite"/>
         <property name="DBMS.Password" value="CHANGEME"/>
-        <if test="${framework::get-target-framework() == 'mono-2.0'}" >
+        <if test="${not platform::is-windows()}" >
                 <!-- Linux version of sqlite does not work with encryption; 
                      use it only for testing purposes; 
                      see also http://sqlite.phxsoftware.com/forums/p/1508/6579.aspx#6579 -->        

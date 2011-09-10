@@ -119,7 +119,6 @@
 </target>
 
 <target name="compile" depends="depend">
-  <property name="dontCompile" value="false" overwrite="false"/>
   <!-- Create assembly info -->
   <if test="${bool::parse(RunCsDepend)!=true}">
     <mkdir dir="${namespace-temp-dir}" />
