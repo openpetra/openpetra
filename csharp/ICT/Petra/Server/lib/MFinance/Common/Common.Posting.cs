@@ -313,21 +313,6 @@ namespace Ict.Petra.Server.MFinance.Common
                         }
 
                         AAccountRow Account = (AAccountRow)accountView[0].Row;
-
-                        if (Account.ForeignCurrencyFlag && (journal.TransactionCurrency != Account.ForeignCurrencyCode))
-                        {
-                            if (false)
-                            {
-                                AVerifications.Add(new TVerificationResult(
-                                        String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
-                                        String.Format(Catalog.GetString(
-                                                "Transaction {0} in Journal {1} with currency {2} does not fit the foreign currency {3} of account {4}."),
-                                            transaction.TransactionNumber, transaction.JournalNumber, journal.TransactionCurrency,
-                                            Account.ForeignCurrencyCode,
-                                            transaction.AccountCode),
-                                        TResultSeverity.Resv_Critical));
-                            }
-                        }
                     }
 
                     if ((transaction.AmountInBaseCurrency == 0) && (transaction.TransactionAmount != 0))
