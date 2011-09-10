@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -40,6 +40,7 @@ namespace Ict.Common.IO.Testing
     {
         string PathToTestData;
 
+        /// init
         [SetUp]
         public void Init()
         {
@@ -84,6 +85,7 @@ namespace Ict.Common.IO.Testing
             return doc;
         }
 
+        /// test the xml writer
         [Test]
         public void TestXmlWriter()
         {
@@ -100,6 +102,7 @@ namespace Ict.Common.IO.Testing
             System.IO.File.Delete(filename + ".new");
         }
 
+        /// test the yml writer
         [Test]
         public void TestYmlWriter()
         {
@@ -114,6 +117,7 @@ namespace Ict.Common.IO.Testing
             System.IO.File.Delete(filename + ".new");
         }
 
+        /// test the csv writer
         [Test]
         public void TestCSVWriter()
         {
@@ -127,6 +131,7 @@ namespace Ict.Common.IO.Testing
             System.IO.File.Delete(filename + ".new");
         }
 
+        /// test the csv parser
         [Test]
         public void TestCSVParser()
         {
@@ -145,6 +150,7 @@ namespace Ict.Common.IO.Testing
             System.IO.File.Delete(filename + ".new");
         }
 
+        /// test the yml parser
         [Test]
         public void TestYMLParser()
         {
@@ -163,6 +169,7 @@ namespace Ict.Common.IO.Testing
             System.IO.File.Delete(filename + ".new");
         }
 
+        /// tests for yml with back slashes
         [Test]
         public void TestYMLBackSlashValue()
         {
@@ -184,6 +191,7 @@ namespace Ict.Common.IO.Testing
             System.IO.File.Delete(filename + ".new");
         }
 
+        /// test zipping strings
         [Test]
         public void TestCompressingString()
         {

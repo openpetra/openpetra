@@ -1569,7 +1569,7 @@ namespace Ict.Petra.Client.MCommon
                             Row));
 
                 // set statusbar text for office specific data labels
-                string HelpText = (DataLabelRow != null?DataLabelRow.Description:"");
+                string HelpText = (DataLabelRow != null ? DataLabelRow.Description : "");
                 // logic.UCStatusBarTextProvider.SetStatusBarText(logic.OfficeSpecificGrid, HelpText);
                 // Note: using InstanceDefaultText is a kind of 'brutal' method, but I (ChristianK) couldn't find another solution to instantly show the HelpText in the StatusBar
                 // logic.UCStatusBarTextProvider.InstanceDefaultText = HelpText;

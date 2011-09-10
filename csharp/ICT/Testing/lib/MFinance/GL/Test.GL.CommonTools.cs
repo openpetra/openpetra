@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -251,7 +251,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             {
                 TAccountPeriodInfo getAPI = new TAccountPeriodInfo(ALedgerNum, APeriodNum);
                 DateTime date = getAPI.PeriodEndDate;
-                return date != null;
+                return true;
             }
             catch (IndexOutOfRangeException)
             {
