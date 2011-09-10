@@ -1560,19 +1560,20 @@ namespace Ict.Petra.Client.MCommon
 
             // so that we can use the global variables via the properties
             TUCOfficeSpecificDataLabelsLogic logic = new TUCOfficeSpecificDataLabelsLogic();
-            PDataLabelRow DataLabelRow;
+
             try
             {
                 // find the datarow in the label table to get the help text
-                DataLabelRow =
+                PDataLabelRow DataLabelRow =
                     (PDataLabelRow)logic.MainDS.DataLabelList.Rows.Find(TUCOfficeSpecificDataLabelsLogic.UGridRowInfo.GetDataRowKey(ASender.Position.
                             Row));
 
-                // TODO set statusbar text for office specific data labels
-                // string HelpText = (DataLabelRow != null?DataLabelRow.Description:"");
+                // set statusbar text for office specific data labels
+                string HelpText = (DataLabelRow != null?DataLabelRow.Description:"");
                 // logic.UCStatusBarTextProvider.SetStatusBarText(logic.OfficeSpecificGrid, HelpText);
                 // Note: using InstanceDefaultText is a kind of 'brutal' method, but I (ChristianK) couldn't find another solution to instantly show the HelpText in the StatusBar
                 // logic.UCStatusBarTextProvider.InstanceDefaultText = HelpText;
+                logic.UCStatusBar.Text = HelpText;
 
                 if (TUCOfficeSpecificDataLabelsLogic.UGridRowInfo.GetControl(ASender.Position.Row) != null)
                 {
