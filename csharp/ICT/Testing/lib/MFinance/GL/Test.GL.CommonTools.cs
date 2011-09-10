@@ -250,7 +250,6 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             try
             {
                 TAccountPeriodInfo getAPI = new TAccountPeriodInfo(ALedgerNum, APeriodNum);
-                DateTime date = getAPI.PeriodEndDate;
                 return true;
             }
             catch (IndexOutOfRangeException)

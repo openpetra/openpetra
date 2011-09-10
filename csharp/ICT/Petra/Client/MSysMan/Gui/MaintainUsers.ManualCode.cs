@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -136,8 +136,6 @@ namespace Ict.Petra.Client.MSysMan.Gui
                     SUserModuleAccessPermissionTable.GetUserIdDBName(),
                     ARow.UserId);
             string currentPermissions = clbUserGroup.GetCheckedStringList();
-            string permissionsToDelete = string.Empty;
-            string permissionsToAdd = string.Empty;
             StringCollection CSVValues = StringHelper.StrSplit(currentPermissions, ",");
 
             foreach (DataRowView rv in FMainDS.SUserModuleAccessPermission.DefaultView)

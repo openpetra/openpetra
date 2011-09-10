@@ -135,7 +135,7 @@ namespace Ict.Common.IO.Testing
         [Test]
         public void TestCSVParser()
         {
-            XmlDocument doc = CreateTestDoc();
+            CreateTestDoc();
 
             // load from csv, is it the same xml code?
             string filename = PathToTestData + "test.csv";
@@ -154,7 +154,7 @@ namespace Ict.Common.IO.Testing
         [Test]
         public void TestYMLParser()
         {
-            XmlDocument doc = CreateTestDoc();
+            CreateTestDoc();
             // load from yml, is it the same xml code?
             string filename = PathToTestData + "test.yml";
             TYml2Xml converterYml = new TYml2Xml(filename);

@@ -44,8 +44,6 @@ namespace Ict.Testing.NUnitPetraClient
 /// AutoLoginPasswd
     public class TPetraConnector
     {
-        private static TServerInfo ServerInfo;
-        private static TUserDefaults UserDefaults;
 
         /// connect to the server
         public static void Connect(string AConfigName)
@@ -117,8 +115,8 @@ namespace Ict.Testing.NUnitPetraClient
             {
                 throw;
             }
-            UserDefaults = new TUserDefaults();
-            ServerInfo = new TServerInfo(Utilities.DetermineExecutingOS());
+            new TUserDefaults();
+            new TServerInfo(Utilities.DetermineExecutingOS());
             TLogging.Log(
                 "client is connected ClientID: " + TConnectionManagement.GConnectionManagement.ClientID.ToString() + " UserId: " + AUserName +
                 " to Server...");

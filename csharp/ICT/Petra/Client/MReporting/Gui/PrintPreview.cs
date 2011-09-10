@@ -52,7 +52,6 @@ namespace Ict.Petra.Client.MReporting.Gui
         private TGridPreview FGridPreview;
         private bool FPrinterInstalled;
 
-        private TReportPrinterLayout ReportGfxPrinter;
         private TReportPrinterLayout ReportTxtPrinter;
         private TGfxPrinter FGfxPrinter;
         private TTxtPrinter FTxtPrinter;
@@ -140,7 +139,10 @@ namespace Ict.Petra.Client.MReporting.Gui
             {
                 this.tabPreview.SelectedTab = tbpPreview;
                 FGfxPrinter = new TGfxPrinter(this.PrintDocument, TGfxPrinter.ePrinterBehaviour.eReport);
-                this.ReportGfxPrinter = new TReportPrinterLayout(Results, Parameters, FGfxPrinter, AWrapColumn);
+
+                // TReportPrinterLayout ReportGfxPrinter
+                new TReportPrinterLayout(Results, Parameters, FGfxPrinter, AWrapColumn);
+
                 this.PrintPreviewControl.Document = FGfxPrinter.Document;
                 this.PrintPreviewControl.Zoom = 1; // show 100% by default
                 this.PrintPreviewControl.UseAntiAlias = true;
