@@ -49,10 +49,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>Used for keeping track of data verification errors</summary>
         private TVerificationResultCollection FVerificationResultCollection;
 
-        /// <summary>
-        /// Delegate for telling the Partner Edit screen that the 'Worker Field...' button has been clicked.
-        /// </summary>
-        /// <remarks>The Partner Edit screen acts on that Delegate and opens the corresponding screen.</remarks>
+        // <summary>
+        // Delegate for telling the Partner Edit screen that the 'Worker Field...' button has been clicked.
+        // </summary>
+        // <remarks>The Partner Edit screen acts on that Delegate and opens the corresponding screen.</remarks>
         // TODO private TDelegateMaintainWorkerField FDelegateMaintainWorkerField;
         #endregion
 
