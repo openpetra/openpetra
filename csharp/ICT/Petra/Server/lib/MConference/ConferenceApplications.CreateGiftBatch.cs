@@ -175,7 +175,8 @@ namespace Ict.Petra.Server.MConference.Applications
 
                     if (line.Length > 0)
                     {
-                        ManualApplicationFee = Convert.ToDecimal(StringHelper.GetNextCSV(ref line, InputSeparator, PreviousManualApplicationFee.ToString()));
+                        ManualApplicationFee =
+                            Convert.ToDecimal(StringHelper.GetNextCSV(ref line, InputSeparator, PreviousManualApplicationFee.ToString()));
                         PreviousManualApplicationFee = ManualApplicationFee;
                     }
 
