@@ -45,7 +45,54 @@
       string line = sr.ReadLine();
       sr.Close();
       return line == null || line.ToLower().IndexOf("auto generated with nant") != -1;
-    }        
+    }
+
+    /// get the relative path, that leads from the workingDirectory to the absolutePath
+    [Function("GetRelativePath")]
+    public static string GetRelativePath(string absolutePath, string workingDirectory)
+    {
+      absolutePath = absolutePath.Replace("\\", "/");
+      workingDirectory = workingDirectory.Replace("\\", "/");
+      
+      int countSame = 0;
+      while (countSame < absolutePath.Length 
+             && countSame < workingDirectory.Length 
+             && absolutePath[countSame] == workingDirectory[countSame])
+      {
+          countSame ++;
+      }
+
+      // go back to the last directory seperator
+      countSame = absolutePath.Substring(0, countSame).LastIndexOf("/") + 1;
+      string Result = absolutePath.Substring(countSame);
+      
+      if (countSame > 0)
+      {
+          // how many directories do we need to go up from the working Directory
+          while (countSame < workingDirectory.Length)
+          {
+              if (workingDirectory[countSame] == '/')
+              {
+                  Result = "../" + Result;
+              }
+              countSame ++;
+          }
+      }
+
+      return Result;
+    }
+
+    /// get the absolute path, if it is not yet absolute.
+    [Function("MakeAbsolute")]
+    public static string MakeAbsolute(string relativePath, string workingDirectory)
+    {
+        if (Path.IsPathRooted(relativePath))
+        {
+            return relativePath;
+        }
+        
+        return Path.GetFullPath(workingDirectory + Path.DirectorySeparatorChar + relativePath);
+    }
 ]]>
     </code>
 </script>

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -49,7 +49,7 @@ namespace Ict.Petra.Client.MPartner
     /// <summary>
     /// FamilyID logic for the UC_FamilyMembers UserControl.
     /// </summary>
-    public class TUCFamilyMembersLogic : System.Object
+    public class TUCFamilyMembersLogic
     {
         /// <summary>todoComment</summary>
         public const String StrFamilyIDChangeDone1stLine = "The Family ID of";
@@ -70,10 +70,7 @@ namespace Ict.Petra.Client.MPartner
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
         private SourceGrid.Cells.Editors.ComboBox FFamilyIDEditor;
         private ControllerBase FSpecialCellController = null;
-        private DevAge.ComponentModel.Validator.ValueMapping FamilyIDDropDownMapping;
         private Int32[] FamilyIDDropDownValues;
-        private Int64 PartnerKeyMemory;
-        private Int32 LocationMemory;
 
         /// <summary>isEdited: Boolean;</summary>
         private Boolean FGridEdited;
@@ -337,7 +334,8 @@ namespace Ict.Petra.Client.MPartner
             FFamilyIDEditor.EnableEdit = true;
             FFamilyIDEditor.EditableMode = EditableMode.Focus;
             FDataGrid.Selection.Focus(new Position(RowNumber, FDataGrid.Columns.Count - 1), true);
-            PartnerKeyMemory = this.GetPartnerKeySelected();
+
+            // Int64 PartnerKeyMemory = this.GetPartnerKeySelected();
         }
 
         /// <summary>
@@ -555,7 +553,8 @@ namespace Ict.Petra.Client.MPartner
                 DisableEditing();
                 FFamilyIDEditor.EnableEdit = false;
                 FFamilyIDEditor.Control.Validating += new CancelEventHandler(this.FamilyID_Validating);
-                FamilyIDDropDownMapping = new DevAge.ComponentModel.Validator.ValueMapping();
+                // DevAge.ComponentModel.Validator.ValueMapping FamilyIDDropDownMapping =
+                new DevAge.ComponentModel.Validator.ValueMapping();
             }
             catch (System.NullReferenceException)
             {
@@ -921,7 +920,9 @@ namespace Ict.Petra.Client.MPartner
                         if (FFamilyMembersDV[Counter].Row == (object)PartnerKey)
                         {
                             FFamilyMembersDV[Counter].Row[PartnerEditTDSFamilyMembersTable.GetFamilyIdDBName()] = (object)this.GetFamilyID();
-                            LocationMemory = Counter;
+
+                            // Int32 LocationMemory = Counter;
+
                             break;
                         }
                     }

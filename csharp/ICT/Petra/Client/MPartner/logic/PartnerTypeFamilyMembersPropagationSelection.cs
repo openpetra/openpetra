@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, markusm
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -176,8 +176,6 @@ namespace Ict.Petra.Client.MPartner
             System.Data.DataRow mNewRow;
             String mFilter;
 
-            String mWhatsInIt;
-
             // Assemble Filterexpression
             mFilter = this.FResultPartnerKeyName + " = " + APartnerKey.ToString();
 
@@ -214,12 +212,11 @@ namespace Ict.Petra.Client.MPartner
 
                 // mInt := Length(mDataRows);
                 // messagebox.show(mInt.ToString + ' Rows.');
-                foreach (DataRow mDataRow in mDataRows)
-                {
-                    mWhatsInIt = mDataRow[0].ToString() + "; " + mDataRow[1].ToString() + "; " + mDataRow[2].ToString() + "; " + mDataRow[3].ToString();
-
-                    // messagebox.show(mWhatsInIt);
-                }
+                // foreach (DataRow mDataRow in mDataRows)
+                // {
+                //     string mWhatsInIt = mDataRow[0].ToString() + "; " + mDataRow[1].ToString() + "; " + mDataRow[2].ToString() + "; " + mDataRow[3].ToString();
+                //     messagebox.show(mWhatsInIt);
+                // }
 
                 #endregion
             }
@@ -305,8 +302,6 @@ namespace Ict.Petra.Client.MPartner
         /// <returns>void</returns>
         public void ChangeCheckedStateForRow(Int32 ARow, out Boolean AChanged)
         {
-            System.Data.DataRow mDataRow;
-
             // mTypeCodePresent:     System.Boolean;
             // CostCentreLink:       System.String;
             // APartnerKey:          System.Int64;
@@ -315,7 +310,7 @@ namespace Ict.Petra.Client.MPartner
             // Initialization
             // TLogging.Log('Begin of ChangeCheckedStateForRow, ARow: ' + ARow.ToString, [TLoggingType.ToLogfile]);
             // TLogging.Log('Begin of initialization section of ChangeCheckedStateForRow', [TLoggingType.ToLogfile]);
-            mDataRow = this.FamilyMembersDV[ARow].Row;
+            // System.Data.DataRow mDataRow = this.FamilyMembersDV[ARow].Row;
 
             // mTypeCodePresent := System.Convert.ToBoolean(mDataRow[this.FTypeCodePresentName]);
             AChanged = false;
@@ -735,31 +730,6 @@ namespace Ict.Petra.Client.MPartner
         /// <returns>void</returns>
         public PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionTable GetResultTable()
         {
-            System.Data.DataRowCollection mRows;
-            System.Int32 mRowNumber;
-            System.Int32 mNumColumns;
-            System.Int32 mNumCol;
-
-            // TLogging.Log('Result Table: ', [TLoggingType.ToLogfile]);
-            mNumColumns = this.FFamilyMembersResultDT.Columns.Count;
-            mRows = this.FFamilyMembersResultDT.Rows;
-            mRowNumber = 0;
-
-            if ((mRows == null) || (mRows.Count < 1))
-            {
-                foreach (DataRow mRow in mRows)
-                {
-                    // TLogging.Log('  Row number ' + mRowNumber.ToString, [TLoggingType.ToLogfile]);
-                    for (mNumCol = 0; mNumCol <= mNumColumns - 1; mNumCol += 1)
-                    {
-                    }
-
-                    // TLogging.Log('    Column Number ' + mNumCol.ToString, [TLoggingType.ToLogfile]);
-                    // TLogging.Log('    Content:      ' + mRow[mNumCol].ToString, [TLoggingType.ToLogfile]);
-                    mRowNumber = mRowNumber + 1;
-                }
-            }
-
             return this.FFamilyMembersResultDT;
         }
 

@@ -427,7 +427,6 @@ namespace Ict.Petra.Client.MReporting.Gui
                         else
                         {
                             myDelegate = @PreviewReport;
-                            object[] Args = new Object[0];
                             FWinForm.Invoke((System.Delegate) new TMyUpdateDelegate(myDelegate));
                         }
                     }

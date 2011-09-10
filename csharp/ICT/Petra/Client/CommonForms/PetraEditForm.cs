@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -345,7 +345,6 @@ namespace Ict.Petra.Client.CommonForms
         {
             Control ctrl = (Control)sender;
             string ctrlname = ctrl.Name;
-            string ctrltype = sender.GetType().FullName;
 
 //TLogging.Log(DateTime.Now.ToString() + " MULTIEVENT Handler.  SuppressChangeDetection: " + this.SuppressChangeDetection);
             if (ctrlname == "lblLabel")
@@ -362,7 +361,8 @@ namespace Ict.Petra.Client.CommonForms
                 LocalControlValueChanged();
                 ControlValueChanged();
 
-//TLogging.Log(DateTime.Now.ToString() + " MULTIEVENT Ctrl: " + ctrlname + " Type: " + ctrltype);
+                // string ctrltype = sender.GetType().FullName;
+                //  TLogging.Log(DateTime.Now.ToString() + " MULTIEVENT Ctrl: " + ctrlname + " Type: " + ctrltype);
             }
         }
 

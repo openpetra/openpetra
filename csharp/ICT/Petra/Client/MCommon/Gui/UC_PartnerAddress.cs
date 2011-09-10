@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -75,9 +75,6 @@ namespace Ict.Petra.Client.MCommon.Gui
 
         /// <summary>DataView for the p_partner_location record we are working with</summary>
         private DataView FPartnerLocationDV;
-
-        /// <summary>dmBrowse for readonly mode or dmEdit for edit mode of the UserControl</summary>
-        private TDataModeEnum FDataMode;
 
         /// <summary>Current Address Order (used for optimising the number of TabIndex changes of certain Controls)</summary>
         private Int32 FCurrentAddressOrder;
@@ -606,8 +603,6 @@ namespace Ict.Petra.Client.MCommon.Gui
         /// <returns>void</returns>
         public void SetMode(TDataModeEnum ADataMode)
         {
-            FDataMode = ADataMode;
-
             // messagebox.show('SetMode (' + aDataMode.ToString("G") + ')');
             if (ADataMode == TDataModeEnum.dmBrowse)
             {
