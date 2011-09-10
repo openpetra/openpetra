@@ -45,8 +45,19 @@ namespace Ict.Petra.Client.CommonForms
     /// </summary>
     public partial class TPetraUserControl : System.Windows.Forms.UserControl
     {
-        // TODO statusbar text
-        // private System.Windows.Forms.ToolTip tipUC;
+        private System.Windows.Forms.ToolTip tipUC;
+
+        /// <summary>
+        /// property for setting the tooltip.
+        /// needed to avoid warning about unused variable tipUC
+        /// </summary>
+        public string ToolTip
+        {
+            set
+            {
+                tipUC.SetToolTip(this, value);
+            }
+        }
 
         /// <summary>Holds the DataSet that contains most data that is used in the UserControl</summary>
         protected DataSet FMainDS;
