@@ -249,7 +249,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         {
             try
             {
-                TAccountPeriodInfo getAPI = new TAccountPeriodInfo(ALedgerNum, APeriodNum);
+                new TAccountPeriodInfo(ALedgerNum, APeriodNum);
                 return true;
             }
             catch (IndexOutOfRangeException)
