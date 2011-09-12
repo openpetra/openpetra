@@ -38,7 +38,6 @@ using Ict.Common.Controls;
 using SourceGrid;
 using SourceGrid.Cells;
 using Ict.Common;
-using Ict.Common.Remoting.Shared;
 using System.Collections.Specialized;
 using System.Windows.Forms;
 using Ict.Petra.Shared;
