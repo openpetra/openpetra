@@ -80,6 +80,8 @@ namespace Ict.Testing.NUnitPetraServer
                 "-1",
                 TClientServerConnectionType.csctLocal,
                 DomainManager.UClientManagerCallForwarderRef,
+                new TSystemDefaultsCache(),
+                new TCacheableTablesManager(null),
                 UserInfo);
             FDomain.InitAppDomain(TSrvSetting.ServerSettings);
 

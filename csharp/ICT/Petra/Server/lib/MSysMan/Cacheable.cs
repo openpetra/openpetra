@@ -146,13 +146,13 @@ namespace Ict.Petra.Server.MSysMan.Cacheable
                         case TCacheableSysManTablesEnum.UserList:
                         {
                             DataTable TmpTable = SUserAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
                         case TCacheableSysManTablesEnum.LanguageSpecificList:
                         {
                             DataTable TmpTable = SLanguageSpecificAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
 
