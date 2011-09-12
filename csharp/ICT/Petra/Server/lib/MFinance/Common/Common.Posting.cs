@@ -193,23 +193,9 @@ namespace Ict.Petra.Server.MFinance.Common
                         TResultSeverity.Resv_Critical));
             }
 
-            // TODO: calculate the base and international currency amounts for each transaction, using the current daily exchange rate?
-
-            // calculate raw value of the batch
-            Batch.BatchCreditTotal = 0;
-            Batch.BatchDebitTotal = 0;
-
-            foreach (ATransactionRow trans in ADataSet.ATransaction.Rows)
-            {
-                if (trans.DebitCreditIndicator)
-                {
-                    Batch.BatchDebitTotal += trans.TransactionAmount;
-                }
-                else
-                {
-                    Batch.BatchCreditTotal += trans.TransactionAmount;
-                }
-            }
+            // calculate the base currency amounts for each transaction, using the exchange rate from the journals.
+            // calculate the credit and debit totals
+            GLRoutines.UpdateTotalsOfBatch(ref ADataSet, Batch);
 
             if (Convert.ToDecimal(Batch.BatchCreditTotal) != Convert.ToDecimal(Batch.BatchDebitTotal))
             {

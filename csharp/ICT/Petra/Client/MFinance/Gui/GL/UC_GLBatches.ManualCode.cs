@@ -43,8 +43,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 {
     public partial class TUC_GLBatches
     {
-        private Int32 FLedgerNumber;
-        private Int32 FSelectedBatchNumber;
+        private Int32 FLedgerNumber = -1;
+        private Int32 FSelectedBatchNumber = -1;
         private TFinanceBatchFilterEnum FLoadedData = TFinanceBatchFilterEnum.fbfNone;
 
         private DateTime DefaultDate;
@@ -84,7 +84,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         private void ShowDataManual()
         {
-            txtLedgerNumber.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
+            if (FLedgerNumber != -1)
+            {
+                txtLedgerNumber.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
+                txtDetailBatchControlTotal.CurrencySymbol = FMainDS.ALedger[0].BaseCurrency;
+            }
         }
 
         private void UpdateChangeableStatus(bool batchRowIsSelected)
@@ -112,15 +116,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 {
                 }
             }
-        }
-
-        /// <summary>
-        /// The FMainDS-Contol is only usable after the LedgerNumber has been set externaly.
-        /// In this case some "default"-Settings are to be done.
-        /// </summary>
-        public void FMainDS_ALedgerIsValidNow()
-        {
-            txtDetailBatchControlTotal.CurrencySymbol = FMainDS.ALedger[0].BaseCurrency;
         }
 
         private void ShowDetailsManual(ABatchRow ARow)
@@ -575,7 +570,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     string DefaultCostCentre = TXMLParser.GetAttribute(RootNode, "CostCentre");
 
                     CreateNewABatch();
-                    AJournalRow NewJournal = FMainDS.AJournal.NewRowTyped(true);
+                    GLBatchTDSAJournalRow NewJournal = FMainDS.AJournal.NewRowTyped(true);
                     ((TFrmGLBatch)ParentForm).GetJournalsControl().NewRowManual(ref NewJournal);
                     FMainDS.AJournal.Rows.Add(NewJournal);
                     NewJournal.TransactionCurrency = TXMLParser.GetAttribute(RootNode, "Currency");

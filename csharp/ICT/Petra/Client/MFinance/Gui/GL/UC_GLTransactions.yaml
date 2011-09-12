@@ -34,7 +34,7 @@ RootNode:
         grdDetails:
             Dock: Fill
             TableName: ATransaction
-            Columns: [TransactionNumber, TransactionDate, CostCentreCode, AccountCode, TransactionAmount, DebitCreditIndicator, Reference, Narrative, AmountInBaseCurrency, AmountInIntlCurrency, AnalysisAttributes]
+            Columns: [TransactionNumber, TransactionDate, CostCentreCode, AccountCode, TransactionAmount, DebitCreditIndicator, Reference, Narrative, AmountInBaseCurrency, AnalysisAttributes]
             CustomColumns:
                 DebitCreditIndicator: {Label=Credit/Debit, Type="Boolean(Debit,Credit)"}
                 DateEntered: {Label=Date Entered, Type=DateTime}

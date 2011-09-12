@@ -366,8 +366,6 @@ namespace Ict.Petra.Server.MFinance.GL
         private void CreateTransaction(string AMessage, string AAccount,
             bool ADebitFlag, string ACostCenter)
         {
-            batch.BatchStatus = MFinanceConstants.BATCH_HAS_TRANSACTIONS;
-
             ATransactionRow transaction = null;
 
             transaction = GLDataset.ATransaction.NewRowTyped();

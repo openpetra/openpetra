@@ -469,7 +469,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 frmExchangeRate.ShowDialog(mainForm);
 
                 currencyExchangeList[iRow].updateExchangeRate(
-                    Decimal.Parse(frmExchangeRate.CurrencyExchangeRate));
+                    frmExchangeRate.CurrencyExchangeRate);
             }
 
             public void InitFrmData(TGLRevaluation AMain, DateTime ADateStart, DateTime ADateEnd)
