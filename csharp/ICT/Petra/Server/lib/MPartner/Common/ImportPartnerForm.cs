@@ -148,16 +148,16 @@ namespace Ict.Petra.Server.MPartner.Import
         public string travel;
         /// avoid default string when nothing gets entered
         public string groupwish;
-        /// avoid default string when nothing gets entered
+        /// first job wish
         public string jobwish1;
-        /// avoid default string when nothing gets entered
+        /// second job wish
         public string jobwish2;
-        /// avoid default string when nothing gets entered
+        /// job wish for prayer or counselling team
         public string jobwishpray;
-        /// avoid default string when nothing gets entered
-        public DateTime dateofarrival;
-        /// avoid default string when nothing gets entered
-        public DateTime dateofdeparture;
+        /// parse date of arrival
+        public DateTime? dateofarrival;
+        /// parse date of departure
+        public DateTime? dateofdeparture;
         /// has the applicant been here before?
         public string numberprevconfparticipant;
         /// has the applicant been here before?
@@ -564,16 +564,8 @@ namespace Ict.Petra.Server.MPartner.Import
                     ShortTermApplicationRow.ConfirmedOptionCode = data.eventidentifier;
                     ShortTermApplicationRow.StConfirmedOption = Convert.ToInt64(data.eventpartnerkey);
                     ShortTermApplicationRow.StFieldCharged = data.registrationoffice;
-
-                    if (data.dateofarrival != null)
-                    {
-                        ShortTermApplicationRow.Arrival = data.dateofarrival;
-                    }
-
-                    if (data.dateofdeparture != null)
-                    {
-                        ShortTermApplicationRow.Departure = data.dateofdeparture;
-                    }
+                    ShortTermApplicationRow.Arrival = data.dateofarrival;
+                    ShortTermApplicationRow.Departure = data.dateofdeparture;
 
                     ConfDS.PmShortTermApplication.Rows.Add(ShortTermApplicationRow);
 

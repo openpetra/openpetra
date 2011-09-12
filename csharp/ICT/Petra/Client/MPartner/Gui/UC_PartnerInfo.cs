@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -448,7 +448,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <remarks>This Method isn't functional yet!</remarks>
         /// <param name="APartnerKey">Partner Key of Partner for which Partner Info data should be retrieved.</param>
         /// <param name="APartnerDR">DataRow containing Partner data, Location Data, Partner Location Data and 'Rest' data.</param>
-        /// <exception cref="NotImplementedException">Thrown no matter what is passed in because this Method isn't functional yet!</exception>
+        /// <exception cref="System.NotImplementedException">Thrown no matter what is passed in because this Method isn't functional yet!</exception>
         public void PassPartnerDataFull(Int64 APartnerKey, DataRow APartnerDR)
         {
             throw new NotImplementedException();

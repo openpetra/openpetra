@@ -296,11 +296,17 @@ namespace Ict.Common
         }
 
         /// <summary>
-        /// log the current stack trace; it is recommended to use SafeLogStackTrace instead
+        /// log the current stack trace; on Mono, that does not fully work
         /// </summary>
         /// <param name="ALoggingtype">destination of logging</param>
         public static void LogStackTrace(TLoggingType ALoggingtype)
         {
+            if (Utilities.DetermineExecutingCLR() == TExecutingCLREnum.eclrMono)
+            {
+                // not printing the stacktrace since that could cause an exception
+                return;
+            }
+
             StackTrace st;
             StackFrame sf;
             Int32 Counter;

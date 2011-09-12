@@ -253,8 +253,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
 
             rbtGLWasChecked = rbtGL.Checked;
             rbtGiftWasChecked = rbtGift.Checked;
-            rbtUnmatchedWasChecked = rbtUnmatched.Checked;
-            rbtIgnoredWasChecked = rbtIgnored.Checked;
 
             pnlGiftEdit.Visible = rbtGift.Checked;
             pnlGLEdit.Visible = rbtGL.Checked;
@@ -304,8 +302,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
         private BankImportTDSAEpMatchRow CurrentlySelectedMatch = null;
         private bool rbtGLWasChecked = false;
         private bool rbtGiftWasChecked = false;
-        private bool rbtUnmatchedWasChecked = false;
-        private bool rbtIgnoredWasChecked = false;
 
         private void DeleteStatement(System.Object Sender, EventArgs e)
         {
@@ -444,8 +440,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
 
             rbtGLWasChecked = rbtGL.Checked;
             rbtGiftWasChecked = rbtGift.Checked;
-            rbtUnmatchedWasChecked = rbtUnmatched.Checked;
-            rbtIgnoredWasChecked = rbtIgnored.Checked;
         }
 
         private void GiftDetailsFocusedRowChanged(System.Object sender, EventArgs e)

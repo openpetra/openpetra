@@ -62,7 +62,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private Int32 FLedgerNumber;
 
-        private DateTime DefaultDate;
         private DateTime StartDateCurrentPeriod;
         private DateTime EndDateLastForwardingPeriod;
 
@@ -88,8 +87,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 TLedgerSelection.GetCurrentPostingRangeDates(FLedgerNumber,
                     out StartDateCurrentPeriod,
-                    out EndDateLastForwardingPeriod,
-                    out DefaultDate);
+                    out EndDateLastForwardingPeriod);
 
                 CreateDataGridHeader();
                 GetListOfRevaluationCurrencies();
@@ -456,8 +454,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             public override void OnClick(SourceGrid.CellContext sender, EventArgs e)
             {
                 base.OnClick(sender, e);
-
-                SourceGrid.DataGrid grid = (SourceGrid.DataGrid)sender.Grid;
 
                 ++ix;
                 System.Diagnostics.Debug.WriteLine(sender.Position.Row.ToString());

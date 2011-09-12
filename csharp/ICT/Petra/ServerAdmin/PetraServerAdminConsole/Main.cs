@@ -43,7 +43,6 @@ public class TAdminConsole
     /// the command prompt
     /// </summary>
     public const String ServerAdminPrompt = "SERVERADMIN> ";
-    private static TLogging Logger;
 
     /// <summary>
     /// todoComment
@@ -448,9 +447,7 @@ public class TAdminConsole
 
         try
         {
-            // effectively this is currently in the bin22 directory
-            // in 2.3 I would like to move the file to /usr/local/petra
-            Logger = new TLogging();
+            new TLogging();
             new TAppSettingsManager();
             SilentSysadm = true;
 
@@ -461,7 +458,7 @@ public class TAdminConsole
 
             if (TAppSettingsManager.HasValue("ServerAdmin.LogFile"))
             {
-                Logger = new TLogging(TAppSettingsManager.GetValue("ServerAdmin.LogFile"));
+                new TLogging(TAppSettingsManager.GetValue("ServerAdmin.LogFile"));
             }
 
             if ((!SilentSysadm))

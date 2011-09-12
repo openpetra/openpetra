@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -87,7 +87,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private IPartnerUIConnectorsPartnerFind FPartnerFindObject;
 
 //TODO        private Int32 FSplitterDistForm;
-        private Int32 FSplitterDistFindByDetails;
+//TODO        private Int32 FSplitterDistFindByDetails;
         private bool FPartnerInfoPaneOpen = false;
         private bool FPartnerTasksPaneOpen = false;
         private TUC_PartnerInfo FPartnerInfoUC;
@@ -1009,7 +1009,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             spcPartnerFindByDetails.SplitterDistance = TUserDefaults.GetInt32Default(
                 TUserDefaults.PARTNER_FIND_SPLITPOS_FINDBYDETAILS, 233);
-            FSplitterDistFindByDetails = spcPartnerFindByDetails.SplitterDistance;
+            // TODO FSplitterDistFindByDetails = spcPartnerFindByDetails.SplitterDistance;
         }
 
         /// <summary>
@@ -1158,7 +1158,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             string PartnerClass = String.Empty;
             string CountryCode = String.Empty;
-            string CallerContext = String.Empty;
+
+            // string CallerContext = String.Empty;
+
             TFrmPartnerEdit frm;
 
             this.Cursor = Cursors.WaitCursor;
@@ -1189,8 +1191,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                      * determine whether the 'Form Message' received is for *this* Instance
                      * of the Modal Partner Find screen.
                      */
-// TODO                    FNewPartnerContext = System.Guid.NewGuid().ToString();
-                    CallerContext = System.Guid.NewGuid().ToString();
+// TODO             FNewPartnerContext = System.Guid.NewGuid().ToString();
+//                  CallerContext = System.Guid.NewGuid().ToString();
 
                     PartnerClass = PartnerClass.Replace("OM-FAM", "FAMILY");
                 }
@@ -1606,7 +1608,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         void spcPartnerFindByDetails_SplitterMoved(System.Object sender, System.Windows.Forms.SplitterEventArgs e)
         {
-            FSplitterDistFindByDetails = ((SplitContainer)sender).SplitterDistance;
+            // TODO FSplitterDistFindByDetails = ((SplitContainer)sender).SplitterDistance;
         }
 
         private void GrpCriteria_Enter(System.Object sender, System.EventArgs e)

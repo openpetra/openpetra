@@ -179,7 +179,7 @@ namespace Ict.Petra.Shared.Interfaces.MPersonnel.Person.DataElements.Application
     /// <summary>auto generated</summary>
     public interface IPersonDataElementsApplicationsCacheableNamespace : IInterface
     {
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applications.Cacheable.TPersonDataElementsApplicationsCacheableNamespace)</summary>
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applications.Cacheable.Class)</summary>
         System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MPersonnel.TCacheablePersonTablesEnum ACacheableTable);
     }
 
@@ -191,7 +191,7 @@ namespace Ict.Petra.Shared.Interfaces.MPersonnel.Person.DataElements.Application
     /// <summary>auto generated</summary>
     public interface IPersonDataElementsApplicationsUIConnectorsNamespace : IInterface
     {
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applications.UIConnectors.TPersonDataElementsApplicationsUIConnectorsNamespace)</summary>
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applications.UIConnectors.Class)</summary>
         Ict.Petra.Shared.Interfaces.MCommon.UIConnectors.IDataElementsUIConnectorsOfficeSpecificDataLabels OfficeSpecificDataLabels(System.Int64 APartnerKey,
                                                                                                                                     System.Int32 AApplicationKey,
                                                                                                                                     System.Int64 ARegistrationOffice,
@@ -207,11 +207,11 @@ namespace Ict.Petra.Shared.Interfaces.MPersonnel.Person.DataElements.Cacheable
     /// <summary>auto generated</summary>
     public interface IPersonDataElementsCacheableNamespace : IInterface
     {
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Cacheable.TPersonDataElementsCacheableNamespace)</summary>
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Cacheable.Class)</summary>
         System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MPersonnel.TCacheablePersonTablesEnum ACacheableTable,
                                                 System.String AHashCode,
                                                 out System.Type AType);
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Cacheable.TPersonDataElementsCacheableNamespace)</summary>
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Cacheable.Class)</summary>
         TSubmitChangesResult SaveChangedStandardCacheableTable(Ict.Petra.Shared.MPersonnel.TCacheablePersonTablesEnum ACacheableTable,
                                                                ref TTypedDataTable ASubmitTable,
                                                                out TVerificationResultCollection AVerificationResult);
@@ -225,7 +225,7 @@ namespace Ict.Petra.Shared.Interfaces.MPersonnel.Person.DataElements.UIConnector
     /// <summary>auto generated</summary>
     public interface IPersonDataElementsUIConnectorsNamespace : IInterface
     {
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.UIConnectors.TPersonDataElementsUIConnectorsNamespace)</summary>
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.UIConnectors.Class)</summary>
         Ict.Petra.Shared.Interfaces.MCommon.UIConnectors.IDataElementsUIConnectorsOfficeSpecificDataLabels OfficeSpecificDataLabels(System.Int64 APartnerKey,
                                                                                                                                     Ict.Petra.Shared.MCommon.TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse,
                                                                                                                                     out Ict.Petra.Shared.MCommon.Data.OfficeSpecificDataLabelsTDS AOfficeSpecificDataLabelsDataSet);
@@ -329,11 +329,11 @@ namespace Ict.Petra.Shared.Interfaces.MPersonnel.Units.DataElements.Cacheable
     /// <summary>auto generated</summary>
     public interface IUnitsDataElementsCacheableNamespace : IInterface
     {
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements.Cacheable.TUnitsDataElementsCacheableNamespace)</summary>
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements.Cacheable.Class)</summary>
         System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MPersonnel.TCacheableUnitTablesEnum ACacheableTable,
                                                 System.String AHashCode,
                                                 out System.Type AType);
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements.Cacheable.TUnitsDataElementsCacheableNamespace)</summary>
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements.Cacheable.Class)</summary>
         TSubmitChangesResult SaveChangedStandardCacheableTable(Ict.Petra.Shared.MPersonnel.TCacheableUnitTablesEnum ACacheableTable,
                                                                ref TTypedDataTable ASubmitTable,
                                                                out TVerificationResultCollection AVerificationResult);

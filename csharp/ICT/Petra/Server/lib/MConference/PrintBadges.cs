@@ -367,7 +367,7 @@ namespace Ict.Petra.Server.MConference.Applications
                         (ConferenceApplicationTDSApplicationGridRow)MainDS.ApplicationGrid.DefaultView[PartnerIndex].Row;
 
                     // create an HTML file using the template files
-                    bool BatchPrinted = TFormLettersTools.AttachNextPage(ref ResultDocument, FormatBadge("Badge", MainDS, applicant, true));
+                    TFormLettersTools.AttachNextPage(ref ResultDocument, FormatBadge("Badge", MainDS, applicant, true));
                 }
 
                 TFormLettersTools.CloseDocument(ref ResultDocument);

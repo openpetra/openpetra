@@ -316,17 +316,14 @@ namespace Ict.Petra.Server.MFinance.Common
 
                         if (Account.ForeignCurrencyFlag && (journal.TransactionCurrency != Account.ForeignCurrencyCode))
                         {
-                            if (false)
-                            {
-                                AVerifications.Add(new TVerificationResult(
-                                        String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
-                                        String.Format(Catalog.GetString(
-                                                "Transaction {0} in Journal {1} with currency {2} does not fit the foreign currency {3} of account {4}."),
-                                            transaction.TransactionNumber, transaction.JournalNumber, journal.TransactionCurrency,
-                                            Account.ForeignCurrencyCode,
-                                            transaction.AccountCode),
-                                        TResultSeverity.Resv_Critical));
-                            }
+                            AVerifications.Add(new TVerificationResult(
+                                    String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
+                                    String.Format(Catalog.GetString(
+                                            "Transaction {0} in Journal {1} with currency {2} does not fit the foreign currency {3} of account {4}."),
+                                        transaction.TransactionNumber, transaction.JournalNumber, journal.TransactionCurrency,
+                                        Account.ForeignCurrencyCode,
+                                        transaction.AccountCode),
+                                    TResultSeverity.Resv_Critical));
                         }
                     }
 

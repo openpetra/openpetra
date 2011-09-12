@@ -56,7 +56,7 @@ namespace Ict.Testing.NUnitPetraServer
             new TAppSettingsManager(AConfigName);
 
             Catalog.Init();
-            TServerManager ServerManager = new TServerManager();
+            new TServerManager();
 
             DBAccess.GDBAccessObj = new TDataBase();
             DBAccess.GDBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,

@@ -151,9 +151,9 @@ namespace Ict.Petra.Shared.Interfaces.MSysMan.Application.ServerLookups
     /// <summary>auto generated</summary>
     public interface IApplicationServerLookupsNamespace : IInterface
     {
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Application.ServerLookups.TApplicationServerLookupsNamespace)</summary>
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Application.ServerLookups.Class)</summary>
         System.Boolean GetDBVersion(out System.String APetraDBVersion);
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Application.ServerLookups.TApplicationServerLookupsNamespace)</summary>
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Application.ServerLookups.Class)</summary>
         System.Boolean GetInstalledPatches(out Ict.Petra.Shared.MSysMan.Data.SPatchLogTable APatchLogDT);
     }
 
@@ -199,11 +199,11 @@ namespace Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.SystemDefaults
     /// <summary>auto generated</summary>
     public interface IMaintenanceSystemDefaultsNamespace : IInterface
     {
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Maintenance.SystemDefaults.TMaintenanceSystemDefaultsNamespace)</summary>
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Maintenance.SystemDefaults.Class)</summary>
         Ict.Petra.Shared.MSysMan.Data.SSystemDefaultsTable GetSystemDefaults();
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Maintenance.SystemDefaults.TMaintenanceSystemDefaultsNamespace)</summary>
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Maintenance.SystemDefaults.Class)</summary>
         System.Boolean SaveSystemDefaults(Ict.Petra.Shared.MSysMan.Data.SSystemDefaultsTable ASystemDefaultsDataTable);
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Maintenance.SystemDefaults.TMaintenanceSystemDefaultsNamespace)</summary>
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Maintenance.SystemDefaults.Class)</summary>
         void ReloadSystemDefaultsTable();
     }
 
@@ -225,14 +225,14 @@ namespace Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.UserDefaults
     /// <summary>auto generated</summary>
     public interface IMaintenanceUserDefaultsNamespace : IInterface
     {
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Maintenance.UserDefaults.TMaintenanceUserDefaultsNamespace)</summary>
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Maintenance.UserDefaults.Class)</summary>
         void GetUserDefaults(System.String AUserName,
                              out Ict.Petra.Shared.MSysMan.Data.SUserDefaultsTable AUserDefaultsDataTable);
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Maintenance.UserDefaults.TMaintenanceUserDefaultsNamespace)</summary>
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Maintenance.UserDefaults.Class)</summary>
         System.Boolean SaveUserDefaults(System.String AUserName,
                                         ref Ict.Petra.Shared.MSysMan.Data.SUserDefaultsTable AUserDefaultsDataTable,
                                         out Ict.Common.Verification.TVerificationResultCollection AVerificationResult);
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Maintenance.UserDefaults.TMaintenanceUserDefaultsNamespace)</summary>
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Maintenance.UserDefaults.Class)</summary>
         void ReloadUserDefaults(System.String AUserName,
                                 out Ict.Petra.Shared.MSysMan.Data.SUserDefaultsTable AUserDefaultsDataTable);
     }
@@ -246,31 +246,31 @@ namespace Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.WebConnectors
     public interface IMaintenanceWebConnectorsNamespace : IInterface
     {
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintainLanguageSettingsWebConnector)</summary>
-        bool SetLanguageAndCulture(string ALanguageCode,
-                                   string ACultureCode);
+        System.Boolean SetLanguageAndCulture(System.String ALanguageCode,
+                                             System.String ACultureCode);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintainLanguageSettingsWebConnector)</summary>
-        bool LoadLanguageAndCultureFromUserDefaults();
+        System.Boolean LoadLanguageAndCultureFromUserDefaults();
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintainLanguageSettingsWebConnector)</summary>
-        bool GetLanguageAndCulture(out string ALanguageCode,
-                                   out string ACultureCode);
+        System.Boolean GetLanguageAndCulture(out System.String ALanguageCode,
+                                             out System.String ACultureCode);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector)</summary>
-        bool SetUserPassword(string AUsername,
-                             string APassword);
+        System.Boolean SetUserPassword(System.String AUsername,
+                                       System.String APassword);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector)</summary>
-        bool CheckPasswordQuality(string APassword,
-                                  out TVerificationResultCollection AVerification);
+        System.Boolean CheckPasswordQuality(System.String APassword,
+                                            out TVerificationResultCollection AVerification);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector)</summary>
-        bool SetUserPassword(string AUsername,
-                             string APassword,
-                             string AOldPassword);
+        System.Boolean SetUserPassword(System.String AUsername,
+                                       System.String APassword,
+                                       System.String AOldPassword);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector)</summary>
-        bool CreateUser(string AUsername,
-                        string APassword,
-                        string AModulePermissions);
+        System.Boolean CreateUser(System.String AUsername,
+                                  System.String APassword,
+                                  System.String AModulePermissions);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector)</summary>
-        bool GetAuthenticationFunctionality(out bool ACanCreateUser,
-                                            out bool ACanChangePassword,
-                                            out bool ACanChangePermissions);
+        System.Boolean GetAuthenticationFunctionality(out System.Boolean ACanCreateUser,
+                                                      out System.Boolean ACanChangePassword,
+                                                      out System.Boolean ACanChangePermissions);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector)</summary>
         MaintainUsersTDS LoadUsersAndModulePermissions();
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector)</summary>
@@ -306,14 +306,14 @@ namespace Ict.Petra.Shared.Interfaces.MSysMan.TableMaintenance.UIConnectors
         ISysManUIConnectorsTableMaintenance SysManTableMaintenance();
         /// <summary>auto generated from Connector constructor and GetData (Ict.Petra.Server.MSysMan.TableMaintenance.UIConnectors.TSysManTableMaintenanceUIConnector)</summary>
         ISysManUIConnectorsTableMaintenance SysManTableMaintenance(ref DataTable ADataSet,
-                                                                   string ATableName);
+                                                                   System.String ATableName);
     }
 
     /// <summary>auto generated</summary>
     public interface ISysManUIConnectorsTableMaintenance : IInterface
     {
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.TableMaintenance.UIConnectors.TSysManTableMaintenanceUIConnector)</summary>
-        DataTable GetData(string ATableName);
+        DataTable GetData(System.String ATableName);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.TableMaintenance.UIConnectors.TSysManTableMaintenanceUIConnector)</summary>
         TSubmitChangesResult SubmitChanges(ref DataTable AInspectTable,
                                            ref DataTable AResponseTable,
@@ -345,9 +345,9 @@ namespace Ict.Petra.Shared.Interfaces.MSysMan.ImportExport.WebConnectors
     public interface IImportExportWebConnectorsNamespace : IInterface
     {
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector)</summary>
-        string ExportAllTables();
+        System.String ExportAllTables();
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector)</summary>
-        bool ResetDatabase(string AZippedNewDatabaseData);
+        System.Boolean ResetDatabase(System.String AZippedNewDatabaseData);
     }
 
 }
@@ -416,9 +416,9 @@ namespace Ict.Petra.Shared.Interfaces.MSysMan.Security.UserManager
     /// <summary>auto generated</summary>
     public interface ISecurityUserManagerNamespace : IInterface
     {
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Security.UserManager.TSecurityUserManagerNamespace)</summary>
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Security.UserManager.Class)</summary>
         Ict.Petra.Shared.Security.TPetraPrincipal ReloadCachedUserInfo();
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Security.UserManager.TSecurityUserManagerNamespace)</summary>
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Security.UserManager.Class)</summary>
         void SignalReloadCachedUserInfo(System.String AUserID);
     }
 
@@ -430,13 +430,13 @@ namespace Ict.Petra.Shared.Interfaces.MSysMan.Cacheable
     /// <summary>auto generated</summary>
     public interface ICacheableNamespace : IInterface
     {
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Cacheable.TCacheableNamespace)</summary>
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Cacheable.Class)</summary>
         System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MSysMan.TCacheableSysManTablesEnum ACacheableTable,
                                                 System.String AHashCode,
                                                 out System.Type AType);
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Cacheable.TCacheableNamespace)</summary>
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Cacheable.Class)</summary>
         void RefreshCacheableTable(Ict.Petra.Shared.MSysMan.TCacheableSysManTablesEnum ACacheableTable);
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Cacheable.TCacheableNamespace)</summary>
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Cacheable.Class)</summary>
         void RefreshCacheableTable(Ict.Petra.Shared.MSysMan.TCacheableSysManTablesEnum ACacheableTable,
                                    out System.Data.DataTable ADataTable);
     }

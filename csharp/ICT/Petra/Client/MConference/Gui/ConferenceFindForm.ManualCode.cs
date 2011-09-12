@@ -78,7 +78,7 @@ namespace Ict.Petra.Client.MConference.Gui
 
         private void Accept(System.Object sender, EventArgs e)
         {
-            int[] SelectedRowIndex = grdConferences.Selection.GetSelectionRegion().GetRowsIndex();
+            // int[] SelectedRowIndex = grdConferences.Selection.GetSelectionRegion().GetRowsIndex();
 
             if (grdConferences.SelectedDataRows.Length == 1)
             {

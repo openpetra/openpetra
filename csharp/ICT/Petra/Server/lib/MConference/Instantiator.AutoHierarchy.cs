@@ -438,18 +438,18 @@ namespace Ict.Petra.Server.MConference.Instantiator.WebConnectors
         }
 
         /// generated method from connector
-        public bool GetEarliestAndLatestDate(Int64 AConferenceKey,
-                                             out DateTime AEarliestArrivalDate,
-                                             out DateTime ALatestDepartureDate,
-                                             out DateTime AStartDate,
-                                             out DateTime AEndDate)
+        public System.Boolean GetEarliestAndLatestDate(Int64 AConferenceKey,
+                                                       out DateTime AEarliestArrivalDate,
+                                                       out DateTime ALatestDepartureDate,
+                                                       out DateTime AStartDate,
+                                                       out DateTime AEndDate)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions), "GetEarliestAndLatestDate", ";LONG;DATETIME;DATETIME;DATETIME;DATETIME;");
             return Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions.GetEarliestAndLatestDate(AConferenceKey, out AEarliestArrivalDate, out ALatestDepartureDate, out AStartDate, out AEndDate);
         }
 
         /// generated method from connector
-        public System.Boolean GetOutreachOptions(long AUnitKey,
+        public System.Boolean GetOutreachOptions(System.Int64 AUnitKey,
                                                  out System.Data.DataTable AConferenceTable)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions), "GetOutreachOptions", ";LONG;DATATABLE;");
@@ -457,10 +457,10 @@ namespace Ict.Petra.Server.MConference.Instantiator.WebConnectors
         }
 
         /// generated method from connector
-        public bool GetFieldUnits(Int64 AConferenceKey,
-                                  TUnitTypeEnum AFieldTypes,
-                                  out DataTable AFieldsTable,
-                                  out String AConferencePrefix)
+        public System.Boolean GetFieldUnits(Int64 AConferenceKey,
+                                            TUnitTypeEnum AFieldTypes,
+                                            out DataTable AFieldsTable,
+                                            out String AConferencePrefix)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions), "GetFieldUnits", ";LONG;TUNITTYPEENUM;DATATABLE;STRING;");
             return Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions.GetFieldUnits(AConferenceKey, AFieldTypes, out AFieldsTable, out AConferencePrefix);

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -66,6 +66,7 @@ namespace Ict.Common.DB.Testing
             TLogging.Log("  Connected to Database.");
         }
 
+        /// init
         [SetUp]
         public void Init()
         {
@@ -75,6 +76,7 @@ namespace Ict.Common.DB.Testing
             EstablishDBConnection();
         }
 
+        /// tear down
         [TearDown]
         public void TearDown()
         {
@@ -123,6 +125,7 @@ namespace Ict.Common.DB.Testing
             DBAccess.GDBAccessObj.CommitTransaction();
         }
 
+        /// test the order of statements in a transaction
         [Test]
         public void TestOrderStatementsInTransaction()
         {
@@ -132,6 +135,7 @@ namespace Ict.Common.DB.Testing
             Assert.Throws <Npgsql.NpgsqlException>(new TestDelegate(WrongOrderSqlStatements));
         }
 
+        /// test sequences
         [Test]
         public void TestSequence()
         {

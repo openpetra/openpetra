@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -118,9 +118,6 @@ namespace Ict.Petra.Client.MCommon
 
         /// <summary>DataRow of the record we are currently working with</summary>
         private PLocationRow FCurrentDataRow;
-
-        /// <summary>Grid Row of the record we are currently working with</summary>
-        private Int32 FCurrentGridRow;
 
         /// <summary>DataTable Key value for the record we are currently working with</summary>
         private Int32 FCurrentLocationKey;
@@ -1469,7 +1466,6 @@ namespace Ict.Petra.Client.MCommon
 
             FCurrentLocationKey = (Int32)FCurrentDataRow.LocationKey;
             FCurrentSiteKey = FCurrentDataRow.SiteKey;
-            FCurrentGridRow = ARow;
 
 //          MessageBox.Show("DetermineCurrentKey:  FCurrentLocationKey: " + FCurrentLocationKey.ToString());
             return FCurrentLocationKey;

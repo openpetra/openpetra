@@ -126,9 +126,6 @@ namespace Ict.Petra.Client.App.Core
             DataTable ClientTasksDataTable;
             TClientTasksQueue ClientTasksQueueInstance;
             Thread ClientTaskQueueThread;
-            String DebugInfo;
-
-            DebugInfo = "";
 
             // Check whether this Thread should still execute
             while (FKeepPollingClientTasks)
@@ -155,20 +152,14 @@ namespace Ict.Petra.Client.App.Core
                 }
                 catch (System.Runtime.Remoting.RemotingException Exp)
                 {
-#if DEBUGMODE
-                    DebugInfo = StrConnectionUnavailableCause + Exp.ToString();
-#endif
-
+                    // string DebugInfo = StrConnectionUnavailableCause + Exp.ToString();
                     // MessageBox.Show(StrConnectionBroken + DebugInfo, StrConnectionBrokenTitle,
                     // MessageBoxButtons.OK, MessageBoxIcon.Error);
                     TLogging.Log("RemotingException in TPollClientTasks.PollClientTasksThread: " + Exp.ToString(), TLoggingType.ToLogfile);
                 }
                 catch (System.Net.Sockets.SocketException Exp)
                 {
-#if DEBUGMODE
-                    DebugInfo = StrConnectionUnavailableCause + Exp.ToString() + "\r\n\r\nSocketException.ErrorCode: " + Exp.ErrorCode.ToString();
-#endif
-
+                    // string DebugInfo = StrConnectionUnavailableCause + Exp.ToString() + "\r\n\r\nSocketException.ErrorCode: " + Exp.ErrorCode.ToString();
                     // MessageBox.Show(StrConnectionClosed + DebugInfo, StrConnectionClosedTitle,
                     // MessageBoxButtons.OK, MessageBoxIcon.Error);
                     TLogging.Log("SocketException in TPollClientTasks.PollClientTasksThread: " + Exp.ToString(), TLoggingType.ToLogfile);

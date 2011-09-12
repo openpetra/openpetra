@@ -216,7 +216,7 @@ public class TServer
              * (eg. when a Client connects)!
              *
              */
-            int Tmp = TheServerManager.IPPort;
+            int TmpNeededForCheatingOnGarbageCollection = TheServerManager.IPPort;
 
             /*
              * Server main Thread goes to sleep and never needs to wake up again -

@@ -273,6 +273,17 @@ public class TOpenPetraOrg : WebService
             VerificationResultCollection = AVerificationResultCollection;
         }
 
+        /// the only purpose of this function is to avoid the compiler warning on Mono:
+        /// The private field `xyz' is assigned but its value is never used
+        private void DummyFunction(out TSubmitChangesResult ASubmitChangesResult,
+            out DataSet AUntypedDataSet,
+            out TVerificationResultCollection AVerificationResultCollection)
+        {
+            ASubmitChangesResult = SubmitChangesResult;
+            AUntypedDataSet = UntypedDataSet;
+            AVerificationResultCollection = VerificationResultCollection;
+        }
+
         /// <summary>
         /// encode the value in JSON
         /// </summary>

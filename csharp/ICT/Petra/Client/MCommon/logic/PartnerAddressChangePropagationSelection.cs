@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -44,7 +44,6 @@ namespace Ict.Petra.Client.MCommon
     /// </summary>
     public class TPartnerAddressChangePropagationSelectionLogic : System.Object
     {
-        private PartnerAddressAggregateTDSChangePromotionParametersTable FPartnerSharingLocationDT;
         private System.Data.DataView FPartnerSharingLocationDV;
         private TSgrdDataGrid FDataGrid;
 
@@ -104,13 +103,15 @@ namespace Ict.Petra.Client.MCommon
         }
 
         /// <summary>
-        /// This procedure initializes this System.Object.
+        /// This procedure initializes this object
         ///
         /// </summary>
         /// <returns>void</returns>
         public void InitialisePartnerTypeFamilyMembers(PartnerAddressAggregateTDSChangePromotionParametersTable APartnerSharingLocationDT)
         {
-            this.FPartnerSharingLocationDT = APartnerSharingLocationDT;
+            // seems that variable is never actually used
+            // was: private PartnerAddressAggregateTDSChangePromotionParametersTable FPartnerSharingLocationDT;
+            // this.FPartnerSharingLocationDT = APartnerSharingLocationDT;
         }
     }
 }

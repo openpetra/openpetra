@@ -250,7 +250,7 @@ namespace Ict.Petra.Client.CommonControls
 
         /// <summary>
         /// Allows the caller to inquire how many Columns are shown when the user drops the Drop-Down.
-        /// Only inquire this after <see cref="AppearanceSetup" /> has been run!
+        /// Only inquire this after <see cref="AppearanceSetup(int[],int)" /> or <see cref="AppearanceSetup(Ict.Petra.Client.CommonControls.TCmbAutoPopulated.TListTableEnum)" /> has been run!
         /// </summary>
         [Browsable(false),
          DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
