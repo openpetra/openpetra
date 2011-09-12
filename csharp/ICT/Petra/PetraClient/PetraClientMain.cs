@@ -62,13 +62,13 @@ namespace Ict.Petra.Client.App.PetraClient
 
         private static Boolean FUseNewNavigation = true;
 
-        /// <summary>ProcessID (unique) assigned by the PetraServer</summary>
+        // <summary>ProcessID (unique) assigned by the PetraServer</summary>
         // TODO private static Int32 FProcessID;
 
-        /// <summary>Welcome message (passed on to the MainWindow)</summary>
+        // <summary>Welcome message (passed on to the MainWindow)</summary>
         // TODO private static String FWelcomeMessage;
 
-        /// <summary>Tells whether the Petra System is enabled, or not (passed on to the MainWindow)</summary>
+        // <summary>Tells whether the Petra System is enabled, or not (passed on to the MainWindow)</summary>
         // TODO private static Boolean FSystemEnabled;
 
         [DllImport("user32.dll")] private static extern int FindWindow(string classname, string windowname);
