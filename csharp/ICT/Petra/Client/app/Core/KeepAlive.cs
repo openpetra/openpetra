@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -274,10 +274,7 @@ namespace Ict.Petra.Client.App.Core
         /// <returns>void</returns>
         public void KeepAliveThread()
         {
-            String DebugInfo;
             IDictionaryEnumerator ObjectEnum;
-
-            DebugInfo = "";
 
             // Check whether this Thread should still execute
             while (UKeepRemotedObjectsAlive)
@@ -325,21 +322,15 @@ namespace Ict.Petra.Client.App.Core
                 }
                 catch (System.Runtime.Remoting.RemotingException Exp)
                 {
-#if DEBUGMODE
-                    DebugInfo = StrConnectionUnavailableCause + Exp.ToString();
-#endif
-
+                    // string DebugInfo = StrConnectionUnavailableCause + Exp.ToString();
                     // MessageBox.Show(StrConnectionBroken + DebugInfo, StrConnectionBrokenTitle,
                     // MessageBoxButtons.OK, MessageBoxIcon.Error);
                     TLogging.Log("RemotingException in TEnsureKeepAlive.KeepAliveThread: " + Exp.ToString(), TLoggingType.ToLogfile);
                 }
                 catch (System.Net.Sockets.SocketException Exp)
                 {
-#if DEBUGMODE
-                    DebugInfo = StrConnectionUnavailableCause + Exp.ToString() +
-                                "\r\n\r\nSocketException.ErrorCode: " + Exp.ErrorCode.ToString();
-#endif
-
+                    // string DebugInfo = StrConnectionUnavailableCause + Exp.ToString() +
+                    //            "\r\n\r\nSocketException.ErrorCode: " + Exp.ErrorCode.ToString();
                     // MessageBox.Show(StrConnectionClosed + DebugInfo, StrConnectionClosedTitle,
                     // MessageBoxButtons.OK, MessageBoxIcon.Error);
                     TLogging.Log("SocketException in TEnsureKeepAlive.KeepAliveThread: " + Exp.ToString(), TLoggingType.ToLogfile);

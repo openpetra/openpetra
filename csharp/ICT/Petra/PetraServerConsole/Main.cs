@@ -449,13 +449,13 @@ ReadClientTaskPriority:
                      * case, because TTheServerManager can be accessed using the
                      * PetraServerAdminConsole via .NET Remoting.
                      *
-                     * Therefore reading the Property is needed to keep the Instace of
+                     * Therefore reading the Property is needed to keep the Instance of
                      * TTheServerManager from being GC'ed, and therefore from running its
                      * Finalizer, which would Log 'SERVER STOPPED!' as soon as GC kicks in
                      * (eg. when a Client connects)!
                      *
                      */
-                    int Tmp = TheServerManager.IPPort;
+                    int TmpNeededForCheatingOnGarbageCollection = TheServerManager.IPPort;
 
                     /*
                      * Server main Thread goes to sleep and never needs to wake up again -

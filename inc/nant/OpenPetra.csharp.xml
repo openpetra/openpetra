@@ -108,6 +108,7 @@
   <if test="${true==bool::parse(RunCsDepend)}">
     <include buildfile="${referencesFile}" />
   </if>
+  <!-- the dll files must actually exist, otherwise they are not considered by NAnt in the fileset -->
   <assemblyfileset id="assemblyfileset-references" basedir="${dir.bin}">
     <lib>
       <include name="${dir.bin}"/>
@@ -207,9 +208,12 @@
       <echo level="Debug">reference-path=${reference-path}</echo>
       <property name="reference-name" 
                 value="${path::get-file-name-without-extension(reference-path)}" />
+      <property name="relative-reference-path" value="${OP::GetRelativePath(reference-path, dir.projectfiles + '/' + devenv-name + '/')}"/>
       <property name="reference-project-file"
                 value="${path::combine(dir.projectfiles,
-                                path::combine(devenv-name, reference-name+'.csproj'))}" />           
+                                path::combine(devenv-name, reference-name+'.csproj'))}" />
+      <property name="reference-project-file-name"
+                value="${path::get-file-name(reference-project-file)}"/>
       <if test="${file::exists(reference-project-file)}">
         <!-- Reference to another project. Find GUID -->
         <xmlpeek
@@ -225,7 +229,7 @@
         <property name="TemplateProjectReferences" value="${TemplateProjectReferences}${tempTemplateReferences}" />
       </if>
       <if test="${not file::exists(reference-project-file)}">
-        <property name="reference-with-hint" value="${not (string::contains(reference-path,'Microsoft.NET\Framework') and file::exists(path::combine(templatedir, 'template.csproj.referencenohint')))}"/>
+        <property name="reference-with-hint" value="${not ((string::contains(reference-path,'Microsoft.NET\Framework') or string::contains(reference-path,'lib/mono/')) and file::exists(path::combine(templatedir, 'template.csproj.referencenohint')))}"/>
         <if test="${not reference-with-hint}">
           <loadfile file="${path::combine(templatedir, 'template.csproj.referencenohint')}"
                     property="tempTemplateReferences" encoding="utf-8">  
@@ -255,7 +259,9 @@
       </items>
     </in>
     <do>
+    <property name="relative-filename" value="${OP::GetRelativePath(filename, dir.projectfiles + '/' + devenv-name + '/')}"/>
     <property name="DependentUpon" value="${path::change-extension(filename,'.cs')}" />
+    <property name="relative-DependentUpon" value="${path::get-file-name(DependentUpon)}" />
     <property name="template" value="template.csproj.resource" />
     <if test="${file::exists(DependentUpon)}">
       <property name="template" value="template.csproj.resource.DependentUpon" />
@@ -279,7 +285,10 @@
       </items>
     </in>
     <do>
+      <property name="justfilename" value="${path::get-file-name(filename)}" />
+      <property name="relative-filename" value="${OP::GetRelativePath(filename, dir.projectfiles + '/' + devenv-name + '/')}"/>
       <property name="template" value="template.csproj.compile" />
+      <property name="DependentUpon" value=""/>
       <if test="${string::contains(filename,'.Designer.cs')}">
         <property name="DependentUpon" value="${string::replace(filename,'.Designer.cs','.cs')}" />
         <if test="${file::exists(DependentUpon)}">
@@ -292,6 +301,7 @@
           <property name="template" value="template.csproj.compile.DependentUpon" />
         </if>
       </if>
+      <property name="relative-DependentUpon" value="${path::get-file-name(DependentUpon)}"/>
       <loadfile file="${path::combine(templatedir, template)}"
                 property="tempTemplateCompile" encoding="utf-8">  
         <filterchain>
@@ -310,6 +320,10 @@
       <expandproperties />
     </filterchain>
   </copy>
+  <!-- need to touch the dll file, so that later the fileset will pick this file up when calculating the references for other projects -->
+  <if test="${not file::exists(path::combine(dir.bin, Namespace + '.dll'))}">
+    <touch file="${dir.bin}/${Namespace}.dll"/>
+  </if>
 </target>
 
 </project>

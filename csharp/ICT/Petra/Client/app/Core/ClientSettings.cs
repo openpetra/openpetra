@@ -159,6 +159,24 @@ namespace Ict.Petra.Client.App.Core
             }
         }
 
+        /// <summary>the data directory to be used if we want to share the data directory with other users, on a network drive</summary>
+        public static string RemoteDataDirectory
+        {
+            get
+            {
+                return URemoteDataDirectory;
+            }
+        }
+
+        /// <summary>the tmp directory to be used if we want to share the tmp directory with other users, on a network drive</summary>
+        public static string RemoteTmpDirectory
+        {
+            get
+            {
+                return URemoteTmpDirectory;
+            }
+        }
+
         /// <summary>should the server be started by the client?</summary>
         public static Boolean RunAsStandalone
         {
@@ -329,8 +347,6 @@ namespace Ict.Petra.Client.App.Core
         public static string GetPathLog()
         {
             UPathTemp = GetUserPath("OpenPetra.PathTemp", Path.GetTempPath());
-
-            string userSettingsPath = GetUserPath("Reporting.PathReportUserSettings", String.Empty);
 
             UPathLog = GetUserPath("OpenPetra.PathLog", UPathTemp);
 

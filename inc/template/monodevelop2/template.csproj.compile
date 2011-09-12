@@ -1,1 +1,3 @@
-    <Compile Include="${filename}" />
+    <Compile Include="${relative-filename}">
+      <Link>${justfilename}</Link>
+    </Compile>

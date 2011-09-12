@@ -219,7 +219,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 txtCreditAmount.NumberValueDecimal = ARow.TransactionAmount;
             }
 
-            AJournalRow journal = GetJournalRow();
+            // AJournalRow journal = GetJournalRow();
 
             UpdateTotals(ARow);
 

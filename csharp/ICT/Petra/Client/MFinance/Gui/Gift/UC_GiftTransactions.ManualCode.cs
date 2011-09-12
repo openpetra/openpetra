@@ -334,8 +334,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (giftDetailView.Count == 0)
             {
-                int oldGiftNumber = gift.GiftTransactionNumber;
-                int oldBatchNumber = gift.BatchNumber;
+                // TODO int oldGiftNumber = gift.GiftTransactionNumber;
+                // TODO int oldBatchNumber = gift.BatchNumber;
 
                 FMainDS.AGift.Rows.Remove(gift);
 
@@ -390,7 +390,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // this is coded manually, to use the correct gift record
 
             // we create the table locally, no dataset
-            AGiftDetailRow NewRow = NewGift();
+            NewGift(); // returns AGiftDetailRow
 
             FPetraUtilsObject.SetChangedFlag();
 
@@ -476,7 +476,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // this is coded manually, to use the correct gift record
 
             // we create the table locally, no dataset
-            AGiftDetailRow NewRow = NewGiftDetail((GiftBatchTDSAGiftDetailRow)FPreviouslySelectedDetailRow);
+            NewGiftDetail((GiftBatchTDSAGiftDetailRow)FPreviouslySelectedDetailRow); // returns AGiftDetailRow
 
             FPetraUtilsObject.SetChangedFlag();
 

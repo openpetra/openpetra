@@ -51,8 +51,10 @@ namespace {#NAMESPACE}
         /// </summary>
         private void InitializeComponent()
         {
+            {#IFDEF RESOURCES}
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof({#CLASSNAME}));
 
+            {#ENDIF RESOURCES}
             {#CONTROLCREATION}
 
             {#SUSPENDLAYOUT}

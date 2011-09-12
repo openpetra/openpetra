@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -49,11 +49,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>Used for keeping track of data verification errors</summary>
         private TVerificationResultCollection FVerificationResultCollection;
 
-        /// <summary>
-        /// Delegate for telling the Partner Edit screen that the 'Worker Field...' button has been clicked.
-        /// </summary>
-        /// <remarks>The Partner Edit screen acts on that Delegate and opens the corresponding screen.</remarks>
-        private TDelegateMaintainWorkerField FDelegateMaintainWorkerField;
+        // <summary>
+        // Delegate for telling the Partner Edit screen that the 'Worker Field...' button has been clicked.
+        // </summary>
+        // <remarks>The Partner Edit screen acts on that Delegate and opens the corresponding screen.</remarks>
+        // TODO private TDelegateMaintainWorkerField FDelegateMaintainWorkerField;
         #endregion
 
         #region Events
@@ -225,7 +225,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>void</returns>
         public void InitialiseDelegateMaintainWorkerField(TDelegateMaintainWorkerField ADelegateFunction)
         {
-            FDelegateMaintainWorkerField = ADelegateFunction;
+            // TODO FDelegateMaintainWorkerField = ADelegateFunction;
         }
 
         /// <summary>
