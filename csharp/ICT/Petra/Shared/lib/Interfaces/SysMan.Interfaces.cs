@@ -34,7 +34,6 @@ using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared.Interfaces.MSysMan.Application;
-using Ict.Petra.Shared.Interfaces.MSysMan.Cacheable;
 using Ict.Petra.Shared.Interfaces.MSysMan.Maintenance;
 using Ict.Petra.Shared.Interfaces.MSysMan.TableMaintenance;
 using Ict.Petra.Shared.Interfaces.MSysMan.ImportExport;
@@ -63,12 +62,6 @@ namespace Ict.Petra.Shared.Interfaces.MSysMan
     {
         /// <summary>access to sub namespace</summary>
         IApplicationNamespace Application
-        {
-            get;
-        }
-
-        /// <summary>access to sub namespace</summary>
-        ICacheableNamespace Cacheable
         {
             get;
         }

@@ -51,7 +51,6 @@ using Ict.Petra.Server.App.Core.Security;
 
 using Ict.Petra.Shared.Interfaces.MSysMan;
 using Ict.Petra.Shared.Interfaces.MSysMan.Application;
-using Ict.Petra.Shared.Interfaces.MSysMan.Cacheable;
 using Ict.Petra.Shared.Interfaces.MSysMan.Maintenance;
 using Ict.Petra.Shared.Interfaces.MSysMan.TableMaintenance;
 using Ict.Petra.Shared.Interfaces.MSysMan.ImportExport;
@@ -70,7 +69,6 @@ using Ict.Petra.Shared.Interfaces.MSysMan.PrintManagement.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MSysMan.Security.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MSysMan.Security.UserManager;
 using Ict.Petra.Server.MSysMan.Instantiator.Application;
-using Ict.Petra.Server.MSysMan.Instantiator.Cacheable;
 using Ict.Petra.Server.MSysMan.Instantiator.Maintenance;
 using Ict.Petra.Server.MSysMan.Instantiator.TableMaintenance;
 using Ict.Petra.Server.MSysMan.Instantiator.ImportExport;
@@ -89,7 +87,6 @@ using Ict.Petra.Server.MSysMan.Instantiator.PrintManagement.UIConnectors;
 using Ict.Petra.Server.MSysMan.Instantiator.Security.UIConnectors;
 using Ict.Petra.Server.MSysMan.Instantiator.Security.UserManager;
 //using Ict.Petra.Server.MSysMan.Application;
-using Ict.Petra.Server.MSysMan.Cacheable;
 using Ict.Petra.Server.MSysMan.Maintenance;
 //using Ict.Petra.Server.MSysMan.TableMaintenance;
 //using Ict.Petra.Server.MSysMan.ImportExport;
@@ -208,7 +205,6 @@ namespace Ict.Petra.Server.MSysMan.Instantiator
         private DateTime FStartTime;
 #endif
         private TApplicationNamespace FApplicationSubNamespace;
-        private TCacheableNamespace FCacheableSubNamespace;
         private TMaintenanceNamespace FMaintenanceSubNamespace;
         private TTableMaintenanceNamespace FTableMaintenanceSubNamespace;
         private TImportExportNamespace FImportExportSubNamespace;
@@ -303,35 +299,6 @@ namespace Ict.Petra.Server.MSysMan.Instantiator
                 }
 
                 return FApplicationSubNamespace;
-            }
-
-        }
-
-        /// <summary>The 'Cacheable' subnamespace contains further subnamespaces.</summary>
-        public ICacheableNamespace Cacheable
-        {
-            get
-            {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'MSysMan.Cacheable' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'MSysMan.Cacheable' sub-namespace
-                //
-
-                // accessing TCacheableNamespace the first time? > instantiate the object
-                if (FCacheableSubNamespace == null)
-                {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TCacheableNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.MSysMan.Instantiator.Cacheable') should be automatically contructable.
-                    FCacheableSubNamespace = new TCacheableNamespace();
-                }
-
-                return FCacheableSubNamespace;
             }
 
         }
