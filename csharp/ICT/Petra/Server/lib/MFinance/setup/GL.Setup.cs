@@ -812,11 +812,12 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 return false;
             }
 
-            if ((ALedgerNumber <= 0) || (ALedgerNumber > 9999))
+            if ((ALedgerNumber <= 1) || (ALedgerNumber > 9999))
             {
+                // ledger number 1 does not work, because the root unit has partner key 1000000.
                 AVerificationResult = new TVerificationResultCollection();
                 string msg = String.Format(Catalog.GetString(
-                        "Invalid number {0} for a ledger. Please choose a number between 1 and 9999."), ALedgerNumber);
+                        "Invalid number {0} for a ledger. Please choose a number between 2 and 9999."), ALedgerNumber);
                 AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Creating Ledger"), msg, TResultSeverity.Resv_Critical));
                 return false;
             }
@@ -1001,7 +1002,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 // but in the empty database, that ledger and therefore p_partner with key 4000000 does not exist
                 // validLedgerNumberRow.IltProcessingCentre = 4000000;
 
-                validLedgerNumberRow.CostCentreCode = (ALedgerNumber * 100).ToString();
+                validLedgerNumberRow.CostCentreCode = (ALedgerNumber * 100).ToString("0000");
                 MainDS.AValidLedgerNumber.Rows.Add(validLedgerNumberRow);
             }
 

@@ -3,7 +3,3 @@
         {#LEDGERNAME}:{code={#LEDGERNUMBERWITHLEADINGZEROS}00S}
             {#LEDGERNAME}, General:{code={#LEDGERNUMBERWITHLEADINGZEROS}00}
         Inter Ledger Transfer Total:{code=ILT}
-            International Clearing House:{code=0400, type=Foreign}
-            Switzerland:{code=3500, type=Foreign}
-            Kenya:{code=7300, type=Foreign}
-            Global Impact Fund:{code=9500, type=Foreign}
