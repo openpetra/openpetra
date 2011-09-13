@@ -23,6 +23,8 @@
 //
 using System;
 using System.Data;
+using Ict.Common;
+using Ict.Common.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 
