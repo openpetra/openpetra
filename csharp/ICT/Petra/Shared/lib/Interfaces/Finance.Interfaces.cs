@@ -599,6 +599,9 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors
         GLBatchTDS LoadABatch(Int32 ALedgerNumber,
                               TFinanceBatchFilterEnum AFilterBatchStatus);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector)</summary>
+        GLBatchTDS LoadABatchAndContent(Int32 ALedgerNumber,
+                                        Int32 ABatchNumber);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector)</summary>
         GLBatchTDS LoadAJournal(Int32 ALedgerNumber,
                                 Int32 ABatchNumber);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector)</summary>
@@ -753,9 +756,8 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Reporting.UIConnectors
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Reporting.UIConnectors.Class)</summary>
         System.Data.DataTable GetReceivingFields(out System.String ADisplayMember,
                                                  out System.String AValueMember);
-
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Reporting.UIConnectors.Class)</summary>
-        string GetReportingCostCentres(String ASummaryCostCentreCode);
+        System.String GetReportingCostCentres(String ASummaryCostCentreCode);
     }
 
 }

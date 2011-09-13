@@ -2655,6 +2655,14 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
         }
 
         /// generated method from connector
+        public GLBatchTDS LoadABatchAndContent(Int32 ALedgerNumber,
+                                               Int32 ABatchNumber)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "LoadABatchAndContent", ";INT;INT;");
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.LoadABatchAndContent(ALedgerNumber, ABatchNumber);
+        }
+
+        /// generated method from connector
         public GLBatchTDS LoadAJournal(Int32 ALedgerNumber,
                                        Int32 ABatchNumber)
         {
@@ -3374,7 +3382,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Reporting.UIConnectors
         }
 
         /// generated method from interface
-        public string GetReportingCostCentres(String ASummaryCostCentreCode)
+        public System.String GetReportingCostCentres(String ASummaryCostCentreCode)
         {
             #region ManualCode
             return FFinanceReportingUIConnector.GetReportingCostCentres(ASummaryCostCentreCode);

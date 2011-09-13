@@ -185,6 +185,27 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         }
 
         /// <summary>
+        /// load the specified batch and its journals and transactions.
+        /// this method is called after a batch has been posted.
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GLBatchTDS LoadABatchAndContent(Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            GLBatchTDS MainDS = new GLBatchTDS();
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            ABatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+            AJournalAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+            ATransactionAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            return MainDS;
+        }
+
+        /// <summary>
         /// loads a list of journals for the given ledger and batch
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -271,7 +292,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             // check added and modified and deleted rows: are they related to a posted or cancelled batch? we must not save adjusted posted batches!
             List <Int32>BatchNumbersInvolved = new List <int>();
-            Int64 LedgerNumber = -1;
+            Int32 LedgerNumber = -1;
 
             if (AInspectDS.ABatch != null)
             {
@@ -290,7 +311,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         {
                             // for deleted batches
                             BatchNumber = (Int32)batch[ABatchTable.ColumnBatchNumberId, DataRowVersion.Original];
-                            LedgerNumber = (Int64)batch[ABatchTable.ColumnLedgerNumberId, DataRowVersion.Original];
+                            LedgerNumber = (Int32)batch[ABatchTable.ColumnLedgerNumberId, DataRowVersion.Original];
                         }
 
                         if (!BatchNumbersInvolved.Contains(BatchNumber))
@@ -316,7 +337,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     {
                         // for deleted journals
                         BatchNumber = (Int32)journal[AJournalTable.ColumnBatchNumberId, DataRowVersion.Original];
-                        LedgerNumber = (Int64)journal[AJournalTable.ColumnLedgerNumberId, DataRowVersion.Original];
+                        LedgerNumber = (Int32)journal[AJournalTable.ColumnLedgerNumberId, DataRowVersion.Original];
                     }
 
                     if (!BatchNumbersInvolved.Contains(BatchNumber))
@@ -334,14 +355,14 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                     try
                     {
-                        BatchNumber = (Int32)transaction.BatchNumber;
-                        LedgerNumber = (Int64)transaction.LedgerNumber;
+                        BatchNumber = transaction.BatchNumber;
+                        LedgerNumber = transaction.LedgerNumber;
                     }
                     catch (Exception)
                     {
                         // for deleted transactions
                         BatchNumber = (Int32)transaction[ATransactionTable.ColumnBatchNumberId, DataRowVersion.Original];
-                        LedgerNumber = (Int64)transaction[ATransactionTable.ColumnLedgerNumberId, DataRowVersion.Original];
+                        LedgerNumber = (Int32)transaction[ATransactionTable.ColumnLedgerNumberId, DataRowVersion.Original];
                     }
 
                     if (!BatchNumbersInvolved.Contains(BatchNumber))

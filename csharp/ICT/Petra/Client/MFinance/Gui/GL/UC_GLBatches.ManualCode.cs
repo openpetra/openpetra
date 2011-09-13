@@ -279,7 +279,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void PostBatch(System.Object sender, EventArgs e)
         {
-            // TODO: show VerificationResult
             // TODO: display progress of posting
             TVerificationResultCollection Verifications;
 
@@ -316,7 +315,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information);
 
-                    // TODO: refresh the grid, to reflect that the batch has been posted
+                    // refresh the grid, to reflect that the batch has been posted
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatchAndContent(FLedgerNumber, FSelectedBatchNumber));
                     LoadBatches(FLedgerNumber);
                 }
             }
