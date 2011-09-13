@@ -826,6 +826,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             String ErrorMessages;
             TVerificationResultCollection VerificationResult;
             TVerificationResult VerificationResultItem;
+
             System.Windows.Forms.DialogResult UnitParentAssignment;
             int RowIndex;
             int NumRows;
