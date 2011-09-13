@@ -44,7 +44,6 @@ namespace Ict.Testing.NUnitPetraClient
 /// AutoLoginPasswd
     public class TPetraConnector
     {
-
         /// connect to the server
         public static void Connect(string AConfigName)
         {
