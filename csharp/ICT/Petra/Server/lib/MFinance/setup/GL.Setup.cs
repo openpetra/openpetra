@@ -64,6 +64,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         {
             GLSetupTDS MainDS = new GLSetupTDS();
 
+            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, null);
             AAccountHierarchyAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
             AAccountHierarchyDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
             AAccountAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
@@ -249,6 +250,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 TCacheableFinanceTablesEnum.AccountList.ToString());
             DomainManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
                 TCacheableFinanceTablesEnum.AnalysisTypeList.ToString());
+            DomainManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                TCacheableFinanceTablesEnum.CostCentreList.ToString());
 
             return returnValue;
         }
@@ -291,6 +294,11 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                                                   MFinanceConstants.ACCOUNT_PROPERTY_BANK_ACCOUNT, "true" }) != null)
             {
                 accountNode.SetAttribute("bankaccount", "true");
+            }
+
+            if (account.ForeignCurrencyFlag)
+            {
+                accountNode.SetAttribute("currency", account.ForeignCurrencyCode);
             }
 
             AParentNode.AppendChild(accountNode);
@@ -473,6 +481,17 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 accProp.PropertyValue = "true";
                 AMainDS.AAccountProperty.Rows.Add(accProp);
                 ((GLSetupTDSAAccountRow)newAccount).BankAccountFlag = true;
+            }
+
+            if (TYml2Xml.HasAttributeRecursive(ACurrentNode, "currency"))
+            {
+                string currency = TYml2Xml.GetAttributeRecursive(ACurrentNode, "currency");
+
+                if (currency != AMainDS.ALedger[0].BaseCurrency)
+                {
+                    newAccount.ForeignCurrencyCode = currency;
+                    newAccount.ForeignCurrencyFlag = true;
+                }
             }
 
             // account hierarchy has been deleted, so always add
