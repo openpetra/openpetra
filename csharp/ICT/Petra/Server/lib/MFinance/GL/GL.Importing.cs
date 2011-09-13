@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       matthiash
+//       matthiash, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -96,9 +96,12 @@ namespace Ict.Petra.Server.MFinance.GL
 
             FTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
+            ALedgerAccess.LoadByPrimaryKey(FMainDS, FLedgerNumber, FTransaction);
             AAnalysisTypeAccess.LoadAll(FSetupDS, FTransaction);
             AFreeformAnalysisAccess.LoadViaALedger(FSetupDS, FLedgerNumber, FTransaction);
             AAnalysisAttributeAccess.LoadViaALedger(FSetupDS, FLedgerNumber, FTransaction);
+            ACostCentreAccess.LoadViaALedger(FSetupDS, FLedgerNumber, FTransaction);
+            AAccountAccess.LoadViaALedger(FSetupDS, FLedgerNumber, FTransaction);
 
             ABatchRow NewBatch = null;
             AJournalRow NewJournal = null;
@@ -109,8 +112,6 @@ namespace Ict.Petra.Server.MFinance.GL
             bool ok = false;
             try
             {
-                ALedgerAccess.LoadByPrimaryKey(FMainDS, FLedgerNumber, FTransaction);
-
                 while ((FImportLine = sr.ReadLine()) != null)
                 {
                     RowNumber++;
@@ -202,12 +203,53 @@ namespace Ict.Petra.Server.MFinance.GL
 
 
                             NewTransaction.CostCentreCode = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("cost centre"));
-                            // TODO check if cost centre exists, and is a posting costcentre.
-                            // TODO check if cost centre is active. ask user if he wants to use an inactive cost centre
+
+                            ACostCentreRow costcentre = (ACostCentreRow)FMainDS.ACostCentre.Rows.Find(new object[] { FLedgerNumber,
+                                                                                                                     NewTransaction.CostCentreCode });
+
+                            // check if cost centre exists, and is a posting costcentre.
+                            // check if cost centre is active.
+                            if ((costcentre == null) || !costcentre.PostingCostCentreFlag)
+                            {
+                                AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Transaction"),
+                                        String.Format(Catalog.GetString("Invalid cost centre {0} in line {1}"),
+                                            NewTransaction.CostCentreCode,
+                                            RowNumber),
+                                        TResultSeverity.Resv_Critical));
+                            }
+                            else if (!costcentre.CostCentreActiveFlag)
+                            {
+                                // TODO: ask user if he wants to use an inactive cost centre???
+                                AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Transaction"),
+                                        String.Format(Catalog.GetString("Inactive cost centre {0} in line {1}"),
+                                            NewTransaction.CostCentreCode,
+                                            RowNumber),
+                                        TResultSeverity.Resv_Critical));
+                            }
 
                             NewTransaction.AccountCode = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("account code"));
-                            // TODO check if account exists, and is a posting account.
-                            // TODO check if account is active. warning when using an inactive account
+
+                            AAccountRow account = (AAccountRow)FMainDS.AAccount.Rows.Find(new object[] { FLedgerNumber, NewTransaction.AccountCode });
+
+                            // check if account exists, and is a posting account.
+                            // check if account is active
+                            if ((account == null) || !account.PostingStatus)
+                            {
+                                AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Transaction"),
+                                        String.Format(Catalog.GetString("Invalid account code {0} in line {1}"),
+                                            NewTransaction.AccountCode,
+                                            RowNumber),
+                                        TResultSeverity.Resv_Critical));
+                            }
+                            else if (!account.AccountActiveFlag)
+                            {
+                                // TODO: ask user if he wants to use an inactive account???
+                                AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Transaction"),
+                                        String.Format(Catalog.GetString("Inactive account {0} in line {1}"),
+                                            NewTransaction.AccountCode,
+                                            RowNumber),
+                                        TResultSeverity.Resv_Critical));
+                            }
 
                             NewTransaction.Narrative = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("narrative"));
 
@@ -274,6 +316,11 @@ namespace Ict.Petra.Server.MFinance.GL
                                         FMainDS.ATransAnalAttrib.Rows.Add(NewTransAnalAttrib);
                                     }
                                 }
+                            }
+
+                            if (AMessages.HasCriticalError())
+                            {
+                                return false;
                             }
 
                             FImportMessage = Catalog.GetString("Saving the transaction:");
