@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -95,7 +95,6 @@ namespace Ict.Petra.Client.App.PetraClient
         /// </summary>
         private bool HasAccessPermission(XmlNode ANode, string AUserId)
         {
-            // TODO: if this node belongs to a ledger, check if the user has access permission
             // TODO: if this is an action node, eg. opens a screen, check the static function that tells RequiredPermissions of the screen
 
             string PermissionsRequired = TXMLParser.GetAttributeRecursive(ANode, "PermissionsRequired", true);
@@ -105,6 +104,17 @@ namespace Ict.Petra.Client.App.PetraClient
                 string PermissionRequired = StringHelper.GetNextCSV(ref PermissionsRequired);
 
                 if (!UserInfo.GUserInfo.IsInModule(PermissionRequired))
+                {
+                    return false;
+                }
+            }
+
+            if (TXMLParser.GetAttribute(ANode, "DependsOnLedger").ToLower() == "true")
+            {
+                // check if the user has permissions for this ledger
+                Int32 LedgerNumber = TXMLParser.GetIntAttribute(ANode, "LedgerNumber");
+
+                if (!UserInfo.GUserInfo.IsInModule("LEDGER" + LedgerNumber.ToString("0000")))
                 {
                     return false;
                 }
