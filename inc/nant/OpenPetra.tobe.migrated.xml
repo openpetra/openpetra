@@ -108,7 +108,7 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
 
 <target name="generateGlue" depends="" description="Generate the glue between client and server, ie. interfaces and instantiators">
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
-  <ExecDotNet program="${dir.bin}/GenerateSharedCode.exe" commandline="-ymlfile:${dir.root}/csharp/ICT/Petra/Definitions/NamespaceHierarchy.yml -outputdir:${dir.root}/csharp/ICT/Petra -TemplateDir:${dir.incdir.template.src}"/>
+  <ExecDotNet program="${dir.bin}/Ict.Tools.GenerateGlue.exe" commandline="-ymlfile:${dir.root}/csharp/ICT/Petra/Definitions/NamespaceHierarchy.yml -outputdir:${dir.root}/csharp/ICT/Petra -TemplateDir:${dir.incdir.template.src}"/>
 </target>
 
 <target name="translation" description="extracts string in winforms, creates and updates the .po files, and compiles the .mo files for delivery">
@@ -204,6 +204,6 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
   </if>
  </target>
   
-<include buildfile="../../OpenPetra.build.database.tasks" />
+<include buildfile="../../db/database.build" />
 
 </project>
