@@ -266,7 +266,137 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static TSubmitChangesResult SaveGLBatchTDS(ref GLBatchTDS AInspectDS,
             out TVerificationResultCollection AVerificationResult)
         {
-            // TODO: calculate debit and credit sums for journal and batch?
+            // calculate debit and credit sums for journal and batch? but careful: we only have the changed parts!
+            // no, we calculate the debit and credit sums before the posting, with GLRoutines.UpdateTotalsOfBatch
+
+            // check added and modified and deleted rows: are they related to a posted or cancelled batch? we must not save adjusted posted batches!
+            List <Int32>BatchNumbersInvolved = new List <int>();
+            Int64 LedgerNumber = -1;
+
+            if (AInspectDS.ABatch != null)
+            {
+                foreach (ABatchRow batch in AInspectDS.ABatch.Rows)
+                {
+                    if (batch.RowState != DataRowState.Added)
+                    {
+                        Int32 BatchNumber;
+
+                        try
+                        {
+                            BatchNumber = batch.BatchNumber;
+                            LedgerNumber = batch.LedgerNumber;
+                        }
+                        catch (Exception)
+                        {
+                            // for deleted batches
+                            BatchNumber = (Int32)batch[ABatchTable.ColumnBatchNumberId, DataRowVersion.Original];
+                            LedgerNumber = (Int64)batch[ABatchTable.ColumnLedgerNumberId, DataRowVersion.Original];
+                        }
+
+                        if (!BatchNumbersInvolved.Contains(BatchNumber))
+                        {
+                            BatchNumbersInvolved.Add(BatchNumber);
+                        }
+                    }
+                }
+            }
+
+            if (AInspectDS.AJournal != null)
+            {
+                foreach (GLBatchTDSAJournalRow journal in AInspectDS.AJournal.Rows)
+                {
+                    Int32 BatchNumber;
+
+                    try
+                    {
+                        BatchNumber = journal.BatchNumber;
+                        LedgerNumber = journal.LedgerNumber;
+                    }
+                    catch (Exception)
+                    {
+                        // for deleted journals
+                        BatchNumber = (Int32)journal[AJournalTable.ColumnBatchNumberId, DataRowVersion.Original];
+                        LedgerNumber = (Int64)journal[AJournalTable.ColumnLedgerNumberId, DataRowVersion.Original];
+                    }
+
+                    if (!BatchNumbersInvolved.Contains(BatchNumber))
+                    {
+                        BatchNumbersInvolved.Add(BatchNumber);
+                    }
+                }
+            }
+
+            if (AInspectDS.ATransaction != null)
+            {
+                foreach (ATransactionRow transaction in AInspectDS.ATransaction.Rows)
+                {
+                    Int32 BatchNumber;
+
+                    try
+                    {
+                        BatchNumber = (Int32)transaction.BatchNumber;
+                        LedgerNumber = (Int64)transaction.LedgerNumber;
+                    }
+                    catch (Exception)
+                    {
+                        // for deleted transactions
+                        BatchNumber = (Int32)transaction[ATransactionTable.ColumnBatchNumberId, DataRowVersion.Original];
+                        LedgerNumber = (Int64)transaction[ATransactionTable.ColumnLedgerNumberId, DataRowVersion.Original];
+                    }
+
+                    if (!BatchNumbersInvolved.Contains(BatchNumber))
+                    {
+                        BatchNumbersInvolved.Add(BatchNumber);
+                    }
+                }
+            }
+
+            // load previously stored batches and check for posted status
+            if (BatchNumbersInvolved.Count > 0)
+            {
+                string ListOfBatchNumbers = string.Empty;
+
+                foreach (Int32 BatchNumber in BatchNumbersInvolved)
+                {
+                    ListOfBatchNumbers = StringHelper.AddCSV(ListOfBatchNumbers, BatchNumber.ToString());
+                }
+
+                string SQLStatement = "SELECT * " +
+                                      " FROM PUB_" + ABatchTable.GetTableDBName() + " WHERE " + ABatchTable.GetLedgerNumberDBName() + " = " +
+                                      LedgerNumber.ToString() +
+                                      " AND " + ABatchTable.GetBatchNumberDBName() + " IN (" + ListOfBatchNumbers + ")";
+
+                GLBatchTDS BatchDS = new GLBatchTDS();
+                TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+                try
+                {
+                    DBAccess.GDBAccessObj.Select(BatchDS, SQLStatement, BatchDS.ABatch.TableName, Transaction);
+                }
+                finally
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+
+                AVerificationResult = new TVerificationResultCollection();
+
+                foreach (ABatchRow batch in BatchDS.ABatch.Rows)
+                {
+                    if ((batch.BatchStatus == MFinanceConstants.BATCH_POSTED)
+                        || (batch.BatchStatus == MFinanceConstants.BATCH_CANCELLED))
+                    {
+                        AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Saving Batch"),
+                                String.Format(Catalog.GetString("Cannot modify Batch {0} because it is {1}"),
+                                    batch.BatchNumber, batch.BatchStatus),
+                                TResultSeverity.Resv_Critical));
+                    }
+                }
+
+                if (AVerificationResult.HasCriticalError())
+                {
+                    return TSubmitChangesResult.scrError;
+                }
+            }
 
             TSubmitChangesResult SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
 

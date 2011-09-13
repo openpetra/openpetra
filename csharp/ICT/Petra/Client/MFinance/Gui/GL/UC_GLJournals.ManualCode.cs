@@ -75,7 +75,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             ShowData();
-            UpdateChangeableStatus();
 
             txtDetailExchangeRateToBase.Enabled = false;
         }
@@ -147,8 +146,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 txtControl.CurrencySymbol = FMainDS.ALedger[0].BaseCurrency;
             }
 
-            // ABatchRow batch = ((TFrmGLBatch)ParentForm).GetBatchControl().GetSelectedDetailRow();
-
             if (FPreviouslySelectedDetailRow != null)
             {
                 txtDebit.NumberValueDecimal = FPreviouslySelectedDetailRow.JournalDebitTotal;
@@ -157,6 +154,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     FPreviouslySelectedDetailRow.JournalDebitTotal -
                     FPreviouslySelectedDetailRow.JournalCreditTotal;
             }
+
+            UpdateChangeableStatus();
         }
 
         /// <summary>
@@ -188,8 +187,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ShowDetailsManual(AJournalRow ARow)
         {
-            UpdateChangeableStatus();
-
             if (ARow == null)
             {
                 ((TFrmGLBatch)ParentForm).DisableTransactions();
@@ -202,6 +199,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     ARow.JournalNumber,
                     ARow.TransactionCurrency);
             }
+        }
+
+        private ABatchRow GetBatchRow()
+        {
+            return ((TFrmGLBatch)ParentForm).GetBatchControl().GetSelectedDetailRow();
         }
 
         /// <summary>
@@ -263,12 +265,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public void UpdateChangeableStatus()
         {
-            this.btnAdd.Enabled = !FPetraUtilsObject.DetailProtectedMode;
             Boolean changeable = !FPetraUtilsObject.DetailProtectedMode
-                                 && (FPreviouslySelectedDetailRow != null)
-                                 && (FPreviouslySelectedDetailRow.JournalStatus == MFinanceConstants.BATCH_UNPOSTED);
+                                 && GetBatchRow() != null
+                                 && (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
+
             this.btnCancel.Enabled = changeable;
+            this.btnAdd.Enabled = changeable;
             pnlDetails.Enabled = changeable;
+            pnlDetailsProtected = !changeable;
         }
 
         /// <summary>

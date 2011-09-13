@@ -341,7 +341,10 @@ namespace {#NAMESPACE}
 
                     case TSubmitChangesResult.scrError:
 
-                        // TODO scrError
+                        MessageBox.Show(VerificationResult.BuildVerificationResultString(),
+                                        Catalog.GetString("Failure saving"),
+                                        MessageBoxButtons.OK,
+                                        MessageBoxIcon.Error);
                         this.Cursor = Cursors.Default;
                         break;
 

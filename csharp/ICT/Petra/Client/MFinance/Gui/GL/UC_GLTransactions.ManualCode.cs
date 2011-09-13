@@ -91,12 +91,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <returns></returns>
         private GLBatchTDSAJournalRow GetJournalRow()
         {
-            return (GLBatchTDSAJournalRow)FMainDS.AJournal.Rows.Find(new object[] { FLedgerNumber, FBatchNumber, FJournalNumber });
+            return ((TFrmGLBatch)ParentForm).GetJournalsControl().GetSelectedDetailRow();
         }
 
         private ABatchRow GetBatchRow()
         {
-            return (ABatchRow)FMainDS.ABatch.Rows.Find(new object[] { FLedgerNumber, FBatchNumber });
+            return ((TFrmGLBatch)ParentForm).GetBatchControl().GetSelectedDetailRow();
         }
 
         /// <summary>
@@ -181,6 +181,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 txtCreditTotalAmount.CurrencySymbol = TransactionCurrency;
                 txtDebitTotalAmount.CurrencySymbol = TransactionCurrency;
             }
+
+            UpdateChangeableStatus();
         }
 
         private void ShowDetailsManual(ATransactionRow ARow)
@@ -283,6 +285,21 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             SourceGrid.RowEventArgs egrid = new SourceGrid.RowEventArgs(-10);
             FocusedRowChanged(sender, egrid);
+        }
+
+        /// <summary>
+        /// enable or disable the buttons
+        /// </summary>
+        public void UpdateChangeableStatus()
+        {
+            Boolean changeable = !FPetraUtilsObject.DetailProtectedMode
+                                 && GetBatchRow() != null
+                                 && (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
+
+            this.btnRemove.Enabled = changeable;
+            this.btnNew.Enabled = changeable;
+            pnlDetails.Enabled = changeable;
+            pnlDetailsProtected = !changeable;
         }
 
         /// <summary>

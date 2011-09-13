@@ -93,16 +93,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void UpdateChangeableStatus(bool batchRowIsSelected)
         {
-            dtpDetailDateEffective.Enabled = batchRowIsSelected;
-            txtDetailBatchDescription.Enabled = batchRowIsSelected;
-
-            FPetraUtilsObject.EnableAction("actExportBatches", batchRowIsSelected);
-
             Boolean postable = batchRowIsSelected
                                && FPreviouslySelectedDetailRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED;
+
             FPetraUtilsObject.EnableAction("actPostBatch", postable);
             FPetraUtilsObject.EnableAction("actTestPostBatch", postable);
             FPetraUtilsObject.EnableAction("actCancel", postable);
+            pnlDetails.Enabled = postable;
+            pnlDetailsProtected = !postable;
 
             if (!batchRowIsSelected)
             {
