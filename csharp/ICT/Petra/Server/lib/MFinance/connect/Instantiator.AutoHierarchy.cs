@@ -3740,7 +3740,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Setup.WebConnectors
         }
 
         /// generated method from connector
-        public System.Boolean CreateNewLedger(Int32 ALedgerNumber,
+        public System.Boolean CreateNewLedger(Int32 ANewLedgerNumber,
                                               String ALedgerName,
                                               String ACountryCode,
                                               String ABaseCurrency,
@@ -3751,8 +3751,8 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Setup.WebConnectors
                                               Int32 ANumberOfFwdPostingPeriods,
                                               out TVerificationResultCollection AVerificationResult)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector), "CreateNewLedger", ";INT;STRING;STRING;STRING;STRING;DATETIME;INT;INT;INT;TVERIFICATIONRESULTCOLLECTION;", ALedgerNumber);
-            return Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector.CreateNewLedger(ALedgerNumber, ALedgerName, ACountryCode, ABaseCurrency, AIntlCurrency, ACalendarStartDate, ANumberOfPeriods, ACurrentPeriod, ANumberOfFwdPostingPeriods, out AVerificationResult);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector), "CreateNewLedger", ";INT;STRING;STRING;STRING;STRING;DATETIME;INT;INT;INT;TVERIFICATIONRESULTCOLLECTION;");
+            return Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector.CreateNewLedger(ANewLedgerNumber, ALedgerName, ACountryCode, ABaseCurrency, AIntlCurrency, ACalendarStartDate, ANumberOfPeriods, ACurrentPeriod, ANumberOfFwdPostingPeriods, out AVerificationResult);
         }
 
         /// generated method from connector

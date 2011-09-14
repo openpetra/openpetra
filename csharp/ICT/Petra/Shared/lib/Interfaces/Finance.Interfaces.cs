@@ -830,7 +830,7 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Setup.WebConnectors
         System.Boolean CanDeleteAccount(Int32 ALedgerNumber,
                                         System.String AAccountCode);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector)</summary>
-        System.Boolean CreateNewLedger(Int32 ALedgerNumber,
+        System.Boolean CreateNewLedger(Int32 ANewLedgerNumber,
                                        String ALedgerName,
                                        String ACountryCode,
                                        String ABaseCurrency,
