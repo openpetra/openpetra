@@ -287,6 +287,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static TSubmitChangesResult SaveGLBatchTDS(ref GLBatchTDS AInspectDS,
             out TVerificationResultCollection AVerificationResult)
         {
+            AVerificationResult = new TVerificationResultCollection();
+
             // calculate debit and credit sums for journal and batch? but careful: we only have the changed parts!
             // no, we calculate the debit and credit sums before the posting, with GLRoutines.UpdateTotalsOfBatch
 
@@ -349,6 +351,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             if (AInspectDS.ATransaction != null)
             {
+                GLBatchTDS TestAccountsAndCostCentres = new GLBatchTDS();
+
                 foreach (ATransactionRow transaction in AInspectDS.ATransaction.Rows)
                 {
                     Int32 BatchNumber;
@@ -357,6 +361,39 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     {
                         BatchNumber = transaction.BatchNumber;
                         LedgerNumber = transaction.LedgerNumber;
+
+                        if (TestAccountsAndCostCentres.AAccount.Count == 0)
+                        {
+                            AAccountAccess.LoadViaALedger(TestAccountsAndCostCentres, LedgerNumber, null);
+                            ACostCentreAccess.LoadViaALedger(TestAccountsAndCostCentres, LedgerNumber, null);
+                        }
+
+                        // TODO could check for active accounts and cost centres?
+
+                        // check for valid accounts and cost centres
+                        if (TestAccountsAndCostCentres.AAccount.Rows.Find(new object[] { LedgerNumber, transaction.AccountCode }) == null)
+                        {
+                            AVerificationResult.Add(new TVerificationResult(
+                                    Catalog.GetString("Cannot save transaction"),
+                                    String.Format(Catalog.GetString("Invalid account code {0} in batch {1}, journal {2}, transaction {3}"),
+                                        transaction.AccountCode,
+                                        transaction.BatchNumber,
+                                        transaction.JournalNumber,
+                                        transaction.TransactionNumber),
+                                    TResultSeverity.Resv_Critical));
+                        }
+
+                        if (TestAccountsAndCostCentres.ACostCentre.Rows.Find(new object[] { LedgerNumber, transaction.CostCentreCode }) == null)
+                        {
+                            AVerificationResult.Add(new TVerificationResult(
+                                    Catalog.GetString("Cannot save transaction"),
+                                    String.Format(Catalog.GetString("Invalid cost centre code {0} in batch {1}, journal {2}, transaction {3}"),
+                                        transaction.CostCentreCode,
+                                        transaction.BatchNumber,
+                                        transaction.JournalNumber,
+                                        transaction.TransactionNumber),
+                                    TResultSeverity.Resv_Critical));
+                        }
                     }
                     catch (Exception)
                     {
@@ -398,8 +435,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 {
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
-
-                AVerificationResult = new TVerificationResultCollection();
 
                 foreach (ABatchRow batch in BatchDS.ABatch.Rows)
                 {

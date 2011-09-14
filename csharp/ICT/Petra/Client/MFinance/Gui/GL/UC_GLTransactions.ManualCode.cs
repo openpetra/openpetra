@@ -77,7 +77,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             // if this form is readonly, then we need all account and cost centre codes, because old codes might have been used
             bool ActiveOnly = this.Enabled;
-
+            FTransactionCurrency = AForeignCurrencyName;
             TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber,
                 true, false, ActiveOnly, false, AForeignCurrencyName);
             TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, ActiveOnly, false);
@@ -157,6 +157,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             NewRowManual(ref ANewRow, null);
         }
 
+        private string FTransactionCurrency = string.Empty;
+
         /// <summary>
         /// show ledger, batch and journal number
         /// </summary>
@@ -180,6 +182,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 txtDebitTotalAmountBase.CurrencySymbol = BaseCurrency;
                 txtCreditTotalAmount.CurrencySymbol = TransactionCurrency;
                 txtDebitTotalAmount.CurrencySymbol = TransactionCurrency;
+
+                // foreign currency accounts only get transactions in that currency
+                if (FTransactionCurrency != TransactionCurrency)
+                {
+                    string SelectedAccount = cmbDetailAccountCode.GetSelectedString();
+
+                    // if this form is readonly, then we need all account and cost centre codes, because old codes might have been used
+                    bool ActiveOnly = this.Enabled;
+
+                    TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber,
+                        true, false, ActiveOnly, false, TransactionCurrency);
+
+                    cmbDetailAccountCode.SetSelectedString(SelectedAccount);
+                }
+
+                FTransactionCurrency = TransactionCurrency;
             }
 
             UpdateChangeableStatus();
