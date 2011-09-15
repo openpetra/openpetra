@@ -243,7 +243,9 @@ namespace {#NAMESPACE}
     {
         if (ARow != null)
         {
+            ARow.BeginEdit();
             {#SAVEDETAILS}
+            ARow.BeginEdit();
         }
     }
 {#ENDIF SAVEDETAILS}
