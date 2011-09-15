@@ -43,6 +43,8 @@ namespace Ict.Petra.Server.MFinance.Common
     /// </summary>
     public class TGLPosting
     {
+        private const int POSTING_LOGLEVEL = 1;
+
         /// <summary>
         /// creates the rows for the whole current year in AGeneralLedgerMaster and AGeneralLedgerMasterPeriod for an Account/CostCentre combination
         /// </summary>
@@ -799,7 +801,6 @@ namespace Ict.Petra.Server.MFinance.Common
                 string AccountCode = TAmount.GetAccountCode(PostingLevelKey);
                 string CostCentreCode = TAmount.GetCostCentreCode(PostingLevelKey);
 
-                TLogging.Log(AccountCode + " " + CostCentreCode);
                 TAmount PostingLevelElement = APostingLevel[PostingLevelKey];
 
                 // Find the posting level, creating it if it does not already exist.
@@ -876,16 +877,25 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="AMainDS"></param>
         /// <param name="AVerifications"></param>
         /// <returns></returns>
-        private static bool SubmitChanges(ref GLBatchTDS AMainDS, out TVerificationResultCollection AVerifications)
+        private static bool SubmitChanges(GLBatchTDS AMainDS, out TVerificationResultCollection AVerifications)
         {
-            GLBatchTDSAccess.SubmitChanges(AMainDS, out AVerifications);
+            if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
+            {
+                TLogging.Log("Posting: SubmitChanges...");
+            }
+
+            GLBatchTDSAccess.SubmitChanges(AMainDS.GetChangesTyped(true), out AVerifications);
 
             if (AVerifications.HasCriticalError())
             {
                 return false;
             }
 
-            AMainDS.AcceptChanges();
+            if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
+            {
+                TLogging.Log("Posting: Finished...");
+            }
+
             return true;
         }
 
@@ -905,10 +915,20 @@ namespace Ict.Petra.Server.MFinance.Common
             out GLBatchTDS AMainDS,
             bool ACalculatePostingTree)
         {
+            if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
+            {
+                TLogging.Log("Posting: LoadData...");
+            }
+
             // get the data from the database into the MainDS
             if (!LoadData(out AMainDS, ALedgerNumber, ABatchNumber, out AVerifications))
             {
                 return false;
+            }
+
+            if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
+            {
+                TLogging.Log("Posting: Validation...");
             }
 
             // first validate Batch, and Transactions; check credit/debit totals; check currency, etc
@@ -922,7 +942,17 @@ namespace Ict.Petra.Server.MFinance.Common
                 return false;
             }
 
+            if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
+            {
+                TLogging.Log("Posting: Load GLM Data...");
+            }
+
             LoadGLMData(ref AMainDS, ALedgerNumber);
+
+            if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
+            {
+                TLogging.Log("Posting: Mark as posted and collect data...");
+            }
 
             // post each journal, each transaction; add sums for costcentre/account combinations
             SortedList <string, TAmount>PostingLevel = MarkAsPostedAndCollectData(ref AMainDS);
@@ -931,6 +961,11 @@ namespace Ict.Petra.Server.MFinance.Common
             // for testing the balances, we don't need to calculate the whole tree
             if (ACalculatePostingTree)
             {
+                if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
+                {
+                    TLogging.Log("Posting: CalculateTrees...");
+                }
+
                 // key is PostingAccount, the value TAccountTreeElement describes the parent account and other details of the relation
                 SortedList <string, TAccountTreeElement>AccountTree;
 
@@ -944,7 +979,17 @@ namespace Ict.Petra.Server.MFinance.Common
                 // but avoid calculating the whole account tree?
                 CalculateTrees(ALedgerNumber, ref PostingLevel, out AccountTree, out CostCentreTree, AMainDS);
 
+                if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
+                {
+                    TLogging.Log("Posting: SummarizeData...");
+                }
+
                 SummarizeData(ref AMainDS, ref PostingLevel, ref AccountTree, ref CostCentreTree);
+            }
+
+            if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
+            {
+                TLogging.Log("Posting: SummarizeDataSimple...");
             }
 
             SummarizeDataSimple(ALedgerNumber, ref AMainDS, ref PostingLevel);
@@ -966,7 +1011,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             if (PostGLBatchInternal(ALedgerNumber, ABatchNumber, out AVerifications, out MainDS, true))
             {
-                bool result = SubmitChanges(ref MainDS, out AVerifications);
+                bool result = SubmitChanges(MainDS, out AVerifications);
 
                 // TODO: release the lock
 
