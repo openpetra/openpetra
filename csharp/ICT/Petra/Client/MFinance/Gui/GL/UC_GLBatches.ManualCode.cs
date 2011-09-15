@@ -33,6 +33,7 @@ using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.Verification;
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared.MFinance;
@@ -353,7 +354,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
-            else
+            else if (Result.Count < 25)
             {
                 string message = string.Empty;
 
@@ -363,15 +364,48 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     message +=
                         string.Format(
-                            Catalog.GetString("{0} ({1}) is: {2} and would be: {3}"),
+                            Catalog.GetString("{0}/{1} ({2}/{3}) is: {4} and would be: {5}"),
                             ((TVariant)compValues[0]).ToString(),
+                            ((TVariant)compValues[2]).ToString(),
                             ((TVariant)compValues[1]).ToString(),
-                            StringHelper.FormatCurrency((TVariant)compValues[2], "currency"),
-                            StringHelper.FormatCurrency((TVariant)compValues[3], "currency")) +
+                            ((TVariant)compValues[3]).ToString(),
+                            StringHelper.FormatCurrency((TVariant)compValues[4], "currency"),
+                            StringHelper.FormatCurrency((TVariant)compValues[5], "currency")) +
                         Environment.NewLine;
                 }
 
                 MessageBox.Show(message, Catalog.GetString("Result of Test Posting"));
+            }
+            else
+            {
+                // store to CSV file
+                string message = string.Empty;
+
+                foreach (TVariant value in Result)
+                {
+                    ArrayList compValues = value.ToComposite();
+
+                    message +=
+                        string.Format(
+                            "{0},{1},{2},{3},{4},{5}",
+                            ((TVariant)compValues[0]).ToString(),
+                            ((TVariant)compValues[1]).ToString(),
+                            ((TVariant)compValues[2]).ToString(),
+                            ((TVariant)compValues[3]).ToString(),
+                            StringHelper.FormatCurrency((TVariant)compValues[4], "currency"),
+                            StringHelper.FormatCurrency((TVariant)compValues[5], "currency")) +
+                        Environment.NewLine;
+                }
+
+                string CSVFilePath = TClientSettings.PathLog + Path.DirectorySeparatorChar + "Batch" + FSelectedBatchNumber.ToString() +
+                                     "_TestPosting.csv";
+                StreamWriter sw = new StreamWriter(CSVFilePath);
+                sw.Write(message);
+                sw.Close();
+
+                MessageBox.Show(
+                    String.Format(Catalog.GetString("Please see file {0} for the result of the test posting"), CSVFilePath),
+                    Catalog.GetString("Result of Test Posting"));
             }
         }
 

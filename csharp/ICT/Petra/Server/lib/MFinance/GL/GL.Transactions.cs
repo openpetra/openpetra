@@ -481,7 +481,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static List <TVariant>TestPostGLBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out TVerificationResultCollection AVerifications)
         {
             GLBatchTDS MainDS;
-            bool success = TGLPosting.PostGLBatchInternal(ALedgerNumber, ABatchNumber, out AVerifications, out MainDS);
+            bool success = TGLPosting.PostGLBatchInternal(ALedgerNumber, ABatchNumber, out AVerifications, out MainDS, false);
 
             List <TVariant>Result = new List <TVariant>();
 
@@ -494,29 +494,18 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 MainDS.ACostCentre.DefaultView.Sort = ACostCentreTable.GetCostCentreCodeDBName();
                 MainDS.AAccount.DefaultView.Sort = AAccountTable.GetAccountCodeDBName();
 
-                foreach (AGeneralLedgerMasterPeriodRow glmRow in MainDS.AGeneralLedgerMasterPeriod.Rows)
+                foreach (AGeneralLedgerMasterPeriodRow glmpRow in MainDS.AGeneralLedgerMasterPeriod.Rows)
                 {
-                    if ((glmRow.PeriodNumber == MainDS.ABatch[0].BatchPeriod) && (glmRow.RowState != DataRowState.Unchanged))
+                    if ((glmpRow.PeriodNumber == MainDS.ABatch[0].BatchPeriod) && (glmpRow.RowState != DataRowState.Unchanged))
                     {
-                        Int32 masterIndex = MainDS.AGeneralLedgerMaster.DefaultView.Find(glmRow.GlmSequence);
-
-                        if (masterIndex == -1)
-                        {
-                            // not exactly sure why those records are missing, perhaps they would be zero?
-                            // TLogging.Log("cannot find glm sequence " + glmRow.GlmSequence.ToString() + " in glm");
-                            continue;
-                        }
-
                         AGeneralLedgerMasterRow masterRow =
-                            (AGeneralLedgerMasterRow)
-                            MainDS.AGeneralLedgerMaster.DefaultView[masterIndex].Row;
+                            (AGeneralLedgerMasterRow)MainDS.AGeneralLedgerMaster.Rows.Find(glmpRow.GlmSequence);
 
-                        ACostCentreRow ccRow =
-                            (ACostCentreRow)
-                            MainDS.ACostCentre.DefaultView[MainDS.ACostCentre.DefaultView.Find(masterRow.CostCentreCode)].Row;
+                        ACostCentreRow ccRow = (ACostCentreRow)MainDS.ACostCentre.Rows.Find(new object[] { ALedgerNumber, masterRow.CostCentreCode });
 
-                        // only consider the top level cost centre
-                        if (ccRow.IsCostCentreToReportToNull())
+                        // only consider the posting cost centres
+                        // TODO or consider only the top cost centre?
+                        if (ccRow.PostingCostCentreFlag)
                         {
                             AAccountRow accRow =
                                 (AAccountRow)
@@ -527,9 +516,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                             {
                                 decimal CurrentValue = 0.0m;
 
-                                if (glmRow.RowState == DataRowState.Modified)
+                                if (glmpRow.RowState == DataRowState.Modified)
                                 {
-                                    CurrentValue = (decimal)glmRow[AGeneralLedgerMasterPeriodTable.ColumnActualBaseId, DataRowVersion.Original];
+                                    CurrentValue = (decimal)glmpRow[AGeneralLedgerMasterPeriodTable.ColumnActualBaseId, DataRowVersion.Original];
                                 }
 
                                 decimal DebitCredit = 1.0m;
@@ -542,8 +531,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                                 // only return values, the client compiles the message, with Catalog.GetString
                                 TVariant values = new TVariant(accRow.AccountCode);
                                 values.Add(new TVariant(accRow.AccountCodeShortDesc), "", false);
+                                values.Add(new TVariant(ccRow.CostCentreCode), "", false);
+                                values.Add(new TVariant(ccRow.CostCentreName), "", false);
                                 values.Add(new TVariant(CurrentValue * DebitCredit), "", false);
-                                values.Add(new TVariant(glmRow.ActualBase * DebitCredit), "", false);
+                                values.Add(new TVariant(glmpRow.ActualBase * DebitCredit), "", false);
 
                                 Result.Add(values);
                             }

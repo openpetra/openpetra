@@ -14062,6 +14062,11 @@
                 thisFields="a_ledger_number_i, a_cost_centre_code_c"
                 otherTable="a_cost_centre"
                 otherFields="a_ledger_number_i, a_cost_centre_code_c"/>
+    <foreignkey name="a_trans_anal_attrib_fk6"
+                descr=""
+                thisFields="a_ledger_number_i, a_batch_number_i"
+                otherTable="a_batch"
+                otherFields="a_ledger_number_i, a_batch_number_i"/>
     <!-- Explicit Indexes on table a_trans_anal_attrib  -->
   </table>
   <table name="a_suspense_account"
