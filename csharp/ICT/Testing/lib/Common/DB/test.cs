@@ -164,7 +164,7 @@ namespace Ict.Common.DB.Testing
 
             for (int i = 0; i < 10000; i++)
             {
-                string modificationid = TTypedDataAccess.GetNextModificationID(t);
+                TTypedDataAccess.GetNextModificationID(t);
             }
 
             TLogging.Log("TestMassSequence takes " + DateTime.Now.Subtract(before).ToString());

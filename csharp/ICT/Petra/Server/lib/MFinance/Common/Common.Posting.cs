@@ -708,7 +708,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
                                 if (GLMMasterIndex == -1)
                                 {
-                                    int NewGlmSequence = CreateGLMYear(
+                                    CreateGLMYear(
                                         ref AMainDS,
                                         AMainDS.ALedger[0].LedgerNumber,
                                         AccountCodeToReportTo,
@@ -775,7 +775,6 @@ namespace Ict.Petra.Server.MFinance.Common
             ref GLBatchTDS AMainDS,
             ref SortedList <string, TAmount>APostingLevel)
         {
-            Int32 TempGLMSequence = AMainDS.AGeneralLedgerMaster.Count * (-1) - 1;
             Int32 FromPeriod = AMainDS.ABatch[0].BatchPeriod;
 
             if (AMainDS.ALedger[0].ProvisionalYearEndFlag)
@@ -809,7 +808,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
                 if (GLMMasterIndex == -1)
                 {
-                    int NewGlmSequence = CreateGLMYear(
+                    CreateGLMYear(
                         ref AMainDS,
                         ALedgerNumber,
                         AccountCode,
