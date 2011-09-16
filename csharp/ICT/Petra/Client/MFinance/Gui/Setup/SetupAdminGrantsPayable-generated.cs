@@ -47,7 +47,7 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
 
-  /// auto generated: Maintain Admin. Grants Payable
+  /// auto generated: Maintain Payable Administration Grants
   public partial class TFrmSetupAdminGrantsPayable: System.Windows.Forms.Form, IFrmPetraEdit
   {
     private TFrmPetraEditUtils FPetraUtilsObject;
@@ -78,11 +78,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
       this.lblToBeDebited.Text = Catalog.GetString("To Be Debited:");
       this.lblToBeCredited.Text = Catalog.GetString("To Be Credited:");
       this.lblReceivingFund.Text = Catalog.GetString("Cost Centre:");
-      this.lblDetailAccountCode.Text = Catalog.GetString("Account:");
+      this.lblDetailDrAccountCode.Text = Catalog.GetString("Account:");
       this.grpAssignment.Text = Catalog.GetString("Assignment");
       this.tbbSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.tbbSave.Text = Catalog.GetString("&Save");
-      this.tbbNew.Text = Catalog.GetString("New Admin. Grant Payable");
+      this.tbbNew.Text = Catalog.GetString("New Payable Admin. Grant");
       this.mniFileSave.ToolTipText = Catalog.GetString("Saves changed data");
       this.mniFileSave.Text = Catalog.GetString("&Save");
       this.mniFilePrint.Text = Catalog.GetString("&Print...");
@@ -98,7 +98,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
       this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra");
       this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
       this.mniHelp.Text = Catalog.GetString("&Help");
-      this.Text = Catalog.GetString("Maintain Admin. Grants Payable");
+      this.Text = Catalog.GetString("Maintain Payable Administration Grants");
       #endregion
 
       this.txtDetailFeeCode.Font = TAppSettingsManager.GetDefaultBoldFont();
@@ -110,8 +110,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
       FPetraUtilsObject.SetStatusBarText(txtDetailFeeDescription, Catalog.GetString("Enter a description for this fee."));
       FPetraUtilsObject.SetStatusBarText(txtDetailChargeAmount, Catalog.GetString("Enter the amount"));
       FPetraUtilsObject.SetStatusBarText(cmbDetailCostCentreCode, Catalog.GetString("Enter a cost centre code"));
-      FPetraUtilsObject.SetStatusBarText(cmbDetailAccountCode, Catalog.GetString("Enter an account code"));
       FPetraUtilsObject.SetStatusBarText(cmbDetailDrAccountCode, Catalog.GetString("Selecct an expense account code to debit for this fee."));
+      FPetraUtilsObject.SetStatusBarText(cmbDetailAccountCode, Catalog.GetString("Enter an account code"));
       FMainDS.AFeesPayable = new AFeesPayableTable();
       Ict.Common.Data.TTypedDataTable TypedTable;
       TRemote.MCommon.DataReader.GetData(AFeesPayableTable.GetTableDBName(), null, out TypedTable);
@@ -119,10 +119,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
       InitializeManualCode();
       grdDetails.Columns.Clear();
       grdDetails.AddTextColumn("Fee Code", FMainDS.AFeesPayable.ColumnFeeCode);
-      grdDetails.AddTextColumn("Fee Description", FMainDS.AFeesPayable.ColumnFeeDescription);
+      grdDetails.AddTextColumn("Description", FMainDS.AFeesPayable.ColumnFeeDescription);
       grdDetails.AddTextColumn("Charge Option", FMainDS.AFeesPayable.ColumnChargeOption);
-      grdDetails.AddTextColumn("Charge Percentage", FMainDS.AFeesPayable.ColumnChargePercentage);
+      grdDetails.AddCurrencyColumn("Charge Percentage", FMainDS.AFeesPayable.ColumnChargePercentage);
       grdDetails.AddCurrencyColumn("Charge Amount", FMainDS.AFeesPayable.ColumnChargeAmount);
+      grdDetails.AddTextColumn("DR Account Code", FMainDS.AFeesPayable.ColumnDrAccountCode);
+      grdDetails.AddTextColumn("Cost Centre Code", FMainDS.AFeesPayable.ColumnCostCentreCode);
+      grdDetails.AddTextColumn("Account Code", FMainDS.AFeesPayable.ColumnAccountCode);
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
       DataView myDataView = FMainDS.AFeesPayable.DefaultView;
@@ -276,8 +279,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 txtDetailChargeAmount.NumberValueDecimal = Convert.ToDecimal(ARow.ChargeAmount);
             }
             cmbDetailCostCentreCode.SetSelectedString(ARow.CostCentreCode);
-            cmbDetailAccountCode.SetSelectedString(ARow.AccountCode);
             cmbDetailDrAccountCode.SetSelectedString(ARow.DrAccountCode);
+            cmbDetailAccountCode.SetSelectedString(ARow.AccountCode);
             pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
         }
         FPetraUtilsObject.EnableDataChangedEvent();
@@ -328,8 +331,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 ARow.ChargeAmount = Convert.ToDecimal(txtDetailChargeAmount.NumberValueDecimal);
             }
             ARow.CostCentreCode = cmbDetailCostCentreCode.GetSelectedString();
-            ARow.AccountCode = cmbDetailAccountCode.GetSelectedString();
             ARow.DrAccountCode = cmbDetailDrAccountCode.GetSelectedString();
+            ARow.AccountCode = cmbDetailAccountCode.GetSelectedString();
         }
     }
 

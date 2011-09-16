@@ -10,7 +10,6 @@ RootNode:
     WindowHeight: 500
     Actions:
         actNew: {Label=&New, ActionClick=NewRow}
-#        actDelete: {Label=&Delete, ActionClick=DeleteRow}
         actImport: {ActionClick=Import}
         actClose:  {Label=Close, ActionClick=CloseDialog}
         actCancel:  {Label=Cancel, ActionClick=CancelDialog}
@@ -26,8 +25,6 @@ RootNode:
             Controls: [btnNew, btnClose, btnCancel]
         btnNew:
             Action: actNew
-#        btnDelete:
-#            Action: actDelete
         btnClose: 
             Action: actClose
         btnCancel: 
@@ -47,14 +44,14 @@ RootNode:
                 Row3: [txtDetailRateOfExchange, btnInvertExchangeRate]
                 Row4: [lblValueOneDirection]
                 Row5: [lblValueOtherDirection]
-        cmbDetailFromCurrencyCode: {OnlySetOnce=true, Label=&From Currency Code, List=CurrencyCodeList}
-        cmbDetailToCurrencyCode: {OnlySetOnce=true, Label=&To Currency Code, List=CurrencyCodeList}
+        cmbDetailFromCurrencyCode: {OnlySetOnce=true, Label=&From Currency Code, List=CurrencyCodeList, ColSpan=2}
+        cmbDetailToCurrencyCode: {OnlySetOnce=true, Label=&To Currency Code, List=CurrencyCodeList, ColSpan=2}
         dtpDetailDateEffectiveFrom: {OnlySetOnce=true, Label=D&ate}
-        txtDetailRateOfExchange: {OnlySetOnce=true, Label=&Rate of exchange, Format=Decimal(6)}
+        txtDetailRateOfExchange: {OnlySetOnce=true, Label=&Rate of exchange, Format=Decimal(10), Width=100}
         btnInvertExchangeRate: {Label=&Invert value}
         btnUseDateToFilter: {Label=Use Date To Filter}
-        lblValueOneDirection: 
-        lblValueOtherDirection: 
+        lblValueOneDirection: {ColSpan=2}
+        lblValueOtherDirection: {ColSpan=2}
     Menu:
         mniExchangeRates:
             mniImport:

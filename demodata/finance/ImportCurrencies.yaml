@@ -1,5 +1,5 @@
 RootNode:
-    Separator: {,}
-    DateFormat: {DD/MM/YYYY}
-    ThousandsSeparator: {,}
-    DecimalSeparator: {.}
+    Separator: |
+#    DateFormat: YYYY-MM-DD    - the 'DateFormat' setting is currently not taken into account from this file. The only date format that is currently supported (hard-coded) is YYYY-MM-DD.
+    ThousandsSeparator: ,
+    DecimalSeparator: .

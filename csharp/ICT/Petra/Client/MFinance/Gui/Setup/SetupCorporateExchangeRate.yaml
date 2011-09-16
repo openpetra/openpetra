@@ -34,18 +34,17 @@ RootNode:
             Controls:
                 Row0: [cmbDetailFromCurrencyCode]
                 Row1: [cmbDetailToCurrencyCode]
-                Row2: [dtpDetailDateEffectiveFrom, btnUseDateToFilter]
+                Row2: [dtpDetailDateEffectiveFrom]
                 Row3: [txtDetailRateOfExchange, btnInvertExchangeRate]
                 Row4: [lblValueOneDirection]
                 Row5: [lblValueOtherDirection]
-        cmbDetailFromCurrencyCode: {OnlySetOnce=true, Label=&From Currency Code, List=CurrencyCodeList, OnLeave=ValueChangedCurrencyCode}
-        cmbDetailToCurrencyCode: {OnlySetOnce=true, Label=&To Currency Code, List=CurrencyCodeList, OnLeave=ValueChangedCurrencyCode}
+        cmbDetailFromCurrencyCode: {OnlySetOnce=true, Label=&From Currency Code, List=CurrencyCodeList, OnLeave=ValueChangedCurrencyCode, ColSpan=2}
+        cmbDetailToCurrencyCode: {OnlySetOnce=true, Label=&To Currency Code, List=CurrencyCodeList, OnLeave=ValueChangedCurrencyCode, ColSpan=2}
         dtpDetailDateEffectiveFrom: {OnlySetOnce=true, Label=D&ate}
-        txtDetailRateOfExchange: {OnlySetOnce=true, Label=&Rate of exchange, Format=Decimal(6), OnLeave=ValueChangedCurrencyCode}
+        txtDetailRateOfExchange: {OnlySetOnce=true, Label=&Rate of exchange, Format=Decimal(10), Width=100, OnLeave=ValueChangedCurrencyCode}
         btnInvertExchangeRate: {Label=&Invert value}
-        btnUseDateToFilter: {Label=Use Date To Filter}
-        lblValueOneDirection: 
-        lblValueOtherDirection: 
+        lblValueOneDirection: {ColSpan=2}
+        lblValueOtherDirection: {ColSpan=2}
     Menu:
         mniExchangeRates:
             mniImport:

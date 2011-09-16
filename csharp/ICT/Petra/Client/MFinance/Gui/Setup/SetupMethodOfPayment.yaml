@@ -7,7 +7,7 @@ RootNode:
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data, Ict.Petra.Shared.MFinance.Gift.Data]
     FormType: edit
     Template: windowMaintainCacheableTable
-    WindowWidth: 660
+    WindowWidth: 760
     WindowHeight: 500
     Actions:
         actNew: {Label=&New, ActionClick=NewRow}
@@ -39,7 +39,7 @@ RootNode:
                 Row1: [chkDetailSpecialMethodOfPmt]
                 Row2: [chkDetailActive]
         txtDetailMethodOfPaymentCode: {Label=Method of Payment, CharacterCasing=Upper}
-        txtDetailMethodOfPaymentDesc: {Label=Description, Width=165}
+        txtDetailMethodOfPaymentDesc: {Label=Description, Width=265}
         chkDetailSpecialMethodOfPmt:  {Label=Special Method of Payment}
         chkDetailActive:
     Toolbar:

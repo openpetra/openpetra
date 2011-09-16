@@ -64,7 +64,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             if (DialogBox.ShowDialog() == DialogResult.OK)
             {
                 string Directory = Path.GetDirectoryName(DialogBox.FileName);
-                string[] YmlFiles = System.IO.Directory.GetFiles(Directory, "*.yml");
+                string[] YmlFiles = System.IO.Directory.GetFiles(Directory, "*.yaml");
                 string DefinitionFileName = String.Empty;
 
                 if (YmlFiles.Length == 1)
@@ -73,14 +73,23 @@ namespace Ict.Petra.Client.MFinance.Logic
                 }
                 else
                 {
-                    // show another open file dialog for the description file
-                    OpenFileDialog DialogDefinitionFile = new OpenFileDialog();
-                    DialogDefinitionFile.Title = Catalog.GetString("Please select a yml file that describes the content of the spreadsheet");
-                    DialogDefinitionFile.Filter = Catalog.GetString("Data description files (*.yml)|*.yml");
-
-                    if (DialogDefinitionFile.ShowDialog() == DialogResult.OK)
+                    YmlFiles = System.IO.Directory.GetFiles(Directory, "*.yml");
+                    
+                    if (YmlFiles.Length == 1)
                     {
-                        DefinitionFileName = DialogDefinitionFile.FileName;
+                        DefinitionFileName = YmlFiles[0];
+                    }
+                    else
+                    {
+                        // show another open file dialog for the description file
+                        OpenFileDialog DialogDefinitionFile = new OpenFileDialog();
+                        DialogDefinitionFile.Title = Catalog.GetString("Please select a yml file that describes the content of the spreadsheet");
+                        DialogDefinitionFile.Filter = Catalog.GetString("Data description files (*.yaml,*.yml)|*.yaml;*.yml");
+    
+                        if (DialogDefinitionFile.ShowDialog() == DialogResult.OK)
+                        {
+                            DefinitionFileName = DialogDefinitionFile.FileName;
+                        }
                     }
                 }
 
@@ -98,6 +107,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             }
             
         }
+        
         
         /// <summary>
         /// Imports currency exchange rates, daily and corporate,
@@ -204,7 +214,8 @@ namespace Ict.Petra.Client.MFinance.Logic
 
                 //TODO: Perform validation on the From and To currencies at ths point!!
                 //TODO: Date parsing as in Petra 2.x instead of using XML date format!!!
-                DateTime DateEffective = XmlConvert.ToDateTime(StringHelper.GetNextCSV(ref Line, Separator, false), DateFormat);
+                string DateEffectiveStr = StringHelper.GetNextCSV(ref Line, Separator, false);
+                DateTime DateEffective = XmlConvert.ToDateTime(DateEffectiveStr);  // , DateFormat
                 string ExchangeRateString = StringHelper.GetNextCSV(ref Line, Separator, false).Replace(ThousandsSeparator, "").Replace(DecimalSeparator, ".");
 
                 decimal ExchangeRate = Convert.ToDecimal(ExchangeRateString, System.Globalization.CultureInfo.InvariantCulture);

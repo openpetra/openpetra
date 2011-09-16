@@ -73,7 +73,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
       this.lblDetailFromCurrencyCode.Text = Catalog.GetString("&From Currency Code:");
       this.lblDetailToCurrencyCode.Text = Catalog.GetString("&To Currency Code:");
       this.lblDetailDateEffectiveFrom.Text = Catalog.GetString("D&ate:");
-      this.btnUseDateToFilter.Text = Catalog.GetString("Use Date To Filter");
       this.lblDetailRateOfExchange.Text = Catalog.GetString("&Rate of exchange:");
       this.btnInvertExchangeRate.Text = Catalog.GetString("&Invert value");
       this.lblValueOneDirection.Text = Catalog.GetString("Value One Direction:");
@@ -279,7 +278,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             ARow.ToCurrencyCode = cmbDetailToCurrencyCode.GetSelectedString();
             ARow.DateEffectiveFrom = dtpDetailDateEffectiveFrom.Date.Value;
             ARow.RateOfExchange = Convert.ToDecimal(txtDetailRateOfExchange.NumberValueDecimal);
-            GetDetailDataFromControlsManual(ARow);
         }
     }
 

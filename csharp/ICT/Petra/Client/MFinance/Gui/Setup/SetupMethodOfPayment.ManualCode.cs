@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       christophert
 //
 // Copyright 2004-2010 by OM International
 //
@@ -52,39 +52,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             ARow.MethodOfPaymentCode = newName;
-        }
-
-        private void DeleteRow(System.Object sender, EventArgs e)
-        {
-            AMethodOfPaymentRow actualRow = GetSelectedDetailRow();
-
-            SelectByIndex(-1);
-            FMainDS.AMethodOfPayment.Rows.Remove(actualRow);
-            FPreviouslySelectedDetailRow = null;
-        }
-        
-        private void SelectByIndex(int rowIndex)
-        {
-            if (rowIndex >= grdDetails.Rows.Count)
-            {
-                rowIndex = grdDetails.Rows.Count - 1;
-            }
-
-            if ((rowIndex < 1) && (grdDetails.Rows.Count > 1))
-            {
-                rowIndex = 1;
-            }
-
-            if ((rowIndex >= 1) && (grdDetails.Rows.Count > 1))
-            {
-                grdDetails.Selection.SelectRow(rowIndex, true);
-                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                ShowDetails(FPreviouslySelectedDetailRow);
-            }
-            else
-            {
-                FPreviouslySelectedDetailRow = null;
-            }
         }
     }
 }
