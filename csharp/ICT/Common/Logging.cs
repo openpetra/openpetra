@@ -234,11 +234,8 @@ namespace Ict.Common
         {
             if (((ALoggingType & TLoggingType.ToConsole) != 0)
                 || ((ALoggingType & TLoggingType.ToLogfile) != 0)
-#if DEBUGMODE
                 // only in Debugmode write the messages for the statusbar also on the console (e.g. reporting progress)
-                || ((ALoggingType & TLoggingType.ToStatusBar) != 0)
-#endif
-                )
+                || ((ALoggingType & TLoggingType.ToStatusBar) != 0 && TLogging.DebugLevel == TLogging.DEBUGLEVEL_TRACE))
             {
                 Console.WriteLine(Utilities.CurrentTime() + "  " + Text);
 
