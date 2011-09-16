@@ -363,8 +363,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             XmlElement costCentreNode = ADoc.CreateElement(TYml2Xml.XMLELEMENT);
 
             // CostCentreToReportTo is encoded implicitly
-            costCentreNode.SetAttribute("name", ADetailRow.CostCentreName);
-            costCentreNode.SetAttribute("code", ADetailRow.CostCentreCode);
+            costCentreNode.SetAttribute("name", ADetailRow.CostCentreCode);
+            costCentreNode.SetAttribute("descr", ADetailRow.CostCentreName);
             costCentreNode.SetAttribute("active", ADetailRow.CostCentreActiveFlag ? "True" : "False");
             costCentreNode.SetAttribute("type", ADetailRow.CostCentreType.ToString());
             AParentNode.AppendChild(costCentreNode);
@@ -580,7 +580,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         {
             ACostCentreRow newCostCentre = null;
 
-            string CostCentreCode = TYml2Xml.GetAttribute(ACurrentNode, "code");
+            string CostCentreCode = TYml2Xml.GetElementName(ACurrentNode);
 
             AImportedCostCentreCodes.Add(CostCentreCode);
 
@@ -600,7 +600,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             newCostCentre.LedgerNumber = ALedgerNumber;
             newCostCentre.CostCentreCode = CostCentreCode;
-            newCostCentre.CostCentreName = TYml2Xml.GetElementName(ACurrentNode);
+            newCostCentre.CostCentreName = TYml2Xml.GetAttribute(ACurrentNode, "descr");
             newCostCentre.CostCentreActiveFlag = TYml2Xml.GetAttributeRecursive(ACurrentNode, "active").ToLower() == "true";
             newCostCentre.CostCentreType = TYml2Xml.GetAttributeRecursive(ACurrentNode, "type");
             newCostCentre.PostingCostCentreFlag = (ACurrentNode.ChildNodes.Count == 0);
