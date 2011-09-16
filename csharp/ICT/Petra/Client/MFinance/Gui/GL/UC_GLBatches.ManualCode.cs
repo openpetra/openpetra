@@ -65,6 +65,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // this will load the batches from the server
             SetBatchFilter();
 
+            ((TFrmGLBatch) this.ParentForm).DisableJournals();
+            ((TFrmGLBatch) this.ParentForm).DisableTransactions();
+            ((TFrmGLBatch) this.ParentForm).DisableAttributes();
+
             ShowData();
 
             //TODO: not necessary for posted batches
@@ -247,7 +251,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     SelectByIndex(rowIndex);
                 }
 
-                // UpdateChangeableStatus();
+                LoadBatches(FLedgerNumber);
             }
         }
 
@@ -318,6 +322,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     // refresh the grid, to reflect that the batch has been posted
                     FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatchAndContent(FLedgerNumber, FSelectedBatchNumber));
+
+                    // make sure that the current dataset is clean,
+                    // otherwise the next save would try to modify the posted batch, even though no values have been changed
+                    FMainDS.AcceptChanges();
+                    this.FPreviouslySelectedDetailRow = null;
+                    ((TFrmGLBatch)ParentForm).GetJournalsControl().ClearCurrentSelection();
                     LoadBatches(FLedgerNumber);
                 }
             }

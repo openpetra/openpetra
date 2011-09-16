@@ -322,5 +322,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             return Convert.ToDecimal(txtDetailExchangeRateToBase.Text);
         }
+
+        /// <summary>
+        /// clear the current selection
+        /// </summary>
+        public void ClearCurrentSelection()
+        {
+            this.FPreviouslySelectedDetailRow = null;
+        }
     }
 }
