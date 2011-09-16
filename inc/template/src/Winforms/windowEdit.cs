@@ -163,9 +163,11 @@ namespace {#NAMESPACE}
     private bool GetDetailsFromControls({#DETAILTABLE}Row ARow)
     {
         if (ARow != null)
-        {
+        {            
             {#VALIDATEDETAILS}
+            ARow.BeginEdit();
             {#SAVEDETAILS}
+            ARow.EndEdit();
         }
 
         return true;

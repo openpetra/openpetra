@@ -154,14 +154,12 @@ OpenPetra:
                 #ICH:
                 #Reports:
                 Setup:  {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
-                    GLSetup:
-                        CreateLedger: {ActionOpenScreen=TFrmGLCreateLedger}
-                        SetupCurrencies: {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmSetupCurrency}
-                        SetupDailyExchangeRate: {ActionOpenScreen=TFrmSetupDailyExchangeRate}
-                        SetupAnalysisTypes: {ActionOpenScreen=TFrmSetupAnalysisTypes}
-                        ManageAccounts: {Description:Add accounts and modify the hierarchy, ActionOpenScreen=TFrmGLAccountHierarchy}
-                        ManageCostCentres: {Description:Add and maintain cost centres, ActionOpenScreen=TFrmGLCostCentreHierarchy}
-                    #Accounts:
+                    GeneralLedgerSetup:
+                        CreateLedger: {Description=Create a new Ledger, ActionOpenScreen=TFrmGLCreateLedger}
+                        ManageAccounts: {Description:Maintain Accounts and modify their hierarchy, ActionOpenScreen=TFrmGLAccountHierarchy}
+                        ManageCostCentres: {Description:Maintain Cost Centres and modify their hierarchy, ActionOpenScreen=TFrmGLCostCentreHierarchy}
+                        SetupCostCentreTypes: {Description=Maintain types of Cost Centres, ActionOpenScreen=TFrmSetupCostCentreTypes}
+                        #Accounts:
                         #AddPostingAccount:
                         #AddForeignCurrencyAccount:
                         #AddSummarisationAccount:
@@ -181,6 +179,18 @@ OpenPetra:
                         #ChangeNumberOfForwardingPeriods:
                     GiftSetup: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
                         SetupMotivationDetails: {Description: "Maintain motivation details towards which donations can be assigned", ActionOpenScreen=Gift.TFrmGiftMotivationSetup}
+                        SetupAdminGrantsPayable: {Description=Maintain payable Administration Grants, ActionOpenScreen=TFrmSetupAdminGrantsPayable}
+                        SetupAdminGrantsReceivable: {Description=Maintain receivable Administration Grants, ActionOpenScreen=TFrmSetupAdminGrantsReceivable}
+                CrossLedgerSetup: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup, Label="Setup (Cross-Ledger)"}
+                    General:
+                        SetupCurrencies: {Description=Maintain Currencies, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmSetupCurrency}
+                        SetupMethodsOfGiving: {Description=Maintain Methods of Giving,ActionOpenScreen=TFrmSetupMethodOfGiving}
+                        SetupMethodsOfPayment: {Description=Maintain Methods of Payment, ActionOpenScreen=TFrmSetupMethodOfPayment}
+                        SetupAnalysisTypes: {Description=Maintain Analysis Types, ActionOpenScreen=TFrmSetupAnalysisTypes}
+                    ExchangeRates:
+                        SetupCorporateExchangeRates: {Description=Maintain Corporate Exchange Rates, ActionOpenScreen=TFrmSetupCorporateExchangeRate}
+                        SetupDailyExchangeRates: {Description=Maintain Daily Exchange Rates, ActionOpenScreen=TFrmSetupDailyExchangeRate}
+                        
         Personnel: {Icon=personel_small.ico, PermissionsRequired=PERSONNEL}
             # Module
             Main:
