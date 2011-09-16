@@ -71,7 +71,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                          TCacheableFinanceTablesEnum.LedgerDetails, value))[0];
                 baseCurrencyOfLedger = ledger.BaseCurrency;
 
-                
+
                 this.txtDetailRateOfExchange.Validated +=
                     new System.EventHandler(this.ValidatedExchangeRate);
 
@@ -85,12 +85,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                 this.btnInvertExchangeRate.Click +=
                     new System.EventHandler(this.InvertExchangeRate);
-                
+
                 this.btnUseDateToFilter.Click +=
                     new System.EventHandler(this.UseDateToFilter);
 
-                FMainDS.ADailyExchangeRate.DefaultView.Sort = ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " DESC, "
-                                                                +  ADailyExchangeRateTable.GetTimeEffectiveFromDBName() + " DESC";
+                FMainDS.ADailyExchangeRate.DefaultView.Sort = ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " DESC, " +
+                                                              ADailyExchangeRateTable.GetTimeEffectiveFromDBName() + " DESC";
                 FMainDS.ADailyExchangeRate.DefaultView.RowFilter = "";
 
                 btnClose.Visible = false;
@@ -112,8 +112,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// <param name="strCurrencyTo">The actual foreign currency value</param>
         /// <param name="strExchangeDefault">Defaut value for the exchange rate</param>
         public void SetDataFilters(DateTime dteEffective,
-                                    string strCurrencyTo,
-                                    string strExchangeDefault)
+            string strCurrencyTo,
+            string strExchangeDefault)
         {
             DateTime dateLimit = dteEffective.AddDays(1.0);
             // Do not use local formats here!
@@ -121,15 +121,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 new System.Globalization.CultureInfo(String.Empty, false).DateTimeFormat;
             string dateString = dateLimit.ToString("d", dateTimeFormat);
 
-            FMainDS.ADailyExchangeRate.DefaultView.RowFilter = 
-                            ADailyExchangeRateTable.GetFromCurrencyCodeDBName() + " = '" + baseCurrencyOfLedger + "' and " + 
-                            ADailyExchangeRateTable.GetToCurrencyCodeDBName() + " = '" + strCurrencyTo + "' and " + 
-                            ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " < '" + dateString + "'";
+            FMainDS.ADailyExchangeRate.DefaultView.RowFilter =
+                ADailyExchangeRateTable.GetFromCurrencyCodeDBName() + " = '" + baseCurrencyOfLedger + "' and " +
+                ADailyExchangeRateTable.GetToCurrencyCodeDBName() + " = '" + strCurrencyTo + "' and " +
+                ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " < '" + dateString + "'";
 
             strModalFormReturnValue = strExchangeDefault;
             strCurrencyToDefault = strCurrencyTo;
             dateTimeDefault = dteEffective;
-            
+
             DefineModalSettings();
         }
 
@@ -141,9 +141,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// <param name="strCurrencyTo"></param>
         /// <param name="decExchangeDefault"></param>
         public void SetDataFilters(DateTime dteStart,
-                                    DateTime dteEnd,
-                                    string strCurrencyTo,
-                                    decimal decExchangeDefault)
+            DateTime dteEnd,
+            string strCurrencyTo,
+            decimal decExchangeDefault)
         {
             DateTime dateEnd2 = dteEnd.AddDays(1.0);
             // Do not use local formats here!
@@ -153,17 +153,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             string strDteEnd = dateEnd2.ToString("d", dateTimeFormat);
 
             FMainDS.ADailyExchangeRate.DefaultView.RowFilter =
-                        ADailyExchangeRateTable.GetFromCurrencyCodeDBName() + " = '" + baseCurrencyOfLedger + "' and " +
-                        ADailyExchangeRateTable.GetToCurrencyCodeDBName() + " = '" + strCurrencyTo + "' and " +
-                        ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " < '" + strDteEnd + "' and " +
-                        ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " > '" + strDteStart + "'";
-            
+                ADailyExchangeRateTable.GetFromCurrencyCodeDBName() + " = '" + baseCurrencyOfLedger + "' and " +
+                ADailyExchangeRateTable.GetToCurrencyCodeDBName() + " = '" + strCurrencyTo + "' and " +
+                ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " < '" + strDteEnd + "' and " +
+                ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " > '" + strDteStart + "'";
+
             strModalFormReturnValue = decExchangeDefault.ToString("0.00000000");
             dateTimeDefault = dteEnd;
             strCurrencyToDefault = strCurrencyTo;
-            
+
             DefineModalSettings();
-        }        
+        }
 
         /// <summary>
         /// Get the last exchange value of the interval
@@ -184,10 +184,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             string strDteEnd = dateEnd2.ToString("d", dateTimeFormat);
 
             FMainDS.ADailyExchangeRate.DefaultView.RowFilter =
-                        ADailyExchangeRateTable.GetFromCurrencyCodeDBName() + " = '" + baseCurrencyOfLedger + "' and " +
-                        ADailyExchangeRateTable.GetToCurrencyCodeDBName() + " = '" + strCurrencyTo + "' and " +
-                        ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " < '" + strDteEnd + "' and " +
-                        ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " > '" + strDteStart + "'";
+                ADailyExchangeRateTable.GetFromCurrencyCodeDBName() + " = '" + baseCurrencyOfLedger + "' and " +
+                ADailyExchangeRateTable.GetToCurrencyCodeDBName() + " = '" + strCurrencyTo + "' and " +
+                ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " < '" + strDteEnd + "' and " +
+                ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " > '" + strDteStart + "'";
 
             if (grdDetails.Rows.Count != 0)
             {
@@ -195,7 +195,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 {
                     // Code tut nicht!
                     SelectDetailRowByDataTableIndex(0);
-                    ADailyExchangeRateRow DailyExchangeRateRow = 
+                    ADailyExchangeRateRow DailyExchangeRateRow =
                         (ADailyExchangeRateRow)(FMainDS.ADailyExchangeRate.DefaultView[0].Row);
                     return DailyExchangeRateRow.RateOfExchange;
                 }
@@ -209,7 +209,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 return 1.0m;
             }
         }
-        
+
         private void DefineModalSettings()
         {
             blnUseDateTimeDefault = true;
@@ -334,23 +334,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             ADailyExRateRow.DateEffectiveFrom = dateDate;
-            ADailyExRateRow.TimeEffectiveFrom = 
+            ADailyExRateRow.TimeEffectiveFrom =
                 (dateTime.Hour * 60 + dateTime.Minute) * 60 + dateTime.Second;
 
             // Ensure we don't create a duplicate record
-            while (FMainDS.ADailyExchangeRate.Rows.Find(new object[] { 
-                ADailyExRateRow.FromCurrencyCode, ADailyExRateRow.ToCurrencyCode, 
-                ADailyExRateRow.DateEffectiveFrom.ToString(), ADailyExRateRow.TimeEffectiveFrom.ToString()}) != null)
+            while (FMainDS.ADailyExchangeRate.Rows.Find(new object[] {
+                           ADailyExRateRow.FromCurrencyCode, ADailyExRateRow.ToCurrencyCode,
+                           ADailyExRateRow.DateEffectiveFrom.ToString(), ADailyExRateRow.TimeEffectiveFrom.ToString()
+                       }) != null)
             {
                 ADailyExRateRow.TimeEffectiveFrom = ADailyExRateRow.TimeEffectiveFrom + 1;
-            }                        
-            
+            }
+
             FMainDS.ADailyExchangeRate.Rows.Add(ADailyExRateRow);
             grdDetails.Refresh();
 
             FPetraUtilsObject.SetChangedFlag();
             SelectDetailRowByDataTableIndex(FMainDS.ADailyExchangeRate.Rows.Count - 1);
-            
+
             UpdateExchangeRateLabels();
         }
 
@@ -371,8 +372,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             FPreviouslySelectedDetailRow = GetSelectedDetailRow();
 
-            UpdateExchangeRateLabels();            
-            
+            UpdateExchangeRateLabels();
+
             if (blnIsInModalMode)
             {
                 dtpDetailDateEffectiveFrom.Enabled = false;
@@ -383,12 +384,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// Updates the lblValueOneDirection and lblValueOtherDirection labels
         /// </summary>
         private void UpdateExchangeRateLabels()
-        {           
+        {
             TSetupExchangeRates.SetExchangeRateLabels(cmbDetailFromCurrencyCode.GetSelectedString(),
                 cmbDetailToCurrencyCode.GetSelectedString(), FPreviouslySelectedDetailRow,
                 txtDetailRateOfExchange.NumberValueDecimal.Value, lblValueOneDirection, lblValueOtherDirection);
         }
-        
+
         /// <summary>
         /// ValueChanged Event for the currency boxes
         /// </summary>
@@ -404,7 +405,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// </summary>
         private void ValueChangedCurrencyCode()
         {
-            if (cmbDetailFromCurrencyCode.GetSelectedString() == 
+            if (cmbDetailFromCurrencyCode.GetSelectedString() ==
                 cmbDetailToCurrencyCode.GetSelectedString())
             {
                 txtDetailRateOfExchange.NumberValueDecimal = 1.0m;
@@ -434,11 +435,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                 cmbDetailFromCurrencyCode.Enabled = true;
             }
-            
+
             if (txtDetailRateOfExchange.NumberValueDecimal.HasValue)
             {
                 UpdateExchangeRateLabels();
-            }            
+            }
         }
 
         /// <summary>
@@ -461,7 +462,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             catch (Exception)
             {
             }
-            
+
             ValidatedExchangeRate();
         }
 
@@ -477,10 +478,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 DateTime dateLimit = dtpDetailDateEffectiveFrom.Date.Value.AddDays(1.0);
                 // Do not use local formats here!
-                DateTimeFormatInfo dateTimeFormat = new 
-                    System.Globalization.CultureInfo("en-US", false).DateTimeFormat;
+                DateTimeFormatInfo dateTimeFormat = new
+                                                    System.Globalization.CultureInfo("en-US", false).DateTimeFormat;
                 string dateString = dateLimit.ToString("d", dateTimeFormat);
-                FMainDS.ADailyExchangeRate.DefaultView.RowFilter = 
+                FMainDS.ADailyExchangeRate.DefaultView.RowFilter =
                     ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " < '" + dateString + "'";
                 String strBtnUseDateToFilter2 = Catalog.GetString("Unuse Filter");
                 btnUseDateToFilter.Text = strBtnUseDateToFilter2;

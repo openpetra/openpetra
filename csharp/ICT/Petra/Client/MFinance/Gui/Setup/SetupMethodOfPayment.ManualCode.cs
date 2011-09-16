@@ -28,20 +28,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
     public partial class TFrmSetupMethodOfPayment
     {
-   	 
-    	private void NewRow(System.Object sender, EventArgs e)
+        private void NewRow(System.Object sender, EventArgs e)
         {
             CreateNewAMethodOfPayment();
-            
         }
 
         private void NewRowManual(ref AMethodOfPaymentRow ARow)
         {
-			
-        	string newName = Ict.Common.Catalog.GetString("NEWTYPE");
+            string newName = Ict.Common.Catalog.GetString("NEWTYPE");
             Int32 countNewDetail = 0;
 
-            if (FMainDS.AMethodOfPayment.Rows.Find(new object[] {newName }) != null)
+            if (FMainDS.AMethodOfPayment.Rows.Find(new object[] { newName }) != null)
             {
                 while (FMainDS.AMethodOfPayment.Rows.Find(new object[] { newName + countNewDetail.ToString() }) != null)
                 {

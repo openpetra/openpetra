@@ -36,49 +36,43 @@ using Ict.Petra.Client.MFinance.Logic;
 using Ict.Common;
 
 
-
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
     public partial class TFrmSetupAdminGrantsPayable
-    {                    
+    {
+        private Int32 FLedgerNumber;
 
-    	private Int32 FLedgerNumber;
-    	
-    	/// <summary>
-    	/// The applicable Ledger Number
-    	/// </summary>
-    	public Int32 LedgerNumber
-    	{
-    	    get 
-    	    {
-    	        return FLedgerNumber;
-    	    }
-    	    
-    	    set
-    	    {
-    	        FLedgerNumber = value;
-    	        
+        /// <summary>
+        /// The applicable Ledger Number
+        /// </summary>
+        public Int32 LedgerNumber
+        {
+            get
+            {
+                return FLedgerNumber;
+            }
+
+            set
+            {
+                FLedgerNumber = value;
+
                 TSetupAdminGrants.PopulateComboBoxes(cmbDetailCostCentreCode, cmbDetailAccountCode, cmbDetailDrAccountCode, FLedgerNumber, false);
-    	    }
-    	
-    	}
-    	
-    	private void NewRow(System.Object sender, EventArgs e)
+            }
+        }
+
+        private void NewRow(System.Object sender, EventArgs e)
         {
             CreateNewAFeesPayable();
         }
 
-   	
-    	
         private void NewRowManual(ref AFeesPayableRow ARow)
         {
-            
             ARow.LedgerNumber = FLedgerNumber;
-        
+
             string newName = Ict.Common.Catalog.GetString("NEWCODE");
             Int32 countNewDetail = 0;
 
-            if (FMainDS.AFeesPayable.Rows.Find(new object[] {FLedgerNumber, newName }) != null)
+            if (FMainDS.AFeesPayable.Rows.Find(new object[] { FLedgerNumber, newName }) != null)
             {
                 while (FMainDS.AFeesPayable.Rows.Find(new object[] { FLedgerNumber, newName + countNewDetail.ToString() }) != null)
                 {
@@ -92,13 +86,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             ARow.AccountCode = MFinanceConstants.ADMIN_FEE_INCOME_ACCT.ToString();
             ARow.DrAccountCode = MFinanceConstants.ADMIN_FEE_EXPENSE_ACCT.ToString();
         }
-        
+
         private void ChargeOptionChanged(object sender, EventArgs e)
         {
             TSetupAdminGrants.ChargeOptionComboChanged((TCmbAutoComplete)sender, lblDetailChargeAmount,
                 txtDetailChargeAmount, txtDetailChargePercentage);
         }
-                
+
         private void SelectByIndex(int rowIndex)
         {
             if (rowIndex >= grdDetails.Rows.Count)

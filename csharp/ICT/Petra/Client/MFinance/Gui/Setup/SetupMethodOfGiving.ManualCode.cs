@@ -27,21 +27,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
     public partial class TFrmSetupMethodOfGiving
     {
-    	
-    	private void NewRow(System.Object sender, EventArgs e)
+        private void NewRow(System.Object sender, EventArgs e)
         {
             CreateNewAMethodOfGiving();
         }
 
         private void NewRowManual(ref Ict.Petra.Shared.MFinance.Account.Data.AMethodOfGivingRow ARow)
         {
-
-        	string newName = Ict.Common.Catalog.GetString("NEWTYPE");
+            string newName = Ict.Common.Catalog.GetString("NEWTYPE");
             Int32 countNewDetail = 0;
 
-            if (FMainDS.AMethodOfGiving.Rows.Find(new object[] {newName }) != null)
+            if (FMainDS.AMethodOfGiving.Rows.Find(new object[] { newName }) != null)
             {
-                while (FMainDS.AMethodOfGiving.Rows.Find(new object[] {newName + countNewDetail.ToString() }) != null)
+                while (FMainDS.AMethodOfGiving.Rows.Find(new object[] { newName + countNewDetail.ToString() }) != null)
                 {
                     countNewDetail++;
                 }
@@ -60,7 +58,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             FMainDS.AMethodOfGiving.Rows.Remove(actualRow);
             FPreviouslySelectedDetailRow = null;
         }
-        
+
         private void SelectByIndex(int rowIndex)
         {
             if (rowIndex >= grdDetails.Rows.Count)

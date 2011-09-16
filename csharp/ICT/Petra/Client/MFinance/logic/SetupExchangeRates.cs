@@ -43,7 +43,7 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="AExchangeRate">Exchange Rate.</param>
         /// <param name="AValueOneDirectionLabel">Label that shows the exchange rate information in one direction (gets updated).</param>
         /// <param name="AValueOtherDirectionLabel">Label that shows the exchange rate information in the other direction (gets updated).</param>
-        public static void SetExchangeRateLabels(String AFromCurrencyCode, String AToCurrencyCode, 
+        public static void SetExchangeRateLabels(String AFromCurrencyCode, String AToCurrencyCode,
             DataRow AExchangeRateRow, decimal AExchangeRate, Label AValueOneDirectionLabel, Label AValueOtherDirectionLabel)
         {
             string StrLabelText = Catalog.GetString("For {0} {1} one will get {2} {3}.");
@@ -54,13 +54,13 @@ namespace Ict.Petra.Client.MFinance.Logic
             }
             else
             {
-                AValueOneDirectionLabel.Text = 
+                AValueOneDirectionLabel.Text =
                     String.Format(StrLabelText,
                         1.0m.ToString("N2"),
                         AFromCurrencyCode,
                         AExchangeRate.ToString("N10"),
                         AToCurrencyCode
-                      );
+                        );
             }
 
             try
@@ -78,13 +78,13 @@ namespace Ict.Petra.Client.MFinance.Logic
             }
             else
             {
-                AValueOtherDirectionLabel.Text = 
+                AValueOtherDirectionLabel.Text =
                     String.Format(StrLabelText,
                         1.0m.ToString("N2"),
                         AToCurrencyCode,
                         AExchangeRate.ToString("N10"),
                         AFromCurrencyCode
-                       );
+                        );
             }
         }
     }

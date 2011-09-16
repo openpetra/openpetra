@@ -38,48 +38,45 @@ using Ict.Common;
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
     public partial class TFrmSetupAdminGrantsReceivable
-    {                    
+    {
+        private Int32 FLedgerNumber;
 
-    	private Int32 FLedgerNumber;
-    	
-    	/// <summary>
-    	/// The applicable Ledger number
-    	/// </summary>
-    	public Int32 LedgerNumber
-    	{
-    	    get 
-    	    {
-    	        return FLedgerNumber;
-    	    }
-    	    
-    	    set
-    	    {
-    	        FLedgerNumber = value;
-                
-    	        TSetupAdminGrants.PopulateComboBoxes(cmbDetailCostCentreCode, cmbDetailAccountCode, cmbDetailDrAccountCode, FLedgerNumber, true);
-    	    }
-    	
-    	}
-    	
-    	private void NewRow(System.Object sender, EventArgs e)
+        /// <summary>
+        /// The applicable Ledger number
+        /// </summary>
+        public Int32 LedgerNumber
+        {
+            get
+            {
+                return FLedgerNumber;
+            }
+
+            set
+            {
+                FLedgerNumber = value;
+
+                TSetupAdminGrants.PopulateComboBoxes(cmbDetailCostCentreCode, cmbDetailAccountCode, cmbDetailDrAccountCode, FLedgerNumber, true);
+            }
+        }
+
+        private void NewRow(System.Object sender, EventArgs e)
         {
             CreateNewAFeesReceivable();
         }
 
-   	
-    	
         private void NewRowManual(ref AFeesReceivableRow ARow)
         {
             ARow.LedgerNumber = FLedgerNumber;
-        	string newName = Ict.Common.Catalog.GetString("NEWCODE");
+            string newName = Ict.Common.Catalog.GetString("NEWCODE");
             Int32 countNewDetail = 0;
 
-            if (FMainDS.AFeesReceivable.Rows.Find(new object[] {FLedgerNumber, newName }) != null)
+            if (FMainDS.AFeesReceivable.Rows.Find(new object[] { FLedgerNumber, newName }) != null)
             {
                 while (FMainDS.AFeesReceivable.Rows.Find(new object[] { FLedgerNumber, newName + countNewDetail.ToString() }) != null)
                 {
                     countNewDetail++;
                 }
+
                 newName += countNewDetail.ToString();
             }
 
@@ -92,8 +89,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             TSetupAdminGrants.ChargeOptionComboChanged((TCmbAutoComplete)sender, lblDetailChargeAmount,
                 txtDetailChargeAmount, txtDetailChargePercentage);
-        }       
-                
+        }
+
         private void SelectByIndex(int rowIndex)
         {
             if (rowIndex >= grdDetails.Rows.Count)
@@ -105,7 +102,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 rowIndex = 1;
             }
-           
+
             if ((rowIndex >= 1) && (grdDetails.Rows.Count > 1))
             {
                 grdDetails.Selection.SelectRow(rowIndex, true);

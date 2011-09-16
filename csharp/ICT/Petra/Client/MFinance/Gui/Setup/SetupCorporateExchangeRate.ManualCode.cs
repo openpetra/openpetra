@@ -79,8 +79,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 this.btnInvertExchangeRate.Click +=
                     new System.EventHandler(this.InvertExchangeRate);
 
-                FMainDS.ACorporateExchangeRate.DefaultView.Sort = ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + " DESC, "
-                                                                +  ACorporateExchangeRateTable.GetTimeEffectiveFromDBName() + " DESC";
+                FMainDS.ACorporateExchangeRate.DefaultView.Sort = ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + " DESC, " +
+                                                                  ACorporateExchangeRateTable.GetTimeEffectiveFromDBName() + " DESC";
                 FMainDS.ACorporateExchangeRate.DefaultView.RowFilter = "";
 
                 mniImport.Enabled = true;
@@ -107,15 +107,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private void NewRow(System.Object sender, EventArgs e)
         {
             DateTime NewDateEffectiveFrom;
-            
+
             // Calculate the Date from which the Exchange Rate will be effective from. It needs to be preset to the first day of the current month.
             NewDateEffectiveFrom = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
             string NewToCurrencyCode;
-            
+
             ACorporateExchangeRateRow ACorporateExRateRow = FMainDS.ACorporateExchangeRate.NewRowTyped();
             ACorporateExRateRow.FromCurrencyCode = "USD";
 
-            
             if (FPreviouslySelectedDetailRow == null)
             {
                 NewToCurrencyCode = baseCurrencyOfLedger;
@@ -130,12 +129,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             ACorporateExRateRow.ToCurrencyCode = NewToCurrencyCode;
 
             // Ensure we don't create a duplicate record
-            while (FMainDS.ACorporateExchangeRate.Rows.Find(new object[] { 
-                ACorporateExRateRow.FromCurrencyCode, NewToCurrencyCode, NewDateEffectiveFrom.ToString() }) != null)
+            while (FMainDS.ACorporateExchangeRate.Rows.Find(new object[] {
+                           ACorporateExRateRow.FromCurrencyCode, NewToCurrencyCode, NewDateEffectiveFrom.ToString()
+                       }) != null)
             {
                 NewDateEffectiveFrom = NewDateEffectiveFrom.AddMonths(1);
             }
-            
 
             if (FPreviouslySelectedDetailRow == null)
             {
@@ -144,7 +143,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             ACorporateExRateRow.DateEffectiveFrom = NewDateEffectiveFrom;
-            ACorporateExRateRow.TimeEffectiveFrom = 
+            ACorporateExRateRow.TimeEffectiveFrom =
                 (DateTime.Now.Hour * 60 + DateTime.Now.Minute) * 60 + DateTime.Now.Second;
 
             FMainDS.ACorporateExchangeRate.Rows.Add(ACorporateExRateRow);
@@ -152,7 +151,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             FPetraUtilsObject.SetChangedFlag();
             SelectDetailRowByDataTableIndex(FMainDS.ACorporateExchangeRate.Rows.Count - 1);
-            
+
             UpdateExchangeRateLabels();
         }
 
@@ -164,7 +163,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private void ValidatedExchangeRate(System.Object sender, EventArgs e)
         {
             UpdateExchangeRateLabels();
-        }        
+        }
 
         /// <summary>
         /// Updates the lblValueOneDirection and lblValueOtherDirection labels
@@ -194,7 +193,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             if (cmbDetailFromCurrencyCode.GetSelectedString() ==
                 cmbDetailToCurrencyCode.GetSelectedString())
             {
-                txtDetailRateOfExchange.NumberValueDecimal= 1.0m;
+                txtDetailRateOfExchange.NumberValueDecimal = 1.0m;
                 UpdateExchangeRateLabels();
                 txtDetailRateOfExchange.Enabled = false;
                 btnInvertExchangeRate.Enabled = false;
@@ -213,11 +212,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 cmbDetailToCurrencyCode.Enabled = true;
                 cmbDetailFromCurrencyCode.Enabled = true;
             }
-            
+
             if (txtDetailRateOfExchange.NumberValueDecimal.HasValue)
             {
                 UpdateExchangeRateLabels();
-            }                        
+            }
         }
 
         /// <summary>
@@ -240,8 +239,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             catch (Exception)
             {
             }
-            
-            UpdateExchangeRateLabels();        
+
+            UpdateExchangeRateLabels();
         }
 
         /// <summary>
@@ -272,5 +271,5 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             TImportExchangeRates.ImportCurrencyExRates(FMainDS.ACorporateExchangeRate, "Corporate");
             FPetraUtilsObject.SetChangedFlag();
         }
-    }   
+    }
 }

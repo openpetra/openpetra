@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -47,7 +47,12 @@ namespace Ict.Petra.Shared
         {
             TimeSpan TimeSpanFromSecs = TimeSpan.FromSeconds(AInt32Time);
 
-            return new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, TimeSpanFromSecs.Hours, TimeSpanFromSecs.Minutes, TimeSpanFromSecs.Seconds);
+            return new DateTime(DateTime.Now.Year,
+                DateTime.Now.Month,
+                DateTime.Now.Day,
+                TimeSpanFromSecs.Hours,
+                TimeSpanFromSecs.Minutes,
+                TimeSpanFromSecs.Seconds);
         }
     }
 }
