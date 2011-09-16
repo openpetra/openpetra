@@ -139,6 +139,9 @@ namespace Ict.Petra.Client.MFinance.Logic
             string ThousandsSeparator = TXMLParser.GetAttribute(ARootNode, "ThousandsSeparator");
             string DecimalSeparator = TXMLParser.GetAttribute(ARootNode, "DecimalSeparator");
 
+            CultureInfo MyCultureInfoDate = new CultureInfo("en-GB");
+            MyCultureInfoDate.DateTimeFormat.ShortDatePattern = DateFormat;
+
             // TODO: check for valid currency codes? at the moment should fail on foreign key
             // TODO: disconnect the grid from the datasource to avoid flickering?
 
@@ -211,7 +214,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                 //TODO: Perform validation on the From and To currencies at ths point!!
                 //TODO: Date parsing as in Petra 2.x instead of using XML date format!!!
                 string DateEffectiveStr = StringHelper.GetNextCSV(ref Line, Separator, false);
-                DateTime DateEffective = XmlConvert.ToDateTime(DateEffectiveStr);  // , DateFormat
+                DateTime DateEffective = Convert.ToDateTime(DateEffectiveStr, MyCultureInfoDate);
                 string ExchangeRateString = StringHelper.GetNextCSV(ref Line, Separator, false).Replace(ThousandsSeparator, "").Replace(
                     DecimalSeparator,
                     ".");
