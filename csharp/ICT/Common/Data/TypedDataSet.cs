@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -256,7 +256,6 @@ namespace Ict.Common.Data
             Int32 i;
             String strSchema;
             String diffGram;
-            String strSchemaWithKeys;
 
             // Console.Writeline('DataSet Serialization constructor');
             try
@@ -283,7 +282,6 @@ namespace Ict.Common.Data
  */
 
                     // it seems if the primary key constraint gets removed, then we are in trouble for deleted rows
-                    strSchemaWithKeys = strSchema;
                     strSchema = TypedDataSet.RemoveConstraintsFromSchema(strSchema);
 
                     // TLogging.Log("after: " + strSchema, TLoggingType.ToLogfile);

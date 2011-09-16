@@ -77,7 +77,7 @@ namespace Ict.Petra.Server.MConference.Instantiator
         public TMConferenceNamespaceLoader()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created in application domain: " + Thread.GetDomain().FriendlyName);
             }
@@ -109,7 +109,7 @@ namespace Ict.Petra.Server.MConference.Instantiator
             Byte[] rndbytes = new Byte[5];
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("TMConferenceNamespaceLoader.GetRemotingURL in AppDomain: " + Thread.GetDomain().FriendlyName);
             }
@@ -133,7 +133,7 @@ namespace Ict.Petra.Server.MConference.Instantiator
             FRemotingURL = RemoteAtURI; // FRemotedObject.URI;
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("TMConference.URI: " + FRemotedObject.URI);
             }
@@ -161,7 +161,7 @@ namespace Ict.Petra.Server.MConference.Instantiator
         public TMConference()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -181,7 +181,7 @@ namespace Ict.Petra.Server.MConference.Instantiator
             object MyObject;
             object MyObject2;
 #endif
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
                                                                                                 DateTime.Now.Ticks -
@@ -190,7 +190,7 @@ namespace Ict.Petra.Server.MConference.Instantiator
 
 #if DEBUGMODELONGRUNNINGFINALIZERS
             MyObject = new object();
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
             }
@@ -201,7 +201,7 @@ namespace Ict.Petra.Server.MConference.Instantiator
                 GC.KeepAlive(MyObject);
             }
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
             }
@@ -292,7 +292,7 @@ namespace Ict.Petra.Server.MConference.Instantiator.Cacheable
         public TCacheableNamespace()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -312,7 +312,7 @@ namespace Ict.Petra.Server.MConference.Instantiator.Cacheable
             object MyObject;
             object MyObject2;
 #endif
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
                                                                                                 DateTime.Now.Ticks -
@@ -321,7 +321,7 @@ namespace Ict.Petra.Server.MConference.Instantiator.Cacheable
 
 #if DEBUGMODELONGRUNNINGFINALIZERS
             MyObject = new object();
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
             }
@@ -332,7 +332,7 @@ namespace Ict.Petra.Server.MConference.Instantiator.Cacheable
                 GC.KeepAlive(MyObject);
             }
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
             }
@@ -364,7 +364,7 @@ namespace Ict.Petra.Server.MConference.Instantiator.WebConnectors
         public TWebConnectorsNamespace()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -384,7 +384,7 @@ namespace Ict.Petra.Server.MConference.Instantiator.WebConnectors
             object MyObject;
             object MyObject2;
 #endif
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
                                                                                                 DateTime.Now.Ticks -
@@ -393,7 +393,7 @@ namespace Ict.Petra.Server.MConference.Instantiator.WebConnectors
 
 #if DEBUGMODELONGRUNNINGFINALIZERS
             MyObject = new object();
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
             }
@@ -404,7 +404,7 @@ namespace Ict.Petra.Server.MConference.Instantiator.WebConnectors
                 GC.KeepAlive(MyObject);
             }
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
             }
@@ -421,10 +421,10 @@ namespace Ict.Petra.Server.MConference.Instantiator.WebConnectors
         }
 
         /// generated method from connector
-        public PUnitTable GetCampaignOptions(Int64 AUnitKey)
+        public PUnitTable GetOutreachOptions(Int64 AUnitKey)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions), "GetCampaignOptions", ";LONG;");
-            return Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions.GetCampaignOptions(AUnitKey);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions), "GetOutreachOptions", ";LONG;");
+            return Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions.GetOutreachOptions(AUnitKey);
         }
 
         /// generated method from connector
@@ -436,29 +436,29 @@ namespace Ict.Petra.Server.MConference.Instantiator.WebConnectors
         }
 
         /// generated method from connector
-        public bool GetEarliestAndLatestDate(Int64 AConferenceKey,
-                                             out DateTime AEarliestArrivalDate,
-                                             out DateTime ALatestDepartureDate,
-                                             out DateTime AStartDate,
-                                             out DateTime AEndDate)
+        public System.Boolean GetEarliestAndLatestDate(Int64 AConferenceKey,
+                                                       out DateTime AEarliestArrivalDate,
+                                                       out DateTime ALatestDepartureDate,
+                                                       out DateTime AStartDate,
+                                                       out DateTime AEndDate)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions), "GetEarliestAndLatestDate", ";LONG;DATETIME;DATETIME;DATETIME;DATETIME;");
             return Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions.GetEarliestAndLatestDate(AConferenceKey, out AEarliestArrivalDate, out ALatestDepartureDate, out AStartDate, out AEndDate);
         }
 
         /// generated method from connector
-        public System.Boolean GetCampaignOptions(long AUnitKey,
+        public System.Boolean GetOutreachOptions(System.Int64 AUnitKey,
                                                  out System.Data.DataTable AConferenceTable)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions), "GetCampaignOptions", ";LONG;DATATABLE;");
-            return Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions.GetCampaignOptions(AUnitKey, out AConferenceTable);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions), "GetOutreachOptions", ";LONG;DATATABLE;");
+            return Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions.GetOutreachOptions(AUnitKey, out AConferenceTable);
         }
 
         /// generated method from connector
-        public bool GetFieldUnits(Int64 AConferenceKey,
-                                  TUnitTypeEnum AFieldTypes,
-                                  out DataTable AFieldsTable,
-                                  out String AConferencePrefix)
+        public System.Boolean GetFieldUnits(Int64 AConferenceKey,
+                                            TUnitTypeEnum AFieldTypes,
+                                            out DataTable AFieldsTable,
+                                            out String AConferencePrefix)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions), "GetFieldUnits", ";LONG;TUNITTYPEENUM;DATATABLE;STRING;");
             return Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions.GetFieldUnits(AConferenceKey, AFieldTypes, out AFieldsTable, out AConferencePrefix);

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -80,6 +80,32 @@ namespace Ict.Common.IO
             StreamWriter sw = new StreamWriter(filename, false, oldEncoding);
             sw.Write(lines.Replace("\r", "").Replace("\n", "\r\n"));
             sw.Close();
+        }
+
+        /// <summary>
+        /// convert a text file from a given code page to Unicode
+        /// </summary>
+        /// <param name="AFilename"></param>
+        /// <param name="AEncodingCodePage"></param>
+        public static void ConvertToUnicode(String AFilename, String AEncodingCodePage)
+        {
+            Encoding SourceEncoding = Encoding.Default;
+
+            try
+            {
+                SourceEncoding = Encoding.GetEncoding(Convert.ToInt32(AEncodingCodePage));
+            }
+            catch (Exception)
+            {
+                SourceEncoding = Encoding.GetEncoding(AEncodingCodePage);
+            }
+
+            StreamReader reader = new StreamReader(AFilename, SourceEncoding);
+            string Content = reader.ReadToEnd();
+            reader.Close();
+            StreamWriter writer = new StreamWriter(AFilename, false, Encoding.Unicode);
+            writer.Write(Content);
+            writer.Close();
         }
 
         /// <summary>
@@ -216,17 +242,7 @@ namespace Ict.Common.IO
                 if (System.IO.File.Exists(AOrigFilename))
                 {
                     // create backup of original file
-                    int backupnr = 0;
-
-                    while (File.Exists(AOrigFilename + "." + backupnr.ToString() + ".bak"))
-                    {
-                        backupnr++;
-                    }
-
-                    File.Copy(AOrigFilename, AOrigFilename + "." + backupnr.ToString() + ".bak");
-
-                    // delete original file
-                    System.IO.File.Delete(AOrigFilename);
+                    TFileHelper.MoveToBackup(AOrigFilename);
                 }
 
                 System.IO.File.Move(NewFilename, AOrigFilename);

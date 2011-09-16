@@ -500,7 +500,7 @@ namespace Ict.Petra.Client.App.Core
                 DataTable TmpDT;
 
                 // Refresh the Cacheable DataTable on the Serverside and return it
-                TRemote.MSysMan.Application.Cacheable.RefreshCacheableTable(ACacheableTable, out TmpDT);
+                TRemote.MSysMan.Cacheable.RefreshCacheableTable(ACacheableTable, out TmpDT);
                 UCacheableTablesManager.AddOrRefreshCachedTable(TmpDT, -1);
 
                 // Update the cached DataTable file
@@ -716,7 +716,7 @@ namespace Ict.Petra.Client.App.Core
                 CacheableMSysManTable = (TCacheableSysManTablesEnum)Enum.Parse(typeof(TCacheableSysManTablesEnum), ACacheableTableName);
 
                 // PetraServer method call
-                ReturnValue = TRemote.MSysMan.Application.Cacheable.GetCacheableTable(CacheableMSysManTable, AHashCode, out ACacheableTableSystemType);
+                ReturnValue = TRemote.MSysMan.Cacheable.GetCacheableTable(CacheableMSysManTable, AHashCode, out ACacheableTableSystemType);
             }
             else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheablePersonTablesEnum)), ACacheableTableName) != -1)
             {

@@ -40,6 +40,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private Int32 FLedgerNumber;
         private Int32 FSelectedBatchNumber;
         private DateTime FDateEffective;
+        /// <summary>
+        /// Refresh the data in the grid and the details after the database content was changed on the server
+        /// </summary>
+        public void RefreshAll()
+        {
+            FPetraUtilsObject.DisableDataChangedEvent();
+            LoadBatches(FLedgerNumber);
+            FPetraUtilsObject.EnableDataChangedEvent();
+        }
 
         /// <summary>
         /// load the batches into the grid
@@ -195,11 +204,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 // TODO: print reports on successfully posted batch
                 MessageBox.Show(Catalog.GetString("The batch has been posted successfully!"));
-
-                // TODO: refresh the grid, to reflect that the batch has been posted
-                LoadBatches(FLedgerNumber);
-
-                FPetraUtilsObject.DisableSaveButton();
+                RefreshAll();
             }
         }
 
@@ -242,6 +247,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             exportForm.LedgerNumber = FLedgerNumber;
             exportForm.MainDS = FMainDS;
             exportForm.Show();
+        }
+
+        private void ReverseGiftBatch(System.Object sender, System.EventArgs e)
+        {
+            ((TFrmGiftBatch)ParentForm).GetTransactionsControl().ShowRevertAdjustForm("ReverseGiftBatch");
         }
 
         /// <summary>

@@ -63,6 +63,26 @@ namespace Ict.Common
         public const int DEBUGLEVEL_TRACE = 10;
 
         /// <summary>
+        /// the debuglevel that is required for saving some detailed log files for the reporting
+        /// </summary>
+        public const int DEBUGLEVEL_REPORTING = 5;
+
+        /// <summary>
+        /// some log messages will be only displayed at a certain DebugLevel
+        /// </summary>
+        public static int DebugLevel = 0;
+
+        /// <summary>DL is a abbreviated synonym for DebugLevel (more convenient)</summary>
+        public static int DL
+        {
+            get
+            {
+                return DebugLevel;
+            }
+        }
+
+
+        /// <summary>
         /// this is the default prefix for the username
         /// </summary>
         public const string DEFAULTUSERNAMEPREFIX = "MiB";
@@ -276,11 +296,17 @@ namespace Ict.Common
         }
 
         /// <summary>
-        /// log the current stack trace; it is recommended to use SafeLogStackTrace instead
+        /// log the current stack trace; on Mono, that does not fully work
         /// </summary>
         /// <param name="ALoggingtype">destination of logging</param>
         public static void LogStackTrace(TLoggingType ALoggingtype)
         {
+            if (Utilities.DetermineExecutingCLR() == TExecutingCLREnum.eclrMono)
+            {
+                // not printing the stacktrace since that could cause an exception
+                return;
+            }
+
             StackTrace st;
             StackFrame sf;
             Int32 Counter;

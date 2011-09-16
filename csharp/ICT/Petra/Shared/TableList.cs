@@ -162,7 +162,7 @@ namespace Ict.Petra.Shared
             list.Add("pt_special_applicant");
             list.Add("pt_leadership_rating");
             list.Add("pt_arrival_point");
-            list.Add("pt_xyz_tbd_preference_level");
+            list.Add("pt_outreach_preference_level");
             list.Add("pt_congress_code");
             list.Add("pt_party_type");
             list.Add("pt_travel_type");
@@ -218,6 +218,7 @@ namespace Ict.Petra.Shared
             list.Add("p_banking_details");
             list.Add("p_partner_banking_details");
             list.Add("p_banking_details_usage");
+            list.Add("p_partner_tax_deductible_pct");
             list.Add("p_partner_type");
             list.Add("p_partner_relationship");
             list.Add("p_partner_ledger");
@@ -271,6 +272,7 @@ namespace Ict.Petra.Shared
             list.Add("p_data_label_value_application");
             list.Add("pm_interview");
             list.Add("pm_person_evaluation");
+            list.Add("pm_person_absence");
             list.Add("pm_person_vision");
             list.Add("pm_special_need");
             list.Add("pm_staff_data");
@@ -429,6 +431,7 @@ namespace Ict.Petra.Shared
             list.Add("seq_ar_invoice");
             list.Add("seq_match_number");
             list.Add("seq_statement_number");
+            list.Add("seq_login_process_id");
 
             #endregion
             return list;

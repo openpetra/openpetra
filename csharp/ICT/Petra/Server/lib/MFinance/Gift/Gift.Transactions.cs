@@ -25,22 +25,21 @@ using System;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Data;
-using System.Diagnostics;
 
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Server.MFinance.Account.Data.Access;
+using Ict.Petra.Server.MFinance.Gift.Data.Access;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
-using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Shared.MFinance.Gift.Data;
-using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Server.MPartner.Partner.Data.Access;
-
+using Ict.Petra.Server.MFinance.Common;
 
 namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 {
@@ -150,8 +149,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// create a gift batch from a recurring gift batch
         /// including gift and gift detail
         /// </summary>
-        /// <param name="requestParams ">HashTable with many parameters</param>
-        /// <param name="AMessages ">Output structure for user error messages</param>
+        /// <param name="requestParams">HashTable with many parameters</param>
+        /// <param name="AMessages">Output structure for user error messages</param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
         public static Boolean SubmitRecurringGiftBatch(Hashtable requestParams, out TVerificationResultCollection AMessages)
@@ -622,8 +621,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             journal.JournalPeriod = giftbatch.BatchPeriod;
             journal.TransactionCurrency = giftbatch.CurrencyCode;
             journal.JournalDescription = batch.BatchDescription;
-            journal.TransactionTypeCode = MFinanceConstants.TRANSACTION_GIFT;
-            journal.SubSystemCode = MFinanceConstants.SUB_SYSTEM_GR;
+            journal.TransactionTypeCode = CommonAccountingTransactionTypesEnum.GR.ToString();
+            journal.SubSystemCode = CommonAccountingSubSystemsEnum.GR.ToString();
             journal.LastTransactionNumber = 0;
             journal.DateOfEntry = DateTime.Now;
 
@@ -785,7 +784,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         out AVerifications) == TSubmitChangesResult.scrOK)
                 {
                     // post the batch
-                    if (!Ict.Petra.Server.MFinance.GL.TGLPosting.PostGLBatch(ALedgerNumber, batch.BatchNumber,
+                    if (!TGLPosting.PostGLBatch(ALedgerNumber, batch.BatchNumber,
                             out AVerifications))
                     {
                         // TODO: what if posting fails? do we have an orphaned GL batch lying around? can this be put into one single transaction? probably not

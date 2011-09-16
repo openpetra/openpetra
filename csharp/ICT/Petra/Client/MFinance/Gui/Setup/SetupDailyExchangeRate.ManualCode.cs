@@ -117,7 +117,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             DateTime dateLimit = dteEffective.AddDays(1.0);
             // Do not use local formats here!
-            DateTimeFormatInfo dateTimeFormat = new System.Globalization.CultureInfo(String.Empty, false).DateTimeFormat;
+            DateTimeFormatInfo dateTimeFormat =
+                new System.Globalization.CultureInfo(String.Empty, false).DateTimeFormat;
             string dateString = dateLimit.ToString("d", dateTimeFormat);
 
             FMainDS.ADailyExchangeRate.DefaultView.RowFilter = 
@@ -194,10 +195,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 {
                     // Code tut nicht!
                     SelectDetailRowByDataTableIndex(0);
-                    ADailyExchangeRateRow DailyExchangeRateRow = (ADailyExchangeRateRow)(FMainDS.ADailyExchangeRate.DefaultView[0].Row);
+                    ADailyExchangeRateRow DailyExchangeRateRow = 
+                        (ADailyExchangeRateRow)(FMainDS.ADailyExchangeRate.DefaultView[0].Row);
                     return DailyExchangeRateRow.RateOfExchange;
                 }
-                catch
+                catch (Exception)
                 {
                     return 1.0m;
                 }
@@ -290,7 +292,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if (!blnUseDateTimeDefault)
             {
-                //For Daily exchange rate must be 1st of the month, for Daily can be now
+                //For Corpoate Exchange Rate must be 1st of the month, for Daily Exchange Rate it must be now
                 dateTimeNow = DateTime.Now;
             }
             else
@@ -475,7 +477,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 DateTime dateLimit = dtpDetailDateEffectiveFrom.Date.Value.AddDays(1.0);
                 // Do not use local formats here!
-                DateTimeFormatInfo dateTimeFormat = new System.Globalization.CultureInfo("en-US", false).DateTimeFormat;
+                DateTimeFormatInfo dateTimeFormat = new 
+                    System.Globalization.CultureInfo("en-US", false).DateTimeFormat;
                 string dateString = dateLimit.ToString("d", dateTimeFormat);
                 FMainDS.ADailyExchangeRate.DefaultView.RowFilter = 
                     ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " < '" + dateString + "'";
@@ -490,7 +493,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             cmbDetailToCurrencyCode.Enabled = false;
-            //txtDetailRateOfExchange.Enabled = false;
             dtpDetailDateEffectiveFrom.Enabled = false;
         }
 

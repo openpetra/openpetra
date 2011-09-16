@@ -92,12 +92,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             ARow.AccountCode = MFinanceConstants.ADMIN_FEE_INCOME_ACCT.ToString();
             ARow.DrAccountCode = MFinanceConstants.ADMIN_FEE_EXPENSE_ACCT.ToString();
         }
-
-        private void InitializeManualCode()
-        {
-            txtReceivingFund.Text = Catalog.GetString("Receiving Fund");
-        }
-        
         
         private void ChargeOptionChanged(object sender, EventArgs e)
         {

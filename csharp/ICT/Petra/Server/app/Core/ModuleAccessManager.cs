@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -115,7 +115,7 @@ namespace Ict.Petra.Server.App.Core.Security
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 8)
+                    if (TLogging.DL >= 8)
                     {
                         Console.WriteLine("TModuleAccessManager.LoadUserModules: committed own transaction.");
                     }
@@ -262,7 +262,7 @@ namespace Ict.Petra.Server.App.Core.Security
 
                     try
                     {
-                        bool hasPermission = CheckUserModulePermissions(moduleExpression);
+                        CheckUserModulePermissions(moduleExpression);
                     }
                     catch (EvaluateException evException)
                     {

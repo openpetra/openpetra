@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -75,7 +75,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     }
 
                     // get a new partner key
-                    Int64 SiteKey = Convert.ToInt64(TYml2Xml.GetAttributeRecursive(LocalNode, "SiteKey"));
                     newPartner.PartnerKey = TImportExportWebConnector.NewPartnerKey;
                     TImportExportWebConnector.NewPartnerKey--;
 
@@ -103,8 +102,14 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
 
                     if (TYml2Xml.GetAttributeRecursive(LocalNode, "class") == MPartnerConstants.PARTNERCLASS_PERSON)
                     {
-                        throw new Exception(
-                            "We are currently not supporting import of PERSON records, until we have resolved the issues with household/family");
+                        if (TAppSettingsManager.GetValue("AllowCreationPersonRecords", "false", false).ToLower() != "true")
+                        {
+                            throw new Exception(
+                                "We are currently not supporting import of PERSON records, until we have resolved the issues with household/family. "
+                                +
+                                "Please add configuration parameter AllowCreationPersonRecords with value true if you want to use PERSON records");
+                        }
+
                         // TODO
                     }
                     else if (TYml2Xml.GetAttributeRecursive(LocalNode, "class") == MPartnerConstants.PARTNERCLASS_ORGANISATION)
@@ -234,10 +239,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static PartnerImportExportTDS ImportFromPartnerExtract(string[] ATextFileLines, out TVerificationResultCollection AVerificationResult)
         {
-            AVerificationResult = new TVerificationResultCollection();
-
             TPartnerFileImport Importer = new TPartnerFileImport();
-            PartnerImportExportTDS MainDS = Importer.ImportAllData(ATextFileLines);
+            PartnerImportExportTDS MainDS = Importer.ImportAllData(ATextFileLines, string.Empty, true, out AVerificationResult);
 
             // TODO: check for updated partners, matching addresses etc.
 

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,10 +28,17 @@ using System.Diagnostics;
 
 namespace Ict.Tools.NAntTasks
 {
+    /// <summary>
+    /// run commands against a MySQL database
+    /// </summary>
     [TaskName("psql")]
     public class PsqlTask : NAnt.Core.Task
     {
         private string FPsqlExecutable;
+
+        /// <summary>
+        /// path to the psql executable
+        /// </summary>
         [TaskAttribute("exe", Required = true)]
         public string PsqlExecutable {
             get
@@ -45,6 +52,10 @@ namespace Ict.Tools.NAntTasks
         }
 
         private string FDatabase;
+
+        /// <summary>
+        /// name of the database
+        /// </summary>
         [TaskAttribute("database", Required = true)]
         public string Database {
             get
@@ -58,6 +69,10 @@ namespace Ict.Tools.NAntTasks
         }
 
         private string FSQLCommand = String.Empty;
+
+        /// <summary>
+        /// the sql command that should be executed
+        /// </summary>
         [TaskAttribute("sqlcommand", Required = false)]
         public string SQLCommand {
             get
@@ -71,6 +86,10 @@ namespace Ict.Tools.NAntTasks
         }
 
         private string FSQLFile = String.Empty;
+
+        /// <summary>
+        /// name of the file that contains sql statements that should be executed
+        /// </summary>
         [TaskAttribute("sqlfile", Required = false)]
         public string SQLFile {
             get
@@ -84,6 +103,10 @@ namespace Ict.Tools.NAntTasks
         }
 
         private string FOutputFile = String.Empty;
+
+        /// <summary>
+        /// name of the file that contains sql statements that should be executed
+        /// </summary>
         [TaskAttribute("outputfile", Required = false)]
         public string OutputFile {
             get
@@ -97,6 +120,10 @@ namespace Ict.Tools.NAntTasks
         }
 
         private string FPassword = String.Empty;
+
+        /// <summary>
+        /// the password of the database user
+        /// </summary>
         [TaskAttribute("password", Required = false)]
         public string Password {
             get
@@ -109,8 +136,13 @@ namespace Ict.Tools.NAntTasks
             }
         }
 
+        /// <summary>
+        /// run the task
+        /// </summary>
         protected override void ExecuteTask()
         {
+            bool Failure = false;
+
             System.Diagnostics.Process process;
             process = new System.Diagnostics.Process();
             process.EnableRaisingEvents = false;
@@ -151,7 +183,7 @@ namespace Ict.Tools.NAntTasks
 
             process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             process.StartInfo.UseShellExecute = false;
-            process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.RedirectStandardError = true;
             process.EnableRaisingEvents = true;
             try
             {
@@ -165,7 +197,7 @@ namespace Ict.Tools.NAntTasks
                 throw new Exception("cannot start " + process.StartInfo.FileName + Environment.NewLine + exp.Message);
             }
 
-            string[] output = process.StandardOutput.ReadToEnd().Split('\n');
+            string[] output = process.StandardError.ReadToEnd().Split('\n');
 
             foreach (string line in output)
             {
@@ -173,6 +205,11 @@ namespace Ict.Tools.NAntTasks
                       || line.Trim().StartsWith("DELETE")))
                 {
                     Console.WriteLine(line);
+                }
+
+                if (line.Contains(" error at"))
+                {
+                    Failure = true;
                 }
             }
 
@@ -184,6 +221,11 @@ namespace Ict.Tools.NAntTasks
             if (FailOnError && (process.ExitCode != 0))
             {
                 throw new Exception("Exit Code " + process.ExitCode.ToString() + " shows that something went wrong");
+            }
+
+            if (FailOnError && Failure)
+            {
+                throw new Exception("Output shows that something went wrong");
             }
         }
     }

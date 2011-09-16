@@ -4,7 +4,7 @@
   <Parameter id="xmlfiles" value="Partner\\partnercontactreport.xml" />
   <Parameter id="currentReport" value="Partner Contact" />
   <Parameter id="MaxDisplayColumns" value="10" />
-  <Parameter id="param_selection" value="one partner" />
+  <Parameter id="param_selection" value="an extract" />
   <Parameter id="param_partnerkey" value="0" />
   <Parameter id="param_order_by_name" value="PartnerName" />
   <Parameter id="param_cmbContactor" value="*" />

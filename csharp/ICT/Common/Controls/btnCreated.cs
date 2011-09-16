@@ -4,7 +4,7 @@
 // @Authors:
 //       markusm, berndr
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -98,7 +98,6 @@ namespace Ict.Common.Controls
         private string FCreatedBy;
         private System.DateTime FDateModified;
         private string FModifiedBy;
-        private TButtonImage FButtonImage;
         private string FToolTipString;
 
         #region property getter and setter
@@ -246,7 +245,6 @@ namespace Ict.Common.Controls
             //
             InitializeComponent();
             this.SetDefaults();
-            this.FButtonImage = new TButtonImage();
             this.Image = TButtonImage.FPersonImage;
         }
 

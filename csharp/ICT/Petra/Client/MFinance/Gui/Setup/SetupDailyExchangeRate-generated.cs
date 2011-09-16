@@ -276,11 +276,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
     {
         if (ARow != null)
         {
+            ARow.BeginEdit();
             ARow.FromCurrencyCode = cmbDetailFromCurrencyCode.GetSelectedString();
             ARow.ToCurrencyCode = cmbDetailToCurrencyCode.GetSelectedString();
             ARow.DateEffectiveFrom = dtpDetailDateEffectiveFrom.Date.Value;
             ARow.RateOfExchange = Convert.ToDecimal(txtDetailRateOfExchange.NumberValueDecimal);
             GetDetailDataFromControlsManual(ARow);
+            ARow.EndEdit();
         }
     }
 

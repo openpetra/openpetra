@@ -30,6 +30,7 @@ NamespaceHierarchy:
             UIConnectors: {Description=User Interface Connectors}
             WebConnectors: {Description=Web Connectors}
     Personnel: {Description=Personnel Module}
+        WebConnectors: {Description=Web Connectors}
         Person: {Description=Person Sub-System}
             DataElements: {Description=DataElements Sub-System}
                 Applications: {Description=Applications}
@@ -83,7 +84,6 @@ NamespaceHierarchy:
         Application: {Description=Application Sub-System}
             UIConnectors: {Description=User Interface Connectors}
             ServerLookups: {Description=ServerLookups}
-            Cacheable: {Description=Cacheable DataTables}
         Maintenance: {Description=Maintenance Sub-System}
             SystemDefaults:
             UIConnectors:
@@ -98,3 +98,4 @@ NamespaceHierarchy:
         Security: {Description=Security Sub-System}
             UIConnectors: {Description=User Interface Connectors}
             UserManager:
+        Cacheable: {Description=Cacheable DataTables}

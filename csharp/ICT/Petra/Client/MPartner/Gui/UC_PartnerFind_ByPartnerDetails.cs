@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -87,10 +87,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         private IPartnerUIConnectorsPartnerFind FPartnerFindObject;
 
 //TODO        private Int32 FSplitterDistForm;
-        private Int32 FSplitterDistFindByDetails;
+//TODO        private Int32 FSplitterDistFindByDetails;
         private bool FPartnerInfoPaneOpen = false;
         private bool FPartnerTasksPaneOpen = false;
-
+        private TUC_PartnerInfo FPartnerInfoUC;
         /// <summary>
         /// event for when the search result changes, and more or less partners match the search criteria
         /// </summary>
@@ -238,6 +238,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void InitUserControl()
         {
+            ucoPartnerInfo.HostedControlKind = THostedControlKind.hckUserControl;
+            ucoPartnerInfo.UserControlClass = "TUC_PartnerInfo";          // TUC_PartnerInfo
+            ucoPartnerInfo.UserControlNamespace = "Ict.Petra.Client.MPartner.Gui";
         }
 
         /// <summary>
@@ -778,12 +781,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                             && FLastSearchWasDetailedSearch))
                     {
                         // We have Location data available
-                        ucoPartnerInfo.PassPartnerDataPartialWithLocation(FLogic.PartnerKey, FLogic.CurrentDataRow);
+                        FPartnerInfoUC.PassPartnerDataPartialWithLocation(FLogic.PartnerKey, FLogic.CurrentDataRow);
                     }
                     else
                     {
                         // We don't have Location data available
-                        ucoPartnerInfo.PassPartnerDataPartialWithoutLocation(FLogic.PartnerKey, FLogic.CurrentDataRow);
+                        FPartnerInfoUC.PassPartnerDataPartialWithoutLocation(FLogic.PartnerKey, FLogic.CurrentDataRow);
                     }
                 }
             }
@@ -819,6 +822,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             OnPartnerInfoPaneExpanded();
 
             ucoPartnerInfo.Expand();
+
+            if (FPartnerInfoUC == null)
+            {
+                FPartnerInfoUC = ((TUC_PartnerInfo)(ucoPartnerInfo.UserControlInstance));
+            }
 
             UpdatePartnerInfoPanel();
 
@@ -1001,7 +1009,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             spcPartnerFindByDetails.SplitterDistance = TUserDefaults.GetInt32Default(
                 TUserDefaults.PARTNER_FIND_SPLITPOS_FINDBYDETAILS, 233);
-            FSplitterDistFindByDetails = spcPartnerFindByDetails.SplitterDistance;
+            // TODO FSplitterDistFindByDetails = spcPartnerFindByDetails.SplitterDistance;
         }
 
         /// <summary>
@@ -1013,6 +1021,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (!FKeepUpSearchFinishedCheck)
             {
+                FPartnerInfoUC = ((TUC_PartnerInfo)(ucoPartnerInfo.UserControlInstance));
+
                 // get the data from the currently edited control;
                 // otherwise there are not the right search criteria when hitting the enter key
                 ucoPartnerFindCriteria.CompleteBindings();
@@ -1033,7 +1043,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // Update UI
                 grdResult.SendToBack();
                 grpResult.Text = Resourcestrings.StrSearchResult;
-                ucoPartnerInfo.ClearControls();
+
+                if (FPartnerInfoUC != null)
+                {
+                    FPartnerInfoUC.ClearControls();
+                }
+
                 lblSearchInfo.Text = Resourcestrings.StrSearching;
                 FPetraUtilsObject.SetStatusBarText(btnSearch, Resourcestrings.StrSearching);
 
@@ -1090,7 +1105,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void BtnClearCriteria_Click(System.Object sender, System.EventArgs e)
         {
             ucoPartnerFindCriteria.ResetSearchCriteriaValuesToDefault();
-            ucoPartnerInfo.ClearControls();
+            FPartnerInfoUC.ClearControls();
             lblSearchInfo.Text = "";
             grpResult.Text = Resourcestrings.StrSearchResult;
             grdResult.SendToBack();
@@ -1143,7 +1158,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             string PartnerClass = String.Empty;
             string CountryCode = String.Empty;
-            string CallerContext = String.Empty;
+
+            // string CallerContext = String.Empty;
+
             TFrmPartnerEdit frm;
 
             this.Cursor = Cursors.WaitCursor;
@@ -1174,8 +1191,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                      * determine whether the 'Form Message' received is for *this* Instance
                      * of the Modal Partner Find screen.
                      */
-// TODO                    FNewPartnerContext = System.Guid.NewGuid().ToString();
-                    CallerContext = System.Guid.NewGuid().ToString();
+// TODO             FNewPartnerContext = System.Guid.NewGuid().ToString();
+//                  CallerContext = System.Guid.NewGuid().ToString();
 
                     PartnerClass = PartnerClass.Replace("OM-FAM", "FAMILY");
                 }
@@ -1591,7 +1608,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         void spcPartnerFindByDetails_SplitterMoved(System.Object sender, System.Windows.Forms.SplitterEventArgs e)
         {
-            FSplitterDistFindByDetails = ((SplitContainer)sender).SplitterDistance;
+            // TODO FSplitterDistFindByDetails = ((SplitContainer)sender).SplitterDistance;
         }
 
         private void GrpCriteria_Enter(System.Object sender, System.EventArgs e)
@@ -1734,7 +1751,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>todoComment</summary>
         public void StopTimer()
         {
-            ucoPartnerInfo.StopTimer();
+            if (FPartnerInfoUC != null)
+            {
+                FPartnerInfoUC.StopTimer();
+            }
         }
 
         /// <summary>

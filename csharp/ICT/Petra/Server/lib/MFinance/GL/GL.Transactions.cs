@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, matthiash
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -42,6 +42,7 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.GL.Data.Access;
 using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Server.MFinance.Common;
 
 namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 {
@@ -150,28 +151,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static GLBatchTDS CreateABatch(Int32 ALedgerNumber)
         {
-            GLBatchTDS MainDS = new GLBatchTDS();
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
-            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
-
-            DBAccess.GDBAccessObj.RollbackTransaction();
-
-            ABatchRow NewRow = MainDS.ABatch.NewRowTyped(true);
-            NewRow.LedgerNumber = ALedgerNumber;
-            MainDS.ALedger[0].LastBatchNumber++;
-            NewRow.BatchNumber = MainDS.ALedger[0].LastBatchNumber;
-            NewRow.BatchPeriod = MainDS.ALedger[0].CurrentPeriod;
-            MainDS.ABatch.Rows.Add(NewRow);
-
-            TVerificationResultCollection VerificationResult;
-
-            if (GLBatchTDSAccess.SubmitChanges(MainDS, out VerificationResult) == TSubmitChangesResult.scrOK)
-            {
-                MainDS.AcceptChanges();
-            }
-
-            return MainDS;
+            return TGLPosting.CreateABatch(ALedgerNumber);
         }
 
         /// <summary>
@@ -303,6 +283,90 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static bool PostGLBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out TVerificationResultCollection AVerifications)
         {
             return TGLPosting.PostGLBatch(ALedgerNumber, ABatchNumber, out AVerifications);
+        }
+
+        /// <summary>
+        /// return a string that shows the balances of the accounts involved, if the GL Batch was posted
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AVerifications"></param>
+        [RequireModulePermission("FINANCE-1")]
+        public static List <TVariant>TestPostGLBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out TVerificationResultCollection AVerifications)
+        {
+            GLBatchTDS MainDS;
+            bool success = TGLPosting.PostGLBatchInternal(ALedgerNumber, ABatchNumber, out AVerifications, out MainDS);
+
+            List <TVariant>Result = new List <TVariant>();
+
+            if (success)
+            {
+                MainDS.AGeneralLedgerMaster.DefaultView.RowFilter = string.Empty;
+                MainDS.AAccount.DefaultView.RowFilter = string.Empty;
+                MainDS.ACostCentre.DefaultView.RowFilter = string.Empty;
+                MainDS.AGeneralLedgerMaster.DefaultView.Sort = AGeneralLedgerMasterTable.GetGlmSequenceDBName();
+                MainDS.ACostCentre.DefaultView.Sort = ACostCentreTable.GetCostCentreCodeDBName();
+                MainDS.AAccount.DefaultView.Sort = AAccountTable.GetAccountCodeDBName();
+
+                foreach (AGeneralLedgerMasterPeriodRow glmRow in MainDS.AGeneralLedgerMasterPeriod.Rows)
+                {
+                    if ((glmRow.PeriodNumber == MainDS.ABatch[0].BatchPeriod) && (glmRow.RowState != DataRowState.Unchanged))
+                    {
+                        Int32 masterIndex = MainDS.AGeneralLedgerMaster.DefaultView.Find(glmRow.GlmSequence);
+
+                        if (masterIndex == -1)
+                        {
+                            // not exactly sure why those records are missing, perhaps they would be zero?
+                            // TLogging.Log("cannot find glm sequence " + glmRow.GlmSequence.ToString() + " in glm");
+                            continue;
+                        }
+
+                        AGeneralLedgerMasterRow masterRow =
+                            (AGeneralLedgerMasterRow)
+                            MainDS.AGeneralLedgerMaster.DefaultView[masterIndex].Row;
+
+                        ACostCentreRow ccRow =
+                            (ACostCentreRow)
+                            MainDS.ACostCentre.DefaultView[MainDS.ACostCentre.DefaultView.Find(masterRow.CostCentreCode)].Row;
+
+                        // only consider the top level cost centre
+                        if (ccRow.IsCostCentreToReportToNull())
+                        {
+                            AAccountRow accRow =
+                                (AAccountRow)
+                                MainDS.AAccount.DefaultView[MainDS.AAccount.DefaultView.Find(masterRow.AccountCode)].Row;
+
+                            // only modified accounts have been loaded to the dataset, therefore report on all accounts available
+                            if (accRow.PostingStatus)
+                            {
+                                decimal CurrentValue = 0.0m;
+
+                                if (glmRow.RowState == DataRowState.Modified)
+                                {
+                                    CurrentValue = (decimal)glmRow[AGeneralLedgerMasterPeriodTable.ColumnActualBaseId, DataRowVersion.Original];
+                                }
+
+                                decimal DebitCredit = 1.0m;
+
+                                if (accRow.DebitCreditIndicator && (accRow.AccountType != MFinanceConstants.ACCOUNT_TYPE_ASSET))
+                                {
+                                    DebitCredit = -1.0m;
+                                }
+
+                                // only return values, the client compiles the message, with Catalog.GetString
+                                TVariant values = new TVariant(accRow.AccountCode);
+                                values.Add(new TVariant(accRow.AccountCodeShortDesc), "", false);
+                                values.Add(new TVariant(CurrentValue * DebitCredit), "", false);
+                                values.Add(new TVariant(glmRow.ActualBase * DebitCredit), "", false);
+
+                                Result.Add(values);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return Result;
         }
 
         /// <summary>
@@ -470,10 +534,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             {
                 // sort rates by date, look for rate just before the date we are looking for
                 ExchangeRates.DefaultView.Sort = ACorporateExchangeRateTable.GetDateEffectiveFromDBName();
-                ExchangeRates.DefaultView.RowFilter = ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + ">= '" +
-                                                      AStartDate.ToString("dd/MM/yyyy") + "' AND " +
-                                                      ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + "<= '" +
-                                                      AEndDate.ToString("dd/MM/yyyy") + "'";
+                ExchangeRates.DefaultView.RowFilter = ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + ">= #" +
+                                                      AStartDate.ToString("yyyy-MM-dd") + "# AND " +
+                                                      ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + "<= #" +
+                                                      AEndDate.ToString("yyyy-MM-dd") + "#";
 
                 if (ExchangeRates.DefaultView.Count > 0)
                 {
@@ -493,10 +557,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 {
                     // sort rates by date, look for rate just before the date we are looking for
                     ExchangeRates.DefaultView.Sort = ACorporateExchangeRateTable.GetDateEffectiveFromDBName();
-                    ExchangeRates.DefaultView.RowFilter = ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + ">= '" +
-                                                          AStartDate.ToString("dd/MM/yyyy") + "' AND " +
-                                                          ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + "<= '" +
-                                                          AEndDate.ToString("dd/MM/yyyy") + "'";
+                    ExchangeRates.DefaultView.RowFilter = ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + ">= #" +
+                                                          AStartDate.ToString("yyyy-MM-dd") + "# AND " +
+                                                          ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + "<= #" +
+                                                          AEndDate.ToString("yyyy-MM-dd") + "#";
 
                     if (ExchangeRates.DefaultView.Count > 0)
                     {
@@ -550,10 +614,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             {
                 // sort rates by date, look for rate just before the date we are looking for
                 PrevExchangeRates.DefaultView.Sort = APrevYearCorpExRateTable.GetDateEffectiveFromDBName();
-                PrevExchangeRates.DefaultView.RowFilter = APrevYearCorpExRateTable.GetDateEffectiveFromDBName() + ">= '" +
-                                                          AStartDate.ToString("dd/MM/yyyy") + "' AND " +
-                                                          APrevYearCorpExRateTable.GetDateEffectiveFromDBName() + "<= '" +
-                                                          AEndDate.ToString("dd/MM/yyyy") + "'";
+                PrevExchangeRates.DefaultView.RowFilter = APrevYearCorpExRateTable.GetDateEffectiveFromDBName() + ">= #" +
+                                                          AStartDate.ToString("yyyy-MM-dd") + "# AND " +
+                                                          APrevYearCorpExRateTable.GetDateEffectiveFromDBName() + "<= #" +
+                                                          AEndDate.ToString("yyyy-MM-dd") + "#";
 
                 if (PrevExchangeRates.DefaultView.Count > 0)
                 {
@@ -573,10 +637,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 {
                     // sort rates by date, look for rate just before the date we are looking for
                     PrevExchangeRates.DefaultView.Sort = APrevYearCorpExRateTable.GetDateEffectiveFromDBName();
-                    PrevExchangeRates.DefaultView.RowFilter = APrevYearCorpExRateTable.GetDateEffectiveFromDBName() + ">= '" +
-                                                              AStartDate.ToString("dd/MM/yyyy") + "' AND " +
-                                                              APrevYearCorpExRateTable.GetDateEffectiveFromDBName() + "<= '" +
-                                                              AEndDate.ToString("dd/MM/yyyy") + "'";
+                    PrevExchangeRates.DefaultView.RowFilter = APrevYearCorpExRateTable.GetDateEffectiveFromDBName() + ">= #" +
+                                                              AStartDate.ToString("yyyy-MM-dd") + "# AND " +
+                                                              APrevYearCorpExRateTable.GetDateEffectiveFromDBName() + "<= #" +
+                                                              AEndDate.ToString("yyyy-MM-dd") + "#";
 
                     if (PrevExchangeRates.DefaultView.Count > 0)
                     {

@@ -93,7 +93,7 @@ namespace Ict.Tools.PatchTool
         /// to be called from PetraClient
         /// the latest patch zip files have already been copied;
         /// </summary>
-        public static void PatchRemoteInstallation(TAppSettingsManager appOpts)
+        public static void PatchRemoteInstallation()
         {
             String oldPatchVersion;
             TPetraPatchTools patchTools;
@@ -103,12 +103,12 @@ namespace Ict.Tools.PatchTool
             startPetraClient = true;
             TLogging.SetStatusBarProcedure(new TLogging.TStatusCallbackProcedure(WriteToStatusWindow));
             patchTools =
-                new TPetraPatchTools(appOpts.GetValue("OpenPetra.Path"),
-                    appOpts.GetValue("OpenPetra.PathTemp"),
+                new TPetraPatchTools(TAppSettingsManager.GetValue("OpenPetra.Path"),
+                    TAppSettingsManager.GetValue("OpenPetra.PathTemp"),
                     "",                  // appOpts.GetValue("OpenPetra.Path.Dat"),
                     "",
-                    appOpts.GetValue("OpenPetra.Path.Patches"),
-                    appOpts.GetValue("OpenPetra.Path.RemotePatches"));
+                    TAppSettingsManager.GetValue("OpenPetra.Path.Patches"),
+                    TAppSettingsManager.GetValue("OpenPetra.Path.RemotePatches"));
 
             if (patchTools.CheckForRecentPatch())
             {
@@ -148,8 +148,9 @@ namespace Ict.Tools.PatchTool
                 // restart Petra Client if patch was successful
                 PetraClientProcess = new System.Diagnostics.Process();
                 PetraClientProcess.EnableRaisingEvents = false;
-                PetraClientProcess.StartInfo.FileName = appOpts.GetValue("OpenPetra.Path.Bin") + Path.DirectorySeparatorChar + "PetraClient.exe";
-                PetraClientProcess.StartInfo.Arguments = "-C:\"" + appOpts.GetValue("C") + "\"";
+                PetraClientProcess.StartInfo.FileName = TAppSettingsManager.GetValue("OpenPetra.Path.Bin") + Path.DirectorySeparatorChar +
+                                                        "PetraClient.exe";
+                PetraClientProcess.StartInfo.Arguments = "-C:\"" + TAppSettingsManager.GetValue("C") + "\"";
                 PetraClientProcess.StartInfo.WindowStyle = ProcessWindowStyle.Normal;
                 PetraClientProcess.Start();
             }
@@ -221,20 +222,13 @@ namespace Ict.Tools.PatchTool
         /// <returns>true if any patch was installed</returns>
         public Boolean PatchTheFiles()
         {
-            Boolean ReturnValue;
-            TFileVersionInfo previousPatchVersion;
-            TFileVersionInfo currentPatchVersion;
-
-            ReturnValue = false;
+            Boolean ReturnValue = false;
 
             // this can only be called after CheckForRecentPatch
             if (FListOfNewPatches == null)
             {
                 throw new Exception("TPatchTools.InstallPatches: need to call CheckForRecentPatch first!");
             }
-
-            previousPatchVersion = null;
-            currentPatchVersion = null;
 
             // todo: RunDBPatch for patches that have not been applied to the database yet, although the binaries have been installed already?
             // this is probably not necessary for network; it is done by innosetup for standalone; also see RunDBPatches
@@ -247,10 +241,6 @@ namespace Ict.Tools.PatchTool
                     return false;
                 }
 
-                // also needs to call the progress patch program for the last build of each patch that is installed now
-                currentPatchVersion = TFileVersionInfo.GetLatestPatchVersionFromDiffZipName(patch);
-
-                previousPatchVersion = currentPatchVersion;
                 ReturnValue = true;
             }
 
@@ -435,15 +425,13 @@ namespace Ict.Tools.PatchTool
             TFileVersionInfo desiredVersion;
             Boolean lastPatch;
 
-            TAppSettingsManager settings = new TAppSettingsManager();
-
             DBAccess.GDBAccessObj = new TDataBase();
-            DBAccess.GDBAccessObj.EstablishDBConnection(CommonTypes.ParseDBType(settings.GetValue("Server.RDBMSType")),
-                settings.GetValue("Server.PostgreSQLServer"),
-                settings.GetValue("Server.PostgreSQLServerPort"),
-                settings.GetValue("Server.PostgreSQLDatabaseName"),
-                settings.GetValue("Server.PostgreSQLUserName"),
-                settings.GetValue("Server.Credentials"),
+            DBAccess.GDBAccessObj.EstablishDBConnection(CommonTypes.ParseDBType(TAppSettingsManager.GetValue("Server.RDBMSType")),
+                TAppSettingsManager.GetValue("Server.DBHostOrFile"),
+                TAppSettingsManager.GetValue("Server.DBPort"),
+                TAppSettingsManager.GetValue("Server.DBName"),
+                TAppSettingsManager.GetValue("Server.DBUserName"),
+                TAppSettingsManager.GetValue("Server.DBPassword"),
                 "");
 
             dbVersion = GetDBPatchLevel();
@@ -500,7 +488,6 @@ namespace Ict.Tools.PatchTool
                 UndoPatchRecursively(APatchRootDirectory, dir);
             }
 
-            TPatchTools patch = new TPatchTools();
             string[] files = System.IO.Directory.GetFiles(APatchDirectory);
 
             foreach (string filename in files)
@@ -562,7 +549,6 @@ namespace Ict.Tools.PatchTool
                 CleanupPatchRecursively(APatchRootDirectory, dir);
             }
 
-            TPatchTools patch = new TPatchTools();
             string[] files = System.IO.Directory.GetFiles(APatchDirectory);
 
             foreach (string filename in files)

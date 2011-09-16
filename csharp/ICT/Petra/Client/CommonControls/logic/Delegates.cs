@@ -35,7 +35,7 @@ namespace Ict.Petra.Client.CommonControls.Logic
 
     /// <summary>Delegate for a call to open a Modal Partner Find screen</summary>
     public delegate bool TDelegateOpenConferenceFindScreen(String AConferenceNamePattern,
-        String ACampaignCodePattern,
+        String AOutreachCodePattern,
         out Int64 AConferenceKey,
         out String AConferenceName,
         IntPtr AParentFormHandle);

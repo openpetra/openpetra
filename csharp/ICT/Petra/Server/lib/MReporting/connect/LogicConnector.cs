@@ -76,16 +76,14 @@ namespace Ict.Petra.Server.MReporting.LogicConnectors
             Thread TheThread;
             String PathStandardReports;
             String PathCustomReports;
-            TAppSettingsManager Config;
 
             this.FAsyncExecProgress = new TAsynchronousExecutionProgress();
             this.FAsyncExecProgress.ProgressState = TAsyncExecProgressState.Aeps_Executing;
             FParameterList = new TParameterList();
             FParameterList.LoadFromDataTable(AParameters);
             FSuccess = false;
-            Config = new TAppSettingsManager();
-            PathStandardReports = Config.GetValue("Reporting.PathStandardReports");
-            PathCustomReports = Config.GetValue("Reporting.PathCustomReports");
+            PathStandardReports = TAppSettingsManager.GetValue("Reporting.PathStandardReports");
+            PathCustomReports = TAppSettingsManager.GetValue("Reporting.PathCustomReports");
             FDatacalculator = new TRptDataCalculator(DBAccess.GDBAccessObj, PathStandardReports, PathCustomReports);
 
             // setup the logging to go to the FAsyncExecProgress.ProgressInformation

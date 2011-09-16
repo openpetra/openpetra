@@ -88,11 +88,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             ARow.DrAccountCode = MFinanceConstants.ADMIN_FEE_EXPENSE_ACCT.ToString();
         }
 
-        private void InitializeManualCode()
-        {
-            txtForeignReceivingFund.Text = Catalog.GetString("Foreign Receiving Fund");
-        }
-
         private void ChargeOptionChanged(object sender, EventArgs e)
         {
             TSetupAdminGrants.ChargeOptionComboChanged((TCmbAutoComplete)sender, lblDetailChargeAmount,
@@ -110,7 +105,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 rowIndex = 1;
             }
-
+           
             if ((rowIndex >= 1) && (grdDetails.Rows.Count > 1))
             {
                 grdDetails.Selection.SelectRow(rowIndex, true);

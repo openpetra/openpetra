@@ -286,6 +286,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
     {
         if (ARow != null)
         {
+            ARow.BeginEdit();
             ARow.CostCentreType = txtDetailCostCentreType.Text;
             if (txtDetailCcDescription.Text.Length == 0)
             {
@@ -296,6 +297,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 ARow.CcDescription = txtDetailCcDescription.Text;
             }
             ARow.Deletable = chkDetailDeletable.Checked;
+            ARow.EndEdit();
         }
     }
 

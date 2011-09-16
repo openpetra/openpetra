@@ -13,7 +13,5 @@
   <Parameter id="param_conferenceselection" value="one conference" />
   <Parameter id="param_attendeeselection" value="all attendees" />
   <Parameter id="param_partnerkey" value="0" />
-  <Parameter id="param_conferencekey" value="0" />
-  <Parameter id="param_conferencename" value="" />
   <Parameter id="param_extractname" value="" />
 </Parameters>

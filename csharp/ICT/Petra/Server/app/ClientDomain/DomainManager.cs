@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -146,7 +146,7 @@ namespace Ict.Petra.Server.App.ClientDomain
             object ATaskParameter4,
             Int16 ATaskPriority)
         {
-            // $IFDEF DEBUGMODE if TSrvSetting.DL >= 7 then Console.WriteLine('ClientTaskAddToOtherClient: calling UClientManagerRef.QueueClientTaskFromClient...'); $ENDIF
+            // $IFDEF DEBUGMODE if TLogging.DL >= 7 then Console.WriteLine('ClientTaskAddToOtherClient: calling UClientManagerRef.QueueClientTaskFromClient...'); $ENDIF
             return UClientManagerCallForwarderRef.QueueClientTaskFromClient(AClientID,
                 ATaskGroup,
                 ATaskCode,
@@ -192,7 +192,7 @@ namespace Ict.Petra.Server.App.ClientDomain
             object ATaskParameter4,
             Int16 ATaskPriority)
         {
-            // $IFDEF DEBUGMODE if TSrvSetting.DL >= 7 then Console.WriteLine('ClientTaskAddToOtherClient: calling UClientManagerRef.QueueClientTaskFromClient...'); $ENDIF
+            // $IFDEF DEBUGMODE if TLogging.DL >= 7 then Console.WriteLine('ClientTaskAddToOtherClient: calling UClientManagerRef.QueueClientTaskFromClient...'); $ENDIF
             return UClientManagerCallForwarderRef.QueueClientTaskFromClient(AUserID,
                 ATaskGroup,
                 ATaskCode,
@@ -229,9 +229,6 @@ namespace Ict.Petra.Server.App.ClientDomain
     /// </summary>
     public class TClientDomainManager : MarshalByRefObject
     {
-        /// <summary>A copy of the TSrvSetting class (including property values) from the Server's Default AppDomain</summary>
-        private TSrvSetting FServerSettings;
-
         /// <summary>Remoting proxy reference to TRemoteFactory object</summary>
         private ObjRef FRemotedObject;
 
@@ -250,7 +247,7 @@ namespace Ict.Petra.Server.App.ClientDomain
         /// <summary>Random Security Token (to prevent unauthorised AppDomain shutdown)</summary>
         private String FRandomAppDomainTearDownToken;
         private System.Object FTearDownAppDomainMonitor;
-        private TcpChannel FTcpChannel;
+        private TcpChannel FTcpChannel = null;
 
         /// <summary>Tells when the last Client Action occured (either the last time when a remoteable object was marshaled (remoted) or when the last DB action occured).</summary>
         public DateTime LastActionTime
@@ -349,8 +346,7 @@ namespace Ict.Petra.Server.App.ClientDomain
             TCacheableTablesManager ACacheableTablesManagerRef,
             TPetraPrincipal AUserInfo)
         {
-            System.Int16 RemotingPortInt;
-            Hashtable ChannelProperties;
+            new TAppSettingsManager();
 
             // Console.WriteLine('TClientDomainManager.Create in AppDomain: ' + Thread.GetDomain().FriendlyName);
             DomainManager.GClientID = Convert.ToInt16(AClientID);
@@ -369,7 +365,7 @@ namespace Ict.Petra.Server.App.ClientDomain
             // Note: .NET Remoting needs to be set up separately for each AppDomain, and settings in
             // the .NET (Remoting) Configuration File are valid only for the Default AppDomain.
             //
-            RemotingPortInt = Convert.ToInt16(ARemotingPort);
+            Int16 RemotingPortInt = Convert.ToInt16(ARemotingPort);
             try
             {
                 // The following settings equal to a config file's
@@ -401,28 +397,32 @@ namespace Ict.Petra.Server.App.ClientDomain
                     // this happens in the Server NUnit test, when running several tests, therefore reconnecting with the same AppDomain.
                 }
 
-                BinaryServerFormatterSinkProvider TCPSink = new BinaryServerFormatterSinkProvider();
-                TCPSink.TypeFilterLevel = TypeFilterLevel.Low;
-                IServerChannelSinkProvider EncryptionSink = TCPSink;
-
-                if (TAppSettingsManager.GetValueStatic("Server.ChannelEncryption.PrivateKeyfile", "", false).Length > 0)
+                // for NUnit Server testing, we do not need .net remoting
+                if (RemotingPortInt != -1)
                 {
-                    EncryptionSink = new EncryptionServerSinkProvider();
-                    EncryptionSink.Next = TCPSink;
+                    BinaryServerFormatterSinkProvider TCPSink = new BinaryServerFormatterSinkProvider();
+                    TCPSink.TypeFilterLevel = TypeFilterLevel.Low;
+                    IServerChannelSinkProvider EncryptionSink = TCPSink;
+
+                    if (TAppSettingsManager.GetValue("Server.ChannelEncryption.PrivateKeyfile", "", false).Length > 0)
+                    {
+                        EncryptionSink = new EncryptionServerSinkProvider();
+                        EncryptionSink.Next = TCPSink;
+                    }
+
+                    Hashtable ChannelProperties = new Hashtable();
+                    ChannelProperties.Add("port", RemotingPortInt.ToString());
+
+                    string SpecificIPAddress = TAppSettingsManager.GetValue("ListenOnIPAddress", "", false);
+
+                    if (SpecificIPAddress.Length > 0)
+                    {
+                        ChannelProperties.Add("machineName", SpecificIPAddress);
+                    }
+
+                    FTcpChannel = new TcpChannel(ChannelProperties, null, EncryptionSink);
+                    ChannelServices.RegisterChannel(FTcpChannel, false);
                 }
-
-                ChannelProperties = new Hashtable();
-                ChannelProperties.Add("port", RemotingPortInt.ToString());
-
-                string SpecificIPAddress = TAppSettingsManager.GetValueStatic("ListenOnIPAddress", "", false);
-
-                if (SpecificIPAddress.Length > 0)
-                {
-                    ChannelProperties.Add("machineName", SpecificIPAddress);
-                }
-
-                FTcpChannel = new TcpChannel(ChannelProperties, null, EncryptionSink);
-                ChannelServices.RegisterChannel(FTcpChannel, false);
             }
             catch (Exception)
             {
@@ -448,7 +448,7 @@ namespace Ict.Petra.Server.App.ClientDomain
             }
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 4)
+            if (TLogging.DL >= 4)
             {
                 Console.WriteLine("Application domain: " + Thread.GetDomain().FriendlyName + " @ Port " + ARemotingPort);
                 Console.WriteLine("  for User: " + FUserID);
@@ -472,7 +472,7 @@ namespace Ict.Petra.Server.App.ClientDomain
         public void StopClientAppDomain()
         {
             // TODO 1 oChristianK cLogging (Console) : Put the following debug messages again in a DEBUGMODE conditional compilation directive and raise the DL to >=9; this was removed to trace problems in on live installations!
-            if (TSrvSetting.DL >= 5)
+            if (TLogging.DL >= 5)
             {
                 TLogging.Log("TClientDomainManager.StopClientAppDomain: calling StopClientStillAliveCheckThread...",
                     TLoggingType.ToConsole | TLoggingType.ToLogfile);
@@ -481,18 +481,21 @@ namespace Ict.Petra.Server.App.ClientDomain
             ClientStillAliveCheck.TClientStillAliveCheck.StopClientStillAliveCheckThread();
 
             // this can get the server to a halt and prevent people to logon again. see email from Moray "Server Crash" 22/08/2007
-            // if TSrvSetting.DL >= 5 then TLogging.Log('TClientDomainManager.StopClientAppDomain: before ChannelServices.UnregisterChannel(FTcpChannel)', [ToConsole, ToLogfile]);
+            // if TLogging.DL >= 5 then TLogging.Log('TClientDomainManager.StopClientAppDomain: before ChannelServices.UnregisterChannel(FTcpChannel)', [ToConsole, ToLogfile]);
             // ChannelServices.UnregisterChannel(FTcpChannel);
-            // if TSrvSetting.DL >= 5 then TLogging.Log('TClientDomainManager.StopClientAppDomain: after ChannelServices.UnregisterChannel(FTcpChannel)', [ToConsole, ToLogfile]);
+            // if TLogging.DL >= 5 then TLogging.Log('TClientDomainManager.StopClientAppDomain: after ChannelServices.UnregisterChannel(FTcpChannel)', [ToConsole, ToLogfile]);
             DomainManager.UClientManagerCallForwarderRef = null;
 
-            if (TSrvSetting.DL >= 5)
+            if (TLogging.DL >= 5)
             {
                 TLogging.Log("TClientDomainManager.StopClientAppDomain: after UClientManagerCallForwarderRef := nil",
                     TLoggingType.ToConsole | TLoggingType.ToLogfile);
             }
 
-            ChannelServices.UnregisterChannel(FTcpChannel);
+            if (FTcpChannel != null)
+            {
+                ChannelServices.UnregisterChannel(FTcpChannel);
+            }
         }
 
         /// <summary>
@@ -551,7 +554,7 @@ namespace Ict.Petra.Server.App.ClientDomain
             String ADBUsername,
             String ADBPassword,
             System.Int16 AIPBasePort,
-            System.Int16 ADebugLevel,
+            System.Int32 ADebugLevel,
             String AServerLogFile,
             String AHostName,
             String AHostIPAddresses,
@@ -568,7 +571,8 @@ namespace Ict.Petra.Server.App.ClientDomain
             string AIntranetDataSenderEmail)
         {
             // Console.WriteLine('TClientDomainManager.TakeoverServerSettings in AppDomain: ' + Thread.GetDomain().FriendlyName);
-            FServerSettings = new TSrvSetting(AApplicationName,
+            // initialise static properties of TSrvSetting
+            new TSrvSetting(AApplicationName,
                 AConfigurationFile,
                 AApplicationVersion,
                 AExecutingOS,
@@ -627,7 +631,7 @@ namespace Ict.Petra.Server.App.ClientDomain
                     if (AToken == FRandomAppDomainTearDownToken)
                     {
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 9)
+                        if (TLogging.DL >= 9)
                         {
                             Console.WriteLine("TearDownAppDomain: Tearing down ClientDomain!!! Reason: " + AReason);
                         }
@@ -665,25 +669,19 @@ namespace Ict.Petra.Server.App.ClientDomain
 #if  TESTMODE_WITHOUT_ODBC
 #else
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("  Connecting to Database...");
             }
 #endif
             DBAccess.GDBAccessObj = new TDataBasePetra();
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("DBAccessObj object created.");
             }
 #endif
-            DBAccess.GDBAccessObj.DebugLevel = TSrvSetting.DebugLevel;
-#if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
-            {
-                Console.WriteLine("DebugLevel set.");
-            }
-#endif
+
             ((TDataBasePetra)DBAccess.GDBAccessObj).AddErrorLogEntryCallback += new TDelegateAddErrorLogEntry(this.AddErrorLogEntry);
             try
             {
@@ -696,7 +694,7 @@ namespace Ict.Petra.Server.App.ClientDomain
                     "",
                     UserInfo.GUserInfo.UserID);
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 9)
+                if (TLogging.DL >= 9)
                 {
                     Console.WriteLine("  Connected to Database.");
                 }
@@ -727,7 +725,7 @@ namespace Ict.Petra.Server.App.ClientDomain
 #if  TESTMODE_WITHOUT_ODBC
 #else
             // TODO 1 oChristianK cLogging (Console) : Put the following debug messages in a DEBUGMODE conditional compilation directive and raise the DL to >=9; these logging statements were inserted to trace problems in on live installations!
-            if (TSrvSetting.DL >= 5)
+            if (TLogging.DL >= 5)
             {
                 TLogging.Log("TClientDomainManager.CloseDBConnection: before calling GDBAccessObj.CloseDBConnection",
                     TLoggingType.ToConsole | TLoggingType.ToLogfile);
@@ -740,7 +738,7 @@ namespace Ict.Petra.Server.App.ClientDomain
             catch (EDBConnectionNotAvailableException)
             {
                 // The DB connection was never opened  since this is no problem here, ignore this Exception.
-                if (TSrvSetting.DL >= 5)
+                if (TLogging.DL >= 5)
                 {
                     TLogging.Log("TClientDomainManager.CloseDBConnection: Info: DB Connection was never opened, therefore no need to close it.",
                         TLoggingType.ToConsole | TLoggingType.ToLogfile);
@@ -751,7 +749,7 @@ namespace Ict.Petra.Server.App.ClientDomain
                 throw;
             }
 
-            if (TSrvSetting.DL >= 5)
+            if (TLogging.DL >= 5)
             {
                 TLogging.Log("TClientDomainManager.CloseDBConnection: after calling GDBAccessObj.CloseDBConnection",
                     TLoggingType.ToConsole | TLoggingType.ToLogfile);
@@ -799,7 +797,7 @@ namespace Ict.Petra.Server.App.ClientDomain
             FRemotedObject = RemotingServices.Marshal(RemotedObject, RemoteAtURI, typeof(IRemoteFactory));
             FRemotingURL = RemoteAtURI; // FRemotedObject.URI;
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("TRemoteFactory.URI: " + FRemotedObject.URI);
             }
@@ -856,14 +854,14 @@ namespace Ict.Petra.Server.App.ClientDomain
             new ClientStillAliveCheck.TClientStillAliveCheck(FClientServerConnectionType, new TDelegateTearDownAppDomain(
                     TearDownAppDomain), FRandomAppDomainTearDownToken);
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 5)
+            if (TLogging.DL >= 5)
             {
                 Console.WriteLine("TClientDomainManager.GetPollClientTasksURL: created TClientStillAliveCheck.");
             }
 #endif
             ReturnValue = RemoteAtURI;
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("TClientDomainManager.GetPollClientTasksURL: RemoteAtURI: " + RemoteAtURI);
             }
@@ -918,355 +916,9 @@ namespace Ict.Petra.Server.App.ClientDomain
         /// todoComment
         /// </summary>
         /// <returns></returns>
-        public IClientInstanceInterface CreateInstance()
-        {
-            return new TMyVanishingRemotedObject();
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        /// <returns></returns>
-        public IClientInstanceInterface2 CreateInstance2()
-        {
-            return new TMyVanishingRemotedObject2();
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        /// <returns></returns>
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TRemoteFactory object exists until this AppDomain is unloaded!
-        }
-
-        #endregion
-    }
-
-    /// <summary>
-    /// For Experimenting with Sponsors only!
-    /// Still in use by the experimental GUI Client.
-    ///
-    /// </summary>
-    public class TMyVanishingRemotedObject : TConfigurableMBRObject, IClientInstanceInterface
-    {
-        private DateTime FStartTime;
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public System.Int32 InstanceHash
-        {
-            get
-            {
-                return this.GetHashCode();
-            }
-        }
-
-
-        #region TMyVanishingRemotedObject
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public TMyVanishingRemotedObject()
-        {
-#if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Created without constructor. Instance hash is " + this.GetHashCode().ToString());
-            }
-#endif
-            FStartTime = DateTime.Now;
-        }
-
-#if DEBUGMODE
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        /// <returns></returns>
-        ~TMyVanishingRemotedObject()
-        {
-            const Int32 MaxIterations = 100000;
-
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-            MyObject = new System.Object();
-
-            if (TSrvSetting.DL >= 9)
-            {
-                Console.WriteLine("TMyVanishingRemotedObject: Getting collected after " + (new TimeSpan(
-                                                                                               DateTime.Now.Ticks -
-                                                                                               FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-            if (TSrvSetting.DL >= 9)
-            {
-                Console.WriteLine("TMyVanishingRemotedObject: Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MaxIterations; LoopCounter += 1)
-            {
-                MyObject2 = new System.Object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TSrvSetting.DL >= 9)
-            {
-                Console.WriteLine("TMyVanishingRemotedObject: Finalizer has run.");
-            }
-        }
-#endif
-
-
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        /// <returns></returns>
-        public DateTime GetServerTime()
-        {
-            Console.WriteLine("TMyVanishingRemotedObject: Time requested by a client.");
-            return DateTime.Now;
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        /// <param name="AHelloString"></param>
-        public void Hello(out String AHelloString)
-        {
-            AHelloString = "HELLO from TMyVanishingRemotedObject!" + Environment.NewLine + "HashCode: " + this.GetHashCode().ToString() +
-                           Environment.NewLine + "In the application domain: " + Thread.GetDomain().FriendlyName;
-        }
-
-        #endregion
-    }
-
-    /// <summary>
-    /// For Experimenting with Sponsors only!
-    /// Still in use by the experimental GUI Client.
-    ///
-    /// </summary>
-    public class TMyVanishingRemotedObject2 : TConfigurableMBRObject, IClientInstanceInterface2
-    {
-        private DateTime FStartTime;
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public System.Int32 InstanceHash
-        {
-            get
-            {
-                return this.GetHashCode();
-            }
-        }
-
-
-        #region TMyVanishingRemotedObject2
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public TMyVanishingRemotedObject2() : base()
-        {
-#if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Created without constructor. Instance hash is " + this.GetHashCode().ToString());
-            }
-#endif
-            FStartTime = DateTime.Now;
-        }
-
-#if DEBUGMODE
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        /// <returns></returns>
-        ~TMyVanishingRemotedObject2()
-        {
-            const Int32 MaxIterations = 100000;
-
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-            MyObject = new object();
-
-            if (TSrvSetting.DL >= 9)
-            {
-                Console.WriteLine("TMyVanishingRemotedObject2: Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-            if (TSrvSetting.DL >= 9)
-            {
-                Console.WriteLine("TMyVanishingRemotedObject2: Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MaxIterations; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TSrvSetting.DL >= 9)
-            {
-                Console.WriteLine("TMyVanishingRemotedObject2: Finalizer has run.");
-            }
-        }
-#endif
-
-
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        /// <returns></returns>
-        public DateTime GetServerTime()
-        {
-            Console.WriteLine("TMyVanishingRemotedObject2: Time requested by a client.");
-            return DateTime.Now;
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        /// <param name="AHelloString"></param>
-        public void Hello2(out String AHelloString)
-        {
-            AHelloString = "HELLO from TMyVanishingRemotedObject2!" + Environment.NewLine + "HashCode: " + this.GetHashCode().ToString() +
-                           Environment.NewLine + "In the application domain: " + Thread.GetDomain().FriendlyName;
-        }
-
-        #endregion
-    }
-
-    /// <summary>
-    /// For Experimenting with Sponsors only!
-    ///
-    /// Left over from early tests and is no longer in use, still kept in here for
-    /// historic and learning purposes.
-    ///
-    /// </summary>
-    public class TMyRemotedObject : MarshalByRefObject, IClientInstanceInterface
-    {
-        private DateTime FStartTime;
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public System.Int32 InstanceHash
-        {
-            get
-            {
-                return this.GetHashCode();
-            }
-        }
-
-
-        #region TMyRemotedObject
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public TMyRemotedObject() : base()
-        {
-#if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " Created without constructor. Instance hash is " + this.GetHashCode().ToString());
-            }
-#endif
-            FStartTime = DateTime.Now;
-        }
-
-#if DEBUGMODE
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        /// <returns></returns>
-        ~TMyRemotedObject()
-        {
-            const Int32 MaxIterations = 100000;
-
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-            MyObject = new System.Object();
-
-            if (TSrvSetting.DL >= 9)
-            {
-                Console.WriteLine("TMyRemotedObject: Getting collected after " + (new TimeSpan(
-                                                                                      DateTime.Now.Ticks -
-                                                                                      FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-            if (TSrvSetting.DL >= 9)
-            {
-                Console.WriteLine("TMyRemotedObject: Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MaxIterations; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TSrvSetting.DL >= 9)
-            {
-                Console.WriteLine("TMyRemotedObject: Finalizer has run.");
-            }
-        }
-#endif
-
-
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        /// <returns></returns>
-        public override object InitializeLifetimeService()
-        {
-            // var
-            // baseLeaseLifetimeService: ILease;
-
-            /*
-             * baseLeaseLifetimeService := ILease(inherited InitializeLifetimeService());
-             *
-             * if baseLeaseLifetimeService.CurrentState = LeaseState.Initial then
-             * begin
-             * baseLeaseLifetimeService.InitialLeaseTime := Timespan.FromSeconds(25);
-             * baseLeaseLifetimeService.RenewOnCallTime := Timespan.FromSeconds(15);
-             * end;
-             *
-             * Result := baseLeaseLifetimeService;
-             */
-            return null;
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        /// <returns></returns>
-        public DateTime GetServerTime()
-        {
-            Console.WriteLine("TMyRemotedObject: Time requested by a client.");
-            return DateTime.Now;
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        /// <param name="AHelloString"></param>
-        public void Hello(out String AHelloString)
-        {
-            AHelloString = "HELLO!" + Environment.NewLine + "HashCode: " + this.GetHashCode().ToString() + Environment.NewLine +
-                           "In the application domain: " + Thread.GetDomain().FriendlyName;
         }
 
         #endregion

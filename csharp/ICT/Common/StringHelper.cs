@@ -373,6 +373,35 @@ namespace Ict.Common
         }
 
         /// <summary>
+        /// get the separator from the first line of CSV Data.
+        /// first test for tab, then for semicolon. otherwise default to comma
+        /// </summary>
+        /// <param name="ACSVData"></param>
+        /// <returns></returns>
+        public static string GetCSVSeparator(string ACSVData)
+        {
+            string InputSeparator = ",";
+
+            string FirstLine = ACSVData;
+
+            if (ACSVData.IndexOf("\n") > 0)
+            {
+                FirstLine = ACSVData.Substring(0, ACSVData.IndexOf("\n"));
+            }
+
+            if (FirstLine.Contains("\t"))
+            {
+                InputSeparator = "\t";
+            }
+            else if (FirstLine.Contains(";"))
+            {
+                InputSeparator = ";";
+            }
+
+            return InputSeparator;
+        }
+
+        /// <summary>
         /// retrieves the first value of the comma separated list, and removes the value from the list
         /// </summary>
         /// <param name="list">the comma separated list that will get the first value removed</param>
@@ -484,6 +513,26 @@ namespace Ict.Common
         public static string GetNextCSV(ref string list, string separator)
         {
             return GetNextCSV(ref list, separator, false);
+        }
+
+        /// <summary>
+        /// overload for GetNextCSV.
+        /// if the value is empty, the default value will be used
+        /// </summary>
+        /// <param name="list">separated values; the first value will be removed</param>
+        /// <param name="separator">delimiter to be used</param>
+        /// <param name="ADefaultValue">to be used if the csv value is empty</param>
+        /// <returns>the first value of the string</returns>
+        public static string GetNextCSV(ref string list, string separator, string ADefaultValue)
+        {
+            string result = GetNextCSV(ref list, separator, false);
+
+            if (result.Length == 0)
+            {
+                result = ADefaultValue;
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -815,49 +864,25 @@ namespace Ict.Common
         /// <returns>the string in new convention</returns>
         public static string UpperCamelCase(String AStr, String ASeparator, bool AIgnorePrefix, bool AIgnorePostfix)
         {
-            string ReturnValue = "";
-            int underscore;
-            String s;
+            string[] parts = AStr.Split(new string[] { ASeparator }, StringSplitOptions.None);
 
-            s = AStr;
-            underscore = s.IndexOf(ASeparator);
-
-            if (underscore == -1)
+            if (parts.Length <= 1)       // Handle string without seperator
             {
-                if (s.Length > 1)
+                return AStr.Length > 1 ? char.ToUpper(AStr[0]).ToString() + AStr.Substring(1) : AStr;
+            }
+
+            int start = (AIgnorePrefix ? 1 : 0);     // ignore the first part
+            int last = (AIgnorePostfix ? 1 : 0);     // ignore the last part
+
+            for (int idx = start; idx < parts.Length - last; ++idx)
+            {
+                if (parts[idx].Length > 0)
                 {
-                    return s.Substring(0, 1).ToUpper() + s.Substring(1);
+                    parts[idx] = char.ToUpper(parts[idx][0]).ToString() + parts[idx].Substring(1);
                 }
-
-                return s;
             }
 
-            if (AIgnorePrefix)
-            {
-                s = s.Substring(underscore + 1);
-            }
-
-            underscore = s.IndexOf(ASeparator);
-
-            while (underscore != -1)
-            {
-                ReturnValue = ReturnValue + s.Substring(0, 1).ToUpper() + s.Substring(1, underscore - 1);
-                s = s.Substring(underscore + 1);
-                underscore = s.IndexOf(ASeparator);
-            }
-
-            if ((!AIgnorePostfix))
-            {
-                // last part of the name
-                ReturnValue = ReturnValue + s.Substring(0, 1).ToUpper();
-                ReturnValue = ReturnValue + s.Substring(1);
-            }
-            else
-            {
-            }
-
-            // drop last part of the name, which identifies the type
-            return ReturnValue;
+            return string.Join("", parts, start, parts.Length - start - last);
         }
 
         /// <summary>

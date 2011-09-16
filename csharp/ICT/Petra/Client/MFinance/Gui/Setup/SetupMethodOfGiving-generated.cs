@@ -292,12 +292,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
     {
         if (ARow != null)
         {
+            ARow.BeginEdit();
             ARow.MethodOfGivingCode = txtDetailMethodOfGivingCode.Text;
             ARow.MethodOfGivingDesc = txtDetailMethodOfGivingDesc.Text;
             ARow.RecurringMethodFlag = chkDetailRecurringMethodFlag.Checked;
             ARow.TaxRebateFlag = chkDetailTaxRebateFlag.Checked;
             ARow.TrustFlag = chkDetailTrustFlag.Checked;
             ARow.Active = chkDetailActive.Checked;
+            ARow.EndEdit();
         }
     }
 

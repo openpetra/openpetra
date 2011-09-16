@@ -693,7 +693,6 @@ namespace Ict.Tools.NAntTasks
         /// <param name="filename"></param>
         private void ProcessFile(string filename)
         {
-            Hashtable usingStatements = new Hashtable();
             string fileNamespace = null;
             // Get the assembly name derived from the directory
             string dirname = Directory.GetParent(filename).FullName;
@@ -731,7 +730,6 @@ namespace Ict.Tools.NAntTasks
 
                 if (matchComment.Success && (matchComment.Groups.Count > 1))
                 {
-                    string old = line;
                     line = matchComment.Groups["noncomment"].ToString();
                 }
 

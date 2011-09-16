@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -34,6 +34,7 @@ using Ict.Petra.Client.CommonControls;
 using GNU.Gettext;
 using Ict.Common;
 
+
 namespace Ict.Petra.Client.MPartner.Gui
 {
     public partial class TUC_PartnerEdit_TopPart
@@ -48,11 +49,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>Used for keeping track of data verification errors</summary>
         private TVerificationResultCollection FVerificationResultCollection;
 
-        /// <summary>
-        /// Delegate for telling the Partner Edit screen that the 'Worker Field...' button has been clicked.
-        /// </summary>
-        /// <remarks>The Partner Edit screen acts on that Delegate and opens the corresponding screen.</remarks>
-        private TDelegateMaintainWorkerField FDelegateMaintainWorkerField;
+        // <summary>
+        // Delegate for telling the Partner Edit screen that the 'Worker Field...' button has been clicked.
+        // </summary>
+        // <remarks>The Partner Edit screen acts on that Delegate and opens the corresponding screen.</remarks>
+        // TODO private TDelegateMaintainWorkerField FDelegateMaintainWorkerField;
         #endregion
 
         #region Events
@@ -224,7 +225,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>void</returns>
         public void InitialiseDelegateMaintainWorkerField(TDelegateMaintainWorkerField ADelegateFunction)
         {
-            FDelegateMaintainWorkerField = ADelegateFunction;
+            // TODO FDelegateMaintainWorkerField = ADelegateFunction;
         }
 
         /// <summary>
@@ -582,21 +583,27 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void MaintainWorkerField(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            //this may be temporary used to have an access point for this dialog
+            TFrmPersonnelStaffData staffDataForm = new TFrmPersonnelStaffData(this.Handle);
 
-#if TODO
-            if (this.FDelegateMaintainWorkerField != null)
-            {
-                try
-                {
-                    this.FDelegateMaintainWorkerField();
-                }
-                finally
-                {
-                    throw new EVerificationMissing(Catalog.GetString("this.FDelegateGetPartnerShortName could not be called!"));
-                }
-            }
-#endif
+            staffDataForm.PartnerKey = ((TFrmPartnerEdit)ParentForm).PartnerKey;
+            staffDataForm.Show();
+
+/*
+ * #if TODO
+ *          if (this.FDelegateMaintainWorkerField != null)
+ *          {
+ *              try
+ *              {
+ *                  this.FDelegateMaintainWorkerField();
+ *              }
+ *              finally
+ *              {
+ *                  throw new EVerificationMissing(Catalog.GetString("this.FDelegateGetPartnerShortName could not be called!"));
+ *              }
+ *          }
+ * #endif
+ */
         }
 
         #endregion

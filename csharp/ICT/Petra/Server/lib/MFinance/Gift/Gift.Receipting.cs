@@ -33,7 +33,6 @@ using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Common.Printing;
 using Ict.Petra.Shared.MFinance;
-using Ict.Petra.Shared.MFinance.Gift;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -110,31 +109,15 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 {
                     string letter = FormatLetter(donorKey, donorName, donations, AHTMLTemplate, LocalCountryCode, Transaction);
 
-                    if (letter.Length > 0)
+                    if (TFormLettersTools.AttachNextPage(ref ResultDocument, letter))
                     {
                         // TODO: store somewhere that the receipt has been printed?
                         // TODO also store each receipt with the donor in document management, and in contact management?
-
-                        if (ResultDocument.Length > 0)
-                        {
-                            // ResultDocument += "<div style=\"page-break-before: always;\"/>";
-                            string body = letter.Substring(letter.IndexOf("<body"));
-                            body = body.Substring(0, body.IndexOf("</html"));
-                            ResultDocument += body;
-                        }
-                        else
-                        {
-                            // without closing html
-                            ResultDocument += letter.Substring(0, letter.IndexOf("</html"));
-                        }
                     }
                 }
             }
 
-            if (ResultDocument.Length > 0)
-            {
-                ResultDocument += "</html>";
-            }
+            TFormLettersTools.CloseDocument(ref ResultDocument);
 
             DBAccess.GDBAccessObj.RollbackTransaction();
 

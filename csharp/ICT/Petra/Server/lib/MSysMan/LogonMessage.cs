@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -35,30 +35,6 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
     /// </summary>
     public class TMaintenanceLogonMessage
     {
-        /// <summary>time when this object was instantiated</summary>
-        private DateTime FStartTime;
-
-        /// <summary>
-        /// constructor
-        /// </summary>
-        public TMaintenanceLogonMessage() : base()
-        {
-            // $IFDEF DEBUGMODE if TSrvSetting.DL >= 9 then Console.WriteLine(this.GetType.FullName + ' created: Instance hash is ' + this.GetHashCode().ToString()); $ENDIF
-            FStartTime = DateTime.Now;
-        }
-
-#if DEBUGMODE
-        /// <summary>
-        /// destructor
-        /// </summary>
-        ~TMaintenanceLogonMessage()
-        {
-            // if TSrvSetting.DL >= new 9 then Console.WriteLine(this.GetType.FullName + ': Getting collected after ' + (TimeSpan(DateTime.Now.Ticks  FStartTime.Ticks)).ToString() + ' seconds.');
-        }
-#endif
-
-
-
         /// <summary>
         /// Returns the Logon Message for a certain LanguageCode.
         ///
@@ -125,7 +101,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 8)
+                    if (TLogging.DL >= 8)
                     {
                         Console.WriteLine("TMaintenanceLogonMessage.GetLogonMessage: committed own transaction.");
                     }

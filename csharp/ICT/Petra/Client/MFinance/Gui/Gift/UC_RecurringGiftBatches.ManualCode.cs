@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -38,8 +38,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     public partial class TUC_RecurringGiftBatches
     {
         private Int32 FLedgerNumber;
-        private Int32 FSelectedBatchNumber;
-        private DateTime FDateEffective;
 
         /// <summary>
         /// load the batches into the grid
@@ -48,7 +46,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public void LoadBatches(Int32 ALedgerNumber)
         {
             FLedgerNumber = ALedgerNumber;
-            FDateEffective = DateTime.Today;
 
             ((TFrmRecurringGiftBatch)ParentForm).ClearCurrentSelections();
 
@@ -107,7 +104,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ((TFrmRecurringGiftBatch)ParentForm).LoadTransactions(
                 ARow.LedgerNumber,
                 ARow.BatchNumber);
-            FSelectedBatchNumber = ARow.BatchNumber;
+
+            // FSelectedBatchNumber = ARow.BatchNumber;
         }
 
         private void ShowTransactionTab(Object sender, EventArgs e)
@@ -152,9 +150,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             TFrmRecurringGiftBatchSubmit submitForm = new TFrmRecurringGiftBatchSubmit(this.Handle);
-            submitForm.MainDS = FMainDS;
-            submitForm.BatchRow = FPreviouslySelectedDetailRow;
-            submitForm.Show();
+            try
+            {
+                ParentForm.ShowInTaskbar = false;
+                submitForm.MainDS = FMainDS;
+                submitForm.BatchRow = FPreviouslySelectedDetailRow;
+                submitForm.ShowDialog();
+            }
+            finally
+            {
+                submitForm.Dispose();
+                ParentForm.ShowInTaskbar = true;
+            }
         }
 
         /// <summary>

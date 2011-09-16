@@ -64,7 +64,7 @@ namespace Ict.Petra.Server.MPartner.Mailing.Cacheable
         public TPartnerCacheable() : base()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -77,7 +77,7 @@ namespace Ict.Petra.Server.MPartner.Mailing.Cacheable
         /// destructor
         ~TPartnerCacheable()
         {
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
                                                                                                 DateTime.Now.Ticks -
@@ -125,7 +125,7 @@ namespace Ict.Petra.Server.MPartner.Mailing.Cacheable
             String TableName = Enum.GetName(typeof(TCacheableMailingTablesEnum), ACacheableTable);
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 7)
+            if (TLogging.DL >= 7)
             {
                 Console.WriteLine(this.GetType().FullName + ".GetCacheableTable called for table '" + TableName + "'.");
             }
@@ -198,7 +198,7 @@ namespace Ict.Petra.Server.MPartner.Mailing.Cacheable
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 7)
+                        if (TLogging.DL >= 7)
                         {
                             Console.WriteLine(this.GetType().FullName + ".GetCacheableTable: commited own transaction.");
                         }

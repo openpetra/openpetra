@@ -77,6 +77,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
       this.lblDetailChargeAmount.Text = Catalog.GetString("Charge Amount:");
       this.lblToBeDebited.Text = Catalog.GetString("To Be Debited:");
       this.lblToBeCredited.Text = Catalog.GetString("To Be Credited:");
+      this.txtReceivingFund.Text = Catalog.GetString("Receiving Fund");
       this.lblReceivingFund.Text = Catalog.GetString("Cost Centre:");
       this.lblDetailDrAccountCode.Text = Catalog.GetString("Account:");
       this.grpAssignment.Text = Catalog.GetString("Assignment");
@@ -116,7 +117,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
       Ict.Common.Data.TTypedDataTable TypedTable;
       TRemote.MCommon.DataReader.GetData(AFeesPayableTable.GetTableDBName(), null, out TypedTable);
       FMainDS.AFeesPayable.Merge(TypedTable);
-      InitializeManualCode();
       grdDetails.Columns.Clear();
       grdDetails.AddTextColumn("Fee Code", FMainDS.AFeesPayable.ColumnFeeCode);
       grdDetails.AddTextColumn("Description", FMainDS.AFeesPayable.ColumnFeeDescription);
@@ -304,6 +304,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
     {
         if (ARow != null)
         {
+            ARow.BeginEdit();
             ARow.FeeCode = txtDetailFeeCode.Text;
             if (txtDetailFeeDescription.Text.Length == 0)
             {
@@ -333,6 +334,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             ARow.CostCentreCode = cmbDetailCostCentreCode.GetSelectedString();
             ARow.DrAccountCode = cmbDetailDrAccountCode.GetSelectedString();
             ARow.AccountCode = cmbDetailAccountCode.GetSelectedString();
+            ARow.EndEdit();
         }
     }
 

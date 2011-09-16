@@ -45,7 +45,54 @@
       string line = sr.ReadLine();
       sr.Close();
       return line == null || line.ToLower().IndexOf("auto generated with nant") != -1;
-    }        
+    }
+
+    /// get the relative path, that leads from the workingDirectory to the absolutePath
+    [Function("GetRelativePath")]
+    public static string GetRelativePath(string absolutePath, string workingDirectory)
+    {
+      absolutePath = absolutePath.Replace("\\", "/");
+      workingDirectory = workingDirectory.Replace("\\", "/");
+      
+      int countSame = 0;
+      while (countSame < absolutePath.Length 
+             && countSame < workingDirectory.Length 
+             && absolutePath[countSame] == workingDirectory[countSame])
+      {
+          countSame ++;
+      }
+
+      // go back to the last directory seperator
+      countSame = absolutePath.Substring(0, countSame).LastIndexOf("/") + 1;
+      string Result = absolutePath.Substring(countSame);
+      
+      if (countSame > 0)
+      {
+          // how many directories do we need to go up from the working Directory
+          while (countSame < workingDirectory.Length)
+          {
+              if (workingDirectory[countSame] == '/')
+              {
+                  Result = "../" + Result;
+              }
+              countSame ++;
+          }
+      }
+
+      return Result;
+    }
+
+    /// get the absolute path, if it is not yet absolute.
+    [Function("MakeAbsolute")]
+    public static string MakeAbsolute(string relativePath, string workingDirectory)
+    {
+        if (Path.IsPathRooted(relativePath))
+        {
+            return relativePath;
+        }
+        
+        return Path.GetFullPath(workingDirectory + Path.DirectorySeparatorChar + relativePath);
+    }
 ]]>
     </code>
 </script>
@@ -62,9 +109,12 @@
 
 
 <!-- Import user specific properties, if available -->
-<property name="userconfig.file" value="${path::combine(dir.root,'OpenPetra.build.config')}" overwrite="false" />
+<property name="userconfig.file" value="${path::combine(dir.root,'OpenPetra.build.config.my')}" overwrite="false" />
 <include buildfile="${userconfig.file}" verbose="true" if="${file::exists(userconfig.file)}"/>
-
+<if test="${not file::exists(userconfig.file)}">
+    <property name="userconfig.file" value="${path::combine(dir.root,'OpenPetra.build.config')}" overwrite="true" />
+    <include buildfile="${userconfig.file}" verbose="true" if="${file::exists(userconfig.file)}"/>
+</if>
 
 <!-- Version number -->
 <property name="ReleaseID" value="${OP::GetReleaseIDFromVersionTxt(dir.root)}" overwrite="false"  />
@@ -75,6 +125,11 @@
           overwrite="false" />
 <property name="dir.incdir.template.etc" value="${path::combine(dir.incdir.template, 'etc')}"
           overwrite="false" />
+<property name="dir.incdir.template.src" value="${path::combine(dir.incdir.template, 'src')}"
+          overwrite="false" />
+<property name="dir.incdir.cfg" value="${path::combine(dir.incdir, 'cfg')}"
+          overwrite="false" />
+
  <!-- csharp -->
 <property name="dir.csharp" value="${path::combine(dir.root, 'csharp')}"
           overwrite="false" />
@@ -134,6 +189,8 @@
 <!-- Server configuration -->
 <property name="Server.Port" value="9000" 
           overwrite="false" />
+<property name="Server.DebugLevel" value="0" 
+          overwrite="false" />
 <property name="SelectedLanguage" value="en" overwrite="false" />
 
 <!-- database -->
@@ -148,7 +205,7 @@
 
 
 <!-- Set correct .NET platform -->
-<property name="NETframework-version" value ="2.0" overwrite="false" />
+<property name="NETframework-version" value ="3.5" overwrite="false" />
 <property name="nant.settings.currentframework" value="net-${NETframework-version}"
           overwrite="false" if="${platform::is-windows()}" />
 <property name="nant.settings.currentframework" value="mono-${NETframework-version}" 
@@ -170,9 +227,9 @@
 
 <!-- generateWinforms -->
 <property name="tool-generateWinForms" value="${dir.bin}/GenerateWinForms.exe" overwrite="false" />
-<!-- leave this empty for MS.net and AutoSize/TableLayoutPanel, mono-2.0 needs it set! -->
-<property name="GUILocalisation" value="" overwrite="false" unless="${framework::get-target-framework() == 'mono-2.0'}"/> 
-<property name="GUILocalisation" value="en" overwrite="false" if="${framework::get-target-framework() == 'mono-2.0'}" />
+<!-- leave this empty for MS.net and AutoSize/TableLayoutPanel, mono-x.x needs it set! -->
+<property name="GUILocalisation" value="" overwrite="false" unless="${string::starts-with(framework::get-target-framework(), 'mono-')}"/> 
+<property name="GUILocalisation" value="en" overwrite="false" if="${string::starts-with(framework::get-target-framework(), 'mono-')}" />
     
 <!-- loglevel -->
 <property name="verbose" value="false"  overwrite="false" />
@@ -187,9 +244,13 @@
 
 
 <!-- external utilities dependend on platform -->
+<property name="external.doxygen" value="doxygen" overwrite="false"/>
+<property name="external.doxygen.configfile" value="${path::combine(dir.incdir.cfg, 'doxygen.cfg')}"
+          overwrite="false" />
+
 <if test="${'win32'==platform::get-name()}" >
   <!-- MS Windows specific -->
-  <property name="external.Uncrustify" value="${environment::get-variable('ProgramFiles')}/uncrustify-0.56-win32/uncrustify.exe" 
+  <property name="external.Uncrustify" value="${environment::get-variable('ProgramFiles')}/uncrustify/uncrustify.exe" 
             overwrite="false"/>
   <property name="external.Poedit.gettext" value="${environment::get-variable('ProgramFiles')}/Poedit/bin/xgettext.exe" overwrite="false"/>
   <property name="external.Poedit.msgfmt" value="${environment::get-variable('ProgramFiles')}/Poedit/bin/msgfmt.exe" overwrite="false"/>

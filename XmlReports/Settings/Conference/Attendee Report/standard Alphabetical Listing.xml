@@ -25,7 +25,7 @@
   <Parameter id="ColumnWidth" column="3" value="1.5" />
   <Parameter id="param_calculation" column="4" value="Charged Office" />
   <Parameter id="ColumnWidth" column="4" value="3" />
-  <Parameter id="param_calculation" column="5" value="Campaign Code" />
+  <Parameter id="param_calculation" column="5" value="Outreach Code" />
   <Parameter id="ColumnWidth" column="5" value="3" />
   <Parameter id="param_calculation" column="6" value="Conference Room" />
   <Parameter id="ColumnWidth" column="6" value="3" />

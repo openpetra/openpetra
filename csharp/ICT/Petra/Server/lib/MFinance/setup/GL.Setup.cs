@@ -37,13 +37,13 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
-using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.GL.Data.Access;
 using Ict.Petra.Server.MSysMan.Data.Access;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MSysMan.Data;
+using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.App.ClientDomain;
 
@@ -484,6 +484,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             AMainDS.AAccountHierarchyDetail.Rows.Add(newAccountHDetail);
 
+            newAccount.PostingStatus = !ACurrentNode.HasChildNodes;
+
             foreach (XmlNode child in ACurrentNode.ChildNodes)
             {
                 CreateAccountHierarchyRecursively(ref AMainDS, ALedgerNumber, ref AImportedAccountNames, child, newAccount.AccountCode);
@@ -690,7 +692,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         {
             XmlDocument doc;
             TYml2Xml ymlFile;
-            string Filename = TAppSettingsManager.GetValueStatic("SqlFiles.Path", ".") +
+            string Filename = TAppSettingsManager.GetValue("SqlFiles.Path", ".") +
                               Path.DirectorySeparatorChar +
                               "DefaultAccountHierarchy.yml";
 
@@ -719,6 +721,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             AAccountRow accountRow = AMainDS.AAccount.NewRowTyped();
             accountRow.LedgerNumber = ALedgerNumber;
             accountRow.AccountCode = ALedgerNumber.ToString();
+            accountRow.PostingStatus = false;
             AMainDS.AAccount.Rows.Add(accountRow);
 
             XmlNode root = doc.FirstChild.NextSibling.FirstChild;
@@ -732,7 +735,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         {
             // load XmlCostCentreHierarchy from a default file
 
-            string Filename = TAppSettingsManager.GetValueStatic("SqlFiles.Path", ".") +
+            string Filename = TAppSettingsManager.GetValue("SqlFiles.Path", ".") +
                               Path.DirectorySeparatorChar +
                               "DefaultCostCentreHierarchy.yml";
             TextReader reader = new StreamReader(Filename, TTextFile.GetFileEncoding(Filename), false);
@@ -822,6 +825,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             partnerRow.PartnerKey = PartnerKey;
             partnerRow.PartnerShortName = ALedgerName;
             partnerRow.StatusCode = MPartnerConstants.PARTNERSTATUS_ACTIVE;
+            partnerRow.PartnerClass = MPartnerConstants.PARTNERCLASS_UNIT;
             MainDS.PPartner.Rows.Add(partnerRow);
 
             PPartnerTypeRow partnerTypeRow = MainDS.PPartnerType.NewRowTyped();
@@ -895,25 +899,26 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             ASystemInterfaceRow systemInterfaceRow = MainDS.ASystemInterface.NewRowTyped();
             systemInterfaceRow.LedgerNumber = ALedgerNumber;
-            systemInterfaceRow.SubSystemCode = MFinanceConstants.SUB_SYSTEM_GL;
+
+            systemInterfaceRow.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
             systemInterfaceRow.SetUpComplete = true;
             MainDS.ASystemInterface.Rows.Add(systemInterfaceRow);
             systemInterfaceRow = MainDS.ASystemInterface.NewRowTyped();
             systemInterfaceRow.LedgerNumber = ALedgerNumber;
-            systemInterfaceRow.SubSystemCode = MFinanceConstants.SUB_SYSTEM_GR;
+            systemInterfaceRow.SubSystemCode = CommonAccountingSubSystemsEnum.GR.ToString();
             systemInterfaceRow.SetUpComplete = true;
             MainDS.ASystemInterface.Rows.Add(systemInterfaceRow);
             systemInterfaceRow = MainDS.ASystemInterface.NewRowTyped();
             systemInterfaceRow.LedgerNumber = ALedgerNumber;
-            systemInterfaceRow.SubSystemCode = MFinanceConstants.SUB_SYSTEM_AP;
+            systemInterfaceRow.SubSystemCode = CommonAccountingSubSystemsEnum.AP.ToString();
             systemInterfaceRow.SetUpComplete = true;
             MainDS.ASystemInterface.Rows.Add(systemInterfaceRow);
 
             // TODO: this might be different for other account or costcentre names
             ATransactionTypeRow transactionTypeRow = MainDS.ATransactionType.NewRowTyped();
             transactionTypeRow.LedgerNumber = ALedgerNumber;
-            transactionTypeRow.SubSystemCode = MFinanceConstants.SUB_SYSTEM_AP;
-            transactionTypeRow.TransactionTypeCode = MFinanceConstants.TRANSACTION_AP;
+            transactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.AP.ToString();
+            transactionTypeRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.INV.ToString();
             transactionTypeRow.DebitAccountCode = "BAL SHT";
             transactionTypeRow.CreditAccountCode = "CRS CTRL";
             transactionTypeRow.TransactionTypeDescription = "Input Creditor's Invoice";
@@ -921,8 +926,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             MainDS.ATransactionType.Rows.Add(transactionTypeRow);
             transactionTypeRow = MainDS.ATransactionType.NewRowTyped();
             transactionTypeRow.LedgerNumber = ALedgerNumber;
-            transactionTypeRow.SubSystemCode = MFinanceConstants.SUB_SYSTEM_GL;
-            transactionTypeRow.TransactionTypeCode = MFinanceConstants.TRANSACTION_ALLOC;
+            transactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
+            transactionTypeRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.ALLOC.ToString();
             transactionTypeRow.DebitAccountCode = "BAL SHT";
             transactionTypeRow.CreditAccountCode = "BAL SHT";
             transactionTypeRow.TransactionTypeDescription = "Allocation Journal";
@@ -930,8 +935,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             MainDS.ATransactionType.Rows.Add(transactionTypeRow);
             transactionTypeRow = MainDS.ATransactionType.NewRowTyped();
             transactionTypeRow.LedgerNumber = ALedgerNumber;
-            transactionTypeRow.SubSystemCode = MFinanceConstants.SUB_SYSTEM_GL;
-            transactionTypeRow.TransactionTypeCode = MFinanceConstants.TRANSACTION_REALLOC;
+            transactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
+            transactionTypeRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.REALLOC.ToString();
             transactionTypeRow.DebitAccountCode = "BAL SHT";
             transactionTypeRow.CreditAccountCode = "BAL SHT";
             transactionTypeRow.TransactionTypeDescription = "Reallocation Journal";
@@ -939,8 +944,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             MainDS.ATransactionType.Rows.Add(transactionTypeRow);
             transactionTypeRow = MainDS.ATransactionType.NewRowTyped();
             transactionTypeRow.LedgerNumber = ALedgerNumber;
-            transactionTypeRow.SubSystemCode = MFinanceConstants.SUB_SYSTEM_GL;
-            transactionTypeRow.TransactionTypeCode = MFinanceConstants.TRANSACTION_FX_REVAL;
+            transactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
+            transactionTypeRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.REVAL.ToString();
             transactionTypeRow.DebitAccountCode = "5003";
             transactionTypeRow.CreditAccountCode = "5003";
             transactionTypeRow.TransactionTypeDescription = "Foreign Exchange Revaluation";
@@ -948,8 +953,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             MainDS.ATransactionType.Rows.Add(transactionTypeRow);
             transactionTypeRow = MainDS.ATransactionType.NewRowTyped();
             transactionTypeRow.LedgerNumber = ALedgerNumber;
-            transactionTypeRow.SubSystemCode = MFinanceConstants.SUB_SYSTEM_GL;
-            transactionTypeRow.TransactionTypeCode = MFinanceConstants.TRANSACTION_STD;
+            transactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
+            transactionTypeRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.STD.ToString();
             transactionTypeRow.DebitAccountCode = "BAL SHT";
             transactionTypeRow.CreditAccountCode = "BAL SHT";
             transactionTypeRow.TransactionTypeDescription = "Standard Journal";
@@ -957,8 +962,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             MainDS.ATransactionType.Rows.Add(transactionTypeRow);
             transactionTypeRow = MainDS.ATransactionType.NewRowTyped();
             transactionTypeRow.LedgerNumber = ALedgerNumber;
-            transactionTypeRow.SubSystemCode = MFinanceConstants.SUB_SYSTEM_GR;
-            transactionTypeRow.TransactionTypeCode = MFinanceConstants.TRANSACTION_GIFT;
+            transactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.GR.ToString();
+            transactionTypeRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.GR.ToString();
             transactionTypeRow.DebitAccountCode = "CASH";
             transactionTypeRow.CreditAccountCode = "GIFT";
             transactionTypeRow.TransactionTypeDescription = "Gift Receipting";

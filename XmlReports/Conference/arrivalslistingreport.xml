@@ -51,7 +51,7 @@
 	<field whichfield="period2">
 		<fielddetail>
 			<switch><case condition="eq({param_conferenceselection}, one conference)">
-				<value text="Selected Campaign Options: "></value>
+				<value text="Selected Outreach Options: "></value>
 				<value variable="param_conferenceoptionscode"></value>
 			</case></switch>
 		</fielddetail>
@@ -117,7 +117,7 @@
 							PUB_pm_short_term_application.pt_travel_type_from_cong_code_c AS DepartureTravelType,
 							PUB_pm_short_term_application.pm_arrival_transport_needed_l,
 							PUB_pm_short_term_application.pm_departure_transport_needed_l,
-							PUB_pm_short_term_application.pm_confirmed_option_code_c AS CampaignCode,
+							PUB_pm_short_term_application.pm_confirmed_option_code_c AS OutreachCode,
 							PUB_pm_short_term_application.pm_st_congress_code_c AS ConferenceRole,
 							PUB_pm_short_term_application.pm_st_fg_code_c AS FellowshipGroup,
 							PUB_pm_short_term_application.pm_st_fg_leader_l,
@@ -172,7 +172,7 @@
 					
 					<queryDetail condition="eq({param_conferenceselection}, all conferences))"><value>
 							AND PUB_pc_attendee.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n
-							AND PUB_pc_conference.pc_xyz_tbd_prefix_c = substr(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) 
+							AND PUB_pc_conference.pc_outreach_prefix_c = substr(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) 
 					</value></queryDetail>
 					
 					<queryDetail condition="eq({param_reportday}, Arrival)"><value>

@@ -4,7 +4,7 @@
 // @Authors:
 //       berndr
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -55,12 +55,12 @@ namespace Ict.Petra.Server.MConference.WebConnectors
         private const int USED_IN_CONFERENCE = 4;
 
         /// <summary>
-        /// Get the units which start with the same campaign code as the given unit.
+        /// Get the units which start with the same outreach code as the given unit.
         /// </summary>
-        /// <param name="AUnitKey">The unit which defines the campaign code</param>
+        /// <param name="AUnitKey">The unit which defines the outreach code</param>
         /// <returns>A table with all the relevant units</returns>
         [RequireModulePermission("CONFERENCE")]
-        public static PUnitTable GetCampaignOptions(Int64 AUnitKey)
+        public static PUnitTable GetOutreachOptions(Int64 AUnitKey)
         {
             String ConferenceCodePrefix = "";
             PUnitTable UnitTable = new PUnitTable();
@@ -69,9 +69,9 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             Boolean NewTransaction = false;
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
-                Console.WriteLine("GetCampaignOptions called!");
+                Console.WriteLine("GetOutreachOptions called!");
             }
 #endif
             ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
@@ -85,12 +85,12 @@ namespace Ict.Petra.Server.MConference.WebConnectors
 
                 if (UnitTable.Rows.Count > 0)
                 {
-                    String ConferenceCode = ((PUnitRow)UnitTable.Rows[0]).XyzTbdCode;
+                    String ConferenceCode = ((PUnitRow)UnitTable.Rows[0]).OutreachCode;
                     ConferenceCodePrefix = ConferenceCode.Substring(0, 5) + "%";
 
                     StringCollection operators = new StringCollection();
                     operators.Add("LIKE");
-                    TemplateRow.XyzTbdCode = ConferenceCodePrefix;
+                    TemplateRow.OutreachCode = ConferenceCodePrefix;
 
                     UnitTable = PUnitAccess.LoadUsingTemplate(TemplateRow, operators, null, ReadTransaction);
                 }
@@ -101,9 +101,9 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
-                        Console.WriteLine("GetCampaignOptions: committed own transaction.");
+                        Console.WriteLine("GetOutreachOptions: committed own transaction.");
                     }
 #endif
                 }
@@ -117,7 +117,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
         /// Otherwise only the conferences that start with the given parameters are returned.
         /// </summary>
         /// <param name="AConferenceName">Matching patterns for Unit Name</param>
-        /// <param name="APrefix">Matching pattern for campaign code</param>
+        /// <param name="APrefix">Matching pattern for outreach code</param>
         /// <returns>A dataset with all the conferences in question</returns>
         [RequireModulePermission("CONFERENCE")]
         public static SelectConferenceTDS GetConferences(String AConferenceName, String APrefix)
@@ -145,7 +145,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             }
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("GetConferences called!");
             }
@@ -162,7 +162,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 if (APrefix.Length > 0)
                 {
                     APrefix = APrefix.Replace('*', '%') + "%";
-                    TemplateRow.XyzTbdPrefix = APrefix;
+                    TemplateRow.OutreachPrefix = APrefix;
 
                     StringCollection Operators = new StringCollection();
                     Operators.Add("LIKE");
@@ -180,7 +180,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine("GetConferences: committed own transaction.");
                     }
@@ -238,7 +238,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             Boolean NewTransaction = false;
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("GetEarliestAndLatestDates called!");
             }
@@ -268,7 +268,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine("GetEarliestAndLatestDates: committed own transaction.");
                     }
@@ -335,18 +335,18 @@ namespace Ict.Petra.Server.MConference.WebConnectors
         }
 
         /// <summary>
-        /// Get the units which start with the same campaign code as given with the prefix.
+        /// Get the units which start with the same outreach code as given with the prefix.
         /// </summary>
-        /// <param name="AUnitKey">Partner Key of the unit from which the campaign options are retrieved</param>
+        /// <param name="AUnitKey">Partner Key of the unit from which the outreach options are retrieved</param>
         /// <param name="AConferenceTable">A table with all the units</param>
         /// <returns></returns>
         [RequireModulePermission("CONFERENCE")]
-        public static System.Boolean GetCampaignOptions(long AUnitKey,
+        public static System.Boolean GetOutreachOptions(long AUnitKey,
             out System.Data.DataTable AConferenceTable)
         {
             AConferenceTable = new DataTable();
             AConferenceTable.Columns.Add("Partner Key", Type.GetType("System.Int64"));
-            AConferenceTable.Columns.Add("Campaign Code");
+            AConferenceTable.Columns.Add("Outreach Code");
             AConferenceTable.Columns.Add("Unit Name");
 
             String ConferenceCodePrefix = "";
@@ -356,9 +356,9 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             Boolean NewTransaction = false;
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
-                Console.WriteLine("GetCampaignOptions called!");
+                Console.WriteLine("GetOutreachOptions called!");
             }
 #endif
             ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
@@ -372,7 +372,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
 
                 if (UnitTable.Rows.Count > 0)
                 {
-                    ConferenceCodePrefix = ((PUnitRow)UnitTable.Rows[0]).XyzTbdCode.Substring(0, 5);
+                    ConferenceCodePrefix = ((PUnitRow)UnitTable.Rows[0]).OutreachCode.Substring(0, 5);
 
                     UnitTable = PUnitAccess.LoadUsingTemplate(TemplateRow, null, null, ReadTransaction,
                         null, 0, 0);
@@ -384,9 +384,9 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
-                        Console.WriteLine("GetCampaignOptions: committed own transaction.");
+                        Console.WriteLine("GetOutreachOptions: committed own transaction.");
                     }
 #endif
                 }
@@ -394,7 +394,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
 
             foreach (PUnitRow UnitRow in UnitTable.Rows)
             {
-                if (!UnitRow.XyzTbdCode.StartsWith(ConferenceCodePrefix, true, null))
+                if (!UnitRow.OutreachCode.StartsWith(ConferenceCodePrefix, true, null))
                 {
                     continue;
                 }
@@ -402,7 +402,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 DataRow NewRow = AConferenceTable.NewRow();
 
                 NewRow["Partner Key"] = UnitRow.PartnerKey;
-                NewRow["Campaign Code"] = UnitRow.XyzTbdCode;
+                NewRow["Outreach Code"] = UnitRow.OutreachCode;
                 NewRow["Unit Name"] = UnitRow.UnitName;
 
                 AConferenceTable.Rows.Add(NewRow);
@@ -421,7 +421,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
         /// <param name="AFieldsTable">A list of units that relate in to the conference.
         /// Column 0 is the Unit key
         /// Column 1 is the Unit name
-        /// Column 2 is the Campaign Code
+        /// Column 2 is the Outreach Code
         /// Column 3 indicates if the unit is directly used by the current conference</param>
         /// <param name="AConferencePrefix">The prefix code of the conference</param>
         /// <returns>True if successful. Otherwise false</returns>
@@ -437,12 +437,11 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             DataTable TmpTable;
 
             PmShortTermApplicationTable ShortTermerTable = new PmShortTermApplicationTable();
-            PmShortTermApplicationRow TemplateRow = (PmShortTermApplicationRow)ShortTermerTable.NewRow();
 
             AFieldsTable.Columns.Add("Selection", System.Type.GetType("System.Boolean"));
             AFieldsTable.Columns.Add("Unit Key", System.Type.GetType("System.Int64"));
             AFieldsTable.Columns.Add("Unit Name", System.Type.GetType("System.String"));
-            AFieldsTable.Columns.Add("Campaign Code", System.Type.GetType("System.String"));
+            AFieldsTable.Columns.Add("Outreach Code", System.Type.GetType("System.String"));
             AFieldsTable.Columns.Add("Used_in_Conference", System.Type.GetType("System.Boolean"));
 
             AConferencePrefix = TConferenceOptions.GetConferencePrefix(AConferenceKey);
@@ -455,9 +454,9 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 case TUnitTypeEnum.utReceivingFields:
                     return TConferenceOptions.GetReceivingFields(AConferenceKey, ref AFieldsTable);
 
-                case TUnitTypeEnum.utCampaignOptions:
+                case TUnitTypeEnum.utOutreachOptions:
 
-                    if (TConferenceOptions.GetCampaignOptions(AConferenceKey, out TmpTable))
+                    if (TConferenceOptions.GetOutreachOptions(AConferenceKey, out TmpTable))
                     {
                         foreach (DataRow Row in TmpTable.Rows)
                         {
@@ -466,7 +465,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                             NewRow[SELECTION] = false;
                             NewRow[UNIT_KEY] = Row["Partner Key"];
                             NewRow[UNIT_NAME] = Row["Unit Name"];
-                            NewRow[CAMPAIGN_CODE] = Row["Campaign Code"];
+                            NewRow[CAMPAIGN_CODE] = Row["Outreach Code"];
                             NewRow[USED_IN_CONFERENCE] = true;
 
                             AFieldsTable.Rows.Add(NewRow);
@@ -482,7 +481,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             }
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("GetFieldUnits called!");
             }
@@ -603,7 +602,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine("GetFieldUnits: committed own transaction.");
                     }
@@ -630,10 +629,9 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             PUnitTable UnitTable;
 
             PcAttendeeTable AttendeeTable = new PcAttendeeTable();
-            PcAttendeeRow TemplateRow = (PcAttendeeRow)AttendeeTable.NewRow();
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("GetSendingFieldsForOneConference called!");
             }
@@ -692,7 +690,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine("GetSendingFieldsForOneConference: committed own transaction.");
                     }
@@ -709,10 +707,9 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             PUnitTable UnitTable;
 
             PcAttendeeTable AttendeeTable = new PcAttendeeTable();
-            PcAttendeeRow TemplateRow = (PcAttendeeRow)AttendeeTable.NewRow();
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("GetAllSendingFields called!");
             }
@@ -771,7 +768,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine("GetAllSendingFields: committed own transaction.");
                     }
@@ -797,7 +794,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             Boolean NewTransaction = false;
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("GetReceivingFieldsForOneConference called!");
             }
@@ -828,7 +825,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine("GetReceivingFieldsForOneConference: committed own transaction.");
                     }
@@ -844,7 +841,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             Boolean NewTransaction = false;
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("GetReceivingFields called!");
             }
@@ -894,7 +891,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine("GetReceivingFields: committed own transaction.");
                     }
@@ -917,7 +914,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             Boolean NewTransaction = false;
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("GetReceivingFieldFromPartnerTable called!");
             }
@@ -961,7 +958,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine("GetReceivingFieldFromPartnerTable: committed own transaction.");
                     }
@@ -984,7 +981,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             Boolean NewTransaction = false;
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("GetReceivingFieldFromShortTermTable called!");
             }
@@ -1013,7 +1010,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine("GetReceivingFieldFromShortTermTable: committed own transaction.");
                     }
@@ -1083,9 +1080,9 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             PUnitTable UnitTable;
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 7)
+            if (TLogging.DL >= 7)
             {
-                Console.WriteLine("GetCampaignPrefix: called.");
+                Console.WriteLine("GetOutreachPrefix: called.");
             }
 #endif
 
@@ -1099,7 +1096,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
 
                 if (UnitTable.Rows.Count > 0)
                 {
-                    ConferencePrefix = (string)UnitTable.Rows[0][PUnitTable.GetXyzTbdCodeDBName()];
+                    ConferencePrefix = (string)UnitTable.Rows[0][PUnitTable.GetOutreachCodeDBName()];
 
                     if (ConferencePrefix.Length > 5)
                     {
@@ -1113,9 +1110,9 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
-                        Console.WriteLine("GetCampaignPrefix: committed own transaction.");
+                        Console.WriteLine("GetOutreachPrefix: committed own transaction.");
                     }
 #endif
                 }

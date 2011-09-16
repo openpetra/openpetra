@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -42,8 +42,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     {
         private Int32 FLedgerNumber = -1;
         private Int32 FBatchNumber = -1;
-
-        private string strCurrencySymbol;
 
         private const string DEFAULT_CURRENCY_EXCHANGE = "1.00";
 
@@ -92,6 +90,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
+        /// <summary>
+        /// WorkAroundInitialization
+        /// </summary>
         public void WorkAroundInitialization()
         {
             btnGetSetExchangeRate.Click += new EventHandler(SetExchangeRateValue);
@@ -124,7 +125,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             txtLedgerNumber.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
             txtBatchNumber.Text = FBatchNumber.ToString();
-            ABatchRow batch = ((TFrmGLBatch)ParentForm).GetBatchControl().GetSelectedDetailRow();
+
+            // ABatchRow batch = ((TFrmGLBatch)ParentForm).GetBatchControl().GetSelectedDetailRow();
 
             if (FPreviouslySelectedDetailRow != null)
             {
@@ -172,7 +174,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             txtDebit.CurrencySymbol = FMainDS.ALedger[0].BaseCurrency;
             txtCredit.CurrencySymbol = FMainDS.ALedger[0].BaseCurrency;
             txtControl.CurrencySymbol = FMainDS.ALedger[0].BaseCurrency;
-            strCurrencySymbol = FMainDS.ALedger[0].BaseCurrency;
         }
 
         private void ShowDetailsManual(AJournalRow ARow)
@@ -307,7 +308,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
-        public decimal GetActualExchangeRateForeign()
+        private decimal GetActualExchangeRateForeign()
         {
             return Convert.ToDecimal(txtDetailExchangeRateToBase.Text);
         }

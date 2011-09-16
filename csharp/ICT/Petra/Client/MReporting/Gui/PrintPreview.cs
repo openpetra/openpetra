@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -52,7 +52,6 @@ namespace Ict.Petra.Client.MReporting.Gui
         private TGridPreview FGridPreview;
         private bool FPrinterInstalled;
 
-        private TReportPrinterLayout ReportGfxPrinter;
         private TReportPrinterLayout ReportTxtPrinter;
         private TGfxPrinter FGfxPrinter;
         private TTxtPrinter FTxtPrinter;
@@ -122,7 +121,6 @@ namespace Ict.Petra.Client.MReporting.Gui
             #endregion
 
             System.Windows.Forms.TabPage SelectedTab;
-            String durationText;
 
             this.Text = this.Text + ": " + caption;
             this.ReportName = caption;
@@ -141,7 +139,10 @@ namespace Ict.Petra.Client.MReporting.Gui
             {
                 this.tabPreview.SelectedTab = tbpPreview;
                 FGfxPrinter = new TGfxPrinter(this.PrintDocument, TGfxPrinter.ePrinterBehaviour.eReport);
-                this.ReportGfxPrinter = new TReportPrinterLayout(Results, Parameters, FGfxPrinter, AWrapColumn);
+
+                // TReportPrinterLayout ReportGfxPrinter
+                new TReportPrinterLayout(Results, Parameters, FGfxPrinter, AWrapColumn);
+
                 this.PrintPreviewControl.Document = FGfxPrinter.Document;
                 this.PrintPreviewControl.Zoom = 1; // show 100% by default
                 this.PrintPreviewControl.UseAntiAlias = true;
@@ -176,9 +177,8 @@ namespace Ict.Petra.Client.MReporting.Gui
                 FGridPreview.PopulateGridContextMenu(ContextMenu1);
             }
 
-            durationText = String.Format("It took {0} to calculate the report", FormatDuration(duration));
-
-            // TODO statusbar this.sbtForm.InstanceDefaultText = durationText;
+            stpInfo.Text = string.Empty;
+            stbMain.ShowMessage(String.Format(Catalog.GetString("It took {0} to calculate the report"), FormatDuration(duration)));
         }
 
         #region Event Handlers

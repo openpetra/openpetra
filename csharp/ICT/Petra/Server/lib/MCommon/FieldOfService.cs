@@ -103,7 +103,7 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
             TDBTransaction ReadTransaction;
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": LoadData called.");
             }

@@ -63,7 +63,7 @@ namespace Ict.Petra.Server.App.ClientDomain
         public TPollClientTasks() : base()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 10)
+            if (TLogging.DL >= 10)
             {
                 Console.WriteLine("{0} TPollClientTasks created", DateTime.Now);
             }
@@ -86,7 +86,7 @@ namespace Ict.Petra.Server.App.ClientDomain
             DataTable ReturnValue;
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 10)
+            if (TLogging.DL >= 10)
             {
                 Console.WriteLine("{0} TPollClientTasks: PollClientTasks called", DateTime.Now);
             }
@@ -100,7 +100,7 @@ namespace Ict.Petra.Server.App.ClientDomain
                 // reduce the number of bytes that are transfered to the Client!
                 ReturnValue = null;
 #if DEBUGMODE
-                if (TSrvSetting.DL > 9)
+                if (TLogging.DL > 9)
                 {
                     Console.WriteLine("{0} TPollClientTasks: Client Tasks Table is empty!", DateTime.Now);
                 }
@@ -111,7 +111,7 @@ namespace Ict.Petra.Server.App.ClientDomain
                 // Retrieve new ClientTasks DataTable and pass it on the the Client
                 ReturnValue = UClientTasksManager.ClientTasksNewDataTable;
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 9)
+                if (TLogging.DL >= 9)
                 {
                     Console.WriteLine("TPollClientTasks: Client Tasks Table has " + (ReturnValue.Rows.Count).ToString() + " entries!");
                 }
@@ -138,7 +138,7 @@ namespace Ict.Petra.Server.App.ClientDomain
         public TPollClientTasksParameters(TClientTasksManager AClientTasksManager)
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 10)
+            if (TLogging.DL >= 10)
             {
                 Console.WriteLine("{0} TPollClientTasksParameters created", DateTime.Now);
             }

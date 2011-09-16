@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -39,8 +39,6 @@ namespace Ict.Common.DB.Testing
     [TestFixture]
     public class TTestCommonDB
     {
-        private TAppSettingsManager settings;
-
         /// <summary>
         /// modified version taken from Ict.Petra.Server.App.Main::TServerManager
         /// </summary>
@@ -49,15 +47,15 @@ namespace Ict.Common.DB.Testing
             TLogging.Log("  Connecting to Database...");
 
             DBAccess.GDBAccessObj = new TDataBase();
-            DBAccess.GDBAccessObj.DebugLevel = settings.GetInt16("Server.DebugLevel", 10);
+            TLogging.DebugLevel = TAppSettingsManager.GetInt16("Server.DebugLevel", 10);
             try
             {
-                DBAccess.GDBAccessObj.EstablishDBConnection(CommonTypes.ParseDBType(settings.GetValue("Server.RDBMSType")),
-                    settings.GetValue("Server.PostgreSQLServer"),
-                    settings.GetValue("Server.PostgreSQLServerPort"),
-                    settings.GetValue("Server.PostgreSQLDatabaseName"),
-                    settings.GetValue("Server.PostgreSQLUserName"),
-                    settings.GetValue("Server.Credentials"),
+                DBAccess.GDBAccessObj.EstablishDBConnection(CommonTypes.ParseDBType(TAppSettingsManager.GetValue("Server.RDBMSType")),
+                    TAppSettingsManager.GetValue("Server.DBHostOrFile"),
+                    TAppSettingsManager.GetValue("Server.DBPort"),
+                    TAppSettingsManager.GetValue("Server.DBName"),
+                    TAppSettingsManager.GetValue("Server.DBUserName"),
+                    TAppSettingsManager.GetValue("Server.DBPassword"),
                     "");
             }
             catch (Exception)
@@ -68,15 +66,17 @@ namespace Ict.Common.DB.Testing
             TLogging.Log("  Connected to Database.");
         }
 
+        /// init
         [SetUp]
         public void Init()
         {
             new TLogging("test.log");
-            settings = new TAppSettingsManager("../../etc/TestServer.config");
+            new TAppSettingsManager("../../etc/TestServer.config");
 
             EstablishDBConnection();
         }
 
+        /// tear down
         [TearDown]
         public void TearDown()
         {
@@ -125,6 +125,7 @@ namespace Ict.Common.DB.Testing
             DBAccess.GDBAccessObj.CommitTransaction();
         }
 
+        /// test the order of statements in a transaction
         [Test]
         public void TestOrderStatementsInTransaction()
         {
@@ -134,6 +135,7 @@ namespace Ict.Common.DB.Testing
             Assert.Throws <Npgsql.NpgsqlException>(new TestDelegate(WrongOrderSqlStatements));
         }
 
+        /// test sequences
         [Test]
         public void TestSequence()
         {

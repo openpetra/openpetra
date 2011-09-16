@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -379,16 +379,15 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
         /// This function is called by the "UnitHierarchyReport"
         /// </summary>
         /// <param name="AUnitKey">Parent unit to get the child unit from</param>
-        /// <param name="AWithCampaigns">Indicates if campaigns and conferences should
+        /// <param name="AWithOutreaches">Indicates if outreaches and conferences should
         /// be included in the result.</param>
         /// <returns>True</returns>
-        private bool GenerateUnitHierarchy(long AUnitKey, string AWithCampaigns)
+        private bool GenerateUnitHierarchy(long AUnitKey, string AWithOutreaches)
         {
             int ChildRow = 1;
 
-            GetChildUnits(AUnitKey, 0, (AWithCampaigns == "true"), ref ChildRow);
-
-            DataTable table = situation.GetResults().ToDataTable(parameters);
+            // stores the child units into the situation results
+            GetChildUnits(AUnitKey, 0, (AWithOutreaches == "true"), ref ChildRow);
 
             return true;
         }
@@ -399,12 +398,12 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
         /// </summary>
         /// <param name="AUnitKey">Parent unit to get the child unit from</param>
         /// <param name="AChildLevel">Indicates how deep we are in the recursion</param>
-        /// <param name="AWithCampaigns">Indicates if campaigns and conferences should
+        /// <param name="AWithOutreaches">Indicates if outreaches and conferences should
         /// be included in the result</param>
         /// <param name="AChildRow">the number of the row</param>
         /// <returns>False if the parent unit is not active.
         /// Otherwise true</returns>
-        private bool GetChildUnits(long AUnitKey, int AChildLevel, bool AWithCampaigns, ref int AChildRow)
+        private bool GetChildUnits(long AUnitKey, int AChildLevel, bool AWithOutreaches, ref int AChildRow)
         {
             UmUnitStructureTable UnitStructure;
             PUnitTable UnitTable;
@@ -491,7 +490,7 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
                 string UnitName = UnitRow.UnitName;
                 string UnitTypeName = UnitRow.UnitTypeCode;
 
-                if (!AWithCampaigns
+                if (!AWithOutreaches
                     && ((UnitTypeName.StartsWith("GA"))
                         || (UnitTypeName.StartsWith("GC"))
                         || (UnitTypeName.StartsWith("TN"))
@@ -507,7 +506,7 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
 
             foreach (KeyValuePair <string, long>kvp in ChildList)
             {
-                GetChildUnits(kvp.Value, AChildLevel, AWithCampaigns, ref AChildRow);
+                GetChildUnits(kvp.Value, AChildLevel, AWithOutreaches, ref AChildRow);
             }
 
             return true;
@@ -883,7 +882,6 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
 
                 PPartnerLocationRow PartnerLocationRow;
                 PLocationTable LocationTable;
-                PLocationRow LocationRow;
 
                 if (!TRptUserFunctionsPartner.GetPartnerBestAddressRow(Row.PartnerKey, situation, out PartnerLocationRow))
                 {
@@ -906,8 +904,6 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
                 {
                     GatheredResults["Church-Name"] += ", " + ((PPartnerRow)ChurchTable.Rows[0]).PartnerShortName + " ";
                 }
-
-                LocationRow = (PLocationRow)LocationTable.Rows[0];
 
                 // Add this church address to the results
                 // the variables will be something like Church-PostalCode, Church-StreetName

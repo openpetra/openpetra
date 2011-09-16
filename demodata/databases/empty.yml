@@ -614,7 +614,7 @@
             Row24:{TypeCode=EX-POTENT, TypeDescription=Potential applicant but did not apply, ValidType=True, TypeDeletable=False}
             Row25:{TypeCode=EX-STAFF, TypeDescription=Formerly a long-term member of us, ValidType=True, TypeDeletable=False}
             Row26:{TypeCode=EX-STAFF-NN, TypeDescription="A non-national, previously a long-termer with us", ValidType=True, TypeDeletable=False}
-            Row27:{TypeCode=EX-STAFF-ST, TypeDescription=Attended a short term campaign, ValidType=True, TypeDeletable=False}
+            Row27:{TypeCode=EX-STAFF-ST, TypeDescription=Attended a short term outreach, ValidType=True, TypeDeletable=False}
             Row28:{TypeCode=EX-STAFF-YP, TypeDescription=Formerly a year programme member of us, ValidType=True, TypeDeletable=False}
             Row29:{TypeCode=EX-VOLUNT, TypeDescription=Previously a volunteer worker or helper, ValidType=True, TypeDeletable=False}
             Row30:{TypeCode=F/L, TypeDescription=Field Leader, ValidType=True, TypeDeletable=False}

@@ -61,8 +61,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.Label3.Text = Catalog.GetString("/");
             this.chkFOOnlyCurrentCommitments.Text = Catalog.GetString("Only Current");
             this.btnChooseCommitmentFieldOffice.Text = Catalog.GetString("...");
-            this.btnChooseEventConferenceCampaign.Text = Catalog.GetString("...");
-            this.lblEventConferenceCampaign.Text = Catalog.GetString("Eve&nt/Confer./Camp.:");
+            this.btnChooseEventConferenceOutreach.Text = Catalog.GetString("...");
+            this.lblEventConferenceOutreach.Text = Catalog.GetString("Eve&nt/Confer./Camp.:");
             this.lblPersonLanguage.Text = Catalog.GetString("Lang&uage:");
             #endregion
 

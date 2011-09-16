@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -44,9 +44,7 @@ namespace Ict.Testing.NUnitPetraClient
 /// AutoLoginPasswd
     public class TPetraConnector
     {
-        public static TServerInfo ServerInfo;
-        public static TUserDefaults UserDefaults;
-
+        /// connect to the server
         public static void Connect(string AConfigName)
         {
             TUnhandledThreadExceptionHandler UnhandledThreadExceptionHandler;
@@ -58,17 +56,18 @@ namespace Ict.Testing.NUnitPetraClient
 
             Application.ThreadException += new ThreadExceptionEventHandler(UnhandledThreadExceptionHandler.OnThreadException);
 
-            TAppSettingsManager Config = new TAppSettingsManager(AConfigName);
+            new TAppSettingsManager(AConfigName);
 
             Catalog.Init();
 
             new TClientSettings();
             TClientInfo.InitVersion();
             TCacheableTablesManager.InitializeUnit();
-            Connect(Config.GetValue("AutoLogin"), Config.GetValue("AutoLoginPasswd"), Config.GetInt64("SiteKey"));
+            Connect(TAppSettingsManager.GetValue("AutoLogin"), TAppSettingsManager.GetValue("AutoLoginPasswd"),
+                TAppSettingsManager.GetInt64("SiteKey"));
         }
 
-        public static void Connect(String AUserName, String APassword, Int64 ASiteKey)
+        private static void Connect(String AUserName, String APassword, Int64 ASiteKey)
         {
             bool ConnectionResult;
             String WelcomeMessage;
@@ -115,13 +114,14 @@ namespace Ict.Testing.NUnitPetraClient
             {
                 throw;
             }
-            UserDefaults = new TUserDefaults();
-            ServerInfo = new TServerInfo(Utilities.DetermineExecutingOS());
+            new TUserDefaults();
+            new TServerInfo(Utilities.DetermineExecutingOS());
             TLogging.Log(
                 "client is connected ClientID: " + TConnectionManagement.GConnectionManagement.ClientID.ToString() + " UserId: " + AUserName +
                 " to Server...");
         }
 
+        /// disconnect from the server
         public static void Disconnect()
         {
             String CantDisconnectReason;

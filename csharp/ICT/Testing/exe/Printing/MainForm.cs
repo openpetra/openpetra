@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -50,6 +50,7 @@ namespace Tests.Common.Printing
     {
         const string FileName = "../../csharp/ICT/Testing/exe/Printing/test.html";
 
+        /// constructor
         public MainForm()
         {
             //
@@ -210,7 +211,7 @@ namespace Tests.Common.Printing
                 UserInfo.GUserInfo = new TPetraPrincipal(PetraIdentity, null);
 
                 FGfxPrinter = new TGfxPrinter(doc, TGfxPrinter.ePrinterBehaviour.eReport);
-                TReportPrinterLayout ReportGfxPrinter = new TReportPrinterLayout(Results, Parameters, FGfxPrinter, true);
+                new TReportPrinterLayout(Results, Parameters, FGfxPrinter, true);
                 printPreviewControl1.Document = doc;
                 doc.EndPrint += new PrintEventHandler(this.PrintDocument_EndPrint);
                 printPreviewControl1.InvalidatePreview();

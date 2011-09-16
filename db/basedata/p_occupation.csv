@@ -1,0 +1,226 @@
+COM-AUDIO-PRODUD,Audio Producer,true,false,?,?,?,?,?
+COM-AV-OPERATOR,Audio/visual Operator,true,false,?,?,?,?,?
+COM-AV-PRODUCER,Audio/visual producer,true,false,?,?,?,?,?
+COM-DANCE,Dance,true,false,?,?,?,?,?
+COM-DRAMA-THEATE,Drama/Theatre Arts,true,false,?,?,?,?,?
+COM-DT-PUBLISHER,Desk-top publisher,true,false,?,?,?,?,?
+COM-EDITOR,Editor,true,false,?,?,?,?,?
+COM-GRAPHIC-ARTS,Graphic arts designer,true,false,?,?,?,?,?
+COM-INSTR-MUSIC,Instrumental Music,true,false,?,?,?,?,?
+COM-JOURNALIST,Journalist,true,false,?,?,?,?,?
+COM-MAGIC-ILLUST,Illusions/Magic,true,false,?,?,?,?,?
+COM-OTHER-MEDIA,Other media skills,true,false,?,?,?,?,?
+COM-PHOTOGRAPHER,Photographer,true,false,?,?,?,?,?
+COM-PRINTER,Printer,true,false,?,?,?,?,?
+COM-PUBLISHER,Publisher,true,false,?,?,?,?,?
+COM-SOUND-LIGHT,Sound/Lighting Technician,true,false,?,?,?,?,?
+COM-TECH-WRITER,Technical Writer,true,false,?,?,?,?,?
+COM-VIDEO-PRODUD,Video Producer,true,false,?,?,?,?,?
+COM-VOCAL-INSTRU,Vocal and Instrumental,true,false,?,?,?,?,?
+COM-VOCAL-MUSIC,Vocal Music,true,false,?,?,?,?,?
+COM-WRITER,Writer,true,false,?,?,?,?,?
+MIN-BIBLE-STUDEN,Bible Student,true,false,?,?,?,?,?
+MIN-BIBLE-TEACH,Bible teacher,true,false,?,?,?,?,?
+MIN-CHILD-EVANG,Children's ministry/Evangelism,true,false,?,?,?,?,?
+MIN-CHURCH-PLANT,Church planting,true,false,?,?,?,?,?
+MIN-CLOWNING,Clown ministry,true,false,?,?,?,?,?
+MIN-COUNSELLING,Counselling,true,false,?,?,?,?,?
+MIN-CULTS,Cults ministry,true,false,?,?,?,?,?
+MIN-DANCE,Dance ministry,true,false,?,?,?,?,?
+MIN-DISCIPLESHIP,Discipleship ministry,true,false,?,?,?,?,?
+MIN-DOOR-TO-DOOR,Door-to-door evangelism,true,false,?,?,?,?,?
+MIN-DRAMA-MIME,Drama and mime evangelism,true,false,?,?,?,?,?
+MIN-DRUG-ADDICTS,Drug addict worker,true,false,?,?,?,?,?
+MIN-EASTERN,Eastern Ministry,true,false,?,?,?,?,?
+MIN-EVANG-PREACH,Evangelistic preacher,true,false,?,?,?,?,?
+MIN-GOSPEL-MAGIC,Gospel magic ministry,true,false,?,?,?,?,?
+MIN-HINDU-SIKH,Hindu/Sikh ministry,true,false,?,?,?,?,?
+MIN-JEWISH,Jewish ministry,true,false,?,?,?,?,?
+MIN-JUGGLING,Juggling ministry,true,false,?,?,?,?,?
+MIN-LITERATURE,Literature ministry,true,false,?,?,?,?,?
+MIN-MILITARY,Military ministry,true,false,?,?,?,?,?
+MIN-MUSIC,Music ministry,true,false,?,?,?,?,?
+MIN-MUSLIM,Muslim ministry,true,false,?,?,?,?,?
+MIN-OPEN-AIR,Open-air  evangelism,true,false,?,?,?,?,?
+MIN-OTHER-EVANG,Other ministry/evangelism,true,false,?,?,?,?,?
+MIN-PASTORAL,Pastoral ministry,true,false,?,?,?,?,?
+MIN-PRISON,Prison ministry,true,false,?,?,?,?,?
+MIN-PUPPET,Puppet ministry,true,false,?,?,?,?,?
+MIN-REFUGEE,Refugee worker,true,false,?,?,?,?,?
+MIN-RELIEF,Relief worker,true,false,?,?,?,?,?
+MIN-SKETCHBOARD,Sketchboard ministry,true,false,?,?,?,?,?
+MIN-STUDENT,Student ministry,true,false,?,?,?,?,?
+MIN-UNREACHED,Unreached people's ministry,true,false,?,?,?,?,?
+MIN-URBAN,Urban ministry,true,false,?,?,?,?,?
+MIN-WOMEN,Women's ministry,true,false,?,?,?,?,?
+MIN-WORSHIP-LEAD,Worship leader,true,false,?,?,?,?,?
+MIN-YOUTH,Youth ministry,true,false,?,?,?,?,?
+MUS-BASS-GUITAR,Bass guitar,true,false,?,?,?,?,?
+MUS-CLARINET,Clarinet,true,false,?,?,?,?,?
+MUS-DRUMS,Drums,true,false,?,?,?,?,?
+MUS-FLUTE,Flute,true,false,?,?,?,?,?
+MUS-GUITAR,Guitar,true,false,?,?,?,?,?
+MUS-KEYBOARD,Keyboard,true,false,?,?,?,?,?
+MUS-OTHER-INSTR,Other musical instrument,true,false,?,?,?,?,?
+MUS-PIANO,Piano,true,false,?,?,?,?,?
+MUS-SAXOPHONE,Saxophone,true,false,?,?,?,?,?
+MUS-SINGER-VOCAL,Singing/vocal,true,false,?,?,?,?,?
+MUS-TROMBONE,Trombone,true,false,?,?,?,?,?
+MUS-TRUMPET,Trumpet,true,false,?,?,?,?,?
+MUS-VIOLIN,Violin,true,false,?,?,?,?,?
+OFF-ACCOUNTANT,Accountant,true,false,?,?,?,?,?
+OFF-ADMIN-ASSISS,Administrative Assistant,true,false,?,?,?,?,?
+OFF-ADMINISTRAT,Administrator,true,false,?,?,?,?,?
+OFF-BANKING,Banking,true,false,?,?,?,?,?
+OFF-BOOKKEEPER,Accounting/Bookkeeping,true,false,?,?,?,?,?
+OFF-BUSINESS-MAN,Business Manager,true,false,?,?,?,?,?
+OFF-CIVIL-SERVAN,Civil Servant,true,false,?,?,?,?,?
+OFF-CLERK,Office/Clerical Work,true,false,?,?,?,?,?
+OFF-COMP-DATA,Data Entry,true,false,?,?,?,?,?
+OFF-COMP-MANAGER,Computer Manager,true,false,?,?,?,?,?
+OFF-COMP-OPERATI,Computer Operations,true,false,?,?,?,?,?
+OFF-COMP-OTHER,Other Computer Related,true,false,?,?,?,?,?
+OFF-COMP-PROGRAM,Programmer/Analyst,true,false,?,?,?,?,?
+OFF-COMP-REPAIR,Computer Repair Technician,true,false,?,?,?,?,?
+OFF-DT-PUBLISHER,Desktop Publisher,true,false,?,?,?,?,?
+OFF-FIN-DEVELOP,Financial Development,true,false,?,?,?,?,?
+OFF-FIN-MANAGER,Financial Manager,true,false,?,?,?,?,?
+OFF-GEN-NO-COMP,General Office Not Using Computers,true,false,?,?,?,?,?
+OFF-GENERAL-COMP,General Office using Computers,true,false,?,?,?,?,?
+OFF-MARKETING,Marketing/Advertising,true,false,?,?,?,?,?
+OFF-OM-REPRESENT,OM Representative,true,false,?,?,?,?,?
+OFF-OPERAT-MANAG,Operations Manager,true,false,?,?,?,?,?
+OFF-OTHER-OFFICE,Other admin/office skills,true,false,?,?,?,?,?
+OFF-OTHER-PR,Other Public Relations,true,false,?,?,?,?,?
+OFF-PERS-MANAGER,Personnel Manager,true,false,?,?,?,?,?
+OFF-PUBL-RELATIO,Public Relations,true,false,?,?,?,?,?
+OFF-RECEPTIONIST,Receptionist,true,false,?,?,?,?,?
+OFF-RETAIL-MANAG,Retail Management,true,false,?,?,?,?,?
+OFF-SECRETARY,Secretary,true,false,?,?,?,?,?
+OFF-SOLICITOR,Solicitor,true,false,?,?,?,?,?
+OFF-TELEPHONIST,Telephonist,true,false,?,?,?,?,?
+OFF-TRAVEL-COOR,Travel Coordinator,true,false,?,?,?,?,?
+OFF-TYPIST-WP,Typist/Word Processor,true,false,?,?,?,?,?
+OTHER,UNKNOWN IMPORT,true,true,?,?,?,?,?
+PEO-CARE-ASSISST,Care Assisstant,true,false,?,?,?,?,?
+PEO-CHILD-CARE,Child-care worker,true,false,?,?,?,?,?
+PEO-COMM-DEVELOP,Community Development,true,false,?,?,?,?,?
+PEO-COUNSELLOR,Counsellor,true,false,?,?,?,?,?
+PEO-DENTIST,Dentist,true,false,?,?,?,?,?
+PEO-DIETICIAN,Nutritionist/Dietician,true,false,?,?,?,?,?
+PEO-DISCIPLER,Discipler,true,false,?,?,?,?,?
+PEO-EMER-RELIEF,Emergency Relief Work,true,false,?,?,?,?,?
+PEO-ENVIR-HEALTH,Environmental Health Officer,true,false,?,?,?,?,?
+PEO-FIRST-AIDER,First Aider,true,false,?,?,?,?,?
+PEO-MEDIC-ASSIST,Medical Assistant,true,false,?,?,?,?,?
+PEO-MEDIC-AUX,Auxiliary Nurse,true,false,?,?,?,?,?
+PEO-MEDIC-DOCTOR,Doctor,true,false,?,?,?,?,?
+PEO-MEDIC-NURSE,Nurse,true,false,?,?,?,?,?
+PEO-OTHER,Other people-related skills,true,false,?,?,?,?,?
+PEO-OTHER-HEALTH,Other Health Related,true,false,?,?,?,?,?
+PEO-OTHER-SOCIAL,Other Social Services,true,false,?,?,?,?,?
+PEO-PARAMEDIC,Emergency Medical/Paramedic,true,false,?,?,?,?,?
+PEO-PERS-ADMIN,Personnel administrator,true,false,?,?,?,?,?
+PEO-PHYSIOTHERAP,Physiotherapist,true,false,?,?,?,?,?
+PEO-PSYCH-NURSE,Psychiatric Nurse,true,false,?,?,?,?,?
+PEO-PSYCHOLOGIST,Psychologist/Psychiatrist,true,false,?,?,?,?,?
+PEO-SALES-PERSON,Salesperson,true,false,?,?,?,?,?
+PEO-SOCIAL-WORK,Social worker,true,false,?,?,?,?,?
+PEO-STUDENT,Student,true,false,?,?,?,?,?
+PEO-TEACH-BIBLE,Bible College/Seminary Lecturer,true,false,?,?,?,?,?
+PEO-TEACH-ELEMEN,Elementary Teacher,true,false,?,?,?,?,?
+PEO-TEACH-INFANT,Early Childhood Educator,true,false,?,?,?,?,?
+PEO-TEACH-OTHER,Other Teaching/Education,true,false,?,?,?,?,?
+PEO-TEACH-SECOND,Secondary Teacher,true,false,?,?,?,?,?
+PEO-TEACH-STUDEN,Student Teacher,true,false,?,?,?,?,?
+PEO-TEACH-TEE,Theological Education by Ext,true,false,?,?,?,?,?
+PEO-TEACH-TEFL,Teacher of English as Foreign Language,true,false,?,?,?,?,?
+PEO-TEACH-TESL,Teacher of English as 2nd Language,true,false,?,?,?,?,?
+PEO-TEACH-UNIV,University/College Teacher/Professor,true,false,?,?,?,?,?
+PEO-TRAINER,Trainer,true,false,?,?,?,?,?
+PEO-TRANSLATOR,Interpreter/Translator,true,false,?,?,?,?,?
+PRAC-AIRCON-HEAT,Heating/ventilation/air conditioning,true,false,?,?,?,?,?
+PRAC-ARCHITECT,Architect/Quantity Surveyor,true,false,?,?,?,?,?
+PRAC-BRICKLAYER,Bricklayer/mason,true,false,?,?,?,?,?
+PRAC-BUILDER,Builder/contractor,true,false,?,?,?,?,?
+PRAC-BUS-DRIVER,Bus Driver,true,false,?,?,?,?,?
+PRAC-BUS-DRV-LIC,Bus driver (licensed),true,false,?,?,?,?,?
+PRAC-CAPTAIN,Captain (certification obtained),true,false,?,?,?,?,?
+PRAC-CARPENTER,Carpenter,true,false,?,?,?,?,?
+PRAC-CHEF,Chef,true,false,?,?,?,?,?
+PRAC-COOK-BAKER,Cook/baker,true,false,?,?,?,?,?
+PRAC-COOK-CERT,Cook (certification obtained),true,false,?,?,?,?,?
+PRAC-CUSTODIAN,Custodian,true,false,?,?,?,?,?
+PRAC-DECK-CERT,Deck Hand (certification obtained),true,false,?,?,?,?,?
+PRAC-DECK-HAND,Deck Hand (unlicensed),true,false,?,?,?,?,?
+PRAC-DECK-OFFICE,Deck Officer (certification obtained),true,false,?,?,?,?,?
+PRAC-DELIVERY,Delivery Person (Inc. Milkman),true,false,?,?,?,?,?
+PRAC-DRIVER,Driver,true,false,?,?,?,?,?
+PRAC-ELEC-REPAIR,Electrical repairer,true,false,?,?,?,?,?
+PRAC-ELEC-WORKER,Electrical worker,true,false,?,?,?,?,?
+PRAC-ELECTRICIAN,Electrician (certification obtained),true,false,?,?,?,?,?
+PRAC-ELECTRO-REP,Electronic repair,true,false,?,?,?,?,?
+PRAC-ENG-CHEM,Chemical Engineer,true,false,?,?,?,?,?
+PRAC-ENG-CIVIL,Civil Engineer,true,false,?,?,?,?,?
+PRAC-ENG-ELEC,Electrical Engineer,true,false,?,?,?,?,?
+PRAC-ENG-INDSTRY,Industrial Engineer,true,false,?,?,?,?,?
+PRAC-ENG-MECH,Mechanical Engineer,true,false,?,?,?,?,?
+PRAC-ENG-MINE,Mining Engineer,true,false,?,?,?,?,?
+PRAC-ENG-OFFICER,Engineering Officer (certification obtained),true,false,?,?,?,?,?
+PRAC-ENG-TELECOM,Telecommunications Engineer,true,false,?,?,?,?,?
+PRAC-FACTORY-WRK,Factory Worker,true,false,?,?,?,?,?
+PRAC-FARM-ARABLE,Farmer (Arable),true,false,?,?,?,?,?
+PRAC-FARM-LABOUR,Farm Labourer,true,false,?,?,?,?,?
+PRAC-FARM-LIVEST,Farmer (Livestock),true,false,?,?,?,?,?
+PRAC-FASHION-DES,Fashion Designer,true,false,?,?,?,?,?
+PRAC-FIREMAN,Fireman,true,false,?,?,?,?,?
+PRAC-FISHERMAN,Fisherman,true,false,?,?,?,?,?
+PRAC-FOOD-MANAG,Food Service Management,true,false,?,?,?,?,?
+PRAC-FOOD-OTHER,Other Food Service/Hospitality,true,false,?,?,?,?,?
+PRAC-FORESTRY,Forestry,true,false,?,?,?,?,?
+PRAC-GEN-CONSTRU,General construction worker,true,false,?,?,?,?,?
+PRAC-GLAZIER,Glazier,true,false,?,?,?,?,?
+PRAC-HAIRDRESSER,Hairdresser,true,false,?,?,?,?,?
+PRAC-HOME-MAKER,Homemaker,true,false,?,?,?,?,?
+PRAC-HORTICULTUR,Horticulturist,true,false,?,?,?,?,?
+PRAC-HOSP-COORDI,Hospitality coordinator,true,false,?,?,?,?,?
+PRAC-HOUSEKEEPER,Housekeeper,true,false,?,?,?,?,?
+PRAC-LABOURER,Labourer,true,false,?,?,?,?,?
+PRAC-LIFEGUARD,Lifeguard,true,false,?,?,?,?,?
+PRAC-MACHI-MAINT,Machine Maintenance,true,false,?,?,?,?,?
+PRAC-MAINT-OTHER,Other Maintenance,true,false,?,?,?,?,?
+PRAC-MAINT-WORK,Maintenance worker,true,false,?,?,?,?,?
+PRAC-MECHANIC,Mechanic - Auto/Truck,true,false,?,?,?,?,?
+PRAC-MINER,Miner,true,false,?,?,?,?,?
+PRAC-MOTOR-CERT,Motorman (certification obtained),true,false,?,?,?,?,?
+PRAC-MOTORMAN,Motorman (unlicensed),true,false,?,?,?,?,?
+PRAC-OTH-PROFESS,Other Profession,true,false,?,?,?,?,?
+PRAC-OTHER,Other practical skills,true,false,?,?,?,?,?
+PRAC-OTHER-MARIN,Other marine,true,false,?,?,?,?,?
+PRAC-OTHER-TRADE,Other Trades,true,false,?,?,?,?,?
+PRAC-PAINTER,Painter,true,false,?,?,?,?,?
+PRAC-PHON-REPAIR,Phone repairer,true,false,?,?,?,?,?
+PRAC-PILOT,Pilot,true,false,?,?,?,?,?
+PRAC-PILOT-LIC,Pilot (licensed),true,false,?,?,?,?,?
+PRAC-PLUMBER,Plumber,true,false,?,?,?,?,?
+PRAC-POLICEMAN,Policeman (Law Enforcement Officer),true,false,?,?,?,?,?
+PRAC-POSTMAN,Postman,true,false,?,?,?,?,?
+PRAC-PRINTING,Printing,true,false,?,?,?,?,?
+PRAC-RADIO-OFFIC,Radio Officer (certification obtained),true,false,?,?,?,?,?
+PRAC-RAILWAY-WRK,Railway Worker,true,false,?,?,?,?,?
+PRAC-SCIENTIST,Scientist,true,false,?,?,?,?,?
+PRAC-SHOP-ASSISS,Shop Assistant,true,false,?,?,?,?,?
+PRAC-SOUND-LIGHT,Sound/lighting technician,true,false,?,?,?,?,?
+PRAC-STUDENT,Student,true,false,?,?,?,?,?
+PRAC-TECH-ELEC,Electrical Technician,true,false,?,?,?,?,?
+PRAC-TECH-LAB,Laboratory Technician,true,false,?,?,?,?,?
+PRAC-TELECOMMS,Telecommunications,true,false,?,?,?,?,?
+PRAC-TOOLMAKER,Toolmaker,true,false,?,?,?,?,?
+PRAC-TRUCK-DRIVE,Truck Driver,true,false,?,?,?,?,?
+PRAC-TRUCK-LIC,Truck driver (licensed),true,false,?,?,?,?,?
+PRAC-VET,Vet,true,false,?,?,?,?,?
+PRAC-WAITER,Waiter/Waitress,true,false,?,?,?,?,?
+PRAC-WAREHOUSE,Warehouse worker,true,false,?,?,?,?,?
+PRAC-WELDER,Welder,true,false,?,?,?,?,?
+UNEMPLOYED,Unemployed,true,false,?,?,?,?,?
+UNKNOWN,Occupation not known,true,false,?,?,?,?,?

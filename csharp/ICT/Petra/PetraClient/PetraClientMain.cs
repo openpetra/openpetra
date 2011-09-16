@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -62,15 +62,14 @@ namespace Ict.Petra.Client.App.PetraClient
 
         private static Boolean FUseNewNavigation = true;
 
-        /// <summary>ProcessID (unique) assigned by the PetraServer</summary>
-        private static Int32 FProcessID;
+        // <summary>ProcessID (unique) assigned by the PetraServer</summary>
+        // TODO private static Int32 FProcessID;
 
-        /// <summary>Welcome message (passed on to the MainWindow)</summary>
-        private static String FWelcomeMessage;
+        // <summary>Welcome message (passed on to the MainWindow)</summary>
+        // TODO private static String FWelcomeMessage;
 
-        /// <summary>Tells whether the Petra System is enabled, or not (passed on to the MainWindow)</summary>
-        private static Boolean FSystemEnabled;
-        private static TLogging FLogging;
+        // <summary>Tells whether the Petra System is enabled, or not (passed on to the MainWindow)</summary>
+        // TODO private static Boolean FSystemEnabled;
 
         [DllImport("user32.dll")] private static extern int FindWindow(string classname, string windowname);
         [DllImport("user32.dll")] private static extern int SendMessage(
@@ -131,7 +130,7 @@ namespace Ict.Petra.Client.App.PetraClient
                 else
                 {
                     // TODO reset any caches
-                    AConnectDialog.GetReturnedParameters(out FProcessID, out FWelcomeMessage, out FSystemEnabled);
+                    // TODO AConnectDialog.GetReturnedParameters(out FProcessID, out FWelcomeMessage, out FSystemEnabled);
 
                     // get Connection Dialog out of memory
                     AConnectDialog.Dispose();
@@ -303,9 +302,11 @@ namespace Ict.Petra.Client.App.PetraClient
         /// </summary>
         public static void StartUp()
         {
+            new TAppSettingsManager();
+
             ExceptionHandling.GApplicationShutdownCallback = Shutdown.SaveUserDefaultsAndDisconnectAndStop;
 
-            FLogging = new TLogging(TClientSettings.GetPathLog() + Path.DirectorySeparatorChar + "PetraClient.log");
+            new TLogging(TClientSettings.GetPathLog() + Path.DirectorySeparatorChar + "PetraClient.log");
 
             Catalog.Init();
 

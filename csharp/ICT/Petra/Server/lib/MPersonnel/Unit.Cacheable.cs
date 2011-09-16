@@ -7,7 +7,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -68,7 +68,7 @@ namespace Ict.Petra.Server.MPersonnel.Unit.Cacheable
         public TPersonnelCacheable() : base()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -81,7 +81,7 @@ namespace Ict.Petra.Server.MPersonnel.Unit.Cacheable
         /// destructor
         ~TPersonnelCacheable()
         {
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
                                                                                                 DateTime.Now.Ticks -
@@ -129,7 +129,7 @@ namespace Ict.Petra.Server.MPersonnel.Unit.Cacheable
             String TableName = Enum.GetName(typeof(TCacheableUnitTablesEnum), ACacheableTable);
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 7)
+            if (TLogging.DL >= 7)
             {
                 Console.WriteLine(this.GetType().FullName + ".GetCacheableTable called for table '" + TableName + "'.");
             }
@@ -147,9 +147,9 @@ namespace Ict.Petra.Server.MPersonnel.Unit.Cacheable
 
                     switch(ACacheableTable)
                     {
-                        case TCacheableUnitTablesEnum.CampaignList:
+                        case TCacheableUnitTablesEnum.OutreachList:
                         {
-                            DataTable TmpTable = GetCampaignListTable(ReadTransaction, TableName);
+                            DataTable TmpTable = GetOutreachListTable(ReadTransaction, TableName);
                             DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
@@ -190,7 +190,7 @@ namespace Ict.Petra.Server.MPersonnel.Unit.Cacheable
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 7)
+                        if (TLogging.DL >= 7)
                         {
                             Console.WriteLine(this.GetType().FullName + ".GetCacheableTable: commited own transaction.");
                         }
@@ -305,7 +305,7 @@ namespace Ict.Petra.Server.MPersonnel.Unit.Cacheable
             return SubmissionResult;
         }
 
-        private DataTable GetCampaignListTable(TDBTransaction AReadTransaction, string ATableName)
+        private DataTable GetOutreachListTable(TDBTransaction AReadTransaction, string ATableName)
         {
 #region ManualCode
             // Used eg. in Select Event Dialog
@@ -313,7 +313,7 @@ namespace Ict.Petra.Server.MPersonnel.Unit.Cacheable
                 "SELECT DISTINCT " +
                 PPartnerTable.GetPartnerShortNameDBName() +
                 ", " + PPartnerTable.GetPartnerClassDBName() +
-                ", " + PUnitTable.GetXyzTbdCodeDBName() +
+                ", " + PUnitTable.GetOutreachCodeDBName() +
                 ", " + PCountryTable.GetTableDBName() + "." + PCountryTable.GetCountryNameDBName() +
                 ", " + PPartnerLocationTable.GetTableDBName() + "." + PPartnerLocationTable.GetDateEffectiveDBName() +
                 ", " + PPartnerLocationTable.GetTableDBName() + "." + PPartnerLocationTable.GetDateGoodUntilDBName() +
@@ -338,7 +338,7 @@ namespace Ict.Petra.Server.MPersonnel.Unit.Cacheable
                 PPartnerLocationTable.GetTableDBName() + "." + PPartnerLocationTable.GetLocationKeyDBName() + " AND " +
                 PCountryTable.GetTableDBName() + "." + PCountryTable.GetCountryCodeDBName() + " = " +
                 PLocationTable.GetTableDBName() + "." + PLocationTable.GetCountryCodeDBName() + " AND " +
-                PUnitTable.GetXyzTbdCodeDBName() + " <> '' ",
+                PUnitTable.GetOutreachCodeDBName() + " <> '' ",
                 ATableName, AReadTransaction);
 #endregion ManualCode        
         }
@@ -351,7 +351,7 @@ namespace Ict.Petra.Server.MPersonnel.Unit.Cacheable
                 "SELECT DISTINCT " +
                 PPartnerTable.GetPartnerShortNameDBName() +
                 ", " + PPartnerTable.GetPartnerClassDBName() +
-                ", " + PUnitTable.GetXyzTbdCodeDBName() +
+                ", " + PUnitTable.GetOutreachCodeDBName() +
                 ", " + PCountryTable.GetTableDBName() + "." + PCountryTable.GetCountryNameDBName() +
                 ", " + PPartnerLocationTable.GetTableDBName() + "." + PPartnerLocationTable.GetDateEffectiveDBName() +
                 ", " + PPartnerLocationTable.GetTableDBName() + "." + PPartnerLocationTable.GetDateGoodUntilDBName() +

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -43,7 +43,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Int32 FJournalNumber = -1;
 
 
-        ForeignCurrencyCalculationss foreignCurrencyCalculations;
+        //ForeignCurrencyCalculationss foreignCurrencyCalculations;
 
 
         /// <summary>
@@ -136,6 +136,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ARefJournalRow">this can be null; otherwise this is the journal that the transaction should belong to</param>
         public void NewRowManual(ref GLBatchTDSATransactionRow ANewRow, AJournalRow ARefJournalRow)
         {
+            GLBatchTDSATransactionRow prevRow = GetSelectedDetailRow();
+
             if (ARefJournalRow == null)
             {
                 ARefJournalRow = GetJournalRow();
@@ -145,7 +147,24 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ANewRow.BatchNumber = ARefJournalRow.BatchNumber;
             ANewRow.JournalNumber = ARefJournalRow.JournalNumber;
             ANewRow.TransactionNumber = ARefJournalRow.LastTransactionNumber + 1;
+            ANewRow.TransactionDate = GetBatchRow().DateEffective;
             ARefJournalRow.LastTransactionNumber++;
+
+            if (prevRow != null)
+            {
+                ANewRow.AccountCode = prevRow.AccountCode;
+                ANewRow.CostCentreCode = prevRow.CostCentreCode;
+
+                if (ARefJournalRow.JournalCreditTotal != ARefJournalRow.JournalDebitTotal)
+                {
+                    ANewRow.Reference = prevRow.Reference;
+                    ANewRow.Narrative = prevRow.Narrative;
+                    ANewRow.TransactionDate = prevRow.TransactionDate;
+                    decimal Difference = ARefJournalRow.JournalDebitTotal - ARefJournalRow.JournalCreditTotal;
+                    ANewRow.TransactionAmount = Math.Abs(Difference);
+                    ANewRow.DebitCreditIndicator = Difference < 0;
+                }
+            }
         }
 
         /// <summary>
@@ -180,8 +199,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 txtDebitTotalAmountBase.CurrencySymbol = BaseCurrency;
                 txtCreditTotalAmount.CurrencySymbol = TransactionCurrency;
                 txtDebitTotalAmount.CurrencySymbol = TransactionCurrency;
-                foreignCurrencyCalculations = new ForeignCurrencyCalculationss(
-                    TransactionCurrency, GetJournalRow().DateEffective);
             }
         }
 
@@ -202,17 +219,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 txtCreditAmount.NumberValueDecimal = ARow.TransactionAmount;
             }
 
-            AJournalRow journal = GetJournalRow();
-//            txtCreditTotalAmount.NumberValueDecimal = journal.JournalCreditTotal;
-//            txtDebitTotalAmount.NumberValueDecimal = journal.JournalDebitTotal;
-//            txtCreditTotalAmountBase.NumberValueDecimal = journal.JournalCreditTotal *
-//                                                          TExchangeRateCache.GetDailyExchangeRate(journal.TransactionCurrency,
-//                FMainDS.ALedger[0].BaseCurrency,
-//                dtpDetailTransactionDate.Date.Value);
-//            txtDebitTotalAmountBase.NumberValueDecimal = journal.JournalDebitTotal *
-//                                                         TExchangeRateCache.GetDailyExchangeRate(journal.TransactionCurrency,
-//                FMainDS.ALedger[0].BaseCurrency,
-//                dtpDetailTransactionDate.Date.Value);
+            // AJournalRow journal = GetJournalRow();
+
+            UpdateTotals(ARow);
 
             if (ARow == null)
             {
@@ -309,6 +318,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ((TFrmGLBatch)ParentForm).GetBatchControl().UpdateTotals();
         }
 
+        /// <summary>
+        /// WorkAroundInitialization
+        /// </summary>
         public void WorkAroundInitialization()
         {
             txtCreditAmount.Validated += new EventHandler(ControlHasChanged);

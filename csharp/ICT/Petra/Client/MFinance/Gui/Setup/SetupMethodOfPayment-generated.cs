@@ -283,10 +283,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
     {
         if (ARow != null)
         {
+            ARow.BeginEdit();
             ARow.MethodOfPaymentCode = txtDetailMethodOfPaymentCode.Text;
             ARow.MethodOfPaymentDesc = txtDetailMethodOfPaymentDesc.Text;
             ARow.SpecialMethodOfPmt = chkDetailSpecialMethodOfPmt.Checked;
             ARow.Active = chkDetailActive.Checked;
+            ARow.EndEdit();
         }
     }
 

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -50,12 +50,57 @@ namespace Ict.Common
         /// </summary>
         public static void Init(string ALanguageCode, string ACultureCode)
         {
+            if (ALanguageCode.ToLower() == "en-en")
+            {
+                ALanguageCode = "en-GB";
+            }
+
+            if (ACultureCode.ToLower() == "en-en")
+            {
+                ACultureCode = "en-GB";
+            }
+
             // modify current locale for the given language
             Thread.CurrentThread.CurrentUICulture = new CultureInfo(ALanguageCode);
 
             catalog = new GettextResourceManager("OpenPetra");
 
             Thread.CurrentThread.CurrentCulture = new CultureInfo(ACultureCode);
+        }
+
+        /// <summary>
+        /// set the given culture
+        /// </summary>
+        /// <param name="ACulture"></param>
+        /// <returns>the previously set culture</returns>
+        public static CultureInfo SetCulture(CultureInfo ACulture)
+        {
+            CultureInfo OrigCulture = Thread.CurrentThread.CurrentCulture;
+
+            Thread.CurrentThread.CurrentCulture = ACulture;
+
+            return OrigCulture;
+        }
+
+        /// <summary>
+        /// set the given culture
+        /// </summary>
+        /// <param name="ACulture"></param>
+        /// <returns>the previously set culture</returns>
+        public static CultureInfo SetCulture(string ACulture)
+        {
+            CultureInfo OrigCulture = Thread.CurrentThread.CurrentCulture;
+
+            try
+            {
+                Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo(ACulture);
+            }
+            catch (Exception)
+            {
+                TLogging.Log("Ict.Common Catalog.SetCulture: invalid culture name: " + ACulture);
+            }
+
+            return OrigCulture;
         }
 
         /// <summary>
@@ -72,6 +117,11 @@ namespace Ict.Common
         /// </summary>
         public static string GetString(string AEnglishMessage)
         {
+            if (catalog == null)
+            {
+                return AEnglishMessage;
+            }
+
             return catalog.GetString(AEnglishMessage);
         }
 

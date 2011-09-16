@@ -35,19 +35,28 @@ namespace Tests.Reporting
     [TestFixture]
     public class TConfigTest : System.Object
     {
+        /// <summary>
+        /// ...
+        /// </summary>
         [SetUp]
         public void Init()
         {
-            TAppSettingsManager Config = new TAppSettingsManager("../../etc/TestClient.config");
+            new TAppSettingsManager("../../etc/TestClient.config");
 
             new TLogging("test.log");
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         [TearDown]
         public void TearDown()
         {
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         [Test]
         public void CheckConfigFile()
         {
@@ -57,7 +66,7 @@ namespace Tests.Reporting
 
             // see also http://nunit.com/blogs/?p=9, How NUnit Finds Config Files
             TLogging.Log(TAppSettingsManager.ConfigFileName);
-            Assert.AreEqual("demo", TAppSettingsManager.GetValueStatic("AutoLogin"), "retrieving value from TAppSettingsManager");
+            Assert.AreEqual("demo", TAppSettingsManager.GetValue("AutoLogin"), "retrieving value from TAppSettingsManager");
 
             // does not seem to help:
             // System.Configuration.ConfigurationFileMap fileMap = new ConfigurationFileMap(TAppSettingsManager.ConfigFileName);

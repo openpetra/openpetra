@@ -34,11 +34,11 @@ using Ict.Tools.DBXML;
 
 namespace Ict.Tools.CodeGeneration.ExtJs
 {
-    /*
-     * This class writes code to a template
-     * but it is not aware of the content and the origin of the content
-     * the code generators that are loaded have the knowledge to generate proper code
-     */
+    /// <summary>
+    /// This class writes code to a template
+    /// but it is not aware of the content and the origin of the content
+    /// the code generators that are loaded have the knowledge to generate proper code
+    /// </summary>
     public class TExtJsFormsWriter : TFormWriter
     {
         private string FFormName = "";
@@ -49,7 +49,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         /// <param name="AFormType"></param>
         public TExtJsFormsWriter(string AFormType)
         {
-            TAppSettingsManager settings = new TAppSettingsManager(false);
+            new TAppSettingsManager(false);
 
             AddControlGenerator(new TextFieldGenerator());
             AddControlGenerator(new TextAreaGenerator());
@@ -72,6 +72,9 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             AddControlGenerator(new HiddenFieldGenerator());
         }
 
+        /// <summary>
+        /// the file extension for the result file
+        /// </summary>
         public override string CodeFileExtension
         {
             get
@@ -80,40 +83,59 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             }
         }
 
+        /// <summary>
+        /// not needed for ext.js
+        /// </summary>
         public override void SetControlProperty(string AControlName, string APropertyName, string APropertyValue, bool ACreateTranslationForLabel)
         {
-            // TODO
+            // not implemented
         }
 
+        /// <summary>
+        /// not needed for ext.js
+        /// </summary>
         public override void SetEventHandlerToControl(string AControlName, string AEvent, string AEventHandlerType, string AEventHandlingMethod)
         {
-            // TODO
+            // not implemented
         }
 
+        /// <summary>
+        /// not needed for ext.js
+        /// </summary>
         public override void SetEventHandlerFunction(string AControlName, string AEvent, string AEventImplementation)
         {
-            // TODO
+            // not implemented
         }
 
+        /// <summary>
+        /// not needed for ext.js
+        /// </summary>
         public override void AddImageToResource(string AControlName, string AImageName, string AImageOrIcon)
         {
-            // TODO
+            // not implemented
         }
 
+        /// <summary>
+        /// not needed for ext.js
+        /// </summary>
         public override void CreateResourceFile(string AYamlFilename, string ATemplateDir)
         {
-            // TODO
+            // not implemented
         }
 
+        /// <summary>
+        /// not needed for ext.js
+        /// </summary>
         public override void CreateDesignerFile(string AYamlFilename, XmlNode ARootNode, string ATemplateDir)
         {
-            // TODO
+            // not implemented
         }
 
+        /// <summary>get the name of the destination generated file</summary>
         public override string CalculateDestinationFilename(string AYamlFilename)
         {
             string yamlFileDirectory = System.IO.Path.GetDirectoryName(AYamlFilename);
-            string generatedFilesPath = TAppSettingsManager.GetValueStatic("deliveryPath") +
+            string generatedFilesPath = TAppSettingsManager.GetValue("deliveryPath") +
                                         System.IO.Path.DirectorySeparatorChar +
                                         yamlFileDirectory.Substring(yamlFileDirectory.IndexOf("webserver") + "webserver".Length) +
                                         System.IO.Path.DirectorySeparatorChar +
@@ -130,6 +152,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
                    this.CodeFileExtension;
         }
 
+        /// <summary>get the name of the file with the manual code</summary>
         public override string CalculateManualCodeFilename(string AYamlFilename)
         {
             return System.IO.Path.GetDirectoryName(AYamlFilename) +
@@ -138,32 +161,51 @@ namespace Ict.Tools.CodeGeneration.ExtJs
                    ".ManualCode" + this.CodeFileExtension;
         }
 
+        /// <summary>
+        /// not needed for ext.js
+        /// </summary>
         public override void CallControlFunction(string AControlName, string AFunctionCall)
         {
-            // TODO
+            // not implemented
         }
 
+        /// <summary>
+        /// not needed for ext.js
+        /// </summary>
         public override void AddContainer(string AControlName)
         {
-            // TODO
+            // not implemented
         }
 
+        /// <summary>
+        /// not needed for ext.js
+        /// </summary>
         public override void InitialiseDataSource(XmlNode curNode, string AControlName)
         {
-            // TODO
+            // not implemented
         }
 
+        /// <summary>
+        /// not needed for ext.js
+        /// </summary>
         public override bool IsUserControlTemplate
         {
             get
             {
-                // TODO
+                // not implemented
                 return true;
             }
         }
 
         private ProcessTemplate FLanguageFileTemplate = null;
 
+        /// <summary>
+        /// add a string that is translatable
+        /// </summary>
+        /// <param name="ACtrlSnippet"></param>
+        /// <param name="APlaceHolder"></param>
+        /// <param name="ACtrl"></param>
+        /// <param name="AText"></param>
         public void AddResourceString(ProcessTemplate ACtrlSnippet, string APlaceHolder, TControlDef ACtrl, string AText)
         {
             string strName;
@@ -239,6 +281,14 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             ACtrlSnippet.SetCodelet("ANCHOR", Anchor);
         }
 
+        /// <summary>
+        /// main function for creating a control
+        /// </summary>
+        /// <param name="ACtrl"></param>
+        /// <param name="ATemplate"></param>
+        /// <param name="AItemsPlaceholder"></param>
+        /// <param name="ANodeName"></param>
+        /// <param name="AWriter"></param>
         public static void InsertControl(TControlDef ACtrl,
             ProcessTemplate ATemplate,
             string AItemsPlaceholder,
@@ -315,10 +365,15 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             }
         }
 
+        /// <summary>
+        /// insert the buttons for the form, eg. submit button, cancel button, etc
+        /// </summary>
+        /// <param name="ACtrl"></param>
+        /// <param name="ATemplate"></param>
+        /// <param name="AItemsPlaceholder"></param>
+        /// <param name="AWriter"></param>
         public static void InsertButtons(TControlDef ACtrl, ProcessTemplate ATemplate, string AItemsPlaceholder, TFormWriter AWriter)
         {
-            XmlNode controlsNode = TYml2Xml.GetChild(ACtrl.xmlNode, "Buttons");
-
             StringCollection children = TYml2Xml.GetElements(ACtrl.xmlNode, "Buttons");
 
             foreach (string child in children)
@@ -365,8 +420,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             FFormName += "Form";
 
             // load default header with license and copyright
-            TAppSettingsManager opts = new TAppSettingsManager(false);
-            string templateDir = opts.GetValue("TemplateDir", true);
+            string templateDir = TAppSettingsManager.GetValue("TemplateDir", true);
             FTemplate.AddToCodelet("GPLFILEHEADER",
                 ProcessTemplate.LoadEmptyFileComment(templateDir + Path.DirectorySeparatorChar + ".." +
                     Path.DirectorySeparatorChar));
@@ -389,6 +443,10 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             File.WriteAllText(languagefilepath, FLanguageFileTemplate.FinishWriting(true));
         }
 
+        /// <summary>
+        /// insert all variables into the template
+        /// </summary>
+        /// <param name="AXAMLFilename"></param>
         public virtual void InsertCodeIntoTemplate(string AXAMLFilename)
         {
             FTemplate.SetCodelet("FORMWIDTH", FCodeStorage.FWidth.ToString());

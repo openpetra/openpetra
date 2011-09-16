@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -38,15 +38,16 @@ namespace Ict.Tools.CodeGeneration
     /// </summary>
     public class TDataBinding
     {
+        /// <summary>the OpenPetra Database structure is stored in this variable</summary>
         public static TDataDefinitionStore FPetraXMLStore = null;
+        /// <summary>the code storage for writing the forms file</summary>
         public static TCodeStorage FCodeStorage = null;
+        /// <summary>store the dataset tables that are used on this form</summary>
         public static SortedList <string, TTable>FDatasetTables = null;
 
         /// <summary>
         /// load the dataset tables
         /// </summary>
-        /// <param name="ADataSetTypeWithNamespace"></param>
-        /// <returns></returns>
         public static SortedList <string, TTable>LoadDatasetTables(string AICTPath, string ADataSetTypeWithNamespace, TCodeStorage ACodeStorage)
         {
             FCodeStorage = ACodeStorage;

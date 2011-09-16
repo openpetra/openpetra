@@ -132,7 +132,7 @@ namespace Ict.Common.IO
             this.Text = Catalog.GetString("Select CSV Separator");
             #endregion
 
-            FSeparator = TAppSettingsManager.GetValueStatic("CSVSeparator",
+            FSeparator = TAppSettingsManager.GetValue("CSVSeparator",
                 System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator);
             System.Globalization.CultureInfo myCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
             String regionalDateString = myCulture.DateTimeFormat.ShortDatePattern;

@@ -4,7 +4,7 @@
 // @Authors:
 //       berndr
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -55,7 +55,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             int ColumnCounter = 0;
             bool DatesAreValid = (dtpFromDate.ValidDate(false) && dtpToDate.ValidDate(false));
 
-            TimeSpan CheckLength = dtpToDate.Date.Value.Subtract(dtpFromDate.Date.Value);
+            // TimeSpan CheckLength = dtpToDate.Date.Value.Subtract(dtpFromDate.Date.Value);
 
             // Add the columns to the report
             ACalc.AddParameter("param_calculation", "Date", ColumnCounter);

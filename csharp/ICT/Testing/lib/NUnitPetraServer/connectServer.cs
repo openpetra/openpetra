@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -52,10 +52,10 @@ namespace Ict.Testing.NUnitPetraServer
         /// <param name="AConfigName">just provide the server config file, plus AutoLogin and AutoLoginPasswd</param>
         public static void Connect(string AConfigName)
         {
-            TAppSettingsManager Config = new TAppSettingsManager(AConfigName);
+            new TAppSettingsManager(AConfigName);
 
             Catalog.Init();
-            TServerManager ServerManager = new TServerManager();
+            new TServerManager();
 
             DBAccess.GDBAccessObj = new TDataBase();
             DBAccess.GDBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
@@ -65,8 +65,8 @@ namespace Ict.Testing.NUnitPetraServer
 
             bool SystemEnabled;
             int ProcessID;
-            TPetraPrincipal UserInfo = TClientManager.PerformLoginChecks(Config.GetValue("AutoLogin").ToUpper(),
-                Config.GetValue("AutoLoginPasswd"),
+            TPetraPrincipal UserInfo = TClientManager.PerformLoginChecks(TAppSettingsManager.GetValue("AutoLogin").ToUpper(),
+                TAppSettingsManager.GetValue("AutoLoginPasswd"),
                 "NUNITTEST", "127.0.0.1", out ProcessID, out SystemEnabled);
 
             if (FDomain != null)
@@ -92,7 +92,7 @@ namespace Ict.Testing.NUnitPetraServer
                 TSrvSetting.PostgreSQLDatabaseName,
                 TSrvSetting.DBUsername, TSrvSetting.DBPassword,
                 TSrvSetting.IPBasePort,
-                TSrvSetting.DebugLevel, TSrvSetting.ServerLogFile, TSrvSetting.HostName, TSrvSetting.HostIPAddresses,
+                TLogging.DebugLevel, TSrvSetting.ServerLogFile, TSrvSetting.HostName, TSrvSetting.HostIPAddresses,
                 TSrvSetting.ClientIdleStatusAfterXMinutes, TSrvSetting.ClientKeepAliveCheckIntervalInSeconds,
                 TSrvSetting.ClientKeepAliveTimeoutAfterXSecondsLAN,
                 TSrvSetting.ClientKeepAliveTimeoutAfterXSecondsRemote,

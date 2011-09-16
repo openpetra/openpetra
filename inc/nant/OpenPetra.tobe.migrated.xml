@@ -97,18 +97,18 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
   </code>
 </script>             
 
-<target name="cleanPetra" depends="clean" />
+<target name="cleanPetra" depends="clean,quickClean" />
 <target name="compilePetra" depends="compile" />
 
 <target name="generateORMCachedTables" depends="" description="Generates the cached tables">
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
-  <property name="CachedTableParameters" value="-petraxml:${PetraXML.file} -outputshared:${dir.root}/csharp/ICT/Petra/Shared -TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates"/>
+  <property name="CachedTableParameters" value="-petraxml:${PetraXML.file} -outputshared:${dir.root}/csharp/ICT/Petra/Shared -TemplateDir:${dir.incdir.template.src}"/>
   <ExecDotNet program="${tool-generateORM}" commandline="-do:cachedtables ${CachedTableParameters} -cachedef:${dir.root}/csharp/ICT/Petra/Definitions/CacheableTablesAndLists.yaml"/>
-</target> 
+</target>
 
 <target name="generateGlue" depends="" description="Generate the glue between client and server, ie. interfaces and instantiators">
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
-  <ExecDotNet program="${dir.bin}/GenerateSharedCode.exe" commandline="-ymlfile:${dir.root}/csharp/ICT/Petra/Definitions/NamespaceHierarchy.yml -outputdir:${dir.root}/csharp/ICT/Petra -TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates"/>
+  <ExecDotNet program="${dir.bin}/GenerateSharedCode.exe" commandline="-ymlfile:${dir.root}/csharp/ICT/Petra/Definitions/NamespaceHierarchy.yml -outputdir:${dir.root}/csharp/ICT/Petra -TemplateDir:${dir.incdir.template.src}"/>
 </target>
 
 <target name="translation" description="extracts string in winforms, creates and updates the .po files, and compiles the .mo files for delivery">
@@ -151,6 +151,7 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
 <property name="OpenPetraRoot.dir" value="${dir.root}" overwrite="true" />
 <property name="PetraRelease" value="0300" overwrite="false" />
 <property name="SQLitedb.file" value="${dir.root}/setup/petra${PetraRelease}/petra.db" overwrite="false" />
+<property name="SQLitedbWork.file" value="${dir.root}/setup/petra${PetraRelease}/demo.db" overwrite="false" />
 <property name="PetraToolsExe.dir" value="${dir.bin}" overwrite="true" />
 <property name="DBDoc.Output.dir" value="${dir.delivery}/dbdoc" overwrite="false" />
 <property name="ThirdParty.dir" value="${dir.3rdParty}" overwrite="false" />

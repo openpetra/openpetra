@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -35,7 +35,10 @@ using Ict.Common;
 
 namespace Ict.Tools.CodeGeneration.DataStore
 {
-    public class codeGenerationDataset
+    /// <summary>
+    /// generate code for typed datasets
+    /// </summary>
+    public class CodeGenerationDataset
     {
         private static string StringCollectionToValuesFormattedForArray(StringCollection ANames)
         {
@@ -156,6 +159,15 @@ namespace Ict.Tools.CodeGeneration.DataStore
 
         private static short DataSetTableIdCounter = -1;
 
+        /// <summary>
+        /// code for generating typed datasets
+        /// </summary>
+        /// <param name="AInputXmlfile"></param>
+        /// <param name="AOutputPath"></param>
+        /// <param name="ANameSpace"></param>
+        /// <param name="store"></param>
+        /// <param name="groups"></param>
+        /// <param name="AFilename"></param>
         public static void CreateTypedDataSets(String AInputXmlfile,
             String AOutputPath,
             String ANameSpace,
@@ -165,8 +177,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
         {
             Console.WriteLine("processing dataset " + ANameSpace);
 
-            TAppSettingsManager opts = new TAppSettingsManager(false);
-            string templateDir = opts.GetValue("TemplateDir", true);
+            string templateDir = TAppSettingsManager.GetValue("TemplateDir", true);
             ProcessTemplate Template = new ProcessTemplate(templateDir + Path.DirectorySeparatorChar +
                 "ORM" + Path.DirectorySeparatorChar +
                 "DataSet.cs");
@@ -174,7 +185,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 "ORM" + Path.DirectorySeparatorChar +
                 "DataTable.cs");
 
-            DataSetTableIdCounter = Convert.ToInt16(opts.GetValue("StartTableId"));
+            DataSetTableIdCounter = Convert.ToInt16(TAppSettingsManager.GetValue("StartTableId"));
 
             // load default header with license and copyright
             Template.SetCodelet("GPLFILEHEADER", ProcessTemplate.LoadEmptyFileComment(templateDir));
@@ -289,8 +300,8 @@ namespace Ict.Tools.CodeGeneration.DataStore
                                 table.order = DataSetTableIdCounter++;
 
                                 // TODO: can we derive from the base table, and just overload a few functions?
-                                codeGenerationTable.InsertTableDefinition(snippetDataset, table, store.GetTable(table.tableorig), "TABLELOOP");
-                                codeGenerationTable.InsertRowDefinition(snippetDataset, table, store.GetTable(table.tableorig), "TABLELOOP");
+                                CodeGenerationTable.InsertTableDefinition(snippetDataset, table, store.GetTable(table.tableorig), "TABLELOOP");
+                                CodeGenerationTable.InsertRowDefinition(snippetDataset, table, store.GetTable(table.tableorig), "TABLELOOP");
                             }
 
                             tables.Add(table.tableorig, table);
@@ -399,8 +410,8 @@ namespace Ict.Tools.CodeGeneration.DataStore
 
                             AddTableToDataset(tabletype, variablename, snippetDataset);
 
-                            codeGenerationTable.InsertTableDefinition(snippetDataset, customTable, null, "TABLELOOP");
-                            codeGenerationTable.InsertRowDefinition(snippetDataset, customTable, null, "TABLELOOP");
+                            CodeGenerationTable.InsertTableDefinition(snippetDataset, customTable, null, "TABLELOOP");
+                            CodeGenerationTable.InsertRowDefinition(snippetDataset, customTable, null, "TABLELOOP");
                         }
 
                         curChild = curChild.NextSibling;

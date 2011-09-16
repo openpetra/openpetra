@@ -36,7 +36,6 @@ namespace SQLiteConsole
 class TSQLiteConsole
 {
     private static TDataBase db;
-    private static TAppSettingsManager settings;
 
     // establish connection to database
     public static bool InitDBConnection(
@@ -45,7 +44,7 @@ class TSQLiteConsole
         db = new TDataBase();
 
         new TLogging("debug.log");
-        db.DebugLevel = settings.GetInt16("DebugLevel", 0);
+        TLogging.DebugLevel = TAppSettingsManager.GetInt16("DebugLevel", 0);
 
         db.EstablishDBConnection(TDBType.SQLite,
             ADBFile,
@@ -61,9 +60,9 @@ class TSQLiteConsole
 
     public static void Main(string[] args)
     {
-        settings = new TAppSettingsManager(false);
+        new TAppSettingsManager(false);
 
-        if (!settings.HasValue("file"))
+        if (!TAppSettingsManager.HasValue("file"))
         {
             Console.WriteLine("call: echo SELECT * FROM s_user | SQLiteConsole -file:mydatabase.db -password:secret");
             Environment.Exit(1);
@@ -71,17 +70,17 @@ class TSQLiteConsole
 
         try
         {
-            if (!System.IO.File.Exists(settings.GetValue("file")))
+            if (!System.IO.File.Exists(TAppSettingsManager.GetValue("file")))
             {
-                Console.WriteLine("database file " + settings.GetValue("file") + " does not exist");
+                Console.WriteLine("database file " + TAppSettingsManager.GetValue("file") + " does not exist");
 
                 // this is to avoid InitDBConnection trying to find/copy the base database
                 Environment.Exit(1);
             }
 
-            if (!InitDBConnection(settings.GetValue("file"), settings.GetValue("password", "")))
+            if (!InitDBConnection(TAppSettingsManager.GetValue("file"), TAppSettingsManager.GetValue("password", "")))
             {
-                Console.WriteLine("cannot connect to database " + settings.GetValue("file"));
+                Console.WriteLine("cannot connect to database " + TAppSettingsManager.GetValue("file"));
                 Environment.Exit(1);
             }
 

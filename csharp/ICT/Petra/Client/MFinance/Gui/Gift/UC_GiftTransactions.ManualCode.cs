@@ -23,9 +23,7 @@
 //
 using System;
 using System.Data;
-using System.Collections;
-using System.Collections.Specialized;
-
+using System.Windows.Forms;
 
 using Ict.Common;
 using Ict.Petra.Client.App.Core.RemoteObjects;
@@ -106,6 +104,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             FinRecipientKeyChanging = true;
+            FPetraUtilsObject.SuppressChangeDetection = true;
+
             try
             {
                 strMotivationGroup = cmbDetailMotivationGroupCode.GetSelectedString();
@@ -129,6 +129,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             finally
             {
                 FinRecipientKeyChanging = false;
+                FPetraUtilsObject.SuppressChangeDetection = false;
             }
         }
 
@@ -333,8 +334,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (giftDetailView.Count == 0)
             {
-                int oldGiftNumber = gift.GiftTransactionNumber;
-                int oldBatchNumber = gift.BatchNumber;
+                // TODO int oldGiftNumber = gift.GiftTransactionNumber;
+                // TODO int oldBatchNumber = gift.BatchNumber;
 
                 FMainDS.AGift.Rows.Remove(gift);
 
@@ -389,13 +390,80 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // this is coded manually, to use the correct gift record
 
             // we create the table locally, no dataset
-            AGiftDetailRow NewRow = NewGift();
+            NewGift(); // returns AGiftDetailRow
 
             FPetraUtilsObject.SetChangedFlag();
 
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftDetail.DefaultView);
             grdDetails.Refresh();
             SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1);
+        }
+
+        private void ReverseGift(System.Object sender, System.EventArgs e)
+        {
+            ShowRevertAdjustForm("ReverseGift");
+        }
+
+        /// <summary>
+        /// show the form for the gift reversal/adjustment
+        /// </summary>
+        /// <param name="functionname">Which function shall be called on the server</param>
+        public void ShowRevertAdjustForm(String functionname)
+        {
+            AGiftBatchRow giftBatch = ((TFrmGiftBatch)ParentForm).GetBatchControl().GetSelectedDetailRow();
+
+            if (giftBatch == null)
+            {
+                MessageBox.Show(Catalog.GetString("Please select a Gift Batch."));
+                return;
+            }
+
+            if (!giftBatch.BatchStatus.Equals(MFinanceConstants.BATCH_POSTED))
+            {
+                MessageBox.Show(Catalog.GetString("This function is only possible when the selected batch is already posted."));
+                return;
+            }
+
+            if (FPreviouslySelectedDetailRow == null)
+            {
+                MessageBox.Show(Catalog.GetString("Please select a Gift to Reverse."));
+                return;
+            }
+
+            if (FPetraUtilsObject.HasChanges)
+            {
+                MessageBox.Show(Catalog.GetString("Please save first and than try again!"));
+                return;
+            }
+
+            TFrmGiftRevertAdjust revertForm = new TFrmGiftRevertAdjust(this.Handle);
+            try
+            {
+                ParentForm.ShowInTaskbar = false;
+                revertForm.LedgerNumber = FLedgerNumber;
+                revertForm.AddParam("Function", functionname);
+                revertForm.GiftDetailRow = FPreviouslySelectedDetailRow;
+
+                if (revertForm.ShowDialog() == DialogResult.OK)
+                {
+                    ((TFrmGiftBatch)ParentForm).RefreshAll();
+                }
+            }
+            finally
+            {
+                revertForm.Dispose();
+                ParentForm.ShowInTaskbar = true;
+            }
+        }
+
+        private void ReverseGiftDetail(System.Object sender, System.EventArgs e)
+        {
+            ShowRevertAdjustForm("ReverseGiftDetail");
+        }
+
+        private void AdjustGift(System.Object sender, System.EventArgs e)
+        {
+            ShowRevertAdjustForm("AdjustGift");
         }
 
         /// <summary>
@@ -408,7 +476,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // this is coded manually, to use the correct gift record
 
             // we create the table locally, no dataset
-            AGiftDetailRow NewRow = NewGiftDetail((GiftBatchTDSAGiftDetailRow)FPreviouslySelectedDetailRow);
+            NewGiftDetail((GiftBatchTDSAGiftDetailRow)FPreviouslySelectedDetailRow); // returns AGiftDetailRow
 
             FPetraUtilsObject.SetChangedFlag();
 
@@ -627,6 +695,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             cmbDetailMethodOfPaymentCode.Enabled = firstIsEnabled && !BatchHasMethodOfPayment();
             txtDetailReference.Enabled = firstIsEnabled;
             cmbDetailReceiptLetterCode.Enabled = firstIsEnabled;
+            PnlDetailsProtected = (ARow != null) && (ARow.GiftTransactionAmount < 0)
+                                  && // taken from old petra
+                                  (GetGiftRow(ARow.GiftTransactionNumber).ReceiptNumber != 0);
+
+            //	&& (ARow.ReceiptNumber) This is not
         }
 
         private Boolean BatchHasMethodOfPayment()
@@ -655,17 +728,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             giftRow.DonorKey = Convert.ToInt64(txtDetailDonorKey.Text);
             giftRow.DateEntered = dtpDateEntered.Date.Value;
 //
-//            foreach (GiftBatchTDSAGiftDetailRow giftDetail in FMainDS.AGiftDetail.Rows)
-//            {
-//                if (giftDetail.BatchNumber.Equals(FBatchNumber)
-//                    && giftDetail.GiftTransactionNumber.Equals(ARow.GiftTransactionNumber))
-//                {
-//                    giftDetail.DateEntered = giftRow.DateEntered;
-//                    giftDetail.DonorKey = giftRow.DonorKey;
-//                    // this does not work
-//                    //giftDetail.DonorName = txtDetailDonorKey.LabelText;
-//                }
-//            }
+            //            foreach (GiftBatchTDSAGiftDetailRow giftDetail in FMainDS.AGiftDetail.Rows)
+            //            {
+            //                if (giftDetail.BatchNumber.Equals(FBatchNumber)
+            //                    && giftDetail.GiftTransactionNumber.Equals(ARow.GiftTransactionNumber))
+            //                {
+            //                    giftDetail.DateEntered = giftRow.DateEntered;
+            //                    giftDetail.DonorKey = giftRow.DonorKey;
+            //                    // this does not work
+            //                    //giftDetail.DonorName = txtDetailDonorKey.LabelText;
+            //                }
+            //            }
 
             //  join by hand
             if (cmbDetailMethodOfGivingCode.SelectedIndex == -1)

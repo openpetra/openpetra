@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -58,9 +58,6 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// <summary>tells whether the cache is containing data, or not</summary>
         private static Boolean UTableCached;
 
-        /// <summary>time when this object was instantiated</summary>
-        private DateTime FStartTime;
-
         /// <summary>
         /// initialize some static variables
         /// </summary>
@@ -73,15 +70,6 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
             UUserDefaultsDT = (SUserDefaultsTable)UUserDefaultsDS.Tables[USERDEFAULTSDT_NAME];
             UUserDefaultsDV = new DataView(UUserDefaultsDT);
             UUserDefaultsDV.Sort = SUserDefaultsTable.GetDefaultCodeDBName();
-        }
-
-        /// <summary>
-        /// constructor
-        /// </summary>
-        public TUserDefaults() : base()
-        {
-            // $IFDEF DEBUGMODE if TSrvSetting.DL >= 9 then Console.WriteLine(this.GetType.FullName + ' created: Instance hash is ' + this.GetHashCode().ToString()); $ENDIF
-            FStartTime = DateTime.Now;
         }
 
         /// <summary>
@@ -259,7 +247,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         public static void GetUserDefaults(String AUserName, out SUserDefaultsTable AUserDefaultsDataTable)
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 7)
+            if (TLogging.DL >= 7)
             {
                 Console.WriteLine("TMaintenanceUserDefaults.GetUserDefaults called.");
             }
@@ -282,7 +270,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                 try
                 {
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine("TMaintenanceUserDefaults.GetUserDefaults waiting for a ReaderLock...");
                     }
@@ -292,7 +280,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                      *should be fairly quick] */
                     UReadWriteLock.AcquireReaderLock(SharedConstants.THREADING_WAIT_INFINITE);
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine("TMaintenanceUserDefaults.GetUserDefaults grabbed a ReaderLock.");
                     }
@@ -304,7 +292,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                     // Release read lock on the cache table
                     UReadWriteLock.ReleaseReaderLock();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine("TMaintenanceUserDefaults.GetUserDefaults released the ReaderLock.");
                     }
@@ -314,7 +302,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
 #if DEBUGMODE
             catch (Exception exp)
             {
-                if (TSrvSetting.DL >= 7)
+                if (TLogging.DL >= 7)
                 {
                     Console.WriteLine("Exception in TMaintenanceUserDefaults.GetUserDefaults: " + exp.ToString());
                 }
@@ -352,7 +340,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
             LockCookie UpgradeLockCookie = new LockCookie();
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("TMaintenanceUserDefaults.LoadUserDefaultsTable called in the AppDomain " + Thread.GetDomain().FriendlyName + '.');
             }
@@ -386,7 +374,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                         {
                             DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                            if (TSrvSetting.DL >= 9)
+                            if (TLogging.DL >= 9)
                             {
                                 Console.WriteLine("TMaintenanceUserDefaults.LoadUserDefaultsTable: committed own transaction.");
                             }
@@ -418,7 +406,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                             // Other threads are now free to obtain a read lock on the cache table.
                             UReadWriteLock.ReleaseWriterLock();
 #if DEBUGMODE
-                            if (TSrvSetting.DL >= 7)
+                            if (TLogging.DL >= 7)
                             {
                                 Console.WriteLine("TMaintenanceUserDefaults.LoadUserDefaultsTable released the WriterLock.");
                             }
@@ -427,7 +415,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                         else
                         {
 #if DEBUGMODE
-                            if (TSrvSetting.DL >= 7)
+                            if (TLogging.DL >= 7)
                             {
                                 Console.WriteLine("TMaintenanceUserDefaults.ReloadUserDefaults waiting for downgrading to a ReaderLock...");
                             }
@@ -436,7 +424,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                             // Downgrade from a WriterLock to a ReaderLock again!
                             UReadWriteLock.DowngradeFromWriterLock(ref UpgradeLockCookie);
 #if DEBUGMODE
-                            if (TSrvSetting.DL >= 7)
+                            if (TLogging.DL >= 7)
                             {
                                 Console.WriteLine("TMaintenanceUserDefaults.ReloadUserDefaults downgraded to a ReaderLock.");
                             }
@@ -476,9 +464,6 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         public static void MergeChanges(SUserDefaultsTable ADestinationDT, SUserDefaultsTable ASourceDT)
         {
             Int16 Counter;
-
-            DataColumn[] PrimaryKeyColumns;
-            object[] PrimaryKeyObj;
             SUserDefaultsRow UpdateRow;
             SUserDefaultsRow AddedRow;
 
@@ -492,8 +477,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                 throw new System.ArgumentException("ASourceDT must not be nil");
             }
 
-            PrimaryKeyColumns = ASourceDT.PrimaryKey;
-            PrimaryKeyObj = new object[PrimaryKeyColumns.Length];
+            // DataColumn[] PrimaryKeyColumns = ASourceDT.PrimaryKey;
 
             for (Counter = 0; Counter <= ASourceDT.Rows.Count - 1; Counter += 1)
             {
@@ -584,7 +568,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
             if ((AUserDefaultsDataTable != null) && (AUserDefaultsDataTable.Rows.Count > 0))
             {
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 8)
+                if (TLogging.DL >= 8)
                 {
                     Console.WriteLine(
                         "TMaintenanceUserDefaults.SaveUserDefaultsFromClientSide: Saving " + (AUserDefaultsDataTable.Rows.Count).ToString() +
@@ -592,7 +576,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                 }
 #endif
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 8)
+                if (TLogging.DL >= 8)
                 {
                     Console.WriteLine(
                         "TMaintenanceUserDefaults.SaveUserDefaultsFromClientSide: Row[0] --- UserId: " + AUserDefaultsDataTable[0].UserId +
@@ -606,7 +590,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                     // Update the serverside copy of the UserDefaults with what was submitted
                     // from the Client.
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine("TMaintenanceUserDefaults.SaveUserDefaultsFromClientSide waiting for a WriterLock...");
                     }
@@ -615,7 +599,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                     // Prevent other threads from obtaining a read lock on the cache table while we are merging the cache table!
                     UReadWriteLock.AcquireWriterLock(SharedConstants.THREADING_WAIT_INFINITE);
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine("TMaintenanceUserDefaults.SaveUserDefaultsFromClientSide grabbed a WriterLock...");
                     }
@@ -632,16 +616,16 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                              * added UserDefaults in the cache will be unaffected).
                              */
 
-                            // $IFDEF DEBUGMODE if TSrvSetting.DL >= 7 then Console.WriteLine('Before merge: UUserDefaultsDS.Tables.Count: ' + UUserDefaultsDS.Tables.Count.ToString); $ENDIF
-                            // $IFDEF DEBUGMODE if TSrvSetting.DL >= 7 then Console.WriteLine('Before merge: UUserDefaultsDS.Tables[0].Rows.Count: ' + UUserDefaultsDS.Tables[0].Rows.Count.ToString); $ENDIF
+                            // $IFDEF DEBUGMODE if TLogging.DL >= 7 then Console.WriteLine('Before merge: UUserDefaultsDS.Tables.Count: ' + UUserDefaultsDS.Tables.Count.ToString); $ENDIF
+                            // $IFDEF DEBUGMODE if TLogging.DL >= 7 then Console.WriteLine('Before merge: UUserDefaultsDS.Tables[0].Rows.Count: ' + UUserDefaultsDS.Tables[0].Rows.Count.ToString); $ENDIF
 #if DEBUGMODE
-                            if (TSrvSetting.DL >= 7)
+                            if (TLogging.DL >= 7)
                             {
                                 Console.WriteLine("Before merge: UUserDefaultsDT.Rows.Count: " + UUserDefaultsDT.Rows.Count.ToString());
                             }
 #endif
 #if DEBUGMODE
-                            if (TSrvSetting.DL >= 7)
+                            if (TLogging.DL >= 7)
                             {
                                 DataTable TmpChangesDT = UUserDefaultsDT.GetChangesTyped();
 
@@ -653,16 +637,16 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
 #endif
                             MergeChanges(UUserDefaultsDT, AUserDefaultsDataTable);
 
-                            // $IFDEF DEBUGMODE if TSrvSetting.DL >= 7 then Console.WriteLine('After merge: UUserDefaultsDS.Tables.Count: ' + UUserDefaultsDS.Tables.Count.ToString); $ENDIF
-                            // $IFDEF DEBUGMODE if TSrvSetting.DL >= 7 then Console.WriteLine('After merge: UUserDefaultsDS.Tables[0].Rows.Count: ' + UUserDefaultsDS.Tables[0].Rows.Count.ToString); $ENDIF
+                            // $IFDEF DEBUGMODE if TLogging.DL >= 7 then Console.WriteLine('After merge: UUserDefaultsDS.Tables.Count: ' + UUserDefaultsDS.Tables.Count.ToString); $ENDIF
+                            // $IFDEF DEBUGMODE if TLogging.DL >= 7 then Console.WriteLine('After merge: UUserDefaultsDS.Tables[0].Rows.Count: ' + UUserDefaultsDS.Tables[0].Rows.Count.ToString); $ENDIF
 #if DEBUGMODE
-                            if (TSrvSetting.DL >= 7)
+                            if (TLogging.DL >= 7)
                             {
                                 Console.WriteLine("After merge: UUserDefaultsDT.Rows.Count: " + UUserDefaultsDT.Rows.Count.ToString());
                             }
 #endif
 #if DEBUGMODE
-                            if (TSrvSetting.DL >= 7)
+                            if (TLogging.DL >= 7)
                             {
                                 DataTable TmpChangesDT = UUserDefaultsDT.GetChangesTyped();
 
@@ -677,7 +661,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
 
                             if (TmpRow != -1)
                             {
-                                if (TSrvSetting.DL >= 7)
+                                if (TLogging.DL >= 7)
                                 {
                                     Console.WriteLine("MailroomLastPerson value: '" +
                                         UUserDefaultsDV[TmpRow][SUserDefaultsTable.GetDefaultValueDBName()].ToString() + "'");
@@ -689,7 +673,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                             // the current user > just save the (now updated) serverside copy
                             // of the UserDefaults.
 #if DEBUGMODE
-                            if (TSrvSetting.DL >= 7)
+                            if (TLogging.DL >= 7)
                             {
                                 Console.WriteLine(
                                     "TMaintenanceUserDefaults.SaveUserDefaultsFromClientSide: merged changed data from the Client side into the Server-side UserDefaults cache; saving the Server-side UserDefaults cache now.");
@@ -733,7 +717,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                         // Other threads are now free to obtain a read lock on the cache table.
                         UReadWriteLock.ReleaseWriterLock();
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 7)
+                        if (TLogging.DL >= 7)
                         {
                             Console.WriteLine("TMaintenanceUserDefaults.SaveUserDefaultsFromClientSide released the WriterLock.");
                         }
@@ -802,7 +786,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                 if ((ChangedUserDefaultsDT != null) && (ChangedUserDefaultsDT.Rows.Count > 0))
                 {
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 8)
+                    if (TLogging.DL >= 8)
                     {
                         Console.WriteLine(
                             "TMaintenanceUserDefaults.SaveUserDefaultsTable: Saving " + (ChangedUserDefaultsDT.Rows.Count).ToString() +
@@ -810,7 +794,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                     }
 #endif
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 8)
+                    if (TLogging.DL >= 8)
                     {
                         Console.WriteLine(
                             "TMaintenanceUserDefaults.SaveUserDefaultsTable: Row[0] --- UserId: " + ChangedUserDefaultsDT[0].UserId +
@@ -842,7 +826,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                             catch (EDBConcurrencyException)
                             {
 #if DEBUGMODE
-                                if (TSrvSetting.DL >= 8)
+                                if (TLogging.DL >= 8)
                                 {
                                     TLogging.Log(
                                         "TMaintenanceUserDefaults.SaveUserDefaultsTable: EDBConcurrencyException occured --> refreshing cached UserDefaults with UserDefaults from the DB!");
@@ -863,7 +847,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
 #if DEBUGMODE
                             catch (Exception Exp)
                             {
-                                if (TSrvSetting.DL >= 8)
+                                if (TLogging.DL >= 8)
                                 {
                                     TLogging.Log("TMaintenanceUserDefaults.SaveUserDefaultsTable: Exception occured: " + Exp.ToString());
                                 }
@@ -874,13 +858,13 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                         } while (!((SavingAttempts > 1) || SubmissionOK));
 
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 8)
+                        if (TLogging.DL >= 8)
                         {
                             Console.WriteLine("TMaintenanceUserDefaults.SaveUserDefaultsTable: after saving.");
                         }
 #endif
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 8)
+                        if (TLogging.DL >= 8)
                         {
                             Console.WriteLine(
                                 "TMaintenanceUserDefaults.SaveUserDefaultsTable: ChangedUserDefaultsDT.Rows.Count: " +
@@ -896,7 +880,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                             if (ASendUpdateInfoToClient)
                             {
 #if DEBUGMODE
-                                if (TSrvSetting.DL >= 8)
+                                if (TLogging.DL >= 8)
                                 {
                                     Console.WriteLine("TMaintenanceUserDefaults.SaveUserDefaultsTable: ASendUpdateInfoToClient = true");
                                 }
@@ -911,7 +895,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                                     if (ChangedUDDR.RowState == DataRowState.Added)
                                     {
 #if DEBUGMODE
-                                        if (TSrvSetting.DL >= 8)
+                                        if (TLogging.DL >= 8)
                                         {
                                             Console.WriteLine(
                                                 "TMaintenanceUserDefaults.SaveUserDefaultsTable: new UserDefault has been INSERTed into the DB Table, inform other Clients about that!");
@@ -926,7 +910,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                                 {
                                     // CopyModificationIDsOver(ChangedUserDefaultsDT, AUserDefaultsDataTable);
 #if DEBUGMODE
-                                    if (TSrvSetting.DL >= 8)
+                                    if (TLogging.DL >= 8)
                                     {
                                         Console.WriteLine("TMaintenanceUserDefaults.SaveUserDefaultsTable: informing other Clients!");
                                     }
@@ -940,7 +924,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                         }
 
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 8)
+                        if (TLogging.DL >= 8)
                         {
                             Console.WriteLine("TMaintenanceUserDefaults.SaveUserDefaultsTable: after AcceptChanges.");
                         }
@@ -949,7 +933,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
 #if DEBUGMODE
                     catch (Exception Exp)
                     {
-                        if (TSrvSetting.DL >= 8)
+                        if (TLogging.DL >= 8)
                         {
                             Console.WriteLine("TMaintenanceUserDefaults.SaveUserDefaultsTable: Exception occured: " + Exp.ToString());
                         }
@@ -965,7 +949,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                             {
                                 DBAccess.GDBAccessObj.CommitTransaction();
 #if DEBUGMODE
-                                if (TSrvSetting.DL >= 8)
+                                if (TLogging.DL >= 8)
                                 {
                                     Console.WriteLine("TMaintenanceUserDefaults.SaveUserDefaultsTable: committed own transaction.");
                                 }
@@ -975,7 +959,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                             {
                                 DBAccess.GDBAccessObj.RollbackTransaction();
 #if DEBUGMODE
-                                if (TSrvSetting.DL >= 8)
+                                if (TLogging.DL >= 8)
                                 {
                                     Console.WriteLine("TMaintenanceUserDefaults.SaveUserDefaultsTable: rolled back own transaction.");
                                 }
@@ -985,7 +969,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                     }
 
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 8)
+                    if (TLogging.DL >= 8)
                     {
                         Console.WriteLine("TMaintenanceUserDefaults.SaveUserDefaultsTable: Done!");
                     }
@@ -996,7 +980,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                 {
 // nothing to save!
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 8)
+                    if (TLogging.DL >= 8)
                     {
                         Console.WriteLine("TMaintenanceUserDefaults.SaveUserDefaultsTable: nothing to save: no changes!");
                     }
@@ -1008,7 +992,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
             {
                 // nothing to save!
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 8)
+                if (TLogging.DL >= 8)
                 {
                     Console.WriteLine("TMaintenanceUserDefaults.SaveUserDefaultsTable: nothing to save: no UserDefaults in memory!");
                 }
@@ -1056,7 +1040,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
 
             AVerificationResult = null;
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 7)
+            if (TLogging.DL >= 7)
             {
                 Console.WriteLine("TMaintenanceUserDefaults.SaveUserDefaultsFromServerSide waiting for a ReaderLock...");
             }
@@ -1065,7 +1049,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
             // Prevent other threads from obtaining a read lock on the cache table while we are reading values from the cache table!
             UReadWriteLock.AcquireReaderLock(SharedConstants.THREADING_WAIT_INFINITE);
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 7)
+            if (TLogging.DL >= 7)
             {
                 Console.WriteLine("TMaintenanceUserDefaults.SaveUserDefaultsFromServerSide grabbed a ReaderLock.");
             }
@@ -1092,7 +1076,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                 {
                     // nothing to save!
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 8)
+                    if (TLogging.DL >= 8)
                     {
                         Console.WriteLine("TMaintenanceUserDefaults.SaveUserDefaultsFromServerSide: nothing to save.");
                     }
@@ -1105,14 +1089,14 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                 // Other threads are now free to obtain a read lock on the cache table.
                 UReadWriteLock.ReleaseReaderLock();
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 7)
+                if (TLogging.DL >= 7)
                 {
                     Console.WriteLine("TMaintenanceUserDefaults.SaveUserDefaultsFromServerSide released the ReaderLock.");
                 }
 #endif
             }
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 8)
+            if (TLogging.DL >= 8)
             {
                 Console.WriteLine("TMaintenanceUserDefaults.SaveUserDefaultsFromServerSide: Done!");
             }
@@ -1186,7 +1170,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
             String SingleOrMultipleIndicator;
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 7)
+            if (TLogging.DL >= 7)
             {
                 Console.WriteLine("TMaintenanceUserDefaults.UpdateUserDefaultsOnClient: calling DomainManager.ClientTaskAdd...");
             }
@@ -1345,7 +1329,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                 }
 
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 7)
+                if (TLogging.DL >= 7)
                 {
                     Console.WriteLine("TMaintenanceUserDefaults.GetUserDefault waiting for a ReaderLock...");
                 }
@@ -1354,7 +1338,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                 // Prevent other threads from obtaining a read lock on the cache table while we are reading a value from the cache table!
                 UReadWriteLock.AcquireReaderLock(SharedConstants.THREADING_WAIT_INFINITE);
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 7)
+                if (TLogging.DL >= 7)
                 {
                     Console.WriteLine("TMaintenanceUserDefaults.GetUserDefault grabbed a ReaderLock.");
                 }
@@ -1379,7 +1363,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                     // Other threads are now free to obtain a read lock on the cache table.
                     UReadWriteLock.ReleaseReaderLock();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine("TMaintenanceUserDefaults.GetUserDefault released the ReaderLock.");
                     }
@@ -1420,7 +1404,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                 }
 
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 7)
+                if (TLogging.DL >= 7)
                 {
                     Console.WriteLine("TMaintenanceUserDefaults.SetUserDefault waiting for a WriterLock...");
                 }
@@ -1429,7 +1413,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                 // Prevent other threads from obtaining a read lock on the cache table while we are changing a value in the cache table!
                 UReadWriteLock.AcquireWriterLock(SharedConstants.THREADING_WAIT_INFINITE);
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 7)
+                if (TLogging.DL >= 7)
                 {
                     Console.WriteLine("TMaintenanceUserDefaults.SetUserDefault grabbed a WriterLock.");
                 }
@@ -1445,7 +1429,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                             // Update only if the value is actually different
                             UUserDefaultsDV[FoundInRow][SUserDefaultsTable.GetDefaultValueDBName()] = AValue;
 #if DEBUGMODE
-                            if (TSrvSetting.DL >= 7)
+                            if (TLogging.DL >= 7)
                             {
                                 Console.WriteLine(
                                     "TMaintenanceUserDefaults.SetUserDefault: updated UserDefault '" + AKey + "' with value '" + AValue + "'.");
@@ -1462,7 +1446,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                         Tmp[SUserDefaultsTable.GetDefaultValueDBName()] = AValue;
                         Tmp.EndEdit();
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 7)
+                        if (TLogging.DL >= 7)
                         {
                             Console.WriteLine(
                                 "TMaintenanceUserDefaults.SetUserDefault: added UserDefault '" + AKey + "' with value '" + AValue + "'.");
@@ -1482,7 +1466,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                     // Other threads are now free to obtain a read lock on the cache table.
                     UReadWriteLock.ReleaseWriterLock();
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
+                    if (TLogging.DL >= 7)
                     {
                         Console.WriteLine("TMaintenanceUserDefaults.SetUserDefault released the WriterLock.");
                     }

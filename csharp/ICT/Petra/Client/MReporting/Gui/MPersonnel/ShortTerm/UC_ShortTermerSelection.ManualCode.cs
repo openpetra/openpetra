@@ -35,14 +35,14 @@ using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Client.CommonForms;
 
-namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
+namespace Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm
 {
     /// <summary>
     /// Description of UC_PartnerSelection.ManualCode.
     /// </summary>
     public partial class TFrmUC_ShortTermerSelection
     {
-        /// <summary>Holds the Partner key of the selecte conference or campaign </summary>
+        /// <summary>Holds the Partner key of the selecte conference or outreach </summary>
         private Int64 FSelectedUnitKey;
 
         /// <summary>
@@ -286,7 +286,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 
             if (SelectEventForm.ShowDialog() == DialogResult.OK)
             {
-                txtEventCode.Text = SelectEventForm.FSelectedCampaignCode;
+                txtEventCode.Text = SelectEventForm.FSelectedOutreachCode;
                 lblEventName.Text = SelectEventForm.FSelectedUnitName;
                 FSelectedUnitKey = SelectEventForm.FSelectedPartnerKey;
             }

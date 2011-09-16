@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -45,8 +45,19 @@ namespace Ict.Petra.Client.CommonForms
     /// </summary>
     public partial class TPetraUserControl : System.Windows.Forms.UserControl
     {
-        // TODO statusbar text
         private System.Windows.Forms.ToolTip tipUC;
+
+        /// <summary>
+        /// property for setting the tooltip.
+        /// needed to avoid warning about unused variable tipUC
+        /// </summary>
+        public string ToolTip
+        {
+            set
+            {
+                tipUC.SetToolTip(this, value);
+            }
+        }
 
         /// <summary>Holds the DataSet that contains most data that is used in the UserControl</summary>
         protected DataSet FMainDS;
@@ -164,6 +175,9 @@ namespace Ict.Petra.Client.CommonForms
             set;
         }
 
+        /// <summary>
+        /// used to initialize the user control
+        /// </summary>
         void InitUserControl();
     }
 
@@ -182,6 +196,9 @@ namespace Ict.Petra.Client.CommonForms
             set;
         }
 
+        /// <summary>
+        /// used to initialize the user control
+        /// </summary>
         void InitUserControl();
     }
 }

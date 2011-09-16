@@ -46,12 +46,12 @@ RootNode:
         txtDetailFeeDescription: {Label=Description, ColSpan=3, Width=320}
         cmbDetailChargeOption:  {Label=Charge Option, OnChange=ChargeOptionChanged}
             OptionalValues: [Minimum, Maximum, Fixed, Percentage]
-        txtDetailChargePercentage:  {Label=Charge Percentage, Format=Decimal}
+        txtDetailChargePercentage:  {Label=Charge Percentage, Format=PercentDecimal}
         txtDetailChargeAmount:  {Label=Charge Amount, Format=Decimal, Width=111}
         cmbDetailCostCentreCode:  {NoLabel=True, List=UserDefinedList}
         cmbDetailAccountCode:  {NoLabel=True, List=UserDefinedList, Width=250}
         cmbDetailDrAccountCode:  {Label=Account, List=UserDefinedList}
-        txtReceivingFund: {Label=Cost Centre, Enabled=False, Width=200}
+        txtReceivingFund: {Label=Cost Centre, Enabled=False, DefaultValue=Receiving Fund, Width=200}
         lblToBeDebited: 
             Padding:96,0,0,0
         lblToBeCredited:

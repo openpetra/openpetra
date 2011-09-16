@@ -34,18 +34,25 @@ using Ict.Tools.CodeGeneration;
 
 namespace Ict.Tools.CodeGeneration
 {
-    /*
-     * This is the abstract base class for all other form writers.
-     * manages the code generators for all the controls
-     */
+    /// <summary>
+    /// This is the abstract base class for all other form writers.
+    /// manages the code generators for all the controls
+    /// </summary>
     public abstract class TFormWriter
     {
+        /// <summary>main function for generating the code</summary>
         public abstract void CreateCode(TCodeStorage AStorage, string AXamlFilename, string ATemplate);
+        /// <summary>create the file with the resources</summary>
         public abstract void CreateResourceFile(string AResourceFile, string AResourceTemplate);
+        /// <summary>get the name of the designer file</summary>
         public abstract void CreateDesignerFile(string AYamlFilename, XmlNode ARootNode, string ATemplateDir);
+        /// <summary>get the name of the destination generated file</summary>
         public abstract string CalculateDestinationFilename(string AYamlFilename);
+        /// <summary>get the name of the file with the manual code</summary>
         public abstract string CalculateManualCodeFilename(string AYamlFilename);
+        /// <summary>set the property of a control</summary>
         public abstract void SetControlProperty(string AControlName, string APropertyName, string APropertyValue, bool ACreateTranslationForLabel);
+        /// <summary>set the property of a control</summary>
         public void SetControlProperty(TControlDef ACtrl, string APropertyName, string APropertyValue)
         {
             SetControlProperty(ACtrl.controlName, APropertyName, APropertyValue, !(ACtrl.GetAttribute("VariableLabelText") == "true"));
@@ -65,26 +72,48 @@ namespace Ict.Tools.CodeGeneration
             }
         }
 
+        /// <summary>
+        /// for special functionality specific to a control
+        /// </summary>
         public virtual void ApplyDerivedFunctionality(IControlGenerator generator, XmlNode curNode)
         {
             generator.ApplyDerivedFunctionality(this, curNode);
         }
 
+        /// <summary>create code for calling a function from an event on the control</summary>
         public abstract void CallControlFunction(string AControlName, string AFunctionCall);
+        /// <summary>install an event handler for a control</summary>
         public abstract void SetEventHandlerToControl(string AControlName, string AEvent, string AEventHandlerType, string AEventHandlingMethod);
+        /// <summary>event handler</summary>
         public abstract void SetEventHandlerFunction(string AControlName, string AEvent, string AEventImplementation);
+        /// <summary>add control to a container</summary>
         public abstract void AddContainer(string AControlName);
+        /// <summary>create a resource from an image and add to designer</summary>
         public abstract void AddImageToResource(string AControlName, string AImageName, string AImageOrIcon);
+        /// <summary>get the data for the form</summary>
         public abstract void InitialiseDataSource(XmlNode curNode, string AControlName);
 
+        /// <summary>
+        /// get the extension of the file to be written
+        /// </summary>
         public abstract string CodeFileExtension
         {
             get;
         }
 
+        /// <summary>
+        /// manage the code objects for this file to be written
+        /// </summary>
         public TCodeStorage FCodeStorage = null;
+
+        /// <summary>
+        /// the template for this file to be written
+        /// </summary>
         public ProcessTemplate FTemplate;
 
+        /// <summary>
+        /// get the storage of this code
+        /// </summary>
         public TCodeStorage CodeStorage
         {
             get
@@ -93,6 +122,9 @@ namespace Ict.Tools.CodeGeneration
             }
         }
 
+        /// <summary>
+        /// get the template code
+        /// </summary>
         public ProcessTemplate Template
         {
             get
@@ -101,6 +133,9 @@ namespace Ict.Tools.CodeGeneration
             }
         }
 
+        /// <summary>
+        /// is this a template for a user control
+        /// </summary>
         public abstract bool IsUserControlTemplate
         {
             get;
@@ -225,11 +260,22 @@ namespace Ict.Tools.CodeGeneration
             return true;
         }
 
+        /// <summary>
+        /// write the template to the destination file
+        /// </summary>
+        /// <param name="ADestinationFile"></param>
+        /// <returns></returns>
         public bool WriteFile(string ADestinationFile)
         {
             return FTemplate.FinishWriting(ADestinationFile, Path.GetExtension(ADestinationFile), true);
         }
 
+        /// <summary>
+        /// write the resulting file, using the given template
+        /// </summary>
+        /// <param name="ADestinationFile"></param>
+        /// <param name="ATemplateFile"></param>
+        /// <returns></returns>
         public bool WriteFile(string ADestinationFile, string ATemplateFile)
         {
             ProcessTemplate LocalTemplate = new ProcessTemplate(ATemplateFile);

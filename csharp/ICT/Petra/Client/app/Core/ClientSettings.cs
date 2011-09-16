@@ -159,6 +159,24 @@ namespace Ict.Petra.Client.App.Core
             }
         }
 
+        /// <summary>the data directory to be used if we want to share the data directory with other users, on a network drive</summary>
+        public static string RemoteDataDirectory
+        {
+            get
+            {
+                return URemoteDataDirectory;
+            }
+        }
+
+        /// <summary>the tmp directory to be used if we want to share the tmp directory with other users, on a network drive</summary>
+        public static string RemoteTmpDirectory
+        {
+            get
+            {
+                return URemoteTmpDirectory;
+            }
+        }
+
         /// <summary>should the server be started by the client?</summary>
         public static Boolean RunAsStandalone
         {
@@ -311,7 +329,7 @@ namespace Ict.Petra.Client.App.Core
 
         private static string GetUserPath(string AVariableName, string ADefaultValue)
         {
-            string result = TAppSettingsManager.GetValueStatic(AVariableName, ADefaultValue);
+            string result = TAppSettingsManager.GetValue(AVariableName, ADefaultValue);
 
             if (result.Contains("{userappdata}"))
             {
@@ -336,9 +354,7 @@ namespace Ict.Petra.Client.App.Core
         {
             UPathTemp = GetUserPath("OpenPetra.PathTemp", Path.GetTempPath());
 
-            string userSettingsPath = GetUserPath("Reporting.PathReportUserSettings", String.Empty);
-
-            UPathLog = GetUserPath("OpenPetra.PathLog", Path.GetTempPath());
+            UPathLog = GetUserPath("OpenPetra.PathLog", UPathTemp);
 
             return UPathLog;
         }
@@ -347,8 +363,8 @@ namespace Ict.Petra.Client.App.Core
         /// will create the directory if it does not exist yet.
         public static string GetExportPath()
         {
-            string ExportPath = TAppSettingsManager.GetValueStatic("OpenPetra.PathExport",
-                TAppSettingsManager.GetValueStatic("OpenPetra.PathTemp") + Path.DirectorySeparatorChar + "export", false);
+            string ExportPath = TAppSettingsManager.GetValue("OpenPetra.PathExport",
+                TAppSettingsManager.GetValue("OpenPetra.PathTemp") + Path.DirectorySeparatorChar + "export", false);
 
             if (!Directory.Exists(ExportPath))
             {
@@ -365,66 +381,54 @@ namespace Ict.Petra.Client.App.Core
         /// <returns>void</returns>
         public TClientSettings() : base()
         {
-            TCmdOpts FCmdOptions = new TCmdOpts();
-            TAppSettingsManager FAppSettings = new TAppSettingsManager();
-
-            //
-            // Parse settings from the Command Line
-            //
-            if (FCmdOptions.IsFlagSet("C"))
-            {
-                UConfigurationFile = FCmdOptions.GetOptValue("C");
-            }
-            else
-            {
-                UConfigurationFile = TAppSettingsManager.ConfigFileName;
-            }
+            UConfigurationFile = TAppSettingsManager.ConfigFileName;
 
             //
             // Parse settings from the Application Configuration File
             //
             UPathLog = GetPathLog();
 
-            UDebugLevel = FAppSettings.GetInt16("Client.DebugLevel", 0);
+            UDebugLevel = TAppSettingsManager.GetInt16("Client.DebugLevel", 0);
 
             UBehaviourSeveralClients = "OnlyOneWithQuestion";
 
-            if (FAppSettings.HasValue("BehaviourSeveralClients"))
+            if (TAppSettingsManager.HasValue("BehaviourSeveralClients"))
             {
-                UBehaviourSeveralClients = FAppSettings.GetValue("BehaviourSeveralClients");
+                UBehaviourSeveralClients = TAppSettingsManager.GetValue("BehaviourSeveralClients");
             }
 
-            UDelayedDataLoading = FAppSettings.GetBoolean("DelayedDataLoading", false);
+            UDelayedDataLoading = TAppSettingsManager.GetBoolean("DelayedDataLoading", false);
             UReportingPathReportSettings =
-                FAppSettings.GetValue("Reporting.PathReportSettings");
+                TAppSettingsManager.GetValue("Reporting.PathReportSettings");
             UReportingPathReportUserSettings =
-                FAppSettings.GetValue("Reporting.PathReportUserSettings").Replace("{userappdata}",
+                TAppSettingsManager.GetValue("Reporting.PathReportUserSettings").Replace("{userappdata}",
                     Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
 
-            UServerPollIntervalInSeconds = FAppSettings.GetInt16("ServerPollIntervalInSeconds", 5);
-            UServerObjectKeepAliveIntervalInSeconds = FAppSettings.GetInt16("ServerObjectKeepAliveIntervalInSeconds", 10);
+            UServerPollIntervalInSeconds = TAppSettingsManager.GetInt16("ServerPollIntervalInSeconds", 5);
+            UServerObjectKeepAliveIntervalInSeconds = TAppSettingsManager.GetInt16("ServerObjectKeepAliveIntervalInSeconds", 10);
 
-            URemoteDataDirectory = FAppSettings.GetValue("RemoteDataDirectory");
-            URemoteTmpDirectory = FAppSettings.GetValue("RemoteTmpDirectory");
+            URemoteDataDirectory = TAppSettingsManager.GetValue("RemoteDataDirectory");
+            URemoteTmpDirectory = TAppSettingsManager.GetValue("RemoteTmpDirectory");
 
-            URunAsStandalone = FAppSettings.GetBoolean("RunAsStandalone", false);
-            URunAsRemote = FAppSettings.GetBoolean("RunAsRemote", false);
+            URunAsStandalone = TAppSettingsManager.GetBoolean("RunAsStandalone", false);
+            URunAsRemote = TAppSettingsManager.GetBoolean("RunAsRemote", false);
             UPetra_Path_RemotePatches = "";
             UPetra_Path_Dat = "";
             UPetra_Path_Patches = "";
-            UPetraWebsite_Link = FAppSettings.GetValue("OpenPetra.Website", "http://www.openpetra.org");
-            UPetraPatches_Link = FAppSettings.GetValue("OpenPetra.Path.RemotePatches", "http://www.example.org/index.php?page=OpenPetraPatches");
-            UPetraSupportTeamEmail = FAppSettings.GetValue("OpenPetra.SupportTeamEmail", String.Empty);
+            UPetraWebsite_Link = TAppSettingsManager.GetValue("OpenPetra.Website", "http://www.openpetra.org");
+            UPetraPatches_Link = TAppSettingsManager.GetValue("OpenPetra.Path.RemotePatches",
+                "http://www.example.org/index.php?page=OpenPetraPatches");
+            UPetraSupportTeamEmail = TAppSettingsManager.GetValue("OpenPetra.SupportTeamEmail", String.Empty);
 
             if (URunAsStandalone == true)
             {
-                UPetraServerAdmin_Configfile = FAppSettings.GetValue("PetraServerAdmin.Configfile");
-                UPetraServer_Configfile = FAppSettings.GetValue("PetraServer.Configfile");
+                UPetraServerAdmin_Configfile = TAppSettingsManager.GetValue("PetraServerAdmin.Configfile");
+                UPetraServer_Configfile = TAppSettingsManager.GetValue("PetraServer.Configfile");
                 UPetra_Path_Bin = Environment.CurrentDirectory;
-                UPetra_Path_DB = FAppSettings.GetValue("Petra.Path.db");
+                UPetra_Path_DB = TAppSettingsManager.GetValue("Petra.Path.db");
                 UPetra_Path_Patches = UPetra_Path_Bin + Path.DirectorySeparatorChar + "sa-patches";
-                UPostgreSql_BaseDir = FAppSettings.GetValue("PostgreSQLServer.BaseDirectory");
-                UPostgreSql_DataDir = FAppSettings.GetValue("PostgreSQLServer.DataDirectory");
+                UPostgreSql_BaseDir = TAppSettingsManager.GetValue("PostgreSQLServer.BaseDirectory");
+                UPostgreSql_DataDir = TAppSettingsManager.GetValue("PostgreSQLServer.DataDirectory");
             }
             else
             {
@@ -435,9 +439,9 @@ namespace Ict.Petra.Client.App.Core
 
             if (URunAsRemote == true)
             {
-                UPetra_Path_Patches = FAppSettings.GetValue("OpenPetra.Path.Patches");
-                UPetra_Path_Dat = FAppSettings.GetValue("OpenPetra.Path.Dat");
-                UPetra_Path_RemotePatches = FAppSettings.GetValue("OpenPetra.Path.RemotePatches");
+                UPetra_Path_Patches = TAppSettingsManager.GetValue("OpenPetra.Path.Patches");
+                UPetra_Path_Dat = TAppSettingsManager.GetValue("OpenPetra.Path.Dat");
+                UPetra_Path_RemotePatches = TAppSettingsManager.GetValue("OpenPetra.Path.RemotePatches");
             }
 
             if ((!URunAsRemote) && (!URunAsStandalone))
@@ -446,9 +450,9 @@ namespace Ict.Petra.Client.App.Core
                 UPetra_Path_Patches = UPetra_Path_Bin + Path.DirectorySeparatorChar + "net-patches";
             }
 
-            if (FCmdOptions.IsFlagSet("StartupMessage"))
+            if (TAppSettingsManager.HasValue("StartupMessage"))
             {
-                UCustomStartupMessage = FCmdOptions.GetOptValue("StartupMessage");
+                UCustomStartupMessage = TAppSettingsManager.GetValue("StartupMessage");
             }
         }
     }

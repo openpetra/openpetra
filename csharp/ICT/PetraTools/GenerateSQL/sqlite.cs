@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -67,6 +67,25 @@ public class TSQLiteWriter
             {
                 createStmt += TWriteSQL.WriteField(TWriteSQL.eDatabaseType.Sqlite, table, field, firstField, false);
                 firstField = false;
+            }
+
+            if (table.HasPrimaryKey() && !createStmt.Contains("PRIMARY KEY AUTOINCREMENT"))
+            {
+                createStmt += ", PRIMARY KEY (";
+                bool firstPrimaryKeyColumn = true;
+
+                foreach (string primaryKeyColumnName in table.GetPrimaryKey().strThisFields)
+                {
+                    if (!firstPrimaryKeyColumn)
+                    {
+                        createStmt += ",";
+                    }
+
+                    createStmt += primaryKeyColumnName;
+                    firstPrimaryKeyColumn = false;
+                }
+
+                createStmt += ")";
             }
 
             createStmt += ");";
@@ -188,7 +207,7 @@ public class TSQLiteWriter
                 stmt += ") VALUES (";
                 first = true;
 
-                foreach (TTableField field in table.grpTableField.List)
+                for (int count = 0; count < table.grpTableField.List.Count; count++)
                 {
                     if (!first)
                     {

@@ -43,7 +43,6 @@ public class TAdminConsole
     /// the command prompt
     /// </summary>
     public const String ServerAdminPrompt = "SERVERADMIN> ";
-    private static TLogging Logger;
 
     /// <summary>
     /// todoComment
@@ -441,7 +440,6 @@ public class TAdminConsole
     public static void Start()
     {
         Ict.Petra.ServerAdmin.App.Core.TConnector TheConnector;
-        TAppSettingsManager AppOpts;
         IServerAdminInterface TRemote;
         String ClientID;
         Boolean SilentSysadm;
@@ -449,20 +447,18 @@ public class TAdminConsole
 
         try
         {
-            // effectively this is currently in the bin22 directory
-            // in 2.3 I would like to move the file to /usr/local/petra
-            Logger = new TLogging();
-            AppOpts = new TAppSettingsManager();
+            new TLogging();
+            new TAppSettingsManager();
             SilentSysadm = true;
 
-            if ((!AppOpts.HasValue("Command") || (AppOpts.GetValue("Command") == "Stop")))
+            if ((!TAppSettingsManager.HasValue("Command") || (TAppSettingsManager.GetValue("Command") == "Stop")))
             {
                 SilentSysadm = false;
             }
 
-            if (AppOpts.HasValue("ServerAdmin.LogFile"))
+            if (TAppSettingsManager.HasValue("ServerAdmin.LogFile"))
             {
-                Logger = new TLogging(AppOpts.GetValue("ServerAdmin.LogFile"));
+                new TLogging(TAppSettingsManager.GetValue("ServerAdmin.LogFile"));
             }
 
             if ((!SilentSysadm))
@@ -484,27 +480,27 @@ public class TAdminConsole
             TheConnector = new Ict.Petra.ServerAdmin.App.Core.TConnector();
             TheConnector.GetServerConnection(TAppSettingsManager.ConfigFileName, out TRemote);
 
-            if (AppOpts.HasValue("Command"))
+            if (TAppSettingsManager.HasValue("Command"))
             {
-                if (AppOpts.GetValue("Command") == "Stop")
+                if (TAppSettingsManager.GetValue("Command") == "Stop")
                 {
                     ShutDown(TRemote, false);
                 }
-                else if (AppOpts.GetValue("Command") == "ConnectedClients")
+                else if (TAppSettingsManager.GetValue("Command") == "ConnectedClients")
                 {
                     System.Console.WriteLine(TRemote.FormatClientList(false));
                 }
-                else if (AppOpts.GetValue("Command") == "ConnectedClientsSysadm")
+                else if (TAppSettingsManager.GetValue("Command") == "ConnectedClientsSysadm")
                 {
                     System.Console.WriteLine(TRemote.FormatClientListSysadm(false));
                 }
-                else if (AppOpts.GetValue("Command") == "DisconnectedClients")
+                else if (TAppSettingsManager.GetValue("Command") == "DisconnectedClients")
                 {
                     System.Console.WriteLine(TRemote.FormatClientList(true));
                 }
-                else if (AppOpts.GetValue("Command") == "DisconnectClient")
+                else if (TAppSettingsManager.GetValue("Command") == "DisconnectClient")
                 {
-                    ClientID = AppOpts.GetValue("ClientID");
+                    ClientID = TAppSettingsManager.GetValue("ClientID");
                     DisconnectClient(TRemote, ClientID);
                 }
             }

@@ -181,7 +181,7 @@ namespace Ict.Petra.Shared.MPartner
             BestRow = 0;
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 8)
+            if (TLogging.DL >= 8)
             {
                 Console.WriteLine("Calculations.DetermineBestAddress: processing " + APartnerLocationsDT.Rows.Count.ToString() + " rows...");
             }

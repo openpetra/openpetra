@@ -43,11 +43,11 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             chkDetailDeletableFlag.Enabled = false;
         }
 
-        private void NewRowManual(ref PtXyzTbdPreferenceLevelRow ARow)
+        private void NewRowManual(ref PtOutreachPreferenceLevelRow ARow)
         {
             int newLevel = 1;
 
-            while (FMainDS.PtXyzTbdPreferenceLevel.Rows.Find(new object[] { newLevel }) != null)
+            while (FMainDS.PtOutreachPreferenceLevel.Rows.Find(new object[] { newLevel }) != null)
             {
                 newLevel++;
             }
@@ -57,7 +57,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 
         private void NewRecord(Object sender, EventArgs e)
         {
-            CreateNewPtXyzTbdPreferenceLevel();
+            CreateNewPtOutreachPreferenceLevel();
         }
 
         private void EnableDisableUnassignableDate(Object sender, EventArgs e)

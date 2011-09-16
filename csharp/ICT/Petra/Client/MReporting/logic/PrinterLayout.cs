@@ -85,6 +85,24 @@ namespace Ict.Petra.Client.MReporting.Logic
         }
 
         /// <summary>
+        /// The page size for reports defaults to A4 at the moment
+        /// </summary>
+        /// <param name="APaperKind"></param>
+        /// <param name="AMargins"></param>
+        /// <param name="AWidthInPoint"></param>
+        /// <param name="AHeightInPoint"></param>
+        /// <returns></returns>
+        public override bool GetPageSize(out PaperKind APaperKind, out Margins AMargins, out float AWidthInPoint, out float AHeightInPoint)
+        {
+            APaperKind = PaperKind.A4;
+            AMargins = new Margins(20, 20, 20, 39);
+            AWidthInPoint = -1;
+            AHeightInPoint = -1;
+
+            return true;
+        }
+
+        /// <summary>
         /// Print a report, initialise the page numbers, print header, body and footer;
         /// At the moment, this is only used for the TxtPrinter.
         ///

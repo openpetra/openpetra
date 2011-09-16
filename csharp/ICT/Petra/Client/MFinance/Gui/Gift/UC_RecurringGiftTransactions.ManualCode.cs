@@ -106,6 +106,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             FinRecipientKeyChanging = true;
+            FPetraUtilsObject.SuppressChangeDetection = true;
             try
             {
                 strMotivationGroup = cmbDetailMotivationGroupCode.GetSelectedString();
@@ -129,6 +130,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             finally
             {
                 FinRecipientKeyChanging = false;
+                FPetraUtilsObject.SuppressChangeDetection = false;
             }
         }
 
@@ -333,8 +335,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (giftDetailView.Count == 0)
             {
-                int oldGiftNumber = gift.GiftTransactionNumber;
-                int oldBatchNumber = gift.BatchNumber;
+                // TODO int oldGiftNumber = gift.GiftTransactionNumber;
+                // TODO int oldBatchNumber = gift.BatchNumber;
 
                 FMainDS.ARecurringGift.Rows.Remove(gift);
 
@@ -389,7 +391,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // this is coded manually, to use the correct gift record
 
             // we create the table locally, no dataset
-            ARecurringGiftDetailRow NewRow = NewGift();
+            NewGift(); // returns ARecurringGiftDetailRow
 
             FPetraUtilsObject.SetChangedFlag();
 
@@ -408,7 +410,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // this is coded manually, to use the correct gift record
 
             // we create the table locally, no dataset
-            ARecurringGiftDetailRow NewRow = NewGiftDetail((RecurringGiftBatchTDSARecurringGiftDetailRow)FPreviouslySelectedDetailRow);
+            NewGiftDetail((RecurringGiftBatchTDSARecurringGiftDetailRow)FPreviouslySelectedDetailRow); // returns ARecurringGiftDetailRow
 
             FPetraUtilsObject.SetChangedFlag();
 

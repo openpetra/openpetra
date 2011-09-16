@@ -153,7 +153,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator
         public TMFinanceNamespaceLoader()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created in application domain: " + Thread.GetDomain().FriendlyName);
             }
@@ -185,7 +185,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator
             Byte[] rndbytes = new Byte[5];
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("TMFinanceNamespaceLoader.GetRemotingURL in AppDomain: " + Thread.GetDomain().FriendlyName);
             }
@@ -209,7 +209,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator
             FRemotingURL = RemoteAtURI; // FRemotedObject.URI;
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine("TMFinance.URI: " + FRemotedObject.URI);
             }
@@ -246,7 +246,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator
         public TMFinance()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -266,7 +266,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator
             object MyObject;
             object MyObject2;
 #endif
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
                                                                                                 DateTime.Now.Ticks -
@@ -275,7 +275,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator
 
 #if DEBUGMODELONGRUNNINGFINALIZERS
             MyObject = new object();
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
             }
@@ -286,7 +286,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator
                 GC.KeepAlive(MyObject);
             }
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
             }
@@ -640,7 +640,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP
         public TAPNamespace()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -660,7 +660,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP
             object MyObject;
             object MyObject2;
 #endif
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
                                                                                                 DateTime.Now.Ticks -
@@ -669,7 +669,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP
 
 #if DEBUGMODELONGRUNNINGFINALIZERS
             MyObject = new object();
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
             }
@@ -680,7 +680,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP
                 GC.KeepAlive(MyObject);
             }
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
             }
@@ -771,7 +771,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP.UIConnectors
         public TAPUIConnectorsNamespace()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -791,7 +791,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP.UIConnectors
             object MyObject;
             object MyObject2;
 #endif
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
                                                                                                 DateTime.Now.Ticks -
@@ -800,7 +800,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP.UIConnectors
 
 #if DEBUGMODELONGRUNNINGFINALIZERS
             MyObject = new object();
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
             }
@@ -811,7 +811,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP.UIConnectors
                 GC.KeepAlive(MyObject);
             }
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
             }
@@ -844,7 +844,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP.UIConnectors
                                                         Int64 APartnerKey)
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Creating TSupplierEditUIConnector...");
             }
@@ -853,7 +853,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP.UIConnectors
             TSupplierEditUIConnector ReturnValue = new TSupplierEditUIConnector();
 
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Calling TSupplierEditUIConnector.GetData...");
             }
@@ -861,7 +861,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP.UIConnectors
 #endif
             ADataSet = ReturnValue.GetData(APartnerKey);
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Calling TSupplierEditUIConnector.GetData finished.");
             }
@@ -885,7 +885,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP.WebConnectors
         public TAPWebConnectorsNamespace()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -905,7 +905,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP.WebConnectors
             object MyObject;
             object MyObject2;
 #endif
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
                                                                                                 DateTime.Now.Ticks -
@@ -914,7 +914,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP.WebConnectors
 
 #if DEBUGMODELONGRUNNINGFINALIZERS
             MyObject = new object();
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
             }
@@ -925,7 +925,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP.WebConnectors
                 GC.KeepAlive(MyObject);
             }
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
             }
@@ -952,7 +952,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP.WebConnectors
         /// generated method from connector
         public AccountsPayableTDS CreateAApDocument(Int32 ALedgerNumber,
                                                     Int64 APartnerKey,
-                                                    bool ACreditNoteOrInvoice)
+                                                    System.Boolean ACreditNoteOrInvoice)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector), "CreateAApDocument", ";INT;LONG;BOOL;");
             return Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector.CreateAApDocument(ALedgerNumber, APartnerKey, ACreditNoteOrInvoice);
@@ -969,9 +969,9 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP.WebConnectors
         /// generated method from connector
         public AccountsPayableTDS CreateAApDocumentDetail(Int32 ALedgerNumber,
                                                           Int32 AApNumber,
-                                                          string AApSupplier_DefaultExpAccount,
-                                                          string AApSupplier_DefaultCostCentre,
-                                                          decimal AAmount,
+                                                          System.String AApSupplier_DefaultExpAccount,
+                                                          System.String AApSupplier_DefaultCostCentre,
+                                                          System.Decimal AAmount,
                                                           Int32 ALastDetailNumber)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector), "CreateAApDocumentDetail", ";INT;INT;STRING;STRING;DECIMAL;INT;");
@@ -981,29 +981,29 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP.WebConnectors
         /// generated method from connector
         public AccountsPayableTDS FindAApDocument(Int32 ALedgerNumber,
                                                   Int64 ASupplierKey,
-                                                  string ADocumentStatus,
-                                                  bool IsCreditNoteNotInvoice,
-                                                  bool AHideAgedTransactions)
+                                                  System.String ADocumentStatus,
+                                                  System.Boolean IsCreditNoteNotInvoice,
+                                                  System.Boolean AHideAgedTransactions)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector), "FindAApDocument", ";INT;LONG;STRING;BOOL;BOOL;");
             return Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector.FindAApDocument(ALedgerNumber, ASupplierKey, ADocumentStatus, IsCreditNoteNotInvoice, AHideAgedTransactions);
         }
 
         /// generated method from connector
-        public bool PostAPDocuments(Int32 ALedgerNumber,
-                                    List <Int32>AAPDocumentNumbers,
-                                    DateTime APostingDate,
-                                    out TVerificationResultCollection AVerifications)
+        public System.Boolean PostAPDocuments(Int32 ALedgerNumber,
+                                              List<Int32>AAPDocumentNumbers,
+                                              DateTime APostingDate,
+                                              out TVerificationResultCollection AVerifications)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector), "PostAPDocuments", ";INT;LIST <INT>;DATETIME;TVERIFICATIONRESULTCOLLECTION;");
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector), "PostAPDocuments", ";INT;LIST;DATETIME;TVERIFICATIONRESULTCOLLECTION;");
             return Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector.PostAPDocuments(ALedgerNumber, AAPDocumentNumbers, APostingDate, out AVerifications);
         }
 
         /// generated method from connector
-        public bool PostAPPayments(AccountsPayableTDSAApPaymentTable APayments,
-                                   AccountsPayableTDSAApDocumentPaymentTable ADocumentPayments,
-                                   DateTime APostingDate,
-                                   out TVerificationResultCollection AVerifications)
+        public System.Boolean PostAPPayments(AccountsPayableTDSAApPaymentTable APayments,
+                                             AccountsPayableTDSAApDocumentPaymentTable ADocumentPayments,
+                                             DateTime APostingDate,
+                                             out TVerificationResultCollection AVerifications)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector), "PostAPPayments", ";ACCOUNTSPAYABLETDSAAPPAYMENTTABLE;ACCOUNTSPAYABLETDSAAPDOCUMENTPAYMENTTABLE;DATETIME;TVERIFICATIONRESULTCOLLECTION;");
             return Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector.PostAPPayments(APayments, ADocumentPayments, APostingDate, out AVerifications);
@@ -1025,7 +1025,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AR
         public TARNamespace()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -1045,7 +1045,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AR
             object MyObject;
             object MyObject2;
 #endif
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
                                                                                                 DateTime.Now.Ticks -
@@ -1054,7 +1054,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AR
 
 #if DEBUGMODELONGRUNNINGFINALIZERS
             MyObject = new object();
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
             }
@@ -1065,7 +1065,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AR
                 GC.KeepAlive(MyObject);
             }
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
             }
@@ -1127,7 +1127,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AR.WebConnectors
         public TARWebConnectorsNamespace()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -1147,7 +1147,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AR.WebConnectors
             object MyObject;
             object MyObject2;
 #endif
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
                                                                                                 DateTime.Now.Ticks -
@@ -1156,7 +1156,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AR.WebConnectors
 
 #if DEBUGMODELONGRUNNINGFINALIZERS
             MyObject = new object();
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
             }
@@ -1167,7 +1167,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AR.WebConnectors
                 GC.KeepAlive(MyObject);
             }
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
             }
@@ -1200,7 +1200,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Budget
         public TBudgetNamespace()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -1220,7 +1220,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Budget
             object MyObject;
             object MyObject2;
 #endif
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
                                                                                                 DateTime.Now.Ticks -
@@ -1229,7 +1229,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Budget
 
 #if DEBUGMODELONGRUNNINGFINALIZERS
             MyObject = new object();
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
             }
@@ -1240,7 +1240,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Budget
                 GC.KeepAlive(MyObject);
             }
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
             }
@@ -1302,7 +1302,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Budget.UIConnectors
         public TBudgetUIConnectorsNamespace()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -1322,7 +1322,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Budget.UIConnectors
             object MyObject;
             object MyObject2;
 #endif
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
                                                                                                 DateTime.Now.Ticks -
@@ -1331,7 +1331,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Budget.UIConnectors
 
 #if DEBUGMODELONGRUNNINGFINALIZERS
             MyObject = new object();
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
             }
@@ -1342,7 +1342,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Budget.UIConnectors
                 GC.KeepAlive(MyObject);
             }
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
             }
@@ -1379,7 +1379,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Cacheable
         public TCacheableNamespace()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -1402,7 +1402,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Cacheable
             object MyObject;
             object MyObject2;
 #endif
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
                                                                                                 DateTime.Now.Ticks -
@@ -1411,7 +1411,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Cacheable
 
 #if DEBUGMODELONGRUNNINGFINALIZERS
             MyObject = new object();
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
             }
@@ -1422,7 +1422,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Cacheable
                 GC.KeepAlive(MyObject);
             }
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
             }
@@ -1584,7 +1584,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Cacheable
         /// generated method from interface
         public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceTablesEnum ACacheableTable,
                                                                       ref TTypedDataTable ASubmitTable,
-                                                                      int ALedgerNumber,
+                                                                      System.Int32 ALedgerNumber,
                                                                       out TVerificationResultCollection AVerificationResult)
         {
             #region ManualCode
@@ -1618,7 +1618,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ImportExport
         public TImportExportNamespace()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -1638,7 +1638,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ImportExport
             object MyObject;
             object MyObject2;
 #endif
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
                                                                                                 DateTime.Now.Ticks -
@@ -1647,7 +1647,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ImportExport
 
 #if DEBUGMODELONGRUNNINGFINALIZERS
             MyObject = new object();
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
             }
@@ -1658,7 +1658,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ImportExport
                 GC.KeepAlive(MyObject);
             }
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
             }
@@ -1720,7 +1720,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ImportExport.WebConnectors
         public TImportExportWebConnectorsNamespace()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -1740,7 +1740,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ImportExport.WebConnectors
             object MyObject;
             object MyObject2;
 #endif
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
                                                                                                 DateTime.Now.Ticks -
@@ -1749,7 +1749,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ImportExport.WebConnectors
 
 #if DEBUGMODELONGRUNNINGFINALIZERS
             MyObject = new object();
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
             }
@@ -1760,7 +1760,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ImportExport.WebConnectors
                 GC.KeepAlive(MyObject);
             }
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
             }
@@ -1793,7 +1793,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ImportExport.WebConnectors
         }
 
         /// generated method from connector
-        public bool DropBankStatement(Int32 AEpStatementKey)
+        public System.Boolean DropBankStatement(Int32 AEpStatementKey)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector), "DropBankStatement", ";INT;");
             return Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector.DropBankStatement(AEpStatementKey);
@@ -1808,7 +1808,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ImportExport.WebConnectors
         }
 
         /// generated method from connector
-        public bool CommitMatches(BankImportTDS AMainDS)
+        public System.Boolean CommitMatches(BankImportTDS AMainDS)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector), "CommitMatches", ";BANKIMPORTTDS;");
             return Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector.CommitMatches(AMainDS);
@@ -1853,7 +1853,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift
         public TGiftNamespace()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -1873,7 +1873,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift
             object MyObject;
             object MyObject2;
 #endif
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
                                                                                                 DateTime.Now.Ticks -
@@ -1882,7 +1882,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift
 
 #if DEBUGMODELONGRUNNINGFINALIZERS
             MyObject = new object();
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
             }
@@ -1893,7 +1893,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift
                 GC.KeepAlive(MyObject);
             }
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
             }
@@ -1984,7 +1984,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.UIConnectors
         public TGiftUIConnectorsNamespace()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -2004,7 +2004,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.UIConnectors
             object MyObject;
             object MyObject2;
 #endif
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
                                                                                                 DateTime.Now.Ticks -
@@ -2013,7 +2013,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.UIConnectors
 
 #if DEBUGMODELONGRUNNINGFINALIZERS
             MyObject = new object();
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
             }
@@ -2024,7 +2024,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.UIConnectors
                 GC.KeepAlive(MyObject);
             }
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
             }
@@ -2056,7 +2056,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
         public TGiftWebConnectorsNamespace()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -2076,7 +2076,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
             object MyObject;
             object MyObject2;
 #endif
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
                                                                                                 DateTime.Now.Ticks -
@@ -2085,7 +2085,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
 
 #if DEBUGMODELONGRUNNINGFINALIZERS
             MyObject = new object();
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
             }
@@ -2096,7 +2096,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
                 GC.KeepAlive(MyObject);
             }
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
             }
@@ -2119,10 +2119,18 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
                                            DateTime AEndDate,
                                            Int64 AOldField,
                                            DateTime ADateCorrection,
-                                           bool AWithReceipt)
+                                           System.Boolean AWithReceipt)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TAdjustmentWebConnector), "FieldChangeAdjustment", ";INT;LONG;DATETIME;DATETIME;LONG;DATETIME;BOOL;");
             return Ict.Petra.Server.MFinance.Gift.WebConnectors.TAdjustmentWebConnector.FieldChangeAdjustment(ALedgerNumber, ARecipientKey, AStartDate, AEndDate, AOldField, ADateCorrection, AWithReceipt);
+        }
+
+        /// generated method from connector
+        public System.Boolean GiftRevertAdjust(Hashtable requestParams,
+                                               out TVerificationResultCollection AMessages)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TAdjustmentWebConnector), "GiftRevertAdjust", ";HASHTABLE;TVERIFICATIONRESULTCOLLECTION;");
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TAdjustmentWebConnector.GiftRevertAdjust(requestParams, out AMessages);
         }
 
         /// generated method from connector
@@ -2134,11 +2142,11 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
         }
 
         /// generated method from connector
-        public NewDonorTDS GetNewDonorSubscriptions(string APublicationCode,
+        public NewDonorTDS GetNewDonorSubscriptions(System.String APublicationCode,
                                                     DateTime ASubscriptionStartFrom,
                                                     DateTime ASubscriptionStartUntil,
-                                                    string AExtractName,
-                                                    bool ADropForeignAddresses)
+                                                    System.String AExtractName,
+                                                    System.Boolean ADropForeignAddresses)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TNewDonorSubscriptionsWebConnector), "GetNewDonorSubscriptions", ";STRING;DATETIME;DATETIME;STRING;BOOL;");
             return Ict.Petra.Server.MFinance.Gift.WebConnectors.TNewDonorSubscriptionsWebConnector.GetNewDonorSubscriptions(APublicationCode, ASubscriptionStartFrom, ASubscriptionStartUntil, AExtractName, ADropForeignAddresses);
@@ -2146,17 +2154,17 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
 
         /// generated method from connector
         public StringCollection PrepareNewDonorLetters(ref NewDonorTDS AMainDS,
-                                                       string AHTMLTemplate)
+                                                       System.String AHTMLTemplate)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TNewDonorSubscriptionsWebConnector), "PrepareNewDonorLetters", ";NEWDONORTDS;STRING;");
             return Ict.Petra.Server.MFinance.Gift.WebConnectors.TNewDonorSubscriptionsWebConnector.PrepareNewDonorLetters(ref AMainDS, AHTMLTemplate);
         }
 
         /// generated method from connector
-        public string CreateAnnualGiftReceipts(Int32 ALedgerNumber,
-                                               DateTime AStartDate,
-                                               DateTime AEndDate,
-                                               string AHTMLTemplate)
+        public System.String CreateAnnualGiftReceipts(Int32 ALedgerNumber,
+                                                      DateTime AStartDate,
+                                                      DateTime AEndDate,
+                                                      System.String AHTMLTemplate)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TReceiptingWebConnector), "CreateAnnualGiftReceipts", ";INT;DATETIME;DATETIME;STRING;");
             return Ict.Petra.Server.MFinance.Gift.WebConnectors.TReceiptingWebConnector.CreateAnnualGiftReceipts(ALedgerNumber, AStartDate, AEndDate, AHTMLTemplate);
@@ -2254,35 +2262,35 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
         }
 
         /// generated method from connector
-        public bool PostGiftBatch(Int32 ALedgerNumber,
-                                  Int32 ABatchNumber,
-                                  out TVerificationResultCollection AVerifications)
+        public System.Boolean PostGiftBatch(Int32 ALedgerNumber,
+                                            Int32 ABatchNumber,
+                                            out TVerificationResultCollection AVerifications)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "PostGiftBatch", ";INT;INT;TVERIFICATIONRESULTCOLLECTION;");
             return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.PostGiftBatch(ALedgerNumber, ABatchNumber, out AVerifications);
         }
 
         /// generated method from connector
-        public bool ExportAllGiftBatchData(ref ArrayList batches,
-                                           Hashtable requestParams,
-                                           out String exportString,
-                                           out TVerificationResultCollection AMessages)
+        public System.Boolean ExportAllGiftBatchData(ref ArrayList batches,
+                                                     Hashtable requestParams,
+                                                     out String exportString,
+                                                     out TVerificationResultCollection AMessages)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "ExportAllGiftBatchData", ";ARRAYLIST;HASHTABLE;STRING;TVERIFICATIONRESULTCOLLECTION;");
             return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.ExportAllGiftBatchData(ref batches, requestParams, out exportString, out AMessages);
         }
 
         /// generated method from connector
-        public bool ImportGiftBatches(Hashtable requestParams,
-                                      String importString,
-                                      out TVerificationResultCollection AMessages)
+        public System.Boolean ImportGiftBatches(Hashtable requestParams,
+                                                String importString,
+                                                out TVerificationResultCollection AMessages)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "ImportGiftBatches", ";HASHTABLE;STRING;TVERIFICATIONRESULTCOLLECTION;");
             return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.ImportGiftBatches(requestParams, importString, out AMessages);
         }
 
         /// generated method from connector
-        public GLSetupTDS LoadPartnerData(long DonorKey)
+        public GLSetupTDS LoadPartnerData(System.Int64 DonorKey)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "LoadPartnerData", ";LONG;");
             return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.LoadPartnerData(DonorKey);
@@ -2313,7 +2321,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL
         public TGLNamespace()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -2333,7 +2341,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL
             object MyObject;
             object MyObject2;
 #endif
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
                                                                                                 DateTime.Now.Ticks -
@@ -2342,7 +2350,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL
 
 #if DEBUGMODELONGRUNNINGFINALIZERS
             MyObject = new object();
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
             }
@@ -2353,7 +2361,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL
                 GC.KeepAlive(MyObject);
             }
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
             }
@@ -2444,7 +2452,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.UIConnectors
         public TGLUIConnectorsNamespace()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -2464,7 +2472,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.UIConnectors
             object MyObject;
             object MyObject2;
 #endif
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
                                                                                                 DateTime.Now.Ticks -
@@ -2473,7 +2481,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.UIConnectors
 
 #if DEBUGMODELONGRUNNINGFINALIZERS
             MyObject = new object();
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
             }
@@ -2484,7 +2492,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.UIConnectors
                 GC.KeepAlive(MyObject);
             }
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
             }
@@ -2516,7 +2524,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
         public TGLWebConnectorsNamespace()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -2536,7 +2544,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
             object MyObject;
             object MyObject2;
 #endif
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
                                                                                                 DateTime.Now.Ticks -
@@ -2545,7 +2553,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
 
 #if DEBUGMODELONGRUNNINGFINALIZERS
             MyObject = new object();
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
             }
@@ -2556,7 +2564,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
                 GC.KeepAlive(MyObject);
             }
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
             }
@@ -2573,58 +2581,59 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
         }
 
         /// generated method from connector
-        public bool TPeriodMonthEndInfo(int ALedgerNum,
+        public System.Boolean TPeriodMonthEnd(System.Int32 ALedgerNum,
+                                              System.Boolean AIsInInfoMode,
+                                              out TVerificationResultCollection AVerificationResult)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodIntervallConnector), "TPeriodMonthEnd", ";INT;BOOL;TVERIFICATIONRESULTCOLLECTION;");
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodIntervallConnector.TPeriodMonthEnd(ALedgerNum, AIsInInfoMode, out AVerificationResult);
+        }
+
+        /// generated method from connector
+        public System.Boolean TPeriodYearEnd(System.Int32 ALedgerNum,
+                                             System.Boolean AIsInInfoMode,
+                                             out TVerificationResultCollection AVerificationResult)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodIntervallConnector), "TPeriodYearEnd", ";INT;BOOL;TVERIFICATIONRESULTCOLLECTION;");
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodIntervallConnector.TPeriodYearEnd(ALedgerNum, AIsInInfoMode, out AVerificationResult);
+        }
+
+        /// generated method from connector
+        public System.Boolean Revaluate(System.Int32 ALedgerNum,
+                                        System.Int32 AAccoutingPeriod,
+                                        System.String[] AForeignCurrency,
+                                        System.Decimal[] ANewExchangeRate,
                                         out TVerificationResultCollection AVerificationResult)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodMonthConnector), "TPeriodMonthEndInfo", ";INT;TVERIFICATIONRESULTCOLLECTION;");
-            return Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodMonthConnector.TPeriodMonthEndInfo(ALedgerNum, out AVerificationResult);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TRevaluationWebConnector), "Revaluate", ";INT;INT;STRING;DECIMAL;TVERIFICATIONRESULTCOLLECTION;");
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TRevaluationWebConnector.Revaluate(ALedgerNum, AAccoutingPeriod, AForeignCurrency, ANewExchangeRate, out AVerificationResult);
         }
 
         /// generated method from connector
-        public bool TPeriodMonthEnd(int ALedgerNum,
-                                    out TVerificationResultCollection AVerificationResult)
-        {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodMonthConnector), "TPeriodMonthEnd", ";INT;TVERIFICATIONRESULTCOLLECTION;");
-            return Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodMonthConnector.TPeriodMonthEnd(ALedgerNum, out AVerificationResult);
-        }
-
-        /// generated method from connector
-        public bool Revaluate(int ALedgerNum,
-                              int AAccoutingPeriod,
-                              string ARevaluationCostCenter,
-                              string[] AForeignCurrency,
-                              decimal[] ANewExchangeRate,
-                              out TVerificationResultCollection AVerificationResult)
-        {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TRevaluationWebConnector), "Revaluate", ";INT;INT;STRING;STRING[];DECIMAL[];TVERIFICATIONRESULTCOLLECTION;");
-            return Ict.Petra.Server.MFinance.GL.WebConnectors.TRevaluationWebConnector.Revaluate(ALedgerNum, AAccoutingPeriod, ARevaluationCostCenter, AForeignCurrency, ANewExchangeRate, out AVerificationResult);
-        }
-
-        /// generated method from connector
-        public bool GetCurrentPeriodDates(Int32 ALedgerNumber,
-                                          out DateTime AStartDate,
-                                          out DateTime AEndDate)
+        public System.Boolean GetCurrentPeriodDates(Int32 ALedgerNumber,
+                                                    out DateTime AStartDate,
+                                                    out DateTime AEndDate)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "GetCurrentPeriodDates", ";INT;DATETIME;DATETIME;");
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetCurrentPeriodDates(ALedgerNumber, out AStartDate, out AEndDate);
         }
 
         /// generated method from connector
-        public bool GetCurrentPostingRangeDates(Int32 ALedgerNumber,
-                                                out DateTime AStartDateCurrentPeriod,
-                                                out DateTime AEndDateLastForwardingPeriod)
+        public System.Boolean GetCurrentPostingRangeDates(Int32 ALedgerNumber,
+                                                          out DateTime AStartDateCurrentPeriod,
+                                                          out DateTime AEndDateLastForwardingPeriod)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "GetCurrentPostingRangeDates", ";INT;DATETIME;DATETIME;");
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetCurrentPostingRangeDates(ALedgerNumber, out AStartDateCurrentPeriod, out AEndDateLastForwardingPeriod);
         }
 
         /// generated method from connector
-        public bool GetPeriodDates(Int32 ALedgerNumber,
-                                   Int32 AYearNumber,
-                                   Int32 ADiffPeriod,
-                                   Int32 APeriodNumber,
-                                   out DateTime AStartDatePeriod,
-                                   out DateTime AEndDatePeriod)
+        public System.Boolean GetPeriodDates(Int32 ALedgerNumber,
+                                             Int32 AYearNumber,
+                                             Int32 ADiffPeriod,
+                                             Int32 APeriodNumber,
+                                             out DateTime AStartDatePeriod,
+                                             out DateTime AEndDatePeriod)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "GetPeriodDates", ";INT;INT;INT;INT;DATETIME;DATETIME;");
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetPeriodDates(ALedgerNumber, AYearNumber, ADiffPeriod, APeriodNumber, out AStartDatePeriod, out AEndDatePeriod);
@@ -2688,63 +2697,72 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
         }
 
         /// generated method from connector
-        public bool PostGLBatch(Int32 ALedgerNumber,
-                                Int32 ABatchNumber,
-                                out TVerificationResultCollection AVerifications)
+        public System.Boolean PostGLBatch(Int32 ALedgerNumber,
+                                          Int32 ABatchNumber,
+                                          out TVerificationResultCollection AVerifications)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "PostGLBatch", ";INT;INT;TVERIFICATIONRESULTCOLLECTION;");
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.PostGLBatch(ALedgerNumber, ABatchNumber, out AVerifications);
         }
 
         /// generated method from connector
-        public string GetStandardCostCentre(Int32 ALedgerNumber)
+        public List<TVariant> TestPostGLBatch(Int32 ALedgerNumber,
+                                              Int32 ABatchNumber,
+                                              out TVerificationResultCollection AVerifications)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "TestPostGLBatch", ";INT;INT;TVERIFICATIONRESULTCOLLECTION;");
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.TestPostGLBatch(ALedgerNumber, ABatchNumber, out AVerifications);
+        }
+
+        /// generated method from connector
+        public System.String GetStandardCostCentre(Int32 ALedgerNumber)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "GetStandardCostCentre", ";INT;");
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetStandardCostCentre(ALedgerNumber);
         }
 
         /// generated method from connector
-        public decimal GetDailyExchangeRate(string ACurrencyFrom,
-                                            string ACurrencyTo,
-                                            DateTime ADateEffective)
+        public System.Decimal GetDailyExchangeRate(System.String ACurrencyFrom,
+                                                   System.String ACurrencyTo,
+                                                   DateTime ADateEffective)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "GetDailyExchangeRate", ";STRING;STRING;DATETIME;");
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetDailyExchangeRate(ACurrencyFrom, ACurrencyTo, ADateEffective);
         }
 
         /// generated method from connector
-        public decimal GetCorporateExchangeRate(string ACurrencyFrom,
-                                                string ACurrencyTo,
-                                                DateTime AStartDate,
-                                                DateTime AEndDate)
+        public System.Decimal GetCorporateExchangeRate(System.String ACurrencyFrom,
+                                                       System.String ACurrencyTo,
+                                                       DateTime AStartDate,
+                                                       DateTime AEndDate)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "GetCorporateExchangeRate", ";STRING;STRING;DATETIME;DATETIME;");
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetCorporateExchangeRate(ACurrencyFrom, ACurrencyTo, AStartDate, AEndDate);
         }
 
         /// generated method from connector
-        public bool CancelGLBatch(out GLBatchTDS MainDS,
-                                  Int32 ALedgerNumber,
-                                  Int32 ABatchNumber,
-                                  out TVerificationResultCollection AVerifications)
+        public System.Boolean CancelGLBatch(out GLBatchTDS MainDS,
+                                            Int32 ALedgerNumber,
+                                            Int32 ABatchNumber,
+                                            out TVerificationResultCollection AVerifications)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "CancelGLBatch", ";GLBATCHTDS;INT;INT;TVERIFICATIONRESULTCOLLECTION;");
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.CancelGLBatch(out MainDS, ALedgerNumber, ABatchNumber, out AVerifications);
         }
 
         /// generated method from connector
-        public bool ExportAllGLBatchData(ref ArrayList batches,
-                                         Hashtable requestParams,
-                                         out String exportString)
+        public System.Boolean ExportAllGLBatchData(ref ArrayList batches,
+                                                   Hashtable requestParams,
+                                                   out String exportString)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "ExportAllGLBatchData", ";ARRAYLIST;HASHTABLE;STRING;");
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.ExportAllGLBatchData(ref batches, requestParams, out exportString);
         }
 
         /// generated method from connector
-        public bool ImportGLBatches(Hashtable requestParams,
-                                    String importString,
-                                    out TVerificationResultCollection AMessages)
+        public System.Boolean ImportGLBatches(Hashtable requestParams,
+                                              String importString,
+                                              out TVerificationResultCollection AMessages)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "ImportGLBatches", ";HASHTABLE;STRING;TVERIFICATIONRESULTCOLLECTION;");
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.ImportGLBatches(requestParams, importString, out AMessages);
@@ -2766,7 +2784,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ICH
         public TICHNamespace()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -2786,7 +2804,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ICH
             object MyObject;
             object MyObject2;
 #endif
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
                                                                                                 DateTime.Now.Ticks -
@@ -2795,7 +2813,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ICH
 
 #if DEBUGMODELONGRUNNINGFINALIZERS
             MyObject = new object();
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
             }
@@ -2806,7 +2824,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ICH
                 GC.KeepAlive(MyObject);
             }
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
             }
@@ -2868,7 +2886,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ICH.UIConnectors
         public TICHUIConnectorsNamespace()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -2888,7 +2906,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ICH.UIConnectors
             object MyObject;
             object MyObject2;
 #endif
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
                                                                                                 DateTime.Now.Ticks -
@@ -2897,7 +2915,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ICH.UIConnectors
 
 #if DEBUGMODELONGRUNNINGFINALIZERS
             MyObject = new object();
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
             }
@@ -2908,7 +2926,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ICH.UIConnectors
                 GC.KeepAlive(MyObject);
             }
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
             }
@@ -2941,7 +2959,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.PeriodEnd
         public TPeriodEndNamespace()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -2961,7 +2979,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.PeriodEnd
             object MyObject;
             object MyObject2;
 #endif
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
                                                                                                 DateTime.Now.Ticks -
@@ -2970,7 +2988,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.PeriodEnd
 
 #if DEBUGMODELONGRUNNINGFINALIZERS
             MyObject = new object();
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
             }
@@ -2981,7 +2999,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.PeriodEnd
                 GC.KeepAlive(MyObject);
             }
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
             }
@@ -3043,7 +3061,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.PeriodEnd.UIConnectors
         public TPeriodEndUIConnectorsNamespace()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -3063,7 +3081,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.PeriodEnd.UIConnectors
             object MyObject;
             object MyObject2;
 #endif
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
                                                                                                 DateTime.Now.Ticks -
@@ -3072,7 +3090,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.PeriodEnd.UIConnectors
 
 #if DEBUGMODELONGRUNNINGFINALIZERS
             MyObject = new object();
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
             }
@@ -3083,7 +3101,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.PeriodEnd.UIConnectors
                 GC.KeepAlive(MyObject);
             }
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
             }
@@ -3116,7 +3134,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Reporting
         public TReportingNamespace()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -3136,7 +3154,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Reporting
             object MyObject;
             object MyObject2;
 #endif
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
                                                                                                 DateTime.Now.Ticks -
@@ -3145,7 +3163,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Reporting
 
 #if DEBUGMODELONGRUNNINGFINALIZERS
             MyObject = new object();
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
             }
@@ -3156,7 +3174,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Reporting
                 GC.KeepAlive(MyObject);
             }
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
             }
@@ -3223,7 +3241,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Reporting.UIConnectors
         public TReportingUIConnectorsNamespace()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -3246,7 +3264,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Reporting.UIConnectors
             object MyObject;
             object MyObject2;
 #endif
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
                                                                                                 DateTime.Now.Ticks -
@@ -3255,7 +3273,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Reporting.UIConnectors
 
 #if DEBUGMODELONGRUNNINGFINALIZERS
             MyObject = new object();
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
             }
@@ -3266,7 +3284,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Reporting.UIConnectors
                 GC.KeepAlive(MyObject);
             }
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
             }
@@ -3372,7 +3390,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Setup
         public TSetupNamespace()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -3392,7 +3410,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Setup
             object MyObject;
             object MyObject2;
 #endif
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
                                                                                                 DateTime.Now.Ticks -
@@ -3401,7 +3419,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Setup
 
 #if DEBUGMODELONGRUNNINGFINALIZERS
             MyObject = new object();
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
             }
@@ -3412,7 +3430,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Setup
                 GC.KeepAlive(MyObject);
             }
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
             }
@@ -3503,7 +3521,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Setup.UIConnectors
         public TSetupUIConnectorsNamespace()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -3523,7 +3541,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Setup.UIConnectors
             object MyObject;
             object MyObject2;
 #endif
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
                                                                                                 DateTime.Now.Ticks -
@@ -3532,7 +3550,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Setup.UIConnectors
 
 #if DEBUGMODELONGRUNNINGFINALIZERS
             MyObject = new object();
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
             }
@@ -3543,7 +3561,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Setup.UIConnectors
                 GC.KeepAlive(MyObject);
             }
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
             }
@@ -3575,7 +3593,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Setup.WebConnectors
         public TSetupWebConnectorsNamespace()
         {
 #if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
             }
@@ -3595,7 +3613,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Setup.WebConnectors
             object MyObject;
             object MyObject2;
 #endif
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
                                                                                                 DateTime.Now.Ticks -
@@ -3604,7 +3622,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Setup.WebConnectors
 
 #if DEBUGMODELONGRUNNINGFINALIZERS
             MyObject = new object();
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
             }
@@ -3615,7 +3633,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Setup.WebConnectors
                 GC.KeepAlive(MyObject);
             }
 
-            if (TSrvSetting.DL >= 9)
+            if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
             }
@@ -3655,67 +3673,67 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Setup.WebConnectors
         }
 
         /// generated method from connector
-        public string ExportAccountHierarchy(Int32 ALedgerNumber,
-                                             string AAccountHierarchyName)
+        public System.String ExportAccountHierarchy(Int32 ALedgerNumber,
+                                                    System.String AAccountHierarchyName)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector), "ExportAccountHierarchy", ";INT;STRING;");
             return Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector.ExportAccountHierarchy(ALedgerNumber, AAccountHierarchyName);
         }
 
         /// generated method from connector
-        public string ExportCostCentreHierarchy(Int32 ALedgerNumber)
+        public System.String ExportCostCentreHierarchy(Int32 ALedgerNumber)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector), "ExportCostCentreHierarchy", ";INT;");
             return Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector.ExportCostCentreHierarchy(ALedgerNumber);
         }
 
         /// generated method from connector
-        public bool ImportAccountHierarchy(Int32 ALedgerNumber,
-                                           string AHierarchyName,
-                                           string AXmlAccountHierarchy)
+        public System.Boolean ImportAccountHierarchy(Int32 ALedgerNumber,
+                                                     System.String AHierarchyName,
+                                                     System.String AXmlAccountHierarchy)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector), "ImportAccountHierarchy", ";INT;STRING;STRING;");
             return Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector.ImportAccountHierarchy(ALedgerNumber, AHierarchyName, AXmlAccountHierarchy);
         }
 
         /// generated method from connector
-        public bool ImportCostCentreHierarchy(Int32 ALedgerNumber,
-                                              string AXmlHierarchy)
+        public System.Boolean ImportCostCentreHierarchy(Int32 ALedgerNumber,
+                                                        System.String AXmlHierarchy)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector), "ImportCostCentreHierarchy", ";INT;STRING;");
             return Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector.ImportCostCentreHierarchy(ALedgerNumber, AXmlHierarchy);
         }
 
         /// generated method from connector
-        public bool ImportNewLedger(Int32 ALedgerNumber,
-                                    string AXmlLedgerDetails,
-                                    string AXmlAccountHierarchy,
-                                    string AXmlCostCentreHierarchy,
-                                    string AXmlMotivationDetails)
+        public System.Boolean ImportNewLedger(Int32 ALedgerNumber,
+                                              System.String AXmlLedgerDetails,
+                                              System.String AXmlAccountHierarchy,
+                                              System.String AXmlCostCentreHierarchy,
+                                              System.String AXmlMotivationDetails)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector), "ImportNewLedger", ";INT;STRING;STRING;STRING;STRING;");
             return Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector.ImportNewLedger(ALedgerNumber, AXmlLedgerDetails, AXmlAccountHierarchy, AXmlCostCentreHierarchy, AXmlMotivationDetails);
         }
 
         /// generated method from connector
-        public bool CanDeleteAccount(Int32 ALedgerNumber,
-                                     string AAccountCode)
+        public System.Boolean CanDeleteAccount(Int32 ALedgerNumber,
+                                               System.String AAccountCode)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector), "CanDeleteAccount", ";INT;STRING;");
             return Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector.CanDeleteAccount(ALedgerNumber, AAccountCode);
         }
 
         /// generated method from connector
-        public bool CreateNewLedger(Int32 ALedgerNumber,
-                                    String ALedgerName,
-                                    String ACountryCode,
-                                    String ABaseCurrency,
-                                    String AIntlCurrency,
-                                    DateTime ACalendarStartDate,
-                                    Int32 ANumberOfPeriods,
-                                    Int32 ACurrentPeriod,
-                                    Int32 ANumberOfFwdPostingPeriods,
-                                    out TVerificationResultCollection AVerificationResult)
+        public System.Boolean CreateNewLedger(Int32 ALedgerNumber,
+                                              String ALedgerName,
+                                              String ACountryCode,
+                                              String ABaseCurrency,
+                                              String AIntlCurrency,
+                                              DateTime ACalendarStartDate,
+                                              Int32 ANumberOfPeriods,
+                                              Int32 ACurrentPeriod,
+                                              Int32 ANumberOfFwdPostingPeriods,
+                                              out TVerificationResultCollection AVerificationResult)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector), "CreateNewLedger", ";INT;STRING;STRING;STRING;STRING;DATETIME;INT;INT;INT;TVERIFICATIONRESULTCOLLECTION;");
             return Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector.CreateNewLedger(ALedgerNumber, ALedgerName, ACountryCode, ABaseCurrency, AIntlCurrency, ACalendarStartDate, ANumberOfPeriods, ACurrentPeriod, ANumberOfFwdPostingPeriods, out AVerificationResult);
@@ -3736,16 +3754,16 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Setup.WebConnectors
         }
 
         /// generated method from connector
-        public int CheckDeleteAFreeformAnalysis(Int32 ALedgerNumber,
-                                                String ATypeCode,
-                                                String AAnalysisValue)
+        public System.Int32 CheckDeleteAFreeformAnalysis(Int32 ALedgerNumber,
+                                                         String ATypeCode,
+                                                         String AAnalysisValue)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector), "CheckDeleteAFreeformAnalysis", ";INT;STRING;STRING;");
             return Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector.CheckDeleteAFreeformAnalysis(ALedgerNumber, ATypeCode, AAnalysisValue);
         }
 
         /// generated method from connector
-        public int CheckDeleteAAnalysisType(String ATypeCode)
+        public System.Int32 CheckDeleteAAnalysisType(String ATypeCode)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector), "CheckDeleteAAnalysisType", ";STRING;");
             return Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector.CheckDeleteAAnalysisType(ATypeCode);

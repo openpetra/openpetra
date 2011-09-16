@@ -102,14 +102,14 @@
 					PUB_p_unit,  PUB_pm_short_term_application, PUB_pm_general_application
 				WHERE
 					PUB_p_unit.p_partner_key_n = {param_unit_key}
-					AND PUB_pm_short_term_application.pm_confirmed_option_code_c  = PUB_p_unit.p_xyz_tbd_code_c
+					AND PUB_pm_short_term_application.pm_confirmed_option_code_c  = PUB_p_unit.p_outreach_code_c
 			</value></queryDetail>
 			
 			<!-- all events -->
 			<queryDetail condition="and(eq({param_source}, Event), eq({param_event_selection}, all))"><value>
 					PUB_p_unit,  PUB_pm_short_term_application, PUB_pm_general_application
 				WHERE
-					PUB_pm_short_term_application.pm_confirmed_option_code_c  = PUB_p_unit.p_xyz_tbd_code_c
+					PUB_pm_short_term_application.pm_confirmed_option_code_c  = PUB_p_unit.p_outreach_code_c
 			</value></queryDetail>
 			
 			<!-- extract and event only -->
@@ -120,7 +120,7 @@
 					AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
 					AND PUB_m_extract_master.m_extract_name_c = {param_extract_name}
 					AND PUB_p_unit.p_partner_key_n = {param_unit_key}
-					AND PUB_pm_short_term_application.pm_confirmed_option_code_c  = PUB_p_unit.p_xyz_tbd_code_c
+					AND PUB_pm_short_term_application.pm_confirmed_option_code_c  = PUB_p_unit.p_outreach_code_c
 			</value></queryDetail>
 			
 			<!-- extract and event and related otions -->
@@ -234,7 +234,7 @@
 					PUB_p_unit,  PUB_pm_short_term_application, PUB_pm_general_application
 				WHERE
 					PUB_p_unit.p_partner_key_n = {param_unit_key}
-					AND PUB_pm_short_term_application.pm_confirmed_option_code_c  = PUB_p_unit.p_xyz_tbd_code_c
+					AND PUB_pm_short_term_application.pm_confirmed_option_code_c  = PUB_p_unit.p_outreach_code_c
 			</value></queryDetail>
 			
 			<!-- all events -->
@@ -252,7 +252,7 @@
 					AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
 					AND PUB_m_extract_master.m_extract_name_c = {param_extract_name}
 					AND PUB_p_unit.p_partner_key_n = {param_unit_key}
-					AND PUB_pm_short_term_application.pm_confirmed_option_code_c  = PUB_p_unit.p_xyz_tbd_code_c
+					AND PUB_pm_short_term_application.pm_confirmed_option_code_c  = PUB_p_unit.p_outreach_code_c
 			</value></queryDetail>
 			
 			<!-- extract and event and related otions -->
@@ -389,7 +389,7 @@
 		</query>
 	</calculation>
 	
-	<calculation align="left" id="Date of birth" returns="text" returnsFormat="text">
+	<calculation align="left" id="Date of birth" returns="text" returnsFormat="formatteddate">
 		<caption><value text="DOB"></value></caption>
 		<query>
 			<queryDetail>

@@ -122,7 +122,8 @@ OpenPetra:
                         #PostBatch:
                         #FindTransaction:
                     PeriodEnd: {Namespace=Ict.Petra.Client.MFinance.Gui.GL}
-                        MonthEnd: {Description:Close a month, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TPeriodEndMonthly}
+                        MonthEnd: {Description:Close a month, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TPeriodEndMonth}
+                        YearEnd: {Description:Close a year, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TPeriodEndYear}
                     Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}
                         AccountDetailReport: {ActionOpenScreen=TFrmAccountDetail}
                         AccountDetailWithAnalysisAttribute: {ActionOpenScreen=TFrmAnalysisAttribute}
@@ -229,11 +230,11 @@ OpenPetra:
                         PersonalDocumentExpiryReport: {ActionOpenScreen=TFrmPersonalDocumentExpiryReport}
                         EmergencyDataReport: {ActionOpenScreen=TFrmEmergencyDataReport}
                         PersonalDataReport: {ActionOpenScreen=TFrmPersonalDataReport}
-                        CampaignOptions: {ActionOpenScreen=TFrmCampaignOptions}
+                        OutreachOptions: {ActionOpenScreen=TFrmOutreachOptions}
                         UnitHierarchy: {ActionOpenScreen=TFrmUnitHierarchy}
                         LocalPersonnelData: {ActionOpenScreen=TFrmLocalPersonnelDataReport}
                         RelationshipReport: {ActionOpenScreen=TFrmRelationshipReport}
-                    ShortTermerReports:
+                    ShortTermerReports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm}
                         GeneralShortTermerReport: {ActionOpenScreen=TFrmShortTermerReport}
                         AbilitiesReport: {ActionOpenScreen=TFrmAbilitiesReport}
                         EmergencyContactReport: {ActionOpenScreen=TFrmEmergencyContactInformationReport}
@@ -259,14 +260,14 @@ OpenPetra:
                         GroupReports: {ActionOpenScreen=TFrmGroupReports}
                         LanguageReport: {ActionOpenScreen=TFrmLanguagesReport}
                         NationalitySummaryReport: {ActionOpenScreen=TFrmNationalitySummaryReport}
-                        PressentAttenddeeReport: {ActionOpenScreen=TFrmPresentAttendeeReport}
+                        PresentAttendeeReport: {ActionOpenScreen=TFrmPresentAttendeeReport}
                         TransportReport: {ActionOpenScreen=TFrmTransportReport}
                     FieldReports:
                         ChargedFieldReport: {ActionOpenScreen=TFrmChargedFieldReport}
                         SendingFieldReport: {ActionOpenScreen=TFrmSendingFieldReport}
                         ReceivingFieldReport: {ActionOpenScreen=TFrmReceivingFieldReport}
                         RegisteringFieldReport: {ActionOpenScreen=TFrmRegisteringFieldReport}
-                        CampaignReport: {ActionOpenScreen=TFrmCampaignReport}
+                        OutreachReport: {ActionOpenScreen=TFrmOutreachReport}
         FinancialDevelopment: {Icon=develope_small.ico, Namespace=Ict.Petra.Client.MFinDev.Gui, Label=FinDev {0} {1}, DependsOnLedger=true, PermissionsRequired=DEVUSER}
             Reports:
                 Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinDev}
@@ -310,7 +311,7 @@ OpenPetra:
                 ExchangeRates: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
                     SetupCurrencies: {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmSetupCurrency}
                     SetupDailyExchangeRate: {ActionOpenScreen=TFrmSetupDailyExchangeRate}
-                Analysis Types: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
+                AnalysisTypes: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
                     SetupAnalysisTypes: {ActionOpenScreen=TFrmSetupAnalysisTypes}
             Database:
                 ImportExport:

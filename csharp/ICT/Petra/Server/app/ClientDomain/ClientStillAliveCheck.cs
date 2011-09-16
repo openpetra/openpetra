@@ -79,7 +79,7 @@ namespace Ict.Petra.Server.App.ClientDomain
                 Int16 ClientStillAliveTimeout;
 
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 10)
+                if (TLogging.DL >= 10)
                 {
                     Console.WriteLine("{0} TClientStillAliveCheck created", DateTime.Now);
                 }
@@ -110,7 +110,7 @@ namespace Ict.Petra.Server.App.ClientDomain
                 UClientStillAliveCheckThread.IsBackground = true;
                 UClientStillAliveCheckThread.Start();
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 10)
+                if (TLogging.DL >= 10)
                 {
                     Console.WriteLine("{0} TClientStillAliveCheck: started ClientStillAliveCheckThread.", DateTime.Now);
                 }
@@ -138,7 +138,7 @@ namespace Ict.Petra.Server.App.ClientDomain
                 while (UKeepServerAliveCheck)
                 {
 #if DEBUGMODE
-                    if (TSrvSetting.DL >= 10)
+                    if (TLogging.DL >= 10)
                     {
                         Console.WriteLine("{0} TClientStillAliveCheck: ClientStillAliveCheckThread: checking...", DateTime.Now);
                     }
@@ -155,7 +155,7 @@ namespace Ict.Petra.Server.App.ClientDomain
                     {
                         // No it hasn't
 #if DEBUGMODE
-                        if (TSrvSetting.DL >= 10)
+                        if (TLogging.DL >= 10)
                         {
                             Console.WriteLine("{0} TClientStillAliveCheck: ClientStillAliveCheckThread: timeout hasn't been exceeded.", DateTime.Now);
                         }
@@ -164,14 +164,14 @@ namespace Ict.Petra.Server.App.ClientDomain
                         {
                             // Sleep for some time. After that, this procedure is called again automatically.
 #if DEBUGMODE
-                            if (TSrvSetting.DL >= 10)
+                            if (TLogging.DL >= 10)
                             {
                                 Console.WriteLine("{0} TClientStillAliveCheck: ClientStillAliveCheckThread: going to sleep...", DateTime.Now);
                             }
 #endif
                             Thread.Sleep(UClientStillAliveCheckInterval * 1000);
 #if DEBUGMODE
-                            if (TSrvSetting.DL >= 10)
+                            if (TLogging.DL >= 10)
                             {
                                 Console.WriteLine("{0} TClientStillAliveCheck: ClientStillAliveCheckThread: re-awakening...", DateTime.Now);
                             }
@@ -180,7 +180,7 @@ namespace Ict.Petra.Server.App.ClientDomain
                         catch (ThreadAbortException)
                         {
 #if DEBUGMODE
-                            if (TSrvSetting.DL >= 10)
+                            if (TLogging.DL >= 10)
                             {
                                 Console.WriteLine("{0} TClientStillAliveCheck: ClientStillAliveCheckThread: ThreadAbortException occured!!!",
                                     DateTime.Now);
@@ -192,7 +192,7 @@ namespace Ict.Petra.Server.App.ClientDomain
                     else
                     {
                         // TODO 1 oChristianK cLogging (Console) : Put the following debug messages again in a DEBUGMODE conditional compilation directive and raise the DL to >=10; this was removed to trace problems in on live installations!
-                        if (TSrvSetting.DL >= 5)
+                        if (TLogging.DL >= 5)
                         {
                             Console.WriteLine(
                                 "{0} TClientStillAliveCheck: ClientStillAliveCheckThread: timeout HAS been exceeded (last PollClientTasks call: " +
@@ -222,7 +222,7 @@ namespace Ict.Petra.Server.App.ClientDomain
                         else
                         {
 #if DEBUGMODE
-                            if (TSrvSetting.DL >= 10)
+                            if (TLogging.DL >= 10)
                             {
                                 Console.WriteLine(
                                     "{0} TClientStillAliveCheck: FTearDownAppDomain was not assigned -> can't tear down Client's AppDomain!",
@@ -235,7 +235,7 @@ namespace Ict.Petra.Server.App.ClientDomain
 
                 // Thread stops here and doesn't get called again automatically.
 #if DEBUGMODE
-                if (TSrvSetting.DL >= 10)
+                if (TLogging.DL >= 10)
                 {
                     Console.WriteLine("{0} TClientStillAliveCheck: ClientStillAliveCheckThread: Thread stopped!", DateTime.Now);
                 }
@@ -257,14 +257,14 @@ namespace Ict.Petra.Server.App.ClientDomain
                 if (UClientStillAliveCheckThread != null)
                 {
                     // TODO 1 oChristianK cLogging (Console) : Put the following debug messages again in a DEBUGMODE conditional compilation directive and raise the DL to >=10; this was removed to trace problems in on live installations!
-                    if (TSrvSetting.DL >= 5)
+                    if (TLogging.DL >= 5)
                     {
                         Console.WriteLine("{0} TClientStillAliveCheck: StopClientStillAliveCheckThread called: aborting Thread!", DateTime.Now);
                     }
 
                     UClientStillAliveCheckThread.Abort();
 
-                    if (TSrvSetting.DL >= 5)
+                    if (TLogging.DL >= 5)
                     {
                         Console.WriteLine("{0} TClientStillAliveCheck: StopClientStillAliveCheckThread: aborting returned, now Joining...!",
                             DateTime.Now);
@@ -273,7 +273,7 @@ namespace Ict.Petra.Server.App.ClientDomain
                     // Wait until the Thread is finished Aborting. Continue anyway after 8 seconds if it doesn't (this should'n happen, but...)
                     JoinTimeoutNotExceeded = UClientStillAliveCheckThread.Join(8000);
 
-                    if (TSrvSetting.DL >= 5)
+                    if (TLogging.DL >= 5)
                     {
                         Console.WriteLine(
                             "{0} TClientStillAliveCheck: StopClientStillAliveCheckThread: aborting returned, Join returned - JoinTimeoutNotExceeded: "
@@ -286,7 +286,7 @@ namespace Ict.Petra.Server.App.ClientDomain
                 }
                 else
                 {
-                    if (TSrvSetting.DL >= 5)
+                    if (TLogging.DL >= 5)
                     {
                         Console.WriteLine("{0} TClientStillAliveCheck: StopClientStillAliveCheckThread: Thread doesn't exist any longer.",
                             DateTime.Now);

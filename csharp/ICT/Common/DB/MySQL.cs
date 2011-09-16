@@ -327,7 +327,7 @@ namespace Ict.Common.DB
 
             ACommandText = FormatQueryRDBMSSpecific(ACommandText);
 
-            if (DBAccess.GDBAccessObj.DebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
+            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
             {
                 TLogging.Log("Query formatted for MySQL: " + ACommandText);
             }

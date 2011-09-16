@@ -112,7 +112,9 @@ namespace Ict.Petra.Client.CommonDialogs
             this.btnCancel.Text = Catalog.GetString(" &Cancel");
             this.lblDatabase.Text = Catalog.GetString("Database:");
             this.chkRememberUserName.Text = Catalog.GetString("Remember the username");
-            this.Text = Catalog.GetString("Petra Login");
+            this.label1.Text = Catalog.GetString("Initial Login: demo/demo or sysadmin/CHANGEME");
+            this.label2.Text = Catalog.GetString("Please change the passwords immediately!");
+            this.Text = Catalog.GetString("OpenPetra Login");
             #endregion
 
             this.Text = PETRA_LOGIN_FORMTITLE;
@@ -167,14 +169,14 @@ namespace Ict.Petra.Client.CommonDialogs
                 {
                     string UserNameStr = String.Empty;
 
-                    if ((TAppSettingsManager.GetValueStatic("AutoLogin",
+                    if ((TAppSettingsManager.GetValue("AutoLogin",
                              false) != TAppSettingsManager.UNDEFINEDVALUE) && !ReadRememberedUserName(ref UserNameStr))
                     {
-                        txtUserName.Text = TAppSettingsManager.GetValueStatic("AutoLogin").ToUpper();
+                        txtUserName.Text = TAppSettingsManager.GetValue("AutoLogin").ToUpper();
 
-                        if (TAppSettingsManager.GetValueStatic("AutoLoginPasswd") != TAppSettingsManager.UNDEFINEDVALUE)
+                        if (TAppSettingsManager.GetValue("AutoLoginPasswd") != TAppSettingsManager.UNDEFINEDVALUE)
                         {
-                            txtPassword.Text = TAppSettingsManager.GetValueStatic("AutoLoginPasswd");
+                            txtPassword.Text = TAppSettingsManager.GetValue("AutoLoginPasswd");
                             BtnLogin_Click(null, null);
                         }
                     }
@@ -401,7 +403,7 @@ namespace Ict.Petra.Client.CommonDialogs
         private void GetUsers()
         {
             // in some countries, don't give a clue about the username
-            if (TAppSettingsManager.ToBoolean(TAppSettingsManager.GetValueStatic("UseWindowsUserID"), false))
+            if (TAppSettingsManager.ToBoolean(TAppSettingsManager.GetValue("UseWindowsUserID"), false))
             {
                 // Get the windows user name
                 String UserNameStr = System.Security.Principal.WindowsIdentity.GetCurrent().Name.ToUpper();
