@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.IO;
 using System.Xml;
 using System.Windows.Forms;
 using System.Reflection;
@@ -151,7 +152,7 @@ namespace Ict.Common.Controls
             if (!FGUIAssemblies.Keys.Contains(strNamespace))
             {
                 // work around dlls containing several namespaces, eg Ict.Petra.Client.MFinance.Gui contains AR as well
-                string DllName = strNamespace;
+                string DllName = TAppSettingsManager.ApplicationDirectory + Path.DirectorySeparatorChar + strNamespace;
 
                 if (!System.IO.File.Exists(DllName + ".dll"))
                 {

@@ -62,6 +62,17 @@ namespace Ict.Common
             }
         }
 
+        /// <summary>
+        /// read only property for the directory where all the binary exe and dll files are
+        /// </summary>
+        public static string ApplicationDirectory
+        {
+            get
+            {
+                return FApplicationDirectory;
+            }
+        }
+
         #region TAppSettingsManager
 
         /// <summary>
