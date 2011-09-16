@@ -243,17 +243,15 @@ namespace Ict.Common.Data
             string DBTableName = TTypedDataTable.GetTableNameSQL(ATableId);
 
             // First try to update with a where clause with the modification id
-            try
-            {
-                DBAccess.GDBAccessObj.ExecuteNonQuery(GenerateUpdateClause("PUB_" + DBTableName,
+            if (0 == DBAccess.GDBAccessObj.ExecuteNonQuery(GenerateUpdateClause("PUB_" + DBTableName,
                         Columns,
                         ADataRow,
                         PrimKeyColumnOrdList), ATransaction, false,
-                    GetParametersForUpdateClause(ATableId, ref ADataRow, PrimKeyColumnOrdList, Columns.Length, ATransaction, ACurrentUser));
-            }
-            catch (Exception ex)
+                    GetParametersForUpdateClause(ATableId, ref ADataRow, PrimKeyColumnOrdList, Columns.Length, ATransaction, ACurrentUser)))
             {
-                TLogging.Log("Conflict with update statement: " + ex.ToString());
+                // Was not able to update the row,
+                // the database has a different modification id on that row.
+                // trying now the other way
 
                 String LastModificationId = "";
                 String LastModifiedBy = "";
