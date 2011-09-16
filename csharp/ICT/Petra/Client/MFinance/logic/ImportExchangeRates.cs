@@ -26,6 +26,7 @@ using System.Data;
 using System.Xml;
 using System.Windows.Forms;
 using System.IO;
+using System.Globalization;
 using System.Collections;
 using System.Collections.Generic;
 using Ict.Petra.Shared.Interfaces; // Implicit reference
