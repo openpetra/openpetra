@@ -225,6 +225,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         /// <returns>void</returns>
         public void SetControls(TParameterList AParameters)
         {
+            if (FLedgerNumber == -1)
+            {
+                // we will wait until the ledger number has been set
+                return;
+            }
+
             /* cost centre options */
 
             FCostCenterCodesDuringLoad = AParameters.Get("param_cost_centre_codes").ToString();
@@ -239,6 +245,18 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 rbtAccountRange.Checked = true;
                 cmbFromAccountCode.SetSelectedString(AParameters.Get("param_account_code_start").ToString());
                 cmbToAccountCode.SetSelectedString(AParameters.Get("param_account_code_end").ToString());
+
+                if (cmbFromAccountCode.GetSelectedString().Length == 0)
+                {
+                    // select first valid entry
+                    cmbFromAccountCode.SelectedIndex = 1;
+                }
+
+                if (cmbToAccountCode.GetSelectedString().Length == 0)
+                {
+                    // select last valid entry
+                    cmbToAccountCode.SelectedIndex = cmbToAccountCode.Count - 1;
+                }
             }
 
             if (AParameters.Get("param_rgrCostCentres").ToString() == "CostCentreList")
@@ -256,6 +274,18 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 rbtCostCentreRange.Checked = true;
                 cmbFromCostCentre.SetSelectedString(AParameters.Get("param_cost_centre_code_start").ToString());
                 cmbToCostCentre.SetSelectedString(AParameters.Get("param_cost_centre_code_end").ToString());
+
+                if (cmbFromCostCentre.GetSelectedString().Length == 0)
+                {
+                    // select first valid entry
+                    cmbFromCostCentre.SelectedIndex = 1;
+                }
+
+                if (cmbToCostCentre.GetSelectedString().Length == 0)
+                {
+                    // select last valid entry
+                    cmbToCostCentre.SelectedIndex = cmbToCostCentre.Count - 1;
+                }
             }
 
             if (FLedgerNumber != -1)

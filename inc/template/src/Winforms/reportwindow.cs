@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from {#XAMLSRCFILE}
+// auto generated with nant generateWinforms from {#XAMLSRCFILE} and template reportwindow.cs
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //

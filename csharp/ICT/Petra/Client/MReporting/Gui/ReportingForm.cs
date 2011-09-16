@@ -325,6 +325,20 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
 #endif
 
+            // read the settings and parameters from the controls
+            if (!ReadControlsWithErrorHandling(TReportActionEnum.raGenerate))
+            {
+                return;
+            }
+
+            if (TClientSettings.DebugLevel >= TClientSettings.DEBUGLEVEL_REPORTINGDATA)
+            {
+                FCalculator.GetParameters().Save(TClientSettings.PathLog + Path.DirectorySeparatorChar + "debugParameter.xml", true);
+            }
+
+            this.FWinForm.Cursor = Cursors.WaitCursor;
+            TLogging.SetStatusBarProcedure(this.WriteToStatusBar);
+
             if ((FGenerateReportThread == null) || (!FGenerateReportThread.IsAlive))
             {
                 ((IFrmReporting) this.FTheForm).EnableBusy(true);
@@ -374,69 +388,19 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <returns>void</returns>
         private void GenerateReport()
         {
-            TMyUpdateDelegate myDelegate;
-
             try
             {
-                // read the settings and parameters from the controls
-                if (!ReadControlsWithErrorHandling(TReportActionEnum.raGenerate))
-                {
-                    ((IFrmReporting) this.FTheForm).EnableBusy(false);
-                    return;
-                }
-
-                if (TClientSettings.DebugLevel >= TClientSettings.DEBUGLEVEL_REPORTINGDATA)
-                {
-                    FCalculator.GetParameters().Save(TClientSettings.PathLog + Path.DirectorySeparatorChar + "debugParameter.xml", true);
-                }
-
-                this.FWinForm.Cursor = Cursors.WaitCursor;
-                TLogging.SetStatusBarProcedure(this.WriteToStatusBar);
-
                 // calculate the report
                 // TODO : should the server know the user name and password? what about user permissions? does not know about the database
                 if (FCalculator.GenerateResultRemoteClient())
                 {
-                    if (TClientSettings.DebugLevel >= TClientSettings.DEBUGLEVEL_REPORTINGDATA)
-                    {
-                        FCalculator.GetParameters().Save(TClientSettings.PathLog + Path.DirectorySeparatorChar + "debugParameterReturn.xml", true);
-                        FCalculator.GetResults().WriteCSV(
-                            FCalculator.GetParameters(), TClientSettings.PathLog + Path.DirectorySeparatorChar + "debugResultReturn.csv");
-                    }
-
-                    this.FWinForm.Cursor = Cursors.Default;
-
-                    if (FCalculator.GetParameters().Exists("SaveCSVFilename")
-                        && (FCalculator.GetParameters().Get("SaveCSVFilename").ToString().Length > 0))
-                    {
-                        FCalculator.GetResults().WriteCSV(FCalculator.GetParameters(), FCalculator.GetParameters().Get("SaveCSVFilename").ToString());
-                    }
-
-                    if (FCalculator.GetParameters().GetOrDefault("OnlySaveCSV", -1, new TVariant(false)).ToBool() == true)
-                    {
-                        ((IFrmReporting) this.FTheForm).EnableBusy(false);
-                    }
-                    else
-                    {
-                        if ((this.FWinForm.Owner != null) && (this.FWinForm.Owner.GetType().ToString() == "TMainWinForm"))
-                        {
-                            // this is PetraClient_Experimenting
-                            // using Delegate causes SEHException in PetraClient_Experimenting
-                            PreviewReport();
-                        }
-                        else
-                        {
-                            myDelegate = @PreviewReport;
-                            FWinForm.Invoke((System.Delegate) new TMyUpdateDelegate(myDelegate));
-                        }
-                    }
+                    TMyUpdateDelegate myDelegate = @ReportCalculationSuccess;
+                    FWinForm.Invoke((System.Delegate) new TMyUpdateDelegate(myDelegate));
                 }
                 else
                 {
-                    // if generateResult failed or was cancelled
-                    this.FWinForm.Cursor = Cursors.Default;
-
-                    ((IFrmReporting) this.FTheForm).EnableBusy(false);
+                    TMyUpdateDelegate myDelegate = @ReportCalculationFailure;
+                    FWinForm.Invoke((System.Delegate) new TMyUpdateDelegate(myDelegate));
                 }
             }
             catch (Exception e)
@@ -447,8 +411,44 @@ namespace Ict.Petra.Client.MReporting.Gui
                     MessageBox.Show(e.Message);
                 }
 
+                TMyUpdateDelegate myDelegate = @ReportCalculationFailure;
+                FWinForm.Invoke((System.Delegate) new TMyUpdateDelegate(myDelegate));
+            }
+        }
+
+        private void ReportCalculationSuccess()
+        {
+            if (TClientSettings.DebugLevel >= TClientSettings.DEBUGLEVEL_REPORTINGDATA)
+            {
+                FCalculator.GetParameters().Save(TClientSettings.PathLog + Path.DirectorySeparatorChar + "debugParameterReturn.xml", true);
+                FCalculator.GetResults().WriteCSV(
+                    FCalculator.GetParameters(), TClientSettings.PathLog + Path.DirectorySeparatorChar + "debugResultReturn.csv");
+            }
+
+            this.FWinForm.Cursor = Cursors.Default;
+
+            if (FCalculator.GetParameters().Exists("SaveCSVFilename")
+                && (FCalculator.GetParameters().Get("SaveCSVFilename").ToString().Length > 0))
+            {
+                FCalculator.GetResults().WriteCSV(FCalculator.GetParameters(), FCalculator.GetParameters().Get("SaveCSVFilename").ToString());
+            }
+
+            if (FCalculator.GetParameters().GetOrDefault("OnlySaveCSV", -1, new TVariant(false)).ToBool() == true)
+            {
                 ((IFrmReporting) this.FTheForm).EnableBusy(false);
             }
+            else
+            {
+                PreviewReport();
+            }
+        }
+
+        private void ReportCalculationFailure()
+        {
+            // if generateResult failed or was cancelled
+            this.FWinForm.Cursor = Cursors.Default;
+
+            ((IFrmReporting) this.FTheForm).EnableBusy(false);
         }
 
         /// <summary>
@@ -770,7 +770,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
             catch (Exception e)
             {
-                System.Diagnostics.Debug.WriteLine(e.ToString());
+                TLogging.Log(e.ToString());
 
                 if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_REPORTING)
                 {
