@@ -177,7 +177,7 @@ namespace Ict.Petra.Client.CommonForms
             {
                 // recurse into children;
                 // but special case for UpDownBase/NumericUpDown, because we don't want the child controls of that
-                if ((ctrl.HasChildren == true) && !(ctrl is UpDownBase))
+                if ((ctrl.HasChildren == true) && !(ctrl is UpDownBase) && !(ctrl is TClbVersatile))
                 {
                     EnumerateControls(ctrl);
                 }

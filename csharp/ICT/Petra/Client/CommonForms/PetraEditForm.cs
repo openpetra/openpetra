@@ -268,6 +268,10 @@ namespace Ict.Petra.Client.CommonForms
                 {
                     ((TCmbVersatile)ctrl).SelectedValueChanged += new EventHandler(this.MultiEventHandler);
                 }
+                else if (ctrl.GetType() == typeof(TClbVersatile))
+                {
+                    ((TClbVersatile)ctrl).ValueChanged += new EventHandler(MultiEventHandler);
+                }
                 else if (ctrl.GetType() == typeof(TtxtPetraDate))
                 {
                     ((TtxtPetraDate)ctrl).DateChanged += new TPetraDateChangedEventHandler(this.TFrmPetraEditUtils_DateChanged);

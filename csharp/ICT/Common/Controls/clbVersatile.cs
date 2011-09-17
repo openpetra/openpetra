@@ -75,7 +75,7 @@ namespace Ict.Common.Controls
         /// allows popping up a question whether to check the CheckBox
         ///
         /// </summary>
-        public event TDataColumnChangedEventHandler DataColumnChanged;
+        public event EventHandler ValueChanged;
 
         #region Creation and Disposal
 
@@ -146,9 +146,17 @@ namespace Ict.Common.Controls
             DataSource = new DevAge.ComponentModel.BoundDataView(FDataView);
 
             // Hook event that allows popping up a question whether to check the CheckBox
-            if ((DataColumnChanged != null) && (!(DesignMode)))
+            if (!DesignMode)
             {
-                FDataTable.ColumnChanged += new DataColumnChangeEventHandler(this.DataColumnChanged);
+                FDataTable.ColumnChanged += MyDataColumnChangedEventHandler;
+            }
+        }
+
+        private void MyDataColumnChangedEventHandler(object sender, DataColumnChangeEventArgs e)
+        {
+            if (this.ValueChanged != null)
+            {
+                ValueChanged(this, null);
             }
         }
 
