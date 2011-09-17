@@ -2382,58 +2382,55 @@ namespace Ict.Common.DB
             string AContext,
             bool AThrowExceptionAfterLogging)
         {
-            if (TLogging.DebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
+            string ErrorMessage = "";
+            string FormattedSqlStatement = "";
+
+            if (ASqlStatement != String.Empty)
             {
-                string ErrorMessage = "";
-                string FormattedSqlStatement = "";
+                ASqlStatement = FDataBaseRDBMS.FormatQueryRDBMSSpecific(ASqlStatement);
 
-                if (ASqlStatement != String.Empty)
+                FormattedSqlStatement = "The SQL Statement was: " + Environment.NewLine +
+                                        ASqlStatement + Environment.NewLine;
+
+                if (AParametersArray != null)
                 {
-                    ASqlStatement = FDataBaseRDBMS.FormatQueryRDBMSSpecific(ASqlStatement);
+                    Int32 Counter = 1;
 
-                    FormattedSqlStatement = "The SQL Statement was: " + Environment.NewLine +
-                                            ASqlStatement + Environment.NewLine;
-
-                    if (AParametersArray != null)
+                    foreach (OdbcParameter Parameter in AParametersArray)
                     {
-                        Int32 Counter = 1;
-
-                        foreach (OdbcParameter Parameter in AParametersArray)
+                        if (Parameter.Value == System.DBNull.Value)
                         {
-                            if (Parameter.Value == System.DBNull.Value)
-                            {
-                                FormattedSqlStatement +=
-                                    "Parameter: " + Counter.ToString() + " DBNull" + ' ' + Parameter.Value.GetType().ToString() + ' ' +
-                                    Enum.GetName(typeof(System.Data.Odbc.OdbcType), Parameter.OdbcType) +
-                                    Environment.NewLine;
-                            }
-                            else
-                            {
-                                FormattedSqlStatement +=
-                                    "Parameter: " + Counter.ToString() + ' ' + Parameter.Value.ToString() + ' ' +
-                                    Parameter.Value.GetType().ToString() +
-                                    ' ' +
-                                    Enum.GetName(typeof(System.Data.Odbc.OdbcType), Parameter.OdbcType) + ' ' + Parameter.Size.ToString() +
-                                    Environment.NewLine;
-                            }
-
-                            Counter = Counter + 1;
+                            FormattedSqlStatement +=
+                                "Parameter: " + Counter.ToString() + " DBNull" + ' ' + Parameter.Value.GetType().ToString() + ' ' +
+                                Enum.GetName(typeof(System.Data.Odbc.OdbcType), Parameter.OdbcType) +
+                                Environment.NewLine;
                         }
+                        else
+                        {
+                            FormattedSqlStatement +=
+                                "Parameter: " + Counter.ToString() + ' ' + Parameter.Value.ToString() + ' ' +
+                                Parameter.Value.GetType().ToString() +
+                                ' ' +
+                                Enum.GetName(typeof(System.Data.Odbc.OdbcType), Parameter.OdbcType) + ' ' + Parameter.Size.ToString() +
+                                Environment.NewLine;
+                        }
+
+                        Counter = Counter + 1;
                     }
                 }
+            }
 
-                FDataBaseRDBMS.LogException(AException, ref ErrorMessage);
+            FDataBaseRDBMS.LogException(AException, ref ErrorMessage);
 
-                TLogging.Log(AContext + Environment.NewLine +
-                    FormattedSqlStatement +
-                    "Possible cause: " + AException.ToString() + Environment.NewLine + ErrorMessage);
+            TLogging.Log(AContext + Environment.NewLine +
+                FormattedSqlStatement +
+                "Possible cause: " + AException.ToString() + Environment.NewLine + ErrorMessage);
 
-                TLogging.LogStackTrace(TLoggingType.ToLogfile);
+            TLogging.LogStackTrace(TLoggingType.ToLogfile);
 
-                if (AThrowExceptionAfterLogging)
-                {
-                    throw AException;
-                }
+            if (AThrowExceptionAfterLogging)
+            {
+                throw AException;
             }
         }
     }
