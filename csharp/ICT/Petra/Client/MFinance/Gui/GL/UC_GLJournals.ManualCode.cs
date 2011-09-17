@@ -119,7 +119,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void SetExchangeRateValue(Object sender, EventArgs e)
         {
             TFrmSetupDailyExchangeRate setupDailyExchangeRate =
-                new TFrmSetupDailyExchangeRate(this.Handle);
+                new TFrmSetupDailyExchangeRate(FPetraUtilsObject.GetForm());
 
             setupDailyExchangeRate.LedgerNumber = FLedgerNumber;
             setupDailyExchangeRate.SetDataFilters(dtpDetailDateEffective.Date.Value,

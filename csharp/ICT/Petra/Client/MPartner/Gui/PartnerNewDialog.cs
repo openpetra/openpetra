@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -158,7 +158,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// constructor
         /// </summary>
-        public TPartnerNewDialogWinForm(IntPtr AParentFormHandle) : base()
+        public TPartnerNewDialogWinForm(Form AParentForm) : base()
         {
             //
             // Required for Windows Form Designer support
@@ -180,7 +180,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.Text = Catalog.GetString("New Partner");
             #endregion
 
-            FPetraUtilsObject = new TFrmPetraUtils(AParentFormHandle, this, stbMain);
+            FPetraUtilsObject = new TFrmPetraUtils(AParentForm, this, stbMain);
             this.FPetraUtilsObject.SetStatusBarText(this.btnOK, Catalog.GetString("Accept data and continue"));
             this.FPetraUtilsObject.SetStatusBarText(this.btnCancel, Catalog.GetString("Cancel data entry and close"));
             this.FPetraUtilsObject.SetStatusBarText(this.btnHelp, Catalog.GetString("Help"));

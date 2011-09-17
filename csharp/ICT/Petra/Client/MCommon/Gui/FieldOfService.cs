@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -87,7 +87,7 @@ namespace Ict.Petra.Client.MCommon.Gui
             // Initialise Screen Logic
             FLogic = new TFieldOfServiceLogic();
 
-            FTheObject = new TFrmPetraEditUtils(AParentForm.Handle, this, stbMain);
+            FTheObject = new TFrmPetraEditUtils(AParentForm, this, stbMain);
 
             // TODO FTheObject.ActionEnablingEvent += ActionEnabledEvent;
             FTheObject.InitActionState();

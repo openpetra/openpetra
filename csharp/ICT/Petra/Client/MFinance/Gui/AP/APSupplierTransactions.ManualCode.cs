@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -93,7 +93,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             if (SelectedGridRow.Length >= 1)
             {
-                TFrmAPEditDocument frm = new TFrmAPEditDocument(this.Handle);
+                TFrmAPEditDocument frm = new TFrmAPEditDocument(this);
                 frm.LoadAApDocument(FLedgerNumber, Convert.ToInt32(SelectedGridRow[0][FMainDS.AApDocument.ColumnApNumber.ColumnName]));
                 frm.Show();
             }
@@ -106,7 +106,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// <param name="e"></param>
         private void CreateInvoice(object sender, EventArgs e)
         {
-            TFrmAPEditDocument frm = new TFrmAPEditDocument(this.Handle);
+            TFrmAPEditDocument frm = new TFrmAPEditDocument(this);
 
             frm.CreateAApDocument(FLedgerNumber, FPartnerKey, false);
             frm.Show();
@@ -119,7 +119,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// <param name="e"></param>
         private void CreateCreditNote(object sender, EventArgs e)
         {
-            TFrmAPEditDocument frm = new TFrmAPEditDocument(this.Handle);
+            TFrmAPEditDocument frm = new TFrmAPEditDocument(this);
 
             frm.CreateAApDocument(FLedgerNumber, FPartnerKey, true);
             frm.Show();
@@ -225,7 +225,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 return;
             }
 
-            TFrmAPPayment frm = new TFrmAPPayment(this.Handle);
+            TFrmAPPayment frm = new TFrmAPPayment(this);
 
             frm.AddDocumentsToPayment(FMainDS, TaggedDocuments);
 

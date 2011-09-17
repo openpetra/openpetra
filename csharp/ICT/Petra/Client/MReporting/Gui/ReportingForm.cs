@@ -109,11 +109,11 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <summary>
         /// constructor
         /// </summary>
-        /// <param name="ACallerWindowHandle">the int handle of the form that has opened this window; needed for focusing when this window is closed later</param>
+        /// <param name="AParentForm">the form that has opened this window; needed for focusing when this window is closed later</param>
         /// <param name="ATheForm"></param>
         /// <param name="AStatusBar"></param>
-        public TFrmPetraReportingUtils(IntPtr ACallerWindowHandle, IFrmPetra ATheForm,
-            TExtStatusBarHelp AStatusBar) : base(ACallerWindowHandle,
+        public TFrmPetraReportingUtils(Form AParentForm, IFrmPetra ATheForm,
+            TExtStatusBarHelp AStatusBar) : base(AParentForm,
                                                 (IFrmPetra)ATheForm,
                                                 AStatusBar)
         {
@@ -458,7 +458,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         protected void PreviewReport()
         {
             // show a print window with all kinds of output options
-            TFrmPrintPreview printWindow = new TFrmPrintPreview(FWinForm.Handle, FReportName, FCalculator.GetDuration(),
+            TFrmPrintPreview printWindow = new TFrmPrintPreview(FWinForm, FReportName, FCalculator.GetDuration(),
                 FCalculator.GetResults(), FCalculator.GetParameters(), FWrapColumn);
 
             this.FWinForm.AddOwnedForm(printWindow);

@@ -85,7 +85,7 @@ namespace Ict.Petra.Client.App.PetraClient
                         testActionNode.Attributes.Append(attr);
                     }
 
-                    TLstTasks.ExecuteAction(testActionNode, IntPtr.Zero);
+                    TLstTasks.ExecuteAction(testActionNode, null);
                 }
             }
         }
@@ -216,7 +216,7 @@ namespace Ict.Petra.Client.App.PetraClient
 
             if (TFrmMainWindow.MainForm == null)
             {
-                TFrmMainWindow.MainForm = new TFrmMainWindow(IntPtr.Zero);
+                TFrmMainWindow.MainForm = new TFrmMainWindow(null);
             }
 
             this.Hide();

@@ -436,7 +436,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            TFrmGiftRevertAdjust revertForm = new TFrmGiftRevertAdjust(this.Handle);
+            TFrmGiftRevertAdjust revertForm = new TFrmGiftRevertAdjust(FPetraUtilsObject.GetForm());
             try
             {
                 ParentForm.ShowInTaskbar = false;

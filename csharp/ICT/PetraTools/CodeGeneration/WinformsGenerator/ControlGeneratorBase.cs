@@ -665,10 +665,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 TActionHandler ActionHandler = writer.CodeStorage.FActionList[ActionToPerform];
                 SetControlActionProperties(writer, ctrl, ActionHandler);
 
-                if (FCodeStorage.ManualFileExistsAndContains(" " + ActionHandler.actionName.Substring(3) + "(IntPtr AParentFormHandle)"))
+                if (FCodeStorage.ManualFileExistsAndContains(" " + ActionHandler.actionName.Substring(3) + "(Form AParentForm)"))
                 {
                     writer.SetEventHandlerFunction(ActionHandler.actionName.Substring(3), "", ActionHandler.actionName.Substring(
-                            3) + "(this.Handle);");
+                            3) + "(this);");
                 }
             }
             else if (ctrl.HasAttribute("ActionClick"))
@@ -688,7 +688,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     Environment.NewLine +
                     "{" + Environment.NewLine;
                 ActionHandler += "    " + ctrl.GetAttribute("ActionOpenScreen") + " frm = new " + ctrl.GetAttribute("ActionOpenScreen") +
-                                 "(this.Handle);" + Environment.NewLine;
+                                 "(this);" + Environment.NewLine;
 
                 // Does PropertyForSubScreens fit a property in the new screen? eg LedgerNumber
                 if (FCodeStorage.HasAttribute("PropertyForSubScreens"))

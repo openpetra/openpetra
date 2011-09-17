@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -42,8 +42,8 @@ namespace Ict.Petra.Client.MSysMan.Gui
         /// this function allows to store the content of the whole database
         /// as a text file, and import it somewhere else, across database types etc
         /// </summary>
-        /// <param name="AParentFormHandle"></param>
-        public static void ExportAllData(IntPtr AParentFormHandle)
+        /// <param name="AParentForm"></param>
+        public static void ExportAllData(Form AParentForm)
         {
             MessageBox.Show(Catalog.GetString("This may take a while. Please just wait!"));
 
@@ -54,8 +54,8 @@ namespace Ict.Petra.Client.MSysMan.Gui
         /// <summary>
         /// this will delete the current database, and reset it with the data selected
         /// </summary>
-        /// <param name="AParentFormHandle"></param>
-        public static void ImportAllData(IntPtr AParentFormHandle)
+        /// <param name="AParentForm"></param>
+        public static void ImportAllData(Form AParentForm)
         {
             DialogResult r = MessageBox.Show(
                 Catalog.GetString("WARNING: this will reset the database! Do you really want to delete the current database?"),
@@ -86,7 +86,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
         /// <summary>
         /// change the password of the current user
         /// </summary>
-        public static void SetUserPassword(IntPtr AParentFormHandle)
+        public static void SetUserPassword(Form AParentForm)
         {
             string username = Ict.Petra.Shared.UserInfo.GUserInfo.UserID;
 

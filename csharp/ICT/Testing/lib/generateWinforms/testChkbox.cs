@@ -50,7 +50,7 @@ namespace Ict.Testing
     private Ict.Petra.Client.CommonForms.TFrmPetraUtils FPetraUtilsObject;
 
     /// constructor
-    public TFrmtestChkbox(IntPtr AParentFormHandle) : base()
+    public TFrmtestChkbox(Form AParentForm) : base()
     {
       //
       // Required for Windows Form Designer support

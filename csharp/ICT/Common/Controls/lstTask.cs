@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -140,7 +140,7 @@ namespace Ict.Common.Controls
         /// execute action from the navigation tree
         /// </summary>
         /// <returns>the error or status message</returns>
-        public static string ExecuteAction(XmlNode node, IntPtr AParentWindowHandle)
+        public static string ExecuteAction(XmlNode node, Form AParentWindow)
         {
             string strNamespace = TYml2Xml.GetAttributeRecursive(node, "Namespace");
 
@@ -188,7 +188,7 @@ namespace Ict.Common.Controls
 
                 if (method != null)
                 {
-                    method.Invoke(null, new object[] { AParentWindowHandle });
+                    method.Invoke(null, new object[] { AParentWindow });
                 }
                 else
                 {
@@ -211,7 +211,7 @@ namespace Ict.Common.Controls
                 // also use something similar as in lstFolderNavigation: CheckAccessPermissionDelegate?
                 // delegate as a static function that is available from everywhere?
 
-                System.Object screen = Activator.CreateInstance(classType, new object[] { AParentWindowHandle });
+                System.Object screen = Activator.CreateInstance(classType, new object[] { AParentWindow });
 
                 // check for properties and according attributes; this works for the LedgerNumber at the moment
                 foreach (PropertyInfo prop in classType.GetProperties())
@@ -287,7 +287,14 @@ namespace Ict.Common.Controls
 
             if ((info.Item != null) && (info.Item == FSelectedTaskItem))
             {
-                string message = ExecuteAction((XmlNode)info.Item.Tag, this.Handle);
+                Control parentForm = Parent;
+
+                while (parentForm != null && !(parentForm is Form))
+                {
+                    parentForm = parentForm.Parent;
+                }
+
+                string message = ExecuteAction((XmlNode)info.Item.Tag, (Form)parentForm);
                 WriteToStatusBar(message);
             }
 

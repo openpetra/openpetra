@@ -825,7 +825,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            TFrmGLBatchExport gl = new TFrmGLBatchExport(this.Handle);
+            TFrmGLBatchExport gl = new TFrmGLBatchExport(FPetraUtilsObject.GetForm());
             gl.LedgerNumber = FLedgerNumber;
             gl.MainDS = FMainDS;
             gl.Show();
