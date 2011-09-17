@@ -73,7 +73,7 @@ namespace Ict.Testing
       this.Text = Catalog.GetString("Test screen");
       #endregion
 
-      FPetraUtilsObject = new Ict.Petra.Client.CommonForms.TFrmPetraUtils(AParentFormHandle, this, stbMain);
+      FPetraUtilsObject = new Ict.Petra.Client.CommonForms.TFrmPetraUtils(AParentForm, this, stbMain);
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
       FPetraUtilsObject.InitActionState();
