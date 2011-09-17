@@ -1,5 +1,5 @@
 ﻿RootNodeInternal:
-    [{#LEDGERNUMBER}]:{code=[{#LEDGERNUMBER}], active=True, type=Local}
-        {#LEDGERNAME}:{code={#LEDGERNUMBERWITHLEADINGZEROS}00S}
-            {#LEDGERNAME}, General:{code={#LEDGERNUMBERWITHLEADINGZEROS}00}
-        Inter Ledger Transfer Total:{code=ILT}
+    [{#LEDGERNUMBER}]:{descr="[{#LEDGERNUMBER}]", active=True, type=Local}
+        {#LEDGERNUMBERWITHLEADINGZEROS}00S:{descr="{#LEDGERNAME}"}
+            {#LEDGERNUMBERWITHLEADINGZEROS}00:{descr="{#LEDGERNAME}, General"}
+        ILT:{descr="Inter Ledger Transfer Total"}
