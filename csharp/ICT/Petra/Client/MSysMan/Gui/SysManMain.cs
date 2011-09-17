@@ -119,13 +119,17 @@ namespace Ict.Petra.Client.MSysMan.Gui
                     {
                         if (password == input.GetAnswer())
                         {
-                            if (TRemote.MSysMan.Maintenance.WebConnectors.SetUserPassword(username, password, oldPassword))
+                            TVerificationResultCollection VerificationResult;
+
+                            if (TRemote.MSysMan.Maintenance.WebConnectors.SetUserPassword(username, password, oldPassword, out VerificationResult))
                             {
                                 MessageBox.Show(String.Format(Catalog.GetString("Password was successfully set for user {0}"), username));
                             }
                             else
                             {
-                                MessageBox.Show(String.Format(Catalog.GetString("There was a problem setting the password for user {0}"), username));
+                                MessageBox.Show(String.Format(Catalog.GetString(
+                                            "There was a problem setting the password for user {0}."), username) +
+                                    Environment.NewLine + VerificationResult.BuildVerificationResultString()));
                             }
                         }
                         else
