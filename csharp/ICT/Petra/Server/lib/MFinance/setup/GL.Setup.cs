@@ -39,6 +39,7 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Server.MFinance.GL.Data.Access;
 using Ict.Petra.Server.MSysMan.Data.Access;
+using Ict.Petra.Shared.MSysMan;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner;
@@ -786,7 +787,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// <summary>
         /// create a new ledger and do the initial setup
         /// </summary>
-        [RequireModulePermission("OR(SYSMAN,FINANCE-3)")]
+        [RequireModulePermission("FINANCE-3")]
         public static bool CreateNewLedger(Int32 ANewLedgerNumber,
             String ALedgerName,
             String ACountryCode,
@@ -1051,6 +1052,34 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             // TODO: permissions for which users?
 
             TSubmitChangesResult result = GLSetupTDSAccess.SubmitChanges(MainDS, out AVerificationResult);
+
+            if (result == TSubmitChangesResult.scrOK)
+            {
+                // give the current user access permissions to this new ledger
+                SUserModuleAccessPermissionTable moduleAccessPermissionTable = new SUserModuleAccessPermissionTable();
+
+                SUserModuleAccessPermissionRow moduleAccessPermissionRow = moduleAccessPermissionTable.NewRowTyped();
+                moduleAccessPermissionRow.UserId = UserInfo.GUserInfo.UserID;
+                moduleAccessPermissionRow.ModuleId = "LEDGER" + ANewLedgerNumber.ToString("0000");
+                moduleAccessPermissionRow.CanAccess = true;
+                moduleAccessPermissionTable.Rows.Add(moduleAccessPermissionRow);
+
+                TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
+
+                try
+                {
+                    if (!SUserModuleAccessPermissionAccess.SubmitChanges(moduleAccessPermissionTable, Transaction, out AVerificationResult))
+                    {
+                        return false;
+                    }
+
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+                finally
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+            }
 
             return result == TSubmitChangesResult.scrOK;
         }

@@ -24,6 +24,7 @@
 using System;
 using System.IO;
 using System.Xml;
+using System.Drawing;
 using System.Windows.Forms;
 using System.Reflection;
 using System.Collections.Generic;
@@ -38,6 +39,25 @@ namespace Ict.Common.Controls
     /// </summary>
     public class TLstTasks : System.Windows.Forms.ListView
     {
+        private static string FUserId;
+        private static CheckAccessPermissionDelegate FHasAccessPermission;
+
+        /// <summary>
+        /// this function checks if the user has access to the navigation node
+        /// </summary>
+        public delegate bool CheckAccessPermissionDelegate(XmlNode ANode, string AUserId);
+
+        /// <summary>
+        /// initialise the permissions callback function for the current user
+        /// </summary>
+        /// <param name="AUserId"></param>
+        /// <param name="AHasAccessPermission"></param>
+        public static void Init(string AUserId, CheckAccessPermissionDelegate AHasAccessPermission)
+        {
+            FUserId = AUserId;
+            FHasAccessPermission = AHasAccessPermission;
+        }
+
         /// <summary>
         /// default constructor
         /// </summary>
@@ -96,6 +116,12 @@ namespace Ict.Common.Controls
                         task.Name = TaskGroupNode.Name;
                         task.Group = listViewGroup;
                         task.Tag = TaskGroupNode;
+
+                        if (!FHasAccessPermission(TaskGroupNode, FUserId))
+                        {
+                            task.ForeColor = Color.Gray;
+                        }
+
                         this.Items.Add(task);
                     }
                     else
@@ -114,6 +140,12 @@ namespace Ict.Common.Controls
                             task.Name = TaskNode.Name;
                             task.Group = listViewGroup;
                             task.Tag = TaskNode;
+
+                            if (!FHasAccessPermission(TaskNode, FUserId))
+                            {
+                                task.ForeColor = Color.Gray;
+                            }
+
                             this.Items.Add(task);
                             TaskNode = TaskNode.NextSibling;
                         }
@@ -142,6 +174,11 @@ namespace Ict.Common.Controls
         /// <returns>the error or status message</returns>
         public static string ExecuteAction(XmlNode node, Form AParentWindow)
         {
+            if (!FHasAccessPermission(node, FUserId))
+            {
+                return Catalog.GetString("Sorry, you don't have enough permissions to do this");
+            }
+
             string strNamespace = TYml2Xml.GetAttributeRecursive(node, "Namespace");
 
             if (strNamespace.Length == 0)

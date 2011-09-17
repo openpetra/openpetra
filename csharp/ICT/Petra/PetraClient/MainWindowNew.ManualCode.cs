@@ -164,10 +164,15 @@ namespace Ict.Petra.Client.App.PetraClient
             }
         }
 
-        private void LoadNavigationUI()
+        /// <summary>
+        /// load or reload the navigation
+        /// </summary>
+        public void LoadNavigationUI()
         {
             TYml2Xml parser = new TYml2Xml(TAppSettingsManager.GetValue("UINavigation.File"));
             XmlDocument UINavigation = parser.ParseYML2XML();
+
+            lstFolders.ClearFolders();
 
             ALedgerTable AvailableLedgers = new ALedgerTable();
 
@@ -184,6 +189,8 @@ namespace Ict.Petra.Client.App.PetraClient
             XmlNode DepartmentNode = MainMenuNode.FirstChild;
 
             AddNavigationForEachLedger(MainMenuNode, AvailableLedgers);
+
+            TLstTasks.Init(UserInfo.GUserInfo.UserID, HasAccessPermission);
 
             while (DepartmentNode != null)
             {
