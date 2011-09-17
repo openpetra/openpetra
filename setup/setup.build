@@ -204,7 +204,7 @@ public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
         <copy file="${Config.file}" tofile="${dir.delivery}/PetraClientRemote.config" overwrite="true"/>
     </if>
     <if test="${not file::exists(Config.file)}">
-        <property name="Config.file" value="{dir.root}/setup/petra${PetraRelease}/remoteclientWin/PetraClientRemote.config"/>
+        <property name="Config.file" value="${dir.root}/setup/petra${PetraRelease}/remoteclientWin/PetraClientRemote.config"/>
         <copy file="${Config.file}" tofile="${dir.delivery}/PetraClientRemote.config" overwrite="true"/>
     </if>
 
