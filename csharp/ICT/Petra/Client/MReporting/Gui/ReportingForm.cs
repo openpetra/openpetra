@@ -301,14 +301,14 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <param name="e"></param>
         public void MI_GenerateReport_Click(System.Object sender, System.EventArgs e)
         {
-#if TODO
-            if (!mniFileClose.Enabled)
+            if ((FGenerateReportThread != null) && FGenerateReportThread.IsAlive)
             {
                 // cancel the report
                 FCalculator.CancelReportCalculation();
                 return;
             }
 
+#if TODO
             // has anything changed in the currently selected column?
             if (ColumnChanged(FSelectedColumn))
             {

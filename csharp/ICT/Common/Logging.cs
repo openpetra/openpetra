@@ -245,7 +245,8 @@ namespace Ict.Common
                 }
             }
 
-            if (((ALoggingType & TLoggingType.ToConsole) != 0) || ((ALoggingType & TLoggingType.ToLogfile) != 0))
+            if (((ALoggingType & TLoggingType.ToConsole) != 0) || ((ALoggingType & TLoggingType.ToLogfile) != 0)
+                || ((ALoggingType & TLoggingType.ToStatusBar) != 0))
             {
                 if (TLogging.StatusBarProcedureValid && (Text.IndexOf("SELECT") == -1))
                 {
