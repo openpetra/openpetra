@@ -323,7 +323,7 @@
     </filterchain>
   </copy>
   <!-- need to touch the dll file, so that later the fileset will pick this file up when calculating the references for other projects -->
-  <if test="${not file::exists(path::combine(dir.bin, Namespace + '.dll'))}">
+  <if test="${not file::exists(path::combine(dir.bin, Namespace + '.dll')) and OutputType=='library'}">
     <touch file="${dir.bin}/${Namespace}.dll"/>
   </if>
 </target>
