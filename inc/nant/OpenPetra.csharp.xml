@@ -260,6 +260,7 @@
     </in>
     <do>
     <property name="relative-filename" value="${OP::GetRelativePath(filename, dir.projectfiles + '/' + devenv-name + '/')}"/>
+    <property name="relative-filename-backslash" value="${string::replace(relative-filename, '/', '\\')}"/>
     <property name="DependentUpon" value="${path::change-extension(filename,'.cs')}" />
     <property name="relative-DependentUpon" value="${path::get-file-name(DependentUpon)}" />
     <property name="template" value="template.csproj.resource" />
@@ -287,6 +288,7 @@
     <do>
       <property name="justfilename" value="${path::get-file-name(filename)}" />
       <property name="relative-filename" value="${OP::GetRelativePath(filename, dir.projectfiles + '/' + devenv-name + '/')}"/>
+      <property name="relative-filename-backslash" value="${string::replace(relative-filename, '/', '\\')}"/>
       <property name="template" value="template.csproj.compile" />
       <property name="DependentUpon" value=""/>
       <if test="${string::contains(filename,'.Designer.cs')}">
