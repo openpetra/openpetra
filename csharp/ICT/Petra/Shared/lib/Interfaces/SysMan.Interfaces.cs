@@ -254,7 +254,8 @@ namespace Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.WebConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector)</summary>
         System.Boolean SetUserPassword(System.String AUsername,
                                        System.String APassword,
-                                       System.String AOldPassword);
+                                       System.String AOldPassword,
+                                       out TVerificationResultCollection AVerification);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector)</summary>
         System.Boolean CreateUser(System.String AUsername,
                                   System.String APassword,

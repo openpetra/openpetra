@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -91,6 +91,8 @@ namespace Ict.Petra.Client.CommonForms
         /// </summary>
         protected System.Windows.Forms.Form FWinForm;
 
+        private Form FCallerForm;
+
         /// Tells whether the Form is activated for the first time (after loading the Form) or not
         protected Boolean FFormActivatedForFirstTime;
 
@@ -103,18 +105,22 @@ namespace Ict.Petra.Client.CommonForms
         /// <summary>
         /// constructor
         /// </summary>
-        /// <param name="ACallerWindowHandle">the int handle of the form that has opened this window; needed for focusing when this window is closed later</param>
+        /// <param name="ACallerForm">the form that has opened this window; needed for focusing when this window is closed later</param>
         /// <param name="ATheForm"></param>
         /// <param name="AStatusBar"></param>
-        public TFrmPetraUtils(IntPtr ACallerWindowHandle, IFrmPetra ATheForm, TExtStatusBarHelp AStatusBar)
+        public TFrmPetraUtils(Form ACallerForm, IFrmPetra ATheForm, TExtStatusBarHelp AStatusBar)
         {
             FFormActivatedForFirstTime = true;
 
             FTheForm = ATheForm;
             FWinForm = (Form)ATheForm;
             FStatusBar = AStatusBar;
+            FCallerForm = ACallerForm;
 
-            TFormsList.GFormsList.NotifyWindowOpened(ACallerWindowHandle, FWinForm.Handle);
+            if (ACallerForm != null)
+            {
+                TFormsList.GFormsList.NotifyWindowOpened(ACallerForm.Handle, FWinForm.Handle);
+            }
 
             // WriteToStatusBar(Catalog.GetString("Ready."));
         }
@@ -177,7 +183,7 @@ namespace Ict.Petra.Client.CommonForms
             {
                 // recurse into children;
                 // but special case for UpDownBase/NumericUpDown, because we don't want the child controls of that
-                if ((ctrl.HasChildren == true) && !(ctrl is UpDownBase))
+                if ((ctrl.HasChildren == true) && !(ctrl is UpDownBase) && !(ctrl is TClbVersatile))
                 {
                     EnumerateControls(ctrl);
                 }
@@ -488,6 +494,24 @@ namespace Ict.Petra.Client.CommonForms
         public void LoadComboBoxHistory(TCmbAutoComplete AComboBox)
         {
             AComboBox.SetDataSourceStringList(TUserDefaults.GetStringDefault("CmbHistory" + AComboBox.Name, ""));
+        }
+
+        /// <summary>
+        /// get the form that has opened this form
+        /// </summary>
+        /// <returns></returns>
+        public Form GetCallerForm()
+        {
+            return FCallerForm;
+        }
+
+        /// <summary>
+        /// get the current form
+        /// </summary>
+        /// <returns></returns>
+        public Form GetForm()
+        {
+            return FWinForm;
         }
     }
 

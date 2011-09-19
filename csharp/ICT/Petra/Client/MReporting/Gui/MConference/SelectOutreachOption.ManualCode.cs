@@ -4,7 +4,7 @@
 // @Authors:
 //       berndr
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -148,7 +148,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
         /// <param name="ConferenceList">The selected outreach options. It holds the Unit keys
         /// and the unit names.</param>
         /// <returns></returns>
-        public static DialogResult OpenSelectOutreachOptionDialog(Int64 EventKey, IWin32Window AOwner,
+        public static DialogResult OpenSelectOutreachOptionDialog(Int64 EventKey, Form AOwner,
             bool AShowOnlyIfSeveralOptions, out List <KeyValuePair <long, string>>ConferenceList)
         {
             TFrmSelectOutreachOption SelectOutreachOptionDialog;
@@ -158,7 +158,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
 
             ConferenceList = new List <KeyValuePair <long, String>>();
 // TODO check the handle...
-            SelectOutreachOptionDialog = new TFrmSelectOutreachOption(AOwner.Handle);
+            SelectOutreachOptionDialog = new TFrmSelectOutreachOption(AOwner);
 
             if ((AShowOnlyIfSeveralOptions && (GetOutreachOptionsCount() > 1))
                 || !AShowOnlyIfSeveralOptions)

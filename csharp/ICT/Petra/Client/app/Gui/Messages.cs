@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -361,16 +361,16 @@ namespace Ict.Petra.Client.App.Gui
 
         /// <summary>
         /// This routine has been written for thte TxtPetraDate-Class but it can be used anywhere
-        /// else to point out that a date has overruned a date limit.
+        /// else to point out that a date has exceeded a date limit.
         /// </summary>
         /// <param name="maxDate">The maximal date limit</param>
         public static void DateValueMessageMaxOverrun(DateTime maxDate)
         {
-            String strMsg = Catalog.GetString("This date has overruned the limit: {0}");
+            String strMsg = Catalog.GetString("This date has exceeded the limit: {0}");
 
             MessageBox.Show(String.Format(
                     strMsg, StringHelper.DateToLocalizedString(maxDate)),
-                Catalog.GetString("Date overrun ..."), MessageBoxButtons.OK);
+                Catalog.GetString("Date exceeded ..."), MessageBoxButtons.OK);
         }
 
         /// <summary>

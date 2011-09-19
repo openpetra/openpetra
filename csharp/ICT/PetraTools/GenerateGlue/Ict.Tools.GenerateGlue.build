@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<project name="OpenPetra-csharp-GenerateSharedCode-build">
-<property name="Namespace" value="GenerateSharedCode" />
+<project name="OpenPetra-csharp-Ict.Tools.GenerateGlue-build">
+<property name="Namespace" value="Ict.Tools.GenerateGlue" />
 <property name="OutputType" value="exe" />
 
 <property name="RunCsDepend" value="true" />

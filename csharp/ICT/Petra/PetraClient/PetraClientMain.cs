@@ -408,11 +408,11 @@ namespace Ict.Petra.Client.App.PetraClient
 
                     if (FUseNewNavigation)
                     {
-                        MainWindow = new TFrmMainWindowNew(IntPtr.Zero);
+                        MainWindow = new TFrmMainWindowNew(null);
                     }
                     else
                     {
-                        MainWindow = new TFrmMainWindow(IntPtr.Zero);
+                        MainWindow = new TFrmMainWindow(null);
                     }
 
                     // TODO: user defined constructor with more details

@@ -46,7 +46,7 @@ namespace Ict.Petra.Client.App.Core
   public partial class TFrmUnhandledExceptionDetailsDialog: System.Windows.Forms.Form
   {
     /// constructor
-    public TFrmUnhandledExceptionDetailsDialog(IntPtr AParentFormHandle) : base()
+    public TFrmUnhandledExceptionDetailsDialog(Form AParentForm) : base()
     {
       //
       // Required for Windows Form Designer support

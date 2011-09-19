@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -77,7 +77,7 @@ namespace Ict.Common.Printing
             // FWidth: don't try to fit on a page at the moment
             FWidth = DEFAULT_LENGTH_LINE;
             FLeftMargin = 0;
-            FRightMargin = FWidth - FLeftMargin;
+            FRightMargin = 0;
             CurrentPageNr = 1;
         }
 

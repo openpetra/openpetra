@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -129,7 +129,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             try
             {
-                TFrmPartnerEdit frm = new TFrmPartnerEdit(this.Handle);
+                TFrmPartnerEdit frm = new TFrmPartnerEdit(this);
                 frm.SetParameters(TScreenMode.smEdit, FMainDS.AApSupplier[0].PartnerKey);
                 frm.Show();
             }

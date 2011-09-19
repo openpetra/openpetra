@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<project name="OpenPetra-csharp-GenerateExtJsForms-build">
-<property name="Namespace" value="GenerateExtJsForms" />
+<project name="OpenPetra-csharp-Ict.Tools.GenerateExtJsForms-build">
+<property name="Namespace" value="Ict.Tools.GenerateExtJsForms" />
 <property name="OutputType" value="exe" />
 
 <property name="RunCsDepend" value="true" />

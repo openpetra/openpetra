@@ -584,7 +584,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void MaintainWorkerField(System.Object sender, System.EventArgs e)
         {
             //this may be temporary used to have an access point for this dialog
-            TFrmPersonnelStaffData staffDataForm = new TFrmPersonnelStaffData(this.Handle);
+            TFrmPersonnelStaffData staffDataForm = new TFrmPersonnelStaffData(FPetraUtilsObject.GetForm());
 
             staffDataForm.PartnerKey = ((TFrmPartnerEdit)ParentForm).PartnerKey;
             staffDataForm.Show();

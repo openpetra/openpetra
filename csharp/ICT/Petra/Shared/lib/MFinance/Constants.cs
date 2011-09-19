@@ -39,9 +39,6 @@ namespace Ict.Petra.Shared.MFinance
         /// <summary>GL Batch</summary>
         public const String BATCH_CANCELLED = "Cancelled";
 
-        /// <summary>GL Batch</summary>
-        public const String BATCH_HAS_TRANSACTIONS = "HasTransactions";
-
         /// <summary>General Ledger</summary>
         public const String ACCOUNT_TYPE_ASSET = "Asset";
 

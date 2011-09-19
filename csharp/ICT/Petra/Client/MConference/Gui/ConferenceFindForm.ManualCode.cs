@@ -138,21 +138,21 @@ namespace Ict.Petra.Client.MConference.Gui
         /// <param name="AOutreachCodePattern">Matching patterns for the outreach code</param>
         /// <param name="AConferenceKey">Conference key of the found conference</param>
         /// <param name="AConferenceName">Partner ShortName name of the found conference</param>
-        /// <param name="AParentFormHandle"></param>
+        /// <param name="AParentForm"></param>
         /// <returns>True if a conference was found and accepted by the user,
         /// otherwise false.</returns>
         public static bool OpenModalForm(String AConferenceNamePattern,
             String AOutreachCodePattern,
             out Int64 AConferenceKey,
             out String AConferenceName,
-            IntPtr AParentFormHandle)
+            Form AParentForm)
         {
             DialogResult dlgResult;
 
             AConferenceKey = -1;
             AConferenceName = String.Empty;
 
-            TFrmConferenceFindForm FindConference = new TFrmConferenceFindForm(AParentFormHandle);
+            TFrmConferenceFindForm FindConference = new TFrmConferenceFindForm(AParentForm);
 
             dlgResult = FindConference.ShowDialog();
 

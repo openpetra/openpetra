@@ -66,23 +66,29 @@ class CreateInstantiators : AutoGenerationWriter
                         ProcessTemplate snippet = ATemplate.GetSnippet("CHECKUSERMODULEPERMISSIONS");
                         snippet.SetCodelet("METHODNAME", m.Name);
                         snippet.SetCodelet("CONNECTORWITHNAMESPACE", AConnectorClassWithNamespace);
+                        snippet.SetCodelet("LEDGERNUMBER", "");
 
                         string ParameterTypes = ";";
 
                         foreach (ParameterDeclarationExpression p in m.Parameters)
                         {
-                            string ParameterName = p.TypeReference.Type.Replace("&", "");
-
-                            if (ParameterName.Contains("."))
+                            if (p.ParameterName == "ALedgerNumber")
                             {
-                                ParameterName = ParameterName.Substring(ParameterName.LastIndexOf(".") + 1);
+                                snippet.SetCodelet("LEDGERNUMBER", ", ALedgerNumber");
                             }
 
-                            ParameterName = ParameterName.Replace("Boolean", "bool");
-                            ParameterName = ParameterName.Replace("Int32", "int");
-                            ParameterName = ParameterName.Replace("Int64", "long");
+                            string ParameterType = p.TypeReference.Type.Replace("&", "");
 
-                            ParameterTypes += ParameterName + ";";
+                            if (ParameterType.Contains("."))
+                            {
+                                ParameterType = ParameterType.Substring(ParameterType.LastIndexOf(".") + 1);
+                            }
+
+                            ParameterType = ParameterType.Replace("Boolean", "bool");
+                            ParameterType = ParameterType.Replace("Int32", "int");
+                            ParameterType = ParameterType.Replace("Int64", "long");
+
+                            ParameterTypes += ParameterType + ";";
                         }
 
                         ParameterTypes = ParameterTypes.ToUpper();

@@ -130,7 +130,7 @@ namespace Tests.MFinance.Client.Gift
 
             TestFile = Path.GetFullPath(TestFile);
             Assert.IsTrue(File.Exists(TestFile), "File does not exist: " + TestFile);
-            TFrmGiftBatch frmBatch = new TFrmGiftBatch(IntPtr.Zero);
+            TFrmGiftBatch frmBatch = new TFrmGiftBatch(null);
 
             frmBatch.LedgerNumber = FLedgerNumber;
             frmBatch.Show();

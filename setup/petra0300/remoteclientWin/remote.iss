@@ -166,12 +166,12 @@ var
 begin
   if CurStep=ssPostInstall then
   begin
-    Dirname := ExpandConstant('{userappdata}/OpenPetra{#ORGNAME}');
-    ReplaceInTextFile(ExpandConstant('{userappdata}/OpenPetra{#ORGNAME}/etc30/PetraClientRemote.config'), 'TMP30', Dirname + '/tmp30', true);
-    ReplaceInTextFile(ExpandConstant('{userappdata}/OpenPetra{#ORGNAME}/etc30/PetraClientRemote.config'), 'PATCHES30', Dirname + '/patches30', true);
+    Dirname := ExpandConstant('{userappdata}\OpenPetra{#ORGNAME}');
+    ReplaceInTextFile(ExpandConstant('{userappdata}/OpenPetra{#ORGNAME}/etc30/PetraClientRemote.config'), 'TMP30', Dirname + '\tmp30', true);
+    ReplaceInTextFile(ExpandConstant('{userappdata}/OpenPetra{#ORGNAME}/etc30/PetraClientRemote.config'), 'PATCHES30', Dirname + '\patches30', true);
     ReplaceInTextFile(ExpandConstant('{userappdata}/OpenPetra{#ORGNAME}/etc30/PetraClientRemote.config'), 'REMOTEPATCHESPATH', 'https://{#SERVERHOST}/patches/{#ORGNAME}/', true);
-    ReplaceInTextFile(ExpandConstant('{userappdata}/OpenPetra{#ORGNAME}/etc30/PetraClientRemote.config'), 'REPORTUSERSETTINGSPATH', Dirname + '/reports30/Settings', true);
-    ReplaceInTextFile(ExpandConstant('{userappdata}/OpenPetra{#ORGNAME}/etc30/PetraClientRemote.config'), 'REPORTSETTINGSPATH', Dirname + '/reports30/Settings', true);
+    ReplaceInTextFile(ExpandConstant('{userappdata}/OpenPetra{#ORGNAME}/etc30/PetraClientRemote.config'), 'REPORTUSERSETTINGSPATH', Dirname + '\reports30\Settings', true);
+    ReplaceInTextFile(ExpandConstant('{userappdata}/OpenPetra{#ORGNAME}/etc30/PetraClientRemote.config'), 'REPORTSETTINGSPATH', Dirname + '\reports30\Settings', true);
     ReplaceInTextFile(ExpandConstant('{userappdata}/OpenPetra{#ORGNAME}/etc30/PetraClientRemote.config'), 'PETRAHOST', strServer, true);
     ReplaceInTextFile(ExpandConstant('{userappdata}/OpenPetra{#ORGNAME}/etc30/PetraClientRemote.config'), 'PETRAPORT', IntToStr(NetPort), true);
   end;

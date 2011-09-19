@@ -239,7 +239,7 @@ namespace Ict.Petra.Client.App.Core
         {
             TFrmUnhandledExceptionDetailsDialog UHEDDialogue;
 
-            UHEDDialogue = new TFrmUnhandledExceptionDetailsDialog(this.Handle);
+            UHEDDialogue = new TFrmUnhandledExceptionDetailsDialog(this);
             UHEDDialogue.ErrorDetails = FErrorDetails;
             UHEDDialogue.ShowDialog();
 

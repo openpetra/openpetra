@@ -33,6 +33,7 @@ using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.Verification;
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared.MFinance;
@@ -43,8 +44,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 {
     public partial class TUC_GLBatches
     {
-        private Int32 FLedgerNumber;
-        private Int32 FSelectedBatchNumber;
+        private Int32 FLedgerNumber = -1;
+        private Int32 FSelectedBatchNumber = -1;
         private TFinanceBatchFilterEnum FLoadedData = TFinanceBatchFilterEnum.fbfNone;
 
         private DateTime DefaultDate;
@@ -63,6 +64,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             // this will load the batches from the server
             SetBatchFilter();
+
+            ((TFrmGLBatch) this.ParentForm).DisableJournals();
+            ((TFrmGLBatch) this.ParentForm).DisableTransactions();
+            ((TFrmGLBatch) this.ParentForm).DisableAttributes();
 
             ShowData();
 
@@ -84,21 +89,23 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         private void ShowDataManual()
         {
-            txtLedgerNumber.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
+            if (FLedgerNumber != -1)
+            {
+                txtLedgerNumber.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
+                txtDetailBatchControlTotal.CurrencySymbol = FMainDS.ALedger[0].BaseCurrency;
+            }
         }
 
         private void UpdateChangeableStatus(bool batchRowIsSelected)
         {
-            dtpDetailDateEffective.Enabled = batchRowIsSelected;
-            txtDetailBatchDescription.Enabled = batchRowIsSelected;
-
-            FPetraUtilsObject.EnableAction("actExportBatches", batchRowIsSelected);
-
             Boolean postable = batchRowIsSelected
                                && FPreviouslySelectedDetailRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED;
+
             FPetraUtilsObject.EnableAction("actPostBatch", postable);
             FPetraUtilsObject.EnableAction("actTestPostBatch", postable);
             FPetraUtilsObject.EnableAction("actCancel", postable);
+            pnlDetails.Enabled = postable;
+            pnlDetailsProtected = !postable;
 
             if (!batchRowIsSelected)
             {
@@ -112,15 +119,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 {
                 }
             }
-        }
-
-        /// <summary>
-        /// The FMainDS-Contol is only usable after the LedgerNumber has been set externaly.
-        /// In this case some "default"-Settings are to be done.
-        /// </summary>
-        public void FMainDS_ALedgerIsValidNow()
-        {
-            txtDetailBatchControlTotal.CurrencySymbol = FMainDS.ALedger[0].BaseCurrency;
         }
 
         private void ShowDetailsManual(ABatchRow ARow)
@@ -253,7 +251,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     SelectByIndex(rowIndex);
                 }
 
-                // UpdateChangeableStatus();
+                LoadBatches(FLedgerNumber);
             }
         }
 
@@ -286,7 +284,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void PostBatch(System.Object sender, EventArgs e)
         {
-            // TODO: show VerificationResult
             // TODO: display progress of posting
             TVerificationResultCollection Verifications;
 
@@ -323,7 +320,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information);
 
-                    // TODO: refresh the grid, to reflect that the batch has been posted
+                    // refresh the grid, to reflect that the batch has been posted
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatchAndContent(FLedgerNumber, FSelectedBatchNumber));
+
+                    // make sure that the current dataset is clean,
+                    // otherwise the next save would try to modify the posted batch, even though no values have been changed
+                    FMainDS.AcceptChanges();
+                    this.FPreviouslySelectedDetailRow = null;
+                    ((TFrmGLBatch)ParentForm).GetJournalsControl().ClearCurrentSelection();
                     LoadBatches(FLedgerNumber);
                 }
             }
@@ -360,7 +364,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
-            else
+            else if (Result.Count < 25)
             {
                 string message = string.Empty;
 
@@ -370,15 +374,48 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     message +=
                         string.Format(
-                            Catalog.GetString("{0} ({1}) is: {2} and would be: {3}"),
+                            Catalog.GetString("{0}/{1} ({2}/{3}) is: {4} and would be: {5}"),
                             ((TVariant)compValues[0]).ToString(),
+                            ((TVariant)compValues[2]).ToString(),
                             ((TVariant)compValues[1]).ToString(),
-                            StringHelper.FormatCurrency((TVariant)compValues[2], "currency"),
-                            StringHelper.FormatCurrency((TVariant)compValues[3], "currency")) +
+                            ((TVariant)compValues[3]).ToString(),
+                            StringHelper.FormatCurrency((TVariant)compValues[4], "currency"),
+                            StringHelper.FormatCurrency((TVariant)compValues[5], "currency")) +
                         Environment.NewLine;
                 }
 
                 MessageBox.Show(message, Catalog.GetString("Result of Test Posting"));
+            }
+            else
+            {
+                // store to CSV file
+                string message = string.Empty;
+
+                foreach (TVariant value in Result)
+                {
+                    ArrayList compValues = value.ToComposite();
+
+                    message +=
+                        string.Format(
+                            "{0},{1},{2},{3},{4},{5}",
+                            ((TVariant)compValues[0]).ToString(),
+                            ((TVariant)compValues[1]).ToString(),
+                            ((TVariant)compValues[2]).ToString(),
+                            ((TVariant)compValues[3]).ToString(),
+                            StringHelper.FormatCurrency((TVariant)compValues[4], "currency"),
+                            StringHelper.FormatCurrency((TVariant)compValues[5], "currency")) +
+                        Environment.NewLine;
+                }
+
+                string CSVFilePath = TClientSettings.PathLog + Path.DirectorySeparatorChar + "Batch" + FSelectedBatchNumber.ToString() +
+                                     "_TestPosting.csv";
+                StreamWriter sw = new StreamWriter(CSVFilePath);
+                sw.Write(message);
+                sw.Close();
+
+                MessageBox.Show(
+                    String.Format(Catalog.GetString("Please see file {0} for the result of the test posting"), CSVFilePath),
+                    Catalog.GetString("Result of Test Posting"));
             }
         }
 
@@ -575,7 +612,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     string DefaultCostCentre = TXMLParser.GetAttribute(RootNode, "CostCentre");
 
                     CreateNewABatch();
-                    AJournalRow NewJournal = FMainDS.AJournal.NewRowTyped(true);
+                    GLBatchTDSAJournalRow NewJournal = FMainDS.AJournal.NewRowTyped(true);
                     ((TFrmGLBatch)ParentForm).GetJournalsControl().NewRowManual(ref NewJournal);
                     FMainDS.AJournal.Rows.Add(NewJournal);
                     NewJournal.TransactionCurrency = TXMLParser.GetAttribute(RootNode, "Currency");
@@ -788,7 +825,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            TFrmGLBatchExport gl = new TFrmGLBatchExport(this.Handle);
+            TFrmGLBatchExport gl = new TFrmGLBatchExport(FPetraUtilsObject.GetForm());
             gl.LedgerNumber = FLedgerNumber;
             gl.MainDS = FMainDS;
             gl.Show();

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -47,7 +47,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// </summary>
         private String baseCurrencyOfLedger;
 
-        private String strModalFormReturnValue;
+        private Decimal ModalFormReturnValue;
 
         private String strCurrencyToDefault;
         private DateTime dateTimeDefault;
@@ -98,7 +98,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 mniImport.Enabled = true;
                 tbbImport.Enabled = true;
                 blnIsInModalMode = false;
-                strModalFormReturnValue = "";
+                ModalFormReturnValue = 1.0m;
             }
         }
 
@@ -110,10 +110,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// </summary>
         /// <param name="dteEffective">Effective date of the actual acounting process</param>
         /// <param name="strCurrencyTo">The actual foreign currency value</param>
-        /// <param name="strExchangeDefault">Defaut value for the exchange rate</param>
+        /// <param name="ExchangeDefault">Default value for the exchange rate</param>
         public void SetDataFilters(DateTime dteEffective,
             string strCurrencyTo,
-            string strExchangeDefault)
+            decimal ExchangeDefault)
         {
             DateTime dateLimit = dteEffective.AddDays(1.0);
             // Do not use local formats here!
@@ -126,7 +126,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 ADailyExchangeRateTable.GetToCurrencyCodeDBName() + " = '" + strCurrencyTo + "' and " +
                 ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " < '" + dateString + "'";
 
-            strModalFormReturnValue = strExchangeDefault;
+            ModalFormReturnValue = 1.0m;
             strCurrencyToDefault = strCurrencyTo;
             dateTimeDefault = dteEffective;
 
@@ -158,7 +158,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " < '" + strDteEnd + "' and " +
                 ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " > '" + strDteStart + "'";
 
-            strModalFormReturnValue = decExchangeDefault.ToString("0.00000000");
+            ModalFormReturnValue = decExchangeDefault;
             dateTimeDefault = dteEnd;
             strCurrencyToDefault = strCurrencyTo;
 
@@ -226,11 +226,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// If the dialog has been used in modal form, this property shall be used to
         /// read the "answer".
         /// </summary>
-        public String CurrencyExchangeRate
+        public Decimal CurrencyExchangeRate
         {
             get
             {
-                return strModalFormReturnValue;
+                return ModalFormReturnValue;
             }
         }
 
@@ -246,7 +246,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 if (CanClose())
                 {
-                    strModalFormReturnValue = txtDetailRateOfExchange.Text;
+                    ModalFormReturnValue = Convert.ToDecimal(txtDetailRateOfExchange.Text);
                     blnUseDateTimeDefault = false;
                     SaveChanges();
                     Close();

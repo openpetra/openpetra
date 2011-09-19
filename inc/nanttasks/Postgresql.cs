@@ -149,15 +149,16 @@ namespace Ict.Tools.NAntTasks
             process.StartInfo.FileName = FPsqlExecutable;
 
             Environment.SetEnvironmentVariable("PGPASSWORD", FPassword, EnvironmentVariableTarget.Process);
+            Environment.SetEnvironmentVariable("PGOPTIONS", "--client-min-messages=warning", EnvironmentVariableTarget.Process);
 
             if (FSQLCommand.Length > 0)
             {
-                process.StartInfo.Arguments = "-c \"" + FSQLCommand + "\"";
+                process.StartInfo.Arguments = "-q -c \"" + FSQLCommand + "\"";
                 Log(Level.Info, FSQLCommand);
             }
             else if (FSQLFile.Length > 0)
             {
-                process.StartInfo.Arguments = "-f \"" + FSQLFile + "\"";
+                process.StartInfo.Arguments = "-q -f \"" + FSQLFile + "\"";
                 Log(Level.Info, "Load sql commands from file: " + FSQLFile);
             }
 

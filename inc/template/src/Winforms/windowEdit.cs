@@ -31,7 +31,7 @@ namespace {#NAMESPACE}
     private {#DATASETTYPE} FMainDS;
 
     /// constructor
-    public {#CLASSNAME}(IntPtr AParentFormHandle) : base()
+    public {#CLASSNAME}(Form AParentForm) : base()
     {
       //
       // Required for Windows Form Designer support
@@ -45,7 +45,7 @@ namespace {#NAMESPACE}
 
       {#ASSIGNFONTATTRIBUTES}
       
-      FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentFormHandle, this, stbMain);
+      FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentForm, this, stbMain);
       FMainDS = new {#DATASETTYPE}();
       {#INITUSERCONTROLS}
       {#INITMANUALCODE}
