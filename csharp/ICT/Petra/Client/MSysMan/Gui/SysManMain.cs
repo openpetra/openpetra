@@ -129,7 +129,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
                             {
                                 MessageBox.Show(String.Format(Catalog.GetString(
                                             "There was a problem setting the password for user {0}."), username) +
-                                    Environment.NewLine + VerificationResult.BuildVerificationResultString()));
+                                    Environment.NewLine + VerificationResult.BuildVerificationResultString());
                             }
                         }
                         else
