@@ -129,7 +129,7 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
   <property name="PostgreSQL.exe" value="${OP::GetFileInProgramDirectory('/PostgreSQL/9.0/bin/psql.exe')}" overwrite="false" />
   <property name="pgdump.exe" value="${OP::GetFileInProgramDirectory('/PostgreSQL/9.0/bin/pg_dump.exe')}" overwrite="false"/>
   <property name="MySQL.exe" value="${OP::GetFileInProgramDirectory('\mysql\mysql server 5.1/bin/mysql.exe')}" overwrite="false" />
-  <property name="MySQLDump.exe" value="${OP::GetFileInProgramDirectory('\mysql\mysql server 5.1/bin/mysqldump.exe')} 
+  <property name="MySQLDump.exe" value="${OP::GetFileInProgramDirectory('\mysql\mysql server 5.1/bin/mysqldump.exe')}" 
             overwrite="false"/> 
   <property name="Innosetup.ISCC" value="${OP::GetFileInProgramDirectory('/Inno Setup 5/ISCC.exe')}" overwrite="false"/>
 
