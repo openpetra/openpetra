@@ -96,6 +96,9 @@ RootNode:
             mniFileExportPartner:
             mniSeparator:
             
+        mniEdit:
+            mniEditFindNewAddress: {Label=Find New Address...}
+
         mniMaintain: {Label=Ma&intain}            
             mniMaintainAddresses:
             mniMaintainPartnerDetails:
@@ -126,7 +129,7 @@ RootNode:
                 mniViewUpperScreenPartCollapsed:            
             mniViewPartnerData:
             mniViewPersonnelData:
-            mniViewFinanceData:
+            mniViewFinanceData: {Enabled=false}
         
         mniHelp:
             mniSeparator:
@@ -137,4 +140,4 @@ RootNode:
         tbbSeparator:
         tbbViewPartnerData: {Action=actViewPartnerData}
         tbbViewPersonnelData: {Action=actViewPersonnelData}
-        tbbViewFinanceData: {Action=actViewFinanceData}
+        tbbViewFinanceData: {Action=actViewFinanceData, Enabled=false}

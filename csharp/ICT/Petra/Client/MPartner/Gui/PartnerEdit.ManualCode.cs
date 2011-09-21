@@ -1510,7 +1510,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 mniMaintainLocalPartnerData.Enabled = false;
             }
-
+            
             FSubmitChangesContinue = false;
             ApplySecurity();
 
@@ -1793,7 +1793,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void MaintainIndividualData(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            ViewPersonnelData(null, null);
         }
 
         private void MaintainDonorHistory(System.Object sender, System.EventArgs e)
@@ -1842,12 +1842,14 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void ViewPartnerData(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            ucoLowerPart.CurrentModuleTabGroup = TModuleSwitchEnum.msPartner;
+            ucoLowerPart.InitChildUserControl();
         }
 
         private void ViewPersonnelData(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            ucoLowerPart.CurrentModuleTabGroup = TModuleSwitchEnum.msPersonnel;
+            ucoLowerPart.InitChildUserControl();
         }
 
         private void ViewFinanceData(System.Object sender, System.EventArgs e)
@@ -2290,6 +2292,13 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FCurrentModuleTabGroup = TModuleSwitchEnum.msPartner;
                     break;
 #endif
+
+                case TPartnerEditTabPageEnum.petpPersonnelIndividualData:
+                case TPartnerEditTabPageEnum.petpPersonnelApplications:
+                    FInitiallySelectedTabPage = FShowTabPage;
+                    FCurrentModuleTabGroup = TModuleSwitchEnum.msPersonnel;
+                    break;
+                
                 default:
 
                     // Fallback
@@ -2327,8 +2336,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>void</returns>
         private void SetupAvailableModuleDataItems(Boolean AEnable, TModuleSwitchEnum ALockOnModule)
         {
-// TODO enable disable buttons
-#if TODO
             Boolean IsEnabled = false;
 
             // TODO 2 oChristianK cSecurity : Take security settings into consideration.
@@ -2344,7 +2351,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     IsEnabled = AEnable;
                 }
 
-                tbbTogglePartner.Enabled = IsEnabled;
+                tbbViewPartnerData.Enabled = IsEnabled;
                 mniViewPartnerData.Enabled = IsEnabled;
 
                 if (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
@@ -2353,8 +2360,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                     mniMaintainWorkerField.Enabled = IsEnabled;
                     mniMaintainFamilyMembers.Text = Resourcestrings.StrFamilyMenuItemText;
 
-                    // Exchange the 'Family Members' icon with the 'Family' icon!
-                    this.XPMenuItemExtender.SetMenuGlyph(this.mniMaintainFamilyMembers, imlMenuHelper.Images[0]);
+                    // TODO
+//                    // Exchange the 'Family Members' icon with the 'Family' icon!
+//                    this.XPMenuItemExtender.SetMenuGlyph(this.mniMaintainFamilyMembers, imlMenuHelper.Images[0]);
                 }
                 else if (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.FAMILY))
                 {
@@ -2368,7 +2376,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     mniMaintainFamilyMembers.Enabled = false;
                     mniMaintainWorkerField.Enabled = false;
                 }
-
+                
                 mniMaintainAddresses.Enabled = IsEnabled;
                 mniEditFindNewAddress.Enabled = IsEnabled;
                 mniMaintainPartnerDetails.Enabled = IsEnabled;
@@ -2380,7 +2388,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 mniMaintainSubscriptions.Enabled = IsEnabled;
                 mniMaintainSpecialTypes.Enabled = IsEnabled;
-                mniMaintainOfficeSpecific.Enabled = IsEnabled;
+                mniMaintainLocalPartnerData.Enabled = IsEnabled;
                 mniMaintainInterests.Enabled = IsEnabled;
                 mniMaintainReminders.Enabled = IsEnabled;
                 mniMaintainRelationships.Enabled = IsEnabled;
@@ -2390,8 +2398,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
-                tbbTogglePartner.Enabled = (!IsEnabled);
-                mniViewFinanceData.Enabled = (!IsEnabled);
+                //tbbViewPartnerData.Enabled = (!IsEnabled);  // This Tab Group is not functional yet
+                //mniViewFinanceData.Enabled = (!IsEnabled);  // This Tab Group is not functional yet
                 mniMaintainAddresses.Enabled = (!IsEnabled);
                 mniEditFindNewAddress.Enabled = (!IsEnabled);
                 mniMaintainPartnerDetails.Enabled = (!IsEnabled);
@@ -2403,7 +2411,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 mniMaintainSubscriptions.Enabled = (!IsEnabled);
                 mniMaintainSpecialTypes.Enabled = (!IsEnabled);
-                mniMaintainOfficeSpecific.Enabled = (!IsEnabled);
+                mniMaintainLocalPartnerData.Enabled = (!IsEnabled);
                 mniMaintainInterests.Enabled = (!IsEnabled);
                 mniMaintainReminders.Enabled = (!IsEnabled);
                 mniMaintainFamilyMembers.Enabled = (!IsEnabled);
@@ -2419,41 +2427,40 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 if (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
                 {
-                    tbbTogglePersonnel.Enabled = AEnable;
+                    tbbViewPersonnelData.Enabled = AEnable;
                     mniViewPersonnelData.Enabled = AEnable;
-                    mniMaintainPersonnelIndividualData.Enabled = AEnable;
-                    mniMaintainPersonnelIndividualData.Text = Resourcestrings.StrPersonnelPersonMenuItemText;
+                    mniMaintainPersonnelData.Enabled = AEnable;
+                    mniMaintainPersonnelData.Text = Resourcestrings.StrPersonnelPersonMenuItemText;
                 }
                 else if (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.UNIT))
                 {
-                    mniMaintainPersonnelIndividualData.Enabled = AEnable;
-                    mniMaintainPersonnelIndividualData.Text = Resourcestrings.StrPersonnelUnitMenuItemText;
+                    mniMaintainPersonnelData.Enabled = AEnable;
+                    mniMaintainPersonnelData.Text = Resourcestrings.StrPersonnelUnitMenuItemText;
                 }
                 else
                 {
-                    tbbTogglePersonnel.Enabled = (!AEnable);
+                    tbbViewPersonnelData.Enabled = (!AEnable);
                     mniViewPersonnelData.Enabled = (!AEnable);
-                    mniMaintainPersonnelIndividualData.Enabled = (!AEnable);
+                    mniMaintainPersonnelData.Enabled = (!AEnable);
                 }
             }
             else
             {
-                tbbTogglePersonnel.Enabled = (!AEnable);
+                tbbViewPersonnelData.Enabled = (!AEnable);
                 mniViewPersonnelData.Enabled = (!AEnable);
-                mniMaintainPersonnelIndividualData.Enabled = (!AEnable);
+                mniMaintainPersonnelData.Enabled = (!AEnable);
             }
 
-#if  ENABLEMODULESWITCHBUTTONS
-#else
-            tbbTogglePersonnel.Enabled = false;
+
+            tbbViewPersonnelData.Enabled = false;
             mniViewPersonnelData.Enabled = false;
-#endif
+
 
             // Finance Module Data
             if ((ALockOnModule == TModuleSwitchEnum.msNone) || (ALockOnModule == TModuleSwitchEnum.msFinance))
             {
-                tbbToggleFinance.Enabled = AEnable;
-                mniViewFinanceData.Enabled = AEnable;
+                //tbbViewFinanceData.Enabled = AEnable;   // This Tab Group is not functional yet
+                //mniViewFinanceData.Enabled = AEnable;   // This Tab Group is not functional yet
                 mniMaintainDonorHistory.Enabled = AEnable;
                 mniMaintainRecipientHistory.Enabled = AEnable;
 
@@ -2464,8 +2471,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
-                tbbToggleFinance.Enabled = (!AEnable);
-                mniViewFinanceData.Enabled = (!AEnable);
+                //tbbViewFinanceData.Enabled = (!AEnable);    // This Tab Group is not functional yet
+                //mniViewFinanceData.Enabled = (!AEnable);    // This Tab Group is not functional yet
                 mniMaintainDonorHistory.Enabled = (!AEnable);
                 mniMaintainRecipientHistory.Enabled = (!AEnable);
 
@@ -2479,22 +2486,18 @@ namespace Ict.Petra.Client.MPartner.Gui
             mniMaintainFinanceReports.Visible = false;
             mniMaintainBankAccounts.Visible = false;
             mniMaintainGiftReceipting.Visible = false;
-#if  ENABLEMODULESWITCHBUTTONS
-#else
-            tbbToggleFinance.Enabled = false;
-            mniViewFinanceData.Enabled = false;
-#endif
-#if SHOWMODULESWITCHBUTTONS
-            tbbSeparator2.Visible = true;
-            mniViewSeparator1.Visible = true;
-            tbbTogglePartner.Visible = true;
-            mniViewPartnerData.Visible = true;
-            tbbTogglePersonnel.Visible = true;
-            mniViewPersonnelData.Visible = true;
-            tbbToggleFinance.Visible = true;
-            mniViewFinanceData.Visible = true;
-#endif
-#endif
+
+            
+            if (SharedTypes.PartnerClassStringToEnum(FMainDS.PPartner[0].PartnerClass) == TPartnerClass.PERSON)
+            {
+                tbbViewPersonnelData.Enabled = true;
+                mniViewPersonnelData.Enabled = true;
+            }
+            else
+            {
+                tbbViewPersonnelData.Enabled = false;
+                mniViewPersonnelData.Enabled = false;
+            }                
         }
 
         private bool CheckSecurityOKToCreateNewPartner(Boolean AShowMessage)
