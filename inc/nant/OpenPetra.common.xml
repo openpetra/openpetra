@@ -94,13 +94,24 @@
         return Path.GetFullPath(workingDirectory + Path.DirectorySeparatorChar + relativePath);
     }
 
+    private static void GetProgramFiles(out string ProgramFiles, out string ProgramFilesX86)
+    {
+        ProgramFiles = Environment.GetEnvironmentVariable("ProgramFiles");
+        ProgramFilesX86 = Environment.GetEnvironmentVariable("ProgramFiles(x86)");
+        if (ProgramFiles == ProgramFilesX86)
+        {
+            ProgramFiles = Environment.GetEnvironmentVariable("ProgramW6432");
+        }
+    }
+
     /// for Windows: check if the program exists in the 32bit or 64bit location of the Program Files.
     /// returns the full path of the file
     [Function("GetFileInProgramDirectory")]
     public static string GetFileInProgramDirectory(string relativePath)
     {
-        string ProgramFiles = Environment.GetEnvironmentVariable("ProgramFiles");
-        string ProgramFilesX86 = Environment.GetEnvironmentVariable("ProgramFiles(x86)");
+        string ProgramFiles;
+        string ProgramFilesX86;
+        GetProgramFiles(out ProgramFiles, out ProgramFilesX86);
         if (File.Exists(ProgramFiles + relativePath))
         {
             return ProgramFiles + relativePath;
@@ -117,8 +128,9 @@
     [Function("GetDirInProgramDirectory")]
     public static string GetDirInProgramDirectory(string relativePath)
     {
-        string ProgramFiles = Environment.GetEnvironmentVariable("ProgramFiles");
-        string ProgramFilesX86 = Environment.GetEnvironmentVariable("ProgramFiles(x86)");
+        string ProgramFiles;
+        string ProgramFilesX86;
+        GetProgramFiles(out ProgramFiles, out ProgramFilesX86);
         if (Directory.Exists(ProgramFiles + relativePath))
         {
             return ProgramFiles + relativePath;
