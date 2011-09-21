@@ -23,6 +23,10 @@
   <references>
     <include name="System.dll" />
   </references>
+  <imports>
+    <import namespace="System.Collections.Generic" />
+  </imports>
+
   <code><![CDATA[ 
 [Function("CalculateStandaloneDBUpdateFileName")]
 public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
@@ -49,6 +53,51 @@ public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
                         numbers[0], numbers[1], Convert.ToInt16(numbers[2]) - 1,
                         numbers[0], numbers[1], numbers[2]);
 }
+
+// for example: "..\..\..\XmlReports\Settings\*.xml"
+[Function("InsertRecursiveAllFilesFromSubdirectories")]
+public static string InsertRecursiveAllFilesFromSubdirectories(string PathToSearch, string FilePattern, string DestinationPath)
+{
+    string[] filePaths = Directory.GetFiles(Path.GetFullPath(PathToSearch), FilePattern, SearchOption.AllDirectories);
+    string AllFilesFromSubdirectories = string.Empty;
+    foreach (string path in filePaths)
+    {
+        AllFilesFromSubdirectories += "  SetOutPath \"$INSTDIR\\" + DestinationPath + "\\" + Path.GetDirectoryName(path).Substring(Path.GetFullPath(PathToSearch).Length) + "\"" + Environment.NewLine;
+        AllFilesFromSubdirectories += "  File \"..\\..\\..\\" + PathToSearch + path.Substring(Path.GetFullPath(PathToSearch).Length) + "\"" + Environment.NewLine;
+    }
+    return AllFilesFromSubdirectories;
+}
+
+[Function("InsertRecursiveAllFilesFromSubdirectoriesForDeletion")]
+public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string PathToSearch, string FilePattern, string DestinationPath)
+{
+    string[] filePaths = Directory.GetFiles(Path.GetFullPath(PathToSearch), FilePattern, SearchOption.AllDirectories);
+    string AllFilesFromSubdirectories = string.Empty;
+    foreach (string path in filePaths)
+    {
+        AllFilesFromSubdirectories += "  Delete \"$INSTDIR\\" + DestinationPath + path.Substring(Path.GetFullPath(PathToSearch).Length) + "\"" + Environment.NewLine;
+    }
+    
+    SortedList<string, string> DeleteDirectories = new SortedList<string, string>();
+    foreach (string path in filePaths)
+    {
+        string pathToDelete = Path.GetDirectoryName(path.Substring(Path.GetFullPath(PathToSearch).Length));
+        string key = (1000 - pathToDelete.Length).ToString("00000") + pathToDelete;
+        while (pathToDelete.Length > 0 && !DeleteDirectories.ContainsKey(key))
+        {
+            DeleteDirectories.Add(key, pathToDelete);
+            pathToDelete = Path.GetDirectoryName(pathToDelete);
+            key = (1000 - pathToDelete.Length).ToString("00000") + pathToDelete;
+        }
+    }
+    
+    foreach(string key in DeleteDirectories.Keys)
+    {
+        AllFilesFromSubdirectories += "  RMDir \"$INSTDIR\\" + DestinationPath + DeleteDirectories[key] + "\"" + Environment.NewLine;
+    }
+
+    return AllFilesFromSubdirectories;
+}
 ]]>
     </code>
 </script> 
@@ -73,9 +122,24 @@ public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
     
     <property name="OrgNameWithoutSpace" value="${string::replace(OrgName, ' ', '')}"/>
     <property name="RandomDBPassword" value="${script::GetPasswordSalt()}"/>
+
+    <!-- *************** Adjust Remote Client Config file ******************** -->
+    <property name="Config.file" value="${dir.root}/setup/petra${PetraRelease}/remoteclientWin/PetraClientRemote.config.my"/>
+    <if test="${file::exists(Config.file)}">
+        <copy file="${Config.file}" tofile="${tempdir}/PetraClientRemote.config" overwrite="true"/>
+    </if>
+    <if test="${not file::exists(Config.file)}">
+        <property name="Config.file" value="${dir.root}/setup/petra${PetraRelease}/remoteclientWin/PetraClientRemote.config"/>
+        <copy file="${Config.file}" tofile="${tempdir}/PetraClientRemote.config" overwrite="true"/>
+    </if>
+    <property name="Config.file" value="${tempdir}/PetraClientRemote.config"/>
+    <property name="result" value="${script::ReplaceInFile(Config.file, '{#WEBSITE}', PublisherUrl)}"/>
+    <property name="result" value="${script::ReplaceInFile(Config.file, '{#ORGNAME}', OrgNameWithoutSpace)}"/>
+    <property name="result" value="${script::ReplaceInFile(Config.file, '{#PETRAHOST}', ServerHost)}"/>
+    <property name="result" value="${script::ReplaceInFile(Config.file, '{#PETRAPORT}', ServerPort)}"/>
     
     <!--  ***************  Build remote client installer ********************* -->
-    <property name="SetupOriginal.File" value="${dir.root}/setup/petra${PetraRelease}/remoteclientWin/remote.iss"/>
+    <property name="SetupOriginal.File" value="${dir.root}/setup/petra${PetraRelease}/remoteclientWin/remote.nsi"/>
     <call target="setupTemplate"/>
     
     <!-- ***************  create the linux scripts for the server side ***************  -->
@@ -189,24 +253,17 @@ public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
 
     <copy file="${SetupOriginal.File}" tofile="${Current.File}" overwrite="true"/>
 
-    <property name="toReplace" value="{#UINAVIGATION}"/>
-    <property name="UINavigation.file" value="UINavigation.yml.my"/>
+    <property name="UINavigation.file" value="${dir.root}/csharp/ICT/Petra/Definitions/UINavigation.yml.my"/>
     <if test="${file::exists(UINavigation.file)}">
-        <echo message='${script::ReplaceInFile(Current.File, toReplace, UINavigation.file)}'/>
+        <copy file="${UINavigation.file}" tofile="${tempdir}/UINavigation.yml" overwrite="true"/>
     </if>
     <if test="${not file::exists(UINavigation.file)}">
-        <property name="UINavigation.file" value="UINavigation.yml"/>
-        <echo message='${script::ReplaceInFile(Current.File, toReplace, UINavigation.file)}'/>
+        <property name="UINavigation.file" value="${dir.root}/csharp/ICT/Petra/Definitions/UINavigation.yml"/>
+        <copy file="${UINavigation.file}" tofile="${tempdir}/UINavigation.yml" overwrite="true"/>
     </if>
 
-    <property name="Config.file" value="${dir.root}/setup/petra${PetraRelease}/remoteclientWin/PetraClientRemote.config.my"/>
-    <if test="${file::exists(Config.file)}">
-        <copy file="${Config.file}" tofile="${dir.delivery}/PetraClientRemote.config" overwrite="true"/>
-    </if>
-    <if test="${not file::exists(Config.file)}">
-        <property name="Config.file" value="${dir.root}/setup/petra${PetraRelease}/remoteclientWin/PetraClientRemote.config"/>
-        <copy file="${Config.file}" tofile="${dir.delivery}/PetraClientRemote.config" overwrite="true"/>
-    </if>
+    <echo message="${script::ReplaceInFile(Current.File, '  File ..\..\..\XmlReports\Settings\*.xml', script::InsertRecursiveAllFilesFromSubdirectories('XmlReports\Settings\', '*.xml', 'reports30\Settings'))}"/>
+    <echo message="${script::ReplaceInFile(Current.File, '  Delete &quot;$INSTDIR\reports30\Settings\*.xml&quot;', script::InsertRecursiveAllFilesFromSubdirectoriesForDeletion('XmlReports\Settings\', '*.xml', 'reports30\Settings\'))}"/>
 
     <property name="toReplace" value="{#RELEASEVERSION}"/>
     <echo message='${script::ReplaceInFile(Current.File, toReplace, ReleaseVersion)}'/>
@@ -228,8 +285,14 @@ public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
         <property name="toReplace" value="{#SERVERPORT}"/>
         <echo message='${script::ReplaceInFile(Current.File, toReplace, ServerPort)}'/>
     </if>
-    <exec program="${Innosetup.ISCC}" commandline=" &quot;${Current.File}&quot;"
-          workingdir="${path::get-directory-name(Current.File)}"/>
+    <if test="${string::ends-with(SetupOriginal.File, '.nsi')}">
+        <exec program="${makensis.exe}" commandline=" &quot;${Current.File}&quot;"
+              workingdir="${path::get-directory-name(Current.File)}"/>
+    </if>
+    <if test="${string::ends-with(SetupOriginal.File, '.iss')}">
+        <exec program="${Innosetup.ISCC}" commandline=" &quot;${Current.File}&quot;"
+              workingdir="${path::get-directory-name(Current.File)}"/>
+    </if>
 </target>
 
 <!-- Linux -->
@@ -295,10 +358,6 @@ public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
         <include name="*.png" />
     </fileset>
   </copy>       
-  <if test="${BuildClientArchive}">
-    <copy todir="${setupDir}/etc30" 
-          file="${dir.root}/setup/petra${PetraRelease}/remoteclientWin/PetraClientRemote.config" />
-  </if>
   <copy todir="${setupDir}/manuals30">
     <fileset basedir="${dir.root}/setup/petra${PetraRelease}/releasenotes/">
       <include name="*.html" />

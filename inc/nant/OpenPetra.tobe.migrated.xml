@@ -132,6 +132,7 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
   <property name="MySQLDump.exe" value="${OP::GetFileInProgramDirectory('\mysql\mysql server 5.1/bin/mysqldump.exe')}" 
             overwrite="false"/> 
   <property name="Innosetup.ISCC" value="${OP::GetFileInProgramDirectory('/Inno Setup 5/ISCC.exe')}" overwrite="false"/>
+  <property name="makensis.exe" value="${OP::GetFileInProgramDirectory('/NSIS/makensis.exe')}" overwrite="false"/>
 
   <!-- Is this really needed?? Yes, needed for the XSP webserver which is used for testing on Windows -->
   <property name="MonoBinPath" value="${OP::GetDirInProgramDirectory('\Mono-2.6.7\bin')}" overwrite="false"/>     
@@ -141,6 +142,7 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
     <echo>Running on Unix</echo>
     <property name="PostgreSQL.exe" value="psql" overwrite="false"/>
     <property name="MySQL.exe" value="mysql" overwrite="false"/>
+    <property name="makensis.exe" value="makensis" overwrite="false"/>
   </if>
   <if test="${'unix'!=platform::get-name()}">
     <echo>Unknown platform!</echo>
