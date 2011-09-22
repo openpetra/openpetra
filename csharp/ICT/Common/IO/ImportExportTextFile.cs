@@ -29,14 +29,17 @@ using System.Globalization;
 
 namespace Ict.Common.IO
 {
-    /// <summary>
+   /// <summary>
     /// write and read a text file in a format that Petra 2.x uses
     /// </summary>
     public class TImportExportTextFile
     {
+        /// <summary>
+        /// This can be used (and changed) from outside
+        /// </summary>
+        private string dateFormat = "dd/MM/yyyy";
         private const string QUOTE_MARKS = "\"";
         private const string SPACE = "  ";
-        private string DATEFORMAT = "dd/MM/yyyy";
 
         /// <summary>
         /// this contains the context of the text file, all Write functions write into this string,
@@ -68,6 +71,20 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
+        /// Access the current Date Format for import / export
+        /// </summary>
+        public string DATEFORMAT
+        {
+            get
+            {
+                return dateFormat;
+            }
+            set
+            {
+                dateFormat = value;
+            }
+        }
+        /// <summary>
         /// read the current line
         /// </summary>
         public string CurrentLine
@@ -86,7 +103,7 @@ namespace Ict.Common.IO
             FTextToWrite = new StringBuilder();
             FStartOfLine = true;
         }
-
+        
         /// <summary>
         /// returns the string that has been assembled during all the previous write function calls
         /// </summary>
@@ -110,11 +127,11 @@ namespace Ict.Common.IO
 
             if (DateTimeFormat.ToLower() == "dmy")
             {
-                DATEFORMAT = "dd/MM/yyyy";
+                dateFormat = "dd/MM/yyyy";
             }
             else if (DateTimeFormat.ToLower() == "mdy")
             {
-                DATEFORMAT = "MM/dd/yyyy";
+                dateFormat = "MM/dd/yyyy";
             }
             else
             {
@@ -437,7 +454,7 @@ namespace Ict.Common.IO
             else
             {
                 FTextToWrite.Append(QUOTE_MARKS);
-                FTextToWrite.Append(AValue.Value.ToString(DATEFORMAT));
+                FTextToWrite.Append(AValue.Value.ToString(dateFormat));
                 FTextToWrite.Append(QUOTE_MARKS);
             }
 
@@ -456,13 +473,13 @@ namespace Ict.Common.IO
                 return new Nullable <DateTime>();
             }
 
-            if (NextItem.Length != DATEFORMAT.Length)
+            if (NextItem.Length != dateFormat.Length)
             {
                 // eg. pm_special_need.s_date_created_d is stored with just two digits for the year
-                return DateTime.ParseExact(NextItem, DATEFORMAT.Replace("yyyy", "yy"), CultureInfo.InvariantCulture);
+                return DateTime.ParseExact(NextItem, dateFormat.Replace("yyyy", "yy"), CultureInfo.InvariantCulture);
             }
 
-            return DateTime.ParseExact(NextItem, DATEFORMAT, CultureInfo.InvariantCulture);
+            return DateTime.ParseExact(NextItem, dateFormat, CultureInfo.InvariantCulture);
         }
 
         /// <summary>
@@ -477,7 +494,7 @@ namespace Ict.Common.IO
             }
 
             FTextToWrite.Append(QUOTE_MARKS);
-            FTextToWrite.Append(AValue.ToString(DATEFORMAT));
+            FTextToWrite.Append(AValue.ToString(dateFormat));
             FTextToWrite.Append(QUOTE_MARKS);
 
             FStartOfLine = false;
@@ -490,7 +507,7 @@ namespace Ict.Common.IO
         {
             string NextItem = ReadString();
 
-            return DateTime.ParseExact(NextItem, DATEFORMAT, CultureInfo.InvariantCulture);
+            return DateTime.ParseExact(NextItem, dateFormat, CultureInfo.InvariantCulture);
         }
     }
 }

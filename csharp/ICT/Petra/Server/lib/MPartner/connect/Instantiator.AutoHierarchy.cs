@@ -1095,6 +1095,40 @@ namespace Ict.Petra.Server.MPartner.Instantiator.ImportExport.WebConnectors
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector), "ExportPartners", ";");
             return Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector.ExportPartners();
         }
+
+        /// generated method from connector
+        public System.String GetExtFileHeader()
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector), "GetExtFileHeader", ";");
+            return Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector.GetExtFileHeader();
+        }
+
+        /// generated method from connector
+        public System.String GetExtFileFooter()
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector), "GetExtFileFooter", ";");
+            return Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector.GetExtFileFooter();
+        }
+
+        /// generated method from connector
+        public System.String ExportPartnerExt(Int64 APartnerKey,
+                                              Int32 ASiteKey,
+                                              Int32 ALocationKey,
+                                              StringCollection ASpecificBuildingInfo)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector), "ExportPartnerExt", ";LONG;INT;INT;STRINGCOLLECTION;");
+            return Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector.ExportPartnerExt(APartnerKey, ASiteKey, ALocationKey, ASpecificBuildingInfo);
+        }
+
+        /// generated method from connector
+        public Boolean ImportDataExt(System.String[] ALinesToImport,
+                                     System.String ALimitToOption,
+                                     System.Boolean ADoNotOverwrite,
+                                     out TVerificationResultCollection AResultList)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector), "ImportDataExt", ";STRING;STRING;BOOL;TVERIFICATIONRESULTCOLLECTION;");
+            return Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector.ImportDataExt(ALinesToImport, ALimitToOption, ADoNotOverwrite, out AResultList);
+        }
     }
 }
 

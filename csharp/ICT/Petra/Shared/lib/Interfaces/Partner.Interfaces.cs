@@ -244,6 +244,20 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.ImportExport.WebConnectors
                                                         out TVerificationResultCollection AVerificationResult);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector)</summary>
         System.String ExportPartners();
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector)</summary>
+        System.String GetExtFileHeader();
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector)</summary>
+        System.String GetExtFileFooter();
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector)</summary>
+        System.String ExportPartnerExt(Int64 APartnerKey,
+                                       Int32 ASiteKey,
+                                       Int32 ALocationKey,
+                                       StringCollection ASpecificBuildingInfo);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector)</summary>
+        Boolean ImportDataExt(System.String[] ALinesToImport,
+                              System.String ALimitToOption,
+                              System.Boolean ADoNotOverwrite,
+                              out TVerificationResultCollection AResultList);
     }
 
 }

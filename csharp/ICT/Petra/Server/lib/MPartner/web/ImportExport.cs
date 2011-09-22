@@ -40,6 +40,7 @@ using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Server.MPartner.Import;
 
 namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
 {
@@ -257,5 +258,62 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         {
             return TImportExportYml.ExportPartners();
         }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>A string that will form the first two lines of a .ext file</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static string GetExtFileHeader ()
+        { 
+            TPartnerFileExport Exporter = new TPartnerFileExport();
+            return Exporter.ExtFileHeader();
+        }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>A string that will form the final line of a .ext file</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static string GetExtFileFooter ()
+        {
+            return "0 FINISH\n";
+        }
+        
+       /// <summary>
+       /// Format a partner as ext (Petra 2.x format)
+       /// </summary>
+       /// <param name="APartnerKey">Partner key</param>
+       /// <param name="ASiteKey">My site key</param>
+       /// <param name="ALocationKey">My location key</param>
+       /// <param name="ASpecificBuildingInfo">Only include these buildings (null for all)</param>
+       /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static string ExportPartnerExt(Int64 APartnerKey, Int32 ASiteKey, Int32 ALocationKey, StringCollection ASpecificBuildingInfo)
+        {
+            TPartnerFileExport Exporter = new TPartnerFileExport();
+            PartnerImportExportTDS AMainDS = TExportAllPartnerData.ExportPartner(APartnerKey);
+            return Exporter.ExportPartnerExt( AMainDS, ASiteKey, ALocationKey, ASpecificBuildingInfo);
+        }
+
+        /// <summary>
+        /// Unpack this (ext formatted) string into the database
+        /// </summary>
+        /// <param name="ALinesToImport"></param>
+        /// <param name="ALimitToOption"></param>
+        /// <param name="ADoNotOverwrite"></param>
+        /// <param name="AResultList"></param>
+        [RequireModulePermission("PTNRUSER")]
+        public static Boolean ImportDataExt(string[] ALinesToImport,
+                    string ALimitToOption,
+                    bool ADoNotOverwrite,
+                    out TVerificationResultCollection AResultList)
+        {
+            TPartnerFileImport Importer = new TPartnerFileImport();
+            Importer.ImportAllData(ALinesToImport,
+                    ALimitToOption, ADoNotOverwrite,  out AResultList);
+         return true;   
+        }
+
     }
 }

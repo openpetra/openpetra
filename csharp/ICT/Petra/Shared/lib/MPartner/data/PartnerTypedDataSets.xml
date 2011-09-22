@@ -331,6 +331,7 @@
         <Table sqltable="pm_passport_details"/>
         <Table sqltable="pm_document"/>
         <Table sqltable="pm_document_type"/>
+        <Table sqltable="pm_document_category"/>
         <Table sqltable="pt_qualification_area"/>
         <Table sqltable="pm_person_qualification"/>
         <Table sqltable="pm_special_need"/>
