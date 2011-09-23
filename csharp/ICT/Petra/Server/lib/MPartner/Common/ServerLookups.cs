@@ -194,7 +194,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
         /// <param name="AIsMergedPartner">true if the Partner' Partner Status is MERGED,
         ///  otherwise false</param>
         /// <param name="AUserCanAccessPartner">true if the current user has the rights to
-        /// edit this partner</param>
+        /// access this partner</param>
         /// <returns>true if Partner was found in DB or Partner key = 0, otherwise false</returns>
         public static Boolean VerifyPartner(Int64 APartnerKey,
             out String APartnerShortName,
