@@ -584,12 +584,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         void HandleMaintainMenuItemOrToolBarButton(ToolStripItem AToolStripItem)
         {
-            throw new NotImplementedException();
 #if TODO
-            String ClickedMenuItemText;
-
-            ClickedMenuItemText = ((MenuItem)sender).Text;
-
             if (ClickedMenuItemText == mniMaintainAddresses.Text)
             {
                 OpenPartnerEditScreen(TPartnerEditTabPageEnum.petpAddresses);
@@ -644,11 +639,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 TMenuFunctions.OpenWorkerField();
             }
-            else if ((ClickedMenuItemText == Resourcestrings.StrPersonnelPersonMenuItemText)
-                     || (ClickedMenuItemText == Resourcestrings.StrPersonnelUnitMenuItemText))
+#endif            
+            if (AToolStripItem.Name == "mniMaintainPersonnelData")
             {
-                TMenuFunctions.OpenPersonnelIndivData();
+                OpenPartnerEditScreen(TPartnerEditTabPageEnum.petpPersonnelIndividualData);
             }
+            else
+            {
+                throw new NotImplementedException();
+            }
+#if TODO            
             else if (ClickedMenuItemText == mniMaintainDonorHistory.Text)
             {
                 TMenuFunctions.OpenDonorGiftHistory(this);

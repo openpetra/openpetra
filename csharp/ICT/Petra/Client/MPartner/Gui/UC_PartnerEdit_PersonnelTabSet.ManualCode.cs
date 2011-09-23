@@ -125,8 +125,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             OnDataLoadingStarted();
 
             FUserControlInitialised = true;
+            
+            tpgApplications.Enabled = false;    // TODO This feature isn't implemented yet.
 
-//            this.tabPartners.SelectedIndexChanged += new EventHandler(this.tabPartners_SelectedIndexChanged);
 
             SelectTabPage(FInitiallySelectedTabPage);
 
@@ -233,18 +234,18 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 if (ATabPageEventArgs.Tab == tpgIndividualData)
                 {
-                    FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpAddresses;
+                    FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpPersonnelIndividualData;
 
-//                    FUcoIndividualData.PartnerEditUIConnector = FPartnerEditUIConnector;
+                    FUcoIndividualData.PartnerEditUIConnector = FPartnerEditUIConnector;
                     FUcoIndividualData.HookupDataChange += new THookupPartnerEditDataChangeEventHandler(Uco_HookupPartnerEditDataChange);
-
+                    
                     FUcoIndividualData.InitialiseUserControl();
 
                     CorrectDataGridWidthsAfterDataChange();
                 }
                 else if (ATabPageEventArgs.Tab == tpgApplications)
                 {
-                    FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpPartnerTypes;
+                    FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpPersonnelApplications;
 
                     // Hook up RecalculateScreenParts Event
                     FUcoApplications.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
@@ -270,17 +271,11 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void CalculateTabHeaderCounters(System.Object ASender)
         {
-            DataView TmpDV;
-            string DynamicTabTitle;
-            string DynamicToolTipPart1;
-            Int32 CountAll;
-            Int32 CountActive;
+            Int32 CountAll = 0;            
 
             if ((ASender is TUC_PartnerEdit_PersonnelTabSet) || (ASender is TUC_Applications))
             {
-                // TODO
-//                tpgApplications.Text = String.Format(StrApplicationsTabHeader + " ({0})", CountActive);
-
+                tpgApplications.Text = String.Format(tpgApplications.Text, CountAll);
             }
         }
 
@@ -341,16 +336,23 @@ namespace Ict.Petra.Client.MPartner.Gui
             // supress detection changing
             SelectedTabPageBeforeReSelecting = tabPersonnel.SelectedTab;
 
-            switch (ATabPage)
+            try
             {
-                case TPartnerEditTabPageEnum.petpPersonnelIndividualData:
-                    tabPersonnel.SelectedTab = tpgIndividualData;
-                    break;
-
-                case TPartnerEditTabPageEnum.petpPersonnelApplications:
-                    tabPersonnel.SelectedTab = tpgApplications;
-                    break;
-
+                switch (ATabPage)
+                {
+                    case TPartnerEditTabPageEnum.petpPersonnelIndividualData:
+                        tabPersonnel.SelectedTab = tpgIndividualData;
+                        break;
+    
+                    case TPartnerEditTabPageEnum.petpPersonnelApplications:
+                        tabPersonnel.SelectedTab = tpgApplications;
+                        break;
+    
+                }                
+            }
+            catch (Ict.Common.Controls.TSelectedIndexChangeDisallowedTabPagedIsDisabledException)
+            {
+                // Desired Tab Page isn't selectable because it is disabled; ignoring this Exception to ignore the selection.
             }
 
             // Check if the selected TabPage actually changed...

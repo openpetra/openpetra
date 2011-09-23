@@ -610,22 +610,7 @@ namespace Ict.Petra.Client.MPartner
         /// </summary>
         public static void OpenPersonnelIndivData()
         {
-// TODO OpenPersonnelIndivData
-#if TODO
-            String PartnerClass;
 
-            PartnerClass = Logic.ULogic.DetermineCurrentPartnerClass();
-
-            if ((PartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
-                || (PartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.UNIT)))
-            {
-                Logic.UCmdMPartner.RunMaintainPersonnel(Logic.ULogic.ParentForm, Logic.ULogic.PartnerKey);
-            }
-            else
-            {
-                MessageBox.Show(CommonResourcestrings.StrErrorOnlyForPersonOrUnit, CommonResourcestrings.StrGenericFunctionalityNotAvailable);
-            }
-#endif
         }
 
         /// <summary>

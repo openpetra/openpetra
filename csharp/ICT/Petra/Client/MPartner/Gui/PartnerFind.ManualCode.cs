@@ -613,7 +613,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void MniMaintain_Click(System.Object sender, System.EventArgs e)
         {
-            ucoFindByPartnerDetails.HandleMenuItemOrToolBarButton(mniEdit, (ToolStripItem)sender, FRunAsModalForm);
+            ucoFindByPartnerDetails.HandleMenuItemOrToolBarButton(mniMaintain, (ToolStripItem)sender, FRunAsModalForm);
         }
 
         private void MniMailing_Click(System.Object sender, System.EventArgs e)

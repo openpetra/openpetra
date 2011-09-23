@@ -1,14 +1,54 @@
 <PetraDataSets>
- <ImportUnit name="Ict.Petra.Shared.MPartner.Partner.Data"/>
-  <ImportUnit name="Ict.Petra.Shared.MPartner.Mailroom.Data"/>
-  <ImportUnit name="Ict.Petra.Shared.MPersonnel.Personnel.Data"/>
-  <ImportUnit name="Ict.Petra.Shared.MPersonnel.Units.Data"/>
-  <ImportUnit name="Ict.Petra.Shared.MFinance.Account.Data"/>
-  <ImportUnit name="Ict.Petra.Shared.MHospitality.Data"/>
-  <ImportUnit name="Ict.Petra.Shared.MCommon.Data"/>
-   <DataSet name="PersonnelTDS">
-          <Table sqltable="p_partner"/>
-          <Table sqltable="pm_staff_data"/> 
-          <Table sqltable="pm_commitment_status"/>
+    <ImportUnit name="Ict.Petra.Shared.MPartner.Partner.Data"/>
+    <ImportUnit name="Ict.Petra.Shared.MPartner.Mailroom.Data"/>
+    <ImportUnit name="Ict.Petra.Shared.MPersonnel.Personnel.Data"/>
+    <ImportUnit name="Ict.Petra.Shared.MPersonnel.Units.Data"/>
+    <ImportUnit name="Ict.Petra.Shared.MFinance.Account.Data"/>
+    <ImportUnit name="Ict.Petra.Shared.MHospitality.Data"/>
+    <ImportUnit name="Ict.Petra.Shared.MCommon.Data"/>
+  
+    <DataSet name="PersonnelTDS">
+        <Table sqltable="p_partner"/>
+        <Table sqltable="pm_staff_data"/> 
+        <Table sqltable="pm_commitment_status"/>
+    </DataSet>  
+
+    <DataSet name="IndividualDataTDS">
+        <Table sqltable="p_person"/>                      <!-- Personal Data -->
+        <Table sqltable="pm_personal_data"/>              <!-- Personal Data -->
+        <Table sqltable="pt_personal_data_labels"/>       <!-- Personal Data -->
+        <Table sqltable="pm_passport_details"/>           <!-- Passport Details -->
+        <Table sqltable="pm_document"/>                   <!-- Personal Documents -->
+        <Table sqltable="pm_special_need"/>               <!-- Special Needs -->
+        <Table sqltable="pm_person_qualification"/>       <!-- Professional Areas (should be merged with Personal Abilities) -->
+        <Table sqltable="pm_person_language"/>            <!-- Personal Languages -->
+        <Table sqltable="pm_person_ability"/>             <!-- Personal Abilities (should be merged with Professional Areas)-->
+        <Table sqltable="pm_past_experience"/>            <!-- Previous Experience -->
+        <Table sqltable="pm_person_vision"/>              <!-- Personal Vision -->
+        <Table sqltable="pm_staff_data"/>                 <!-- Commitment Periods -->
+        <Table sqltable="pm_job_assignment"/>             <!-- Job Assignments -->
+        <Table sqltable="pm_person_evaluation"/>          <!-- Progress Reports -->
+        <Table sqltable="pm_long_term_support_figures"/>  <!-- Personal Budgets -->
+          
+        <CustomTable name="SummaryData">
+            <Field sqltable="p_person" sqlfield="p_partner_key_n"/>
+            <Field sqltable="p_person" sqlfield="p_family_name_c"/>
+            <Field sqltable="p_person" sqlfield="p_first_name_c"/>
+            <Field sqltable="p_person" sqlfield="p_middle_name_1_c"/>
+            <Field sqltable="p_person" sqlfield="p_date_of_birth_d"/>
+            <Field sqltable="p_person" sqlfield="p_gender_c"/>
+            <Field sqltable="p_person" sqlfield="p_marital_status_c"/>
+            <Field sqltable="p_person" sqlfield="p_prefered_name_c"/>
+            
+            <Field sqltable="p_occupation" sqlfield="p_occupation_description_c"/>
+            <Field sqltable="p_country" sqlfield="p_country_name_c" name="Nationality"/>
+            <Field sqltable="p_partner_location" sqlfield="p_email_address_c"/>
+            <Field sqltable="p_partner_location" sqlfield="p_telephone_number_c"/>
+            
+            <!-- TODO: Many more fields need to be added to that CustomTable (see diapro_i.w) -->
+            
+            <PrimaryKey thisFields="PartnerKey"/>
+        </CustomTable>
    </DataSet>    
+   
 </PetraDataSets>

@@ -1436,7 +1436,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             ucoLowerPart.HookupDataChange += new THookupDataChangeEventHandler(this.UcoPartnerTabSet_HookupDataChange);
             ucoLowerPart.HookupPartnerEditDataChange += new THookupPartnerEditDataChangeEventHandler(
                 this.UcoPartnerTabSet_HookupPartnerEditDataChange);
-            ucoLowerPart.InitChildUserControl();
 
             if (FNewPartnerWithAutoCreatedAddress)
             {
@@ -1448,11 +1447,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 case TModuleSwitchEnum.msPartner:
 
-                    /*
-                     * Set up ucoPartnerTabSet
-                     */
-
-                    // TODO 1
+                    ViewPartnerData(null, null);
 
                     // TODO FPartnerTabSetInitialised = true;
 
@@ -1460,13 +1455,13 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 case TModuleSwitchEnum.msPersonnel:
 
-                    // TODO 2
+                    ViewPersonnelData(null, null);
 
                     break;
 
                 case TModuleSwitchEnum.msFinance:
 
-                    // TODO 2
+                    ViewFinanceData(null, null);
 
                     break;
             }
@@ -1842,12 +1837,26 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void ViewPartnerData(System.Object sender, System.EventArgs e)
         {
+            tbbViewPartnerData.Checked = true;
+            tbbViewPersonnelData.Checked = false;
+            tbbViewFinanceData.Checked = false;
+            mniViewPartnerData.Checked = true;
+            mniViewPersonnelData.Checked = false;
+            mniViewFinanceData.Checked = false;
+                       
             ucoLowerPart.CurrentModuleTabGroup = TModuleSwitchEnum.msPartner;
             ucoLowerPart.InitChildUserControl();
         }
 
         private void ViewPersonnelData(System.Object sender, System.EventArgs e)
         {
+            tbbViewPersonnelData.Checked = true;            
+            tbbViewPartnerData.Checked = false;
+            tbbViewFinanceData.Checked = false;
+            mniViewPersonnelData.Checked = true;
+            mniViewPartnerData.Checked = false;           
+            mniViewFinanceData.Checked = false;
+            
             ucoLowerPart.CurrentModuleTabGroup = TModuleSwitchEnum.msPersonnel;
             ucoLowerPart.InitChildUserControl();
         }

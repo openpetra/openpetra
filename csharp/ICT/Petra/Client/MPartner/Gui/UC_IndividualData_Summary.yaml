@@ -1,0 +1,70 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MPartner.Gui   
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data, Ict.Petra.Shared.MPersonnel.Personnel.Data]
+    DatasetType: Ict.Petra.Shared.MPersonnel.Personnel.Data.IndividualDataTDS
+    FormType: edit
+    Template: usercontrol
+    MasterTable: PPerson
+    Controls:
+        pnlContent:
+            Controls: [grpPersonInfo, grpJobCommitment, grpChurchInfo]              
+            Dock: Fill
+       
+        grpPersonInfo:
+            Controls: [pnlPersonInfoData]
+                   
+        pnlPersonInfoData:
+            Controls:
+                Row0: [txtFamilyName, dtpDateOfBirth]
+                Row1: [txtFirstName, txtGender]
+                Row2: [txtMiddleName, txtNationality]
+                Row3: [txtPreferredName, txtMaritalStatus]
+                Row4: [txtPhone, txtEmail]
+            RowHeights: [3=Fixed:35]
+            Margin: 15,0,0,0
+            
+        txtFamilyName: {ReadOnly=true, BorderStyle=None, DataField=SummaryData.FamilyName}
+        dtpDateOfBirth: {Label=Birth date, ReadOnly=true, BorderStyle=None, DataField=SummaryData.DateOfBirth}
+        txtFirstName: {ReadOnly=true, BorderStyle=None, DataField=SummaryData.FirstName}
+        txtGender: {ReadOnly=true, BorderStyle=None, DataField=SummaryData.Gender}
+        txtMiddleName: {ReadOnly=true, BorderStyle=None, DataField=SummaryData.MiddleName1}
+        txtNationality: {Label=Nationality (Ctry), ReadOnly=true, BorderStyle=None, DataField=SummaryData.Nationality}
+        txtPreferredName: {ReadOnly=true, BorderStyle=None, DataField=SummaryData.PreferedName}
+        txtMaritalStatus: {ReadOnly=true, BorderStyle=None, DataField=SummaryData.MaritalStatus}
+        txtPhone: {ReadOnly=true, BorderStyle=None, DataField=SummaryData.TelephoneNumber}
+        txtEmail: {ReadOnly=true, BorderStyle=None, DataField=SummaryData.EmailAddress}
+
+        grpJobCommitment:
+            Label: Job/Commitment
+            Controls: [pnlJobCommitmentData]
+            
+        pnlJobCommitmentData:
+            Controls:
+                Row0: [txtOccupation, txtField]
+                Row1: [txtBeginDate]
+                Row2: [txtEndDate]
+            RowHeights: [0=Fixed:35]
+            Margin: 43,0,0,0
+
+        txtOccupation: {ReadOnly=true, BorderStyle=None, DataField=SummaryData.Occupation}
+        txtField: {ReadOnly=true, BorderStyle=None}
+        txtBeginDate: {ReadOnly=true, BorderStyle=None}
+        txtEndDate: {ReadOnly=true, BorderStyle=None}
+
+            
+        grpChurchInfo:
+            Controls: [pnlChurchInfoData]
+                    
+        pnlChurchInfoData:
+            Controls:
+                Row0: [txtChurchName]
+                Row1: [txtChurchAddress]
+                Row2: [txtChurchTelephoneNumber, txtPastor]
+            Margin: 60,0,0,0
+            
+        txtChurchName: {Label=Name, ReadOnly=true, BorderStyle=None}
+        txtChurchAddress: {Label=Address, ReadOnly=true, BorderStyle=None}
+        txtChurchTelephoneNumber: {Label=Phone, ReadOnly=true, BorderStyle=None}
+        txtPastor: {ReadOnly=true, BorderStyle=None}

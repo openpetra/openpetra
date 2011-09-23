@@ -22,13 +22,52 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Windows.Forms;
 
 using Ict.Common;
+using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
+using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
     public partial class TUC_IndividualData
     {
+        /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
+        private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
+        
+        IndividualDataTDS FMainDS;          // FMainDS is NOT of Type 'PartnerEditTDS' in this UserControl!!!
+        PartnerEditTDS FPartnerEditTDS;
+        
+        #region Properties
+
+        /// <summary>used for passing through the Clientside Proxy for the UIConnector</summary>
+        public IPartnerUIConnectorsPartnerEdit PartnerEditUIConnector
+        {
+            get
+            {
+                return FPartnerEditUIConnector;
+            }
+
+            set
+            {
+                FPartnerEditUIConnector = value;
+            }
+        }    
+        
+        public PartnerEditTDS MainDS
+        {
+            get
+            {
+                return FPartnerEditTDS;
+            }
+            
+            set
+            {
+                FPartnerEditTDS = value;
+            }
+        }
+        #endregion
         #region Events
         
         /// <summary>todoComment</summary>
@@ -48,12 +87,12 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>void</returns>
         public void InitialiseUserControl()
         {
-//            // Set up screen logic
-//            FLogic.MainDS = FMainDS;
-//            FLogic.DataGrid = grdRecordList;
-//            FLogic.GridRowIconsImageList = imlRecordIcons;
-//            FLogic.PartnerEditUIConnector = FPartnerEditUIConnector;
-//            FLogic.LoadDataOnDemand();
+            FMainDS = new IndividualDataTDS();
+            FMainDS.Merge(FPartnerEditTDS);
+//MessageBox.Show(FMainDS.SummaryData.Rows.Count.ToString());
+
+            ucoSummaryData.PartnerEditUIConnector = FPartnerEditUIConnector;
+            ucoSummaryData.SpecialInitUserControl(FMainDS);
         }
         
 //        /// <summary>
@@ -73,6 +112,43 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void AdjustAfterResizing()
         {
+        }        
+                           
+        #endregion
+                         
+        #region Event Handlers
+        
+        private void IndividualDataItemSelected(object Sender, EventArgs e)
+        {
+            MessageBox.Show("IndividualDataItemSelected clicked.  Sender: " + Sender.ToString());
+            
+//            if (Sender == btnOverview)
+//            {
+//                
+//            }
+//            else if (Sender == btnSpecialNeeds)
+//            {
+//                
+//            }
+//            else if (Sender == btnLanguages)
+//            {
+//                
+//            }
+        }
+        
+        private void OpenBasicDataShepherd(object Sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+        
+        private void OpenIntranetRegistrationShepherd(object Sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ShowEmergencyContacts(object Sender, EventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion

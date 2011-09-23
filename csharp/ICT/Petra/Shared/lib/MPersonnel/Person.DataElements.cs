@@ -25,13 +25,41 @@ using System;
 
 namespace Ict.Petra.Shared.MPersonnel.Person
 {
-    class DataElements
+    public enum TIndividualDataItemEnum
     {
-        /*
-         *   Enums holding the possible cacheable tables for the Petra Personnel Module.
-         */
-
-        // [Serializable()]
-        // TVariableDataLabelsTypesEnum = (Office, Personal, LongTermApp, ShortTermApp);
+        /// <summary>
+        /// the Summary page
+        /// </summary>
+        idiSummary,
+    
+        idiPersonalData,
+        
+        idiEmergencyData,
+        
+        idiPassportDetails,
+        
+        idiPersonalDocuments,
+        
+        idiSpecialNeeds,
+        
+        idiLocalPersonnelData,
+        
+        idiProfessionalAreas,
+        
+        idiPersonalLanguages,
+        
+        idiPersonalAbilities,
+        
+        idiPreviousExperiences,
+        
+        idiPersonalVision,
+        
+        idiCommitmentPeriods,
+        
+        idiJobAssignments,
+        
+        idiProgressReports,
+        
+        idiPersonalBudgets
     }
 }

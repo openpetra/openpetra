@@ -58,6 +58,7 @@ using Ict.Petra.Shared.Interfaces.MPersonnel.Person.DataElements.Applications.Ca
 using Ict.Petra.Shared.Interfaces.MPersonnel.Person.DataElements.Applications.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MPersonnel.Person.DataElements.Cacheable;
 using Ict.Petra.Shared.Interfaces.MPersonnel.Person.DataElements.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MPersonnel.Person.DataElements.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MPersonnel.Person.Shepherds;
 using Ict.Petra.Shared.Interfaces.MPersonnel.Person.Shepherds.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MPersonnel.TableMaintenance.UIConnectors;
@@ -74,6 +75,7 @@ using Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applications.
 using Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applications.UIConnectors;
 using Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Cacheable;
 using Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.UIConnectors;
+using Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.WebConnectors;
 using Ict.Petra.Server.MPersonnel.Instantiator.Person.Shepherds;
 using Ict.Petra.Server.MPersonnel.Instantiator.Person.Shepherds.UIConnectors;
 using Ict.Petra.Server.MPersonnel.Instantiator.TableMaintenance.UIConnectors;
@@ -90,6 +92,7 @@ using Ict.Petra.Server.MPersonnel.WebConnectors;
 //using Ict.Petra.Server.MPersonnel.Person.DataElements.Applications.UIConnectors;
 //using Ict.Petra.Server.MPersonnel.Person.DataElements.Cacheable;
 //using Ict.Petra.Server.MPersonnel.Person.DataElements.UIConnectors;
+using Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors;
 //using Ict.Petra.Server.MPersonnel.Person.Shepherds;
 //using Ict.Petra.Server.MPersonnel.Person.Shepherds.UIConnectors;
 //using Ict.Petra.Server.MPersonnel.TableMaintenance.UIConnectors;
@@ -103,6 +106,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Server.MCommon.UIConnectors;
 using Ict.Petra.Shared.RemotedExceptions;
 using Ict.Petra.Shared.MPersonnel;
+using Ict.Petra.Shared.MPersonnel.Person;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 #endregion ManualCode
 namespace Ict.Petra.Server.MPersonnel.Instantiator
@@ -614,6 +618,7 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements
         private TPersonDataElementsApplicationsNamespace FPersonDataElementsApplicationsSubNamespace;
         private TPersonDataElementsCacheableNamespace FPersonDataElementsCacheableSubNamespace;
         private TPersonDataElementsUIConnectorsNamespace FPersonDataElementsUIConnectorsSubNamespace;
+        private TPersonDataElementsWebConnectorsNamespace FPersonDataElementsWebConnectorsSubNamespace;
 
         /// <summary>Constructor</summary>
         public TPersonDataElementsNamespace()
@@ -760,6 +765,35 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements
                 }
 
                 return FPersonDataElementsUIConnectorsSubNamespace;
+            }
+
+        }
+
+        /// <summary>The 'PersonDataElementsWebConnectors' subnamespace contains further subnamespaces.</summary>
+        public IPersonDataElementsWebConnectorsNamespace WebConnectors
+        {
+            get
+            {
+                //
+                // Creates or passes a reference to an instantiator of sub-namespaces that
+                // reside in the 'PersonDataElements.WebConnectors' sub-namespace.
+                // A call to this function is done everytime a Client uses an object of this
+                // sub-namespace - this is fully transparent to the Client.
+                //
+                // @return A reference to an instantiator of sub-namespaces that reside in
+                //         the 'PersonDataElements.WebConnectors' sub-namespace
+                //
+
+                // accessing TWebConnectorsNamespace the first time? > instantiate the object
+                if (FPersonDataElementsWebConnectorsSubNamespace == null)
+                {
+                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
+                    //      * for the Generator: the name of this Type ('TPersonDataElementsWebConnectorsNamespace') needs to come out of the XML definition,
+                    //      * The Namespace where it resides in ('Ict.Petra.Server.PersonDataElements.Instantiator.WebConnectors') should be automatically contructable.
+                    FPersonDataElementsWebConnectorsSubNamespace = new TPersonDataElementsWebConnectorsNamespace();
+                }
+
+                return FPersonDataElementsWebConnectorsSubNamespace;
             }
 
         }
@@ -1326,6 +1360,85 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.UIConnect
 
 #endif
             return ReturnValue;
+        }
+    }
+}
+
+namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.WebConnectors
+{
+    /// <summary>auto generated class </summary>
+    public class TPersonDataElementsWebConnectorsNamespace : MarshalByRefObject, IPersonDataElementsWebConnectorsNamespace
+    {
+#if DEBUGMODE
+        private DateTime FStartTime;
+#endif
+
+        /// <summary>Constructor</summary>
+        public TPersonDataElementsWebConnectorsNamespace()
+        {
+#if DEBUGMODE
+            if (TLogging.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
+            }
+
+            FStartTime = DateTime.Now;
+#endif
+        }
+
+        // NOTE AutoGeneration: This destructor is only needed for debugging...
+#if DEBUGMODE
+        /// <summary>Destructor</summary>
+        ~TPersonDataElementsWebConnectorsNamespace()
+        {
+#if DEBUGMODELONGRUNNINGFINALIZERS
+            const Int32 MAX_ITERATIONS = 100000;
+            System.Int32 LoopCounter;
+            object MyObject;
+            object MyObject2;
+#endif
+            if (TLogging.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
+                                                                                                DateTime.Now.Ticks -
+                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
+            }
+
+#if DEBUGMODELONGRUNNINGFINALIZERS
+            MyObject = new object();
+            if (TLogging.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
+            }
+
+            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
+            {
+                MyObject2 = new object();
+                GC.KeepAlive(MyObject);
+            }
+
+            if (TLogging.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
+            }
+
+#endif
+        }
+
+#endif
+
+        /// NOTE AutoGeneration: This function is all-important!!!
+        public override object InitializeLifetimeService()
+        {
+            return null; // make sure that the TPersonDataElementsWebConnectorsNamespace object exists until this AppDomain is unloaded!
+        }
+
+        /// generated method from connector
+        public IndividualDataTDS GetData(Int64 APartnerKey,
+                                         TIndividualDataItemEnum AIndivDataItem)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors.TIndividualDataWebConnector), "GetData", ";LONG;TINDIVIDUALDATAITEMENUM;");
+            return Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors.TIndividualDataWebConnector.GetData(APartnerKey, AIndivDataItem);
         }
     }
 }
