@@ -289,6 +289,7 @@ namespace Ict.Petra.Client.CommonForms
                          || (ctrl.GetType() == typeof(System.Windows.Forms.ToolStrip))
                          || (ctrl.GetType() == typeof(System.Windows.Forms.MenuStrip))
                          || (ctrl.GetType() == typeof(Label))
+                         || (ctrl.GetType() == typeof(LinkLabel))
                          || (ctrl.GetType() == typeof(TabPage))
                          || (ctrl.GetType() == typeof(Splitter))
                          || (ctrl.GetType() == typeof(Panel))

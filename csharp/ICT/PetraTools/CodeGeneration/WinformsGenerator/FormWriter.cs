@@ -129,6 +129,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AddControlGenerator(new SplitContainerGenerator());
                 AddControlGenerator(new UserControlGenerator());
                 AddControlGenerator(new LabelGenerator());
+                AddControlGenerator(new LinkLabelGenerator());
                 AddControlGenerator(new ButtonGenerator());
                 AddControlGenerator(new CheckBoxGenerator());
                 AddControlGenerator(new TClbVersatileGenerator());
