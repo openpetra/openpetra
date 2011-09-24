@@ -25,63 +25,63 @@ using System;
 using System.IO;
 using Ict.Common;
 
-namespace DumpPetra2xToOpenPetra
+namespace Ict.Tools.DataDumpPetra2
 {
 /// <summary>
 /// main class
 /// </summary>
-public class TMain
-{
-    /// <summary>
-    /// main function
-    /// </summary>
-    /// <param name="args"></param>
-    public static void Main(string[] args)
+    public class TMain
     {
-        new TAppSettingsManager(false);
-        new TLogging("DumpPetra2xToOpenPetra.log");
-
-        Console.Error.WriteLine("dumps one single table or all tables from Progress Petra 2.3 into Postgresql SQL load format");
-        Console.Error.WriteLine(
-            "usage: DumpPetra2xToOpenPetra -debuglevel:<0..10> -table:<single table or all> -oldpetraxml:<path and filename of old petra.xml> -newpetraxml:<path and filename of petra.xml>");
-        Console.Error.WriteLine("will default to processing all tables, and using petra23.xml and petra.xml from the current directory");
-        Console.Error.WriteLine("");
-        Console.Error.WriteLine("If the file fulldumpOpenPetraCSV.r does not exist yet, the .p file will be written.");
-        Console.Error.WriteLine("");
-        Console.Error.WriteLine(
-            "You should redirect the output to a file, or even pipe it through gzip. eg. mono DumpPetra2xToOpenPetra.exe | gzip > mydump.sql.gz");
-        Console.Error.WriteLine("");
-
-        try
+        /// <summary>
+        /// main function
+        /// </summary>
+        /// <param name="args"></param>
+        public static void Main(string[] args)
         {
-            TLogging.DebugLevel = TAppSettingsManager.GetInt16("debuglevel", 0);
-            string table = TAppSettingsManager.GetValue("table", "");
-            string newxmlfile = TAppSettingsManager.GetValue("newpetraxml", "petra.xml");
-            string oldxmlfile = TAppSettingsManager.GetValue("oldpetraxml", "petra23.xml");
+            new TAppSettingsManager(false);
+            new TLogging("Ict.Tools.DataDumpPetra2.log");
 
-            if (!File.Exists("fulldumpOpenPetraCSV.r"))
+            Console.Error.WriteLine("dumps one single table or all tables from Progress Petra 2.3 into Postgresql SQL load format");
+            Console.Error.WriteLine(
+                "usage: Ict.Tools.DataDumpPetra2 -debuglevel:<0..10> -table:<single table or all> -oldpetraxml:<path and filename of old petra.xml> -newpetraxml:<path and filename of petra.xml>");
+            Console.Error.WriteLine("will default to processing all tables, and using petra23.xml and petra.xml from the current directory");
+            Console.Error.WriteLine("");
+            Console.Error.WriteLine("If the file fulldumpOpenPetraCSV.r does not exist yet, the .p file will be written.");
+            Console.Error.WriteLine("");
+            Console.Error.WriteLine(
+                "You should redirect the output to a file, or even pipe it through gzip. eg. mono Ict.Tools.DataDumpPetra2.exe | gzip > mydump.sql.gz");
+            Console.Error.WriteLine("");
+
+            try
             {
-                TCreateFulldumpProgressCode CreateProgressCode = new TCreateFulldumpProgressCode();
-                CreateProgressCode.GenerateFulldumpCode(oldxmlfile, newxmlfile, "fulldumpOpenPetraCSV.p");
-                TLogging.Log("Please compile fulldumpOpenPetraCSV.p against a StandAlone Petra 2.3 database (network would take forever),");
-                TLogging.Log("and copy the resulting fulldumpOpenPetraCSV.r into this directory. Then rerun DumpPetra2xToOpenPetra.exe.");
-                return;
+                TLogging.DebugLevel = TAppSettingsManager.GetInt16("debuglevel", 0);
+                string table = TAppSettingsManager.GetValue("table", "");
+                string newxmlfile = TAppSettingsManager.GetValue("newpetraxml", "petra.xml");
+                string oldxmlfile = TAppSettingsManager.GetValue("oldpetraxml", "petra23.xml");
+
+                if (!File.Exists("fulldumpOpenPetraCSV.r"))
+                {
+                    TCreateFulldumpProgressCode CreateProgressCode = new TCreateFulldumpProgressCode();
+                    CreateProgressCode.GenerateFulldumpCode(oldxmlfile, newxmlfile, "fulldumpOpenPetraCSV.p");
+                    TLogging.Log("Please compile fulldumpOpenPetraCSV.p against a StandAlone Petra 2.3 database (network would take forever),");
+                    TLogging.Log("and copy the resulting fulldumpOpenPetraCSV.r into this directory. Then rerun Ict.Tools.DataDumpPetra2.exe.");
+                    return;
+                }
+
+                TDumpProgressToPostgresql dumper = new TDumpProgressToPostgresql();
+                dumper.DumpTables(table, oldxmlfile, newxmlfile);
             }
-
-            TDumpProgressToPostgresql dumper = new TDumpProgressToPostgresql();
-            dumper.DumpTables(table, oldxmlfile, newxmlfile);
-        }
-        catch (Exception e)
-        {
-            TLogging.Log(e.Message);
-
-            if (e.InnerException != null)
+            catch (Exception e)
             {
-                TLogging.Log(e.InnerException.Message);
-            }
+                TLogging.Log(e.Message);
 
-            TLogging.Log(e.StackTrace);
+                if (e.InnerException != null)
+                {
+                    TLogging.Log(e.InnerException.Message);
+                }
+
+                TLogging.Log(e.StackTrace);
+            }
         }
     }
-}
 }

@@ -26,81 +26,84 @@ using System.Diagnostics;
 using System.Threading;
 using Ict.Common;
 
-namespace DumpPetra2xToOpenPetra
-{
-public class TRunProgress
+namespace Ict.Tools.DataDumpPetra2
 {
     /// <summary>
-    /// run a .r file in Progress with the given parameters
+    /// run a progress program
     /// </summary>
-    public static bool RunProgress(String AProgram, String AParameters, String AOutput)
+    public class TRunProgress
     {
-        string petraHome = Environment.GetEnvironmentVariable("PETRA_HOME");
-
-        if ((petraHome == null) || (petraHome.Length == 0))
+        /// <summary>
+        /// run a .r file in Progress with the given parameters
+        /// </summary>
+        public static bool RunProgress(String AProgram, String AParameters, String AOutput)
         {
-            throw new Exception("need to run petraenv.sh first");
-        }
+            string petraHome = Environment.GetEnvironmentVariable("PETRA_HOME");
 
-        System.Diagnostics.Process ProgressProcess = new System.Diagnostics.Process();
-        ProgressProcess.EnableRaisingEvents = false;
-
-        if (Utilities.DetermineExecutingOS() == TExecutingOSEnum.eosLinux)
-        {
-            ProgressProcess.StartInfo.FileName = "sh";     // . petra23env.sh should have been called
-
-            ProgressProcess.StartInfo.Arguments = "-c \"_progres -1 -b -pf " + petraHome + "/etc/batch.pf -p ./" +
-                                                  AProgram;
-
-            if (AParameters.Length > 0)
+            if ((petraHome == null) || (petraHome.Length == 0))
             {
-                ProgressProcess.StartInfo.Arguments += " -param " + AParameters;
+                throw new Exception("need to run petraenv.sh first");
             }
 
-            if (AOutput.Length == 0)
+            System.Diagnostics.Process ProgressProcess = new System.Diagnostics.Process();
+            ProgressProcess.EnableRaisingEvents = false;
+
+            if (Utilities.DetermineExecutingOS() == TExecutingOSEnum.eosLinux)
             {
-                ProgressProcess.StartInfo.Arguments += " | cat ";
+                ProgressProcess.StartInfo.FileName = "sh";         // . petra23env.sh should have been called
+
+                ProgressProcess.StartInfo.Arguments = "-c \"_progres -1 -b -pf " + petraHome + "/etc/batch.pf -p ./" +
+                                                      AProgram;
+
+                if (AParameters.Length > 0)
+                {
+                    ProgressProcess.StartInfo.Arguments += " -param " + AParameters;
+                }
+
+                if (AOutput.Length == 0)
+                {
+                    ProgressProcess.StartInfo.Arguments += " | cat ";
+                }
+                else
+                {
+                    ProgressProcess.StartInfo.Arguments += " >> " + AOutput;
+                }
+
+                ProgressProcess.StartInfo.Arguments += "\"";
             }
-            else
+            else         // windows
             {
-                ProgressProcess.StartInfo.Arguments += " >> " + AOutput;
+                string ProgressExe = TAppSettingsManager.GetValue("Progress4GL.Executable", "_progres.exe");
+                ProgressExe = ProgressExe.Replace("prowin32.exe", "_progres.exe");
+
+                ProgressProcess.StartInfo.FileName = ProgressExe;
+
+                ProgressProcess.StartInfo.Arguments =
+                    TAppSettingsManager.GetValue("Progress4GL.Parameters").Replace("petra23.pf", "petra23-single.pf") +
+                    " -b -p " + AProgram;
+
+                if (AParameters.Length > 0)
+                {
+                    ProgressProcess.StartInfo.Arguments += " -param " + AParameters;
+                }
             }
 
-            ProgressProcess.StartInfo.Arguments += "\"";
-        }
-        else     // windows
-        {
-            string ProgressExe = TAppSettingsManager.GetValue("Progress4GL.Executable", "_progres.exe");
-            ProgressExe = ProgressExe.Replace("prowin32.exe", "_progres.exe");
+            ProgressProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
 
-            ProgressProcess.StartInfo.FileName = ProgressExe;
+            ProgressProcess.EnableRaisingEvents = true;
 
-            ProgressProcess.StartInfo.Arguments =
-                TAppSettingsManager.GetValue("Progress4GL.Parameters").Replace("petra23.pf", "petra23-single.pf") +
-                " -b -p " + AProgram;
-
-            if (AParameters.Length > 0)
+            if ((!ProgressProcess.Start()))
             {
-                ProgressProcess.StartInfo.Arguments += " -param " + AParameters;
+                return false;
             }
+
+            while ((!ProgressProcess.HasExited))
+            {
+                Thread.Sleep(500);
+            }
+
+            ProgressProcess.Close();
+            return true;
         }
-
-        ProgressProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-
-        ProgressProcess.EnableRaisingEvents = true;
-
-        if ((!ProgressProcess.Start()))
-        {
-            return false;
-        }
-
-        while ((!ProgressProcess.HasExited))
-        {
-            Thread.Sleep(500);
-        }
-
-        ProgressProcess.Close();
-        return true;
     }
-}
 }

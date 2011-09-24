@@ -28,190 +28,195 @@ using System.Collections.Specialized;
 using System.Collections.Generic;
 using Ict.Common;
 
-namespace DumpPetra2xToOpenPetra
+namespace Ict.Tools.DataDumpPetra2
 {
-class TParseProgressCSV
-{
-    private static int MAXROWS = 200000;
-    private static int RealLineCounter = 0;
-
     /// <summary>
-    /// parse a CSV file that was dumped by Progress.
-    /// that is the fastest way of dumping the data, but it is not ready for being imported into PostgreSQL
+    /// parse the dump file from Progress which is basically a CSV file
     /// </summary>
-    /// <param name="AReader"></param>
-    /// <param name="AColumnCount">for checking the number of columns</param>
-    public static List <string[]>ParseFile(StreamReader AReader, int AColumnCount, ref int CountRows)
+    public class TParseProgressCSV
     {
-        List <string[]>Result = new List <string[]>();
+        private static int MAXROWS = 200000;
+        private static int RealLineCounter = 0;
 
-        if (CountRows == 0)
+        /// <summary>
+        /// parse a CSV file that was dumped by Progress.
+        /// that is the fastest way of dumping the data, but it is not ready for being imported into PostgreSQL.
+        /// this function will stop after MAXROWS, and the next call will continue in the next row. This should avoid too much memory use.
+        /// </summary>
+        /// <param name="AReader"></param>
+        /// <param name="AColumnCount">for checking the number of columns</param>
+        /// <param name="CountRows">returns the current number of rows that have been parsed.</param>
+        public static List <string[]>ParseFile(StreamReader AReader, int AColumnCount, ref int CountRows)
         {
-            RealLineCounter = 0;
-        }
+            List <string[]>Result = new List <string[]>();
 
-        try
-        {
-            while (!AReader.EndOfStream)
+            if (CountRows == 0)
             {
-                StringBuilder line = new StringBuilder(AReader.ReadLine());
+                RealLineCounter = 0;
+            }
 
-                int ColumnCounter = 0;
-
-                if (TLogging.DebugLevel == 10)
+            try
+            {
+                while (!AReader.EndOfStream)
                 {
-                    TLogging.Log("parsing line: " + line.ToString());
-                }
+                    StringBuilder line = new StringBuilder(AReader.ReadLine());
 
-                RealLineCounter++;
-
-                string[] NewLine = new string[AColumnCount];
-
-                while (line.Length > 0)
-                {
-                    string val = string.Empty;
-
-                    if (line[0] == '"')
-                    {
-                        bool AcrossSeveralLines = false;
-
-                        do
-                        {
-                            if (AcrossSeveralLines)
-                            {
-                                line.Append("\n").Append(AReader.ReadLine());
-
-                                if (TLogging.DebugLevel == 10)
-                                {
-                                    TLogging.Log("adding next line: " + line.ToString());
-                                }
-
-                                RealLineCounter++;
-                            }
-
-                            try
-                            {
-                                val = StringHelper.GetNextCSV(ref line, ',');
-                                AcrossSeveralLines = false;
-                            }
-                            catch (System.IndexOutOfRangeException)
-                            {
-                                // the current data row is across several lines
-                                AcrossSeveralLines = true;
-                            }
-                        } while (AcrossSeveralLines);
-
-                        // double quotes have been escaped by two double quotes
-                        val = val.Replace("\"\"", "\"");
-
-                        val = val.Replace("\n", "\\n").Replace("\r", "\\r");
-                    }
-                    else
-                    {
-                        val = StringHelper.GetNextCSV(ref line, ',');
-
-                        if (val == "?")
-                        {
-                            // NULL
-                            val = "\\N";
-                        }
-                    }
+                    int ColumnCounter = 0;
 
                     if (TLogging.DebugLevel == 10)
                     {
-                        TLogging.Log("Parsed value: " + val);
+                        TLogging.Log("parsing line: " + line.ToString());
                     }
 
-                    if (ColumnCounter >= AColumnCount)
+                    RealLineCounter++;
+
+                    string[] NewLine = new string[AColumnCount];
+
+                    while (line.Length > 0)
+                    {
+                        string val = string.Empty;
+
+                        if (line[0] == '"')
+                        {
+                            bool AcrossSeveralLines = false;
+
+                            do
+                            {
+                                if (AcrossSeveralLines)
+                                {
+                                    line.Append("\n").Append(AReader.ReadLine());
+
+                                    if (TLogging.DebugLevel == 10)
+                                    {
+                                        TLogging.Log("adding next line: " + line.ToString());
+                                    }
+
+                                    RealLineCounter++;
+                                }
+
+                                try
+                                {
+                                    val = StringHelper.GetNextCSV(ref line, ',');
+                                    AcrossSeveralLines = false;
+                                }
+                                catch (System.IndexOutOfRangeException)
+                                {
+                                    // the current data row is across several lines
+                                    AcrossSeveralLines = true;
+                                }
+                            } while (AcrossSeveralLines);
+
+                            // double quotes have been escaped by two double quotes
+                            val = val.Replace("\"\"", "\"");
+
+                            val = val.Replace("\n", "\\n").Replace("\r", "\\r");
+                        }
+                        else
+                        {
+                            val = StringHelper.GetNextCSV(ref line, ',');
+
+                            if (val == "?")
+                            {
+                                // NULL
+                                val = "\\N";
+                            }
+                        }
+
+                        if (TLogging.DebugLevel == 10)
+                        {
+                            TLogging.Log("Parsed value: " + val);
+                        }
+
+                        if (ColumnCounter >= AColumnCount)
+                        {
+                            throw new Exception(
+                                String.Format("Line {0}: Invalid number of columns, should be only {1} but there are more columns.",
+                                    RealLineCounter,
+                                    AColumnCount));
+                        }
+
+                        NewLine[ColumnCounter] = val;
+                        ColumnCounter++;
+                    }
+
+                    if (ColumnCounter != AColumnCount)
                     {
                         throw new Exception(
-                            String.Format("Line {0}: Invalid number of columns, should be only {1} but there are more columns.",
+                            String.Format("Line {0}: Invalid number of columns, should be {1} but there are only {2} columns.",
                                 RealLineCounter,
-                                AColumnCount));
+                                AColumnCount,
+                                ColumnCounter));
                     }
 
-                    NewLine[ColumnCounter] = val;
-                    ColumnCounter++;
-                }
+                    Result.Add(NewLine);
+                    CountRows++;
 
-                if (ColumnCounter != AColumnCount)
-                {
-                    throw new Exception(
-                        String.Format("Line {0}: Invalid number of columns, should be {1} but there are only {2} columns.",
-                            RealLineCounter,
-                            AColumnCount,
-                            ColumnCounter));
-                }
+                    if ((TLogging.DebugLevel > 0) && (CountRows % 500000 == 0))
+                    {
+                        TLogging.Log(CountRows.ToString() + " " + (GC.GetTotalMemory(false) / 1024 / 1024).ToString() + " MB");
+                    }
 
-                Result.Add(NewLine);
-                CountRows++;
-
-                if ((TLogging.DebugLevel > 0) && (CountRows % 500000 == 0))
-                {
-                    TLogging.Log(CountRows.ToString() + " " + (GC.GetTotalMemory(false) / 1024 / 1024).ToString() + " MB");
-                }
-
-                if (CountRows % MAXROWS == 0)
-                {
-                    break;
+                    if (CountRows % MAXROWS == 0)
+                    {
+                        break;
+                    }
                 }
             }
-        }
-        catch (Exception e)
-        {
-            TLogging.Log("Problem parsing file, in line " + RealLineCounter.ToString());
-            throw e;
-        }
-
-        return Result;
-    }
-
-    private static string ReplaceKommaQuotes(string InputString)
-    {
-        int startCopyIndex = 0;
-        string lineWithoutDoubleQuotes = "";
-
-        int StringLength = InputString.Length - 1;
-        bool IsString = false;
-
-        for (int Counter = 0; Counter < StringLength; ++Counter)
-        {
-            if (InputString[Counter] == '\"')
+            catch (Exception e)
             {
-                if (!IsString)
-                {
-                    IsString = true;
+                TLogging.Log("Problem parsing file, in line " + RealLineCounter.ToString());
+                throw e;
+            }
 
-                    if ((Counter > 0)
-                        && (InputString[Counter - 1] == ','))
-                    {
-                        // We have ," replace it with KOMMAQUOTES%%
-                        lineWithoutDoubleQuotes = lineWithoutDoubleQuotes +
-                                                  InputString.Substring(startCopyIndex, Counter - 1 - startCopyIndex) +
-                                                  "KOMMAQUOTES%%";
-                        startCopyIndex = Counter + 1;
-                    }
-                }
-                else
+            return Result;
+        }
+
+        private static string ReplaceKommaQuotes(string InputString)
+        {
+            int startCopyIndex = 0;
+            string lineWithoutDoubleQuotes = "";
+
+            int StringLength = InputString.Length - 1;
+            bool IsString = false;
+
+            for (int Counter = 0; Counter < StringLength; ++Counter)
+            {
+                if (InputString[Counter] == '\"')
                 {
-                    // check if " is end of string or part of string
-                    if (InputString[Counter + 1] == '\"')
+                    if (!IsString)
                     {
-                        // We have a double quote as part of the string
-                        Counter++;
+                        IsString = true;
+
+                        if ((Counter > 0)
+                            && (InputString[Counter - 1] == ','))
+                        {
+                            // We have ," replace it with KOMMAQUOTES%%
+                            lineWithoutDoubleQuotes = lineWithoutDoubleQuotes +
+                                                      InputString.Substring(startCopyIndex, Counter - 1 - startCopyIndex) +
+                                                      "KOMMAQUOTES%%";
+                            startCopyIndex = Counter + 1;
+                        }
                     }
                     else
                     {
-                        IsString = false;
+                        // check if " is end of string or part of string
+                        if (InputString[Counter + 1] == '\"')
+                        {
+                            // We have a double quote as part of the string
+                            Counter++;
+                        }
+                        else
+                        {
+                            IsString = false;
+                        }
                     }
                 }
             }
+
+            lineWithoutDoubleQuotes = lineWithoutDoubleQuotes +
+                                      InputString.Substring(startCopyIndex, InputString.Length - startCopyIndex);
+
+            return lineWithoutDoubleQuotes;
         }
-
-        lineWithoutDoubleQuotes = lineWithoutDoubleQuotes +
-                                  InputString.Substring(startCopyIndex, InputString.Length - startCopyIndex);
-
-        return lineWithoutDoubleQuotes;
     }
-}
 }
