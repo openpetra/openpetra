@@ -65,6 +65,13 @@
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/>
   <property name="generateWinformsParameters" value="-TemplateDir:${dir.incdir.template.src}/Winforms -ResourceDir:${dir.root}/resources -petraxml:${PetraXML.file} -localisation:${GUILocalisation} -TargetPlatform:${framework::get-target-framework()}"/>
   <ExecDotNet program="${tool-generateWinForms}" commandline="-ymlfile:${file} ${generateWinformsParameters}"/>
+
+  <!-- now compile -->
+  <nant inheritall="true" target="compile" verbose="${verbose}">
+      <buildfiles>
+        <include name="${path::combine(path::get-directory-name(path::combine(path::combine(dir.csharp, 'ICT/Petra/Client'), file)), '*.build')}"/>
+      </buildfiles>
+  </nant>
 </target>
 
 

@@ -41,6 +41,9 @@ compat:
   generateORM: generates Object Relational Mapping routines from petra.xml
     sub items: generateORMCachedTables, generateORMData, generateORMAccess
   generateGlue: generates the interfaces and instantiators, which is the glue between client and server
+  generateWinforms: generates all yaml files in csharp\ICT\Petra\Client
+  generateWinform: generate a single yaml file, and compile and optionally start the client
+       nant generateWinform startPetraClient -D:file=MFinance/Gui/GL/GLBatch.yaml
   cleanPetra: prepare for a clean build
   compilePetra: build all Petra C# code
   translationCompilePOFile: create the dlls required to be delivered with a new release
@@ -92,7 +95,7 @@ useful parameters
     </fileset>
   </delete>
   <property name="target" value="clean" />
-  <call target="translationCompilePOFile" />    
+  <call target="translationCompilePOFile" />
 </target>
 
 <target name="quickClean" description="cleans all generated files and the delivery directory">
@@ -304,6 +307,14 @@ useful parameters
 <target name="generateORMAccess">
   <!-- generate the files for Ict.Petra.Server.lib.data, ie. the access files for reading from and writing to the database -->
   <nant inheritall="false" target="custdepend" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Server/Ict.Petra.Server.build')}" verbose="${verbose}"/>
+</target>
+
+<target name="generateWinforms">
+  <nant inheritall="false" target="custdepend" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Client/Ict.Petra.Client.build')}" verbose="${verbose}"/>
+</target>
+
+<target name="generateWinform">
+  <nant inheritall="true" target="generateWinform" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Client/Ict.Petra.Client.build')}" verbose="${verbose}"/>
 </target>
 
 </project>
