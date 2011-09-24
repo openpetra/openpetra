@@ -271,6 +271,7 @@
     </target>
 
     <target name="createSQLiteDB" depends="init">
+        <property name="DBMS.Type.Orig" value="${DBMS.Type}"/>
         <property name="DBMS.Type" value="sqlite"/>
         <property name="DBMS.Password" value="CHANGEME"/>
         <if test="${not platform::is-windows()}" >
@@ -282,6 +283,7 @@
         <call target="recreateDatabase"/>
         <call target="resetDatabase"/>
         <copy file="${SQLitedb.file}" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demo.db" overwrite="true"/>
+        <property name="DBMS.Type" value="${DBMS.Type.Orig}"/>
     </target>
 
     <target name="refreshSudo">
@@ -292,19 +294,23 @@
     </target>
     
     <target name="createPostgreSQLDB" depends="init">
+        <property name="DBMS.Type.Orig" value="${DBMS.Type}"/>
         <property name="DBMS.Type" value="postgresql"/>
         <call target="recreateDatabase"/>
         <call target="resetDatabase"/>
         <property name="OutputDB.file" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demodata-PostgreSQL.sql"/>
         <call target="dumpDatabase"/>
+        <property name="DBMS.Type" value="${DBMS.Type.Orig}"/>
     </target>
 
     <target name="createMySQLDB" depends="init">
+        <property name="DBMS.Type.Orig" value="${DBMS.Type}"/>
         <property name="DBMS.Type" value="mysql"/>
         <call target="recreateDatabase"/>
         <call target="resetDatabase"/>
         <property name="OutputDB.file" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demodata-MySQL.sql"/>
         <call target="dumpDatabase"/>
+        <property name="DBMS.Type" value="${DBMS.Type.Orig}"/>
     </target>
 
 </project>
