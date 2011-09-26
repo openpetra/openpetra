@@ -43,7 +43,8 @@ compat:
   generateGlue: generates the interfaces and instantiators, which is the glue between client and server
   generateWinforms: generates all yaml files in csharp\ICT\Petra\Client
   generateWinform: generate a single yaml file, and optionally compile and start the client
-       nant generateWinform startPetraClient -D:file=MFinance/Gui/GL/GLBatch.yaml -D:donotcompile=true
+       nant generateWinform startPetraClient -D:file=MFinance/Gui/GL/GLBatch.yaml
+       nant generateWinform -D:file=MFinance/Gui/GL/GLBatch.yaml -D:donotcompile=true
   cleanPetra: prepare for a clean build
   compilePetra: build all Petra C# code
   translationCompilePOFile: create the dlls required to be delivered with a new release
