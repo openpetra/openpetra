@@ -103,6 +103,11 @@ namespace Ict.Tools.DataDumpPetra2
 
             StringCollection ColumnNames = new StringCollection();
 
+            foreach (TTableField field in newTable.grpTableField.List)
+            {
+                ColumnNames.Add(field.strName);
+            }
+
             Console.WriteLine("COPY " + newTable.strName + " FROM stdin;");
 
             int CountRows = 0;
