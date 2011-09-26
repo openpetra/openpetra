@@ -30,7 +30,7 @@ using System.Collections.Specialized;
 using System.Globalization;
 using Ict.Common;
 using Ict.Petra.Shared;
-    
+
 namespace Ict.Petra.Shared.Testing
 {
     ///  This is a testing program for Ict.Petra.Shared.dll
@@ -52,7 +52,7 @@ namespace Ict.Petra.Shared.Testing
             DateTime ResultDate;
             DateTime ExpectedDate;
             Int32 TimePart;
-            
+
             // Comparison #1: with a time of 01:10:12
             InitialDate = new DateTime(2004, 1, 1, 01, 10, 12);
 
@@ -62,8 +62,8 @@ namespace Ict.Petra.Shared.Testing
             ExpectedDate = DateTime.Now.Date + new TimeSpan(01, 10, 12);
 
             Assert.AreEqual(ExpectedDate, ResultDate, "Comparison #1 of ExpectedDate and ResultDate");
-            
-            
+
+
             // Comparison #1: with a time of 23:56:59
             InitialDate = new DateTime(2004, 1, 1, 23, 56, 59);
 
@@ -72,7 +72,7 @@ namespace Ict.Petra.Shared.Testing
             ResultDate = Conversions.Int32TimeToDateTime(TimePart);
             ExpectedDate = DateTime.Now.Date + new TimeSpan(23, 56, 59);
 
-            Assert.AreEqual(ExpectedDate, ResultDate, "Comparison #2 of ExpectedDate and ResultDate");            
+            Assert.AreEqual(ExpectedDate, ResultDate, "Comparison #2 of ExpectedDate and ResultDate");
         }
     }
 }

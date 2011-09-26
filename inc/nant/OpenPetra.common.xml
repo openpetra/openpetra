@@ -93,6 +93,54 @@
         
         return Path.GetFullPath(workingDirectory + Path.DirectorySeparatorChar + relativePath);
     }
+
+    private static void GetProgramFiles(out string ProgramFiles, out string ProgramFilesX86)
+    {
+        ProgramFiles = Environment.GetEnvironmentVariable("ProgramFiles");
+        ProgramFilesX86 = Environment.GetEnvironmentVariable("ProgramFiles(x86)");
+        if (ProgramFiles == ProgramFilesX86)
+        {
+            ProgramFiles = Environment.GetEnvironmentVariable("ProgramW6432");
+        }
+    }
+
+    /// for Windows: check if the program exists in the 32bit or 64bit location of the Program Files.
+    /// returns the full path of the file
+    [Function("GetFileInProgramDirectory")]
+    public static string GetFileInProgramDirectory(string relativePath)
+    {
+        string ProgramFiles;
+        string ProgramFilesX86;
+        GetProgramFiles(out ProgramFiles, out ProgramFilesX86);
+        if (File.Exists(ProgramFiles + relativePath))
+        {
+            return ProgramFiles + relativePath;
+        }
+        else if (File.Exists(ProgramFilesX86 + relativePath))
+        {
+            return ProgramFilesX86 + relativePath;
+        }
+        return ProgramFiles + relativePath;
+    }
+
+    /// for Windows: check if the directory exists in the 32bit or 64bit location of the Program Files.
+    /// returns the full path of the file
+    [Function("GetDirInProgramDirectory")]
+    public static string GetDirInProgramDirectory(string relativePath)
+    {
+        string ProgramFiles;
+        string ProgramFilesX86;
+        GetProgramFiles(out ProgramFiles, out ProgramFilesX86);
+        if (Directory.Exists(ProgramFiles + relativePath))
+        {
+            return ProgramFiles + relativePath;
+        }
+        else if (Directory.Exists(ProgramFilesX86 + relativePath))
+        {
+            return ProgramFilesX86 + relativePath;
+        }
+        return ProgramFiles + relativePath;
+    }
 ]]>
     </code>
 </script>
@@ -254,11 +302,11 @@
 
 <if test="${'win32'==platform::get-name()}" >
   <!-- MS Windows specific -->
-  <property name="external.Uncrustify" value="${environment::get-variable('ProgramFiles')}/uncrustify/uncrustify.exe" 
+  <property name="external.Uncrustify" value="${OP::GetFileInProgramDirectory('/uncrustify/uncrustify.exe')}" 
             overwrite="false"/>
-  <property name="external.Poedit.gettext" value="${environment::get-variable('ProgramFiles')}/Poedit/bin/xgettext.exe" overwrite="false"/>
-  <property name="external.Poedit.msgfmt" value="${environment::get-variable('ProgramFiles')}/Poedit/bin/msgfmt.exe" overwrite="false"/>
-  <property name="external.Poedit.msgcat" value="${environment::get-variable('ProgramFiles')}/Poedit/bin/msgcat.exe" overwrite="false"/> 
+  <property name="external.Poedit.gettext" value="${OP::GetFileInProgramDirectory('/Poedit/bin/xgettext.exe')}" overwrite="false"/>
+  <property name="external.Poedit.msgfmt" value="${OP::GetFileInProgramDirectory('/Poedit/bin/msgfmt.exe')}" overwrite="false"/>
+  <property name="external.Poedit.msgcat" value="${OP::GetFileInProgramDirectory('/Poedit/bin/msgcat.exe')}" overwrite="false"/> 
             
 </if>
 <if test="${'win32'!=platform::get-name()}">

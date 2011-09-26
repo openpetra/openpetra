@@ -146,14 +146,37 @@ namespace Ict.Common.IO
                 throw new Exception("ReadNextStringItem: there is no data anymore");
             }
 
-            // sometimes strings go across several lines
-            while (FCurrentLine.StartsWith("\"") && StringHelper.FindMatchingQuote(FCurrentLine) == -1 && !EndOfFile())
-            {
-                FCurrentLineCounter++;
-                FCurrentLine += Environment.NewLine + FLinesToParse[FCurrentLineCounter].TrimEnd();
-            }
+            string NextStringItem = string.Empty;
 
-            string NextStringItem = StringHelper.GetNextCSV(ref FCurrentLine, SPACE);
+            // sometimes strings go across several lines
+            if (FCurrentLine[0] == '"')
+            {
+                bool AcrossSeveralLines = false;
+
+                do
+                {
+                    if (AcrossSeveralLines)
+                    {
+                        FCurrentLineCounter++;
+                        FCurrentLine += Environment.NewLine + FLinesToParse[FCurrentLineCounter].TrimEnd();
+                    }
+
+                    try
+                    {
+                        NextStringItem = StringHelper.GetNextCSV(ref FCurrentLine, SPACE);
+                        AcrossSeveralLines = false;
+                    }
+                    catch (System.IndexOutOfRangeException)
+                    {
+                        // the current data row is across several lines
+                        AcrossSeveralLines = true;
+                    }
+                } while (AcrossSeveralLines);
+            }
+            else
+            {
+                NextStringItem = StringHelper.GetNextCSV(ref FCurrentLine, SPACE);
+            }
 
             while (FCurrentLine.Length == 0 && FCurrentLineCounter < FLinesToParse.Length - 1)
             {

@@ -36,6 +36,7 @@ using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MSysMan.Data.Access;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -119,6 +120,13 @@ namespace Ict.Petra.Server.MFinance.GL
                         if (RowType == "B")
                         {
                             System.Diagnostics.Debug.WriteLine("B");
+
+                            if (NewBatch != null)
+                            {
+                                // update the totals of the batch that has just been imported
+                                GLRoutines.UpdateTotalsOfBatch(ref MainDS, NewBatch);
+                            }
+
                             NewBatch = MainDS.ABatch.NewRowTyped(true);
                             NewBatch.LedgerNumber = LedgerNumber;
                             MainDS.ALedger[0].LastBatchNumber++;
@@ -270,18 +278,14 @@ namespace Ict.Petra.Server.MFinance.GL
                             {
                                 NewTransaction.DebitCreditIndicator = true;
                                 NewTransaction.TransactionAmount = DebitAmount;
-                                NewJournal.JournalDebitTotal += DebitAmount;
-                                NewBatch.BatchDebitTotal += DebitAmount;
-                                //NewBatch.BatchControlTotal += DebitAmount;
-                                NewBatch.BatchRunningTotal += DebitAmount;
                             }
                             else
                             {
                                 NewTransaction.DebitCreditIndicator = false;
                                 NewTransaction.TransactionAmount = CreditAmount;
-                                NewJournal.JournalCreditTotal += CreditAmount;
-                                NewBatch.BatchCreditTotal += CreditAmount;
                             }
+
+                            NewTransaction.AmountInBaseCurrency = NewTransaction.TransactionAmount / NewJournal.ExchangeRateToBase;
 
                             for (int i = 0; i < 10; i++)
                             {
@@ -317,6 +321,9 @@ namespace Ict.Petra.Server.MFinance.GL
                             {
                                 return false;
                             }
+
+                            // update the totals of the last batch that has just been imported
+                            GLRoutines.UpdateTotalsOfBatch(ref MainDS, NewBatch);
 
                             FImportMessage = Catalog.GetString("Saving the transaction:");
 

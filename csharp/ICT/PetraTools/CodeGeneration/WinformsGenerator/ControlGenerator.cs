@@ -135,14 +135,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             base.SetControlProperties(writer, ctrl);
-            
+
             writer.SetControlProperty(ctrl, "Text", "\"" + ctrl.Label + "\"");
             writer.SetControlProperty(ctrl, "Margin", "new System.Windows.Forms.Padding(3, 7, 3, 0)");
 
             return writer.FTemplate;
         }
     }
-    
+
     /// <summary>
     /// generator for buttons
     /// </summary>
