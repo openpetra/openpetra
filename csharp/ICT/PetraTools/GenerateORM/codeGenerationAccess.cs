@@ -49,15 +49,15 @@ namespace Ict.Tools.CodeGeneration.DataStore
         {
             return DirectReferences.Contains(
                 AConstraint.strOtherTable + "," +
-                StringHelper.StrMerge(AConstraint.strThisFields, ",") + "," +
-                StringHelper.StrMerge(AConstraint.strOtherFields, ","));
+                StringHelper.StrMerge(AConstraint.strThisFields, ',') + "," +
+                StringHelper.StrMerge(AConstraint.strOtherFields, ','));
         }
 
         private static void AddDirectReference(TConstraint AConstraint)
         {
             DirectReferences.Add(AConstraint.strOtherTable + "," +
-                StringHelper.StrMerge(AConstraint.strThisFields, ",") + "," +
-                StringHelper.StrMerge(AConstraint.strOtherFields, ","));
+                StringHelper.StrMerge(AConstraint.strThisFields, ',') + "," +
+                StringHelper.StrMerge(AConstraint.strOtherFields, ','));
         }
 
         /// <summary>

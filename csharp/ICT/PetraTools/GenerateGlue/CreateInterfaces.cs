@@ -547,7 +547,7 @@ public class CreateInterfaces : AutoGenerationWriter
             NamespaceSplit[2] = "Server";
             NamespaceSplit[3] = NamespaceSplit[4];
             NamespaceSplit[4] = "Instantiator";
-            string ServerInstantiatorNamespace = StringHelper.StrMerge(NamespaceSplit, ".");
+            string ServerInstantiatorNamespace = StringHelper.StrMerge(NamespaceSplit, '.');
             List <TypeDeclaration>InstantiatorClasses = GetClassesThatImplementInterface(
                 ACSFiles,
                 AInterfaceName,

@@ -2156,7 +2156,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         ctrl.rowNumber = countRow;
                     }
 
-                    result = StringHelper.ConcatCSV(result, StringHelper.StrMerge(controls, ","), ",");
+                    result = StringHelper.ConcatCSV(result, StringHelper.StrMerge(controls, ','), ",");
                     countRow++;
                 }
 

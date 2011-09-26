@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -219,7 +219,7 @@ namespace Ict.Petra.Client.MReporting.Logic
                 RecentlyUsedSettings.RemoveAt(RecentlyUsedSettings.Count - 1);
             }
 
-            TUserDefaults.SetDefault("RptStg" + FReportName, StringHelper.StrMerge(RecentlyUsedSettings, ","));
+            TUserDefaults.SetDefault("RptStg" + FReportName, StringHelper.StrMerge(RecentlyUsedSettings, ','));
             return RecentlyUsedSettings;
         }
 

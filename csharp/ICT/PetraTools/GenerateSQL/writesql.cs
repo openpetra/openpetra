@@ -511,14 +511,14 @@ public class TWriteSQL
         {
             ASw.WriteLine(",");
             ASw.WriteLine("  CONSTRAINT {0}", constr.strName);
-            ASw.Write("    PRIMARY KEY ({0})", StringHelper.StrMerge(constr.strThisFields, ","));
+            ASw.Write("    PRIMARY KEY ({0})", StringHelper.StrMerge(constr.strThisFields, ','));
         }
 
         if (!onlyForeign && (constr.strType == "uniquekey"))
         {
             ASw.WriteLine(",");
             ASw.WriteLine("  CONSTRAINT {0}", constr.strName);
-            ASw.Write("    UNIQUE ({0})", StringHelper.StrMerge(constr.strThisFields, ","));
+            ASw.Write("    UNIQUE ({0})", StringHelper.StrMerge(constr.strThisFields, ','));
         }
 
         if (onlyForeign && (constr.strType == "foreignkey"))
@@ -528,8 +528,8 @@ public class TWriteSQL
             if (AAdd)
             {
                 ASw.WriteLine("  ADD CONSTRAINT {0}", constr.strName);
-                ASw.WriteLine("    FOREIGN KEY ({0})", StringHelper.StrMerge(constr.strThisFields, ","));
-                ASw.WriteLine("    REFERENCES {0}({1});", constr.strOtherTable, StringHelper.StrMerge(constr.strOtherFields, ","));
+                ASw.WriteLine("    FOREIGN KEY ({0})", StringHelper.StrMerge(constr.strThisFields, ','));
+                ASw.WriteLine("    REFERENCES {0}({1});", constr.strOtherTable, StringHelper.StrMerge(constr.strOtherFields, ','));
             }
             else
             {

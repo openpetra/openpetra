@@ -121,39 +121,54 @@ namespace Ict.Common
             return ReturnValue;
         }
 
+        private static void StrMergeHelper(ref StringBuilder builder, string element, char delim)
+        {
+            if (element.Contains("\\"))
+            {
+                element = element.Replace("\\", "\\\\");
+            }
+
+            // if the element already contains the delimiter, do something about it.
+            // strsplit and getNextCSV have to revert it
+            if (element.IndexOf(delim) != -1)
+            {
+                if (delim == '\t')
+                {
+                    builder.Append(element.Replace("\t", "\\t"));
+                }
+                else
+                {
+                    // replace a double quote with two double quotes inside the element
+                    builder.Append("\"").Append(element.Replace("\"", "\"\"")).Append("\"");
+                }
+            }
+            else
+            {
+                builder.Append(element);
+            }
+        }
+
         /// <summary>
         /// concatenate a string using the given delimiter
         /// </summary>
         /// <param name="l">the StringCollection containing the strings that should be concatenated</param>
         /// <param name="delim">the delimiter to be used between the strings</param>
         /// <returns>a string with the concatenated strings from the StringCollection</returns>
-        public static string StrMerge(StringCollection l, string delim)
+        public static string StrMerge(StringCollection l, char delim)
         {
-            string ReturnValue;
-            int i;
-            string element;
+            StringBuilder ReturnValue = new StringBuilder();
 
-            ReturnValue = "";
-
-            for (i = 0; i <= l.Count - 1; i += 1)
+            for (int i = 0; i <= l.Count - 1; i += 1)
             {
-                element = l[i];
-
-                // if the element already contains the delimiter, mark it with an escape sequence
-                // strsplit and getNextCSV have to revert it
-                // escape the escape marker
-                element = element.Replace("\\", "\\\\");
-                element = element.Replace(delim, "\\" + delim);
-
                 if (i != 0)
                 {
-                    ReturnValue = ReturnValue + delim;
+                    ReturnValue.Append(delim);
                 }
 
-                ReturnValue = ReturnValue + element;
+                StrMergeHelper(ref ReturnValue, l[i], delim);
             }
 
-            return ReturnValue;
+            return ReturnValue.ToString();
         }
 
         /// <summary>
@@ -162,29 +177,21 @@ namespace Ict.Common
         /// <param name="l">the string array containing the strings that should be concatenated</param>
         /// <param name="delim">the delimiter to be used between the strings</param>
         /// <returns>a string with the concatenated strings from the string array</returns>
-        public static string StrMerge(String[] l, string delim)
+        public static string StrMerge(String[] l, char delim)
         {
-            string ReturnValue = "";
+            StringBuilder ReturnValue = new StringBuilder();
 
-            for (int i = 0; i <= l.Length - 1; i++)
+            for (int i = 0; i <= l.Length - 1; i += 1)
             {
-                string element = l[i];
-
-                // if the element already contains the delimiter, mark it with an escape sequence
-                // strsplit and getNextCSV have to revert it
-                // escape the escape marker
-                element = element.Replace("\\", "\\\\");
-                element = element.Replace(delim, "\\" + delim);
-
                 if (i != 0)
                 {
-                    ReturnValue = ReturnValue + delim;
+                    ReturnValue.Append(delim);
                 }
 
-                ReturnValue = ReturnValue + element;
+                StrMergeHelper(ref ReturnValue, l[i], delim);
             }
 
-            return ReturnValue;
+            return ReturnValue.ToString();
         }
 
         /// <summary>

@@ -49,7 +49,7 @@ namespace Ict.Tools.DataDumpPetra2
             Console.Error.WriteLine("If the file fulldumpOpenPetraCSV.r does not exist yet, the .p file will be written.");
             Console.Error.WriteLine("");
             Console.Error.WriteLine(
-                "You should redirect the output to a file, or even pipe it through gzip. eg. mono Ict.Tools.DataDumpPetra2.exe | gzip > mydump.sql.gz");
+                "You should redirect the output to a file, or even pipe it through gzip. eg. mono Ict.Tools.DataDumpPetra2.exe | iconv --to-code=UTF-8 | gzip > mydump.sql.gz");
             Console.Error.WriteLine("");
 
             try

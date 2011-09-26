@@ -713,7 +713,7 @@ namespace Ict.Tools.CodeGeneration
 
             foreach (XmlNode child in children)
             {
-                string nodeValue = StringHelper.StrMerge(TYml2Xml.GetElements(child), ",");
+                string nodeValue = StringHelper.StrMerge(TYml2Xml.GetElements(child), ',');
 
                 // some placeholders should be replaced after all other processing, e.g. Initialise_Ledger
                 AddToCodelet(child.Name, nodeValue);

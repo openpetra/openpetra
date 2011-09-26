@@ -484,7 +484,7 @@ namespace Ict.Petra.Client.CommonForms
                 values.RemoveAt(values.Count - 1);
             }
 
-            TUserDefaults.SetDefault(keyName, StringHelper.StrMerge(values, ","));
+            TUserDefaults.SetDefault(keyName, StringHelper.StrMerge(values, ','));
         }
 
         /// <summary>

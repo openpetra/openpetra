@@ -41,6 +41,7 @@ namespace Ict.Tools.DataDumpPetra2
     {
         private TDataDefinitionStore storeOld;
         private TDataDefinitionStore storeNew;
+        private Encoding ProgressFileEncoding;
 
         private void DumpTable(TTable newTable)
         {
@@ -101,23 +102,12 @@ namespace Ict.Tools.DataDumpPetra2
             TLogging.Log("after reading from Progress");
 
             StringCollection ColumnNames = new StringCollection();
-            StringBuilder copyCommand = new StringBuilder();
-            copyCommand.Append("COPY ").Append(newTable.strName).Append(" (");
 
-            foreach (TTableField field in newTable.grpTableField.List)
-            {
-                ColumnNames.Add(field.strName);
-                copyCommand.Append(field.strName).Append(",");
-            }
-
-            copyCommand.Remove(copyCommand.Length - 1, 1);
-            copyCommand.Append(") FROM stdin;");
-
-            Console.WriteLine(copyCommand.ToString());
+            Console.WriteLine("COPY " + newTable.strName +" FROM stdin;");
 
             int CountRows = 0;
 
-            using (StreamReader sr = new StreamReader(dumpFile))
+            using (StreamReader sr = new StreamReader(dumpFile, ProgressFileEncoding))
             {
                 while (!sr.EndOfStream)
                 {
@@ -127,19 +117,7 @@ namespace Ict.Tools.DataDumpPetra2
 
                     foreach (string[] row in DumpValues)
                     {
-                        StringBuilder sb = new StringBuilder();
-
-                        for (int countColumn = 0; countColumn < newTable.grpTableField.List.Count; countColumn++)
-                        {
-                            if (countColumn > 0)
-                            {
-                                sb.Append('\t');
-                            }
-
-                            sb.Append(row[countColumn]);
-                        }
-
-                        Console.WriteLine(sb.ToString());
+                        Console.WriteLine(StringHelper.StrMerge(row, '\t').Replace("\\\\N", "\\N").ToString());
                     }
                 }
             }
@@ -230,6 +208,17 @@ namespace Ict.Tools.DataDumpPetra2
             }
 
             WritePSQLHeader();
+
+            string ProgressCodepage = Environment.GetEnvironmentVariable("PROGRESS_CP");
+
+            try
+            {
+                ProgressFileEncoding = Encoding.GetEncoding(Convert.ToInt32(ProgressCodepage));
+            }
+            catch
+            {
+                ProgressFileEncoding = Encoding.GetEncoding(ProgressCodepage);
+            }
 
             if (ATableName.Length == 0)
             {

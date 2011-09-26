@@ -95,7 +95,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             // only load from server if there are no attributes loaded yet for this journal
             // otherwise we would overwrite attributes that have already been modified
-            view.Sort = StringHelper.StrMerge(TTypedDataTable.GetPrimaryKeyColumnStringList(ATransactionTable.TableId), ",");
+            view.Sort = StringHelper.StrMerge(TTypedDataTable.GetPrimaryKeyColumnStringList(ATransactionTable.TableId), ',');
 
             if (view.Find(new object[] { FLedgerNumber, FBatchNumber, FJournalNumber, FTransactionNumber }) == -1)
             {
