@@ -38,6 +38,11 @@ namespace Ict.Tools.DataDumpPetra2
             string AColumnName,
             string ANewValue)
         {
+            if (AColumnNames.IndexOf(AColumnName) == -1)
+            {
+                throw new Exception("TFixData.SetValue: Problem with unknown column name " + AColumnName);
+            }
+
             ACurrentRow[AColumnNames.IndexOf(AColumnName)] = ANewValue;
         }
 
@@ -45,6 +50,11 @@ namespace Ict.Tools.DataDumpPetra2
             string[] ACurrentRow,
             string AColumnName)
         {
+            if (AColumnNames.IndexOf(AColumnName) == -1)
+            {
+                throw new Exception("TFixData.GetValue: Problem with unknown column name " + AColumnName);
+            }
+
             return ACurrentRow[AColumnNames.IndexOf(AColumnName)];
         }
 
@@ -85,32 +95,121 @@ namespace Ict.Tools.DataDumpPetra2
                 }
             }
 
-            // TODO:
-            // some entries in a_gift_batch.a_batch_status_c have "posted" (lower letter p)
-            // These entries must be converted to "Posted" (capital letter P)
+            // s_user_group contains some SQL_* users, which are not part of the s_user table
+            if (ATableName == "s_user_group")
+            {
+                for (Int32 counter = 0; counter < ACSVLines.Count; counter++)
+                {
+                    string[] CurrentRow = ACSVLines[counter];
 
-            // TODO
-#if TODO
-            if ((oldField.strName == "pm_target_field_office_n")
-                || (oldField.strName == "pm_target_field_n")
-                || (oldField.strName == "p_om_field_key_n"))
-            {
-                sw.WriteLine("        ForceNullDecimal(" + oldField.strName + ") /* new name " + newField.strName + " */");
-            }
-            else if (oldField.strName.EndsWith("_code_c")
-                     || (oldField.strName == "pm_st_recruit_missions_c"))
-            {
-                if (!oldField.bNotNull)
-                {
-                    sw.WriteLine("        ForceNull(ToUpperCaseAndTrim(" + oldField.strName + "))  /* new name " + newField.strName + " */");
-                }
-                else
-                {
-                    sw.WriteLine("        ToUpperCaseAndTrim(" + oldField.strName + ") /* new name " + newField.strName + " */");
+                    if (GetValue(AColumnNames, CurrentRow, "s_user_id_c").StartsWith("SQL_"))
+                    {
+                        ACSVLines.RemoveAt(counter);
+                        counter--;
+                    }
                 }
             }
-            else
-#endif
+
+            // there is a space in front of the code, which causes a duplicate primary key
+            if (ATableName == "p_type")
+            {
+                bool duplicateExists = false;
+
+                for (Int32 counter = 0; counter < ACSVLines.Count; counter++)
+                {
+                    string[] CurrentRow = ACSVLines[counter];
+
+                    if (GetValue(AColumnNames, CurrentRow, "p_type_code_c") == "STAFF")
+                    {
+                        duplicateExists = true;
+                    }
+                }
+
+                for (Int32 counter = 0; duplicateExists && counter < ACSVLines.Count; counter++)
+                {
+                    string[] CurrentRow = ACSVLines[counter];
+
+                    if (GetValue(AColumnNames, CurrentRow, "p_type_code_c") == " STAFF")
+                    {
+                        ACSVLines.RemoveAt(counter);
+                        counter--;
+                    }
+                }
+            }
+
+            // there is a space in front of the code, which causes a duplicate primary key
+            if (ATableName == "p_reason_subscription_given")
+            {
+                for (Int32 counter = 0; counter < ACSVLines.Count; counter++)
+                {
+                    string[] CurrentRow = ACSVLines[counter];
+
+                    if (GetValue(AColumnNames, CurrentRow, "p_code_c") == " FREE")
+                    {
+                        ACSVLines.RemoveAt(counter);
+                        counter--;
+                    }
+                }
+            }
+
+            // fix foreign key, remove space
+            if (ATableName == "p_subscription")
+            {
+                for (Int32 counter = 0; counter < ACSVLines.Count; counter++)
+                {
+                    string[] CurrentRow = ACSVLines[counter];
+
+                    if (GetValue(AColumnNames, CurrentRow, "p_reason_subs_given_code_c") == " FREE")
+                    {
+                        SetValue(AColumnNames, ref CurrentRow, "p_reason_subs_given_code_c", "FREE");
+                    }
+                }
+            }
+
+            // pm_person_language, language code cannot be null, should be 99
+            if (ATableName == "pm_person_language")
+            {
+                for (Int32 counter = 0; counter < ACSVLines.Count; counter++)
+                {
+                    string[] CurrentRow = ACSVLines[counter];
+                    string val = GetValue(AColumnNames, CurrentRow, "p_language_code_c");
+
+                    if ((val.Length == 0) || (val == "\\N"))
+                    {
+                        SetValue(AColumnNames, ref CurrentRow, "p_language_code_c", "99");
+                    }
+                }
+            }
+
+            // p_partner_contact, method of contact cannot be null, should be UNKNOWN
+            if (ATableName == "p_partner_contact")
+            {
+                for (Int32 counter = 0; counter < ACSVLines.Count; counter++)
+                {
+                    string[] CurrentRow = ACSVLines[counter];
+                    string val = GetValue(AColumnNames, CurrentRow, "p_contact_code_c");
+
+                    if ((val.Length == 0) || (val == "\\N"))
+                    {
+                        SetValue(AColumnNames, ref CurrentRow, "p_contact_code_c", "UNKNOWN");
+                    }
+                }
+            }
+
+            // wrong gift batch status, need to have case sensitive status
+            if (ATableName == "a_gift_batch")
+            {
+                for (Int32 counter = 0; counter < ACSVLines.Count; counter++)
+                {
+                    string[] CurrentRow = ACSVLines[counter];
+                    string val = GetValue(AColumnNames, CurrentRow, "a_batch_status_c");
+
+                    if (val == "posted")
+                    {
+                        SetValue(AColumnNames, ref CurrentRow, "a_batch_status_c", "Posted");
+                    }
+                }
+            }
         }
     }
 }
