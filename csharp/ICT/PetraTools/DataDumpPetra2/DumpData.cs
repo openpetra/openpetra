@@ -103,7 +103,7 @@ namespace Ict.Tools.DataDumpPetra2
 
             StringCollection ColumnNames = new StringCollection();
 
-            Console.WriteLine("COPY " + newTable.strName +" FROM stdin;");
+            Console.WriteLine("COPY " + newTable.strName + " FROM stdin;");
 
             int CountRows = 0;
 
