@@ -40,11 +40,9 @@ RootNode:
                 Row8: [llbLanguages]
                 Row9: [llbPersonalAbilities]
                 Row10: [llbPreviousExperience]
-                Row11: [llbPersonalVision]
-                Row12: [llbCommitmentPeriods]
-                Row13: [llbJobAssignments]
-                Row14: [llbProgressReports]
-                Row15: [llbPersonalBudgets]
+                Row11: [llbCommitmentPeriods]
+                Row12: [llbJobAssignments]
+                Row13: [llbProgressReports]
             RowHeights: [0=Fixed:28]
 
         llbOverview: {Label=[&v] Overview, Action=actIndivDataItemSelected}
@@ -58,11 +56,9 @@ RootNode:
         llbLanguages: {Label=[&k] Languages ({0}), Action=actIndivDataItemSelected}
         llbPersonalAbilities: {Label=[&l] Abilities ({0}), Enabled=false, Action=actIndivDataItemSelected}
         llbPreviousExperience: {Label=[&m] Previous Experience ({0}), Enabled=false, Action=actIndivDataItemSelected}
-        llbPersonalVision: {Label=[&n] Personal Vision ({0}), Enabled=false, Action=actIndivDataItemSelected}
         llbCommitmentPeriods: {Label=[&o] Commitment Periods ({0}), Enabled=false, Action=actIndivDataItemSelected}
         llbJobAssignments: {Label=[&p] Job Assignments ({0}), Enabled=false, Action=actIndivDataItemSelected}
         llbProgressReports: {Label=[&q] Progress Reports ({0}), Enabled=false, Action=actIndivDataItemSelected}
-        llbPersonalBudgets: {Label=[&r] Personal Budgets ({0}), Enabled=false, Action=actIndivDataItemSelected}
             
         pnlSelectedIndivDataItem:
  #           Dock: Fill

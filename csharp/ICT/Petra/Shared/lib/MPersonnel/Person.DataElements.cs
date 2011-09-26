@@ -52,14 +52,10 @@ namespace Ict.Petra.Shared.MPersonnel.Person
         
         idiPreviousExperiences,
         
-        idiPersonalVision,
-        
         idiCommitmentPeriods,
         
         idiJobAssignments,
         
-        idiProgressReports,
-        
-        idiPersonalBudgets
+        idiProgressReports        
     }
 }
