@@ -210,6 +210,21 @@ namespace Ict.Tools.DataDumpPetra2
                     }
                 }
             }
+
+            // bank code has too many characters, remove spaces
+            if (ATableName == "p_bank")
+            {
+                for (Int32 counter = 0; counter < ACSVLines.Count; counter++)
+                {
+                    string[] CurrentRow = ACSVLines[counter];
+                    string val = GetValue(AColumnNames, CurrentRow, "p_branch_code_c");
+
+                    if (val.Length > 20)
+                    {
+                        SetValue(AColumnNames, ref CurrentRow, "p_branch_code_c", val.Replace(" ", ""));
+                    }
+                }
+            }
         }
     }
 }
