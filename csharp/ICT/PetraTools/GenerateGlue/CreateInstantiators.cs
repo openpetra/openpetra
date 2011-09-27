@@ -84,6 +84,11 @@ class CreateInstantiators : AutoGenerationWriter
                                 ParameterType = ParameterType.Substring(ParameterType.LastIndexOf(".") + 1);
                             }
 
+                            if (p.TypeReference.IsArrayType)
+                            {
+                                ParameterType += ".ARRAY";
+                            }
+
                             ParameterType = ParameterType.Replace("Boolean", "bool");
                             ParameterType = ParameterType.Replace("Int32", "int");
                             ParameterType = ParameterType.Replace("Int64", "long");
