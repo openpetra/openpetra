@@ -361,6 +361,20 @@ namespace Ict.Petra.Server.App.Main
             string DatabaseUserName = TAppSettingsManager.GetValue("Server.DBUserName", "petraserver");
             string DatabasePassword = TAppSettingsManager.GetValue("Server.DBPassword");
 
+            if (DatabasePassword == "PG_OPENPETRA_DBPWD")
+            {
+                // get the password from the file ~/.pgpass. This currently only works for PostgreSQL on Linux
+                using (StreamReader sr = new StreamReader(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
+                           Path.DirectorySeparatorChar + ".pgpass"))
+                {
+                    while (!sr.EndOfStream)
+                    {
+                        string line = sr.ReadLine();
+                        DatabasePassword = line.Substring(line.LastIndexOf(':') + 1);
+                    }
+                }
+            }
+
             if (TAppSettingsManager.HasValue("Server.LogFile"))
             {
                 ServerLogFile = TAppSettingsManager.GetValue("Server.LogFile");
