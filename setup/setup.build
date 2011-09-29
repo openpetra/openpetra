@@ -99,6 +99,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
   <property name="HostedServer" value="localhost"/>
   <property name="HostedPort" value="9000"/>
   <property name="PublisherUrl" value="www.solidcharity.com"/>
+  <property name="RandomDBPassword" value="CHANGEME"/>
   <call target="nanttasks"/>
   <call target="buildRemoteInstallers"/>
 </target>
@@ -380,19 +381,19 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
   
   <if test="${BuildArchive != 'client'}">
     <!-- ***************  create the linux config script for the server side ***************  -->
-    <property name="RandomDBPassword" value="${script::GetPasswordSalt()}"/>
+    <property name="RandomDBPassword" value="${script::GetPasswordSalt()}" overwrite="false"/>
     <property name="Config.file" value="${dir.root}/setup/petra${PetraRelease}/linuxserver/${LinuxTargetDistribution}/config.sh.my"/>
     <if test="${not file::exists(Config.file)}">
         <property name="Config.file" value="${dir.root}/setup/petra${PetraRelease}/linuxserver/${LinuxTargetDistribution}/config.sh"/>
     </if>
     <property name="OpenPetraOrgPath" value="$OpenPetraOrgPath"/>
     <copy file="${Config.file}"
-        tofile="${setupDir}/config.sh" overwrite="true">
+        tofile="${setupDir}/config-sample.sh" overwrite="true">
         <filterchain>
             <expandproperties />
         </filterchain>
     </copy>
-    <copy file="${dir.root}/setup/petra${PetraRelease}/linuxserver/${LinuxTargetDistribution}/setup.sh" tofile="${setupDir}/setup-sample.sh"/>
+    <copy file="${dir.root}/setup/petra${PetraRelease}/linuxserver/${LinuxTargetDistribution}/setup.sh" tofile="${setupDir}/setup.sh"/>
    
     <copy todir="${setupDir}/etc30">
       <fileset basedir="${dir.root}/setup/petra${PetraRelease}/linuxserver/">

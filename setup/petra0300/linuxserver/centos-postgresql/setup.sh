@@ -1,5 +1,10 @@
 if [ "$OPENPETRA_RDBMSType" == '' ]
 then
+    if [ ! -f config.sh ]
+    then
+      cp config-sample.sh config.sh
+    fi
+
     echo "Please first run your config.sh!"
     exit
 fi
@@ -20,9 +25,9 @@ cp $OpenPetraOrgPath/etc30/privatekey-sample.xml $OpenPetraOrgPath/etc30/private
 mkdir -p `dirname $OPENPETRA_LocationPublicKeyFile`
 ln -s $OpenPetraOrgPath/etc30/publickey.xml $OPENPETRA_LocationPublicKeyFile
 mkdir -p /etc/sysconfig/openpetra
-ln -s $OpenPetraOrgPath/config.sh /etc/sysconfig/openpetra/OpenPetra`basename $OpenPetraOrgPath`
-ln -s $OpenPetraOrgPath/openpetraorg-server.sh /etc/init.d/OpenPetra`basename $OpenPetraOrgPath`
-chmod a+x /etc/init.d/OpenPetra`basename $OpenPetraOrgPath`
+ln -s $OpenPetraOrgPath/config.sh /etc/sysconfig/openpetra/openpetra`basename $OpenPetraOrgPath`
+ln -s $OpenPetraOrgPath/openpetraorg-server.sh /etc/init.d/openpetra`basename $OpenPetraOrgPath`
+chmod a+x /etc/init.d/openpetra`basename $OpenPetraOrgPath`
 cat /var/lib/pgsql/9.1/data/pg_hba.conf | grep md5 > /var/lib/pgsql/9.1/data/pg_hba.conf.new
 mv /var/lib/pgsql/9.1/data/pg_hba.conf.new /var/lib/pgsql/9.1/data/pg_hba.conf
 echo "local  $OPENPETRA_DBNAME $OPENPETRA_DBUSER   md5" >> /var/lib/pgsql/9.1/data/pg_hba.conf
@@ -33,7 +38,9 @@ echo "local   postgres         postgres        ident">> /var/lib/pgsql/9.1/data/
 
 chown -R $userName $OpenPetraOrgPath
 
-chkconfig OpenPetra`basename $OpenPetraOrgPath` on
+chkconfig openpetra`basename $OpenPetraOrgPath` on
 
 # TODO: install cron job for running the backup each night
 # $OpenPetraOrgPath/openpetraorg-server.sh backup
+
+cd -

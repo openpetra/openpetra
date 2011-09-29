@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # description: Starts and stops the openpetraorg server running with Mono
 #
@@ -34,7 +34,7 @@ export OPENPETRA_PORT=9000
 export backupfile=$OpenPetraOrgPath/backup-`date +%Y%m%d`.sql.gz
 
 # Override defaults from /etc/sysconfig/openpetra if file is present
-[ -f /etc/sysconfig/openpetra/${NAME} ] && . /etc/sysconfig/openpetra/${NAME}
+[ -f /etc/openpetra/${NAME} ] && . /etc/openpetra/${NAME}
 
 if [ "$2" != "" ]
 then
