@@ -90,11 +90,11 @@
              <if test="${platform::is-unix()}">
                  <echo message="please run sudo ls before calling this, then you don't need to enter a password for postgres user"/>
              </if>
-             <psql exe="${PostgreSQL.exe}" sqlcommand="DROP DATABASE IF EXISTS ${DBMS.DBName};" database="template1" password="${DBMS.Password}"/>
-             <psql exe="${PostgreSQL.exe}" sqlcommand="DROP OWNED BY ${DBMS.UserName}; DROP USER IF EXISTS ${DBMS.UserName};" database="template1" failonerror="false" password="${DBMS.Password}"/>
-             <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE USER ${DBMS.UserName} PASSWORD '${DBMS.Password}';" database="template1" failonerror="false" password="${DBMS.Password}"/>
-             <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE DATABASE ${DBMS.DBName} WITH OWNER=${DBMS.UserName};" database="template1" password="${DBMS.Password}"/>
-             <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" database="${DBMS.DBName}" password="${DBMS.Password}"/>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="DROP DATABASE IF EXISTS ${DBMS.DBName};" database="template1" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="DROP OWNED BY ${DBMS.UserName}; DROP USER IF EXISTS ${DBMS.UserName};" database="template1" failonerror="false" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE USER ${DBMS.UserName} PASSWORD '${DBMS.Password}';" database="template1" failonerror="false" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE DATABASE ${DBMS.DBName} WITH OWNER=${DBMS.UserName};" database="template1" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+             <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
         </if>
         <if test="${DBMS.Type=='mysql'}">
              <echo message="this will now take a while..."/>
@@ -174,9 +174,9 @@
                  <property name="Current.File" value="${BaseData.Dir}/init.sql.local"/>
                  <echo message='${script::ReplaceInFile(Current.File, toReplace, newValue)}'/>
              </if>
-             <psql exe="${PostgreSQL.exe}" sqlfile="${BaseData.Dir}/clean.sql" database="${DBMS.DBName}" password="${DBMS.Password}"/>
-             <psql exe="${PostgreSQL.exe}" sqlfile="${BaseData.Dir}/init.sql.local" database="${DBMS.DBName}" password="${DBMS.Password}"/>
-             <psql exe="${PostgreSQL.exe}" sqlfile="${DemoData.Dir}/init.sql.local" database="${DBMS.DBName}" password="${DBMS.Password}"/>
+             <psql exe="${PostgreSQL.exe}" sqlfile="${BaseData.Dir}/clean.sql" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+             <psql exe="${PostgreSQL.exe}" sqlfile="${BaseData.Dir}/init.sql.local" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+             <psql exe="${PostgreSQL.exe}" sqlfile="${DemoData.Dir}/init.sql.local" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
         </if>
         <if test="${DBMS.Type=='mysql'}">
              <mysql exe="${MySQL.exe}" sqlfile="${BaseData.Dir}/clean.sql" database="${DBMS.DBName}" user="root" password="${DBMS.Password}"/>
@@ -199,7 +199,7 @@
                 <exec program="sudo" commandline="-u postgres rm /var/tmp/output.sql"/>
             </if>
             <if test="${platform::is-windows()}" >
-                <exec program="${pgdump.exe}" commandline="--data-only --file=&quot;${OutputDB.file}&quot; ${DBMS.DBName}">
+                <exec program="${pgdump.exe}" commandline="--data-only --username=${DBMS.UserName} --file=&quot;${OutputDB.file}&quot; ${DBMS.DBName}">
                     <environment>
                         <variable name="PGPASSWORD" value="${DBMS.Password}"/>
                     </environment>
@@ -227,11 +227,11 @@
             <copy file="${LoadDB.file}" tofile="${SQLitedb.file}" overwrite="true"/>
         </if>
         <if test="${DBMS.Type=='postgresql'}">
-            <psql exe="${PostgreSQL.exe}" sqlcommand="DROP DATABASE IF EXISTS ${DBMS.DBName};" database="template1" password="${DBMS.Password}"/>
-            <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE DATABASE ${DBMS.DBName};" database="template1" password="${DBMS.Password}"/>
-            <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra_withoutConstraints.sql" database="${DBMS.DBName}" password="${DBMS.Password}"/>
-            <psql exe="${PostgreSQL.exe}" sqlfile="${LoadDB.file}" database="${DBMS.DBName}" password="${DBMS.Password}"/>
-            <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createconstraints-PostgreSQL.sql" database="${DBMS.DBName}" password="${DBMS.Password}"/>
+            <psql exe="${PostgreSQL.exe}" sqlcommand="DROP DATABASE IF EXISTS ${DBMS.DBName};" database="template1" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+            <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE DATABASE ${DBMS.DBName};" database="template1" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+            <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra_withoutConstraints.sql" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+            <psql exe="${PostgreSQL.exe}" sqlfile="${LoadDB.file}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+            <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createconstraints-PostgreSQL.sql" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
         </if>
         <if test="${DBMS.Type=='mysql'}">
             <mysql exe="${MySQL.exe}" sqlfile="${BaseData.Dir}/clean.sql" database="${DBMS.DBName}" user="root" password="${DBMS.Password}"/>
@@ -246,7 +246,7 @@
             <copy file="${LoadDB.file}" tofile="${SQLitedb.file}" overwrite="true"/>
         </if>
         <if test="${DBMS.Type=='postgresql'}">
-            <psql exe="${PostgreSQL.exe}" sqlfile="${LoadDB.file}" database="${DBMS.DBName}" password="${DBMS.Password}"/>
+            <psql exe="${PostgreSQL.exe}" sqlfile="${LoadDB.file}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
         </if>
         <if test="${DBMS.Type=='mysql'}">
             <mysql exe="${MySQL.exe}" sqlfile="${LoadDB.file}" database="${DBMS.DBName}" user="root" password="${DBMS.Password}"/>
