@@ -263,6 +263,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
 <target name="compileWithoutClient">
   <delete file="${dir.bin}/dont_compile.txt"/>
   
+  <nant inheritall="true" target="thirdParty" buildfile="${path::combine(dir.csharp, 'csharp.build')}" verbose="${verbose}"/>
   <nant inheritall="true" target="compile" buildfile="${path::combine(dir.csharp, 'ICT/Common/ICT.Common.build')}" verbose="${verbose}"/>
   <nant inheritall="true" target="compile" buildfile="${path::combine(dir.csharp, 'ICT/PetraTools/ICT.PetraTools.build')}" verbose="${verbose}"/>
   <nant inheritall="true" target="compile" buildfile="${path::combine(dir.csharp, 'ICT/Petra/PetraWithoutClient.build')}" verbose="${verbose}"/>

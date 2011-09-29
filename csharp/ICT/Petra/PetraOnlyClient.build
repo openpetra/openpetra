@@ -7,12 +7,12 @@
         buildfile="PetraClient/PetraClient.build" />
 </target>
 
-<target name="client" depends="shared,server" >
+<target name="client" depends="" >
   <nant inheritall="false" target="${target}" 
         buildfile="Client/Ict.Petra.Client.build" />
 </target>
 
-<target name="client-plugins" depends="shared,client" >
+<target name="client-plugins" depends="client" >
   <nant inheritall="false" target="${target}"
         buildfile="ClientPlugins/ClientPlugins.build" />
 </target>
