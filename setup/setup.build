@@ -4,7 +4,7 @@
 <include buildfile="../inc/nant/OpenPetra.common.xml" />
 
 <property name="BuildClientArchive" value="false" overwrite="false" />
-<property name="LinuxTargetDistribution" value="centos-postgresql" overwrite="false" />
+<property name="LinuxTargetDistribution-list" value="centos-postgresql" overwrite="false" />
 <property name="WithLinuxClient" value="false" overwrite="false" />
 <property name="PetraRelease" value="0300" overwrite="false" />
 
@@ -93,11 +93,13 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
 
 <target name="buildLinuxSourceforgeRelease">
   <property name="WithLinuxClient" value="true"/>
+  <property name="LinuxTargetDistribution-list" value="debian-postgresql,centos-postgresql"/>
   <property name="OrgName" value="MyOpenPetra"/>
   <property name="OrgNameWithoutSpace" value="MyOpenPetra"/>
   <property name="HostedServer" value="localhost"/>
   <property name="HostedPort" value="9000"/>
   <property name="PublisherUrl" value="www.solidcharity.com"/>
+  <call target="nanttasks"/>
   <call target="buildRemoteInstallers"/>
 </target>
 
@@ -158,8 +160,8 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
         <copy file="${UINavigation.file}" tofile="${tempdir}/UINavigation.yml" overwrite="true"/>
     </if>
 
-    <echo message="${script::ReplaceInFile(Current.File, '  File ..\..\..\XmlReports\Settings\*.xml', script::InsertRecursiveAllFilesFromSubdirectories('XmlReports\Settings\', '*.xml', 'reports30\Settings'))}"/>
-    <echo message="${script::ReplaceInFile(Current.File, '  Delete &quot;$INSTDIR\reports30\Settings\*.xml&quot;', script::InsertRecursiveAllFilesFromSubdirectoriesForDeletion('XmlReports\Settings\', '*.xml', 'reports30\Settings\'))}"/>
+    <echo message="${script::ReplaceInFile(Current.File, '  File ..\..\..\XmlReports\Settings\*.xml', script::InsertRecursiveAllFilesFromSubdirectories('XmlReports/Settings/', '*.xml', 'reports30\Settings'))}"/>
+    <echo message="${script::ReplaceInFile(Current.File, '  Delete &quot;$INSTDIR\reports30\Settings\*.xml&quot;', script::InsertRecursiveAllFilesFromSubdirectoriesForDeletion('XmlReports/Settings/', '*.xml', 'reports30\Settings\'))}"/>
 
     <echo message="${script::ReplaceInFile(Current.File, '{#RELEASEVERSION}', ReleaseVersion)}"/>
     <echo message="${script::ReplaceInFile(Current.File, '{#RELEASEID}', ReleaseID)}"/>
@@ -189,11 +191,11 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
 
   <call target="compile"/>
 
-  <if test="${string::contains(LinuxTargetDistribution, 'postgresql')}">
+  <if test="${string::contains(LinuxTargetDistribution-list, 'postgresql')}">
     <call target="refreshSudo"/>
     <call target="createPostgreSQLDB" unless="${target::has-executed('createPostgreSQLDB')}"/>
   </if>
-  <if test="${string::contains(LinuxTargetDistribution, 'mysql')}">
+  <if test="${string::contains(LinuxTargetDistribution-list, 'mysql')}">
     <call target="createMySQLDB" unless="${target::has-executed('createMySQLDB')}"/>
   </if>
 
@@ -207,22 +209,25 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
   
   <!-- ********* build Linux Server tar.gz ********* -->
   <property name="BuildArchive" value="server" overwrite="true"/>
-  <call target="prepareSetupDirForTarFile"/>
   
-  <copy file="${tempdir}/publickey.xml" tofile="${setupDir}/etc30/publickey-sample.xml"/>
-  <copy file="${tempdir}/privatekey.xml" tofile="${setupDir}/etc30/privatekey-sample.xml"/>
-  
-  <if test="${not platform::is-windows()}">
-    <ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}/..; tar czpf ${dir.delivery}/openpetraorg-server-${OrgNameWithoutSpace}-${ReleaseID}.tar.gz openpetraorg-${ReleaseID}&quot;"/>
-  </if>
-  <if test="${platform::is-windows()}">
-    <!-- this does not keep the executable flag -->
-    <tar destfile="${dir.delivery}/openpetraorg-server-${OrgNameWithoutSpace}-${ReleaseID}.tar.gz" compression="GZip">
-      <fileset basedir="${setupDir}" prefix="openpetraorg-${ReleaseID}">
-        <include name="**/*" />
-      </fileset>
-    </tar>
-  </if>
+  <foreach item="String" property="LinuxTargetDistribution" delim="," in="${LinuxTargetDistribution-list}" >
+    <call target="prepareSetupDirForTarFile"/>
+    
+    <copy file="${tempdir}/publickey.xml" tofile="${setupDir}/etc30/publickey-sample.xml"/>
+    <copy file="${tempdir}/privatekey.xml" tofile="${setupDir}/etc30/privatekey-sample.xml"/>
+    
+    <if test="${not platform::is-windows()}">
+      <ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}/..; tar czpf ${dir.delivery}/openpetraorg-server-${LinuxTargetDistribution}-${OrgNameWithoutSpace}-${ReleaseID}.tar.gz openpetraorg-${ReleaseID}&quot;"/>
+    </if>
+    <if test="${platform::is-windows()}">
+      <!-- this does not keep the executable flag -->
+      <tar destfile="${dir.delivery}/openpetraorg-server-${LinuxTargetDistribution}-${OrgNameWithoutSpace}-${ReleaseID}.tar.gz" compression="GZip">
+        <fileset basedir="${setupDir}" prefix="openpetraorg-${ReleaseID}">
+          <include name="**/*" />
+        </fileset>
+      </tar>
+    </if>
+  </foreach>
 
   <!-- ************ build backup client tar.gz for future patches ********* -->
   <property name="BuildArchive" value="client" overwrite="true"/>

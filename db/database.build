@@ -193,9 +193,10 @@
             <if test="${not platform::is-windows()}" >
                 <!-- file ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createtables-PostgreSQL.sql already exists -->
                 <!-- file ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createconstraints-PostgreSQL.sql already exists -->
-                <exec program="sudo" commandline="-u postgres /usr/bin/pg_dump --data-only --file=${tempdir}/output.sql ${DBMS.DBName}" />
-                <copy file="${tempdir}/output.sql" tofile="${OutputDB.file}" overwrite="true"/>
-                <exec program="sudo" commandline="-u postgres rm ${tempdir}/output.sql"/>
+                <!-- write to a location, eg. /var/tmp, where the user postgres has write permissions. tempdir would not work for this reason -->
+                <exec program="sudo" commandline="-u postgres /usr/bin/pg_dump --data-only --file=/var/tmp/output.sql ${DBMS.DBName}" />
+                <copy file="/var/tmp/output.sql" tofile="${OutputDB.file}" overwrite="true"/>
+                <exec program="sudo" commandline="-u postgres rm /var/tmp/output.sql"/>
             </if>
             <if test="${platform::is-windows()}" >
                 <exec program="${pgdump.exe}" commandline="--data-only --file=&quot;${OutputDB.file}&quot; ${DBMS.DBName}">
