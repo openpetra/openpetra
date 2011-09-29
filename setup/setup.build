@@ -3,21 +3,10 @@
 
 <include buildfile="../inc/nant/OpenPetra.common.xml" />
 
-<target name="buildRelease" depends="buildReleaseLinux,buildReleaseWindows" 
-        description="Build the release for the target platform we are building on" />
-
 <property name="BuildClientArchive" value="false" overwrite="false" />
 <property name="LinuxTargetDistribution" value="centos-postgresql" overwrite="false" />
+<property name="WithLinuxClient" value="false" overwrite="false" />
 <property name="PetraRelease" value="0300" overwrite="false" />
-
-<!-- Windows -->
-<target name="buildReleaseWindows" if="${platform::is-windows()}">
-  <delete file="${dir.bin}/dont_compile.txt"/>
-  <call target="compile" unless="${target::has-executed('compile')}" />
-  <call target="createSQLiteDB" unless="${target::has-executed('createSQLiteDB')}"/>
-  <call target="translationCompilePOFile" unless="${target::has-executed('translationCompilePOFile')}"/>
-  <call target="setupStandalone" unless="${target::has-executed('setupStandalone')}"/>
-</target> 
 
 <script language="C#">
   <references>
@@ -101,6 +90,25 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
 ]]>
     </code>
 </script> 
+
+<target name="buildLinuxSourceforgeRelease">
+  <property name="WithLinuxClient" value="true"/>
+  <property name="OrgName" value="MyOpenPetra"/>
+  <property name="OrgNameWithoutSpace" value="MyOpenPetra"/>
+  <property name="HostedServer" value="localhost"/>
+  <property name="HostedPort" value="9000"/>
+  <property name="PublisherUrl" value="www.solidcharity.com"/>
+  <call target="buildRemoteInstallers"/>
+</target>
+
+<!-- Windows -->
+<target name="buildWindowsStandalone" if="${platform::is-windows()}">
+  <delete file="${dir.bin}/dont_compile.txt"/>
+  <call target="compile"/>
+  <call target="createSQLiteDB" unless="${target::has-executed('createSQLiteDB')}"/>
+  <call target="translationCompilePOFile" unless="${target::has-executed('translationCompilePOFile')}"/>
+  <call target="setupStandalone"/>
+</target> 
   
 <target name="setupStandalone">
     <echo file="${dir.root}/setup/petra${PetraRelease}/standalone/version.txt">${ReleaseID}</echo>
@@ -191,22 +199,24 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
 
   <call target="translationCompilePOFile" unless="${target::has-executed('translationCompilePOFile')}"/>
 
+  <!-- create key pair for encrypted remoting -->
+  <ExecDotNet program="${tool-generateEncryptionKey}" commandline="-PublicKeyFile:${tempdir}/publickey.xml -PrivateKeyFile:${tempdir}/privatekey.xml"/>
+  
   <!-- build Remote Setup Windows installer -->
   <call target="setupRemote"/>
   
   <!-- ********* build Linux Server tar.gz ********* -->
   <property name="BuildArchive" value="server" overwrite="true"/>
   <call target="prepareSetupDirForTarFile"/>
-
-  <!-- create key pair for encrypted remoting -->
-  <ExecDotNet program="${tool-generateEncryptionKey}" commandline="-PublicKeyFile:${setupDir}/etc30/publickey.xml -PrivateKeyFile:${setupDir}/etc30/privatekey.xml"/>
-
+  
+  <copy file="${tempdir}/publickey.xml" tofile="${setupDir}/etc30/publickey-sample.xml"/>
+  <copy file="${tempdir}/privatekey.xml" tofile="${setupDir}/etc30/privatekey-sample.xml"/>
+  
   <if test="${not platform::is-windows()}">
-  <echo message="unix"/>
     <ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}/..; tar czpf ${dir.delivery}/openpetraorg-server-${OrgNameWithoutSpace}-${ReleaseID}.tar.gz openpetraorg-${ReleaseID}&quot;"/>
   </if>
   <if test="${platform::is-windows()}">
-  <echo message="windows"/>
+    <!-- this does not keep the executable flag -->
     <tar destfile="${dir.delivery}/openpetraorg-server-${OrgNameWithoutSpace}-${ReleaseID}.tar.gz" compression="GZip">
       <fileset basedir="${setupDir}" prefix="openpetraorg-${ReleaseID}">
         <include name="**/*" />
@@ -223,12 +233,21 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
       <include name="**/*" />
     </fileset>
   </tar>
-  
+
+  <!-- ********* build Linux Client tar.gz ********* -->
+  <if test="${WithLinuxClient == 'true'}">
+    <call target="buildLinuxClient"/>
+  </if>
+
   <!-- TODO: build patch against previous release -->
+
+  <delete file="${tempdir}/publickey.xml"/>
+  <delete file="${tempdir}/privatekey.xml"/>
+  <delete dir="${setupDir}"/>
 </target>
 
 <!-- Linux -->
-<target name="buildReleaseLinux" if="${platform::is-unix()}" help="build a full release with a linux server and a client compiled for mono">
+<target name="buildLinuxClient" help="build a full release with a linux server and a client compiled for mono">
   <delete file="${dir.bin}/dont_compile.txt"/>
   
   <property name="OrigTargetPlatformGUI" value="${TargetPlatformGUI}" overwrite="true"/>
@@ -239,12 +258,36 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
   <property name="TargetPlatformGUI" value="${OrigTargetPlatformGUI}" overwrite="true"/>
   <property name="GUILocalisation" value="${OrigGUILocalisation}" overwrite="true"/>
 
-  <call target="refreshSudo"/>
-  <call target="createPostgreSQLDB" unless="${target::has-executed('createPostgreSQLDB')}"/>
-  <call target="createMySQLDB" unless="${target::has-executed('createMySQLDB')}"/>
-
   <call target="translationCompilePOFile" unless="${target::has-executed('translationCompilePOFile')}"/>
-  <call target="TODOsetupLinuxServer"/>
+  <property name="BuildArchive" value="client" overwrite="true"/>
+  <call target="prepareSetupDirForTarFile"/>
+  copy startclient sh und remote config
+  
+  <copy file="${dir.root}/setup/petra${PetraRelease}/linuxclient/startClient.sh"
+              tofile="${setupDir}/startClient.sh"/>
+  <copy file="${tempdir}/publickey.xml" tofile="${setupDir}/etc30/publickey-sample.xml"/>
+  <copy file="${dir.root}/setup/petra${PetraRelease}/linuxclient/PetraClientRemote.config"
+              tofile="${setupDir}/etc30/PetraClientRemote.config">
+        <filterchain>
+            <expandproperties />
+        </filterchain>
+  </copy>
+
+  <if test="${not platform::is-windows()}">
+    <!-- change the executable flag -->
+    <ExecCmd program="sh" commandline="/C &quot;chmod a+x ${setupDir}/*.sh&quot;"/>
+    <!-- make sure that the script files are in unix format -->
+    <ExecCmd program="sh" commandline="/C &quot;for f in ${setupDir}/*.sh; do dos2unix -o $f; done;&quot;"/>
+    <ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}/..; tar czpf ${dir.delivery}/openpetraorg-client-${OrgNameWithoutSpace}-${ReleaseID}.tar.gz openpetraorg-${ReleaseID}&quot;"/>
+  </if>
+  <if test="${platform::is-windows()}">
+    <!-- this does not keep the executable flag -->
+    <tar destfile="${dir.delivery}/openpetraorg-client-${OrgNameWithoutSpace}-${ReleaseID}.tar.gz" compression="GZip">
+      <fileset basedir="${setupDir}" prefix="openpetraorg-${ReleaseID}">
+        <include name="**/*" />
+      </fileset>
+    </tar>
+  </if>  
 </target>
 
 <target name="prepareSetupDirForTarFile">

@@ -15,6 +15,8 @@ chown $userName /home/$userName/.pgpass
 cd $OpenPetraOrgPath
 mkdir -p $OpenPetraOrgPath/log30
 touch $OpenPetraOrgPath/log30/Server.log
+cp $OpenPetraOrgPath/etc30/publickey-sample.xml $OpenPetraOrgPath/etc30/publickey.xml
+cp $OpenPetraOrgPath/etc30/privatekey-sample.xml $OpenPetraOrgPath/etc30/privatekey.xml
 mkdir -p `dirname $OPENPETRA_LocationPublicKeyFile`
 ln -s $OpenPetraOrgPath/etc30/publickey.xml $OPENPETRA_LocationPublicKeyFile
 mkdir -p /etc/sysconfig/openpetra
