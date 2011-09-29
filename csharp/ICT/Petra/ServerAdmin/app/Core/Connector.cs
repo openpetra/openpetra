@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,12 +22,16 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections;
 using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Tcp;
+using System.Runtime.Remoting.Services;
 using System.Runtime.Remoting.Lifetime;
+using System.Runtime.Serialization.Formatters;
 using Ict.Common;
 using Ict.Petra.Shared.Interfaces.ServerAdminInterface;
+using Ict.Petra.Shared.RemotingSinks.Encryption;
 
 namespace Ict.Petra.ServerAdmin.App.Core
 {
@@ -47,17 +51,37 @@ namespace Ict.Petra.ServerAdmin.App.Core
             iRemote = null;
             try
             {
-                RemotingConfiguration.Configure(ConfigFile, false);
-                iRemote = (IServerAdminInterface)(Ict.Common.TRemotingHelper.GetObject(typeof(IServerAdminInterface)));
-
-                if (iRemote == null)
+                if (TAppSettingsManager.HasValue("Server.IPBasePort"))
                 {
+                    IClientChannelSinkProvider TCPSink = new BinaryClientFormatterSinkProvider();
+
+                    if (TAppSettingsManager.HasValue("Server.ChannelEncryption.PublicKeyfile"))
+                    {
+                        Hashtable properties = new Hashtable();
+                        properties.Add("FilePublicKeyXml", TAppSettingsManager.GetValue("Server.ChannelEncryption.PublicKeyfile"));
+
+                        TCPSink.Next = new EncryptionClientSinkProvider(properties, null);
+                    }
+
+                    Hashtable ChannelProperties = new Hashtable();
+
+                    TcpChannel Channel = new TcpChannel(ChannelProperties, TCPSink, null);
+                    ChannelServices.RegisterChannel(Channel, false);
+
+                    RemotingConfiguration.RegisterWellKnownClientType(
+                        typeof(Ict.Petra.Shared.Interfaces.ServerAdminInterface.IServerAdminInterface),
+                        String.Format("tcp://localhost:{0}/Servermanager", TAppSettingsManager.GetValue("Server.IPBasePort")));
                 }
                 else
                 {
-#if DEBUGMODE
+                    RemotingConfiguration.Configure(ConfigFile, false);
+                }
+
+                iRemote = (IServerAdminInterface)(Ict.Common.TRemotingHelper.GetObject(typeof(IServerAdminInterface)));
+
+                if ((iRemote != null) && (TLogging.DebugLevel > 0))
+                {
                     TLogging.Log(("GetServerConnection: connected."));
-#endif
                 }
             }
             catch (Exception exp)

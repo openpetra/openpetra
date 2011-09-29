@@ -92,34 +92,16 @@
              </if>
              <psql exe="${PostgreSQL.exe}" sqlcommand="DROP DATABASE IF EXISTS ${DBMS.DBName};" database="template1" password="${DBMS.Password}"/>
              <psql exe="${PostgreSQL.exe}" sqlcommand="DROP OWNED BY ${DBMS.UserName}; DROP USER IF EXISTS ${DBMS.UserName};" database="template1" failonerror="false" password="${DBMS.Password}"/>
-             <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE DATABASE ${DBMS.DBName};" database="template1" password="${DBMS.Password}"/>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE USER ${DBMS.UserName} PASSWORD '${DBMS.Password}';" database="template1" failonerror="false" password="${DBMS.Password}"/>
+             <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE DATABASE ${DBMS.DBName} WITH OWNER=${DBMS.UserName};" database="template1" password="${DBMS.Password}"/>
              <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" database="${DBMS.DBName}" password="${DBMS.Password}"/>
-             <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE USER ${DBMS.UserName} PASSWORD '${DBMS.Password}';" database="${DBMS.DBName}" failonerror="false" password="${DBMS.Password}"/>
-             <property name="tempfile" value="${path::get-temp-path()}/userpermissions.sql"/>
-             <if test="${not platform::is-windows()}" >
-                 <!-- at least on Mac, the tmp directory of the current user is returned, which the postgres user has no access to -->
-                 <property name="tempfile" value="/tmp/userpermissions.sql"/>
-             </if>
-             <psql exe="${PostgreSQL.exe}" 
-                sqlcommand="select 'GRANT SELECT,UPDATE,DELETE,INSERT ON ' || c.relname || ' TO ${DBMS.UserName};' from pg_class AS c LEFT JOIN pg_namespace n ON n.oid = c.relnamespace where c.relkind = 'r' and n.nspname NOT IN('pg_catalog', 'pg_toast') and pg_table_is_visible(c.oid);"
-                outputfile="${tempfile}"
-                database="${DBMS.DBName}"
-                password="${DBMS.Password}"/>
-             <psql exe="${PostgreSQL.exe}" sqlfile="${tempfile}" database="${DBMS.DBName}" password="${DBMS.Password}"/>
-
-             <psql exe="${PostgreSQL.exe}" 
-                sqlcommand="select 'GRANT SELECT,UPDATE,USAGE ON ' || c.relname || ' TO ${DBMS.UserName};' from pg_class AS c LEFT JOIN pg_namespace n ON n.oid = c.relnamespace where c.relkind = 'S' and n.nspname NOT IN('pg_catalog', 'pg_toast') and pg_table_is_visible(c.oid);"
-                outputfile="${tempfile}"
-                database="${DBMS.DBName}"
-                password="${DBMS.Password}"/>
-             <psql exe="${PostgreSQL.exe}" sqlfile="${tempfile}" database="${DBMS.DBName}" password="${DBMS.Password}"/>
         </if>
         <if test="${DBMS.Type=='mysql'}">
              <echo message="this will now take a while..."/>
              <mysql exe="${MySQL.exe}" sqlcommand="drop database if exists ${DBMS.DBName};" user="root" password="${DBMS.Password}"/>
              <mysql exe="${MySQL.exe}" sqlcommand="create database if not exists ${DBMS.DBName};" user="root" password="${DBMS.Password}"/>
              <mysql exe="${MySQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" database="${DBMS.DBName}" user="root" password="${DBMS.Password}"/>
-             <mysql exe="${MySQL.exe}" sqlcommand="GRANT SELECT,UPDATE,DELETE,INSERT ON * TO ${DBMS.UserName} IDENTIFIED BY 'TOBESETBYINSTALLER';" database="${DBMS.DBName}" user="root" password="${DBMS.Password}"/>
+             <mysql exe="${MySQL.exe}" sqlcommand="GRANT SELECT,UPDATE,DELETE,INSERT ON ${DBMS.DBName}.* TO ${DBMS.UserName} IDENTIFIED BY 'TOBESETBYINSTALLER';" database="${DBMS.DBName}" user="root" password="${DBMS.Password}"/>
         </if>
     </target>
 
@@ -211,9 +193,10 @@
             <if test="${not platform::is-windows()}" >
                 <!-- file ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createtables-PostgreSQL.sql already exists -->
                 <!-- file ${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createconstraints-PostgreSQL.sql already exists -->
-                <exec program="sudo" commandline="-u postgres /usr/bin/pg_dump --data-only --file=${tempdir}/output.sql ${DBMS.DBName}" />
-                <copy file="${tempdir}/output.sql" tofile="${OutputDB.file}" overwrite="true"/>
-                <exec program="sudo" commandline="-u postgres rm ${tempdir}/output.sql"/>
+                <!-- write to a location, eg. /var/tmp, where the user postgres has write permissions. tempdir would not work for this reason -->
+                <exec program="sudo" commandline="-u postgres /usr/bin/pg_dump --data-only --file=/var/tmp/output.sql ${DBMS.DBName}" />
+                <copy file="/var/tmp/output.sql" tofile="${OutputDB.file}" overwrite="true"/>
+                <exec program="sudo" commandline="-u postgres rm /var/tmp/output.sql"/>
             </if>
             <if test="${platform::is-windows()}" >
                 <exec program="${pgdump.exe}" commandline="--data-only --file=&quot;${OutputDB.file}&quot; ${DBMS.DBName}">
@@ -296,6 +279,7 @@
     <target name="createPostgreSQLDB" depends="init">
         <property name="DBMS.Type.Orig" value="${DBMS.Type}"/>
         <property name="DBMS.Type" value="postgresql"/>
+        <property name="DBMS.DBName" value="openpetra_basedb"/>
         <call target="recreateDatabase"/>
         <call target="resetDatabase"/>
         <property name="OutputDB.file" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demodata-PostgreSQL.sql"/>
@@ -305,12 +289,19 @@
 
     <target name="createMySQLDB" depends="init">
         <property name="DBMS.Type.Orig" value="${DBMS.Type}"/>
+        <property name="DBMS.Password.Orig" value="${DBMS.Password}"/>
         <property name="DBMS.Type" value="mysql"/>
+        <if test="${not property::exists('Mysql.RootPassword')}">
+          <fail message="Please add property Mysql.RootPassword to your OpenPetra.build.config file!"/>
+        </if>
+        <property name="DBMS.Password" value="${Mysql.RootPassword}"/>
+        <property name="DBMS.DBName" value="openpetra_basedb"/>
         <call target="recreateDatabase"/>
         <call target="resetDatabase"/>
         <property name="OutputDB.file" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demodata-MySQL.sql"/>
         <call target="dumpDatabase"/>
         <property name="DBMS.Type" value="${DBMS.Type.Orig}"/>
+        <property name="DBMS.Password" value="${DBMS.Password.Orig}"/>
     </target>
 
 </project>
