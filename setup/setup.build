@@ -6,6 +6,7 @@
 <property name="BuildClientArchive" value="false" overwrite="false" />
 <property name="LinuxTargetDistribution-list" value="centos-postgresql" overwrite="false" />
 <property name="WithLinuxClient" value="false" overwrite="false" />
+<property name="WithWindowsClient" value="true" overwrite="false" />
 <property name="PetraRelease" value="0300" overwrite="false" />
 
 <script language="C#">
@@ -93,6 +94,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
 
 <target name="buildLinuxSourceforgeRelease">
   <property name="WithLinuxClient" value="true"/>
+  <property name="WithWindowsClient" value="false"/>
   <property name="LinuxTargetDistribution-list" value="debian-postgresql,centos-postgresql"/>
   <property name="OrgName" value="MyOpenPetra"/>
   <property name="OrgNameWithoutSpace" value="MyOpenPetra"/>
@@ -206,7 +208,9 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
   <ExecDotNet program="${tool-generateEncryptionKey}" commandline="-PublicKeyFile:${tempdir}/publickey.xml -PrivateKeyFile:${tempdir}/privatekey.xml"/>
   
   <!-- build Remote Setup Windows installer -->
-  <call target="setupRemote"/>
+  <if test="${WithWindowsClient}">
+    <call target="setupRemote"/>
+  </if>
   
   <!-- ********* build Linux Server tar.gz ********* -->
   <property name="BuildArchive" value="server" overwrite="true"/>
