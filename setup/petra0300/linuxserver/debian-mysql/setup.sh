@@ -13,9 +13,9 @@ mkdir -p $OpenPetraOrgPath
 cp -R * $OpenPetraOrgPath
 useradd --home /home/$userName $userName
 
-echo "[client]\npassword=$OPENPETRA_DBPWD" > /home/$userName/my.cnf
 mkdir /home/$userName
-chown $userName:$userName /home/$userName
+echo "[client]\npassword=$OPENPETRA_DBPWD" > /home/$userName/my.cnf
+chown -R $userName:$userName /home/$userName
 chmod 600 /home/$userName/my.cnf
 chown $userName /home/$userName/my.cnf
 

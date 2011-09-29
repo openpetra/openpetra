@@ -13,9 +13,9 @@ mkdir -p $OpenPetraOrgPath
 cp -R * $OpenPetraOrgPath
 useradd --home /home/$userName $userName
 
-echo "*:$OPENPETRA_DBPORT:$OPENPETRA_DBNAME:$OPENPETRA_DBUSER:$OPENPETRA_DBPWD" >> /home/$userName/.pgpass
 mkdir /home/$userName
-chown $userName:$userName /home/$userName
+echo "*:$OPENPETRA_DBPORT:$OPENPETRA_DBNAME:$OPENPETRA_DBUSER:$OPENPETRA_DBPWD" >> /home/$userName/.pgpass
+chown -R $userName:$userName /home/$userName
 chmod 600 /home/$userName/.pgpass
 chown $userName /home/$userName/.pgpass
 
