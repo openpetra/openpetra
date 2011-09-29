@@ -190,9 +190,13 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
 
 <target name="buildRemoteInstallers" help="build a tar.gz file for the server, the remote installer for the client, and a backup for future patches"
     depends="init">
-  <delete file="${dir.bin}/dont_compile.txt"/>
-
-  <call target="compile"/>
+  <if test="${WithWindowsClient}">
+    <delete file="${dir.bin}/dont_compile.txt"/>
+    <call target="compile"/>
+  </if>
+  <if test="${not WithWindowsClient}">
+    <call target="compileWithoutClient"/>
+  </if>
 
   <if test="${string::contains(LinuxTargetDistribution-list, 'postgresql')}">
     <call target="refreshSudo"/>
@@ -210,6 +214,16 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
   <!-- build Remote Setup Windows installer -->
   <if test="${WithWindowsClient}">
     <call target="setupRemote"/>
+    
+    <!-- ************ build backup client tar.gz for future patches ********* -->
+    <property name="BuildArchive" value="client" overwrite="true"/>
+    <call target="prepareSetupDirForTarFile"/>
+    <!-- this does not keep the executable flag; need this to make the patch for windows clients -->
+    <tar destfile="${dir.delivery}/openpetraorg-client-backup-${OrgNameWithoutSpace}-${ReleaseID}.tar.gz" compression="GZip">
+      <fileset basedir="${setupDir}" prefix="openpetraorg-${ReleaseID}">
+        <include name="**/*" />
+      </fileset>
+    </tar>
   </if>
   
   <!-- ********* build Linux Server tar.gz ********* -->
@@ -234,16 +248,6 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
     </if>
   </foreach>
 
-  <!-- ************ build backup client tar.gz for future patches ********* -->
-  <property name="BuildArchive" value="client" overwrite="true"/>
-  <call target="prepareSetupDirForTarFile"/>
-  <!-- this does not keep the executable flag; need this to make the patch for windows clients -->
-  <tar destfile="${dir.delivery}/openpetraorg-client-backup-${OrgNameWithoutSpace}-${ReleaseID}.tar.gz" compression="GZip">
-    <fileset basedir="${setupDir}" prefix="openpetraorg-${ReleaseID}">
-      <include name="**/*" />
-    </fileset>
-  </tar>
-
   <!-- ********* build Linux Client tar.gz ********* -->
   <if test="${WithLinuxClient == 'true'}">
     <call target="buildLinuxClient"/>
@@ -256,17 +260,32 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
   <delete dir="${setupDir}"/>
 </target>
 
-<!-- Linux -->
-<target name="buildLinuxClient" help="build a full release with a linux server and a client compiled for mono">
+<target name="compileWithoutClient">
   <delete file="${dir.bin}/dont_compile.txt"/>
   
+  <nant inheritall="true" target="compile" buildfile="${path::combine(dir.csharp, 'ICT/Common/ICT.Common.build')}" verbose="${verbose}"/>
+  <nant inheritall="true" target="compile" buildfile="${path::combine(dir.csharp, 'ICT/PetraTools/ICT.PetraTools.build')}" verbose="${verbose}"/>
+  <nant inheritall="true" target="compile" buildfile="${path::combine(dir.csharp, 'ICT/Petra/PetraWithoutClient.build')}" verbose="${verbose}"/>
+
+</target>
+
+<target name="compileMonoClient">
+  <delete file="${dir.bin}/dont_compile.txt"/>
+
   <property name="OrigTargetPlatformGUI" value="${TargetPlatformGUI}" overwrite="true"/>
   <property name="OrigGUILocalisation" value="${GUILocalisation}" overwrite="true"/>
   <property name="TargetPlatformGUI" value="mono" overwrite="true"/>
   <property name="GUILocalisation" value="en" overwrite="true"/>
-  <call target="compile"/>
+  
+  <nant inheritall="true" target="compile" buildfile="${path::combine(dir.csharp, 'ICT/Petra/PetraOnlyClient.build')}" verbose="${verbose}"/>
+
   <property name="TargetPlatformGUI" value="${OrigTargetPlatformGUI}" overwrite="true"/>
   <property name="GUILocalisation" value="${OrigGUILocalisation}" overwrite="true"/>
+</target>
+
+<!-- Linux -->
+<target name="buildLinuxClient" help="build a Linux client compiled for mono">
+  <call target="compileMonoClient"/>  
 
   <call target="translationCompilePOFile" unless="${target::has-executed('translationCompilePOFile')}"/>
   <property name="BuildArchive" value="client" overwrite="true"/>
