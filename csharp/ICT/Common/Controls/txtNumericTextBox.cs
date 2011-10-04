@@ -1264,7 +1264,7 @@ namespace Ict.Common.Controls
                             }
                             else
                             {
-                                if (!AValue.StartsWith("0."))
+                                if (!AValue.StartsWith("0" + FCurrencyDecimalSeparator))
                                 {
                                     base.Text = System.Int64.Parse(AValue).ToString() + " %";
                                 }
@@ -1276,7 +1276,7 @@ namespace Ict.Common.Controls
                         }
                         else
                         {
-                            if (!AValue.StartsWith("0."))
+                            if (!AValue.StartsWith("0" + FCurrencyDecimalSeparator))
                             {
                                 base.Text = System.Int64.Parse(AValue).ToString();
                             }
