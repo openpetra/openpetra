@@ -358,15 +358,6 @@ namespace Ict.Petra.Client.CommonControls
         }
 
         /// <summary>
-        /// todoComment
-        /// </summary>
-        /// <returns></returns>
-        public String Get_SelectedText()
-        {
-            return this.cmbAutoPopulated.cmbCombobox.SelectedText;
-        }
-
-        /// <summary>
         /// set the string that should be selected;
         /// uses TCmbVersatile.SetSelectedString
         /// </summary>
