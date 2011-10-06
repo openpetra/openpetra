@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -243,7 +243,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            TFrmGiftBatchExport exportForm = new TFrmGiftBatchExport(this.Handle);
+            TFrmGiftBatchExport exportForm = new TFrmGiftBatchExport(FPetraUtilsObject.GetForm());
             exportForm.LedgerNumber = FLedgerNumber;
             exportForm.MainDS = FMainDS;
             exportForm.Show();

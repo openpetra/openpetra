@@ -355,18 +355,29 @@ namespace Ict.Petra.Server.App.Main
             // Server.ODBC_DSN
             ODBCDsnAppSetting = TAppSettingsManager.GetValue("Server.ODBC_DSN", false);
 
-            string DatabaseHostOrFile = TAppSettingsManager.GetValue("Server.DBHostOrFile", "localhost").
-                                        Replace("{userappdata}", Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
+            string DatabaseHostOrFile = TAppSettingsManager.GetValue("Server.DBHostOrFile", "localhost");
             string DatabasePort = TAppSettingsManager.GetValue("Server.DBPort", "5432");
             string DatabaseName = TAppSettingsManager.GetValue("Server.DBName", "openpetra");
             string DatabaseUserName = TAppSettingsManager.GetValue("Server.DBUserName", "petraserver");
             string DatabasePassword = TAppSettingsManager.GetValue("Server.DBPassword");
 
+            if (DatabasePassword == "PG_OPENPETRA_DBPWD")
+            {
+                // get the password from the file ~/.pgpass. This currently only works for PostgreSQL on Linux
+                using (StreamReader sr = new StreamReader(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
+                           Path.DirectorySeparatorChar + ".pgpass"))
+                {
+                    while (!sr.EndOfStream)
+                    {
+                        string line = sr.ReadLine();
+                        DatabasePassword = line.Substring(line.LastIndexOf(':') + 1);
+                    }
+                }
+            }
+
             if (TAppSettingsManager.HasValue("Server.LogFile"))
             {
-                ServerLogFile =
-                    TAppSettingsManager.GetValue("Server.LogFile", false).Replace("{userappdata}",
-                        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
+                ServerLogFile = TAppSettingsManager.GetValue("Server.LogFile");
             }
             else
             {

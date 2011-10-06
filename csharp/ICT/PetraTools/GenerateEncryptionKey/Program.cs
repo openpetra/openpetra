@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,6 +24,7 @@
 using System;
 using System.IO;
 using System.Security.Cryptography;
+using Ict.Common;
 using Ict.Common.IO;
 
 namespace GenerateEncryptionKey
@@ -34,6 +35,7 @@ class Program
     {
         try
         {
+            new TAppSettingsManager(false);
             CspParameters cp = new CspParameters();
             cp.KeyContainerName = "OpenPetraServerKeyContainer";
 
@@ -45,19 +47,39 @@ class Program
             // now create the new key
             RSACryptoServiceProvider RSANew = new RSACryptoServiceProvider(cp);
 
-            Console.WriteLine("public key only: ");
-            Console.WriteLine(RSANew.ToXmlString(false));
+            string PublicKeyFile = TAppSettingsManager.GetValue("PublicKeyFile", "", false);
 
-            Console.WriteLine("public and private key: ");
-            Console.WriteLine(RSANew.ToXmlString(true));
+            if (PublicKeyFile.Length > 0)
+            {
+                StreamWriter sw = new StreamWriter(PublicKeyFile);
+                sw.WriteLine(RSANew.ToXmlString(false));
+                sw.Close();
+                Console.WriteLine("public key has been written to " + PublicKeyFile);
+            }
+            else
+            {
+                Console.WriteLine("public key only: ");
+            }
+
+            string PrivateKeyFile = TAppSettingsManager.GetValue("PrivateKeyFile", "", false);
+
+            if (PrivateKeyFile.Length > 0)
+            {
+                StreamWriter sw = new StreamWriter(PrivateKeyFile);
+                sw.WriteLine(RSANew.ToXmlString(true));
+                sw.Close();
+                Console.WriteLine("public key has been written to " + PrivateKeyFile);
+            }
+            else
+            {
+                Console.WriteLine("Private key with public key: ");
+            }
         }
         catch (Exception e)
         {
             Console.WriteLine("error: " + e.Message);
             Console.WriteLine("error: " + e.StackTrace);
         }
-
-        Console.ReadLine();
     }
 }
 }

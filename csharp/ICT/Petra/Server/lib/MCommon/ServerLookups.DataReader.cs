@@ -92,6 +92,18 @@ namespace Ict.Petra.Server.MCommon.DataReader
                 {
                     tempTable = ADailyExchangeRateAccess.LoadAll(ReadTransaction);
                 }
+                else if (ATablename == ACorporateExchangeRateTable.GetTableDBName())
+                {
+                    tempTable = ACorporateExchangeRateAccess.LoadAll(ReadTransaction);
+                }
+                else if (ATablename == AFeesPayableTable.GetTableDBName())
+                {
+                    tempTable = AFeesPayableAccess.LoadAll(ReadTransaction);
+                }
+                else if (ATablename == AFeesReceivableTable.GetTableDBName())
+                {
+                    tempTable = AFeesReceivableAccess.LoadAll(ReadTransaction);
+                }
                 else if (ATablename == AAnalysisTypeTable.GetTableDBName())
                 {
                     tempTable = AAnalysisTypeAccess.LoadAll(ReadTransaction);
@@ -190,6 +202,42 @@ namespace Ict.Petra.Server.MCommon.DataReader
                     else if (ATablename == ADailyExchangeRateTable.GetTableDBName())
                     {
                         if (ADailyExchangeRateAccess.SubmitChanges((ADailyExchangeRateTable)ASubmitTable, SubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
+                    else if (ATablename == ACorporateExchangeRateTable.GetTableDBName())
+                    {
+                        if (ACorporateExchangeRateAccess.SubmitChanges((ACorporateExchangeRateTable)ASubmitTable, SubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
+                    else if (ATablename == AFeesPayableTable.GetTableDBName())
+                    {
+                        if (AFeesPayableAccess.SubmitChanges((AFeesPayableTable)ASubmitTable, SubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
+                    else if (ATablename == AFeesReceivableTable.GetTableDBName())
+                    {
+                        if (AFeesReceivableAccess.SubmitChanges((AFeesReceivableTable)ASubmitTable, SubmitChangesTransaction,
                                 out SingleVerificationResultCollection))
                         {
                             SubmissionResult = TSubmitChangesResult.scrOK;

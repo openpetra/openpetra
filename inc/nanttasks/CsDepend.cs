@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       thiasg
+//       thiasg, timop
 //
 // Copyright 2004-2011 by OM International
 //
@@ -215,19 +215,19 @@ namespace Ict.Tools.NAntTasks
             }
         }
 
-        private string _outputtpye = "library";
+        private string _outputtype = "library";
         /// <summary>
         /// The directory where the original nant build file was called
         /// </summary>
-        [TaskAttribute("outputtpye", Required = false)]
-        public string outputtpye {
+        [TaskAttribute("outputtype", Required = false)]
+        public string outputtype {
             get
             {
-                return _outputtpye;
+                return _outputtype;
             }
             set
             {
-                _outputtpye = value;
+                _outputtype = value;
             }
         }
 
@@ -465,10 +465,22 @@ namespace Ict.Tools.NAntTasks
 
                 string depstring = string.Join(",", (string[])ToSortedArray(pkgRefsList.Keys).ToArray(typeof(string)));
 
+                string originalOutputType = _outputtype;
+
+                // if there is a file called OutputType, then use the contained value
+                if (File.Exists(assembly.directory + "/OutputType.cfg"))
+                {
+                    using (StreamReader sr = new StreamReader(assembly.directory + "/OutputType.cfg"))
+                    {
+                        _outputtype = sr.ReadLine();
+                        sr.Close();
+                    }
+                }
+
                 if (nsDefault == assembly.name)   // This one is written at the end
                 {   // Add the references at the beginning of the targets
                     targets = string.Format(FSnippets[NANT_REFERENCE_TEMPLATE], assembly.name, refs + additionalRefsString,
-                        depstring, GetUUID(assembly.name), _outputtpye) + targets;
+                        depstring, GetUUID(assembly.name), _outputtype) + targets;
                     referenceAdded = true;
                 }
                 else
@@ -479,11 +491,13 @@ namespace Ict.Tools.NAntTasks
                     StreamWriter sw = new StreamWriter(filename);
                     sw.Write(string.Format(FSnippets[NANT_BUILD_FILE_TEMPLATE], DATE_TIME_STRING,
                             assembly.name, refs + additionalRefsString, buildincfile,
-                            GetUUID(assembly.name), _outputtpye));
+                            GetUUID(assembly.name), _outputtype));
                     sw.Close();
                     // Add a target for compiling this namespace
                     targets += string.Format(FSnippets[NANT_FILE_TARGET_TEMPLATE], assembly.name, depstring, filename);
                 }
+
+                _outputtype = originalOutputType;
 
                 knownTargets.Add(assembly.name);
             }
@@ -693,7 +707,6 @@ namespace Ict.Tools.NAntTasks
         /// <param name="filename"></param>
         private void ProcessFile(string filename)
         {
-            Hashtable usingStatements = new Hashtable();
             string fileNamespace = null;
             // Get the assembly name derived from the directory
             string dirname = Directory.GetParent(filename).FullName;
@@ -731,7 +744,6 @@ namespace Ict.Tools.NAntTasks
 
                 if (matchComment.Success && (matchComment.Groups.Count > 1))
                 {
-                    string old = line;
                     line = matchComment.Groups["noncomment"].ToString();
                 }
 

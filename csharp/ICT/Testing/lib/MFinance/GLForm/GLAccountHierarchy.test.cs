@@ -127,7 +127,8 @@ namespace Tests.MFinance.GLBatches
                 0, 2
             };
             hierarchyTester.trvAccounts.SelectNode(nodeList1);
-            TreeNode node = hierarchyTester.trvAccounts.Properties.SelectedNode;
+
+            //TreeNode node = hierarchyTester.trvAccounts.Properties.SelectedNode;
 
             Boolean blnSaveBtn = hierarchyTester.tbbSave.Properties.Enabled;
             Assert.AreEqual(blnSaveBtn, false, "Save button shall be not enabled!");
@@ -229,7 +230,7 @@ namespace Tests.MFinance.GLBatches
             // Create a third Account ...
             hierarchyTester.trvAccounts.SelectNode(nodeList1);
             hierarchyTester.tbbAddNewAccount.Click();
-            String strName3 = hierarchyTester.txtDetailAccountCode.Properties.Text;
+            // String strName3 = hierarchyTester.txtDetailAccountCode.Properties.Text;
             hierarchyTester.txtDetailEngAccountCodeLongDesc.Properties.Text = "z";
             // use an invalid name
             hierarchyTester.txtDetailAccountCode.Properties.Text = strName1;
@@ -240,7 +241,7 @@ namespace Tests.MFinance.GLBatches
             // Create a fourth Account ...
             hierarchyTester.trvAccounts.SelectNode(nodeList1);
             hierarchyTester.tbbAddNewAccount.Click();
-            String strName4 = hierarchyTester.txtDetailAccountCode.Properties.Text;
+            // String strName4 = hierarchyTester.txtDetailAccountCode.Properties.Text;
             hierarchyTester.txtDetailEngAccountCodeLongDesc.Properties.Text = "zz";
             // use an invalid name
             hierarchyTester.txtDetailAccountCode.Properties.Text = strName1;
@@ -266,7 +267,7 @@ namespace Tests.MFinance.GLBatches
 
             // Create a first Account ...
             hierarchyTester.tbbAddNewAccount.Click();
-            String strName1 = hierarchyTester.txtDetailAccountCode.Properties.Text;
+            // String strName1 = hierarchyTester.txtDetailAccountCode.Properties.Text;
             // Invalid Name resp. the name "BAL SHT" exists in the test db ...
             hierarchyTester.txtDetailAccountCode.Properties.Text = "BAL SHT";
 

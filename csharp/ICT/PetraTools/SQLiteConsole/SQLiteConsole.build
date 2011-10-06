@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<project name="OpenPetra-csharp-SQLiteConsole-build">
-<property name="Namespace" value="SQLiteConsole" />
+<project name="OpenPetra-csharp-Ict.Tools.SQLiteConsole-build">
+<property name="Namespace" value="Ict.Tools.SQLiteConsole" />
 <property name="OutputType" value="exe" />
 
 <property name="RunCsDepend" value="true" />

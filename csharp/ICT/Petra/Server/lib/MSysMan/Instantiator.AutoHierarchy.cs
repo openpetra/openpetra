@@ -1306,64 +1306,65 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance.WebConnectors
         }
 
         /// generated method from connector
-        public bool SetLanguageAndCulture(string ALanguageCode,
-                                          string ACultureCode)
+        public System.Boolean SetLanguageAndCulture(System.String ALanguageCode,
+                                                    System.String ACultureCode)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintainLanguageSettingsWebConnector), "SetLanguageAndCulture", ";STRING;STRING;");
             return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintainLanguageSettingsWebConnector.SetLanguageAndCulture(ALanguageCode, ACultureCode);
         }
 
         /// generated method from connector
-        public bool LoadLanguageAndCultureFromUserDefaults()
+        public System.Boolean LoadLanguageAndCultureFromUserDefaults()
         {
             return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintainLanguageSettingsWebConnector.LoadLanguageAndCultureFromUserDefaults();
         }
 
         /// generated method from connector
-        public bool GetLanguageAndCulture(out string ALanguageCode,
-                                          out string ACultureCode)
+        public System.Boolean GetLanguageAndCulture(out System.String ALanguageCode,
+                                                    out System.String ACultureCode)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintainLanguageSettingsWebConnector), "GetLanguageAndCulture", ";STRING;STRING;");
             return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintainLanguageSettingsWebConnector.GetLanguageAndCulture(out ALanguageCode, out ACultureCode);
         }
 
         /// generated method from connector
-        public bool SetUserPassword(string AUsername,
-                                    string APassword)
+        public System.Boolean SetUserPassword(System.String AUsername,
+                                              System.String APassword)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector), "SetUserPassword", ";STRING;STRING;");
             return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector.SetUserPassword(AUsername, APassword);
         }
 
         /// generated method from connector
-        public bool CheckPasswordQuality(string APassword,
-                                         out TVerificationResultCollection AVerification)
+        public System.Boolean CheckPasswordQuality(System.String APassword,
+                                                   out TVerificationResultCollection AVerification)
         {
             return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector.CheckPasswordQuality(APassword, out AVerification);
         }
 
         /// generated method from connector
-        public bool SetUserPassword(string AUsername,
-                                    string APassword,
-                                    string AOldPassword)
+        public System.Boolean SetUserPassword(System.String AUsername,
+                                              System.String APassword,
+                                              System.String AOldPassword,
+                                              out TVerificationResultCollection AVerification)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector), "SetUserPassword", ";STRING;STRING;STRING;");
-            return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector.SetUserPassword(AUsername, APassword, AOldPassword);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector), "SetUserPassword", ";STRING;STRING;STRING;TVERIFICATIONRESULTCOLLECTION;");
+            return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector.SetUserPassword(AUsername, APassword, AOldPassword, out AVerification);
         }
 
         /// generated method from connector
-        public bool CreateUser(string AUsername,
-                               string APassword,
-                               string AModulePermissions)
+        public System.Boolean CreateUser(System.String AUsername,
+                                         System.String APassword,
+                                         System.String AModulePermissions)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector), "CreateUser", ";STRING;STRING;STRING;");
             return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector.CreateUser(AUsername, APassword, AModulePermissions);
         }
 
         /// generated method from connector
-        public bool GetAuthenticationFunctionality(out bool ACanCreateUser,
-                                                   out bool ACanChangePassword,
-                                                   out bool ACanChangePermissions)
+        public System.Boolean GetAuthenticationFunctionality(out System.Boolean ACanCreateUser,
+                                                             out System.Boolean ACanChangePassword,
+                                                             out System.Boolean ACanChangePermissions)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector), "GetAuthenticationFunctionality", ";BOOL;BOOL;BOOL;");
             return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector.GetAuthenticationFunctionality(out ACanCreateUser, out ACanChangePassword, out ACanChangePermissions);
@@ -1566,7 +1567,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.TableMaintenance.UIConnectors
 
         /// generated method from interface
         public ISysManUIConnectorsTableMaintenance SysManTableMaintenance(ref DataTable ADataSet,
-                                                                          string ATableName)
+                                                                          System.String ATableName)
         {
 #if DEBUGMODE
             if (TLogging.DL >= 9)
@@ -1770,14 +1771,14 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.ImportExport.WebConnectors
         }
 
         /// generated method from connector
-        public string ExportAllTables()
+        public System.String ExportAllTables()
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector), "ExportAllTables", ";");
             return Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector.ExportAllTables();
         }
 
         /// generated method from connector
-        public bool ResetDatabase(string AZippedNewDatabaseData)
+        public System.Boolean ResetDatabase(System.String AZippedNewDatabaseData)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector), "ResetDatabase", ";STRING;");
             return Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector.ResetDatabase(AZippedNewDatabaseData);

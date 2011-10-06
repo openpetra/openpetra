@@ -4,7 +4,7 @@
 // @Authors:
 //       berndr
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -55,8 +55,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             ACalc.AddParameter("param_date_selectionSub30", dtpDateSelection.Date.Value.AddDays(-30));
             ACalc.AddParameter("param_date_selection60", dtpDateSelection.Date.Value.AddDays(60));
             ACalc.AddParameter("DueDate", DateTime.Today);
-
-            int MaxColumns = ACalc.GetParameters().Get("MaxDisplayColumns").ToInt();
 
             int ColumnCounter = 0;
 

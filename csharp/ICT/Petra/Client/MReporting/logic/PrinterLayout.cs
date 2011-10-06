@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -169,7 +169,7 @@ namespace Ict.Petra.Client.MReporting.Logic
             FPrinter.PrintString(Get("ControlSource",
                     ReportingConsts.HEADERPAGELEFT2), eFont.eDefaultBoldFont, GetPosition(ReportingConsts.HEADERPAGELEFT2, -1, HEADERPAGELEFT2_POS));
             PrintColumnCaptions();
-            FPrinter.DrawLine(FPrinter.LeftMargin, FPrinter.RightMargin, eLinePosition.eAbove, eFont.eDefaultBoldFont);
+            FPrinter.DrawLine(FPrinter.LeftMargin, FPrinter.Width, eLinePosition.eAbove, eFont.eDefaultBoldFont);
             FPrinter.LineFeed(eFont.eDefaultFont);
         }
 
@@ -549,7 +549,7 @@ namespace Ict.Petra.Client.MReporting.Logic
 
             if (FParameters.Get("FullLineAbove", -1, row.depth, eParameterFit.eExact).ToBool() == true)
             {
-                FPrinter.DrawLine(FPrinter.LeftMargin, FPrinter.RightMargin, eLinePosition.eAbove, eFont.eDefaultFont);
+                FPrinter.DrawLine(FPrinter.LeftMargin, FPrinter.Width, eLinePosition.eAbove, eFont.eDefaultFont);
                 FPrinter.LineSpaceFeed(eFont.eDefaultFont);
             }
 
@@ -572,7 +572,7 @@ namespace Ict.Petra.Client.MReporting.Logic
 
             if (FParameters.Get("FullLineBelow", -1, row.depth, eParameterFit.eExact).ToBool() == true)
             {
-                FPrinter.DrawLine(FPrinter.LeftMargin, FPrinter.RightMargin, eLinePosition.eAbove, eFont.eDefaultFont);
+                FPrinter.DrawLine(FPrinter.LeftMargin, FPrinter.Width, eLinePosition.eAbove, eFont.eDefaultFont);
                 FPrinter.LineSpaceFeed(eFont.eDefaultFont);
             }
 
@@ -604,7 +604,7 @@ namespace Ict.Petra.Client.MReporting.Logic
             }
 
             FPrinter.LineFeedToPageFooter();
-            FPrinter.DrawLine(FPrinter.LeftMargin, FPrinter.RightMargin, eLinePosition.eAbove, eFont.eDefaultBoldFont);
+            FPrinter.DrawLine(FPrinter.LeftMargin, FPrinter.Width, eLinePosition.eAbove, eFont.eDefaultBoldFont);
             FPrinter.LineSpaceFeed(eFont.eSmallPrintFont);
 
             /*

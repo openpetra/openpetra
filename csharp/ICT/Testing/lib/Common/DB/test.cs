@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -31,6 +31,7 @@ using System.Xml;
 using System.Data;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Data;
 using Npgsql;
 
 namespace Ict.Common.DB.Testing
@@ -66,6 +67,7 @@ namespace Ict.Common.DB.Testing
             TLogging.Log("  Connected to Database.");
         }
 
+        /// init
         [SetUp]
         public void Init()
         {
@@ -75,6 +77,7 @@ namespace Ict.Common.DB.Testing
             EstablishDBConnection();
         }
 
+        /// tear down
         [TearDown]
         public void TearDown()
         {
@@ -123,6 +126,7 @@ namespace Ict.Common.DB.Testing
             DBAccess.GDBAccessObj.CommitTransaction();
         }
 
+        /// test the order of statements in a transaction
         [Test]
         public void TestOrderStatementsInTransaction()
         {
@@ -132,6 +136,7 @@ namespace Ict.Common.DB.Testing
             Assert.Throws <Npgsql.NpgsqlException>(new TestDelegate(WrongOrderSqlStatements));
         }
 
+        /// test sequences
         [Test]
         public void TestSequence()
         {
@@ -147,6 +152,22 @@ namespace Ict.Common.DB.Testing
             Assert.AreEqual(CurrentSequence, CurrentSequenceAfterReset, "after reset we want the same current sequence");
             Int64 NextSequenceAfterReset = DBAccess.GDBAccessObj.GetNextSequenceValue("seq_statement_number", t);
             Assert.AreEqual(CurrentSequence + 1, NextSequenceAfterReset, "after reset we don't want the previous last sequence number to be repeated");
+        }
+
+        /// test of sequences speed
+        [Test]
+        public void TestMassSequence()
+        {
+            TDBTransaction t = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+            DateTime before = DateTime.Now;
+
+            for (int i = 0; i < 10000; i++)
+            {
+                TTypedDataAccess.GetNextModificationID(t);
+            }
+
+            TLogging.Log("TestMassSequence takes " + DateTime.Now.Subtract(before).ToString());
         }
     }
 }

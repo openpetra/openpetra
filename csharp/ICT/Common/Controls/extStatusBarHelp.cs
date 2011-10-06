@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -54,7 +54,9 @@ namespace Ict.Common.Controls
                 });
 
             this.FStatusLabel.Name = "FStatusLabel";
-            this.FStatusLabel.Size = new System.Drawing.Size(109, 17);
+            this.FStatusLabel.AutoSize = true;
+            this.FStatusLabel.Spring = true;
+            this.FStatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 
             this.ResumeLayout(false);
             this.PerformLayout();

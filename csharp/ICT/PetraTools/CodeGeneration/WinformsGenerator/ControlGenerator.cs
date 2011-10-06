@@ -107,6 +107,43 @@ namespace Ict.Tools.CodeGeneration.Winforms
     }
 
     /// <summary>
+    /// Generator for label
+    /// </summary>
+    public class LinkLabelGenerator : TControlGenerator
+    {
+        /// <summary>
+        /// constructor
+        /// </summary>
+        public LinkLabelGenerator()
+            : base("llb", typeof(LinkLabel))
+        {
+            FAutoSize = true;
+            FGenerateLabel = false;
+        }
+
+        /// <summary>
+        /// get the name for the LinkLabel from the name of the associated control
+        /// </summary>
+        /// <param name="controlName"></param>
+        /// <returns></returns>
+        public string CalculateName(string controlName)
+        {
+            return "llb" + controlName.Substring(3);
+        }
+
+        /// <summary>write the code for the designer file where the properties of the control are written</summary>
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        {
+            base.SetControlProperties(writer, ctrl);
+
+            writer.SetControlProperty(ctrl, "Text", "\"" + ctrl.Label + "\"");
+            writer.SetControlProperty(ctrl, "Margin", "new System.Windows.Forms.Padding(3, 7, 3, 0)");
+
+            return writer.FTemplate;
+        }
+    }
+
+    /// <summary>
     /// generator for buttons
     /// </summary>
     public class ButtonGenerator : TControlGenerator

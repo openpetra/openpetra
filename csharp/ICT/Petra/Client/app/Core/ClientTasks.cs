@@ -40,7 +40,8 @@ namespace Ict.Petra.Client.App.Core
     /// </summary>
     public class TClientTasksQueue : object
     {
-        private static Int32 UClientID;
+        // only needed for debugging
+        // private static Int32 UClientID;
 
         /// Holds the ClientTasksDataTable that was passed in when Create got called.
         private DataTable FClientTasksDataTable;
@@ -54,7 +55,8 @@ namespace Ict.Petra.Client.App.Core
         /// <param name="AClientTasksDataTable"></param>
         public TClientTasksQueue(Int32 AClientID, DataTable AClientTasksDataTable)
         {
-            UClientID = AClientID;
+            // only needed for debugging
+            // UClientID = AClientID;
             FClientTasksDataTable = AClientTasksDataTable;
         }
 

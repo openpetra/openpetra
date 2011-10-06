@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       berndr
+//       berndr, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -43,7 +43,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
     /// </summary>
     public partial class TFrmUC_GeneralSettings
     {
-        private int FLedgerNumber;
+        private int FLedgerNumber = -1;
         private int FNumberAccountingPeriods;
         private int FNumberForwardingPeriods;
         private int FCurrentPeriod;
@@ -135,7 +135,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             if (rbtQuarter.Checked)
             {
-                Year = (int)cmbQuarterYear.SelectedItem;
+                Year = cmbQuarterYear.GetSelectedInt32();
 
                 int Quarter = (Int32)StringHelper.TryStrToInt(txtQuarter.Text, 1);
                 ACalculator.AddParameter("param_start_period_i", (System.Object)(Quarter * 3 - 2));
@@ -152,7 +152,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             }
             else if (rbtPeriod.Checked)
             {
-                Year = (int)cmbPeriodYear.SelectedItem;
+                Year = cmbPeriodYear.GetSelectedInt32();
 
                 int StartPeriod = (Int32)StringHelper.TryStrToInt(txtStartPeriod.Text, 1);
                 int EndPeriod = (Int32)StringHelper.TryStrToInt(txtEndPeriod.Text, 1);
@@ -200,6 +200,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         /// <returns>void</returns>
         public void SetControls(TParameterList AParameters)
         {
+            if (FLedgerNumber == -1)
+            {
+                // we will wait until the ledger number has been set
+                return;
+            }
+
             // TODO
             //          int DiffPeriod = 0;//(System.Int32)CbB_YearEndsOn.SelectedItem;
             //            DiffPeriod = DiffPeriod - 12;
@@ -214,9 +220,32 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             rbtDate.Checked = AParameters.Get("param_date_checked").ToBool();
             rbtPeriod.Checked = AParameters.Get("param_period").ToBool();
 
+            if (!rbtPeriod.Checked && !rbtDate.Checked && !rbtQuarter.Checked)
+            {
+                rbtPeriod.Checked = true;
+            }
+
             txtQuarter.Text = (AParameters.Get("param_end_period_i").ToInt() / 3).ToString();
             txtStartPeriod.Text = AParameters.Get("param_start_period_i").ToString();
             txtEndPeriod.Text = AParameters.Get("param_end_period_i").ToString();
+
+            if (rbtPeriod.Checked)
+            {
+                if (txtStartPeriod.Text.Length == 0)
+                {
+                    txtStartPeriod.Text = FCurrentPeriod.ToString();
+                }
+
+                if (txtEndPeriod.Text.Length == 0)
+                {
+                    txtEndPeriod.Text = FCurrentPeriod.ToString();
+                }
+
+                if (cmbPeriodYear.SelectedIndex == -1)
+                {
+                    cmbPeriodYear.SetSelectedInt32(FCurrentYear);
+                }
+            }
 
             if (AParameters.Exists("param_start_date"))
             {

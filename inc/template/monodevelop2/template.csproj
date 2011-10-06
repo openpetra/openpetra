@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <ProjectGuid>${ProjectGuid}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -9,25 +9,32 @@
     <AssemblyName>${Namespace}</AssemblyName>
     <TargetFrameworkVersion>v${NETframework-version}</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <BaseIntermediateOutputPath>${dir.bin}\${Namespace}\</BaseIntermediateOutputPath>
-    <NoStdLib>False</NoStdLib>    
-    <OutputPath>${dir.bin}</OutputPath>
+    <BaseIntermediateOutputPath>../../bin/${Namespace}/</BaseIntermediateOutputPath>
+    <NoStdLib>False</NoStdLib>
+    <OutputPath>../../bin/</OutputPath>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <DocumentationFile>${dir.bin}/${Namespace}.xml</DocumentationFile>
+    <DocumentationFile>../../bin/${Namespace}.xml</DocumentationFile>
     <Optimize>False</Optimize>
     <StartArguments>${DebugStartArguments}</StartArguments>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <DebugSymbols>True</DebugSymbols>
-    <DebugType>Full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
     <DefineConstants>DEBUG;TRACE;DEBUGMODE</DefineConstants>
     <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>../../bin/</OutputPath>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>false</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <DebugSymbols>False</DebugSymbols>
-    <DebugType>None</DebugType>
+    <DebugType>none</DebugType>
     <DefineConstants>TRACE;DEBUGMODE</DefineConstants>
     <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>../../bin/</OutputPath>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>false</Optimize>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
@@ -35,5 +42,5 @@ ${TemplateReferences}  </ItemGroup>
   <ItemGroup>
 ${TemplateCompile}${TemplateResource}  </ItemGroup>
   <ItemGroup>
-${TemplateProjectReferences}    </ItemGroup>
+${TemplateProjectReferences}  </ItemGroup>
 </Project>

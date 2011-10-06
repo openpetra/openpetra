@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -37,12 +37,14 @@ namespace Ict.Common.Testing
     [TestFixture]
     public class TTestCommon
     {
+        /// init the test
         [SetUp]
         public void Init()
         {
             new TLogging("test.log");
         }
 
+        /// find matching quote in a string. considers nested quotes
         public static int FindMatchingQuote(String s)
         {
             string localstr;
@@ -58,6 +60,8 @@ namespace Ict.Common.Testing
         }
 
         static Int16 tstNr;
+
+        /// create a name for a test
         public static string FormatTestName(string s)
         {
             string ReturnValue;
@@ -67,6 +71,7 @@ namespace Ict.Common.Testing
             return ReturnValue;
         }
 
+        /// test dates
         [Test]
         public void TestDates()
         {
@@ -81,6 +86,7 @@ namespace Ict.Common.Testing
             Assert.AreEqual(new DateTime(2003, 12, 31), d2, "end date");
         }
 
+        /// test formatting currency values
         [Test]
         public void TestStringHelperFormatCurrency()
         {
@@ -189,8 +195,7 @@ namespace Ict.Common.Testing
             }
         }
 
-        /* need to find the matching quotes */
-
+        /// test csv operations (comma separated value lists)
         [Test]
         public void TestStringHelperCSVList()
         {
@@ -282,6 +287,7 @@ namespace Ict.Common.Testing
             Assert.AreEqual("0", StringHelper.GetNextCSV(ref testListSeparator2Spaces, "  "));
         }
 
+        /// test TVariant and dates
         [Test]
         public void TestVariantDates()
         {
@@ -321,6 +327,7 @@ namespace Ict.Common.Testing
             Thread.CurrentThread.CurrentCulture = oldCulture;
         }
 
+        /// test TVariant composites
         [Test]
         public void TestVariantComposite()
         {
@@ -349,7 +356,7 @@ namespace Ict.Common.Testing
                 v.EncodeToString(),
                 "EncodeToString3");
             v.Add(new TVariant(new DateTime(2004, 03, 29)));
-            v2 = new TVariant(v); /// copy constructor
+            v2 = new TVariant(v); // copy constructor
             Assert.AreEqual(
                 "eComposite: :eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDecimal:4612203932384535511|eInteger:2|eString: test |eDateTime:29/03/2004",
                 v2.EncodeToString(),
@@ -482,6 +489,7 @@ namespace Ict.Common.Testing
             Thread.CurrentThread.CurrentCulture = oldCulture;
         }
 
+        /// test TVariant and currencies
         [Test]
         public void TestVariantCurrencies()
         {
@@ -592,6 +600,7 @@ namespace Ict.Common.Testing
             Thread.CurrentThread.CurrentCulture = oldCulture;
         }
 
+        /// test currentculture and list separators
         [Test]
         public void TestListSeparator()
         {
@@ -608,6 +617,7 @@ namespace Ict.Common.Testing
             Thread.CurrentThread.CurrentCulture = oldCulture;
         }
 
+        /// test printing amounts as words
         [Test]
         public void TestAmountToWords()
         {

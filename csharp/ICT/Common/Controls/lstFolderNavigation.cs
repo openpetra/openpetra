@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -196,6 +196,14 @@ namespace Ict.Common.Controls
             rbt.CheckedChanged += new System.EventHandler(this.FolderCheckedChanged);
 
             rbt.Enabled = AHasAccessPermission(AFolderNode, AUserId);
+        }
+
+        /// <summary>
+        /// for reloading the navigation file, eg. with newly created ledger
+        /// </summary>
+        public void ClearFolders()
+        {
+            this.sptNavigation.Panel2.Controls.Clear();
         }
 
         /// <summary>

@@ -129,6 +129,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AddControlGenerator(new SplitContainerGenerator());
                 AddControlGenerator(new UserControlGenerator());
                 AddControlGenerator(new LabelGenerator());
+                AddControlGenerator(new LinkLabelGenerator());
                 AddControlGenerator(new ButtonGenerator());
                 AddControlGenerator(new CheckBoxGenerator());
                 AddControlGenerator(new TClbVersatileGenerator());
@@ -334,6 +335,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 Console.WriteLine("Warning: Cannot find image file " + FResourceDirectory + System.IO.Path.DirectorySeparatorChar + AImageName);
                 return;
             }
+
+            // only add ComponentResourceManager to generated code if it is required
+            FTemplate.SetCodelet("RESOURCES", "true");
 
             string Md5SumImageFile = GetMd5Sum(FResourceDirectory + System.IO.Path.DirectorySeparatorChar + AImageName);
             string formattedImage = Image2Base64(FResourceDirectory + System.IO.Path.DirectorySeparatorChar + AImageName, AImageOrIcon);

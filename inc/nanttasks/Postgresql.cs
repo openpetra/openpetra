@@ -119,6 +119,23 @@ namespace Ict.Tools.NAntTasks
             }
         }
 
+        private string FUsername = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+
+        /// <summary>
+        /// the database user. otherwise defaulting to Windows username
+        /// </summary>
+        [TaskAttribute("username", Required = false)]
+        public string Username {
+            get
+            {
+                return FUsername;
+            }
+            set
+            {
+                FUsername = value;
+            }
+        }
+
         private string FPassword = String.Empty;
 
         /// <summary>
@@ -149,15 +166,16 @@ namespace Ict.Tools.NAntTasks
             process.StartInfo.FileName = FPsqlExecutable;
 
             Environment.SetEnvironmentVariable("PGPASSWORD", FPassword, EnvironmentVariableTarget.Process);
+            Environment.SetEnvironmentVariable("PGOPTIONS", "--client-min-messages=warning", EnvironmentVariableTarget.Process);
 
             if (FSQLCommand.Length > 0)
             {
-                process.StartInfo.Arguments = "-c \"" + FSQLCommand + "\"";
+                process.StartInfo.Arguments = "-q -c \"" + FSQLCommand + "\"";
                 Log(Level.Info, FSQLCommand);
             }
             else if (FSQLFile.Length > 0)
             {
-                process.StartInfo.Arguments = "-f \"" + FSQLFile + "\"";
+                process.StartInfo.Arguments = "-q -f \"" + FSQLFile + "\"";
                 Log(Level.Info, "Load sql commands from file: " + FSQLFile);
             }
 
@@ -165,6 +183,13 @@ namespace Ict.Tools.NAntTasks
             {
                 process.StartInfo.Arguments += " -t -o \"" + FOutputFile + "\"";
             }
+
+            if (FUsername.Contains("\\"))
+            {
+                FUsername = FUsername.Substring(FUsername.IndexOf("\\") + 1);
+            }
+
+            process.StartInfo.Arguments += " --username=" + FUsername;
 
             process.StartInfo.Arguments += " " + FDatabase;
 

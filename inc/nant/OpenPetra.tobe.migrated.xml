@@ -108,7 +108,7 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
 
 <target name="generateGlue" depends="" description="Generate the glue between client and server, ie. interfaces and instantiators">
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
-  <ExecDotNet program="${dir.bin}/GenerateSharedCode.exe" commandline="-ymlfile:${dir.root}/csharp/ICT/Petra/Definitions/NamespaceHierarchy.yml -outputdir:${dir.root}/csharp/ICT/Petra -TemplateDir:${dir.incdir.template.src}"/>
+  <ExecDotNet program="${dir.bin}/Ict.Tools.GenerateGlue.exe" commandline="-ymlfile:${dir.root}/csharp/ICT/Petra/Definitions/NamespaceHierarchy.yml -outputdir:${dir.root}/csharp/ICT/Petra -TemplateDir:${dir.incdir.template.src}"/>
 </target>
 
 <target name="translation" description="extracts string in winforms, creates and updates the .po files, and compiles the .mo files for delivery">
@@ -125,21 +125,24 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
 <!-- set platform specific variables -->
 <if test="${'win32'==platform::get-name()}" >
   <echo>Running on MS Windows</echo>
-  <property name="Dia.exe" value="${environment::get-variable('ProgramFiles')}\Dia\bin\dia.exe" overwrite="false"/> 
-  <property name="PostgreSQL.exe" value="${environment::get-variable('ProgramFiles')}/PostgreSQL/9.0/bin/psql.exe" overwrite="false" />
-  <property name="pgdump.exe" value="${environment::get-variable('ProgramFiles')}/PostgreSQL/9.0/bin/pg_dump.exe" overwrite="false"/>
-  <property name="MySQL.exe" value="${environment::get-variable('ProgramFiles')}\mysql\mysql server 5.1/bin/mysql.exe" overwrite="false" />
-  <property name="MySQLDump.exe" value="${environment::get-variable('ProgramFiles')}\mysql\mysql server 5.1/bin/mysqldump.exe" 
+  <property name="Dia.exe" value="${OP::GetFileInProgramDirectory('\Dia\bin\dia.exe')}" overwrite="false"/> 
+  <property name="PostgreSQL.exe" value="${OP::GetFileInProgramDirectory('/PostgreSQL/9.0/bin/psql.exe')}" overwrite="false" />
+  <property name="pgdump.exe" value="${OP::GetFileInProgramDirectory('/PostgreSQL/9.0/bin/pg_dump.exe')}" overwrite="false"/>
+  <property name="MySQL.exe" value="${OP::GetFileInProgramDirectory('\mysql\mysql server 5.1/bin/mysql.exe')}" overwrite="false" />
+  <property name="MySQLDump.exe" value="${OP::GetFileInProgramDirectory('\mysql\mysql server 5.1/bin/mysqldump.exe')}" 
             overwrite="false"/> 
-  <property name="Innosetup.ISCC" value="${environment::get-variable('ProgramFiles')}/Inno Setup 5/ISCC.exe" overwrite="false"/>
+  <property name="Innosetup.ISCC" value="${OP::GetFileInProgramDirectory('/Inno Setup 5/ISCC.exe')}" overwrite="false"/>
+  <property name="makensis.exe" value="${OP::GetFileInProgramDirectory('/NSIS/makensis.exe')}" overwrite="false"/>
+
   <!-- Is this really needed?? Yes, needed for the XSP webserver which is used for testing on Windows -->
-  <property name="MonoBinPath" value="${environment::get-variable('ProgramFiles')}\Mono-2.6.7\bin" overwrite="false"/>     
+  <property name="MonoBinPath" value="${OP::GetDirInProgramDirectory('\Mono-2.6.7\bin')}" overwrite="false"/>     
 </if>
 <if test="${'win32'!=platform::get-name()}">
   <if test="${'unix'==platform::get-name()}">
     <echo>Running on Unix</echo>
     <property name="PostgreSQL.exe" value="psql" overwrite="false"/>
     <property name="MySQL.exe" value="mysql" overwrite="false"/>
+    <property name="makensis.exe" value="makensis" overwrite="false"/>
   </if>
   <if test="${'unix'!=platform::get-name()}">
     <echo>Unknown platform!</echo>
@@ -204,6 +207,6 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
   </if>
  </target>
   
-<include buildfile="../../OpenPetra.build.database.tasks" />
+<include buildfile="../../db/database.build" />
 
 </project>

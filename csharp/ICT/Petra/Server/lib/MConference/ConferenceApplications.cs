@@ -285,8 +285,6 @@ namespace Ict.Petra.Server.MConference.Applications
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
-
-            return new ConferenceApplicationTDS();
         }
 
         private static bool LoadApplicationsFromDB(

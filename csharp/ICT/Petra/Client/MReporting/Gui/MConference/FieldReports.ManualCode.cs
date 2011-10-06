@@ -4,7 +4,7 @@
 // @Authors:
 //       berndr
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -298,8 +298,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
 
         private void ConferenceSelectionChanged(System.Object sender, EventArgs e)
         {
-            RadioButton RbtAllConferences = (RadioButton)sender;
-
             grdFields_InitialiseData(FUnitType);
         }
 

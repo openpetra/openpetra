@@ -23,6 +23,7 @@
 //
 using System;
 using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Odbc;
 using Ict.Common;
@@ -237,90 +238,102 @@ namespace Ict.Common.Data
             DB.TDBTransaction ATransaction,
             String ACurrentUser)
         {
-            String LastModificationId = "";
-            String LastModifiedBy = "";
-
-            System.DateTime LastModifiedDate;
-            String OriginalModificationID;
-            String CurrentModificationID;
-
             string[] Columns = TTypedDataTable.GetColumnStringList(ATableId);
             int[] PrimKeyColumnOrdList = TTypedDataTable.GetPrimaryKeyColumnOrdList(ATableId);
             string DBTableName = TTypedDataTable.GetTableNameSQL(ATableId);
 
-            // check if modification id of the changed row is the same as currently stored in the database
-            GetStoredModification(ATableId,
-                Columns,
-                PrimKeyColumnOrdList,
-                ADataRow,
-                ATransaction,
-                ref LastModificationId,
-                ref LastModifiedBy,
-                out LastModifiedDate);
-
-            if (LastModificationId != MODIFICATION_ID_DELETEDROW_INDICATOR)
-            {
-                if ((ADataRow[MODIFICATION_ID,
-                              DataRowVersion.Original] == System.DBNull.Value) || (ADataRow[MODIFICATION_ID, DataRowVersion.Original] == null))
-                {
-                    OriginalModificationID = "";
-                }
-                else
-                {
-                    OriginalModificationID = ADataRow[MODIFICATION_ID, DataRowVersion.Original].ToString();
-                }
-
-                if ((ADataRow[MODIFICATION_ID,
-                              DataRowVersion.Current] == System.DBNull.Value) || (ADataRow[MODIFICATION_ID, DataRowVersion.Current] == null))
-                {
-                    CurrentModificationID = "";
-                }
-                else
-                {
-                    CurrentModificationID = ADataRow[MODIFICATION_ID, DataRowVersion.Current].ToString();
-                }
-
-                if (OriginalModificationID == LastModificationId)
-                {
-                    if (CurrentModificationID != LastModificationId)
-                    {
-                        // the modification id has been increased in a previous SubmitChanges, but then the transaction has been rolled back
-                        ADataRow[MODIFICATION_ID] = LastModificationId;
-                        CurrentModificationID = LastModificationId;
-                    }
-                }
-
-                // check if modification id has been changed and committed to the database, but AcceptChanges has not been applied
-                if (OriginalModificationID != CurrentModificationID)
-                {
-                    throw new Exception(
-                        "Developer should fix this: Forgot to call AcceptChanges on table " + DBTableName + " (OriginalModificationID: '" +
-                        OriginalModificationID + "', CurrentModificationID: '" + CurrentModificationID + "'");
-                }
-
-                if (LastModificationId != OriginalModificationID)
-                {
-                    throw new EDBConcurrencyException(
-                        "Cannot update row of table " + DBTableName + " because the row has been edited by user " + LastModifiedBy,
-                        "update",
-                        DBTableName,
-                        LastModifiedBy,
-                        LastModifiedDate);
-                }
-
-                DBAccess.GDBAccessObj.ExecuteNonQuery(GenerateUpdateClause("PUB_" + DBTableName,
+            // First try to update with a where clause with the modification id
+            if (0 == DBAccess.GDBAccessObj.ExecuteNonQuery(GenerateUpdateClause("PUB_" + DBTableName,
                         Columns,
                         ADataRow,
                         PrimKeyColumnOrdList), ATransaction, false,
-                    GetParametersForUpdateClause(ATableId, ref ADataRow, PrimKeyColumnOrdList, Columns.Length, ATransaction, ACurrentUser));
-            }
-            else
+                    GetParametersForUpdateClause(ATableId, ref ADataRow, PrimKeyColumnOrdList, Columns.Length, ATransaction, ACurrentUser)))
             {
-                throw new EDBConcurrencyRowDeletedException("Cannot update row of table " + DBTableName + " because the row has been deleted.",
-                    "update",
-                    DBTableName,
-                    "",
-                    DateTime.MinValue);
+                // Was not able to update the row,
+                // the database has a different modification id on that row.
+                // trying now the other way
+
+                String LastModificationId = "";
+                String LastModifiedBy = "";
+
+                System.DateTime LastModifiedDate;
+                String OriginalModificationID;
+                String CurrentModificationID;
+
+                // check if modification id of the changed row is the same as currently stored in the database
+                GetStoredModification(ATableId,
+                    Columns,
+                    PrimKeyColumnOrdList,
+                    ADataRow,
+                    ATransaction,
+                    ref LastModificationId,
+                    ref LastModifiedBy,
+                    out LastModifiedDate);
+
+                if (LastModificationId != MODIFICATION_ID_DELETEDROW_INDICATOR)
+                {
+                    if ((ADataRow[MODIFICATION_ID,
+                                  DataRowVersion.Original] == System.DBNull.Value) || (ADataRow[MODIFICATION_ID, DataRowVersion.Original] == null))
+                    {
+                        OriginalModificationID = "";
+                    }
+                    else
+                    {
+                        OriginalModificationID = ADataRow[MODIFICATION_ID, DataRowVersion.Original].ToString();
+                    }
+
+                    if ((ADataRow[MODIFICATION_ID,
+                                  DataRowVersion.Current] == System.DBNull.Value) || (ADataRow[MODIFICATION_ID, DataRowVersion.Current] == null))
+                    {
+                        CurrentModificationID = "";
+                    }
+                    else
+                    {
+                        CurrentModificationID = ADataRow[MODIFICATION_ID, DataRowVersion.Current].ToString();
+                    }
+
+                    if (OriginalModificationID == LastModificationId)
+                    {
+                        if (CurrentModificationID != LastModificationId)
+                        {
+                            // the modification id has been increased in a previous SubmitChanges, but then the transaction has been rolled back
+                            ADataRow[MODIFICATION_ID] = LastModificationId;
+                            CurrentModificationID = LastModificationId;
+                        }
+                    }
+
+                    // check if modification id has been changed and committed to the database, but AcceptChanges has not been applied
+                    if (OriginalModificationID != CurrentModificationID)
+                    {
+                        throw new Exception(
+                            "Developer should fix this: Forgot to call AcceptChanges on table " + DBTableName + " (OriginalModificationID: '" +
+                            OriginalModificationID + "', CurrentModificationID: '" + CurrentModificationID + "'");
+                    }
+
+                    if (LastModificationId != OriginalModificationID)
+                    {
+                        throw new EDBConcurrencyException(
+                            "Cannot update row of table " + DBTableName + " because the row has been edited by user " + LastModifiedBy,
+                            "update",
+                            DBTableName,
+                            LastModifiedBy,
+                            LastModifiedDate);
+                    }
+
+                    DBAccess.GDBAccessObj.ExecuteNonQuery(GenerateUpdateClause("PUB_" + DBTableName,
+                            Columns,
+                            ADataRow,
+                            PrimKeyColumnOrdList), ATransaction, false,
+                        GetParametersForUpdateClause(ATableId, ref ADataRow, PrimKeyColumnOrdList, Columns.Length, ATransaction, ACurrentUser));
+                }
+                else
+                {
+                    throw new EDBConcurrencyRowDeletedException("Cannot update row of table " + DBTableName + " because the row has been deleted.",
+                        "update",
+                        DBTableName,
+                        "",
+                        DateTime.MinValue);
+                }
             }
         }
 
@@ -1217,15 +1230,11 @@ namespace Ict.Common.Data
             DB.TDBTransaction ATransaction,
             String ACurrentUser)
         {
-            OdbcParameter[] ReturnValue;
-            System.Int32 Counter;
-            System.Int32 i;
+            List <OdbcParameter>ReturnValue = new List <OdbcParameter>();
             System.Object CurrentValue = null;
-            Counter = 0;
+            OdbcParameter parameter;
 
-            // find out how many template values there are, to be able to create the array in one go
-            // only consider the first columns of the row, that exist in the database
-            for (i = 0; i <= ANumberDBColumns - 1; i += 1)
+            for (Int32 i = 0; i <= ANumberDBColumns - 1; i += 1)
             {
                 if (NoDefaultColumn(ADataRow.Table.Columns[i].ColumnName))
                 {
@@ -1233,65 +1242,49 @@ namespace Ict.Common.Data
                     {
                         if (CurrentValue != System.DBNull.Value)
                         {
-                            Counter = Counter + 1;
-                        }
-                    }
-                }
-            }
-
-            // for the modification id, the modified by and date modified
-            Counter = Counter + 3;
-
-            if (APrimaryKeyColumnOrd != null)
-            {
-                Counter = Counter + APrimaryKeyColumnOrd.Length;
-            }
-
-            ReturnValue = new OdbcParameter[Counter];
-            Counter = 0;
-
-            for (i = 0; i <= ANumberDBColumns - 1; i += 1)
-            {
-                if (NoDefaultColumn(ADataRow.Table.Columns[i].ColumnName))
-                {
-                    if (NotEquals(ADataRow, i, ref CurrentValue))
-                    {
-                        if (CurrentValue != System.DBNull.Value)
-                        {
-                            ReturnValue[Counter] = CreateOdbcParameter(ATableId, i, CurrentValue);
-                            ReturnValue[Counter].Value = CurrentValue;
-                            Counter = Counter + 1;
+                            parameter = CreateOdbcParameter(ATableId, i, CurrentValue);
+                            parameter.Value = CurrentValue;
+                            ReturnValue.Add(parameter);
                         }
                     }
                 }
             }
 
             // modification id
-            ReturnValue[Counter] = new OdbcParameter("", OdbcType.VarChar, 150);
-            ReturnValue[Counter].Value = GetNextModificationID(ATransaction);
-            ADataRow[MODIFICATION_ID] = ReturnValue[Counter].Value;
-            Counter = Counter + 1;
-            ReturnValue[Counter] = new OdbcParameter("", OdbcType.VarChar, 20);
-            ReturnValue[Counter].Value = ACurrentUser;
-            ADataRow[MODIFIED_BY] = ReturnValue[Counter].Value;
-            Counter = Counter + 1;
-            ReturnValue[Counter] = new OdbcParameter("", OdbcType.Date);
-            ReturnValue[Counter].Value = DateTime.Now;
-            ADataRow[MODIFIED_DATE] = ReturnValue[Counter].Value;
-            Counter = Counter + 1;
+            string OldModificationId = (ADataRow.IsNull(MODIFICATION_ID) ? null : (string)ADataRow[MODIFICATION_ID]);
+            parameter = new OdbcParameter("", OdbcType.VarChar, 150);
+            parameter.Value = GetNextModificationID(ATransaction);
+            ADataRow[MODIFICATION_ID] = parameter.Value;
+            ReturnValue.Add(parameter);
+            parameter = new OdbcParameter("", OdbcType.VarChar, 20);
+            parameter.Value = ACurrentUser;
+            ADataRow[MODIFIED_BY] = parameter.Value;
+            ReturnValue.Add(parameter);
+            parameter = new OdbcParameter("", OdbcType.Date);
+            parameter.Value = DateTime.Now;
+            ADataRow[MODIFIED_DATE] = parameter.Value;
+            ReturnValue.Add(parameter);
 
             // for the UPDATE WHERE statement
             if (APrimaryKeyColumnOrd != null)
             {
                 foreach (int pki in APrimaryKeyColumnOrd)
                 {
-                    ReturnValue[Counter] = CreateOdbcParameter(ATableId, pki, ADataRow[pki]);
-                    ReturnValue[Counter].Value = ADataRow[pki, DataRowVersion.Original];
-                    Counter = Counter + 1;
+                    parameter = CreateOdbcParameter(ATableId, pki, ADataRow[pki]);
+                    parameter.Value = ADataRow[pki, DataRowVersion.Original];
+                    ReturnValue.Add(parameter);
                 }
             }
 
-            return ReturnValue;
+            if (OldModificationId != null)
+            {
+                // modification id for the where clause
+                parameter = new OdbcParameter("", OdbcType.VarChar, 150);
+                parameter.Value = OldModificationId;
+                ReturnValue.Add(parameter);
+            }
+
+            return ReturnValue.ToArray();
         }
 
         /// <summary>
@@ -1458,6 +1451,15 @@ namespace Ict.Common.Data
                     }
 
                     ReturnValue = ReturnValue + AColumnNames[PrimKeyOrd] + " = ?";
+                }
+
+                if (ADataRow.IsNull(MODIFICATION_ID))
+                {
+                    ReturnValue += " AND " + MODIFICATION_ID + " IS NULL";
+                }
+                else
+                {
+                    ReturnValue += " AND " + MODIFICATION_ID + " = ?";
                 }
             }
             else
