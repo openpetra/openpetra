@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<project name="OpenPetra-csharp-Ict.Tools.DevelopersAssistant-build">
+<property name="Namespace" value="Ict.Tools.DevelopersAssistant" />
+<property name="OutputType" value="exe" />
+
+<property name="RunCsDepend" value="true" />
+
+<include buildfile="../../../..//inc/nant/OpenPetra.csharp.xml"/> 
+
+</project>
