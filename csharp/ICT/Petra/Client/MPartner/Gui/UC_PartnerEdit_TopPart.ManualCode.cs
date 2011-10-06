@@ -539,13 +539,13 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void CmbPersonGender_SelectedValueChanged(System.Object sender, System.EventArgs e)
         {
-            if (cmbPersonGender.SelectedItem.ToString() == "Female")
+            if (cmbPersonGender.GetSelectedString() == "Female")
             {
-                cmbPersonAddresseeTypeCode.SelectedItem = SharedTypes.StdAddresseeTypeCodeEnumToString(TStdAddresseeTypeCode.satcFEMALE);
+                cmbPersonAddresseeTypeCode.SetSelectedString(SharedTypes.StdAddresseeTypeCodeEnumToString(TStdAddresseeTypeCode.satcFEMALE));
             }
-            else if (cmbPersonGender.SelectedItem.ToString() == "Male")
+            else if (cmbPersonGender.GetSelectedString() == "Male")
             {
-                cmbPersonAddresseeTypeCode.SelectedItem = SharedTypes.StdAddresseeTypeCodeEnumToString(TStdAddresseeTypeCode.satcMALE);
+                cmbPersonAddresseeTypeCode.SetSelectedString(SharedTypes.StdAddresseeTypeCodeEnumToString(TStdAddresseeTypeCode.satcMALE));
             }
 
 //            /*

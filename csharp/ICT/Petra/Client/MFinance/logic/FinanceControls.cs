@@ -567,7 +567,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             if (!FindAndSelect(ref cmbMinistry, APartnerKey))
             {
                 //Clear the combobox
-                cmbMinistry.SelectedValueCell = null;
+                cmbMinistry.SelectedIndex = -1;
             }
         }
 
@@ -577,7 +577,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             {
                 if (pr.PartnerKey == APartnerKey)
                 {
-                    AControl.SelectedValueCell = APartnerKey;
+                    AControl.SetSelectedInt64(APartnerKey);
                     return true;
                 }
             }

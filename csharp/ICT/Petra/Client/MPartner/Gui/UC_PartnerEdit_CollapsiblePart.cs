@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -725,13 +725,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         #region Event handlers
         private void CmbPersonGender_SelectedValueChanged(System.Object sender, System.EventArgs e)
         {
-            if (cmbPersonGender.SelectedItem.ToString() == "Female")
+            if (cmbPersonGender.GetSelectedString() == "Female")
             {
-                cmbAddresseeType.SelectedItem = SharedTypes.StdAddresseeTypeCodeEnumToString(TStdAddresseeTypeCode.satcFEMALE);
+                cmbAddresseeType.SetSelectedString(SharedTypes.StdAddresseeTypeCodeEnumToString(TStdAddresseeTypeCode.satcFEMALE));
             }
-            else if (cmbPersonGender.SelectedItem.ToString() == "Male")
+            else if (cmbPersonGender.GetSelectedString() == "Male")
             {
-                cmbAddresseeType.SelectedItem = SharedTypes.StdAddresseeTypeCodeEnumToString(TStdAddresseeTypeCode.satcMALE);
+                cmbAddresseeType.SetSelectedString(SharedTypes.StdAddresseeTypeCodeEnumToString(TStdAddresseeTypeCode.satcMALE));
             }
 
             /*
@@ -740,7 +740,7 @@ namespace Ict.Petra.Client.MPartner.Gui
              * of cmbPersonGender, but uses the mouse to select anything else on the screen
              * *except* cmbAddresseeType!
              */
-            FMainDS.PPartner[0].AddresseeTypeCode = cmbAddresseeType.SelectedItem.ToString();
+            FMainDS.PPartner[0].AddresseeTypeCode = cmbAddresseeType.GetSelectedString();
         }
 
         private void ChkNoSolicitations_CheckedChanged(System.Object sender, System.EventArgs e)
@@ -867,7 +867,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         e.ProposedValue = e.Row[e.Column.ColumnName];
 
                         // need to assign this to make the change actually visible...
-                        cmbPartnerStatus.SelectedItem = e.ProposedValue.ToString();
+                        cmbPartnerStatus.SetSelectedString(e.ProposedValue.ToString());
 
                         // TODO 1 ochristiank cUI : Make a message library and call a method there to show verification errors.
                         MessageBox.Show(
@@ -909,7 +909,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                             e.ProposedValue = e.Row[e.Column.ColumnName];
 
                             // Need to assign this to make the change actually visible...
-                            cmbPartnerStatus.SelectedItem = e.ProposedValue.ToString();
+                            cmbPartnerStatus.SetSelectedString(e.ProposedValue.ToString());
                         }
                     }
                 }
