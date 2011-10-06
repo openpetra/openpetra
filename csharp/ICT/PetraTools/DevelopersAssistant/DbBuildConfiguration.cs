@@ -51,7 +51,7 @@ namespace Ict.Tools.DevelopersAssistant
         /// </summary>
         public static string[] Systems =
         {
-            "<default>", "SQLite", "PostgreSQL", "mySQL"
+            "<default>", "sqlite", "postgresql", "mysql"
         };
 
         public DbBuildConfiguration(string BranchLocation)
