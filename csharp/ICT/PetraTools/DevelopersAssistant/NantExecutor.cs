@@ -1,4 +1,27 @@
-﻿using System;
+﻿//
+// DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+//
+// @Authors:
+//       alanp
+//
+// Copyright 2004-2011 by OM International
+//
+// This file is part of OpenPetra.org.
+//
+// OpenPetra.org is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// OpenPetra.org is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
+//
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Diagnostics;
@@ -7,22 +30,21 @@ using System.Runtime.InteropServices;
 namespace Ict.Tools.DevelopersAssistant
 {
     /************************************************************************************************************************************
-     * 
+     *
      * This class handles the low level stuff involved in calling Windows to start or stop Processes.
      * All the methods and properties in this class are static, so we never instantiate this class.
-     * 
+     *
      * *********************************************************************************************************************************/
 
     class NantExecutor
     {
         // We use PostMessage to minimise the server window
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return : MarshalAs(UnmanagedType.Bool)]
         [DllImport("user32.dll", SetLastError = true)]
         static extern bool PostMessage(HandleRef hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
 
         private const UInt32 WM_SYSCOMMAND = 0x0112;
         private const UInt32 SC_MINIMIZE = 0xF020;
-
 
 
         // This is the processID for the cmd window that is hosting the server process (rather than the server ProcessID itself)
@@ -37,21 +59,25 @@ namespace Ict.Tools.DevelopersAssistant
         {
             Process[] allProcesses = Process.GetProcessesByName("PetraServerConsole");
             bool bIsRunning = allProcesses.Length > 0;
-            if (bIsRunning && _serverProcessID == 0)
+
+            if (bIsRunning && (_serverProcessID == 0))
             {
                 // Theoretically there could be more than one server console running.  If there are we will just work with the first one
                 //  and then work out which cmd window is associated with it
                 DateTime dtServerStart = allProcesses[0].StartTime;
-                
+
                 // Now go round all cmd.exe processes to find the one that started just before
                 // We assume that it will be within 5 seconds
                 Process[] cmdProcesses = Process.GetProcessesByName("cmd");
+
                 if (cmdProcesses.Length > 0)
                 {
                     TimeSpan tsSmallest = TimeSpan.FromDays(36500);      // assume the smallest time span so far is 100 years!
+
                     for (int i = 0; i < cmdProcesses.Length; i++)
                     {
                         TimeSpan ts = dtServerStart - cmdProcesses[i].StartTime;
+
                         if (ts >= TimeSpan.Zero)
                         {
                             // This cmd window did start before the server console process
@@ -64,7 +90,11 @@ namespace Ict.Tools.DevelopersAssistant
                     }
                 }
             }
-            if (!bIsRunning) _serverProcessID = 0;
+
+            if (!bIsRunning)
+            {
+                _serverProcessID = 0;
+            }
 
             return bIsRunning;
         }
@@ -90,11 +120,13 @@ namespace Ict.Tools.DevelopersAssistant
 
                 if (_serverProcessID == 0)
                 {
-                    OutputText.AppendText(OutputText.OutputStream.Both, "\r\nThe startServer task was executed but the Assistant failed to figure out the cmd window ID\r\n");
+                    OutputText.AppendText(OutputText.OutputStream.Both,
+                        "\r\nThe startServer task was executed but the Assistant failed to figure out the cmd window ID\r\n");
                 }
                 else if (StartMinimized)
                 {
-                    PostMessage(new HandleRef(null, Process.GetProcessById(_serverProcessID).MainWindowHandle), WM_SYSCOMMAND, new IntPtr(SC_MINIMIZE), new IntPtr(0));
+                    PostMessage(new HandleRef(null, Process.GetProcessById(_serverProcessID).MainWindowHandle), WM_SYSCOMMAND, new IntPtr(
+                            SC_MINIMIZE), new IntPtr(0));
                 }
             }
 
@@ -110,6 +142,7 @@ namespace Ict.Tools.DevelopersAssistant
         {
             // Launch the stop task
             bool bRet = LaunchExe("nant.bat", "stopPetraServer -logfile:opda.txt", BranchLocation);
+
             if (bRet)
             {
                 // That command window will have closed but we will be left with the cmd window that hosted the server
@@ -118,6 +151,7 @@ namespace Ict.Tools.DevelopersAssistant
                 // Failing that we do not know which command window to close, so we have to leave it
                 Process[] curProcesses = Process.GetProcessesByName("cmd");
                 bool bFound = false;
+
                 if (_serverProcessID > 0)
                 {
                     foreach (Process p in curProcesses)
@@ -135,9 +169,16 @@ namespace Ict.Tools.DevelopersAssistant
                     curProcesses[0].Kill();
                     bFound = true;
                 }
-                if (!bFound) OutputText.AppendText(OutputText.OutputStream.Both, String.Format("\r\nFailed to find ProcessID {0} so cmd window was not closed\r\n", _serverProcessID));
+
+                if (!bFound)
+                {
+                    OutputText.AppendText(OutputText.OutputStream.Both,
+                        String.Format("\r\nFailed to find ProcessID {0} so cmd window was not closed\r\n", _serverProcessID));
+                }
+
                 _serverProcessID = 0;
             }
+
             return bRet;
         }
 
@@ -161,12 +202,20 @@ namespace Ict.Tools.DevelopersAssistant
         public static bool RunGenerateWinform(string BranchLocation, string YAMLPath, bool AndCompile, bool AndStartClient)
         {
             string initialDir = System.IO.Path.Combine(BranchLocation, "csharp\\ICT\\Petra\\Client");
+
             if (AndCompile && AndStartClient)
+            {
                 return LaunchExe("nant.bat", String.Format("generateWinform  startPetraClient  -D:file={0}  -logfile:opda.txt", YAMLPath), initialDir);
+            }
             else if (AndCompile)
+            {
                 return LaunchExe("nant.bat", String.Format("generateWinform  -D:file={0}  -logfile:opda.txt", YAMLPath), initialDir);
+            }
             else
-                return LaunchExe("nant.bat", String.Format("generateWinform  -D:file={0}  -D:donotcompile=true  -logfile:opda.txt", YAMLPath), initialDir);
+            {
+                return LaunchExe("nant.bat", String.Format("generateWinform  -D:file={0}  -D:donotcompile=true  -logfile:opda.txt",
+                        YAMLPath), initialDir);
+            }
         }
 
         //  Helper function to launch an executable file.
@@ -175,6 +224,7 @@ namespace Ict.Tools.DevelopersAssistant
         {
             bool ret = true;
             ProcessStartInfo si = new ProcessStartInfo(ExeName, Params);
+
             si.WorkingDirectory = StartDirectory;
             si.WindowStyle = ProcessWindowStyle.Hidden;
 
@@ -185,7 +235,9 @@ namespace Ict.Tools.DevelopersAssistant
             }
             catch (Exception ex)
             {
-                OutputText.AppendText(OutputText.OutputStream.Both, String.Format("\r\nError!!! An exception occurred when launching '{0}'.  The exception message was '{1}'.\r\n", ExeName, ex.Message));
+                OutputText.AppendText(OutputText.OutputStream.Both,
+                    String.Format("\r\nError!!! An exception occurred when launching '{0}'.  The exception message was '{1}'.\r\n", ExeName,
+                        ex.Message));
                 ret = false;
             }
             return ret;

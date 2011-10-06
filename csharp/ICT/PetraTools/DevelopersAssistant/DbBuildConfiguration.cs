@@ -1,4 +1,27 @@
-﻿using System;
+﻿//
+// DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+//
+// @Authors:
+//       alanp
+//
+// Copyright 2004-2011 by OM International
+//
+// This file is part of OpenPetra.org.
+//
+// OpenPetra.org is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// OpenPetra.org is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
+//
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
@@ -17,7 +40,7 @@ namespace Ict.Tools.DevelopersAssistant
         private string _port;
         private string _target;
 
-        private List<string> _storedDbBuildConfig = new List<string>();                     // List of stored configuration items
+        private List <string>_storedDbBuildConfig = new List <string>();                     // List of stored configuration items
 
         /// <summary>
         /// The string that is used when there is no entry in the Build file
@@ -26,7 +49,10 @@ namespace Ict.Tools.DevelopersAssistant
         /// <summary>
         /// The possible values for the DBMS
         /// </summary>
-        public static string[] Systems = { "<default>", "SQLite", "PostgreSQL", "mySQL" };
+        public static string[] Systems =
+        {
+            "<default>", "SQLite", "PostgreSQL", "mySQL"
+        };
 
         public DbBuildConfiguration(string BranchLocation)
         {
@@ -35,10 +61,15 @@ namespace Ict.Tools.DevelopersAssistant
             // We can work out what our favourite configurations are whatever the branch location
             _storedDbBuildConfig.Clear();
             string s = Properties.Settings.Default.DbBuildConfigurations;
+
             if (s != String.Empty)
             {
-                string[] sep = { "&&" };
+                string[] sep =
+                {
+                    "&&"
+                };
                 string[] items = s.Split(sep, StringSplitOptions.None);
+
                 for (int i = 0; i < items.Length; i++)
                 {
                     _storedDbBuildConfig.Add(items[i]);
@@ -46,7 +77,10 @@ namespace Ict.Tools.DevelopersAssistant
             }
 
             // Now we read the content of our working (current) config.  For that we need a valid branch location
-            if (_branchLocation == String.Empty) return;
+            if (_branchLocation == String.Empty)
+            {
+                return;
+            }
 
             _DBMSType = DefaultString;
             _DBName = DefaultString;
@@ -79,14 +113,17 @@ namespace Ict.Tools.DevelopersAssistant
         {
             get
             {
-                if (_branchLocation == String.Empty) return "";
+                if (_branchLocation == String.Empty)
+                {
+                    return "";
+                }
 
                 string s = String.Format("DBMS: {0};  Port: {1};  Database name: {2};  Password: {3}\r\nLocation: {4}",
-                            _DBMSType,
-                            _port,
-                            _DBName,
-                            (_password == String.Empty) ? "<blank>" : _password,
-                            _target);
+                    _DBMSType,
+                    _port,
+                    _DBName,
+                    (_password == String.Empty) ? "<blank>" : _password,
+                    _target);
                 return s;
             }
         }
@@ -98,14 +135,31 @@ namespace Ict.Tools.DevelopersAssistant
         public void ListAllConfigs(System.Windows.Forms.ListBox listBox)
         {
             listBox.Items.Clear();
+
             for (int i = 0; i < _storedDbBuildConfig.Count; i++)
             {
-                string[] sep = { "++" };
+                string[] sep =
+                {
+                    "++"
+                };
                 string[] items = _storedDbBuildConfig[i].Split(sep, StringSplitOptions.None);
                 string s = String.Empty;
-                if (items[0] != String.Empty) s += String.Format(";  DBMS: {0}", items[0]);
-                if (items[1] != String.Empty) s += String.Format(";  Name: {0}", items[1]);
-                if (items[2] != String.Empty) s += String.Format(";  Port: {0}", items[2]);
+
+                if (items[0] != String.Empty)
+                {
+                    s += String.Format(";  DBMS: {0}", items[0]);
+                }
+
+                if (items[1] != String.Empty)
+                {
+                    s += String.Format(";  Name: {0}", items[1]);
+                }
+
+                if (items[2] != String.Empty)
+                {
+                    s += String.Format(";  Port: {0}", items[2]);
+                }
+
                 if (items[3] != String.Empty)
                 {
                     s += String.Format(";  Password: {0}", items[3]);
@@ -114,12 +168,24 @@ namespace Ict.Tools.DevelopersAssistant
                 {
                     s += ";  Password: <blank>";
                 }
-                if (items[5] != String.Empty) s += String.Format(";  Location: {0}", items[5]);
 
-                if (s.Length > 3) s = s.Substring(3);
+                if (items[5] != String.Empty)
+                {
+                    s += String.Format(";  Location: {0}", items[5]);
+                }
+
+                if (s.Length > 3)
+                {
+                    s = s.Substring(3);
+                }
+
                 listBox.Items.Add(s);
             }
-            if (listBox.Items.Count > 0) listBox.SelectedIndex = 0;
+
+            if (listBox.Items.Count > 0)
+            {
+                listBox.SelectedIndex = 0;
+            }
         }
 
         /// <summary>
@@ -161,7 +227,8 @@ namespace Ict.Tools.DevelopersAssistant
         public bool SetConfigAsDefault(int Index)
         {
             bool bRet = false;
-            if (Index >= 0 && Index < _storedDbBuildConfig.Count)
+
+            if ((Index >= 0) && (Index < _storedDbBuildConfig.Count))
             {
                 bRet = true;
                 string dbms, dbName, port, password, location;
@@ -172,6 +239,7 @@ namespace Ict.Tools.DevelopersAssistant
                 {
                     xmlDoc.PreserveWhitespace = true;
                     string xmlPath = _branchLocation + @"\OpenPetra.build.config";
+
                     if (File.Exists(xmlPath))
                     {
                         xmlDoc.Load(xmlPath);
@@ -180,25 +248,68 @@ namespace Ict.Tools.DevelopersAssistant
                     {
                         xmlDoc.LoadXml("<?xml version=\"1.0\"?>\r\n<project name=\"OpenPetra-userconfig\">\r\n</project>");
                     }
-                    if (dbms == String.Empty) bRet &= RemoveProperty(xmlDoc, "DBMS.Type"); else bRet &= SetPropertyValue(xmlDoc, "DBMS.Type", dbms);
-                    if (dbName == String.Empty) bRet &= RemoveProperty(xmlDoc, "DBMS.DBName"); else bRet &= SetPropertyValue(xmlDoc, "DBMS.DBName", dbName);
-                    if (port == String.Empty) bRet &= RemoveProperty(xmlDoc, "DBMS.DBPort"); else bRet &= SetPropertyValue(xmlDoc, "DBMS.DBPort", port);
-                    if (location == String.Empty) bRet &= RemoveProperty(xmlDoc, "DBMS.DBHostOrFile"); else bRet &= SetPropertyValue(xmlDoc, "DBMS.DBHostOrFile", location);
+
+                    if (dbms == String.Empty)
+                    {
+                        bRet &= RemoveProperty(xmlDoc, "DBMS.Type");
+                    }
+                    else
+                    {
+                        bRet &= SetPropertyValue(xmlDoc, "DBMS.Type", dbms);
+                    }
+
+                    if (dbName == String.Empty)
+                    {
+                        bRet &= RemoveProperty(xmlDoc, "DBMS.DBName");
+                    }
+                    else
+                    {
+                        bRet &= SetPropertyValue(xmlDoc, "DBMS.DBName", dbName);
+                    }
+
+                    if (port == String.Empty)
+                    {
+                        bRet &= RemoveProperty(xmlDoc, "DBMS.DBPort");
+                    }
+                    else
+                    {
+                        bRet &= SetPropertyValue(xmlDoc, "DBMS.DBPort", port);
+                    }
+
+                    if (location == String.Empty)
+                    {
+                        bRet &= RemoveProperty(xmlDoc, "DBMS.DBHostOrFile");
+                    }
+                    else
+                    {
+                        bRet &= SetPropertyValue(xmlDoc, "DBMS.DBHostOrFile", location);
+                    }
+
                     if (isBlank)
                     {
                         bRet &= SetPropertyValue(xmlDoc, "DBMS.Password", String.Empty);
                     }
                     else
                     {
-                        if (password == String.Empty) bRet &= RemoveProperty(xmlDoc, "DBMS.Password"); else bRet &= SetPropertyValue(xmlDoc, "DBMS.Password", password);
+                        if (password == String.Empty)
+                        {
+                            bRet &= RemoveProperty(xmlDoc, "DBMS.Password");
+                        }
+                        else
+                        {
+                            bRet &= SetPropertyValue(xmlDoc, "DBMS.Password", password);
+                        }
                     }
+
                     if (bRet)
                     {
                         xmlDoc.Save(xmlPath);
                     }
                     else
                     {
-                        System.Windows.Forms.MessageBox.Show("The Assistant encountered an unexpected error while writing the new properties to the configuration file.", Program.APP_TITLE);
+                        System.Windows.Forms.MessageBox.Show(
+                            "The Assistant encountered an unexpected error while writing the new properties to the configuration file.",
+                            Program.APP_TITLE);
                     }
                 }
                 catch (Exception)
@@ -206,6 +317,7 @@ namespace Ict.Tools.DevelopersAssistant
                     bRet = false;
                 }
             }
+
             return bRet;
         }
 
@@ -219,15 +331,22 @@ namespace Ict.Tools.DevelopersAssistant
             bool isBlank = (IsDefined(_password) && _password == String.Empty);
 
             // Is there something here worth saving??
-            bool hasContent = dbms != String.Empty || dbName != String.Empty || port != String.Empty || location != String.Empty || password != String.Empty || isBlank;
+            bool hasContent = dbms != String.Empty || dbName != String.Empty || port != String.Empty || location != String.Empty || password !=
+                              String.Empty || isBlank;
+
             if (hasContent)
             {
                 string s = MakeConfigString(dbms, dbName, port, password, isBlank, location);
+
                 // Have we got it already?
                 for (int i = 0; i < _storedDbBuildConfig.Count; i++)
                 {
-                    if (String.Compare(_storedDbBuildConfig[i], s, true) == 0) return;
+                    if (String.Compare(_storedDbBuildConfig[i], s, true) == 0)
+                    {
+                        return;
+                    }
                 }
+
                 AddConfig(s);
             }
         }
@@ -255,7 +374,12 @@ namespace Ict.Tools.DevelopersAssistant
         public static int GetDBMSIndex(string DBMS)
         {
             int ret = -1;
-            if (DBMS == String.Empty) return 0;
+
+            if (DBMS == String.Empty)
+            {
+                return 0;
+            }
+
             for (int i = 0; i < Systems.Length; i++)
             {
                 if (String.Compare(Systems[i], DBMS, true) == 0)
@@ -263,6 +387,7 @@ namespace Ict.Tools.DevelopersAssistant
                     return i;
                 }
             }
+
             return ret;
         }
 
@@ -276,7 +401,13 @@ namespace Ict.Tools.DevelopersAssistant
         /// <param name="Password">Returns the password for the database</param>
         /// <param name="IsBlank">Returns if the password is explicitly blank</param>
         /// <param name="Location">Returns the location parameter (the host or file path)</param>
-        public void GetStoredConfiguration(int Index, out string DBMS, out string DBName, out string Port, out string Password, out bool IsBlank, out string Location)
+        public void GetStoredConfiguration(int Index,
+            out string DBMS,
+            out string DBName,
+            out string Port,
+            out string Password,
+            out bool IsBlank,
+            out string Location)
         {
             DBMS = String.Empty;
             DBName = String.Empty;
@@ -284,9 +415,13 @@ namespace Ict.Tools.DevelopersAssistant
             Password = String.Empty;
             IsBlank = false;
             Location = String.Empty;
-            if (Index >= 0 && Index < _storedDbBuildConfig.Count)
+
+            if ((Index >= 0) && (Index < _storedDbBuildConfig.Count))
             {
-                string[] sep = { "++" };
+                string[] sep =
+                {
+                    "++"
+                };
                 string[] items = _storedDbBuildConfig[Index].Split(sep, StringSplitOptions.None);
                 DBMS = items[0];
                 DBName = items[1];
@@ -300,34 +435,47 @@ namespace Ict.Tools.DevelopersAssistant
         private string MakeConfigStringArray()
         {
             string s = String.Empty;
+
             for (int i = 0; i < _storedDbBuildConfig.Count; i++)
             {
-                if (s != String.Empty) s += "&&";
+                if (s != String.Empty)
+                {
+                    s += "&&";
+                }
+
                 s += _storedDbBuildConfig[i];
             }
+
             return s;
         }
 
         private string GetPropertyValue(XmlDocument xmlDoc, string PropertyName)
         {
             XmlNode parentNode = xmlDoc.DocumentElement;
+
             if (parentNode != null)
             {
                 return XmlHelper.GetPropertyValue(xmlDoc, PropertyName, DefaultString, parentNode, "property", "name", "value");
             }
+
             return DefaultString;
         }
 
         private bool SetPropertyValue(XmlDocument xmlDoc, string PropertyName, string NewValue)
         {
             XmlNode parentNode = xmlDoc.DocumentElement;
+
             return XmlHelper.SetPropertyValue(xmlDoc, PropertyName, NewValue, parentNode, "property", "name", "value");
         }
 
         private bool RemoveProperty(XmlDocument xmlDoc, string PropertyName)
         {
             XmlNode parentNode = xmlDoc.DocumentElement;
-            if (parentNode == null) return true;      // The property is not there anyway
+
+            if (parentNode == null)
+            {
+                return true;                          // The property is not there anyway
+            }
 
             return XmlHelper.RemoveProperty(xmlDoc, PropertyName, parentNode, "property", "name");
         }

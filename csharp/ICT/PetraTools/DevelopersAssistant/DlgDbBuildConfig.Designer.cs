@@ -1,4 +1,27 @@
-﻿namespace Ict.Tools.DevelopersAssistant
+﻿//
+// DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+//
+// @Authors:
+//       alanp
+//
+// Copyright 2004-2011 by OM International
+//
+// This file is part of OpenPetra.org.
+//
+// OpenPetra.org is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// OpenPetra.org is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
+//
+namespace Ict.Tools.DevelopersAssistant
 {
     partial class DlgDbBuildConfig
     {
@@ -17,6 +40,7 @@
             {
                 components.Dispose();
             }
+
             base.Dispose(disposing);
         }
 
@@ -43,92 +67,92 @@
             this.label1 = new System.Windows.Forms.Label();
             this.chkBlankPW = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
-            // 
+            //
             // label15
-            // 
+            //
             this.label15.AutoSize = true;
             this.label15.Location = new System.Drawing.Point(46, 117);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(48, 13);
             this.label15.TabIndex = 8;
             this.label15.Text = "Location";
-            // 
+            //
             // label14
-            // 
+            //
             this.label14.AutoSize = true;
             this.label14.Location = new System.Drawing.Point(68, 89);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(26, 13);
             this.label14.TabIndex = 6;
             this.label14.Text = "Port";
-            // 
+            //
             // label13
-            // 
+            //
             this.label13.AutoSize = true;
             this.label13.Location = new System.Drawing.Point(277, 30);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(53, 13);
             this.label13.TabIndex = 4;
             this.label13.Text = "Password";
-            // 
+            //
             // label12
-            // 
+            //
             this.label12.AutoSize = true;
             this.label12.Location = new System.Drawing.Point(12, 61);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(82, 13);
             this.label12.TabIndex = 2;
             this.label12.Text = "Database name";
-            // 
+            //
             // cboDBMS
-            // 
+            //
             this.cboDBMS.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboDBMS.FormattingEnabled = true;
             this.cboDBMS.Location = new System.Drawing.Point(100, 27);
             this.cboDBMS.Name = "cboDBMS";
             this.cboDBMS.Size = new System.Drawing.Size(125, 21);
             this.cboDBMS.TabIndex = 1;
-            // 
+            //
             // label11
-            // 
+            //
             this.label11.AutoSize = true;
             this.label11.Location = new System.Drawing.Point(56, 30);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(38, 13);
             this.label11.TabIndex = 0;
             this.label11.Text = "DBMS";
-            // 
+            //
             // txtLocation
-            // 
+            //
             this.txtLocation.Location = new System.Drawing.Point(100, 114);
             this.txtLocation.Name = "txtLocation";
             this.txtLocation.Size = new System.Drawing.Size(378, 20);
             this.txtLocation.TabIndex = 9;
-            // 
+            //
             // txtDBName
-            // 
+            //
             this.txtDBName.Location = new System.Drawing.Point(100, 58);
             this.txtDBName.Name = "txtDBName";
             this.txtDBName.Size = new System.Drawing.Size(125, 20);
             this.txtDBName.TabIndex = 3;
-            // 
+            //
             // txtPassword
-            // 
+            //
             this.txtPassword.Location = new System.Drawing.Point(336, 27);
             this.txtPassword.Name = "txtPassword";
             this.txtPassword.Size = new System.Drawing.Size(142, 20);
             this.txtPassword.TabIndex = 5;
             this.txtPassword.TextChanged += new System.EventHandler(this.txtPassword_TextChanged);
-            // 
+            //
             // txtPort
-            // 
+            //
             this.txtPort.Location = new System.Drawing.Point(100, 86);
             this.txtPort.Name = "txtPort";
             this.txtPort.Size = new System.Drawing.Size(67, 20);
             this.txtPort.TabIndex = 7;
-            // 
+            //
             // btnOK
-            // 
+            //
             this.btnOK.Location = new System.Drawing.Point(159, 150);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(75, 23);
@@ -136,9 +160,9 @@
             this.btnOK.Text = "OK";
             this.btnOK.UseVisualStyleBackColor = true;
             this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
-            // 
+            //
             // btnCancel
-            // 
+            //
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.btnCancel.Location = new System.Drawing.Point(258, 150);
             this.btnCancel.Name = "btnCancel";
@@ -146,18 +170,18 @@
             this.btnCancel.TabIndex = 11;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
-            // 
+            //
             // label1
-            // 
+            //
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(12, 195);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(374, 13);
             this.label1.TabIndex = 12;
             this.label1.Text = "Note:  Leave text boxes blank where you want to use inherited default values.";
-            // 
+            //
             // chkBlankPW
-            // 
+            //
             this.chkBlankPW.AutoSize = true;
             this.chkBlankPW.Location = new System.Drawing.Point(336, 60);
             this.chkBlankPW.Name = "chkBlankPW";
@@ -166,9 +190,9 @@
             this.chkBlankPW.Text = "Use blank password";
             this.chkBlankPW.UseVisualStyleBackColor = true;
             this.chkBlankPW.Click += new System.EventHandler(this.chkBlankPW_Click);
-            // 
+            //
             // DlgDbBuildConfig
-            // 
+            //
             this.AcceptButton = this.btnOK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -197,7 +221,6 @@
             this.Text = "Database Build Configuration";
             this.ResumeLayout(false);
             this.PerformLayout();
-
         }
 
         #endregion

@@ -1,4 +1,27 @@
-﻿using System;
+﻿//
+// DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+//
+// @Authors:
+//       alanp
+//
+// Copyright 2004-2011 by OM International
+//
+// This file is part of OpenPetra.org.
+//
+// OpenPetra.org is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// OpenPetra.org is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
+//
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Runtime.InteropServices;
@@ -8,7 +31,7 @@ namespace Ict.Tools.DevelopersAssistant
     public static class FlashWindow
     {
         [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return : MarshalAs(UnmanagedType.Bool)]
         private static extern bool FlashWindowEx(ref FLASHWINFO pwfi);
 
         [StructLayout(LayoutKind.Sequential)]
@@ -81,12 +104,14 @@ namespace Ict.Tools.DevelopersAssistant
                 FLASHWINFO fi = Create_FLASHWINFO(form.Handle, FLASHW_ALL | FLASHW_TIMERNOFG, uint.MaxValue, 0);
                 return FlashWindowEx(ref fi);
             }
+
             return false;
         }
 
         private static FLASHWINFO Create_FLASHWINFO(IntPtr handle, uint flags, uint count, uint timeout)
         {
             FLASHWINFO fi = new FLASHWINFO();
+
             fi.cbSize = Convert.ToUInt32(Marshal.SizeOf(fi));
             fi.hwnd = handle;
             fi.dwFlags = flags;
@@ -108,6 +133,7 @@ namespace Ict.Tools.DevelopersAssistant
                 FLASHWINFO fi = Create_FLASHWINFO(form.Handle, FLASHW_ALL, count, 0);
                 return FlashWindowEx(ref fi);
             }
+
             return false;
         }
 
@@ -123,6 +149,7 @@ namespace Ict.Tools.DevelopersAssistant
                 FLASHWINFO fi = Create_FLASHWINFO(form.Handle, FLASHW_ALL, uint.MaxValue, 0);
                 return FlashWindowEx(ref fi);
             }
+
             return false;
         }
 
@@ -138,6 +165,7 @@ namespace Ict.Tools.DevelopersAssistant
                 FLASHWINFO fi = Create_FLASHWINFO(form.Handle, FLASHW_STOP, uint.MaxValue, 0);
                 return FlashWindowEx(ref fi);
             }
+
             return false;
         }
 
@@ -146,7 +174,10 @@ namespace Ict.Tools.DevelopersAssistant
         /// </summary>
         private static bool Win2000OrLater
         {
-            get { return System.Environment.OSVersion.Version.Major >= 5; }
+            get
+            {
+                return System.Environment.OSVersion.Version.Major >= 5;
+            }
         }
     }
 }
