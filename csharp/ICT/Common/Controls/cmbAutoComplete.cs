@@ -168,19 +168,6 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
-        /// This property determines which columns are searched, when the user enters
-        /// text into the combobox.
-        ///
-        /// </summary>
-        public System.Collections.Specialized.StringCollection ColumnsToSearchCollection
-        {
-            get
-            {
-                return this.FColumnsToSearch;
-            }
-        }
-
-        /// <summary>
         /// This property determines which column should be sorted. This may be esential
         /// for heirs of this class which use more the one column in the combobox. The
         /// default value for this property is therefore NIL.
@@ -259,138 +246,6 @@ namespace Ict.Common.Controls
             set
             {
                 this.FSuppressSelectionColor = value;
-            }
-        }
-
-        /// <summary>
-        /// property for the current selection;
-        /// SelectedItem is about the display member, SelectedValue reflects the value member, at the moment only Strings are supported
-        /// </summary>
-        public new System.Object SelectedItem
-        {
-            get
-            {
-                if (DesignMode)
-                {
-                    // messagebox.Show('I am in DesignMode!');
-                    return base.SelectedItem;
-                }
-
-                if ((DataSource == null) && (Items.Count > 0) && (SelectedIndex > -1))
-                {
-                    // use the normal Items values, not the datasource etc
-                    return Convert.ToString(Items[this.SelectedIndex]);
-                }
-
-                DataRowView mRowView = GetSelectedRowView();
-
-                if (mRowView == null)
-                {
-                    return System.DBNull.Value;
-                }
-                else
-                {
-                    return mRowView[GetColumnNrOfValueMember()];
-                }
-            }
-
-            set
-            {
-                if ((value == null) || (value.ToString() == ""))
-                {
-                    base.SelectedIndex = -1;
-                }
-                else
-                {
-                    Int32 m_SelectedIndex = this.FindStringSortedByLength(value.ToString(), GetColumnNrOfValueMember());
-                    base.SelectedIndex = m_SelectedIndex;
-                }
-            }
-        }
-        /// <summary>
-        /// This is yet another version of getting and setting the current selection:
-        ///
-        /// SelectedValueCell is for setting and getting exact the value column if datasource is used:
-        /// we take the object from the table at the special marked value column and at the selected row
-        /// </summary>
-        public System.Object SelectedValueCell
-        {
-            get
-            {
-                if (DesignMode)
-                {
-                    return base.SelectedItem;
-                }
-
-                if (DataSource == null)
-                {
-                    if ((Items.Count > 0) && (SelectedIndex > -1))
-                    {
-                        // use the normal Items values, not the datasource etc
-                        Object mySelectedItem = Items[this.SelectedIndex];
-                        //TODO for composed values return the correct cell instead
-                        return mySelectedItem;
-                    }
-                    else
-                    {
-                        return System.DBNull.Value;
-                    }
-                }
-                else
-                {
-                    DataRowView mRowView = GetSelectedRowView();
-
-                    if (mRowView == null)
-                    {
-                        return System.DBNull.Value;
-                    }
-                    else
-                    {
-                        return mRowView[GetColumnNrOfValueMember()];
-                    }
-                }
-            }
-
-            set
-            {
-                if ((value == null) || (value.ToString() == ""))
-                {
-                    base.SelectedIndex = -1;
-                    base.ResetText();
-                }
-                else
-                {
-                    Int32 m_SelectedIndex = this.FindExactString(value.ToString(), GetColumnNrOfValueMember());
-                    base.SelectedIndex = m_SelectedIndex;
-                }
-            }
-        }
-        /// <summary>
-        /// property for the current selection;
-        /// SelectedItem is about the display member, SelectedValue reflects the value member
-        /// </summary>
-        public new System.Object SelectedValue
-        {
-            get
-            {
-                return base.SelectedValue;
-            }
-            set
-            {
-                if (DesignMode)
-                {
-                    base.SelectedValue = value;
-                }
-
-                if (DataSource == null)
-                {
-                    SelectedItem = value;
-                }
-                else
-                {
-                    // TODO??? something special about DataSource situation?
-                    base.SelectedItem = value;
-                }
             }
         }
 
@@ -498,25 +353,30 @@ namespace Ict.Common.Controls
         /// This function builds a string collection out of a comma seperated list given
         /// in the format of a string. The occurance of each column can only be one.
         /// Therefore Duplicates are being removed.
-        ///
         /// </summary>
-        /// <returns>void</returns>
         private StringCollection BuildColumnStringCollection(String AString)
         {
-            StringCollection ReturnValue;
-            StringCollection mRawStringCollection;
-
-            ReturnValue = new StringCollection();
-            mRawStringCollection = StringHelper.StrSplit(AString, ",");
+            StringCollection ReturnValue = new StringCollection();
+            StringCollection mRawStringCollection = StringHelper.StrSplit(AString, ",");
 
             foreach (String mString in mRawStringCollection)
             {
-                if (!(ReturnValue.Contains(mString)))
+                string stringToAdd = mString;
+
+                // Replace the placeholders #VALUE# and #DISPLAY# with the real stuff.
+                if (stringToAdd == StrValueMember)
                 {
-                    if (mString != "")
-                    {
-                        ReturnValue.Add(mString);
-                    }
+                    stringToAdd = this.ValueMember;
+                }
+
+                if (stringToAdd == StrDisplayMember)
+                {
+                    stringToAdd = this.DisplayMember;
+                }
+
+                if (!ReturnValue.Contains(stringToAdd) && (stringToAdd.Length > 0))
+                {
+                    ReturnValue.Add(stringToAdd);
                 }
             }
 
@@ -546,24 +406,6 @@ namespace Ict.Common.Controls
             }
 
             return ((DataView)(this.DataSource)).Table.Columns.IndexOf(AColumnName);
-        }
-
-        /// <summary>
-        /// </summary>
-        /// <returns>the number of the column that has its name stored in DisplayMember
-        /// </returns>
-        private System.Int32 GetColumnNrOfDisplayMember()
-        {
-            return GetColumnNr(DisplayMember);
-        }
-
-        /// <summary>
-        /// </summary>
-        /// <returns>the number of the column that has its name stored in ValueMember
-        /// </returns>
-        private System.Int32 GetColumnNrOfValueMember()
-        {
-            return GetColumnNr(ValueMember);
         }
 
         /// <summary>
@@ -794,9 +636,6 @@ namespace Ict.Common.Controls
                 {
                     this.SelectedItem = DBNull.Value;
                     this.SelectedValue = DBNull.Value;
-
-                    // TLogging.Log('SelectedItem: ' + this.SelectedItem.ToString);
-                    // TLogging.Log('Selected Index: ' + this.SelectedIndex.ToString);
                 }
             }
 
@@ -893,13 +732,10 @@ namespace Ict.Common.Controls
                 }
                 else
                 {
-                    // TLogging.Log('User may NOT enter ANY new values.');
-                    if (this.SelectedItem.Equals(System.DBNull.Value))
+                    if ((this.SelectedItem != null) && this.SelectedItem.Equals(System.DBNull.Value))
                     {
                         this.Text = System.DBNull.Value.ToString();
                         this.UInitialString = System.DBNull.Value.ToString();
-
-                        // TLogging.Log('Set the whole stuff to dbnull');
                     }
                     else
                     {
@@ -937,62 +773,6 @@ namespace Ict.Common.Controls
             this.ValueMember = mColName;
             this.DataSource = mDataTable.DefaultView;
             this.EndUpdate();
-        }
-
-        /// <summary>
-        /// This function checks the existance of a column name within the datasource
-        /// specified.
-        ///
-        /// </summary>
-        /// <returns>void</returns>
-        private bool DoColumnNamesExistInDataSource()
-        {
-            if (DataSource == null)
-            {
-                return true;
-            }
-
-            // Get the Column collection of the datasource
-            DataColumnCollection mComboboxItems = ((System.Data.DataView) this.DataSource).Table.Columns;
-
-            // Replace the placeholders #VALUE# and #DISPLAY# with the real stuff.
-            Int32 mIndex = this.FColumnsToSearch.IndexOf(StrValueMember);
-
-            if (mIndex >= 0)
-            {
-                this.FColumnsToSearch[mIndex] = this.ValueMember;
-            }
-
-            mIndex = this.FColumnsToSearch.IndexOf(StrDisplayMember);
-
-            if (mIndex >= 0)
-            {
-                this.FColumnsToSearch[mIndex] = this.DisplayMember;
-            }
-
-            // If there is nothing to check then the result is FALSE anyway
-            if ((mComboboxItems == null) || (mComboboxItems.Count < 1))
-            {
-                return false;
-            }
-
-            System.Int32 mCountExistance = 0;
-
-            // Check whether the column names in this string collections are in the datasource
-            foreach (String mColumnName in this.FColumnsToSearch)
-            {
-                if (mComboboxItems.Contains(mColumnName))
-                {
-                    mCountExistance = mCountExistance + 1;
-                }
-            }
-
-            if (mCountExistance == this.FColumnsToSearch.Count)
-            {
-                return true;
-            }
-
-            return false;
         }
 
         /// <summary>
@@ -1097,8 +877,6 @@ namespace Ict.Common.Controls
                 return -1;
             }
 
-            DoColumnNamesExistInDataSource();
-
             // Create the IndexTable where the results are stored. The table consists out
             // of a column that holds the index and a column which holds the length of the
             // found string.
@@ -1161,7 +939,6 @@ namespace Ict.Common.Controls
                 }
             }
 
-            // End of "for ComboboxItem in this.Items do"
             // Search for the shortest string in the IndexTable with the smallest indices.
             DataView IndexView = new DataView(IndexTable);
 
@@ -1358,7 +1135,7 @@ namespace Ict.Common.Controls
         {
             if (ColumnNumber == -1)
             {
-                ColumnNumber = GetColumnNrOfValueMember();
+                ColumnNumber = GetColumnNr(ValueMember);
             }
 
             if (ColumnNumber == -1)
@@ -1399,7 +1176,7 @@ namespace Ict.Common.Controls
         {
             if (ColumnNumber == -1)
             {
-                ColumnNumber = GetColumnNrOfValueMember();
+                ColumnNumber = GetColumnNr(ValueMember);
             }
 
             if ((this.SelectedItem != null) && (this.SelectedItem != System.DBNull.Value))
@@ -1445,11 +1222,8 @@ namespace Ict.Common.Controls
 
             if (ColumnNumber == -1)
             {
-                ColumnNumber = GetColumnNrOfValueMember();
+                ColumnNumber = GetColumnNr(ValueMember);
             }
-
-            TLogging.Log("GetSelectedString 0" + ((System.Data.DataRowView) this.Items[0])[GetColumnNrOfDisplayMember()].ToString());
-            TLogging.Log("GetSelectedString selected" + ((System.Data.DataRowView) this.Items[SelectedIndex])[GetColumnNrOfDisplayMember()].ToString());
 
             if ((this.SelectedItem != null) && (SelectedIndex != -1) && (this.SelectedItem != System.DBNull.Value))
             {
@@ -1477,6 +1251,31 @@ namespace Ict.Common.Controls
         public string GetSelectedString()
         {
             return GetSelectedString(-1);
+        }
+
+        /// <summary>
+        /// get the display string for the selected value
+        /// </summary>
+        public string GetSelectedDisplayString()
+        {
+            return GetSelectedString(GetColumnNr(DisplayMember));
+        }
+
+        /// <summary>
+        /// the column that is used for the description in the label
+        /// </summary>
+        public string DescriptionMember
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// get the description string for the selected value (for the label beside the combobox)
+        /// </summary>
+        public string GetSelectedDescription()
+        {
+            return GetSelectedString(GetColumnNr(DescriptionMember));
         }
 
         /// <summary>
@@ -1629,9 +1428,7 @@ namespace Ict.Common.Controls
             string mTestString = this.UInitialString;
             Int32 mSelectedIndex = this.SelectedIndex;
 
-            TLogging.Log("RestoreOriginalItem:mSelectedIndex: " + mSelectedIndex.ToString());
-
-            // Get test for nil first and then set to '' (empty string) otherwise trim would
+            // Get test for null first and then set to '' (empty string) otherwise trim would
             // yield an exception.
             if ((mTestString == null) || (mSelectedIndex < 0))
             {
@@ -1639,44 +1436,18 @@ namespace Ict.Common.Controls
             }
 
             mTestString = mTestString.Trim();
-            TLogging.Log("RestoreOriginalItem:mTestString: " + mTestString);
 
             if (mTestString == "")
             {
                 // It is only an empty string => ComboBox is not set to a certain item
-                TLogging.Log("It is only an empty string => ComboBox is not set to a certain item");
                 this.Text = "";
                 this.SelectedIndex = -1;
-                SetBoundValueToDBNull();
             }
             else
             {
                 // It is a valid string => The string must be in the items collection
-                TLogging.Log("It is a valid string => The string must be in the items collection");
                 this.Text = this.UInitialString;
                 this.SelectedIndex = this.FindStringExact(this.UInitialString);
-            }
-        }
-
-        /// <summary>
-        /// This procedure sets the data bound value to DBNull. The procedure obtains
-        /// the databound field through the databinding.
-        ///
-        /// </summary>
-        /// <returns>void</returns>
-        private void SetBoundValueToDBNull()
-        {
-            // Iterate through all bindings
-            foreach (System.Windows.Forms.Binding mSingleBinding in DataBindings)
-            {
-                String mBindingField = mSingleBinding.BindingMemberInfo.BindingField;
-                String mBindingMember = mSingleBinding.BindingMemberInfo.BindingMember;
-                Int32 mBindingPosition = mSingleBinding.BindingManagerBase.Position;
-
-                DataView mDataView = (System.Data.DataView)mSingleBinding.DataSource;
-                mDataView.Table.Columns[mBindingField].AllowDBNull = true;
-
-                mDataView[mBindingPosition][mBindingMember] = System.DBNull.Value;
             }
         }
     }

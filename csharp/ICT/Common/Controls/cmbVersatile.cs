@@ -42,7 +42,7 @@ namespace Ict.Common.Controls
     /// Here the user is not allowed to add new items to the ComboBox. The following
     /// properties are essential for this control to work:
     /// - DataSource:
-    ///   Here the underlying table / view has to be set. This is mostly done in the
+    ///   Here the underlying view has to be set. This is mostly done in the
     ///   following way:
     ///     cmbVersatile.BeginUpdate();
     ///     cmbVersatile.DataSource := YOUR_DATA_VIEW;
@@ -279,22 +279,6 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
-        /// check if the datasource knows that column
-        /// </summary>
-        /// <param name="AColumn">column to look for</param>
-        /// <returns></returns>
-        public bool DataSourceContainsColumn(String AColumn)
-        {
-            // check for null is required for Mono; called from DataSourceContainsColumn with null parameter
-            if (!(DesignMode) && (AColumn != null))
-            {
-                return GetDataSourceTableFromSelf().Columns.Contains(AColumn);
-            }
-
-            return false;
-        }
-
-        /// <summary>
         /// This procedure disposes the TcmbVersatile.
         /// </summary>
         /// <param name="Disposing">true to release both managed and unmanaged resources;
@@ -312,43 +296,6 @@ namespace Ict.Common.Controls
             }
 
             base.Dispose(Disposing);
-        }
-
-        /// <summary>
-        /// This procedure needs a object in
-        /// order to come up with the table.
-        /// </summary>
-        /// <param name="ADataSource">The object to be transformed into a table.</param>
-        /// <returns>The table of the System.ComponentModel.MarshalByValueComponent object.
-        /// </returns>
-        private System.Data.DataTable GetDataSourceTable(object ADataSource)
-        {
-            if (ADataSource != null)
-            {
-                return ((System.Data.DataView)ADataSource).Table;
-            }
-            else
-            {
-                string mLogLine = "DataSourceTable could not be built. Since DataSource is \"null\".";
-                throw new ArgumentException(mLogLine);
-            }
-        }
-
-        /// <summary>
-        /// returns the currently used DataTable
-        /// </summary>
-        /// <returns>the DataTable from the DataSource</returns>
-        private System.Data.DataTable GetDataSourceTableFromSelf()
-        {
-            DataTable ReturnValue = this.GetDataSourceTable(this.DataSource);
-
-            if (ReturnValue == null)
-            {
-                string mLogLine = "GetDataSourceTableFromSelf: Table is \"null\"";
-                throw new ArgumentException(mLogLine);
-            }
-
-            return ReturnValue;
         }
 
         private System.ComponentModel.IContainer components = null;
@@ -374,16 +321,15 @@ namespace Ict.Common.Controls
         #region Routines dealing with the Drop Down
 
         /// <summary>
-        /// This procedure gets the colum nnumber from a given DataSource if the
+        /// This procedure gets the colum number of the current DataSource if the
         /// name of the column is provided.
         /// </summary>
-        /// <param name="DataSource">The DataSource the column is in.</param>
-        /// <param name="ColumnName">The name of the column to get the ordial from.</param>
-        /// <returns>The column ordial.
+        /// <param name="ColumnName">The name of the column to get the ordinal from.</param>
+        /// <returns>The column ordinal.
         /// </returns>
-        private int Get_ColumnNumber(object DataSource, string ColumnName)
+        private int Get_ColumnNumber(string ColumnName)
         {
-            DataTable mDataTable = this.GetDataSourceTable(DataSource);
+            DataTable mDataTable = ((DataView)DataSource).Table;
 
             try
             {
@@ -466,7 +412,7 @@ namespace Ict.Common.Controls
                 // Getting the items into a string;
                 for (int counter = 0; counter < this.ColumnNum; counter++)
                 {
-                    Int32 ColumnIndex = this.Get_ColumnNumber(this.DataSource, this.FDisplayInColumn[counter]);
+                    Int32 ColumnIndex = this.Get_ColumnNumber(this.FDisplayInColumn[counter]);
 
                     if (ColumnIndex != -1)
                     {

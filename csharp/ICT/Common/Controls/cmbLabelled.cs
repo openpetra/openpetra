@@ -466,52 +466,7 @@ namespace Ict.Common.Controls
             this.cmbCombobox.Size = new System.Drawing.Size(121, 21);
             this.cmbCombobox.TabIndex = 0;
             this.cmbCombobox.Text = "";
-            this.cmbCombobox.DataSourceChanged += new System.EventHandler(this.TCmbLabelled_DataSourceChanged);
             this.cmbCombobox.SelectionChangeCommitted += new System.EventHandler(this.TCmbLabelled_SelectionChangeCommitted);
-        }
-
-        /// <summary>
-        /// This procedure adds this colomn to the DataBindings of the lblDescription.
-        ///
-        /// </summary>
-        /// <returns>void</returns>
-        private void DataBindLabel(String AColumnName)
-        {
-            String mColumnToBind;
-            Binding oldBinding;
-
-            if (!(DesignMode))
-            {
-                if (this.cmbCombobox.DataSourceContainsColumn(AColumnName) == true)
-                {
-                    mColumnToBind = AColumnName;
-                }
-                else
-                {
-                    mColumnToBind = this.cmbCombobox.DisplayMember;
-                }
-
-                // Do the databinding
-                // this.lblDescription.DataBindings.Clear;
-                // don't add the binding twice; so first try to find the binding and remove it
-                // otherwise the cmbcombobox.valuemember gets lost
-                oldBinding = this.lblDescription.DataBindings["Text"];
-
-                if (oldBinding != null)
-                {
-                    this.lblDescription.DataBindings.Remove(oldBinding);
-                }
-
-                this.lblDescription.DataBindings.Add("Text", this.cmbCombobox.DataSource, mColumnToBind);
-                oldBinding = this.DataBindings["Text"];
-
-                if (oldBinding != null)
-                {
-                    this.DataBindings.Remove(oldBinding);
-                }
-
-                this.DataBindings.Add("Text", this.cmbCombobox.DataSource, mColumnToBind);
-            }
         }
 
         /// <summary>
@@ -594,6 +549,11 @@ namespace Ict.Common.Controls
 
         #region Event handling
 
+        private void RefreshLabel(object sender, EventArgs e)
+        {
+            this.lblDescription.Text = cmbCombobox.GetSelectedDescription();
+        }
+
         /// <summary>
         /// This event occurs when the control is created.
         /// </summary>
@@ -611,10 +571,9 @@ namespace Ict.Common.Controls
                 System.Drawing.Font mLabelFont = new System.Drawing.Font(this.Font.FontFamily, (this.Font.Size - 1), System.Drawing.FontStyle.Regular);
                 this.lblDescription.Font = mLabelFont;
 
-                if (this.cmbCombobox.DataSource != null)
-                {
-                    DataBindLabel(this.FLabelDisplaysColumn);
-                }
+                this.cmbCombobox.DescriptionMember = this.FLabelDisplaysColumn;
+                this.lblDescription.Text = this.cmbCombobox.GetSelectedDescription();
+                this.cmbCombobox.SelectedIndexChanged += RefreshLabel;
             }
         }
 
@@ -627,21 +586,6 @@ namespace Ict.Common.Controls
         protected override void OnResize(System.EventArgs e)
         {
             this.Size = new Size(this.Size.Width, UNIT_HEIGHT);
-        }
-
-        /// <summary>
-        /// This event goes off when the DataSource is fired.
-        /// </summary>
-        /// <param name="sender">The sender of this event.</param>
-        /// <param name="e">The event arguments.
-        /// </param>
-        /// <returns>void</returns>
-        protected void TCmbLabelled_DataSourceChanged(System.Object sender, System.EventArgs e)
-        {
-            if (!(DesignMode))
-            {
-                DataBindLabel(this.FLabelDisplaysColumn);
-            }
         }
 
         /// <summary>
@@ -728,7 +672,6 @@ namespace Ict.Common.Controls
         /// <returns>void</returns>
         protected void TCmbLabelled_SelectionChangeCommitted(System.Object sender, System.EventArgs e)
         {
-            this.lblDescription.Invalidate();
             this.cmbCombobox.SetSelectionColorLength();
         }
 

@@ -382,7 +382,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ProcessAnalysisAttributes()
         {
-            ((TFrmGLBatch)ParentForm).GetAttributesControl().CheckAnalysisAttributes((String)cmbDetailAccountCode.SelectedValue);
+            ((TFrmGLBatch)ParentForm).GetAttributesControl().CheckAnalysisAttributes(cmbDetailAccountCode.GetSelectedString());
         }
     }
 }

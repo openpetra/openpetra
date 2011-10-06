@@ -192,49 +192,6 @@ namespace Ict.Petra.Client.CommonControls
         }
 
         /// <summary>todoComment</summary>
-        public System.Object SelectedItem
-        {
-            get
-            {
-                return cmbAutoPopulated.cmbCombobox.SelectedItem;
-            }
-
-            set
-            {
-                cmbAutoPopulated.cmbCombobox.SelectedItem = value;
-            }
-        }
-
-        /// <summary>todoComment</summary>
-        public System.Object SelectedValue
-        {
-            get
-            {
-                return cmbAutoPopulated.cmbCombobox.SelectedValue;
-            }
-
-            set
-            {
-                cmbAutoPopulated.cmbCombobox.SelectedValue = value;
-            }
-        }
-
-        /// <summary>todoComment</summary>
-        public System.Object SelectedValueCell
-        {
-            get
-            {
-                return cmbAutoPopulated.cmbCombobox.SelectedValueCell;
-            }
-
-            set
-            {
-                cmbAutoPopulated.cmbCombobox.SelectedValueCell = value;
-            }
-        }
-
-
-        /// <summary>todoComment</summary>
         public int ComboBoxWidth
         {
             get
@@ -790,6 +747,7 @@ namespace Ict.Petra.Client.CommonControls
             FDataView = new DataView(FDataCache_ListTable);
             FDataView.RowFilter = FFilter;
             FDataView.Sort = ADisplayDBName;
+            cmbAutoPopulated.cmbCombobox.DescriptionMember = ADescDBName;
             cmbAutoPopulated.cmbCombobox.DisplayMember = ADisplayDBName;
             cmbAutoPopulated.cmbCombobox.ValueMember = AValueDBName;
             cmbAutoPopulated.cmbCombobox.DisplayInColumn1 = ADisplayDBName;
