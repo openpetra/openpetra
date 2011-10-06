@@ -496,9 +496,6 @@ namespace Ict.Common.Controls
         {
             if (AColumnWidth > 0)
             {
-                // Calculate some Column index
-                Int32 mTableColumnIndex = ACurrColumnNumber;
-
                 // Paint background
                 AnEvent.Graphics.FillRectangle(ABackgroundBrush, ABackgroundRectangle);
 

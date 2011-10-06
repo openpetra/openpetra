@@ -89,8 +89,6 @@ namespace Tests.Common.Controls
             Form TestForm = new Form();
             TestForm.Controls.Add(cmb);
 
-            TCmbAutoPopulatedTester tester = new TCmbAutoPopulatedTester(cmb.Name);
-
             TestForm.Show();
 
             cmb.SelectedIndex = 1;
