@@ -430,6 +430,15 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
+        /// get the selected description
+        /// uses TCmbVersatile.GetSelectedDescription
+        /// </summary>
+        public string GetSelectedDescription()
+        {
+            return this.cmbCombobox.GetSelectedDescription();
+        }
+
+        /// <summary>
         /// Selects an item with the given Int32 value in the first column. Selects first element if the Int32 value is not existing.
         /// uses TCmbVersatile.SetSelectedInt32
         /// </summary>
