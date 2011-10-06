@@ -85,11 +85,14 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                         TImportExportYml.NewPartnerKey--;
                     }
 
-                    TLogging.Log(
-                        TYml2Xml.GetAttributeRecursive(LocalNode, "class") + " " +
-                        LocalNode.Name + " " +
-                        "PartnerKey=" + newPartner.PartnerKey
-                        );
+                    if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_TRACE)
+                    {
+                        TLogging.Log(
+                            TYml2Xml.GetAttributeRecursive(LocalNode, "class") + " " +
+                            LocalNode.Name + " " +
+                            "PartnerKey=" + newPartner.PartnerKey
+                            );
+                    }
 
                     if (TYml2Xml.GetAttributeRecursive(LocalNode, "class") == MPartnerConstants.PARTNERCLASS_FAMILY)
                     {
