@@ -37,6 +37,9 @@ namespace Ict.Tools.DevelopersAssistant
      *
      * ***********************************************************************************************************************************/
 
+    /// <summary>
+    /// Dialog that displays the current settings for a sequence of tasks
+    /// </summary>
     public partial class DlgSequence : Form
     {
         /// <summary>
@@ -44,6 +47,9 @@ namespace Ict.Tools.DevelopersAssistant
         /// </summary>
         public List <NantTask.TaskItem>ExitSequence = null;
 
+        /// <summary>
+        /// Constructor for the class
+        /// </summary>
         public DlgSequence()
         {
             InitializeComponent();

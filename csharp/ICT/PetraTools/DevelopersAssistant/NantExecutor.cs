@@ -198,6 +198,8 @@ namespace Ict.Tools.DevelopersAssistant
         /// </summary>
         /// <param name="BranchLocation">The path to the openPetra branch for which the task is to be run</param>
         /// <param name="YAMLPath">The sub-path to the YAML file, eg MPartner\Gui\Setup\myForm.yaml</param>
+        /// <param name="AndCompile">Boolean indicating if the compiler is to be invoked after generating the form</param>
+        /// <param name="AndStartClient">Boolean indicating if the client should be started after compilation</param>
         /// <returns>True if nant.bat was launched successfully.  Check the log file to see if the command actually succeeded.</returns>
         public static bool RunGenerateWinform(string BranchLocation, string YAMLPath, bool AndCompile, bool AndStartClient)
         {

@@ -28,6 +28,9 @@ using System.Xml;
 
 namespace Ict.Tools.DevelopersAssistant
 {
+    /// <summary>
+    /// Static helper class that has methods for dealing with Xml formatted settings files
+    /// </summary>
     public static class XmlHelper
     {
         /// <summary>

@@ -124,6 +124,9 @@ namespace Ict.Tools.DevelopersAssistant
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btnOK;
         private System.Windows.Forms.Button btnCancel;
+        /// <summary>
+        /// The list box containing the implemented tasks
+        /// </summary>
         public System.Windows.Forms.ListBox listTasks;
     }
 }

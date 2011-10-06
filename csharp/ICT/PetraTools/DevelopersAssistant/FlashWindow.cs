@@ -28,6 +28,9 @@ using System.Runtime.InteropServices;
 
 namespace Ict.Tools.DevelopersAssistant
 {
+    /// <summary>
+    /// Static class to handle flashing a window
+    /// </summary>
     public static class FlashWindow
     {
         [DllImport("user32.dll")]

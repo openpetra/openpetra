@@ -31,6 +31,9 @@ using System.Windows.Forms;
 
 namespace Ict.Tools.DevelopersAssistant
 {
+    /// <summary>
+    /// Dialog that displays the fields for editing the database build config file
+    /// </summary>
     public partial class DlgDbBuildConfig : Form
     {
         /// <summary>
@@ -38,6 +41,9 @@ namespace Ict.Tools.DevelopersAssistant
         /// </summary>
         public string ExitData = String.Empty;
 
+        /// <summary>
+        /// Constructor for the class
+        /// </summary>
         public DlgDbBuildConfig()
         {
             InitializeComponent();

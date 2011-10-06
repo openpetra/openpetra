@@ -31,8 +31,14 @@ using System.Windows.Forms;
 
 namespace Ict.Tools.DevelopersAssistant
 {
+    /// <summary>
+    /// Dialog class for the progress window
+    /// </summary>
     public partial class ProgressDialog : Form
     {
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public ProgressDialog()
         {
             InitializeComponent();

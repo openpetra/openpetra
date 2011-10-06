@@ -81,6 +81,9 @@ namespace Ict.Tools.DevelopersAssistant
 
         #endregion
 
+        /// <summary>
+        /// The status text label
+        /// </summary>
         public System.Windows.Forms.Label lblStatus;
     }
 }

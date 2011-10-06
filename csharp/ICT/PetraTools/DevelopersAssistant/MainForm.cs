@@ -38,6 +38,9 @@ namespace Ict.Tools.DevelopersAssistant
      *
      * *************************************************************************************************************************************/
 
+    /// <summary>
+    /// The main window class foir the application
+    /// </summary>
     public partial class MainForm : Form
     {
         private bool _serverIsRunning = false;                                              // Local variable holds server state
@@ -52,6 +55,9 @@ namespace Ict.Tools.DevelopersAssistant
          *
          * ***********************************************************************************************************************************/
 
+        /// <summary>
+        /// Constructor for the class
+        /// </summary>
         public MainForm()
         {
             InitializeComponent();
@@ -621,6 +627,12 @@ namespace Ict.Tools.DevelopersAssistant
             Properties.Settings.Default.Save();
         }
 
+        /// <summary>
+        /// Handler to capture keypress for keyboard accelerators
+        /// </summary>
+        /// <param name="message">Windows message</param>
+        /// <param name="keys">Keys invoked</param>
+        /// <returns></returns>
         protected override bool ProcessCmdKey(ref Message message, Keys keys)
         {
             switch (keys)

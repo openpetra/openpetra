@@ -39,42 +39,121 @@ namespace Ict.Tools.DevelopersAssistant
      *
      * ***********************************************************************************************************************************************/
 
+    /// <summary>
+    /// A class that manages the strings associated with each Nant task
+    /// </summary>
     public class NantTask
     {
         /// <summary>
-        /// One item for each Nant target that the Assistant supports
+        /// One item for each Nant target that the Assistant supports.
+        ///   Where possible the enumeration should be the parameter string for Nant 
         /// </summary>
         public enum TaskItem
         {
+            /// <summary>
+            /// Dummy placeholder for position 0
+            /// </summary>
             None,
             // Basic items
+            /// <summary>
+            /// Start the server
+            /// </summary>
             startPetraServer,
+            /// <summary>
+            /// Stop the server
+            /// </summary>
             stopPetraServer,
+            /// <summary>
+            /// Start the client
+            /// </summary>
             startPetraClient,
+            /// <summary>
+            /// Generate a Windows Form
+            /// </summary>
             generateWinform,
             // Code generation
+            /// <summary>
+            /// Generate the solution without compilation
+            /// </summary>
             generateSolutionNoCompile = 11,
+            /// <summary>
+            /// Generate the solution with only a minimal compile of critical components
+            /// </summary>
             minimalGenerateSolution,
+            /// <summary>
+            /// Generate he solution with full compile
+            /// </summary>
             generateSolution,
+            /// <summary>
+            /// Generate object relational mapper code
+            /// </summary>
             generateORM,
+            /// <summary>
+            /// Generate the cahed tables code
+            /// </summary>
             generateORMCachedTables,
+            /// <summary>
+            /// Generate ORM Data
+            /// </summary>
             generateORMData,
+            /// <summary>
+            /// Generate ORM Access
+            /// </summary>
             generateORMAccess,
+            /// <summary>
+            /// Generate glue
+            /// </summary>
             generateGlue,
             // Compilation
+            /// <summary>
+            /// Clean the folders prior to new build
+            /// </summary>
             clean = 21,
+            /// <summary>
+            /// Perform a 'quick' clean
+            /// </summary>
             quickClean,
+            /// <summary>
+            /// Comile the complete solution
+            /// </summary>
             compile,
+            /// <summary>
+            /// Quick compile the complete solution
+            /// </summary>
             quickCompile,
+            /// <summary>
+            /// Quick compile the server solution only
+            /// </summary>
             quickCompileServer,
+            /// <summary>
+            /// Quick compile the client solution only
+            /// </summary>
             quickCompileClient,
+            /// <summary>
+            /// Quick compile the testing solution only
+            /// </summary>
             quickCompileTesting,
+            /// <summary>
+            /// Quick compile the tools solution only
+            /// </summary>
             quickCompileTools,
             // Miscellaneous
+            /// <summary>
+            /// Initialise the configuration files
+            /// </summary>
             initConfigFiles = 31,
+            /// <summary>
+            /// Delete all backup files
+            /// </summary>
             deleteBakFiles,
             // Database
+            /// <summary>
+            /// Recreate the database
+            /// </summary>
             recreateDatabase = 41,
+            /// <summary>
+            /// Reset the database content
+            /// </summary>
             resetDatabase
         }
         private TaskItem _taskItem = TaskItem.None;
@@ -181,7 +260,10 @@ namespace Ict.Tools.DevelopersAssistant
             }
         }
 
-        // Constructor that uses the string passed from a comboBox or task sequence list
+        /// <summary>
+        /// Constructor that uses the string passed from a comboBox or task sequence list
+        /// </summary>
+        /// <param name="TaskName">A string representation of the task that is parsed to determine the specific task</param>
         public NantTask(string TaskName)
         {
             // This constructor is used by tasks initiated from a comboBox list
@@ -289,7 +371,10 @@ namespace Ict.Tools.DevelopersAssistant
             }
         }
 
-        // Constructor that uses an item enumeration
+        /// <summary>
+        /// Constructor that uses an item enumeration
+        /// </summary>
+        /// <param name="Item"></param>
         public NantTask(TaskItem Item)
         {
             // This constructor is used by tasks initiated from specific buttons

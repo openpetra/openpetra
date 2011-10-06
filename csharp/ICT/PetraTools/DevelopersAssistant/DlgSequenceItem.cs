@@ -37,6 +37,9 @@ namespace Ict.Tools.DevelopersAssistant
      *
      * *****************************************************************************************************/
 
+    /// <summary>
+    /// Dialog that contains the complete list of possible items to include in a sequence
+    /// </summary>
     public partial class DlgSequenceItem : Form
     {
         /// <summary>
@@ -44,6 +47,9 @@ namespace Ict.Tools.DevelopersAssistant
         /// </summary>
         public NantTask SelectedTask = null;
 
+        /// <summary>
+        /// Constructor for the class
+        /// </summary>
         public DlgSequenceItem()
         {
             InitializeComponent();
