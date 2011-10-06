@@ -382,6 +382,90 @@ namespace Ict.Common.Controls
             }
         }
 
+        /// drop down the combobox
+        public void DropDown()
+        {
+            cmbCombobox.DroppedDown = true;
+        }
+
+        /// pass through the SelectedIndex property from the combobox
+        public Int32 SelectedIndex
+        {
+            get
+            {
+                return this.cmbCombobox.SelectedIndex;
+            }
+            set
+            {
+                this.cmbCombobox.SelectedIndex = value;
+            }
+        }
+
+        /// the number of items in the combobox items list
+        public Int32 Count
+        {
+            get
+            {
+                return cmbCombobox.Items.Count;
+            }
+        }
+
+        /// <summary>
+        /// set the string that should be selected;
+        /// uses TCmbVersatile.SetSelectedString
+        /// </summary>
+        /// <param name="ASelectedString"></param>
+        public bool SetSelectedString(string ASelectedString)
+        {
+            return this.cmbCombobox.SetSelectedString(ASelectedString);
+        }
+
+        /// <summary>
+        /// get the selected string
+        /// uses TCmbVersatile.GetSelectedString
+        /// </summary>
+        public string GetSelectedString()
+        {
+            return this.cmbCombobox.GetSelectedString();
+        }
+
+        /// <summary>
+        /// Selects an item with the given Int32 value in the first column. Selects first element if the Int32 value is not existing.
+        /// uses TCmbVersatile.SetSelectedInt32
+        /// </summary>
+        /// <param name="ANr"></param>
+        public void SetSelectedInt32(System.Int32 ANr)
+        {
+            this.cmbCombobox.SetSelectedInt32(ANr);
+        }
+
+        /// <summary>
+        /// gets the Int32 value of the selected item, first column
+        /// uses TCmbVersatile.GetSelectedInt32
+        /// </summary>
+        public Int32 GetSelectedInt32()
+        {
+            return this.cmbCombobox.GetSelectedInt32();
+        }
+
+        /// <summary>
+        /// Selects an item with the given Int64 value in the first column. Selects first element if the Int64 value is not existing.
+        /// uses TCmbVersatile.SetSelectedInt64
+        /// </summary>
+        /// <param name="ANr"></param>
+        public void SetSelectedInt64(System.Int64 ANr)
+        {
+            this.cmbCombobox.SetSelectedInt64(ANr);
+        }
+
+        /// <summary>
+        /// gets the Int32 value of the selected item, first column
+        /// uses TCmbVersatile.GetSelectedInt32
+        /// </summary>
+        public Int64 GetSelectedInt64()
+        {
+            return this.cmbCombobox.GetSelectedInt64();
+        }
 
         #region Windows Form Designer generated code
 
