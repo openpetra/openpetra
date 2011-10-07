@@ -1,7 +1,4 @@
-﻿// auto generated with nant generateORM
-// Do not modify this file manually!
-//
-//
+﻿//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -27,7 +24,7 @@
 
 using System;
 
-namespace Ict.Petra.Shared.lib.MCommon
+namespace Ict.Common
 {
     /// <summary>
     /// Helper class for all things numeric
