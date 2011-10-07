@@ -470,7 +470,7 @@ namespace Ict.Petra.Client.CommonForms
 
                 // set focus to the caller window
                 WindowHandling.SetForegroundWindowWrapper(callerHandle);
-                WindowHandling.ShowWindowWrapper(callerHandle, WindowHandling.SW_RESTORE);
+                WindowHandling.ShowWindowWrapper(callerHandle, WindowHandling.SW_SHOW);
 
                 // remove from list
                 WindowRelationship.Remove((System.Object)AClosingWindowHandle.ToInt64());

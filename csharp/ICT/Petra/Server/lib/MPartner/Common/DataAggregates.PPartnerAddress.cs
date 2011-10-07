@@ -498,7 +498,10 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 
                     foreach (DataRow TmpDR in AInspectDT.Rows)
                     {
-                        Console.WriteLine("LocationType: " + TmpDR[LocationTypeDBName].ToString());
+                        if (TLogging.DL >= 9)
+                        {
+                            Console.WriteLine("LocationType: " + TmpDR[LocationTypeDBName].ToString());
+                        }
 
                         if (TmpDR[LocationTypeDBName].ToString().EndsWith(SharedConstants.SECURITY_CAN_LOCATIONTYPE))
                         {

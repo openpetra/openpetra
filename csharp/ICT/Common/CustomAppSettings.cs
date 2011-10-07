@@ -457,6 +457,25 @@ namespace Ict.Common
         }
 
         /// <summary>
+        /// read a double value
+        /// </summary>
+        /// <returns>the value of the parameter or -1.0 if the parameter does not exist on the command line or in the config file</returns>
+        public static double GetDouble(String AKey, double ADefault)
+        {
+            double ReturnValue = -1.0f;
+
+            try
+            {
+                ReturnValue = Convert.ToDouble(GetValue(AKey, false));
+            }
+            catch (Exception)
+            {
+                ReturnValue = ADefault;
+            }
+            return ReturnValue;
+        }
+
+        /// <summary>
         /// return the Boolean value of a parameter or its default value
         /// </summary>
         /// <param name="AKey">the name of the parameter</param>
