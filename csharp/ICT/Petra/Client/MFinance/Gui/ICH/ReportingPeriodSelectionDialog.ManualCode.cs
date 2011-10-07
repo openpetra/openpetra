@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       christophert
 //
 // Copyright 2004-2011 by OM International
 //
@@ -114,7 +114,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             {
                 case TICHReportingPeriodSelectionModeEnum.rpsmICHStewardshipCalc:
                     
-                   if(GetStewardshipCalculationUIConnector(FLedgerNumber, System.Int32.Parse(cmbReportPeriod.SelectedValue.ToString())))
+                   if(GetStewardshipCalculationUIConnector(FLedgerNumber, cmbReportPeriod.GetSelectedInt32()))
                    {
                        MessageBox.Show("TStewardshipCalculationUIConnector successfully acquired!");
                        

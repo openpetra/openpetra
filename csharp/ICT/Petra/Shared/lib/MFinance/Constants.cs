@@ -148,8 +148,6 @@ namespace Ict.Petra.Shared.MFinance
         public const int ICH_ACCT = 8500;
         public const int INTERNAL_XFER_ACCT = 9800;
         /* 0005 Admin fee accounts. */
-        public const int ADMIN_FEE_INCOME_ACCT = 3400;
-        public const int ADMIN_FEE_EXPENSE_ACCT = 4900;
         public const int FUND_TRANSFER_INCOME_ACC = 3300;
         public const int FUND_TRANSFER_EXPENSE_ACCT = 4800;
 

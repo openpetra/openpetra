@@ -47,7 +47,7 @@ using Ict.Petra.Server.MSysMan.Data.Access;
 using Ict.Petra.Server.MSysMan.Maintenance;
 using Ict.Petra.Server.MSysMan.Security;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
-using Ict.Petra.Shared.lib.MCommon;
+using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MSysMan;
 using Ict.Petra.Shared.MSysMan.Data;
 
