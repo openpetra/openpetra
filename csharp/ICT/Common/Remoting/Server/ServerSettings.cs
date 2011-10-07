@@ -360,14 +360,14 @@ namespace Ict.Common.Remoting.Server
             FExecutingOS = Utilities.DetermineExecutingOS();
 
             // Server.RDBMSType
-            FRDBMSType = CommonTypes.ParseDBType(TAppSettingsManager.GetValue("Server.RDBMSType"));
+            FRDBMSType = CommonTypes.ParseDBType(TAppSettingsManager.GetValue("Server.RDBMSType", "postgresql"));
 
             FDatabaseHostOrFile = TAppSettingsManager.GetValue("Server.DBHostOrFile", "localhost").
                                   Replace("{userappdata}", Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
             FDatabasePort = TAppSettingsManager.GetValue("Server.DBPort", "5432");
             FDatabaseName = TAppSettingsManager.GetValue("Server.DBName", "openpetra");
             FDBUsername = TAppSettingsManager.GetValue("Server.DBUserName", "petraserver");
-            FDBPassword = TAppSettingsManager.GetValue("Server.DBPassword");
+            FDBPassword = TAppSettingsManager.GetValue("Server.DBPassword", string.Empty, false);
 
             if (FDBPassword == "PG_OPENPETRA_DBPWD")
             {

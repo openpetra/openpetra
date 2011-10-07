@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,7 +27,7 @@ using System.Threading;
 
 using Ict.Common;
 
-namespace Ict.Petra.Server.App.Core
+namespace Ict.Common.Remoting.Server
 {
     /// <summary>
     /// Contains procedures for structured Exception handling. They are
