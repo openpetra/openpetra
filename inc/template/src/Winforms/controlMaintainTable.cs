@@ -231,7 +231,7 @@ namespace {#NAMESPACE}
 
     private void GetDetailsFromControls({#DETAILTABLETYPE}Row ARow)
     {
-        if (ARow != null)
+        if (ARow != null && !pnlDetailsProtected)
         {
             ARow.BeginEdit();
             {#SAVEDETAILS}

@@ -201,7 +201,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm
 
             if (chkCurrentFutureOnly.Checked)
             {
-                RowFilter = PPartnerLocationTable.GetDateGoodUntilDBName() + " >= #" + DateTime.Today.ToString("MM/dd/yyyy") + "#";
+                RowFilter = PPartnerLocationTable.GetDateGoodUntilDBName() + " >= #" + DateTime.Today.ToString("yyyy-MM-dd") + "#";
             }
 
             if (rbtTeenstreet.Checked)

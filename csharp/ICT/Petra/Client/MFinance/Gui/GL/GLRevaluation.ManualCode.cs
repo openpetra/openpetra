@@ -114,7 +114,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void GetListOfRevaluationCurrencies()
         {
             TFrmSetupDailyExchangeRate frmExchangeRate =
-                new TFrmSetupDailyExchangeRate(this.Handle);
+                new TFrmSetupDailyExchangeRate(this);
 
             DataTable table = TDataCache.TMFinance.GetCacheableFinanceTable(
                 TCacheableFinanceTablesEnum.AccountList, FLedgerNumber);
@@ -461,7 +461,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 int iRow = sender.Position.Row - 1;
 
                 TFrmSetupDailyExchangeRate frmExchangeRate =
-                    new TFrmSetupDailyExchangeRate(mainForm.Handle);
+                    new TFrmSetupDailyExchangeRate(mainForm);
                 frmExchangeRate.LedgerNumber = mainForm.FLedgerNumber;
                 frmExchangeRate.SetDataFilters(dteStart, dteEnd,
                     currencyExchangeList[iRow].Currency,
@@ -469,7 +469,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 frmExchangeRate.ShowDialog(mainForm);
 
                 currencyExchangeList[iRow].updateExchangeRate(
-                    Decimal.Parse(frmExchangeRate.CurrencyExchangeRate));
+                    frmExchangeRate.CurrencyExchangeRate);
             }
 
             public void InitFrmData(TGLRevaluation AMain, DateTime ADateStart, DateTime ADateEnd)

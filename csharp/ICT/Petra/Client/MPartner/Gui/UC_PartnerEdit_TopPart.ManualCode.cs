@@ -539,13 +539,13 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void CmbPersonGender_SelectedValueChanged(System.Object sender, System.EventArgs e)
         {
-            if (cmbPersonGender.SelectedItem.ToString() == "Female")
+            if (cmbPersonGender.GetSelectedString() == "Female")
             {
-                cmbPersonAddresseeTypeCode.SelectedItem = SharedTypes.StdAddresseeTypeCodeEnumToString(TStdAddresseeTypeCode.satcFEMALE);
+                cmbPersonAddresseeTypeCode.SetSelectedString(SharedTypes.StdAddresseeTypeCodeEnumToString(TStdAddresseeTypeCode.satcFEMALE));
             }
-            else if (cmbPersonGender.SelectedItem.ToString() == "Male")
+            else if (cmbPersonGender.GetSelectedString() == "Male")
             {
-                cmbPersonAddresseeTypeCode.SelectedItem = SharedTypes.StdAddresseeTypeCodeEnumToString(TStdAddresseeTypeCode.satcMALE);
+                cmbPersonAddresseeTypeCode.SetSelectedString(SharedTypes.StdAddresseeTypeCodeEnumToString(TStdAddresseeTypeCode.satcMALE));
             }
 
 //            /*
@@ -584,7 +584,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void MaintainWorkerField(System.Object sender, System.EventArgs e)
         {
             //this may be temporary used to have an access point for this dialog
-            TFrmPersonnelStaffData staffDataForm = new TFrmPersonnelStaffData(this.Handle);
+            TFrmPersonnelStaffData staffDataForm = new TFrmPersonnelStaffData(FPetraUtilsObject.GetForm());
 
             staffDataForm.PartnerKey = ((TFrmPartnerEdit)ParentForm).PartnerKey;
             staffDataForm.Show();

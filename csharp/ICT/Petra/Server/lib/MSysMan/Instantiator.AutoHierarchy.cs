@@ -1345,10 +1345,11 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance.WebConnectors
         /// generated method from connector
         public System.Boolean SetUserPassword(System.String AUsername,
                                               System.String APassword,
-                                              System.String AOldPassword)
+                                              System.String AOldPassword,
+                                              out TVerificationResultCollection AVerification)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector), "SetUserPassword", ";STRING;STRING;STRING;");
-            return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector.SetUserPassword(AUsername, APassword, AOldPassword);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector), "SetUserPassword", ";STRING;STRING;STRING;TVERIFICATIONRESULTCOLLECTION;");
+            return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector.SetUserPassword(AUsername, APassword, AOldPassword, out AVerification);
         }
 
         /// generated method from connector

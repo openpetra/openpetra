@@ -60,7 +60,7 @@ namespace {#NAMESPACE}
 {#ENDIF TABPAGECTRL}
 
     /// constructor
-    public {#CLASSNAME}(IntPtr AParentFormHandle) : base()
+    public {#CLASSNAME}(Form AParentForm) : base()
     {
       //
       // Required for Windows Form Designer support
@@ -74,7 +74,7 @@ namespace {#NAMESPACE}
       
       {#ASSIGNFONTATTRIBUTES}
       
-      FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentFormHandle, this, stbMain);
+      FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentForm, this, stbMain);
 {#IFDEF DATASETTYPE}
       FMainDS = new {#DATASETTYPE}();
 {#ENDIF DATASETTYPE}
@@ -147,7 +147,9 @@ namespace {#NAMESPACE}
     {
         if (ARow != null)
         {
+            ARow.BeginEdit();
             {#SAVEDETAILS}
+            ARow.EndEdit();
         }
     }
 {#ENDIF SAVEDETAILS}
@@ -342,7 +344,10 @@ namespace {#NAMESPACE}
 
                     case TSubmitChangesResult.scrError:
 
-                        // TODO scrError
+                        MessageBox.Show(VerificationResult.BuildVerificationResultString(),
+                                        Catalog.GetString("Failure saving"),
+                                        MessageBoxButtons.OK,
+                                        MessageBoxIcon.Error);
                         this.Cursor = Cursors.Default;
                         break;
 

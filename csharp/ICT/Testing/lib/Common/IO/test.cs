@@ -45,9 +45,9 @@ namespace Ict.Common.IO.Testing
         public void Init()
         {
             new TLogging("test.log");
-            new TAppSettingsManager("../../../../../etc/TestClient.config");
+            new TAppSettingsManager("../../etc/TestClient.config");
 
-            PathToTestData = "../../Common/IO/TestData/".Replace("/", System.IO.Path.DirectorySeparatorChar.ToString());
+            PathToTestData = "../../csharp/ICT/Testing/lib/Common/IO/TestData/".Replace("/", System.IO.Path.DirectorySeparatorChar.ToString());
         }
 
         private XmlDocument CreateTestDoc()

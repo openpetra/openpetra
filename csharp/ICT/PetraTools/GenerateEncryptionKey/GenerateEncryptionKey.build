@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<project name="OpenPetra-csharp-GenerateEncryptionKey-build">
-<property name="Namespace" value="GenerateEncryptionKey" />
+<project name="OpenPetra-csharp-Ict.Tools.GenerateEncryptionKey-build">
+<property name="Namespace" value="Ict.Tools.GenerateEncryptionKey" />
 <property name="OutputType" value="exe" />
 
 <property name="RunCsDepend" value="true" />

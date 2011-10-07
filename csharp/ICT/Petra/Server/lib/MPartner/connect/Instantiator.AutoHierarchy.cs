@@ -1086,7 +1086,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.ImportExport.WebConnectors
         public PartnerImportExportTDS ImportFromPartnerExtract(System.String[] ATextFileLines,
                                                                out TVerificationResultCollection AVerificationResult)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector), "ImportFromPartnerExtract", ";STRING;TVERIFICATIONRESULTCOLLECTION;");
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector), "ImportFromPartnerExtract", ";STRING.ARRAY;TVERIFICATIONRESULTCOLLECTION;");
             return Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector.ImportFromPartnerExtract(ATextFileLines, out AVerificationResult);
         }
 

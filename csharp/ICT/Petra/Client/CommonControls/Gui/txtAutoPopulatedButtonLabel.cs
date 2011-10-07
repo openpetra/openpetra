@@ -1409,7 +1409,7 @@ namespace Ict.Petra.Client.CommonControls
                                         out mResultIntTxt,
                                         out mResultStringLbl,
                                         out mResultLocationPK,
-                                        this.ParentForm.Handle);
+                                        this.ParentForm);
 
 //                                    MessageBox.Show(mResultIntTxt.ToString() + "; " + mResultStringLbl + "; " + mResultLocationPK.LocationKey.ToString());
                                     if (mResultIntTxt != -1)
@@ -1479,7 +1479,7 @@ namespace Ict.Petra.Client.CommonControls
                                     TCommonScreensForwarding.OpenConferenceFindScreen.Invoke("*", "*",
                                         out mResultIntTxt,
                                         out mResultStringLbl,
-                                        this.ParentForm.Handle);
+                                        this.ParentForm);
 
                                     if (mResultIntTxt != -1)
                                     {

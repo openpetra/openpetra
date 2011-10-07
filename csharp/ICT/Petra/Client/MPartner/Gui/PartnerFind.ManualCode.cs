@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timh
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1232,13 +1232,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// if there was no running Instance, otherwise it will just activate any Instance of
         /// the Partner Find Screen if finds.</para>
         /// </remarks>
-        /// <param name="AParentFormHandle"></param>
+        /// <param name="AParentForm"></param>
         /// <returns>void</returns>
-        public static void OpenNewOrExistingForm(IntPtr AParentFormHandle)
+        public static void OpenNewOrExistingForm(Form AParentForm)
         {
             bool FormWasAlreadyOpened;
 
-            OpenNewOrExistingForm(out FormWasAlreadyOpened, AParentFormHandle);
+            OpenNewOrExistingForm(out FormWasAlreadyOpened, AParentForm);
         }
 
         /// <summary>
@@ -1249,10 +1249,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// the Partner Find Screen if finds.</remarks>
         /// <param name="AFormWasAlreadyOpened">False if a new Partner Find Screen was opened,
         /// false if an existing Instance of the Partner Find Screen was activated.</param>
-        /// <param name="AParentFormHandle"></param>
+        /// <param name="AParentForm"></param>
         /// <returns>An Instance of the Partner Find Screen (either newly created or
         /// just activated).</returns>
-        public static Form OpenNewOrExistingForm(out bool AFormWasAlreadyOpened, IntPtr AParentFormHandle)
+        public static Form OpenNewOrExistingForm(out bool AFormWasAlreadyOpened, Form AParentForm)
         {
             Form OpenFindScreen;
             Form NewFindScreen;
@@ -1271,7 +1271,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
-                NewFindScreen = new TPartnerFindScreen(AParentFormHandle);
+                NewFindScreen = new TPartnerFindScreen(AParentForm);
                 NewFindScreen.Show();
                 return NewFindScreen;
             }
@@ -1287,14 +1287,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="APartnerKey">PartnerKey of the found Partner.</param>
         /// <param name="AShortName">Partner ShortName of the found Partner.</param>
         /// <param name="ALocationPK">LocationKey of the found Partner.</param>
-        /// <param name="AParentFormHandle"></param>
+        /// <param name="AParentForm"></param>
         /// <returns>True if a Partner was found and accepted by the user,
         /// otherwise false.</returns>
         public static bool OpenModalForm(String ARestrictToPartnerClasses,
             out Int64 APartnerKey,
             out String AShortName,
             out TLocationPK ALocationPK,
-            IntPtr AParentFormHandle)
+            Form AParentForm)
         {
             TPartnerFindScreen PartnerFindForm;
             DialogResult dlgResult;
@@ -1303,7 +1303,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             AShortName = String.Empty;
             ALocationPK = new TLocationPK(-1, -1);
 
-            PartnerFindForm = new TPartnerFindScreen(AParentFormHandle);
+            PartnerFindForm = new TPartnerFindScreen(AParentForm);
             PartnerFindForm.SetParameters(ARestrictToPartnerClasses);
 
             dlgResult = PartnerFindForm.ShowDialog();

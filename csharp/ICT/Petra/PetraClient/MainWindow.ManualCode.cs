@@ -60,7 +60,7 @@ namespace Ict.Petra.Client.App.PetraClient
 
             if (TFrmMainWindowNew.MainForm == null)
             {
-                TFrmMainWindowNew.MainForm = new TFrmMainWindowNew(IntPtr.Zero);
+                TFrmMainWindowNew.MainForm = new TFrmMainWindowNew(null);
             }
 
             this.Hide();

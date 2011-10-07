@@ -71,7 +71,7 @@ namespace Tests.MFinance.GLBatches
         [Test]
         public void TestCreateBatchAndSave()
         {
-            TFrmGLBatch frmBatch = new TFrmGLBatch(IntPtr.Zero);
+            TFrmGLBatch frmBatch = new TFrmGLBatch(null);
 
             frmBatch.LedgerNumber = FLedgerNumber;
             frmBatch.Show();
@@ -95,7 +95,7 @@ namespace Tests.MFinance.GLBatches
         [Test]
         public void TestCancelBatchBug121()
         {
-            TFrmGLBatch frmBatch = new TFrmGLBatch(IntPtr.Zero);
+            TFrmGLBatch frmBatch = new TFrmGLBatch(null);
 
             frmBatch.LedgerNumber = FLedgerNumber;
             frmBatch.Show();
@@ -145,7 +145,7 @@ namespace Tests.MFinance.GLBatches
         [Test]
         public void TestCreateBatchAndPost()
         {
-            TFrmGLBatch frmBatch = new TFrmGLBatch(IntPtr.Zero);
+            TFrmGLBatch frmBatch = new TFrmGLBatch(null);
 
             frmBatch.LedgerNumber = FLedgerNumber;
             frmBatch.Show();
@@ -237,7 +237,7 @@ namespace Tests.MFinance.GLBatches
             TestFile = Path.GetFullPath(TestFile);
             Assert.IsTrue(File.Exists(TestFile), "File does not exist: " + TestFile);
 
-            TFrmGLBatch frmBatch = new TFrmGLBatch(IntPtr.Zero);
+            TFrmGLBatch frmBatch = new TFrmGLBatch(null);
 
             frmBatch.LedgerNumber = FLedgerNumber;
             frmBatch.Show();
@@ -276,7 +276,7 @@ namespace Tests.MFinance.GLBatches
             // get the batch number from the journal tab
             int ImportedBatchNumber = Convert.ToInt32(txtBatchNumber.Properties.Text);
 
-            TFrmGLBatchExport frmBatchExport = new TFrmGLBatchExport(IntPtr.Zero);
+            TFrmGLBatchExport frmBatchExport = new TFrmGLBatchExport(null);
 
             frmBatch.Close();
 
@@ -354,7 +354,7 @@ namespace Tests.MFinance.GLBatches
             // At the moment the initial state is unknown so we make a relative test
 
 
-            TFrmSetupAnalysisTypes frmAnalysistypes = new TFrmSetupAnalysisTypes(IntPtr.Zero);
+            TFrmSetupAnalysisTypes frmAnalysistypes = new TFrmSetupAnalysisTypes(null);
 
             frmAnalysistypes.LedgerNumber = FLedgerNumber;
             frmAnalysistypes.Show();

@@ -66,18 +66,7 @@ namespace Ict.Common
         }
 
         /// <summary>
-        /// read only property for application file name
-        /// </summary>
-        public static string ApplicationName
-        {
-            get
-            {
-                return FApplicationName;
-            }
-        }
-
-        /// <summary>
-        /// read only property for the directory where the application is started from
+        /// read only property for the directory where all the binary exe and dll files are
         /// </summary>
         public static string ApplicationDirectory
         {
@@ -293,6 +282,9 @@ namespace Ict.Common
                 }
             }
 
+            ReturnValue = ReturnValue.Replace("{userappdata}",
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
+
             return ReturnValue;
         }
 
@@ -465,6 +457,25 @@ namespace Ict.Common
             {
                 // Caller wanted the Value and didn't specify a Default: log that
                 TLogging.Log("Problem reading Double value from key " + AKey + " from config file.", TLoggingType.ToLogfile);
+            }
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// read a double value
+        /// </summary>
+        /// <returns>the value of the parameter or -1.0 if the parameter does not exist on the command line or in the config file</returns>
+        public static double GetDouble(String AKey, double ADefault)
+        {
+            double ReturnValue = -1.0f;
+
+            try
+            {
+                ReturnValue = Convert.ToDouble(GetValue(AKey, false));
+            }
+            catch (Exception)
+            {
+                ReturnValue = ADefault;
             }
             return ReturnValue;
         }

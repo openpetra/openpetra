@@ -827,6 +827,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             String ErrorMessages;
             TVerificationResultCollection VerificationResult;
             TVerificationResult VerificationResultItem;
+
             System.Windows.Forms.DialogResult UnitParentAssignment;
             int RowIndex;
             int NumRows;
@@ -2637,7 +2638,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             TPartnerNewDialogWinForm NewPartnerDialog;
 
-            NewPartnerDialog = new TPartnerNewDialogWinForm(this.Handle);
+            NewPartnerDialog = new TPartnerNewDialogWinForm(this);
             NewPartnerDialog.SetParameters(FPartnerEditUIConnector,
                 FNewPartnerPartnerClass,
                 FNewPartnerSiteKey,

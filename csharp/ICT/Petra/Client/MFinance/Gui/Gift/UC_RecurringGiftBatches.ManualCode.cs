@@ -149,7 +149,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
             }
 
-            TFrmRecurringGiftBatchSubmit submitForm = new TFrmRecurringGiftBatchSubmit(this.Handle);
+            TFrmRecurringGiftBatchSubmit submitForm = new TFrmRecurringGiftBatchSubmit(FPetraUtilsObject.GetForm());
             try
             {
                 ParentForm.ShowInTaskbar = false;

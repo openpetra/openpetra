@@ -53,7 +53,6 @@ namespace Ict.Petra.Client.App.Core
         private static String UPetraServerAdmin_Configfile = "";
         private static String UPetraServer_Configfile = "";
         private static String UPetra_Path_Bin = "";
-        private static String UPetra_Path_DB = "";
         private static String UPetra_Path_Dat = "";
         private static String UPetra_Path_Patches = "";
         private static String UPetra_Path_RemotePatches = "";
@@ -222,15 +221,6 @@ namespace Ict.Petra.Client.App.Core
             }
         }
 
-        /// <summary>the location of the petra database, that is used for starting the standalone ODBC server</summary>
-        public static String Petra_Path_DB
-        {
-            get
-            {
-                return UPetra_Path_DB;
-            }
-        }
-
         /// <summary>the directory that contains the directories Reportsettings, accounts, etc.</summary>
         public static String Petra_Path_Dat
         {
@@ -331,22 +321,16 @@ namespace Ict.Petra.Client.App.Core
         {
             string result = TAppSettingsManager.GetValue(AVariableName, ADefaultValue);
 
-            if (result.Contains("{userappdata}"))
+            // on Windows, we cannot store the database in userappdata during installation, because
+            // the setup has to be run as administrator.
+            // therefore the first time the user starts Petra, we need to prepare his environment
+            // see also http://www.vincenzo.net/isxkb/index.php?title=Vista_considerations#Best_Practices
+            if (!Directory.Exists(result))
             {
-                // on Windows, we cannot store the database in userappdata during installation, because
-                // the setup has to be run as administrator.
-                // therefore the first time the user starts Petra, we need to prepare his environment
-                // see also http://www.vincenzo.net/isxkb/index.php?title=Vista_considerations#Best_Practices
-                result = result.Replace("{userappdata}",
-                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
-
-                if (!Directory.Exists(result))
-                {
-                    Directory.CreateDirectory(result);
-                }
+                Directory.CreateDirectory(result);
             }
 
-            return result;
+            return Path.GetFullPath(result);
         }
 
         /// get temp path in the user directory. this is called from PetraClientMain directly
@@ -363,8 +347,8 @@ namespace Ict.Petra.Client.App.Core
         /// will create the directory if it does not exist yet.
         public static string GetExportPath()
         {
-            string ExportPath = TAppSettingsManager.GetValue("OpenPetra.PathExport",
-                TAppSettingsManager.GetValue("OpenPetra.PathTemp") + Path.DirectorySeparatorChar + "export", false);
+            string ExportPath = GetUserPath("OpenPetra.PathExport",
+                GetUserPath("OpenPetra.PathTemp", "") + Path.DirectorySeparatorChar + "export");
 
             if (!Directory.Exists(ExportPath))
             {
@@ -398,11 +382,8 @@ namespace Ict.Petra.Client.App.Core
             }
 
             UDelayedDataLoading = TAppSettingsManager.GetBoolean("DelayedDataLoading", false);
-            UReportingPathReportSettings =
-                TAppSettingsManager.GetValue("Reporting.PathReportSettings");
-            UReportingPathReportUserSettings =
-                TAppSettingsManager.GetValue("Reporting.PathReportUserSettings").Replace("{userappdata}",
-                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
+            UReportingPathReportSettings = GetUserPath("Reporting.PathReportSettings", "");
+            UReportingPathReportUserSettings = GetUserPath("Reporting.PathReportUserSettings", "");
 
             UServerPollIntervalInSeconds = TAppSettingsManager.GetInt16("ServerPollIntervalInSeconds", 5);
             UServerObjectKeepAliveIntervalInSeconds = TAppSettingsManager.GetInt16("ServerObjectKeepAliveIntervalInSeconds", 10);
@@ -425,7 +406,6 @@ namespace Ict.Petra.Client.App.Core
                 UPetraServerAdmin_Configfile = TAppSettingsManager.GetValue("PetraServerAdmin.Configfile");
                 UPetraServer_Configfile = TAppSettingsManager.GetValue("PetraServer.Configfile");
                 UPetra_Path_Bin = Environment.CurrentDirectory;
-                UPetra_Path_DB = TAppSettingsManager.GetValue("Petra.Path.db");
                 UPetra_Path_Patches = UPetra_Path_Bin + Path.DirectorySeparatorChar + "sa-patches";
                 UPostgreSql_BaseDir = TAppSettingsManager.GetValue("PostgreSQLServer.BaseDirectory");
                 UPostgreSql_DataDir = TAppSettingsManager.GetValue("PostgreSQLServer.DataDirectory");
@@ -439,8 +419,8 @@ namespace Ict.Petra.Client.App.Core
 
             if (URunAsRemote == true)
             {
-                UPetra_Path_Patches = TAppSettingsManager.GetValue("OpenPetra.Path.Patches");
-                UPetra_Path_Dat = TAppSettingsManager.GetValue("OpenPetra.Path.Dat");
+                UPetra_Path_Patches = GetUserPath("OpenPetra.Path.Patches", "");
+                UPetra_Path_Dat = GetUserPath("OpenPetra.Path.Dat", "");
                 UPetra_Path_RemotePatches = TAppSettingsManager.GetValue("OpenPetra.Path.RemotePatches");
             }
 

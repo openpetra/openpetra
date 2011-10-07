@@ -258,6 +258,79 @@ namespace Ict.Common.Data
         }
 
         /// <summary>
+        /// compare the changed columns of a row.
+        /// for some reasons, on the client the values are read from the controls, and despite the row has not changed, the row is marked modified
+        /// </summary>
+        public static bool IsReallyChanged(DataRow ADataRow)
+        {
+            int DEBUGLEVEL_REALLYCHANGED = 1;
+
+            if (ADataRow.RowState == DataRowState.Added)
+            {
+                if (TLogging.DebugLevel >= DEBUGLEVEL_REALLYCHANGED)
+                {
+                    TLogging.Log("Row has been added:");
+
+                    foreach (DataColumn dc in ADataRow.Table.Columns)
+                    {
+                        TLogging.Log("  " + dc.ColumnName + ": " + ADataRow[dc.Ordinal].ToString());
+                    }
+                }
+
+                return true;
+            }
+            else if (ADataRow.RowState == DataRowState.Deleted)
+            {
+                if (TLogging.DebugLevel >= DEBUGLEVEL_REALLYCHANGED)
+                {
+                    TLogging.Log("Row has been deleted:");
+
+                    foreach (DataColumn dc in ADataRow.Table.Columns)
+                    {
+                        TLogging.Log("  " + dc.ColumnName + ": " + ADataRow[dc.Ordinal, DataRowVersion.Original].ToString());
+                    }
+                }
+
+                return true;
+            }
+            else if (ADataRow.RowState == DataRowState.Modified)
+            {
+                if (TLogging.DebugLevel >= DEBUGLEVEL_REALLYCHANGED)
+                {
+                    TLogging.Log("Row has been modified:");
+                }
+
+                bool changed = false;
+
+                foreach (DataColumn dc in ADataRow.Table.Columns)
+                {
+                    if (ADataRow[dc.Ordinal, DataRowVersion.Original].ToString() != ADataRow[dc.Ordinal, DataRowVersion.Current].ToString())
+                    {
+                        changed = true;
+
+                        if (TLogging.DebugLevel >= DEBUGLEVEL_REALLYCHANGED)
+                        {
+                            TLogging.Log("***  " + dc.ColumnName + ": from " +
+                                ADataRow[dc.Ordinal, DataRowVersion.Original].ToString() + " to " +
+                                ADataRow[dc.Ordinal, DataRowVersion.Current].ToString());
+                        }
+                    }
+                    else
+                    {
+                        if (TLogging.DebugLevel >= DEBUGLEVEL_REALLYCHANGED)
+                        {
+                            TLogging.Log("  " + dc.ColumnName + ": " + ADataRow[dc.Ordinal, DataRowVersion.Original].ToString());
+                        }
+                    }
+                }
+
+                return changed;
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// copy the modification ids from one datarow to another
         /// </summary>
         /// <param name="ADestinationDR">datarow to be modified</param>

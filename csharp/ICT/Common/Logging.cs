@@ -234,21 +234,19 @@ namespace Ict.Common
         {
             if (((ALoggingType & TLoggingType.ToConsole) != 0)
                 || ((ALoggingType & TLoggingType.ToLogfile) != 0)
-#if DEBUGMODE
                 // only in Debugmode write the messages for the statusbar also on the console (e.g. reporting progress)
-                || ((ALoggingType & TLoggingType.ToStatusBar) != 0)
-#endif
-                )
+                || (((ALoggingType & TLoggingType.ToStatusBar) != 0) && (TLogging.DebugLevel == TLogging.DEBUGLEVEL_TRACE)))
             {
-                Console.WriteLine(Utilities.CurrentTime() + "  " + Text);
+                Console.Error.WriteLine(Utilities.CurrentTime() + "  " + Text);
 
                 if ((TLogging.Context != null) && (TLogging.Context.Length != 0))
                 {
-                    Console.WriteLine("  Context: " + TLogging.Context);
+                    Console.Error.WriteLine("  Context: " + TLogging.Context);
                 }
             }
 
-            if (((ALoggingType & TLoggingType.ToConsole) != 0) || ((ALoggingType & TLoggingType.ToLogfile) != 0))
+            if (((ALoggingType & TLoggingType.ToConsole) != 0) || ((ALoggingType & TLoggingType.ToLogfile) != 0)
+                || ((ALoggingType & TLoggingType.ToStatusBar) != 0))
             {
                 if (TLogging.StatusBarProcedureValid && (Text.IndexOf("SELECT") == -1))
                 {

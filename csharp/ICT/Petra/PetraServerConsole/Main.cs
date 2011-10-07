@@ -23,8 +23,13 @@
 //
 using System;
 using System.IO;
+using System.Collections;
 using System.Runtime.Remoting;
 using System.Runtime.Remoting.Services;
+using System.Runtime.Remoting.Channels.Tcp;
+using System.Runtime.Remoting.Channels;
+using System.Runtime.Remoting.Lifetime;
+using System.Runtime.Serialization.Formatters;
 using System.Threading;
 using GNU.Gettext;
 
@@ -32,6 +37,9 @@ using Ict.Common;
 using Ict.Common.Remoting.Server;
 using Ict.Common.Remoting.Shared;
 using Ict.Petra.Server.App.Core;
+using Ict.Petra.Server.App.Main;
+using Ict.Petra.Shared.Interfaces.ServerAdminInterface;
+using Ict.Petra.Shared.RemotingSinks.Encryption;
 
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
 
@@ -110,9 +118,56 @@ public class TServer
             //
             try
             {
-                TLogging.Log(Catalog.GetString("Reading server remote configuration from config file..."));
+                if (TAppSettingsManager.HasValue("LifetimeServices.LeaseTimeInSeconds"))
+                {
+                    TLogging.Log(Catalog.GetString("Reading parameters for server remote configuration from config file..."));
 
-                RemotingConfiguration.Configure(TAppSettingsManager.ConfigFileName, false);
+                    BinaryServerFormatterSinkProvider TCPSink = new BinaryServerFormatterSinkProvider();
+                    TCPSink.TypeFilterLevel = TypeFilterLevel.Low;
+                    IServerChannelSinkProvider EncryptionSink = TCPSink;
+
+                    if (TAppSettingsManager.GetValue("Server.ChannelEncryption.PrivateKeyfile", "", false).Length > 0)
+                    {
+                        EncryptionSink = new EncryptionServerSinkProvider();
+                        EncryptionSink.Next = TCPSink;
+                    }
+
+                    Hashtable ChannelProperties = new Hashtable();
+                    ChannelProperties.Add("port", TAppSettingsManager.GetValue("Server.IPBasePort"));
+
+                    string SpecificIPAddress = TAppSettingsManager.GetValue("ListenOnIPAddress", "", false);
+
+                    if (SpecificIPAddress.Length > 0)
+                    {
+                        ChannelProperties.Add("machineName", SpecificIPAddress);
+                    }
+
+                    TcpChannel Channel = new TcpChannel(ChannelProperties, null, EncryptionSink);
+                    ChannelServices.RegisterChannel(Channel, false);
+
+                    RemotingConfiguration.RegisterWellKnownServiceType(typeof(Ict.Petra.Server.App.Main.TServerManager),
+                        "Servermanager", WellKnownObjectMode.Singleton);
+                    RemotingConfiguration.RegisterWellKnownServiceType(typeof(Ict.Petra.Server.App.Main.TClientManager),
+                        "Clientmanager", WellKnownObjectMode.Singleton);
+
+                    LifetimeServices.LeaseTime = TimeSpan.FromSeconds(TAppSettingsManager.GetDouble("LifetimeServices.LeaseTimeInSeconds", 5.0f));
+                    LifetimeServices.RenewOnCallTime = TimeSpan.FromSeconds(TAppSettingsManager.GetDouble("LifetimeServices.RenewOnCallTime", 5.0f));
+                    LifetimeServices.LeaseManagerPollTime =
+                        TimeSpan.FromSeconds(TAppSettingsManager.GetDouble("LifetimeServices.LeaseManagerPollTime", 1.0f));
+                }
+                else
+                {
+                    TLogging.Log(Catalog.GetString("Reading server remote configuration from config file..."));
+
+                    if (TheServerManager.ConfigurationFileName == "")
+                    {
+                        RemotingConfiguration.Configure(Environment.GetCommandLineArgs()[0] + ".config", false);
+                    }
+                    else
+                    {
+                        RemotingConfiguration.Configure(TheServerManager.ConfigurationFileName, false);
+                    }
+                }
             }
             catch (RemotingException rex)
             {

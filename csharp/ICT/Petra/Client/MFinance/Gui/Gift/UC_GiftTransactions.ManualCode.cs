@@ -181,14 +181,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FInKeyMinistryChanging = true;
             try
             {
-                Object val = cmbMinistry.SelectedValueCell;
+                Int64 rcp = cmbMinistry.GetSelectedInt64();
 
-                if (val != null)
-                {
-                    Int64 rcp = (Int64)val;
-
-                    txtDetailRecipientKey.Text = String.Format("{0:0000000000}", rcp);
-                }
+                txtDetailRecipientKey.Text = String.Format("{0:0000000000}", rcp);
             }
             finally
             {
@@ -436,7 +431,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            TFrmGiftRevertAdjust revertForm = new TFrmGiftRevertAdjust(this.Handle);
+            TFrmGiftRevertAdjust revertForm = new TFrmGiftRevertAdjust(FPetraUtilsObject.GetForm());
             try
             {
                 ParentForm.ShowInTaskbar = false;
