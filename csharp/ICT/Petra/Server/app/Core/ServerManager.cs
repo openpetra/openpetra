@@ -120,6 +120,15 @@ namespace Ict.Petra.Server.App.Core
             }
         }
 
+        /// <summary>Server setting: Name of the Server configuration file</summary>
+        public String ConfigurationFileName
+        {
+            get
+            {
+                return TSrvSetting.ConfigurationFile;
+            }
+        }
+
         /// <summary>Version of the Petra Server and operating system on which the Server runs</summary>
         public String ServerInfoVersion
         {

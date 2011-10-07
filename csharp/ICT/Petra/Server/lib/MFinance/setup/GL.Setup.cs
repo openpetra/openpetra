@@ -253,7 +253,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 TCacheableFinanceTablesEnum.AccountList.ToString());
             TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
                 TCacheableFinanceTablesEnum.AnalysisTypeList.ToString());
-            DomainManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+            TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
                 TCacheableFinanceTablesEnum.CostCentreList.ToString());
 
             return returnValue;

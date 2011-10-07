@@ -39,7 +39,6 @@ namespace Ict.Common.Remoting.Server
     public class TSrvSetting
     {
         private String FConfigurationFile;
-        private String FApplicationName;
         private TDBType FRDBMSType;
         private String FDatabaseHostOrFile;
         private String FDatabasePort;
@@ -82,15 +81,6 @@ namespace Ict.Common.Remoting.Server
             get
             {
                 return USingletonSrvSetting.FConfigurationFile;
-            }
-        }
-
-        /// <summary>Name of the Server's .exe</summary>
-        public static String ApplicationName
-        {
-            get
-            {
-                return USingletonSrvSetting.FApplicationName;
             }
         }
 
@@ -328,7 +318,6 @@ namespace Ict.Common.Remoting.Server
                 USingletonSrvSetting = this;
             }
 
-            FApplicationName = ACopyFrom.FApplicationName;
             FConfigurationFile = ACopyFrom.FConfigurationFile;
             FExecutingOS = ACopyFrom.FExecutingOS;
             FRDBMSType = ACopyFrom.FRDBMSType;
@@ -367,7 +356,6 @@ namespace Ict.Common.Remoting.Server
                 USingletonSrvSetting = this;
             }
 
-            FApplicationName = TAppSettingsManager.ApplicationName;
             FConfigurationFile = TAppSettingsManager.ConfigFileName;
             FExecutingOS = Utilities.DetermineExecutingOS();
 
@@ -381,7 +369,7 @@ namespace Ict.Common.Remoting.Server
             FDBUsername = TAppSettingsManager.GetValue("Server.DBUserName", "petraserver");
             FDBPassword = TAppSettingsManager.GetValue("Server.DBPassword");
 
-            if (DatabasePassword == "PG_OPENPETRA_DBPWD")
+            if (FDBPassword == "PG_OPENPETRA_DBPWD")
             {
                 // get the password from the file ~/.pgpass. This currently only works for PostgreSQL on Linux
                 using (StreamReader sr = new StreamReader(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
@@ -390,7 +378,7 @@ namespace Ict.Common.Remoting.Server
                     while (!sr.EndOfStream)
                     {
                         string line = sr.ReadLine();
-                        DatabasePassword = line.Substring(line.LastIndexOf(':') + 1);
+                        FDBPassword = line.Substring(line.LastIndexOf(':') + 1);
                     }
                 }
             }

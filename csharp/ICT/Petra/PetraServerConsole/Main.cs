@@ -36,10 +36,8 @@ using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Remoting.Server;
 using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Sinks.Encryption;
 using Ict.Petra.Server.App.Core;
-using Ict.Petra.Server.App.Main;
-using Ict.Petra.Shared.Interfaces.ServerAdminInterface;
-using Ict.Petra.Shared.RemotingSinks.Encryption;
 
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
 
@@ -145,9 +143,9 @@ public class TServer
                     TcpChannel Channel = new TcpChannel(ChannelProperties, null, EncryptionSink);
                     ChannelServices.RegisterChannel(Channel, false);
 
-                    RemotingConfiguration.RegisterWellKnownServiceType(typeof(Ict.Petra.Server.App.Main.TServerManager),
+                    RemotingConfiguration.RegisterWellKnownServiceType(typeof(Ict.Petra.Server.App.Core.TServerManager),
                         "Servermanager", WellKnownObjectMode.Singleton);
-                    RemotingConfiguration.RegisterWellKnownServiceType(typeof(Ict.Petra.Server.App.Main.TClientManager),
+                    RemotingConfiguration.RegisterWellKnownServiceType(typeof(Ict.Common.Remoting.Server.TClientManager),
                         "Clientmanager", WellKnownObjectMode.Singleton);
 
                     LifetimeServices.LeaseTime = TimeSpan.FromSeconds(TAppSettingsManager.GetDouble("LifetimeServices.LeaseTimeInSeconds", 5.0f));
