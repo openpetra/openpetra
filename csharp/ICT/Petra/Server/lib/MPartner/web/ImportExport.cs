@@ -33,6 +33,7 @@ using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.DB;
 using Ict.Common.Verification;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
@@ -41,6 +42,8 @@ using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MPartner.Import;
+using Ict.Petra.Server.MPartner.Partner;
+using Ict.Petra.Server.MPartner.Partner.ServerLookups;
 
 namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
 {
@@ -241,11 +244,21 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         public static PartnerImportExportTDS ImportFromPartnerExtract(string[] ATextFileLines, out TVerificationResultCollection AVerificationResult)
         {
             TPartnerFileImport Importer = new TPartnerFileImport();
-            PartnerImportExportTDS MainDS = Importer.ImportAllData(ATextFileLines, string.Empty, true, out AVerificationResult);
-
-            // TODO: check for updated partners, matching addresses etc.
+            PartnerImportExportTDS MainDS = Importer.ImportAllData(ATextFileLines, string.Empty, false, out AVerificationResult);
 
             return MainDS;
+        }
+        
+        /// <summary>
+        /// Web connector for commit changes after importing a partner
+        /// </summary>
+        /// <param name="MainDS"></param>
+        /// <param name="AVerificationResult"></param>
+        /// <returns></returns>
+        public static Boolean CommitChanges (PartnerImportExportTDS MainDS,  out TVerificationResultCollection AVerificationResult)
+        {
+            TSubmitChangesResult Res = PartnerImportExportTDSAccess.SubmitChanges(MainDS, out AVerificationResult);
+            return (TSubmitChangesResult.scrOK == Res);
         }
 
         /// <summary>
@@ -277,23 +290,66 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static string GetExtFileFooter ()
         {
-            return "0 FINISH\n";
+            return "0  \"FINISH\"\n";
         }
         
        /// <summary>
        /// Format a partner as ext (Petra 2.x format)
+       /// If I've been asked to export a PERSON, I can also export the FAMILY record first.
        /// </summary>
        /// <param name="APartnerKey">Partner key</param>
-       /// <param name="ASiteKey">My site key</param>
-       /// <param name="ALocationKey">My location key</param>
+       /// <param name="ASiteKey">Partner's site key</param>
+       /// <param name="ALocationKey">Partner's primary location key</param>
+       /// <param name="ANoFamily">Set this flag for a PERSON, to prevent the FAMILY being exported too.</param>
        /// <param name="ASpecificBuildingInfo">Only include these buildings (null for all)</param>
        /// <returns></returns>
         [RequireModulePermission("PTNRUSER")]
-        public static string ExportPartnerExt(Int64 APartnerKey, Int32 ASiteKey, Int32 ALocationKey, StringCollection ASpecificBuildingInfo)
+        public static string ExportPartnerExt(Int64 APartnerKey, Int32 ASiteKey, Int32 ALocationKey, Boolean ANoFamily, StringCollection ASpecificBuildingInfo)
         {
+            String extRecord = "";
+            //
+            // First I'm going to check that I can access this partner OK..
+            Boolean PartnerAccessOk = false;
+            String ShortName;
+            TPartnerClass PartnerClass;
+            Boolean IsMergedPartner = false;
+            Boolean UserCanAccessPartner = false;
+            
+            if (APartnerKey != 0)
+            {
+                PartnerAccessOk = TPartnerServerLookups.VerifyPartner(APartnerKey,
+                        out ShortName, out PartnerClass, 
+                        out IsMergedPartner, out UserCanAccessPartner);
+            }
+            if (!PartnerAccessOk || !UserCanAccessPartner)
+            {
+                return extRecord;  // This is empty - TODO: I'm not returning any error code here.
+            }
+            
             TPartnerFileExport Exporter = new TPartnerFileExport();
             PartnerImportExportTDS AMainDS = TExportAllPartnerData.ExportPartner(APartnerKey);
-            return Exporter.ExportPartnerExt( AMainDS, ASiteKey, ALocationKey, ASpecificBuildingInfo);
+            
+            if (!ANoFamily)  // I'll check whether there's a FAMILY to go with this Partner.
+            {
+                PPartnerRow PartnerRow = AMainDS.PPartner[0];
+                if (PartnerRow.PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
+                {
+                    PPersonRow PersonRow = AMainDS.PPerson[0];
+                    long FamilyKey = PersonRow.FamilyKey;
+                    PartnerAccessOk = TPartnerServerLookups.VerifyPartner(FamilyKey,
+                            out ShortName, out PartnerClass, 
+                            out IsMergedPartner, out UserCanAccessPartner);
+                    if ((FamilyKey > 0) && PartnerAccessOk  && UserCanAccessPartner)
+                    {
+                        PartnerImportExportTDS FamilyDS = TExportAllPartnerData.ExportPartner(FamilyKey);
+                        extRecord += Exporter.ExportPartnerExt(FamilyDS, ASiteKey, ALocationKey, ASpecificBuildingInfo);
+                    }
+                    // TODO: If I couldn't access the FAMILY for a PERSON, I should perhaps stop exporting?
+                }
+            }
+            
+            extRecord += Exporter.ExportPartnerExt( AMainDS, ASiteKey, ALocationKey, ASpecificBuildingInfo);
+            return extRecord;
         }
 
         /// <summary>

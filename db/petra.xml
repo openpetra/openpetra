@@ -13945,15 +13945,20 @@
                 otherFields="a_ledger_number_i, a_batch_number_i, a_journal_number_i"/>
     <foreignkey name="a_transaction_fk2"
                 descr=""
+                thisFields="a_ledger_number_i, a_batch_number_i"
+                otherTable="a_batch"
+                otherFields="a_ledger_number_i, a_batch_number_i"/>
+    <foreignkey name="a_transaction_fk3"
+                descr=""
                 thisFields="a_ledger_number_i, a_account_code_c"
                 otherTable="a_account"
                 otherFields="a_ledger_number_i, a_account_code_c"/>
-    <foreignkey name="a_transaction_fk3"
+    <foreignkey name="a_transaction_fk4"
                 descr=""
                 thisFields="a_ledger_number_i, a_cost_centre_code_c"
                 otherTable="a_cost_centre"
                 otherFields="a_ledger_number_i, a_cost_centre_code_c"/>
-    <foreignkey name="a_transaction_fk4"
+    <foreignkey name="a_transaction_fk5"
                 descr=""
                 thisFields="a_key_ministry_key_n"
                 otherTable="p_unit"
@@ -14057,6 +14062,11 @@
                 thisFields="a_ledger_number_i, a_cost_centre_code_c"
                 otherTable="a_cost_centre"
                 otherFields="a_ledger_number_i, a_cost_centre_code_c"/>
+    <foreignkey name="a_trans_anal_attrib_fk6"
+                descr=""
+                thisFields="a_ledger_number_i, a_batch_number_i"
+                otherTable="a_batch"
+                otherFields="a_ledger_number_i, a_batch_number_i"/>
     <!-- Explicit Indexes on table a_trans_anal_attrib  -->
   </table>
   <table name="a_suspense_account"

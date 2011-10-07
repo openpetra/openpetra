@@ -36,6 +36,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MPersonnel.Units.Data;
 using Ict.Petra.Shared.MHospitality.Data;
+using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPersonnel.Units.Data.Access;
@@ -54,7 +55,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         private List <Int64>FPartnerAlreadyLoaded = new List <long>();
         private TVerificationResultCollection FResultList = new TVerificationResultCollection();
         private string FLimitToOption = string.Empty;
-        private bool FDoNotOverwrite = true;
+        private bool FDoNotOverwrite = false;
         private int FCountLocationKeys = -1;
         private Int64 FPartnerKey = -1;
         private bool FIgnorePartner = false;
@@ -161,7 +162,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             PartnerRow.ReceiptEachGift = ReadBoolean();
             PartnerRow.ReceiptLetterFrequency = ReadString();
 
-            // it seems, these values are not part of the ext files that I have seen
+            // These values are not included in the ext file
             //PartnerRow.NoSolicitations = ReadBoolean();
             //PartnerRow.AnonymousDonor = ReadBoolean();
 
@@ -170,7 +171,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 PartnerRow.AcquisitionCode = MPartnerConstants.ACQUISITIONCODE_APPLICANT;
             }
 
-            // check if acquisition code does already exist in this database
+            // check if acquisition code already exists in this database
             FMainDS.PAcquisition.DefaultView.RowFilter = String.Format("{0} = '{1}'",
                 PAcquisitionTable.GetAcquisitionCodeDBName(), PartnerRow.AcquisitionCode);
 
@@ -183,7 +184,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 FMainDS.PAcquisition.Rows.Add(aqRow);
             }
 
-            // check if such a partner (most likely family partner has already been loaded)
+            // Check if this partner was already imported 
             FIgnorePartner = FPartnerAlreadyLoaded.Contains(FPartnerKey);
 
             if (!FIgnorePartner && !FMainDS.PPartner.Rows.Contains(FPartnerKey))
@@ -240,10 +241,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 FamilyRow.MaritalStatusSince = ReadNullableDate();
                 FamilyRow.MaritalStatusComment = ReadString();
 
-                if (!FIgnorePartner)
-                {
-                    PFamilyAccess.AddOrModifyRecord(FamilyRow.PartnerKey, FMainDS.PFamily, FamilyRow, FDoNotOverwrite, ATransaction);
-                }
+                PFamilyAccess.AddOrModifyRecord(FamilyRow.PartnerKey, FMainDS.PFamily, FamilyRow, FDoNotOverwrite, ATransaction);
             }
             else if (APartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
             {
@@ -288,14 +286,12 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 if (FieldKey.HasValue && (FieldKey.Value != 0))
                 {
                     PersonRow.FieldKey = FieldKey.Value;
-
                     AddRequiredOffice(PersonRow.FieldKey);
                 }
 
                 PersonRow.FamilyKey = ReadInt64();
                 PersonRow.FamilyId = ReadInt32();
 
-                PPersonAccess.AddOrModifyRecord(PersonRow.PartnerKey, FMainDS.PPerson, PersonRow, FDoNotOverwrite, ATransaction);
 
                 if (TAppSettingsManager.GetValue("AllowCreationPersonRecords", "false", false).ToLower() != "true")
                 {
@@ -303,7 +299,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                         "We are currently not supporting import of PERSON records, until we have resolved the issues with household/family. " +
                         "Please add configuration parameter AllowCreationPersonRecords with value true if you want to use PERSON records");
                 }
-            }
+                PPersonAccess.AddOrModifyRecord(PersonRow.PartnerKey, FMainDS.PPerson, PersonRow, FDoNotOverwrite, ATransaction);
+          }
             else if (APartnerClass == MPartnerConstants.PARTNERCLASS_ORGANISATION)
             {
                 POrganisationRow OrganisationRow = FMainDS.POrganisation.NewRowTyped();
@@ -359,14 +356,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             PLocationRow LocationRow = FMainDS.PLocation.NewRowTyped();
 
-            if (ExistingLocation.Count > 0)
-            {
-                LocationRow.LocationKey = ExistingLocation[0].LocationKey;
-            }
-            else
-            {
-                LocationRow.LocationKey = FCountLocationKeys--;
-            }
 
             LocationRow.SiteKey = ReadInt64();
             LocationRow.Locality = ReadString();
@@ -377,6 +366,19 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             LocationRow.PostalCode = ReadString();
             LocationRow.CountryCode = ReadString();
 
+            ExistingLocation.DefaultView.RowFilter = String.Format("{0}='{1}' AND {2}='{3}'",
+                PLocationTable.GetStreetNameDBName(), LocationRow.StreetName,
+                PLocationTable.GetPostalCodeDBName(), LocationRow.PostalCode);
+
+            if (ExistingLocation.DefaultView.Count > 0)
+            {
+                LocationRow.LocationKey = ((PLocationRow)ExistingLocation.DefaultView[0].Row).LocationKey;
+            }
+            else
+            {
+                LocationRow.LocationKey = FCountLocationKeys--;
+            }
+
             PPartnerLocationRow PartnerLocationRow = FMainDS.PPartnerLocation.NewRowTyped();
 
             PartnerLocationRow.PartnerKey = FPartnerKey;
@@ -385,12 +387,18 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             PartnerLocationRow.DateEffective = ReadNullableDate();
             PartnerLocationRow.DateGoodUntil = ReadNullableDate();
             PartnerLocationRow.LocationType = ReadString();
+            PartnerLocationRow.SendMail = ReadBoolean();
+            PartnerLocationRow.EmailAddress = ReadString();
+            PartnerLocationRow.TelephoneNumber = ReadString();
+            PartnerLocationRow.Extension = ReadInt32();
+            PartnerLocationRow.FaxNumber = ReadString();
+            PartnerLocationRow.FaxExtension = ReadInt32();
 
             // check if location type does already exist in this database
             FMainDS.PLocationType.DefaultView.RowFilter = String.Format("{0} = '{1}'",
                 PLocationTypeTable.GetCodeDBName(), PartnerLocationRow.LocationType);
 
-            if (!FIgnoreApplication && (FMainDS.PLocationType.DefaultView.Count == 0))
+            if (FMainDS.PLocationType.DefaultView.Count == 0)
             {
                 TLogging.Log("Adding new location type " + PartnerLocationRow.LocationType);
                 PLocationTypeRow locationTypeRow = FMainDS.PLocationType.NewRowTyped();
@@ -399,14 +407,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 FMainDS.PLocationType.Rows.Add(locationTypeRow);
             }
 
-            PartnerLocationRow.SendMail = ReadBoolean();
-            PartnerLocationRow.EmailAddress = ReadString();
-            PartnerLocationRow.TelephoneNumber = ReadString();
-            PartnerLocationRow.Extension = ReadInt32();
-            PartnerLocationRow.FaxNumber = ReadString();
-            PartnerLocationRow.FaxExtension = ReadInt32();
-
-            if (ExistingLocation.Count > 0)
+            if (ExistingLocation.DefaultView.Count > 0)
             {
                 PLocationAccess.AddOrModifyRecord(LocationRow.SiteKey,
                     LocationRow.LocationKey,
@@ -451,7 +452,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         }
 
         /// <summary>
-        ///  we do not want to add new congress codes, but limit the registration offices to the existing congress codes (roles)
+        /// We do not want to add new congress codes, 
+        /// but limit the registration offices to the existing congress codes (roles)
         /// </summary>
         /// <param name="ACongressCode"></param>
         private void CheckCongressCode(string ACongressCode)
@@ -466,10 +468,10 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             if (FMainDS.PtCongressCode.DefaultView.Count == 0)
             {
-                TLogging.Log("We do not know congress code " + ACongressCode);
+                TLogging.Log("Unknown Congress Code " + ACongressCode);
                 FResultList.Add(new TVerificationResult(
-                        String.Format("importing application for partner {0}", FPartnerKey),
-                        String.Format("We do not know congress code {0}", ACongressCode),
+                        String.Format("Importing application for partner {0}", FPartnerKey),
+                        String.Format("Unknown Congress Code {0}", ACongressCode),
                         TResultSeverity.Resv_Critical));
             }
         }
@@ -571,32 +573,38 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             ShortTermApplicationRow.ToCongTravelInfo = ReadString();
             ShortTermApplicationRow.ArrivalPointCode = ReadString();
 
-            // check if arrival point code does already exist in this database
-            FMainDS.PtArrivalPoint.DefaultView.RowFilter = String.Format("{0} = '{1}'",
-                PtArrivalPointTable.GetCodeDBName(), ShortTermApplicationRow.ArrivalPointCode);
-
-            if (!FIgnoreApplication && (FMainDS.PtArrivalPoint.DefaultView.Count == 0))
+            if (ShortTermApplicationRow.ArrivalPointCode != "")
             {
-                TLogging.Log("Adding new arrival point code " + ShortTermApplicationRow.ArrivalPointCode);
-                PtArrivalPointRow arrivalRow = FMainDS.PtArrivalPoint.NewRowTyped();
-                arrivalRow.Code = ShortTermApplicationRow.ArrivalPointCode;
-                arrivalRow.Description = "N/A";
-                FMainDS.PtArrivalPoint.Rows.Add(arrivalRow);
+                // Check if arrival point code already exists in the database
+                FMainDS.PtArrivalPoint.DefaultView.RowFilter = String.Format("{0} = '{1}'",
+                    PtArrivalPointTable.GetCodeDBName(), ShortTermApplicationRow.ArrivalPointCode);
+
+                if (!FIgnoreApplication && (FMainDS.PtArrivalPoint.DefaultView.Count == 0))
+                {
+                    TLogging.Log("Adding new arrival point code '" + ShortTermApplicationRow.ArrivalPointCode + "'");
+                    PtArrivalPointRow arrivalRow = FMainDS.PtArrivalPoint.NewRowTyped();
+                    arrivalRow.Code = ShortTermApplicationRow.ArrivalPointCode;
+                    arrivalRow.Description = "Created from Ext file Import";
+                    FMainDS.PtArrivalPoint.Rows.Add(arrivalRow);
+                }
             }
 
             ShortTermApplicationRow.DeparturePointCode = ReadString();
 
-            // check if arrival point code does already exist in this database
-            FMainDS.PtArrivalPoint.DefaultView.RowFilter = String.Format("{0} = '{1}'",
-                PtArrivalPointTable.GetCodeDBName(), ShortTermApplicationRow.DeparturePointCode);
-
-            if (!FIgnoreApplication && (FMainDS.PtArrivalPoint.DefaultView.Count == 0))
+            if (ShortTermApplicationRow.DeparturePointCode != "")
             {
-                TLogging.Log("Adding new arrival point code " + ShortTermApplicationRow.DeparturePointCode);
-                PtArrivalPointRow arrivalRow = FMainDS.PtArrivalPoint.NewRowTyped();
-                arrivalRow.Code = ShortTermApplicationRow.DeparturePointCode;
-                arrivalRow.Description = "N/A";
-                FMainDS.PtArrivalPoint.Rows.Add(arrivalRow);
+                // Check if Departure point code already exists in the database
+                FMainDS.PtArrivalPoint.DefaultView.RowFilter = String.Format("{0} = '{1}'",
+                    PtArrivalPointTable.GetCodeDBName(), ShortTermApplicationRow.DeparturePointCode);
+
+                if (!FIgnoreApplication && (FMainDS.PtArrivalPoint.DefaultView.Count == 0))
+                {
+                    TLogging.Log("Adding new arrival point code '" + ShortTermApplicationRow.DeparturePointCode + "'");
+                    PtArrivalPointRow arrivalRow = FMainDS.PtArrivalPoint.NewRowTyped();
+                    arrivalRow.Code = ShortTermApplicationRow.DeparturePointCode;
+                    arrivalRow.Description = "N/A";
+                    FMainDS.PtArrivalPoint.Rows.Add(arrivalRow);
+                }
             }
 
             ShortTermApplicationRow.TravelTypeFromCongCode = ReadString();
@@ -621,7 +629,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             if (ShortTermApplicationRow.StFieldCharged == 0)
             {
                 // we cannot import a partner that has a field charged 0. This would be an invalid application.
-                // we assume that the registration office will be charged
+                // we assume that the registration office will be charged.
                 ShortTermApplicationRow.StFieldCharged = ShortTermApplicationRow.RegistrationOffice;
             }
 
@@ -696,22 +704,25 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             ApplicationFormRow.ReferencePartnerKey = ReadInt64();
             ApplicationFormRow.Comment = ReadString();
 
-            // ignore application forms with an unknown type
-            FMainDS.PtAppFormTypes.DefaultView.RowFilter =
-                String.Format("{0}='{1}'",
-                    PtAppFormTypesTable.GetFormNameDBName(),
-                    ApplicationFormRow.FormName.Replace("'", "''"));
-
-            if (!FIgnoreApplication && (FMainDS.PtAppFormTypes.DefaultView.Count == 1))
+            if (!FIgnoreApplication)
             {
-                PmApplicationFormsAccess.AddOrModifyRecord(ApplicationFormRow.PartnerKey,
-                    ApplicationFormRow.ApplicationKey,
-                    ApplicationFormRow.RegistrationOffice,
-                    ApplicationFormRow.FormName,
-                    FMainDS.PmApplicationForms,
-                    ApplicationFormRow,
-                    FDoNotOverwrite,
-                    ATransaction);
+                // ignore application forms with an unknown type
+                FMainDS.PtAppFormTypes.DefaultView.RowFilter =
+                    String.Format("{0}='{1}'",
+                        PtAppFormTypesTable.GetFormNameDBName(),
+                        ApplicationFormRow.FormName.Replace("'", "''"));
+
+                if (FMainDS.PtAppFormTypes.DefaultView.Count == 1)
+                {
+                    PmApplicationFormsAccess.AddOrModifyRecord(ApplicationFormRow.PartnerKey,
+                        ApplicationFormRow.ApplicationKey,
+                        ApplicationFormRow.RegistrationOffice,
+                        ApplicationFormRow.FormName,
+                        FMainDS.PmApplicationForms,
+                        ApplicationFormRow,
+                        FDoNotOverwrite,
+                        ATransaction);
+                }
             }
         }
 
@@ -770,6 +781,21 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             GeneralApplicationRow.GenYearProgram = ReadString();
             GeneralApplicationRow.ApplicationKey = ReadInt32();
             GeneralApplicationRow.RegistrationOffice = ReadInt64();
+            // If I've never heard of this office (which is unlikely in the real world)
+            // I'll create one to keep the database happy.
+
+            FMainDS.PUnit.DefaultView.RowFilter = String.Format("{0} = '{1}'",
+                  PUnitTable.GetPartnerKeyDBName(), GeneralApplicationRow.RegistrationOffice);
+            if (FMainDS.PUnit.DefaultView.Count == 0) // There's no such Unit
+            {
+                AddRequiredOffice(GeneralApplicationRow.RegistrationOffice);
+                FResultList.Add(new TVerificationResult(
+                    String.Format("Importing application for partner {0}", FPartnerKey),
+                    String.Format("Unknown Registration Office {0} - Placeholder office created.", GeneralApplicationRow.RegistrationOffice),
+                    TResultSeverity.Resv_Noncritical));
+            }
+            FMainDS.PUnit.DefaultView.RowFilter = String.Empty;
+                 
             GeneralApplicationRow.Comment = ReadMultiLine();
 
             if (ApplicationTypeRow.AppFormType == MPersonnelConstants.APPLICATIONFORMTYPE_SHORTFORM)
@@ -881,7 +907,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 AddRequiredOffice(StaffDataRow.ReceivingFieldOffice);
             }
 
-            // check if commitment status code does already exist in this database
+            // Check if commitment status code already exists in the database
             FMainDS.PmCommitmentStatus.DefaultView.RowFilter = String.Format("{0} = '{1}'",
                 PmCommitmentStatusTable.GetCodeDBName(), StaffDataRow.StatusCode);
 
@@ -956,6 +982,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             PassportDetailsRow.PartnerKey = FPartnerKey;
 
             PassportDetailsRow.PassportNumber = ReadString();
+            PassportDetailsRow.MainPassport = ReadBoolean();
             PassportDetailsRow.CountryOfIssue = ReadString();
             PassportDetailsRow.DateOfExpiration = ReadNullableDate();
             PassportDetailsRow.DateOfIssue = ReadNullableDate();
@@ -983,17 +1010,24 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             DocumentRow.SiteKey = ReadInt64();
             DocumentRow.DocumentKey = ReadInt64();
             DocumentRow.DocCode = ReadString();
-            
+            DocumentRow.DocumentId = ReadString();
+            DocumentRow.PlaceOfIssue = ReadString();
+            DocumentRow.DateOfIssue = ReadNullableDate();
+            DocumentRow.DateOfStart = ReadNullableDate();
+            DocumentRow.DateOfExpiration = ReadNullableDate();
+            DocumentRow.AssocDocId = ReadString();
+            DocumentRow.ContactPartnerKey = ReadInt64();
+            DocumentRow.DocComment = ReadString();
+
             //
-            // TODO: The ext file includes both the DocCode and also the Category for that code.
+            // The ext file includes both the DocCode and also the Category for that code.
             // If the Code isn't currently in PmDocumentType, I can add it now
             //   ..and if even the Category isn't known, I can add that too in PmDocumentCategory.
-            //          (Actually, I'll need to do that first, because of the foreign key constraint.)
             //
             String DocCategory = ReadString(); // DocCategory
           
             FMainDS.PmDocumentCategory.DefaultView.RowFilter = String.Format("{0} = '{1}'",
-                  PmDocumentCategoryTable.GetCodeDBName(), DocCategory);
+                    PmDocumentCategoryTable.GetCodeDBName(), DocCategory);
 
             if (FMainDS.PmDocumentCategory.DefaultView.Count == 0) // There's no existing DocCategory..
             {
@@ -1008,7 +1042,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             
             // Now check the DocCode exists:
             FMainDS.PmDocumentType.DefaultView.RowFilter = String.Format("{0} = '{1}'",
-                  PmDocumentTypeTable.GetDocCodeDBName(), DocumentRow.DocCode);
+                    PmDocumentTypeTable.GetDocCodeDBName(), DocumentRow.DocCode);
 
             if (FMainDS.PmDocumentType.DefaultView.Count == 0) // There's no existing DocCode..
             {
@@ -1020,24 +1054,13 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 FMainDS.PmDocumentType.Rows.Add(DocumentTypeRow);
             }
             FMainDS.PmDocumentType.DefaultView.RowFilter = String.Empty;
-            // Now I can get back to reading the Ext file...
             
-            DocumentRow.DocumentId = ReadString();
-            DocumentRow.PlaceOfIssue = ReadString();
-            DocumentRow.DateOfIssue = ReadNullableDate();
-            DocumentRow.DateOfStart = ReadNullableDate();
-            DocumentRow.DateOfExpiration = ReadNullableDate();
-            DocumentRow.AssocDocId = ReadString();
-            DocumentRow.ContactPartnerKey = ReadInt64();
-            DocumentRow.DocComment = ReadString();
-
             PmDocumentAccess.AddOrModifyRecord(DocumentRow.SiteKey,
                 DocumentRow.DocumentKey,
                 FMainDS.PmDocument,
                 DocumentRow,
                 FDoNotOverwrite,
                 ATransaction);
-
         }
 
         private void ImportPersonalData(TDBTransaction ATransaction)
@@ -1046,14 +1069,16 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             PersonalDataRow.PartnerKey = FPartnerKey;
 
-            PersonalDataRow.DriverStatus = ReadString();
+            PersonalDataRow.DriverStatus = ReadString(); // This will be constrained to be a value in PtDriverStatus table.
             PersonalDataRow.GenDriverLicense = ReadBoolean();
             PersonalDataRow.DrivingLicenseNumber = ReadString();
             PersonalDataRow.InternalDriverLicense = ReadBoolean();
 
-            PmPersonalDataAccess.AddOrModifyRecord(PersonalDataRow.PartnerKey, FMainDS.PmPersonalData, PersonalDataRow, FDoNotOverwrite, ATransaction);
-
-            // TODO: PtDriverStatus
+            if (!PtDriverStatusAccess.Exists(PersonalDataRow.DriverStatus, ATransaction))
+            {
+                PersonalDataRow.DriverStatus = ""; // If someone entered some weird unknown code, I'll use this "unknown" value.
+            }
+            PmPersonalDataAccess.AddOrModifyRecord(FPartnerKey, FMainDS.PmPersonalData, PersonalDataRow, FDoNotOverwrite, ATransaction);
         }
 
         private void ImportProfessionalData(TDBTransaction ATransaction)
@@ -1071,14 +1096,15 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             PersonQualificationRow.QualificationDate = ReadNullableDate();
             PersonQualificationRow.QualificationExpiry = ReadNullableDate();
 
-            // check if type code does already exist in this database
+            // Check if type code does already exist in this database
             FMainDS.PtQualificationArea.DefaultView.RowFilter = String.Format("{0} = '{1}'",
                 PtQualificationAreaTable.GetQualificationAreaNameDBName(), PersonQualificationRow.QualificationAreaName);
 
+            // If not, don't add this qualification
             if (FMainDS.PtQualificationArea.DefaultView.Count == 0)
             {
                 TLogging.Log(
-                    "Ignoring PersonQualification because of non existing qualification area " + PersonQualificationRow.QualificationAreaName);
+                    "Ignoring PersonQualification: unknown qualification area " + PersonQualificationRow.QualificationAreaName);
                 return;
             }
 
@@ -1140,28 +1166,25 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             PartnerTypeRow.ValidFrom = ReadNullableDate();
             PartnerTypeRow.ValidUntil = ReadNullableDate();
 
-            if (!FIgnorePartner)
-            {
-                // check if type code does already exist in this database
-                FMainDS.PType.DefaultView.RowFilter = String.Format("{0} = '{1}'", PTypeTable.GetTypeCodeDBName(), PartnerTypeRow.TypeCode);
+            // check if type code already exists in this database
+            FMainDS.PType.DefaultView.RowFilter = String.Format("{0} = '{1}'", PTypeTable.GetTypeCodeDBName(), PartnerTypeRow.TypeCode);
 
-                if (FMainDS.PType.DefaultView.Count == 0)
-                {
-                    TLogging.Log("Ignoring non existing type code " + PartnerTypeRow.TypeCode);
-                    //                  PTypeRow typeRow = FMainDS.PType.NewRowTyped();
-                    //                  typeRow.TypeCode = PartnerTypeRow.TypeCode;
-                    //                  typeRow.TypeDescription = "N/A";
-                    //                  FMainDS.PType.Rows.Add(typeRow);
-                }
-                else
-                {
-                    PPartnerTypeAccess.AddOrModifyRecord(PartnerTypeRow.PartnerKey,
-                        PartnerTypeRow.TypeCode,
-                        FMainDS.PPartnerType,
-                        PartnerTypeRow,
-                        FDoNotOverwrite,
-                        ATransaction);
-                }
+            if (FMainDS.PType.DefaultView.Count == 0)
+            {
+                TLogging.Log("Ignoring unknown type code " + PartnerTypeRow.TypeCode);
+                //                  PTypeRow typeRow = FMainDS.PType.NewRowTyped();
+                //                  typeRow.TypeCode = PartnerTypeRow.TypeCode;
+                //                  typeRow.TypeDescription = "N/A";
+                //                  FMainDS.PType.Rows.Add(typeRow);
+            }
+            else
+            {
+                PPartnerTypeAccess.AddOrModifyRecord(PartnerTypeRow.PartnerKey,
+                    PartnerTypeRow.TypeCode,
+                    FMainDS.PPartnerType,
+                    PartnerTypeRow,
+                    FDoNotOverwrite,
+                    ATransaction);
             }
         }
 
@@ -1170,14 +1193,32 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             PPartnerInterestRow PartnerInterestRow = FMainDS.PPartnerInterest.NewRowTyped();
 
             PartnerInterestRow.PartnerKey = FPartnerKey;
-
             PartnerInterestRow.InterestNumber = ReadInt32();
-            PartnerInterestRow.FieldKey = ReadInt64();
-            PartnerInterestRow.Country = ReadString();
+            Int64 FieldKey = ReadInt64();
+            if (FieldKey != 0)
+            {
+                PartnerInterestRow.FieldKey = FieldKey; // If I've imported 0, leave the field key null.
+                AddRequiredOffice(FieldKey);
+            }
+            
+            String CountryCode = ReadString();
+            
             PartnerInterestRow.Interest = ReadString();
             ReadString(); // Category
             PartnerInterestRow.Level = ReadInt32();
             PartnerInterestRow.Comment = ReadString();
+
+            if (PCountryAccess.Exists(CountryCode, ATransaction)) // If I've imported an invalid country code, ignore it.
+            {
+                PartnerInterestRow.Country = CountryCode;
+            }
+            else
+            {
+                FResultList.Add(new TVerificationResult(
+                        String.Format("Importing interest for partner {0}", FPartnerKey),
+                        String.Format("Unknown Country code {0}", CountryCode),
+                        TResultSeverity.Resv_Noncritical));
+            }
 
             PPartnerInterestAccess.AddOrModifyRecord(PartnerInterestRow.PartnerKey,
                 PartnerInterestRow.InterestNumber,
@@ -1186,7 +1227,18 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 FDoNotOverwrite,
                 ATransaction);
 
-            // TODO: PInterest, PInterestCategory
+            // This Partner's interest must have a new or existing entry in PInterest.
+            FMainDS.PInterest.DefaultView.RowFilter = String.Format("{0} = '{1}'",
+                            PInterestTable.GetInterestDBName(), PartnerInterestRow.Interest);
+            if (FMainDS.PInterest.DefaultView.Count == 0) // There's no entry for this interest..
+            {
+                PInterestRow InterestRow = FMainDS.PInterest.NewRowTyped();
+                InterestRow.Interest = PartnerInterestRow.Interest;
+                InterestRow.Description = "Auto-generated by Ext Import";
+
+                FMainDS.PInterest.Rows.Add(InterestRow);
+            }
+            FMainDS.PInterest.DefaultView.RowFilter = String.Empty;
         }
 
         private void ImportVision(TDBTransaction ATransaction)
@@ -1209,45 +1261,23 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
         private void ImportUnitAbility(TDBTransaction ATransaction)
         {
-            UmUnitAbilityRow UnitAbilityRow = FMainDS.UmUnitAbility.NewRowTyped();
-
-            UnitAbilityRow.PartnerKey = FPartnerKey;
-
-            UnitAbilityRow.AbilityAreaName = ReadString();
-            UnitAbilityRow.AbilityLevel = ReadInt32();
-            UnitAbilityRow.YearsOfExperience = ReadInt32();
-
-            UmUnitAbilityAccess.AddOrModifyRecord(UnitAbilityRow.PartnerKey,
-                UnitAbilityRow.AbilityAreaName,
-                FMainDS.UmUnitAbility,
-                UnitAbilityRow,
-                FDoNotOverwrite,
-                ATransaction);
+            /* AbilityAreaName */ ReadString();
+            /* AbilityLevel */ ReadInt32();
+            /* YearsOfExperience */ ReadInt32();
         }
 
         private void ImportUnitCosts(TDBTransaction ATransaction)
         {
-            UmUnitCostRow UnitCostRow = FMainDS.UmUnitCost.NewRowTyped();
-
-            UnitCostRow.PartnerKey = FPartnerKey;
-
-            UnitCostRow.ValidFromDate = ReadDate();
-            UnitCostRow.ChargePeriod = ReadString();
-            UnitCostRow.CoupleJoiningChargeIntl = ReadDecimal();
-            UnitCostRow.AdultJoiningChargeIntl = ReadDecimal();
-            UnitCostRow.ChildJoiningChargeIntl = ReadDecimal();
-            UnitCostRow.CoupleCostsPeriodIntl = ReadDecimal();
-            UnitCostRow.SingleCostsPeriodIntl = ReadDecimal();
-            UnitCostRow.Child1CostsPeriodIntl = ReadDecimal();
-            UnitCostRow.Child2CostsPeriodIntl = ReadDecimal();
-            UnitCostRow.Child3CostsPeriodIntl = ReadDecimal();
-
-            UmUnitCostAccess.AddOrModifyRecord(UnitCostRow.PartnerKey,
-                UnitCostRow.ValidFromDate,
-                FMainDS.UmUnitCost,
-                UnitCostRow,
-                FDoNotOverwrite,
-                ATransaction);
+            /* ValidFromDate */ ReadDate();
+            /* ChargePeriod */ ReadString();
+            /* CoupleJoiningChargeIntl */ ReadDecimal();
+            /* AdultJoiningChargeIntl */ ReadDecimal();
+            /* ChildJoiningChargeIntl */ ReadDecimal();
+            /* CoupleCostsPeriodIntl */ ReadDecimal();
+            /* SingleCostsPeriodIntl */ ReadDecimal();
+            /* Child1CostsPeriodIntl */ ReadDecimal();
+            /* Child2CostsPeriodIntl */ ReadDecimal();
+            /* Child3CostsPeriodIntl */ ReadDecimal();
         }
 
         private void ImportJob()
@@ -1333,23 +1363,11 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
         private void ImportUnitLanguage(TDBTransaction ATransaction)
         {
-            UmUnitLanguageRow UnitLanguageRow = FMainDS.UmUnitLanguage.NewRowTyped();
-
-            UnitLanguageRow.PartnerKey = FPartnerKey;
-
-            UnitLanguageRow.LanguageCode = ReadString();
-            UnitLanguageRow.LanguageLevel = ReadInt32();
-            UnitLanguageRow.YearsOfExperience = ReadInt32();
-            UnitLanguageRow.UnitLanguageReq = ReadString();
-            UnitLanguageRow.UnitLangComment = ReadString();
-
-            UmUnitLanguageAccess.AddOrModifyRecord(UnitLanguageRow.PartnerKey,
-                UnitLanguageRow.LanguageCode,
-                UnitLanguageRow.LanguageLevel,
-                FMainDS.UmUnitLanguage, UnitLanguageRow, FDoNotOverwrite, ATransaction);
-
-            // TODO p_language
-            // TODO pt_language_level
+            /* LanguageCode */ ReadString();
+            /* LanguageLevel */ ReadInt32();
+            /* YearsOfExperience */ ReadInt32();
+            /* UnitLanguageReq */ ReadString();
+            /* UnitLangComment */ ReadString();
         }
 
         private void ImportUnitStructure(TDBTransaction ATransaction)
@@ -1366,19 +1384,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
         private void ImportUnitVision(TDBTransaction ATransaction)
         {
-            UmUnitVisionRow UnitVisionRow = FMainDS.UmUnitVision.NewRowTyped();
-
-            UnitVisionRow.PartnerKey = FPartnerKey;
-
-            UnitVisionRow.VisionAreaName = ReadString();
-            UnitVisionRow.VisionLevel = ReadInt32();
-
-            UmUnitVisionAccess.AddOrModifyRecord(UnitVisionRow.PartnerKey,
-                UnitVisionRow.VisionAreaName,
-                FMainDS.UmUnitVision, UnitVisionRow, FDoNotOverwrite, ATransaction);
-
-            // TODO pt_vision_area
-            // TODO pt_vision_level
+            /* VisionAreaName */ ReadString();
+            /* VisionLevel */ ReadInt32();
         }
 
         private void ImportBuilding(TDBTransaction ATransaction)
@@ -1543,7 +1550,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 }
                 else
                 {
-                    throw new Exception("found unknown option " + KeyWord);
+                    throw new Exception("Found unknown option " + KeyWord);
                 }
 
                 KeyWord = ReadString();
@@ -1551,7 +1558,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         }
 
         /// <summary>
-        /// import all data of a partner from a text file, using a format used by Petra 2.x.
+        /// Import all data of a partner from a text file, using a format used by Petra 2.x.
         /// containing: partner, person/family/church/etc record, valid locations, special types,
         ///             interests, personnel data, commitments, applications
         /// for units there is more specific data, used eg. for the events file
@@ -1585,6 +1592,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             PtAppFormTypesAccess.LoadAll(FMainDS, Transaction);
             PtCongressCodeAccess.LoadAll(FMainDS, Transaction);
             PtQualificationAreaAccess.LoadAll(FMainDS, Transaction);
+            PInterestAccess.LoadAll(FMainDS, Transaction);
             DBAccess.GDBAccessObj.RollbackTransaction();
 
             InitReading(ALinesToImport);

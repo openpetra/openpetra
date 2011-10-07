@@ -186,12 +186,12 @@ namespace Ict.Petra.Client.CommonForms
         /// <summary>
         /// constructor
         /// </summary>
-        /// <param name="ACallerWindowHandle">the int handle of the form that has opened this window; needed for focusing when this window is closed later</param>
+        /// <param name="ACallerForm">the int handle of the form that has opened this window; needed for focusing when this window is closed later</param>
         /// <param name="ATheForm"></param>
         /// <param name="AStatusBar"></param>"
-        public TFrmPetraEditUtils(IntPtr ACallerWindowHandle, IFrmPetraEdit ATheForm, TExtStatusBarHelp AStatusBar) : base(ACallerWindowHandle,
-                                                                                                                          (IFrmPetra)ATheForm,
-                                                                                                                          AStatusBar)
+        public TFrmPetraEditUtils(Form ACallerForm, IFrmPetraEdit ATheForm, TExtStatusBarHelp AStatusBar) : base(ACallerForm,
+                                                                                                                (IFrmPetra)ATheForm,
+                                                                                                                AStatusBar)
         {
             FVerificationResultCollection = new TVerificationResultCollection();
             FCloseFormCheckRun = false;
@@ -267,6 +267,10 @@ namespace Ict.Petra.Client.CommonForms
                 else if (ctrl.GetType() == typeof(TCmbVersatile))
                 {
                     ((TCmbVersatile)ctrl).SelectedValueChanged += new EventHandler(this.MultiEventHandler);
+                }
+                else if (ctrl.GetType() == typeof(TClbVersatile))
+                {
+                    ((TClbVersatile)ctrl).ValueChanged += new EventHandler(MultiEventHandler);
                 }
                 else if (ctrl.GetType() == typeof(TtxtPetraDate))
                 {

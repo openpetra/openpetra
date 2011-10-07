@@ -4,7 +4,7 @@
 // @Authors:
 //       berndr
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -167,7 +167,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             {
                 List <KeyValuePair <long, string>>ConferenceList;
                 DialogResult DlgResult = TFrmSelectOutreachOption.OpenSelectOutreachOptionDialog(
-                    Convert.ToInt64(txtConference.Text), this, true, out ConferenceList);
+                    Convert.ToInt64(txtConference.Text), FPetraUtilsObject.GetForm(), true, out ConferenceList);
 
                 if (((DlgResult != DialogResult.OK) || (ConferenceList.Count == 0))
                     && (DlgResult != DialogResult.None))

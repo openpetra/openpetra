@@ -321,8 +321,8 @@
         <Table sqltable="p_partner_comment"/>
         <Table sqltable="p_type"/>
         <Table sqltable="p_partner_type"/>
-        <Table sqltable="p_partner_interest"/>
         <Table sqltable="p_interest"/>
+        <Table sqltable="p_partner_interest"/>
 
         <Table sqltable="p_publication"/>
         <Table sqltable="p_subscription"/>

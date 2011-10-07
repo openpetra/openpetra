@@ -64,7 +64,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             dialog.FileName = TUserDefaults.GetStringDefault("Imp Filename",
                 TClientSettings.GetExportPath() + Path.DirectorySeparatorChar + "import.csv");
 
-            dialog.Title = Catalog.GetString("Import batches from spreadsheet file");
+            dialog.Title = Catalog.GetString("Import batches from csv file");
             dialog.Filter = Catalog.GetString("GL Batches files (*.csv)|*.csv");
             String impOptions = TUserDefaults.GetStringDefault("Imp Options", ";American");
 

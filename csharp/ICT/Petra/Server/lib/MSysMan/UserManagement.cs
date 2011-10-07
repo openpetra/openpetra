@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -136,13 +136,11 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         /// any user can call this, but they need to know the old password.
         /// </summary>
         [RequireModulePermission("NONE")]
-        public static bool SetUserPassword(string AUsername, string APassword, string AOldPassword)
+        public static bool SetUserPassword(string AUsername, string APassword, string AOldPassword, out TVerificationResultCollection AVerification)
         {
             string UserAuthenticationMethod = TAppSettingsManager.GetValue("UserAuthenticationMethod", "OpenPetraDBSUser", false);
 
-            TVerificationResultCollection verification;
-
-            if (!CheckPasswordQuality(APassword, out verification))
+            if (!CheckPasswordQuality(APassword, out AVerification))
             {
                 return false;
             }

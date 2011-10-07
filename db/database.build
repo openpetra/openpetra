@@ -28,7 +28,7 @@
         <mkdir dir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}" failonerror="false"/>
         <!-- we don't need SQL statements for sqlite, but only for the other DBMS -->
         <if test="${DBMS.Type!='sqlite'}">
-            <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:sql -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" failonerror="true"/>
+            <ExecDotNet program="${PetraToolsExe.dir}/Ict.Tools.GenerateSQL.exe" commandline="-do:sql -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" failonerror="true"/>
         </if>
     </target>
 
@@ -38,7 +38,7 @@
         <mkdir dir="${DBDoc.Output.dir}/img" failonerror="false"/>    
 
         <mkdir dir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}" failonerror="false"/>
-        <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:sql -dbms:postgresql -petraxml:${PetraXML.file} -outputFile:${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" failonerror="true"/>
+        <ExecDotNet program="${PetraToolsExe.dir}/Ict.Tools.GenerateSQL.exe" commandline="-do:sql -dbms:postgresql -petraxml:${PetraXML.file} -outputFile:${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" failonerror="true"/>
         
         <copy todir="${DBDoc.Output.dir}" overwrite="true">
             <fileset basedir="${OpenPetraRoot.dir}/db/html/">
@@ -84,7 +84,7 @@
         <if test="${DBMS.Type=='sqlite'}">
              <delete file="${SQLitedb.file}" if="${file::exists(SQLitedb.file)}"/>
              <move file="${SQLitedbWork.file}" tofile="${SQLitedbWork.file}.bak" if="${file::exists(SQLitedbWork.file)}"/>
-             <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:sql -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -password:${DBMS.Password}" failonerror="true"/>
+             <ExecDotNet program="${PetraToolsExe.dir}/Ict.Tools.GenerateSQL.exe" commandline="-do:sql -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -password:${DBMS.Password}" failonerror="true"/>
         </if>
         <if test="${DBMS.Type=='postgresql'}">
              <if test="${platform::is-unix()}">
@@ -177,9 +177,9 @@
          <echo message='${script::ReplaceInFile(Current.File, toReplace, passwordsalt)}'/>
 
         <if test="${DBMS.Type=='sqlite'}">
-             <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -datapath:${BaseData.Dir} -sqlfile:${BaseData.Dir}/clean.sql -password:${DBMS.Password}" failonerror="true"/>
-             <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -datapath:${BaseData.Dir} -sqlfile:${BaseData.Dir}/init.sql.local -password:${DBMS.Password}" failonerror="true"/>
-             <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -datapath:${DemoData.Dir} -sqlfile:${DemoData.Dir}/init.sql.local -password:${DBMS.Password}" failonerror="true"/>
+             <ExecDotNet program="${PetraToolsExe.dir}/Ict.Tools.GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -datapath:${BaseData.Dir} -sqlfile:${BaseData.Dir}/clean.sql -password:${DBMS.Password}" failonerror="true"/>
+             <ExecDotNet program="${PetraToolsExe.dir}/Ict.Tools.GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -datapath:${BaseData.Dir} -sqlfile:${BaseData.Dir}/init.sql.local -password:${DBMS.Password}" failonerror="true"/>
+             <ExecDotNet program="${PetraToolsExe.dir}/Ict.Tools.GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -datapath:${DemoData.Dir} -sqlfile:${DemoData.Dir}/init.sql.local -password:${DBMS.Password}" failonerror="true"/>
         </if>
         <if test="${DBMS.Type=='postgresql'}">
              <if test="${psqlversion=='9'}">
@@ -198,8 +198,8 @@
         </if>
         <if test="${DBMS.Type=='mysql'}">
              <mysql exe="${MySQL.exe}" sqlfile="${BaseData.Dir}/clean.sql" database="${DBMS.DBName}" user="root" password="${DBMS.Password}"/>
-             <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:empty  -sqlfile:${BaseData.Dir}/init.sql.local -database:${DBMS.DBName} -username:root -password:${DBMS.Password}" failonerror="true"/>
-             <ExecDotNet program="${PetraToolsExe.dir}/GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:empty  -sqlfile:${DemoData.Dir}/init.sql.local -database:${DBMS.DBName} -username:root -password:${DBMS.Password}" failonerror="true"/>
+             <ExecDotNet program="${PetraToolsExe.dir}/Ict.Tools.GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:empty  -sqlfile:${BaseData.Dir}/init.sql.local -database:${DBMS.DBName} -username:root -password:${DBMS.Password}" failonerror="true"/>
+             <ExecDotNet program="${PetraToolsExe.dir}/Ict.Tools.GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:empty  -sqlfile:${DemoData.Dir}/init.sql.local -database:${DBMS.DBName} -username:root -password:${DBMS.Password}" failonerror="true"/>
         </if>
     </target>
 

@@ -103,7 +103,7 @@ namespace Ict.Testing.NUnitForms
 
         private TFrmGLCreateLedgerTester()
         {
-            tFrmGLCreateLedger = new TFrmGLCreateLedger(IntPtr.Zero);
+            tFrmGLCreateLedger = new TFrmGLCreateLedger(null);
 
             nudLedgerNumber = new NumericUpDownTester("nudLedgerNumber", tFrmGLCreateLedger);
 

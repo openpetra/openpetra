@@ -168,7 +168,7 @@ public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
         su openpetraOrgNameWithoutSpace
         tar xzf openpetraorg-mono-0.2.3-0.tar.gz
         mv /usr/local/openpetra/OrgNameWithoutSpace/openpetraorg-0.2.3-0/* /usr/local/openpetra/OrgNameWithoutSpace
-        generate private and public key, with GenerateEncryptionKey from PetraTools/_bin. write to 2 text files
+        generate private and public key, with Ict.Tools.GenerateEncryptionKey from bin. write to 2 text files
         upload /var/www/keys/publickey.xml
         upload /usr/local/openpetra/OrgNameWithoutSpace/etc30/privatekey.xml
         copy generated PetraServerAdminConsole.config and PetraServerConsole.config to etc30
@@ -204,7 +204,7 @@ public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
         <copy file="${Config.file}" tofile="${dir.delivery}/PetraClientRemote.config" overwrite="true"/>
     </if>
     <if test="${not file::exists(Config.file)}">
-        <property name="Config.file" value="{dir.root}/setup/petra${PetraRelease}/remoteclientWin/PetraClientRemote.config"/>
+        <property name="Config.file" value="${dir.root}/setup/petra${PetraRelease}/remoteclientWin/PetraClientRemote.config"/>
         <copy file="${Config.file}" tofile="${dir.delivery}/PetraClientRemote.config" overwrite="true"/>
     </if>
 

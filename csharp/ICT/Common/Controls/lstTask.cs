@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,7 +22,9 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.IO;
 using System.Xml;
+using System.Drawing;
 using System.Windows.Forms;
 using System.Reflection;
 using System.Collections.Generic;
@@ -37,6 +39,25 @@ namespace Ict.Common.Controls
     /// </summary>
     public class TLstTasks : System.Windows.Forms.ListView
     {
+        private static string FUserId;
+        private static CheckAccessPermissionDelegate FHasAccessPermission;
+
+        /// <summary>
+        /// this function checks if the user has access to the navigation node
+        /// </summary>
+        public delegate bool CheckAccessPermissionDelegate(XmlNode ANode, string AUserId);
+
+        /// <summary>
+        /// initialise the permissions callback function for the current user
+        /// </summary>
+        /// <param name="AUserId"></param>
+        /// <param name="AHasAccessPermission"></param>
+        public static void Init(string AUserId, CheckAccessPermissionDelegate AHasAccessPermission)
+        {
+            FUserId = AUserId;
+            FHasAccessPermission = AHasAccessPermission;
+        }
+
         /// <summary>
         /// default constructor
         /// </summary>
@@ -95,6 +116,12 @@ namespace Ict.Common.Controls
                         task.Name = TaskGroupNode.Name;
                         task.Group = listViewGroup;
                         task.Tag = TaskGroupNode;
+
+                        if (!FHasAccessPermission(TaskGroupNode, FUserId))
+                        {
+                            task.ForeColor = Color.Gray;
+                        }
+
                         this.Items.Add(task);
                     }
                     else
@@ -113,6 +140,12 @@ namespace Ict.Common.Controls
                             task.Name = TaskNode.Name;
                             task.Group = listViewGroup;
                             task.Tag = TaskNode;
+
+                            if (!FHasAccessPermission(TaskNode, FUserId))
+                            {
+                                task.ForeColor = Color.Gray;
+                            }
+
                             this.Items.Add(task);
                             TaskNode = TaskNode.NextSibling;
                         }
@@ -139,8 +172,13 @@ namespace Ict.Common.Controls
         /// execute action from the navigation tree
         /// </summary>
         /// <returns>the error or status message</returns>
-        public static string ExecuteAction(XmlNode node, IntPtr AParentWindowHandle)
+        public static string ExecuteAction(XmlNode node, Form AParentWindow)
         {
+            if (!FHasAccessPermission(node, FUserId))
+            {
+                return Catalog.GetString("Sorry, you don't have enough permissions to do this");
+            }
+
             string strNamespace = TYml2Xml.GetAttributeRecursive(node, "Namespace");
 
             if (strNamespace.Length == 0)
@@ -151,7 +189,7 @@ namespace Ict.Common.Controls
             if (!FGUIAssemblies.Keys.Contains(strNamespace))
             {
                 // work around dlls containing several namespaces, eg Ict.Petra.Client.MFinance.Gui contains AR as well
-                string DllName = strNamespace;
+                string DllName = TAppSettingsManager.ApplicationDirectory + Path.DirectorySeparatorChar + strNamespace;
 
                 if (!System.IO.File.Exists(DllName + ".dll"))
                 {
@@ -187,7 +225,7 @@ namespace Ict.Common.Controls
 
                 if (method != null)
                 {
-                    method.Invoke(null, new object[] { AParentWindowHandle });
+                    method.Invoke(null, new object[] { AParentWindow });
                 }
                 else
                 {
@@ -210,7 +248,7 @@ namespace Ict.Common.Controls
                 // also use something similar as in lstFolderNavigation: CheckAccessPermissionDelegate?
                 // delegate as a static function that is available from everywhere?
 
-                System.Object screen = Activator.CreateInstance(classType, new object[] { AParentWindowHandle });
+                System.Object screen = Activator.CreateInstance(classType, new object[] { AParentWindow });
 
                 // check for properties and according attributes; this works for the LedgerNumber at the moment
                 foreach (PropertyInfo prop in classType.GetProperties())
@@ -286,7 +324,14 @@ namespace Ict.Common.Controls
 
             if ((info.Item != null) && (info.Item == FSelectedTaskItem))
             {
-                string message = ExecuteAction((XmlNode)info.Item.Tag, this.Handle);
+                Control parentForm = Parent;
+
+                while (parentForm != null && !(parentForm is Form))
+                {
+                    parentForm = parentForm.Parent;
+                }
+
+                string message = ExecuteAction((XmlNode)info.Item.Tag, (Form)parentForm);
                 WriteToStatusBar(message);
             }
 

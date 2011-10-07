@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -45,34 +45,34 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// create a new partner (default to family ie. household)
         /// </summary>
-        public static void NewPartner(IntPtr AParentFormHandle)
+        public static void NewPartner(Form AParentForm)
         {
-            TFrmPartnerEdit frm = new TFrmPartnerEdit(AParentFormHandle);
+            TFrmPartnerEdit frm = new TFrmPartnerEdit(AParentForm);
 
             frm.SetParameters(TScreenMode.smNew, "FAMILY", -1, -1, "");
             frm.Show();
         }
 
         /// create a new organisation (eg. supplier)
-        public static void NewOrganisation(IntPtr AParentFormHandle)
+        public static void NewOrganisation(Form AParentForm)
         {
-            TFrmPartnerEdit frm = new TFrmPartnerEdit(AParentFormHandle);
+            TFrmPartnerEdit frm = new TFrmPartnerEdit(AParentForm);
 
             frm.SetParameters(TScreenMode.smNew, "ORGANISATION", -1, -1, "");
             frm.Show();
         }
 
         /// create a new person
-        public static void NewPerson(IntPtr AParentFormHandle)
+        public static void NewPerson(Form AParentForm)
         {
-            TFrmPartnerEdit frm = new TFrmPartnerEdit(AParentFormHandle);
+            TFrmPartnerEdit frm = new TFrmPartnerEdit(AParentForm);
 
             frm.SetParameters(TScreenMode.smNew, "PERSON", -1, -1, "");
             frm.Show();
         }
 
             /// export partners into file
-        public static void ExportPartners(IntPtr AParentFormHandle)
+        public static void ExportPartners(Form AParentForm)
         {
 
             String FileName = TImportExportDialogs.GetExportFilename (Catalog.GetString("Save Partners into File"));
@@ -80,17 +80,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 if (FileName.EndsWith("ext"))
                 {
-                    Int64 APartnerKey = 10000026;
-                    Int32 ASiteKey = 0;
-                    Int32 ALocationKey = 0;
+                    Int64 PartnerKey = 10000026;
                     StringCollection ASpecificBuildingInfo = null;
                     String doc = TRemote.MPartner.ImportExport.WebConnectors.GetExtFileHeader ();
-                    
+                    Int32 SiteKey = 0;
+                    Int32 LocationKey = 0;
 
                     doc += TRemote.MPartner.ImportExport.WebConnectors.ExportPartnerExt(
-                        APartnerKey, ASiteKey, ALocationKey, 
-                        ASpecificBuildingInfo);
-                        
+                        PartnerKey, SiteKey, LocationKey, false, ASpecificBuildingInfo);
+                    
+                    doc += TRemote.MPartner.ImportExport.WebConnectors.GetExtFileFooter ();
                     TImportExportDialogs.ExportTofile(doc, FileName);
                 
                 }
@@ -101,15 +100,14 @@ namespace Ict.Petra.Client.MPartner.Gui
                     TImportExportDialogs.ExportTofile(doc, FileName);
                 }
             }
-//            TImportExportDialogs.ExportWithDialog(doc, Catalog.GetString("Save Partners into File"));
         }
 
         /// <summary>
         /// open partner find screen
         /// </summary>
-        public static void FindPartner(IntPtr AParentFormHandle)
+        public static void FindPartner(Form AParentForm)
         {
-            TPartnerFindScreen frm = new TPartnerFindScreen(AParentFormHandle);
+            TPartnerFindScreen frm = new TPartnerFindScreen(AParentForm);
 
             frm.SetParameters(false, -1);
             frm.Show();

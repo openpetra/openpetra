@@ -36,7 +36,7 @@ namespace Ict.Petra.Server.MPartner.Import
     public class TExportAllPartnerData
     {
         /// <summary>
-        /// export all relevant data of a partner
+        /// Load all the data of a partner into a TDS
         /// </summary>
         public static PartnerImportExportTDS ExportPartner(Int64 APartnerKey)
         {

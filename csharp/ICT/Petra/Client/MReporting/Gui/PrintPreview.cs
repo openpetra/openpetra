@@ -68,17 +68,17 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <summary>
         /// constructor
         /// </summary>
-        /// <param name="ACallerWindowHandle"></param>
+        /// <param name="ACallerForm"></param>
         /// <param name="caption">caption of the dialog</param>
         /// <param name="duration"></param>
         /// <param name="results"></param>
         /// <param name="parameters"></param>
         /// <param name="AWrapColumn">true: Wrap the text in the column. False: Cut the text that is to long for the column</param>
-        public TFrmPrintPreview(IntPtr ACallerWindowHandle, String caption, TimeSpan duration, TResultList results,
+        public TFrmPrintPreview(Form ACallerForm, String caption, TimeSpan duration, TResultList results,
             TParameterList parameters, bool AWrapColumn)
             : base()
         {
-            FPetraUtilsObject = new Ict.Petra.Client.CommonForms.TFrmPetraUtils(ACallerWindowHandle, this, stbMain);
+            FPetraUtilsObject = new Ict.Petra.Client.CommonForms.TFrmPetraUtils(ACallerForm, this, stbMain);
 
             //
             // Required for Windows Form Designer support
@@ -387,7 +387,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             TFrmPrintPreview printWindow;
 
             // show a print window with all kinds of output options
-            printWindow = new TFrmPrintPreview(this.Handle, ACalculator.GetParameters().Get("currentReport").ToString(),
+            printWindow = new TFrmPrintPreview(this, ACalculator.GetParameters().Get("currentReport").ToString(),
                 ACalculator.GetDuration(), ACalculator.GetResults(
                     ), ACalculator.GetParameters(), FWrapColumn);
             this.AddOwnedForm(printWindow);

@@ -24,8 +24,10 @@
 using System;
 using System.Data;
 using System.Windows.Forms;
+using System.Collections.Specialized;
 
 using Ict.Common;
+using Ict.Common.IO;
 using Ict.Common.Controls;
 using Ict.Common.DB;
 using Ict.Common.Verification;
@@ -826,6 +828,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             String ErrorMessages;
             TVerificationResultCollection VerificationResult;
             TVerificationResult VerificationResultItem;
+
             System.Windows.Forms.DialogResult UnitParentAssignment;
             int RowIndex;
             int NumRows;
@@ -1710,7 +1713,23 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void FileExportPartner(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            String FileName = TImportExportDialogs.GetExportFilename (Catalog.GetString("Save Partners into File"));
+            if (FileName.Length > 0)
+            {
+                if (FileName.EndsWith("ext"))
+                {
+                    StringCollection ASpecificBuildingInfo = null;
+                    String doc = TRemote.MPartner.ImportExport.WebConnectors.GetExtFileHeader ();
+                    Int32 SiteKey = 0;
+                    Int32 LocationKey = 0;
+
+                    doc += TRemote.MPartner.ImportExport.WebConnectors.ExportPartnerExt(
+                        this.PartnerKey, SiteKey, LocationKey, false, ASpecificBuildingInfo);
+                    
+                    doc += TRemote.MPartner.ImportExport.WebConnectors.GetExtFileFooter ();
+                    TImportExportDialogs.ExportTofile(doc, FileName);
+                }
+            }
         }
 
         #endregion
@@ -2636,7 +2655,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             TPartnerNewDialogWinForm NewPartnerDialog;
 
-            NewPartnerDialog = new TPartnerNewDialogWinForm(this.Handle);
+            NewPartnerDialog = new TPartnerNewDialogWinForm(this);
             NewPartnerDialog.SetParameters(FPartnerEditUIConnector,
                 FNewPartnerPartnerClass,
                 FNewPartnerSiteKey,

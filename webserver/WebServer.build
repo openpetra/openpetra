@@ -25,7 +25,7 @@
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
   <property name="generateWebformsParameters" value="-TemplateDir:${dir.incdir.template.src}/ExtJs -petraxml:${PetraXML.file} -deliveryPath:${dir.webserver}"/>
   <property name="ClientPath" value="${dir.root}/webserver"/>
-  <ExecDotNet program="${dir.bin}/GenerateExtJsForms.exe" commandline="-ymlfile:${ClientPath} ${generateWebformsParameters}"/>
+  <ExecDotNet program="${dir.bin}/Ict.Tools.GenerateExtJsForms.exe" commandline="-ymlfile:${ClientPath} ${generateWebformsParameters}"/>
 </target>
 
 <target name="generateWebform">
@@ -33,7 +33,7 @@
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
   <property name="generateWebformsParameters" value="-TemplateDir:${dir.incdir.template.src}/ExtJs -petraxml:${PetraXML.file} -deliveryPath:${dir.webserver}"/>
   <property name="ClientPath" value="${dir.root}/webserver"/>
-  <ExecDotNet program="${PetraToolsExe.dir}/GenerateExtJsForms.exe" commandline="-ymlfile:${ClientPath}/${file} ${generateWebformsParameters}"/>
+  <ExecDotNet program="${PetraToolsExe.dir}/Ict.Tools.GenerateExtJsForms.exe" commandline="-ymlfile:${ClientPath}/${file} ${generateWebformsParameters}"/>
 </target>
 
 <target name="prepareWebServer" description="create a directory in delivery with all files required for the webserver">

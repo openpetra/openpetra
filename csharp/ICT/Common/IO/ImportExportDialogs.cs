@@ -72,6 +72,9 @@ namespace Ict.Common.IO
         {
             if (FileName.EndsWith("ext"))
             {
+                StreamWriter outfile = new StreamWriter(FileName);
+                outfile.Write(doc);
+                outfile.Close();
                 return true;
             }
             return false;

@@ -190,11 +190,11 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 Write("");                 // ShortTermApplicationRow.FromCongTravelInfo
                 WriteLine();
                 Write("?");                // ShortTermApplicationRow.Arrival
-                Write("0");                // ShortTermApplicationRow.ArrivalHour
-                Write("0");                // ShortTermApplicationRow.ArrivalMinute
+                Write(0);                  // ShortTermApplicationRow.ArrivalHour
+                Write(0);                  // ShortTermApplicationRow.ArrivalMinute
                 Write("?");                // ShortTermApplicationRow.Departure
-                Write("0");                // ShortTermApplicationRow.DepartureHour
-                Write("0");                // ShortTermApplicationRow.DepartureMinute
+                Write(0);                  // ShortTermApplicationRow.DepartureHour
+                Write(0);                  // ShortTermApplicationRow.DepartureMinute
                 WriteLine();
                 Write("");                 // ShortTermApplicationRow.StApplicationHoldReason
                 Write(true);               // ShortTermApplicationRow.StApplicationOnHold
@@ -953,6 +953,13 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 Write(VenueRow.IsCurrencyCodeNull()? "" : VenueRow.CurrencyCode);
                 Write(VenueRow.IsContactPartnerKeyNull()? 0 : VenueRow.ContactPartnerKey);
                 WriteLine();
+            }
+            //
+            // If I have not been given a locationKey, I can pull one out of the LocationTable now,
+            // so that the code below works.
+            if (ALocationKey == 0)
+            {
+                ALocationKey = ((PPartnerLocationRow)AMainDS.PPartnerLocation.DefaultView[0].Row).LocationKey;
             }
 
             AMainDS.PLocation.DefaultView.RowFilter =

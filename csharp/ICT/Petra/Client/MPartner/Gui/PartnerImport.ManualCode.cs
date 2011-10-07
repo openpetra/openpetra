@@ -34,6 +34,7 @@ using Ict.Common.IO;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
@@ -136,6 +137,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     return;
                 }
+
+//              TRemote.MPartner.ImportExport.WebConnectors.CommitChanges (FMainDS,  out VerificationResult);
             }
         }
 
@@ -273,12 +276,24 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     PLocationRow LocationRow = (PLocationRow)FMainDS.PLocation.DefaultView[0].Row;
 
-                    PartnerInfo += LocationRow.StreetName + Environment.NewLine;
-                    PartnerInfo += LocationRow.Address3 + Environment.NewLine;
-                    PartnerInfo += LocationRow.PostalCode + Environment.NewLine;
-                    PartnerInfo += LocationRow.City + Environment.NewLine;
+                    PartnerInfo += LocationRow.StreetName + ", ";
+                    if (LocationRow.Address3 != "")
+                    {
+                        PartnerInfo += LocationRow.Address3 + ", ";
+                    }
+                    if (LocationRow.City != "")
+                    {
+                        PartnerInfo += LocationRow.City + ", ";
+                    }
+                    if (LocationRow.PostalCode != "")
+                    {
+                        PartnerInfo += LocationRow.PostalCode + ", ";
+                    }
                     PartnerInfo += LocationRow.CountryCode + Environment.NewLine;
-                    PartnerInfo += PartnerLocationRow.EmailAddress + Environment.NewLine;
+                    if (PartnerLocationRow.EmailAddress != "")
+                    {
+                        PartnerInfo += PartnerLocationRow.EmailAddress + Environment.NewLine;
+                    }
 
                     PartnerInfo += Environment.NewLine;
                 }
@@ -432,15 +447,30 @@ namespace Ict.Petra.Client.MPartner.Gui
             DisplayCurrentRecord();
         }
 
-        private void AddAddresses(ref PartnerEditTDS ANewPartnerDS)
+        private void ImportRecordsByPartnerKey(DataTable DestTable, DataTable SourceTable, String KeyDbName, Int64 PartnerKey)
         {
-            // TODO check duplicate addresses
+            SourceTable.DefaultView.RowFilter = String.Format("{0}={1}", KeyDbName, PartnerKey);
+            foreach (DataRowView rv in SourceTable.DefaultView)
+            {
+                DestTable.ImportRow(rv.Row);
+            }
+        }
+
+        private void AddAbility(Int64 PartnerKey, ref PartnerImportExportTDS NewPartnerDS)
+        {
+            ImportRecordsByPartnerKey(NewPartnerDS.PmPersonAbility, FMainDS.PmPersonAbility,
+                PmPersonAbilityTable.GetPartnerKeyDBName(), PartnerKey);
+        }
+
+        private void AddAddresses(ref PartnerImportExportTDS ANewPartnerDS)
+        {
+            FMainDS.PPartnerLocation.DefaultView.RowFilter = String.Format("{0}={1}",
+                PPartnerLocationTable.GetPartnerKeyDBName(),
+                ANewPartnerDS.PPartner[0].PartnerKey);
+
             foreach (DataRowView rv in FMainDS.PPartnerLocation.DefaultView)
             {
                 PPartnerLocationRow PartnerLocationRow = (PPartnerLocationRow)rv.Row;
-
-                PartnerLocationRow.PartnerKey = ANewPartnerDS.PPartner[0].PartnerKey;
-                ANewPartnerDS.PPartnerLocation.ImportRow(PartnerLocationRow);
 
                 if (PartnerLocationRow.LocationKey != 0)
                 {
@@ -449,10 +479,98 @@ namespace Ict.Petra.Client.MPartner.Gui
                         PartnerLocationRow.LocationKey,
                         PLocationTable.GetSiteKeyDBName(),
                         PartnerLocationRow.SiteKey);
+                    if (FMainDS.PLocation.DefaultView.Count > 0)
+                    {
+                        // Check duplicate address, comparing StreetName and PostalCode
+                        PLocationRow NewLocation = (PLocationRow)FMainDS.PLocation.DefaultView[0].Row;
+                        ANewPartnerDS.PLocation.DefaultView.RowFilter = String.Format("{0}='{1}' and {2}='{3}'",
+                            PLocationTable.GetStreetNameDBName(),
+                            NewLocation.StreetName,
+                            PLocationTable.GetPostalCodeDBName(),
+                            NewLocation.PostalCode);
 
-                    ANewPartnerDS.PLocation.ImportRow((PLocationRow)FMainDS.PLocation.DefaultView[0].Row);
+                        if (ANewPartnerDS.PLocation.DefaultView.Count == 0) // This row is not already present
+                        {
+                            ANewPartnerDS.PLocation.ImportRow(NewLocation);
+                            ANewPartnerDS.PPartnerLocation.ImportRow(PartnerLocationRow);
+                        }
+                    }
                 }
             }
+        }
+
+        private void AddCommentSeq(Int64 PartnerKey, ref PartnerImportExportTDS NewPartnerDS)
+        {
+            ImportRecordsByPartnerKey(NewPartnerDS.PPartnerComment, FMainDS.PPartnerComment,
+                PPartnerCommentTable.GetPartnerKeyDBName(), PartnerKey);
+        }
+
+        private void AddCommitment(Int64 PartnerKey, ref PartnerImportExportTDS NewPartnerDS)
+        {
+            ImportRecordsByPartnerKey(NewPartnerDS.PmStaffData, FMainDS.PmStaffData,
+                PmStaffDataTable.GetPartnerKeyDBName(), PartnerKey);
+        }
+
+        private void AddLanguage(Int64 PartnerKey, ref PartnerImportExportTDS NewPartnerDS)
+        {
+            ImportRecordsByPartnerKey(NewPartnerDS.PmPersonLanguage, FMainDS.PmPersonLanguage,
+                PmPersonLanguageTable.GetPartnerKeyDBName(), PartnerKey);
+        }
+
+        private void AddPreviousExperience(Int64 PartnerKey, ref PartnerImportExportTDS NewPartnerDS)
+        {
+            ImportRecordsByPartnerKey(NewPartnerDS.PmPastExperience, FMainDS.PmPastExperience,
+                PmPastExperienceTable.GetPartnerKeyDBName(), PartnerKey);
+        }
+
+        private void AddPassport(Int64 PartnerKey, ref PartnerImportExportTDS NewPartnerDS)
+        {
+            ImportRecordsByPartnerKey(NewPartnerDS.PmPassportDetails, FMainDS.PmPassportDetails,
+                PmPassportDetailsTable.GetPartnerKeyDBName(), PartnerKey);
+        }
+
+        private void AddPersonalData(Int64 PartnerKey, ref PartnerImportExportTDS NewPartnerDS)
+        {
+            ImportRecordsByPartnerKey(NewPartnerDS.PmPersonalData, FMainDS.PmPersonalData,
+                PmPersonalDataTable.GetPartnerKeyDBName(), PartnerKey);
+        }
+
+        private void AddPersonalDocument(Int64 PartnerKey, ref PartnerImportExportTDS NewPartnerDS)
+        {
+            ImportRecordsByPartnerKey(NewPartnerDS.PmDocument, FMainDS.PmDocument,
+                PmDocumentTable.GetPartnerKeyDBName(), PartnerKey);
+
+            // There may be a person Document Type too...
+        }
+
+        private void AddProfessionalData(Int64 PartnerKey, ref PartnerImportExportTDS NewPartnerDS)
+        {
+            ImportRecordsByPartnerKey(NewPartnerDS.PmPersonQualification, FMainDS.PmPersonQualification,
+                PmPersonQualificationTable.GetPartnerKeyDBName(), PartnerKey);
+        }
+
+        private void AddPersonalEvaluation(Int64 PartnerKey, ref PartnerImportExportTDS NewPartnerDS)
+        {
+            ImportRecordsByPartnerKey(NewPartnerDS.PmPersonEvaluation, FMainDS.PmPersonEvaluation,
+                PmPersonEvaluationTable.GetPartnerKeyDBName(), PartnerKey);
+        }
+
+        private void AddSpecialNeeds(Int64 PartnerKey, ref PartnerImportExportTDS NewPartnerDS)
+        {
+            ImportRecordsByPartnerKey(NewPartnerDS.PmSpecialNeed, FMainDS.PmSpecialNeed,
+                PmSpecialNeedTable.GetPartnerKeyDBName(), PartnerKey);
+        }
+
+        private void AddInterest(Int64 PartnerKey, ref PartnerImportExportTDS NewPartnerDS)
+        {
+            ImportRecordsByPartnerKey(NewPartnerDS.PPartnerInterest, FMainDS.PPartnerInterest,
+                PPartnerInterestTable.GetPartnerKeyDBName(), PartnerKey);
+        }
+
+        private void AddVision(Int64 PartnerKey, ref PartnerImportExportTDS NewPartnerDS)
+        {
+            ImportRecordsByPartnerKey(NewPartnerDS.PmPersonVision, FMainDS.PmPersonVision,
+                PmPersonVisionTable.GetPartnerKeyDBName(), PartnerKey);
         }
 
         private void CreateNewPartner(Object sender, EventArgs e)
@@ -462,14 +580,14 @@ namespace Ict.Petra.Client.MPartner.Gui
                 return;
             }
 
-            PartnerEditTDS NewPartnerDS = new PartnerEditTDS();
+            PartnerImportExportTDS NewPartnerDS = new PartnerImportExportTDS();
 
             NewPartnerDS.PPartner.ImportRow(FMainDS.PPartner[FCurrentNumberOfRecord - 1]);
 
             Int64 OrigPartnerKey = FMainDS.PPartner[FCurrentNumberOfRecord - 1].PartnerKey;
             Int64 NewPartnerKey = OrigPartnerKey;
 
-            // for UNITs we want to be able to specify the partner key in the import file
+            // For UNITs we want to be able to specify the partner key in the import file
             if (OrigPartnerKey < 0)
             {
                 NewPartnerKey = TRemote.MPartner.Partner.WebConnectors.NewPartnerKey(-1);
@@ -477,40 +595,42 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             NewPartnerDS.PPartner[0].PartnerKey = NewPartnerKey;
 
-            if (NewPartnerDS.PPartner[0].PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY)
+            if (NewPartnerDS.PPartner[0].PartnerClass == MPartnerConstants.PARTNERCLASS_CHURCH)
             {
-                NewPartnerDS.PFamily.ImportRow((PFamilyRow)FMainDS.PFamily.DefaultView[0].Row);
-                NewPartnerDS.PFamily[0].PartnerKey = NewPartnerKey;
+                ImportRecordsByPartnerKey(NewPartnerDS.PChurch, FMainDS.PChurch, PChurchTable.GetPartnerKeyDBName(), NewPartnerKey);
+            }
+            else if (NewPartnerDS.PPartner[0].PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY)
+            {
+                ImportRecordsByPartnerKey(NewPartnerDS.PFamily, FMainDS.PFamily, PFamilyTable.GetPartnerKeyDBName(), NewPartnerKey);
+            }
+            else if (NewPartnerDS.PPartner[0].PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
+            {
+                ImportRecordsByPartnerKey(NewPartnerDS.PPerson, FMainDS.PPerson, PPersonTable.GetPartnerKeyDBName(), NewPartnerKey);
             }
             else if (NewPartnerDS.PPartner[0].PartnerClass == MPartnerConstants.PARTNERCLASS_ORGANISATION)
             {
-                NewPartnerDS.POrganisation.ImportRow((POrganisationRow)FMainDS.POrganisation.DefaultView[0].Row);
-                NewPartnerDS.POrganisation[0].PartnerKey = NewPartnerKey;
+                ImportRecordsByPartnerKey(NewPartnerDS.POrganisation, FMainDS.POrganisation, POrganisationTable.GetPartnerKeyDBName(), NewPartnerKey);
             }
             else if (NewPartnerDS.PPartner[0].PartnerClass == MPartnerConstants.PARTNERCLASS_UNIT)
             {
-                NewPartnerDS.PUnit.ImportRow((PUnitRow)FMainDS.PUnit.DefaultView[0].Row);
-                NewPartnerDS.PUnit[0].PartnerKey = NewPartnerKey;
-
-                FMainDS.UmUnitStructure.DefaultView.RowFilter = String.Format("{0}={1}",
-                    UmUnitStructureTable.GetChildUnitKeyDBName(),
-                    OrigPartnerKey);
-
-                foreach (DataRowView rv in FMainDS.UmUnitStructure.DefaultView)
-                {
-                    NewPartnerDS.UmUnitStructure.ImportRow((UmUnitStructureRow)rv.Row);
-                }
-
+                ImportRecordsByPartnerKey(NewPartnerDS.PUnit, FMainDS.PUnit, PUnitTable.GetPartnerKeyDBName(), NewPartnerKey);
+                ImportRecordsByPartnerKey(NewPartnerDS.UmUnitStructure, FMainDS.UmUnitStructure, UmUnitStructureTable.GetChildUnitKeyDBName(), OrigPartnerKey);
                 foreach (UmUnitStructureRow UnitStructureRow in NewPartnerDS.UmUnitStructure.Rows)
                 {
                     UnitStructureRow.ChildUnitKey = NewPartnerKey;
                 }
             }
+            else if (NewPartnerDS.PPartner[0].PartnerClass == MPartnerConstants.PARTNERCLASS_VENUE)
+            {
+                ImportRecordsByPartnerKey(NewPartnerDS.PVenue, FMainDS.PVenue, PVenueTable.GetPartnerKeyDBName(), NewPartnerKey);
+            }
+            else if (NewPartnerDS.PPartner[0].PartnerClass == MPartnerConstants.PARTNERCLASS_BANK)
+            {
+                ImportRecordsByPartnerKey(NewPartnerDS.PBank, FMainDS.PBank, PBankTable.GetPartnerKeyDBName(), NewPartnerKey);
+            }
 
-            // TODO add special types etc
             FMainDS.PPartnerType.DefaultView.RowFilter = String.Format("{0}={1}",
-                PPartnerTypeTable.GetPartnerKeyDBName(),
-                OrigPartnerKey);
+                PPartnerTypeTable.GetPartnerKeyDBName(), OrigPartnerKey);
 
             foreach (DataRowView rv in FMainDS.PPartnerType.DefaultView)
             {
@@ -522,11 +642,25 @@ namespace Ict.Petra.Client.MPartner.Gui
                 PartnerTypeRow.PartnerKey = NewPartnerKey;
             }
 
+            // Add special types etc
+            AddAbility(NewPartnerKey, ref NewPartnerDS);
             AddAddresses(ref NewPartnerDS);
+            AddCommentSeq(NewPartnerKey, ref NewPartnerDS);
+            AddCommitment(NewPartnerKey, ref NewPartnerDS);
+            AddLanguage(NewPartnerKey, ref NewPartnerDS);
+            AddPreviousExperience(NewPartnerKey, ref NewPartnerDS);
+            AddPassport(NewPartnerKey, ref NewPartnerDS);
+            AddPersonalDocument(NewPartnerKey, ref NewPartnerDS);
+            AddPersonalData(NewPartnerKey, ref NewPartnerDS);
+            AddProfessionalData(NewPartnerKey, ref NewPartnerDS);
+            AddPersonalEvaluation(NewPartnerKey, ref NewPartnerDS);
+            AddSpecialNeeds(NewPartnerKey, ref NewPartnerDS);
+            AddInterest(NewPartnerKey, ref NewPartnerDS);
+            AddVision(NewPartnerKey, ref NewPartnerDS);
 
             TVerificationResultCollection VerificationResult;
 
-            if (!TRemote.MPartner.Partner.WebConnectors.SavePartner(NewPartnerDS, out VerificationResult))
+            if (!TRemote.MPartner.ImportExport.WebConnectors.CommitChanges(NewPartnerDS, out VerificationResult))
             {
                 MessageBox.Show(VerificationResult.BuildVerificationResultString(), Catalog.GetString("Error"),
                     MessageBoxButtons.OK,

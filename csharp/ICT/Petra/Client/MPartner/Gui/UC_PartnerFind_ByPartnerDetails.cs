@@ -1132,7 +1132,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // If ALT held down, show the conventional screen, otherwise the new, generated one.
                 if (System.Windows.Forms.Form.ModifierKeys != Keys.Alt)
                 {
-                    TFrmPartnerEdit frm = new TFrmPartnerEdit(this.Handle);
+                    TFrmPartnerEdit frm = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
 
                     frm.SetParameters(TScreenMode.smEdit, FLogic.PartnerKey,
                         FLogic.DetermineCurrentLocationPK().SiteKey, FLogic.DetermineCurrentLocationPK().LocationKey, AShowTabPage);
@@ -1140,7 +1140,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
                 else
                 {
-                    TFrmPartnerEdit frm = new TFrmPartnerEdit(this.Handle);
+                    TFrmPartnerEdit frm = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
 
                     frm.SetParameters(TScreenMode.smEdit, FLogic.PartnerKey,
                         FLogic.DetermineCurrentLocationPK().SiteKey, FLogic.DetermineCurrentLocationPK().LocationKey, AShowTabPage);
@@ -1197,7 +1197,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     PartnerClass = PartnerClass.Replace("OM-FAM", "FAMILY");
                 }
 
-                frm = new Ict.Petra.Client.MPartner.Gui.TFrmPartnerEdit(this.Handle);
+                frm = new Ict.Petra.Client.MPartner.Gui.TFrmPartnerEdit(FPetraUtilsObject.GetForm());
 
                 frm.SetParameters(TScreenMode.smNew,
                     PartnerClass, -1, -1, CountryCode);
@@ -1305,7 +1305,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             this.Cursor = Cursors.WaitCursor;
             LocationPK = FLogic.DetermineCurrentLocationPK();
-            frmPF = new TPartnerFindScreen(this.Handle);
+            frmPF = new TPartnerFindScreen(FPetraUtilsObject.GetForm());
             frmPF.SetParameters(true, LocationPK.LocationKey);
             frmPF.Show();
             this.Cursor = Cursors.Default;
@@ -1740,7 +1740,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             this.Cursor = Cursors.WaitCursor;
 
-            frmPEDS = new TFrmPartnerEdit(this.Handle);
+            frmPEDS = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
             frmPEDS.SetParameters(TScreenMode.smEdit, LastPartnerKey);
             frmPEDS.Show();
 

@@ -154,14 +154,11 @@ OpenPetra:
                 #ICH:
                 #Reports:
                 Setup:  {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
-                    GLSetup:
-                        CreateLedger: {ActionOpenScreen=TFrmGLCreateLedger}
-                        SetupCurrencies: {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmSetupCurrency}
-                        SetupDailyExchangeRate: {ActionOpenScreen=TFrmSetupDailyExchangeRate}
-                        SetupAnalysisTypes: {ActionOpenScreen=TFrmSetupAnalysisTypes}
-                        ManageAccounts: {Description:Add accounts and modify the hierarchy, ActionOpenScreen=TFrmGLAccountHierarchy}
-                        ManageCostCentres: {Description:Add and maintain cost centres, ActionOpenScreen=TFrmGLCostCentreHierarchy}
-                    #Accounts:
+                    GeneralLedgerSetup:
+                        ManageAccounts: {Description:Maintain Accounts and modify their hierarchy, ActionOpenScreen=TFrmGLAccountHierarchy}
+                        ManageCostCentres: {Description:Maintain Cost Centres and modify their hierarchy, ActionOpenScreen=TFrmGLCostCentreHierarchy}
+                        SetupCostCentreTypes: {Description=Maintain types of Cost Centres, ActionOpenScreen=TFrmSetupCostCentreTypes}
+                        #Accounts:
                         #AddPostingAccount:
                         #AddForeignCurrencyAccount:
                         #AddSummarisationAccount:
@@ -181,6 +178,21 @@ OpenPetra:
                         #ChangeNumberOfForwardingPeriods:
                     GiftSetup: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
                         SetupMotivationDetails: {Description: "Maintain motivation details towards which donations can be assigned", ActionOpenScreen=Gift.TFrmGiftMotivationSetup}
+                        SetupAdminGrantsPayable: {Description=Maintain payable Administration Grants, ActionOpenScreen=TFrmSetupAdminGrantsPayable}
+                        SetupAdminGrantsReceivable: {Description=Maintain receivable Administration Grants, ActionOpenScreen=TFrmSetupAdminGrantsReceivable}
+        CrossLedgerSetup: {Icon=sysman_small.ico, Namespace=Ict.Petra.Client.MFinance.Gui.Setup, Label="Finance Setup", PermissionsRequired="FINANCE-1"}
+            CrossLedgerSetup: {Label="Finance Setup"}
+                General:
+                    Ledger:
+                        CreateLedger: {Description=Create a new Ledger, ActionOpenScreen=TFrmGLCreateLedger, PermissionsRequired="FINANCE-3"}
+                    Setup: {Label="Finance Setup (Cross-Ledger)"}
+                        SetupCurrencies: {Description=Maintain Currencies, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmSetupCurrency, PermissionsRequired=FINANCE-3}
+                        SetupMethodsOfGiving: {Description=Maintain Methods of Giving,ActionOpenScreen=TFrmSetupMethodOfGiving, PermissionsRequired=FINANCE-3}
+                        SetupMethodsOfPayment: {Description=Maintain Methods of Payment, ActionOpenScreen=TFrmSetupMethodOfPayment, PermissionsRequired=FINANCE-3}
+                        SetupAnalysisTypes: {Description=Maintain Analysis Types, ActionOpenScreen=TFrmSetupAnalysisTypes, PermissionsRequired=FINANCE-3}
+                    ExchangeRates: {Label="Exchange Rates (Cross-Ledger)"}
+                        SetupCorporateExchangeRates: {Description=Maintain Corporate Exchange Rates, ActionOpenScreen=TFrmSetupCorporateExchangeRate}
+                        SetupDailyExchangeRates: {Description=Maintain Daily Exchange Rates, ActionOpenScreen=TFrmSetupDailyExchangeRate}
         Personnel: {Icon=personel_small.ico, PermissionsRequired=PERSONNEL}
             # Module
             Main:
@@ -294,15 +306,6 @@ OpenPetra:
                         #ViewCurrentUsers:
                         #ViewLoginLog:
                 Setup:
-            Finance:
-                #LedgerOperations: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
-                    #CreateLedger: {ActionOpenScreen=TFrmGLCreateLedger}
-                    #DeleteLedger:
-                ExchangeRates: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
-                    SetupCurrencies: {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmSetupCurrency}
-                    SetupDailyExchangeRate: {ActionOpenScreen=TFrmSetupDailyExchangeRate}
-                AnalysisTypes: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
-                    SetupAnalysisTypes: {ActionOpenScreen=TFrmSetupAnalysisTypes}
             Database:
                 ImportExport:
                     ExportAllData: {ActionClick=TSysManMain.ExportAllData}

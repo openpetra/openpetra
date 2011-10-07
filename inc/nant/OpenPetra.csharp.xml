@@ -94,7 +94,7 @@
       basedir="${project::get-base-directory()}" uuidfile="${uuidFile}"
       referencesfile="${referencesFile}" buildincfile="${path::combine(dir.buildfiles, 'OpenPetra.csharp.xml')}"
       templatefile="${path::combine(dir.root,'inc/nanttasks/CsDependTemplates.txt')}" 
-      additionalRefs="${CsDependAdditionalLibReferences}" outputtpye="${OutputType}" >
+      additionalRefs="${CsDependAdditionalLibReferences}" outputtype="${OutputType}" >
       <sources>
         <include name="${csdependfiles}" />
         <exclude name="${excludecsfiles}" />
@@ -260,6 +260,7 @@
     </in>
     <do>
     <property name="relative-filename" value="${OP::GetRelativePath(filename, dir.projectfiles + '/' + devenv-name + '/')}"/>
+    <property name="relative-filename-backslash" value="${string::replace(relative-filename, '/', '\\')}"/>
     <property name="DependentUpon" value="${path::change-extension(filename,'.cs')}" />
     <property name="relative-DependentUpon" value="${path::get-file-name(DependentUpon)}" />
     <property name="template" value="template.csproj.resource" />
@@ -287,6 +288,7 @@
     <do>
       <property name="justfilename" value="${path::get-file-name(filename)}" />
       <property name="relative-filename" value="${OP::GetRelativePath(filename, dir.projectfiles + '/' + devenv-name + '/')}"/>
+      <property name="relative-filename-backslash" value="${string::replace(relative-filename, '/', '\\')}"/>
       <property name="template" value="template.csproj.compile" />
       <property name="DependentUpon" value=""/>
       <if test="${string::contains(filename,'.Designer.cs')}">
@@ -321,7 +323,7 @@
     </filterchain>
   </copy>
   <!-- need to touch the dll file, so that later the fileset will pick this file up when calculating the references for other projects -->
-  <if test="${not file::exists(path::combine(dir.bin, Namespace + '.dll'))}">
+  <if test="${not file::exists(path::combine(dir.bin, Namespace + '.dll')) and OutputType=='library'}">
     <touch file="${dir.bin}/${Namespace}.dll"/>
   </if>
 </target>

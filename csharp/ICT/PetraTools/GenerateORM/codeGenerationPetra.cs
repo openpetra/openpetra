@@ -27,7 +27,7 @@ using System.Collections.Specialized;
 using Ict.Tools.CodeGeneration;
 using Ict.Tools.DBXML;
 
-namespace Ict.Tools.CodeGeneration
+namespace Ict.Tools.CodeGeneration.DataStore
 {
     /// <summary>
     /// tools for the code generation

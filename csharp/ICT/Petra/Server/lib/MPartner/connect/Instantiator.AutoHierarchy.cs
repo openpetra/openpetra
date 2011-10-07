@@ -1085,8 +1085,15 @@ namespace Ict.Petra.Server.MPartner.Instantiator.ImportExport.WebConnectors
         public PartnerImportExportTDS ImportFromPartnerExtract(System.String[] ATextFileLines,
                                                                out TVerificationResultCollection AVerificationResult)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector), "ImportFromPartnerExtract", ";STRING;TVERIFICATIONRESULTCOLLECTION;");
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector), "ImportFromPartnerExtract", ";STRING.ARRAY;TVERIFICATIONRESULTCOLLECTION;");
             return Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector.ImportFromPartnerExtract(ATextFileLines, out AVerificationResult);
+        }
+
+        /// generated method from connector
+        public Boolean CommitChanges(PartnerImportExportTDS MainDS,
+                                     out TVerificationResultCollection AVerificationResult)
+        {
+            return Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector.CommitChanges(MainDS, out AVerificationResult);
         }
 
         /// generated method from connector
@@ -1114,10 +1121,11 @@ namespace Ict.Petra.Server.MPartner.Instantiator.ImportExport.WebConnectors
         public System.String ExportPartnerExt(Int64 APartnerKey,
                                               Int32 ASiteKey,
                                               Int32 ALocationKey,
+                                              Boolean ANoFamily,
                                               StringCollection ASpecificBuildingInfo)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector), "ExportPartnerExt", ";LONG;INT;INT;STRINGCOLLECTION;");
-            return Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector.ExportPartnerExt(APartnerKey, ASiteKey, ALocationKey, ASpecificBuildingInfo);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector), "ExportPartnerExt", ";LONG;INT;INT;BOOL;STRINGCOLLECTION;");
+            return Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector.ExportPartnerExt(APartnerKey, ASiteKey, ALocationKey, ANoFamily, ASpecificBuildingInfo);
         }
 
         /// generated method from connector
