@@ -82,7 +82,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 #if DEBUGMODE
                 if (TLogging.DL >= 7)
                 {
-                    Console.WriteLine("TPartnerFindUIConnector: AsyncExecProgress reqeusted.");
+                    Console.WriteLine("TPartnerFindUIConnector: AsyncExecProgress requested.");
                 }
 #endif
                 return FAsyncExecProgress;
