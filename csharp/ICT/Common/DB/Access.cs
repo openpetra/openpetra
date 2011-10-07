@@ -508,6 +508,12 @@ namespace Ict.Common.DB
         /// </summary>
         private void CheckDatabaseVersion()
         {
+            if (TAppSettingsManager.GetValue("action", string.Empty, false) == "patchDatabase")
+            {
+                // we want to upgrade the database, so don't check for the database version
+                return;
+            }
+
             string DBPatchVersion;
             TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
 
