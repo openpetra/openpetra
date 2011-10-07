@@ -109,11 +109,11 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <summary>
         /// constructor
         /// </summary>
-        /// <param name="ACallerWindowHandle">the int handle of the form that has opened this window; needed for focusing when this window is closed later</param>
+        /// <param name="AParentForm">the form that has opened this window; needed for focusing when this window is closed later</param>
         /// <param name="ATheForm"></param>
         /// <param name="AStatusBar"></param>
-        public TFrmPetraReportingUtils(IntPtr ACallerWindowHandle, IFrmPetra ATheForm,
-            TExtStatusBarHelp AStatusBar) : base(ACallerWindowHandle,
+        public TFrmPetraReportingUtils(Form AParentForm, IFrmPetra ATheForm,
+            TExtStatusBarHelp AStatusBar) : base(AParentForm,
                                                 (IFrmPetra)ATheForm,
                                                 AStatusBar)
         {
@@ -301,14 +301,14 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <param name="e"></param>
         public void MI_GenerateReport_Click(System.Object sender, System.EventArgs e)
         {
-#if TODO
-            if (!mniFileClose.Enabled)
+            if ((FGenerateReportThread != null) && FGenerateReportThread.IsAlive)
             {
                 // cancel the report
                 FCalculator.CancelReportCalculation();
                 return;
             }
 
+#if TODO
             // has anything changed in the currently selected column?
             if (ColumnChanged(FSelectedColumn))
             {
@@ -324,6 +324,20 @@ namespace Ict.Petra.Client.MReporting.Gui
                 SelectColumn(-1);
             }
 #endif
+
+            // read the settings and parameters from the controls
+            if (!ReadControlsWithErrorHandling(TReportActionEnum.raGenerate))
+            {
+                return;
+            }
+
+            if (TClientSettings.DebugLevel >= TClientSettings.DEBUGLEVEL_REPORTINGDATA)
+            {
+                FCalculator.GetParameters().Save(TClientSettings.PathLog + Path.DirectorySeparatorChar + "debugParameter.xml", true);
+            }
+
+            this.FWinForm.Cursor = Cursors.WaitCursor;
+            TLogging.SetStatusBarProcedure(this.WriteToStatusBar);
 
             if ((FGenerateReportThread == null) || (!FGenerateReportThread.IsAlive))
             {
@@ -374,81 +388,67 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <returns>void</returns>
         private void GenerateReport()
         {
-            TMyUpdateDelegate myDelegate;
-
             try
             {
-                // read the settings and parameters from the controls
-                if (!ReadControlsWithErrorHandling(TReportActionEnum.raGenerate))
-                {
-                    ((IFrmReporting) this.FTheForm).EnableBusy(false);
-                    return;
-                }
-
-                if (TClientSettings.DebugLevel >= TClientSettings.DEBUGLEVEL_REPORTINGDATA)
-                {
-                    FCalculator.GetParameters().Save(TClientSettings.PathLog + Path.DirectorySeparatorChar + "debugParameter.xml", true);
-                }
-
-                this.FWinForm.Cursor = Cursors.WaitCursor;
-                TLogging.SetStatusBarProcedure(this.WriteToStatusBar);
-
                 // calculate the report
                 // TODO : should the server know the user name and password? what about user permissions? does not know about the database
                 if (FCalculator.GenerateResultRemoteClient())
                 {
-                    if (TClientSettings.DebugLevel >= TClientSettings.DEBUGLEVEL_REPORTINGDATA)
-                    {
-                        FCalculator.GetParameters().Save(TClientSettings.PathLog + Path.DirectorySeparatorChar + "debugParameterReturn.xml", true);
-                        FCalculator.GetResults().WriteCSV(
-                            FCalculator.GetParameters(), TClientSettings.PathLog + Path.DirectorySeparatorChar + "debugResultReturn.csv");
-                    }
-
-                    this.FWinForm.Cursor = Cursors.Default;
-
-                    if (FCalculator.GetParameters().Exists("SaveCSVFilename")
-                        && (FCalculator.GetParameters().Get("SaveCSVFilename").ToString().Length > 0))
-                    {
-                        FCalculator.GetResults().WriteCSV(FCalculator.GetParameters(), FCalculator.GetParameters().Get("SaveCSVFilename").ToString());
-                    }
-
-                    if (FCalculator.GetParameters().GetOrDefault("OnlySaveCSV", -1, new TVariant(false)).ToBool() == true)
-                    {
-                        ((IFrmReporting) this.FTheForm).EnableBusy(false);
-                    }
-                    else
-                    {
-                        if ((this.FWinForm.Owner != null) && (this.FWinForm.Owner.GetType().ToString() == "TMainWinForm"))
-                        {
-                            // this is PetraClient_Experimenting
-                            // using Delegate causes SEHException in PetraClient_Experimenting
-                            PreviewReport();
-                        }
-                        else
-                        {
-                            myDelegate = @PreviewReport;
-                            object[] Args = new Object[0];
-                            FWinForm.Invoke((System.Delegate) new TMyUpdateDelegate(myDelegate));
-                        }
-                    }
+                    TMyUpdateDelegate myDelegate = @ReportCalculationSuccess;
+                    FWinForm.Invoke((System.Delegate) new TMyUpdateDelegate(myDelegate));
                 }
                 else
                 {
-                    // if generateResult failed or was cancelled
-                    this.FWinForm.Cursor = Cursors.Default;
-
-                    ((IFrmReporting) this.FTheForm).EnableBusy(false);
+                    TMyUpdateDelegate myDelegate = @ReportCalculationFailure;
+                    FWinForm.Invoke((System.Delegate) new TMyUpdateDelegate(myDelegate));
                 }
             }
             catch (Exception e)
             {
-#if DEBUGMODE
-                MessageBox.Show(e.ToString());
-                MessageBox.Show(e.Message);
-#endif
+                if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_REPORTING)
+                {
+                    MessageBox.Show(e.ToString());
+                    MessageBox.Show(e.Message);
+                }
 
+                TMyUpdateDelegate myDelegate = @ReportCalculationFailure;
+                FWinForm.Invoke((System.Delegate) new TMyUpdateDelegate(myDelegate));
+            }
+        }
+
+        private void ReportCalculationSuccess()
+        {
+            if (TClientSettings.DebugLevel >= TClientSettings.DEBUGLEVEL_REPORTINGDATA)
+            {
+                FCalculator.GetParameters().Save(TClientSettings.PathLog + Path.DirectorySeparatorChar + "debugParameterReturn.xml", true);
+                FCalculator.GetResults().WriteCSV(
+                    FCalculator.GetParameters(), TClientSettings.PathLog + Path.DirectorySeparatorChar + "debugResultReturn.csv");
+            }
+
+            this.FWinForm.Cursor = Cursors.Default;
+
+            if (FCalculator.GetParameters().Exists("SaveCSVFilename")
+                && (FCalculator.GetParameters().Get("SaveCSVFilename").ToString().Length > 0))
+            {
+                FCalculator.GetResults().WriteCSV(FCalculator.GetParameters(), FCalculator.GetParameters().Get("SaveCSVFilename").ToString());
+            }
+
+            if (FCalculator.GetParameters().GetOrDefault("OnlySaveCSV", -1, new TVariant(false)).ToBool() == true)
+            {
                 ((IFrmReporting) this.FTheForm).EnableBusy(false);
             }
+            else
+            {
+                PreviewReport();
+            }
+        }
+
+        private void ReportCalculationFailure()
+        {
+            // if generateResult failed or was cancelled
+            this.FWinForm.Cursor = Cursors.Default;
+
+            ((IFrmReporting) this.FTheForm).EnableBusy(false);
         }
 
         /// <summary>
@@ -458,7 +458,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         protected void PreviewReport()
         {
             // show a print window with all kinds of output options
-            TFrmPrintPreview printWindow = new TFrmPrintPreview(FWinForm.Handle, FReportName, FCalculator.GetDuration(),
+            TFrmPrintPreview printWindow = new TFrmPrintPreview(FWinForm, FReportName, FCalculator.GetDuration(),
                 FCalculator.GetResults(), FCalculator.GetParameters(), FWrapColumn);
 
             this.FWinForm.AddOwnedForm(printWindow);
@@ -770,13 +770,15 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
             catch (Exception e)
             {
-                System.Diagnostics.Debug.WriteLine(e.ToString());
-#if DEBUGMODE
-                MessageBox.Show(e.ToString(), "DEBUGMODE: Invalid Selection");
+                TLogging.Log(e.ToString());
 
-                // todo: use the verification tools from Christian
-                MessageBox.Show(e.Message, "Invalid Selection");
-#endif
+                if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_REPORTING)
+                {
+                    MessageBox.Show(e.ToString(), "DEBUGMODE: Invalid Selection");
+
+                    // todo: use the verification tools from Christian
+                    MessageBox.Show(e.Message, "Invalid Selection");
+                }
             }
             return ReturnValue;
         }

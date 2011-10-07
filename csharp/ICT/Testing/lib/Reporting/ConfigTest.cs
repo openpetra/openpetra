@@ -41,7 +41,7 @@ namespace Tests.Reporting
         [SetUp]
         public void Init()
         {
-            TAppSettingsManager Config = new TAppSettingsManager("../../etc/TestClient.config");
+            new TAppSettingsManager("../../etc/TestClient.config");
 
             new TLogging("test.log");
         }

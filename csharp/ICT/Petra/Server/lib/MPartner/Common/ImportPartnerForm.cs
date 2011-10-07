@@ -129,6 +129,10 @@ namespace Ict.Petra.Server.MPartner.Import
         /// </summary>
         public string eventidentifier;
         /// <summary>
+        /// identifies the event with the partner key
+        /// </summary>
+        public string eventpartnerkey;
+        /// <summary>
         /// each applicant is given a role at the event (participant, volunteer, etc)
         /// </summary>
         public string role;
@@ -144,14 +148,16 @@ namespace Ict.Petra.Server.MPartner.Import
         public string travel;
         /// avoid default string when nothing gets entered
         public string groupwish;
-        /// avoid default string when nothing gets entered
+        /// first job wish
         public string jobwish1;
-        /// avoid default string when nothing gets entered
+        /// second job wish
         public string jobwish2;
-        /// avoid default string when nothing gets entered
+        /// job wish for prayer or counselling team
         public string jobwishpray;
-        /// avoid default string when nothing gets entered
-        public string dateofarrival;
+        /// parse date of arrival
+        public DateTime? dateofarrival;
+        /// parse date of departure
+        public DateTime? dateofdeparture;
         /// has the applicant been here before?
         public string numberprevconfparticipant;
         /// has the applicant been here before?
@@ -325,7 +331,7 @@ namespace Ict.Petra.Server.MPartner.Import
                 r.Close();
             }
 
-            if (AData.existingpartnerkey.StartsWith("If you cannot find it"))
+            if ((AData.existingpartnerkey != null) && AData.existingpartnerkey.StartsWith("If you cannot find it"))
             {
                 AData.RawData = AData.RawData.Replace(AData.existingpartnerkey, "N/A");
                 AData.existingpartnerkey = "";
@@ -556,7 +562,11 @@ namespace Ict.Petra.Server.MPartner.Import
                     ShortTermApplicationRow.StBasicOutreachId = GeneralApplicationRow.OldLink;
                     ShortTermApplicationRow.StCongressCode = data.role;
                     ShortTermApplicationRow.ConfirmedOptionCode = data.eventidentifier;
+                    ShortTermApplicationRow.StConfirmedOption = Convert.ToInt64(data.eventpartnerkey);
                     ShortTermApplicationRow.StFieldCharged = data.registrationoffice;
+                    ShortTermApplicationRow.Arrival = data.dateofarrival;
+                    ShortTermApplicationRow.Departure = data.dateofdeparture;
+
                     ConfDS.PmShortTermApplication.Rows.Add(ShortTermApplicationRow);
 
                     // TODO ApplicationForms

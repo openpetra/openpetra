@@ -5,7 +5,7 @@
                 6000S:{shortdesc=Petty Cash Accounts (Total)}
                     6000:{validcc=Local, shortdesc=Petty Cash}
                 6200S:{shortdesc=Bank Accounts(Total Operational)}
-                    6200:{validcc=Local, shortdesc=Bank Accounts Operational}
+                    6200:{validcc=Local, shortdesc=Bank Accounts Operational, bankaccount=true}
                 6400S:{shortdesc=Bank Accounts (Total Deposit)}
                     6400:{validcc=Local, shortdesc=Bank Accounts Deposit}
             6500S:{shortdesc=Investments, longdesc=INVESTMENTS}

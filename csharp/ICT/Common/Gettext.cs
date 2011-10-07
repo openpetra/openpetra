@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -66,6 +66,41 @@ namespace Ict.Common
             catalog = new GettextResourceManager("OpenPetra");
 
             Thread.CurrentThread.CurrentCulture = new CultureInfo(ACultureCode);
+        }
+
+        /// <summary>
+        /// set the given culture
+        /// </summary>
+        /// <param name="ACulture"></param>
+        /// <returns>the previously set culture</returns>
+        public static CultureInfo SetCulture(CultureInfo ACulture)
+        {
+            CultureInfo OrigCulture = Thread.CurrentThread.CurrentCulture;
+
+            Thread.CurrentThread.CurrentCulture = ACulture;
+
+            return OrigCulture;
+        }
+
+        /// <summary>
+        /// set the given culture
+        /// </summary>
+        /// <param name="ACulture"></param>
+        /// <returns>the previously set culture</returns>
+        public static CultureInfo SetCulture(string ACulture)
+        {
+            CultureInfo OrigCulture = Thread.CurrentThread.CurrentCulture;
+
+            try
+            {
+                Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo(ACulture);
+            }
+            catch (Exception)
+            {
+                TLogging.Log("Ict.Common Catalog.SetCulture: invalid culture name: " + ACulture);
+            }
+
+            return OrigCulture;
         }
 
         /// <summary>

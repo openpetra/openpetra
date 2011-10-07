@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -137,8 +137,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (FFormSetupFinished)
             {
-                APartnerClass = cmbPartnerClass.SelectedItem.ToString();
-                AAcquisitionCode = cmbAcquisitionCode.SelectedItem.ToString();
+                APartnerClass = cmbPartnerClass.GetSelectedString();
+                AAcquisitionCode = cmbAcquisitionCode.GetSelectedString();
                 ASiteKey = FSiteKey;
                 APartnerKey = FPartnerKey;
                 APrivatePartner = chkPrivatePartner.Checked;
@@ -158,7 +158,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// constructor
         /// </summary>
-        public TPartnerNewDialogWinForm(IntPtr AParentFormHandle) : base()
+        public TPartnerNewDialogWinForm(Form AParentForm) : base()
         {
             //
             // Required for Windows Form Designer support
@@ -180,7 +180,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.Text = Catalog.GetString("New Partner");
             #endregion
 
-            FPetraUtilsObject = new TFrmPetraUtils(AParentFormHandle, this, stbMain);
+            FPetraUtilsObject = new TFrmPetraUtils(AParentForm, this, stbMain);
             this.FPetraUtilsObject.SetStatusBarText(this.btnOK, Catalog.GetString("Accept data and continue"));
             this.FPetraUtilsObject.SetStatusBarText(this.btnCancel, Catalog.GetString("Cancel data entry and close"));
             this.FPetraUtilsObject.SetStatusBarText(this.btnHelp, Catalog.GetString("Help"));
@@ -210,7 +210,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (FFormSetupFinished)
             {
-                if (cmbPartnerClass.SelectedValue.ToString() == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
+                if (cmbPartnerClass.GetSelectedString() == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
                 {
                     ShowFamilyPartnerSelection(true);
                 }
@@ -249,7 +249,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             Int64 NewPartnerKey;
             String NewPartnerClass;
 
-            NewPartnerClass = cmbPartnerClass.SelectedItem.ToString();
+            NewPartnerClass = cmbPartnerClass.GetSelectedString();
 
             if (NewPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
             {
@@ -294,22 +294,22 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (FPartnerClass != "")
             {
-                cmbPartnerClass.SelectedItem = FPartnerClass;
+                cmbPartnerClass.SetSelectedString(FPartnerClass);
             }
             else
             {
                 // Default value: FAMILY
-                cmbPartnerClass.SelectedItem = "FAMILY";
+                cmbPartnerClass.SetSelectedString("FAMILY");
             }
 
             if (FAcquisitionCode != "")
             {
-                cmbAcquisitionCode.SelectedItem = FAcquisitionCode;
+                cmbAcquisitionCode.SetSelectedString(FAcquisitionCode);
             }
             else
             {
                 // Default value: UserDefault PARTNER_ACQUISITIONCODE
-                cmbAcquisitionCode.SelectedItem = TUserDefaults.GetStringDefault(TUserDefaults.PARTNER_ACQUISITIONCODE, "MAILROOM");
+                cmbAcquisitionCode.SetSelectedString(TUserDefaults.GetStringDefault(TUserDefaults.PARTNER_ACQUISITIONCODE, "MAILROOM"));
             }
 
             // Default value: false (from SetParameters default)

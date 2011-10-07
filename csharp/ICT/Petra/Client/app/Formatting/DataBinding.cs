@@ -1,10 +1,10 @@
-//
+﻿//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -73,7 +73,6 @@ namespace Ict.Petra.Client.App.Formatting
             String TmpDay;
             String TmpMonthDayExchange = "";
             String TmpShortDatePattern;
-            String TmpDateSeparator;
             Int16 YearStart = 0;
             Int16 RestStart = 0;
 
@@ -133,7 +132,7 @@ namespace Ict.Petra.Client.App.Formatting
                         TmpShortDatePattern = CurrentDateTimeFormatInfo.ShortDatePattern.ToUpper();
 
                         // TmpShortDatePattern := "MM DD";      // For testing purposes only
-                        TmpDateSeparator = CurrentDateTimeFormatInfo.DateSeparator;
+                        // string TmpDateSeparator = CurrentDateTimeFormatInfo.DateSeparator;
 
                         if (TmpShortDatePattern.StartsWith("Y"))
                         {

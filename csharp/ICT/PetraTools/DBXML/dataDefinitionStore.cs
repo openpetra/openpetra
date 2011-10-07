@@ -148,7 +148,7 @@ namespace Ict.Tools.DBXML
         public string strArea;
 
         /// <summary>
-        /// even shorter description than strDescription; not used at the moment
+        /// even shorter description than strDescription
         /// </summary>
         public string strLabel;
 
@@ -940,7 +940,27 @@ namespace Ict.Tools.DBXML
         /// <summary>
         /// name that should be used in generated code for this column
         /// </summary>
-        public string strNameDotNet;
+        private string FNameDotNet;
+
+        /// <summary>
+        /// property for dynamically calculating the .net name for the column
+        /// </summary>
+        public string strNameDotNet
+        {
+            set
+            {
+                FNameDotNet = value;
+            }
+            get
+            {
+                if ((FNameDotNet == null) || (FNameDotNet.Length == 0))
+                {
+                    return TTable.NiceFieldName(strName);
+                }
+
+                return FNameDotNet;
+            }
+        }
 
         /// <summary>
         /// help for this column for the user

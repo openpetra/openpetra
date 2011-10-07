@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -52,7 +52,6 @@ namespace Ict.Tools.DBXML
         {
         }
 
-        private TDataDefinitionStore myStore;
         private bool FDoValidation;
 
         /// <summary>
@@ -147,7 +146,6 @@ namespace Ict.Tools.DBXML
             XmlNode cur;
             TTable table;
 
-            this.myStore = myStore;
             ReturnValue = false;
             FDoValidation = ADoValidation;
             startNode = myDoc.DocumentElement;

@@ -74,16 +74,16 @@ namespace Ict.Petra.Shared.Interfaces.MCommon.Cacheable
     /// <summary>auto generated</summary>
     public interface ICacheableNamespace : IInterface
     {
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MCommon.Instantiator.Cacheable.TCacheableNamespace)</summary>
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MCommon.Instantiator.Cacheable.Class)</summary>
         System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MCommon.TCacheableCommonTablesEnum ACacheableTable,
                                                 System.String AHashCode,
                                                 out System.Type AType);
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MCommon.Instantiator.Cacheable.TCacheableNamespace)</summary>
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MCommon.Instantiator.Cacheable.Class)</summary>
         void RefreshCacheableTable(Ict.Petra.Shared.MCommon.TCacheableCommonTablesEnum ACacheableTable);
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MCommon.Instantiator.Cacheable.TCacheableNamespace)</summary>
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MCommon.Instantiator.Cacheable.Class)</summary>
         void RefreshCacheableTable(Ict.Petra.Shared.MCommon.TCacheableCommonTablesEnum ACacheableTable,
                                    out System.Data.DataTable ADataTable);
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MCommon.Instantiator.Cacheable.TCacheableNamespace)</summary>
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MCommon.Instantiator.Cacheable.Class)</summary>
         TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableCommonTablesEnum ACacheableTable,
                                                                ref TTypedDataTable ASubmitTable,
                                                                out TVerificationResultCollection AVerificationResult);
@@ -156,12 +156,12 @@ namespace Ict.Petra.Shared.Interfaces.MCommon.DataReader
     /// <summary>auto generated</summary>
     public interface IDataReaderNamespace : IInterface
     {
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MCommon.Instantiator.DataReader.TDataReaderNamespace)</summary>
-        bool GetData(string ATablename,
-                     TSearchCriteria[] ASearchCriteria,
-                     out Ict.Common.Data.TTypedDataTable AResultTable);
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MCommon.Instantiator.DataReader.TDataReaderNamespace)</summary>
-        TSubmitChangesResult SaveData(string ATablename,
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MCommon.Instantiator.DataReader.Class)</summary>
+        System.Boolean GetData(System.String ATablename,
+                               TSearchCriteria[] ASearchCriteria,
+                               out Ict.Common.Data.TTypedDataTable AResultTable);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MCommon.Instantiator.DataReader.Class)</summary>
+        TSubmitChangesResult SaveData(System.String ATablename,
                                       ref TTypedDataTable ASubmitTable,
                                       out TVerificationResultCollection AVerificationResult);
     }

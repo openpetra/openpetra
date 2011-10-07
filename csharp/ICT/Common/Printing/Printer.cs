@@ -45,7 +45,10 @@ namespace Ict.Common.Printing
         eDefaultMargins,
 
         /// <summary>use the full printable area. the margins are managed by the rendering method, eg HTML renderer</summary>
-        ePrintableArea
+        ePrintableArea,
+
+        /// <summary>the margins have been set in SetPageSize</summary>
+        eCalculatedMargins
     };
 
     /// <summary>todoComment</summary>
@@ -97,7 +100,10 @@ namespace Ict.Common.Printing
         eHeadingFont,
 
         /// <summary>todoComment</summary>
-        eSmallPrintFont
+        eSmallPrintFont,
+
+        /// <summary>useful for printing bar codes. usually code128.ttf</summary>
+        eBarCodeFont
     };
 
     /// <summary>todoComment</summary>
@@ -119,6 +125,22 @@ namespace Ict.Common.Printing
         eFinished
     };
 
+    /// <summary>
+    /// specify for which axis the value is intended. needed for taking resolution in account
+    /// </summary>
+    public enum eResolution
+    {
+        /// <summary>
+        /// vertical
+        /// </summary>
+        eVertical,
+
+        /// <summary>
+        /// horizontal
+        /// </summary>
+        eHorizontal
+    }
+
     /// definition for current state of printer; useful with the stack
     public class TPrinterState
     {
@@ -136,6 +158,12 @@ namespace Ict.Common.Printing
 
         /// <summary>current y Position on page, in current display unit</summary>
         public float FCurrentYPos;
+
+        /// <summary>other elements can be printed relative to this position</summary>
+        public float FAnchorXPos;
+
+        /// <summary>other elements can be printed relative to this position</summary>
+        public float FAnchorYPos;
 
         /// <summary>todoComment</summary>
         public eFont FCurrentFont;
@@ -158,6 +186,8 @@ namespace Ict.Common.Printing
             newState.FCurrentPageNr = FCurrentPageNr;
             newState.FCurrentXPos = FCurrentXPos;
             newState.FCurrentYPos = FCurrentYPos;
+            newState.FAnchorXPos = FAnchorXPos;
+            newState.FAnchorYPos = FAnchorYPos;
             newState.FCurrentFont = FCurrentFont;
             newState.FCurrentRelativeFontSize = FCurrentRelativeFontSize;
             newState.FCurrentAlignment = FCurrentAlignment;
@@ -276,6 +306,34 @@ namespace Ict.Common.Printing
             set
             {
                 FCurrentState.FCurrentXPos = value;
+            }
+        }
+
+        /// <summary>other elements can be positioned relative to this position</summary>
+        public float AnchorXPos
+        {
+            get
+            {
+                return FCurrentState.FAnchorXPos;
+            }
+
+            set
+            {
+                FCurrentState.FAnchorXPos = value;
+            }
+        }
+
+        /// <summary>other elements can be positioned relative to this position</summary>
+        public float AnchorYPos
+        {
+            get
+            {
+                return FCurrentState.FAnchorYPos;
+            }
+
+            set
+            {
+                FCurrentState.FAnchorYPos = value;
             }
         }
 
@@ -458,10 +516,18 @@ namespace Ict.Common.Printing
 
         /// <summary>
         /// Converts the given value in cm to the currently used measurement unit
-        ///
         /// </summary>
-        /// <returns>void</returns>
         public abstract float Cm(float AValueInCm);
+
+        /// <summary>
+        /// Converts the given value in pixel to the currently used measurement unit, using the horizontal resolution
+        /// </summary>
+        public abstract float PixelHorizontal(float AValueInPixel);
+
+        /// <summary>
+        /// Converts the given value in pixel to the currently used measurement unit, using the vertical resolution
+        /// </summary>
+        public abstract float PixelVertical(float AValueInPixel);
 
         #endregion
         #region Print String

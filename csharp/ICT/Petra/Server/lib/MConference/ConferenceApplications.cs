@@ -35,6 +35,7 @@ using Ict.Common.DB;
 using Ict.Common.IO;
 using Ict.Common.Printing;
 using Ict.Common.Verification;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
@@ -72,7 +73,7 @@ namespace Ict.Petra.Server.MConference.Applications
             // if there are no REG-... module permissions for anyone, allow all offices? this would help with a base database for testing?
             Int32 CountRegModules =
                 Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM " + SModuleTable.GetTableDBName() + " WHERE " +
-                        SModuleTable.GetModuleNameDBName() + " LIKE 'REG-%'", ATransaction));
+                        SModuleTable.GetModuleIdDBName() + " LIKE 'REG-%'", ATransaction));
 
             foreach (DataRow officeRow in offices.Rows)
             {
@@ -94,95 +95,273 @@ namespace Ict.Petra.Server.MConference.Applications
             return AllowedRegistrationOffices;
         }
 
+        /// is the current user representing the office that is organising the conference?
+        /// This user gets to see all registrations.
+        public static bool IsConferenceOrganisingOffice()
+        {
+            // TODO: check for permissions for just one specific office, linked from the config file?
+            bool NewTransaction;
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+
+            List <Int64>AllowedRegistrationOffices = new List <long>();
+            try
+            {
+                AllowedRegistrationOffices = GetRegistrationOfficeKeysOfUser(Transaction);
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+            }
+
+            return AllowedRegistrationOffices.Count > 3;
+        }
+
         /// <summary>
-        /// return a list of all applicants for a given event, but only the registration office that the user has permissions for, ie. Module REG-00xx0000000
+        /// return a list of all applicants for a given event,
+        /// but if AConferenceOrganisingOffice is false,
+        /// consider only the registration office that the user has permissions for, ie. Module REG-00xx0000000
         /// </summary>
+        /// <param name="AMainDS"></param>
+        /// <param name="AEventPartnerKey"></param>
         /// <param name="AEventCode"></param>
         /// <param name="AApplicationStatus"></param>
-        /// <param name="ARegistrationOffice"></param>
+        /// <param name="ARegistrationOffice">if -1, then show all offices that the user has permission for</param>
+        /// <param name="AConferenceOrganisingOffice">if true, all offices are considered</param>
         /// <param name="ARole"></param>
+        /// <param name="AClearJSONData"></param>
         /// <returns></returns>
-        public static ConferenceApplicationTDS GetApplications(string AEventCode, string AApplicationStatus, Int64 ARegistrationOffice, string ARole)
+        public static bool GetApplications(
+            ref ConferenceApplicationTDS AMainDS,
+            Int64 AEventPartnerKey,
+            string AEventCode,
+            string AApplicationStatus,
+            Int64 ARegistrationOffice,
+            bool AConferenceOrganisingOffice,
+            string ARole,
+            bool AClearJSONData)
         {
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
-            ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
-
             try
             {
-                List <Int64>AllowedRegistrationOffices = GetRegistrationOfficeKeysOfUser(Transaction);
-
-                foreach (Int64 RegistrationOffice in AllowedRegistrationOffices)
+                // load all attendees of this conference.
+                // only load once: GetApplications might be called for several application stati
+                if (AMainDS.PcAttendee.Rows.Count == 0)
                 {
-                    if ((ARegistrationOffice == RegistrationOffice) || (ARegistrationOffice == -1))
+                    PcAttendeeRow templateAttendeeRow = AMainDS.PcAttendee.NewRowTyped(false);
+                    templateAttendeeRow.ConferenceKey = AEventPartnerKey;
+                    PcAttendeeAccess.LoadUsingTemplate(AMainDS, templateAttendeeRow, Transaction);
+                    AMainDS.PcAttendee.DefaultView.Sort = PcAttendeeTable.GetPartnerKeyDBName();
+                }
+
+                if (AConferenceOrganisingOffice && (ARegistrationOffice == -1))
+                {
+                    // avoid duplicates, who are registered by one office, but charged to another office
+                    GetApplications(ref AMainDS, AEventCode, -1, AApplicationStatus, ARole, AClearJSONData, Transaction);
+                }
+                else
+                {
+                    List <Int64>AllowedRegistrationOffices = GetRegistrationOfficeKeysOfUser(Transaction);
+
+                    foreach (Int64 RegistrationOffice in AllowedRegistrationOffices)
                     {
-                        MainDS.Merge(GetApplications(AEventCode, RegistrationOffice, AApplicationStatus, ARole, Transaction));
+                        if ((ARegistrationOffice == RegistrationOffice) || (ARegistrationOffice == -1))
+                        {
+                            GetApplications(ref AMainDS, AEventCode, RegistrationOffice, AApplicationStatus, ARole, AClearJSONData, Transaction);
+                        }
                     }
                 }
+
+                // required for DefaultView.Find
+                AMainDS.PmShortTermApplication.DefaultView.Sort =
+                    PmShortTermApplicationTable.GetStConfirmedOptionDBName() + "," +
+                    PmShortTermApplicationTable.GetPartnerKeyDBName();
+                AMainDS.PmGeneralApplication.DefaultView.Sort =
+                    PmGeneralApplicationTable.GetPartnerKeyDBName() + "," +
+                    PmGeneralApplicationTable.GetApplicationKeyDBName() + "," +
+                    PmGeneralApplicationTable.GetRegistrationOfficeDBName();
+                AMainDS.ApplicationGrid.DefaultView.Sort =
+                    ConferenceApplicationTDSApplicationGridTable.GetPartnerKeyDBName() + "," +
+                    ConferenceApplicationTDSApplicationGridTable.GetApplicationKeyDBName();
+                AMainDS.PDataLabelValuePartner.DefaultView.Sort = PDataLabelValuePartnerTable.GetDataLabelKeyDBName() + "," +
+                                                                  PDataLabelValuePartnerTable.GetPartnerKeyDBName();
+                AMainDS.PDataLabel.DefaultView.Sort = PDataLabelTable.GetTextDBName();
             }
             finally
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
 
-            MainDS.AcceptChanges();
+            if (AMainDS.HasChanges())
+            {
+                AMainDS.EnforceConstraints = false;
+                AMainDS.AcceptChanges();
+            }
 
-            return MainDS;
+            return true;
         }
 
         /// <summary>
-        /// return a list of all applicants for a given event
+        /// return a list of all applicants for a given event, but only the registration office that the user has permissions for, ie. Module REG-00xx0000000
+        /// </summary>
+        /// <param name="AMainDS"></param>
+        /// <param name="AEventPartnerKey"></param>
+        /// <param name="AEventCode"></param>
+        /// <param name="AApplicationStatus"></param>
+        /// <param name="ARegistrationOffice">if -1, then show all offices that the user has permission for</param>
+        /// <param name="ARole"></param>
+        /// <param name="AClearJSONData"></param>
+        /// <returns></returns>
+        public static bool GetApplications(
+            ref ConferenceApplicationTDS AMainDS,
+            Int64 AEventPartnerKey,
+            string AEventCode,
+            string AApplicationStatus,
+            Int64 ARegistrationOffice,
+            string ARole,
+            bool AClearJSONData)
+        {
+            return GetApplications(ref AMainDS,
+                AEventPartnerKey,
+                AEventCode,
+                AApplicationStatus,
+                ARegistrationOffice,
+                IsConferenceOrganisingOffice(),
+                ARole,
+                AClearJSONData);
+        }
+
+        /// <summary>
+        /// get shortterm application rows and person rows of all people in a given fellowship group
         /// </summary>
         /// <param name="AEventCode"></param>
-        /// <param name="ARegisteringOffice"></param>
-        /// <param name="AApplicationStatus"></param>
-        /// <param name="ARole"></param>
-        /// <param name="ATransaction"></param>
+        /// <param name="AStFgCode"></param>
         /// <returns></returns>
-        private static ConferenceApplicationTDS GetApplications(string AEventCode,
-            Int64 ARegisteringOffice,
-            string AApplicationStatus,
+        public static ConferenceApplicationTDS GetFellowshipGroupMembers(string AEventCode, string AStFgCode)
+        {
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
+
+            try
+            {
+                ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
+
+                List <OdbcParameter>parameters = new List <OdbcParameter>();
+
+                OdbcParameter parameter = new OdbcParameter("eventcode", OdbcType.VarChar, PmShortTermApplicationTable.GetConfirmedOptionCodeLength());
+                parameter.Value = AEventCode;
+                parameters.Add(parameter);
+
+                parameter = new OdbcParameter("groupcode", OdbcType.VarChar, PmShortTermApplicationTable.GetStFgCodeLength());
+                parameter.Value = AStFgCode;
+                parameters.Add(parameter);
+
+                string queryFellowshipGroupMembers =
+                    "SELECT * " +
+                    " FROM PUB_" + PmShortTermApplicationTable.GetTableDBName() +
+                    " WHERE " + PmShortTermApplicationTable.GetConfirmedOptionCodeDBName() + " = ?" +
+                    " AND " + PmShortTermApplicationTable.GetStFgCodeDBName() + " = ?";
+
+                string queryPerson =
+                    "SELECT DISTINCT PUB_p_person.* " +
+                    "FROM PUB_pm_short_term_application, PUB_p_person " +
+                    "WHERE PUB_pm_short_term_application.pm_confirmed_option_code_c = ? " +
+                    "  AND PUB_p_person.p_partner_key_n = PUB_pm_short_term_application.p_partner_key_n" +
+                    "  AND " + PmShortTermApplicationTable.GetStFgCodeDBName() + " = ?";
+
+                DBAccess.GDBAccessObj.Select(MainDS,
+                    queryFellowshipGroupMembers,
+                    MainDS.PmShortTermApplication.TableName, Transaction, parameters.ToArray());
+
+                DBAccess.GDBAccessObj.Select(MainDS,
+                    queryPerson,
+                    MainDS.PPerson.TableName, Transaction, parameters.ToArray());
+
+                return MainDS;
+            }
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+        }
+
+        private static bool LoadApplicationsFromDB(
+            ref ConferenceApplicationTDS AMainDS,
+            string AEventCode,
+            Int64? ARegisteringOffice,
             string ARole,
+            Int64? APartnerKey,
             TDBTransaction ATransaction)
         {
             ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
 
             List <OdbcParameter>parameters = new List <OdbcParameter>();
 
-            OdbcParameter parameter = new OdbcParameter("registrationoffice", OdbcType.Decimal, 10);
-            parameter.Value = ARegisteringOffice;
-            parameters.Add(parameter);
-            parameter = new OdbcParameter("eventcode", OdbcType.VarChar, PmShortTermApplicationTable.GetConfirmedOptionCodeLength());
+            OdbcParameter parameter = new OdbcParameter("eventcode", OdbcType.VarChar, PmShortTermApplicationTable.GetConfirmedOptionCodeLength());
             parameter.Value = AEventCode;
             parameters.Add(parameter);
-            parameter = new OdbcParameter("role", OdbcType.VarChar, PmShortTermApplicationTable.GetStCongressCodeLength());
-            parameter.Value = ARole;
-            parameters.Add(parameter);
+
+            string DataLabels = "(PUB_p_data_label.p_text_c = 'MedicalNotes' OR PUB_p_data_label.p_text_c = 'Rebukes')";
 
             string queryShortTermApplication = "SELECT PUB_pm_short_term_application.* " +
                                                "FROM PUB_pm_short_term_application " +
-                                               "WHERE PUB_pm_short_term_application.pm_registration_office_n = ? " +
-                                               "  AND PUB_pm_short_term_application.pm_confirmed_option_code_c = ? ";
+                                               "WHERE PUB_pm_short_term_application.pm_confirmed_option_code_c = ? ";
 
             string queryGeneralApplication = "SELECT PUB_pm_general_application.* " +
                                              "FROM PUB_pm_short_term_application, PUB_pm_general_application " +
-                                             "WHERE PUB_pm_short_term_application.pm_registration_office_n = ? " +
-                                             "  AND PUB_pm_short_term_application.pm_confirmed_option_code_c = ? " +
+                                             "WHERE PUB_pm_short_term_application.pm_confirmed_option_code_c = ? " +
                                              "  AND PUB_pm_general_application.p_partner_key_n = PUB_pm_short_term_application.p_partner_key_n " +
                                              "  AND PUB_pm_general_application.pm_application_key_i = PUB_pm_short_term_application.pm_application_key_i "
                                              +
                                              "  AND PUB_pm_general_application.pm_registration_office_n = PUB_pm_short_term_application.pm_registration_office_n";
-            string queryPerson = "SELECT PUB_p_person.* " +
+            string queryPerson = "SELECT DISTINCT PUB_p_person.* " +
                                  "FROM PUB_pm_short_term_application, PUB_p_person " +
-                                 "WHERE PUB_pm_short_term_application.pm_registration_office_n = ? " +
-                                 "  AND PUB_pm_short_term_application.pm_confirmed_option_code_c = ? " +
+                                 "WHERE PUB_pm_short_term_application.pm_confirmed_option_code_c = ? " +
                                  "  AND PUB_p_person.p_partner_key_n = PUB_pm_short_term_application.p_partner_key_n";
+            string queryDataLabel = "SELECT DISTINCT PUB_p_data_label_value_partner.* " +
+                                    "FROM PUB_pm_short_term_application, PUB_p_data_label_value_partner, PUB_p_data_label " +
+                                    "WHERE PUB_pm_short_term_application.pm_confirmed_option_code_c = ? " +
+                                    "  AND PUB_p_data_label_value_partner.p_partner_key_n = PUB_pm_short_term_application.p_partner_key_n" +
+                                    "  AND PUB_p_data_label_value_partner.p_data_label_key_i = PUB_p_data_label.p_key_i" +
+                                    " AND " + DataLabels;
 
             if ((ARole != null) && (ARole.Length > 0))
             {
-                queryGeneralApplication += "  AND PUB_pm_short_term_application.pm_st_congress_code_c = ?";
-                queryShortTermApplication += "  AND PUB_pm_short_term_application.pm_st_congress_code_c = ?";
-                queryPerson += "  AND PUB_pm_short_term_application.pm_st_congress_code_c = ?";
+                queryGeneralApplication += "  AND PUB_pm_short_term_application.pm_st_congress_code_c LIKE '" + ARole + "%'";
+                queryShortTermApplication += "  AND PUB_pm_short_term_application.pm_st_congress_code_c LIKE '" + ARole + "%'";
+                queryPerson += "  AND PUB_pm_short_term_application.pm_st_congress_code_c LIKE '" + ARole + "%'";
+                queryDataLabel += "  AND PUB_pm_short_term_application.pm_st_congress_code_c LIKE '" + ARole + "%'";
+            }
+
+            if (ARegisteringOffice.HasValue && (ARegisteringOffice.Value > 0))
+            {
+                string queryRegistrationOffice =
+                    "  AND (PUB_pm_short_term_application.pm_st_field_charged_n = ? OR PUB_pm_short_term_application.pm_registration_office_n = ?)";
+                queryGeneralApplication += queryRegistrationOffice;
+                queryShortTermApplication += queryRegistrationOffice;
+                queryPerson += queryRegistrationOffice;
+                queryDataLabel += queryRegistrationOffice;
+
+                parameter = new OdbcParameter("fieldCharged", OdbcType.Decimal, 10);
+                parameter.Value = ARegisteringOffice.Value;
+                parameters.Add(parameter);
+                parameter = new OdbcParameter("registrationOffice", OdbcType.Decimal, 10);
+                parameter.Value = ARegisteringOffice.Value;
+                parameters.Add(parameter);
+            }
+
+            if (APartnerKey.HasValue && (APartnerKey.Value > 0))
+            {
+                queryGeneralApplication += "  AND PUB_pm_short_term_application.p_partner_key_n = ?";
+                queryShortTermApplication += "  AND PUB_pm_short_term_application.p_partner_key_n = ?";
+                queryPerson += "  AND PUB_pm_short_term_application.p_partner_key_n = ?";
+                queryDataLabel += "  AND PUB_pm_short_term_application.p_partner_key_n = ?";
+
+                parameter = new OdbcParameter("partnerkey", OdbcType.Decimal, 10);
+                parameter.Value = APartnerKey.Value;
+                parameters.Add(parameter);
             }
 
             DBAccess.GDBAccessObj.Select(MainDS,
@@ -197,21 +376,62 @@ namespace Ict.Petra.Server.MConference.Applications
                 queryGeneralApplication,
                 MainDS.PmGeneralApplication.TableName, ATransaction, parameters.ToArray());
 
-            foreach (PmShortTermApplicationRow shortTermRow in MainDS.PmShortTermApplication.Rows)
+            DBAccess.GDBAccessObj.Select(MainDS,
+                queryDataLabel,
+                MainDS.PDataLabelValuePartner.TableName, ATransaction, parameters.ToArray());
+
+            DBAccess.GDBAccessObj.Select(MainDS,
+                "SELECT * FROM PUB_p_data_label WHERE " + DataLabels,
+                MainDS.PDataLabel.TableName, ATransaction);
+
+            AMainDS.Merge(MainDS);
+
+            return true;
+        }
+
+        /// <summary>
+        /// return a list of all applicants for a given event
+        /// </summary>
+        /// <param name="AMainDS"></param>
+        /// <param name="AEventCode"></param>
+        /// <param name="ARegisteringOffice"></param>
+        /// <param name="AApplicationStatus"></param>
+        /// <param name="ARole"></param>
+        /// <param name="AClearJSONData"></param>
+        /// <param name="ATransaction"></param>
+        /// <returns></returns>
+        private static ConferenceApplicationTDS GetApplications(
+            ref ConferenceApplicationTDS AMainDS,
+            string AEventCode,
+            Int64 ARegisteringOffice,
+            string AApplicationStatus,
+            string ARole,
+            bool AClearJSONData,
+            TDBTransaction ATransaction)
+        {
+            LoadApplicationsFromDB(ref AMainDS,
+                AEventCode, ARegisteringOffice,
+                ARole, new Nullable <Int64>(),
+                ATransaction);
+
+            AMainDS.PDataLabelValuePartner.DefaultView.Sort = PDataLabelValuePartnerTable.GetDataLabelKeyDBName() + "," +
+                                                              PDataLabelValuePartnerTable.GetPartnerKeyDBName();
+            AMainDS.PDataLabel.DefaultView.Sort = PDataLabelTable.GetTextDBName();
+
+            DataView PersonView = AMainDS.PPerson.DefaultView;
+
+            PersonView.Sort = PPersonTable.GetPartnerKeyDBName();
+
+            DataView GenAppView = AMainDS.PmGeneralApplication.DefaultView;
+            GenAppView.Sort = PmGeneralApplicationTable.GetPartnerKeyDBName() + "," + PmGeneralApplicationTable.GetApplicationKeyDBName();
+
+            foreach (PmShortTermApplicationRow shortTermRow in AMainDS.PmShortTermApplication.Rows)
             {
-                MainDS.PPerson.DefaultView.RowFilter =
-                    String.Format("{0}={1}",
-                        PPersonTable.GetPartnerKeyDBName(),
-                        shortTermRow.PartnerKey);
-                MainDS.PmGeneralApplication.DefaultView.RowFilter =
-                    String.Format("{0}={1}",
-                        PmGeneralApplicationTable.GetPartnerKeyDBName(),
-                        shortTermRow.PartnerKey);
+                PPersonRow Person = (PPersonRow)PersonView[PersonView.Find(shortTermRow.PartnerKey)].Row;
+                PmGeneralApplicationRow GeneralApplication =
+                    (PmGeneralApplicationRow)GenAppView[GenAppView.Find(new Object[] { shortTermRow.PartnerKey, shortTermRow.ApplicationKey })].Row;
 
-                PPersonRow Person = (PPersonRow)MainDS.PPerson.DefaultView[0].Row;
-                PmGeneralApplicationRow GeneralApplication = (PmGeneralApplicationRow)MainDS.PmGeneralApplication.DefaultView[0].Row;
-
-                ConferenceApplicationTDSApplicationGridRow newRow = MainDS.ApplicationGrid.NewRowTyped();
+                ConferenceApplicationTDSApplicationGridRow newRow = AMainDS.ApplicationGrid.NewRowTyped();
                 newRow.PartnerKey = shortTermRow.PartnerKey;
 
                 if (!GeneralApplication.IsLocalPartnerKeyNull())
@@ -234,28 +454,79 @@ namespace Ict.Petra.Server.MConference.Applications
                 newRow.Comment = GeneralApplication.Comment;
                 newRow.StFgCode = shortTermRow.StFgCode;
                 newRow.StFgLeader = shortTermRow.StFgLeader;
+                newRow.StFieldCharged = shortTermRow.StFieldCharged;
+                newRow.DateOfArrival = shortTermRow.Arrival;
+                newRow.DateOfDeparture = shortTermRow.Departure;
 
                 // TODO: display the description of that application status
                 newRow.GenApplicationStatus = GeneralApplication.GenApplicationStatus;
                 newRow.StCongressCode = shortTermRow.StCongressCode;
-                newRow.JSONData = StringHelper.MD5Sum(GeneralApplication.RawApplicationData);
+
+                // only allow the medical team to read and write
+                if (UserInfo.GUserInfo.IsInModule("MEDICAL"))
+                {
+                    Int32 IndexLabelMedical = AMainDS.PDataLabel.DefaultView.Find("MedicalNotes");
+
+                    if (IndexLabelMedical != -1)
+                    {
+                        Int32 MedicalLabelID = ((PDataLabelRow)AMainDS.PDataLabel.DefaultView[IndexLabelMedical].Row).Key;
+
+                        int IndexLabel = AMainDS.PDataLabelValuePartner.DefaultView.Find(new object[] { MedicalLabelID, newRow.PartnerKey });
+
+                        if (IndexLabel != -1)
+                        {
+                            newRow.MedicalNotes = ((PDataLabelValuePartnerRow)AMainDS.PDataLabelValuePartner.DefaultView[IndexLabel].Row).ValueChar;
+                        }
+                    }
+                }
+
+                Int32 IndexLabelRebuke = AMainDS.PDataLabel.DefaultView.Find("Rebukes");
+
+                if (IndexLabelRebuke != -1)
+                {
+                    Int32 RebukeLabelID = ((PDataLabelRow)AMainDS.PDataLabel.DefaultView[IndexLabelRebuke].Row).Key;
+
+                    int IndexLabel = AMainDS.PDataLabelValuePartner.DefaultView.Find(new object[] { RebukeLabelID, newRow.PartnerKey });
+
+                    if (IndexLabel != -1)
+                    {
+                        newRow.RebukeNotes = ((PDataLabelValuePartnerRow)AMainDS.PDataLabelValuePartner.DefaultView[IndexLabel].Row).ValueChar;
+                    }
+                }
+
+                int indexAttendee = AMainDS.PcAttendee.DefaultView.Find(shortTermRow.PartnerKey);
+
+                if (indexAttendee != -1)
+                {
+                    newRow.BadgePrint = ((PcAttendeeRow)AMainDS.PcAttendee.DefaultView[indexAttendee].Row).BadgePrint;
+                }
+
+                if (AClearJSONData)
+                {
+                    // only if the json data is cleared anyway, search for duplicate applications using the md5sum
+                    newRow.JSONData = StringHelper.MD5Sum(GeneralApplication.RawApplicationData);
+                }
+                else
+                {
+                    newRow.JSONData = GeneralApplication.RawApplicationData;
+                }
 
                 if (AApplicationStatus.Length == 0)
                 {
                     AApplicationStatus = "on hold";
                 }
 
-                if (AApplicationStatus != "all")
+                if (AApplicationStatus == "on hold")
                 {
                     // if there is already an application on hold for that person, drop the old row
-                    MainDS.ApplicationGrid.DefaultView.RowFilter =
+                    AMainDS.ApplicationGrid.DefaultView.RowFilter =
                         String.Format("JSONData = '{0}' AND {1} = 'H'", newRow.JSONData,
                             ConferenceApplicationTDSApplicationGridTable.GetGenApplicationStatusDBName());
 
-                    while (MainDS.ApplicationGrid.DefaultView.Count > 0)
+                    while (AMainDS.ApplicationGrid.DefaultView.Count > 0)
                     {
                         ConferenceApplicationTDSApplicationGridRow RowToDrop =
-                            (ConferenceApplicationTDSApplicationGridRow)MainDS.ApplicationGrid.DefaultView[0].Row;
+                            (ConferenceApplicationTDSApplicationGridRow)AMainDS.ApplicationGrid.DefaultView[0].Row;
                         //Console.WriteLine("dropping " + RowToDrop.FamilyName + " " + RowToDrop.FirstName + " " + RowToDrop.PartnerKey.ToString());
                         RowToDrop.Delete();
                     }
@@ -263,32 +534,43 @@ namespace Ict.Petra.Server.MConference.Applications
 
                 if ((AApplicationStatus == "on hold") && newRow.GenApplicationStatus.StartsWith("H"))
                 {
-                    MainDS.ApplicationGrid.Rows.Add(newRow);
+                    AMainDS.ApplicationGrid.Rows.Add(newRow);
                 }
                 else if ((AApplicationStatus == "accepted") && newRow.GenApplicationStatus.StartsWith("A"))
                 {
-                    MainDS.ApplicationGrid.Rows.Add(newRow);
+                    AMainDS.ApplicationGrid.Rows.Add(newRow);
                 }
                 else if ((AApplicationStatus == "cancelled")
                          && ((newRow.GenApplicationStatus.StartsWith("R") || newRow.GenApplicationStatus.StartsWith("C"))))
                 {
-                    MainDS.ApplicationGrid.Rows.Add(newRow);
+                    AMainDS.ApplicationGrid.Rows.Add(newRow);
                 }
                 else if (AApplicationStatus == "all")
                 {
-                    MainDS.ApplicationGrid.Rows.Add(newRow);
+                    AMainDS.ApplicationGrid.Rows.Add(newRow);
                 }
             }
 
-            // clear raw data, otherwise this is too big for the javascript client
-            foreach (ConferenceApplicationTDSApplicationGridRow row in MainDS.ApplicationGrid.Rows)
+            AMainDS.ApplicationGrid.DefaultView.RowFilter = String.Empty;
+
+            if (AClearJSONData)
             {
-                row.JSONData = string.Empty;
+                // clear raw data, otherwise this is too big for the javascript client
+                foreach (ConferenceApplicationTDSApplicationGridRow row in AMainDS.ApplicationGrid.Rows)
+                {
+                    row.JSONData = string.Empty;
+                }
             }
 
-            MainDS.AcceptChanges();
+            AMainDS.ApplicationGrid.AcceptChanges();
 
-            return MainDS;
+            if (AMainDS.HasChanges())
+            {
+                AMainDS.EnforceConstraints = false;
+                AMainDS.AcceptChanges();
+            }
+
+            return AMainDS;
         }
 
         /// <summary>
@@ -338,6 +620,8 @@ namespace Ict.Petra.Server.MConference.Applications
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
 
+            result.DefaultView.Sort = PPartnerTable.GetPartnerKeyDBName();
+
             return result;
         }
 
@@ -350,7 +634,8 @@ namespace Ict.Petra.Server.MConference.Applications
         /// <returns></returns>
         public static string GetRawApplicationData(Int64 APartnerKey, Int32 AApplicationKey, Int64 ARegistrationOfficeKey)
         {
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            bool NewTransaction;
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
 
             string Result = "Failure, cannot find partner";
 
@@ -366,10 +651,87 @@ namespace Ict.Petra.Server.MConference.Applications
             }
             finally
             {
-                DBAccess.GDBAccessObj.RollbackTransaction();
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
             }
 
             return Result;
+        }
+
+        /// <summary>
+        /// find the short term application for an applicant, by registration key, partner key, or first and last name;
+        /// </summary>
+        /// <param name="AMainDS"></param>
+        /// <param name="APartnerKey"></param>
+        /// <param name="LastName"></param>
+        /// <param name="FirstName"></param>
+        /// <returns></returns>
+        public static PmShortTermApplicationRow FindShortTermApplication(ConferenceApplicationTDS AMainDS,
+            ref Int64 APartnerKey,
+            string LastName,
+            string FirstName)
+        {
+            if ((APartnerKey <= 0) && (LastName.Length > 0) && (FirstName.Length > 0))
+            {
+                // try to find the partner key from the name
+                string OldSort = AMainDS.ApplicationGrid.DefaultView.Sort;
+                AMainDS.ApplicationGrid.DefaultView.Sort = ConferenceApplicationTDSApplicationGridTable.GetFamilyNameDBName() + "," +
+                                                           ConferenceApplicationTDSApplicationGridTable.GetFirstNameDBName();
+                Int32 index = AMainDS.ApplicationGrid.DefaultView.Find(new object[] { LastName, FirstName });
+
+                if (index == -1)
+                {
+                    TLogging.Log("Import Fellowship groups: Cannot find attendee " + FirstName + " " + LastName);
+                    AMainDS.ApplicationGrid.DefaultView.Sort = OldSort;
+                    return null;
+                }
+
+                ConferenceApplicationTDSApplicationGridRow ApplicantRow =
+                    (ConferenceApplicationTDSApplicationGridRow)AMainDS.ApplicationGrid.DefaultView[index].Row;
+                APartnerKey = ApplicantRow.PartnerKey;
+
+                AMainDS.ApplicationGrid.DefaultView.Sort = OldSort;
+            }
+            else
+            {
+                // is this the person key from the local Petra database, or the registration key?
+                string OldSort = AMainDS.ApplicationGrid.DefaultView.Sort;
+                AMainDS.ApplicationGrid.DefaultView.Sort = ConferenceApplicationTDSApplicationGridTable.GetPersonKeyDBName();
+                Int32 index = AMainDS.ApplicationGrid.DefaultView.Find(APartnerKey);
+
+                if (index != -1)
+                {
+                    ConferenceApplicationTDSApplicationGridRow ApplicantRow =
+                        (ConferenceApplicationTDSApplicationGridRow)AMainDS.ApplicationGrid.DefaultView[index].Row;
+                    APartnerKey = ApplicantRow.PartnerKey;
+                }
+
+                AMainDS.ApplicationGrid.DefaultView.Sort = OldSort;
+            }
+
+            string OldSortShortterm = AMainDS.PmShortTermApplication.DefaultView.Sort;
+            AMainDS.PmShortTermApplication.DefaultView.Sort = PmShortTermApplicationTable.GetPartnerKeyDBName();
+            Int32 indexShorttermApp = AMainDS.PmShortTermApplication.DefaultView.Find(APartnerKey);
+
+            if (indexShorttermApp == -1)
+            {
+                AMainDS.PmShortTermApplication.DefaultView.Sort = OldSortShortterm;
+
+                if (APartnerKey > 0)
+                {
+                    APartnerKey = -1;
+
+                    return FindShortTermApplication(AMainDS, ref APartnerKey, LastName, FirstName);
+                }
+
+                return null;
+            }
+
+            PmShortTermApplicationRow shorttermRow = (PmShortTermApplicationRow)AMainDS.PmShortTermApplication.DefaultView[indexShorttermApp].Row;
+            AMainDS.PmShortTermApplication.DefaultView.Sort = OldSortShortterm;
+            return shorttermRow;
         }
 
         /// send an email to the applicant telling him that the application was accepted;
@@ -451,6 +813,203 @@ namespace Ict.Petra.Server.MConference.Applications
             return true;
         }
 
+        private static void InsertDataIntoConferenceApplicationTDS(ConferenceApplicationTDSApplicationGridRow AChangedRow,
+            ref ConferenceApplicationTDS AMainDS,
+            string AEventCode, TDBTransaction ATransaction)
+        {
+            if (AChangedRow.RowState == DataRowState.Modified)
+            {
+                if (ATransaction != null)
+                {
+                    LoadApplicationsFromDB(ref AMainDS, AEventCode, null,
+                        null, AChangedRow.PartnerKey,
+                        ATransaction);
+                }
+
+                AMainDS.PDataLabel.DefaultView.Sort = PDataLabelTable.GetTextDBName();
+                AMainDS.PDataLabelValuePartner.DefaultView.Sort = PDataLabelValuePartnerTable.GetDataLabelKeyDBName() + "," +
+                                                                  PDataLabelValuePartnerTable.GetPartnerKeyDBName();
+
+                if (AChangedRow.GenApplicationStatus == "I")
+                {
+                    // load duplicate applications, in case they should be set to ignore as well. see below
+                    ConferenceApplicationTDS DuplicatesDS = new ConferenceApplicationTDS();
+                    PmGeneralApplicationRow TemplateRow = AMainDS.PmGeneralApplication.NewRowTyped(false);
+                    TemplateRow.GenApplicationStatus = "H";
+                    TemplateRow.RawApplicationData = AChangedRow.JSONData;
+                    PmGeneralApplicationAccess.LoadUsingTemplate(DuplicatesDS, TemplateRow, ATransaction);
+                    AMainDS.Merge(DuplicatesDS);
+                }
+
+                AMainDS.PPerson.DefaultView.Sort = PPersonTable.GetPartnerKeyDBName();
+                AMainDS.PmShortTermApplication.DefaultView.Sort = PmShortTermApplicationTable.GetPartnerKeyDBName() + "," +
+                                                                  PmShortTermApplicationTable.GetApplicationKeyDBName();
+                AMainDS.PmGeneralApplication.DefaultView.Sort = PmGeneralApplicationTable.GetPartnerKeyDBName() + "," +
+                                                                PmGeneralApplicationTable.GetApplicationKeyDBName();
+
+                PPersonRow Person = (PPersonRow)AMainDS.PPerson.DefaultView[AMainDS.PPerson.DefaultView.Find(AChangedRow.PartnerKey)].Row;
+                PmShortTermApplicationRow ShortTermApplication =
+                    (PmShortTermApplicationRow)AMainDS.PmShortTermApplication.DefaultView[AMainDS.PmShortTermApplication.DefaultView.Find(new object
+                                                                                              [] {
+                                                                                                  AChangedRow.PartnerKey,
+                                                                                                  AChangedRow.ApplicationKey
+                                                                                              })].Row;
+                PmGeneralApplicationRow GeneralApplication =
+                    (PmGeneralApplicationRow)AMainDS.PmGeneralApplication.DefaultView[AMainDS.PmGeneralApplication.DefaultView.Find(new object[] {
+                                                                                              AChangedRow.PartnerKey,
+                                                                                              AChangedRow.ApplicationKey
+                                                                                          })].Row;
+
+                Person.FirstName = AChangedRow.FirstName;
+                Person.FamilyName = AChangedRow.FamilyName;
+
+                if (AChangedRow.DateOfBirth.HasValue)
+                {
+                    Person.DateOfBirth = AChangedRow.DateOfBirth;
+                }
+                else
+                {
+                    Person.SetDateOfBirthNull();
+                }
+
+                Person.Gender = AChangedRow.Gender;
+                GeneralApplication.Comment = AChangedRow.Comment;
+                GeneralApplication.GenAppDate = AChangedRow.GenAppDate;
+
+                if (!AChangedRow.IsJSONDataNull() && (AChangedRow.JSONData.Length > 0))
+                {
+                    GeneralApplication.RawApplicationData = AChangedRow.JSONData;
+                }
+                else
+                {
+                    // get raw application data, we have removed it because we don't need it on the client
+                    GeneralApplication.RawApplicationData = GetRawApplicationData(GeneralApplication.PartnerKey,
+                        GeneralApplication.ApplicationKey,
+                        GeneralApplication.RegistrationOffice);
+                }
+
+                ShortTermApplication.StFgLeader = AChangedRow.StFgLeader;
+                ShortTermApplication.StFgCode = AChangedRow.StFgCode;
+                ShortTermApplication.StFieldCharged = AChangedRow.StFieldCharged;
+                ShortTermApplication.Arrival = AChangedRow.DateOfArrival;
+                ShortTermApplication.Departure = AChangedRow.DateOfDeparture;
+
+                if (GeneralApplication.GenApplicationStatus != AChangedRow.GenApplicationStatus)
+                {
+                    if (AChangedRow.GenApplicationStatus == "A")
+                    {
+                        if (GeneralApplication.IsGenAppSendFldAcceptDateNull())
+                        {
+                            GeneralApplication.GenAppSendFldAcceptDate = DateTime.Today;
+                        }
+
+                        GeneralApplication.SetGenAppCancelledNull();
+                        GeneralApplication.GenCancelledApp = false;
+
+                        try
+                        {
+                            TApplicationFormData data = (TApplicationFormData)TJsonTools.ImportIntoTypedStructure(typeof(TApplicationFormData),
+                                GeneralApplication.RawApplicationData);
+                            data.RawData = GeneralApplication.RawApplicationData;
+
+                            // attempt to send an email to that applicant, telling about the accepted application
+                            SendEmail(data);
+                        }
+                        catch (Exception e)
+                        {
+                            TLogging.Log("Problem sending acceptance email " + e.Message);
+                            TLogging.Log(GeneralApplication.RawApplicationData);
+                            throw;
+                        }
+                    }
+                    else if (AChangedRow.GenApplicationStatus.StartsWith("C") || AChangedRow.GenApplicationStatus.StartsWith("R"))
+                    {
+                        GeneralApplication.GenCancelledApp = true;
+
+                        if (GeneralApplication.IsGenAppCancelledNull())
+                        {
+                            GeneralApplication.GenAppCancelled = DateTime.Today;
+                        }
+                    }
+                    else if (AChangedRow.GenApplicationStatus == "I")
+                    {
+                        // drop all other applications of this person, that are on hold.
+                        // data has been loaded above already.
+                        DataView DuplicateView = new DataView(AMainDS.PmGeneralApplication);
+
+                        DuplicateView.RowFilter =
+                            String.Format("{0} = '{1}' AND {2} = 'H'",
+                                PmGeneralApplicationTable.GetRawApplicationDataDBName(),
+                                AChangedRow.JSONData,
+                                PmGeneralApplicationTable.GetGenApplicationStatusDBName());
+
+                        foreach (DataRowView rv in DuplicateView)
+                        {
+                            PmGeneralApplicationRow DuplicateApplication = (PmGeneralApplicationRow)rv.Row;
+                            DuplicateApplication.GenApplicationStatus = "I";
+                        }
+                    }
+                }
+
+                GeneralApplication.GenApplicationStatus = AChangedRow.GenApplicationStatus;
+                ShortTermApplication.StCongressCode = AChangedRow.StCongressCode;
+
+                // only allow the medical team to save
+                if ((AChangedRow.MedicalNotes.Length > 0) && UserInfo.GUserInfo.IsInModule("MEDICAL"))
+                {
+                    Int32 IndexLabelMedical = AMainDS.PDataLabel.DefaultView.Find("MedicalNotes");
+
+                    if (IndexLabelMedical != -1)
+                    {
+                        Int32 MedicalLabelID = ((PDataLabelRow)AMainDS.PDataLabel.DefaultView[IndexLabelMedical].Row).Key;
+
+                        int IndexLabel = AMainDS.PDataLabelValuePartner.DefaultView.Find(new object[] { MedicalLabelID, AChangedRow.PartnerKey });
+
+                        if (IndexLabel != -1)
+                        {
+                            ((PDataLabelValuePartnerRow)AMainDS.PDataLabelValuePartner.DefaultView[IndexLabel].Row).ValueChar =
+                                AChangedRow.MedicalNotes;
+                        }
+                        else
+                        {
+                            PDataLabelValuePartnerRow newLabel = AMainDS.PDataLabelValuePartner.NewRowTyped();
+                            newLabel.DataLabelKey = MedicalLabelID;
+                            newLabel.PartnerKey = AChangedRow.PartnerKey;
+                            newLabel.ValueChar = AChangedRow.MedicalNotes;
+                            AMainDS.PDataLabelValuePartner.Rows.Add(newLabel);
+                        }
+                    }
+                }
+
+                // only allow the boundaries team to modify rebukes
+                if ((AChangedRow.RebukeNotes.Length > 0) && UserInfo.GUserInfo.IsInModule("BOUNDARIES"))
+                {
+                    Int32 IndexLabelRebuke = AMainDS.PDataLabel.DefaultView.Find("Rebukes");
+
+                    if (IndexLabelRebuke != -1)
+                    {
+                        Int32 RebukeLabelID = ((PDataLabelRow)AMainDS.PDataLabel.DefaultView[IndexLabelRebuke].Row).Key;
+
+                        int IndexLabel = AMainDS.PDataLabelValuePartner.DefaultView.Find(new object[] { RebukeLabelID, AChangedRow.PartnerKey });
+
+                        if (IndexLabel != -1)
+                        {
+                            ((PDataLabelValuePartnerRow)AMainDS.PDataLabelValuePartner.DefaultView[IndexLabel].Row).ValueChar =
+                                AChangedRow.RebukeNotes;
+                        }
+                        else
+                        {
+                            PDataLabelValuePartnerRow newLabel = AMainDS.PDataLabelValuePartner.NewRowTyped();
+                            newLabel.DataLabelKey = RebukeLabelID;
+                            newLabel.PartnerKey = AChangedRow.PartnerKey;
+                            newLabel.ValueChar = AChangedRow.RebukeNotes;
+                            AMainDS.PDataLabelValuePartner.Rows.Add(newLabel);
+                        }
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// store the adjusted applications to the database
         /// </summary>
@@ -462,66 +1021,7 @@ namespace Ict.Petra.Server.MConference.Applications
             {
                 foreach (ConferenceApplicationTDSApplicationGridRow row in AMainDS.ApplicationGrid.Rows)
                 {
-                    if (row.RowState == DataRowState.Modified)
-                    {
-                        AMainDS.PPerson.DefaultView.RowFilter =
-                            String.Format("{0}={1}",
-                                PPersonTable.GetPartnerKeyDBName(),
-                                row.PartnerKey);
-                        AMainDS.PmShortTermApplication.DefaultView.RowFilter =
-                            String.Format("{0}={1}",
-                                PmShortTermApplicationTable.GetPartnerKeyDBName(),
-                                row.PartnerKey);
-                        AMainDS.PmGeneralApplication.DefaultView.RowFilter =
-                            String.Format("{0}={1}",
-                                PmGeneralApplicationTable.GetPartnerKeyDBName(),
-                                row.PartnerKey);
-
-                        PPersonRow Person = (PPersonRow)AMainDS.PPerson.DefaultView[0].Row;
-                        PmShortTermApplicationRow ShortTermApplication = (PmShortTermApplicationRow)AMainDS.PmShortTermApplication.DefaultView[0].Row;
-                        PmGeneralApplicationRow GeneralApplication = (PmGeneralApplicationRow)AMainDS.PmGeneralApplication.DefaultView[0].Row;
-
-                        Person.FirstName = row.FirstName;
-                        Person.FamilyName = row.FamilyName;
-
-                        if (row.DateOfBirth.HasValue)
-                        {
-                            Person.DateOfBirth = row.DateOfBirth;
-                        }
-                        else
-                        {
-                            Person.SetDateOfBirthNull();
-                        }
-
-                        Person.Gender = row.Gender;
-                        GeneralApplication.Comment = row.Comment;
-                        GeneralApplication.RawApplicationData = row.JSONData;
-                        ShortTermApplication.StFgLeader = row.StFgLeader;
-                        ShortTermApplication.StFgCode = row.StFgCode;
-
-                        if ((GeneralApplication.GenApplicationStatus != row.GenApplicationStatus) && (row.GenApplicationStatus == "A"))
-                        {
-                            // get raw application data, we have removed it because we don't need it on the client
-                            GeneralApplication.RawApplicationData = GetRawApplicationData(GeneralApplication.PartnerKey,
-                                GeneralApplication.ApplicationKey,
-                                GeneralApplication.RegistrationOffice);
-
-                            // attempt to send an email to that applicant, telling about the accepted application
-                            TApplicationFormData data = (TApplicationFormData)TJsonTools.ImportIntoTypedStructure(typeof(TApplicationFormData),
-                                GeneralApplication.RawApplicationData);
-                            data.RawData = GeneralApplication.RawApplicationData;
-
-                            if (GeneralApplication.IsGenAppSendFldAcceptDateNull())
-                            {
-                                GeneralApplication.GenAppSendFldAcceptDate = DateTime.Today;
-                            }
-
-                            SendEmail(data);
-                        }
-
-                        GeneralApplication.GenApplicationStatus = row.GenApplicationStatus;
-                        ShortTermApplication.StCongressCode = row.StCongressCode;
-                    }
+                    InsertDataIntoConferenceApplicationTDS(row, ref AMainDS, string.Empty, null);
                 }
             }
             catch (Exception e)
@@ -531,10 +1031,45 @@ namespace Ict.Petra.Server.MConference.Applications
                 return TSubmitChangesResult.scrError;
             }
 
+
             TVerificationResultCollection VerificationResult;
             TSubmitChangesResult result = ConferenceApplicationTDSAccess.SubmitChanges(AMainDS, out VerificationResult);
 
+            // this takes 6 seconds!
             AMainDS.AcceptChanges();
+
+            return result;
+        }
+
+        /// <summary>
+        /// store the selected application to the database
+        /// </summary>
+        /// <returns></returns>
+        public static TSubmitChangesResult SaveApplication(string AEventCode, ConferenceApplicationTDSApplicationGridRow ARow)
+        {
+            ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            try
+            {
+                InsertDataIntoConferenceApplicationTDS(ARow, ref MainDS, AEventCode, Transaction);
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(e.Message);
+                TLogging.Log(e.StackTrace);
+                return TSubmitChangesResult.scrError;
+            }
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            TVerificationResultCollection VerificationResult;
+            TSubmitChangesResult result = ConferenceApplicationTDSAccess.SubmitChanges(MainDS, out VerificationResult);
+
+            ARow.AcceptChanges();
 
             return result;
         }
@@ -553,8 +1088,9 @@ namespace Ict.Petra.Server.MConference.Applications
             result += "EventRole;AppStatus;PreviousAttendance;AppComments;NotesPerson;HorstID;FamilyPartnerKey;RecordImported";
             result = "\"" + result.Replace(";", "\";\"") + "\"\n";
 
-            ConferenceApplicationTDS MainDS = GetApplications(AEventCode, "cancelled", ARegistrationOffice, null);
-            MainDS.Merge(GetApplications(AEventCode, "accepted", ARegistrationOffice, null));
+            ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
+            GetApplications(ref MainDS, AEventPartnerKey, AEventCode, "cancelled", ARegistrationOffice, null, true);
+            GetApplications(ref MainDS, AEventPartnerKey, AEventCode, "accepted", ARegistrationOffice, null, true);
 
             try
             {
@@ -666,16 +1202,45 @@ namespace Ict.Petra.Server.MConference.Applications
         }
 
         /// <summary>
+        /// Calculate the age in years at a reference date
+        /// </summary>
+        /// <param name="ADateOfBirth"></param>
+        /// <param name="AReferenceDate"></param>
+        /// <returns></returns>
+        public static Int32 CalculateAge(DateTime? ADateOfBirth, DateTime AReferenceDate)
+        {
+            if (!ADateOfBirth.HasValue)
+            {
+                return -1;
+            }
+
+            Int32 AgeInYears =
+                AReferenceDate.Year - ADateOfBirth.Value.Year;
+
+            if (ADateOfBirth.Value.DayOfYear > AReferenceDate.DayOfYear)
+            {
+                // BirthdayDuringOrAfter Reference Date
+                AgeInYears--;
+            }
+
+            return AgeInYears;
+        }
+
+        /// <summary>
         /// export accepted applications to an Excel file
         /// </summary>
         /// <returns></returns>
-        public static bool DownloadApplications(string AEventCode, ref ConferenceApplicationTDS AMainDS, MemoryStream AStream)
+        public static bool DownloadApplications(Int64 AConferenceKey, string AEventCode, ref ConferenceApplicationTDS AMainDS, MemoryStream AStream)
         {
             XmlDocument myDoc = TYml2Xml.CreateXmlDocument();
 
             try
             {
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+                PcConferenceTable ConferenceTable = PcConferenceAccess.LoadByPrimaryKey(AConferenceKey, Transaction);
+                DateTime ConferenceStartDate = ConferenceTable[0].Start.Value;
+                DateTime ConferenceEndDate = ConferenceTable[0].End.Value;
 
                 foreach (ConferenceApplicationTDSApplicationGridRow row in AMainDS.ApplicationGrid.Rows)
                 {
@@ -687,7 +1252,6 @@ namespace Ict.Petra.Server.MConference.Applications
                     PmShortTermApplicationRow ShortTermApplicationRow = PmShortTermApplicationAccess.LoadUsingTemplate(TemplateRow, Transaction)[0];
 
                     PPersonRow PersonRow = PPersonAccess.LoadByPrimaryKey(ShortTermApplicationRow.PartnerKey, Transaction)[0];
-                    PLocationRow LocationRow = PLocationAccess.LoadViaPPartner(PersonRow.FamilyKey, Transaction)[0];
                     PPartnerLocationRow PartnerLocationRow = PPartnerLocationAccess.LoadViaPPartner(PersonRow.FamilyKey, Transaction)[0];
 
                     PmGeneralApplicationRow GeneralApplicationRow =
@@ -726,11 +1290,25 @@ namespace Ict.Petra.Server.MConference.Applications
                     attr.Value = PartnerLocationRow.EmailAddress;
                     newNode.Attributes.Append(attr);
                     attr = myDoc.CreateAttribute("DateOfBirth");
-                    attr.Value = PersonRow.DateOfBirth.Value.ToString("dd-MM-yyyy");
+                    attr.Value = new TVariant(PersonRow.DateOfBirth.Value).EncodeToString();
                     newNode.Attributes.Append(attr);
                     attr = myDoc.CreateAttribute("DayOfBirth");
                     attr.Value = PersonRow.DateOfBirth.Value.ToString("MMdd");
                     newNode.Attributes.Append(attr);
+
+                    if (PersonRow.DateOfBirth.HasValue)
+                    {
+                        Int32 AgeAtStartOfConference = CalculateAge(PersonRow.DateOfBirth.Value, ConferenceStartDate);
+                        Int32 AgeAtEndOfConference = CalculateAge(PersonRow.DateOfBirth.Value, ConferenceEndDate);
+
+                        attr = myDoc.CreateAttribute("AgeAtStartOfConference");
+                        attr.Value = new TVariant(AgeAtStartOfConference).EncodeToString();
+                        newNode.Attributes.Append(attr);
+                        attr = myDoc.CreateAttribute("AgeAtEndOfConference");
+                        attr.Value = new TVariant(AgeAtEndOfConference).EncodeToString();
+                        newNode.Attributes.Append(attr);
+                    }
+
                     attr = myDoc.CreateAttribute("Gender");
                     attr.Value = PersonRow.Gender;
                     newNode.Attributes.Append(attr);
@@ -738,7 +1316,7 @@ namespace Ict.Petra.Server.MConference.Applications
                     attr.Value = ShortTermApplicationRow.StCongressCode;
                     newNode.Attributes.Append(attr);
                     attr = myDoc.CreateAttribute("ApplicationDate");
-                    attr.Value = GeneralApplicationRow.GenAppDate.ToString("dd-MM-yyyy");
+                    attr.Value = new TVariant(GeneralApplicationRow.GenAppDate).EncodeToString();
                     newNode.Attributes.Append(attr);
                     attr = myDoc.CreateAttribute("ApplicationStatus");
                     attr.Value = GeneralApplicationRow.GenApplicationStatus;
@@ -761,7 +1339,25 @@ namespace Ict.Petra.Server.MConference.Applications
                             DateAccepted = GeneralApplicationRow.GenAppRecvgFldAccept.Value;
                         }
 
-                        attr.Value = DateAccepted.ToString("dd-MM-yyyy");
+                        attr.Value = new TVariant(DateAccepted).EncodeToString();
+                        newNode.Attributes.Append(attr);
+                    }
+
+                    attr = myDoc.CreateAttribute("FieldCharged");
+                    attr.Value = ShortTermApplicationRow.StFieldCharged.ToString();
+                    newNode.Attributes.Append(attr);
+
+                    if (!ShortTermApplicationRow.IsStFgCodeNull())
+                    {
+                        attr = myDoc.CreateAttribute("FGroup");
+                        attr.Value = ShortTermApplicationRow.StFgCode.ToString();
+                        newNode.Attributes.Append(attr);
+                    }
+
+                    if (!ShortTermApplicationRow.IsStFgLeaderNull())
+                    {
+                        attr = myDoc.CreateAttribute("FGLeader");
+                        attr.Value = ShortTermApplicationRow.StFgLeader.ToString();
                         newNode.Attributes.Append(attr);
                     }
 
@@ -793,8 +1389,6 @@ namespace Ict.Petra.Server.MConference.Applications
         public static bool UploadPetraImportResult(string APartnerKeyFile)
         {
             XmlDocument partnerKeys = TCsv2Xml.ParseCSV2Xml(APartnerKeyFile);
-
-            SortedList <Int64, XmlNode>PartnerKeys = new SortedList <long, XmlNode>();
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
@@ -833,6 +1427,8 @@ namespace Ict.Petra.Server.MConference.Applications
                     RegistrationIDs);
                 DBAccess.GDBAccessObj.SelectDT(applicationTable, stmt, Transaction, null, 0, 0);
 
+                applicationTable.DefaultView.Sort = PmGeneralApplicationTable.GetPartnerKeyDBName();
+
                 foreach (XmlNode applicant in partnerKeys.DocumentElement.ChildNodes)
                 {
                     Int64 RegistrationID = Convert.ToInt64(TXMLParser.GetAttribute(applicant, "HorstID"));
@@ -842,14 +1438,11 @@ namespace Ict.Petra.Server.MConference.Applications
                     {
                         Int64 LocalOfficePartnerKey = Convert.ToInt64(TXMLParser.GetAttribute(applicant, "PersonPartnerKey"));
 
-                        applicationTable.DefaultView.RowFilter = String.Format(
-                            "{0} = {1}",
-                            PmGeneralApplicationTable.GetPartnerKeyDBName(),
-                            RegistrationID);
+                        Int32 index = applicationTable.DefaultView.Find(RegistrationID);
 
-                        if (applicationTable.DefaultView.Count > 0)
+                        if (index != -1)
                         {
-                            PmGeneralApplicationRow row = (PmGeneralApplicationRow)applicationTable.DefaultView[0].Row;
+                            PmGeneralApplicationRow row = (PmGeneralApplicationRow)applicationTable.DefaultView[index].Row;
                             row.LocalPartnerKey = LocalOfficePartnerKey;
                             row.ImportedLocalPetra = true;
                         }

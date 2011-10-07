@@ -2,7 +2,7 @@ RootNode:
     BaseYaml: ShortTermReportingForm.yaml
     FormType: report
     FormTitle: Short Termer Report
-    Namespace: Ict.Petra.Client.MReporting.Gui.MPersonnel
+    Namespace: Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm
     TemplateParameters:
         XMLFILES: [Personnel\\\\generalshorttermerreport.xml,Personnel\\\\shorttermerreport.xml]
         REPORTNAME: Short Termer Report
@@ -25,7 +25,7 @@ RootNode:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting
             Dock: Fill
         ucoShortTermerAdditionalSettings:
-            Type: Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmUC_ShortTermerAdditionalSetting
+            Type: Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm.TFrmUC_ShortTermerAdditionalSetting
             Dock: Fill
         
     ReportParameters:{ColumnFunction=TPartnerColumnFunction}

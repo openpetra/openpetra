@@ -24,7 +24,7 @@ namespace {#NAMESPACE}
   public partial class {#CLASSNAME}: System.Windows.Forms.Form
   {
     /// constructor
-    public {#CLASSNAME}(IntPtr AParentFormHandle) : base()
+    public {#CLASSNAME}(Form AParentForm) : base()
     {
       //
       // Required for Windows Form Designer support

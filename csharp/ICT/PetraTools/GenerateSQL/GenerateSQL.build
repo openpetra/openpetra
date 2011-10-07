@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<project name="OpenPetra-csharp-GenerateSQL-build">
-<property name="Namespace" value="GenerateSQL" />
+<project name="OpenPetra-csharp-Ict.Tools.GenerateSQL-build">
+<property name="Namespace" value="Ict.Tools.GenerateSQL" />
 <property name="OutputType" value="exe" />
 
 <property name="RunCsDepend" value="true" />

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -65,6 +65,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void NewRow(System.Object sender, EventArgs e)
         {
+            // reload analysis types from cache table
+            cmbDetailAnalysisTypeCode.InitialiseUserControl();
+
             if (cmbDetailAnalysisTypeCode.Count == 0)
             {
                 MessageBox.Show(Catalog.GetString("Please create an analysis type first"), Catalog.GetString("Error"),

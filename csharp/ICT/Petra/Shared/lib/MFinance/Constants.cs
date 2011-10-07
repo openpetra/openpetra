@@ -39,8 +39,20 @@ namespace Ict.Petra.Shared.MFinance
         /// <summary>GL Batch</summary>
         public const String BATCH_CANCELLED = "Cancelled";
 
-        /// <summary>GL Batch</summary>
-        public const String BATCH_HAS_TRANSACTIONS = "HasTransactions";
+        /// <summary>General Ledger</summary>
+        public const String ACCOUNT_TYPE_ASSET = "Asset";
+
+        /// <summary>General Ledger</summary>
+        public const String ACCOUNT_TYPE_LIABILITY = "Liability";
+
+        /// <summary>General Ledger</summary>
+        public const String ACCOUNT_TYPE_INCOME = "Income";
+
+        /// <summary>General Ledger</summary>
+        public const String ACCOUNT_TYPE_EXPENSE = "Expense";
+
+        /// <summary>General Ledger</summary>
+        public const String ACCOUNT_TYPE_EQUITY = "Equity";
 
         /// <summary>General Ledger</summary>
         public const String ACCOUNT_HIERARCHY_STANDARD = "STANDARD";
@@ -95,6 +107,12 @@ namespace Ict.Petra.Shared.MFinance
 
         /// <summary>Unit-Type is key-min</summary>
         public const String GROUP_DETAIL_KEY_MIN = "KEYMIN";
+
+        /// <summary>Used in Admin Grants Payable and Receivable</summary>
+        public const int ADMIN_FEE_INCOME_ACCT = 3400;
+
+        /// <summary>Used in Admin Grants Payable and Receivable</summary>
+        public const int ADMIN_FEE_EXPENSE_ACCT = 4900;
 
         /// <summary>Sets the transaction to a debit transaction</summary>
         public const bool IS_DEBIT = true;

@@ -60,12 +60,6 @@ namespace Ict.Common.DB
             ArrayList ExceptionList;
             SQLiteConnection TheConnection = null;
 
-            if (AServer.Contains("{userappdata}"))
-            {
-                AServer = AServer.Replace("{userappdata}",
-                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
-            }
-
             if (!File.Exists(AServer))
             {
                 // on Windows, we cannot store the database in userappdata during installation, because

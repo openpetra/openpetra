@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -228,7 +228,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// </summary>
         public void SupplierTransactions(object sender, EventArgs e)
         {
-            TFrmAPSupplierTransactions frm = new TFrmAPSupplierTransactions(this.Handle);
+            TFrmAPSupplierTransactions frm = new TFrmAPSupplierTransactions(this);
 
             frm.LoadSupplier(FLedgerNumber, GetCurrentlySelectedSupplier());
             frm.Show();
@@ -250,9 +250,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     out PartnerKey,
                     out ResultStringLbl,
                     out ResultLocationPK,
-                    this.Handle))
+                    this))
             {
-                TFrmAPEditSupplier frm = new TFrmAPEditSupplier(this.Handle);
+                TFrmAPEditSupplier frm = new TFrmAPEditSupplier(this);
                 frm.LedgerNumber = FLedgerNumber;
                 frm.CreateNewSupplier(PartnerKey);
                 frm.Show();
@@ -270,7 +270,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             if (PartnerKey != -1)
             {
-                TFrmAPEditSupplier frm = new TFrmAPEditSupplier(this.Handle);
+                TFrmAPEditSupplier frm = new TFrmAPEditSupplier(this);
                 frm.LedgerNumber = FLedgerNumber;
                 frm.EditSupplier(PartnerKey);
                 frm.Show();
@@ -288,7 +288,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             if (PartnerKey != -1)
             {
-                TFrmAPEditDocument frm = new TFrmAPEditDocument(this.Handle);
+                TFrmAPEditDocument frm = new TFrmAPEditDocument(this);
 
                 frm.CreateAApDocument(FLedgerNumber, PartnerKey, false);
                 frm.Show();
@@ -306,7 +306,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             if (PartnerKey != -1)
             {
-                TFrmAPEditDocument frm = new TFrmAPEditDocument(this.Handle);
+                TFrmAPEditDocument frm = new TFrmAPEditDocument(this);
 
                 frm.CreateAApDocument(FLedgerNumber, PartnerKey, true);
                 frm.Show();

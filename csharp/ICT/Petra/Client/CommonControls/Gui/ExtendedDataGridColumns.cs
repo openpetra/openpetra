@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -67,8 +67,6 @@ namespace Ict.Petra.Client.CommonControls
     public class TDataGridTextBoxColumnNotEditableNotNavigable : DataGridTextBoxColumn
     {
         private TKeyTrapTextBox FKeyTrapTextBox;
-        private System.Windows.Forms.CurrencyManager FSource;
-        private int FRowNum;
         private Boolean FIsEditing;
 
         /// <summary>todoComment</summary>
@@ -120,8 +118,6 @@ namespace Ict.Petra.Client.CommonControls
             base.Edit(source, rowNum, bounds, true, instantText, false);
 
             // readOnly, instantText, cellIsVisible
-            this.FRowNum = rowNum;
-            this.FSource = source;
             this.FKeyTrapTextBox.Parent = this.TextBox.Parent;
             this.FKeyTrapTextBox.Location = this.TextBox.Location;
             this.FKeyTrapTextBox.Size = this.TextBox.Size;

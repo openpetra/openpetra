@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -40,13 +40,14 @@ namespace Ict.Common.IO.Testing
     {
         string PathToTestData;
 
+        /// init
         [SetUp]
         public void Init()
         {
             new TLogging("test.log");
-            new TAppSettingsManager("../../../../../etc/TestClient.config");
+            new TAppSettingsManager("../../etc/TestClient.config");
 
-            PathToTestData = "../../Common/IO/TestData/".Replace("/", System.IO.Path.DirectorySeparatorChar.ToString());
+            PathToTestData = "../../csharp/ICT/Testing/lib/Common/IO/TestData/".Replace("/", System.IO.Path.DirectorySeparatorChar.ToString());
         }
 
         private XmlDocument CreateTestDoc()
@@ -84,6 +85,7 @@ namespace Ict.Common.IO.Testing
             return doc;
         }
 
+        /// test the xml writer
         [Test]
         public void TestXmlWriter()
         {
@@ -100,6 +102,7 @@ namespace Ict.Common.IO.Testing
             System.IO.File.Delete(filename + ".new");
         }
 
+        /// test the yml writer
         [Test]
         public void TestYmlWriter()
         {
@@ -114,6 +117,7 @@ namespace Ict.Common.IO.Testing
             System.IO.File.Delete(filename + ".new");
         }
 
+        /// test the csv writer
         [Test]
         public void TestCSVWriter()
         {
@@ -127,10 +131,11 @@ namespace Ict.Common.IO.Testing
             System.IO.File.Delete(filename + ".new");
         }
 
+        /// test the csv parser
         [Test]
         public void TestCSVParser()
         {
-            XmlDocument doc = CreateTestDoc();
+            CreateTestDoc();
 
             // load from csv, is it the same xml code?
             string filename = PathToTestData + "test.csv";
@@ -145,10 +150,11 @@ namespace Ict.Common.IO.Testing
             System.IO.File.Delete(filename + ".new");
         }
 
+        /// test the yml parser
         [Test]
         public void TestYMLParser()
         {
-            XmlDocument doc = CreateTestDoc();
+            CreateTestDoc();
             // load from yml, is it the same xml code?
             string filename = PathToTestData + "test.yml";
             TYml2Xml converterYml = new TYml2Xml(filename);
@@ -163,6 +169,7 @@ namespace Ict.Common.IO.Testing
             System.IO.File.Delete(filename + ".new");
         }
 
+        /// tests for yml with back slashes
         [Test]
         public void TestYMLBackSlashValue()
         {
@@ -184,6 +191,7 @@ namespace Ict.Common.IO.Testing
             System.IO.File.Delete(filename + ".new");
         }
 
+        /// test zipping strings
         [Test]
         public void TestCompressingString()
         {

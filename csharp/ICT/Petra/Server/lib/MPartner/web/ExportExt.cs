@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -265,8 +265,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
             else
             {
-                PmYearProgramApplicationRow YearProgramApplicationRow =
-                    (PmYearProgramApplicationRow)AMainDS.PmYearProgramApplication.DefaultView[0].Row;
+                // PmYearProgramApplicationRow YearProgramApplicationRow =
+                //    (PmYearProgramApplicationRow)AMainDS.PmYearProgramApplication.DefaultView[0].Row;
                 Write("");                 // YearProgramApplicationRow.HoOrientConfBookingKey
                 Write(0);                 // YearProgramApplicationRow.YpAgreedJoiningCharge
                 Write(0);                 // YearProgramApplicationRow.YpAgreedSupportFigure

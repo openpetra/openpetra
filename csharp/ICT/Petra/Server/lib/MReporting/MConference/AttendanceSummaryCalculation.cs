@@ -4,7 +4,7 @@
 // @Authors:
 //       berndr
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -176,8 +176,8 @@ namespace Ict.Petra.Server.MReporting.MConference
             // Init the Table
             FAttendanceTable = new DataTable("Accomodation Report");
 
-            TimeSpan CheckLength = AToDate.Subtract(AFromDate);
-            int DaysNumber = CheckLength.Days;
+            // TimeSpan CheckLength = AToDate.Subtract(AFromDate);
+            // int DaysNumber = CheckLength.Days;
 
             DataColumn Column = new DataColumn();
             Column.DataType = Type.GetType("System.String");

@@ -47,9 +47,6 @@
 				<value text="All Staff at "></value>
 				<value variable="param_currentstaffdate"></value>
 			</fielddetail>
-			<fielddetail condition="eq({param_selection}, all staff)">
-				<value text="All Staff"></value>
-			</fielddetail>
 		</field>
 	</pageheader>
 
@@ -97,13 +94,6 @@
 						AND PUB_pm_staff_data.pm_start_of_commitment_d &lt;= {#param_currentstaffdate#}
 						AND ( PUB_pm_staff_data.pm_end_of_commitment_d &gt;= {#param_currentstaffdate#}
 							OR PUB.pm_staff_data.pm_end_of_commitment_d IS NULL )
-				</value>
-			</queryDetail>
-			<queryDetail condition="eq({param_selection}, all staff)">
-				<value>
-						, PUB_pm_staff_data
-					WHERE
-						PUB_pm_staff_data.p_partner_key_n = PUB_p_partner_relationship.p_relation_key_n
 				</value>
 			</queryDetail>
 			
@@ -181,13 +171,6 @@
 						AND PUB_pm_staff_data.pm_start_of_commitment_d &lt;= {#param_currentstaffdate#}
 						AND ( PUB_pm_staff_data.pm_end_of_commitment_d &gt;= {#param_currentstaffdate#}
 							OR PUB.pm_staff_data.pm_end_of_commitment_d IS NULL )
-				</value>
-			</queryDetail>
-			<queryDetail condition="eq({param_selection}, all staff)">
-				<value>
-						, PUB_pm_staff_data
-					WHERE
-						PUB_pm_staff_data.p_partner_key_n = PUB_p_partner_relationship.p_partner_key_n
 				</value>
 			</queryDetail>
 			<queryDetail condition="eq({param_chkActivePartners}, true)">
@@ -780,7 +763,7 @@
 		</query>
 	</calculation>
 	
-	<calculation align="left" id="Partner 1 Date Of Birth" returns="text" returnsFormat="text">
+	<calculation align="left" id="Partner 1 Date Of Birth" returns="text" returnsFormat="formatteddate">
 		<caption><value text="P1 Date Of Birth"></value></caption>
 		<query>
 			<queryDetail>
@@ -872,7 +855,7 @@
 		</query>
 	</calculation>
 	
-	<calculation align="left" id="Partner 2 Date Of Birth" returns="text" returnsFormat="text">
+	<calculation align="left" id="Partner 2 Date Of Birth" returns="text" returnsFormat="formatteddate">
 		<caption><value text="P2 Date Of Birth"></value></caption>
 		<query>
 			<queryDetail>

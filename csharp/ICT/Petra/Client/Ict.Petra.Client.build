@@ -54,7 +54,7 @@
 <target name="custdepend">
   <!-- Generate winforms --> 
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
-  <property name="generateWinformsParameters" value="-TemplateDir:${dir.incdir.template.src}/Winforms -ResourceDir:${dir.root}/resources -petraxml:${PetraXML.file} -localisation:${GUILocalisation} -TargetPlatform:${framework::get-target-framework()}"/>
+  <property name="generateWinformsParameters" value="-TemplateDir:${dir.incdir.template.src}/Winforms -ResourceDir:${dir.root}/resources -petraxml:${PetraXML.file} -localisation:${GUILocalisation} -TargetPlatformGUI:${TargetPlatformGUI}"/>
   <property name="ClientPath" value="${dir.root}/csharp/ICT/Petra/Client"/>
   <foreach item="String" property="yamldir" in="${directories-with-yaml}" delim="," trim="Both"><do>
     <ExecDotNet program="${tool-generateWinForms}" commandline="-ymlfile:${ClientPath}/${yamldir} ${generateWinformsParameters}"/>
@@ -64,8 +64,18 @@
 <target name="generateWinform">
   <!-- Generate winforms -->
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/>
-  <property name="generateWinformsParameters" value="-TemplateDir:${dir.incdir.template.src}/Winforms -ResourceDir:${dir.root}/resources -petraxml:${PetraXML.file} -localisation:${GUILocalisation} -TargetPlatform:${framework::get-target-framework()}"/>
+  <property name="generateWinformsParameters" value="-TemplateDir:${dir.incdir.template.src}/Winforms -ResourceDir:${dir.root}/resources -petraxml:${PetraXML.file} -localisation:${GUILocalisation} -TargetPlatformGUI:${TargetPlatformGUI}"/>
   <ExecDotNet program="${tool-generateWinForms}" commandline="-ymlfile:${file} ${generateWinformsParameters}"/>
+
+  <property name="donotcompile" value="false" overwrite="false"/>
+  <if test="${donotcompile == 'false'}">
+      <!-- now compile -->
+      <nant inheritall="true" target="compile" verbose="${verbose}">
+          <buildfiles>
+            <include name="${path::combine(path::get-directory-name(path::combine(path::combine(dir.csharp, 'ICT/Petra/Client'), file)), '*.build')}"/>
+          </buildfiles>
+      </nant>
+  </if>
 </target>
 
 

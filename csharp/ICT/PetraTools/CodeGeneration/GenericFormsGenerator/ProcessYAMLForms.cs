@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -39,6 +39,10 @@ namespace Ict.Tools.CodeGeneration
         String FYamlFilename;
         String FSelectedLocalisation = null;
         SortedList FFormTypes = new SortedList();
+
+        /// <summary>
+        /// the list of xml nodes in the yaml file
+        /// </summary>
         public SortedList FXmlNodes;
 
         /// <summary>
@@ -86,6 +90,10 @@ namespace Ict.Tools.CodeGeneration
             return (TFormWriter)Activator.CreateInstance(formTypeClass, new Object[] { AFormType });
         }
 
+        /// <summary>
+        /// process the yaml document
+        /// </summary>
+        /// <returns></returns>
         public Boolean ProcessDocument()
         {
             string baseyaml;
@@ -105,7 +113,7 @@ namespace Ict.Tools.CodeGeneration
                 TCodeStorage codeStorage = new TCodeStorage(myDoc, FXmlNodes);
                 TParseYAMLFormsDefinition yamlParser = new TParseYAMLFormsDefinition(ref codeStorage);
 
-                codeStorage.FTargetWinforms = TAppSettingsManager.GetValue("TargetPlatform", "net-2.0");
+                codeStorage.FTargetWinforms = TAppSettingsManager.GetValue("TargetPlatformGUI", "net");
 
                 // should not need to be specific to special forms
                 yamlParser.LoadRecursively(FYamlFilename, FSelectedLocalisation);

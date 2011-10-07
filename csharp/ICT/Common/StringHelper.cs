@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Text;
 using System.Collections;
 using System.Collections.Specialized;
 using Ict.Common;
@@ -356,20 +357,94 @@ namespace Ict.Common
         /// <summary>
         /// need to find the matching quotes
         /// </summary>
-        /// <param name="s">String to the find the matchin quote</param>
-        /// <returns>index of the end matching quote in the string </returns>
-        public static int FindMatchingQuote(String s)
+        /// <param name="s">String to the find the matching quote</param>
+        /// <param name="position">position of the first quote</param>
+        /// <returns>index of the end matching quote in the string</returns>
+        public static int FindMatchingQuote(String s, int position)
         {
-            string localstr;
+            int counter = position + 1;
 
-            localstr = s.Substring(1);
-
-            if (localstr.IndexOf("\"\"") != -1)
+            while (counter < s.Length)
             {
-                localstr = localstr.Replace("\"\"", "  ");
+                if (s[counter] == '"')
+                {
+                    if ((counter + 1 == s.Length) || (s[counter + 1] != '"'))
+                    {
+                        return counter - 1;
+                    }
+                    else
+                    {
+                        // two double quotes mean one escaped double quote.
+                        counter++;
+                    }
+                }
+
+                counter++;
             }
 
-            return localstr.IndexOf('"');
+            // cannot find
+            throw new System.IndexOutOfRangeException();
+        }
+
+        /// <summary>
+        /// need to find the matching quotes
+        /// </summary>
+        /// <param name="s">String to the find the matching quote</param>
+        /// <param name="position">position of the first quote</param>
+        /// <returns>index of the end matching quote in the string</returns>
+        public static int FindMatchingQuote(StringBuilder s, int position)
+        {
+            int counter = position + 1;
+
+            while (counter < s.Length)
+            {
+                if (s[counter] == '"')
+                {
+                    if ((counter + 1 == s.Length) || (s[counter + 1] != '"'))
+                    {
+                        return counter - 1;
+                    }
+                    else
+                    {
+                        // two double quotes mean one escaped double quote.
+                        counter++;
+                    }
+                }
+
+                counter++;
+            }
+
+            // cannot find
+            throw new System.IndexOutOfRangeException();
+        }
+
+        /// <summary>
+        /// get the separator from the first line of CSV Data.
+        /// first test for tab, then for semicolon. otherwise default to comma
+        /// </summary>
+        /// <param name="ACSVData"></param>
+        /// <returns></returns>
+        public static string GetCSVSeparator(string ACSVData)
+        {
+            string InputSeparator = ",";
+
+            string FirstLine = ACSVData;
+
+            if (ACSVData.IndexOf("\n") > 0)
+            {
+                FirstLine = ACSVData.Substring(0, ACSVData.IndexOf("\n"));
+            }
+
+            if (FirstLine.Contains("\t"))
+            {
+                InputSeparator = "\t";
+            }
+            else if (FirstLine.Contains(";"))
+            {
+                InputSeparator = ";";
+            }
+
+            return InputSeparator;
         }
 
         /// <summary>
@@ -381,10 +456,6 @@ namespace Ict.Common
         /// <returns>the first value of the list</returns>
         public static string GetNextCSV(ref string list, string separator, Boolean ATryAllSeparators)
         {
-            string value;
-            int position;
-            Boolean escape;
-
             if (list.Length == 0)
             {
                 return "";
@@ -404,9 +475,9 @@ namespace Ict.Common
                 }
             }
 
-            position = 0;
-            escape = false;
-            value = "";
+            int position = 0;
+            bool escape = false;
+            StringBuilder value = new StringBuilder();
 
             if (!list.StartsWith(separator))
             {
@@ -427,22 +498,23 @@ namespace Ict.Common
 
                     if (list[position] == '"')
                     {
-                        string quotedstring = list.Substring(position + 1, FindMatchingQuote(list.Substring(position) + 1));
+                        // TODO: no substring???
+                        string quotedstring = list.Substring(position + 1, FindMatchingQuote(list, position) - position);
 
                         if (value.Length == 0)
                         {
-                            value += quotedstring;
+                            value.Append(quotedstring);
                         }
                         else
                         {
-                            value += "\"" + quotedstring + "\"";
+                            value.Append("\"").Append(quotedstring).Append("\"");
                         }
 
                         position += quotedstring.Length + 2;
                     }
                     else
                     {
-                        value = value + list[position];
+                        value.Append(list[position]);
                         position++;
                     }
 
@@ -471,7 +543,94 @@ namespace Ict.Common
                 }
             }
 
-            return value;
+            return value.ToString();
+        }
+
+        /// <summary>
+        /// retrieves the first value of the comma separated list, and removes the value from the list.
+        /// This version of GetNextCSV is quite optimized, but less flexible than the other version.
+        /// only supports single character separators, and works only with the specified separator
+        /// </summary>
+        /// <param name="list">the comma separated list that will get the first value removed</param>
+        /// <param name="separator">the delimiter/separator of the list</param>
+        /// <returns>the first value of the list</returns>
+        public static string GetNextCSV(ref StringBuilder list, char separator)
+        {
+            if (list.Length == 0)
+            {
+                return "";
+            }
+
+            int position = 0;
+            bool escape = false;
+            StringBuilder value = new StringBuilder();
+
+            if (list[0] != separator)
+            {
+                while (position < list.Length)
+                {
+                    if (escape)
+                    {
+                        escape = false;
+                    }
+                    else
+                    {
+                        if (list[position] == '\\')
+                        {
+                            escape = true;
+                            position++;
+                        }
+                    }
+
+                    if (list[position] == '"')
+                    {
+                        // TODO: no substring???
+                        char[] quotedstring = new char[FindMatchingQuote(list, position) - position];
+                        list.CopyTo(position + 1, quotedstring, 0, quotedstring.Length);
+
+                        if (value.Length == 0)
+                        {
+                            value.Append(quotedstring);
+                        }
+                        else
+                        {
+                            value.Append("\"").Append(quotedstring).Append("\"");
+                        }
+
+                        position += quotedstring.Length + 2;
+                    }
+                    else
+                    {
+                        value.Append(list[position]);
+                        position++;
+                    }
+
+                    if (!escape && (position < list.Length) && (list[position] == separator))
+                    {
+                        // found the next separator
+                        break;
+                    }
+                }
+            }
+
+            value.Replace("\"\"", "\"");
+
+            if (position == list.Length)
+            {
+                list.Remove(0, list.Length);
+            }
+            else
+            {
+                list.Remove(0, position + 1);
+
+                // there still was a separator, so if the list is now empty, we need to provide an empty value
+                if (list.Length == 0)
+                {
+                    list.Append("\"\"");
+                }
+            }
+
+            return value.ToString();
         }
 
         /// <summary>
@@ -484,6 +643,26 @@ namespace Ict.Common
         public static string GetNextCSV(ref string list, string separator)
         {
             return GetNextCSV(ref list, separator, false);
+        }
+
+        /// <summary>
+        /// overload for GetNextCSV.
+        /// if the value is empty, the default value will be used
+        /// </summary>
+        /// <param name="list">separated values; the first value will be removed</param>
+        /// <param name="separator">delimiter to be used</param>
+        /// <param name="ADefaultValue">to be used if the csv value is empty</param>
+        /// <returns>the first value of the string</returns>
+        public static string GetNextCSV(ref string list, string separator, string ADefaultValue)
+        {
+            string result = GetNextCSV(ref list, separator, false);
+
+            if (result.Length == 0)
+            {
+                result = ADefaultValue;
+            }
+
+            return result;
         }
 
         /// <summary>

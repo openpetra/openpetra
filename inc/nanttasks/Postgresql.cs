@@ -28,10 +28,17 @@ using System.Diagnostics;
 
 namespace Ict.Tools.NAntTasks
 {
+    /// <summary>
+    /// run commands against a MySQL database
+    /// </summary>
     [TaskName("psql")]
     public class PsqlTask : NAnt.Core.Task
     {
         private string FPsqlExecutable;
+
+        /// <summary>
+        /// path to the psql executable
+        /// </summary>
         [TaskAttribute("exe", Required = true)]
         public string PsqlExecutable {
             get
@@ -45,6 +52,10 @@ namespace Ict.Tools.NAntTasks
         }
 
         private string FDatabase;
+
+        /// <summary>
+        /// name of the database
+        /// </summary>
         [TaskAttribute("database", Required = true)]
         public string Database {
             get
@@ -58,6 +69,10 @@ namespace Ict.Tools.NAntTasks
         }
 
         private string FSQLCommand = String.Empty;
+
+        /// <summary>
+        /// the sql command that should be executed
+        /// </summary>
         [TaskAttribute("sqlcommand", Required = false)]
         public string SQLCommand {
             get
@@ -71,6 +86,10 @@ namespace Ict.Tools.NAntTasks
         }
 
         private string FSQLFile = String.Empty;
+
+        /// <summary>
+        /// name of the file that contains sql statements that should be executed
+        /// </summary>
         [TaskAttribute("sqlfile", Required = false)]
         public string SQLFile {
             get
@@ -84,6 +103,10 @@ namespace Ict.Tools.NAntTasks
         }
 
         private string FOutputFile = String.Empty;
+
+        /// <summary>
+        /// name of the file that contains sql statements that should be executed
+        /// </summary>
         [TaskAttribute("outputfile", Required = false)]
         public string OutputFile {
             get
@@ -96,7 +119,28 @@ namespace Ict.Tools.NAntTasks
             }
         }
 
+        private string FUsername = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+
+        /// <summary>
+        /// the database user. otherwise defaulting to Windows username
+        /// </summary>
+        [TaskAttribute("username", Required = false)]
+        public string Username {
+            get
+            {
+                return FUsername;
+            }
+            set
+            {
+                FUsername = value;
+            }
+        }
+
         private string FPassword = String.Empty;
+
+        /// <summary>
+        /// the password of the database user
+        /// </summary>
         [TaskAttribute("password", Required = false)]
         public string Password {
             get
@@ -109,24 +153,29 @@ namespace Ict.Tools.NAntTasks
             }
         }
 
+        /// <summary>
+        /// run the task
+        /// </summary>
         protected override void ExecuteTask()
         {
             bool Failure = false;
+
             System.Diagnostics.Process process;
             process = new System.Diagnostics.Process();
             process.EnableRaisingEvents = false;
             process.StartInfo.FileName = FPsqlExecutable;
 
             Environment.SetEnvironmentVariable("PGPASSWORD", FPassword, EnvironmentVariableTarget.Process);
+            Environment.SetEnvironmentVariable("PGOPTIONS", "--client-min-messages=warning", EnvironmentVariableTarget.Process);
 
             if (FSQLCommand.Length > 0)
             {
-                process.StartInfo.Arguments = "-c \"" + FSQLCommand + "\"";
+                process.StartInfo.Arguments = "-q -c \"" + FSQLCommand + "\"";
                 Log(Level.Info, FSQLCommand);
             }
             else if (FSQLFile.Length > 0)
             {
-                process.StartInfo.Arguments = "-f \"" + FSQLFile + "\"";
+                process.StartInfo.Arguments = "-q -f \"" + FSQLFile + "\"";
                 Log(Level.Info, "Load sql commands from file: " + FSQLFile);
             }
 
@@ -134,6 +183,13 @@ namespace Ict.Tools.NAntTasks
             {
                 process.StartInfo.Arguments += " -t -o \"" + FOutputFile + "\"";
             }
+
+            if (FUsername.Contains("\\"))
+            {
+                FUsername = FUsername.Substring(FUsername.IndexOf("\\") + 1);
+            }
+
+            process.StartInfo.Arguments += " --username=" + FUsername;
 
             process.StartInfo.Arguments += " " + FDatabase;
 

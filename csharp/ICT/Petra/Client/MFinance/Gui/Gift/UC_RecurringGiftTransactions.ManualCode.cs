@@ -182,14 +182,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FInKeyMinistryChanging = true;
             try
             {
-                Object val = cmbMinistry.SelectedValueCell;
+                Int64 rcp = cmbMinistry.GetSelectedInt64();
 
-                if (val != null)
-                {
-                    Int64 rcp = (Int64)val;
-
-                    txtDetailRecipientKey.Text = String.Format("{0:0000000000}", rcp);
-                }
+                txtDetailRecipientKey.Text = String.Format("{0:0000000000}", rcp);
             }
             finally
             {
@@ -335,8 +330,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (giftDetailView.Count == 0)
             {
-                int oldGiftNumber = gift.GiftTransactionNumber;
-                int oldBatchNumber = gift.BatchNumber;
+                // TODO int oldGiftNumber = gift.GiftTransactionNumber;
+                // TODO int oldBatchNumber = gift.BatchNumber;
 
                 FMainDS.ARecurringGift.Rows.Remove(gift);
 
@@ -391,7 +386,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // this is coded manually, to use the correct gift record
 
             // we create the table locally, no dataset
-            ARecurringGiftDetailRow NewRow = NewGift();
+            NewGift(); // returns ARecurringGiftDetailRow
 
             FPetraUtilsObject.SetChangedFlag();
 
@@ -410,7 +405,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // this is coded manually, to use the correct gift record
 
             // we create the table locally, no dataset
-            ARecurringGiftDetailRow NewRow = NewGiftDetail((RecurringGiftBatchTDSARecurringGiftDetailRow)FPreviouslySelectedDetailRow);
+            NewGiftDetail((RecurringGiftBatchTDSARecurringGiftDetailRow)FPreviouslySelectedDetailRow); // returns ARecurringGiftDetailRow
 
             FPetraUtilsObject.SetChangedFlag();
 

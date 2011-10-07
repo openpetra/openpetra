@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,9 +23,11 @@
 //
 using System;
 using System.Windows.Forms;
+using System.Reflection;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Verification;
+using Ict.Petra.Shared;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors;
 
@@ -49,7 +51,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             cmbBaseCurrency.SetSelectedString("EUR");
             cmbIntlCurrency.SetSelectedString("USD");
             cmbCountryCode.SetSelectedString("DE");
-            
+
             btnOK.Text = "C&reate Ledger";
         }
 
@@ -87,18 +89,30 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 {
                     MessageBox.Show(Catalog.GetString("Problem: No Ledger has been created"),
                         Catalog.GetString("Error"));
-                }                
+                }
             }
             else
-            {                
+            {
                 MessageBox.Show(String.Format(Catalog.GetString(
                             "The ledger {0} ({1}) has been created successfully. Please assign permissions to the users in System Manager."),
                         txtLedgerName.Text,
                         nudLedgerNumber.Value),
                     Catalog.GetString("Success"),
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                
-                Close();                                                
+
+                // reload permissions for user
+                UserInfo.GUserInfo = TRemote.MSysMan.Security.UserManager.ReloadCachedUserInfo();
+
+                // reload navigation
+                Form MainWindow = FPetraUtilsObject.GetCallerForm();
+                MethodInfo method = MainWindow.GetType().GetMethod("LoadNavigationUI");
+
+                if (method != null)
+                {
+                    method.Invoke(MainWindow, new object[] { });
+                }
+
+                Close();
             }
         }
     }

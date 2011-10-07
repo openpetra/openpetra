@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<project name="OpenPetra-csharp-GenerateI18N-build">
-<property name="Namespace" value="GenerateI18N" />
+<project name="OpenPetra-csharp-Ict.Tools.GenerateI18N-build">
+<property name="Namespace" value="Ict.Tools.GenerateI18N" />
 <property name="OutputType" value="exe" />
 
 <property name="RunCsDepend" value="true" />

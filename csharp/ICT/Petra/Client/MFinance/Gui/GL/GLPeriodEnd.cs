@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -37,8 +37,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// is used to put into TPeriodEnd, adding a boolean constant to
         /// switch to the EndMonthMode
         /// </summary>
-        /// <param name="AParentFormHandle"></param>
-        public TPeriodEndMonth(IntPtr AParentFormHandle) : base(AParentFormHandle, true)
+        /// <param name="AParentForm"></param>
+        public TPeriodEndMonth(Form AParentForm) : base(AParentForm, true)
         {
         }
     }
@@ -54,8 +54,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// is used to put into TPeriodEnd, adding a boolean constant to
         /// switch to the EndYearMode
         /// </summary>
-        /// <param name="AParentFormHandle"></param>
-        public TPeriodEndYear(IntPtr AParentFormHandle) : base(AParentFormHandle, false)
+        /// <param name="AParentForm"></param>
+        public TPeriodEndYear(Form AParentForm) : base(AParentForm, false)
         {
         }
     }
@@ -72,10 +72,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <summary>
         /// Non UINavigation.yml standard constructor
         /// </summary>
-        /// <param name="AParentFormHandle">Standard parameter</param>
+        /// <param name="AParentForm">Standard parameter</param>
         /// <param name="AIsMonthMode">true = month-to-month mode,
         /// false = year-to-month mode</param>
-        public TPeriodEnd(IntPtr AParentFormHandle, bool AIsMonthMode) : base()
+        public TPeriodEnd(Form AParentForm, bool AIsMonthMode) : base()
         {
             //
             // The InitializeComponent() call is required for Windows Forms designer support.

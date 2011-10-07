@@ -4,7 +4,7 @@
 // @Authors:
 //       berndr
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Windows.Forms;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Petra.Shared.MConference;
@@ -36,8 +37,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="AParentFormHandle"></param>
-        public TFrmChargedFieldReport(IntPtr AParentFormHandle) : base(AParentFormHandle)
+        /// <param name="AParentForm"></param>
+        public TFrmChargedFieldReport(Form AParentForm) : base(AParentForm)
         {
             this.Text = Catalog.GetString("Charged Field Report");
 

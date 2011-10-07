@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -462,9 +462,11 @@ namespace Ict.Petra.Server.MPartner.Partner
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    Console.WriteLine(this.GetType().FullName + ".GetNewFamilyID: committed own transaction.");
-#endif
+
+                    if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_TRACE)
+                    {
+                        Console.WriteLine(this.GetType().FullName + ".GetNewFamilyID: committed own transaction.");
+                    }
                 }
             }
             return ReturnValue;
@@ -788,9 +790,11 @@ namespace Ict.Petra.Server.MPartner.Partner
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    Console.WriteLine(this.GetType().FullName + ".GetAvailableFamilyID: committed own transaction.");
-#endif
+
+                    if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_TRACE)
+                    {
+                        Console.WriteLine(this.GetType().FullName + ".GetAvailableFamilyID: committed own transaction.");
+                    }
                 }
             }
             return ReturnValue;
