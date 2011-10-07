@@ -480,6 +480,7 @@ namespace Ict.Tools.DevelopersAssistant
             {
                 return;
             }
+            SetBranchDependencies();
 
             // Optionally run initConfigFiles to get everything matched up
             msg = "Do you want to run the 'InitConfigFiles' task to initialize the other configuration files?";

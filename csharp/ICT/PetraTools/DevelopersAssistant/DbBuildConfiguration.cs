@@ -51,7 +51,7 @@ namespace Ict.Tools.DevelopersAssistant
         /// </summary>
         public static string[] Systems =
         {
-            "<default>", "sqlite", "postgresql", "mysql"
+            "<default>", "SQLite", "PostgreSQL", "mySQL"
         };
 
         public DbBuildConfiguration(string BranchLocation)
@@ -255,7 +255,7 @@ namespace Ict.Tools.DevelopersAssistant
                     }
                     else
                     {
-                        bRet &= SetPropertyValue(xmlDoc, "DBMS.Type", dbms);
+                        bRet &= SetPropertyValue(xmlDoc, "DBMS.Type", dbms.ToLower());
                     }
 
                     if (dbName == String.Empty)
