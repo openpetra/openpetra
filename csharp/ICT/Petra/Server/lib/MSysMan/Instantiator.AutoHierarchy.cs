@@ -1315,6 +1315,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance.WebConnectors
         /// generated method from connector
         public System.Boolean LoadLanguageAndCultureFromUserDefaults()
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintainLanguageSettingsWebConnector), "LoadLanguageAndCultureFromUserDefaults", ";");
             return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintainLanguageSettingsWebConnector.LoadLanguageAndCultureFromUserDefaults();
         }
 
@@ -1338,6 +1339,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance.WebConnectors
         public System.Boolean CheckPasswordQuality(System.String APassword,
                                                    out TVerificationResultCollection AVerification)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector), "CheckPasswordQuality", ";STRING;TVERIFICATIONRESULTCOLLECTION;");
             return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector.CheckPasswordQuality(APassword, out AVerification);
         }
 

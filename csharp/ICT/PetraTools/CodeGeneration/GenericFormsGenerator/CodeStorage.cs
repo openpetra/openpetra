@@ -154,7 +154,7 @@ namespace Ict.Tools.CodeGeneration
             string pathAndName = System.IO.Path.GetDirectoryName(Path.GetFullPath(this.FFilename)).Replace("\\", "/");
 
             // cut off after /Client/lib
-            pathAndName = pathAndName.Substring(0, pathAndName.IndexOf("ICT/Petra/Client/") + "ICT/Petra/Client/".Length);
+            pathAndName = pathAndName.Substring(0, pathAndName.IndexOf("ICT/Petra/Client/") + "ICT/Petra/Client".Length);
 
             // use only last part of namespace after Ict.Petra.Client
             ANamespaceAndClassname = ANamespaceAndClassname.Substring("Ict.Petra.Client".Length);

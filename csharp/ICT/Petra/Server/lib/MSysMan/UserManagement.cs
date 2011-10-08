@@ -106,6 +106,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         /// this will do some simple checks and return false if the password is not strong enough
         /// </summary>
         /// <returns></returns>
+        [RequireModulePermission("NONE")]
         public static bool CheckPasswordQuality(string APassword, out TVerificationResultCollection AVerification)
         {
             // at least 8 characters, at least one digit, at least one letter
