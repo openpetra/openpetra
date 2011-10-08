@@ -46,7 +46,7 @@ namespace Ict.Tools.DevelopersAssistant
     {
         /// <summary>
         /// One item for each Nant target that the Assistant supports.
-        ///   Where possible the enumeration should be the parameter string for Nant 
+        ///   Where possible the enumeration should be the parameter string for Nant
         /// </summary>
         public enum TaskItem
         {

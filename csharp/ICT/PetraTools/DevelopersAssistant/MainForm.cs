@@ -480,6 +480,7 @@ namespace Ict.Tools.DevelopersAssistant
             {
                 return;
             }
+
             SetBranchDependencies();
 
             // Optionally run initConfigFiles to get everything matched up
@@ -506,7 +507,7 @@ namespace Ict.Tools.DevelopersAssistant
 
         private void btnSaveCurrentDbBuildConfig_Click(object sender, EventArgs e)
         {
-            DbBuildConfiguration dbCfg = new DbBuildConfiguration(txtBranchLocation.Text);
+            new DbBuildConfiguration(txtBranchLocation.Text);
         }
 
         private void chkUseAutoLogon_CheckedChanged(object sender, EventArgs e)
@@ -592,7 +593,7 @@ namespace Ict.Tools.DevelopersAssistant
         {
             try
             {
-                UInt32 i = Convert.ToUInt32(txtFlashAfterSeconds.Text);
+                Convert.ToUInt32(txtFlashAfterSeconds.Text);
                 bHaveAlertedFlashSetting = false;
             }
             catch (Exception)
