@@ -33,6 +33,7 @@ using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;

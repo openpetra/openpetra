@@ -30,7 +30,7 @@ using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Remoting.Shared;
 
-namespace Ict.Petra.Client.App.Core
+namespace Ict.Common.Remoting.Client
 {
     /// <summary>
     /// Creates a Tread which regularly calls into remoted server-side Objects that

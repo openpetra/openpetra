@@ -29,6 +29,7 @@ using System.Threading;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared.Interfaces.MSysMan;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;

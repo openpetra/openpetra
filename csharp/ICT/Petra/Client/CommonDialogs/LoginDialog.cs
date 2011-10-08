@@ -4,7 +4,7 @@
 // @Authors:
 //       markusm, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -41,6 +41,7 @@ using System.Threading;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MSysMan;
 using Ict.Petra.Client.CommonForms;
@@ -289,7 +290,7 @@ namespace Ict.Petra.Client.CommonDialogs
             AError = "";
             try
             {
-                ReturnValue = TConnectionManagement.GConnectionManagement.ConnectToServer(AUserName, APassWord,
+                ReturnValue = ((TConnectionManagement)TConnectionManagement.GConnectionManagement).ConnectToServer(AUserName, APassWord,
                     out FProcessID,
                     out FWelcomeMessage,
                     out FSystemEnabled,

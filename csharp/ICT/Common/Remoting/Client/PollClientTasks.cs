@@ -29,7 +29,7 @@ using System.Runtime.Remoting;
 using Ict.Common;
 using Ict.Common.Remoting.Shared;
 
-namespace Ict.Petra.Client.App.Core
+namespace Ict.Common.Remoting.Client
 {
     /// <summary>
     /// Creates a Thread which calls a Method of the server-side Class

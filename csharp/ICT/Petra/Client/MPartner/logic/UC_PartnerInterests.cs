@@ -39,6 +39,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared;
+using Ict.Common.Remoting.Client;
 
 namespace Ict.Petra.Client.MPartner
 {

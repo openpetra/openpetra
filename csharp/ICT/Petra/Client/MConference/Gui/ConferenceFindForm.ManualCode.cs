@@ -37,6 +37,7 @@ using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared.Interfaces.MConference;
 using Ict.Petra.Shared.MConference.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Common.Remoting.Client;
 //using Ict.Petra.Shared.MReporting;
 
 namespace Ict.Petra.Client.MConference.Gui

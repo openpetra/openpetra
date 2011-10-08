@@ -33,7 +33,6 @@ using Ict.Common;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Client;
 using Ict.Common.Remoting.Sinks.Encryption;
-using Ict.Petra.Shared.Interfaces.ServerAdminInterface;
 
 namespace Ict.Petra.ServerAdmin.App.Core
 {
@@ -71,7 +70,7 @@ namespace Ict.Petra.ServerAdmin.App.Core
                     ChannelServices.RegisterChannel(Channel, false);
 
                     RemotingConfiguration.RegisterWellKnownClientType(
-                        typeof(Ict.Petra.Shared.Interfaces.ServerAdminInterface.IServerAdminInterface),
+                        typeof(IServerAdminInterface),
                         String.Format("tcp://localhost:{0}/Servermanager", TAppSettingsManager.GetValue("Server.IPBasePort")));
                 }
                 else
@@ -79,7 +78,7 @@ namespace Ict.Petra.ServerAdmin.App.Core
                     RemotingConfiguration.Configure(ConfigFile, false);
                 }
 
-                iRemote = (IServerAdminInterface)(Ict.Common.TRemotingHelper.GetObject(typeof(IServerAdminInterface)));
+                iRemote = (IServerAdminInterface)(TRemotingHelper.GetObject(typeof(IServerAdminInterface)));
 
                 if ((iRemote != null) && (TLogging.DebugLevel > 0))
                 {

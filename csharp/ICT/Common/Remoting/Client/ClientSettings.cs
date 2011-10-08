@@ -26,7 +26,7 @@ using System.IO;
 using Ict.Common.IO;
 using Ict.Common;
 
-namespace Ict.Petra.Client.App.Core
+namespace Ict.Common.Remoting.Client
 {
     /// <summary>
     /// Holds read-only Client settings (from .NET Configuration File and Command

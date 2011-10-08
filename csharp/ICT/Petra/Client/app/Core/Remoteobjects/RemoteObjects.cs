@@ -24,6 +24,7 @@
 using System;
 using Ict.Common;
 using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared.Interfaces.MCommon;
 using Ict.Petra.Shared.Interfaces.MConference;
 using Ict.Petra.Shared.Interfaces.MPartner;
@@ -45,22 +46,8 @@ namespace Ict.Petra.Client.App.Core.RemoteObjects
     /// The properties MPartner, MFinance, etc. represent the top-most level of the
     /// Petra Partner, Finance, etc. Petra Module Namespaces in the PetraServer.
     /// </summary>
-    public class TRemote : object
+    public class TRemote : TRemoteBase
     {
-        /// <summary>Reference to the ClientManager</summary>
-        public static IClientManagerInterface ClientManager
-        {
-            get
-            {
-                return UClientManager;
-            }
-
-            set
-            {
-                UClientManager = value;
-            }
-        }
-
         /// <summary>Reference to the topmost level of the Petra Common Module Namespace</summary>
         public static IMCommonNamespace MCommon
         {
@@ -124,7 +111,6 @@ namespace Ict.Petra.Client.App.Core.RemoteObjects
             }
         }
 
-        private static IClientManagerInterface UClientManager;
         private static IMCommonNamespace UCommonObject;
         private static IMConferenceNamespace UConferenceObject;
         private static IMPartnerNamespace UPartnerObject;
@@ -145,8 +131,8 @@ namespace Ict.Petra.Client.App.Core.RemoteObjects
             IMFinanceNamespace AFinanceObject,
             IMReportingNamespace AReportingObject,
             IMSysManNamespace ASysManObject)
+            : base(AClientManager)
         {
-            UClientManager = AClientManager;
             USysManObject = ASysManObject;
             UConferenceObject = AConferenceObject;
             UPartnerObject = APartnerObject;

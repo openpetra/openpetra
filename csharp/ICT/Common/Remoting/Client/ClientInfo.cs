@@ -27,7 +27,7 @@ using System.IO;
 using Ict.Common;
 using Ict.Common.IO;
 
-namespace Ict.Petra.Client.App.Core
+namespace Ict.Common.Remoting.Client
 {
     /// <summary>
     /// The TClientInfo class holds information about the currently running instance

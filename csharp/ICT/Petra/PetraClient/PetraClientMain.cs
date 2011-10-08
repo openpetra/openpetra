@@ -33,6 +33,7 @@ using System.Globalization;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.IO;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner; // Implicit reference
 using Ict.Petra.Shared.Security;
@@ -309,6 +310,11 @@ namespace Ict.Petra.Client.App.PetraClient
             new TLogging(TClientSettings.GetPathLog() + Path.DirectorySeparatorChar + "PetraClient.log");
 
             Catalog.Init();
+
+            // initialize the client
+            TClientTasksQueue.ClientTasksInstanceType = typeof(TClientTaskInstance);
+            TConnectionManagementBase.ConnectorType = typeof(TConnector);
+            TConnectionManagementBase.GConnectionManagement = new TConnectionManagement();
 
             // TODO another Catalog.Init("org", "./locale") for organisation specific words?
 

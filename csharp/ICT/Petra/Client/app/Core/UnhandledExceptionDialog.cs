@@ -31,6 +31,7 @@ using System.Net.Sockets;
 using System.Runtime.Remoting;
 
 using Ict.Common;
+using Ict.Common.Remoting.Client;
 
 namespace Ict.Petra.Client.App.Core
 {

@@ -31,6 +31,7 @@ using Ict.Common.Data; // Implicit reference
 using Ict.Common.IO;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared.Interfaces.Plugins.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using GNU.Gettext;

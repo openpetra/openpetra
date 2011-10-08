@@ -24,6 +24,7 @@
 using System;
 using System.Windows.Forms;
 using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MReporting.Logic;

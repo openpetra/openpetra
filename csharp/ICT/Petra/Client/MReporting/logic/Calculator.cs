@@ -31,6 +31,7 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common;
 using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Client;
 using System.Data;
 using System.IO;
 using System.Threading;

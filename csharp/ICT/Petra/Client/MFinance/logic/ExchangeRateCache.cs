@@ -24,6 +24,7 @@
 using System;
 using System.Collections.Generic;
 using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 

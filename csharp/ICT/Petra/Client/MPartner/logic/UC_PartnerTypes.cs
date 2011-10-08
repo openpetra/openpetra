@@ -28,6 +28,7 @@ using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;

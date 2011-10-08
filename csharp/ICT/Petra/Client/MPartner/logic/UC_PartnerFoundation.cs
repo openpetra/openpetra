@@ -28,6 +28,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
