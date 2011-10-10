@@ -73,6 +73,10 @@ namespace Ict.Petra.Server.App.Core
             // Create SystemDefaults Cache
             FSystemDefaultsCache = new TSystemDefaultsCache();
 
+            TRemoteLoader.CLIENTDOMAIN_DLLNAME = "Ict.Petra.Server.app.Core";
+            TRemoteLoader.CLIENTDOMAIN_CLASSNAME = "Ict.Petra.Server.App.Core.TClientDomainManager";
+            TClientAppDomainConnectionBase.ClientAppDomainConnectionType = typeof(TClientAppDomainConnection);
+
             TCacheableTablesManager.InitializeUnit();
             TCacheableTablesManager.GCacheableTablesManager = new TCacheableTablesManager(new TDelegateSendClientTask(TClientManager.QueueClientTask));
 
