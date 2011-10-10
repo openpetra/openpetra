@@ -121,7 +121,8 @@ namespace Ict.Petra.Shared.MFinance
         public const bool IS_CREDIT = false;
 
         //TODO: Cleanup
-		/* 0001 Logical values for debit & credit transactions. */
+
+        /* 0001 Logical values for debit & credit transactions. */
         public const bool DEBIT = true;
         public const bool CREDIT = false;
         public const bool POSTED = true;
@@ -142,11 +143,13 @@ namespace Ict.Petra.Shared.MFinance
 
         /* 0004 public const EARNINGS-BF-ACCT RET B/F */
         public const int EARNINGS_BF_ACCT = 9700;
+
         /* public const DIRECT-XFER-ACCT 5600 */
         public const int DIRECT_XFER_ACCT = 5501;
         public const int ICH_SETTLEMENT_ACCT = 5601;
         public const int ICH_ACCT = 8500;
         public const int INTERNAL_XFER_ACCT = 9800;
+
         /* 0005 Admin fee accounts. */
         public const int FUND_TRANSFER_INCOME_ACC = 3300;
         public const int FUND_TRANSFER_EXPENSE_ACCT = 4800;
@@ -184,7 +187,7 @@ namespace Ict.Petra.Shared.MFinance
         public const string DEBTOR_HEADING = "DRS";
         public const string CREDITOR_HEADING = "CRS";
         public const string TOTAL_ASSET_HEADING = "ASSETS";
-        public const string TOTAL_LIABILITY_HEADING= "LIABS";
+        public const string TOTAL_LIABILITY_HEADING = "LIABS";
         public const string EQUITY_HEADING = "RET EARN";
 
         //* 0002 Cash Book/Gift Receipt Status */
@@ -192,7 +195,7 @@ namespace Ict.Petra.Shared.MFinance
         public const bool TRANSACTION_POSTED = true;
 
         //* Motivation/Fee information */
-        //* OMSS Designation code to Motiv Detail (in Motiv Group: GIFT) */ 
+        //* OMSS Designation code to Motiv Detail (in Motiv Group: GIFT) */
         public const string OMSS_DESIGNATION_1 = "SUPPORT";
         public const string OMSS_DESIGNATION_2 = "PERSONAL";
         public const string OMSS_DESIGNATION_3 = "FIELD";
@@ -211,8 +214,8 @@ namespace Ict.Petra.Shared.MFinance
 
         //* Form Design Preprocessors 0009 */
         public const string FORM_RECEIPT = "Receipt";
-        public const string STD_RECEIPT ="Standard";
-        public const string YEARLY_RECEIPT ="Annual";
+        public const string STD_RECEIPT = "Standard";
+        public const string YEARLY_RECEIPT = "Annual";
         //* 0011 */
         public const string FORM_REMIT = "Remittance";
         public const string STD_REMIT = "Standard";
@@ -233,8 +236,8 @@ namespace Ict.Petra.Shared.MFinance
         public const string AP_PARTIALLY_PAID = "PARTIALLY PAID";
 
         //*defines for some system account properties*/
-        public const string ACC_PROP_BANK_ACCOUNT ="Bank Account";
-        public const string ACC_PROP_METHOD_OF_PAYMENT ="MOP";
+        public const string ACC_PROP_BANK_ACCOUNT = "Bank Account";
+        public const string ACC_PROP_METHOD_OF_PAYMENT = "MOP";
 
         //*defines for using MOP Type for special processing for direct debit and credit card gifts. */
         public const char MOP_TYPE_INDICATOR_CHAR = ':';
@@ -246,7 +249,6 @@ namespace Ict.Petra.Shared.MFinance
         //   carry forward into the same CC or the standard CC */
         public const string CARRY_FORWARD_IN_SAME_CC = "SAMECC";
         public const string CARRY_FORWARD_IN_STANDARD_CC = "STANDARDCC";
-
     }
 
     /// <summary>
@@ -316,8 +318,8 @@ namespace Ict.Petra.Shared.MFinance
         /// </summary>
             REVAL
     }
-    
-        /// <summary>
+
+    /// <summary>
     /// enum for several runtime environments
     /// </summary>
     public enum TLedgerInitialisationArrayEnum
@@ -330,70 +332,70 @@ namespace Ict.Petra.Shared.MFinance
         /// <summary>
         /// Currency = 2
         /// </summary>
-        liaCurrency,
+            liaCurrency,
 
         /// <summary>
         /// AcctPeriods = 3
         /// </summary>
-        liaAcctPeriods,
+            liaAcctPeriods,
 
         /// <summary>
         /// DataRetain = 4
         /// </summary>
-        liaDataRetain,
-        
+            liaDataRetain,
+
         /// <summary>
         /// PL = 5
         /// </summary>
-        liaPL,
-        
+            liaPL,
+
         /// <summary>
         /// ILT = 6
         /// </summary>
-        liaILT,
-        
+            liaILT,
+
         /// <summary>
         /// Forex = 7
         /// </summary>
-        liaForex,
+            liaForex,
 
         /// <summary>
         /// SysInt = 8
         /// </summary>
-        liaSysInt,
+            liaSysInt,
 
         /// <summary>
         /// SuspAcct = 9
         /// </summary>
-        liaSuspAcct,
+            liaSuspAcct,
 
         /// <summary>
         /// Cal = 10
         /// </summary>
-        liaCal,
+            liaCal,
 
         /// <summary>
         /// Budget = 11
         /// </summary>
-        liaBudget,
+            liaBudget,
 
         /// <summary>
         /// FwdPosting = 12
         /// </summary>
-        liaFwdPosting,
+            liaFwdPosting,
 
         /// <summary>
         /// CurrentPeriod = 13
         /// </summary>
-        liaCurrentPeriod,
-        
+            liaCurrentPeriod,
+
         /// <summary>
         /// RevaluationRun = 14
         /// </summary>
-        liaRevaluationRun
+            liaRevaluationRun
     };
 
-    
+
     /// <summary>
     /// enum for several runtime environments
     /// </summary>
@@ -418,11 +420,10 @@ namespace Ict.Petra.Shared.MFinance
         /// NeedBankingDetailKey = 4
         /// </summary>
         moptNeedBankingDetailKey,
-        
+
         /// <summary>
         /// BankingTypesAllowed = 5
         /// </summary>
         moptBankingTypesAllowed
     }
-
 }

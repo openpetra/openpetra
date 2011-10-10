@@ -68,8 +68,8 @@ namespace Ict.Petra.Server.MFinance.ICH.UIConnectors
         public bool PerformStewardshipCalculation(out TVerificationResultCollection AVerificationResult)
         {
             TStewardshipCalculation StewardshipCalc = new TStewardshipCalculation();
-            
+
             return StewardshipCalc.PerformStewardshipCalculation(FLedgerNumber, FPeriodNumber, out AVerificationResult);
         }
-   }
+    }
 }

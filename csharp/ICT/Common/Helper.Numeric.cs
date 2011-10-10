@@ -31,7 +31,6 @@ namespace Ict.Common
     /// </summary>
     public class THelperNumeric
     {
-
         /// <summary>
         ///  Returns the number of decimal places
         ///  in a OpenPetra numeric format. Relates to x_dp.p
@@ -41,16 +40,15 @@ namespace Ict.Common
         public static int CalcNumericFormatDecimalPlaces(string ANumericFormat)
         {
             int DecimalPos = ANumericFormat.IndexOf(".");
-            
-            if (DecimalPos < 0 || DecimalPos == (ANumericFormat.Length - 1))
+
+            if ((DecimalPos < 0) || (DecimalPos == (ANumericFormat.Length - 1)))
             {
-                return 0;        
+                return 0;
             }
             else
             {
-                 return ANumericFormat.Substring(DecimalPos + 1).Length;
+                return ANumericFormat.Substring(DecimalPos + 1).Length;
             }
         }
-        
     }
 }

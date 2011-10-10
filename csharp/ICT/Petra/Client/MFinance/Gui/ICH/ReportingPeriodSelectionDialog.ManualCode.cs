@@ -45,7 +45,7 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 
 
 namespace Ict.Petra.Client.MFinance.Gui.ICH
-{   
+{
     /// <summary>
     /// Enums holding the possible reporting period selection modes
     /// </summary>
@@ -60,14 +60,14 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
         /// </summary>
         rpsmICHStewardshipCalc
     }
-    
-	
-	/// manual methods for the generated window
+
+
+    /// manual methods for the generated window
     public partial class TFrmReportingPeriodSelectionDialog : System.Windows.Forms.Form
     {
         /// <summary>Reference to the screen's UIConnector (serverside Business Object)</summary>
         private IICHUIConnectorsStewardshipCalculation FUIConnectorStewardshipCalc;
-        
+
         /// <summary>
         /// Field to store the reporting period selection mode
         /// </summary>
@@ -81,13 +81,12 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
         private int FCurrentPeriod;
         private int FCurrentYear;
 
-        
+
         private void InitializeManualCode()
         {
-
         }
 
-        public void CustomClosingHandler(System.Object sender, System.ComponentModel.CancelEventArgs e)        
+        public void CustomClosingHandler(System.Object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (!CanClose())
             {
@@ -105,38 +104,38 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                 FPetraUtilsObject.TFrmPetra_Closing(this, null);
             }
         }
-        
+
         private void BtnOK_Click(Object Sender, EventArgs e)
         {
             TVerificationResultCollection VerificationResult;
-            
-            switch(this.ReportingPeriodSelectionMode)
+
+            switch (this.ReportingPeriodSelectionMode)
             {
                 case TICHReportingPeriodSelectionModeEnum.rpsmICHStewardshipCalc:
-                    
-                   if(GetStewardshipCalculationUIConnector(FLedgerNumber, cmbReportPeriod.GetSelectedInt32()))
-                   {
-                       MessageBox.Show("TStewardshipCalculationUIConnector successfully acquired!");
-                       
-                       if(FUIConnectorStewardshipCalc.PerformStewardshipCalculation(out VerificationResult))
-                       {
-                            MessageBox.Show("PerformStewardshipCalculation ran successfully!");    
-                       }
-                       else
-                       {
-                           MessageBox.Show(
-                                Messages.BuildMessageFromVerificationResult("PerformStewardshipCalculation was UNSUCCESSFUL", 
+
+                    if (GetStewardshipCalculationUIConnector(FLedgerNumber, cmbReportPeriod.GetSelectedInt32()))
+                    {
+                        MessageBox.Show("TStewardshipCalculationUIConnector successfully acquired!");
+
+                        if (FUIConnectorStewardshipCalc.PerformStewardshipCalculation(out VerificationResult))
+                        {
+                            MessageBox.Show("PerformStewardshipCalculation ran successfully!");
+                        }
+                        else
+                        {
+                            MessageBox.Show(
+                                Messages.BuildMessageFromVerificationResult("PerformStewardshipCalculation was UNSUCCESSFUL",
                                     VerificationResult));
-                       }
-                   }
-                    
-                   break;
-                   
+                        }
+                    }
+
+                    break;
+
                 case TICHReportingPeriodSelectionModeEnum.rpsmICHStatement:
-                   throw new NotImplementedException("ICH Statement functionality is not yet implemented!");
+                    throw new NotImplementedException("ICH Statement functionality is not yet implemented!");
             }
         }
-        
+
         /// <summary>
         /// Gets or sets the ICH reporting period selection mode
         /// </summary>
@@ -144,16 +143,17 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
         {
             get
             {
-                 return FReportingPeriodSelectionMode;     
+                return FReportingPeriodSelectionMode;
             }
-            
+
             set
             {
                 FReportingPeriodSelectionMode = value;
+
                 if (FReportingPeriodSelectionMode == TICHReportingPeriodSelectionModeEnum.rpsmICHStatement)
                 {
-                   chkEmailReport.Visible = true;
-                   lblEmailReport.Visible = true;
+                    chkEmailReport.Visible = true;
+                    lblEmailReport.Visible = true;
                 }
                 else
                 {
@@ -170,34 +170,32 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
         {
             set
             {
-                
-                FLedgerNumber=value;
-                string  currentPeriodDBName; 
-                 
+                FLedgerNumber = value;
+                string currentPeriodDBName;
+
                 DataTable Table = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountingPeriodList, FLedgerNumber);
 
                 //Ict.Petra.Client.CommonControls.TCmbAutoPopulated this.Controls["cmbReportPeriod"];
                 TCmbAutoPopulated cmb = cmbReportPeriod;
-                
+
                 TRemote.MFinance.Reporting.UIConnectors.SelectLedger(FLedgerNumber);
                 TRemote.MFinance.Reporting.UIConnectors.GetLedgerPeriodDetails(out FNumberAccountingPeriods,
-                                                                               out FNumberForwardingPeriods,
-                                                                               out FCurrentPeriod,
-                                                                               out FCurrentYear);
+                    out FNumberForwardingPeriods,
+                    out FCurrentPeriod,
+                    out FCurrentYear);
 
                 Table.DefaultView.Sort = AAccountingPeriodTable.GetAccountingPeriodDescDBName() + " ASC";
-                
+
                 currentPeriodDBName = AAccountingPeriodTable.GetAccountingPeriodNumberDBName();
                 Table.DefaultView.RowFilter = currentPeriodDBName + " >= " + FCurrentPeriod +
-                                              " AND " + 
+                                              " AND " +
                                               currentPeriodDBName + " <= " + FNumberForwardingPeriods + FCurrentPeriod + "";
-                                              //" AND " + AAccountingPeriodTable. ;
-                
-                cmb.InitialiseUserControl(Table, AAccountingPeriodTable.GetAccountingPeriodNumberDBName(), AAccountingPeriodTable.GetAccountingPeriodDescDBName(), null, null);
-    
-                cmb.AppearanceSetup(new int[] { -1 }, -1);
+                //" AND " + AAccountingPeriodTable. ;
 
-            
+                cmb.InitialiseUserControl(Table,
+                    AAccountingPeriodTable.GetAccountingPeriodNumberDBName(), AAccountingPeriodTable.GetAccountingPeriodDescDBName(), null, null);
+
+                cmb.AppearanceSetup(new int[] { -1 }, -1);
             }
         }
 
@@ -267,6 +265,5 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
 //                MessageBox.Show("Unregistered UIConnector.");
             }
         }
-        
     }
 }
