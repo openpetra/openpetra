@@ -587,42 +587,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         }
 
         /// <summary>
-        /// get corporate exchange rate for the given currencies and date;
-        /// </summary>
-        /// <param name="ACurrencyFrom"></param>
-        /// <param name="ACurrencyTo"></param>
-        /// <param name="AStartDate"></param>
-        /// <param name="AEndDate"></param>
-        /// <param name="AExchangeRate"></param>
-        /// <returns>true if a exchange rate was found for the date. Otherwise false</returns>
-        private static bool GetCorporateExchangeRate(string ACurrencyFrom,
-            string ACurrencyTo,
-            DateTime AStartDate,
-            DateTime AEndDate,
-            out decimal AExchangeRate)
-        {
-            return TExchangeRateTools.GetCorporateExchangeRate(ACurrencyFrom, ACurrencyTo, AStartDate, AEndDate, out AExchangeRate);
-        }
-
-        /// <summary>
-        /// get corporate exchange rate from the previous years for the given currencies and date;
-        /// </summary>
-        /// <param name="ACurrencyFrom"></param>
-        /// <param name="ACurrencyTo"></param>
-        /// <param name="AStartDate"></param>
-        /// <param name="AEndDate"></param>
-        /// <param name="AExchangeRate"></param>
-        /// <returns>true if a exchange rate was found for the date. Otherwise false</returns>
-        private static bool GetCorporateExchangeRateFromPreviousYears(string ACurrencyFrom,
-            string ACurrencyTo,
-            DateTime AStartDate,
-            DateTime AEndDate,
-            out decimal AExchangeRate)
-        {
-            return TExchangeRateTools.GetCorporateExchangeRateFromPreviousYears(ACurrencyFrom, ACurrencyTo, AStartDate, AEndDate, out AExchangeRate);
-        }
-
-        /// <summary>
         /// cancel a GL Batch
         /// </summary>
         /// <param name="MainDS"></param>

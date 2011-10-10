@@ -72,15 +72,6 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
         /// <summary>
-        ///
-        /// </summary>
-        public TCurrencyInfo(string ACurrencyCode, TDBTransaction AMasterTransaction)
-        {
-            LoadDatabase();
-            baseCurrencyRow = SetRowToCode(ACurrencyCode);
-        }
-
-        /// <summary>
         /// Constructor which automatically loads the table and sets the value of
         /// the base currency table and foreign currency table.
         /// </summary>
@@ -325,21 +316,21 @@ namespace Ict.Petra.Server.MFinance.Common
     }
 
     /// <summary>
-    /// todoComment
+    /// a cache for corporate exchange rates. mainly used by the reporting tool
     /// </summary>
-    public class TExchangeRateCache
+    public class TCorporateExchangeRateCache
     {
         private List <TExchangeRate>exchangeRates;
 
         /// <summary>
         /// constructor
         /// </summary>
-        public TExchangeRateCache() : base()
+        public TCorporateExchangeRateCache() : base()
         {
             exchangeRates = new List <TExchangeRate>();
         }
 
-        private decimal GetExchangeRateFromDB(TDataBase databaseConnection,
+        private decimal GetCorporateExchangeRateFromDB(TDataBase databaseConnection,
             int pv_ledger_number_i,
             int pv_year_i,
             int pv_period_i,
@@ -384,7 +375,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="pv_period_i"></param>
         /// <param name="currentFinancialYear"></param>
         /// <returns></returns>
-        public decimal GetExchangeRate(TDataBase databaseConnection,
+        public decimal GetCorporateExchangeRate(TDataBase databaseConnection,
             int pv_ledger_number_i,
             int pv_year_i,
             int pv_period_i,
@@ -401,7 +392,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 }
             }
 
-            ReturnValue = GetExchangeRateFromDB(databaseConnection, pv_ledger_number_i, pv_year_i, pv_period_i, currentFinancialYear);
+            ReturnValue = GetCorporateExchangeRateFromDB(databaseConnection, pv_ledger_number_i, pv_year_i, pv_period_i, currentFinancialYear);
             TExchangeRate exchangeRateElement2 = new TExchangeRate();
             exchangeRateElement2.ledger_number_i = pv_ledger_number_i;
             exchangeRateElement2.year_i = pv_year_i;
@@ -526,11 +517,8 @@ namespace Ict.Petra.Server.MFinance.Common
 
             if (!GetCorporateExchangeRate(ACurrencyFrom, ACurrencyTo, AStartDate, AEndDate, out ExchangeRate))
             {
-                if (!GetCorporateExchangeRateFromPreviousYears(ACurrencyFrom, ACurrencyTo, AStartDate, AEndDate, out ExchangeRate))
-                {
-                    ExchangeRate = 1.0M;
-                    TLogging.Log("cannot find rate for " + ACurrencyFrom + " " + ACurrencyTo);
-                }
+                ExchangeRate = 1.0M;
+                TLogging.Log("cannot find rate for " + ACurrencyFrom + " " + ACurrencyTo);
             }
 
             return ExchangeRate;
@@ -614,371 +602,6 @@ namespace Ict.Petra.Server.MFinance.Common
             }
 
             return true;
-        }
-
-        /// <summary>
-        /// get corporate exchange rate from the previous years for the given currencies and date;
-        /// </summary>
-        /// <param name="ACurrencyFrom"></param>
-        /// <param name="ACurrencyTo"></param>
-        /// <param name="AStartDate"></param>
-        /// <param name="AEndDate"></param>
-        /// <param name="AExchangeRate"></param>
-        /// <returns>true if a exchange rate was found for the date. Otherwise false</returns>
-        public static bool GetCorporateExchangeRateFromPreviousYears(string ACurrencyFrom,
-            string ACurrencyTo,
-            DateTime AStartDate,
-            DateTime AEndDate,
-            out decimal AExchangeRate)
-        {
-            AExchangeRate = decimal.MinValue;
-
-            bool NewTransaction;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
-
-            APrevYearCorpExRateTable PrevTempTable = new APrevYearCorpExRateTable();
-            APrevYearCorpExRateRow PrevTemplateRow = PrevTempTable.NewRowTyped(false);
-
-            PrevTemplateRow.FromCurrencyCode = ACurrencyFrom;
-            PrevTemplateRow.ToCurrencyCode = ACurrencyTo;
-
-            APrevYearCorpExRateTable PrevExchangeRates = APrevYearCorpExRateAccess.LoadUsingTemplate(PrevTemplateRow, Transaction);
-
-            if (PrevExchangeRates.Count > 0)
-            {
-                // sort rates by date, look for rate just before the date we are looking for
-                PrevExchangeRates.DefaultView.Sort = APrevYearCorpExRateTable.GetDateEffectiveFromDBName();
-                PrevExchangeRates.DefaultView.RowFilter = APrevYearCorpExRateTable.GetDateEffectiveFromDBName() + ">= #" +
-                                                          AStartDate.ToString("yyyy-MM-dd") + "# AND " +
-                                                          APrevYearCorpExRateTable.GetDateEffectiveFromDBName() + "<= #" +
-                                                          AEndDate.ToString("yyyy-MM-dd") + "#";
-
-                if (PrevExchangeRates.DefaultView.Count > 0)
-                {
-                    AExchangeRate = ((APrevYearCorpExRateRow)PrevExchangeRates.DefaultView[0].Row).RateOfExchange;
-                }
-            }
-
-            if (AExchangeRate == decimal.MinValue)
-            {
-                // try other way round
-                PrevTemplateRow.FromCurrencyCode = ACurrencyTo;
-                PrevTemplateRow.ToCurrencyCode = ACurrencyFrom;
-
-                PrevExchangeRates = APrevYearCorpExRateAccess.LoadUsingTemplate(PrevTemplateRow, Transaction);
-
-                if (PrevExchangeRates.Count > 0)
-                {
-                    // sort rates by date, look for rate just before the date we are looking for
-                    PrevExchangeRates.DefaultView.Sort = APrevYearCorpExRateTable.GetDateEffectiveFromDBName();
-                    PrevExchangeRates.DefaultView.RowFilter = APrevYearCorpExRateTable.GetDateEffectiveFromDBName() + ">= #" +
-                                                              AStartDate.ToString("yyyy-MM-dd") + "# AND " +
-                                                              APrevYearCorpExRateTable.GetDateEffectiveFromDBName() + "<= #" +
-                                                              AEndDate.ToString("yyyy-MM-dd") + "#";
-
-                    if (PrevExchangeRates.DefaultView.Count > 0)
-                    {
-                        AExchangeRate = 1 / ((APrevYearCorpExRateRow)PrevExchangeRates.DefaultView[0].Row).RateOfExchange;
-                    }
-                }
-            }
-
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
-
-            if (AExchangeRate == decimal.MinValue)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        /// Euro Preprocessors
-        private const string EURO_CURRENCY = "EUR";
-        private const int EURO_INTERMEDIATE_DP = 4;
-
-        /// <summary>
-        /// Convert between European Currencies.
-        /// If either currency is non euro then perform calculation using supplied rate.
-        /// If both are euro (including eur) then do triangulation.
-        /// </summary>
-        /// <param name="AInputAmount"></param>
-        /// <param name="AExchangeRate"></param>
-        /// <param name="ACurrencyFrom"></param>
-        /// <param name="ACurrencyTo"></param>
-        /// <param name="ADBTransaction"></param>
-        /// <param name="AVerificationResult"></param>
-        /// <returns>Converted Amount</returns>
-        public static decimal ConvertBetweenEuropeanCurrencies(decimal AInputAmount,
-            decimal AExchangeRate,
-            string ACurrencyFrom,
-            string ACurrencyTo,
-            TDBTransaction ADBTransaction,
-            ref TVerificationResultCollection AVerificationResult
-            )
-        {
-            decimal OutputAmount = AInputAmount;
-
-            int NumDecPlaces;
-            decimal IntermediateResult;
-            decimal ExchangeRate;
-
-            //Error handling
-            string ErrorContext = String.Empty;
-            string ErrorMessage = String.Empty;
-            TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
-
-            try
-            {
-                if (ACurrencyFrom == ACurrencyTo)
-                {
-                    ErrorContext = "Convert Between European Currencies";
-                    ErrorMessage = String.Format(Catalog.GetString("Currencies are the same so no conversion required"));
-                    ErrorType = TResultSeverity.Resv_Noncritical;
-                    throw new System.InvalidOperationException(ErrorMessage);
-                }
-
-                ACurrencyTable CurrencyTbFrom = new ACurrencyTable();
-                ACurrencyRow TemplateRow = (ACurrencyRow)CurrencyTbFrom.NewRowTyped(false);
-
-                TemplateRow.CurrencyCode = ACurrencyFrom;
-                TemplateRow.InEmu = true;
-
-                StringCollection operators = StringHelper.InitStrArr(new string[] { "=", "=" });
-                //StringCollection OrderList = new StringCollection();
-
-                ACurrencyTable CurrencyTableFrom = ACurrencyAccess.LoadUsingTemplate(TemplateRow, operators, null, ADBTransaction);
-
-                ACurrencyTable CurrencyTbTo = new ACurrencyTable();
-                ACurrencyRow TemplateRow2 = (ACurrencyRow)CurrencyTbTo.NewRowTyped(false);
-
-                TemplateRow2.CurrencyCode = ACurrencyTo;
-                TemplateRow2.InEmu = true;
-
-                StringCollection operators2 = StringHelper.InitStrArr(new string[] { "=", "=" });
-                //StringCollection OrderList = new StringCollection();
-
-                ACurrencyTable CurrencyTableTo = ACurrencyAccess.LoadUsingTemplate(TemplateRow2, operators2, null, ADBTransaction);
-
-                if ((CurrencyTableFrom.Count == 0) || (CurrencyTableTo.Count == 0))
-                {
-                    CurrencyTableTo = ACurrencyAccess.LoadByPrimaryKey(ACurrencyTo, ADBTransaction);
-
-                    if (CurrencyTableTo.Count == 0)
-                    {
-                        ErrorContext = "Convert Between European Currencies";
-                        ErrorMessage = String.Format(Catalog.GetString(
-                                "Unable to access the record for currency: {0} in the currencies table."), ACurrencyTo);
-                        ErrorType = TResultSeverity.Resv_Noncritical;
-                        throw new System.InvalidOperationException(ErrorMessage);
-                    }
-                    else
-                    {
-                        ACurrencyRow CurrencyRowTo = (ACurrencyRow)CurrencyTableTo.Rows[0];
-                        OutputAmount =
-                            Math.Round(AInputAmount / AExchangeRate, THelperNumeric.CalcNumericFormatDecimalPlaces(CurrencyRowTo.DisplayFormat));
-                    }
-                }
-                else /* EMU conversion required*/
-                {
-                    ACurrencyRow CurrencyRowTo = (ACurrencyRow)CurrencyTableTo.Rows[0];
-                    NumDecPlaces = THelperNumeric.CalcNumericFormatDecimalPlaces(CurrencyRowTo.DisplayFormat);
-
-                    /* Find the exchange rate into EMU */
-                    /* Calculate the rate */
-                    string CurrencyFrom = ACurrencyFrom.ToUpper();
-                    string CurrencyTo = ACurrencyTo.ToUpper();
-
-                    if (CurrencyFrom == EURO_CURRENCY)
-                    {
-                        ExchangeRate = GetRate(ACurrencyTo, ACurrencyFrom, ADBTransaction, ref AVerificationResult);
-
-                        if (ExchangeRate == 0)
-                        {
-                            ErrorContext = "Convert Between European Currencies";
-                            ErrorMessage =
-                                String.Format(Catalog.GetString(
-                                        "Unable to access the daily exchange rate for currency: {0} in the exchange rate table."), ACurrencyTo);
-                            ErrorType = TResultSeverity.Resv_Noncritical;
-                            throw new System.InvalidOperationException(ErrorMessage);
-                        }
-                        else
-                        {
-                            OutputAmount = Math.Round((AInputAmount * ExchangeRate), NumDecPlaces);
-                        }
-                    }
-                    else if (CurrencyTo == EURO_CURRENCY)
-                    {
-                        ExchangeRate = GetRate(ACurrencyFrom, ACurrencyTo, ADBTransaction, ref AVerificationResult);
-
-                        if (ExchangeRate == 0)
-                        {
-                            ErrorContext = "Convert Between European Currencies";
-                            ErrorMessage =
-                                String.Format(Catalog.GetString(
-                                        "Unable to access the daily exchange rate for currency: {0} in the exchange rate table."), ACurrencyTo);
-                            ErrorType = TResultSeverity.Resv_Noncritical;
-                            throw new System.InvalidOperationException(ErrorMessage);
-                        }
-                        else
-                        {
-                            OutputAmount = Math.Round((AInputAmount / ExchangeRate), NumDecPlaces);
-                        }
-                    }
-                    else //Go via Euro
-                    {
-                        ExchangeRate = GetRate(ACurrencyFrom, EURO_CURRENCY, ADBTransaction, ref AVerificationResult);
-
-                        if (ExchangeRate == 0)
-                        {
-                            ErrorContext = "Convert Between European Currencies";
-                            ErrorMessage =
-                                String.Format(Catalog.GetString(
-                                        "Unable to access the daily exchange rate for currency: {0} in the exchange rate table."), ACurrencyTo);
-                            ErrorType = TResultSeverity.Resv_Noncritical;
-                            throw new System.InvalidOperationException(ErrorMessage);
-                        }
-                        else
-                        {
-                            IntermediateResult = Math.Round((AInputAmount / ExchangeRate), EURO_INTERMEDIATE_DP);
-                            ExchangeRate = GetRate(ACurrencyTo, EURO_CURRENCY, ADBTransaction, ref AVerificationResult);
-
-                            OutputAmount = Math.Round((IntermediateResult * ExchangeRate), NumDecPlaces);
-                        }
-                    }
-                }
-            }
-            catch (InvalidOperationException ex)
-            {
-                AVerificationResult.Add(new TVerificationResult(ErrorContext, ex.Message, ErrorType));
-                OutputAmount = AInputAmount;
-            }
-            catch (Exception ex)
-            {
-                ErrorContext = "Converting Between European Countries";
-                ErrorMessage = String.Format(Catalog.GetString("Unknown error while converting from: '{0}' to: '{1}'." +
-                        Environment.NewLine + Environment.NewLine + ex.ToString()),
-                    ACurrencyFrom,
-                    ACurrencyTo
-                    );
-                ErrorType = TResultSeverity.Resv_Critical;
-
-                AVerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
-                OutputAmount = 0;
-            }
-
-            return OutputAmount;
-        }
-
-        /// <summary>
-        /// Retrieves the relevant exchange rate
-        /// </summary>
-        /// <param name="ACurrencyFrom"></param>
-        /// <param name="ACurrencyTo"></param>
-        /// <param name="ADBTransaction"></param>
-        /// <param name="AVerificationResult"></param>
-        /// <returns></returns>
-        private static decimal GetRate(string ACurrencyFrom,
-            string ACurrencyTo,
-            TDBTransaction ADBTransaction,
-            ref TVerificationResultCollection AVerificationResult
-            )
-        {
-            decimal RateOfExchange = 0;
-
-            //Error handling
-            string ErrorContext = String.Empty;
-            string ErrorMessage = String.Empty;
-            TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
-
-            try
-            {
-                ADailyExchangeRateTable DailyExchangeRateTb = new ADailyExchangeRateTable();
-                ADailyExchangeRateRow TemplateRow = (ADailyExchangeRateRow)DailyExchangeRateTb.NewRowTyped(false);
-
-                TemplateRow.FromCurrencyCode = ACurrencyFrom;
-                TemplateRow.ToCurrencyCode = ACurrencyTo;
-
-                StringCollection operators = StringHelper.InitStrArr(new string[] { "=", "=" });
-                StringCollection OrderList = new StringCollection();
-                //Order by Fee Code
-                OrderList.Add("ORDER BY " + ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " DESC");
-                OrderList.Add(ADailyExchangeRateTable.GetTimeEffectiveFromDBName() + " DESC");
-
-                ADailyExchangeRateTable DailyExchangeRateTable = ADailyExchangeRateAccess.LoadUsingTemplate(TemplateRow,
-                    operators,
-                    null,
-                    ADBTransaction,
-                    OrderList,
-                    0,
-                    0);
-
-                if (DailyExchangeRateTable.Count > 0)
-                {
-                    ADailyExchangeRateRow DailyExchangeRateRow = (ADailyExchangeRateRow)DailyExchangeRateTable.Rows[0];
-                    RateOfExchange = DailyExchangeRateRow.RateOfExchange;
-                }
-                else
-                {
-                    //RUN s_errmsg.p ("X_0027":U,
-                    ErrorContext = "Get Daily Exchange Rate";
-                    ErrorMessage = String.Format(Catalog.GetString(
-                            "Rate for converting from {0} to {1} does not exist. Do you wish to add it?"), ACurrencyFrom, ACurrencyTo);
-                    ErrorType = TResultSeverity.Resv_Noncritical;
-                    //TODO:Rather than throw an error ask if the user wants to add a new exchange rate
-
-                    /*****************************************************
-                    *  int dialogResult;
-                    *  //throw new System.InvalidOperationException(ErrorMessage);
-                    *
-                    *  RateOfExchange = 0;
-                    *
-                    *  if (dialogResult = 1)
-                    *  {
-                    *    // Call the new rate entry screen.
-                    *    RUN as1070ex.w (?,
-                    *           "new":U,
-                    *           ?,
-                    *           pv_fromurr,
-                    *           pv_tourr,
-                    *           TODAY).
-                    *    Simply rerun this procedure
-                    *    RateOfExchange = GetRate(ACurrencyFrom, ACurrencyTo, ref AVerificationResult)
-                    *
-                    *  }
-                    *  else
-                    *  {
-                    *   ErrorContext = "Get Daily Exchange Rate";
-                    *   ErrorMessage = String.Format(Catalog.GetString("Rate for converting from {0} to {1} does not exist."), ACurrencyFrom, ACurrencyTo);
-                    *   ErrorType = TResultSeverity.Resv_Noncritical;
-                    *   throw new System.InvalidOperationException(ErrorMessage);
-                    *  }
-                    *****************************************************/
-                }
-            }
-            catch (InvalidOperationException ex)
-            {
-                AVerificationResult.Add(new TVerificationResult(ErrorContext, ex.Message, ErrorType));
-                RateOfExchange = 0;
-            }
-            catch (Exception ex)
-            {
-                ErrorContext = "Get Exchange Rate";
-                ErrorMessage = String.Format(Catalog.GetString("Unknown error while getting exchange rate from: '{0}' to: '{1}'." +
-                        Environment.NewLine + Environment.NewLine + ex.ToString()),
-                    ACurrencyFrom,
-                    ACurrencyTo
-                    );
-                ErrorType = TResultSeverity.Resv_Critical;
-
-                AVerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
-                RateOfExchange = 0;
-            }
-
-            return RateOfExchange;
         }
 
         /// <summary>
