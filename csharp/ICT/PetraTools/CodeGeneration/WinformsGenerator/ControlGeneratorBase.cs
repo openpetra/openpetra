@@ -617,7 +617,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 {
                     // for Mono, no other size information required; AutoSize would make the elements too high
                     // for Windows .Net, we need AutoSize, otherwise the controls have no size at all
-                    if (writer.CodeStorage.FTargetWinforms == "net-2.0")
+                    if (writer.CodeStorage.FTargetWinforms == "net")
                     {
                         writer.SetControlProperty(ctrl, "AutoSize", "true");
                     }

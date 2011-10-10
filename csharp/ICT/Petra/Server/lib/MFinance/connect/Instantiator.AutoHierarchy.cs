@@ -2606,7 +2606,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
                                         System.Decimal[] ANewExchangeRate,
                                         out TVerificationResultCollection AVerificationResult)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TRevaluationWebConnector), "Revaluate", ";INT;INT;STRING;DECIMAL;TVERIFICATIONRESULTCOLLECTION;");
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TRevaluationWebConnector), "Revaluate", ";INT;INT;STRING.ARRAY;DECIMAL.ARRAY;TVERIFICATIONRESULTCOLLECTION;");
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TRevaluationWebConnector.Revaluate(ALedgerNum, AAccoutingPeriod, AForeignCurrency, ANewExchangeRate, out AVerificationResult);
         }
 

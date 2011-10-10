@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -349,8 +349,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.cmbAddresseeType.ListTable = TCmbAutoPopulated.TListTableEnum.AddresseeTypeList;
             this.cmbAddresseeType.Location = new System.Drawing.Point(0, 0);
             this.cmbAddresseeType.Name = "cmbAddresseeType";
-            this.cmbAddresseeType.SelectedItem = ((System.Object)(resources.GetObject('c' + "mbAddresseeType.SelectedItem")));
-            this.cmbAddresseeType.SelectedValue = null;
             this.cmbAddresseeType.Size = new System.Drawing.Size(100, 22);
             this.cmbAddresseeType.TabIndex = 10;
 
@@ -394,8 +392,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.cmbPersonGender.ListTable = TCmbAutoPopulated.TListTableEnum.GenderList;
             this.cmbPersonGender.Location = new System.Drawing.Point(80, 40);
             this.cmbPersonGender.Name = "cmbPersonGender";
-            this.cmbPersonGender.SelectedItem = ((System.Object)(resources.GetObject('c' + "mbPersonGender.SelectedItem")));
-            this.cmbPersonGender.SelectedValue = null;
             this.cmbPersonGender.Size = new System.Drawing.Size(90, 22);
             this.cmbPersonGender.TabIndex = 6;
 
@@ -631,8 +627,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.cmbPartnerStatus.ListTable = TCmbAutoPopulated.TListTableEnum.PartnerStatusList;
             this.cmbPartnerStatus.Location = new System.Drawing.Point(118, 20);
             this.cmbPartnerStatus.Name = "cmbPartnerStatus";
-            this.cmbPartnerStatus.SelectedItem = ((System.Object)(resources.GetObject('c' + "mbPartnerStatus.SelectedItem")));
-            this.cmbPartnerStatus.SelectedValue = null;
             this.cmbPartnerStatus.Size = new System.Drawing.Size(100, 22);
             this.cmbPartnerStatus.TabIndex = 14;
 

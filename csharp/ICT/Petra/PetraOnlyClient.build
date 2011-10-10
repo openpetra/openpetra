@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!-- this is useful for building releases, eg. a client that is compiled for Mono runtime -->
+<project name="Petra-Build-OnlyClient">
+
+<target name="PetraClient" depends="client" >
+  <nant inheritall="false" target="${target}" 
+        buildfile="PetraClient/PetraClient.build" />
+</target>
+
+<target name="client" depends="" >
+  <nant inheritall="false" target="${target}" 
+        buildfile="Client/Ict.Petra.Client.build" />
+</target>
+
+<target name="client-plugins" depends="client" >
+  <nant inheritall="false" target="${target}"
+        buildfile="ClientPlugins/ClientPlugins.build" />
+</target>
+
+<target name="internal-subdirs" 
+        depends="client,client-plugins,PetraClient" />
+
+<!-- Include default implementation -->
+<include buildfile="../../../inc/nant/OpenPetra.subdirs.xml"/> 
+
+</project>
