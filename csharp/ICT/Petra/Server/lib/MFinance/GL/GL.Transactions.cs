@@ -569,84 +569,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         [RequireModulePermission("NONE")]
         public static decimal GetDailyExchangeRate(string ACurrencyFrom, string ACurrencyTo, DateTime ADateEffective)
         {
-            if (ACurrencyFrom == ACurrencyTo)
-            {
-                return 1.0M;
-            }
-
-            bool NewTransaction;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
-
-            ADailyExchangeRateRow fittingRate = null;
-
-            // TODO: get the most recent exchange rate for the given date and currencies
-            bool oppositeRate = false;
-            ADailyExchangeRateTable rates = ADailyExchangeRateAccess.LoadByPrimaryKey(ACurrencyFrom, ACurrencyTo, ADateEffective, 0, Transaction);
-
-            if (rates.Count == 0)
-            {
-                // try other way round
-                rates = ADailyExchangeRateAccess.LoadByPrimaryKey(ACurrencyTo, ACurrencyFrom, ADateEffective, 0, Transaction);
-                oppositeRate = true;
-            }
-
-            if (rates.Count == 1)
-            {
-                fittingRate = rates[0];
-            }
-            else if (rates.Count == 0)
-            {
-                // TODO: collect exchange rate from the web; save to db
-                // see tracker http://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=87
-
-                // Or look for most recent exchange rate???
-                ADailyExchangeRateTable tempTable = new ADailyExchangeRateTable();
-                ADailyExchangeRateRow templateRow = tempTable.NewRowTyped(false);
-                templateRow.FromCurrencyCode = ACurrencyFrom;
-                templateRow.ToCurrencyCode = ACurrencyTo;
-                oppositeRate = false;
-                rates = ADailyExchangeRateAccess.LoadUsingTemplate(templateRow, Transaction);
-
-                if (rates.Count == 0)
-                {
-                    templateRow.FromCurrencyCode = ACurrencyTo;
-                    templateRow.ToCurrencyCode = ACurrencyFrom;
-                    oppositeRate = true;
-                    rates = ADailyExchangeRateAccess.LoadUsingTemplate(templateRow, Transaction);
-                }
-
-                if (rates.Count > 0)
-                {
-                    // sort rates by date, look for rate just before the date we are looking for
-                    rates.DefaultView.Sort = ADailyExchangeRateTable.GetDateEffectiveFromDBName();
-                    rates.DefaultView.RowFilter = ADailyExchangeRateTable.GetDateEffectiveFromDBName() + "<= #" +
-                                                  ADateEffective.ToString("yyyy-MM-dd") + "#";
-
-                    if (rates.DefaultView.Count > 0)
-                    {
-                        fittingRate = (ADailyExchangeRateRow)rates.DefaultView[rates.DefaultView.Count - 1].Row;
-                    }
-                }
-            }
-
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
-
-            if (fittingRate != null)
-            {
-                if (oppositeRate)
-                {
-                    return 1.0M / fittingRate.RateOfExchange;
-                }
-
-                return fittingRate.RateOfExchange;
-            }
-
-            TLogging.Log("cannot find rate for " + ACurrencyFrom + " " + ACurrencyTo);
-
-            return 1.0M;
+            return TExchangeRateTools.GetDailyExchangeRate(ACurrencyFrom, ACurrencyTo, ADateEffective);
         }
 
         /// <summary>
@@ -660,23 +583,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         [RequireModulePermission("NONE")]
         public static decimal GetCorporateExchangeRate(string ACurrencyFrom, string ACurrencyTo, DateTime AStartDate, DateTime AEndDate)
         {
-            decimal ExchangeRate = 1.0M;
-
-            if (ACurrencyFrom == ACurrencyTo)
-            {
-                return ExchangeRate;
-            }
-
-            if (!GetCorporateExchangeRate(ACurrencyFrom, ACurrencyTo, AStartDate, AEndDate, out ExchangeRate))
-            {
-                if (!GetCorporateExchangeRateFromPreviousYears(ACurrencyFrom, ACurrencyTo, AStartDate, AEndDate, out ExchangeRate))
-                {
-                    ExchangeRate = 1.0M;
-                    TLogging.Log("cannot find rate for " + ACurrencyFrom + " " + ACurrencyTo);
-                }
-            }
-
-            return ExchangeRate;
+            return TExchangeRateTools.GetCorporateExchangeRate(ACurrencyFrom, ACurrencyTo, AStartDate, AEndDate);
         }
 
         /// <summary>
@@ -694,69 +601,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             DateTime AEndDate,
             out decimal AExchangeRate)
         {
-            AExchangeRate = decimal.MinValue;
-
-            bool NewTransaction;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
-
-            ACorporateExchangeRateTable tempTable = new ACorporateExchangeRateTable();
-            ACorporateExchangeRateRow templateRow = tempTable.NewRowTyped(false);
-
-            templateRow.FromCurrencyCode = ACurrencyFrom;
-            templateRow.ToCurrencyCode = ACurrencyTo;
-
-            ACorporateExchangeRateTable ExchangeRates = ACorporateExchangeRateAccess.LoadUsingTemplate(templateRow, Transaction);
-
-            if (ExchangeRates.Count > 0)
-            {
-                // sort rates by date, look for rate just before the date we are looking for
-                ExchangeRates.DefaultView.Sort = ACorporateExchangeRateTable.GetDateEffectiveFromDBName();
-                ExchangeRates.DefaultView.RowFilter = ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + ">= #" +
-                                                      AStartDate.ToString("yyyy-MM-dd") + "# AND " +
-                                                      ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + "<= #" +
-                                                      AEndDate.ToString("yyyy-MM-dd") + "#";
-
-                if (ExchangeRates.DefaultView.Count > 0)
-                {
-                    AExchangeRate = ((ACorporateExchangeRateRow)ExchangeRates.DefaultView[0].Row).RateOfExchange;
-                }
-            }
-
-            if (AExchangeRate == decimal.MinValue)
-            {
-                // try other way round
-                templateRow.FromCurrencyCode = ACurrencyTo;
-                templateRow.ToCurrencyCode = ACurrencyFrom;
-
-                ExchangeRates = ACorporateExchangeRateAccess.LoadUsingTemplate(templateRow, Transaction);
-
-                if (ExchangeRates.Count > 0)
-                {
-                    // sort rates by date, look for rate just before the date we are looking for
-                    ExchangeRates.DefaultView.Sort = ACorporateExchangeRateTable.GetDateEffectiveFromDBName();
-                    ExchangeRates.DefaultView.RowFilter = ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + ">= #" +
-                                                          AStartDate.ToString("yyyy-MM-dd") + "# AND " +
-                                                          ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + "<= #" +
-                                                          AEndDate.ToString("yyyy-MM-dd") + "#";
-
-                    if (ExchangeRates.DefaultView.Count > 0)
-                    {
-                        AExchangeRate = 1 / ((ACorporateExchangeRateRow)ExchangeRates.DefaultView[0].Row).RateOfExchange;
-                    }
-                }
-            }
-
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
-
-            if (AExchangeRate == decimal.MinValue)
-            {
-                return false;
-            }
-
-            return true;
+            return TExchangeRateTools.GetCorporateExchangeRate(ACurrencyFrom, ACurrencyTo, AStartDate, AEndDate, out AExchangeRate);
         }
 
         /// <summary>
@@ -774,69 +619,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             DateTime AEndDate,
             out decimal AExchangeRate)
         {
-            AExchangeRate = decimal.MinValue;
-
-            bool NewTransaction;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
-
-            APrevYearCorpExRateTable PrevTempTable = new APrevYearCorpExRateTable();
-            APrevYearCorpExRateRow PrevTemplateRow = PrevTempTable.NewRowTyped(false);
-
-            PrevTemplateRow.FromCurrencyCode = ACurrencyFrom;
-            PrevTemplateRow.ToCurrencyCode = ACurrencyTo;
-
-            APrevYearCorpExRateTable PrevExchangeRates = APrevYearCorpExRateAccess.LoadUsingTemplate(PrevTemplateRow, Transaction);
-
-            if (PrevExchangeRates.Count > 0)
-            {
-                // sort rates by date, look for rate just before the date we are looking for
-                PrevExchangeRates.DefaultView.Sort = APrevYearCorpExRateTable.GetDateEffectiveFromDBName();
-                PrevExchangeRates.DefaultView.RowFilter = APrevYearCorpExRateTable.GetDateEffectiveFromDBName() + ">= #" +
-                                                          AStartDate.ToString("yyyy-MM-dd") + "# AND " +
-                                                          APrevYearCorpExRateTable.GetDateEffectiveFromDBName() + "<= #" +
-                                                          AEndDate.ToString("yyyy-MM-dd") + "#";
-
-                if (PrevExchangeRates.DefaultView.Count > 0)
-                {
-                    AExchangeRate = ((APrevYearCorpExRateRow)PrevExchangeRates.DefaultView[0].Row).RateOfExchange;
-                }
-            }
-
-            if (AExchangeRate == decimal.MinValue)
-            {
-                // try other way round
-                PrevTemplateRow.FromCurrencyCode = ACurrencyTo;
-                PrevTemplateRow.ToCurrencyCode = ACurrencyFrom;
-
-                PrevExchangeRates = APrevYearCorpExRateAccess.LoadUsingTemplate(PrevTemplateRow, Transaction);
-
-                if (PrevExchangeRates.Count > 0)
-                {
-                    // sort rates by date, look for rate just before the date we are looking for
-                    PrevExchangeRates.DefaultView.Sort = APrevYearCorpExRateTable.GetDateEffectiveFromDBName();
-                    PrevExchangeRates.DefaultView.RowFilter = APrevYearCorpExRateTable.GetDateEffectiveFromDBName() + ">= #" +
-                                                              AStartDate.ToString("yyyy-MM-dd") + "# AND " +
-                                                              APrevYearCorpExRateTable.GetDateEffectiveFromDBName() + "<= #" +
-                                                              AEndDate.ToString("yyyy-MM-dd") + "#";
-
-                    if (PrevExchangeRates.DefaultView.Count > 0)
-                    {
-                        AExchangeRate = 1 / ((APrevYearCorpExRateRow)PrevExchangeRates.DefaultView[0].Row).RateOfExchange;
-                    }
-                }
-            }
-
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
-
-            if (AExchangeRate == decimal.MinValue)
-            {
-                return false;
-            }
-
-            return true;
+            return TExchangeRateTools.GetCorporateExchangeRateFromPreviousYears(ACurrencyFrom, ACurrencyTo, AStartDate, AEndDate, out AExchangeRate);
         }
 
         /// <summary>
