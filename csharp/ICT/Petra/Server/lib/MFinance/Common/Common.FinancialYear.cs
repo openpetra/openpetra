@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -149,23 +149,6 @@ namespace Ict.Petra.Server.MFinance.Common
             TDBTransaction ATransaction)
         {
             return GetLedgerDatePostingPeriod(ALedgerNumber, ref ADateToTest, out AYearNr, out APeriodNumber, ATransaction, false);
-        }
-
-        /// <summary>
-        /// Create the first financial year in a fresh database
-        /// TODO/TOTHINK: import start balances from somewhere?
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="AFirstYearNumber"></param>
-        /// <param name="AInitialPeriod"></param>
-        /// <returns></returns>
-        public static bool CreateInitialFinancialYear(Int32 ALedgerNumber, Int32 AFirstYearNumber, Int32 AInitialPeriod)
-        {
-            // TODO: create a_general_ledger_master, create a_general_ledger_master_period for main account/costcentre?
-            // ledger a_current_financial_year_i
-            // ledger a_current_period_i
-
-            return false;
         }
 
         /// <summary>

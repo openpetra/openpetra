@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -817,6 +817,77 @@ namespace Ict.Common.Verification
                 e.ProposedValue = PreviousProposedValue;
                 MessageBox.Show("SetColumnErrorText: After resetting the value: " + e.ProposedValue.ToString());
             }
+        }
+    }
+
+    /// <summary>
+    /// This exception transports the error message and if the reason was another exception
+    /// to the end of the routine. ResultCollection unpacks this data into a
+    /// TVerificationResultCollection object, so that the user gets this message on the
+    /// "normal" message box.
+    /// </summary>
+    public class TVerificationException : Exception
+    {
+        /// <summary>
+        /// Constructor with inner exception
+        /// </summary>
+        /// <param name="innerException"></param>
+        /// <param name="message"></param>
+        public TVerificationException(Exception innerException, string message)
+            : base(message, innerException)
+        {
+        }
+
+        /// <summary>
+        /// Constructor without inner exception
+        /// </summary>
+        /// <param name="message"></param>
+        public TVerificationException(string message)
+            : base(message)
+        {
+        }
+
+        /// <summary>
+        /// Property to handle (transport) the error code
+        /// </summary>
+        public string ErrorCode = String.Empty;
+
+        /// <summary>
+        /// Property to handle (transport) the error context
+        /// </summary>
+        public string Context = String.Empty;
+
+        /// <summary>
+        /// A Method to transform the exception message(s) into a
+        /// TVerificationResultCollection
+        /// </summary>
+        /// <returns></returns>
+        public TVerificationResultCollection ResultCollection()
+        {
+            TVerificationResultCollection collection =
+                new TVerificationResultCollection();
+            TVerificationResult avrEntry;
+
+            avrEntry = new TVerificationResult(this.Context,
+                this.Message, "",
+                this.ErrorCode,
+                TResultSeverity.Resv_Critical);
+            collection.Add(avrEntry);
+            avrEntry = new TVerificationResult(Catalog.GetString("Exception has been thrown"),
+                this.ToString(), "",
+                this.ErrorCode,
+                TResultSeverity.Resv_Critical);
+            collection.Add(avrEntry);
+
+            if (this.InnerException != null)
+            {
+                avrEntry = new TVerificationResult(Catalog.GetString("Inner Exception"),
+                    this.InnerException.ToString(),
+                    TResultSeverity.Resv_Critical);
+                collection.Add(avrEntry);
+            }
+
+            return collection;
         }
     }
 }
