@@ -49,7 +49,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
         /// <summary>
         /// cache of exchange rates
         /// </summary>
-        public static TExchangeRateCache ExchangeRateCache = new TExchangeRateCache();
+        public static TCorporateExchangeRateCache ExchangeRateCache = new TCorporateExchangeRateCache();
 
         /// <summary>
         /// cache of sql results for exchange rates
@@ -152,7 +152,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
 
             if (realGlmSequence != null)
             {
-                exchangeRateToIntl = LedgerStatus.ExchangeRateCache.GetExchangeRate(databaseConnection,
+                exchangeRateToIntl = LedgerStatus.ExchangeRateCache.GetCorporateExchangeRate(databaseConnection,
                     realGlmSequence.ledger_number,
                     realYear,
                     realPeriod,
