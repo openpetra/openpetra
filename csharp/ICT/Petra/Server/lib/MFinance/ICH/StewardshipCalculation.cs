@@ -246,9 +246,9 @@ namespace Ict.Petra.Server.MFinance.ICH
                     JournalRow.JournalPeriod = APeriodNumber;
                     AdminFeeDS.AJournal.Rows.Add(JournalRow);
 
-                    /***************************
-                    *  Generate the transactions
-                    ***************************/
+                    //
+                    // Generate the transactions
+                    //
 
                     /* M009 Changed the following loop for Petra 2.1 design changes. a_processed_fee
                      * now has a record for each gift detail so it is necessary to sum up all the

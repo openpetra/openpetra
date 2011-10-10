@@ -81,12 +81,33 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
         private int FCurrentPeriod;
         private int FCurrentYear;
 
+        /// <summary>
+        /// get the number of accounting periods. needed to avoid warning about unused FNumberAccountingPeriods
+        /// </summary>
+        public int NumberAccountingPeriods
+        {
+            get
+            {
+                return FNumberForwardingPeriods;
+            }
+        }
+
+        /// <summary>
+        /// get the number of the current year. needed to avoid warning about unused FCurrentYear
+        /// </summary>
+        public int CurrentYear
+        {
+            get
+            {
+                return FCurrentYear;
+            }
+        }
 
         private void InitializeManualCode()
         {
         }
 
-        public void CustomClosingHandler(System.Object sender, System.ComponentModel.CancelEventArgs e)
+        private void CustomClosingHandler(System.Object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (!CanClose())
             {
@@ -203,7 +224,8 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
         /// <summary>
         /// Instantiates the Screen's UIConnector.
         /// </summary>
-        /// <param name="APartnerKey">Partner Key of the Partner</param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="APeriodNumber"></param>
         /// <returns>true if successful, otherwise false
         /// </returns>
         private Boolean GetStewardshipCalculationUIConnector(int ALedgerNumber, int APeriodNumber)
@@ -255,7 +277,6 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
         /// <summary>
         /// Frees the UIConnector so it can be GC'ed on the server side.
         /// </summary>
-        /// <returns>void</returns>
         private void UnRegisterUIConnector()
         {
             if (FUIConnectorStewardshipCalc != null)

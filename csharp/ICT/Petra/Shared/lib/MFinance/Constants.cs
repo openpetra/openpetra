@@ -125,25 +125,25 @@ namespace Ict.Petra.Shared.MFinance
 
         /// standard account
         public const int DIRECT_XFER_ACCT = 5501;
-        
+
         /// standard account
         public const int ICH_SETTLEMENT_ACCT = 5601;
-        
+
         /// standard account
         public const int ICH_ACCT = 8500;
-        
+
         /// standard account
         public const int INTERNAL_XFER_ACCT = 9800;
 
         /// admin fee accounts.
         public const int FUND_TRANSFER_INCOME_ACC = 3300;
-        
+
         /// admin fee accounts.
         public const int FUND_TRANSFER_EXPENSE_ACCT = 4800;
 
         /// Allocation Journal values
         public const int MAX_AC_CC_SPLIT_INTO = 10;
-        
+
         /// Allocation Journal values
         public const int MAX_ALLOCATION_DESTINATIONS = 10;
 
