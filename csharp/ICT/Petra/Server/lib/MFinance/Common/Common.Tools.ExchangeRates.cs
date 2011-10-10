@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       wolfgangu, timop
+//       wolfgangu, christophert, timop
 //
 // Copyright 2004-2011 by OM International
 //
@@ -696,6 +696,10 @@ namespace Ict.Petra.Server.MFinance.Common
             return true;
         }
 
+        /// Euro Preprocessors
+        private const string EURO_CURRENCY = "EUR";
+        private const int EURO_INTERMEDIATE_DP = 4;
+
         /// <summary>
         /// Convert between European Currencies.
         /// If either currency is non euro then perform calculation using supplied rate.
@@ -788,7 +792,7 @@ namespace Ict.Petra.Server.MFinance.Common
                     string CurrencyFrom = ACurrencyFrom.ToUpper();
                     string CurrencyTo = ACurrencyTo.ToUpper();
 
-                    if (CurrencyFrom == MFinanceConstants.EURO_CURRENCY.ToUpper())
+                    if (CurrencyFrom == EURO_CURRENCY)
                     {
                         ExchangeRate = GetRate(ACurrencyTo, ACurrencyFrom, ADBTransaction, ref AVerificationResult);
 
@@ -806,7 +810,7 @@ namespace Ict.Petra.Server.MFinance.Common
                             OutputAmount = Math.Round((AInputAmount * ExchangeRate), NumDecPlaces);
                         }
                     }
-                    else if (CurrencyTo == MFinanceConstants.EURO_CURRENCY.ToUpper())
+                    else if (CurrencyTo == EURO_CURRENCY)
                     {
                         ExchangeRate = GetRate(ACurrencyFrom, ACurrencyTo, ADBTransaction, ref AVerificationResult);
 
@@ -826,7 +830,7 @@ namespace Ict.Petra.Server.MFinance.Common
                     }
                     else //Go via Euro
                     {
-                        ExchangeRate = GetRate(ACurrencyFrom, MFinanceConstants.EURO_CURRENCY.ToUpper(), ADBTransaction, ref AVerificationResult);
+                        ExchangeRate = GetRate(ACurrencyFrom, EURO_CURRENCY, ADBTransaction, ref AVerificationResult);
 
                         if (ExchangeRate == 0)
                         {
@@ -839,8 +843,8 @@ namespace Ict.Petra.Server.MFinance.Common
                         }
                         else
                         {
-                            IntermediateResult = Math.Round((AInputAmount / ExchangeRate), MFinanceConstants.EURO_INTERMEDIATE_DP);
-                            ExchangeRate = GetRate(ACurrencyTo, MFinanceConstants.EURO_CURRENCY.ToUpper(), ADBTransaction, ref AVerificationResult);
+                            IntermediateResult = Math.Round((AInputAmount / ExchangeRate), EURO_INTERMEDIATE_DP);
+                            ExchangeRate = GetRate(ACurrencyTo, EURO_CURRENCY, ADBTransaction, ref AVerificationResult);
 
                             OutputAmount = Math.Round((IntermediateResult * ExchangeRate), NumDecPlaces);
                         }
