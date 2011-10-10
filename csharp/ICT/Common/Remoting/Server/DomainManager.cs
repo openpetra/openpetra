@@ -305,7 +305,7 @@ namespace Ict.Common.Remoting.Server
             TClientManagerCallForwarder AClientManagerRef,
             string AUserID)
         {
-            new TAppSettingsManager();
+            new TAppSettingsManager(false);
 
             FUserID = AUserID;
 
@@ -456,7 +456,7 @@ namespace Ict.Common.Remoting.Server
         {
             // Console.WriteLine('TClientDomainManager.InitAppDomain in AppDomain: ' + Thread.GetDomain().FriendlyName);
 
-            new TAppSettingsManager();
+            new TAppSettingsManager(false);
 
             new TSrvSetting(ASettings);
             TLogging.DebugLevel = TAppSettingsManager.GetInt16("Server.DebugLevel", 0);

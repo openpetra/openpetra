@@ -25,11 +25,22 @@ using System;
 
 namespace Tests.IctCommonRemoting.Interface
 {
+    /// <summary>
+    /// constants for the remoting
+    /// </summary>
+    public class SharedConstantsTest
+    {
+        /// <summary>
+        /// the unique name for the test service URL
+        /// </summary>
+        public static string REMOTINGURL_IDENTIFIER_MYSERVICE = "MYSERVICE";
+    }
+
     /// a simple service for testing purposes
     public interface IMyService
     {
         /// print hello world
-        void HelloWorld(string msg);
+        string HelloWorld(string msg);
 
         /// some tests for remoting DateTime objects
         DateTime TestDateTime(DateTime date, out DateTime outDate);

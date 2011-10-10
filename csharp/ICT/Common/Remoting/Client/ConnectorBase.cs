@@ -42,8 +42,12 @@ namespace Ict.Common.Remoting.Client
     {
         private String FServerIPAddr = "";
         private System.Int16 FServerIPPort;
-        private IClientManagerInterface FRemote;
-        private Boolean FRemotingConfigurationSetup;
+
+        /// <summary>
+        /// if you want to overwrite GetRemoteServerConnection, you need to be able to set this variable.
+        /// can only connect once.
+        /// </summary>
+        protected Boolean FRemotingConfigurationSetup;
 
         /// <summary>todoComment</summary>
         public String ServerIPAddr
@@ -77,7 +81,7 @@ namespace Ict.Common.Remoting.Client
         /// <param name="ARemote">.NET Remoting Proxy object for the ClientManager object
         /// </param>
         /// <returns>void</returns>
-        public void GetRemoteServerConnection(string ConfigFile, out IClientManagerInterface ARemote)
+        public virtual void GetRemoteServerConnection(string ConfigFile, out IClientManagerInterface ARemote)
         {
             ARemote = null;
             try
@@ -89,9 +93,9 @@ namespace Ict.Common.Remoting.Client
                     FRemotingConfigurationSetup = true;
                 }
 
-                FRemote = (IClientManagerInterface)TRemotingHelper.GetObject(typeof(IClientManagerInterface));
+                ARemote = (IClientManagerInterface)TRemotingHelper.GetObject(typeof(IClientManagerInterface));
 
-                if (FRemote == null)
+                if (ARemote == null)
                 {
                     // do nothing
                 }
@@ -100,7 +104,6 @@ namespace Ict.Common.Remoting.Client
 #if DEBUGMODE
                     TLogging.Log("GetRemoteServerConnection: connected.", TLoggingType.ToLogfile);
 #endif
-                    ARemote = FRemote;
                 }
             }
             catch (Exception exp)
