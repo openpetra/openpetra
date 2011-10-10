@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank, christophert
+//       christiank, christophert, timop
 //
 // Copyright 2004-2011 by OM International
 //
@@ -50,6 +50,8 @@ using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MSysMan;
 using Ict.Petra.Shared.MSysMan.Data;
+using Ict.Petra.Server.MFinance.GL;
+using Ict.Petra.Server.MFinance.Common;
 
 namespace Ict.Petra.Server.MFinance.ICH
 {
@@ -532,6 +534,8 @@ namespace Ict.Petra.Server.MFinance.ICH
                         }
                     }
 
+                    TVerificationResultCollection Verification = null;
+
                     /* check that something has been posted - we know this if the IsSuccessful flag is still false */
                     if (!CreatedSuccessfully)
                     {
@@ -544,10 +548,10 @@ namespace Ict.Petra.Server.MFinance.ICH
                         //Post the batch just created
 
                         /*RUN gl1210.p (pvedgerumber,lv_gl_batch_number,TRUE,OUTPUT IsSuccessful).*/
-                        IsSuccessful = PostNewBatch(ALedgerNumber, BatchNumber, true);
+                        IsSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, BatchNumber, out Verification);
                     }
 
-                    if (!IsSuccessful)
+                    if ((Verification == null) || Verification.HasCriticalError())
                     {
                         //Petra error: GL0067
                         ErrorContext = "Posting Admin Fee Batch";
@@ -593,225 +597,6 @@ namespace Ict.Petra.Server.MFinance.ICH
         }
 
         /// <summary>
-        /// Retrieves the Ledger short name from the Partner table
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ADBTransaction"></param>
-        /// <param name="AVerificationResult"></param>
-        /// <returns></returns>
-        private string RetrieveLedgerName(int ALedgerNumber,
-            TDBTransaction ADBTransaction,
-            ref TVerificationResultCollection AVerificationResult
-            )
-        {
-            string ReturnLedgerName = string.Empty;
-
-            //Error handling
-            string ErrorContext = String.Empty;
-            string ErrorMessage = String.Empty;
-            TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
-
-            /* Retrieve info on the ledger. */
-            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, ADBTransaction);
-            ALedgerRow LedgerRow = (ALedgerRow)LedgerTable.Rows[0];
-
-            try
-            {
-                PPartnerTable PartnerTable = PPartnerAccess.LoadByPrimaryKey(LedgerRow.PartnerKey, ADBTransaction);
-                PPartnerRow PartnerRow = (PPartnerRow)PartnerTable.Rows[0];
-
-                ReturnLedgerName = PartnerRow.PartnerShortName;
-            }
-            catch (InvalidOperationException ex)
-            {
-                AVerificationResult.Add(new TVerificationResult(ErrorContext, ex.Message, ErrorType));
-                ReturnLedgerName = "";
-            }
-            catch (Exception ex)
-            {
-                ErrorContext = "Ledger Name";
-                ErrorMessage = String.Format(Catalog.GetString("Unknown error while extracting short Name for Ledger {0} from the Partner table." +
-                        Environment.NewLine + Environment.NewLine + ex.ToString()),
-                    ALedgerNumber
-                    );
-                ErrorType = TResultSeverity.Resv_Critical;
-
-                AVerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
-                ReturnLedgerName = "";
-            }
-
-            return ReturnLedgerName;
-        }
-
-        /// <summary>
-        /// Test that a date is valid: In the current period or within
-        ///  forward posting limits.
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ATestDate">Test Date</param>
-        /// <param name="AProcessingPeriod">Processing Period</param>
-        /// <param name="ADBTransaction"></param>
-        /// <param name="AVerificationResult"></param>
-        /// <returns></returns>
-        private bool CheckForValidDate(int ALedgerNumber,
-            DateTime ATestDate,
-            ref int AProcessingPeriod,
-            TDBTransaction ADBTransaction,
-            ref TVerificationResultCollection AVerificationResult
-            )
-        {
-            //****gl4320 <- gl4330.p <- gl1130fa.i <- gl1130.i <- gl2150.p
-
-            //Return value
-            bool ValidDateIndicator = false;
-
-            int CurrentPeriod;
-            int MaxPeriod;
-
-            //Error handling
-            string ErrorContext = String.Empty;
-            string ErrorMessage = String.Empty;
-            TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
-
-            /* Retrieve info on the ledger. */
-            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, ADBTransaction);
-            ALedgerRow LedgerRow = (ALedgerRow)LedgerTable.Rows[0];
-
-            CurrentPeriod = LedgerRow.CurrentPeriod;
-
-            try
-            {
-                AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber,
-                    LedgerRow.CurrentPeriod,
-                    ADBTransaction);
-
-                if (AccountingPeriodTable.Count == 0)
-                {
-                    //RUN x_table.p ("a_accounting_period":U).
-                    //RUN s_errmsg.p ("X_0007":U, PROGRAM-NAME(1), lv_message, RETURN-VALUE).
-                    //&1 does not exist in &2.
-                    ErrorContext = "Data Validation";
-                    ErrorMessage =
-                        String.Format(Catalog.GetString("Accounting Period Key (Ledger = {0}, Accounting Period Number = {1}) does not exist."),
-                            ALedgerNumber,
-                            CurrentPeriod
-                            );
-                    ErrorType = TResultSeverity.Resv_Noncritical;
-                    throw new System.InvalidOperationException(ErrorMessage);
-                }
-
-                AAccountingPeriodRow AccountingPeriodRow = (AAccountingPeriodRow)AccountingPeriodTable.Rows[0];
-
-                /* Must be after the period start date. */
-                if (ATestDate < AccountingPeriodRow.PeriodStartDate)
-                {
-                    /*RUN s_errmsg.p ("GL0013":U, PROGRAM-NAME(1),
-                     *                  STRING(pv_test_date_d),
-                     *                  FormatInternationalDate( pv_test_date_d),
-                     *                  STRING(lv_current_period)).*/
-                    ErrorContext = "Data Validation";
-                    ErrorMessage = String.Format(Catalog.GetString("This date {0:d} refers to a prior accounting period."),
-                        ATestDate);
-                    ErrorType = TResultSeverity.Resv_Noncritical;
-                    throw new System.InvalidOperationException(ErrorMessage);
-                }
-
-                /* Check if the date is in the curent period, a fwd posting, or
-                 * to far ahead. */
-                if (ATestDate > AccountingPeriodRow.PeriodEndDate)
-                {
-                    AAccountingPeriodTable AccountingPeriodTb = new AAccountingPeriodTable();
-                    AAccountingPeriodRow TemplateRow8 = (AAccountingPeriodRow)AccountingPeriodTb.NewRowTyped(false);
-
-                    TemplateRow8.LedgerNumber = ALedgerNumber;
-                    TemplateRow8.PeriodStartDate = ATestDate;
-                    TemplateRow8.PeriodEndDate = ATestDate;
-
-                    StringCollection operators8 = StringHelper.InitStrArr(new string[] { "=", "<=", ">=" });
-                    StringCollection OrderList8 = new StringCollection();
-
-                    OrderList8.Add("ORDER BY " + AAccountingPeriodTable.GetAccountingPeriodNumberDBName() + " ASC");
-
-                    AccountingPeriodTable = AAccountingPeriodAccess.LoadUsingTemplate(TemplateRow8,
-                        operators8,
-                        null,
-                        ADBTransaction,
-                        OrderList8,
-                        0,
-                        0);
-
-                    if (AccountingPeriodTable.Count == 0)
-                    {
-                        /*RUN x_table.p ("a_accounting_period":U).
-                         * RUN s_errmsg.p ("X_0007":U,PROGRAM-NAME(1),lv_message,RETURN-VALUE).*/
-                        ErrorContext = "Data Validation";
-                        ErrorMessage = String.Format(Catalog.GetString("The accounting period for {0: d} does not exist in Ledger: {1}"),
-                            ATestDate,
-                            ALedgerNumber);
-                        ErrorType = TResultSeverity.Resv_Noncritical;
-                        throw new System.InvalidOperationException(ErrorMessage);
-                    }
-
-                    MaxPeriod = CurrentPeriod + LedgerRow.NumberFwdPostingPeriods;
-
-                    /* The date is beyond the current period - is it within the
-                     *  fwd posting allowance? */
-
-                    AccountingPeriodRow = (AAccountingPeriodRow)AccountingPeriodTable.Rows[0];
-
-                    int AccountPeriodNumber = AccountingPeriodRow.AccountingPeriodNumber;
-
-                    if ((AccountPeriodNumber <= MaxPeriod)
-                        && (AccountPeriodNumber >= CurrentPeriod))
-                    {
-                        AProcessingPeriod = AccountPeriodNumber;
-                        ValidDateIndicator = true;
-                    }
-                    else
-                    {
-                        /* The date is past the maximum fwd posting date.
-                         * RUN s_errmsg.p ("GL0014":U,PROGRAM-NAME(1),STRING(pv_test_date_d),STRING(lv_current_period)).*/
-                        ErrorContext = "Data Validation";
-                        ErrorMessage =
-                            String.Format(Catalog.GetString(
-                                    "This date {0} is beyond the current accounting period and the date allowed for forward processing for Ledger: {1}."),
-                                ATestDate,
-                                ALedgerNumber);
-                        ErrorType = TResultSeverity.Resv_Noncritical;
-                        throw new System.InvalidOperationException(ErrorMessage);
-                    }
-                }
-                else
-                {
-                    AccountingPeriodRow = (AAccountingPeriodRow)AccountingPeriodTable.Rows[0];
-
-                    /* The date is within the current period. */
-                    AProcessingPeriod = AccountingPeriodRow.AccountingPeriodNumber;
-                    ValidDateIndicator = true;
-                }
-            }
-            catch (InvalidOperationException ex)
-            {
-                AVerificationResult.Add(new TVerificationResult(ErrorContext, ex.Message, ErrorType));
-                ValidDateIndicator = false;
-            }
-            catch (Exception ex)
-            {
-                ErrorContext = "Generate Transactions";
-                ErrorMessage = String.Format(Catalog.GetString("Unknown error while generating transactions for Ledger: {0}" +
-                        Environment.NewLine + Environment.NewLine + ex.ToString()),
-                    ALedgerNumber
-                    );
-                ErrorType = TResultSeverity.Resv_Critical;
-
-                AVerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
-                ValidDateIndicator = false;
-            }
-
-            return ValidDateIndicator;
-        }
-
-        /// <summary>
         /// Test that a transaction is valid
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -853,7 +638,7 @@ namespace Ict.Petra.Server.MFinance.ICH
             bool ValidTransactionIndicator = false;
 
             bool ConversionOK;
-            bool ValiddateIndicator;
+            bool ValidDateIndicator;
             int ProcessingPeriod = 0;
             string BudgetKey;
             bool Answer = false;
@@ -898,14 +683,12 @@ namespace Ict.Petra.Server.MFinance.ICH
                  *  the journal date, as long as it's in the same period. */
 
                 //***Run gl4320
-                ValiddateIndicator = CheckForValidDate(ALedgerNumber,
+                ValidDateIndicator = TFinancialYear.IsInValidPostingPeriod(ALedgerNumber,
                     ATransactionDate,
-                    ref ProcessingPeriod,
-                    ADBTransaction,
-                    ref AVerificationResult
-                    );
+                    ProcessingPeriod,
+                    ADBTransaction);
 
-                if (!ValiddateIndicator)
+                if (!ValidDateIndicator)
                 {
                     ErrorContext = "Date Validation";
                     ErrorMessage = String.Format(Catalog.GetString("This date {0} is invalid."), ATransactionDate);
@@ -1346,23 +1129,6 @@ namespace Ict.Petra.Server.MFinance.ICH
                 AVerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
                 IsSuccessful = false;
             }
-
-            return IsSuccessful;
-        }
-
-        /// <summary>
-        /// Post a batch consisting of journals
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <param name="APrintReport"></param>
-        /// <returns></returns>
-        private bool PostNewBatch(int ALedgerNumber, int ABatchNumber, bool APrintReport)
-        {
-            //gl1210.p
-            bool IsSuccessful = false;
-
-            //TODO
 
             return IsSuccessful;
         }

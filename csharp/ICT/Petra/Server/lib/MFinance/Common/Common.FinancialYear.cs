@@ -152,6 +152,25 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
         /// <summary>
+        /// check if the given date is in the given accounting period of the given ledger, one of the current or forward posting periods
+        /// </summary>
+        public static bool IsInValidPostingPeriod(Int32 ALedgerNumber,
+            DateTime ADateToTest,
+            int APeriodNumberToTest,
+            TDBTransaction ATransaction)
+        {
+            int YearNr;
+            int PeriodNumber;
+
+            if (GetLedgerDatePostingPeriod(ALedgerNumber, ref ADateToTest, out YearNr, out PeriodNumber, ATransaction, false))
+            {
+                return PeriodNumber == APeriodNumberToTest;
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// close the current financial period, open the next period, if it was not the last period of the year
         /// </summary>
         /// <param name="ALedgerNumber"></param>
