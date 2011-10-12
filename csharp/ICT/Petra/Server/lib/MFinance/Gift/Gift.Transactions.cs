@@ -746,17 +746,83 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
         private static decimal CalculateAdminFee(Int32 ALedgerNumber, string AFeeCode, decimal AGiftAmount)
         {
+            //Amount to return
+            decimal FeeAmount = 0;
+            
             // TODO CT
 #if todo
+            decimal GiftPercentageAmount;
+            
             AFeesPayableRow feePayableRow = (AFeesPayableRow)MainDS.AFeePayable.Rows.Find(new object[] { ALedgerNumber, AFeeCode });
 
             if (feePayableRow == null)
             {
                 AFeesReceivableRow feeReceivableRow = (AFeesReceivableRow)MainDS.AFeeReceivable.Rows.Find(new object[] { ALedgerNumber, AFeeCode });
             }
+            
+            GiftPercentageAmount = feePayableRow.ChargePercentage * AGiftAmount / 100;
+            
+            switch (feePayableRow.ChargeOption)
+            {
+                case "FIXED":
+                    FeeAmount = feePayableRow.ChargeAmount;
+                    break;
+                case "MINIMUM":
+                    if (AGiftAmount >= 0)
+                    {
+                        if (feePayableRow.ChargeAmount > GiftPercentageAmount)
+                        {
+                            FeeAmount = feePayableRow.ChargeAmount;
+                        }
+                        else
+                        {
+                            FeeAmount = GiftPercentageAmount;
+                        }
+                    }
+                    else
+                    {
+                        if (-feePayableRow.ChargeAmount < GiftPercentageAmount)
+                        {
+                            FeeAmount = -feePayableRow.ChargeAmount;
+                        }
+                        else
+                        {
+                            FeeAmount = GiftPercentageAmount;
+                        }
+                    }
+                    break;
+                case "MAXIMUM":
+                    if (AGiftAmount >= 0)
+                    {
+                        if (feePayableRow.ChargeAmount < GiftPercentageAmount)
+                        {
+                            FeeAmount = feePayableRow.ChargeAmount;
+                        }
+                        else
+                        {
+                            FeeAmount = GiftPercentageAmount;
+                        }
+                    }
+                    else
+                    {
+                        if (-feePayableRow.ChargeAmount > GiftPercentageAmount)
+                        {
+                            FeeAmount = -feePayableRow.ChargeAmount;
+                        }
+                        else
+                        {
+                            FeeAmount = GiftPercentageAmount;
+                        }
+                    }
+                    break;
+                case "PERCENTAGE":
+                    FeeAmount = GiftPercentageAmount;
+                    break;
+            }
+            
             // calculate the admin fee for the specific amount and admin fee. see gl4391.p
 #endif
-            return 1.0m;
+            return FeeAmount;
         }
 
         private static void AddToFeeTotals(GiftBatchTDS AMainDS,
