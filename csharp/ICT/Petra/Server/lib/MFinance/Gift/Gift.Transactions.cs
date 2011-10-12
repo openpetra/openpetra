@@ -733,9 +733,40 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             AGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
             AMotivationDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
 
+            // for calculation of admin fees
+            AMotivationDetailFeeAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+            AFeesPayableAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+            AFeesReceivableAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+            AProcessedFeeAccess.LoadViaAGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+
             DBAccess.GDBAccessObj.RollbackTransaction();
 
             return MainDS;
+        }
+
+        private static decimal CalculateAdminFee(Int32 ALedgerNumber, string AFeeCode, decimal AGiftAmount)
+        {
+            // TODO CT
+#if todo
+            AFeesPayableRow feePayableRow = (AFeesPayableRow)MainDS.AFeePayable.Rows.Find(new object[] { ALedgerNumber, AFeeCode });
+
+            if (feePayableRow == null)
+            {
+                AFeesReceivableRow feeReceivableRow = (AFeesReceivableRow)MainDS.AFeeReceivable.Rows.Find(new object[] { ALedgerNumber, AFeeCode });
+            }
+            // calculate the admin fee for the specific amount and admin fee. see gl4391.p
+#endif
+            return 1.0m;
+        }
+
+        private static void AddToFeeTotals(GiftBatchTDS AMainDS,
+            AGiftDetailRow AGiftDetailRow,
+            string AFeeCode,
+            decimal AFeeAmount,
+            int APostingPeriod)
+        {
+            // TODO CT
+            // see Add_To_Fee_Totals in gr1210.p
         }
 
         /// <summary>
@@ -752,6 +783,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             GiftBatchTDS MainDS = LoadGiftBatchForPosting(ALedgerNumber, ABatchNumber);
 
+            // TODO: make sure that MainDS.AGiftBatch[0].BatchPeriod has the correct and valid value
+
             foreach (GiftBatchTDSAGiftDetailRow giftDetail in MainDS.AGiftDetail.Rows)
             {
                 // find motivation detail
@@ -765,6 +798,17 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 // TODO deal with different currencies; at the moment assuming base currency
                 giftDetail.GiftAmount = giftDetail.GiftTransactionAmount;
+
+                // get all motivation detail fees for this gift
+                foreach (AMotivationDetailFeeRow motivationFeeRow in MainDS.AMotivationDetailFee.Rows)
+                {
+                    if ((motivationFeeRow.MotivationDetailCode == motivationRow.MotivationDetailCode)
+                        && (motivationFeeRow.MotivationGroupCode == motivationRow.MotivationGroupCode))
+                    {
+                        decimal FeeAmount = CalculateAdminFee(ALedgerNumber, motivationFeeRow.FeeCode, giftDetail.GiftAmount);
+                        AddToFeeTotals(MainDS, giftDetail, motivationFeeRow.FeeCode, FeeAmount, MainDS.AGiftBatch[0].BatchPeriod);
+                    }
+                }
             }
 
             // TODO if already posted, fail
