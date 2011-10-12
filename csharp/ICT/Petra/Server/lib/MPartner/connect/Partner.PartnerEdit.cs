@@ -413,6 +413,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             Int32 ItemsCountSubscriptions = 0;
             Int32 ItemsCountSubscriptionsActive = 0;
             Int32 ItemsCountPartnerTypes = 0;
+			Int32 ItemsCountRelationships = 0;
             Int32 ItemsCountFamilyMembers = 0;
             Int32 ItemsCountPartnerInterests = 0;
             Int32 ItemsCountInterests = 0;
@@ -494,6 +495,19 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         FPartnerEditScreenDS.PSubscription.Rows.Clear();
                     }
 
+                    // Relationships
+                    FPartnerEditScreenDS.Merge(GetRelationshipsInternal(out ItemsCountRelationships, false));
+
+                    if ((ADelayedDataLoading) && (ATabPage != TPartnerEditTabPageEnum.petpRelationships))
+                    {
+                        // Only count Relationships
+                        Calculations.CalculateTabCountsRelationships(FPartnerEditScreenDS.PPartnerRelationship,
+                            out ItemsCountRelationships);
+
+                        // Empty Tables again, we don't want to transfer the data contained in them
+                        FPartnerEditScreenDS.PPartnerRelationship.Rows.Clear();
+                    }
+					
                     // Locations and PartnerLocations
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
@@ -798,6 +812,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     MiscellaneousDataDR.ItemsCountSubscriptions = ItemsCountSubscriptions;
                     MiscellaneousDataDR.ItemsCountSubscriptionsActive = ItemsCountSubscriptionsActive;
                     MiscellaneousDataDR.ItemsCountPartnerTypes = ItemsCountPartnerTypes;
+                    MiscellaneousDataDR.ItemsCountRelationships = ItemsCountRelationships;
                     MiscellaneousDataDR.ItemsCountFamilyMembers = ItemsCountFamilyMembers;
                     MiscellaneousDataDR.ItemsCountInterests = ItemsCountPartnerInterests;
                     MiscellaneousDataDR.OfficeSpecificDataLabelsAvailable = OfficeSpecificDataLabelsAvailable;
@@ -923,6 +938,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             Int32 ItemsCountSubscriptions = 0;
             Int32 ItemsCountSubscriptionsActive = 0;
             Int32 ItemsCountPartnerTypes = 0;
+            Int32 ItemsCountRelationships = 0;
             Int32 ItemsCountFamilyMembers = 0;
             Int32 ItemsCountInterests = 0;
             Int64 FoundationOwner1Key = 0;
@@ -1357,6 +1373,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 MiscellaneousDataDR.ItemsCountSubscriptions = ItemsCountSubscriptions;
                 MiscellaneousDataDR.ItemsCountSubscriptionsActive = ItemsCountSubscriptionsActive;
                 MiscellaneousDataDR.ItemsCountPartnerTypes = ItemsCountPartnerTypes;
+                MiscellaneousDataDR.ItemsCountRelationships = ItemsCountRelationships;
                 MiscellaneousDataDR.ItemsCountFamilyMembers = ItemsCountFamilyMembers;
                 MiscellaneousDataDR.ItemsCountInterests = ItemsCountInterests;
                 MiscellaneousDataDR.OfficeSpecificDataLabelsAvailable = OfficeSpecificDataLabelsAvailable;
@@ -1484,6 +1501,17 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             return GetSubscriptionsInternal(out SubscriptionsCount, false);
         }
 
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        /// <returns></returns>
+        public PartnerEditTDSPPartnerRelationshipTable GetDataRelationships()
+        {
+            Int32 RelationshipsCount;
+
+            return GetRelationshipsInternal(out RelationshipsCount, false);
+        }
+        
         /// <summary>
         /// todoComment
         /// </summary>
@@ -3071,6 +3099,97 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             return GetSubscriptionsInternal(out ACount, false);
         }
 
+        private PartnerEditTDSPPartnerRelationshipTable GetRelationshipsInternal(out Int32 ACount, Boolean ACountOnly)
+        {
+            TDBTransaction ReadTransaction;
+            Boolean NewTransaction = false;
+            PartnerEditTDSPPartnerRelationshipTable RelationshipDT;
+            PartnerEditTDSPPartnerRelationshipRow RelationshipRow;
+            PPartnerRelationshipTable TempRelationshipDT;
+            PPartnerTable PartnerDT;
+
+            RelationshipDT = new PartnerEditTDSPPartnerRelationshipTable();
+            try
+            {
+                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+                    TEnforceIsolationLevel.eilMinimum,
+                    out NewTransaction);
+
+                if (ACountOnly)
+                {
+                    // count relationships where partner is involved with partner key or reciprocal
+                    ACount = PPartnerRelationshipAccess.CountViaPPartnerPartnerKey(FPartnerKey, ReadTransaction)
+                             + PPartnerRelationshipAccess.CountViaPPartnerRelationKey(FPartnerKey, ReadTransaction);
+                }
+                else
+                {
+#if DEBUGMODE
+                    if (TLogging.DL >= 7)
+                    {
+                        Console.WriteLine(
+                            this.GetType().FullName + ".GetRelationshipsInternal: loading Relationships for Partner " + FPartnerKey.ToString() +
+                            "...");
+                    }
+#endif
+                    try
+                    {
+                        // load relationships where partner is involved with partner key or reciprocal
+                        TempRelationshipDT = PPartnerRelationshipAccess.LoadViaPPartnerPartnerKey(FPartnerKey, ReadTransaction);
+                        TempRelationshipDT.Merge (PPartnerRelationshipAccess.LoadViaPPartnerRelationKey(FPartnerKey, ReadTransaction));
+
+                        foreach (PPartnerRelationshipRow TempPartnerRelationshipRow in TempRelationshipDT.Rows)
+                        {
+                            RelationshipRow = RelationshipDT.NewRowTyped(true);
+
+                            // set relationship data from tables retrieved
+                            RelationshipRow.PartnerKey   = TempPartnerRelationshipRow.PartnerKey;
+                            RelationshipRow.RelationName = TempPartnerRelationshipRow.RelationName;
+                            RelationshipRow.RelationKey  = TempPartnerRelationshipRow.RelationKey;
+                            RelationshipRow.Comment      = TempPartnerRelationshipRow.Comment;
+                            
+                            // find partner name and class depending on relation and add it to data set
+                            if (TempPartnerRelationshipRow.PartnerKey == FPartnerKey)
+                            {
+                                PartnerDT = PPartnerAccess.LoadByPrimaryKey (TempPartnerRelationshipRow.RelationKey, ReadTransaction);
+                            }
+                            else
+                            {
+                                PartnerDT = PPartnerAccess.LoadByPrimaryKey (TempPartnerRelationshipRow.PartnerKey, ReadTransaction);
+                            }
+
+                            // set extended fields for partner data if record exists
+                            if (PartnerDT.Rows[0] != null)
+                            {
+                                RelationshipRow.PartnerShortName = ((PPartnerRow)PartnerDT.Rows[0]).PartnerShortName;
+                                RelationshipRow.PartnerClass     = ((PPartnerRow)PartnerDT.Rows[0]).PartnerClass;
+                            }
+                            
+                            RelationshipDT.Rows.Add(RelationshipRow);
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        throw;
+                    }
+                    ACount = RelationshipDT.Rows.Count;
+                }
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+#if DEBUGMODE
+                    if (TLogging.DL >= 7)
+                    {
+                        Console.WriteLine(this.GetType().FullName + ".GetRelationshipsInternal: committed own transaction.");
+                    }
+#endif
+                }
+            }
+            return RelationshipDT;
+        }
+        
         /// <summary>
         /// todoComment
         /// </summary>

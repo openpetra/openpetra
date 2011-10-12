@@ -83,6 +83,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         public const String StrSpecialTypesTabHeader = "Special Types";
 
         /// <summary>todoComment</summary>
+        public const String StrRelationshipsTabHeader = "Relationships";
+
+        /// <summary>todoComment</summary>
         public const String StrFamilyMembersTabHeader = "Family Members";
 
         /// <summary>todoComment</summary>
@@ -275,7 +278,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             // for the time beeing, we always hide these Tabs that don't do anything yet...
 #if  SHOWUNFINISHEDTABS
 #else
-            TabsToHide.Add("tbpRelationships");
             TabsToHide.Add("tbpContacts");
             TabsToHide.Add("tbpReminders");
             TabsToHide.Add("tbpInterests");
@@ -585,6 +587,20 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     CorrectDataGridWidthsAfterDataChange();
                 }
+                else if (ATabPageEventArgs.Tab == tpgRelationships)
+                {
+                    FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpRelationships;
+
+                    // Hook up RecalculateScreenParts Event
+                    FUcoRelationships.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
+
+                    FUcoRelationships.PartnerEditUIConnector = FPartnerEditUIConnector;
+                    FUcoRelationships.HookupDataChange += new THookupPartnerEditDataChangeEventHandler(Uco_HookupPartnerEditDataChange);
+
+                    FUcoRelationships.SpecialInitUserControl();
+
+                    CorrectDataGridWidthsAfterDataChange();
+                }
                 else if (ATabPageEventArgs.Tab == tpgFamilyMembers)
                 {
                     FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpFamilyMembers;
@@ -719,6 +735,20 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
+            if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUC_Relationships))
+            {
+                if (FMainDS.Tables.Contains(PPartnerRelationshipTable.GetTableName()))
+                {
+                    Calculations.CalculateTabCountsRelationships(FMainDS.PPartnerRelationship, out CountAll);
+                }
+                else
+                {
+                    CountAll = FMainDS.MiscellaneousData[0].ItemsCountRelationships;
+                }
+
+                tpgRelationships.Text = String.Format(StrRelationshipsTabHeader + " ({0})", CountAll);
+            }
+            
             if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUC_FamilyMembers))
             {
                 // determine Tab Title
@@ -800,6 +830,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FUcoPartnerTypes.AdjustAfterResizing();
                 }
 
+                if (FUcoRelationships != null)
+                {
+                    FUcoRelationships.AdjustAfterResizing();
+                }
+                
                 // TODO
 //                if (FUcoFamilyMembers != null)
 //                {
@@ -921,6 +956,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                     tabPartners.SelectedTab = tpgPartnerTypes;
                     break;
 
+                case TPartnerEditTabPageEnum.petpRelationships:
+                    tabPartners.SelectedTab = tpgRelationships;
+                    break;
+
                 case TPartnerEditTabPageEnum.petpFamilyMembers:
                     tabPartners.SelectedTab = tpgFamilyMembers;
                     break;
@@ -936,10 +975,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 case TPartnerEditTabPageEnum.petpReminders:
                     tabPartners.SelectedTab = tpgReminders;
-                    break;
-
-                case TPartnerEditTabPageEnum.petpRelationships:
-                    tabPartners.SelectedTab = tpgRelationships;
                     break;
 
                 case TPartnerEditTabPageEnum.petpContacts:

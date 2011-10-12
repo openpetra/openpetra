@@ -663,6 +663,17 @@ namespace Ict.Petra.Shared.MPartner
         }
 
         /// <summary>
+        /// Count the relationships
+        /// </summary>
+        /// <param name="ATable">table with subscriptions</param>
+        /// <param name="ATotalRelationships">returns the total number of relationships</param>
+        public static void CalculateTabCountsRelationships(PPartnerRelationshipTable ATable, out Int32 ATotalRelationships)
+        {
+            // Inspect only CurrentRows (this excludes Deleted DataRows)
+            ATotalRelationships = new DataView(ATable, "", "", DataViewRowState.CurrentRows).Count;
+        }
+        
+        /// <summary>
         /// convert shortname from Lastname, firstname, title to another shortname format
         /// TODO: use partner key to get to the full name, resolve issues with couples that have different family names etc
         /// </summary>
