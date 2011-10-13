@@ -209,7 +209,8 @@ namespace Ict.Petra.Server.MFinance.ICH
                 StringCollection operators = StringHelper.InitStrArr(new string[] { "=", "<>", "=", "=" });
                 StringCollection OrderList = new StringCollection();
                 //Order by Fee Code
-                OrderList.Add("ORDER BY " + AProcessedFeeTable.GetFeeCodeDBName() + " ASC");
+                OrderList.Add("ORDER BY");
+                OrderList.Add(AProcessedFeeTable.GetFeeCodeDBName() + " ASC");
                 OrderList.Add(AProcessedFeeTable.GetCostCentreCodeDBName() + " ASC");
 
                 AProcessedFeeTable ProcessedFee = AProcessedFeeAccess.LoadUsingTemplate(TemplateRow, operators, null, ADBTransaction, OrderList, 0, 0);

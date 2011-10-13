@@ -750,7 +750,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             decimal FeeAmount = 0;
             
             // TODO CT
-#if todo
+
             decimal GiftPercentageAmount;
             
             AFeesPayableRow feePayableRow = (AFeesPayableRow)MainDS.AFeePayable.Rows.Find(new object[] { ALedgerNumber, AFeeCode });
@@ -764,10 +764,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             
             switch (feePayableRow.ChargeOption)
             {
-                case "FIXED":
+                case MFinanceConstants.ADMIN_CHARGE_OPTION_FIXED:
                     FeeAmount = feePayableRow.ChargeAmount;
                     break;
-                case "MINIMUM":
+                case MFinanceConstants.ADMIN_CHARGE_OPTION_MIN:
                     if (AGiftAmount >= 0)
                     {
                         if (feePayableRow.ChargeAmount > GiftPercentageAmount)
@@ -791,7 +791,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         }
                     }
                     break;
-                case "MAXIMUM":
+                case MFinanceConstants.ADMIN_CHARGE_OPTION_MAX:
                     if (AGiftAmount >= 0)
                     {
                         if (feePayableRow.ChargeAmount < GiftPercentageAmount)
@@ -815,13 +815,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         }
                     }
                     break;
-                case "PERCENTAGE":
+                case MFinanceConstants.ADMIN_CHARGE_OPTION_PERCENT:
                     FeeAmount = GiftPercentageAmount;
                     break;
             }
             
             // calculate the admin fee for the specific amount and admin fee. see gl4391.p
-#endif
+
             return FeeAmount;
         }
 
@@ -833,6 +833,43 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         {
             // TODO CT
             // see Add_To_Fee_Totals in gr1210.p
+
+            /* Get the record for the totals of the processed fees. */
+            AProcessedFeeTable ProcessedFeeDataTable = AMainDS.AProcessedFee;
+            AProcessedFeeRow ProcessedFeeRow = 
+
+//Need to reset to this after Timo fixes order
+//                (AProcessedFeeRow)ProcessedFeeDataTable.Rows.Find(new object[] {AGiftDetailRow.LedgerNumber,
+//                                                                                AFeeCode,
+//                                                                                AGiftDetailRow.BatchNumber,
+//                                                                                AGiftDetailRow.GiftTransactionNumber,
+//                                                                                AGiftDetailRow.DetailNumber
+//                                                                               });
+            
+                (AProcessedFeeRow)ProcessedFeeDataTable.Rows.Find(new object[] {AGiftDetailRow.LedgerNumber,
+                                                                                AGiftDetailRow.BatchNumber,
+                                                                                AGiftDetailRow.GiftTransactionNumber,
+                                                                                AGiftDetailRow.DetailNumber,
+                                                                                AFeeCode
+                                                                               });
+            if (ProcessedFeeRow == null)
+            {
+                ProcessedFeeRow = (AProcessedFeeRow)ProcessedFeeDataTable.NewRowTyped(false);       
+                ProcessedFeeRow.LedgerNumber = AGiftDetailRow.LedgerNumber;
+                ProcessedFeeRow.BatchNumber = AGiftDetailRow.BatchNumber;
+                ProcessedFeeRow.GiftTransactionNumber = AGiftDetailRow.GiftTransactionNumber;
+                ProcessedFeeRow.DetailNumber = AGiftDetailRow.DetailNumber;
+                ProcessedFeeRow.FeeCode = AFeeCode;
+                ProcessedFeeRow.PeriodicAmount = 0;
+                
+                ProcessedFeeDataTable.Rows.Add(ProcessedFeeRow);
+            }
+
+            ProcessedFeeRow.CostCentreCode = AGiftDetailRow.CostCentreCode;
+            ProcessedFeeRow.PeriodNumber = APostingPeriod;
+
+            /* Add the amount to the existing total. */
+            ProcessedFeeRow.PeriodicAmount += AFeeAmount;
         }
 
         /// <summary>
@@ -863,7 +900,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 giftDetail.AccountCode = motivationRow.AccountCode;
 
                 // TODO deal with different currencies; at the moment assuming base currency
-                giftDetail.GiftAmount = giftDetail.GiftTransactionAmount;
+                //giftDetail.GiftAmount = giftDetail.GiftTransactionAmount;
+                giftDetail.GiftAmount =  giftDetail.GiftTransactionAmount * MainDS.AGiftBatch[0].ExchangeRateToBase;
 
                 // get all motivation detail fees for this gift
                 foreach (AMotivationDetailFeeRow motivationFeeRow in MainDS.AMotivationDetailFee.Rows)
@@ -879,8 +917,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             // TODO if already posted, fail
             MainDS.AGiftBatch[0].BatchStatus = MFinanceConstants.BATCH_POSTED;
-
-            TDBTransaction SubmitChangesTransaction = null;
 
             try
             {
@@ -902,22 +938,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     }
                     else
                     {
-                        SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
-                        // store GiftBatch and GiftDetails to database
-                        if (AGiftBatchAccess.SubmitChanges(MainDS.AGiftBatch, SubmitChangesTransaction,
-                                out AVerifications))
-                        {
-                            if (AGiftAccess.SubmitChanges(MainDS.AGift, SubmitChangesTransaction,
-                                    out AVerifications))
-                            {
-                                // save changed motivation details, costcentre etc to database
-                                if (AGiftDetailAccess.SubmitChanges(MainDS.AGiftDetail, SubmitChangesTransaction, out AVerifications))
-                                {
-                                    ResultValue = true;
-                                }
-                            }
-                        }
+                        ResultValue = (GiftBatchTDSAccess.SubmitChanges(MainDS, out AVerifications) == TSubmitChangesResult.scrOK);
                     }
                 }
             }
@@ -928,21 +949,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 TLogging.Log("after submitchanges: exception " + e.Message);
 
-                if (SubmitChangesTransaction != null)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-
                 throw new Exception(e.ToString() + " " + e.Message);
-            }
-
-            if (ResultValue)
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
-            }
-            else
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
             }
 
             return ResultValue;

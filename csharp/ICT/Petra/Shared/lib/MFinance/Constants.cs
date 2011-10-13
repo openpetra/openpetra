@@ -114,6 +114,18 @@ namespace Ict.Petra.Shared.MFinance
         /// <summary>Used in Admin Grants Payable and Receivable</summary>
         public const int ADMIN_FEE_EXPENSE_ACCT = 4900;
 
+        /// <summary>Used in Admin Fee Charge Options</summary>
+        public const string ADMIN_CHARGE_OPTION_MAX = "MAXIMUM";
+
+        /// <summary>Used in Admin Fee Charge Options</summary>
+        public const string ADMIN_CHARGE_OPTION_MIN = "MINIMUM";
+
+        /// <summary>Used in Admin Fee Charge Options</summary>
+        public const string ADMIN_CHARGE_OPTION_FIXED = "FIXED";
+
+        /// <summary>Used in Admin Fee Charge Options</summary>
+        public const string ADMIN_CHARGE_OPTION_PERCENT = "PERCENTAGE";
+
         /// <summary>Sets the transaction to a debit transaction</summary>
         public const bool IS_DEBIT = true;
 
