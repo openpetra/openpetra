@@ -52,7 +52,6 @@ namespace Tests.MFinance.Server.Gift
         [TestFixtureSetUp]
         public void Init()
         {
-            new TLogging("TestServer.log");
             TPetraServerConnector.Connect("../../etc/TestServer.config");
             FLedgerNumber = TAppSettingsManager.GetInt32("LedgerNumber", 43);
         }
