@@ -125,11 +125,13 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
 <!-- set platform specific variables -->
 <if test="${'win32'==platform::get-name()}" >
   <echo>Running on MS Windows</echo>
+  <property name="PostgreSQL.Version" value="9.0" overwrite="false"/>
+  <property name="MySQL.Version" value="5.1" overwrite="false"/>
   <property name="Dia.exe" value="${OP::GetFileInProgramDirectory('\Dia\bin\dia.exe')}" overwrite="false"/> 
-  <property name="PostgreSQL.exe" value="${OP::GetFileInProgramDirectory('/PostgreSQL/9.0/bin/psql.exe')}" overwrite="false" />
-  <property name="pgdump.exe" value="${OP::GetFileInProgramDirectory('/PostgreSQL/9.0/bin/pg_dump.exe')}" overwrite="false"/>
-  <property name="MySQL.exe" value="${OP::GetFileInProgramDirectory('\mysql\mysql server 5.1/bin/mysql.exe')}" overwrite="false" />
-  <property name="MySQLDump.exe" value="${OP::GetFileInProgramDirectory('\mysql\mysql server 5.1/bin/mysqldump.exe')}" 
+  <property name="PostgreSQL.exe" value="${OP::GetFileInProgramDirectory('/PostgreSQL/' + PostgreSQL.Version + '/bin/psql.exe')}" overwrite="false" />
+  <property name="pgdump.exe" value="${OP::GetFileInProgramDirectory('/PostgreSQL/' + PostgreSQL.Version + '/bin/pg_dump.exe')}" overwrite="false"/>
+  <property name="MySQL.exe" value="${OP::GetFileInProgramDirectory('\mysql\mysql server ' + MySQL.Version + '/bin/mysql.exe')}" overwrite="false" />
+  <property name="MySQLDump.exe" value="${OP::GetFileInProgramDirectory('\mysql\mysql server ' + MySQL.Version + '/bin/mysqldump.exe')}" 
             overwrite="false"/> 
   <property name="Innosetup.ISCC" value="${OP::GetFileInProgramDirectory('/Inno Setup 5/ISCC.exe')}" overwrite="false"/>
   <property name="makensis.exe" value="${OP::GetFileInProgramDirectory('/NSIS/makensis.exe')}" overwrite="false"/>
