@@ -758,15 +758,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             //Amount to return
             decimal FeeAmount = 0;
 
-            // TODO CT
-
             decimal GiftPercentageAmount;
 
-            AFeesPayableRow feePayableRow = (AFeesPayableRow)MainDS.AFeePayable.Rows.Find(new object[] { ALedgerNumber, AFeeCode });
+            AFeesPayableRow feePayableRow = (AFeesPayableRow)MainDS.AFeesPayable.Rows.Find(new object[] { ALedgerNumber, AFeeCode });
 
             if (feePayableRow == null)
             {
-                AFeesReceivableRow feeReceivableRow = (AFeesReceivableRow)MainDS.AFeeReceivable.Rows.Find(new object[] { ALedgerNumber, AFeeCode });
+                AFeesReceivableRow feeReceivableRow = (AFeesReceivableRow)MainDS.AFeesReceivable.Rows.Find(new object[] { ALedgerNumber, AFeeCode });
             }
 
             GiftPercentageAmount = feePayableRow.ChargePercentage * AGiftAmount / 100;
