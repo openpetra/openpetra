@@ -28,8 +28,11 @@ using Ict.Common;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Client.CommonControls;
+using Ict.Petra.Shared.Interfaces.MPartner;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -180,6 +183,54 @@ namespace Ict.Petra.Client.MPartner.Gui
         
         private void GetDetailDataFromControlsManual(PPartnerRelationshipRow ARow)
         {
+            txtPPartnerRelationshipPartnerKey.ValueChanged += new TDelegatePartnerChanged(txtPPartnerRelationshipPartnerKey_ValueChanged);
+            txtPPartnerRelationshipRelationKey.ValueChanged += new TDelegatePartnerChanged(txtPPartnerRelationshipRelationKey_ValueChanged);
+        }
+
+        void txtPPartnerRelationshipPartnerKey_ValueChanged(long APartnerKey, string APartnerShortName, bool AValidSelection)
+        {
+            PartnerEditTDSPPartnerRelationshipRow CurrentRow;
+            string PartnerShortName;
+            TPartnerClass PartnerClass;
+
+            if (AValidSelection) 
+            {
+                if (APartnerKey != ((PPartnerRow)FMainDS.PPartner.Rows[0]).PartnerKey
+                    && APartnerKey != 0)
+                {
+                    CurrentRow = GetSelectedDetailRow();
+                    if (CurrentRow.PartnerKey != APartnerKey)
+                    {
+                        CurrentRow.PartnerKey       = APartnerKey;
+                        FPartnerEditUIConnector.GetPartnerShortName (APartnerKey, out PartnerShortName, out PartnerClass);
+                        CurrentRow.PartnerShortName = PartnerShortName;
+                        CurrentRow.PartnerClass     = PartnerClass.ToString();
+                    }
+                }
+            }
+        }
+
+        void txtPPartnerRelationshipRelationKey_ValueChanged(long APartnerKey, string APartnerShortName, bool AValidSelection)
+        {
+            PartnerEditTDSPPartnerRelationshipRow CurrentRow;
+            string PartnerShortName;
+            TPartnerClass PartnerClass;
+            
+            if (AValidSelection) 
+            {
+                if (APartnerKey != ((PPartnerRow)FMainDS.PPartner.Rows[0]).PartnerKey
+                    && APartnerKey != 0)
+                {
+                    CurrentRow = GetSelectedDetailRow();
+                    if (CurrentRow.PartnerKey != APartnerKey)
+                    {
+                        CurrentRow.PartnerKey       = APartnerKey;
+                        FPartnerEditUIConnector.GetPartnerShortName (APartnerKey, out PartnerShortName, out PartnerClass);
+                        CurrentRow.PartnerShortName = PartnerShortName;
+                        CurrentRow.PartnerClass     = PartnerClass.ToString();
+                    }
+                }
+            }
         }
         
         private void NewRow(System.Object sender, EventArgs e)

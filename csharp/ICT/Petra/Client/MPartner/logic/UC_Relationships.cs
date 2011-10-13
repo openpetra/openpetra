@@ -134,7 +134,6 @@ namespace Ict.Petra.Client.MPartner
                 ForeignTableColumn.DataType = System.Type.GetType("System.String");
                 ForeignTableColumn.ColumnName = "Parent_" + PRelationTable.GetRelationDescriptionDBName();
                 ForeignTableColumn.Expression = "Parent." + PRelationTable.GetRelationDescriptionDBName();
-                //ForeignTableColumn.Expression = PPartnerRelationshipTable.GetCommentDBName();
                 FMainDS.PPartnerRelationship.Columns.Add(ForeignTableColumn);
 
                 // add column for reciprocal description
