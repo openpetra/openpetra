@@ -134,8 +134,6 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         /// <summary>get the name of the destination generated file</summary>
         public override string CalculateDestinationFilename(string AYamlFilename)
         {
-            string yamlFileDirectory = System.IO.Path.GetDirectoryName(AYamlFilename);
-
             string relativePath = Path.GetDirectoryName(Path.GetFullPath(AYamlFilename)).
                                   Substring(Path.GetFullPath(TAppSettingsManager.GetValue("ymlroot")).Length);
 

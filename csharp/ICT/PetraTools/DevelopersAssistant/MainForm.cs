@@ -507,7 +507,9 @@ namespace Ict.Tools.DevelopersAssistant
 
         private void btnSaveCurrentDbBuildConfig_Click(object sender, EventArgs e)
         {
-            BuildConfiguration dbCfg = new BuildConfiguration(txtBranchLocation.Text);
+            // timop: commented this local variable, so that Mono does not give a compiler warning about unused variable
+            // BuildConfiguration dbCfg =
+            new BuildConfiguration(txtBranchLocation.Text);
         }
 
         private void chkUseAutoLogon_CheckedChanged(object sender, EventArgs e)
@@ -593,7 +595,8 @@ namespace Ict.Tools.DevelopersAssistant
         {
             try
             {
-                UInt32 i = Convert.ToUInt32(txtFlashAfterSeconds.Text);
+                // timop: not using a local variable, since that would cause a warning by the mono compiler about unused variable
+                Convert.ToUInt32(txtFlashAfterSeconds.Text);
                 bHaveAlertedFlashSetting = false;
             }
             catch (Exception)
