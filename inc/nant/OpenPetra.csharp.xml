@@ -231,6 +231,7 @@
       <property name="reference-project-file"
                 value="${path::combine(dir.projectfiles,
                                 path::combine(devenv-name, reference-name+'.csproj'))}" />
+      <property name="relative-reference-project-file" value="${reference-name+'.csproj'}"/>
       <property name="reference-project-file-name"
                 value="${path::get-file-name(reference-project-file)}"/>
       <if test="${file::exists(reference-project-file)}">
