@@ -2138,6 +2138,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
                                                    ref String motivationGroup,
                                                    ref String motivationDetail)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TGuiTools), "GetMotivationGroupAndDetail", ";LONG;STRING;STRING;");
             return Ict.Petra.Server.MFinance.Gift.WebConnectors.TGuiTools.GetMotivationGroupAndDetail(partnerKey, ref motivationGroup, ref motivationDetail);
         }
 
