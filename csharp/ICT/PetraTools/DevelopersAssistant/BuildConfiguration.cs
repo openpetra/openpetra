@@ -29,7 +29,7 @@ using System.Xml;
 
 namespace Ict.Tools.DevelopersAssistant
 {
-    class DbBuildConfiguration
+    class BuildConfiguration
     {
         private string _branchLocation = String.Empty;
 
@@ -54,7 +54,7 @@ namespace Ict.Tools.DevelopersAssistant
             "<default>", "SQLite", "PostgreSQL", "mySQL"
         };
 
-        public DbBuildConfiguration(string BranchLocation)
+        public BuildConfiguration(string BranchLocation)
         {
             _branchLocation = BranchLocation;
 

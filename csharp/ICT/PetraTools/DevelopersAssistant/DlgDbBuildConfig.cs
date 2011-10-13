@@ -48,9 +48,9 @@ namespace Ict.Tools.DevelopersAssistant
         {
             InitializeComponent();
 
-            for (int i = 0; i < DbBuildConfiguration.Systems.Length; i++)
+            for (int i = 0; i < BuildConfiguration.Systems.Length; i++)
             {
-                cboDBMS.Items.Add(DbBuildConfiguration.Systems[i]);
+                cboDBMS.Items.Add(BuildConfiguration.Systems[i]);
             }
 
             cboDBMS.SelectedIndex = 0;
@@ -63,13 +63,13 @@ namespace Ict.Tools.DevelopersAssistant
         /// <param name="Index">The index of the favourite to be edited</param>
         public void InitializeDialog(string BranchLocation, int Index)
         {
-            DbBuildConfiguration dbCfg = new DbBuildConfiguration(BranchLocation);
+            BuildConfiguration dbCfg = new BuildConfiguration(BranchLocation);
             string dbms, dbName, port, password, location;
             bool isBlank;
 
             dbCfg.GetStoredConfiguration(Index, out dbms, out dbName, out port, out password, out isBlank, out location);
 
-            cboDBMS.SelectedIndex = DbBuildConfiguration.GetDBMSIndex(dbms);
+            cboDBMS.SelectedIndex = BuildConfiguration.GetDBMSIndex(dbms);
             txtDBName.Text = dbName;
             txtPort.Text = port;
             txtPassword.Text = password;
@@ -93,7 +93,7 @@ namespace Ict.Tools.DevelopersAssistant
             string s = txtLocation.Text;
 
             s = s.Replace('\\', '/');
-            ExitData = DbBuildConfiguration.MakeConfigString(
+            ExitData = BuildConfiguration.MakeConfigString(
                 (cboDBMS.SelectedIndex == 0) ? String.Empty : cboDBMS.Items[cboDBMS.SelectedIndex].ToString(),
                 txtDBName.Text,
                 txtPort.Text,

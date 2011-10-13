@@ -46,7 +46,7 @@ namespace Ict.Tools.DevelopersAssistant
     {
         /// <summary>
         /// One item for each Nant target that the Assistant supports.
-        ///   Where possible the enumeration should be the parameter string for Nant
+        ///   Where possible the enumeration should be the parameter string for Nant 
         /// </summary>
         public enum TaskItem
         {
@@ -54,7 +54,7 @@ namespace Ict.Tools.DevelopersAssistant
             /// Dummy placeholder for position 0
             /// </summary>
             None,
-            // Basic items
+            // Basic items ---------------------------------
             /// <summary>
             /// Start the server
             /// </summary>
@@ -71,7 +71,7 @@ namespace Ict.Tools.DevelopersAssistant
             /// Generate a Windows Form
             /// </summary>
             generateWinform,
-            // Code generation
+            // Code generation ---------------------------------------
             /// <summary>
             /// Generate the solution without compilation
             /// </summary>
@@ -104,7 +104,7 @@ namespace Ict.Tools.DevelopersAssistant
             /// Generate glue
             /// </summary>
             generateGlue,
-            // Compilation
+            // Compilation ----------------------------------------------------
             /// <summary>
             /// Clean the folders prior to new build
             /// </summary>
@@ -137,7 +137,7 @@ namespace Ict.Tools.DevelopersAssistant
             /// Quick compile the tools solution only
             /// </summary>
             quickCompileTools,
-            // Miscellaneous
+            // Miscellaneous -----------------------------------------------------
             /// <summary>
             /// Initialise the configuration files
             /// </summary>
@@ -146,7 +146,11 @@ namespace Ict.Tools.DevelopersAssistant
             /// Delete all backup files
             /// </summary>
             deleteBakFiles,
-            // Database
+            /// <summary>
+            /// Uncrustify the source files
+            /// </summary>
+            uncrustify,
+            // Database ---------------------------------------------------------
             /// <summary>
             /// Recreate the database
             /// </summary>
@@ -238,7 +242,7 @@ namespace Ict.Tools.DevelopersAssistant
         public static TaskItem LastMiscItem {
             get
             {
-                return TaskItem.deleteBakFiles;
+                return TaskItem.uncrustify;
             }
         }
         /// <summary>
@@ -299,6 +303,10 @@ namespace Ict.Tools.DevelopersAssistant
                 if (TaskName.IndexOf("clean", StringComparison.InvariantCultureIgnoreCase) >= 0)
                 {
                     _taskItem = TaskItem.clean;
+                }
+                else if (TaskName.IndexOf("uncrustify", 0, StringComparison.InvariantCultureIgnoreCase) >= 0)
+                {
+                    _taskItem = TaskItem.uncrustify;
                 }
                 else if (TaskName.IndexOf("Mapper", 0, StringComparison.InvariantCultureIgnoreCase) >= 0)
                 {
@@ -445,6 +453,8 @@ namespace Ict.Tools.DevelopersAssistant
 
                     case TaskItem.stopPetraServer: return "Stopping OpenPetra Server ... Please wait ...";
 
+                    case TaskItem.uncrustify: return "Uncrustifying the source code ... Please wait ...";
+
                     default: return "Unknown task title";
                 }
             }
@@ -529,6 +539,8 @@ namespace Ict.Tools.DevelopersAssistant
 
                     case TaskItem.stopPetraServer: return "Stopping OpenPetra server";
 
+                    case TaskItem.uncrustify: return "Uncrustifying source code";
+
                     default: return "";
                 }
             }
@@ -591,6 +603,8 @@ namespace Ict.Tools.DevelopersAssistant
 
                     case TaskItem.stopPetraServer: return "Stop server (if it is running)";
 
+                    case TaskItem.uncrustify: return "Uncrustify the source code";
+
                     default: return "Not known";
                 }
             }
@@ -652,6 +666,8 @@ namespace Ict.Tools.DevelopersAssistant
                     case TaskItem.startPetraServer: return "Start server";
 
                     case TaskItem.stopPetraServer: return "Stop server";
+
+                    case TaskItem.uncrustify: return "Uncrustify the source code";
 
                     default: return "Not known";
                 }

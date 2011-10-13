@@ -93,7 +93,7 @@ namespace Ict.Tools.DevelopersAssistant
         {
             lblBranchLocation.Text = (txtBranchLocation.Text == String.Empty) ? "Not defined" : txtBranchLocation.Text;
 
-            DbBuildConfiguration dbCfg = new DbBuildConfiguration(txtBranchLocation.Text);
+            BuildConfiguration dbCfg = new BuildConfiguration(txtBranchLocation.Text);
 
             if (txtBranchLocation.Text == String.Empty)
             {
@@ -396,7 +396,7 @@ namespace Ict.Tools.DevelopersAssistant
                 return;
             }
 
-            DbBuildConfiguration dbCfg = new DbBuildConfiguration(txtBranchLocation.Text);
+            BuildConfiguration dbCfg = new BuildConfiguration(txtBranchLocation.Text);
             dbCfg.AddConfig(dlg.ExitData);
             SetBranchDependencies();
             listDbBuildConfig.SelectedIndex = listDbBuildConfig.Items.Count - 1;
@@ -418,7 +418,7 @@ namespace Ict.Tools.DevelopersAssistant
                 return;
             }
 
-            DbBuildConfiguration dbCfg = new DbBuildConfiguration(txtBranchLocation.Text);
+            BuildConfiguration dbCfg = new BuildConfiguration(txtBranchLocation.Text);
             dbCfg.RemoveConfig(index);
             SetBranchDependencies();
 
@@ -447,7 +447,7 @@ namespace Ict.Tools.DevelopersAssistant
                 return;
             }
 
-            DbBuildConfiguration dbCfg = new DbBuildConfiguration(txtBranchLocation.Text);
+            BuildConfiguration dbCfg = new BuildConfiguration(txtBranchLocation.Text);
             dbCfg.EditConfig(listDbBuildConfig.SelectedIndex, dlg.ExitData);
             SetBranchDependencies();
             listDbBuildConfig.SelectedIndex = index;
@@ -474,13 +474,12 @@ namespace Ict.Tools.DevelopersAssistant
             }
 
             //  Ok - we write the specified settings to the config file and remove the unspecified ones
-            DbBuildConfiguration DbCfg = new DbBuildConfiguration(txtBranchLocation.Text);
+            BuildConfiguration DbCfg = new BuildConfiguration(txtBranchLocation.Text);
 
             if (!DbCfg.SetConfigAsDefault(listDbBuildConfig.SelectedIndex))
             {
                 return;
             }
-
             SetBranchDependencies();
 
             // Optionally run initConfigFiles to get everything matched up
@@ -507,7 +506,7 @@ namespace Ict.Tools.DevelopersAssistant
 
         private void btnSaveCurrentDbBuildConfig_Click(object sender, EventArgs e)
         {
-            new DbBuildConfiguration(txtBranchLocation.Text);
+            BuildConfiguration dbCfg = new BuildConfiguration(txtBranchLocation.Text);
         }
 
         private void chkUseAutoLogon_CheckedChanged(object sender, EventArgs e)
@@ -593,7 +592,7 @@ namespace Ict.Tools.DevelopersAssistant
         {
             try
             {
-                Convert.ToUInt32(txtFlashAfterSeconds.Text);
+                UInt32 i = Convert.ToUInt32(txtFlashAfterSeconds.Text);
                 bHaveAlertedFlashSetting = false;
             }
             catch (Exception)
@@ -833,7 +832,28 @@ namespace Ict.Tools.DevelopersAssistant
             NantTask task = new NantTask(cboMiscellaneous.Items[cboMiscellaneous.SelectedIndex].ToString());
             int NumErrors = 0;
             int NumWarnings = 0;
-            RunSimpleNantTarget(task, ref NumErrors, ref NumWarnings);
+            if (task.Item == NantTask.TaskItem.uncrustify)
+            {
+                FolderBrowserDialog dlg = new FolderBrowserDialog();
+                dlg.Description = "Select a folder to Uncrustify";
+                dlg.SelectedPath = txtBranchLocation.Text;
+                dlg.ShowNewFolderButton = false;
+                if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.Cancel) return;
+
+                // check that the folder contains a .build file
+                string[] files = Directory.GetFiles(dlg.SelectedPath, "*.build", SearchOption.TopDirectoryOnly);
+                if (files.Length == 0)
+                {
+                    MessageBox.Show("The selected folder cannot be Uncrustified.  You must choose a folder that contains a BUILD file.", Program.APP_TITLE);
+                    return;
+                }
+                // Ready to run - overriding the usual root location with the specified folder
+                RunSimpleNantTarget(task, dlg.SelectedPath, ref NumErrors, ref NumWarnings);
+            }
+            else
+            {
+                RunSimpleNantTarget(task, ref NumErrors, ref NumWarnings);
+            }
 
             txtOutput.Text = (chkVerbose.Checked) ? OutputText.VerboseOutput : OutputText.ConciseOutput;
 
@@ -977,6 +997,11 @@ namespace Ict.Tools.DevelopersAssistant
         // It handles the display of the splash dialog and the text that will end up in the output window
         private void RunSimpleNantTarget(NantTask Task, ref int NumErrors, ref int NumWarnings)
         {
+            RunSimpleNantTarget(Task, txtBranchLocation.Text, ref NumErrors, ref NumWarnings);
+        }
+
+        private void RunSimpleNantTarget(NantTask Task, string WorkingFolder, ref int NumErrors, ref int NumWarnings)
+        {
             // Basic routine that runs a simple target with no parameters
             ProgressDialog dlg = new ProgressDialog();
 
@@ -993,22 +1018,22 @@ namespace Ict.Tools.DevelopersAssistant
             switch (Task.Item)
             {
                 case NantTask.TaskItem.startPetraServer:
-                    bOk = NantExecutor.StartServer(txtBranchLocation.Text, (Properties.Settings.Default.MinimizeServerAtStartup != 0));
+                    bOk = NantExecutor.StartServer(WorkingFolder, (Properties.Settings.Default.MinimizeServerAtStartup != 0));
                     break;
 
                 case NantTask.TaskItem.stopPetraServer:
-                    bOk = NantExecutor.StopServer(txtBranchLocation.Text);
+                    bOk = NantExecutor.StopServer(WorkingFolder);
                     break;
 
                 default:
-                    bOk = NantExecutor.RunGenericNantTarget(txtBranchLocation.Text, Task.TargetName);
+                    bOk = NantExecutor.RunGenericNantTarget(WorkingFolder, Task.TargetName);
                     break;
             }
 
             if (bOk)
             {
                 // It ran successfully - let us check the output ...
-                OutputText.AddLogFileOutput(txtBranchLocation.Text + @"\opda.txt", ref NumErrors, ref NumWarnings);
+                OutputText.AddLogFileOutput(WorkingFolder + @"\opda.txt", ref NumErrors, ref NumWarnings);
 
                 if ((Task.Item == NantTask.TaskItem.startPetraServer) || (Task.Item == NantTask.TaskItem.stopPetraServer))
                 {
