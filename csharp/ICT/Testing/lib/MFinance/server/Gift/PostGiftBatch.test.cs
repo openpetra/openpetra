@@ -81,9 +81,9 @@ namespace Tests.MFinance.Server.Gift
 
             Hashtable parameters = new Hashtable();
             parameters.Add("Delimiter", ",");
-            parameters.Add("ALedgerNumber", FLedgerNumber.ToString());
+            parameters.Add("ALedgerNumber", FLedgerNumber);
             parameters.Add("DateFormatString", "yyyy-MM-dd");
-            parameters.Add("NumberFormat", "European");
+            parameters.Add("NumberFormat", "American");
             parameters.Add("NewLine", Environment.NewLine);
 
             TVerificationResultCollection VerificationResult;
@@ -94,7 +94,7 @@ namespace Tests.MFinance.Server.Gift
 
             Assert.AreNotEqual(-1, BatchNumber, "Should have imported the gift batch and return a valid batch number");
 
-            if (TTransactionWebConnector.PostGiftBatch(FLedgerNumber, BatchNumber, out VerificationResult))
+            if (!TTransactionWebConnector.PostGiftBatch(FLedgerNumber, BatchNumber, out VerificationResult))
             {
                 Assert.Fail("Gift Batch was not posted");
             }
