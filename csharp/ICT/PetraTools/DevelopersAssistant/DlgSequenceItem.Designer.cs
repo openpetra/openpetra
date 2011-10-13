@@ -57,27 +57,27 @@ namespace Ict.Tools.DevelopersAssistant
             this.btnOK = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.SuspendLayout();
-            // 
+            //
             // listTasks
-            // 
+            //
             this.listTasks.FormattingEnabled = true;
             this.listTasks.Location = new System.Drawing.Point(12, 25);
             this.listTasks.Name = "listTasks";
             this.listTasks.Size = new System.Drawing.Size(239, 342);
             this.listTasks.TabIndex = 1;
             this.listTasks.DoubleClick += new System.EventHandler(this.listTasks_DoubleClick);
-            // 
+            //
             // label1
-            // 
+            //
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(12, 9);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(78, 13);
             this.label1.TabIndex = 0;
             this.label1.Text = "Available tasks";
-            // 
+            //
             // btnOK
-            // 
+            //
             this.btnOK.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.btnOK.Location = new System.Drawing.Point(44, 377);
             this.btnOK.Name = "btnOK";
@@ -86,9 +86,9 @@ namespace Ict.Tools.DevelopersAssistant
             this.btnOK.Text = "OK";
             this.btnOK.UseVisualStyleBackColor = true;
             this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
-            // 
+            //
             // btnCancel
-            // 
+            //
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.btnCancel.Location = new System.Drawing.Point(143, 377);
             this.btnCancel.Name = "btnCancel";
@@ -96,9 +96,9 @@ namespace Ict.Tools.DevelopersAssistant
             this.btnCancel.TabIndex = 3;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
-            // 
+            //
             // DlgSequenceItem
-            // 
+            //
             this.AcceptButton = this.btnOK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -117,7 +117,6 @@ namespace Ict.Tools.DevelopersAssistant
             this.Text = "Add a Task";
             this.ResumeLayout(false);
             this.PerformLayout();
-
         }
 
         #endregion

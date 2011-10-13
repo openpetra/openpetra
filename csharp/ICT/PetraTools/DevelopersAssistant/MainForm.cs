@@ -480,6 +480,7 @@ namespace Ict.Tools.DevelopersAssistant
             {
                 return;
             }
+
             SetBranchDependencies();
 
             // Optionally run initConfigFiles to get everything matched up
@@ -832,21 +833,29 @@ namespace Ict.Tools.DevelopersAssistant
             NantTask task = new NantTask(cboMiscellaneous.Items[cboMiscellaneous.SelectedIndex].ToString());
             int NumErrors = 0;
             int NumWarnings = 0;
+
             if (task.Item == NantTask.TaskItem.uncrustify)
             {
                 FolderBrowserDialog dlg = new FolderBrowserDialog();
                 dlg.Description = "Select a folder to Uncrustify";
                 dlg.SelectedPath = txtBranchLocation.Text;
                 dlg.ShowNewFolderButton = false;
-                if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.Cancel) return;
+
+                if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
+                {
+                    return;
+                }
 
                 // check that the folder contains a .build file
                 string[] files = Directory.GetFiles(dlg.SelectedPath, "*.build", SearchOption.TopDirectoryOnly);
+
                 if (files.Length == 0)
                 {
-                    MessageBox.Show("The selected folder cannot be Uncrustified.  You must choose a folder that contains a BUILD file.", Program.APP_TITLE);
+                    MessageBox.Show("The selected folder cannot be Uncrustified.  You must choose a folder that contains a BUILD file.",
+                        Program.APP_TITLE);
                     return;
                 }
+
                 // Ready to run - overriding the usual root location with the specified folder
                 RunSimpleNantTarget(task, dlg.SelectedPath, ref NumErrors, ref NumWarnings);
             }
