@@ -58,6 +58,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         /// load the language and culture settings from the user defaults
         /// </summary>
         /// <returns>false if user has not selected any defaults</returns>
+        [RequireModulePermission("NONE")]
         public static bool LoadLanguageAndCultureFromUserDefaults()
         {
             if (TUserDefaults.HasDefault(MSysManConstants.USERDEFAULT_UILANGUAGE))
