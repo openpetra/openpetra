@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       timop, christophert
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -744,30 +744,41 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             return MainDS;
         }
 
-        private static decimal CalculateAdminFee(Int32 ALedgerNumber, string AFeeCode, decimal AGiftAmount)
+        /// <summary>
+        /// calculate the admin fee for a given amount.
+        /// public so that it can be tested by NUnit tests.
+        /// </summary>
+        /// <param name="MainDS"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AFeeCode"></param>
+        /// <param name="AGiftAmount"></param>
+        /// <returns></returns>
+        public static decimal CalculateAdminFee(GiftBatchTDS MainDS, Int32 ALedgerNumber, string AFeeCode, decimal AGiftAmount)
         {
             //Amount to return
             decimal FeeAmount = 0;
-            
+
             // TODO CT
 
             decimal GiftPercentageAmount;
-            
+
             AFeesPayableRow feePayableRow = (AFeesPayableRow)MainDS.AFeePayable.Rows.Find(new object[] { ALedgerNumber, AFeeCode });
 
             if (feePayableRow == null)
             {
                 AFeesReceivableRow feeReceivableRow = (AFeesReceivableRow)MainDS.AFeeReceivable.Rows.Find(new object[] { ALedgerNumber, AFeeCode });
             }
-            
+
             GiftPercentageAmount = feePayableRow.ChargePercentage * AGiftAmount / 100;
-            
+
             switch (feePayableRow.ChargeOption)
             {
                 case MFinanceConstants.ADMIN_CHARGE_OPTION_FIXED:
                     FeeAmount = feePayableRow.ChargeAmount;
                     break;
+
                 case MFinanceConstants.ADMIN_CHARGE_OPTION_MIN:
+
                     if (AGiftAmount >= 0)
                     {
                         if (feePayableRow.ChargeAmount > GiftPercentageAmount)
@@ -790,8 +801,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             FeeAmount = GiftPercentageAmount;
                         }
                     }
+
                     break;
+
                 case MFinanceConstants.ADMIN_CHARGE_OPTION_MAX:
+
                     if (AGiftAmount >= 0)
                     {
                         if (feePayableRow.ChargeAmount < GiftPercentageAmount)
@@ -814,12 +828,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             FeeAmount = GiftPercentageAmount;
                         }
                     }
+
                     break;
+
                 case MFinanceConstants.ADMIN_CHARGE_OPTION_PERCENT:
                     FeeAmount = GiftPercentageAmount;
                     break;
             }
-            
+
             // calculate the admin fee for the specific amount and admin fee. see gl4391.p
 
             return FeeAmount;
@@ -836,32 +852,23 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             /* Get the record for the totals of the processed fees. */
             AProcessedFeeTable ProcessedFeeDataTable = AMainDS.AProcessedFee;
-            AProcessedFeeRow ProcessedFeeRow = 
+            AProcessedFeeRow ProcessedFeeRow =
+                (AProcessedFeeRow)ProcessedFeeDataTable.Rows.Find(new object[] { AGiftDetailRow.LedgerNumber,
+                                                                                 AFeeCode,
+                                                                                 AGiftDetailRow.BatchNumber,
+                                                                                 AGiftDetailRow.GiftTransactionNumber,
+                                                                                 AGiftDetailRow.DetailNumber });
 
-//Need to reset to this after Timo fixes order
-//                (AProcessedFeeRow)ProcessedFeeDataTable.Rows.Find(new object[] {AGiftDetailRow.LedgerNumber,
-//                                                                                AFeeCode,
-//                                                                                AGiftDetailRow.BatchNumber,
-//                                                                                AGiftDetailRow.GiftTransactionNumber,
-//                                                                                AGiftDetailRow.DetailNumber
-//                                                                               });
-            
-                (AProcessedFeeRow)ProcessedFeeDataTable.Rows.Find(new object[] {AGiftDetailRow.LedgerNumber,
-                                                                                AGiftDetailRow.BatchNumber,
-                                                                                AGiftDetailRow.GiftTransactionNumber,
-                                                                                AGiftDetailRow.DetailNumber,
-                                                                                AFeeCode
-                                                                               });
             if (ProcessedFeeRow == null)
             {
-                ProcessedFeeRow = (AProcessedFeeRow)ProcessedFeeDataTable.NewRowTyped(false);       
+                ProcessedFeeRow = (AProcessedFeeRow)ProcessedFeeDataTable.NewRowTyped(false);
                 ProcessedFeeRow.LedgerNumber = AGiftDetailRow.LedgerNumber;
                 ProcessedFeeRow.BatchNumber = AGiftDetailRow.BatchNumber;
                 ProcessedFeeRow.GiftTransactionNumber = AGiftDetailRow.GiftTransactionNumber;
                 ProcessedFeeRow.DetailNumber = AGiftDetailRow.DetailNumber;
                 ProcessedFeeRow.FeeCode = AFeeCode;
                 ProcessedFeeRow.PeriodicAmount = 0;
-                
+
                 ProcessedFeeDataTable.Rows.Add(ProcessedFeeRow);
             }
 
@@ -901,7 +908,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 // TODO deal with different currencies; at the moment assuming base currency
                 //giftDetail.GiftAmount = giftDetail.GiftTransactionAmount;
-                giftDetail.GiftAmount =  giftDetail.GiftTransactionAmount * MainDS.AGiftBatch[0].ExchangeRateToBase;
+                giftDetail.GiftAmount = giftDetail.GiftTransactionAmount * MainDS.AGiftBatch[0].ExchangeRateToBase;
 
                 // get all motivation detail fees for this gift
                 foreach (AMotivationDetailFeeRow motivationFeeRow in MainDS.AMotivationDetailFee.Rows)
@@ -909,7 +916,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     if ((motivationFeeRow.MotivationDetailCode == motivationRow.MotivationDetailCode)
                         && (motivationFeeRow.MotivationGroupCode == motivationRow.MotivationGroupCode))
                     {
-                        decimal FeeAmount = CalculateAdminFee(ALedgerNumber, motivationFeeRow.FeeCode, giftDetail.GiftAmount);
+                        decimal FeeAmount = CalculateAdminFee(MainDS, ALedgerNumber, motivationFeeRow.FeeCode, giftDetail.GiftAmount);
                         AddToFeeTotals(MainDS, giftDetail, motivationFeeRow.FeeCode, FeeAmount, MainDS.AGiftBatch[0].BatchPeriod);
                     }
                 }
