@@ -839,10 +839,18 @@ namespace Ict.Tools.DevelopersAssistant
                 FolderBrowserDialog dlg = new FolderBrowserDialog();
                 dlg.Description = "Select a folder to Uncrustify";
                 dlg.SelectedPath = txtBranchLocation.Text;
+                dlg.RootFolder = Environment.SpecialFolder.MyComputer;
                 dlg.ShowNewFolderButton = false;
 
                 if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
                 {
+                    return;
+                }
+
+                // check the selection is based on teh current branch
+                if (!dlg.SelectedPath.StartsWith(txtBranchLocation.Text, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    MessageBox.Show("You must choose a folder within the current branch.", Program.APP_TITLE);
                     return;
                 }
 
