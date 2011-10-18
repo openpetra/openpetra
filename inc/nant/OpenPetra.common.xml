@@ -201,6 +201,16 @@
  <!-- webserver -->
 <property name="dir.webserver" value="${path::combine(dir.delivery, 'webserver')}" overwrite="false" />
 <property name="dir.webserver.bin" value="${path::combine(dir.webserver, 'bin')}" overwrite="false" />
+<property name="webserver.includeSamples" value="true" overwrite="false"/>
+<property name="dir.webforms.source" value="${dir.root}/webserver" overwrite="false"/>
+<property name="dir.webforms.delivery" value="${dir.webserver}" overwrite="false"/>
+<property name="dir.webserver.OnlineRegBackend.doc" value="" overwrite="false"/>
+<property name="dir.webserver.OnlineReg.doc" value="" overwrite="false"/>
+<property name="dir.webserver.DirectLinks" value="" overwrite="false"/>
+<property name="dir.webserver.ProductionConfig" value="" overwrite="false"/>
+<property name="dir.webserver.Formletters" value="${dir.root}/demodata/formletters" overwrite="false"/>
+<property name="dir.webserver.Badges" value="" overwrite="false"/>
+<property name="dir.webserver.HtmlReports" value="" overwrite="false"/>
 
 <!-- build tools -->
 <property name="devenv-name" value="sharpdevelop3"

@@ -2,17 +2,6 @@
     BaseYaml: AccountDetail.yaml
     WindowHeight: 670
     Controls:
-        grpLedger: {Height=50}
-        grpCurrency: {Height=50}
-        rgrPeriod: {Height=90}
-        rbtPeriodRange: {Height=40}
-        rbtDateRange: {Height=50}
         rgrSorting: {Height=160}
         rbtSortByReference: {Height=40}
         rbtSortByAnalysisType: {Height=40}
-        rgrAccounts: {Width=620, Height=250}
-        rgrCostCentres: {Width=620, Height=250}
-        rbtAccountRange: {Height=80}
-        rbtAccountList: {Height=170}
-        rbtCostCentreRange: {Height=80}
-        rbtCostCentreList: {Height=170}

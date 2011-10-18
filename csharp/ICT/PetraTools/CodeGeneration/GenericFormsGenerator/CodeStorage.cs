@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.IO;
 using System.Xml;
 using System.Collections;
 using System.Collections.Specialized;
@@ -150,10 +151,10 @@ namespace Ict.Tools.CodeGeneration
         /// <returns></returns>
         public bool ImplementationContains(string ANamespaceAndClassname, string ASearchText)
         {
-            string pathAndName = System.IO.Path.GetDirectoryName(this.FFilename).Replace("\\", "/");
+            string pathAndName = System.IO.Path.GetDirectoryName(Path.GetFullPath(this.FFilename)).Replace("\\", "/");
 
             // cut off after /Client/lib
-            pathAndName = pathAndName.Substring(0, pathAndName.IndexOf("ICT/Petra/Client/") + "ICT/Petra/Client/".Length);
+            pathAndName = pathAndName.Substring(0, pathAndName.IndexOf("ICT/Petra/Client/") + "ICT/Petra/Client".Length);
 
             // use only last part of namespace after Ict.Petra.Client
             ANamespaceAndClassname = ANamespaceAndClassname.Substring("Ict.Petra.Client".Length);
@@ -161,15 +162,11 @@ namespace Ict.Tools.CodeGeneration
 
             // get the file name without TFrm prefix
             string filename = "/" + ANamespaceAndClassname.Substring(ANamespaceAndClassname.LastIndexOf(".") + 1 + 4);
-            string alternativePathName = pathAndName;
+            string alternativeFileName = filename;
 
             if (!System.IO.File.Exists(pathAndName + filename + ".cs"))
             {
-                // try to use path name without the last part of the namespace
-                // was eg Ict.Petra.Client.MFinance.Gui.Setup.TFrmSetupCurrency is
-                // in MFinance/Gui/SetupCurrency.cs, but now that file has gone into a subdirectory anyways
-
-                pathAndName = pathAndName.Substring(0, pathAndName.LastIndexOf("/"));
+                filename += "-generated";
             }
 
             if (System.IO.File.Exists(pathAndName + filename + ".cs"))
@@ -187,12 +184,19 @@ namespace Ict.Tools.CodeGeneration
             {
                 Console.WriteLine("Warning naming conventions: cannot find file " +
                     pathAndName + filename + ".cs or " +
-                    alternativePathName + filename + ".cs");
+                    pathAndName + alternativeFileName + ".cs");
             }
 
-            if (System.IO.File.Exists(pathAndName + filename + ".ManualCode.cs"))
+            string ManualCodeFile = pathAndName + filename + ".ManualCode.cs";
+
+            if (!System.IO.File.Exists(ManualCodeFile))
             {
-                System.IO.StreamReader r = new System.IO.StreamReader(pathAndName + filename + ".ManualCode.cs");
+                ManualCodeFile = ManualCodeFile.Replace("-generated.cs", ".ManualCode.cs");
+            }
+
+            if (System.IO.File.Exists(ManualCodeFile))
+            {
+                System.IO.StreamReader r = new System.IO.StreamReader(ManualCodeFile);
                 string temp = r.ReadToEnd();
                 r.Close();
 

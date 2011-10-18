@@ -172,7 +172,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
     <echo message="${script::ReplaceInFile(Current.File, '{#DELIVERY.DIR}', dir.delivery)}"/>
     
     <!-- for remote installer -->
-    <if test="${property::exists('OrgName')}">
+    <if test="${property::exists('HostedServer')}">
         <echo message="${script::ReplaceInFile(Current.File, '{#ORGNAME}', OrgName)}"/>
         <echo message="${script::ReplaceInFile(Current.File, '{#PUBLISHERURL}', PublisherUrl)}"/>
         <echo message="${script::ReplaceInFile(Current.File, '{#SERVERHOST}', HostedServer)}"/>

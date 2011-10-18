@@ -11,18 +11,20 @@ then
         NAME=${NAME:3}
 fi
 
-export mono=/opt/novell/mono/bin
-export OpenPetraOrgPath=/usr/local/openpetraorg
-export CustomerName=DefaultTOREPLACE
-export OPENPETRA_LocationKeyFile=
-export OPENPETRA_RDBMSType=postgresql
-export OPENPETRA_DBPWD=TOBESETBYINSTALLER
-export OPENPETRA_DBHOST=localhost
-export OPENPETRA_DBPORT=5432
-export OPENPETRA_DBUSER=petraserver
-export OPENPETRA_DBNAME=openpetra
-export OPENPETRA_PORT=9000
-export backupfile=$OpenPetraOrgPath/backup-`date +%Y%m%d`.sql.gz
+if [ ! -d $OpenPetraOrgPath ]
+  export mono=/opt/novell/mono/bin
+  export OpenPetraOrgPath=/usr/local/openpetraorg
+  export CustomerName=DefaultTOREPLACE
+  export OPENPETRA_LocationKeyFile=
+  export OPENPETRA_RDBMSType=postgresql
+  export OPENPETRA_DBPWD=TOBESETBYINSTALLER
+  export OPENPETRA_DBHOST=localhost
+  export OPENPETRA_DBPORT=5432
+  export OPENPETRA_DBUSER=petraserver
+  export OPENPETRA_DBNAME=openpetra
+  export OPENPETRA_PORT=9000
+  export backupfile=$OpenPetraOrgPath/backup-`date +%Y%m%d`.sql.gz
+fi
 
 # Override defaults from /etc/sysconfig/openpetra if file is present
 [ -f /etc/sysconfig/openpetra/${NAME} ] && . /etc/sysconfig/openpetra/${NAME}

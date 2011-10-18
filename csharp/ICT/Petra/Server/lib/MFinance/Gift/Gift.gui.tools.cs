@@ -27,6 +27,7 @@ using System.Data;
 using Ict.Common.DB;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 
@@ -67,7 +68,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         ///                                       values of APartnerKey. </param>
         /// <returns>The result of is boolean and the value true tells that there exists an entry
         /// in the database which is represented by the parther key</returns>
-
+        [RequireModulePermission("FINANCE-1")]
         public static Boolean GetMotivationGroupAndDetail(Int64 partnerKey,
             ref String motivationGroup,
             ref String motivationDetail)
