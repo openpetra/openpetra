@@ -39,26 +39,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     /// </summary>
     public partial class TFrmDonorRecipientHistory
     {
-        private long FDonor = 0;
         /// the Donor
         public long Donor
         {
             set
             {
-                FDonor = value;
                 txtDonor.Text = String.Format("{0:0000000000}", value);
-            }             //injected
+            }
         }
 
-        private long FRecipient = 0;
         /// the recipient
         public long Recipient
         {
             set
             {
-                FRecipient = value;
                 txtRecipient.Text = String.Format("{0:0000000000}", value);
-            }             //injected
+            }
         }
 
 
