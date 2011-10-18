@@ -25,6 +25,7 @@ using System;
 using System.Data;
 using System.Windows.Forms;
 using Ict.Common;
+using Ict.Common.Controls;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -137,6 +138,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             // where data did not already come from server
             txtPPartnerRelationshipPartnerKey.ValueChanged += new TDelegatePartnerChanged(txtPPartnerRelationshipPartnerKey_ValueChanged);
             txtPPartnerRelationshipRelationKey.ValueChanged += new TDelegatePartnerChanged(txtPPartnerRelationshipRelationKey_ValueChanged);
+
+            grdDetails.InsertKeyPressed += new TKeyPressedEventHandler(grdDetails_InsertKeyPressed);
+            grdDetails.DeleteKeyPressed += new TKeyPressedEventHandler(grdDetails_DeleteKeyPressed);
             
             if (grdDetails.Rows.Count > 1)
             {
@@ -200,6 +204,18 @@ namespace Ict.Petra.Client.MPartner.Gui
                     btnEditOtherPartner.Enabled = true;
                 }
             }
+            if (ARow.RowState == DataRowState.Added)
+            {
+                txtPPartnerRelationshipPartnerKey.Enabled = true;
+                cmbPPartnerRelationshipRelationName.Enabled = true;
+                txtPPartnerRelationshipRelationKey.Enabled = true;
+            }
+            else
+            {
+                txtPPartnerRelationshipPartnerKey.Enabled = false;
+                cmbPPartnerRelationshipRelationName.Enabled = false;
+                txtPPartnerRelationshipRelationKey.Enabled = false;
+            }
         }
         
         private void GetDetailDataFromControlsManual(PPartnerRelationshipRow ARow)
@@ -251,6 +267,27 @@ namespace Ict.Petra.Client.MPartner.Gui
                         CurrentRow.PartnerClass     = PartnerClass.ToString();
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// Event Handler for Grid Event
+        /// </summary>
+        /// <returns>void</returns>
+        private void grdDetails_InsertKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
+        {
+            NewRow(this, null);
+        }
+
+        /// <summary>
+        /// Event Handler for Grid Event
+        /// </summary>
+        /// <returns>void</returns>
+        private void grdDetails_DeleteKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
+        {
+            if (e.Row != -1)
+            {
+                this.DeleteRow(this, null);
             }
         }
         
