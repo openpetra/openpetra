@@ -97,6 +97,19 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
         
+        /// <summary>
+        /// This Procedure will get called from the SaveChanges procedure before it
+        /// actually performs any saving operation.
+        /// </summary>
+        /// <param name="sender">The Object that throws this Event</param>
+        /// <param name="e">Event Arguments.
+        /// </param>
+        /// <returns>void</returns>
+        private void DataSavingStarted(System.Object sender, System.EventArgs e)
+        {
+            GetDetailsFromControls (GetSelectedDetailRow());
+        }
+
         /// <summary>todoComment</summary>
         public void SpecialInitUserControl()
         {
@@ -117,6 +130,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             FLogic.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(this.RethrowRecalculateScreenParts);
             OnHookupDataChange(new THookupPartnerEditDataChangeEventArgs(TPartnerEditTabPageEnum.petpRelationships));
 
+            // Hook up DataSavingStarted Event to be able to run code before SaveChanges is doing anything
+            FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(this.DataSavingStarted);
+
+            // hook up partner changed event for partner key and relation key so grid can be updated when new record is created
+            // where data did not already come from server
+            txtPPartnerRelationshipPartnerKey.ValueChanged += new TDelegatePartnerChanged(txtPPartnerRelationshipPartnerKey_ValueChanged);
+            txtPPartnerRelationshipRelationKey.ValueChanged += new TDelegatePartnerChanged(txtPPartnerRelationshipRelationKey_ValueChanged);
+            
             if (grdDetails.Rows.Count > 1)
             {
                 grdDetails.SelectRowInGrid(1);
@@ -183,8 +204,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         
         private void GetDetailDataFromControlsManual(PPartnerRelationshipRow ARow)
         {
-            txtPPartnerRelationshipPartnerKey.ValueChanged += new TDelegatePartnerChanged(txtPPartnerRelationshipPartnerKey_ValueChanged);
-            txtPPartnerRelationshipRelationKey.ValueChanged += new TDelegatePartnerChanged(txtPPartnerRelationshipRelationKey_ValueChanged);
         }
 
         void txtPPartnerRelationshipPartnerKey_ValueChanged(long APartnerKey, string APartnerShortName, bool AValidSelection)
@@ -195,6 +214,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (AValidSelection) 
             {
+                // display "other" partner name and class in grid
                 if (APartnerKey != ((PPartnerRow)FMainDS.PPartner.Rows[0]).PartnerKey
                     && APartnerKey != 0)
                 {
@@ -218,13 +238,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             
             if (AValidSelection) 
             {
+                // display "other" partner name and class in grid
                 if (APartnerKey != ((PPartnerRow)FMainDS.PPartner.Rows[0]).PartnerKey
                     && APartnerKey != 0)
                 {
                     CurrentRow = GetSelectedDetailRow();
-                    if (CurrentRow.PartnerKey != APartnerKey)
+                    if (CurrentRow.RelationKey != APartnerKey)
                     {
-                        CurrentRow.PartnerKey       = APartnerKey;
+                        CurrentRow.RelationKey       = APartnerKey;
                         FPartnerEditUIConnector.GetPartnerShortName (APartnerKey, out PartnerShortName, out PartnerClass);
                         CurrentRow.PartnerShortName = PartnerShortName;
                         CurrentRow.PartnerClass     = PartnerClass.ToString();

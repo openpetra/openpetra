@@ -3104,8 +3104,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             TDBTransaction ReadTransaction;
             Boolean NewTransaction = false;
             PartnerEditTDSPPartnerRelationshipTable RelationshipDT;
-            PartnerEditTDSPPartnerRelationshipRow RelationshipRow;
-            PPartnerRelationshipTable TempRelationshipDT;
             PPartnerTable PartnerDT;
 
             RelationshipDT = new PartnerEditTDSPPartnerRelationshipTable();
@@ -3134,27 +3132,19 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     try
                     {
                         // load relationships where partner is involved with partner key or reciprocal
-                        TempRelationshipDT = PPartnerRelationshipAccess.LoadViaPPartnerPartnerKey(FPartnerKey, ReadTransaction);
-                        TempRelationshipDT.Merge (PPartnerRelationshipAccess.LoadViaPPartnerRelationKey(FPartnerKey, ReadTransaction));
+                        RelationshipDT.Merge (PPartnerRelationshipAccess.LoadViaPPartnerPartnerKey(FPartnerKey, ReadTransaction));
+                        RelationshipDT.Merge (PPartnerRelationshipAccess.LoadViaPPartnerRelationKey(FPartnerKey, ReadTransaction));
 
-                        foreach (PPartnerRelationshipRow TempPartnerRelationshipRow in TempRelationshipDT.Rows)
+                        foreach (PartnerEditTDSPPartnerRelationshipRow RelationshipRow in RelationshipDT.Rows)
                         {
-                            RelationshipRow = RelationshipDT.NewRowTyped(true);
-
-                            // set relationship data from tables retrieved
-                            RelationshipRow.PartnerKey   = TempPartnerRelationshipRow.PartnerKey;
-                            RelationshipRow.RelationName = TempPartnerRelationshipRow.RelationName;
-                            RelationshipRow.RelationKey  = TempPartnerRelationshipRow.RelationKey;
-                            RelationshipRow.Comment      = TempPartnerRelationshipRow.Comment;
-                            
                             // find partner name and class depending on relation and add it to data set
-                            if (TempPartnerRelationshipRow.PartnerKey == FPartnerKey)
+                            if (RelationshipRow.PartnerKey == FPartnerKey)
                             {
-                                PartnerDT = PPartnerAccess.LoadByPrimaryKey (TempPartnerRelationshipRow.RelationKey, ReadTransaction);
+                                PartnerDT = PPartnerAccess.LoadByPrimaryKey (RelationshipRow.RelationKey, ReadTransaction);
                             }
                             else
                             {
-                                PartnerDT = PPartnerAccess.LoadByPrimaryKey (TempPartnerRelationshipRow.PartnerKey, ReadTransaction);
+                                PartnerDT = PPartnerAccess.LoadByPrimaryKey (RelationshipRow.PartnerKey, ReadTransaction);
                             }
 
                             // set extended fields for partner data if record exists
@@ -3163,8 +3153,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                                 RelationshipRow.PartnerShortName = ((PPartnerRow)PartnerDT.Rows[0]).PartnerShortName;
                                 RelationshipRow.PartnerClass     = ((PPartnerRow)PartnerDT.Rows[0]).PartnerClass;
                             }
-                            
-                            RelationshipDT.Rows.Add(RelationshipRow);
                         }
                     }
                     catch (Exception)
