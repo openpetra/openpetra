@@ -41,16 +41,19 @@ namespace Ict.Tools.DataDumpPetra2
             new TAppSettingsManager(false);
             new TLogging("Ict.Tools.DataDumpPetra2.log");
 
-            Console.Error.WriteLine("dumps one single table or all tables from Progress Petra 2.3 into Postgresql SQL load format");
-            Console.Error.WriteLine(
-                "usage: Ict.Tools.DataDumpPetra2 -debuglevel:<0..10> -table:<single table or all> -oldpetraxml:<path and filename of old petra.xml> -newpetraxml:<path and filename of petra.xml>");
-            Console.Error.WriteLine("will default to processing all tables, and using petra23.xml and petra.xml from the current directory");
-            Console.Error.WriteLine("");
-            Console.Error.WriteLine("If the file fulldumpOpenPetraCSV.r does not exist yet, the .p file will be written.");
-            Console.Error.WriteLine("");
-            Console.Error.WriteLine(
-                "You should redirect the output to a file, or even pipe it through gzip. eg. mono Ict.Tools.DataDumpPetra2.exe | iconv --to-code=UTF-8 | gzip > mydump.sql.gz");
-            Console.Error.WriteLine("");
+            if (!TAppSettingsManager.HasValue("debuglevel"))
+            {
+                Console.Error.WriteLine("dumps one single table or all tables from Progress Petra 2.3 into Postgresql SQL load format");
+                Console.Error.WriteLine(
+                    "usage: Ict.Tools.DataDumpPetra2 -debuglevel:<0..10> -table:<single table or all> -oldpetraxml:<path and filename of old petra.xml> -newpetraxml:<path and filename of petra.xml>");
+                Console.Error.WriteLine("will default to processing all tables, and using petra23.xml and petra.xml from the current directory");
+                Console.Error.WriteLine("");
+                Console.Error.WriteLine("If the file fulldumpOpenPetraCSV.r does not exist yet, the .p file will be written.");
+                Console.Error.WriteLine("");
+                Console.Error.WriteLine(
+                    "You should redirect the output to a file, or even pipe it through gzip. eg. mono Ict.Tools.DataDumpPetra2.exe | iconv --to-code=UTF-8 | gzip > mydump.sql.gz");
+                Console.Error.WriteLine("");
+            }
 
             try
             {

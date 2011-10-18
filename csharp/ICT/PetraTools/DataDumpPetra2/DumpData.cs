@@ -28,6 +28,7 @@ using System.Threading;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Tools.DBXML;
@@ -66,8 +67,7 @@ namespace Ict.Tools.DataDumpPetra2
             string dumpFile = "fulldump" + Path.DirectorySeparatorChar + oldTableName + ".d";
 
             // now run the compiled .r program against the Progress database
-            // in debug mode, don't dump the file again
-            if ((TLogging.DebugLevel == 0) || !File.Exists(dumpFile))
+            if (!File.Exists(dumpFile))
             {
                 TRunProgress.RunProgress("fulldumpOpenPetraCSV.r", oldTableName, TLogging.GetLogFileName());
 
@@ -101,6 +101,73 @@ namespace Ict.Tools.DataDumpPetra2
 
             TLogging.Log("after reading from Progress");
 
+            if (File.Exists(dumpFile))
+            {
+                FileInfo f = new FileInfo(dumpFile);
+
+                if ((f.Length > 200000) && !TAppSettingsManager.HasValue("table"))
+                {
+                    ProcessAndWritePostgresqlFileNewProcess(dumpFile, newTable);
+                }
+                else
+                {
+                    ProcessAndWritePostgresqlFile(dumpFile, newTable);
+                }
+            }
+        }
+
+        private void ProcessAndWritePostgresqlFileNewProcess(string dumpFile, TTable newTable)
+        {
+            TLogging.Log("Special treatment of file " + Path.GetFileName(dumpFile));
+            System.Diagnostics.Process ChildProcess = new System.Diagnostics.Process();
+            ChildProcess.EnableRaisingEvents = false;
+
+            if (Utilities.DetermineExecutingOS() == TExecutingOSEnum.eosLinux)
+            {
+                ChildProcess.StartInfo.FileName = "mono";
+
+                ChildProcess.StartInfo.Arguments = "Ict.Tools.DataDumpPetra2.exe ";
+            }
+            else         // windows
+            {
+                ChildProcess.StartInfo.FileName = "Ict.Tools.DataDumpPetra2.exe";
+
+                ChildProcess.StartInfo.Arguments = string.Empty;
+            }
+
+            ChildProcess.StartInfo.Arguments +=
+                " -debuglevel:" + TAppSettingsManager.GetValue("debuglevel", "0") +
+                " -table:" + newTable.strName +
+                " -newpetraxml:" + TAppSettingsManager.GetValue("newpetraxml", "petra.xml") +
+                " -oldpetraxml:" + TAppSettingsManager.GetValue("oldpetraxml", "petra.xml");
+
+            ChildProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+
+            ChildProcess.EnableRaisingEvents = true;
+            ChildProcess.StartInfo.UseShellExecute = false;
+
+            if (!ChildProcess.Start())
+            {
+                return;
+            }
+
+            Thread.Sleep(500);
+
+            while ((!ChildProcess.HasExited))
+            {
+                Thread.Sleep(500);
+            }
+
+            ChildProcess.Close();
+        }
+
+        /// <summary>
+        /// process the data from the Progress dump file, so that Postgresql can read the result
+        /// </summary>
+        public void ProcessAndWritePostgresqlFile(string dumpFile, TTable newTable)
+        {
+            string oldTableName = DataDefinitionDiff.GetOldTableName(newTable.strName);
+
             StringCollection ColumnNames = new StringCollection();
 
             foreach (TTableField field in newTable.grpTableField.List)
@@ -112,27 +179,35 @@ namespace Ict.Tools.DataDumpPetra2
 
             int CountRows = 0;
 
-            using (StreamReader sr = new StreamReader(dumpFile, ProgressFileEncoding))
+            try
             {
-                while (!sr.EndOfStream)
+                using (StreamReader sr = new StreamReader(dumpFile, ProgressFileEncoding))
                 {
-                    List <string[]>DumpValues = TParseProgressCSV.ParseFile(sr, newTable.grpTableField.List.Count, ref CountRows);
-
-                    TFixData.FixData(oldTableName, ColumnNames, ref DumpValues);
-
-                    foreach (string[] row in DumpValues)
+                    while (!sr.EndOfStream)
                     {
-                        Console.WriteLine(StringHelper.StrMerge(row, '\t').Replace("\\\\N", "\\N").ToString());
+                        List <string[]>DumpValues = TParseProgressCSV.ParseFile(sr, newTable.grpTableField.List.Count, ref CountRows);
+
+                        TFixData.FixData(oldTableName, ColumnNames, ref DumpValues);
+
+                        foreach (string[] row in DumpValues)
+                        {
+                            Console.WriteLine(StringHelper.StrMerge(row, '\t').Replace("\\\\N", "\\N").ToString());
+                        }
                     }
                 }
-            }
 
-            if (TLogging.DebugLevel == 0)
+                if (TLogging.DebugLevel == 0)
+                {
+                    File.Delete(dumpFile);
+                }
+
+                TLogging.Log(" after processing file, rows: " + CountRows.ToString());
+            }
+            catch (Exception e)
             {
-                File.Delete(dumpFile);
+                TLogging.Log((GC.GetTotalMemory(false) / 1024 / 1024).ToString());
+                TLogging.Log("WARNING Problems processing file " + dumpFile + ": " + e.ToString());
             }
-
-            TLogging.Log(" after processing file, rows: " + CountRows.ToString());
 
             Console.WriteLine("\\.");
             Console.WriteLine();
