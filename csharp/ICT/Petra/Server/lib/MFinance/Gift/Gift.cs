@@ -462,5 +462,57 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             return AccessToGift;
         }
+
+        /// <summary>
+        /// Check if a gift is really restricted or if the user belongs to the group that is allowed
+        /// to access the gift
+        /// </summary>
+        /// <param name="gift">the gift we want to check for restriction</param>
+        /// <param name="ATransaction">A TDBTransaction object for reuse</param>
+        /// <returns>true if the user has no permission and the gift is restricted
+        ///</returns>
+        public static bool GiftRestricted(AGiftRow gift, TDBTransaction ATransaction)
+        {
+            SGroupGiftTable GroupGiftDT;
+            SUserGroupTable UserGroupDT;
+            Int16 Counter;
+
+            DataRow[] FoundUserGroups;
+
+            if (gift.Restricted)
+            {
+                GroupGiftDT = SGroupGiftAccess.LoadViaAGift(
+                    gift.LedgerNumber,
+                    gift.BatchNumber,
+                    gift.GiftTransactionNumber,
+                    ATransaction);
+                UserGroupDT = SUserGroupAccess.LoadViaSUser(UserInfo.GUserInfo.UserID, ATransaction);
+
+                // Loop over all rows of GroupGiftDT
+                for (Counter = 0; Counter <= GroupGiftDT.Rows.Count - 1; Counter += 1)
+                {
+                    // To be able to view a Gift, ReadAccess must be granted
+                    if (GroupGiftDT[Counter].ReadAccess)
+                    {
+                        // Find out whether the user has a row in s_user_group with the
+                        // GroupID of the GroupGift row
+                        FoundUserGroups = UserGroupDT.Select(SUserGroupTable.GetGroupIdDBName() + " = '" + GroupGiftDT[Counter].GroupId + "'");
+
+                        if (FoundUserGroups.Length != 0)
+                        {
+                            // The gift is not restricted because there is a read access for the group
+                            return false;
+                            // don't evaluate further GroupGiftDT rows
+                        }
+                    }
+                }
+            }
+            else
+            {
+                return false;
+            }
+
+            return true;
+        }
     }
 }

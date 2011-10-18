@@ -23,10 +23,6 @@
             Label: General Settings
             Controls: [lblLedger, grpSelection]
             
-        uco_Columns:
-            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns
-            Dock: Fill
-            
         lblLedger:
             Label: Ledger
         grpSelection:

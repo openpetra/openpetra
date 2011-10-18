@@ -1,0 +1,74 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraForm.yaml
+    FormTitle: Donor Recipient History
+    Namespace: Ict.Petra.Client.MFinance.Gui.Gift
+    DatasetType: Ict.Petra.Shared.MFinance.Gift.Data.GiftBatchTDS
+    DetailTable: AGiftDetail
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.Gift.Data]
+    FormType: browse
+    Template: windowSingleTable
+    WindowWidth: 1000
+    WindowHeight: 800
+    Actions:
+        actClose:  {Label=Close, ActionClick=BtnCloseClick}
+        actView: {Label=View, ActionClick=BtnViewClick}
+        actBrowse: {Label=Browse, ActionClick=BtnBrowseClick}
+    Controls:
+        pnlContent:
+            Controls: [pnlSelect, pnlGrid, pnlDetails, pnlButtons]
+            Dock: Fill
+        pnlSelect:
+            Dock: Top
+            Controls:
+                Row0: [txtLedger]
+                Row1: [txtDonor]
+                Row2: [txtRecipient]
+                Row3: [dtpDateFrom,dtpDateTo]
+                Row4: [txtMotivationGroup, txtMotivationDetail, btnBrowse]
+        txtLedger: {Label=Ledger, ReadOnly=true}
+        txtDonor: {Label=Donor, Type=PartnerKey, PartnerClass=FAMILY}
+        txtRecipient: {Label=Recipient, Type=PartnerKey}
+        dtpDateFrom: {Label=Date from}
+        dtpDateTo: {Label=To}  
+        txtMotivationGroup: {Label=Motivation Group}
+        txtMotivationDetail: {Label=Detail}  
+        btnBrowse:
+            Action: actBrowse        
+        pnlGrid:
+            Dock: Top
+            Controls: [grdDetails]
+            Height:400
+        pnlButtons:
+            Dock: Bottom
+            Controls:
+                Row0: [btnClose]
+        btnClose: 
+            Action: actClose
+        grdDetails:
+            TableName: AGiftDetail
+            Dock: Fill
+            Columns: [DateEntered, MotivationGroupCode, MotivationDetailCode, ReceiptNumber, GiftTransactionAmount, ConfidentialGiftFlag, BatchNumber, GiftTransactionNumber, RecipientDescription, Reference, GiftCommentOne, CommentOneType, RecipientLedgerNumber, RecipientKey, ChargeFlag, MethodOfPaymentCode, MethodOfGivingCode, CostCentreCode, GiftCommentTwo, GiftCommentThree, MailingCode]
+            CustomColumns:
+                ConfidentialGiftFlag: {Label=C, Type=Boolean}
+                DateEntered: {Label=Date Entered, Type=DateTime}
+                DonorKey: {Label=Donor Key, Type=PartnerKey}
+                DonorName: {Label=Donor Name, Type=String}
+                DonorClass: {Label=Class, Type=String}
+                RecipientDescription: {Label=Recipient, Type=String}
+                RecipientLedgerNumber: {Label=Recipient Ledger, type=Int}
+                GiftAmount: {Label=Gift Amount, Type=Decimal}
+                MethodOfGivingCode: {Label=Method of Giving, Type=String}
+                MethodOfPaymentCode: {Label=Method of Payment, Type=String}
+                ReceiptNumber: {Label=Receipt, Type=Int32}
+                Reference: {Label=Reference, Type=String}
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Top
+            Controls:
+                Row0: [txtGiftTotal,txtNumberOfGifts]
+                Row1: [btnView]
+        txtGiftTotal: {Label=Total, Format=Currency, ReadOnly=true}
+        txtNumberOfGifts: {Label=Number of Gifts, ReadOnly=true}
+        btnView:
+            Action: actView               
+

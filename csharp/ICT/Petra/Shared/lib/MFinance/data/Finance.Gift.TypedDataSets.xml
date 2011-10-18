@@ -19,6 +19,7 @@
             <CustomField name="MethodOfGivingCode" type="String"/>
             <CustomField name="MethodOfPaymentCode" type="String"/>
             <CustomField name="AccountCode" type="String"/>
+            <CustomField name="Reference" type="String"/>
         </Table>
         <Table sqltable="a_motivation_group"/>
         <Table sqltable="a_motivation_detail"/>

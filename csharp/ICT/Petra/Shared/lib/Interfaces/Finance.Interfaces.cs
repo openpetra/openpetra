@@ -496,6 +496,9 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors
         GiftBatchTDS LoadTransactions(Int32 ALedgerNumber,
                                       Int32 ABatchNumber);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
+        GiftBatchTDS LoadDonorRecipientHistory(Hashtable requestParams,
+                                               out TVerificationResultCollection AMessages);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
         RecurringGiftBatchTDS LoadRecurringTransactions(Int32 ALedgerNumber,
                                                         Int32 ABatchNumber);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>

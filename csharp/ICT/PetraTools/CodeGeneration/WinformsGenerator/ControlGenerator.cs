@@ -2645,11 +2645,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 ctrl.GetAttribute("Panel2") + ")");
 
             TControlDef ChildCtrl = ctrl.FCodeStorage.GetControl(ctrl.GetAttribute("Panel1"));
+            ChildCtrl.parentName = ctrl.controlName;
             IControlGenerator ChildGenerator = writer.FindControlGenerator(ChildCtrl);
             ChildGenerator.GenerateDeclaration(writer, ChildCtrl);
             ChildGenerator.SetControlProperties(writer, ChildCtrl);
 
             ChildCtrl = ctrl.FCodeStorage.GetControl(ctrl.GetAttribute("Panel2"));
+            ChildCtrl.parentName = ctrl.controlName;
             ChildGenerator = writer.FindControlGenerator(ChildCtrl);
             ChildGenerator.GenerateDeclaration(writer, ChildCtrl);
             ChildGenerator.SetControlProperties(writer, ChildCtrl);

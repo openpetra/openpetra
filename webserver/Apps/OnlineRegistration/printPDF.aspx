@@ -36,7 +36,8 @@ TLogging.Log(AJSONFormData);
 				Ict.Common.Catalog.Init("en-GB", "en-GB");
                 
                 // will set the correct language code for parsing dates in the json data string
-                AJSONFormData = TJsonTools.RemoveContainerControls(AJSONFormData);
+                string RequiredCulture = string.Empty;
+                AJSONFormData = TJsonTools.RemoveContainerControls(AJSONFormData, ref RequiredCulture);
                 
                 TApplicationFormData data = (TApplicationFormData)JsonConvert.Import(typeof(TApplicationFormData),
                     AJSONFormData);
