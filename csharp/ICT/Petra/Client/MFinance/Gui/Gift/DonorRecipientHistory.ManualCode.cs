@@ -4,7 +4,7 @@
 // @Authors:
 //       matthiash
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -182,7 +182,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     this.Cursor = Cursors.WaitCursor;
 
-                    TFrmGiftBatch gb = new TFrmGiftBatch(this.Handle);
+                    TFrmGiftBatch gb = new TFrmGiftBatch(this);
                     gb.ViewMode = true;
                     gb.ViewModeTDS = FMainDS;
                     gb.LedgerNumber = Convert.ToInt32(txtLedger.Text);
@@ -201,17 +201,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         /// <param name="Name"></param>
         /// <param name="PartnerKey"></param>
-        /// <param name="theHandle"></param>
-        public static void OpenWindowDonorRecipientHistory(String Name, Int64 PartnerKey, IntPtr theHandle)
+        /// <param name="theParentForm"></param>
+        public static void OpenWindowDonorRecipientHistory(String Name, Int64 PartnerKey, Form theParentForm)
         {
             if (PartnerKey == -1)
             {
-                MessageBox.Show(Catalog.GetString("No current partner seleted"));
+                MessageBox.Show(Catalog.GetString("No current partner selected"));
                 return;
             }
 
             Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory frmDRH = new  Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory(
-                theHandle);
+                theParentForm);
             try
             {
                 frmDRH.Cursor = Cursors.WaitCursor;

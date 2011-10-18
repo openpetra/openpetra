@@ -562,13 +562,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory.OpenWindowDonorRecipientHistory(AToolStripItem.Name,
                     PartnerKey,
-                    this.Handle);
+                    FPetraUtilsObject.GetForm());
             }
             else if (AToolStripItem.Name == "mniMaintainRecipientHistory")
             {
                 Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory.OpenWindowDonorRecipientHistory(AToolStripItem.Name,
                     PartnerKey,
-                    this.Handle);
+                    FPetraUtilsObject.GetForm());
             }
             else
             {

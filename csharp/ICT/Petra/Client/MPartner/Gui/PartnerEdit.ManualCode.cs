@@ -1800,14 +1800,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory.OpenWindowDonorRecipientHistory("mniMaintainDonorHistory",
                 PartnerKey,
-                this.Handle);
+                FPetraUtilsObject.GetForm());
         }
 
         private void MaintainRecipientHistory(System.Object sender, System.EventArgs e)
         {
             Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory.OpenWindowDonorRecipientHistory("mniMaintainRecipientHistory",
                 PartnerKey,
-                this.Handle);
+                FPetraUtilsObject.GetForm());
         }
 
         private void MaintainFinanceReports(System.Object sender, System.EventArgs e)
