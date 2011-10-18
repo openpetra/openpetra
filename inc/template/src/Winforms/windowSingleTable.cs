@@ -37,7 +37,7 @@ namespace {#NAMESPACE}
     }
 {#ENDIFN DATASETTYPE}    
     /// constructor
-    public {#CLASSNAME}(IntPtr AParentFormHandle) : base()
+    public {#CLASSNAME}(Form AParentForm) : base()
     {
       //
       // Required for Windows Form Designer support
@@ -51,13 +51,13 @@ namespace {#NAMESPACE}
 
       {#ASSIGNFONTATTRIBUTES}
       
-      FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentFormHandle, this, stbMain);
+      FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentForm, this, stbMain);
 {#IFDEF DATASETTYPE}
       FMainDS = new {#DATASETTYPE}();
 {#ENDIF DATASETTYPE}
       {#INITUSERCONTROLS}    
 {#IFNDEF DATASETTYPE}      
-      FMainDS.{#DETAILTABLE} = new {#DETAILTABLE}Table();   
+      FMainDS.{#DETAILTABLE} = new {#DETAILTABLE}Table();
       Ict.Common.Data.TTypedDataTable TypedTable;
       TRemote.MCommon.DataReader.GetData({#DETAILTABLE}Table.GetTableDBName(), null, out TypedTable);
       FMainDS.{#DETAILTABLE}.Merge(TypedTable);

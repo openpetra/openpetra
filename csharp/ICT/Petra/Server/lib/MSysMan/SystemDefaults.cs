@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -36,18 +36,6 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
     /// </summary>
     public class TSystemDefaults
     {
-        /// <summary>time when this object was instantiated</summary>
-        private DateTime FStartTime;
-
-        /// <summary>
-        /// constructor
-        /// </summary>
-        public TSystemDefaults() : base()
-        {
-            // $IFDEF DEBUGMODE if TLogging.DL >= 9 then Console.WriteLine(this.GetType.FullName + ' created: Instance hash is ' + this.GetHashCode().ToString()); $ENDIF
-            FStartTime = DateTime.Now;
-        }
-
         /// <summary>
         /// Returns the value of the specified System Default.
         /// </summary>

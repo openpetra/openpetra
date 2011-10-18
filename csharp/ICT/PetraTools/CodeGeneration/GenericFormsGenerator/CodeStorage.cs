@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.IO;
 using System.Xml;
 using System.Collections;
 using System.Collections.Specialized;
@@ -32,16 +33,14 @@ using Ict.Tools.DBXML;
 
 namespace Ict.Tools.CodeGeneration
 {
-    /*
-     * This class represents the code of a windows form in memory
-     * There are other classes that fill this model by reading from the Designer.cs file or the yaml file
-     * There are other classes that will write the code
-     *
-     * each xml element is directly linked in the FXmlNodes list, no matter which depth it is in the actual xml structure
-     * each control (menu, gui controls, etc) is linked in the FControlList
-     * all changes are done to the xml structure as well as to the FControlList and the FXmlNodes
-     * this allows easy saving of the modified xml
-     */
+    /// This class represents the code of a windows form in memory
+    /// There are other classes that fill this model by reading from the Designer.cs file or the yaml file
+    /// There are other classes that will write the code
+    ///
+    /// each xml element is directly linked in the FXmlNodes list, no matter which depth it is in the actual xml structure
+    /// each control (menu, gui controls, etc) is linked in the FControlList
+    /// all changes are done to the xml structure as well as to the FControlList and the FXmlNodes
+    /// this allows easy saving of the modified xml
     public class TCodeStorage
     {
         /// contains all controls, ie also menus etc; this is a sorted list for easily finding values, but also keep them ordered
@@ -49,36 +48,66 @@ namespace Ict.Tools.CodeGeneration
 
         /// it seems, on Mono the Dictionary gets sorted differently, therefore it is not useful for getting the RootControl etc; so we use a specific SortedList for this
         public SortedList <int, TControlDef>FSortedControlList = new SortedList <int, TControlDef>();
+
+        /// <summary>
+        /// list of event handlers
+        /// </summary>
         public Dictionary <string, TEventHandler>FEventList = new Dictionary <string, TEventHandler>();
+
+        /// <summary>
+        /// list of action handlers
+        /// </summary>
         public Dictionary <string, TActionHandler>FActionList = new Dictionary <string, TActionHandler>();
+
+        /// <summary>
+        /// list of report parameters
+        /// </summary>
         public Dictionary <string, TReportParameter>FReportParameterList = new Dictionary <string, TReportParameter>();
 
-        //public ArrayList FActionList = new ArrayList();
+        /// <summary>class to inherit from</summary>
         public string FBaseClass = "";
+        /// <summary>interface to be inherited</summary>
         public string FInterfaceName = "";
+        /// <summary>the type of UtilObject, eg. for edit window or other type of window</summary>
         public string FUtilObjectClass = "";
+        /// <summary>the class for the generated file</summary>
         public string FClassName = "";
+        /// <summary>the title for the form</summary>
         public string FFormTitle = "";
+        /// <summary>the namespace for the generated file</summary>
         public string FNamespace = "";
+        /// <summary>the name of the yaml file</summary>
         public string FFilename = "";
+        /// <summary>the name of the manualcode file</summary>
         public string FManualCodeFilename = "";
+        /// <summary>store the code for installing the handlers in this variable</summary>
         public string FEventHandler = "";
+        /// <summary>store code in this variable for the event handlers</summary>
         public string FEventHandlersImplementation = "";
+        /// <summary>store the code for the action handlers in this variable</summary>
         public string FActionHandlers = "";
+        /// <summary>store code in this variable for the report parameters</summary>
         public string FReportParametersImplementation = "";
 
-        /// can be net-2.0 for Windows .net, or mono-2.0 for Mono; mainly to resolve issues with TableLayoutPanel and AutoSize etc
-        public string FTargetWinforms = "net-2.0";
+        /// can be net for Windows .net, or mono for Mono; mainly to resolve issues with TableLayoutPanel and AutoSize etc
+        public string FTargetWinforms = "net";
 
+        /// <summary>height of the generate window</summary>
         public Int32 FHeight = 500;
+        /// <summary>width of the generate window</summary>
         public Int32 FWidth = 700;
+        /// <summary>list of variables that will be inserted into the template code</summary>
         public XmlNode FTemplateParameters = null;
+        /// <summary>the xml representation of the yaml file</summary>
         public XmlDocument FXmlDocument = null;
+        /// <summary>all xml nodes of the yaml file</summary>
         public SortedList FXmlNodes = null;
+        /// <summary>the root xml node of the yaml file</summary>
         public XmlNode FRootNode = null;
 
         private string FManualCodeFileContent = "";
 
+        /// <summary>constructor</summary>
         public TCodeStorage(XmlDocument AXmlDocument, SortedList AXmlNodes)
         {
             FXmlDocument = AXmlDocument;
@@ -122,10 +151,10 @@ namespace Ict.Tools.CodeGeneration
         /// <returns></returns>
         public bool ImplementationContains(string ANamespaceAndClassname, string ASearchText)
         {
-            string pathAndName = System.IO.Path.GetDirectoryName(this.FFilename).Replace("\\", "/");
+            string pathAndName = System.IO.Path.GetDirectoryName(Path.GetFullPath(this.FFilename)).Replace("\\", "/");
 
             // cut off after /Client/lib
-            pathAndName = pathAndName.Substring(0, pathAndName.IndexOf("ICT/Petra/Client/") + "ICT/Petra/Client/".Length);
+            pathAndName = pathAndName.Substring(0, pathAndName.IndexOf("ICT/Petra/Client/") + "ICT/Petra/Client".Length);
 
             // use only last part of namespace after Ict.Petra.Client
             ANamespaceAndClassname = ANamespaceAndClassname.Substring("Ict.Petra.Client".Length);
@@ -133,15 +162,11 @@ namespace Ict.Tools.CodeGeneration
 
             // get the file name without TFrm prefix
             string filename = "/" + ANamespaceAndClassname.Substring(ANamespaceAndClassname.LastIndexOf(".") + 1 + 4);
-            string alternativePathName = pathAndName;
+            string alternativeFileName = filename;
 
             if (!System.IO.File.Exists(pathAndName + filename + ".cs"))
             {
-                // try to use path name without the last part of the namespace
-                // was eg Ict.Petra.Client.MFinance.Gui.Setup.TFrmSetupCurrency is
-                // in MFinance/Gui/SetupCurrency.cs, but now that file has gone into a subdirectory anyways
-
-                pathAndName = pathAndName.Substring(0, pathAndName.LastIndexOf("/"));
+                filename += "-generated";
             }
 
             if (System.IO.File.Exists(pathAndName + filename + ".cs"))
@@ -159,12 +184,19 @@ namespace Ict.Tools.CodeGeneration
             {
                 Console.WriteLine("Warning naming conventions: cannot find file " +
                     pathAndName + filename + ".cs or " +
-                    alternativePathName + filename + ".cs");
+                    pathAndName + alternativeFileName + ".cs");
             }
 
-            if (System.IO.File.Exists(pathAndName + filename + ".ManualCode.cs"))
+            string ManualCodeFile = pathAndName + filename + ".ManualCode.cs";
+
+            if (!System.IO.File.Exists(ManualCodeFile))
             {
-                System.IO.StreamReader r = new System.IO.StreamReader(pathAndName + filename + ".ManualCode.cs");
+                ManualCodeFile = ManualCodeFile.Replace("-generated.cs", ".ManualCode.cs");
+            }
+
+            if (System.IO.File.Exists(ManualCodeFile))
+            {
+                System.IO.StreamReader r = new System.IO.StreamReader(ManualCodeFile);
                 string temp = r.ReadToEnd();
                 r.Close();
 
@@ -208,6 +240,11 @@ namespace Ict.Tools.CodeGeneration
             return result;
         }
 
+        /// <summary>
+        /// get a control from the list of controls defined in the yaml file
+        /// </summary>
+        /// <param name="AControlName"></param>
+        /// <returns></returns>
         public TControlDef GetControl(string AControlName)
         {
             if (FControlList.ContainsKey(AControlName))
@@ -288,6 +325,12 @@ namespace Ict.Tools.CodeGeneration
             return GetRootControl(APrefix, true);
         }
 
+        /// <summary>
+        /// find the appropriate root control for this window.
+        /// can be a tab page container, a group panel, a user control or a simple panel
+        /// </summary>
+        /// <param name="APrefix"></param>
+        /// <returns></returns>
         public bool HasRootControl(string APrefix)
         {
             foreach (TControlDef ctrl in FSortedControlList.Values)
@@ -310,9 +353,14 @@ namespace Ict.Tools.CodeGeneration
             return false;
         }
 
+        /// <summary>
+        /// which node does this control belong to?
+        /// </summary>
+        /// <param name="AControlName"></param>
+        /// <param name="AParentName"></param>
+        /// <returns></returns>
         public XmlNode GetCorrectCollection(string AControlName, string AParentName)
         {
-            // which node does this control belong to?
             string prefix = TControlDef.GetLowerCasePrefix(AControlName);
             XmlNode collectionNode = (XmlNode)FXmlNodes["Controls"];
 
@@ -358,8 +406,8 @@ namespace Ict.Tools.CodeGeneration
             return TYml2Xml.GetAttribute(FRootNode, AAttributeName);
         }
 
-        // only to be called by TParseXAML when loading the controls from the file
-        // don't call this for creating new nodes; use FindOrCreateControl instead
+        /// only to be called by TParseXAML when loading the controls from the file
+        /// don't call this for creating new nodes; use FindOrCreateControl instead
         public TControlDef AddControl(XmlNode AParsedNode)
         {
             if (AParsedNode.Name == "base")
@@ -400,6 +448,12 @@ namespace Ict.Tools.CodeGeneration
             return result;
         }
 
+        /// <summary>
+        /// get the definition of the control, if it has not been loaded yet from yaml then do it now
+        /// </summary>
+        /// <param name="AControlName"></param>
+        /// <param name="AParentName"></param>
+        /// <returns></returns>
         public TControlDef FindOrCreateControl(string AControlName, string AParentName)
         {
             TControlDef result = GetControl(AControlName);
@@ -462,8 +516,8 @@ namespace Ict.Tools.CodeGeneration
             return result;
         }
 
-        // only to be called by TParseXAML when loading the Events from the file
-        // don't call this for creating new nodes; use FindOrCreateControl instead
+        /// only to be called by TParseXAML when loading the Events from the file
+        /// don't call this for creating new nodes; use FindOrCreateControl instead
         public TEventHandler AddEvent(XmlNode AParsedNode)
         {
             if (AParsedNode.Name == "base")
@@ -492,6 +546,11 @@ namespace Ict.Tools.CodeGeneration
             return result;
         }
 
+        /// <summary>
+        /// load an action from yaml
+        /// </summary>
+        /// <param name="AParsedNode"></param>
+        /// <returns></returns>
         public TActionHandler AddAction(XmlNode AParsedNode)
         {
             if (AParsedNode.Name == "base")
@@ -544,6 +603,12 @@ namespace Ict.Tools.CodeGeneration
             return result;
         }
 
+        /// <summary>
+        /// load a report parameter from yaml
+        /// </summary>
+        /// <param name="AParsedNode"></param>
+        /// <param name="AColumnFunctionClassName"></param>
+        /// <returns></returns>
         public TReportParameter AddReportParameter(XmlNode AParsedNode, string AColumnFunctionClassName)
         {
             if (AParsedNode.Name == "base")
@@ -574,11 +639,18 @@ namespace Ict.Tools.CodeGeneration
     }
 
     #region Helper Classes
+    /// <summary>
+    /// report parameter, used for the report system
+    /// </summary>
     public class TReportParameter
     {
+        /// <summary>classname for function</summary>
         public string columnFunctionClassName;
+        /// <summary>description</summary>
         public string functionDescription;
+        /// <summary>parameters</summary>
         public string functionParameters;
+        /// <summary>constructor</summary>
         public TReportParameter(string AColumnFunctionClassName, string AFunctionDescription, string AFunctionParameters)
         {
             this.columnFunctionClassName = AColumnFunctionClassName;
@@ -587,9 +659,18 @@ namespace Ict.Tools.CodeGeneration
         }
     }
 
+    /// <summary>
+    /// event handler
+    /// </summary>
     public class TEventHandler
     {
-        public string eventName, eventType, eventHandler;
+        /// <summary>name</summary>
+        public string eventName;
+        /// <summary>type</summary>
+        public string eventType;
+        /// <summary>handler</summary>
+        public string eventHandler;
+        /// <summary>constructor</summary>
         public TEventHandler(string eventName, string eventType, string eventHandler)
         {
             this.eventName = eventName;
@@ -598,20 +679,29 @@ namespace Ict.Tools.CodeGeneration
         }
     }
 
+    /// <summary>action handler</summary>
     public class TActionHandler
     {
         /// <summary>
         /// name of the action with leading prefix act
         /// </summary>
         public string actionName;
+        /// <summary>name of the function to be called when action is clicked</summary>
         public string actionClick;
 
         /// <summary>
         /// ActionId eg eHelp, and other default actions that are hardwired
         /// </summary>
         public string actionId;
-        public string actionLabel, actionTooltip, actionImage, activeValidRowInGrid;
+        /// <summary>label to be written on the button or menu item</summary>
+        public string actionLabel;
+        /// <summary>tooltip to be shown</summary>
+        public string actionTooltip;
+        /// <summary>image to be displayed on the button or menu item</summary>
+        public string actionImage;
+        /// <summary>reference to the yaml file</summary>
         public XmlNode actionNode;
+        /// <summary>constructor</summary>
         public TActionHandler(XmlNode AActionNode, string AName, string AActionClick, string AActionId, string ALabel, string ATooltip, string AImage)
         {
             actionNode = AActionNode;
@@ -623,8 +713,17 @@ namespace Ict.Tools.CodeGeneration
             actionImage = AImage;
         }
     }
+
+    /// <summary>
+    /// definition of a control to be embedded in the window
+    /// </summary>
     public class TControlDef
     {
+        /// <summary>
+        /// construtor
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="ACodeStorage"></param>
         public TControlDef(XmlNode node, TCodeStorage ACodeStorage)
         {
             xmlNode = node;
@@ -632,43 +731,65 @@ namespace Ict.Tools.CodeGeneration
             FCodeStorage = ACodeStorage;
         }
 
+        /// <summary>prefix that identifies the type of the control, eg. btn</summary>
         public string controlTypePrefix = "";
+        /// <summary>the generator for this type of control, eg ButtonGenerator</summary>
         public IControlGenerator controlGenerator = null;
+        /// <summary>name of the parent control</summary>
         public string parentName = "";
+        /// <summary>order of the control among the other controls</summary>
         public int order = -1;
+        /// <summary>the node in the yaml file</summary>
         public XmlNode xmlNode = null;
+        /// <summary>control belongs to this storage</summary>
         public TCodeStorage FCodeStorage = null;
+        /// <summary>in the grid layout, the row number where this control appears</summary>
         public int rowNumber = -1;
+        /// <summary>if this controls spans several columns in the grid layout</summary>
         public int colSpan = 1;
+        /// <summary>if this controls spans several rows in the grid layout</summary>
         public int rowSpan = 1;
 
-        /// e.g. tableLayoutPanel1.ColumnStyles.Add
-        //public string otherFunctionCalls = "";
-        // what about events
-
+        /// <summary>
+        /// write attribute value to the yaml
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="value"></param>
         public void SetAttribute(string name, string value)
         {
             TYml2Xml.SetAttribute(xmlNode, name, value);
         }
 
+        /// <summary>
+        /// check for attribute in the yaml
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public bool HasAttribute(string name)
         {
             return TYml2Xml.HasAttribute(xmlNode, name);
         }
 
+        /// <summary>
+        /// remove attribute
+        /// </summary>
+        /// <param name="name"></param>
         public void ClearAttribute(string name)
         {
             TYml2Xml.ClearAttribute(xmlNode, name);
         }
 
+        /// <summary>
+        /// get value of attribute from yaml
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public string GetAttribute(string name)
         {
             return TYml2Xml.GetAttribute(xmlNode, name);
         }
 
-        /**
-         * simple string function to return the prefix that is in lowercase letters
-         */
+        /// simple string function to return the prefix that is in lowercase letters
         public static string GetLowerCasePrefix(string s)
         {
             int countLowerCase = 0;
@@ -707,6 +828,9 @@ namespace Ict.Tools.CodeGeneration
             return null;
         }
 
+        /// <summary>
+        /// property for the label to be displayed before the control or on the button
+        /// </summary>
         public string Label
         {
             get
@@ -744,6 +868,9 @@ namespace Ict.Tools.CodeGeneration
             }
         }
 
+        /// <summary>
+        /// property for the name of the control, including the prefix
+        /// </summary>
         public string controlName
         {
             get
@@ -757,6 +884,9 @@ namespace Ict.Tools.CodeGeneration
             }
         }
 
+        /// <summary>
+        /// the type of the control
+        /// </summary>
         public string controlType
         {
             get
@@ -774,6 +904,10 @@ namespace Ict.Tools.CodeGeneration
                 return "";
             }
         }
+
+        /// <summary>
+        /// get the number of children of this control
+        /// </summary>
         public int NumberChildren
         {
             get
@@ -783,6 +917,9 @@ namespace Ict.Tools.CodeGeneration
         }
     }
 
+    /// <summary>
+    /// for sorting the control items
+    /// </summary>
     public class CtrlItemOrderComparer : IComparer <TControlDef>
     {
         /// <summary>

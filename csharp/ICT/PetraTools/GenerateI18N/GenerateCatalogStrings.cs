@@ -47,7 +47,7 @@ public class TGenerateCatalogStrings
     /// <returns>true if the file should be parsed for translatable strings</returns>
     public static bool Execute(string AMainFilename, TDataDefinitionStore ADataDefinitionStore, StreamWriter ADbHelpTranslationWriter)
     {
-        string DesignerFileName = TCSProjTools.GetDesignerFilename(AMainFilename);
+        string DesignerFileName = GetDesignerFilename(AMainFilename);
         StreamReader readerDesignerFile = null;
         StreamWriter writer = null;
 
@@ -211,6 +211,18 @@ public class TGenerateCatalogStrings
         TTextFile.UpdateFile(AMainFilename, true);
 
         return true;
+    }
+
+    /// <summary>
+    /// get the filename of the designer file that belongs to this file;
+    /// it does not check if that file actually exists
+    /// </summary>
+    /// <param name="AFilename"></param>
+    /// <returns></returns>
+    public static string GetDesignerFilename(string AFilename)
+    {
+        return Path.GetDirectoryName(AFilename) + Path.DirectorySeparatorChar + System.IO.Path.GetFileNameWithoutExtension(AFilename) +
+               ".Designer.cs";
     }
 
     /// <summary>

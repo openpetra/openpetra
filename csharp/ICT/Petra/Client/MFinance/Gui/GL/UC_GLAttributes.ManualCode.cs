@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -103,10 +103,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             // if this form is readonly, then we need all account and cost centre codes, because old codes might have been used
-            bool ActiveOnly = this.Enabled;
-
+            // bool ActiveOnly = this.Enabled;
             // TFinanceControls.InitialiseValuesList(ref cmbDetailAccountCode, FLedgerNumber, true, false, ActiveOnly, false);
-
 
             ShowData();
         }

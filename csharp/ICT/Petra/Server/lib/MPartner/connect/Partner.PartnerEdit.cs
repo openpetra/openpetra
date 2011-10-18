@@ -87,10 +87,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         /// <summary>Holds DataTables which are created by the instantiated Partner Business Objects</summary>
         private PartnerEditTDS FPartnerEditScreenDS;
         private Int64 FPartnerKey;
-        private Int64 FNewPartnerSiteKey;
         private Int64 FNewPartnerPartnerKey;
         private TLocationPK FKeyForSelectingPartnerLocation;
-        private String FNewPartnerAcquisitionCode;
         private TPartnerClass FPartnerClass;
         private TPartnerClass FNewPartnerPartnerClass;
         private PartnerEditTDS FSubmissionDS;
@@ -933,10 +931,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             Boolean OfficeSpecificDataLabelsAvailable;
 
             ASiteCountryCode = "";
-            FNewPartnerSiteKey = ASiteKey;
             FNewPartnerPartnerKey = APartnerKey;
             FNewPartnerPartnerClass = APartnerClass;
-            FNewPartnerAcquisitionCode = AAcquisitionCode;
             CreationDate = DateTime.Today;
             CreationUserID = UserInfo.GUserInfo.UserID;
 
@@ -2844,16 +2840,14 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             TDBTransaction ASubmitChangesTransaction,
             out TVerificationResultCollection ASingleVerificationResultCollection)
         {
-            bool ReturnValue;
+            bool ReturnValue = true;
             int Counter;
             PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionTable FamilyChangePromotionTable;
             PPartnerTypeTable PPartnerTypeSubmitTable;
             PPartnerTypeRow PPartnerTypeSubmitRow;
             bool PartnerTypeDBExists;
             PPartnerTypeTable PartnerType;
-            DateTime DateCreated;
 
-            ReturnValue = true;
             ASingleVerificationResultCollection = null;
 
             if (AInspectDS.Tables.Contains(PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionTable.GetTableName()))
@@ -2879,7 +2873,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     }
 #endif
                     PPartnerTypeSubmitTable = new PPartnerTypeTable();
-                    DateCreated = DateTime.Now.Date;
 
                     for (Counter = 0; Counter <= FamilyChangePromotionTable.Rows.Count - 1; Counter += 1)
                     {

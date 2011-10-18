@@ -34,8 +34,6 @@ RootNode:
         cmbDetailCostCentreType:
             OptionalValues: [Local, Foreign]
         txtDetailCostCentreName:
-        cmbDetailValidCcCombo: {Label=Valid Cost Centres}
-            OptionalValues: [All, Foreign, Local]
         # TODO: system cost centre
         chkDetailCostCentreActiveFlag: {Label=Active}
     Toolbar:

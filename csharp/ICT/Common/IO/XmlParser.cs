@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -97,7 +97,6 @@ namespace Ict.Common.IO
         /// the XmlDocument that is currently parsed
         /// </summary>
         protected XmlDocument myDoc;
-        static string XMLFilePathForDTD = String.Empty;
 
         /// <summary>
         /// this fixes the problem that we have the filename of the DTD with a relative path name in the XML file
@@ -176,7 +175,7 @@ namespace Ict.Common.IO
                 XmlReaderSettings settings = new XmlReaderSettings();
                 settings.IgnoreWhitespace = false;
                 settings.ProhibitDtd = false;
-                settings.XmlResolver = new MyUrlResolver(Path.GetDirectoryName(filename));
+                settings.XmlResolver = new MyUrlResolver(Path.GetDirectoryName(Path.GetFullPath(filename)));
                 settings.ValidationType = withValidation ? ValidationType.DTD : ValidationType.None;
                 settings.ValidationEventHandler += new ValidationEventHandler(eventHandler);
 
@@ -418,26 +417,63 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
-        /// find a node somewhere in the xml document by its name
+        /// find a node somewhere in the xml document by its tag name
         /// </summary>
         /// <param name="AParentNode"></param>
         /// <param name="ANodeNameToSearch"></param>
         /// <returns></returns>
         public static XmlNode FindNodeRecursive(XmlNode AParentNode, string ANodeNameToSearch)
         {
+            return FindNodeRecursive(AParentNode, ANodeNameToSearch, "");
+        }
+
+        /// <summary>
+        /// find a node somewhere in the xml document by its tag name and attribute name
+        /// </summary>
+        /// <param name="AParentNode"></param>
+        /// <param name="ANodeNameToSearch"></param>
+        /// <param name="ANameAttribute"></param>
+        /// <returns></returns>
+        public static XmlNode FindNodeRecursive(XmlNode AParentNode, string ANodeNameToSearch, string ANameAttribute)
+        {
+            for (Int32 counter = 0; counter < AParentNode.ChildNodes.Count; counter++)
+            {
+                XmlNode ChildNode = AParentNode.ChildNodes[counter];
+
+                if (ChildNode.Name == ANodeNameToSearch)
+                {
+                    if (ANameAttribute.Length > 0)
+                    {
+                        if (TXMLParser.HasAttribute(ChildNode, "name") && (TXMLParser.GetAttribute(ChildNode, "name") == ANameAttribute))
+                        {
+                            return ChildNode;
+                        }
+                    }
+                    else
+                    {
+                        return ChildNode;
+                    }
+                }
+            }
+
             XmlNode ResultNode = GetChild(AParentNode, ANodeNameToSearch);
 
             if (ResultNode == null)
             {
                 foreach (XmlNode childNode in AParentNode.ChildNodes)
                 {
-                    ResultNode = FindNodeRecursive(childNode, ANodeNameToSearch);
+                    ResultNode = FindNodeRecursive(childNode, ANodeNameToSearch, ANameAttribute);
 
                     if (ResultNode != null)
                     {
                         return ResultNode;
                     }
                 }
+            }
+
+            if (ANameAttribute.Length > 0)
+            {
+                return null;
             }
 
             return ResultNode;

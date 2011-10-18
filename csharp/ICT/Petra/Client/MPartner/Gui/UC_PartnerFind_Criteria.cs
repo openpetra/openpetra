@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1933,12 +1933,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         public Boolean UnSelectCriteriaPanel(String ACriteriaName)
         {
             System.Windows.Forms.Panel SearchedPanel;
-            System.Windows.Forms.Panel OtherPanel;
             TPartnerFindCriteriaSelectionChangedEventArgs FindCriteriaSelectionChangedArgs;
             Int32 Counter1;
             Int32 NotFoundInPanelCounter;
             SearchedPanel = pnlLeftColumn;
-            OtherPanel = pnlRightColumn;
             NotFoundInPanelCounter = 0;
 
             while (1 == 1)
@@ -1981,7 +1979,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     // Panel with matching name not found in pnlLeftColumn, try in pnlRightColumn
                     SearchedPanel = pnlRightColumn;
-                    OtherPanel = pnlLeftColumn;
                 }
                 else
                 {

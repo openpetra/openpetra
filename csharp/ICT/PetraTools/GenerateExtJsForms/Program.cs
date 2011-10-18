@@ -99,9 +99,9 @@ class Program
         {
             new TAppSettingsManager(false);
 
-            if (Directory.Exists("log"))
+            if (Directory.Exists(TAppSettingsManager.GetValue("logPath")))
             {
-                new TLogging("log/generateextjsforms.log");
+                new TLogging(TAppSettingsManager.GetValue("logPath") + "/generateextjsforms.log");
             }
             else
             {
@@ -119,11 +119,6 @@ class Program
 
             // calculate ICTPath from ymlfile path
             string fullYmlfilePath = Path.GetFullPath(TAppSettingsManager.GetValue("ymlfile")).Replace("\\", "/");
-
-            if (!fullYmlfilePath.Contains("webserver/"))
-            {
-                Console.WriteLine("ymlfile must be below the webserver directory");
-            }
 
             string SelectedLocalisation = null;             // none selected by default
 

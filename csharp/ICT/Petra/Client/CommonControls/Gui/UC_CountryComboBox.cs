@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -72,7 +72,10 @@ namespace Ict.Petra.Client.CommonControls
                 }
                 else
                 {
-                    cmbCountry.cmbCombobox.SelectedIndex = -1;
+                    if (FAddNotSetValue)
+                    {
+                        SelectNotSetRow();
+                    }
                 }
             }
         }
@@ -124,7 +127,6 @@ namespace Ict.Petra.Client.CommonControls
                 cmbCountry.cmbCombobox.ValueMember = "p_country_code_c";
                 cmbCountry.cmbCombobox.EndUpdate();
 
-                //	cmbCountry.cmbCombobox.SelectedItem = null;
                 this.cmbCountry.cmbCombobox.SelectedValueChanged += new System.EventHandler(this.CmbCombobox_SelectedValueChanged);
                 FUserControlInitialised = true;
             }
@@ -146,6 +148,7 @@ namespace Ict.Petra.Client.CommonControls
             Dr.CountryName = FNotSetDisplay;
             Dr.CountryCode = FNotSetValue;
             FDataCache_CountryListTable.Rows.InsertAt(Dr, 0);
+            cmbCountry.cmbCombobox.SelectedValue = FNotSetValue;
         }
 
         /// <summary>

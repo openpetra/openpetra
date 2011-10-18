@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -186,12 +186,12 @@ namespace Ict.Petra.Client.CommonForms
         /// <summary>
         /// constructor
         /// </summary>
-        /// <param name="ACallerWindowHandle">the int handle of the form that has opened this window; needed for focusing when this window is closed later</param>
+        /// <param name="ACallerForm">the int handle of the form that has opened this window; needed for focusing when this window is closed later</param>
         /// <param name="ATheForm"></param>
         /// <param name="AStatusBar"></param>"
-        public TFrmPetraEditUtils(IntPtr ACallerWindowHandle, IFrmPetraEdit ATheForm, TExtStatusBarHelp AStatusBar) : base(ACallerWindowHandle,
-                                                                                                                          (IFrmPetra)ATheForm,
-                                                                                                                          AStatusBar)
+        public TFrmPetraEditUtils(Form ACallerForm, IFrmPetraEdit ATheForm, TExtStatusBarHelp AStatusBar) : base(ACallerForm,
+                                                                                                                (IFrmPetra)ATheForm,
+                                                                                                                AStatusBar)
         {
             FVerificationResultCollection = new TVerificationResultCollection();
             FCloseFormCheckRun = false;
@@ -268,6 +268,10 @@ namespace Ict.Petra.Client.CommonForms
                 {
                     ((TCmbVersatile)ctrl).SelectedValueChanged += new EventHandler(this.MultiEventHandler);
                 }
+                else if (ctrl.GetType() == typeof(TClbVersatile))
+                {
+                    ((TClbVersatile)ctrl).ValueChanged += new EventHandler(MultiEventHandler);
+                }
                 else if (ctrl.GetType() == typeof(TtxtPetraDate))
                 {
                     ((TtxtPetraDate)ctrl).DateChanged += new TPetraDateChangedEventHandler(this.TFrmPetraEditUtils_DateChanged);
@@ -285,6 +289,7 @@ namespace Ict.Petra.Client.CommonForms
                          || (ctrl.GetType() == typeof(System.Windows.Forms.ToolStrip))
                          || (ctrl.GetType() == typeof(System.Windows.Forms.MenuStrip))
                          || (ctrl.GetType() == typeof(Label))
+                         || (ctrl.GetType() == typeof(LinkLabel))
                          || (ctrl.GetType() == typeof(TabPage))
                          || (ctrl.GetType() == typeof(Splitter))
                          || (ctrl.GetType() == typeof(Panel))
@@ -345,7 +350,6 @@ namespace Ict.Petra.Client.CommonForms
         {
             Control ctrl = (Control)sender;
             string ctrlname = ctrl.Name;
-            string ctrltype = sender.GetType().FullName;
 
 //TLogging.Log(DateTime.Now.ToString() + " MULTIEVENT Handler.  SuppressChangeDetection: " + this.SuppressChangeDetection);
             if (ctrlname == "lblLabel")
@@ -362,7 +366,8 @@ namespace Ict.Petra.Client.CommonForms
                 LocalControlValueChanged();
                 ControlValueChanged();
 
-//TLogging.Log(DateTime.Now.ToString() + " MULTIEVENT Ctrl: " + ctrlname + " Type: " + ctrltype);
+                // string ctrltype = sender.GetType().FullName;
+                //  TLogging.Log(DateTime.Now.ToString() + " MULTIEVENT Ctrl: " + ctrlname + " Type: " + ctrltype);
             }
         }
 

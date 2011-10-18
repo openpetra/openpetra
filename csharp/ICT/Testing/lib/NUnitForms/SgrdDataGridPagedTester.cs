@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -35,7 +35,6 @@ namespace Ict.Testing.NUnitForms
     public class TSgrdDataGridPagedTester : ControlTester
     {
         private TSgrdDataGridPaged _TheObject;
-        private int OldSelectedRow = -1;
 
         /// constructor
         public TSgrdDataGridPagedTester(string name, Form form)
@@ -96,10 +95,10 @@ namespace Ict.Testing.NUnitForms
 //            FireEvent("SelectionChanged",
 //                       new RangeRegionChangedEventArgs(new RangeRegion(
 //                              new Position(ARowNumber, 0)),
-//                              new RangeRegion(new Position(OldSelectedRow,0))));
+//                              new RangeRegion(new Position(FOldSelectedRow,0))));
             FireEvent("FocusRowEntered",
                 new RowEventArgs(ARowNumber));
-            OldSelectedRow = ARowNumber;
+//            FOldSelectedRow = ARowNumber;
         }
     }
 }

@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -35,8 +35,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <summary>
         /// Runs the revalation ...
         /// </summary>
-        /// <param name="AParentFormHandle"></param>
-        public TGLRevaluation(IntPtr AParentFormHandle) : base()
+        /// <param name="AParentForm"></param>
+        public TGLRevaluation(Form AParentForm) : base()
         {
             //
             // The InitializeComponent() call is required for Windows Forms designer support.

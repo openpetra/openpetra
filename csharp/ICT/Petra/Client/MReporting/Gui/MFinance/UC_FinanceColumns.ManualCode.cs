@@ -4,7 +4,7 @@
 // @Authors:
 //       berndr
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -640,7 +640,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
                 String Calculation =
                     FColumnParameters.GetOrDefault("param_calculation", ASelectedColumn, new TVariant(cmbYearSelection.GetSelectedString())).ToString();
-                TFinanceColumnFunction Func = (TFinanceColumnFunction)GetFunction(Calculation);
+
+                //TFinanceColumnFunction Func = (TFinanceColumnFunction)GetFunction(Calculation);
 
                 if (cmbYearSelection.FindString(Calculation) != -1)
                 {

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -823,10 +823,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             PartnerEditTDS SubmitDS;
             TSubmitChangesResult SubmissionResult;
 
-            System.Int32 ChangedColumns;
             String ErrorMessages;
             TVerificationResultCollection VerificationResult;
             TVerificationResult VerificationResultItem;
+
             System.Windows.Forms.DialogResult UnitParentAssignment;
             int RowIndex;
             int NumRows;
@@ -887,39 +887,44 @@ namespace Ict.Petra.Client.MPartner.Gui
                             if ((InspectDT.TableName != PLocationTable.GetTableName()) && (InspectDT.TableName != PPartnerLocationTable.GetTableName()))
                             {
                                 MaxColumn = InspectDT.Columns.Count;
-                                ChangedColumns = SharedDataUtilities.AcceptChangesForUnmodifiedRows(InspectDT, MaxColumn);
-#if SHOWCHANGES
+                                Int32 ChangedColumns = SharedDataUtilities.AcceptChangesForUnmodifiedRows(InspectDT, MaxColumn);
+
                                 if (ChangedColumns != 0)
                                 {
+#if SHOWCHANGES
                                     MessageBox.Show(InspectDT.TableName + " - changed colums: " + ChangedColumns.ToString());
-                                }
 #endif
+                                }
                             }
                             else if (InspectDT.TableName == PLocationTable.GetTableName())
                             {
                                 MaxColumn = new PLocationTable().Columns.Count;
 
                                 // MessageBox.Show('PLocation MaxColumn: ' + MaxColumn.ToString);
-                                ChangedColumns = SharedDataUtilities.AcceptChangesForUnmodifiedRows(AInspectDS.PLocation, MaxColumn, true);
-#if SHOWCHANGES
+                                Int32 ChangedColumns = SharedDataUtilities.AcceptChangesForUnmodifiedRows(AInspectDS.PLocation, MaxColumn, true);
+
                                 if (ChangedColumns != 0)
                                 {
+#if SHOWCHANGES
                                     MessageBox.Show(PLocationTable.GetTableName() + " - changed colums: " + ChangedColumns.ToString());
-                                }
 #endif
+                                }
                             }
                             else
                             {
                                 MaxColumn = new PPartnerLocationTable().Columns.Count;
 
                                 // MessageBox.Show('PPartnerLocation MaxColumn: ' + MaxColumn.ToString);
-                                ChangedColumns = SharedDataUtilities.AcceptChangesForUnmodifiedRows(AInspectDS.PPartnerLocation, MaxColumn, true);
-#if SHOWCHANGES
+                                Int32 ChangedColumns = SharedDataUtilities.AcceptChangesForUnmodifiedRows(AInspectDS.PPartnerLocation,
+                                    MaxColumn,
+                                    true);
+
                                 if (ChangedColumns != 0)
                                 {
+#if SHOWCHANGES
                                     MessageBox.Show(PPartnerLocationTable.GetTableName() + " - changed colums: " + ChangedColumns.ToString());
-                                }
 #endif
+                                }
                             }
 
 #if SHOWCHANGES
@@ -2636,7 +2641,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             TPartnerNewDialogWinForm NewPartnerDialog;
 
-            NewPartnerDialog = new TPartnerNewDialogWinForm(this.Handle);
+            NewPartnerDialog = new TPartnerNewDialogWinForm(this);
             NewPartnerDialog.SetParameters(FPartnerEditUIConnector,
                 FNewPartnerPartnerClass,
                 FNewPartnerSiteKey,

@@ -150,8 +150,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// create a gift batch from a recurring gift batch
         /// including gift and gift detail
         /// </summary>
-        /// <param name="requestParams ">HashTable with many parameters</param>
-        /// <param name="AMessages ">Output structure for user error messages</param>
+        /// <param name="requestParams">HashTable with many parameters</param>
+        /// <param name="AMessages">Output structure for user error messages</param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
         public static Boolean SubmitRecurringGiftBatch(Hashtable requestParams, out TVerificationResultCollection AMessages)

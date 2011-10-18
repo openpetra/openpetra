@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -941,7 +941,6 @@ namespace Ict.Petra.Client.CommonControls
 
             // mErrorMessage:       System.String;  mCaption:            System.String;
             String mColumnName;
-            String mControlName;
             TResultSeverity mResultSev;
             TScreenVerificationResult mVerificationResult;
             String mVerifiedString;
@@ -981,7 +980,6 @@ namespace Ict.Petra.Client.CommonControls
 
             // Initialization
             mColumnName = e.Column.ColumnName;
-            mControlName = this.Name;
             mDelegateVerified = false;
             this.FErrorData.RVerified = false;
             mResultSev = TResultSeverity.Resv_Critical;
@@ -1162,8 +1160,7 @@ namespace Ict.Petra.Client.CommonControls
 
                     if (mExtractName != "")
                     {
-                        Boolean ServerResult;
-                        ServerResult = TServerLookup.TMPartner.GetExtractDescription(mExtractName, out ExtractDescription);
+                        TServerLookup.TMPartner.GetExtractDescription(mExtractName, out ExtractDescription);
                     }
 
                     this.txtAutoPopulated.lblLabel.Text = ExtractDescription;
@@ -1355,7 +1352,6 @@ namespace Ict.Petra.Client.CommonControls
             TLocationPK mResultLocationPK;
             mLabelStringOld = LabelStringIn;
             mTextBoxStringOld = TextBoxStringIn;
-            bool mDelegateVerified;
 
             if (DesignMode == false)
             {
@@ -1409,11 +1405,11 @@ namespace Ict.Petra.Client.CommonControls
                                 // TLogging.Log('PartnerFindScreen is assigned!', [TLoggingType.ToLogfile]);
                                 try
                                 {
-                                    mDelegateVerified = TCommonScreensForwarding.OpenPartnerFindScreen.Invoke(this.FPartnerClass,
+                                    TCommonScreensForwarding.OpenPartnerFindScreen.Invoke(this.FPartnerClass,
                                         out mResultIntTxt,
                                         out mResultStringLbl,
                                         out mResultLocationPK,
-                                        this.ParentForm.Handle);
+                                        this.ParentForm);
 
 //                                    MessageBox.Show(mResultIntTxt.ToString() + "; " + mResultStringLbl + "; " + mResultLocationPK.LocationKey.ToString());
                                     if (mResultIntTxt != -1)
@@ -1480,10 +1476,10 @@ namespace Ict.Petra.Client.CommonControls
                                 /* TLogging.Log('OpenConferenceFindDialog is assigned!', [TLoggingType.ToLogfile]); */
                                 try
                                 {
-                                    mDelegateVerified = TCommonScreensForwarding.OpenConferenceFindScreen.Invoke("*", "*",
+                                    TCommonScreensForwarding.OpenConferenceFindScreen.Invoke("*", "*",
                                         out mResultIntTxt,
                                         out mResultStringLbl,
-                                        this.ParentForm.Handle);
+                                        this.ParentForm);
 
                                     if (mResultIntTxt != -1)
                                     {

@@ -30,10 +30,10 @@ RootNode:
                mniReportPartnerByCity: {Label=Progress Report, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmProgressReport}
                mniShortTermerReports:
                 Label: Short Termer Reports
-                mniGeneralShortTermerReport: {Label=General Short Termer Report, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmShortTermerReport}
-                mniAbilitiesReport: {Label=Abilities Report, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmAbilitiesReport}
-                mniPersonnelEmergencyContactReport: {Label=Emergency Contact Report, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmEmergencyContactInformationReport}
-                mniLanguagesReport: {Label=Languages Report, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmLanguagesReport}
+                mniGeneralShortTermerReport: {Label=General Short Termer Report, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm.TFrmShortTermerReport}
+                mniAbilitiesReport: {Label=Abilities Report, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm.TFrmAbilitiesReport}
+                mniPersonnelEmergencyContactReport: {Label=Emergency Contact Report, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm.TFrmEmergencyContactInformationReport}
+                mniLanguagesReport: {Label=Languages Report, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm.TFrmLanguagesReport}
                 
                mniIndividualDataReport: {Label=Individual Data Report, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmPersonalDataReport}
                mniEmergencyDataReport: {Label=Emergency Data Report, ActionOpenScreen=Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmEmergencyDataReport}

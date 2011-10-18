@@ -26,6 +26,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+
 using System.Data;
 using Ict.Petra.Shared.Interfaces; // Implicit references
 using Ict.Petra.Shared.MCommon;
@@ -56,7 +57,7 @@ namespace Ict.Petra.Client.CommonControls
     /// The control fetches its list entries on its own from the source of the data that
     /// is hard-coded with each ListTable!
     /// </summary>
-    public partial class TCmbAutoPopulated : System.Windows.Forms.UserControl
+    public partial class TCmbAutoPopulated : TCmbLabelled
     {
         /// <summary>
         /// Enumeration for the Designer. Holds the possible values for ListTable.
@@ -190,63 +191,6 @@ namespace Ict.Petra.Client.CommonControls
         }
 
         /// <summary>todoComment</summary>
-        public System.Object SelectedItem
-        {
-            get
-            {
-                return cmbAutoPopulated.cmbCombobox.SelectedItem;
-            }
-
-            set
-            {
-                cmbAutoPopulated.cmbCombobox.SelectedItem = value;
-            }
-        }
-
-        /// <summary>todoComment</summary>
-        public System.Object SelectedValue
-        {
-            get
-            {
-                return cmbAutoPopulated.cmbCombobox.SelectedValue;
-            }
-
-            set
-            {
-                cmbAutoPopulated.cmbCombobox.SelectedValue = value;
-            }
-        }
-
-        /// <summary>todoComment</summary>
-        public System.Object SelectedValueCell
-        {
-            get
-            {
-                return cmbAutoPopulated.cmbCombobox.SelectedValueCell;
-            }
-
-            set
-            {
-                cmbAutoPopulated.cmbCombobox.SelectedValueCell = value;
-            }
-        }
-
-
-        /// <summary>todoComment</summary>
-        public int ComboBoxWidth
-        {
-            get
-            {
-                return cmbAutoPopulated.ComboBoxWidth;
-            }
-
-            set
-            {
-                cmbAutoPopulated.ComboBoxWidth = value;
-            }
-        }
-
-        /// <summary>todoComment</summary>
         public String Filter
         {
             get
@@ -311,80 +255,6 @@ namespace Ict.Petra.Client.CommonControls
         public TCmbAutoPopulated()
             : base()
         {
-            //
-            // Required for Windows Form Designer support
-            //
-            InitializeComponent();
-            #region CATALOGI18N
-
-            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-            #endregion
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        /// <returns></returns>
-        public String Get_SelectedText()
-        {
-            return this.cmbAutoPopulated.cmbCombobox.SelectedText;
-        }
-
-        /// <summary>
-        /// set the string that should be selected;
-        /// uses TCmbVersatile.SetSelectedString
-        /// </summary>
-        /// <param name="ASelectedString"></param>
-        public bool SetSelectedString(string ASelectedString)
-        {
-            return this.cmbAutoPopulated.cmbCombobox.SetSelectedString(ASelectedString);
-        }
-
-        /// <summary>
-        /// get the selected string
-        /// uses TCmbVersatile.GetSelectedString
-        /// </summary>
-        public string GetSelectedString()
-        {
-            return this.cmbAutoPopulated.cmbCombobox.GetSelectedString();
-        }
-
-        /// <summary>
-        /// Selects an item with the given Int32 value in the first column. Selects first element if the Int32 value is not existing.
-        /// uses TCmbVersatile.SetSelectedInt32
-        /// </summary>
-        /// <param name="ANr"></param>
-        public void SetSelectedInt32(System.Int32 ANr)
-        {
-            this.cmbAutoPopulated.cmbCombobox.SetSelectedInt32(ANr);
-        }
-
-        /// <summary>
-        /// gets the Int32 value of the selected item, first column
-        /// uses TCmbVersatile.GetSelectedInt32
-        /// </summary>
-        public Int32 GetSelectedInt32()
-        {
-            return this.cmbAutoPopulated.cmbCombobox.GetSelectedInt32();
-        }
-
-        /// <summary>
-        /// Selects an item with the given Int64 value in the first column. Selects first element if the Int64 value is not existing.
-        /// uses TCmbVersatile.SetSelectedInt64
-        /// </summary>
-        /// <param name="ANr"></param>
-        public void SetSelectedInt64(System.Int64 ANr)
-        {
-            this.cmbAutoPopulated.cmbCombobox.SetSelectedInt64(ANr);
-        }
-
-        /// <summary>
-        /// gets the Int32 value of the selected item, first column
-        /// uses TCmbVersatile.GetSelectedInt32
-        /// </summary>
-        public Int64 GetSelectedInt64()
-        {
-            return this.cmbAutoPopulated.cmbCombobox.GetSelectedInt64();
         }
 
         /// <summary>
@@ -718,7 +588,7 @@ namespace Ict.Petra.Client.CommonControls
         }
 
         /// <summary>
-        /// generic function for initialising the user control
+        /// generic function for initialising the combobox
         /// does not depend on table implementations
         /// </summary>
         /// <param name="ATable"></param>
@@ -737,9 +607,8 @@ namespace Ict.Petra.Client.CommonControls
             FDataCache_ListTable = ATable;
 
             // Pass on any set Tag
-            cmbAutoPopulated.Tag = this.Tag;
-            cmbAutoPopulated.cmbCombobox.Tag = this.Tag;
-            this.cmbAutoPopulated.cmbCombobox.SelectedValueChanged += new System.EventHandler(this.CmbCombobox_SelectedValueChanged);
+            cmbCombobox.Tag = this.Tag;
+            this.cmbCombobox.SelectedValueChanged += new System.EventHandler(this.CmbCombobox_SelectedValueChanged);
 
             if (FAddNotSetValue)
             {
@@ -757,24 +626,25 @@ namespace Ict.Petra.Client.CommonControls
 
             string DescriptionDBName = (ADescDBName != null && ADescDBName.Length > 0) ? ADescDBName : null;
 
-            cmbAutoPopulated.LabelDisplaysColumn = DescriptionDBName;
+            LabelDisplaysColumn = DescriptionDBName;
 
-            cmbAutoPopulated.cmbCombobox.BeginUpdate();
+            cmbCombobox.BeginUpdate();
             FDataView = new DataView(FDataCache_ListTable);
             FDataView.RowFilter = FFilter;
             FDataView.Sort = ADisplayDBName;
-            cmbAutoPopulated.cmbCombobox.DisplayMember = ADisplayDBName;
-            cmbAutoPopulated.cmbCombobox.ValueMember = AValueDBName;
-            cmbAutoPopulated.cmbCombobox.DisplayInColumn1 = ADisplayDBName;
-            cmbAutoPopulated.cmbCombobox.DisplayInColumn2 = DescriptionDBName;
-            cmbAutoPopulated.cmbCombobox.DisplayInColumn3 = null;
-            cmbAutoPopulated.cmbCombobox.DisplayInColumn4 = null;
-            cmbAutoPopulated.cmbCombobox.ColumnsToSearch = AColumnsToSearch;
-            cmbAutoPopulated.cmbCombobox.DataSource = FDataView;
-            cmbAutoPopulated.cmbCombobox.EndUpdate();
-            cmbAutoPopulated.cmbCombobox.Name = this.Name + "_internal_ComboBox";
-            cmbAutoPopulated.cmbCombobox.SuppressSelectionColor = true;
-            cmbAutoPopulated.cmbCombobox.SelectedItem = null;
+            cmbCombobox.DescriptionMember = ADescDBName;
+            cmbCombobox.DisplayMember = ADisplayDBName;
+            cmbCombobox.ValueMember = AValueDBName;
+            cmbCombobox.DisplayInColumn1 = ADisplayDBName;
+            cmbCombobox.DisplayInColumn2 = DescriptionDBName;
+            cmbCombobox.DisplayInColumn3 = null;
+            cmbCombobox.DisplayInColumn4 = null;
+            cmbCombobox.ColumnsToSearch = AColumnsToSearch;
+            cmbCombobox.DataSource = FDataView;
+            cmbCombobox.EndUpdate();
+            cmbCombobox.Name = this.Name + "_internal_ComboBox";
+            cmbCombobox.SuppressSelectionColor = true;
+            cmbCombobox.SelectedItem = null;
 
             FUserControlInitialised = true;
         }
@@ -816,13 +686,13 @@ namespace Ict.Petra.Client.CommonControls
         /// <param name="AMaxDropDownItems"></param>
         public void AppearanceSetup(Int32[] AColumnWidth, Int32 AMaxDropDownItems)
         {
-            cmbAutoPopulated.ComboBoxWidth = 100;
-            cmbAutoPopulated.ColumnWidthCol1 = 100;
-            cmbAutoPopulated.ColumnWidthCol2 = 0;
-            cmbAutoPopulated.ColumnWidthCol3 = 0;
-            cmbAutoPopulated.ColumnWidthCol4 = 0;
-            cmbAutoPopulated.ImageColumn = 0;
-            cmbAutoPopulated.Images = null;
+            this.ComboBoxWidth = 100;
+            this.ColumnWidthCol1 = 100;
+            this.ColumnWidthCol2 = 0;
+            this.ColumnWidthCol3 = 0;
+            this.ColumnWidthCol4 = 0;
+            this.ImageColumn = 0;
+            this.Images = null;
 
             for (Int32 Counter = 0; Counter < AColumnWidth.Length; Counter++)
             {
@@ -831,185 +701,203 @@ namespace Ict.Petra.Client.CommonControls
                     switch (Counter)
                     {
                         case 0:
-                            cmbAutoPopulated.ComboBoxWidth = AColumnWidth[Counter];
-                            cmbAutoPopulated.ColumnWidthCol1 = AColumnWidth[Counter];
+                            this.ComboBoxWidth = AColumnWidth[Counter];
+                            this.ColumnWidthCol1 = AColumnWidth[Counter];
                             break;
 
                         case 1:
-                            cmbAutoPopulated.ColumnWidthCol2 = AColumnWidth[Counter];
+                            this.ColumnWidthCol2 = AColumnWidth[Counter];
                             break;
 
                         case 2:
-                            cmbAutoPopulated.ColumnWidthCol3 = AColumnWidth[Counter];
+                            this.ColumnWidthCol3 = AColumnWidth[Counter];
                             break;
 
                         case 3:
-                            cmbAutoPopulated.ColumnWidthCol4 = AColumnWidth[Counter];
+                            this.ColumnWidthCol4 = AColumnWidth[Counter];
                             break;
                     }
                 }
             }
 
+            if (this.Width < this.ColumnWidthCol1)
+            {
+                // Ensure that the ComboBox itself is never 'cut off'
+                this.ComboBoxWidth = this.Width;
+            }
+            else
+            {
+                this.ComboBoxWidth = this.ColumnWidthCol1;
+            }
+
             if (AMaxDropDownItems > 0)
             {
-                cmbAutoPopulated.cmbCombobox.MaxDropDownItems = AMaxDropDownItems;
+                cmbCombobox.MaxDropDownItems = AMaxDropDownItems;
             }
         }
 
         /// it might be better to do this in other functions, see also Client/lib/MFinance/gui/FinanceComboboxes.cs
         private void AppearanceSetup(TListTableEnum AListTable)
         {
-            cmbAutoPopulated.ComboBoxWidth = 0;
-            cmbAutoPopulated.ColumnWidthCol1 = 100;
-            cmbAutoPopulated.ColumnWidthCol2 = 0;
-            cmbAutoPopulated.ColumnWidthCol3 = 0;
-            cmbAutoPopulated.ColumnWidthCol4 = 0;
-            cmbAutoPopulated.ImageColumn = 0;
-            cmbAutoPopulated.Images = null;
+            this.ComboBoxWidth = 0;
+            this.ColumnWidthCol1 = 100;
+            this.ColumnWidthCol2 = 0;
+            this.ColumnWidthCol3 = 0;
+            this.ColumnWidthCol4 = 0;
+            this.ImageColumn = 0;
+            this.Images = null;
 
             switch (AListTable)
             {
                 case TListTableEnum.AcquisitionCodeList:
-                    cmbAutoPopulated.ColumnWidthCol2 = 350;
+                    this.ColumnWidthCol2 = 350;
                     break;
 
                 case TListTableEnum.AddresseeTypeList:
-                    cmbAutoPopulated.ColumnWidthCol2 = 150;
-                    cmbAutoPopulated.cmbCombobox.MaxDropDownItems = 9;
+                    this.ColumnWidthCol2 = 150;
+                    cmbCombobox.MaxDropDownItems = 9;
                     break;
 
                 case TListTableEnum.AddressDisplayOrderList:
-                    cmbAutoPopulated.ColumnWidthCol1 = 50;
-                    cmbAutoPopulated.ColumnWidthCol2 = 150;
+                    this.ColumnWidthCol1 = 50;
+                    this.ColumnWidthCol2 = 150;
                     break;
 
                 case TListTableEnum.BusinessCodeList:
-                    cmbAutoPopulated.ColumnWidthCol2 = 150;
-                    cmbAutoPopulated.cmbCombobox.MaxDropDownItems = 9;
+                    this.ColumnWidthCol2 = 150;
+                    cmbCombobox.MaxDropDownItems = 9;
                     break;
 
                 case TListTableEnum.CountryList:
-                    cmbAutoPopulated.ColumnWidthCol1 = 50;
-                    cmbAutoPopulated.ColumnWidthCol2 = 200;
+                    this.ColumnWidthCol1 = 50;
+                    this.ColumnWidthCol2 = 200;
                     break;
 
                 case TListTableEnum.CurrencyCodeList:
-                    cmbAutoPopulated.ColumnWidthCol1 = 60;
-                    cmbAutoPopulated.ColumnWidthCol2 = 170;
+                    this.ColumnWidthCol1 = 60;
+                    this.ColumnWidthCol2 = 170;
                     break;
 
                 case TListTableEnum.DenominationList:
-                    cmbAutoPopulated.ColumnWidthCol2 = 330;
+                    this.ColumnWidthCol2 = 330;
                     break;
 
                 case TListTableEnum.DocumentTypeCategoryList:
-                    cmbAutoPopulated.ColumnWidthCol2 = 200;
+                    this.ColumnWidthCol2 = 200;
                     break;
 
                 case TListTableEnum.FoundationOwnerList:
-                    cmbAutoPopulated.ColumnWidthCol1 = 120;
+                    this.ColumnWidthCol1 = 120;
                     break;
 
                 case TListTableEnum.FrequencyList:
-                    cmbAutoPopulated.ColumnWidthCol2 = 350;
+                    this.ColumnWidthCol2 = 350;
                     break;
 
                 case TListTableEnum.GenderList:
-                    cmbAutoPopulated.ColumnWidthCol1 = 88;
-                    cmbAutoPopulated.cmbCombobox.MaxDropDownItems = 3;
+                    this.ColumnWidthCol1 = 88;
+                    cmbCombobox.MaxDropDownItems = 3;
                     break;
 
                 case TListTableEnum.InterestList:
-                    cmbAutoPopulated.ColumnWidthCol1 = 130;
-                    cmbAutoPopulated.ColumnWidthCol2 = 230;
-                    cmbAutoPopulated.cmbCombobox.MaxDropDownItems = 3;
+                    this.ColumnWidthCol1 = 130;
+                    this.ColumnWidthCol2 = 230;
+                    cmbCombobox.MaxDropDownItems = 3;
                     break;
 
                 case TListTableEnum.InterestCategoryList:
-                    cmbAutoPopulated.ColumnWidthCol1 = 130;
-                    cmbAutoPopulated.ColumnWidthCol2 = 230;
-                    cmbAutoPopulated.cmbCombobox.MaxDropDownItems = 3;
+                    this.ColumnWidthCol1 = 130;
+                    this.ColumnWidthCol2 = 230;
+                    cmbCombobox.MaxDropDownItems = 3;
                     break;
 
                 case TListTableEnum.InternationalPostalTypeList:
-                    cmbAutoPopulated.ColumnWidthCol1 = 100;
-                    cmbAutoPopulated.ColumnWidthCol2 = 230;
+                    this.ColumnWidthCol1 = 100;
+                    this.ColumnWidthCol2 = 230;
                     break;
 
                 case TListTableEnum.LanguageCodeList:
-                    cmbAutoPopulated.ColumnWidthCol1 = 57;
-                    cmbAutoPopulated.ColumnWidthCol2 = 130;
+                    this.ColumnWidthCol1 = 57;
+                    this.ColumnWidthCol2 = 130;
                     break;
 
                 case TListTableEnum.LocationTypeList:
-                    cmbAutoPopulated.ColumnWidthCol1 = 110;
+                    this.ColumnWidthCol1 = 110;
                     break;
 
                 case TListTableEnum.MaritalStatusList:
-                    cmbAutoPopulated.ColumnWidthCol1 = 39;
-                    cmbAutoPopulated.ColumnWidthCol2 = 230;
-                    cmbAutoPopulated.cmbCombobox.MaxDropDownItems = 10;
+                    this.ColumnWidthCol1 = 39;
+                    this.ColumnWidthCol2 = 230;
+                    cmbCombobox.MaxDropDownItems = 10;
                     break;
 
                 case TListTableEnum.PartnerClassList:
-                    cmbAutoPopulated.ColumnWidthCol1 = 130;
+                    this.ColumnWidthCol1 = 130;
                     break;
 
                 case TListTableEnum.PartnerStatusList:
-                    cmbAutoPopulated.ColumnWidthCol1 = 95;
+                    this.ColumnWidthCol1 = 95;
                     break;
 
                 case TListTableEnum.ProposalSubmissionTypeList:
-                    cmbAutoPopulated.ColumnWidthCol2 = 100;
+                    this.ColumnWidthCol2 = 100;
                     break;
 
                 case TListTableEnum.ReasonSubscriptionCancelledList:
-                    cmbAutoPopulated.ColumnWidthCol1 = 110;
-                    cmbAutoPopulated.ColumnWidthCol2 = 450;
+                    this.ColumnWidthCol1 = 110;
+                    this.ColumnWidthCol2 = 450;
                     break;
 
                 case TListTableEnum.ReasonSubscriptionGivenList:
-                    cmbAutoPopulated.ColumnWidthCol1 = 110;
-                    cmbAutoPopulated.ColumnWidthCol2 = 450;
+                    this.ColumnWidthCol1 = 110;
+                    this.ColumnWidthCol2 = 450;
                     break;
 
                 case TListTableEnum.PublicationList:
-                    cmbAutoPopulated.ColumnWidthCol1 = 110;
-                    cmbAutoPopulated.ColumnWidthCol2 = 350;
+                    this.ColumnWidthCol1 = 110;
+                    this.ColumnWidthCol2 = 350;
                     break;
 
                 case TListTableEnum.SubscriptionStatus:
-                    cmbAutoPopulated.ColumnWidthCol1 = 110;
+                    this.ColumnWidthCol1 = 110;
                     break;
 
                 case TListTableEnum.RelationList:
-                    cmbAutoPopulated.ColumnWidthCol2 = 150;
-                    cmbAutoPopulated.cmbCombobox.MaxDropDownItems = 15;
+                    this.ColumnWidthCol2 = 150;
+                    cmbCombobox.MaxDropDownItems = 15;
                     break;
 
                 case TListTableEnum.RelationCategoryList:
-                    cmbAutoPopulated.ColumnWidthCol2 = 150;
+                    this.ColumnWidthCol2 = 150;
                     break;
 
                 case TListTableEnum.UnitTypeList:
-                    cmbAutoPopulated.ColumnWidthCol1 = 90;
-                    cmbAutoPopulated.ColumnWidthCol2 = 200;
+                    this.ColumnWidthCol1 = 90;
+                    this.ColumnWidthCol2 = 200;
                     break;
 
                 case TListTableEnum.DataLabelLookupList:
-                    cmbAutoPopulated.ColumnWidthCol2 = 200;
+                    this.ColumnWidthCol2 = 200;
                     break;
             }
 
-            if (cmbAutoPopulated.ComboBoxWidth == 0)
+            if (this.ComboBoxWidth == 0)
             {
-                cmbAutoPopulated.ComboBoxWidth = cmbAutoPopulated.ColumnWidthCol1;
+                if (this.Width < this.ColumnWidthCol1)
+                {
+                    // Ensure that the ComboBox itself is never 'cut off'
+                    this.ComboBoxWidth = this.Width;
+                }
+                else
+                {
+                    this.ComboBoxWidth = this.ColumnWidthCol1;
+                }
             }
 
             if (DesignMode)
             {
                 // Put text in ComboBox to make it easier to distinguish different AutoPopulatedComboBoxes on one Form
-                cmbAutoPopulated.cmbCombobox.Text = AListTable.ToString("G");
+                cmbCombobox.Text = AListTable.ToString("G");
             }
         }
 
@@ -1030,7 +918,7 @@ namespace Ict.Petra.Client.CommonControls
             // begin
             // MessageBox.Show((ADataSource as DataSet).Tables['POrganisation'].Rows[0]['p_business_code_c'].ToString);
             // end;
-            cmbAutoPopulated.cmbCombobox.DataBindings.Add("SelectedValue", ADataSource, AColumnName);
+            cmbCombobox.DataBindings.Add("SelectedValue", ADataSource, AColumnName);
         }
 
         /// <summary>
@@ -1065,39 +953,9 @@ namespace Ict.Petra.Client.CommonControls
         /// </summary>
         public void SaveValueNow()
         {
-            if ((cmbAutoPopulated.cmbCombobox.DataBindings.Count == 1) && (cmbAutoPopulated.cmbCombobox.DataBindings[0].BindingManagerBase != null))
+            if ((cmbCombobox.DataBindings.Count == 1) && (cmbCombobox.DataBindings[0].BindingManagerBase != null))
             {
-                cmbAutoPopulated.cmbCombobox.DataBindings[0].BindingManagerBase.EndCurrentEdit();
-            }
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public void DropDown()
-        {
-            cmbAutoPopulated.cmbCombobox.DroppedDown = true;
-        }
-
-        /// pass through the SelectedIndex property from the combobox
-        public Int32 SelectedIndex
-        {
-            get
-            {
-                return this.cmbAutoPopulated.cmbCombobox.SelectedIndex;
-            }
-            set
-            {
-                this.cmbAutoPopulated.cmbCombobox.SelectedIndex = value;
-            }
-        }
-
-        /// the number of items in the combobox items list
-        public Int32 Count
-        {
-            get
-            {
-                return cmbAutoPopulated.cmbCombobox.Items.Count;
+                cmbCombobox.DataBindings[0].BindingManagerBase.EndCurrentEdit();
             }
         }
     }

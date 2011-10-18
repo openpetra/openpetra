@@ -110,7 +110,7 @@
 					
 					<queryDetail condition="eq({param_conferenceselection}, all conferences))"><value>
 							AND PUB_pc_attendee.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n
-							AND PUB_pc_conference.pc_xyz_tbd_prefix_c = substr(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) 
+							AND PUB_pc_conference.pc_outreach_prefix_c = substr(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) 
 					</value></queryDetail>
 					
 					<queryDetail condition="eq({param_chkAcceptedApplications}, true))"><value>
@@ -180,7 +180,7 @@
 							PUB_pm_general_application.pm_application_key_i AS ApplicationKey,
 							PUB_pm_general_application.pm_registration_office_n AS RegistrationOffice,
 					
-							PUB_pc_attendee.pc_xyz_tbd_type_c AS OutreachType,
+							PUB_pc_attendee.pc_outreach_type_c AS OutreachType,
 							PUB_pc_attendee.pc_discovery_group_c AS DiscoveryGroup,
 							PUB_pc_attendee.pc_work_group_c AS WorkGroup,
 							PUB_pc_attendee.pc_arrival_group_c AS ArrivalGroup,
@@ -232,7 +232,7 @@
 					
 					<queryDetail condition="eq({param_conferenceselection}, all conferences))"><value>
 							AND PUB_pc_attendee.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n
-							AND PUB_pc_conference.pc_xyz_tbd_prefix_c = substr(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) 
+							AND PUB_pc_conference.pc_outreach_prefix_c = substr(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) 
 					</value></queryDetail>
 					
 					<queryDetail condition="eq({param_chkAcceptedApplications}, true))"><value>

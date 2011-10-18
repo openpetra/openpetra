@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -609,8 +609,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
             String APostCodeTo,
             String ACounty)
         {
-            bool ReturnValue;
-            TDBTransaction ReadTransaction;
+            bool ReturnValue = false;
             Boolean NewTransaction;
             String postalCode;
 
@@ -636,12 +635,10 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 return (APostalRegion.Length == 0) && (APostCodeFrom.Length == 0) && (APostCodeTo.Length == 0) && (ACounty.Length == 0);
             }
 
-            ReturnValue = false;
-
             if (APostalRegion.Length > 0)
             {
                 postalCode = situation.GetParameters().Get("PostalCode").ToString();
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+                DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
                 try
                 {
 // todo, wrong combination of table/columns
@@ -1110,8 +1107,6 @@ namespace Ict.Petra.Server.MReporting.MPartner
             Dictionary <String, int>CountyRowList = InitStatisticalReportTable();
             FNumberOfAcitvePartner = 0;
 
-            String SubscriptionCodeDBName = PSubscriptionTable.GetPublicationCodeDBName();
-            String SubscriptionCopiesDBName = PSubscriptionTable.GetPublicationCopiesDBName();
             String PartnerKeyDBName = PPartnerTable.GetPartnerKeyDBName() + " = ";
 
             foreach (PPartnerRow PartnerRow in PartnerTable.Rows)
@@ -1162,7 +1157,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
                         if (LocationRow.County.Length > 0)
                         {
                             // County
-                            RowName = LocationRow.County.ToLower();
+                            RowName = LocationRow.County.ToLower().Trim();
                         }
                         else
                         {
@@ -1179,17 +1174,16 @@ namespace Ict.Petra.Server.MReporting.MPartner
                     {
                         PSubscriptionRow SubscriptionRow = (PSubscriptionRow)Row;
 
-                        if (!SubscriptionRow.IsDateCancelledNull())
+                        // if there is a cancelled date set, then don't use this subscription in the report
+                        if (SubscriptionRow.IsDateCancelledNull()
+                            && ((SubscriptionRow.SubscriptionStatus == "PROVISIONAL")
+                                || (SubscriptionRow.SubscriptionStatus == "PERMANENT")
+                                || (SubscriptionRow.SubscriptionStatus == "GIFT")))
                         {
-                            // if there is a cancelled date, then don't use this subscription in the report
-                            continue;
-                        }
+                            // Add Value to Table
+                            AddToStatisticalReportTable(CountyRowList[RowName], SubscriptionRow.PublicationCode, 1);
 
-                        // Add Value to Table
-                        AddToStatisticalReportTable(CountyRowList[RowName], SubscriptionRow.PublicationCode, 1);
-
-                        if (SubscriptionRow.PublicationCopies > 1)
-                        {
+                            // Add number of copies to overall "Count:" column
                             AddToStatisticalReportTable(CountyRowList[ROW_COUNT], SubscriptionRow.PublicationCode, SubscriptionRow.PublicationCopies);
                         }
                     }
@@ -1416,7 +1410,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
         }
 
         /// <summary>
-        /// Calculates the Row "Percent", "Totals" and "Counts" for the publication statistical report
+        /// Calculates the Row "Percent" and "Totals" for the publication statistical report
         /// </summary>
         private void CalculateTotals()
         {
@@ -1442,11 +1436,6 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 FStatisticalReportDataTable.Rows[RowIndex][ColumnIndex] = CalcPercent;                 //.ToString("F");
                 FStatisticalReportPercentage.Add(FStatisticalReportDataTable.Columns[ColumnIndex].ColumnName,
                     CalcPercent.ToString("F"));
-
-                // Counts:
-                FStatisticalReportDataTable.Rows[RowIndex + 2][ColumnIndex] = (int)
-                                                                              ((int)FStatisticalReportDataTable.Rows[RowIndex +
-                                                                                                                     2][ColumnIndex] + Totals);
             }
         }
 
@@ -1592,8 +1581,6 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 POccupationTable OccupationTable;
 
                 OccupationTable = POccupationAccess.LoadByPrimaryKey(AOccupationCode, situation.GetDatabaseConnection().Transaction);
-
-                DataRow[] OccupationRows = OccupationTable.Select(POccupationTable.GetOccupationCodeDBName() + " = '" + AOccupationCode + "'");
 
                 if (OccupationTable.Rows.Count > 0)
                 {

@@ -4,7 +4,7 @@
 // @Authors:
 //       matthiash
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -68,8 +68,6 @@ namespace Ict.Petra.Server.MFinance.Gift
         bool FTransactionsOnly;
         bool FExtraColumns;
         TDBTransaction FTransaction;
-        Int64 FRecipientNumber;
-        Int64 FFieldNumber;
         GiftBatchTDS FMainDS;
         GLSetupTDS FSetupTDS;
         TVerificationResultCollection FMessages = new TVerificationResultCollection();
@@ -89,7 +87,6 @@ namespace Ict.Petra.Server.MFinance.Gift
             out TVerificationResultCollection AMessages)
         {
             FStringWriter = new StringWriter();
-            StringBuilder line = new StringBuilder();
             FMainDS = new GiftBatchTDS();
             FSetupTDS = new GLSetupTDS();
             FDelimiter = (String)requestParams["Delimiter"];
@@ -102,8 +99,8 @@ namespace Ict.Petra.Server.MFinance.Gift
             String NumberFormat = (String)requestParams["NumberFormat"];
             FCultureInfo = new CultureInfo(NumberFormat.Equals("American") ? "en-US" : "de-DE");
             FTransactionsOnly = (bool)requestParams["TransactionsOnly"];
-            FRecipientNumber = (Int64)requestParams["RecipientNumber"];
-            FFieldNumber = (Int64)requestParams["FieldNumber"];
+            // FRecipientNumber = (Int64)requestParams["RecipientNumber"];
+            // FFieldNumber = (Int64)requestParams["FieldNumber"];
             FExtraColumns = (bool)requestParams["ExtraColumns"];
 
 
@@ -444,12 +441,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
         void WriteGeneralNumber(decimal generalNumberField, bool bLineEnd)
         {
-            Int64 integerNumber = Convert.ToInt64(generalNumberField);
-
-
             FStringWriter.Write(String.Format(FCultureInfo, "{0:g}", generalNumberField));
-
-
             WriteDelimiter(bLineEnd);
         }
 

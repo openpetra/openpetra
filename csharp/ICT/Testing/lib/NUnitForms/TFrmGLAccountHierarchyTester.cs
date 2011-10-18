@@ -164,7 +164,7 @@ namespace Ict.Testing.NUnitForms
         /// </summary>
         public TFrmGLAccountHierarchyTester()
         {
-            mainForm = new TFrmGLAccountHierarchy(IntPtr.Zero);
+            mainForm = new TFrmGLAccountHierarchy(null);
 
             trvAccounts = new TTrvTreeViewTester("trvAccounts", mainForm);
             txtDetailAccountCode = new TextBoxTester("txtDetailAccountCode", mainForm);

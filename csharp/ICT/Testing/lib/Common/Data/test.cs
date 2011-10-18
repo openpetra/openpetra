@@ -69,6 +69,7 @@ namespace Ict.Common.DB.Testing
             TLogging.Log("  Connected to Database.");
         }
 
+        /// Init the test
         [SetUp]
         public void Init()
         {
@@ -78,6 +79,7 @@ namespace Ict.Common.DB.Testing
             EstablishDBConnection();
         }
 
+        /// clean up after the test
         [TearDown]
         public void TearDown()
         {

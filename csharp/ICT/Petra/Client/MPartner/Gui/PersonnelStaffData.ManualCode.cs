@@ -196,7 +196,10 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             try
             {
-                DateTime StartOfCommitment = dtpDetailStartOfCommitment.Date.Value;
+                if (!dtpDetailStartOfCommitment.Date.HasValue)
+                {
+                    throw new Exception();
+                }
             }
             catch (Exception)
             {
@@ -207,7 +210,10 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             try
             {
-                DateTime EndOfCommitment = dtpDetailEndOfCommitment.Date.Value;
+                if (!dtpDetailEndOfCommitment.Date.HasValue)
+                {
+                    throw new Exception();
+                }
             }
             catch (Exception)
             {

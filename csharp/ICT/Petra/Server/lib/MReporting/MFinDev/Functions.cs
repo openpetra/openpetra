@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -253,9 +253,6 @@ namespace Ict.Petra.Server.MReporting.MFinDev
             bool ReturnValue = false;
             bool FirstTime = true;
 
-            DateTime SelectionStartDate = AStartDate.AddDays(-ATolerance);
-            DateTime SelectionEndDate = AEndDate.AddDays(ATolerance);
-
             DateTime StartDate = AEndDate.AddDays(-ATolerance);
             DateTime EndDate = AEndDate.AddDays(ATolerance);
 
@@ -266,9 +263,6 @@ namespace Ict.Petra.Server.MReporting.MFinDev
             GetTimeFrequency(AFrequency, out YearFrequency, out MonthFrequency, out DayFrequency);
 
             DataTable Table;
-
-            AGiftTable GiftTable = new AGiftTable();
-            AGiftRow TemplateRow = GiftTable.NewRowTyped(false);
 
             String StrSql = "SELECT " + AGiftTable.GetDateEnteredDBName() +
                             " FROM " + AGiftTable.GetTableDBName() +

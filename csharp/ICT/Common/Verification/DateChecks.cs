@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -66,8 +66,6 @@ namespace Ict.Common.Verification
             String ASecondDateDescription)
         {
             TVerificationResult ReturnValue;
-            DateTime Date1 = TSaveConvert.ObjectToDate(ADate1);
-            DateTime Date2 = TSaveConvert.ObjectToDate(ADate2);
 
             if (ADate1 <= ADate2)
             {
@@ -321,8 +319,6 @@ namespace Ict.Common.Verification
             String ASecondDateDescription)
         {
             TVerificationResult ReturnValue;
-            DateTime Date1 = TSaveConvert.ObjectToDate(ADate1);
-            DateTime Date2 = TSaveConvert.ObjectToDate(ADate2);
 
             if (ADate1 >= ADate2)
             {
@@ -370,8 +366,6 @@ namespace Ict.Common.Verification
             String ASecondDateDescription)
         {
             TVerificationResult ReturnValue;
-            DateTime Date1 = TSaveConvert.ObjectToDate(ADate1);
-            DateTime Date2 = TSaveConvert.ObjectToDate(ADate2);
 
             if (ADate1 > ADate2)
             {

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -386,9 +386,8 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
         {
             int ChildRow = 1;
 
+            // stores the child units into the situation results
             GetChildUnits(AUnitKey, 0, (AWithOutreaches == "true"), ref ChildRow);
-
-            DataTable table = situation.GetResults().ToDataTable(parameters);
 
             return true;
         }
@@ -883,7 +882,6 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
 
                 PPartnerLocationRow PartnerLocationRow;
                 PLocationTable LocationTable;
-                PLocationRow LocationRow;
 
                 if (!TRptUserFunctionsPartner.GetPartnerBestAddressRow(Row.PartnerKey, situation, out PartnerLocationRow))
                 {
@@ -906,8 +904,6 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
                 {
                     GatheredResults["Church-Name"] += ", " + ((PPartnerRow)ChurchTable.Rows[0]).PartnerShortName + " ";
                 }
-
-                LocationRow = (PLocationRow)LocationTable.Rows[0];
 
                 // Add this church address to the results
                 // the variables will be something like Church-PostalCode, Church-StreetName

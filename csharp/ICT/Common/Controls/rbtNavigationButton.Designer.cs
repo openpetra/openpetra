@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -56,7 +56,7 @@ namespace Ict.Common.Controls
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TRbtNavigationButton));
+            new System.ComponentModel.ComponentResourceManager(typeof(TRbtNavigationButton));
 
             this.lblCaption = new System.Windows.Forms.Label();
             this.pbxIcon = new System.Windows.Forms.PictureBox();

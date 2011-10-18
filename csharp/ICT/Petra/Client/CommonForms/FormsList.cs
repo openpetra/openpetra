@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -458,23 +458,19 @@ namespace Ict.Petra.Client.CommonForms
         /// <param name="AClosingWindowHandle"></param>
         public void NotifyWindowClose(IntPtr AClosingWindowHandle)
         {
-            IntPtr callerHandle;
-
-            System.Windows.Forms.Form callerForm;
-            Int32 keyIndex;
-            keyIndex = WindowRelationship.IndexOfKey((System.Object)AClosingWindowHandle.ToInt64());
+            Int32 keyIndex = WindowRelationship.IndexOfKey((System.Object)AClosingWindowHandle.ToInt64());
 
             if (keyIndex != -1)
             {
-                callerHandle = (IntPtr)((Int64)WindowRelationship.GetByIndex(keyIndex));
+                IntPtr callerHandle = (IntPtr)((Int64)WindowRelationship.GetByIndex(keyIndex));
 
                 // MessageBox.Show('NotifyWindowClose:  AClosingWindowHandle: ' + AClosingWindowHandle.ToString + '; callerHandle:' + callerHandle.ToString);
                 // check whether the calling window is Delphi or Progress
-                callerForm = GetFormByHandle(callerHandle);
+                // System.Windows.Forms.Form callerForm = GetFormByHandle(callerHandle);
 
                 // set focus to the caller window
                 WindowHandling.SetForegroundWindowWrapper(callerHandle);
-                WindowHandling.ShowWindowWrapper(callerHandle, WindowHandling.SW_RESTORE);
+                WindowHandling.ShowWindowWrapper(callerHandle, WindowHandling.SW_SHOW);
 
                 // remove from list
                 WindowRelationship.Remove((System.Object)AClosingWindowHandle.ToInt64());

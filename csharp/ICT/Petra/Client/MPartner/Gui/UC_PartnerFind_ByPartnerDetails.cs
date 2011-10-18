@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -88,7 +88,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private IPartnerUIConnectorsPartnerFind FPartnerFindObject;
 
 //TODO        private Int32 FSplitterDistForm;
-        private Int32 FSplitterDistFindByDetails;
+//TODO        private Int32 FSplitterDistFindByDetails;
         private bool FPartnerInfoPaneOpen = false;
         private bool FPartnerTasksPaneOpen = false;
         private TUC_PartnerInfo FPartnerInfoUC;
@@ -1022,7 +1022,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             spcPartnerFindByDetails.SplitterDistance = TUserDefaults.GetInt32Default(
                 TUserDefaults.PARTNER_FIND_SPLITPOS_FINDBYDETAILS, 233);
-            FSplitterDistFindByDetails = spcPartnerFindByDetails.SplitterDistance;
+            // TODO FSplitterDistFindByDetails = spcPartnerFindByDetails.SplitterDistance;
         }
 
         /// <summary>
@@ -1145,7 +1145,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // If ALT held down, show the conventional screen, otherwise the new, generated one.
                 if (System.Windows.Forms.Form.ModifierKeys != Keys.Alt)
                 {
-                    TFrmPartnerEdit frm = new TFrmPartnerEdit(this.Handle);
+                    TFrmPartnerEdit frm = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
 
                     frm.SetParameters(TScreenMode.smEdit, FLogic.PartnerKey,
                         FLogic.DetermineCurrentLocationPK().SiteKey, FLogic.DetermineCurrentLocationPK().LocationKey, AShowTabPage);
@@ -1153,7 +1153,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
                 else
                 {
-                    TFrmPartnerEdit frm = new TFrmPartnerEdit(this.Handle);
+                    TFrmPartnerEdit frm = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
 
                     frm.SetParameters(TScreenMode.smEdit, FLogic.PartnerKey,
                         FLogic.DetermineCurrentLocationPK().SiteKey, FLogic.DetermineCurrentLocationPK().LocationKey, AShowTabPage);
@@ -1171,7 +1171,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             string PartnerClass = String.Empty;
             string CountryCode = String.Empty;
-            string CallerContext = String.Empty;
+
+            // string CallerContext = String.Empty;
+
             TFrmPartnerEdit frm;
 
             this.Cursor = Cursors.WaitCursor;
@@ -1202,13 +1204,13 @@ namespace Ict.Petra.Client.MPartner.Gui
                      * determine whether the 'Form Message' received is for *this* Instance
                      * of the Modal Partner Find screen.
                      */
-// TODO                    FNewPartnerContext = System.Guid.NewGuid().ToString();
-                    CallerContext = System.Guid.NewGuid().ToString();
+// TODO             FNewPartnerContext = System.Guid.NewGuid().ToString();
+//                  CallerContext = System.Guid.NewGuid().ToString();
 
                     PartnerClass = PartnerClass.Replace("OM-FAM", "FAMILY");
                 }
 
-                frm = new Ict.Petra.Client.MPartner.Gui.TFrmPartnerEdit(this.Handle);
+                frm = new Ict.Petra.Client.MPartner.Gui.TFrmPartnerEdit(FPetraUtilsObject.GetForm());
 
                 frm.SetParameters(TScreenMode.smNew,
                     PartnerClass, -1, -1, CountryCode);
@@ -1316,7 +1318,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             this.Cursor = Cursors.WaitCursor;
             LocationPK = FLogic.DetermineCurrentLocationPK();
-            frmPF = new TPartnerFindScreen(this.Handle);
+            frmPF = new TPartnerFindScreen(FPetraUtilsObject.GetForm());
             frmPF.SetParameters(true, LocationPK.LocationKey);
             frmPF.Show();
             this.Cursor = Cursors.Default;
@@ -1619,7 +1621,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         void spcPartnerFindByDetails_SplitterMoved(System.Object sender, System.Windows.Forms.SplitterEventArgs e)
         {
-            FSplitterDistFindByDetails = ((SplitContainer)sender).SplitterDistance;
+            // TODO FSplitterDistFindByDetails = ((SplitContainer)sender).SplitterDistance;
         }
 
         private void GrpCriteria_Enter(System.Object sender, System.EventArgs e)
@@ -1751,7 +1753,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             this.Cursor = Cursors.WaitCursor;
 
-            frmPEDS = new TFrmPartnerEdit(this.Handle);
+            frmPEDS = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
             frmPEDS.SetParameters(TScreenMode.smEdit, LastPartnerKey);
             frmPEDS.Show();
 

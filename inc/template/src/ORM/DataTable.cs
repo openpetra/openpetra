@@ -43,7 +43,10 @@ public class {#TABLENAME}Table : {#BASECLASSTABLE}
                 {#COLUMNUNIQUEKEYORDER}
 {#ENDIF COLUMNUNIQUEKEYORDER}
             }));
-        return true;
+
+        // try to avoid a compiler warning about unused variable FInitInfoValues which we need for initially calling InitInfoValues once
+        FInitInfoValues = true;
+        return FInitInfoValues;
     }
 {#ENDIF COLUMNINFO}
 
@@ -133,6 +136,12 @@ public class {#TABLENAME}Table : {#BASECLASSTABLE}
         return "{#DBTABLENAME}";
     }
 
+    /// return the 'Label' of the table as it is used in the database (the 'Label' is usually a short description of what the db table is about)
+    public static {#NEW}string GetTableDBLabel()
+    {
+        return "{#DBTABLELABEL}";
+    }
+    
     /// get an odbc parameter for the given column
     public override OdbcParameter CreateOdbcParameter(Int32 AColumnNr)
     {
