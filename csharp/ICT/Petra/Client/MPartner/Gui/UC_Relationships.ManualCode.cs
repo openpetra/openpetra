@@ -47,16 +47,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         
         #region Public Methods
 
-//        /// <summary>
-//        /// Gets the data from all controls on this UserControl.
-//        /// The data is stored in the DataTables/DataColumns to which the Controls
-//        /// are mapped.
-//        /// </summary>
-//        public void GetDataFromControls2()
-//        {
-//            GetDataFromControls(FMainDS.PBank[0]);
-//        }
-
         /// <summary>used for passing through the Clientside Proxy for the UIConnector</summary>
         public IPartnerUIConnectorsPartnerEdit PartnerEditUIConnector
         {
@@ -127,8 +117,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             grdDetails.AddTextColumn("Class", FMainDS.PPartnerRelationship.Columns[PartnerEditTDSPPartnerRelationshipTable.GetPartnerClassDBName()]);
             grdDetails.AddTextColumn("Comment", FMainDS.PPartnerRelationship.Columns[PPartnerRelationshipTable.GetCommentDBName()]);
 
-            // Hook up RecalculateScreenParts Event that is fired by FLogic
-            FLogic.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(this.RethrowRecalculateScreenParts);
             OnHookupDataChange(new THookupPartnerEditDataChangeEventArgs(TPartnerEditTabPageEnum.petpRelationships));
 
             // Hook up DataSavingStarted Event to be able to run code before SaveChanges is doing anything
@@ -139,6 +127,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             txtPPartnerRelationshipPartnerKey.ValueChanged += new TDelegatePartnerChanged(txtPPartnerRelationshipPartnerKey_ValueChanged);
             txtPPartnerRelationshipRelationKey.ValueChanged += new TDelegatePartnerChanged(txtPPartnerRelationshipRelationKey_ValueChanged);
 
+            // enable grid to react to insert and delete keyboard keys
             grdDetails.InsertKeyPressed += new TKeyPressedEventHandler(grdDetails_InsertKeyPressed);
             grdDetails.DeleteKeyPressed += new TKeyPressedEventHandler(grdDetails_DeleteKeyPressed);
             

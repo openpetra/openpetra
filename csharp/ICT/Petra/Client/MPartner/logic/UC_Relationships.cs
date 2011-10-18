@@ -82,9 +82,6 @@ namespace Ict.Petra.Client.MPartner
         }
         #endregion
 
-        /// <summary>todoComment</summary>
-        public event TRecalculateScreenPartsEventHandler RecalculateScreenParts;
-        
         /// <summary>
         /// Loads Partner Types Data from Petra Server into FMainDS.
         /// </summary>
