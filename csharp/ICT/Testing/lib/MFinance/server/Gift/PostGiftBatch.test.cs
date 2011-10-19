@@ -52,6 +52,7 @@ namespace Tests.MFinance.Server.Gift
         [TestFixtureSetUp]
         public void Init()
         {
+            //new TLogging("TestServer.log");
             TPetraServerConnector.Connect("../../etc/TestServer.config");
             FLedgerNumber = TAppSettingsManager.GetInt32("LedgerNumber", 43);
         }
@@ -108,13 +109,18 @@ namespace Tests.MFinance.Server.Gift
         {
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
 
+            TVerificationResultCollection VerficationResults = null;
+            
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
-            AFeesPayableAccess.LoadViaALedger(FLedgerNumber, Transaction);
-            AFeesReceivableAccess.LoadViaALedger(FLedgerNumber, Transaction);
+            AFeesPayableAccess.LoadViaALedger(MainDS, FLedgerNumber, Transaction);
+            AFeesReceivableAccess.LoadViaALedger(MainDS, FLedgerNumber, Transaction);
             DBAccess.GDBAccessObj.RollbackTransaction();
 
-            Assert.AreEqual(0.12m, TTransactionWebConnector.CalculateAdminFee(MainDS, FLedgerNumber, "ICT", 12.21m), "expect 1%");
+
+            //TODO If this first one works, try different permatations for Assert.AreEqual
+            // Test also for exception handling
+            Assert.AreEqual(-30m, TTransactionWebConnector.CalculateAdminFee(MainDS, FLedgerNumber, "NEWCODEP", -200m, out VerficationResults), "expect 15");
         }
     }
 }

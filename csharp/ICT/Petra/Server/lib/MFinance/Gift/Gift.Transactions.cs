@@ -25,6 +25,7 @@ using System;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Data;
+using System.Windows.Forms;
 
 using Ict.Common;
 using Ict.Common.DB;
@@ -753,85 +754,150 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="AFeeCode"></param>
         /// <param name="AGiftAmount"></param>
         /// <returns></returns>
-        public static decimal CalculateAdminFee(GiftBatchTDS MainDS, Int32 ALedgerNumber, string AFeeCode, decimal AGiftAmount)
+        public static decimal CalculateAdminFee(GiftBatchTDS MainDS,
+                                                Int32 ALedgerNumber,
+                                                string AFeeCode,
+                                                decimal AGiftAmount,
+                                                out TVerificationResultCollection AVerificationResult
+                                                )
         {
             //Amount to return
             decimal FeeAmount = 0;
 
             decimal GiftPercentageAmount;
+            decimal ChargeAmount;
+            string ChargeOption;
 
-            AFeesPayableRow feePayableRow = (AFeesPayableRow)MainDS.AFeesPayable.Rows.Find(new object[] { ALedgerNumber, AFeeCode });
-
-            if (feePayableRow == null)
+            //Error handling
+            string ErrorContext = String.Empty;
+            string ErrorMessage = String.Empty;
+            //Set default type as non-critical
+            TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
+            AVerificationResult = null;
+            
+            try
             {
-                AFeesReceivableRow feeReceivableRow = (AFeesReceivableRow)MainDS.AFeesReceivable.Rows.Find(new object[] { ALedgerNumber, AFeeCode });
+                AFeesPayableRow feePayableRow = (AFeesPayableRow)MainDS.AFeesPayable.Rows.Find(new object[] { ALedgerNumber, AFeeCode });
+
+                if (feePayableRow == null)
+                {
+                    AFeesReceivableRow feeReceivableRow = (AFeesReceivableRow)MainDS.AFeesReceivable.Rows.Find(new object[] { ALedgerNumber, AFeeCode });
+                    if (feeReceivableRow == null)
+                    {
+                        ErrorContext = "Calculate Admin Fee";
+                        ErrorMessage = String.Format(Catalog.GetString("The Ledger no.: {0} or Fee Code: {1} does not exist."),
+                                                     ALedgerNumber,
+                                                     AFeeCode
+                                                    );
+                        ErrorType = TResultSeverity.Resv_Noncritical;
+                        throw new System.ArgumentException(ErrorMessage);
+                    }
+                    else
+                    {
+                        GiftPercentageAmount = feeReceivableRow.ChargePercentage * AGiftAmount / 100;
+                        ChargeOption = feeReceivableRow.ChargeOption.ToUpper();
+                        ChargeAmount = feeReceivableRow.ChargeAmount;
+                    }
+                }
+                else
+                {
+                    GiftPercentageAmount = feePayableRow.ChargePercentage * AGiftAmount / 100;
+                    ChargeOption = feePayableRow.ChargeOption.ToUpper();
+                    ChargeAmount = feePayableRow.ChargeAmount;
+                }
+
+                switch (ChargeOption)
+                {
+                    case MFinanceConstants.ADMIN_CHARGE_OPTION_FIXED:
+                        FeeAmount = ChargeAmount;
+                        break;
+
+                    case MFinanceConstants.ADMIN_CHARGE_OPTION_MIN:
+
+                        if (AGiftAmount >= 0)
+                        {
+                            if (ChargeAmount >= GiftPercentageAmount)
+                            {
+                                FeeAmount = ChargeAmount;
+                            }
+                            else
+                            {
+                                FeeAmount = GiftPercentageAmount;
+                            }
+                        }
+                        else
+                        {
+                            if (-ChargeAmount <= GiftPercentageAmount)
+                            {
+                                FeeAmount = -ChargeAmount;
+                            }
+                            else
+                            {
+                                FeeAmount = GiftPercentageAmount;
+                            }
+                        }
+
+                        break;
+
+                    case MFinanceConstants.ADMIN_CHARGE_OPTION_MAX:
+
+                        if (AGiftAmount >= 0)
+                        {
+                            if (ChargeAmount <= GiftPercentageAmount)
+                            {
+                                FeeAmount = ChargeAmount;
+                            }
+                            else
+                            {
+                                FeeAmount = GiftPercentageAmount;
+                            }
+                        }
+                        else
+                        {
+                            if (-ChargeAmount >= GiftPercentageAmount)
+                            {
+                                FeeAmount = -ChargeAmount;
+                            }
+                            else
+                            {
+                                FeeAmount = GiftPercentageAmount;
+                            }
+                        }
+
+                        break;
+
+                    case MFinanceConstants.ADMIN_CHARGE_OPTION_PERCENT:
+                        FeeAmount = GiftPercentageAmount;
+                        break;
+
+                    default:
+                        ErrorContext = "Calculate Admin Fee";
+                        ErrorMessage = String.Format(Catalog.GetString("Unexpected Fee Payable/Receivable Charge Option in Ledger: {0} and Fee Code: '{1}'."),
+                                                     ALedgerNumber,
+                                                     AFeeCode
+                                                    );
+                        ErrorType = TResultSeverity.Resv_Noncritical;
+                        throw new System.InvalidOperationException(ErrorMessage);
+                }
             }
-
-            GiftPercentageAmount = feePayableRow.ChargePercentage * AGiftAmount / 100;
-
-            switch (feePayableRow.ChargeOption)
+            catch (ArgumentException ex)
             {
-                case MFinanceConstants.ADMIN_CHARGE_OPTION_FIXED:
-                    FeeAmount = feePayableRow.ChargeAmount;
-                    break;
-
-                case MFinanceConstants.ADMIN_CHARGE_OPTION_MIN:
-
-                    if (AGiftAmount >= 0)
-                    {
-                        if (feePayableRow.ChargeAmount > GiftPercentageAmount)
-                        {
-                            FeeAmount = feePayableRow.ChargeAmount;
-                        }
-                        else
-                        {
-                            FeeAmount = GiftPercentageAmount;
-                        }
-                    }
-                    else
-                    {
-                        if (-feePayableRow.ChargeAmount < GiftPercentageAmount)
-                        {
-                            FeeAmount = -feePayableRow.ChargeAmount;
-                        }
-                        else
-                        {
-                            FeeAmount = GiftPercentageAmount;
-                        }
-                    }
-
-                    break;
-
-                case MFinanceConstants.ADMIN_CHARGE_OPTION_MAX:
-
-                    if (AGiftAmount >= 0)
-                    {
-                        if (feePayableRow.ChargeAmount < GiftPercentageAmount)
-                        {
-                            FeeAmount = feePayableRow.ChargeAmount;
-                        }
-                        else
-                        {
-                            FeeAmount = GiftPercentageAmount;
-                        }
-                    }
-                    else
-                    {
-                        if (-feePayableRow.ChargeAmount > GiftPercentageAmount)
-                        {
-                            FeeAmount = -feePayableRow.ChargeAmount;
-                        }
-                        else
-                        {
-                            FeeAmount = GiftPercentageAmount;
-                        }
-                    }
-
-                    break;
-
-                case MFinanceConstants.ADMIN_CHARGE_OPTION_PERCENT:
-                    FeeAmount = GiftPercentageAmount;
-                    break;
+                AVerificationResult.Add(new TVerificationResult(ErrorContext, ex.Message, ErrorType));
+            }
+            catch (InvalidOperationException ex)
+            {
+                AVerificationResult.Add(new TVerificationResult(ErrorContext, ex.Message, ErrorType));
+            }
+            catch (Exception ex)
+            {
+                ErrorContext = "Calculate Admin Fee";
+                ErrorMessage = String.Format(Catalog.GetString("Unknown error while calculating admin fee for Ledger: {0} and Fee Code: {1}" +
+                                                                Environment.NewLine + Environment.NewLine + ex.ToString()),
+                                             ALedgerNumber,
+                                             AFeeCode
+                                            );
+                ErrorType = TResultSeverity.Resv_Critical;
+                AVerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
             }
 
             // calculate the admin fee for the specific amount and admin fee. see gl4391.p
@@ -914,7 +980,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     if ((motivationFeeRow.MotivationDetailCode == motivationRow.MotivationDetailCode)
                         && (motivationFeeRow.MotivationGroupCode == motivationRow.MotivationGroupCode))
                     {
-                        decimal FeeAmount = CalculateAdminFee(MainDS, ALedgerNumber, motivationFeeRow.FeeCode, giftDetail.GiftAmount);
+                        decimal FeeAmount = CalculateAdminFee(MainDS, ALedgerNumber, motivationFeeRow.FeeCode, giftDetail.GiftAmount, out AVerifications);
                         AddToFeeTotals(MainDS, giftDetail, motivationFeeRow.FeeCode, FeeAmount, MainDS.AGiftBatch[0].BatchPeriod);
                     }
                 }
