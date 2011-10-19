@@ -54,9 +54,9 @@ using Ict.Petra.Shared.Interfaces.MSysMan.TableMaintenance;
 using Ict.Petra.Shared.Interfaces.MSysMan.ImportExport;
 using Ict.Petra.Shared.Interfaces.MSysMan.PrintManagement;
 using Ict.Petra.Shared.Interfaces.MSysMan.Security;
+using Ict.Petra.Shared.Interfaces.MSysMan.Cacheable;
 using Ict.Petra.Shared.Interfaces.MSysMan.Application.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MSysMan.Application.ServerLookups;
-using Ict.Petra.Shared.Interfaces.MSysMan.Cacheable;
 using Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.SystemDefaults;
 using Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.UserDefaults;
@@ -72,6 +72,7 @@ using Ict.Petra.Server.MSysMan.Instantiator.TableMaintenance;
 using Ict.Petra.Server.MSysMan.Instantiator.ImportExport;
 using Ict.Petra.Server.MSysMan.Instantiator.PrintManagement;
 using Ict.Petra.Server.MSysMan.Instantiator.Security;
+using Ict.Petra.Server.MSysMan.Instantiator.Cacheable;
 using Ict.Petra.Server.MSysMan.Instantiator.Application.UIConnectors;
 using Ict.Petra.Server.MSysMan.Instantiator.Application.ServerLookups;
 using Ict.Petra.Server.MSysMan.Instantiator.Maintenance.SystemDefaults;
@@ -83,16 +84,15 @@ using Ict.Petra.Server.MSysMan.Instantiator.ImportExport.WebConnectors;
 using Ict.Petra.Server.MSysMan.Instantiator.PrintManagement.UIConnectors;
 using Ict.Petra.Server.MSysMan.Instantiator.Security.UIConnectors;
 using Ict.Petra.Server.MSysMan.Instantiator.Security.UserManager;
-using Ict.Petra.Server.MSysMan.Instantiator.Cacheable;
 //using Ict.Petra.Server.MSysMan.Application;
 using Ict.Petra.Server.MSysMan.Maintenance;
 //using Ict.Petra.Server.MSysMan.TableMaintenance;
 //using Ict.Petra.Server.MSysMan.ImportExport;
 //using Ict.Petra.Server.MSysMan.PrintManagement;
 using Ict.Petra.Server.MSysMan.Security;
+using Ict.Petra.Server.MSysMan.Cacheable;
 //using Ict.Petra.Server.MSysMan.Application.UIConnectors;
 using Ict.Petra.Server.MSysMan.Application.ServerLookups;
-using Ict.Petra.Server.MSysMan.Cacheable;
 //using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults;
 //using Ict.Petra.Server.MSysMan.Maintenance.UIConnectors;
 //using Ict.Petra.Server.MSysMan.Maintenance.UserDefaults;
@@ -444,8 +444,8 @@ namespace Ict.Petra.Server.MSysMan.Instantiator
 
                 return FSecuritySubNamespace;
             }
-        }
 
+        }
 
         /// <summary>The 'Cacheable' subnamespace contains further subnamespaces.</summary>
         public ICacheableNamespace Cacheable
@@ -454,25 +454,26 @@ namespace Ict.Petra.Server.MSysMan.Instantiator
             {
                 //
                 // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'Application.Cacheable' sub-namespace.
+                // reside in the 'MSysMan.Cacheable' sub-namespace.
                 // A call to this function is done everytime a Client uses an object of this
                 // sub-namespace - this is fully transparent to the Client.
                 //
                 // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'Application.Cacheable' sub-namespace
+                //         the 'MSysMan.Cacheable' sub-namespace
                 //
 
                 // accessing TCacheableNamespace the first time? > instantiate the object
                 if (FCacheableSubNamespace == null)
                 {
                     // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TApplicationCacheableNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.Application.Instantiator.Cacheable') should be automatically contructable.
+                    //      * for the Generator: the name of this Type ('TCacheableNamespace') needs to come out of the XML definition,
+                    //      * The Namespace where it resides in ('Ict.Petra.Server.MSysMan.Instantiator.Cacheable') should be automatically contructable.
                     FCacheableSubNamespace = new TCacheableNamespace();
                 }
 
                 return FCacheableSubNamespace;
-            }   
+            }
+
         }
     }
 }
@@ -487,7 +488,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Application
 #endif
         private TApplicationUIConnectorsNamespace FApplicationUIConnectorsSubNamespace;
         private TApplicationServerLookupsNamespace FApplicationServerLookupsSubNamespace;
- 
+
         /// <summary>Constructor</summary>
         public TApplicationNamespace()
         {
@@ -1304,64 +1305,67 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance.WebConnectors
         }
 
         /// generated method from connector
-        public bool SetLanguageAndCulture(string ALanguageCode,
-                                          string ACultureCode)
+        public System.Boolean SetLanguageAndCulture(System.String ALanguageCode,
+                                                    System.String ACultureCode)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintainLanguageSettingsWebConnector), "SetLanguageAndCulture", ";STRING;STRING;");
             return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintainLanguageSettingsWebConnector.SetLanguageAndCulture(ALanguageCode, ACultureCode);
         }
 
         /// generated method from connector
-        public bool LoadLanguageAndCultureFromUserDefaults()
+        public System.Boolean LoadLanguageAndCultureFromUserDefaults()
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintainLanguageSettingsWebConnector), "LoadLanguageAndCultureFromUserDefaults", ";");
             return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintainLanguageSettingsWebConnector.LoadLanguageAndCultureFromUserDefaults();
         }
 
         /// generated method from connector
-        public bool GetLanguageAndCulture(out string ALanguageCode,
-                                          out string ACultureCode)
+        public System.Boolean GetLanguageAndCulture(out System.String ALanguageCode,
+                                                    out System.String ACultureCode)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintainLanguageSettingsWebConnector), "GetLanguageAndCulture", ";STRING;STRING;");
             return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintainLanguageSettingsWebConnector.GetLanguageAndCulture(out ALanguageCode, out ACultureCode);
         }
 
         /// generated method from connector
-        public bool SetUserPassword(string AUsername,
-                                    string APassword)
+        public System.Boolean SetUserPassword(System.String AUsername,
+                                              System.String APassword)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector), "SetUserPassword", ";STRING;STRING;");
             return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector.SetUserPassword(AUsername, APassword);
         }
 
         /// generated method from connector
-        public bool CheckPasswordQuality(string APassword,
-                                         out TVerificationResultCollection AVerification)
+        public System.Boolean CheckPasswordQuality(System.String APassword,
+                                                   out TVerificationResultCollection AVerification)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector), "CheckPasswordQuality", ";STRING;TVERIFICATIONRESULTCOLLECTION;");
             return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector.CheckPasswordQuality(APassword, out AVerification);
         }
 
         /// generated method from connector
-        public bool SetUserPassword(string AUsername,
-                                    string APassword,
-                                    string AOldPassword)
+        public System.Boolean SetUserPassword(System.String AUsername,
+                                              System.String APassword,
+                                              System.String AOldPassword,
+                                              out TVerificationResultCollection AVerification)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector), "SetUserPassword", ";STRING;STRING;STRING;");
-            return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector.SetUserPassword(AUsername, APassword, AOldPassword);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector), "SetUserPassword", ";STRING;STRING;STRING;TVERIFICATIONRESULTCOLLECTION;");
+            return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector.SetUserPassword(AUsername, APassword, AOldPassword, out AVerification);
         }
 
         /// generated method from connector
-        public bool CreateUser(string AUsername,
-                               string APassword,
-                               string AModulePermissions)
+        public System.Boolean CreateUser(System.String AUsername,
+                                         System.String APassword,
+                                         System.String AModulePermissions)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector), "CreateUser", ";STRING;STRING;STRING;");
             return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector.CreateUser(AUsername, APassword, AModulePermissions);
         }
 
         /// generated method from connector
-        public bool GetAuthenticationFunctionality(out bool ACanCreateUser,
-                                                   out bool ACanChangePassword,
-                                                   out bool ACanChangePermissions)
+        public System.Boolean GetAuthenticationFunctionality(out System.Boolean ACanCreateUser,
+                                                             out System.Boolean ACanChangePassword,
+                                                             out System.Boolean ACanChangePermissions)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector), "GetAuthenticationFunctionality", ";BOOL;BOOL;BOOL;");
             return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector.GetAuthenticationFunctionality(out ACanCreateUser, out ACanChangePassword, out ACanChangePermissions);
@@ -1564,7 +1568,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.TableMaintenance.UIConnectors
 
         /// generated method from interface
         public ISysManUIConnectorsTableMaintenance SysManTableMaintenance(ref DataTable ADataSet,
-                                                                          string ATableName)
+                                                                          System.String ATableName)
         {
 #if DEBUGMODE
             if (TLogging.DL >= 9)
@@ -1768,14 +1772,14 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.ImportExport.WebConnectors
         }
 
         /// generated method from connector
-        public string ExportAllTables()
+        public System.String ExportAllTables()
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector), "ExportAllTables", ";");
             return Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector.ExportAllTables();
         }
 
         /// generated method from connector
-        public bool ResetDatabase(string AZippedNewDatabaseData)
+        public System.Boolean ResetDatabase(System.String AZippedNewDatabaseData)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector), "ResetDatabase", ";STRING;");
             return Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector.ResetDatabase(AZippedNewDatabaseData);
@@ -2323,7 +2327,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Cacheable
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
-            return null; // make sure that the TApplicationCacheableNamespace object exists until this AppDomain is unloaded!
+            return null; // make sure that the TCacheableNamespace object exists until this AppDomain is unloaded!
         }
 
         #region ManualCode
@@ -2420,3 +2424,4 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Cacheable
         }
     }
 }
+

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -59,13 +59,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
-            GLSetupTDS FCacheDS = ((TFrmGLBatch)ParentForm).GetAttributesControl().CacheDS;
             OpenFileDialog dialog = new OpenFileDialog();
 
             dialog.FileName = TUserDefaults.GetStringDefault("Imp Filename",
                 TClientSettings.GetExportPath() + Path.DirectorySeparatorChar + "import.csv");
 
-            dialog.Title = Catalog.GetString("Import batches from spreadsheet file");
+            dialog.Title = Catalog.GetString("Import batches from csv file");
             dialog.Filter = Catalog.GetString("GL Batches files (*.csv)|*.csv");
             String impOptions = TUserDefaults.GetStringDefault("Imp Options", ";American");
 

@@ -106,7 +106,6 @@ namespace Ict.Common.IO
                 public static MemoryStream DeflateFilesFromStream(Stream AZippedStream)
                 {
                     MemoryStream UnzippedStream = new MemoryStream();
-                    ZipEntry ZippedFile;
                     Int32 size = 0;
 
                     // Always ensure we are reading from the beginning...
@@ -114,7 +113,7 @@ namespace Ict.Common.IO
 
                     using (ZipInputStream s = new ZipInputStream(AZippedStream))
                     {
-                        while ((ZippedFile = s.GetNextEntry()) != null)
+                        while (s.GetNextEntry() != null)
                         {
                             Byte[] buffer = new Byte[4096];
 

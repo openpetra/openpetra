@@ -50,8 +50,6 @@ namespace Ict.Petra.Server.MFinance.Common
 
         private bool blnReadyForTransaction;
 
-        private ATransactionRow lastTransaction = null;
-
         // The use of the default value requires an additional database request. So this is done in the
         // "last moment" and only if no other date value is used
         private bool blnInitBatchDate;
@@ -399,8 +397,6 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 journal.JournalCreditTotal += AAmountBaseCurrency;
             }
-
-            lastTransaction = transaction;
         }
 
         /// <summary>

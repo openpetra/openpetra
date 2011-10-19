@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<project name="OpenPetra-csharp-GenerateWinForms-build">
-<property name="Namespace" value="GenerateWinForms" />
+<project name="OpenPetra-csharp-Ict.Tools.GenerateWinForms-build">
+<property name="Namespace" value="Ict.Tools.GenerateWinForms" />
 <property name="OutputType" value="exe" />
 
 <property name="RunCsDepend" value="true" />

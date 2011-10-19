@@ -2,7 +2,7 @@ RootNode:
     BaseYaml: ShortTermReportingForm.yaml
     FormType: report
     FormTitle: Emergency Contact Report
-    Namespace: Ict.Petra.Client.MReporting.Gui.MPersonnel
+    Namespace: Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm
     TemplateParameters:
         XMLFILES: [Personnel\\\\emergencycontactreport.xml,Personnel\\\\personnel.xml]
         REPORTNAME: Emergency Contact Report

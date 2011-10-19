@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -35,8 +35,20 @@ using Ict.Common;
 
 namespace Ict.Tools.CodeGeneration.DataStore
 {
-    public class codeGenerationDatasetAccess
+    /// <summary>
+    /// create code for reading and writing datasets from and to the database
+    /// </summary>
+    public class CodeGenerationDatasetAccess
     {
+        /// <summary>
+        /// create code for a table that is part of a dataset
+        /// </summary>
+        /// <param name="ATables"></param>
+        /// <param name="ASqltable"></param>
+        /// <param name="tabletype"></param>
+        /// <param name="variablename"></param>
+        /// <param name="snippetDataset"></param>
+        /// <param name="ASnippetSubmitChanges"></param>
         private static void AddTableToDataset(
             List <TDataSetTable>ATables,
             TTable ASqltable,
@@ -121,6 +133,15 @@ namespace Ict.Tools.CodeGeneration.DataStore
             }
         }
 
+        /// <summary>
+        /// main function for generating access methods for typed data sets
+        /// </summary>
+        /// <param name="AInputXmlfile"></param>
+        /// <param name="AOutputPath"></param>
+        /// <param name="ANameSpace"></param>
+        /// <param name="store"></param>
+        /// <param name="groups"></param>
+        /// <param name="AFilename"></param>
         public static void CreateTypedDataSets(String AInputXmlfile,
             String AOutputPath,
             String ANameSpace,
@@ -190,7 +211,6 @@ namespace Ict.Tools.CodeGeneration.DataStore
                                 tabletype,
                                 variablename,
                                 store.GetTable(tabletype));
-                            XmlNode tableNodes = curChild.FirstChild;
 
                             tables.Add(table);
                         }

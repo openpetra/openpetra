@@ -42,14 +42,7 @@ RootNode:
         btnRemoveColumn:
             Label: Remove
             Action: actRemoveColumn
-            
-        btnCancel:
-            Label: &Cancel
-            Action: actCancelColumn
-        btnApply:
-            Label: A&pply
-            Action: actApplyColumn
-        
+       
         btnDummy:
             Label: DummyButton
             Visible: false

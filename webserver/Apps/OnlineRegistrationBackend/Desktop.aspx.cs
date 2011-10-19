@@ -1,4 +1,4 @@
-//
+﻿//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -30,13 +30,16 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Text;
+using System.Globalization;
 
 using Ext.Net;
+using Jayrock.Json.Conversion;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.Verification;
 using PetraWebService;
 using Ict.Petra.Server.MConference.Applications;
+using Ict.Petra.Server.MPartner.Import;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MConference.Data;
 using Ict.Petra.Shared.MPersonnel;
@@ -59,20 +62,54 @@ namespace Ict.Petra.WebServer.MConference
         protected Ext.Net.Store StoreRole;
         protected Ext.Net.Store StoreApplicationStatus;
         protected Ext.Net.Store StoreRegistrationOffice;
+        protected Ext.Net.Store StoreServiceTeamJob;
         protected Ext.Net.Image Image1;
         protected Ext.Net.FileUploadField FileUploadField1;
         protected Ext.Net.FileUploadField FileUploadField2;
         protected Ext.Net.FileUploadField FileUploadField3;
         protected Ext.Net.ComboBox FileUploadCodePage3;
-        protected Ext.Net.TextField OldPassword;
-        protected Ext.Net.TextField NewPassword1;
-        protected Ext.Net.TextField NewPassword2;
-        protected Ext.Net.DesktopWindow winChangePassword;
         protected Ext.Net.TextField txtSearchApplicant;
         protected Ext.Net.GridPanel GridPanel1;
         protected Ext.Net.GridFilters GridFilters1;
         protected Ext.Net.Panel TabRawApplicationData;
+        protected Ext.Net.Panel TabApplicantDetails;
+        protected Ext.Net.Panel TabFinance;
+        protected Ext.Net.Panel TabMedicalLog;
+        protected Ext.Net.Panel TabMedicalInfo;
+        protected Ext.Net.Panel TabRebukes;
+        protected Ext.Net.Panel TabGroups;
         protected Ext.Net.TabPanel TabPanelApplication;
+        protected Ext.Net.ComboBox JobWish1;
+        protected Ext.Net.ComboBox JobWish2;
+        protected Ext.Net.ComboBox JobAssigned;
+        protected Ext.Net.ComboBox StFieldCharged;
+        protected Ext.Net.Checkbox SecondSibling;
+        protected Ext.Net.Checkbox CancelledByFinanceOffice;
+        protected Ext.Net.TextArea Comment;
+        protected Ext.Net.TextArea CommentRegistrationOfficeReadOnly;
+        protected Ext.Net.Panel TabServiceTeam;
+        protected Ext.Net.Panel TabMoreDetails;
+        protected Ext.Net.Button btnJSONApplication;
+        protected Ext.Net.Button btnCreateGiftBatch;
+        protected Ext.Net.Button btnLoadRefreshApplicants;
+        protected Ext.Net.Button btnTestPrintBadges;
+        protected Ext.Net.Button btnPrintBadges;
+        protected Ext.Net.Button btnReprintBadges;
+        protected Ext.Net.Button btnExportTShirtNumbers;
+        protected Ext.Net.Button btnImportPrintedBadges;
+        protected Ext.Net.Button btnExcelArrivalRegistration;
+        protected Ext.Net.Button btnExcelRolesPerCountry;
+        protected Ext.Net.Button btnFixArrivalDepartureDates;
+        protected Ext.Net.Button btnManualRegistration;
+        protected Ext.Net.Button btnPrintArrivalRegistration;
+        protected Ext.Net.Store StoreRebukes;
+        protected Ext.Net.Button btnNewRebuke;
+        protected Ext.Net.DateField dtpRebukesReportForDate;
+        protected Ext.Net.TabPanel MedicalPanel;
+        protected Ext.Net.TextField MaxGroupMembers;
+        protected Ext.Net.TextArea GroupMembers;
+        protected Ext.Net.TextField StFgCode;
+        protected Ext.Net.TextField GroupWish;
 
         protected bool ConferenceOrganisingOffice = false;
 
@@ -96,12 +133,61 @@ namespace Ict.Petra.WebServer.MConference
                 RoleData_Refresh(null, null);
                 ApplicationStatus_Refresh(null, null);
                 RegistrationOffice_Refresh(null, null);
+                ServiceTeamJobs_Refresh(null, null);
 
                 if (ConferenceOrganisingOffice)
                 {
                     // for the organising office, only show the accepted applicants by default.
                     FilterStatus.SelectedItem.Value = "accepted";
                 }
+
+                btnJSONApplication.Visible = ConferenceOrganisingOffice;
+                btnLoadRefreshApplicants.Visible = false;
+                btnPrintBadges.Visible = ConferenceOrganisingOffice;
+                btnReprintBadges.Visible = ConferenceOrganisingOffice;
+                btnExportTShirtNumbers.Visible = ConferenceOrganisingOffice;
+                btnImportPrintedBadges.Visible = ConferenceOrganisingOffice;
+                btnExcelArrivalRegistration.Visible = ConferenceOrganisingOffice;
+                btnPrintArrivalRegistration.Visible = ConferenceOrganisingOffice;
+                btnExcelRolesPerCountry.Visible = ConferenceOrganisingOffice;
+                btnFixArrivalDepartureDates.Visible = ConferenceOrganisingOffice;
+                btnManualRegistration.Visible = ConferenceOrganisingOffice;
+
+                // for the moment, do not confuse all offices with this button
+                btnCreateGiftBatch.Visible = ConferenceOrganisingOffice;
+
+                if (!UserInfo.GUserInfo.IsInModule("MEDICAL"))
+                {
+                    TabMedicalLog.Enabled = false;
+                    TabMedicalLog.Visible = false;
+                    TabMedicalInfo.Enabled = false;
+                    TabMedicalInfo.Visible = false;
+                }
+                else
+                {
+                    TabRawApplicationData.Visible = false;
+                    TabFinance.Visible = false;
+                    TabServiceTeam.Visible = false;
+                    TabApplicantDetails.Visible = false;
+                    TabGroups.Visible = false;
+                }
+
+                if (!UserInfo.GUserInfo.IsInModule("BOUNDARIES"))
+                {
+                    TabRebukes.Enabled = false;
+                    TabRebukes.Visible = false;
+                    btnNewRebuke.Visible = false;
+                }
+
+                DateTime PrintDate = DateTime.Today;
+
+                if (PrintDate.Hour < 8)
+                {
+                    // if rebukes are printed in the early morning, print of last day
+                    PrintDate.AddDays(-1);
+                }
+
+                dtpRebukesReportForDate.Value = PrintDate;
 
                 MyData_Refresh(null, null);
             }
@@ -119,7 +205,7 @@ namespace Ict.Petra.WebServer.MConference
                 Result.Add(NewRow);
             }
 
-            foreach (DataRow row in ATable.Rows)
+            foreach (DataRowView row in ATable.DefaultView)
             {
                 object[] NewRow = new object[ATable.Columns.Count];
 
@@ -185,10 +271,15 @@ namespace Ict.Petra.WebServer.MConference
 
             if ((CurrentApplicants == null) || (sender != null) || (Session["CURRENTROW"] == null))
             {
-                CurrentApplicants = TApplicationManagement.GetApplications(EventCode,
+                CurrentApplicants = new ConferenceApplicationTDS();
+                TApplicationManagement.GetApplications(
+                    ref CurrentApplicants,
+                    EventPartnerKey,
+                    EventCode,
                     this.FilterStatus.SelectedItem.Value,
                     GetSelectedRegistrationOffice(),
-                    GetSelectedRole());
+                    GetSelectedRole(),
+                    true);
                 Session["CURRENTAPPLICANTS"] = CurrentApplicants;
                 this.FormPanel1.SetValues(new { });
                 this.FormPanel1.Disabled = true;
@@ -214,6 +305,17 @@ namespace Ict.Petra.WebServer.MConference
             PtCongressCodeTable roleTable = (PtCongressCodeTable)cache.GetCacheableTable(TCacheablePersonTablesEnum.EventRoleList,
                 String.Empty, true, out dummy);
 
+            roleTable.DefaultView.Sort = PtCongressCodeTable.GetCodeDBName();
+
+            if (roleTable.DefaultView.Find("TS-TEEN-A") != -1)
+            {
+                PtCongressCodeRow AllTeenagers = roleTable.NewRowTyped();
+
+                AllTeenagers.Code = "TS-TEEN";
+                AllTeenagers.Description = "all teenagers";
+                roleTable.Rows.Add(AllTeenagers);
+            }
+
             this.StoreRole.DataSource = DataTableToArray(roleTable, "All", "All");
 
             this.StoreRole.DataBind();
@@ -227,15 +329,23 @@ namespace Ict.Petra.WebServer.MConference
 
         protected void SearchApplicant(object sender, DirectEventArgs e)
         {
-            NumericFilter nf = (NumericFilter)GridFilters1.Filters[0];
-            StringFilter sf = (StringFilter)GridFilters1.Filters[1];
+            NumericFilter nfRegistrationKey = (NumericFilter)GridFilters1.Filters[0];
+            NumericFilter nfPersonKey = (NumericFilter)GridFilters1.Filters[1];
+            StringFilter sfFamilyName = (StringFilter)GridFilters1.Filters[2];
+            StringFilter sfFirstName = (StringFilter)GridFilters1.Filters[3];
+            StringFilter sfFGroupName = (StringFilter)GridFilters1.Filters[4];
 
             if (txtSearchApplicant.Text.Length == 0)
             {
-                nf.SetActive(false);
-                sf.SetActive(false);
+                nfRegistrationKey.SetActive(false);
+                nfPersonKey.SetActive(false);
+                sfFamilyName.SetActive(false);
+                sfFirstName.SetActive(false);
+                sfFGroupName.SetActive(false);
                 return;
             }
+
+            ConferenceApplicationTDS CurrentApplicants = (ConferenceApplicationTDS)Session["CURRENTAPPLICANTS"];
 
             try
             {
@@ -247,17 +357,124 @@ namespace Ict.Petra.WebServer.MConference
                     Partnerkey += 4000000;
                 }
 
-                nf.SetValue(Partnerkey);
-                sf.SetActive(false);
-                nf.SetActive(true);
+                if (Math.Abs((Int64)(float)Partnerkey - Partnerkey) >= 1)
+                {
+                    // for some reason, the conversion to float changes the value by one
+                    nfRegistrationKey.SetValue(Partnerkey - 2, Partnerkey + 2);
+                }
+                else
+                {
+                    nfRegistrationKey.SetValue(Partnerkey);
+                }
+
+                sfFamilyName.SetActive(false);
+                sfFirstName.SetActive(false);
+                nfPersonKey.SetActive(false);
+                nfRegistrationKey.SetActive(true);
+                sfFGroupName.SetActive(false);
+
+                CurrentApplicants.ApplicationGrid.DefaultView.RowFilter =
+                    ConferenceApplicationTDSApplicationGridTable.GetPartnerKeyDBName() + " = " + Partnerkey.ToString();
+
+                if (CurrentApplicants.ApplicationGrid.DefaultView.Count == 0)
+                {
+                    // search for the person key from the home office
+                    if (Math.Abs((Int64)(float)Partnerkey - Partnerkey) >= 1)
+                    {
+                        // for some reason, the conversion to float changes the value by one
+                        nfPersonKey.SetValue(Partnerkey - 2, Partnerkey + 2);
+                    }
+                    else
+                    {
+                        nfPersonKey.SetValue(Partnerkey);
+                    }
+
+                    sfFamilyName.SetActive(false);
+                    sfFirstName.SetActive(false);
+                    nfRegistrationKey.SetActive(false);
+                    nfPersonKey.SetActive(true);
+                    sfFGroupName.SetActive(false);
+                }
             }
             catch
             {
-                // search for a name starting with this text
-                sf.SetValue(txtSearchApplicant.Text);
-                sf.SetActive(true);
-                nf.SetActive(false);
+                bool found = false;
+
+                // search for a family name starting with this text
+                CurrentApplicants.ApplicationGrid.DefaultView.RowFilter =
+                    ConferenceApplicationTDSApplicationGridTable.GetFamilyNameDBName() + " LIKE '*" + txtSearchApplicant.Text + "*'";
+
+                if (CurrentApplicants.ApplicationGrid.DefaultView.Count != 0)
+                {
+                    found = true;
+                    sfFamilyName.SetValue(txtSearchApplicant.Text);
+                    sfFamilyName.SetActive(true);
+                    sfFirstName.SetActive(false);
+                    nfPersonKey.SetActive(false);
+                    nfRegistrationKey.SetActive(false);
+                    sfFGroupName.SetActive(false);
+                }
+
+                if (!found)
+                {
+                    // search for a group name with this text
+                    CurrentApplicants.ApplicationGrid.DefaultView.RowFilter =
+                        ConferenceApplicationTDSApplicationGridTable.GetStFgCodeDBName() + " LIKE '*" + txtSearchApplicant.Text + "*'";
+
+                    if (CurrentApplicants.ApplicationGrid.DefaultView.Count != 0)
+                    {
+                        found = true;
+                        sfFGroupName.SetValue(txtSearchApplicant.Text);
+                        sfFamilyName.SetActive(false);
+                        sfFirstName.SetActive(false);
+                        nfPersonKey.SetActive(false);
+                        nfRegistrationKey.SetActive(false);
+                        sfFGroupName.SetActive(true);
+                    }
+                }
+
+                if (!found)
+                {
+                    // search for first name
+                    CurrentApplicants.ApplicationGrid.DefaultView.RowFilter =
+                        ConferenceApplicationTDSApplicationGridTable.GetFirstNameDBName() + " LIKE '*" + txtSearchApplicant.Text + "*'";
+
+                    if (CurrentApplicants.ApplicationGrid.DefaultView.Count != 0)
+                    {
+                        found = true;
+                        sfFirstName.SetValue(txtSearchApplicant.Text);
+                        sfFamilyName.SetActive(false);
+                        sfFirstName.SetActive(true);
+                        nfPersonKey.SetActive(false);
+                        nfRegistrationKey.SetActive(false);
+                        sfFGroupName.SetActive(false);
+                    }
+                }
             }
+
+            CurrentApplicants.ApplicationGrid.DefaultView.RowFilter = "";
+        }
+
+        protected void ServiceTeamJobs_Refresh(object sender, StoreRefreshDataEventArgs e)
+        {
+            string[] availableJobs = new string[] {
+                "Kitchen", "Kiosk", "StaffCafe", "FunFood", "FruitStand", "Cocktail Lounge", "CoffeeBar", "Information", "TS Office",
+                "Technical Support", "CleanStreet", "Security", "MainHall Security", "OmniVision", "Medical Team", "Sports Team", "CyberCafe",
+                "KidsStreet", "InBetweens", "ToddlerStreet", "BookShop", "Communications", "Headset Team", "Outreach", "RAG", "Dayvisitors",
+                "ArtZone",
+                "Others"
+            };
+
+            List <object[]>datasource = new List <object[]>();
+
+            foreach (string job in availableJobs)
+            {
+                datasource.Add(new object[] { job });
+            }
+
+            StoreServiceTeamJob.DataSource = datasource.ToArray();
+
+            StoreServiceTeamJob.DataBind();
         }
 
         protected void ApplicationStatus_Refresh(object sender, StoreRefreshDataEventArgs e)
@@ -276,10 +493,11 @@ namespace Ict.Petra.WebServer.MConference
         {
             PPartnerTable offices = TApplicationManagement.GetRegistrationOffices();
 
-            if (offices.Count > 3)
-            {
-                ConferenceOrganisingOffice = true;
-            }
+            offices.DefaultView.Sort = PPartnerTable.GetPartnerShortNameDBName();
+
+            ConferenceOrganisingOffice = TApplicationManagement.IsConferenceOrganisingOffice();
+
+            Session["CONFERENCEORGANISINGOFFICE"] = ConferenceOrganisingOffice;
 
             if (offices.Count > 0)
             {
@@ -295,55 +513,167 @@ namespace Ict.Petra.WebServer.MConference
 
         protected void RowSelect(object sender, DirectEventArgs e)
         {
-            Int64 PartnerKey = Convert.ToInt64(e.ExtraParams["PartnerKey"]);
-
-            ConferenceApplicationTDS CurrentApplicants = (ConferenceApplicationTDS)Session["CURRENTAPPLICANTS"];
-
-            CurrentApplicants.ApplicationGrid.DefaultView.RowFilter = "p_partner_key_n = " + PartnerKey.ToString();
-
-            ConferenceApplicationTDSApplicationGridRow row =
-                (ConferenceApplicationTDSApplicationGridRow)CurrentApplicants.ApplicationGrid.DefaultView[0].Row;
-            Session["CURRENTROW"] = row;
-
-            this.FormPanel1.Disabled = false;
-
-            string RawData = TApplicationManagement.GetRawApplicationData(row.PartnerKey, row.ApplicationKey, row.RegistrationOffice);
-            TabRawApplicationData.Html = TJsonTools.DataToHTMLTable(RawData);
-
-            Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(RawData);
-
-            string TShirtStyle = String.Empty;
-            string TShirtSize = String.Empty;
-
             try
             {
-                TShirtStyle = rawDataObject["TShirtStyle"].ToString();
-                TShirtSize = rawDataObject["TShirtSize"].ToString();
+                Int64 PartnerKey = Convert.ToInt64(e.ExtraParams["PartnerKey"]);
+                Int32 ApplicationKey = Convert.ToInt32(e.ExtraParams["ApplicationKey"]);
+                ConferenceApplicationTDS CurrentApplicants = (ConferenceApplicationTDS)Session["CURRENTAPPLICANTS"];
+                ConferenceOrganisingOffice = Convert.ToBoolean(Session["CONFERENCEORGANISINGOFFICE"]);
+
+                System.Data.DataView ApplicationView = CurrentApplicants.ApplicationGrid.DefaultView;
+
+                ConferenceApplicationTDSApplicationGridRow row =
+                    (ConferenceApplicationTDSApplicationGridRow)ApplicationView[ApplicationView.Find(new object[] { PartnerKey,
+                                                                                                                    ApplicationKey })].Row;
+                Session["CURRENTROW"] = row;
+
+                this.FormPanel1.Disabled = false;
+
+                string RawData = TApplicationManagement.GetRawApplicationData(row.PartnerKey, row.ApplicationKey, row.RegistrationOffice);
+                Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(RawData);
+
+                if (UserInfo.GUserInfo.IsInModule("MEDICAL"))
+                {
+                    LoadDataForMedicalTeam(row, rawDataObject);
+                }
+                else
+                {
+                    TabRawApplicationData.Html = TJsonTools.DataToHTMLTable(RawData);
+
+                    Ext.Net.Panel panel = this.X().Panel()
+                                          .ID("TabMoreDetails")
+                                          .Title("Edit more details")
+                                          .Padding(5)
+                                          .AutoScroll(true);
+                    panel.Render("TabPanelApplication", 4, RenderMode.InsertTo);
+
+                    Ext.Net.Label label = this.X().Label()
+                                          .ID("lblWarningEdit")
+                                          .Html(
+                        "<b>Please be very careful</b>, only edit data if you are sure. Drop Down boxes or Dates might not work anymore.<br/><br/>");
+
+                    label.Render("TabMoreDetails", RenderMode.AddTo);
+                }
+
+                var dictionary = new Dictionary <string, object>();
+                dictionary.Add("PartnerKey", row.PartnerKey);
+                dictionary.Add("PersonKey", row.IsPersonKeyNull() ? "" : row.PersonKey.ToString());
+                dictionary.Add("FirstName", row.FirstName);
+                dictionary.Add("FamilyName", row.FamilyName);
+                dictionary.Add("Gender", row.Gender);
+                dictionary.Add("DateOfBirth", row.DateOfBirth);
+                dictionary.Add("DateOfArrival", row.DateOfArrival);
+                dictionary.Add("DateOfDeparture", row.DateOfDeparture);
+                dictionary.Add("GenAppDate", row.GenAppDate);
+                dictionary.Add("GenApplicationStatus", row.GenApplicationStatus);
+                dictionary.Add("StCongressCode", row.StCongressCode);
+                dictionary.Add("Comment", row.Comment);
+                dictionary.Add("StFgLeader", row.StFgLeader);
+                dictionary.Add("StFgCode", row.StFgCode);
+                dictionary.Add("StFieldCharged", row.StFieldCharged);
+                dictionary.Add("MedicalLog", row.MedicalNotes);
+
+                List <string>FieldsOnFirstTab = new List <string>(new string[] {
+                                                                      "TShirtStyle", "TShirtSize", "JobWish1", "JobWish2", "JobAssigned",
+                                                                      "SecondSibling", "CancelledByFinanceOffice", "GroupWish", "DateOfArrival",
+                                                                      "DateOfDeparture"
+                                                                  });
+
+                foreach (string key in rawDataObject.Names)
+                {
+                    if (!dictionary.ContainsKey(key)
+                        && FieldsOnFirstTab.Contains(key))
+                    {
+                        dictionary.Add(key, rawDataObject[key]);
+                    }
+                }
+
+                List <string>FieldsNotToBeEdited = new List <string>(new string[] {
+                                                                         "Role", "FormsId", "EventIdentifier", "RegistrationOffice", "LastName",
+                                                                         "RegistrationCountryCode", "ImageID",
+                                                                         "CLS", "Dresscode", "LegalImprint"
+                                                                     });
+
+                if (!UserInfo.GUserInfo.IsInModule("MEDICAL"))
+                {
+                    foreach (string key in rawDataObject.Names)
+                    {
+                        if (!dictionary.ContainsKey(key)
+                            && !FieldsNotToBeEdited.Contains(key)
+                            && !FieldsOnFirstTab.Contains(key)
+                            && !key.EndsWith("_SelIndex")
+                            && !key.EndsWith("_Value")
+                            && !key.EndsWith("_ActiveTab"))
+                        {
+                            dictionary.Add(key, rawDataObject[key]);
+
+                            if (rawDataObject[key].ToString().Length > 40)
+                            {
+                                TextArea text = this.X().TextArea()
+                                                .ID(key)
+                                                .LabelWidth(200)
+                                                .Width(700)
+                                                .Height(150)
+                                                .FieldLabel(key);
+
+                                text.Render("TabMoreDetails", RenderMode.AddTo);
+                            }
+                            else
+                            {
+                                TextField text = this.X().TextField()
+                                                 .ID(key)
+                                                 .LabelWidth(200)
+                                                 .Width(500)
+                                                 .FieldLabel(key);
+
+                                text.Render("TabMoreDetails", RenderMode.AddTo);
+                            }
+                        }
+                    }
+                }
+
+                JobWish1.ClearValue();
+                JobWish2.ClearValue();
+                JobAssigned.ClearValue();
+                SecondSibling.Clear();
+                CancelledByFinanceOffice.Clear();
+
+                // SetValues: new {}; anonymous type: http://msdn.microsoft.com/en-us/library/bb397696.aspx
+                // instead a Dictionary can be used as well
+                // See also StackOverflow ObjectExtensions::ToDictionary for converting an anonymous type to a dictionary
+                this.FormPanel1.SetValues(dictionary);
+
+                CommentRegistrationOfficeReadOnly.Text = row.Comment;
+
+                // only allow the logistics office to assign jobs
+                JobAssigned.ReadOnly = !ConferenceOrganisingOffice;
+                StFieldCharged.ReadOnly = !ConferenceOrganisingOffice;
+
+                // ReadOnly does not seem to work to make the checkbox readonly. use disabled instead.
+                CancelledByFinanceOffice.Disabled = !UserInfo.GUserInfo.IsInModule("FINANCE-3");
+
+                // only show service team panel for TS-STAFF and TS-SERVE
+                if ((row.StCongressCode == "TS-STAFF") || (row.StCongressCode == "TS-SERVE"))
+                {
+                    X.Js.Call("ShowTabPanel", "TabServiceTeam");
+                }
+                else
+                {
+                    X.Js.Call("HideTabPanel", "TabServiceTeam");
+                }
+
+                Random rand = new Random();
+                Image1.ImageUrl = "photos.aspx?id=" + PartnerKey.ToString() + ".jpg&" + rand.Next(1, 10000).ToString();
+
+                RefreshRebukesStore(row.RebukeNotes);
+
+                GroupMembers.Text = string.Empty;
             }
-            catch
+            catch (Exception ex)
             {
-                // exhibitors and late applicants do not have tshirt size and style
+                TLogging.Log("Exception in RowSelect: " + ex.ToString() + " " + ex.Message);
+                TLogging.Log(ex.StackTrace);
             }
-
-            this.FormPanel1.SetValues(new {
-                    row.PartnerKey,
-                    PersonKey = row.IsPersonKeyNull() ? "" : row.PersonKey.ToString(),
-                    row.FirstName,
-                    row.FamilyName,
-                    row.Gender,
-                    row.DateOfBirth,
-                    row.GenAppDate,
-                    row.GenApplicationStatus,
-                    row.StCongressCode,
-                    TShirtStyle = TShirtStyle,
-                    TShirtSize = TShirtSize,
-                    row.Comment,
-                    row.StFgLeader,
-                    row.StFgCode
-                });
-
-            Random rand = new Random();
-            Image1.ImageUrl = "photos.aspx?id=" + PartnerKey.ToString() + ".jpg&" + rand.Next(1, 10000).ToString();
         }
 
         protected void ShowRawApplicationData(object sender, DirectEventArgs e)
@@ -358,42 +688,215 @@ namespace Ict.Petra.WebServer.MConference
             //Console.WriteLine(e.ExtraParams["Values"]);
 
             Dictionary <string, string>values = JSON.Deserialize <Dictionary <string, string>>(e.ExtraParams["Values"]);
+            string RebukeValues = string.Empty;
 
-            string RawData = TApplicationManagement.GetRawApplicationData(row.PartnerKey, row.ApplicationKey, row.RegistrationOffice);
-            Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(RawData);
-
-            rawDataObject["TShirtStyle"] = values["TShirtStyle"];
-            rawDataObject["TShirtSize"] = values["TShirtSize"];
-            row.JSONData = TJsonTools.ToJsonString(rawDataObject);
-
-            row.FamilyName = values["FamilyName"];
-            row.FirstName = values["FirstName"];
-            row.Gender = values["Gender"];
-
-            if (values["DateOfBirth"].Length == 0)
+            try
             {
-                row.SetDateOfBirthNull();
+                RebukeValues = e.ExtraParams["RebukeValues"].ToString();
+            }
+            catch (Exception)
+            {
+            }
+
+            if (UserInfo.GUserInfo.IsInModule("MEDICAL"))
+            {
+                row.MedicalNotes = GetMedicalLogsFromScreen(values);
             }
             else
             {
-                row.DateOfBirth = Convert.ToDateTime(values["DateOfBirth"]);
+                string RawData = TApplicationManagement.GetRawApplicationData(row.PartnerKey, row.ApplicationKey, row.RegistrationOffice);
+                Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(RawData);
+
+                if (!rawDataObject.Contains("RegistrationCountryCode"))
+                {
+                    // some of the late registrations do not have a country code
+                    rawDataObject.Put("RegistrationCountryCode", "en-GB");
+                }
+
+                CultureInfo OrigCulture = Catalog.SetCulture(rawDataObject["RegistrationCountryCode"].ToString());
+
+                row.FamilyName = values["FamilyName"];
+                row.FirstName = values["FirstName"];
+                row.Gender = values["Gender"];
+
+                if (values["DateOfBirth"].Length == 0)
+                {
+                    row.DateOfBirth = new Nullable <DateTime>();
+                }
+                else
+                {
+                    // avoid problems with different formatting of dates, could cause parsing errors later, into the typed class
+                    values["DateOfBirth"] = Convert.ToDateTime(values["DateOfBirth"]).ToShortDateString();
+                    row.DateOfBirth = Convert.ToDateTime(values["DateOfBirth"]);
+                }
+
+                if (values["DateOfArrival"].Length == 0)
+                {
+                    row.SetDateOfArrivalNull();
+                }
+                else
+                {
+                    values["DateOfArrival"] = Convert.ToDateTime(values["DateOfArrival"]).ToShortDateString();
+                    row.DateOfArrival = Convert.ToDateTime(values["DateOfArrival"]);
+                }
+
+                if (values["DateOfDeparture"].Length == 0)
+                {
+                    row.SetDateOfDepartureNull();
+                }
+                else
+                {
+                    values["DateOfDeparture"] = Convert.ToDateTime(values["DateOfDeparture"]).ToShortDateString();
+                    row.DateOfDeparture = Convert.ToDateTime(values["DateOfDeparture"]);
+                }
+
+                row.GenAppDate = Convert.ToDateTime(values["GenAppDate"]);
+                row.StCongressCode = values["StCongressCode_Value"];
+                row.GenApplicationStatus = values["GenApplicationStatus_Value"];
+                row.StFgLeader = values.ContainsKey("StFgLeader");
+                row.StFgCode = values.ContainsKey("StFgCode") ? values["StFgCode"] : string.Empty;
+
+                if (values.ContainsKey("StFieldCharged_Value"))
+                {
+                    row.StFieldCharged = Convert.ToInt64(values["StFieldCharged_Value"]);
+                }
+
+                row.Comment = values["Comment"];
+
+                row.RebukeNotes = RebukeValues;
+
+                bool SecondSibling = false;
+                bool CancelledByFinanceOffice = false;
+
+                foreach (string key in values.Keys)
+                {
+                    // TODO: typecast dates?
+                    object value = values[key];
+
+                    if (rawDataObject.Contains(key))
+                    {
+                        rawDataObject[key] = value;
+                    }
+                    else if (key.EndsWith("_ActiveTab")
+                             || key.EndsWith("_SelIndex")
+                             || key.EndsWith("_Value"))
+                    {
+                        // do not add all values, eg. _Value or _SelIndex for comboboxes or _ActiveTab, cause trouble otherwise
+                    }
+                    else if (key == "JobAssigned")
+                    {
+                        rawDataObject.Put(key, value);
+                    }
+                    else if (key == "SecondSibling")
+                    {
+                        SecondSibling = true;
+                        rawDataObject.Put(key, true);
+                    }
+                    else if (key == "CancelledByFinanceOffice")
+                    {
+                        CancelledByFinanceOffice = true;
+                        rawDataObject.Put(key, true);
+                    }
+                }
+
+                if (!SecondSibling)
+                {
+                    rawDataObject.Put("SecondSibling", false);
+                }
+
+                if (!CancelledByFinanceOffice)
+                {
+                    rawDataObject.Put("CancelledByFinanceOffice", false);
+                }
+
+                rawDataObject["Role"] = values["StCongressCode_Value"];
+                rawDataObject["SecondSibling"] = values.ContainsKey("SecondSibling");
+                rawDataObject["CancelledByFinanceOffice"] = values.ContainsKey("CancelledByFinanceOffice");
+
+                row.JSONData = TJsonTools.ToJsonString(rawDataObject);
+
+                Catalog.SetCulture(OrigCulture);
             }
 
-            row.GenAppDate = Convert.ToDateTime(values["GenAppDate"]);
-            row.StCongressCode = values["StCongressCode_Value"];
-            row.GenApplicationStatus = values["GenApplicationStatus_Value"];
-            row.StFgLeader = values.ContainsKey("StFgLeader");
-            row.StFgCode = values["StFgCode"];
-            row.Comment = values["Comment"];
-
-            ConferenceApplicationTDS CurrentApplicants = (ConferenceApplicationTDS)Session["CURRENTAPPLICANTS"];
-
-            if (TApplicationManagement.SaveApplications(ref CurrentApplicants) != TSubmitChangesResult.scrOK)
+            if (TApplicationManagement.SaveApplication(EventCode, row) != TSubmitChangesResult.scrOK)
             {
                 X.Msg.Alert("Error", "Saving did not work").Show();
             }
 
-            MyData_Refresh(null, null);
+            // save some time? user can click refresh himself.
+            // MyData_Refresh(null, null);
+        }
+
+        protected void ReprintPDF(object sender, DirectEventArgs e)
+        {
+            try
+            {
+                ConferenceApplicationTDSApplicationGridRow row = (ConferenceApplicationTDSApplicationGridRow)Session["CURRENTROW"];
+                string RawData = TApplicationManagement.GetRawApplicationData(row.PartnerKey, row.ApplicationKey, row.RegistrationOffice);
+
+                TApplicationFormData data = (TApplicationFormData)TJsonTools.ImportIntoTypedStructure(
+                    typeof(TApplicationFormData),
+                    RawData);
+                data.RawData = RawData;
+
+                string pdfIdentifier;
+                string pdfFilename = TImportPartnerForm.GeneratePDF(row.PartnerKey, data.registrationcountrycode, data, out pdfIdentifier);
+                try
+                {
+                    // TImportPartnerForm.SendEmail(row.PartnerKey, data.registrationcountrycode, data, pdfFilename);
+                }
+                catch (Exception ex)
+                {
+                    TLogging.Log(ex.Message);
+                    TLogging.Log(ex.StackTrace);
+                }
+                TLogging.Log(pdfFilename);
+                this.Response.Clear();
+                this.Response.ContentType = "application/pdf";
+                this.Response.AddHeader("Content-Type", "application/pdf");
+                this.Response.AddHeader("Content-Disposition", "attachment; filename=" + row.PartnerKey.ToString());
+                this.Response.TransmitFile(pdfFilename);
+                // this.Response.End(); avoid System.Threading.ThreadAbortException
+            }
+            catch (Exception ex2)
+            {
+                TLogging.Log(ex2.Message);
+                TLogging.Log(ex2.StackTrace);
+                throw;
+            }
+        }
+
+        protected void ReprintBadge(object sender, DirectEventArgs e)
+        {
+            try
+            {
+                ConferenceApplicationTDSApplicationGridRow row = (ConferenceApplicationTDSApplicationGridRow)Session["CURRENTROW"];
+
+                string PDFPath = TConferenceBadges.ReprintBadge(EventPartnerKey,
+                    EventCode,
+                    row.PartnerKey);
+
+                if (File.Exists(PDFPath))
+                {
+                    this.Response.Clear();
+                    this.Response.ContentType = "application/pdf";
+                    this.Response.AddHeader("Content-Type", "application/pdf");
+                    this.Response.AddHeader("Content-Disposition", "attachment; filename=Badge_" + row.FirstName + "_" + row.FamilyName + ".pdf");
+                    this.Response.TransmitFile(PDFPath);
+                    File.Delete(PDFPath);
+                    // this.Response.End(); avoid System.Threading.ThreadAbortException
+                }
+            }
+            catch (Exception ex)
+            {
+                X.Msg.Show(new MessageBoxConfig
+                    {
+                        Buttons = MessageBox.Button.OK,
+                        Icon = MessageBox.Icon.ERROR,
+                        Title = "Fail",
+                        Message = ex.Message
+                    });
+            }
         }
 
         protected void AcceptManyApplicants(object sender, DirectEventArgs e)
@@ -427,7 +930,12 @@ namespace Ict.Petra.WebServer.MConference
                 }
             }
 
-            ConferenceApplicationTDS CurrentApplicants = TApplicationManagement.GetApplications(EventCode, "all", -1, null);
+            ConferenceApplicationTDS CurrentApplicants = new ConferenceApplicationTDS();
+            TApplicationManagement.GetApplications(
+                ref CurrentApplicants,
+                EventPartnerKey,
+                EventCode,
+                "all", -1, null, true);
 
             // first do a test run to test the keys
             List <Int64>RegistrationKeysBackup = new List <Int64>();
@@ -477,7 +985,11 @@ namespace Ict.Petra.WebServer.MConference
             this.Response.Clear();
             // TODO: this is a problem with old Petra 2.x, importing ANSI only
             this.Response.ContentEncoding = Encoding.GetEncoding("Windows-1252");
-            this.Response.ContentType = "application/csv";
+
+            // Some browsers (Safari on Mac?) process the file and confuse the separators
+            //this.Response.ContentType = "application/csv";
+
+            this.Response.ContentType = "text/plain";
             this.Response.AddHeader("Content-Disposition", "attachment; filename=petra-import.csv");
             this.Response.Write(csvLines);
             this.Response.End();
@@ -490,9 +1002,288 @@ namespace Ict.Petra.WebServer.MConference
             this.Response.Clear();
             this.Response.ContentType = "application/xls";
             this.Response.AddHeader("Content-Type", "application/xls");
-            this.Response.AddHeader("Content-Disposition", "attachment; filename=TeenStreetApplicants.xls");
+            this.Response.AddHeader("Content-Disposition", "attachment; filename=Applicants.xls");
             MemoryStream m = new MemoryStream();
-            TApplicationManagement.DownloadApplications(EventCode, ref CurrentApplicants, m);
+            TApplicationManagement.DownloadApplications(EventPartnerKey, EventCode, ref CurrentApplicants, m);
+            m.WriteTo(this.Response.OutputStream);
+            m.Close();
+            this.Response.End();
+        }
+
+        protected void LoadRefreshApplicants(object sender, DirectEventArgs e)
+        {
+            TAttendeeManagement.RefreshAttendees(EventPartnerKey, EventCode);
+        }
+
+        protected void PrintBadges(bool AReprintPrinted, bool ADoNotReprint)
+        {
+            string OutputName = "badges.pdf";
+
+            try
+            {
+                OutputName = this.FilterRegistrationOffice.SelectedItem.Text + "_" + this.FilterRole.SelectedItem.Text + ".pdf";
+            }
+            catch (Exception)
+            {
+            }
+
+            try
+            {
+                string PDFPath = TConferenceBadges.PrintBadges(EventPartnerKey,
+                    EventCode,
+                    GetSelectedRegistrationOffice(),
+                    GetSelectedRole(),
+                    AReprintPrinted,
+                    ADoNotReprint);
+
+                if (File.Exists(PDFPath))
+                {
+                    this.Response.Clear();
+                    this.Response.ContentType = "application/pdf";
+                    this.Response.AddHeader("Content-Type", "application/pdf");
+                    this.Response.AddHeader("Content-Disposition", "attachment; filename=" + OutputName);
+                    this.Response.TransmitFile(PDFPath);
+                    File.Delete(PDFPath);
+                    // this.Response.End(); avoid System.Threading.ThreadAbortException
+                }
+            }
+            catch (Exception e)
+            {
+                X.Msg.Show(new MessageBoxConfig
+                    {
+                        Buttons = MessageBox.Button.OK,
+                        Icon = MessageBox.Icon.ERROR,
+                        Title = "Fail",
+                        Message = e.Message
+                    });
+            }
+        }
+
+        protected void PrintBadges(object sender, DirectEventArgs e)
+        {
+            PrintBadges(false, true);
+        }
+
+        protected void TestPrintBadges(object sender, DirectEventArgs e)
+        {
+            PrintBadges(false, false);
+        }
+
+        protected void ReprintBadges(object sender, DirectEventArgs e)
+        {
+            PrintBadges(true, false);
+        }
+
+        protected void PrintFinanceReport(object sender, DirectEventArgs e)
+        {
+            string OutputName = "FinanceReport.pdf";
+
+            try
+            {
+                OutputName = "FinanceReport_" + this.FilterRegistrationOffice.SelectedItem.Text + ".pdf";
+            }
+            catch (Exception)
+            {
+            }
+
+            try
+            {
+                string PDFPath = TConferenceFinanceReports.PrintFinanceReport(EventPartnerKey,
+                    EventCode,
+                    GetSelectedRegistrationOffice());
+
+                if (File.Exists(PDFPath))
+                {
+                    this.Response.Clear();
+                    this.Response.ContentType = "application/pdf";
+                    this.Response.AddHeader("Content-Type", "application/pdf");
+                    this.Response.AddHeader("Content-Disposition", "attachment; filename=" + OutputName);
+                    this.Response.TransmitFile(PDFPath);
+                    File.Delete(PDFPath);
+                    // this.Response.End(); avoid System.Threading.ThreadAbortException
+                }
+            }
+            catch (Exception ex)
+            {
+                X.Msg.Show(new MessageBoxConfig
+                    {
+                        Buttons = MessageBox.Button.OK,
+                        Icon = MessageBox.Icon.ERROR,
+                        Title = "Fail",
+                        Message = ex.Message
+                    });
+            }
+        }
+
+        protected void PrintRebukesReport(object sender, DirectEventArgs e)
+        {
+            DateTime PrintDate = (DateTime)dtpRebukesReportForDate.Value;
+
+            string OutputName = "RebukesReport_" + PrintDate.ToString("yyyy-MM-dd") + ".pdf";
+
+            try
+            {
+                OutputName = "RebukesReport_" + this.FilterRegistrationOffice.SelectedItem.Text + "_" + PrintDate.ToString("yyyy-MM-dd") + ".pdf";
+            }
+            catch (Exception)
+            {
+            }
+
+            try
+            {
+                string PDFPath = TRebukeReport.PrintRebukeReport(EventPartnerKey,
+                    EventCode,
+                    GetSelectedRegistrationOffice(),
+                    PrintDate);
+
+                if (File.Exists(PDFPath))
+                {
+                    this.Response.Clear();
+                    this.Response.ContentType = "application/pdf";
+                    this.Response.AddHeader("Content-Type", "application/pdf");
+                    this.Response.AddHeader("Content-Disposition", "attachment; filename=" + OutputName);
+                    this.Response.TransmitFile(PDFPath);
+                    File.Delete(PDFPath);
+                    // this.Response.End(); avoid System.Threading.ThreadAbortException
+                }
+            }
+            catch (Exception ex)
+            {
+                X.Msg.Show(new MessageBoxConfig
+                    {
+                        Buttons = MessageBox.Button.OK,
+                        Icon = MessageBox.Icon.ERROR,
+                        Title = "Fail",
+                        Message = ex.Message
+                    });
+            }
+        }
+
+        protected void PrintBarcodeLabels(object sender, DirectEventArgs e)
+        {
+            string OutputName = "badgeLabels.pdf";
+
+            try
+            {
+                OutputName = this.FilterRegistrationOffice.SelectedItem.Text + "_" + this.FilterRole.SelectedItem.Text + "_Labels.pdf";
+            }
+            catch (Exception)
+            {
+            }
+
+            try
+            {
+                string PDFPath = TConferenceBadges.PrintBadgeLabels(EventPartnerKey,
+                    EventCode,
+                    GetSelectedRegistrationOffice(),
+                    GetSelectedRole(),
+                    "BadgeLabel", false);
+
+                if (File.Exists(PDFPath))
+                {
+                    this.Response.Clear();
+                    this.Response.ContentType = "application/pdf";
+                    this.Response.AddHeader("Content-Type", "application/pdf");
+                    this.Response.AddHeader("Content-Disposition", "attachment; filename=" + OutputName);
+                    this.Response.TransmitFile(PDFPath);
+                    File.Delete(PDFPath);
+                    // this.Response.End(); avoid System.Threading.ThreadAbortException
+                }
+            }
+            catch (Exception ex)
+            {
+                X.Msg.Show(new MessageBoxConfig
+                    {
+                        Buttons = MessageBox.Button.OK,
+                        Icon = MessageBox.Icon.ERROR,
+                        Title = "Fail",
+                        Message = ex.Message
+                    });
+            }
+        }
+
+        protected void PrintArrivalRegistration(object sender, DirectEventArgs e)
+        {
+            string OutputName = "arrivalsList.pdf";
+
+            try
+            {
+                OutputName = this.FilterRegistrationOffice.SelectedItem.Text + "_" + this.FilterRole.SelectedItem.Text + "_arrivals.pdf";
+            }
+            catch (Exception)
+            {
+            }
+
+            try
+            {
+                string PDFPath = TConferenceBadges.PrintBadgeLabels(EventPartnerKey,
+                    EventCode,
+                    GetSelectedRegistrationOffice(),
+                    GetSelectedRole(),
+                    "ArrivalsList", true);
+
+                if (File.Exists(PDFPath))
+                {
+                    this.Response.Clear();
+                    this.Response.ContentType = "application/pdf";
+                    this.Response.AddHeader("Content-Type", "application/pdf");
+                    this.Response.AddHeader("Content-Disposition", "attachment; filename=" + OutputName);
+                    this.Response.TransmitFile(PDFPath);
+                    File.Delete(PDFPath);
+                    // this.Response.End(); avoid System.Threading.ThreadAbortException
+                }
+            }
+            catch (Exception ex)
+            {
+                X.Msg.Show(new MessageBoxConfig
+                    {
+                        Buttons = MessageBox.Button.OK,
+                        Icon = MessageBox.Icon.ERROR,
+                        Title = "Fail",
+                        Message = ex.Message
+                    });
+            }
+        }
+
+        protected void FixArrivalDepartureDates(object sender, DirectEventArgs e)
+        {
+            TConferenceToolsRawData.FixArrivalDepartureDates(EventPartnerKey, EventCode);
+        }
+
+        protected void ExportTShirtNumbers(object sender, DirectEventArgs e)
+        {
+            this.Response.Clear();
+            this.Response.ContentType = "application/xls";
+            this.Response.AddHeader("Content-Type", "application/xls");
+            this.Response.AddHeader("Content-Disposition", "attachment; filename=TShirtNumbers.xls");
+            MemoryStream m = new MemoryStream();
+            TConferenceFreeTShirt.DownloadTShirtNumbers(EventPartnerKey, EventCode, m);
+            m.WriteTo(this.Response.OutputStream);
+            m.Close();
+            this.Response.End();
+        }
+
+        protected void ExportArrivalRegistrationList(object sender, DirectEventArgs e)
+        {
+            this.Response.Clear();
+            this.Response.ContentType = "application/xls";
+            this.Response.AddHeader("Content-Type", "application/xls");
+            this.Response.AddHeader("Content-Disposition", "attachment; filename=ArrivalRegistration.xls");
+            MemoryStream m = new MemoryStream();
+            TConferenceExcelReports.DownloadArrivalRegistration(EventPartnerKey, EventCode, m);
+            m.WriteTo(this.Response.OutputStream);
+            m.Close();
+            this.Response.End();
+        }
+
+        protected void ExportRolesPerCountry(object sender, DirectEventArgs e)
+        {
+            this.Response.Clear();
+            this.Response.ContentType = "application/xls";
+            this.Response.AddHeader("Content-Type", "application/xls");
+            this.Response.AddHeader("Content-Disposition", "attachment; filename=RolesPerCountry.xls");
+            MemoryStream m = new MemoryStream();
+            TConferenceExcelReports.GetNumbersOfRolesPerCountry(EventPartnerKey, EventCode, m);
             m.WriteTo(this.Response.OutputStream);
             m.Close();
             this.Response.End();
@@ -718,6 +1509,360 @@ namespace Ict.Petra.WebServer.MConference
                         Message = "There has been a problem in the .ext file."
                     });
             }
+        }
+
+        /// this is used for applications made by mistake on the demo website, to import into the live application website
+        protected void ImportJSONApplication(object sender, DirectEventArgs e)
+        {
+            Dictionary <string, string>values = JSON.Deserialize <Dictionary <string, string>>(e.ExtraParams["Values"]);
+
+            string AJSONFormData = values["JSONData"].ToString();
+            string RequiredCulture = string.Empty;
+            AJSONFormData = TJsonTools.RemoveContainerControls(AJSONFormData, ref RequiredCulture);
+
+            AJSONFormData = AJSONFormData.Replace("\"txt", "\"").
+                            Replace("\"chk", "\"").
+                            Replace("\"rbt", "\"").
+                            Replace("\"cmb", "\"").
+                            Replace("\"hid", "\"").
+                            Replace("\"dtp", "\"").
+                            Replace("\n", " ").Replace("\r", "");
+
+            TLogging.Log(AJSONFormData);
+
+            try
+            {
+                // should not be able to create a PDF since the picture is missing, and not send an email
+                TImportPartnerForm.DataImportFromForm("RegisterPerson", AJSONFormData);
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(ex.Message);
+                TLogging.Log(ex.StackTrace);
+            }
+        }
+
+        private static int NewRebukeId = 1;
+
+        private void RefreshRebukesStore(string AData)
+        {
+            List <TRebuke>store = new List <TRebuke>();
+
+            if (AData.Length > 0)
+            {
+                //string test = "[{\"ID\":1,\"When\":\"2011-07-21T16:55:04\",\"What\":\"\",\"Consequence\":\"TBD\"}]";
+
+                Jayrock.Json.JsonArray list = (Jayrock.Json.JsonArray)Jayrock.Json.Conversion.JsonConvert.Import(AData);
+
+                foreach (Jayrock.Json.JsonObject element in list)
+                {
+                    string time = string.Empty;
+
+                    try
+                    {
+                        time = element["Time"].ToString();
+                    }
+                    catch (Exception)
+                    {
+                    }
+
+                    if (Convert.ToInt32(element["ID"]) >= NewRebukeId)
+                    {
+                        NewRebukeId = Convert.ToInt32(element["ID"]) + 1;
+                    }
+
+                    store.Add(new TRebuke(Convert.ToInt32(element["ID"]),
+                            Convert.ToDateTime(element["When"]),
+                            time,
+                            element["What"].ToString(),
+                            element["Consequence"].ToString()));
+                }
+            }
+
+            this.StoreRebukes.DataSource = store;
+            this.StoreRebukes.DataBind();
+        }
+
+        protected void AddNewRebuke(Object sender, DirectEventArgs e)
+        {
+            NewRebukeId++;
+            this.StoreRebukes.AddRecord(new TRebuke(NewRebukeId));
+            this.StoreRebukes.CommitChanges();
+        }
+
+        protected void AddMedicalIncident(Object sender, DirectEventArgs e)
+        {
+            Int32 NewIncidentID = (Int32)Session["NewMedicalId"];
+
+            Session["NewMedicalId"] = NewIncidentID + 1;
+
+            AddMedicalIncidentData(new TMedicalIncident(NewIncidentID));
+        }
+
+        protected void AddMedicalIncidentData(TMedicalIncident ARow)
+        {
+            string TabId = "TabMedicalIncident" + ARow.ID.ToString();
+
+            Ext.Net.Panel panel = this.X().Panel()
+                                  .ID(TabId)
+                                  .Title("incident " + ARow.ID.ToString())
+                                  .Padding(5)
+                                  .AutoScroll(true);
+
+            Ext.Net.TableLayout tblMedicalIncident = this.X().TableLayout()
+                                                     .ID("tblMedicalIncident")
+                                                     .Columns(3);
+
+            Ext.Net.DateField dtpDate = this.X().DateField()
+                                        .ID("dtpDate" + ARow.ID.ToString())
+                                        .Width(300)
+                                        .Value(ARow.Date)
+                                        .Format("dd-MMM-yyyy")
+                                        .FieldLabel("Date");
+
+            Ext.Net.Cell cDate = new Cell();
+            cDate.ColSpan = 2;
+            cDate.Items.Add(dtpDate);
+            tblMedicalIncident.Cells.Add(cDate);
+
+            Ext.Net.TextField txtExaminer = this.X().TextField()
+                                            .ID("txtExaminer" + ARow.ID.ToString())
+                                            .Value(ARow.Examiner)
+                                            .FieldLabel("Examiner");
+
+            Ext.Net.Cell cExaminer = new Cell();
+            cExaminer.ColSpan = 1;
+            cExaminer.Items.Add(txtExaminer);
+            tblMedicalIncident.Cells.Add(cExaminer);
+
+            Ext.Net.TextField txtPulse = this.X().TextField()
+                                         .ID("txtPulse" + ARow.ID.ToString())
+                                         .Value(ARow.Pulse)
+                                         .FieldLabel("Pulse");
+
+            Ext.Net.Cell cPulse = new Cell();
+            cPulse.Items.Add(txtPulse);
+            tblMedicalIncident.Cells.Add(cPulse);
+
+            Ext.Net.TextField txtBloodPressure = this.X().TextField()
+                                                 .ID("txtBloodPressure" + ARow.ID.ToString())
+                                                 .Value(ARow.BloodPressure)
+                                                 .FieldLabel("Blood Pressure");
+
+            Ext.Net.Cell cBloodPressure = new Cell();
+            cBloodPressure.Items.Add(txtBloodPressure);
+            tblMedicalIncident.Cells.Add(cBloodPressure);
+
+            Ext.Net.TextField txtTemperature = this.X().TextField()
+                                               .ID("txtTemperature" + ARow.ID.ToString())
+                                               .Value(ARow.Temperature)
+                                               .FieldLabel("Temperature");
+
+            Ext.Net.Cell cTemperature = new Cell();
+            cTemperature.Items.Add(txtTemperature);
+            tblMedicalIncident.Cells.Add(cTemperature);
+
+            Ext.Net.TextArea txtDiagnosis = this.X().TextArea()
+                                            .ID("txtDiagnosis" + ARow.ID.ToString())
+                                            .Height(100)
+                                            .Width(500)
+                                            .Value(ARow.Diagnosis)
+                                            .FieldLabel("Diagnosis");
+
+            Ext.Net.Cell cDiagnosis = new Cell();
+            cDiagnosis.ColSpan = 3;
+            cDiagnosis.Items.Add(txtDiagnosis);
+            tblMedicalIncident.Cells.Add(cDiagnosis);
+
+            Ext.Net.TextArea txtTherapy = this.X().TextArea()
+                                          .ID("txtTherapy" + ARow.ID.ToString())
+                                          .Height(100)
+                                          .Width(500)
+                                          .Value(ARow.Therapy)
+                                          .FieldLabel("Therapy");
+
+            Ext.Net.Cell cTherapy = new Cell();
+            cTherapy.ColSpan = 3;
+            cTherapy.Items.Add(txtTherapy);
+            tblMedicalIncident.Cells.Add(cTherapy);
+
+            Ext.Net.TextField txtKeywords = this.X().TextField()
+                                            .ID("txtKeywords" + ARow.ID.ToString())
+                                            .Width(500)
+                                            .EmptyText("for statistics, separated by comma")
+                                            .Value(ARow.Keywords)
+                                            .FieldLabel("Keywords");
+
+            Ext.Net.Cell cKeywords = new Cell();
+            cKeywords.ColSpan = 3;
+            cKeywords.Items.Add(txtKeywords);
+            tblMedicalIncident.Cells.Add(cKeywords);
+
+            panel.ContentControls.Add(tblMedicalIncident);
+            panel.Render("MedicalPanel", RenderMode.AddTo);
+            X.Js.Call("SetActiveMedicalIncident", ARow.ID - 1);
+        }
+
+        /// <summary>
+        /// values to JSON string
+        /// </summary>
+        /// <param name="AValues"></param>
+        /// <returns></returns>
+        private string GetMedicalLogsFromScreen(Dictionary <string, string>AValues)
+        {
+            string Result = "[";
+
+            Int32 NewIncidentID = (Int32)Session["NewMedicalId"];
+
+            for (Int32 Counter = 1; Counter < NewIncidentID; Counter++)
+            {
+                if (Result.EndsWith("}"))
+                {
+                    Result += ",";
+                }
+
+                Result += "{\"ID\":\"" + Counter.ToString() + "\"";
+
+                string[] fields = new string[] {
+                    "dtpDate", "txtExaminer", "txtPulse", "txtBloodPressure", "txtTemperature", "txtDiagnosis", "txtTherapy", "txtKeywords"
+                };
+
+                foreach (string name in fields)
+                {
+                    Result += ",\"" + name + "\":\"" + AValues[name + Counter.ToString()] + "\"";
+                }
+
+                Result += "}";
+            }
+
+            Result += "]";
+
+            return Result;
+        }
+
+        private void LoadMedicalLogs(string AData)
+        {
+            Int32 NewMedicalId = 1;
+
+            MedicalPanel.RemoveAll();
+
+            if (AData.Length > 0)
+            {
+                Jayrock.Json.JsonArray list = (Jayrock.Json.JsonArray)Jayrock.Json.Conversion.JsonConvert.Import(AData);
+
+                foreach (Jayrock.Json.JsonObject element in list)
+                {
+                    if (Convert.ToInt32(element["ID"]) >= NewMedicalId)
+                    {
+                        NewMedicalId = Convert.ToInt32(element["ID"]) + 1;
+                    }
+
+                    DateTime date = DateTime.Today;
+                    try
+                    {
+                        date = Convert.ToDateTime(element["dtpDate"]);
+                    }
+                    catch (Exception)
+                    {
+                    }
+
+                    AddMedicalIncidentData(new TMedicalIncident(Convert.ToInt32(element["ID"]),
+                            date,
+                            element["txtExaminer"].ToString(),
+                            element["txtPulse"].ToString(),
+                            element["txtBloodPressure"].ToString(),
+                            element["txtTemperature"].ToString(),
+                            element["txtDiagnosis"].ToString(),
+                            element["txtTherapy"].ToString(),
+                            element["txtKeywords"].ToString()));
+                }
+            }
+
+            Session["NewMedicalId"] = NewMedicalId;
+        }
+
+        private void LoadDataForMedicalTeam(ConferenceApplicationTDSApplicationGridRow ARow, Jayrock.Json.JsonObject ARawDataObject)
+        {
+            // fill MedicalLog TextArea with Info about the participant
+            string MedicalInfo = "<table>";
+
+            MedicalInfo += "<tr><th>Name</th><td>" + ARow.FamilyName + ", " + ARow.FirstName + "</td></tr>";
+
+            if (ARow.DateOfBirth.HasValue)
+            {
+                MedicalInfo += "<tr><th>Date of Birth</th><td>" + ARow.DateOfBirth.Value.ToString("dd-MMM-yyyy") + "</td></tr>";
+            }
+
+            MedicalInfo += "<tr><th>Country</th><td>" + ARawDataObject["Country"].ToString() + "</td></tr>";
+
+            PPartnerTable offices = TApplicationManagement.GetRegistrationOffices();
+            offices.DefaultView.Sort = PPartnerTable.GetPartnerKeyDBName();
+            PPartnerRow office =
+                (PPartnerRow)offices.DefaultView[offices.DefaultView.Find(Convert.ToInt64(ARawDataObject["RegistrationOffice"]))].Row;
+            MedicalInfo += "<tr><th>Registration Office</th><td>" + office.PartnerShortName + "</td></tr>";
+
+            MedicalInfo += "<tr><th>Fellowship Group</th><td>" + ARow.StFgCode + "</td></tr>";
+
+            if (ARawDataObject.Contains("Phone"))
+            {
+                MedicalInfo += "<tr><th>Phone</th><td>" + ARawDataObject["Phone"].ToString() + "</td></tr>";
+            }
+
+            if (ARawDataObject.Contains("Mobile"))
+            {
+                MedicalInfo += "<tr><th>Mobile</th><td>" + ARawDataObject["Mobile"].ToString() + "</td></tr>";
+            }
+
+            foreach (string key in ARawDataObject.Names)
+            {
+                if (key.ToLower().Contains("health")
+                    || key.ToLower().Contains("emergency")
+                    || key.ToLower().Contains("medical")
+                    || key.ToLower().Contains("vegetarian"))
+                {
+                    MedicalInfo += "<tr><th>" + key + "</th><td>" + ARawDataObject[key].ToString() + "</td></tr>";
+                }
+            }
+
+            foreach (string key in ARawDataObject.Names)
+            {
+                // show the answers to these personal questions, since the applicants might write about past health issues
+                if (key.ToLower().Contains("why")
+                    || key.ToLower().Contains("daily")
+                    || key.ToLower().Contains("what"))
+                {
+                    MedicalInfo += "<tr><th>" + key + "</th><td>" + ARawDataObject[key].ToString() + "</td></tr>";
+                }
+            }
+
+            MedicalInfo += "</table>";
+            TabMedicalInfo.Html = MedicalInfo;
+
+            LoadMedicalLogs(ARow.MedicalNotes);
+        }
+
+        protected void CalculateFellowshipGroups(Object sender, DirectEventArgs e)
+        {
+            try
+            {
+                Int32 MaxGroupMembersInt = Convert.ToInt32(MaxGroupMembers);
+
+                TFellowshipGroups.CalculateFellowshipGroups(
+                    EventPartnerKey,
+                    EventCode,
+                    GetSelectedRegistrationOffice(),
+                    GetSelectedRole(),
+                    MaxGroupMembersInt);
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(ex.ToString());
+            }
+        }
+
+        protected void RefreshGroupMembers(Object sender, DirectEventArgs e)
+        {
+            GroupMembers.Text = TFellowshipGroups.GetGroupMembers(EventCode, StFgCode.Text);
         }
     }
 }

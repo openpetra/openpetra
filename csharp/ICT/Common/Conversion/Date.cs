@@ -4,7 +4,7 @@
 // @Authors:
 //       berndr
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -60,20 +60,22 @@ namespace Ict.Common.Conversion
             Boolean AShowVerificationError,
             System.Type ATypeWhichCallsVerification)
         {
-            Boolean ReturnValue;
+            Boolean ReturnValue = false;
             Int32 DayOffset;
             String TmpYear;
             String TmpMonth;
             String TmpDay;
             String TmpMonthDayExchange = "";
             String TmpShortDatePattern;
-            String TmpDateSeparator;
             Int16 YearStart = 0;
             Int16 RestStart = 0;
 
             AParsedDate = null;
             DateTimeFormatInfo CurrentDateTimeFormatInfo;
-            ReturnValue = false;
+
+            // for testing purposes only
+            // string TmpDateSeparator = CurrentDateTimeFormatInfo.DateSeparator;
+
             try
             {
                 // TODO: implement parsing of localised short month names like 4GL does (according to user's default language setting), eg. accept 'M?R' instead of 'MAR' for March if the user's language setting is DE (German)
@@ -128,7 +130,6 @@ namespace Ict.Common.Conversion
                         TmpShortDatePattern = CurrentDateTimeFormatInfo.ShortDatePattern.ToUpper();
 
                         // TmpShortDatePattern := "MM DD";      // For testing purposes only
-                        TmpDateSeparator = CurrentDateTimeFormatInfo.DateSeparator;
 
                         if (TmpShortDatePattern.StartsWith("Y"))
                         {

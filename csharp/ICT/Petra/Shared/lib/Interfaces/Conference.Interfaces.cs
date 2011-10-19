@@ -82,19 +82,19 @@ namespace Ict.Petra.Shared.Interfaces.MConference.WebConnectors
         SelectConferenceTDS GetConferences(String AConferenceName,
                                            String APrefix);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions)</summary>
-        bool GetEarliestAndLatestDate(Int64 AConferenceKey,
-                                      out DateTime AEarliestArrivalDate,
-                                      out DateTime ALatestDepartureDate,
-                                      out DateTime AStartDate,
-                                      out DateTime AEndDate);
+        System.Boolean GetEarliestAndLatestDate(Int64 AConferenceKey,
+                                                out DateTime AEarliestArrivalDate,
+                                                out DateTime ALatestDepartureDate,
+                                                out DateTime AStartDate,
+                                                out DateTime AEndDate);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions)</summary>
-        System.Boolean GetOutreachOptions(long AUnitKey,
+        System.Boolean GetOutreachOptions(System.Int64 AUnitKey,
                                           out System.Data.DataTable AConferenceTable);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions)</summary>
-        bool GetFieldUnits(Int64 AConferenceKey,
-                           TUnitTypeEnum AFieldTypes,
-                           out DataTable AFieldsTable,
-                           out String AConferencePrefix);
+        System.Boolean GetFieldUnits(Int64 AConferenceKey,
+                                     TUnitTypeEnum AFieldTypes,
+                                     out DataTable AFieldsTable,
+                                     out String AConferencePrefix);
     }
 
 }

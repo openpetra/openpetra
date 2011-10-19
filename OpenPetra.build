@@ -25,7 +25,6 @@ list of available commands:
   stopPetraServer: stop the local Petra Server
   startPetraClient: run the Petra Client
   deleteBakFiles: delete all backup files
-  buildRelease: Build the release for the target platform we are building on
   initConfigFiles: write and overwrite the config files for client, server and testing, and the version.txt
 
 compat:
@@ -41,25 +40,31 @@ compat:
   generateORM: generates Object Relational Mapping routines from petra.xml
     sub items: generateORMCachedTables, generateORMData, generateORMAccess
   generateGlue: generates the interfaces and instantiators, which is the glue between client and server
+  generateWinforms: generates all yaml files in csharp\ICT\Petra\Client
+  generateWinform: generate a single yaml file, and optionally compile and start the client
+       nant generateWinform startPetraClient -D:file=MFinance/Gui/GL/GLBatch.yaml
+       nant generateWinform -D:file=MFinance/Gui/GL/GLBatch.yaml -D:donotcompile=true
   cleanPetra: prepare for a clean build
   compilePetra: build all Petra C# code
   translationCompilePOFile: create the dlls required to be delivered with a new release
   translation: extracts string in winforms, creates and updates the .po files, and compiles the dll files for delivery
 
+releases:
+  buildWindowsStandalone: uses InnoSetup, therefore only works on Windows
+  buildLinuxSourceforgeRelease: will build the linux files that we upload to Sourceforge. creates tar files for local server and client
+  buildRemoteInstallers -D:ReleaseID=0.0.2.0 -D:OrgName=&quot;Your Organisation&quot; -D:PublisherUrl=www.ProviderWebsite.com -D:HostedServer=app.Provider.com -D:HostedPort=9000 -D:WithLinuxClient=false
+
 list of commands, which works in the specific csharp directories:
   indent: beautify the code according to coding style guide
   uncrustify: calls indent
-
 
 not supported
   loc, ploc: count the lines of code, to be used for COCOMO etc
   generateWebforms: generates the User Interface using the Ext.js AJAX framework
   generateWebform: generate a single Webform. requires parameter: -D:file=SampleApplicationForm
   startWebServer: start a webservice with Mono XSP and Postgresl (does not work with sqlite at the moment)
-  setupRemote -D:ReleaseID=0.0.2.0 -D:OrgName=&quot;Your Organisation&quot; -D:PublisherUrl=www.ProviderWebsite.com -D:ServerHost=app.Provider.com -D:ServerPort=9000
   createPatch: requires these parameters: -D:OldVersion=0.0.8-1 -D:NewVersion=0.0.10-0
-  packTestReportingRelease: quick snapshot of all debug executables and dlls and config files for quick test on another machine
-  
+
 useful parameters
   -logfile:test.log
 </echo>
@@ -92,7 +97,7 @@ useful parameters
     </fileset>
   </delete>
   <property name="target" value="clean" />
-  <call target="translationCompilePOFile" />    
+  <call target="translationCompilePOFile" />
 </target>
 
 <target name="quickClean" description="cleans all generated files and the delivery directory">
@@ -144,13 +149,19 @@ useful parameters
   <nant inheritall="false" target="compile" 
         buildfile="csharp/ICT/PetraTools/ICT.PetraTools.build" />
   <!-- Find all dependencies -->
+  <mkdir dir="${dir.bin}" />
+  <!-- write this information to a file, since the properties are not passed through to the sub directories -->
+  <echo file="${dir.bin}/dont_compile.txt">true</echo>
   <nant inheritall="false" target="depend" 
         buildfile="csharp/csharp.build" />
   <!-- Generate the project/solution files -->
   <call target="generateSolutionNoCompile" />
+  <delete file="${dir.bin}/dont_compile.txt"/>
 </target>
 
-<target name="generateSolution" depends="compile" description="compiles OpenPetra and generates the project and solution files">
+<target name="generateSolution" description="compiles OpenPetra and generates the project and solution files">
+  <delete file="${dir.bin}/dont_compile.txt"/>
+  <call target="compile" />
   <call target="generateSolutionNoCompile" />
 </target>
 
@@ -211,6 +222,7 @@ useful parameters
               property="FirstCSFile"/>
       <property name="temp" value="${script::ReplaceInFile(ProjectFile, 'xmlnsDeactivated', 'xmlns')}"/>
       
+      <property name="FirstCSFile" value="${OP::MakeAbsolute(FirstCSFile, dir.projectfiles + '/' + devenv-name + '/')}"/>
       <property name="FirstCSFile" value="${string::replace(FirstCSFile,dir.root,'')}"/>
       <property name="FirstCSFile" value="${string::replace(FirstCSFile,'\','/')}"/>
       <property name="FirstCSFile" value="${string::replace(FirstCSFile,'/csharp/ICT/','')}"/>
@@ -252,378 +264,8 @@ useful parameters
 <!-- Compat targets -->
 <include buildfile="inc/nant/OpenPetra.tobe.migrated.xml"/>
 
-<!-- BEGIN buildRelease -->
-<target name="buildRelease" depends="buildReleaseLinux,buildReleaseWindows" 
-        description="Build the release for the target platform we are building on" />
-
-<property name="BuildClientArchive" value="false" overwrite="false" />
-<property name="SkipDatabases" value="false" overwrite="false" />
-<property name="PetraRelease" value="0300" overwrite="false" />
-
-<!-- Windows -->
-<target name="buildReleaseWindows" if="${platform::is-windows()}">
-  <call target="compile" unless="${target::has-executed('compile')}" />
-  <call target="createSQLiteDB" unless="${target::has-executed('createSQLiteDB')}"/>
-  <call target="translationCompilePOFile" unless="${target::has-executed('translationCompilePOFile')}"/>
-  <call target="setupStandalone" unless="${target::has-executed('setupStandalone')}"/>
-</target> 
-
-<script language="C#">
-  <references>
-    <include name="System.dll" />
-  </references>
-  <code><![CDATA[ 
-[Function("CalculateStandaloneDBUpdateFileName")]
-public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
-{
-    string[] numbers = ReleaseID.Split(new char[]{'.', '-'});
-    
-    // need to manually code the medium version increases
-    if (numbers[1] == "1" && numbers[2] == "0")
-    {
-        return String.Format("Patch_{0}.{1}.{2}_{3}.{4}.{5}.sql",
-                        0, 0, 15,
-                        numbers[0], numbers[1], numbers[2]);
-    }
-
-    if (numbers[1] == "2" && numbers[2] == "0")
-    {
-        return String.Format("Patch_{0}.{1}.{2}_{3}.{4}.{5}.sql",
-                        0, 1, 0,
-                        numbers[0], numbers[1], numbers[2]);
-    }
-
-    // this is for smaller patches
-    return String.Format("Patch_{0}.{1}.{2}_{3}.{4}.{5}.sql",
-                        numbers[0], numbers[1], Convert.ToInt16(numbers[2]) - 1,
-                        numbers[0], numbers[1], numbers[2]);
-}
-]]>
-    </code>
-</script> 
-  
-<target name="setupStandalone">
-    <echo file="${dir.root}/setup/petra${PetraRelease}/standalone/version.txt">${ReleaseID}</echo>
-    <property name="DBUpdate.file" value="${dir.root}/db/patches/${script::CalculateStandaloneDBUpdateFileName(ReleaseID)}"/>
-    <if test="${not file::exists(DBUpdate.file)}">
-        <echo message="${DBUpdate.file}"/>
-        <fail message="We are missing the db upgrade file for sqlite standalone databases." />
-    </if>
-    <property name="SetupOriginal.File" value="${dir.root}/setup/petra${PetraRelease}/standalone/standalone.iss"/>
-    <call target="setupTemplate"/>
-</target>
-
-<target name="setupRemote">
-    <if test="${DBMS.Type!='postgresql' and DBMS.Type!='mysql'}">
-        <fail message="only postgresql and mysql are supported for nant setupRemote"/>
-    </if>
-
-    <echo file="${dir.root}/setup/petra${PetraRelease}/remoteclientWin/version.txt">${ReleaseVersion}</echo>
-    
-    <property name="OrgNameWithoutSpace" value="${string::replace(OrgName, ' ', '')}"/>
-    <property name="RandomDBPassword" value="${script::GetPasswordSalt()}"/>
-    
-    <!--  ***************  Build remote client installer ********************* -->
-    <property name="SetupOriginal.File" value="${dir.root}/setup/petra${PetraRelease}/remoteclientWin/remote.iss"/>
-    <call target="setupTemplate"/>
-    
-    <!-- ***************  create the linux scripts for the server side ***************  -->
-    <copy todir="${dir.delivery}" overwrite="true">
-        <fileset basedir="${dir.root}/setup/petra${PetraRelease}/remoteClientWin/">
-            <include name="openpetraorg-server.sh" />
-            <include name="PetraServerAdminConsole.config" />
-        </fileset>
-    </copy>
-
-    <property name="CustomConfig.File" value="${dir.root}/setup/petra${PetraRelease}/remoteClientWin/PetraServerConsole.config.my"/>
-    <if test="${file::exists(CustomConfig.File)}">
-        <copy file="${CustomConfig.File}" tofile="${dir.delivery}/PetraServerConsole.config"/>
-    </if>
-    <if test="${not file::exists(CustomConfig.File)}">
-        <copy file="${dir.root}/setup/petra${PetraRelease}/remoteClientWin/PetraServerConsole-${DBMS.Type}.config" tofile="${dir.delivery}/PetraServerConsole.config" overwrite="true"/>
-    </if>
-
-    <!--  ***************  openpetraorg-server.sh ********************* -->
-    <property name="Current.File" value="${dir.delivery}/openpetraorg-server.sh"/>
-    <property name="toReplace" value="{#ORGNAMEWITHOUTSPACE}"/>
-    <property name="newValue" value="${OrgNameWithoutSpace}"/>
-    <property name="result" value='${script::ReplaceInFile(Current.File, toReplace, newValue)}'/>
-
-    <property name="toReplace" value="{#ORGNAME}"/>
-    <property name="newValue" value="${OrgName}"/>
-    <property name="result" value='${script::ReplaceInFile(Current.File, toReplace, newValue)}'/>
-
-    <property name="toReplace" value="{#RDBMS}"/>
-    <property name="newValue" value="${DBMS.Type}"/>
-    <property name="result" value='${script::ReplaceInFile(Current.File, toReplace, newValue)}'/>
-    
-    <!--  ***************  PetraServerConsole.config ********************* -->
-    <property name="Current.File" value="${dir.delivery}/PetraServerConsole.config"/>
-    <property name="toReplace" value="{#SERVERPORT}"/>
-    <property name="newValue" value="${ServerPort}"/>
-    <property name="result" value='${script::ReplaceInFile(Current.File, toReplace, newValue)}'/>
-
-    <property name="toReplace" value="{#ORGNAMEWITHOUTSPACE}"/>
-    <property name="newValue" value="${OrgNameWithoutSpace}"/>
-    <property name="result" value='${script::ReplaceInFile(Current.File, toReplace, newValue)}'/>
-
-    <property name="toReplace" value="{#DBPASSWORD}"/>
-    <property name="newValue" value="${RandomDBPassword}"/>
-    <property name="result" value='${script::ReplaceInFile(Current.File, toReplace, newValue)}'/>
-    
-    <!--  ***************  PetraServerAdminConsole.config ********************* -->
-    <property name="Current.File" value="${dir.delivery}/PetraServerAdminConsole.config"/>
-    <property name="toReplace" value="{#SERVERPORT}"/>
-    <property name="newValue" value="${ServerPort}"/>
-    <property name="result" value='${script::ReplaceInFile(Current.File, toReplace, newValue)}'/>
-
-    <property name="toReplace" value="{#SERVERHOST}"/>
-    <property name="newValue" value="${ServerHost}"/>
-    <property name="result" value='${script::ReplaceInFile(Current.File, toReplace, newValue)}'/>
-    
-    <!--  ***************  initmysql.sh ********************* -->
-    <if test="${DBMS.Type=='mysql'}">
-        <property name="Current.File" value="${dir.delivery}/initmysql.sh"/>
-        <copy file="${dir.root}/setup/petra${PetraRelease}/remoteClientWin/initmysql.sh" tofile="${Current.File}" overwrite="true"/>
-        <property name="Current.File" value="${dir.delivery}/initmysql.sh"/>
-        <property name="toReplace" value="{#ORGNAMEWITHOUTSPACE}"/>
-        <property name="newValue" value="${OrgNameWithoutSpace}"/>
-        <property name="result" value='${script::ReplaceInFile(Current.File, toReplace, newValue)}'/>
-
-        <property name="toReplace" value="{#DBPASSWORD}"/>
-        <property name="newValue" value="${RandomDBPassword}"/>
-        <property name="result" value='${script::ReplaceInFile(Current.File, toReplace, newValue)}'/>
-    </if>
-
-    <!--  ***************  initpg.sh ********************* -->
-    <if test="${DBMS.Type=='postgresql'}">
-        <property name="Current.File" value="${dir.delivery}/initpg.sh"/>
-        <copy file="${dir.root}/setup/petra${PetraRelease}/remoteClientWin/initpg.sh" tofile="${Current.File}" overwrite="true"/>
-        <property name="toReplace" value="{#ORGNAMEWITHOUTSPACE}"/>
-        <property name="newValue" value="${OrgNameWithoutSpace}"/>
-        <property name="result" value='${script::ReplaceInFile(Current.File, toReplace, newValue)}'/>
-
-        <property name="toReplace" value="{#DBPASSWORD}"/>
-        <property name="newValue" value="${RandomDBPassword}"/>
-        <property name="result" value='${script::ReplaceInFile(Current.File, toReplace, newValue)}'/>
-    </if>
-
-    <!-- todo on Server: 
-        mkdir /usr/local/openpetra
-        useradd openpetraOrgNameWithoutSpace
-        mkdir /usr/local/openpetra/OrgNameWithoutSpace
-        chmod 700 openpetraOrgNameWithoutSpace /usr/local/openpetra/OrgNameWithoutSpace
-        sftp get openpetraorg-mono-0.2.3-0.tar.gz
-        su openpetraOrgNameWithoutSpace
-        tar xzf openpetraorg-mono-0.2.3-0.tar.gz
-        mv /usr/local/openpetra/OrgNameWithoutSpace/openpetraorg-0.2.3-0/* /usr/local/openpetra/OrgNameWithoutSpace
-        generate private and public key, with GenerateEncryptionKey from PetraTools/_bin. write to 2 text files
-        upload /var/www/keys/publickey.xml
-        upload /usr/local/openpetra/OrgNameWithoutSpace/etc30/privatekey.xml
-        copy generated PetraServerAdminConsole.config and PetraServerConsole.config to etc30
-        copy generated initpg.sh and openpetraorg-server.sh
-        initpg.sh
-
-        make sure that the database and the files get backed up!!!
-        
-        as root:
-            ln -s /usr/local/openpetra/OrgNameWithoutSpace/openpetraorg-server.sh /etc/init.d/openpetra-server-OrgNameWithoutSpace.sh
-            update-rc.d -f openpetra-server-OrgNameWithoutSpace.sh defaults
-        start server
-    -->
-</target>
-
-<target name="setupTemplate">
-    <property name="Current.File" value="${SetupOriginal.File}.local"/>
-
-    <copy file="${SetupOriginal.File}" tofile="${Current.File}" overwrite="true"/>
-
-    <property name="toReplace" value="{#UINAVIGATION}"/>
-    <property name="UINavigation.file" value="UINavigation.yml.my"/>
-    <if test="${file::exists(UINavigation.file)}">
-        <echo message='${script::ReplaceInFile(Current.File, toReplace, UINavigation.file)}'/>
-    </if>
-    <if test="${not file::exists(UINavigation.file)}">
-        <property name="UINavigation.file" value="UINavigation.yml"/>
-        <echo message='${script::ReplaceInFile(Current.File, toReplace, UINavigation.file)}'/>
-    </if>
-
-    <property name="toReplace" value="{#REMOTECONFIG}"/>
-    <property name="Config.file" value="PetraClientRemote.config.my"/>
-    <if test="${file::exists(Config.file)}">
-        <echo message='${script::ReplaceInFile(Current.File, toReplace, Config.file)}'/>
-    </if>
-    <if test="${not file::exists(Config.file)}">
-        <property name="Config.file" value="PetraClientRemote.config"/>
-        <echo message='${script::ReplaceInFile(Current.File, toReplace, Config.file)}'/>
-    </if>
-
-    <property name="toReplace" value="{#RELEASEVERSION}"/>
-    <echo message='${script::ReplaceInFile(Current.File, toReplace, ReleaseVersion)}'/>
-    <property name="toReplace" value="{#RELEASEID}"/>
-    <echo message='${script::ReplaceInFile(Current.File, toReplace, ReleaseID)}'/>
-    <property name="toReplace" value="{#PATCHVERSION}"/>
-    <echo message='${script::ReplaceInFile(Current.File, toReplace, ReleaseID)}'/>
-    <property name="toReplace" value="{#DELIVERY.DIR}"/>
-    <echo message='${script::ReplaceInFile(Current.File, toReplace, dir.delivery)}'/>
-    
-    <!-- for remote installer -->
-    <if test="${property::exists('OrgName')}">
-        <property name="toReplace" value="{#ORGNAME}"/>
-        <echo message='${script::ReplaceInFile(Current.File, toReplace, OrgName)}'/>
-        <property name="toReplace" value="{#PUBLISHERURL}"/>
-        <echo message='${script::ReplaceInFile(Current.File, toReplace, PublisherUrl)}'/>
-        <property name="toReplace" value="{#SERVERHOST}"/>
-        <echo message='${script::ReplaceInFile(Current.File, toReplace, ServerHost)}'/>
-        <property name="toReplace" value="{#SERVERPORT}"/>
-        <echo message='${script::ReplaceInFile(Current.File, toReplace, ServerPort)}'/>
-    </if>
-    <exec program="${Innosetup.ISCC}" commandline=" &quot;${Current.File}&quot;"
-          workingdir="${path::get-directory-name(Current.File)}"/>
-</target>
-
-<!-- Linux -->
-<target name="buildReleaseLinux" if="${platform::is-unix()}">
-  <call target="refreshSudo" unless="${target::has-executed('refreshSudo')}" />
-  <call target="compile" unless="${target::has-executed('compile')}" />
-  <call target="createPostgreSQLDB" unless="${target::has-executed('createPostgreSQLDB')}"/>
-  <call target="createMySQLDB" unless="${target::has-executed('createMySQLDB')}"/>
-  <call target="createSQLiteDB" unless="${target::has-executed('createSQLiteDB')}"/>
-  <call target="translationCompilePOFile" unless="${target::has-executed('translationCompilePOFile')}"/>
-  <call target="setupLinuxServer" unless="${target::has-executed('setupLinuxServer')}"/>
-</target>
-
-<target name="setupLinuxServer" depends="init">
-<!-- for the moment, just create a tar.gz file, with sub directories manuals30 containing the release notes, 
-     bin30 with just the server binaries, db30 with the demo sqlite database, demo30 with some sample files,
-     reports30, sql30 with the sql scripts, etc30 with the 2 config files; start and maintain script in the root
-     LICENSE file in the root, INSTALL file with instructions, required packages, firewall etc? -->
-  <property name="setupDir" value="${dir.bin}/tmp/openpetraorg-${ReleaseID}"/>
-  <delete file="${setupDir}/etc30/PetraServerConsole-postgresql.config"/>
-  <delete dir="${setupDir}"/>
-  <mkdir dir="${setupDir}"/>
-
-  <if test="${SkipDatabases!='true'}">
-    <mkdir dir="${setupDir}/db30"/>
-    <mkdir dir="${setupDir}/demo30"/>
-    <mkdir dir="${setupDir}/log30"/>
-    <mkdir dir="${setupDir}/etc30"/>
-    <mkdir dir="${setupDir}/reports30"/>
-    <mkdir dir="${setupDir}/patches30"/>  
-    <if test="${not BuildClientArchive}">
-      <copy todir="${setupDir}/etc30">
-          <fileset basedir="${dir.root}/setup/petra${PetraRelease}/linuxserver/">
-              <include name="*.config" />
-          </fileset>
-      </copy>
-    </if>
-    <copy todir="${setupDir}/demo30">
-        <fileset basedir="${dir.bin}/demodata/">
-            <include name="**/*.*" />
-        </fileset>
-    </copy>
-  </if>
-  <mkdir dir="${setupDir}/manuals30"/>
-  <mkdir dir="${setupDir}/sql30"/>
-  <mkdir dir="${setupDir}/resources30"/>
-  <mkdir dir="${setupDir}/bin30"/>
-  <copy file="${dir.root}/db/patches/version.txt" tofile="${setupDir}/bin30/version.txt" />
-  <copy todir="${setupDir}/bin30">
-    <fileset basedir="${dir.bin}">
-      <include name="*.dll" />
-      <include name="*.exe" />
-      <exclude name="Tests*" />
-      <include name="*/*.dll" /> <!-- i18n DLLs-->
-    </fileset>
-  </copy>
-  <copy file="${dir.root}/csharp/ICT/Petra/Definitions/UINavigation.yml"
-              tofile="${setupDir}/bin30/UINavigation.yml"/>
-  <copy todir="${setupDir}/resources30">
-    <fileset basedir="${dir.bin}/resources">
-        <include name="*.ico" />
-        <include name="*.png" />
-    </fileset>
-  </copy>       
-  <if test="${BuildClientArchive}">
-    <copy todir="${setupDir}/etc30" 
-          file="${dir.root}/setup/petra${PetraRelease}/remoteclientWin/PetraClientRemote.config" />
-  </if>
-  <copy todir="${setupDir}/manuals30">
-    <fileset basedir="${dir.root}/setup/petra${PetraRelease}/releasenotes/">
-      <include name="*.html" />
-    </fileset>
-  </copy>
-  <copy todir="${setupDir}/reports30">
-    <fileset basedir="${dir.bin}/XmlReports/">
-      <include name="*.dtd" />
-      <include name="**/*.xml" />
-    </fileset>
-  </copy>
-  <copy file="${dir.root}/LICENSE" tofile="${setupDir}/LICENSE"/>
-  <if test="${not BuildClientArchive}">
-    <copy todir="${setupDir}/sql30">
-      <fileset basedir="${dir.root}/csharp/ICT/Petra/Server/sql/">
-          <include name="*.sql" />
-          <include name="*.yml" />
-      </fileset>
-    </copy>
-    <if test="${SkipDatabases!='true'}">
-      <copy file="${dir.root}/setup/petra${PetraRelease}/demo.db"
-                  tofile="${setupDir}/db30/demo.db"/>
-      <copy file="${dir.root}/setup/petra${PetraRelease}/createtables-PostgreSQL.sql"
-                  tofile="${setupDir}/db30/createtables-PostgreSQL.sql"/>
-      <copy file="${dir.root}/setup/petra${PetraRelease}/createconstraints-PostgreSQL.sql"
-                  tofile="${setupDir}/db30/createconstraints-PostgreSQL.sql"/>
-      <copy file="${dir.root}/setup/petra${PetraRelease}/demodata-PostgreSQL.sql"
-                  tofile="${setupDir}/db30/demodata-PostgreSQL.sql"/>
-      <copy file="${dir.root}/setup/petra${PetraRelease}/createtables-MySQL.sql"
-                  tofile="${setupDir}/db30/createtables-MySQL.sql"/>
-      <copy file="${dir.root}/setup/petra${PetraRelease}/createconstraints-MySQL.sql"
-                  tofile="${setupDir}/db30/createconstraints-MySQL.sql"/>
-      <copy file="${dir.root}/setup/petra${PetraRelease}/demodata-MySQL.sql"
-                  tofile="${setupDir}/db30/demodata-MySQL.sql"/>
-      <copy file="${dir.root}/setup/petra${PetraRelease}/linuxserver/INSTALL"
-                  tofile="${setupDir}/INSTALL"/>
-      <copy file="${dir.root}/setup/petra${PetraRelease}/linuxserver/startClient.sh"
-                  tofile="${setupDir}/startClient.sh"/>
-      <copy file="${dir.root}/setup/petra${PetraRelease}/linuxserver/openpetraorg-server.sh"
-                  tofile="${setupDir}/openpetraorg-server.sh"/>
-      <copy file="${dir.root}/setup/petra${PetraRelease}/linuxserver/initpg.sh"
-                  tofile="${setupDir}/initpg.sh"/>
-      <copy file="${dir.root}/setup/petra${PetraRelease}/linuxserver/initmysql.sh"
-                  tofile="${setupDir}/initmysql.sh"/>
-      <if test="${platform::is-unix()}">
-        <!-- change the executable flag -->
-        <ExecCmd program="sh" commandline="/C &quot;chmod a+x ${setupDir}/*.sh&quot;"/>
-        <!-- make sure that the script files are in unix format -->
-        <ExecCmd program="sh" commandline="/C &quot;for f in ${setupDir}/*.sh; do dos2unix -o $f; done;&quot;"/>
-        <ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}/etc30; ln -s PetraServerConsole-postgresql.config PetraServerConsole.config&quot;"/>
-        
-        <ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}/..; tar czpf ${dir.delivery}/openpetraorg-mono-${ReleaseID}.tar.gz openpetraorg-${ReleaseID}&quot;"/>
-
-        <!-- to avoid problem with symbolic link with delete dir task -->
-        <ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}/etc30; rm PetraServerConsole.config&quot;"/>
-      </if>
-    </if>
-    <if test="${SkipDatabases=='true'}">
-      <!-- this can be useful if we just need the binary files and not the scripts for an existing Linux OpenPetra server to update -->
-      <tar destfile="${dir.delivery}/openpetraorg-server-update-${ReleaseID}.tar.gz" compression="GZip">
-          <fileset basedir="${setupDir}" prefix="openpetraorg-${ReleaseID}">
-              <include name="**/*" />
-          </fileset>
-      </tar>
-    </if>
-  </if>
-  <if test="${BuildClientArchive}">
-    <!-- this does not keep the executable flag; need this to make the patch for windows clients -->
-    <tar destfile="${dir.delivery}/openpetraorg-client-backup-${ReleaseID}.tar.gz" compression="GZip">
-        <fileset basedir="${setupDir}" prefix="openpetraorg-${ReleaseID}">
-            <include name="**/*" />
-        </fileset>
-    </tar>
-  </if>
-</target> 
-<!-- END buildRelease -->
+<!-- tasks for building releases -->
+<include buildfile="setup/setup.build"/>
 
 <target name="quickCompile">
   <!-- this is very different from the compile target. quickCompile does not generate any code. 
@@ -634,7 +276,7 @@ public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
   <property name="solution.file" value="${path::combine(dir.projectfiles,
                                 path::combine(devenv-name, 'OpenPetra.'+solution+'.sln'))}"/>
   <property name="solution.file" value="${string::replace(solution.file, 'OpenPetra.OpenPetra.sln', 'OpenPetra.sln')}"/>
-  <if test="${framework::get-target-framework() == 'mono-2.0'}" >
+  <if test="${not platform::is-windows()}" >
     <if test="${property::exists('xbuild')}">
       <exec program="${xbuild}" commandline="${solution.file}">
          <environment>
@@ -643,14 +285,14 @@ public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
       </exec>
     </if>
   </if>
-  <if test="${string::starts-with(framework::get-target-framework(), 'net-')}" >
+  <if test="${platform::is-windows()}" >
     <if test="${file::exists(msbuildtask.file)}">
       <msbuild project="${solution.file}" verbosity="Minimal">
         <property name="Configuration" value="${Configuration}"/>
       </msbuild>
     </if>
     <if test="${not file::exists(msbuildtask.file)}">
-      <solution configuration="${Configuration}" solutionfile="${solution.file}" />
+      <fail message="you need the NAnt.Contrib.Tasks.dll for msbuild" />
     </if>
   </if>
 </target>
@@ -667,6 +309,14 @@ public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
 <target name="generateORMAccess">
   <!-- generate the files for Ict.Petra.Server.lib.data, ie. the access files for reading from and writing to the database -->
   <nant inheritall="false" target="custdepend" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Server/Ict.Petra.Server.build')}" verbose="${verbose}"/>
+</target>
+
+<target name="generateWinforms">
+  <nant inheritall="false" target="custdepend" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Client/Ict.Petra.Client.build')}" verbose="${verbose}"/>
+</target>
+
+<target name="generateWinform">
+  <nant inheritall="true" target="generateWinform" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Client/Ict.Petra.Client.build')}" verbose="${verbose}"/>
 </target>
 
 </project>

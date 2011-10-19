@@ -11,6 +11,7 @@ RootNode:
         actNew: {Label=&Add, ActionClick=NewRow}
         actCancel: {Label=&Cancel, ActionClick=CancelRow}
         actPostBatch: {Label=&Post Batch, ActionClick=PostBatch}
+        actTestPostBatch: {Label=&Test Batch, ActionClick=TestPostBatch}
         actImportFromSpreadSheet: {ActionClick=ImportFromSpreadSheet}
         actImportBatches: {Label=&Import Batches, ActionClick=ImportBatches}
         actExportBatches: {Label=&Export Batches, ActionClick=ExportBatches}
@@ -35,10 +36,11 @@ RootNode:
             Controls: [grdDetails, pnlDetailButtons]
         pnlDetailButtons:
             Dock: Right
-            Controls: [btnNew, btnCancel, btnPostBatch]
+            Controls: [btnNew, btnCancel, btnTestPostBatch, btnPostBatch]
         btnNew: {Action=actNew}
         btnCancel: {Action=actCancel}
         btnPostBatch: {Action=actPostBatch}
+        btnTestPostBatch:
         grdDetails:
             Dock: Fill
             Columns: [ABatch.BatchNumber, ABatch.BatchStatus, ABatch.DateEffective, ABatch.BatchDebitTotal, ABatch.BatchCreditTotal, ABatch.BatchControlTotal, ABatch.BatchDescription]
@@ -60,11 +62,13 @@ RootNode:
     Menu:
         mniBatch:
             Label: &Batch
-            mniPost: {Action=actPostBatch}
+            mniPostBatch:
+            mniTestPostBatch:
             mniImportFromSpreadSheet:
             mniImportBatches:
             mniExportBatches:
     Toolbar:
+        tbbTestPostBatch:
         tbbPostBatch:
         tbbImportFromSpreadSheet:
         tbbImportBatches:

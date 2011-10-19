@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -85,16 +85,5 @@ namespace Ict.Petra.Shared.Interfaces
      */
     public interface IRemoteFactory : IInterface
     {
-        /// <summary>
-        /// create an instance remotely
-        /// </summary>
-        /// <returns></returns>
-        IClientInstanceInterface CreateInstance();
-
-        /// <summary>
-        /// another experiment
-        /// </summary>
-        /// <returns></returns>
-        IClientInstanceInterface2 CreateInstance2();
     }
 }

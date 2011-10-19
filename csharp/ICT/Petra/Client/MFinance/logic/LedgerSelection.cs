@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -108,8 +108,7 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// </summary>
         public static bool GetCurrentPostingRangeDates(Int32 ALedgerNumber,
             out DateTime AStartDateCurrentPeriod,
-            out DateTime AEndDateLastForwardingPeriod,
-            out DateTime ADefaultDate)
+            out DateTime AEndDateLastForwardingPeriod)
         {
             if (!FValidPostingDates.ContainsKey(ALedgerNumber))
             {
@@ -121,6 +120,27 @@ namespace Ict.Petra.Client.MFinance.Logic
                 AStartDateCurrentPeriod = FValidPostingDates[ALedgerNumber][0];
                 AEndDateLastForwardingPeriod = FValidPostingDates[ALedgerNumber][1];
 
+                return true;
+            }
+
+            AStartDateCurrentPeriod = DateTime.MinValue;
+            AEndDateLastForwardingPeriod = DateTime.MinValue;
+            return false;
+        }
+
+        /// <summary>
+        /// Get the valid dates for posting;
+        /// based on current period and number of forwarding periods
+        /// </summary>
+        public static bool GetCurrentPostingRangeDates(Int32 ALedgerNumber,
+            out DateTime AStartDateCurrentPeriod,
+            out DateTime AEndDateLastForwardingPeriod,
+            out DateTime ADefaultDate)
+        {
+            if (GetCurrentPostingRangeDates(ALedgerNumber,
+                    out AStartDateCurrentPeriod,
+                    out AEndDateLastForwardingPeriod))
+            {
                 if ((DateTime.Now >= AStartDateCurrentPeriod) && (DateTime.Now <= AEndDateLastForwardingPeriod))
                 {
                     ADefaultDate = DateTime.Now;
@@ -133,8 +153,6 @@ namespace Ict.Petra.Client.MFinance.Logic
                 return true;
             }
 
-            AStartDateCurrentPeriod = DateTime.MinValue;
-            AEndDateLastForwardingPeriod = DateTime.MinValue;
             ADefaultDate = DateTime.MinValue;
             return false;
         }

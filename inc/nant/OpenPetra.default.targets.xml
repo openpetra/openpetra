@@ -24,14 +24,14 @@
 
 <target name="initConfigFiles-internal">
   <copy file="${templateFile}"
-        tofile="${configFile}" overwrite="true" if="${not file::exists(templateFile + '.my')}">
+        tofile="${configFile}" overwrite="true" outputencoding="utf-8" if="${not file::exists(templateFile + '.my')}">
     <filterchain>
       <expandproperties />
     </filterchain>
   </copy>
   <property name="templateFile" value="${templateFile}.my"/>
   <copy file="${templateFile}"
-        tofile="${configFile}" overwrite="true" if="${file::exists(templateFile)}">
+        tofile="${configFile}" overwrite="true" outputencoding="utf-8" if="${file::exists(templateFile)}">
     <filterchain>
       <expandproperties />
     </filterchain>

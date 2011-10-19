@@ -40,7 +40,7 @@ namespace {#NAMESPACE}
     }
 {#ENDIFN DATASETTYPE} 
     /// constructor
-    public {#CLASSNAME}(IntPtr AParentFormHandle) : base()
+    public {#CLASSNAME}(Form AParentForm) : base()
     {
       Control[] FoundCheckBoxes;  
       
@@ -56,7 +56,7 @@ namespace {#NAMESPACE}
       
       {#ASSIGNFONTATTRIBUTES}
       
-      FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentFormHandle, this, stbMain);
+      FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentForm, this, stbMain);
       {#IFDEF DATASETTYPE}
       FMainDS = new {#DATASETTYPE}();
       {#ENDIF DATASETTYPE}
@@ -225,7 +225,9 @@ namespace {#NAMESPACE}
     {
         if (ARow != null)
         {
+            ARow.BeginEdit();
             {#SAVEDETAILS}
+            ARow.EndEdit();
         }
     }
 {#ENDIF SAVEDETAILS}

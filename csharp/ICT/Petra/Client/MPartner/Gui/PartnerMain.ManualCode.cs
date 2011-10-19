@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -43,34 +43,34 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// create a new partner (default to family ie. household)
         /// </summary>
-        public static void NewPartner(IntPtr AParentFormHandle)
+        public static void NewPartner(Form AParentForm)
         {
-            TFrmPartnerEdit frm = new TFrmPartnerEdit(AParentFormHandle);
+            TFrmPartnerEdit frm = new TFrmPartnerEdit(AParentForm);
 
             frm.SetParameters(TScreenMode.smNew, "FAMILY", -1, -1, "");
             frm.Show();
         }
 
         /// create a new organisation (eg. supplier)
-        public static void NewOrganisation(IntPtr AParentFormHandle)
+        public static void NewOrganisation(Form AParentForm)
         {
-            TFrmPartnerEdit frm = new TFrmPartnerEdit(AParentFormHandle);
+            TFrmPartnerEdit frm = new TFrmPartnerEdit(AParentForm);
 
             frm.SetParameters(TScreenMode.smNew, "ORGANISATION", -1, -1, "");
             frm.Show();
         }
 
         /// create a new person
-        public static void NewPerson(IntPtr AParentFormHandle)
+        public static void NewPerson(Form AParentForm)
         {
-            TFrmPartnerEdit frm = new TFrmPartnerEdit(AParentFormHandle);
+            TFrmPartnerEdit frm = new TFrmPartnerEdit(AParentForm);
 
             frm.SetParameters(TScreenMode.smNew, "PERSON", -1, -1, "");
             frm.Show();
         }
 
         /// export partners into file
-        public static void ExportPartners(IntPtr AParentFormHandle)
+        public static void ExportPartners(Form AParentForm)
         {
             XmlDocument doc = new XmlDocument();
 
@@ -81,9 +81,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// open partner find screen
         /// </summary>
-        public static void FindPartner(IntPtr AParentFormHandle)
+        public static void FindPartner(Form AParentForm)
         {
-            TPartnerFindScreen frm = new TPartnerFindScreen(AParentFormHandle);
+            TPartnerFindScreen frm = new TPartnerFindScreen(AParentForm);
 
             frm.SetParameters(false, -1);
             frm.Show();

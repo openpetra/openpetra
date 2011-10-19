@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from {#XAMLSRCFILE}
+// auto generated with nant generateWinforms from {#XAMLSRCFILE} and template reportwindow.cs
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -34,7 +34,7 @@ namespace {#NAMESPACE}
     /// <summary>
     /// constructor
     /// </summary>
-    public {#CLASSNAME}(IntPtr AParentFormHandle) : base()
+    public {#CLASSNAME}(Form AParentForm) : base()
     {
       //
       // Required for Windows Form Designer support
@@ -48,7 +48,7 @@ namespace {#NAMESPACE}
 
       {#ASSIGNFONTATTRIBUTES}
       
-      FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentFormHandle, this, stbMain);
+      FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentForm, this, stbMain);
 
       FPetraUtilsObject.FXMLFiles = "{#XMLFILES}";
       FPetraUtilsObject.FReportName = "{#REPORTNAME}";

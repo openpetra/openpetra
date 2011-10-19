@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,18 +27,20 @@ using System.Collections.Specialized;
 using Ict.Tools.CodeGeneration;
 using Ict.Tools.DBXML;
 
-namespace Ict.Tools.CodeGeneration
+namespace Ict.Tools.CodeGeneration.DataStore
 {
-    public class codeGenerationPetra
+    /// <summary>
+    /// tools for the code generation
+    /// </summary>
+    public class CodeGenerationPetra
     {
-        /** convert an sql type from our xml file into a delphi type
-         * should also work for Convert.To<DelphiType>
-         * for C#, we can only cast primitive types;
-         * to specify a type that needs to be casted via CodeObjectCreateExpression,
-         * add System. in front (e.g DateTime)
-         *
-         */
-        public static string ToDelphiType(TTableField tableField)
+        /// <summary>
+        /// convert an sql type from our xml file into a dotnet type.
+        /// should also work for Convert.To&lt;DotNetType&gt;
+        /// </summary>
+        /// <param name="tableField"></param>
+        /// <returns></returns>
+        public static string ToDotNetType(TTableField tableField)
         {
             return tableField.GetDotNetType();
         }

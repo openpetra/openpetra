@@ -11,7 +11,6 @@
 			<option name="one partner"></option>
 			<option name="an extract"></option>
 			<option name="all current staff"></option>
-			<option name="all staff"></option>
 		</reportparameter>
 		<reportparameter condition="param_selection=an extract" name="param_extract"></reportparameter>
 		<reportparameter condition="param_selection=one partner" name="param_partnerkey"></reportparameter>
@@ -34,9 +33,6 @@
         </fielddetail>
         <fielddetail condition="eq({param_selection},all current staff)">
           <value text="All current Staff at date "></value><value variable="param_currentstaffdate" format="formatteddate"></value>
-        </fielddetail>
-        <fielddetail condition="eq({param_selection},all staff)">
-          <value text="All Staff"></value>
         </fielddetail>
       </field>
     </pageheader>

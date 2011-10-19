@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -32,6 +32,9 @@ using Ict.Tools.CodeGeneration;
 
 namespace GenerateI18N
 {
+/// <summary>
+/// drop unwanted strings from the po file
+/// </summary>
 public class TDropUnwantedStrings
 {
     /// <summary>
@@ -131,7 +134,7 @@ public class TDropUnwantedStrings
                         throw new Exception("did expect msgstr in the line");
                     }
 
-                    string messageStr = ParsePoLine(sr, ref line, out OriginalLines);
+                    ParsePoLine(sr, ref line, out OriginalLines);
                 }
                 else
                 {

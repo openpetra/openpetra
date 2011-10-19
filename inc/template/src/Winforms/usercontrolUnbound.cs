@@ -80,6 +80,11 @@ namespace {#NAMESPACE}
         {
             FMainDS = value;
         }
+        get
+        {
+            // not really needed, but helps to avoid compiler warning if FMainDS is not used anywhere else
+            return FMainDS;
+        }
     }
 
 {#ENDIF DATASETTYPE}

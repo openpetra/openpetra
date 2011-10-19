@@ -43,7 +43,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
 
-        private TDelegateIsNewPartner FDelegateIsNewPartner;
+        // private TDelegateIsNewPartner FDelegateIsNewPartner;
 
         #endregion
 
@@ -216,7 +216,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void InitialiseDelegateIsNewPartner(TDelegateIsNewPartner ADelegateFunction)
         {
             // set the delegate function from the calling System.Object
-            FDelegateIsNewPartner = ADelegateFunction;
+            // TODO FDelegateIsNewPartner = ADelegateFunction;
         }
 
         /// <summary>
