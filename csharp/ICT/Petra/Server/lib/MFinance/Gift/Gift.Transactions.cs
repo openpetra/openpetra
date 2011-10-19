@@ -536,34 +536,32 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     AGiftBatchAccess.LoadByPrimaryKey(MainDS, giftRow.LedgerNumber, giftRow.BatchNumber, Transaction);
                     PPartnerTable partner;
                     StringCollection shortName = new StringCollection();
-	                shortName.Add(PPartnerTable.GetPartnerShortNameDBName());
-	                shortName.Add(PPartnerTable.GetPartnerClassDBName());
+                    shortName.Add(PPartnerTable.GetPartnerShortNameDBName());
+                    shortName.Add(PPartnerTable.GetPartnerClassDBName());
+
                     if (!giftDetail.ConfidentialGiftFlag)
                     {
-                    
-	                    
-	                    partner = PPartnerAccess.LoadByPrimaryKey(giftRow.DonorKey, shortName, Transaction);
-	
-	                   
-	                    
-	
-	                    giftDetail.DonorKey = giftRow.DonorKey;
-	                    giftDetail.DonorName = partner[0].PartnerShortName;
-	                    giftDetail.DonorClass = partner[0].PartnerClass;
-	                     partner.Clear();
+                        partner = PPartnerAccess.LoadByPrimaryKey(giftRow.DonorKey, shortName, Transaction);
+
+
+                        giftDetail.DonorKey = giftRow.DonorKey;
+                        giftDetail.DonorName = partner[0].PartnerShortName;
+                        giftDetail.DonorClass = partner[0].PartnerClass;
+                        partner.Clear();
                     }
+
                     giftDetail.MethodOfGivingCode = giftRow.MethodOfGivingCode;
                     giftDetail.MethodOfPaymentCode = giftRow.MethodOfPaymentCode;
                     giftDetail.ReceiptNumber = giftRow.ReceiptNumber;
                     giftDetail.ReceiptPrinted = giftRow.ReceiptPrinted;
                     giftDetail.Reference = giftRow.Reference;
-                   
+
                     // This may be not very fast we can optimize later
                     //Ict.Petra.Shared.MPartner.Partner.Data.PUnitTable unitTable = null;
 
 
                     //do the same for the Recipient
-                   
+
                     //Int64 fieldNumber;
 
                     //LoadKeyMinistryInsideTrans(ref Transaction, ref unitTable, ref partner, giftDetail.RecipientKey, out fieldNumber);
@@ -579,11 +577,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     {
                         giftDetail.RecipientDescription = "INVALID";
                     }
-					
+
                     giftDetail.DateEntered = giftRow.DateEntered;
+
                     if (TGift.GiftRestricted(giftRow, Transaction))
                     {
-						giftDetail.Delete();
+                        giftDetail.Delete();
                     }
                 }
 
