@@ -115,7 +115,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             // best address for each partner
             DataUtilities.CopyTo(
-                TAddressTools.AddPostalAddress(MainDS.AGift, MainDS.AGift.ColumnDonorKey, ADropForeignAddresses, transaction),
+                TAddressTools.AddPostalAddress(MainDS.AGift, MainDS.AGift.ColumnDonorKey, ADropForeignAddresses, true, transaction),
                 MainDS.BestAddress);
 
             // remove all invalid addresses
