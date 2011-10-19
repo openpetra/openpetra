@@ -43,6 +43,7 @@ using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.MCommon;
+using Ict.Petra.Client.MFinance.Gui.Gift;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -556,6 +557,18 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (AToolStripItem.Name == "mniEditSearch")
             {
                 BtnSearch_Click(this, new EventArgs());
+            }
+            else if (AToolStripItem.Name == "mniMaintainDonorHistory")
+            {
+                Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory.OpenWindowDonorRecipientHistory(AToolStripItem.Name,
+                    PartnerKey,
+                    FPetraUtilsObject.GetForm());
+            }
+            else if (AToolStripItem.Name == "mniMaintainRecipientHistory")
+            {
+                Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory.OpenWindowDonorRecipientHistory(AToolStripItem.Name,
+                    PartnerKey,
+                    FPetraUtilsObject.GetForm());
             }
             else
             {

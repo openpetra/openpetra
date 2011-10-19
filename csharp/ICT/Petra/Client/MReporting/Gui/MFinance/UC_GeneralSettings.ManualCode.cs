@@ -135,7 +135,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             if (rbtQuarter.Checked)
             {
-                Year = (int)cmbQuarterYear.SelectedItem;
+                Year = cmbQuarterYear.GetSelectedInt32();
 
                 int Quarter = (Int32)StringHelper.TryStrToInt(txtQuarter.Text, 1);
                 ACalculator.AddParameter("param_start_period_i", (System.Object)(Quarter * 3 - 2));
@@ -152,7 +152,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             }
             else if (rbtPeriod.Checked)
             {
-                Year = (int)cmbPeriodYear.SelectedItem;
+                Year = cmbPeriodYear.GetSelectedInt32();
 
                 int StartPeriod = (Int32)StringHelper.TryStrToInt(txtStartPeriod.Text, 1);
                 int EndPeriod = (Int32)StringHelper.TryStrToInt(txtEndPeriod.Text, 1);

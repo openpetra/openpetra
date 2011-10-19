@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -552,7 +552,6 @@ namespace Ict.Petra.Client.MCommon.Gui
             //
             this.cmbCountry.Location = new System.Drawing.Point(84, 126);
             this.cmbCountry.Name = "cmbCountry";
-            this.cmbCountry.SelectedValue = null;
             this.cmbCountry.Size = new System.Drawing.Size(322, 22);
             this.cmbCountry.TabIndex = 13;
             this.cmbCountry.Tag = "CustomDisableAlthoughInvisible";
@@ -617,8 +616,6 @@ namespace Ict.Petra.Client.MCommon.Gui
             this.cmbLocationType.ListTable = TCmbAutoPopulated.TListTableEnum.LocationTypeList;
             this.cmbLocationType.Location = new System.Drawing.Point(597, 16);
             this.cmbLocationType.Name = "cmbLocationType";
-            this.cmbLocationType.SelectedItem = (System.Object)resources.GetObject('c' + "mbLocationType.SelectedItem");
-            this.cmbLocationType.SelectedValue = null;
             this.cmbLocationType.Size = new System.Drawing.Size(111, 22);
             this.cmbLocationType.TabIndex = 15;
             this.cmbLocationType.Tag = "CustomDisableAlthoughInvisible";

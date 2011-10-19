@@ -45,7 +45,7 @@ RootNode:
             OnChange: TransactionFilterChanged
         txtCreditSum: {Format=Currency, ReadOnly=true}
         txtDebitSum: {Format=Currency, ReadOnly=true}
-        pnlStatementInfo:
+        # pnlStatementInfo:
             # Controls: [txtStartBalance, txtEndBalance, txtSumDebit, txtSumCredit, txtNumberMatchedTransactions]
         sptTransactionDetails:
             Panel1: grdAllTransactions

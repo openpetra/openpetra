@@ -663,7 +663,7 @@ namespace Ict.Petra.Client.MCommon
                 else
                 {
                     // Default value if no Label data exists for the Partner
-                    LookupValueEditor.SelectedItem = "";
+                    LookupValueEditor.SetSelectedString(string.Empty);
                 }
             }
         }

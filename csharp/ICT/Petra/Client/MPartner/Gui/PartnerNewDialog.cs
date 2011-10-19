@@ -137,8 +137,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (FFormSetupFinished)
             {
-                APartnerClass = cmbPartnerClass.SelectedItem.ToString();
-                AAcquisitionCode = cmbAcquisitionCode.SelectedItem.ToString();
+                APartnerClass = cmbPartnerClass.GetSelectedString();
+                AAcquisitionCode = cmbAcquisitionCode.GetSelectedString();
                 ASiteKey = FSiteKey;
                 APartnerKey = FPartnerKey;
                 APrivatePartner = chkPrivatePartner.Checked;
@@ -210,7 +210,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (FFormSetupFinished)
             {
-                if (cmbPartnerClass.SelectedValue.ToString() == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
+                if (cmbPartnerClass.GetSelectedString() == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
                 {
                     ShowFamilyPartnerSelection(true);
                 }
@@ -249,7 +249,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             Int64 NewPartnerKey;
             String NewPartnerClass;
 
-            NewPartnerClass = cmbPartnerClass.SelectedItem.ToString();
+            NewPartnerClass = cmbPartnerClass.GetSelectedString();
 
             if (NewPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
             {
@@ -294,22 +294,22 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (FPartnerClass != "")
             {
-                cmbPartnerClass.SelectedItem = FPartnerClass;
+                cmbPartnerClass.SetSelectedString(FPartnerClass);
             }
             else
             {
                 // Default value: FAMILY
-                cmbPartnerClass.SelectedItem = "FAMILY";
+                cmbPartnerClass.SetSelectedString("FAMILY");
             }
 
             if (FAcquisitionCode != "")
             {
-                cmbAcquisitionCode.SelectedItem = FAcquisitionCode;
+                cmbAcquisitionCode.SetSelectedString(FAcquisitionCode);
             }
             else
             {
                 // Default value: UserDefault PARTNER_ACQUISITIONCODE
-                cmbAcquisitionCode.SelectedItem = TUserDefaults.GetStringDefault(TUserDefaults.PARTNER_ACQUISITIONCODE, "MAILROOM");
+                cmbAcquisitionCode.SetSelectedString(TUserDefaults.GetStringDefault(TUserDefaults.PARTNER_ACQUISITIONCODE, "MAILROOM"));
             }
 
             // Default value: false (from SetParameters default)
