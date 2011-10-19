@@ -34,9 +34,11 @@ using Ict.Common.IO;
 using Ict.Petra.Shared.Interfaces; // Implicit reference
 using Ict.Petra.Server.App.Main;
 using Ict.Petra.Server.App.Core;
+using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.App.ClientDomain;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Server.MFinance.AP.UIConnectors;
+using Ict.Petra.Server.MConference.Applications;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Jayrock.Json;
@@ -321,20 +323,34 @@ public class TOpenPetraOrg : WebService
     [WebMethod(EnableSession = true)]
     public string DataImportFromForm(string AFormID, string AJSONFormData)
     {
-        // user ANONYMOUS, can only write, not read
-        if (!IsUserLoggedIn())
+        try
         {
-            if (!LoginInternal("ANONYMOUS", TAppSettingsManager.GetValue("AnonymousUserPasswd")))
+            // user ANONYMOUS, can only write, not read
+            if (!IsUserLoggedIn())
             {
-                string message =
-                    "In order to process anonymous submission of data from the web, we need to have a user ANONYMOUS which does not have any read permissions";
-                TLogging.Log(message);
+                InitServer();
 
-                // do not disclose errors on production version
-                message = "There is a problem on the Server";
+                if (!LoginInternal("ANONYMOUS", TAppSettingsManager.GetValue("AnonymousUserPasswd")))
+                {
+                    string message =
+                        "In order to process anonymous submission of data from the web, we need to have a user ANONYMOUS which does not have any read permissions";
+                    TLogging.Log(message);
 
-                return "{\"failure\":true, \"data\":{\"result\":\"" + message + "\"}}";
+                    // do not disclose errors on production version
+                    message = "There is a problem on the Server";
+
+                    return "{\"failure\":true, \"data\":{\"result\":\"" + message + "\"}}";
+                }
             }
+        }
+        catch (Exception e)
+        {
+            TLogging.Log(e.Message);
+            TLogging.Log(e.StackTrace);
+
+            Logout();
+
+            return "{\"failure\":true, \"data\":{\"result\":\"Unexpected failure\"}}";
         }
 
         // remove ext-comp controls, for multi-page forms
@@ -446,6 +462,29 @@ public class TOpenPetraOrg : WebService
     public string SyncModifiedPartnerData(string AUsername, string APassword, DateTime AEarliestModifiedDate)
     {
         return "error";
+    }
+
+    /// <summary>
+    /// get data of all accepted participants, to sync with other tools (eg. seminar registration tool)
+    /// </summary>
+    [WebMethod(EnableSession = true)]
+    public string GetAllParticipants()
+    {
+        if (IsUserLoggedIn())
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MConference.Applications.TApplicationManagement),
+                "GetAllParticipants",
+                ";LONG;STRING;");
+
+            DataTable result = TApplicationManagement.GetAllParticipants(TAppSettingsManager.GetInt64("ConferenceTool.EventPartnerKey"),
+                TAppSettingsManager.GetValue("ConferenceTool.EventCode"));
+
+            StringWriter sw = new StringWriter();
+            result.WriteXml(sw);
+            return sw.ToString();
+        }
+
+        return string.Empty;
     }
 }
 }
