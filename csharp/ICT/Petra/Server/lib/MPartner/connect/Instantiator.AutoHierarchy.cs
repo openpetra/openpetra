@@ -1554,11 +1554,12 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Mailing.WebConnectors
         /// generated method from connector
         public System.Boolean GetBestAddress(Int64 APartnerKey,
                                              out PLocationTable AAddress,
+                                             out PPartnerLocationTable APartnerLocation,
                                              out System.String ACountryNameLocal,
                                              out System.String AEmailAddress)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Mailing.WebConnectors.TAddressWebConnector), "GetBestAddress", ";LONG;PLOCATIONTABLE;STRING;STRING;");
-            return Ict.Petra.Server.MPartner.Mailing.WebConnectors.TAddressWebConnector.GetBestAddress(APartnerKey, out AAddress, out ACountryNameLocal, out AEmailAddress);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Mailing.WebConnectors.TAddressWebConnector), "GetBestAddress", ";LONG;PLOCATIONTABLE;PPARTNERLOCATIONTABLE;STRING;STRING;");
+            return Ict.Petra.Server.MPartner.Mailing.WebConnectors.TAddressWebConnector.GetBestAddress(APartnerKey, out AAddress, out APartnerLocation, out ACountryNameLocal, out AEmailAddress);
         }
 
         /// generated method from connector
