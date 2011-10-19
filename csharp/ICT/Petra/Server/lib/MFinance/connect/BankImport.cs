@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -559,6 +559,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             gljournalRow.JournalDescription = glbatchRow.BatchDescription;
             gljournalRow.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
             gljournalRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.STD.ToString();
+            gljournalRow.ExchangeRateToBase = 1.0m;
             GLDS.AJournal.Rows.Add(gljournalRow);
 
             foreach (DataRowView dv in AMainDS.AEpTransaction.DefaultView)
