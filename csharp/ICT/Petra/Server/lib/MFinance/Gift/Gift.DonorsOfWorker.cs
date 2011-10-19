@@ -63,7 +63,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             try
             {
-                string stmt = TDataBase.ReadSqlFile("Gift.DonorsOfWorker.sql");
+                string stmt = TDataBase.ReadSqlFile("Gift.GetDonorsOfWorker.sql");
 
                 OdbcParameter parameter;
 

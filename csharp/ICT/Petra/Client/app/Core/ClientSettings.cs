@@ -321,6 +321,11 @@ namespace Ict.Petra.Client.App.Core
         {
             string result = TAppSettingsManager.GetValue(AVariableName, ADefaultValue);
 
+            if (result.Length == 0)
+            {
+                return result;
+            }
+
             // on Windows, we cannot store the database in userappdata during installation, because
             // the setup has to be run as administrator.
             // therefore the first time the user starts Petra, we need to prepare his environment
