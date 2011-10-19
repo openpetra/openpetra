@@ -390,7 +390,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             try
             {
-                TFrmPartnerEdit frm = new TFrmPartnerEdit(this.Handle);
+                TFrmPartnerEdit frm = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
 
                 frm.SetParameters(TScreenMode.smEdit, RelationPartnerKey);
                 frm.Show();
