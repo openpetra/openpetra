@@ -54,6 +54,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static NewDonorTDS GetDonorsOfWorker(
             Int64 AWorkerPartnerKey,
+            Int32 ALedgerNumber,
             bool ADropForeignAddresses,
             bool ADropPartnersWithNoMailing)
         {
@@ -70,6 +71,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 List <OdbcParameter>parameters = new List <OdbcParameter>();
                 parameter = new OdbcParameter("WorkerPartnerKey", OdbcType.BigInt);
                 parameter.Value = AWorkerPartnerKey;
+                parameters.Add(parameter);
+                parameter = new OdbcParameter("LedgerNumber", OdbcType.Int);
+                parameter.Value = ALedgerNumber;
                 parameters.Add(parameter);
 
                 DBAccess.GDBAccessObj.Select(MainDS, stmt, MainDS.AGift.TableName, transaction, parameters.ToArray());

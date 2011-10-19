@@ -46,18 +46,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
     partial class TFrmGiftDonorsOfWorkerLetter
     {
-        private void InitializeManualCode()
-        {
-        }
+        private Int32 FLedgerNumber;
 
-        private void FilterChanged(System.Object sender, EventArgs e)
+        /// the ledger that the user is currently working with
+        public Int32 LedgerNumber
         {
+            set
+            {
+                FLedgerNumber = value;
+            }
         }
 
         private void GenerateLetters(System.Object sender, EventArgs e)
         {
             FMainDS = TRemote.MFinance.Gift.WebConnectors.GetDonorsOfWorker(
                 Convert.ToInt64(txtWorkerPartnerKey.Text),
+                FLedgerNumber,
                 true, true);
 
             if (FMainDS.BestAddress.Rows.Count == 0)

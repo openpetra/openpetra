@@ -136,6 +136,9 @@ namespace Ict.Petra.Shared.MPartner
         /// family name
             eOnlySurname,
 
+        /// first name
+            eOnlyFirstname,
+
         /// firstname l.; useful for data protection
             eReverseLastnameInitialsOnly,
 

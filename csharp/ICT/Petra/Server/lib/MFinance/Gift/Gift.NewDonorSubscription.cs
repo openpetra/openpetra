@@ -182,6 +182,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 msg =
                     msg.Replace("#RECIPIENTNAME",
                         Calculations.FormatShortName(row.RecipientDescription, eShortNameFormat.eReverseWithoutTitle));
+                msg =
+                    msg.Replace("#RECIPIENTFIRSTNAME",
+                        Calculations.FormatShortName(row.RecipientDescription, eShortNameFormat.eOnlyFirstname));
                 msg = msg.Replace("#TITLE", Calculations.FormatShortName(donorName, eShortNameFormat.eOnlyTitle));
                 msg = msg.Replace("#NAME", Calculations.FormatShortName(donorName, eShortNameFormat.eReverseWithoutTitle));
                 msg = msg.Replace("#FORMALGREETING", Calculations.FormalGreeting(donorName));

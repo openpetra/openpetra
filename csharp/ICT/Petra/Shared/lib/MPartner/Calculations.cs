@@ -707,6 +707,10 @@ namespace Ict.Petra.Shared.MPartner
             {
                 return names[0];
             }
+            else if (AFormat == eShortNameFormat.eOnlyFirstname)
+            {
+                return names[1];
+            }
             else if (AFormat == eShortNameFormat.eReverseWithoutTitle)
             {
                 if (names.Count > 1)
