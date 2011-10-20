@@ -191,11 +191,23 @@ namespace Ict.Petra.Client.MPartner.Gui
                     ucoPartnerTabSet.InitiallySelectedTabPage = FInitiallySelectedTabPage;
                     ucoPartnerTabSet.MainDS = FMainDS;
                     ucoPartnerTabSet.SpecialInitUserControl();
-
+                    ucoPartnerTabSet.HookupDataChange += new THookupDataChangeEventHandler(ucoPartnerTabSet_HookupDataChange);
+                    ucoPartnerTabSet.HookupPartnerEditDataChange += new THookupPartnerEditDataChangeEventHandler(
+                    ucoPartnerTabSet_HookupPartnerEditDataChange);
                     break;
             }
 
             // TODO Other TabSets (Personnel Data, Finance Data)
+        }
+
+        void ucoPartnerTabSet_HookupPartnerEditDataChange(object Sender, THookupPartnerEditDataChangeEventArgs e)
+        {
+            OnHookupPartnerEditDataChange(e);
+        }
+
+        void ucoPartnerTabSet_HookupDataChange(object Sender, EventArgs e)
+        {
+            OnHookupDataChange(e);
         }
 
         /// <summary>
