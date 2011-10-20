@@ -47,10 +47,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             // We will only fail if you actually have chosen to store all our possibilities
             // It is much more likely that you will want to store other combinations than all of these, so we will
             // find something that has not been actually used.
-            string[] tryCurrencies = {"USD", "GBP", "EUR", "INR", "JPY", "AUD", "NZD", "CHF", "RUR", "SEK", "ZAR"};
-            string[] tryLanguages = {"EN", "DE", "ES", "FR", "HI", "IT", "JA", "MAN", "NO", "SV", "AF", "AR", "BG", "BN", "CAN", "CRE", "CY"};
+            string[] tryCurrencies =
+            {
+                "USD", "GBP", "EUR", "INR", "JPY", "AUD", "NZD", "CHF", "RUR", "SEK", "ZAR"
+            };
+            string[] tryLanguages =
+            {
+                "EN", "DE", "ES", "FR", "HI", "IT", "JA", "MAN", "NO", "SV", "AF", "AR", "BG", "BN", "CAN", "CRE", "CY"
+            };
             int nTryLanguage = 0;
             int nTryCurrency = 0;
+
             while (FMainDS.ACurrencyLanguage.Rows.Find(new object[] { tryCurrencies[nTryCurrency], tryLanguages[nTryLanguage] }) != null)
             {
                 if (++nTryCurrency == tryCurrencies.Length)
@@ -59,10 +66,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     {
                         break;
                     }
+
                     nTryCurrency = 0;
                 }
             }
-            
+
             ARow.CurrencyCode = tryCurrencies[nTryCurrency];
             ARow.LanguageCode = tryLanguages[nTryLanguage];
         }
