@@ -23,6 +23,7 @@
 //
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 
@@ -459,6 +460,145 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
+        /// loads a list of gift transactions and details for the given ledger and batch
+        /// </summary>
+        /// <param name="requestParams"></param>
+        /// <param name="AMessages"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GiftBatchTDS LoadDonorRecipientHistory(Hashtable requestParams,
+            out TVerificationResultCollection AMessages)
+        {
+            GiftBatchTDS MainDS = new GiftBatchTDS();
+            TDBTransaction Transaction = null;
+
+            AMessages = new TVerificationResultCollection();
+            long Recipient = (Int64)requestParams["Recipient"];
+            long Donor = (Int64)requestParams["Donor"];
+            try
+            {
+                Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+                // Case 1 : Donor Given : go via AGift
+                // Case 2 : Recipient given go via AGiftDetail
+                // Case 3 : Both given ?
+
+                //AGiftAccess.LoadViaAGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                if (Recipient > 0) //Case 2, Case 3
+                {
+                    AGiftDetailAccess.LoadViaPPartnerRecipientKey(MainDS, Recipient, Transaction);
+
+                    foreach (GiftBatchTDSAGiftDetailRow giftDetail in MainDS.AGiftDetail.Rows)
+                    {
+                        AGiftAccess.LoadByPrimaryKey(MainDS,
+                            giftDetail.LedgerNumber,
+                            giftDetail.BatchNumber,
+                            giftDetail.GiftTransactionNumber,
+                            Transaction);
+
+                        if (Donor != 0)
+                        {
+                            AGiftRow newGiftRow = (AGiftRow)MainDS.AGift.Rows.Find(new object[] { giftDetail.LedgerNumber,
+                                                                                                  giftDetail.BatchNumber,
+                                                                                                  giftDetail.GiftTransactionNumber });
+
+                            if (newGiftRow.DonorKey != Donor)
+                            {
+                                if (newGiftRow.RowState != DataRowState.Deleted)
+                                {
+                                    newGiftRow.Delete();
+                                }
+
+                                giftDetail.Delete();
+                            }
+                        }
+                    }
+                }
+                else //Case 1
+                {
+                    AGiftAccess.LoadViaPPartner(MainDS, Donor, Transaction);
+
+                    foreach (AGiftRow giftRow in MainDS.AGift.Rows)
+                    {
+                        AGiftDetailAccess.LoadViaAGift(MainDS, giftRow.LedgerNumber, giftRow.BatchNumber, giftRow.GiftTransactionNumber, Transaction);
+                    }
+                }
+
+                MainDS.AcceptChanges();
+                DataView giftView = new DataView(MainDS.AGift);
+
+                // fill the columns in the modified GiftDetail Table to show donorkey, dateentered etc in the grid
+                foreach (GiftBatchTDSAGiftDetailRow giftDetail in MainDS.AGiftDetail.Rows)
+                {
+                    // get the gift
+                    giftView.RowFilter = AGiftTable.GetGiftTransactionNumberDBName() + " = " + giftDetail.GiftTransactionNumber.ToString();
+                    giftView.RowFilter += " AND " + AGiftTable.GetBatchNumberDBName() + " = " + giftDetail.BatchNumber.ToString();
+                    AGiftRow giftRow = (AGiftRow)giftView[0].Row;
+                    AGiftBatchAccess.LoadByPrimaryKey(MainDS, giftRow.LedgerNumber, giftRow.BatchNumber, Transaction);
+                    PPartnerTable partner;
+                    StringCollection shortName = new StringCollection();
+                    shortName.Add(PPartnerTable.GetPartnerShortNameDBName());
+                    shortName.Add(PPartnerTable.GetPartnerClassDBName());
+
+                    if (!giftDetail.ConfidentialGiftFlag)
+                    {
+                        partner = PPartnerAccess.LoadByPrimaryKey(giftRow.DonorKey, shortName, Transaction);
+
+
+                        giftDetail.DonorKey = giftRow.DonorKey;
+                        giftDetail.DonorName = partner[0].PartnerShortName;
+                        giftDetail.DonorClass = partner[0].PartnerClass;
+                        partner.Clear();
+                    }
+
+                    giftDetail.MethodOfGivingCode = giftRow.MethodOfGivingCode;
+                    giftDetail.MethodOfPaymentCode = giftRow.MethodOfPaymentCode;
+                    giftDetail.ReceiptNumber = giftRow.ReceiptNumber;
+                    giftDetail.ReceiptPrinted = giftRow.ReceiptPrinted;
+                    giftDetail.Reference = giftRow.Reference;
+
+                    // This may be not very fast we can optimize later
+                    //Ict.Petra.Shared.MPartner.Partner.Data.PUnitTable unitTable = null;
+
+
+                    //do the same for the Recipient
+
+                    //Int64 fieldNumber;
+
+                    //LoadKeyMinistryInsideTrans(ref Transaction, ref unitTable, ref partner, giftDetail.RecipientKey, out fieldNumber);
+                    //giftDetail.RecipientField = fieldNumber;
+
+                    partner = PPartnerAccess.LoadByPrimaryKey(giftDetail.RecipientKey, shortName, Transaction);
+
+                    if (partner.Count > 0)
+                    {
+                        giftDetail.RecipientDescription = partner[0].PartnerShortName;
+                    }
+                    else
+                    {
+                        giftDetail.RecipientDescription = "INVALID";
+                    }
+
+                    giftDetail.DateEntered = giftRow.DateEntered;
+
+                    if (TGift.GiftRestricted(giftRow, Transaction))
+                    {
+                        giftDetail.Delete();
+                    }
+                }
+
+                MainDS.AcceptChanges();
+            }
+            finally
+            {
+                if (Transaction != null)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+            }
+            return MainDS;
+        }
+
+        /// <summary>
         /// loads a list of recurring gift transactions and details for the given ledger and recurring batch
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -494,7 +634,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 foreach (RecurringGiftBatchTDSARecurringGiftDetailRow giftDetail in MainDS.ARecurringGiftDetail.Rows)
                 {
                     // get the gift
-                    giftView.RowFilter = ARecurringGiftTable.GetGiftTransactionNumberDBName() + " = " + giftDetail.GiftTransactionNumber.ToString();
+                    giftView.RowFilter = ARecurringGiftTable.GetGiftTransactionNumberDBName() + " = " +
+                                         giftDetail.GiftTransactionNumber.ToString();
 
                     ARecurringGiftRow giftRow = (ARecurringGiftRow)giftView[0].Row;
 
@@ -695,8 +836,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             // Careful: modify gift cost centre and account and recipient field only when the amount is positive.
             // adjustments and reversals must remain on the original value
             transactionForTotals.AccountCode = giftbatch.BankAccountCode;
-            transactionForTotals.CostCentreCode = Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetStandardCostCentre(
-                ALedgerNumber);
+            transactionForTotals.CostCentreCode =
+                Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetStandardCostCentre(
+                    ALedgerNumber);
             transactionForTotals.Narrative = "Deposit from receipts - Gift Batch " + giftbatch.BatchNumber.ToString();
             transactionForTotals.Reference = "GB" + giftbatch.BatchNumber.ToString();
 
@@ -756,7 +898,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             {
                 // find motivation detail
                 AMotivationDetailRow motivationRow =
-                    (AMotivationDetailRow)MainDS.AMotivationDetail.Rows.Find(new object[] { ALedgerNumber, giftDetail.MotivationGroupCode,
+                    (AMotivationDetailRow)MainDS.AMotivationDetail.Rows.Find(new object[] { ALedgerNumber,
+                                                                                            giftDetail.MotivationGroupCode,
                                                                                             giftDetail.MotivationDetailCode });
 
                 // TODO: make sure the correct costcentres and accounts are used (check pm_staff_data for commitment period, and motivation details, etc)

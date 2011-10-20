@@ -104,7 +104,7 @@ class CreateInstantiators : AutoGenerationWriter
             }
         }
 
-        TLogging.Log("Warning: Missing module access permissions for " + AConnectorClassWithNamespace + "::" + m.Name);
+        TLogging.Log("Warning !!! Missing module access permissions for " + AConnectorClassWithNamespace + "::" + m.Name);
 
         return new ProcessTemplate();
     }

@@ -13,6 +13,8 @@ list of available commands:
   generateWebforms: generates all webforms
   generateWebform: generates a single webform
     generateWebform -D:file=
+  splitFormsIntoSubdirs: split all child/serve/etc files into subdirectories for easier work
+  restoreFormsFromSubdirs: restore the files again into the ApplicationForms direcotory
   packWebApp: builds a zip file in the delivery directory
   packTranslation: pack the language specific file for one or several languages
     packTranslation -D:country-id=de-DE,en-GB
@@ -39,14 +41,14 @@ list of available commands:
   <!-- Generate webforms --> 
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
   <property name="generateWebformsParameters" value="-TemplateDir:${dir.incdir.template.src}/ExtJs -petraxml:${PetraXML.file} -deliveryPath:${dir.webforms.delivery} -logPath:${dir.log}"/>
-  <ExecDotNet program="${dir.bin}/GenerateExtJsForms.exe" commandline="-ymlfile:${dir.webforms.source} -ymlroot:${dir.webforms.source} ${generateWebformsParameters}"/>
+  <ExecDotNet program="${dir.bin}/Ict.Tools.GenerateExtJsForms.exe" commandline="-ymlfile:${dir.webforms.source} -ymlroot:${dir.webforms.source} ${generateWebformsParameters}"/>
 </target>
 
 <target name="generateWebform">
   <!-- Generate single webform -->
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
   <property name="generateWebformsParameters" value="-TemplateDir:${dir.incdir.template.src}/ExtJs -petraxml:${PetraXML.file} -deliveryPath:${dir.webforms.delivery} -logPath:${dir.log}" />
-  <ExecDotNet program="${PetraToolsExe.dir}/GenerateExtJsForms.exe" commandline="-ymlfile:${dir.webforms.source}/${file} -ymlroot:${dir.webforms.source} ${generateWebformsParameters}"/>
+  <ExecDotNet program="${PetraToolsExe.dir}/Ict.Tools.GenerateExtJsForms.exe" commandline="-ymlfile:${dir.webforms.source}/${file} -ymlroot:${dir.webforms.source} ${generateWebformsParameters}"/>
 </target>
 
 <target name="prepareWebServer" description="create a directory in delivery with all files required for the webserver">
@@ -59,6 +61,12 @@ list of available commands:
       <exclude name="**/*.yaml" />
       <exclude name="**/*.xml" />
       <exclude name="**/*-template.js" />
+    </fileset>
+  </copy>
+
+  <copy todir="${dir.webserver}/Apps/OnlineRegistration" overwrite="true">
+    <fileset basedir="${dir.webforms.source}">
+      <include name="*-lang.js" />
     </fileset>
   </copy>
 
@@ -317,6 +325,46 @@ list of available commands:
       </in>
       <do>
         <echo message="what about ${filename}"/>
+      </do>
+  </foreach>
+</target>
+
+<target name="splitFormsIntoSubdirs">
+  <foreach item="Folder" property="dirname">
+      <in>
+        <items basedir="${dir.webforms.source}">
+          <include name="*"/>
+        </items>
+      </in>
+      <do>
+        <if test="${path::get-full-path(dirname) != path::get-full-path(dir.webforms.source)}">
+          <property name="pattern" value="${path::get-file-name(dirname)}"/>
+          <move todir="${dirname}">
+            <fileset basedir="${dir.webforms.source}">
+              <include name="*.${pattern}.yaml" />
+            </fileset>
+          </move>
+        </if>
+      </do>
+  </foreach>
+</target>
+
+<target name="restoreFormsFromSubdirs">
+  <foreach item="Folder" property="dirname">
+      <in>
+        <items basedir="${dir.webforms.source}">
+          <include name="*"/>
+        </items>
+      </in>
+      <do>
+        <if test="${path::get-full-path(dirname) != path::get-full-path(dir.webforms.source)}">
+          <property name="pattern" value="${path::get-file-name(dirname)}"/>
+          <move todir="${dir.webforms.source}">
+            <fileset basedir="${dirname}">
+              <include name="*.${pattern}.yaml" />
+            </fileset>
+          </move>
+        </if>
       </do>
   </foreach>
 </target>
