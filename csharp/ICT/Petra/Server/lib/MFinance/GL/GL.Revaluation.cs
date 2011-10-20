@@ -77,7 +77,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             bool blnReturn = revaluation.RunRevaluation();
 
-            AVerificationResult = revaluation.GetVerificationResultCollection;
+            AVerificationResult = revaluation.VerificationResultCollection;
             return blnReturn;
         }
     }
@@ -134,7 +134,7 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <summary>
         ///
         /// </summary>
-        public TVerificationResultCollection GetVerificationResultCollection {
+        public TVerificationResultCollection VerificationResultCollection {
             get
             {
                 return verificationCollection;
@@ -154,7 +154,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 strRevaluationAccount = gli.RevaluationAccount;
                 RunRevaluationIntern();
             }
-            catch (TerminateException terminate)
+            catch (TVerificationException terminate)
             {
                 verificationCollection = terminate.ResultCollection();
             }
@@ -170,7 +170,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
             if (accountTable.Rows.Count == 0)
             {
-                TerminateException terminate = new TerminateException(
+                TVerificationException terminate = new TVerificationException(
                     Catalog.GetString(Catalog.GetString(
                             "No Entries in GeneralLedgerMasterTable")));
                 terminate.Context = "Common Accountig";
@@ -262,8 +262,8 @@ namespace Ict.Petra.Server.MFinance.GL
 
                     if (decDelta != 0)
                     {
-                        // Now we have the relevant Cost Center ...
-                        RevaluateCostCenter(ARelevantAccount, generalLedgerMasterRow.CostCentreCode);
+                        // Now we have the relevant Cost Centre ...
+                        RevaluateCostCentre(ARelevantAccount, generalLedgerMasterRow.CostCentreCode);
                     }
                     else
                     {
@@ -276,7 +276,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                 strStatusContent, strMessage, TResultSeverity.Resv_Noncritical));
                     }
                 }
-                catch (TerminateException terminate)
+                catch (TVerificationException terminate)
                 {
                     verificationCollection = terminate.ResultCollection();
                 }
@@ -299,7 +299,7 @@ namespace Ict.Petra.Server.MFinance.GL
             CloseRevaluationAccountingBatch();
         }
 
-        private void RevaluateCostCenter(string ARelevantAccount, string ACostCenter)
+        private void RevaluateCostCentre(string ARelevantAccount, string ACostCentre)
         {
             // In the very first run Batch and Journal shall be created ...
             if (GLDataset == null)
@@ -327,17 +327,17 @@ namespace Ict.Petra.Server.MFinance.GL
 
             decDelta = Math.Abs(decDelta);
 
-            strMessage = String.Format(strMessage, ARelevantAccount, ACostCenter);
+            strMessage = String.Format(strMessage, ARelevantAccount, ACostCentre);
 
-            CreateTransaction(strMessage, strRevaluationAccount, !blnDebitFlag, ACostCenter);
-            CreateTransaction(strMessage, ARelevantAccount, blnDebitFlag, ACostCenter);
+            CreateTransaction(strMessage, strRevaluationAccount, !blnDebitFlag, ACostCentre);
+            CreateTransaction(strMessage, ARelevantAccount, blnDebitFlag, ACostCentre);
             journal.JournalDebitTotal = journal.JournalDebitTotal + decDelta;
             journal.JournalCreditTotal = journal.JournalCreditTotal + decDelta;
         }
 
         private void InitBatchAndJournal()
         {
-            GLDataset = TTransactionWebConnector.CreateABatch(intLedgerNum);
+            GLDataset = TGLPosting.CreateABatch(intLedgerNum);
             batch = GLDataset.ABatch[0];
             batch.BatchDescription = Catalog.GetString("Period end revaluations");
 

@@ -35,6 +35,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Shared.Interfaces.MConference.Cacheable;
 using Ict.Petra.Shared.Interfaces.MConference.WebConnectors;
 #region ManualCode
+using Ict.Common.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MConference.Data;
 using Ict.Petra.Shared.MConference;
@@ -66,6 +67,19 @@ namespace Ict.Petra.Shared.Interfaces.MConference.Cacheable
     /// <summary>auto generated</summary>
     public interface ICacheableNamespace : IInterface
     {
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MConference.Instantiator.Cacheable.Class)</summary>
+        System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MConference.TCacheableConferenceTablesEnum ACacheableTable,
+                                                System.String AHashCode,
+                                                out System.Type AType);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MConference.Instantiator.Cacheable.Class)</summary>
+        void RefreshCacheableTable(Ict.Petra.Shared.MConference.TCacheableConferenceTablesEnum ACacheableTable);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MConference.Instantiator.Cacheable.Class)</summary>
+        void RefreshCacheableTable(Ict.Petra.Shared.MConference.TCacheableConferenceTablesEnum ACacheableTable,
+                                   out System.Data.DataTable ADataTable);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MConference.Instantiator.Cacheable.Class)</summary>
+        TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableConferenceTablesEnum ACacheableTable,
+                                                               ref TTypedDataTable ASubmitTable,
+                                                               out TVerificationResultCollection AVerificationResult);
     }
 
 }

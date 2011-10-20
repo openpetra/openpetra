@@ -295,6 +295,16 @@ namespace Ict.Petra.Client.App.Core
                         AMotivationDetailTable.GetLedgerNumberDBName(), ALedgerNumber, out DataTableType);
                         break;
 
+                    case TCacheableFinanceTablesEnum.FeesPayableList:
+                        ReturnValue = GetBasedOnLedger(ACacheableTable,
+                        AFeesPayableTable.GetLedgerNumberDBName(), ALedgerNumber, out DataTableType);
+                        break;
+
+                    case TCacheableFinanceTablesEnum.FeesReceivableList:
+                        ReturnValue = GetBasedOnLedger(ACacheableTable,
+                        AFeesReceivableTable.GetLedgerNumberDBName(), ALedgerNumber, out DataTableType);
+                        break;
+
                     default:
 
                         // $IFDEF DEBUGMODE MessageBox.Show('GetCacheableFinanceTable: Cache Table ''' + Enum.GetName(typeof(

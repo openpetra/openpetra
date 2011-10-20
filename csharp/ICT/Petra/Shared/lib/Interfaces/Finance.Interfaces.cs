@@ -496,6 +496,9 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors
         GiftBatchTDS LoadTransactions(Int32 ALedgerNumber,
                                       Int32 ABatchNumber);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
+        GiftBatchTDS LoadDonorRecipientHistory(Hashtable requestParams,
+                                               out TVerificationResultCollection AMessages);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
         RecurringGiftBatchTDS LoadRecurringTransactions(Int32 ALedgerNumber,
                                                         Int32 ABatchNumber);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
@@ -676,6 +679,16 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.ICH.UIConnectors
     /// <summary>auto generated</summary>
     public interface IICHUIConnectorsNamespace : IInterface
     {
+        /// <summary>auto generated from Connector constructor (Ict.Petra.Server.MFinance.ICH.UIConnectors.TStewardshipCalculationUIConnector)</summary>
+        IICHUIConnectorsStewardshipCalculation StewardshipCalculation(int ALedgerNumber,
+                                                                      int APeriodNumber);
+    }
+
+    /// <summary>auto generated</summary>
+    public interface IICHUIConnectorsStewardshipCalculation : IInterface
+    {
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.ICH.UIConnectors.TStewardshipCalculationUIConnector)</summary>
+        bool PerformStewardshipCalculation(out TVerificationResultCollection AVerificationResult);
     }
 
 }

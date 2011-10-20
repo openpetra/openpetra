@@ -149,7 +149,8 @@ OpenPetra:
                         TotalGiftsThroughField: {ActionOpenScreen=TFrmTotalGiftsThroughField}
                         OneYearMonthlyGiving: {ActionOpenScreen=TFrmOneYearMonthlyGiving}
                     #YearEnd:
-                    #ICHProcessing:
+                    ICHProcessing: {Namespace=Ict.Petra.Client.MFinance.Gui.ICH}
+                        ICHStewardshipCalculation: {ActionOpenScreen=TFrmReportingPeriodSelectionDialog, ReportingPeriodSelectionMode=rpsmICHStewardshipCalc}
                 #Budgets:
                 #ICH:
                 #Reports:

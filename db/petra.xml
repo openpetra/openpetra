@@ -10364,6 +10364,11 @@
                 thisFields="a_ledger_number_i, a_motivation_group_code_c, a_motivation_detail_code_c"
                 otherTable="a_motivation_detail"
                 otherFields="a_ledger_number_i, a_motivation_group_code_c, a_motivation_detail_code_c"/>
+    <foreignkey name="a_motivation_detail_fee_fk2"
+                descr=""
+                thisFields="a_ledger_number_i"
+                otherTable="a_ledger"
+                otherFields="a_ledger_number_i"/> <!-- to give us LoadViaALedger -->
     <!-- Explicit Indexes on table a_motivation_detail_fee  -->
   </table>
   <table name="a_processed_fee"
@@ -10459,6 +10464,11 @@
                 thisFields="a_ledger_number_i, a_batch_number_i, a_gift_transaction_number_i, a_detail_number_i"
                 otherTable="a_gift_detail"
                 otherFields="a_ledger_number_i, a_batch_number_i, a_gift_transaction_number_i, a_detail_number_i"/>
+    <foreignkey name="a_processed_fee_fk4"
+                descr=""
+                thisFields="a_ledger_number_i, a_batch_number_i"
+                otherTable="a_gift_batch"
+                otherFields="a_ledger_number_i, a_batch_number_i"/> <!-- this foreign key is to give us LoadViaAGiftBatch -->
     <!-- Explicit Indexes on table a_processed_fee  -->
     <index name="a_processed_fee_k"
            descr="key"
