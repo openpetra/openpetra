@@ -43,9 +43,9 @@ using Ict.Petra.Shared.Interfaces.MPartner.Partner;
 namespace Ict.Petra.Client.MPartner
 {
     /// <summary>
-    /// Contains logic for the UC_Relationships UserControl.
+    /// Contains logic for the UC_PartnerRelationships UserControl.
     /// </summary>
-    public class TUCRelationshipsLogic
+    public class TUCPartnerRelationshipsLogic
     {
         private PartnerEditTDS FMainDS;
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
@@ -104,7 +104,7 @@ namespace Ict.Petra.Client.MPartner
 
                 if (TClientSettings.DelayedDataLoading)
                 {
-                    FMainDS.Merge(FPartnerEditUIConnector.GetDataRelationships());
+                    FMainDS.Merge(FPartnerEditUIConnector.GetDataPartnerRelationships());
 
                     // Make DataRows unchanged
                     if (FMainDS.PPartnerRelationship.Rows.Count > 0)

@@ -83,7 +83,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         public const String StrSpecialTypesTabHeader = "Special Types";
 
         /// <summary>todoComment</summary>
-        public const String StrRelationshipsTabHeader = "Relationships";
+        public const String StrPartnerRelationshipsTabHeader = "Relationships";
 
         /// <summary>todoComment</summary>
         public const String StrFamilyMembersTabHeader = "Family Members";
@@ -587,17 +587,17 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     CorrectDataGridWidthsAfterDataChange();
                 }
-                else if (ATabPageEventArgs.Tab == tpgRelationships)
+                else if (ATabPageEventArgs.Tab == tpgPartnerRelationships)
                 {
-                    FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpRelationships;
+                    FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpPartnerRelationships;
 
                     // Hook up RecalculateScreenParts Event
-                    FUcoRelationships.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
+                    FUcoPartnerRelationships.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
 
-                    FUcoRelationships.PartnerEditUIConnector = FPartnerEditUIConnector;
-                    FUcoRelationships.HookupDataChange += new THookupPartnerEditDataChangeEventHandler(Uco_HookupPartnerEditDataChange);
+                    FUcoPartnerRelationships.PartnerEditUIConnector = FPartnerEditUIConnector;
+                    FUcoPartnerRelationships.HookupDataChange += new THookupPartnerEditDataChangeEventHandler(Uco_HookupPartnerEditDataChange);
 
-                    FUcoRelationships.SpecialInitUserControl();
+                    FUcoPartnerRelationships.SpecialInitUserControl();
 
                     CorrectDataGridWidthsAfterDataChange();
                 }
@@ -735,18 +735,18 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
-            if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUC_Relationships))
+            if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUC_PartnerRelationships))
             {
                 if (FMainDS.Tables.Contains(PPartnerRelationshipTable.GetTableName()))
                 {
-                    Calculations.CalculateTabCountsRelationships(FMainDS.PPartnerRelationship, out CountAll);
+                    Calculations.CalculateTabCountsPartnerRelationships(FMainDS.PPartnerRelationship, out CountAll);
                 }
                 else
                 {
-                    CountAll = FMainDS.MiscellaneousData[0].ItemsCountRelationships;
+                    CountAll = FMainDS.MiscellaneousData[0].ItemsCountPartnerRelationships;
                 }
-
-                tpgRelationships.Text = String.Format(StrRelationshipsTabHeader + " ({0})", CountAll);
+ 
+                tpgPartnerRelationships.Text = String.Format(StrPartnerRelationshipsTabHeader + " ({0})", CountAll);
             }
             
             if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUC_FamilyMembers))
@@ -830,9 +830,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FUcoPartnerTypes.AdjustAfterResizing();
                 }
 
-                if (FUcoRelationships != null)
+                if (FUcoPartnerRelationships != null)
                 {
-                    FUcoRelationships.AdjustAfterResizing();
+                    FUcoPartnerRelationships.AdjustAfterResizing();
                 }
                 
                 // TODO
@@ -956,8 +956,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     tabPartners.SelectedTab = tpgPartnerTypes;
                     break;
 
-                case TPartnerEditTabPageEnum.petpRelationships:
-                    tabPartners.SelectedTab = tpgRelationships;
+                case TPartnerEditTabPageEnum.petpPartnerRelationships:
+                    tabPartners.SelectedTab = tpgPartnerRelationships;
                     break;
 
                 case TPartnerEditTabPageEnum.petpFamilyMembers:

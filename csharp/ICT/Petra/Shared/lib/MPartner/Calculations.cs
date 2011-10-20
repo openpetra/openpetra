@@ -667,7 +667,7 @@ namespace Ict.Petra.Shared.MPartner
         /// </summary>
         /// <param name="ATable">table with subscriptions</param>
         /// <param name="ATotalRelationships">returns the total number of relationships</param>
-        public static void CalculateTabCountsRelationships(PPartnerRelationshipTable ATable, out Int32 ATotalRelationships)
+        public static void CalculateTabCountsPartnerRelationships(PPartnerRelationshipTable ATable, out Int32 ATotalRelationships)
         {
             // Inspect only CurrentRows (this excludes Deleted DataRows)
             ATotalRelationships = new DataView(ATable, "", "", DataViewRowState.CurrentRows).Count;

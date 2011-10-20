@@ -557,7 +557,7 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.UIConnectors.TPartnerEditUIConnector)</summary>
         PPartnerTypeTable GetDataPartnerTypes();
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.UIConnectors.TPartnerEditUIConnector)</summary>
-        PartnerEditTDSPPartnerRelationshipTable GetDataRelationships();
+        PartnerEditTDSPPartnerRelationshipTable GetDataPartnerRelationships();
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.UIConnectors.TPartnerEditUIConnector)</summary>
         PSubscriptionTable GetDataSubscriptions();
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.UIConnectors.TPartnerEditUIConnector)</summary>

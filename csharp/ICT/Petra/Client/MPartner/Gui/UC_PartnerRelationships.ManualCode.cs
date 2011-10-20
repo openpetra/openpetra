@@ -37,13 +37,13 @@ using Ict.Petra.Shared.Interfaces.MPartner;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
-    public partial class TUC_Relationships
+    public partial class TUC_PartnerRelationships
     {
 
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
 
-        private TUCRelationshipsLogic FLogic;
+        private TUCPartnerRelationshipsLogic FLogic;
         
         #region Public Methods
 
@@ -117,7 +117,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             grdDetails.AddTextColumn("Class", FMainDS.PPartnerRelationship.Columns[PartnerEditTDSPPartnerRelationshipTable.GetPartnerClassDBName()]);
             grdDetails.AddTextColumn("Comment", FMainDS.PPartnerRelationship.Columns[PPartnerRelationshipTable.GetCommentDBName()]);
 
-            OnHookupDataChange(new THookupPartnerEditDataChangeEventArgs(TPartnerEditTabPageEnum.petpRelationships));
+            OnHookupDataChange(new THookupPartnerEditDataChangeEventArgs(TPartnerEditTabPageEnum.petpPartnerRelationships));
 
             // Hook up DataSavingStarted Event to be able to run code before SaveChanges is doing anything
             FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(this.DataSavingStarted);
@@ -157,7 +157,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void InitializeManualCode()
         {
-            FLogic = new TUCRelationshipsLogic();
+            FLogic = new TUCPartnerRelationshipsLogic();
 
             FMainDS.Tables.Add(new PartnerEditTDSPPartnerRelationshipTable());
             FMainDS.InitVars();

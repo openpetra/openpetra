@@ -48,10 +48,10 @@ RootNode:
             Label: Family Members
             Image: FamilyMembers.ico
 
-        tpgRelationships: {LoadPageDynamically=true}
+        tpgPartnerRelationships: {LoadPageDynamically=true}
             Label: Relationships ({0})
             Image: Relationships.ico
-            DynamicControlType: Ict.Petra.Client.MPartner.Gui.TUC_Relationships
+            DynamicControlType: Ict.Petra.Client.MPartner.Gui.TUC_PartnerRelationships
 
         tpgNotes: {LoadPageDynamically=true}
             Label: Notes ({0})

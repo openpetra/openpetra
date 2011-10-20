@@ -411,7 +411,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             Int32 ItemsCountSubscriptions = 0;
             Int32 ItemsCountSubscriptionsActive = 0;
             Int32 ItemsCountPartnerTypes = 0;
-			Int32 ItemsCountRelationships = 0;
+			Int32 ItemsCountPartnerRelationships = 0;
             Int32 ItemsCountFamilyMembers = 0;
             Int32 ItemsCountPartnerInterests = 0;
             Int32 ItemsCountInterests = 0;
@@ -493,14 +493,14 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         FPartnerEditScreenDS.PSubscription.Rows.Clear();
                     }
 
-                    // Relationships
-                    FPartnerEditScreenDS.Merge(GetRelationshipsInternal(out ItemsCountRelationships, false));
+                    // Partner Relationships
+                    FPartnerEditScreenDS.Merge(GetPartnerRelationshipsInternal(out ItemsCountPartnerRelationships, false));
 
-                    if ((ADelayedDataLoading) && (ATabPage != TPartnerEditTabPageEnum.petpRelationships))
+                    if ((ADelayedDataLoading) && (ATabPage != TPartnerEditTabPageEnum.petpPartnerRelationships))
                     {
                         // Only count Relationships
-                        Calculations.CalculateTabCountsRelationships(FPartnerEditScreenDS.PPartnerRelationship,
-                            out ItemsCountRelationships);
+                        Calculations.CalculateTabCountsPartnerRelationships(FPartnerEditScreenDS.PPartnerRelationship,
+                            out ItemsCountPartnerRelationships);
 
                         // Empty Tables again, we don't want to transfer the data contained in them
                         FPartnerEditScreenDS.PPartnerRelationship.Rows.Clear();
@@ -810,7 +810,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     MiscellaneousDataDR.ItemsCountSubscriptions = ItemsCountSubscriptions;
                     MiscellaneousDataDR.ItemsCountSubscriptionsActive = ItemsCountSubscriptionsActive;
                     MiscellaneousDataDR.ItemsCountPartnerTypes = ItemsCountPartnerTypes;
-                    MiscellaneousDataDR.ItemsCountRelationships = ItemsCountRelationships;
+                    MiscellaneousDataDR.ItemsCountPartnerRelationships = ItemsCountPartnerRelationships;
                     MiscellaneousDataDR.ItemsCountFamilyMembers = ItemsCountFamilyMembers;
                     MiscellaneousDataDR.ItemsCountInterests = ItemsCountPartnerInterests;
                     MiscellaneousDataDR.OfficeSpecificDataLabelsAvailable = OfficeSpecificDataLabelsAvailable;
@@ -936,7 +936,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             Int32 ItemsCountSubscriptions = 0;
             Int32 ItemsCountSubscriptionsActive = 0;
             Int32 ItemsCountPartnerTypes = 0;
-            Int32 ItemsCountRelationships = 0;
+            Int32 ItemsCountPartnerRelationships = 0;
             Int32 ItemsCountFamilyMembers = 0;
             Int32 ItemsCountInterests = 0;
             Int64 FoundationOwner1Key = 0;
@@ -1369,7 +1369,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 MiscellaneousDataDR.ItemsCountSubscriptions = ItemsCountSubscriptions;
                 MiscellaneousDataDR.ItemsCountSubscriptionsActive = ItemsCountSubscriptionsActive;
                 MiscellaneousDataDR.ItemsCountPartnerTypes = ItemsCountPartnerTypes;
-                MiscellaneousDataDR.ItemsCountRelationships = ItemsCountRelationships;
+                MiscellaneousDataDR.ItemsCountPartnerRelationships = ItemsCountPartnerRelationships;
                 MiscellaneousDataDR.ItemsCountFamilyMembers = ItemsCountFamilyMembers;
                 MiscellaneousDataDR.ItemsCountInterests = ItemsCountInterests;
                 MiscellaneousDataDR.OfficeSpecificDataLabelsAvailable = OfficeSpecificDataLabelsAvailable;
@@ -1501,11 +1501,11 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         /// todoComment
         /// </summary>
         /// <returns></returns>
-        public PartnerEditTDSPPartnerRelationshipTable GetDataRelationships()
+        public PartnerEditTDSPPartnerRelationshipTable GetDataPartnerRelationships()
         {
             Int32 RelationshipsCount;
 
-            return GetRelationshipsInternal(out RelationshipsCount, false);
+            return GetPartnerRelationshipsInternal(out RelationshipsCount, false);
         }
         
         /// <summary>
@@ -3092,7 +3092,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             return GetSubscriptionsInternal(out ACount, false);
         }
 
-        private PartnerEditTDSPPartnerRelationshipTable GetRelationshipsInternal(out Int32 ACount, Boolean ACountOnly)
+        private PartnerEditTDSPPartnerRelationshipTable GetPartnerRelationshipsInternal(out Int32 ACount, Boolean ACountOnly)
         {
             TDBTransaction ReadTransaction;
             Boolean NewTransaction = false;

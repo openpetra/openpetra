@@ -83,7 +83,7 @@ namespace Ict.Petra.Shared.MPartner
         /// <summary>
         /// page for relationships between partners
         /// </summary>
-        petpRelationships,
+        petpPartnerRelationships,
 
         /// <summary>
         /// page for contact management

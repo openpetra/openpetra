@@ -60,7 +60,7 @@
             <CustomField name="ItemsCountFamilyMembers" type="Int32"/>
             <CustomField name="ItemsCountInterests" type="Int32"/>
             <CustomField name="ItemsCountReminders" type="Int32"/>            <!-- not in use yet! -->
-            <CustomField name="ItemsCountRelationships" type="Int32"/>        <!-- not in use yet! -->
+            <CustomField name="ItemsCountPartnerRelationships" type="Int32"/>        <!-- not in use yet! -->
             <CustomField name="ItemsCountContacts" type="Int32"/>         <!-- not in use yet! -->            
             <CustomField name="OfficeSpecificDataLabelsAvailable" type="bool"/>
             <CustomField name="FoundationOwner1Key" type="Int64"/>
