@@ -1,0 +1,62 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain Currency Language Setup
+    Namespace: Ict.Petra.Client.MFinance.Gui.Setup
+    DetailTable: ACurrencyLanguage
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.Gift.Data]
+    FormType: edit
+    Template: windowMaintainTable
+    WindowWidth: 660
+    WindowHeight: 500
+    Actions:
+        actNew: {Label=New, ActionClick=NewRecord}
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew]
+        btnNew:
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailCurrencyCode, DetailLanguageCode, DetailUnitLabelSingular, DetailUnitLabelPlural, DetailSpecialCode, DetailDecimalOptions, DetailDecimalLabelSingular, DetailDecimalLabelPlural]
+            CustomColumns:
+                DetailLanguageCode: {Label=Language}
+                DetailUnitLabelSingular: {Label=Singular Unit}
+                DetailUnitLabelPlural: {Label=Plural Unit}
+                DetailDecimalLabelSingular: {Label=Singular Decimal}
+                DetailDecimalLabelPlural: {Label=Plural Decimal}
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [cmbDetailCurrencyCode]
+                Row1: [cmbDetailLanguageCode]
+                Row2: [lblUnit, lblDecimal]
+                Row3: [txtDetailUnitLabelSingular, txtDetailDecimalLabelSingular]
+                Row4: [txtDetailUnitLabelPlural, txtDetailDecimalLabelPlural]
+                Row5: [txtDetailSpecialCode, lblSpecialCodeInfo]
+                Row6: [rgrDetailDecimalOptions]
+        cmbDetailCurrencyCode: {Label=Currency Code, List=CurrencyCodeList, ColSpan=3, ComboBoxWidth=130}
+        cmbDetailLanguageCode: {Label=Language Code, List=LanguageCodeList, ColSpan=3, ComboBoxWidth=130}
+        lblUnit: {Text=Unit e.g.Dollar}
+        lblDecimal: {Text=Decimal e.g Cent}
+        txtDetailUnitLabelSingular: {Label=Singular amount, Width=90}
+        txtDetailDecimalLabelSingular: {NoLabel=true, Width=90}
+        txtDetailUnitLabelPlural: {Label=Plural amount, Width=90}
+        txtDetailDecimalLabelPlural: {NoLabel=true, Width=90}
+        txtDetailSpecialCode: {Label=Special Code, Width=90}
+        lblSpecialCodeInfo: {Text=e.g. language gender}
+        rgrDetailDecimalOptions:
+            OptionalValues: ["Numeric", "Text", "None"]
+            Label: Format for decimal amounts
+            BorderVisible: false
+            ControlsOrientation: horizontal
+
+    Toolbar:
+        tbbNew: 
+            Label: New Language Setup

@@ -114,6 +114,7 @@ CachedTables:
         Conference:
             DatabaseTables:
                 PcConferenceOptionType:
+                PcCostType: {Enum=ConferenceCostTypeList}
     SysMan:
         SysMan:
             DatabaseTables:

@@ -286,6 +286,9 @@ OpenPetra:
                         ReceivingFieldReport: {ActionOpenScreen=TFrmReceivingFieldReport}
                         RegisteringFieldReport: {ActionOpenScreen=TFrmRegisteringFieldReport}
                         OutreachReport: {ActionOpenScreen=TFrmOutreachReport}
+                Setup: {Namespace=Ict.Petra.Client.MConference.Gui.Setup}
+                    General:
+                        ConferenceCostType: {Label= Setup Conference Cost Types, Description=Maintain Conference Cost Types, ActionOpenScreen=TFrmConferenceCostTypeSetup}
         FinancialDevelopment: {Icon=develope_small.ico, Namespace=Ict.Petra.Client.MFinDev.Gui, Label=FinDev {0} {1}, DependsOnLedger=true, PermissionsRequired=DEVUSER}
             Reports:
                 Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinDev}

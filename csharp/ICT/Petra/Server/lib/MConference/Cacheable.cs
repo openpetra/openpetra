@@ -149,6 +149,12 @@ namespace Ict.Petra.Server.MConference.Cacheable
                             DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
+                        case TCacheableConferenceTablesEnum.ConferenceCostTypeList:
+                        {
+                            DataTable TmpTable = PcCostTypeAccess.LoadAll(ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
 
                         default:
                             // Unknown Standard Cacheable DataTable
@@ -216,6 +222,13 @@ namespace Ict.Petra.Server.MConference.Cacheable
                     {
                         case TCacheableConferenceTablesEnum.ConferenceOptionTypeList:
                             if (PcConferenceOptionTypeAccess.SubmitChanges((PcConferenceOptionTypeTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            break;
+                        case TCacheableConferenceTablesEnum.ConferenceCostTypeList:
+                            if (PcCostTypeAccess.SubmitChanges((PcCostTypeTable)ASubmitTable, SubmitChangesTransaction,
                                     out SingleVerificationResultCollection))
                             {
                                 SubmissionResult = TSubmitChangesResult.scrOK;

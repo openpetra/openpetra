@@ -27,6 +27,8 @@ using System.IO;
 using System.IO.IsolatedStorage;
 using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Shared.Interfaces.MPartner;
+using Ict.Petra.Shared.Interfaces.MConference;
+using Ict.Petra.Shared.MConference;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPersonnel;
@@ -109,6 +111,33 @@ namespace Ict.Petra.Client.App.Core
         #endregion
 
 
+        #region TDataCache.TMCommon
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        public class TMConference
+        {
+            /**
+             * Returns the chosen DataTable for the Conference Namespace from the Cache.
+             *
+             * If the DataTable is not available on the Client side, it is automatically
+             * retrieved from the Petra Server.
+             *
+             * @param ACacheableTable The cached DataTable that should be returned in the
+             * DataSet
+             * @return Chosen DataTable
+             *
+             */
+            public static DataTable GetCacheableCommonTable(TCacheableConferenceTablesEnum ACacheableTable)
+            {
+                return TDataCache.GetCacheableDataTableFromCache(ACacheableTable.ToString());
+            }
+        }
+
+        #endregion
+
+        
         #region TDataCache.TMPartner
         /// <summary>
         /// todoComment
@@ -661,6 +690,7 @@ namespace Ict.Petra.Client.App.Core
             TCacheableSysManTablesEnum CacheableMSysManTable;
             TCacheablePersonTablesEnum CacheableMPersonnelPersonTable;
             TCacheableUnitTablesEnum CacheableMPersonnelUnitsTable;
+            TCacheableConferenceTablesEnum CacheableMConferenceTable;
             ReturnValue = null;
 
             if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableCommonTablesEnum)), ACacheableTableName) != -1)
@@ -670,6 +700,17 @@ namespace Ict.Petra.Client.App.Core
 
                 // PetraServer method call
                 ReturnValue = TRemote.MCommon.Cacheable.GetCacheableTable(CacheableMCommonTable,
+                    AHashCode,
+                    out ACacheableTableSystemType);
+            }
+            else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableConferenceTablesEnum)), ACacheableTableName) != -1)
+            {
+                // MConference Namespace
+                CacheableMConferenceTable = (TCacheableConferenceTablesEnum)Enum.Parse(typeof(TCacheableConferenceTablesEnum),
+                    ACacheableTableName);
+
+                // PetraServer method call
+                ReturnValue = TRemote.MConference.Cacheable.GetCacheableTable(CacheableMConferenceTable,
                     AHashCode,
                     out ACacheableTableSystemType);
             }
@@ -1178,6 +1219,7 @@ namespace Ict.Petra.Client.App.Core
         {
             TSubmitChangesResult ReturnValue = TSubmitChangesResult.scrError;
             TCacheableCommonTablesEnum CacheableMCommonTable;
+            TCacheableConferenceTablesEnum CacheableMConferenceTable;
             TCacheableFinanceTablesEnum CacheableMFinanceTable;
             TCacheableSubscriptionsTablesEnum CacheableMPartnerSubscriptionsTable;
             TCacheablePartnerTablesEnum CacheableMPartnerPartnerTable;
@@ -1194,6 +1236,16 @@ namespace Ict.Petra.Client.App.Core
 
                 // PetraServer method call
                 ReturnValue = TRemote.MCommon.Cacheable.SaveChangedStandardCacheableTable(CacheableMCommonTable,
+                    ref AChangedCacheableDT,
+                    out AVerificationResult);
+            }
+            else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableConferenceTablesEnum)), ACacheableTableName) != -1)
+            {
+                // MConference Namespace
+                CacheableMConferenceTable = (TCacheableConferenceTablesEnum)Enum.Parse(typeof(TCacheableConferenceTablesEnum), ACacheableTableName);
+
+                // PetraServer method call
+                ReturnValue = TRemote.MConference.Cacheable.SaveChangedStandardCacheableTable(CacheableMConferenceTable,
                     ref AChangedCacheableDT,
                     out AVerificationResult);
             }
