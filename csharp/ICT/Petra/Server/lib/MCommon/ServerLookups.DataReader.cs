@@ -96,6 +96,10 @@ namespace Ict.Petra.Server.MCommon.DataReader
                 {
                     tempTable = ACorporateExchangeRateAccess.LoadAll(ReadTransaction);
                 }
+                else if (ATablename == ACurrencyLanguageTable.GetTableDBName())
+                {
+                    tempTable = ACurrencyLanguageAccess.LoadAll(ReadTransaction);
+                }
                 else if (ATablename == AFeesPayableTable.GetTableDBName())
                 {
                     tempTable = AFeesPayableAccess.LoadAll(ReadTransaction);
@@ -214,6 +218,18 @@ namespace Ict.Petra.Server.MCommon.DataReader
                     else if (ATablename == ACorporateExchangeRateTable.GetTableDBName())
                     {
                         if (ACorporateExchangeRateAccess.SubmitChanges((ACorporateExchangeRateTable)ASubmitTable, SubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
+                    else if (ATablename == ACurrencyLanguageTable.GetTableDBName())
+                    {
+                        if (ACurrencyLanguageAccess.SubmitChanges((ACurrencyLanguageTable)ASubmitTable, SubmitChangesTransaction,
                                 out SingleVerificationResultCollection))
                         {
                             SubmissionResult = TSubmitChangesResult.scrOK;
