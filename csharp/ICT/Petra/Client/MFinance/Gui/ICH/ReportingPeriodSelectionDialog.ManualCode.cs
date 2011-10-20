@@ -88,7 +88,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
         {
             get
             {
-                return FNumberForwardingPeriods;
+                return FNumberAccountingPeriods;
             }
         }
 

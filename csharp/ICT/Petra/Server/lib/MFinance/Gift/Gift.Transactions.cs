@@ -895,7 +895,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="AFeeCode"></param>
         /// <param name="AGiftAmount"></param>
+        /// <param name="AVerificationResult"></param>
         /// <returns></returns>
+        [RequireModulePermission("FINANCE-3")]
         public static decimal CalculateAdminFee(GiftBatchTDS MainDS,
             Int32 ALedgerNumber,
             string AFeeCode,
