@@ -25,9 +25,9 @@ using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using Ict.Testing.NUnitForms;
+using Ict.Common.Verification;
 using Ict.Petra.Server.MFinance.GL;
 using Ict.Petra.Server.MFinance.Common;
-
 
 namespace Ict.Testing.Petra.Server.MFinance.GL
 {
@@ -104,7 +104,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 new FormatConverter("nonsens");
                 Assert.Fail("No InternalException thrown");
             }
-            catch (TerminateException internalException)
+            catch (TVerificationException internalException)
             {
                 Assert.AreEqual("TCurrencyInfo03", internalException.ErrorCode, "Wrong Error Code");
             }
@@ -126,7 +126,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 new TCurrencyInfo("JPN");
                 Assert.Fail("No InternalException thrown");
             }
-            catch (TerminateException internalException)
+            catch (TVerificationException internalException)
             {
                 Assert.AreEqual("TCurrencyInfo02", internalException.ErrorCode, "Wrong Error Code");
             }
@@ -140,7 +140,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 new TCurrencyInfo("DMG");
                 Assert.Fail("No InternalException thrown");
             }
-            catch (TerminateException internalException)
+            catch (TVerificationException internalException)
             {
                 if (internalException.ErrorCode.Equals("TCurrencyInfo01"))
                 {

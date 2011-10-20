@@ -4,11 +4,9 @@ RootNode:
     Namespace: Ict.Petra.Client.MFinance.Gui.Setup.Gift
     DatasetType: Ict.Petra.Shared.MFinance.Gift.Data.GiftBatchTDS
     DetailTable: AMotivationDetail
-    CacheableTable: MotivationList
-    CacheableTableSpecificFilter: Ledger
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Gift.Data]
     FormType: edit
-    Template: windowMaintainCacheableTable
+    Template: windowEdit
     WindowWidth: 660
     WindowHeight: 700
     Actions:
@@ -38,6 +36,7 @@ RootNode:
                 Row3: [cmbDetailAccountCode]
                 Row4: [cmbDetailCostCentreCode]
                 Row5: [chkDetailMotivationStatus, chkDetailReceipt]
+                Row6: [clbDetailFeesPayable, clbDetailFeesReceivable]
             ColWidths: [1=Fixed:200]
         txtDetailMotivationGroupCode: {Label=Group}
         txtDetailMotivationDetailCode: {Label=Detail, CharacterCasing=Upper}
@@ -46,6 +45,10 @@ RootNode:
         cmbDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList, ColSpan=3}
         chkDetailMotivationStatus: {Label=Active}
         chkDetailReceipt: {Label=Print Receipt}
+        clbDetailFeesPayable:
+            List: UserDefinedList
+        clbDetailFeesReceivable:
+            List: UserDefinedList
     Toolbar:
         tbbNew:
             Label: New Motivation Detail
