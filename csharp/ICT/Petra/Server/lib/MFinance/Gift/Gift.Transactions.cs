@@ -755,11 +755,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="AGiftAmount"></param>
         /// <returns></returns>
         public static decimal CalculateAdminFee(GiftBatchTDS MainDS,
-                                                Int32 ALedgerNumber,
-                                                string AFeeCode,
-                                                decimal AGiftAmount,
-                                                out TVerificationResultCollection AVerificationResult
-                                                )
+            Int32 ALedgerNumber,
+            string AFeeCode,
+            decimal AGiftAmount,
+            out TVerificationResultCollection AVerificationResult
+            )
         {
             //Amount to return
             decimal FeeAmount = 0;
@@ -773,8 +773,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             string ErrorMessage = String.Empty;
             //Set default type as non-critical
             TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
+
             AVerificationResult = null;
-            
+
             try
             {
                 AFeesPayableRow feePayableRow = (AFeesPayableRow)MainDS.AFeesPayable.Rows.Find(new object[] { ALedgerNumber, AFeeCode });
@@ -782,13 +783,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 if (feePayableRow == null)
                 {
                     AFeesReceivableRow feeReceivableRow = (AFeesReceivableRow)MainDS.AFeesReceivable.Rows.Find(new object[] { ALedgerNumber, AFeeCode });
+
                     if (feeReceivableRow == null)
                     {
                         ErrorContext = "Calculate Admin Fee";
                         ErrorMessage = String.Format(Catalog.GetString("The Ledger no.: {0} or Fee Code: {1} does not exist."),
-                                                     ALedgerNumber,
-                                                     AFeeCode
-                                                    );
+                            ALedgerNumber,
+                            AFeeCode
+                            );
                         ErrorType = TResultSeverity.Resv_Noncritical;
                         throw new System.ArgumentException(ErrorMessage);
                     }
@@ -872,10 +874,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                     default:
                         ErrorContext = "Calculate Admin Fee";
-                        ErrorMessage = String.Format(Catalog.GetString("Unexpected Fee Payable/Receivable Charge Option in Ledger: {0} and Fee Code: '{1}'."),
-                                                     ALedgerNumber,
-                                                     AFeeCode
-                                                    );
+                        ErrorMessage =
+                            String.Format(Catalog.GetString("Unexpected Fee Payable/Receivable Charge Option in Ledger: {0} and Fee Code: '{1}'."),
+                                ALedgerNumber,
+                                AFeeCode
+                                );
                         ErrorType = TResultSeverity.Resv_Noncritical;
                         throw new System.InvalidOperationException(ErrorMessage);
                 }
@@ -892,10 +895,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             {
                 ErrorContext = "Calculate Admin Fee";
                 ErrorMessage = String.Format(Catalog.GetString("Unknown error while calculating admin fee for Ledger: {0} and Fee Code: {1}" +
-                                                                Environment.NewLine + Environment.NewLine + ex.ToString()),
-                                             ALedgerNumber,
-                                             AFeeCode
-                                            );
+                        Environment.NewLine + Environment.NewLine + ex.ToString()),
+                    ALedgerNumber,
+                    AFeeCode
+                    );
                 ErrorType = TResultSeverity.Resv_Critical;
                 AVerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
             }
@@ -980,7 +983,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     if ((motivationFeeRow.MotivationDetailCode == motivationRow.MotivationDetailCode)
                         && (motivationFeeRow.MotivationGroupCode == motivationRow.MotivationGroupCode))
                     {
-                        decimal FeeAmount = CalculateAdminFee(MainDS, ALedgerNumber, motivationFeeRow.FeeCode, giftDetail.GiftAmount, out AVerifications);
+                        decimal FeeAmount = CalculateAdminFee(MainDS,
+                            ALedgerNumber,
+                            motivationFeeRow.FeeCode,
+                            giftDetail.GiftAmount,
+                            out AVerifications);
                         AddToFeeTotals(MainDS, giftDetail, motivationFeeRow.FeeCode, FeeAmount, MainDS.AGiftBatch[0].BatchPeriod);
                     }
                 }

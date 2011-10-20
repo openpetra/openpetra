@@ -110,7 +110,7 @@ namespace Tests.MFinance.Server.Gift
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
 
             TVerificationResultCollection VerficationResults = null;
-            
+
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
             AFeesPayableAccess.LoadViaALedger(MainDS, FLedgerNumber, Transaction);
@@ -120,7 +120,11 @@ namespace Tests.MFinance.Server.Gift
 
             //TODO If this first one works, try different permatations for Assert.AreEqual
             // Test also for exception handling
-            Assert.AreEqual(-30m, TTransactionWebConnector.CalculateAdminFee(MainDS, FLedgerNumber, "NEWCODEP", -200m, out VerficationResults), "expect 15");
+            Assert.AreEqual(-30m, TTransactionWebConnector.CalculateAdminFee(MainDS,
+                    FLedgerNumber,
+                    "NEWCODEP",
+                    -200m,
+                    out VerficationResults), "expect 15");
         }
     }
 }
