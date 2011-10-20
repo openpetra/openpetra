@@ -953,7 +953,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 switch (ChargeOption)
                 {
                     case MFinanceConstants.ADMIN_CHARGE_OPTION_FIXED:
-                        FeeAmount = ChargeAmount;
+                        if (AGiftAmount >= 0)
+                        {
+                            FeeAmount = ChargeAmount;
+                        }
+                        else
+                        {
+                            FeeAmount = -ChargeAmount;
+                        }
                         break;
 
                     case MFinanceConstants.ADMIN_CHARGE_OPTION_MIN:
