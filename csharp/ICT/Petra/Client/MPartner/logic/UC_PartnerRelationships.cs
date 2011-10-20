@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangb
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -114,25 +114,28 @@ namespace Ict.Petra.Client.MPartner
                 }
 
                 // Add relation table to data set
-                FMainDS.Tables.Add (new PRelationTable());
+                FMainDS.Tables.Add(new PRelationTable());
                 relationTable = (PRelationTable)TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.RelationList);
                 // rename data table as otherwise the merge with the data set won't work; tables need to have same name
                 relationTable.TableName = "PRelation";
                 FMainDS.Merge(relationTable);
-                FMainDS.EnableRelation (new TTypedRelation("PartnerRelation", 
-                                                           PRelationTable.GetTableName(), 
-                                                           new string[] {PRelationTable.GetRelationNameDBName()},
-                                                           PPartnerRelationshipTable.GetTableName(), 
-                                                           new string[] {PPartnerRelationshipTable.GetRelationNameDBName()},
-                                                           false));
+                FMainDS.EnableRelation(new TTypedRelation("PartnerRelation",
+                        PRelationTable.GetTableName(),
+                        new string[] { PRelationTable.GetRelationNameDBName() },
+                        PPartnerRelationshipTable.GetTableName(),
+                        new string[] { PPartnerRelationshipTable.GetRelationNameDBName() },
+                        false));
 
                 // add column to display the other partner key depending on direction of relationship
                 ForeignTableColumn = new DataColumn();
                 ForeignTableColumn.DataType = System.Type.GetType("System.Decimal");
                 ForeignTableColumn.ColumnName = "OtherPartnerKey";
-                ForeignTableColumn.Expression = "IIF(" + PPartnerRelationshipTable.GetPartnerKeyDBName() + "=" + ((PPartnerRow)FMainDS.PPartner.Rows[0]).PartnerKey.ToString() + "," + PPartnerRelationshipTable.GetRelationKeyDBName()+"," + PPartnerRelationshipTable.GetPartnerKeyDBName()+")";
+                ForeignTableColumn.Expression = "IIF(" + PPartnerRelationshipTable.GetPartnerKeyDBName() + "=" +
+                                                ((PPartnerRow)FMainDS.PPartner.Rows[0]).PartnerKey.ToString() + "," +
+                                                PPartnerRelationshipTable.GetRelationKeyDBName() + "," +
+                                                PPartnerRelationshipTable.GetPartnerKeyDBName() + ")";
                 FMainDS.PPartnerRelationship.Columns.Add(ForeignTableColumn);
-                
+
                 // add column for relation description
                 ForeignTableColumn = new DataColumn();
                 ForeignTableColumn.DataType = System.Type.GetType("System.String");
@@ -151,9 +154,12 @@ namespace Ict.Petra.Client.MPartner
                 ForeignTableColumn = new DataColumn();
                 ForeignTableColumn.DataType = System.Type.GetType("System.String");
                 ForeignTableColumn.ColumnName = "RelationDescription";
-                ForeignTableColumn.Expression = "IIF(" + PPartnerRelationshipTable.GetPartnerKeyDBName() + "=" + ((PPartnerRow)FMainDS.PPartner.Rows[0]).PartnerKey.ToString() + ",Parent_" + PRelationTable.GetRelationDescriptionDBName()+",Parent_" + PRelationTable.GetReciprocalDescriptionDBName()+")";
+                ForeignTableColumn.Expression = "IIF(" + PPartnerRelationshipTable.GetPartnerKeyDBName() + "=" +
+                                                ((PPartnerRow)FMainDS.PPartner.Rows[0]).PartnerKey.ToString() + ",Parent_" +
+                                                PRelationTable.GetRelationDescriptionDBName() +
+                                                ",Parent_" + PRelationTable.GetReciprocalDescriptionDBName() + ")";
                 FMainDS.PPartnerRelationship.Columns.Add(ForeignTableColumn);
-                
+
                 if (FMainDS.PPartnerRelationship.Rows.Count != 0)
                 {
                     ReturnValue = true;

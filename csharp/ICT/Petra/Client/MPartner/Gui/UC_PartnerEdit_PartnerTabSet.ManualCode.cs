@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -745,10 +745,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     CountAll = FMainDS.MiscellaneousData[0].ItemsCountPartnerRelationships;
                 }
- 
+
                 tpgPartnerRelationships.Text = String.Format(StrPartnerRelationshipsTabHeader + " ({0})", CountAll);
             }
-            
+
             if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUC_FamilyMembers))
             {
                 // determine Tab Title
@@ -834,7 +834,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     FUcoPartnerRelationships.AdjustAfterResizing();
                 }
-                
+
                 // TODO
 //                if (FUcoFamilyMembers != null)
 //                {

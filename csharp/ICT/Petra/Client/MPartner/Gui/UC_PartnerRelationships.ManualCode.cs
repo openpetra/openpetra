@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangb
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -39,12 +39,11 @@ namespace Ict.Petra.Client.MPartner.Gui
 {
     public partial class TUC_PartnerRelationships
     {
-
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
 
         private TUCPartnerRelationshipsLogic FLogic;
-        
+
         #region Public Methods
 
         /// <summary>used for passing through the Clientside Proxy for the UIConnector</summary>
@@ -66,7 +65,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         /// <summary>todoComment</summary>
         public event THookupPartnerEditDataChangeEventHandler HookupDataChange;
-        
+
         private void RethrowRecalculateScreenParts(System.Object sender, TRecalculateScreenPartsEventArgs e)
         {
             OnRecalculateScreenParts(e);
@@ -87,7 +86,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 RecalculateScreenParts(this, e);
             }
         }
-        
+
         /// <summary>
         /// This Procedure will get called from the SaveChanges procedure before it
         /// actually performs any saving operation.
@@ -98,22 +97,22 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>void</returns>
         private void DataSavingStarted(System.Object sender, System.EventArgs e)
         {
-            GetDetailsFromControls (GetSelectedDetailRow());
+            GetDetailsFromControls(GetSelectedDetailRow());
         }
 
         /// <summary>todoComment</summary>
         public void SpecialInitUserControl()
         {
-
             // Set up screen logic
             FLogic.MultiTableDS = (PartnerEditTDS)FMainDS;
             FLogic.PartnerEditUIConnector = FPartnerEditUIConnector;
             FLogic.LoadDataOnDemand();
-            
+
             grdDetails.Columns.Clear();
             grdDetails.AddTextColumn("Description", FMainDS.PPartnerRelationship.Columns["RelationDescription"]);
             grdDetails.AddTextColumn("Partner Key", FMainDS.PPartnerRelationship.Columns["OtherPartnerKey"]);
-            grdDetails.AddTextColumn("Partner Name", FMainDS.PPartnerRelationship.Columns[PartnerEditTDSPPartnerRelationshipTable.GetPartnerShortNameDBName()]);
+            grdDetails.AddTextColumn("Partner Name",
+                FMainDS.PPartnerRelationship.Columns[PartnerEditTDSPPartnerRelationshipTable.GetPartnerShortNameDBName()]);
             grdDetails.AddTextColumn("Class", FMainDS.PPartnerRelationship.Columns[PartnerEditTDSPPartnerRelationshipTable.GetPartnerClassDBName()]);
             grdDetails.AddTextColumn("Comment", FMainDS.PPartnerRelationship.Columns[PPartnerRelationshipTable.GetCommentDBName()]);
 
@@ -130,7 +129,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             // enable grid to react to insert and delete keyboard keys
             grdDetails.InsertKeyPressed += new TKeyPressedEventHandler(grdDetails_InsertKeyPressed);
             grdDetails.DeleteKeyPressed += new TKeyPressedEventHandler(grdDetails_DeleteKeyPressed);
-            
+
             if (grdDetails.Rows.Count > 1)
             {
                 grdDetails.SelectRowInGrid(1);
@@ -141,7 +140,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 btnEditOtherPartner.Enabled = false;
             }
         }
-        
+
         /// <summary>
         /// This Method is needed for UserControls who get dynamicly loaded on TabPages.
         /// Since we don't have controls on this UserControl that need adjusting after resizing
@@ -150,7 +149,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void AdjustAfterResizing()
         {
         }
-        
+
         #endregion
 
         #region Private Methods
@@ -177,7 +176,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (ARow != null)
             {
                 btnDelete.Enabled = true;
-                
+
                 // depending on the relation select other partner to be edited
                 if (ARow.PartnerKey == ((PPartnerRow)FMainDS.PPartner.Rows[0]).PartnerKey)
                 {
@@ -187,12 +186,13 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     RelationPartnerKey = GetSelectedDetailRow().PartnerKey;
                 }
-                
+
                 if (RelationPartnerKey != 0)
                 {
                     btnEditOtherPartner.Enabled = true;
                 }
             }
+
             if (ARow.RowState == DataRowState.Added)
             {
                 txtPPartnerRelationshipPartnerKey.Enabled = true;
@@ -206,7 +206,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 txtPPartnerRelationshipRelationKey.Enabled = false;
             }
         }
-        
+
         private void GetDetailDataFromControlsManual(PPartnerRelationshipRow ARow)
         {
         }
@@ -217,19 +217,20 @@ namespace Ict.Petra.Client.MPartner.Gui
             string PartnerShortName;
             TPartnerClass PartnerClass;
 
-            if (AValidSelection) 
+            if (AValidSelection)
             {
                 // display "other" partner name and class in grid
-                if (APartnerKey != ((PPartnerRow)FMainDS.PPartner.Rows[0]).PartnerKey
-                    && APartnerKey != 0)
+                if ((APartnerKey != ((PPartnerRow)FMainDS.PPartner.Rows[0]).PartnerKey)
+                    && (APartnerKey != 0))
                 {
                     CurrentRow = GetSelectedDetailRow();
+
                     if (CurrentRow.PartnerKey != APartnerKey)
                     {
-                        CurrentRow.PartnerKey       = APartnerKey;
-                        FPartnerEditUIConnector.GetPartnerShortName (APartnerKey, out PartnerShortName, out PartnerClass);
+                        CurrentRow.PartnerKey = APartnerKey;
+                        FPartnerEditUIConnector.GetPartnerShortName(APartnerKey, out PartnerShortName, out PartnerClass);
                         CurrentRow.PartnerShortName = PartnerShortName;
-                        CurrentRow.PartnerClass     = PartnerClass.ToString();
+                        CurrentRow.PartnerClass = PartnerClass.ToString();
                     }
                 }
             }
@@ -240,20 +241,21 @@ namespace Ict.Petra.Client.MPartner.Gui
             PartnerEditTDSPPartnerRelationshipRow CurrentRow;
             string PartnerShortName;
             TPartnerClass PartnerClass;
-            
-            if (AValidSelection) 
+
+            if (AValidSelection)
             {
                 // display "other" partner name and class in grid
-                if (APartnerKey != ((PPartnerRow)FMainDS.PPartner.Rows[0]).PartnerKey
-                    && APartnerKey != 0)
+                if ((APartnerKey != ((PPartnerRow)FMainDS.PPartner.Rows[0]).PartnerKey)
+                    && (APartnerKey != 0))
                 {
                     CurrentRow = GetSelectedDetailRow();
+
                     if (CurrentRow.RelationKey != APartnerKey)
                     {
-                        CurrentRow.RelationKey       = APartnerKey;
-                        FPartnerEditUIConnector.GetPartnerShortName (APartnerKey, out PartnerShortName, out PartnerClass);
+                        CurrentRow.RelationKey = APartnerKey;
+                        FPartnerEditUIConnector.GetPartnerShortName(APartnerKey, out PartnerShortName, out PartnerClass);
                         CurrentRow.PartnerShortName = PartnerShortName;
-                        CurrentRow.PartnerClass     = PartnerClass.ToString();
+                        CurrentRow.PartnerClass = PartnerClass.ToString();
                     }
                 }
             }
@@ -279,13 +281,13 @@ namespace Ict.Petra.Client.MPartner.Gui
                 this.DeleteRow(this, null);
             }
         }
-        
+
         private void NewRow(System.Object sender, EventArgs e)
         {
             TRecalculateScreenPartsEventArgs RecalculateScreenPartsEventArgs;
 
             CreateNewPPartnerRelationship();
-            
+
             // Fire OnRecalculateScreenParts event: reset counter in tab header
             RecalculateScreenPartsEventArgs = new TRecalculateScreenPartsEventArgs();
             RecalculateScreenPartsEventArgs.ScreenPart = TScreenPartEnum.spCounters;
@@ -339,7 +341,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FPreviouslySelectedDetailRow = null;
             }
         }
-        
+
         private void DeleteRow(System.Object sender, EventArgs e)
         {
             TRecalculateScreenPartsEventArgs RecalculateScreenPartsEventArgs;
@@ -364,7 +366,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void EditOtherPartner(System.Object sender, EventArgs e)
         {
             long RelationPartnerKey;
-            
+
             if (GetSelectedDetailRow() == null)
             {
                 return;
@@ -379,13 +381,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 RelationPartnerKey = GetSelectedDetailRow().PartnerKey;
             }
-                
-    
+
             if (RelationPartnerKey == 0)
             {
                 return;
             }
-            
+
             this.Cursor = Cursors.WaitCursor;
 
             try
@@ -400,8 +401,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 this.Cursor = Cursors.Default;
             }
         }
-        
+
         #endregion
-        
     }
 }

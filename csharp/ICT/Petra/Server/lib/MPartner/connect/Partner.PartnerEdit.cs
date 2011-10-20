@@ -411,7 +411,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             Int32 ItemsCountSubscriptions = 0;
             Int32 ItemsCountSubscriptionsActive = 0;
             Int32 ItemsCountPartnerTypes = 0;
-			Int32 ItemsCountPartnerRelationships = 0;
+            Int32 ItemsCountPartnerRelationships = 0;
             Int32 ItemsCountFamilyMembers = 0;
             Int32 ItemsCountPartnerInterests = 0;
             Int32 ItemsCountInterests = 0;
@@ -505,7 +505,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         // Empty Tables again, we don't want to transfer the data contained in them
                         FPartnerEditScreenDS.PPartnerRelationship.Rows.Clear();
                     }
-					
+
                     // Locations and PartnerLocations
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
@@ -1507,7 +1507,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
             return GetPartnerRelationshipsInternal(out RelationshipsCount, false);
         }
-        
+
         /// <summary>
         /// todoComment
         /// </summary>
@@ -3109,8 +3109,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 if (ACountOnly)
                 {
                     // count relationships where partner is involved with partner key or reciprocal
-                    ACount = PPartnerRelationshipAccess.CountViaPPartnerPartnerKey(FPartnerKey, ReadTransaction)
-                             + PPartnerRelationshipAccess.CountViaPPartnerRelationKey(FPartnerKey, ReadTransaction);
+                    ACount = PPartnerRelationshipAccess.CountViaPPartnerPartnerKey(FPartnerKey, ReadTransaction) +
+                             PPartnerRelationshipAccess.CountViaPPartnerRelationKey(FPartnerKey, ReadTransaction);
                 }
                 else
                 {
@@ -3125,26 +3125,26 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     try
                     {
                         // load relationships where partner is involved with partner key or reciprocal
-                        RelationshipDT.Merge (PPartnerRelationshipAccess.LoadViaPPartnerPartnerKey(FPartnerKey, ReadTransaction));
-                        RelationshipDT.Merge (PPartnerRelationshipAccess.LoadViaPPartnerRelationKey(FPartnerKey, ReadTransaction));
+                        RelationshipDT.Merge(PPartnerRelationshipAccess.LoadViaPPartnerPartnerKey(FPartnerKey, ReadTransaction));
+                        RelationshipDT.Merge(PPartnerRelationshipAccess.LoadViaPPartnerRelationKey(FPartnerKey, ReadTransaction));
 
                         foreach (PartnerEditTDSPPartnerRelationshipRow RelationshipRow in RelationshipDT.Rows)
                         {
                             // find partner name and class depending on relation and add it to data set
                             if (RelationshipRow.PartnerKey == FPartnerKey)
                             {
-                                PartnerDT = PPartnerAccess.LoadByPrimaryKey (RelationshipRow.RelationKey, ReadTransaction);
+                                PartnerDT = PPartnerAccess.LoadByPrimaryKey(RelationshipRow.RelationKey, ReadTransaction);
                             }
                             else
                             {
-                                PartnerDT = PPartnerAccess.LoadByPrimaryKey (RelationshipRow.PartnerKey, ReadTransaction);
+                                PartnerDT = PPartnerAccess.LoadByPrimaryKey(RelationshipRow.PartnerKey, ReadTransaction);
                             }
 
                             // set extended fields for partner data if record exists
                             if (PartnerDT.Rows[0] != null)
                             {
                                 RelationshipRow.PartnerShortName = ((PPartnerRow)PartnerDT.Rows[0]).PartnerShortName;
-                                RelationshipRow.PartnerClass     = ((PPartnerRow)PartnerDT.Rows[0]).PartnerClass;
+                                RelationshipRow.PartnerClass = ((PPartnerRow)PartnerDT.Rows[0]).PartnerClass;
                             }
                         }
                     }
@@ -3170,7 +3170,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             }
             return RelationshipDT;
         }
-        
+
         /// <summary>
         /// todoComment
         /// </summary>

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -672,7 +672,7 @@ namespace Ict.Petra.Shared.MPartner
             // Inspect only CurrentRows (this excludes Deleted DataRows)
             ATotalRelationships = new DataView(ATable, "", "", DataViewRowState.CurrentRows).Count;
         }
-        
+
         /// <summary>
         /// convert shortname from Lastname, firstname, title to another shortname format
         /// TODO: use partner key to get to the full name, resolve issues with couples that have different family names etc

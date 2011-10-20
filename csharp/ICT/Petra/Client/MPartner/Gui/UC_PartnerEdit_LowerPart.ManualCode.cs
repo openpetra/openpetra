@@ -192,7 +192,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     ucoPartnerTabSet.MainDS = FMainDS;
                     ucoPartnerTabSet.SpecialInitUserControl();
                     ucoPartnerTabSet.HookupDataChange += new THookupDataChangeEventHandler(ucoPartnerTabSet_HookupDataChange);
-                    ucoPartnerTabSet.HookupPartnerEditDataChange += new THookupPartnerEditDataChangeEventHandler(ucoPartnerTabSet_HookupPartnerEditDataChange);
+                    ucoPartnerTabSet.HookupPartnerEditDataChange += new THookupPartnerEditDataChangeEventHandler(
+                    ucoPartnerTabSet_HookupPartnerEditDataChange);
                     break;
             }
 
