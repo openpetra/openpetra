@@ -71,5 +71,13 @@
         <Table sqltable="p_partner_location"/>
         <Table sqltable="p_partner_ledger"/>
     </DataSet>
-
+    <DataSet name="GLStewardshipCalculationTDS">
+        <CustomTable name="CreditFeeTotal">
+            <Field sqltable="a_cost_centre" sqlfield="a_cost_centre_code_c"/>
+            <Field sqltable="a_account" sqlfield="a_account_code_c"/>
+            <Field sqltable="a_transaction" sqlfield="a_transaction_amount_n"/>
+            <PrimaryKey thisFields="CostCentreCode,AccountCode"/>
+        </CustomTable>
+    </DataSet>
+            
 </PetraDataSets>

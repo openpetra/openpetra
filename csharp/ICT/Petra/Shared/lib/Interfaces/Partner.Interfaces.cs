@@ -558,6 +558,8 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.UIConnectors.TPartnerEditUIConnector)</summary>
         PPartnerTypeTable GetDataPartnerTypes();
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.UIConnectors.TPartnerEditUIConnector)</summary>
+        PartnerEditTDSPPartnerRelationshipTable GetDataPartnerRelationships();
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.UIConnectors.TPartnerEditUIConnector)</summary>
         PSubscriptionTable GetDataSubscriptions();
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.UIConnectors.TPartnerEditUIConnector)</summary>
         PartnerEditTDSFamilyMembersTable GetDataFamilyMembers(Int64 AFamilyPartnerKey,

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -660,6 +660,17 @@ namespace Ict.Petra.Shared.MPartner
                 PSubscriptionTable.GetSubscriptionStatusDBName() + " <> '" + MPartnerConstants.SUBSCRIPTIONS_STATUS_CANCELLED + "' AND " +
                 PSubscriptionTable.GetSubscriptionStatusDBName() + " <> '" + MPartnerConstants.SUBSCRIPTIONS_STATUS_EXPIRED + "'", "",
                 DataViewRowState.CurrentRows).Count;
+        }
+
+        /// <summary>
+        /// Count the relationships
+        /// </summary>
+        /// <param name="ATable">table with subscriptions</param>
+        /// <param name="ATotalRelationships">returns the total number of relationships</param>
+        public static void CalculateTabCountsPartnerRelationships(PPartnerRelationshipTable ATable, out Int32 ATotalRelationships)
+        {
+            // Inspect only CurrentRows (this excludes Deleted DataRows)
+            ATotalRelationships = new DataView(ATable, "", "", DataViewRowState.CurrentRows).Count;
         }
 
         /// <summary>

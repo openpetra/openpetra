@@ -1700,6 +1700,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     // TPartnerEditTabPageEnum.petpDocuments:     SelectedTab := 4;
                     // TPartnerEditTabPageEnum.petpOfficeSpecific:     SelectedTab := 5;
                     // TPartnerEditTabPageEnum.petpFoundationDetails:     SelectedTab := 6;
+                    // TPartnerEditTabPageEnum.petpPartnerRelationshipsDetails:     SelectedTab := 7;
             }
 
             TPartnerPrintSectionDialog PrintSectionDialog = new TPartnerPrintSectionDialog();
@@ -2270,13 +2271,13 @@ namespace Ict.Petra.Client.MPartner.Gui
                 case TPartnerEditTabPageEnum.petpDetails:
                 case TPartnerEditTabPageEnum.petpSubscriptions:
                 case TPartnerEditTabPageEnum.petpPartnerTypes:
+                case TPartnerEditTabPageEnum.petpPartnerRelationships:
                 case TPartnerEditTabPageEnum.petpNotes:
                     FInitiallySelectedTabPage = FShowTabPage;
                     FCurrentModuleTabGroup = TModuleSwitchEnum.msPartner;
                     break;
 
 #if  SHOWUNFINISHEDTABS
-                case TPartnerEditTabPageEnum.petpRelationships:
                 case TPartnerEditTabPageEnum.petpContacts:
                 case TPartnerEditTabPageEnum.petpReminders:
                 case TPartnerEditTabPageEnum.petpInterests:
@@ -2285,7 +2286,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     break;
 
 #else
-                case TPartnerEditTabPageEnum.petpRelationships:
                 case TPartnerEditTabPageEnum.petpContacts:
                 case TPartnerEditTabPageEnum.petpReminders:
                 case TPartnerEditTabPageEnum.petpInterests:
@@ -2775,7 +2775,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FMainDS.PDataLabelValuePartner.ColumnChanging += new DataColumnChangeEventHandler(FPetraUtilsObject.OnAnyDataColumnChanging);
                     break;
 
-                case TPartnerEditTabPageEnum.petpRelationships:
+                case TPartnerEditTabPageEnum.petpPartnerRelationships:
+                    FMainDS.PPartnerRelationship.ColumnChanging += new DataColumnChangeEventHandler(FPetraUtilsObject.OnAnyDataColumnChanging);
+                    FMainDS.PPartnerRelationship.RowDeleting += new DataRowChangeEventHandler(FPetraUtilsObject.OnAnyDataRowChanging);
                     break;
 
                 case TPartnerEditTabPageEnum.petpContacts:

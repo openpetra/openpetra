@@ -118,7 +118,7 @@ using Ict.Petra.Server.MFinance.ImportExport.WebConnectors;
 using Ict.Petra.Server.MFinance.Gift.WebConnectors;
 //using Ict.Petra.Server.MFinance.GL.UIConnectors;
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
-//using Ict.Petra.Server.MFinance.ICH.UIConnectors;
+using Ict.Petra.Server.MFinance.ICH.UIConnectors;
 //using Ict.Petra.Server.MFinance.PeriodEnd.UIConnectors;
 //using Ict.Petra.Server.MFinance.Reporting.UIConnectors;
 //using Ict.Petra.Server.MFinance.Setup.UIConnectors;
@@ -2969,6 +2969,12 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ICH.UIConnectors
             return null; // make sure that the TICHUIConnectorsNamespace object exists until this AppDomain is unloaded!
         }
 
+        /// generated method from interface
+        public IICHUIConnectorsStewardshipCalculation StewardshipCalculation(int ALedgerNumber,
+                                                                             int APeriodNumber)
+        {
+            return new TStewardshipCalculationUIConnector(ALedgerNumber, APeriodNumber);
+        }
     }
 }
 

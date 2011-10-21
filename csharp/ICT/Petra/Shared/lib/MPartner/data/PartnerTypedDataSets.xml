@@ -37,7 +37,11 @@
         <Table sqltable="p_partner_interest"/>
         <Table sqltable="p_interest"/>                              <!-- will not be filled on the server, but using the cached table. needed for the relation PartnerInterestCategory, which is needed for the grid for partner interests -->
         <Table sqltable="p_partner_reminder"/>                      <!-- not in use yet! -->
-        <Table sqltable="p_partner_relationship"/>                  <!-- not in use yet! -->
+        <Table sqltable="p_partner_relationship">
+            <Field sqltable="p_partner" sqlfield="p_partner_short_name_c"/>
+            <Field sqltable="p_partner" sqlfield="p_partner_class_c"/>
+        </Table>
+        <Table sqltable="p_relation"/>
         <Table sqltable="p_partner_contact"/>                       <!-- not in use yet! -->
         <Table sqltable="p_data_label_value_application"/>
         <Table sqltable="p_data_label_value_partner"/>
@@ -56,7 +60,7 @@
             <CustomField name="ItemsCountFamilyMembers" type="Int32"/>
             <CustomField name="ItemsCountInterests" type="Int32"/>
             <CustomField name="ItemsCountReminders" type="Int32"/>            <!-- not in use yet! -->
-            <CustomField name="ItemsCountRelationships" type="Int32"/>        <!-- not in use yet! -->
+            <CustomField name="ItemsCountPartnerRelationships" type="Int32"/>        <!-- not in use yet! -->
             <CustomField name="ItemsCountContacts" type="Int32"/>         <!-- not in use yet! -->            
             <CustomField name="OfficeSpecificDataLabelsAvailable" type="bool"/>
             <CustomField name="FoundationOwner1Key" type="Int64"/>
