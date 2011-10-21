@@ -687,13 +687,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                 if (VerificationResult != null)
                 {
                     MessageBox.Show(
-                        VerificationResult.GetVerificationResult(0).ResultText,
+                        VerificationResult.BuildVerificationResultString(),
                         Catalog.GetString("Problem: No gift batch has been created"));
                 }
                 else
                 {
                     MessageBox.Show(
-                        VerificationResult.GetVerificationResult(0).ResultText,
+                        VerificationResult.BuildVerificationResultString(),
                         Catalog.GetString("Problem: No gift batch has been created"));
                 }
             }
@@ -728,7 +728,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                 if (VerificationResult != null)
                 {
                     MessageBox.Show(
-                        VerificationResult.GetVerificationResult(0).ResultText,
+                        VerificationResult.BuildVerificationResultString(),
                         Catalog.GetString("Problem: No GL batch has been created"));
                 }
                 else
