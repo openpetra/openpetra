@@ -230,8 +230,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void GetDataFromControls()
         {
             ucoPartnerTabSet.GetDataFromControls();
-
-            // TODO Other TabSets (Personnel Data, Finance Data)
+			ucoPersonnelTabSet.GetDataFromControls();
+			
+            // TODO Other TabSets (Finance Data)
         }
 
         /// <summary>

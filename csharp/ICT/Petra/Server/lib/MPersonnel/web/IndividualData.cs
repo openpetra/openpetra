@@ -35,6 +35,7 @@ using Ict.Common.IO;
 using Ict.Common.Data;
 using Ict.Common.DB;
 using Ict.Common.Verification;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPersonnel.Person;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
@@ -246,6 +247,59 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
             
             // Add Row to 'SummaryData' DataTable in Typed DataSet 'IndividualDataTDS'
             AIndividualDataDS.Merge(SummaryDT);            
+        }
+
+        [NoRemoting]
+        public static TSubmitChangesResult SubmitChangesServerSide(ref IndividualDataTDS AInspectDS,
+            TDBTransaction ASubmitChangesTransaction,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            TSubmitChangesResult SubmissionResult;
+            TVerificationResultCollection SingleVerificationResultCollection;
+            PmSpecialNeedTable PmSpecialNeedTableSubmit;
+
+			AVerificationResult = new TVerificationResultCollection();            
+			
+            if (AInspectDS != null) 
+            {            	
+            	SubmissionResult = TSubmitChangesResult.scrError;
+            	
+            	if (AInspectDS.Tables.Contains(PmSpecialNeedTable.GetTableName()))
+            	{
+                    PmSpecialNeedTableSubmit = AInspectDS.PmSpecialNeed;
+
+                    if (PmSpecialNeedAccess.SubmitChanges(PmSpecialNeedTableSubmit, ASubmitChangesTransaction,
+                            out SingleVerificationResultCollection))
+                    {
+                        SubmissionResult = TSubmitChangesResult.scrOK;
+                    }
+                    else
+                    {
+                        SubmissionResult = TSubmitChangesResult.scrError;
+                        AVerificationResult.AddCollection(SingleVerificationResultCollection);
+#if DEBUGMODE
+                        if (TLogging.DL >= 9)
+                        {
+                            Console.WriteLine(Messages.BuildMessageFromVerificationResult(
+                                    "TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
+                        }
+#endif
+                    }
+            		
+            	}
+            }
+            else
+            {
+#if DEBUGMODE
+                if (TLogging.DL >= 8)
+                {
+                    Console.WriteLine("AInspectDS = nil!");
+                }
+#endif
+                SubmissionResult = TSubmitChangesResult.scrNothingToBeSaved;            	
+            }
+            
+            return SubmissionResult;
         }
     }
 }

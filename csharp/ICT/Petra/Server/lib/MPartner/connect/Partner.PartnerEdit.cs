@@ -2417,6 +2417,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
 
                 #endregion
+                
                 #region Partner Types
 
                 if (AInspectDS.Tables.Contains(PPartnerTypeTable.GetTableName()))
@@ -2437,6 +2438,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
 
                 #endregion
+                
                 #region Subscriptions
 
                 if (AInspectDS.Tables.Contains(PSubscriptionTable.GetTableName()))
@@ -2450,6 +2452,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
 
                 #endregion
+                
                 #region Partner Details according to PartnerClass
 
                 switch (FPartnerClass)
@@ -2625,6 +2628,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
 
                 #endregion
+                
                 #region Relationships
 
                 if (AInspectDS.Tables.Contains(PPartnerRelationshipTable.GetTableName()))
@@ -2638,6 +2642,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
 
                 #endregion
+                
                 #region Foundations
 
                 if (AInspectDS.Tables.Contains(PFoundationTable.GetTableName()))
@@ -2704,7 +2709,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     }
                 }
 
-                #endregion
+                #endregion                
+                
                 #region Office Specific Data Labels
 
                 if (AInspectDS.Tables.Contains(PDataLabelValuePartnerTable.GetTableName()))
@@ -2722,7 +2728,25 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
 
                 #endregion
-
+                
+                #region Individual Data (Personnel Tab)
+                
+                IndividualDataTDS TempDS = new IndividualDataTDS();
+                TempDS.Merge(AInspectDS);
+                TSubmitChangesResult IndividualDataResult;
+                
+                IndividualDataResult = TIndividualDataWebConnector.SubmitChangesServerSide(ref TempDS, ASubmitChangesTransaction, 
+					out SingleVerificationResultCollection);
+                
+                if ((IndividualDataResult != TSubmitChangesResult.scrOK) 
+                    && (IndividualDataResult != TSubmitChangesResult.scrNothingToBeSaved))
+                {
+                    AllSubmissionsOK = false;
+                    AVerificationResult.AddCollection(SingleVerificationResultCollection);
+                }                	
+                	
+                #endregion
+                	
                 // Note: Locations and PartnerLocations are done sepearately in SubmitChangesAddresses!
 #if DEBUGMODE
                 if (TLogging.DL >= 9)

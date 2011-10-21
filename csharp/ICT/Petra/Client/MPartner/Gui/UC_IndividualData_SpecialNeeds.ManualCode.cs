@@ -35,7 +35,7 @@ using Ict.Petra.Shared.MPersonnel.Person;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {        
-    public partial class TUC_IndividualData_Summary
+    public partial class TUC_IndividualData_SpecialNeeds
     {   
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
@@ -67,27 +67,36 @@ namespace Ict.Petra.Client.MPartner.Gui
         
 			LoadDataOnDemand();
             
-            ShowData((PPersonRow)FMainDS.PPerson.Rows[0]);  
-            
-            if (FMainDS.SummaryData.Rows.Count == 0)
+            if (FMainDS.PmSpecialNeed.Rows.Count == 0)
             {
-                MessageBox.Show("FMainDS.SummaryData holds NO ROWS!", "DEVELOPER NEEDS TO FIX THIS!!!");
+            	// There hasn't been data stored yet, so create a new Record
+                FMainDS.PmSpecialNeed.Rows.Add(FMainDS.PmSpecialNeed.NewRowTyped(true));
+                // ... and set its Primary Key
+                FMainDS.PmSpecialNeed[0].PartnerKey = FMainDS.PPerson[0].PartnerKey;
             }
             
-            dtpDateOfBirth.Enabled = true;
+            ShowData(FMainDS.PmSpecialNeed[0]);                         
         }
         
         /// <summary>
-        /// This empty Method is needed so that the 'SAVEDATA' section of the template for the auto-generated class can be filled in.
-        /// It is a HACK, since this screen is read-only and wouldn't need any saving code at all...
-        /// FIXME in the WinForms generator/devise another template for read-only screens...
+        /// Gets the data from all controls on this UserControl.
+        /// The data is stored in the DataTables/DataColumns to which the Controls
+        /// are mapped.
         /// </summary>
-        /// <param name="ARow"></param>
-        private void GetDataFromControlsManual(PPersonRow ARow)
+        public void GetDataFromControls2()
         {
-            
+            GetDataFromControls(FMainDS.PmSpecialNeed[0]);
         }
 
+        /// <summary>
+        /// This Method is needed for UserControls who get dynamicly loaded on TabPages.
+        /// Since we don't have controls on this UserControl that need adjusting after resizing
+        /// on 'Large Fonts (120 DPI)', we don't need to do anything here.
+        /// </summary>
+        public void AdjustAfterResizing()
+        {
+        }
+        
         /// <summary>
         /// Loads Summary Data from Petra Server into FMainDS, if not already loaded.
         /// </summary>
@@ -99,28 +108,28 @@ namespace Ict.Petra.Client.MPartner.Gui
             try
             {
                 // Make sure that Typed DataTables are already there at Client side
-                if (FMainDS.SummaryData == null)
+                if (FMainDS.PmSpecialNeed == null)
                 {
-                    FMainDS.Tables.Add(new IndividualDataTDSSummaryDataTable());
+                    FMainDS.Tables.Add(new PmSpecialNeedTable());
                     FMainDS.InitVars();
                 }
 
                 if (TClientSettings.DelayedDataLoading && 
-                    (FMainDS.SummaryData.Rows.Count == 0))
+                    (FMainDS.PmSpecialNeed.Rows.Count == 0))
                 {
-                    FMainDS.Merge(FPartnerEditUIConnector.GetDataPersonnelIndividualData(TIndividualDataItemEnum.idiSummary));
+                    FMainDS.Merge(FPartnerEditUIConnector.GetDataPersonnelIndividualData(TIndividualDataItemEnum.idiSpecialNeeds));
 
                     // Make DataRows unchanged
-                    if (FMainDS.SummaryData.Rows.Count > 0)
+                    if (FMainDS.PmSpecialNeed.Rows.Count > 0)
                     {
-                        if (FMainDS.SummaryData.Rows[0].RowState != DataRowState.Added)
+                        if (FMainDS.PmSpecialNeed.Rows[0].RowState != DataRowState.Added)
                         {
-                            FMainDS.SummaryData.AcceptChanges();
+                            FMainDS.PmSpecialNeed.AcceptChanges();
                         }
                     }
                 }
 
-                if (FMainDS.SummaryData.Rows.Count != 0)
+                if (FMainDS.PmSpecialNeed.Rows.Count != 0)
                 {
                     ReturnValue = true;
                 }
