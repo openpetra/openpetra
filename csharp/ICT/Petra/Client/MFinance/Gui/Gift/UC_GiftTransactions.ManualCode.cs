@@ -591,7 +591,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             TFinanceControls.GetRecipientData(ref cmbMinistry, ref txtField, ARow.RecipientKey);
 
-            dtpDateEntered.Date = ((GiftBatchTDSAGiftDetailRow)ARow).DateEntered;
+            AGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
+            dtpDateEntered.Date = giftRow.DateEntered;
 
             if (((GiftBatchTDSAGiftDetailRow)ARow).IsDonorKeyNull())
             {
