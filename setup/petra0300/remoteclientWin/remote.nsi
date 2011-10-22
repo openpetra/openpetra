@@ -115,7 +115,7 @@ Section "Main Section" SecInstallFiles
   File ..\..\..\resources\*.ico
   File ..\..\..\resources\*.png
   SetOutPath "$INSTDIR\bin30"
-  File version.txt
+  File ..\..\..\tmp\version.txt
   SetOutPath "$INSTDIR"
   File ..\..\..\LICENSE
   File ..\..\..\resources\petraico-big.ico
