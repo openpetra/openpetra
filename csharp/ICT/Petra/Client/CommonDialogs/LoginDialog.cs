@@ -307,7 +307,8 @@ namespace Ict.Petra.Client.CommonDialogs
 #endif
 #if  TESTMODE
 #else
-                MessageBox.Show(Catalog.GetString("The PetraServer is too busy to accept the Login request." + "\r\n" + "\r\n" + "Please try again after a short time!"),
+                MessageBox.Show(Catalog.GetString("The PetraServer is too busy to accept the Login request." + "\r\n" + "\r\n" +
+                        "Please try again after a short time!"),
                     Catalog.GetString("Server busy"),
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
@@ -336,7 +337,8 @@ namespace Ict.Petra.Client.CommonDialogs
 #if  TESTMODE
 #else
                     MessageBox.Show(
-                        Catalog.GetString("An error occured while trying to connect to the PETRA Server!") + Environment.NewLine + StrDetailsInLogfile + ": " +
+                        Catalog.GetString(
+                            "An error occured while trying to connect to the PETRA Server!") + Environment.NewLine + StrDetailsInLogfile + ": " +
                         TLogging.GetLogFileName(),
                         Catalog.GetString("Server connection error"),
                         MessageBoxButtons.OK,
@@ -353,7 +355,8 @@ namespace Ict.Petra.Client.CommonDialogs
 #endif
 #if  TESTMODE
 #else
-                MessageBox.Show(Catalog.GetString("The PetraServer cannot be reached!"), Catalog.GetString("No Server response"), MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                MessageBox.Show(Catalog.GetString("The PetraServer cannot be reached!"), Catalog.GetString(
+                        "No Server response"), MessageBoxButtons.OK, MessageBoxIcon.Stop);
 #endif
                 return false;
             }
@@ -364,7 +367,7 @@ namespace Ict.Petra.Client.CommonDialogs
 #if  TESTMODE
 #else
                 MessageBox.Show(Catalog.GetString(
-                    "An error occured while trying to connect to the PETRA Server!") + Environment.NewLine + StrDetailsInLogfile + ": " +
+                        "An error occured while trying to connect to the PETRA Server!") + Environment.NewLine + StrDetailsInLogfile + ": " +
                     TLogging.GetLogFileName(),
                     "Server connection error",
                     MessageBoxButtons.OK,
@@ -379,7 +382,8 @@ namespace Ict.Petra.Client.CommonDialogs
 #if  TESTMODE
 #else
                 MessageBox.Show(
-                    Catalog.GetString("An error occured while trying to connect to the PETRA Server!") + Environment.NewLine + StrDetailsInLogfile + ": " +
+                    Catalog.GetString(
+                        "An error occured while trying to connect to the PETRA Server!") + Environment.NewLine + StrDetailsInLogfile + ": " +
                     TLogging.GetLogFileName(),
                     Catalog.GetString("Server connection error"),
                     MessageBoxButtons.OK,

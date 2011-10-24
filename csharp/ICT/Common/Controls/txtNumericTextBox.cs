@@ -829,7 +829,7 @@ namespace Ict.Common.Controls
                                         }
                                     }
                                     else
-                                    {                                        
+                                    {
                                         if (intSelStart > 0)
                                         {
                                             if (intSelStart < this.Text.Length)

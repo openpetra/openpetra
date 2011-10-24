@@ -1179,18 +1179,18 @@ namespace Ict.Petra.Server.MReporting.MPartner
                     {
                         PSubscriptionRow SubscriptionRow = (PSubscriptionRow)Row;
 
-						// if there is a cancelled date set, then don't use this subscription in the report
-						if (   SubscriptionRow.IsDateCancelledNull()
-						    && (   SubscriptionRow.SubscriptionStatus == "PROVISIONAL"
-						        || SubscriptionRow.SubscriptionStatus == "PERMANENT"
-						        || SubscriptionRow.SubscriptionStatus == "GIFT"))
-						{
-			        		// Add Value to Table
-			        		AddToStatisticalReportTable(CountyRowList[RowName], SubscriptionRow.PublicationCode, 1);
-			        		
-			        		// Add number of copies to overall "Count:" column
-		        			AddToStatisticalReportTable(CountyRowList[ROW_COUNT], SubscriptionRow.PublicationCode, SubscriptionRow.PublicationCopies);
-						}
+                        // if there is a cancelled date set, then don't use this subscription in the report
+                        if (SubscriptionRow.IsDateCancelledNull()
+                            && ((SubscriptionRow.SubscriptionStatus == "PROVISIONAL")
+                                || (SubscriptionRow.SubscriptionStatus == "PERMANENT")
+                                || (SubscriptionRow.SubscriptionStatus == "GIFT")))
+                        {
+                            // Add Value to Table
+                            AddToStatisticalReportTable(CountyRowList[RowName], SubscriptionRow.PublicationCode, 1);
+
+                            // Add number of copies to overall "Count:" column
+                            AddToStatisticalReportTable(CountyRowList[ROW_COUNT], SubscriptionRow.PublicationCode, SubscriptionRow.PublicationCopies);
+                        }
                     }
 
                     if (CheckPartnerGift(PartnerRow.PartnerKey))
@@ -1415,7 +1415,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
         }
 
         /// <summary>
-		/// Calculates the Row "Percent" and "Totals" for the publication statistical report
+        /// Calculates the Row "Percent" and "Totals" for the publication statistical report
         /// </summary>
         private void CalculateTotals()
         {
@@ -1441,7 +1441,6 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 FStatisticalReportDataTable.Rows[RowIndex][ColumnIndex] = CalcPercent;                 //.ToString("F");
                 FStatisticalReportPercentage.Add(FStatisticalReportDataTable.Columns[ColumnIndex].ColumnName,
                     CalcPercent.ToString("F"));
-
             }
         }
 
