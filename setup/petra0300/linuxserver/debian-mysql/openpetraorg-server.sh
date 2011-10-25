@@ -21,6 +21,7 @@ then
 fi
 
 if [ ! -d $OpenPetraOrgPath ]
+then
   export mono=mono
   export OpenPetraOrgPath=/usr/local/openpetraorg
   export CustomerName=DefaultTOREPLACE

@@ -54,6 +54,7 @@ namespace Ict.Testing.NUnitPetraServer
         public static void Connect(string AConfigName)
         {
             new TAppSettingsManager(AConfigName);
+            new TLogging(TAppSettingsManager.GetValue("Server.LogFile"));
 
             Catalog.Init();
             new TServerManager();

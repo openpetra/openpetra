@@ -167,3 +167,15 @@ msgstr "do not translate"
 
 msgid "PRIVATE {MARLENE}"
 msgstr "do not translate"
+
+msgid "todo"
+msgstr "do not translate"
+
+msgid "dummy button"
+msgstr "do not translate"
+
+msgid "dummybutton"
+msgstr "do not translate"
+
+msgid "99"
+msgstr "do not translate"

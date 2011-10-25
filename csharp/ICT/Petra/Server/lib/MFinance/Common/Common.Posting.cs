@@ -744,7 +744,18 @@ namespace Ict.Petra.Server.MFinance.Common
                                      PeriodCount++)
                                 {
                                     int GLMPeriodIndex = GLMPeriodView.Find(new object[] { GlmRow.GlmSequence, PeriodCount });
-                                    AGeneralLedgerMasterPeriodRow GlmPeriodRow = (AGeneralLedgerMasterPeriodRow)GLMPeriodView[GLMPeriodIndex].Row;
+                                    AGeneralLedgerMasterPeriodRow GlmPeriodRow;
+
+                                    if (GLMPeriodIndex == -1)
+                                    {
+                                        GlmPeriodRow = AMainDS.AGeneralLedgerMasterPeriod.NewRowTyped();
+                                        GlmPeriodRow.GlmSequence = GlmRow.GlmSequence;
+                                        GlmPeriodRow.PeriodNumber = PeriodCount;
+                                    }
+                                    else
+                                    {
+                                        GlmPeriodRow = (AGeneralLedgerMasterPeriodRow)GLMPeriodView[GLMPeriodIndex].Row;
+                                    }
 
                                     GlmPeriodRow.ActualBase += SignBaseAmount;
 
@@ -846,7 +857,18 @@ namespace Ict.Petra.Server.MFinance.Common
                      PeriodCount++)
                 {
                     int GLMPeriodIndex = GLMPeriodView.Find(new object[] { GlmRow.GlmSequence, PeriodCount });
-                    AGeneralLedgerMasterPeriodRow GlmPeriodRow = (AGeneralLedgerMasterPeriodRow)GLMPeriodView[GLMPeriodIndex].Row;
+                    AGeneralLedgerMasterPeriodRow GlmPeriodRow;
+
+                    if (GLMPeriodIndex == -1)
+                    {
+                        GlmPeriodRow = AMainDS.AGeneralLedgerMasterPeriod.NewRowTyped();
+                        GlmPeriodRow.GlmSequence = GlmRow.GlmSequence;
+                        GlmPeriodRow.PeriodNumber = PeriodCount;
+                    }
+                    else
+                    {
+                        GlmPeriodRow = (AGeneralLedgerMasterPeriodRow)GLMPeriodView[GLMPeriodIndex].Row;
+                    }
 
                     GlmPeriodRow.ActualBase += PostingLevelElement.baseAmount;
 

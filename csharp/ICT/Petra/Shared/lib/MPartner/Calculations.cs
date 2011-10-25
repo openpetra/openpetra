@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -663,6 +663,17 @@ namespace Ict.Petra.Shared.MPartner
         }
 
         /// <summary>
+        /// Count the relationships
+        /// </summary>
+        /// <param name="ATable">table with subscriptions</param>
+        /// <param name="ATotalRelationships">returns the total number of relationships</param>
+        public static void CalculateTabCountsPartnerRelationships(PPartnerRelationshipTable ATable, out Int32 ATotalRelationships)
+        {
+            // Inspect only CurrentRows (this excludes Deleted DataRows)
+            ATotalRelationships = new DataView(ATable, "", "", DataViewRowState.CurrentRows).Count;
+        }
+
+        /// <summary>
         /// convert shortname from Lastname, firstname, title to another shortname format
         /// TODO: use partner key to get to the full name, resolve issues with couples that have different family names etc
         /// </summary>
@@ -706,6 +717,10 @@ namespace Ict.Petra.Shared.MPartner
             else if (AFormat == eShortNameFormat.eOnlySurname)
             {
                 return names[0];
+            }
+            else if (AFormat == eShortNameFormat.eOnlyFirstname)
+            {
+                return names[1];
             }
             else if (AFormat == eShortNameFormat.eReverseWithoutTitle)
             {

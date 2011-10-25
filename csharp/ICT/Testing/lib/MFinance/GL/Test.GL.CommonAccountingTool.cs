@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       wolfgangu
+//       wolfgangu, timop
 //
 // Copyright 2004-2011 by OM International
 //
@@ -24,6 +24,10 @@
 using System;
 using NUnit.Framework;
 using Ict.Testing.NUnitForms;
+using Ict.Common.DB;
+using Ict.Common.Verification;
+using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.GL;
 using Ict.Petra.Server.MFinance.Common;
 using Ict.Petra.Shared.MFinance;
@@ -114,6 +118,29 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 "Check if 10 has been accounted");
         }
 
+        private void PrepareTestCaseData()
+        {
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
+
+            // Check if some special test data are available - otherwise load ...
+            bool AccountTestCasesAvailable = AAccountAccess.Exists(LedgerNumber, "6001", Transaction);
+            bool CostCentreTestCasesAvailable = ACostCentreAccess.Exists(LedgerNumber, "4301", Transaction);
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+
+            if (!AccountTestCasesAvailable)
+            {
+                LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
+                    "test-sql\\gl-test-account-data.sql");
+            }
+
+            if (!CostCentreTestCasesAvailable)
+            {
+                LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
+                    "test-sql\\gl-test-costcentre-data.sql");
+            }
+        }
+
         /// <summary>
         /// Tests the foreign Currency part of the TCommonAccountingTool.
         /// </summary>
@@ -124,19 +151,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             string strAccountEnd = "9800";        // Use a base currency account only
             string strCostCentre = "4300";
 
-            // Check if some special test data are availiable - otherwise load ...
-            if (!new TAccountInfo(new TLedgerInfo(LedgerNumber), "6001").IsValid)
-            {
-                LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
-                    "test-sql\\gl-test-account-data.sql");
-            }
-
-            // Check if some special test data are availiable - otherwise load ...
-            if (!new TCostCenterInfo(LedgerNumber, "4301").IsValid)
-            {
-                LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
-                    "test-sql\\gl-test-costcentre-data.sql");
-            }
+            PrepareTestCaseData();
 
             // Get the glm-values before and after the test and taking the differences enables
             // to run the test several times
@@ -181,19 +196,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             string strAccountEnd = "9800";        // Use a base currency account only
             string strCostCentre = "4300";
 
-            // Check if some special test data are availiable - otherwise load ...
-            if (!new TAccountInfo(new TLedgerInfo(LedgerNumber), "6001").IsValid)
-            {
-                LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
-                    "test-sql\\gl-test-account-data.sql");
-            }
-
-            // Check if some special test data are availiable - otherwise load ...
-            if (!new TCostCenterInfo(LedgerNumber, "4301").IsValid)
-            {
-                LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
-                    "test-sql\\gl-test-costcentre-data.sql");
-            }
+            PrepareTestCaseData();
 
             TCommonAccountingTool commonAccountingTool =
                 new TCommonAccountingTool(LedgerNumber, "NUNIT");
@@ -208,7 +211,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                     MFinanceConstants.IS_CREDIT, 100, 333.33m);
                 Assert.Fail("Exception does not appear!");
             }
-            catch (TerminateException)
+            catch (TVerificationException)
             {
                 Assert.Pass("Exception was thrown");
             }

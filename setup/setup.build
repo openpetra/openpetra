@@ -116,7 +116,6 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
 </target> 
   
 <target name="setupStandalone">
-    <echo file="${dir.root}/setup/petra${PetraRelease}/standalone/version.txt">${ReleaseID}</echo>
     <property name="DBUpdate.file" value="${dir.root}/db/patches/${script::CalculateStandaloneDBUpdateFileName(ReleaseID)}"/>
     <if test="${not file::exists(DBUpdate.file)}">
         <echo message="${DBUpdate.file}"/>
@@ -127,8 +126,6 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
 </target>
 
 <target name="setupRemote">
-    <echo file="${dir.root}/setup/petra${PetraRelease}/remoteclientWin/version.txt">${ReleaseVersion}</echo>
-    
     <!-- *************** Adjust Remote Client Config file ******************** -->
     <property name="Config.file" value="${dir.root}/setup/petra${PetraRelease}/remoteclientWin/PetraClientRemote.config.my"/>
     <if test="${file::exists(Config.file)}">
@@ -150,6 +147,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
 </target>
 
 <target name="setupTemplate">
+    <echo file="${dir.root}/tmp/version.txt">${ReleaseVersion}</echo>
     <property name="Current.File" value="${SetupOriginal.File}.local"/>
 
     <copy file="${SetupOriginal.File}" tofile="${Current.File}" overwrite="true"/>
@@ -343,7 +341,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
   <mkdir dir="${setupDir}/resources30"/>
   <mkdir dir="${setupDir}/bin30"/>
 
-  <copy file="${dir.root}/db/patches/version.txt" tofile="${setupDir}/bin30/version.txt" />
+  <echo file="${setupDir}/bin30/version.txt">${ReleaseVersion}</echo>
   <copy todir="${setupDir}/bin30">
     <fileset basedir="${dir.bin}">
       <include name="*.dll" />

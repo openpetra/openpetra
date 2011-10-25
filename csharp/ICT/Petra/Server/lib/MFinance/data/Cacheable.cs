@@ -314,6 +314,18 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                             FCacheableTablesManager.AddOrMergeCachedTable(TableName, TmpTable, DomainManager.GClientID, (object)ALedgerNumber);
                             break;
                         }
+                        case TCacheableFinanceTablesEnum.FeesPayableList:
+                        {
+                            DataTable TmpTable = AFeesPayableAccess.LoadViaALedger(ALedgerNumber, ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrMergeCachedTable(TableName, TmpTable, DomainManager.GClientID, (object)ALedgerNumber);
+                            break;
+                        }
+                        case TCacheableFinanceTablesEnum.FeesReceivableList:
+                        {
+                            DataTable TmpTable = AFeesReceivableAccess.LoadViaALedger(ALedgerNumber, ReadTransaction);
+                            DomainManager.GCacheableTablesManager.AddOrMergeCachedTable(TableName, TmpTable, DomainManager.GClientID, (object)ALedgerNumber);
+                            break;
+                        }
                         case TCacheableFinanceTablesEnum.AccountingPeriodList:
                         {
                             DataTable TmpTable = GetAccountingPeriodListTable(ReadTransaction, ALedgerNumber, TableName);

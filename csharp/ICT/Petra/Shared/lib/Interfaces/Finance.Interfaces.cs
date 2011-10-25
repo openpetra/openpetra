@@ -455,6 +455,11 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TAdjustmentWebConnector)</summary>
         System.Boolean GiftRevertAdjust(Hashtable requestParams,
                                         out TVerificationResultCollection AMessages);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TDonorsOfWorkerWebConnector)</summary>
+        NewDonorTDS GetDonorsOfWorker(Int64 AWorkerPartnerKey,
+                                      Int32 ALedgerNumber,
+                                      System.Boolean ADropForeignAddresses,
+                                      System.Boolean ADropPartnersWithNoMailing);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TGuiTools)</summary>
         Boolean GetMotivationGroupAndDetail(Int64 partnerKey,
                                             ref String motivationGroup,
@@ -679,6 +684,16 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.ICH.UIConnectors
     /// <summary>auto generated</summary>
     public interface IICHUIConnectorsNamespace : IInterface
     {
+        /// <summary>auto generated from Connector constructor (Ict.Petra.Server.MFinance.ICH.UIConnectors.TStewardshipCalculationUIConnector)</summary>
+        IICHUIConnectorsStewardshipCalculation StewardshipCalculation(int ALedgerNumber,
+                                                                      int APeriodNumber);
+    }
+
+    /// <summary>auto generated</summary>
+    public interface IICHUIConnectorsStewardshipCalculation : IInterface
+    {
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.ICH.UIConnectors.TStewardshipCalculationUIConnector)</summary>
+        bool PerformStewardshipCalculation(out TVerificationResultCollection AVerificationResult);
     }
 
 }

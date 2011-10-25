@@ -120,7 +120,7 @@ using Ict.Petra.Server.MFinance.ImportExport.WebConnectors;
 using Ict.Petra.Server.MFinance.Gift.WebConnectors;
 //using Ict.Petra.Server.MFinance.GL.UIConnectors;
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
-//using Ict.Petra.Server.MFinance.ICH.UIConnectors;
+using Ict.Petra.Server.MFinance.ICH.UIConnectors;
 //using Ict.Petra.Server.MFinance.PeriodEnd.UIConnectors;
 //using Ict.Petra.Server.MFinance.Reporting.UIConnectors;
 //using Ict.Petra.Server.MFinance.Setup.UIConnectors;
@@ -2135,6 +2135,16 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
         }
 
         /// generated method from connector
+        public NewDonorTDS GetDonorsOfWorker(Int64 AWorkerPartnerKey,
+                                             Int32 ALedgerNumber,
+                                             System.Boolean ADropForeignAddresses,
+                                             System.Boolean ADropPartnersWithNoMailing)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TDonorsOfWorkerWebConnector), "GetDonorsOfWorker", ";LONG;INT;BOOL;BOOL;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TDonorsOfWorkerWebConnector.GetDonorsOfWorker(AWorkerPartnerKey, ALedgerNumber, ADropForeignAddresses, ADropPartnersWithNoMailing);
+        }
+
+        /// generated method from connector
         public Boolean GetMotivationGroupAndDetail(Int64 partnerKey,
                                                    ref String motivationGroup,
                                                    ref String motivationDetail)
@@ -2960,6 +2970,12 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ICH.UIConnectors
             return null; // make sure that the TICHUIConnectorsNamespace object exists until this AppDomain is unloaded!
         }
 
+        /// generated method from interface
+        public IICHUIConnectorsStewardshipCalculation StewardshipCalculation(int ALedgerNumber,
+                                                                             int APeriodNumber)
+        {
+            return new TStewardshipCalculationUIConnector(ALedgerNumber, APeriodNumber);
+        }
     }
 }
 

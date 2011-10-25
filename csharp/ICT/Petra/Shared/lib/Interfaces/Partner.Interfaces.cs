@@ -314,6 +314,7 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Mailing.WebConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Mailing.WebConnectors.TAddressWebConnector)</summary>
         System.Boolean GetBestAddress(Int64 APartnerKey,
                                       out PLocationTable AAddress,
+                                      out PPartnerLocationTable APartnerLocation,
                                       out System.String ACountryNameLocal,
                                       out System.String AEmailAddress);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Mailing.WebConnectors.TAddressWebConnector)</summary>
@@ -556,6 +557,8 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors
                                          out String ASiteCountryCode);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.UIConnectors.TPartnerEditUIConnector)</summary>
         PPartnerTypeTable GetDataPartnerTypes();
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.UIConnectors.TPartnerEditUIConnector)</summary>
+        PartnerEditTDSPPartnerRelationshipTable GetDataPartnerRelationships();
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.UIConnectors.TPartnerEditUIConnector)</summary>
         PSubscriptionTable GetDataSubscriptions();
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.UIConnectors.TPartnerEditUIConnector)</summary>

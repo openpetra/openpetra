@@ -242,8 +242,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
 
             AMotivationDetailRow motivationDetailRow = (AMotivationDetailRow)v[0].Row;
 
-            cmbGiftAccount.Filter = AAccountTable.GetAccountCodeDBName() + " = '" + motivationDetailRow.AccountCode + "'";
-            cmbGiftCostCentre.Filter = ACostCentreTable.GetCostCentreCodeDBName() + " = '" + motivationDetailRow.CostCentreCode + "'";
+            cmbGiftAccount.SetSelectedString(motivationDetailRow.AccountCode);
+            cmbGiftCostCentre.SetSelectedString(motivationDetailRow.CostCentreCode);
         }
 
         private void NewTransactionCategory(System.Object sender, EventArgs e)
@@ -666,6 +666,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             // TODO: should we first ask? also when closing the window?
             SaveMatches(null, null);
 
+            if (cmbSelectBankAccount.SelectedIndex == -1)
+            {
+                MessageBox.Show(Catalog.GetString("Please select a bank account first!"), Catalog.GetString("No gift batch has been created"));
+                return;
+            }
+
             TVerificationResultCollection VerificationResult;
             Int32 GiftBatchNumber = TRemote.MFinance.ImportExport.WebConnectors.CreateGiftBatch(FMainDS,
                 FLedgerNumber,
@@ -682,13 +688,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                 if (VerificationResult != null)
                 {
                     MessageBox.Show(
-                        VerificationResult.GetVerificationResult(0).ResultText,
+                        VerificationResult.BuildVerificationResultString(),
                         Catalog.GetString("Problem: No gift batch has been created"));
                 }
                 else
                 {
                     MessageBox.Show(
-                        VerificationResult.GetVerificationResult(0).ResultText,
+                        VerificationResult.BuildVerificationResultString(),
                         Catalog.GetString("Problem: No gift batch has been created"));
                 }
             }
@@ -700,6 +706,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
 
             // TODO: should we first ask? also when closing the window?
             SaveMatches(null, null);
+
+            if (cmbSelectBankAccount.SelectedIndex == -1)
+            {
+                MessageBox.Show(Catalog.GetString("Please select a bank account first!"), Catalog.GetString("No gift batch has been created"));
+                return;
+            }
 
             TVerificationResultCollection VerificationResult;
             Int32 GLBatchNumber = TRemote.MFinance.ImportExport.WebConnectors.CreateGLBatch(FMainDS,
@@ -717,7 +729,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                 if (VerificationResult != null)
                 {
                     MessageBox.Show(
-                        VerificationResult.GetVerificationResult(0).ResultText,
+                        VerificationResult.BuildVerificationResultString(),
                         Catalog.GetString("Problem: No GL batch has been created"));
                 }
                 else

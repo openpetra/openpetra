@@ -83,7 +83,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             this.tpgTransactions.Enabled = false;
         }
-		private int standardTabIndex = 0;
+
+        private int standardTabIndex = 0;
         private void TFrmGiftBatch_Load(object sender, EventArgs e)
         {
             FPetraUtilsObject.TFrmPetra_Load(sender, e);
@@ -134,7 +135,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             return ucoBatches;
         }
-		
+
         /// <summary>
         /// find a special gift detail
         /// </summary>
@@ -142,8 +143,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             ucoBatches.SelectBatchNumber(gdr.BatchNumber);
             ucoTransactions.SelectGiftDetailNumber(gdr.GiftTransactionNumber, gdr.DetailNumber);
-           	standardTabIndex = 1; // later we switch to the detail tab
-            
+            standardTabIndex = 1;     // later we switch to the detail tab
         }
 
         /// <summary>
