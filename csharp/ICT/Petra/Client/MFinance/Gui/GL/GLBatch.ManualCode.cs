@@ -25,6 +25,7 @@ using System;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Common.Remoting.Client;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {

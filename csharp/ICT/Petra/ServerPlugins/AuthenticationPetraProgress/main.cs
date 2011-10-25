@@ -28,6 +28,8 @@ using System.Collections.Generic;
 using System.Web.Security;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Remoting.Server;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared.Interfaces.Plugins.MSysMan;
 using Ict.Petra.Shared.MSysMan;
 using Ict.Petra.Shared;

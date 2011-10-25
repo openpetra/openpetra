@@ -20,6 +20,7 @@ using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Common.Remoting.Client;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
 {#USINGNAMESPACES}

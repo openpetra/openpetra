@@ -34,6 +34,7 @@ using SourceGrid.Cells.DataGrid;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Controls;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner;

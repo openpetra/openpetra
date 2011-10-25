@@ -31,11 +31,11 @@ using Ict.Common;
 using Ict.Common.Data; // Implicit reference
 using Ict.Common.DB;
 using Ict.Common.IO;
-using Ict.Petra.Shared.Interfaces; // Implicit reference
-using Ict.Petra.Server.App.Main;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.App.Core.Security;
-using Ict.Petra.Server.App.ClientDomain;
+using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Server.MFinance.AP.UIConnectors;
 using Ict.Petra.Server.MConference.Applications;
@@ -82,8 +82,9 @@ public class TOpenPetraOrg : WebService
             {
                 TheServerManager.EstablishDBConnection();
 
-                DomainManager.GSystemDefaultsCache = new TSystemDefaultsCache();
-                DomainManager.GSiteKey = DomainManager.GSystemDefaultsCache.GetInt64Default(Ict.Petra.Shared.SharedConstants.SYSDEFAULT_SITEKEY);
+                TSystemDefaultsCache.GSystemDefaultsCache = new TSystemDefaultsCache();
+                DomainManager.GSiteKey = TSystemDefaultsCache.GSystemDefaultsCache.GetInt64Default(
+                    Ict.Petra.Shared.SharedConstants.SYSDEFAULT_SITEKEY);
             }
             catch (Exception e)
             {

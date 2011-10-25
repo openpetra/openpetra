@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.Data;
 using Ict.Common;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared.Interfaces.MConference.Cacheable;
 using Ict.Petra.Shared.Interfaces.MConference.WebConnectors;
 #region ManualCode

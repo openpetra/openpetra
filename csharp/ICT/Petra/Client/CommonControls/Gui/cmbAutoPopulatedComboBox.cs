@@ -28,7 +28,9 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 using System.Data;
-using Ict.Petra.Shared.Interfaces; // Implicit references
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Client;
+using Ict.Petra.Shared.Interfaces.MCommon;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;

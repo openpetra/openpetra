@@ -42,10 +42,13 @@ namespace Ict.Common
         /// </summary>
         public const String UNDEFINEDVALUE = "#UNDEFINED#";
 
+        /// <summary>The path where the application is started from.</summary>
         private static String FApplicationDirectory = Environment.CurrentDirectory;
 
-        /// <summary>the path where the application is started from. The name of the Configuration File that should be read from; static so it can be manipulated manually once for all (remoting nunit etc.)</summary>
+        /// <summary>The name of the Configuration File that should be read from; static so it can be manipulated manually once for all (remoting nunit etc.)</summary>
         private static String FConfigFileName = "";
+
+        private static string FApplicationName = "";
 
         /// <summary>XML Element under which the AppSettings are found</summary>
         private static XmlElement FAppSettingsElement = null;
@@ -85,6 +88,8 @@ namespace Ict.Common
         private void Create(String CustomConfigFileName, bool AFailOnMissingConfigFile)
         {
             FCmdOpts = new TCmdOpts();
+
+            FApplicationName = Environment.GetCommandLineArgs()[0];
 
             if (CustomConfigFileName != "")
             {

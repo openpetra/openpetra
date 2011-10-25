@@ -483,5 +483,13 @@ namespace Ict.Common.DB
 
             return ASqlCommand.Substring(0, StartIndex) + "DATE_FORMAT(" + ReplacedDate + ASqlCommand.Substring(EndBracketIndex);
         }
+
+        /// Updating of a MySQL database has not been implemented yet, need to do this still manually
+        public void UpdateDatabase(TFileVersionInfo ADBVersion, TFileVersionInfo AExeVersion,
+            string AHostOrFile, string ADatabasePort, string ADatabaseName, string AUsername, string APassword)
+        {
+            throw new Exception(
+                "Cannot connect to old database, please restore the latest clean demo database or run nant patchDatabase");
+        }
     }
 }

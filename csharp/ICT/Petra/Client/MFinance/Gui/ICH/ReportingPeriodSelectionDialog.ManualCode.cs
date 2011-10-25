@@ -32,6 +32,8 @@ using Ict.Common.Controls;
 using Ict.Common.Data;
 using Ict.Common.DB;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared;

@@ -28,7 +28,8 @@ using System.Data;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Verification;
-using Ict.Petra.Server.App.ClientDomain;
+using Ict.Common.Remoting.Server;
+using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
@@ -77,7 +78,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             NewRow.GlEffectiveDate = ADateEffective;
             NewRow.ExchangeRateToBase = 1.0M;
             // TODO: bank account as a parameter, set on the gift matching screen, etc
-            NewRow.BankAccountCode = DomainManager.GSystemDefaultsCache.GetStringDefault(
+            NewRow.BankAccountCode = TSystemDefaultsCache.GSystemDefaultsCache.GetStringDefault(
                 SharedConstants.SYSDEFAULT_GIFTBANKACCOUNT + ALedgerNumber.ToString());
 
             if (NewRow.BankAccountCode.Length == 0)
@@ -98,7 +99,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                     NewRow.BankAccountCode = "6000";
                 }
 
-                // TODO? DomainManager.GSystemDefaultsCache.SetDefault(SharedConstants.SYSDEFAULT_GIFTBANKACCOUNT + ALedgerNumber.ToString(), NewRow.BankAccountCode);
+                // TODO? TSystemDefaultsCache.GSystemDefaultsCache.SetDefault(SharedConstants.SYSDEFAULT_GIFTBANKACCOUNT + ALedgerNumber.ToString(), NewRow.BankAccountCode);
             }
 
             NewRow.BankCostCentre = Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetStandardCostCentre(ALedgerNumber);
@@ -130,7 +131,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
 
             // TODO: bank account as a parameter, set on the gift matching screen, etc
-            NewRow.BankAccountCode = DomainManager.GSystemDefaultsCache.GetStringDefault(
+            NewRow.BankAccountCode = TSystemDefaultsCache.GSystemDefaultsCache.GetStringDefault(
                 SharedConstants.SYSDEFAULT_GIFTBANKACCOUNT + ALedgerNumber.ToString());
 
             if (NewRow.BankAccountCode.Length == 0)
@@ -151,7 +152,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                     NewRow.BankAccountCode = "6000";
                 }
 
-                // TODO? DomainManager.GSystemDefaultsCache.SetDefault(SharedConstants.SYSDEFAULT_GIFTBANKACCOUNT + ALedgerNumber.ToString(), NewRow.BankAccountCode);
+                // TODO? TSystemDefaultsCache.GSystemDefaultsCache.SetDefault(SharedConstants.SYSDEFAULT_GIFTBANKACCOUNT + ALedgerNumber.ToString(), NewRow.BankAccountCode);
             }
 
             NewRow.BankCostCentre = Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetStandardCostCentre(ALedgerNumber);

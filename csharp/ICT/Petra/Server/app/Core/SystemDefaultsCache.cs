@@ -28,6 +28,7 @@ using System.Threading;
 
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MSysMan.Data.Access;
@@ -48,8 +49,11 @@ namespace Ict.Petra.Server.App.Core
     /// @Comment The System Defaults are retrieved from the s_system_defaults table
     ///   and are put into a Typed DataTable that has the structure of this table.
     /// </summary>
-    public class TSystemDefaultsCache : MarshalByRefObject
+    public class TSystemDefaultsCache : MarshalByRefObject, ISystemDefaultsCache
     {
+        /// a static variable for global access to the system defaults
+        public static TSystemDefaultsCache GSystemDefaultsCache;
+
         /*------------------------------------------------------------------------------
          * Partner System Default Constants
          * -------------------------------------------------------------------------------*/

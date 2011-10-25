@@ -44,6 +44,8 @@ using System.Threading;
 using System.Runtime.Remoting;
 using System.Security.Cryptography;
 using Ict.Common;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
 using Ict.Petra.Server.App.Core.Security;
 
@@ -101,7 +103,6 @@ using Ict.Petra.Server.MPersonnel.WebConnectors;
 using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Server.MCommon.UIConnectors;
-using Ict.Petra.Shared.RemotedExceptions;
 using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 #endregion ManualCode

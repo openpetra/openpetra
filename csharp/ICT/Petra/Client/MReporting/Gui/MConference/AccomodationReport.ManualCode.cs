@@ -4,7 +4,7 @@
 // @Authors:
 //       berndr
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -29,14 +29,15 @@ using System.Windows.Forms;
 using System.Data;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MConference.Data;
+using Ict.Petra.Shared.Interfaces.MConference;
 using Ict.Petra.Shared.MReporting;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MReporting.Logic;
-using Ict.Petra.Shared.Interfaces; // Implicit reference
 using Ict.Petra.Shared.MCommon.Data;
 
 namespace Ict.Petra.Client.MReporting.Gui.MConference

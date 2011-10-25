@@ -31,6 +31,8 @@ using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Data;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MSysMan;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner;
@@ -42,13 +44,11 @@ using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.RemotedExceptions;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Server.MFinance.Gift;
 using Ict.Petra.Server.MPartner.Partner;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Server.App.Core;
-using Ict.Petra.Server.App.ClientDomain;
 using Ict.Petra.Server.MCommon.UIConnectors;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.MPartner;
@@ -967,7 +967,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 #region Calculations
 
                 // Determine Gift Receipting settings
-                GiftReceiptingDefaults = DomainManager.GSystemDefaultsCache.GetStringDefault(TSystemDefaultsCache.PARTNER_GIFTRECEIPTINGDEFAULTS);
+                GiftReceiptingDefaults = TSystemDefaultsCache.GSystemDefaultsCache.GetStringDefault(
+                    TSystemDefaultsCache.PARTNER_GIFTRECEIPTINGDEFAULTS);
 
                 if (GiftReceiptingDefaults != "")
                 {

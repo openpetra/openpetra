@@ -31,6 +31,7 @@ using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Data;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MCommon.Data;
@@ -41,7 +42,7 @@ using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.MSysMan.Data.Access;
-using Ict.Petra.Server.App.ClientDomain;
+using Ict.Petra.Server.App.Core;
 
 namespace Ict.Petra.Server.MPartner
 {
