@@ -2134,6 +2134,16 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
         }
 
         /// generated method from connector
+        public NewDonorTDS GetDonorsOfWorker(Int64 AWorkerPartnerKey,
+                                             Int32 ALedgerNumber,
+                                             System.Boolean ADropForeignAddresses,
+                                             System.Boolean ADropPartnersWithNoMailing)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TDonorsOfWorkerWebConnector), "GetDonorsOfWorker", ";LONG;INT;BOOL;BOOL;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TDonorsOfWorkerWebConnector.GetDonorsOfWorker(AWorkerPartnerKey, ALedgerNumber, ADropForeignAddresses, ADropPartnersWithNoMailing);
+        }
+
+        /// generated method from connector
         public Boolean GetMotivationGroupAndDetail(Int64 partnerKey,
                                                    ref String motivationGroup,
                                                    ref String motivationDetail)

@@ -147,10 +147,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             // get details of the donor, and best address
 
             PLocationTable Location;
+            PPartnerLocationTable PartnerLocation;
             string CountryName;
             string EmailAddress;
 
-            if (!TAddressTools.GetBestAddress(ADonorKey, out Location, out CountryName, out EmailAddress, ATransaction))
+            if (!TAddressTools.GetBestAddress(ADonorKey, out Location, out PartnerLocation, out CountryName, out EmailAddress, ATransaction))
             {
                 return "";
             }
