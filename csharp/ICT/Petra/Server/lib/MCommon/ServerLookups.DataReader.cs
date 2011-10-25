@@ -27,7 +27,7 @@ using Ict.Common.DB;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Verification;
-using Ict.Petra.Server.App.ClientDomain;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
@@ -212,7 +212,7 @@ namespace Ict.Petra.Server.MCommon.DataReader
                         if (AFeesPayableAccess.SubmitChanges((AFeesPayableTable)ASubmitTable, SubmitChangesTransaction,
                                 out SingleVerificationResultCollection))
                         {
-                            DomainManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
                                 TCacheableFinanceTablesEnum.FeesPayableList.ToString());
 
                             SubmissionResult = TSubmitChangesResult.scrOK;
@@ -227,7 +227,7 @@ namespace Ict.Petra.Server.MCommon.DataReader
                         if (AFeesReceivableAccess.SubmitChanges((AFeesReceivableTable)ASubmitTable, SubmitChangesTransaction,
                                 out SingleVerificationResultCollection))
                         {
-                            DomainManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
                                 TCacheableFinanceTablesEnum.FeesReceivableList.ToString());
 
                             SubmissionResult = TSubmitChangesResult.scrOK;

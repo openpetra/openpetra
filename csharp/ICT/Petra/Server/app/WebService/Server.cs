@@ -34,6 +34,8 @@ using Ict.Common.IO;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.App.Core;
+using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Server.MFinance.AP.UIConnectors;
 using Ict.Petra.Server.MConference.Applications;
