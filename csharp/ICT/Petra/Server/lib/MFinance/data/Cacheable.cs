@@ -317,13 +317,13 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                         case TCacheableFinanceTablesEnum.FeesPayableList:
                         {
                             DataTable TmpTable = AFeesPayableAccess.LoadViaALedger(ALedgerNumber, ReadTransaction);
-                            TCacheableTablesManager.GCacheableTablesManager.AddOrMergeCachedTable(TableName, TmpTable, DomainManager.GClientID, (object)ALedgerNumber);
+                            FCacheableTablesManager.AddOrMergeCachedTable(TableName, TmpTable, DomainManager.GClientID, (object)ALedgerNumber);
                             break;
                         }
                         case TCacheableFinanceTablesEnum.FeesReceivableList:
                         {
                             DataTable TmpTable = AFeesReceivableAccess.LoadViaALedger(ALedgerNumber, ReadTransaction);
-                            TCacheableTablesManager.GCacheableTablesManager.AddOrMergeCachedTable(TableName, TmpTable, DomainManager.GClientID, (object)ALedgerNumber);
+                            FCacheableTablesManager.AddOrMergeCachedTable(TableName, TmpTable, DomainManager.GClientID, (object)ALedgerNumber);
                             break;
                         }
                         case TCacheableFinanceTablesEnum.AccountingPeriodList:
