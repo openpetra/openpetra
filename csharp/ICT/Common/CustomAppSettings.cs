@@ -35,7 +35,7 @@ namespace Ict.Common
     /// the Application itself).
     /// It also supports parameters on the command line which override the values in the config file.
     /// </summary>
-    public class TAppSettingsManager : object
+    public class TAppSettingsManager
     {
         /// <summary>
         /// constant for undefined value
@@ -47,8 +47,6 @@ namespace Ict.Common
 
         /// <summary>The name of the Configuration File that should be read from; static so it can be manipulated manually once for all (remoting nunit etc.)</summary>
         private static String FConfigFileName = "";
-
-        private static string FApplicationName = "";
 
         /// <summary>XML Element under which the AppSettings are found</summary>
         private static XmlElement FAppSettingsElement = null;
@@ -88,8 +86,6 @@ namespace Ict.Common
         private void Create(String CustomConfigFileName, bool AFailOnMissingConfigFile)
         {
             FCmdOpts = new TCmdOpts();
-
-            FApplicationName = Environment.GetCommandLineArgs()[0];
 
             if (CustomConfigFileName != "")
             {
