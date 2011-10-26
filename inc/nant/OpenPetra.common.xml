@@ -197,7 +197,7 @@
           overwrite="false" />
 <property name="uuidFile" value="${path::combine(dir.projectfiles, 'projectuuid.map')}"
           overwrite="false" />
-<property name="projectfiles.templates-list" value="vs2008,sharpdevelop3" overwrite="false" />
+<property name="projectfiles.templates-list" value="sharpdevelop4" overwrite="false" />
  <!-- webserver -->
 <property name="dir.webserver" value="${path::combine(dir.delivery, 'webserver')}" overwrite="false" />
 <property name="dir.webserver.bin" value="${path::combine(dir.webserver, 'bin')}" overwrite="false" />
@@ -267,7 +267,7 @@
 
 
 <!-- Set correct .NET platform -->
-<property name="NETframework-version" value ="3.5" overwrite="false" />
+<property name="NETframework-version" value ="4.0" overwrite="false" />
 <property name="nant.settings.currentframework" value="net-${NETframework-version}"
           overwrite="false" if="${platform::is-windows()}" />
 <property name="nant.settings.currentframework" value="mono-${NETframework-version}" 
