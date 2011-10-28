@@ -50,11 +50,6 @@ namespace Ict.Petra.Client.MPartner.Gui
     /// </summary>
     public delegate bool TDelegateIsNewPartner(PartnerEditTDS AInspectDataSet);
 
-    /// just temporary until TUCPartnerSubscriptions are included properly
-    public class TUCPartnerSubscriptions
-    {
-    }
-
     /// <summary>
     /// temporary class until PartnerInterests are implemented properly
     /// </summary>
@@ -569,7 +564,13 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpSubscriptions;
 
-                    // TODO
+                    // Hook up RecalculateScreenParts Event
+                    FUcoSubscriptions.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
+
+                    FUcoSubscriptions.PartnerEditUIConnector = FPartnerEditUIConnector;
+                    FUcoSubscriptions.HookupDataChange += new THookupPartnerEditDataChangeEventHandler(Uco_HookupPartnerEditDataChange);
+
+                    FUcoSubscriptions.SpecialInitUserControl();
 
                     CorrectDataGridWidthsAfterDataChange();
                 }
@@ -685,7 +686,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
-            if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUCPartnerSubscriptions))
+            if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUC_Subscriptions))
             {
                 if (FMainDS.Tables.Contains(PSubscriptionTable.GetTableName()))
                 {
@@ -819,11 +820,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FUcoAddresses.AdjustAfterResizing();
                 }
 
-                // TODO
-//                if (FUcoPartnerSubscriptions != null)
-//                {
-//                    FUcoPartnerSubscriptions.AdjustAfterResizing();
-//                }
+                if (FUcoSubscriptions != null)
+                {
+                    FUcoSubscriptions.AdjustAfterResizing();
+                }
 
                 if (FUcoPartnerTypes != null)
                 {

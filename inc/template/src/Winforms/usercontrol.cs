@@ -103,7 +103,8 @@ namespace {#NAMESPACE}
         FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 {#ENDIF ACTIONENABLING}
 
-        if(FMainDS != null)
+        if(   FMainDS != null
+		   && FMainDS.{#MASTERTABLE} != null)
         {
             ShowData(FMainDS.{#MASTERTABLE}[0]);
         }
