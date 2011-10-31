@@ -30,22 +30,28 @@
           
         <CustomTable name="SummaryData">
             <Field sqltable="p_person" sqlfield="p_partner_key_n"/>
-            <Field sqltable="p_person" sqlfield="p_family_name_c"/>
-            <Field sqltable="p_person" sqlfield="p_first_name_c"/>
-            <Field sqltable="p_person" sqlfield="p_middle_name_1_c"/>
             <Field sqltable="p_person" sqlfield="p_date_of_birth_d"/>
             <Field sqltable="p_person" sqlfield="p_gender_c"/>
             <Field sqltable="p_person" sqlfield="p_marital_status_c"/>
-            <Field sqltable="p_person" sqlfield="p_prefered_name_c"/>
-            
-            <Field sqltable="p_occupation" sqlfield="p_occupation_description_c"/>
-            <Field sqltable="p_country" sqlfield="p_country_name_c" name="Nationality"/>
+            <Field name="Nationality" sqltable="p_country" sqlfield="p_country_name_c"/>
             <Field sqltable="p_partner_location" sqlfield="p_email_address_c"/>
             <Field sqltable="p_partner_location" sqlfield="p_telephone_number_c"/>
             
             <!-- TODO: Many more fields need to be added to that CustomTable (see diapro_i.w) -->
             
             <PrimaryKey thisFields="PartnerKey"/>           
+        </CustomTable>
+
+        <CustomTable name="JobAssignmentStaffDataCombined">
+            <CustomField name="Key" type="Int32"/>
+            <Field sqltable="p_person" sqlfield="p_partner_key_n"/>
+            <Field name="FieldKey" sqltable="pm_job_assignment" sqlfield="pm_unit_key_n"/>
+            <CustomField name="FieldName" type="string"/>
+            <CustomField name="Position" type="string"/>
+            <Field sqltable="pm_job_assignment" sqlfield="pm_from_date_d"/>
+            <Field sqltable="pm_job_assignment" sqlfield="pm_to_date_d"/>
+            
+            <PrimaryKey thisFields="Key"/>           
         </CustomTable>
         
         <CustomTable name="MiscellaneousData">

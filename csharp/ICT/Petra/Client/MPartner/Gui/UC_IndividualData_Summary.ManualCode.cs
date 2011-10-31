@@ -75,6 +75,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             
             dtpDateOfBirth.Enabled = true;
+            
+  	        DataView myDataView = FMainDS.JobAssignmentStaffDataCombined.DefaultView;
+	        myDataView.AllowNew = false;
+	        myDataView.Sort = PmJobAssignmentTable.GetFromDateDBName() + " DESC";
+	        grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
         }
         
         /// <summary>

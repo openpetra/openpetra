@@ -116,6 +116,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Merge DataTables which are held only in PartnerEditTDS into IndividualDataTDS so that we can access that data in here!
             FMainDS.Merge(FPartnerEditTDS);
 
+	        ucoSummaryData.PetraUtilsObject = FPetraUtilsObject;
+	        ucoSummaryData.MainDS = FMainDS;
+	        ucoSummaryData.InitUserControl();           
             ucoSummaryData.PartnerEditUIConnector = FPartnerEditUIConnector;
             ucoSummaryData.SpecialInitUserControl(FMainDS);
             

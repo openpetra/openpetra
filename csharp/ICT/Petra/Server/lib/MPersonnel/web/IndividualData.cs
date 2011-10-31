@@ -145,7 +145,9 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
             PmJobAssignmentTable PmJobAssignmentDT = null;
             PUnitTable PUnitDT = null;
             PmJobAssignmentRow PmJobAssignmentDR;
-
+			IndividualDataTDSJobAssignmentStaffDataCombinedRow JobAssiStaffDataCombDR;
+			int JobAssiStaffDataCombKey = 0;
+			
             SummaryDT = new IndividualDataTDSSummaryDataTable();
             SummaryDR = SummaryDT.NewRowTyped(false);
             
@@ -164,33 +166,15 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
             
             if (PersonDR != null)
             {
-                SummaryDR.FamilyName = PersonDR.FamilyName;
-                SummaryDR.FirstName = PersonDR.FirstName;
-                SummaryDR.MiddleName1 = PersonDR.MiddleName1;
-                SummaryDR.PreferedName = PersonDR.PreferedName;
                 SummaryDR.DateOfBirth = PersonDR.DateOfBirth;
                 SummaryDR.Gender = PersonDR.Gender;
                 SummaryDR.MaritalStatus = PersonDR.MaritalStatus;
-            
-                if (POccupationDT.Rows.Count == 1)
-                {
-                    SummaryDR.OccupationDescription = ((POccupationRow)POccupationDT.Rows[0]).OccupationDescription;
-                }
-                else
-                {
-                    SummaryDR.OccupationDescription = StrNotAvailable;
-                }
             }
             else
             {
-                SummaryDR.FamilyName = StrNotAvailable;
-                SummaryDR.FirstName = StrNotAvailable;
-                SummaryDR.MiddleName1 = StrNotAvailable;
-                SummaryDR.PreferedName = StrNotAvailable;
                 SummaryDR.SetDateOfBirthNull();
                 SummaryDR.Gender = StrNotAvailable;
                 SummaryDR.MaritalStatus = StrNotAvailable;
-                SummaryDR.OccupationDescription = StrNotAvailable;
             }
                                 
             
@@ -215,20 +199,40 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
             PmStaffDataDT = PmStaffDataAccess.LoadViaPPerson(APartnerKey, AReadTransaction);
 			MiscellaneousDataDR.ItemsCountCommitmentPeriods = PmStaffDataDT.Rows.Count;            
 			
+				
+			
+			
             if (PmStaffDataDT.Rows.Count > 0)
-            {
-                // TODO
-                
-                PmStaffDataDR = (PmStaffDataRow)PmStaffDataDT.Rows[0];
-                
-                if (PmStaffDataDR.ReceivingField != 0)
-                {
-                    PUnitDT = PUnitAccess.LoadByPrimaryKey(PmStaffDataDR.ReceivingField, AReadTransaction);
-                    
-                    // TODO
-                }
-                
-                // TODO
+            {           	
+            	foreach(DataRow DR in PmStaffDataDT.Rows)
+            	{
+            		JobAssiStaffDataCombDR = AIndividualDataDS.JobAssignmentStaffDataCombined.NewRowTyped(false);            		
+            		JobAssiStaffDataCombDR.Key = JobAssiStaffDataCombKey++;
+            		JobAssiStaffDataCombDR.PartnerKey = APartnerKey;
+            		
+            		
+            		PmStaffDataDR = (PmStaffDataRow)DR;
+            		
+            		if (!(PmStaffDataDR.IsReceivingFieldNull())
+            		    && (PmStaffDataDR.ReceivingField != 0))
+	                {
+	                    PUnitDT = PUnitAccess.LoadByPrimaryKey(PmStaffDataDR.ReceivingField, AReadTransaction);
+	                    
+	                    JobAssiStaffDataCombDR.FieldKey = PmStaffDataDR.ReceivingField;
+	                    JobAssiStaffDataCombDR.FieldName = PUnitDT[0].UnitName;
+	                }
+	                else
+	                {
+	                	JobAssiStaffDataCombDR.FieldKey = 0;
+	                	JobAssiStaffDataCombDR.FieldName = "[None]";
+	                }
+	                
+	                JobAssiStaffDataCombDR.Position = PmStaffDataDR.JobTitle;
+	                JobAssiStaffDataCombDR.FromDate = PmStaffDataDR.StartOfCommitment;
+	                JobAssiStaffDataCombDR.ToDate = PmStaffDataDR.EndOfCommitment;
+	                
+	                AIndividualDataDS.JobAssignmentStaffDataCombined.Rows.Add(JobAssiStaffDataCombDR);
+            	}
             }
             else
             {
@@ -236,15 +240,35 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                 
                 if (PmJobAssignmentDT.Rows.Count > 0)
                 {                
-                    PmJobAssignmentDR = (PmJobAssignmentRow)PmJobAssignmentDT.Rows[0];
-                    
-                    if (PmJobAssignmentDR.UnitKey != 0)
-                    {
-                        PUnitDT = PUnitAccess.LoadByPrimaryKey(PmStaffDataDR.ReceivingField, AReadTransaction);
-                        
-                        // TODO
-                    }
+	            	foreach(DataRow DR in PmJobAssignmentDT.Rows)
+	            	{                	
+	            		JobAssiStaffDataCombDR = AIndividualDataDS.JobAssignmentStaffDataCombined.NewRowTyped(false);            		
+	            		JobAssiStaffDataCombDR.Key = JobAssiStaffDataCombKey++;
+	            		JobAssiStaffDataCombDR.PartnerKey = APartnerKey;
+	            		
+	                    PmJobAssignmentDR = (PmJobAssignmentRow)DR;
+	                    
+	                    if (PmJobAssignmentDR.UnitKey != 0)
+	                    {
+	                        PUnitDT = PUnitAccess.LoadByPrimaryKey(PmJobAssignmentDR.UnitKey, AReadTransaction);
+	                        
+		                    JobAssiStaffDataCombDR.FieldKey = PmJobAssignmentDR.UnitKey;
+		                    JobAssiStaffDataCombDR.FieldName = PUnitDT[0].UnitName;
+	                    }
+		                else
+		                {
+		                	JobAssiStaffDataCombDR.FieldKey = 0;
+		                	JobAssiStaffDataCombDR.FieldName = "[None]";
+		                }
+		                
+		                JobAssiStaffDataCombDR.Position = PmJobAssignmentDR.PositionName;
+		                JobAssiStaffDataCombDR.FromDate = PmJobAssignmentDR.FromDate;
+		                JobAssiStaffDataCombDR.ToDate = PmJobAssignmentDR.ToDate;
+		                
+		                AIndividualDataDS.JobAssignmentStaffDataCombined.Rows.Add(JobAssiStaffDataCombDR);                    
+	            	}
                 }
+	            	
                 
                 // TODO
             }
