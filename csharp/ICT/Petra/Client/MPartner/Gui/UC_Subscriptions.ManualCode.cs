@@ -180,7 +180,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
+                ucoDetails.MakeScreenInvisible(true);
                 btnDelete.Enabled = false;
+                btnCancelAllSubscriptions.Enabled = false;
             }
         }
         
@@ -230,6 +232,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (ARow != null)
             {
                 btnDelete.Enabled = true;
+                btnCancelAllSubscriptions.Enabled = true;
             }
         }
         

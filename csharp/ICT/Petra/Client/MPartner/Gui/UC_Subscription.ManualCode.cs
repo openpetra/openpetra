@@ -147,6 +147,19 @@ namespace Ict.Petra.Client.MPartner.Gui
             GetDataFromControls (ARow);
         }
 
+		/// <summary>
+		/// Sets this Usercontrol visible or unvisile true = visible, false = invisible.
+		/// </summary>
+		/// <returns>void</returns>
+		public void MakeScreenInvisible(Boolean value)
+		{
+			/* Set the groupboxes of this UserControl visible or invisible. */
+			this.grpMisc.Visible = !value;
+			this.grpSubscription.Visible = !value;
+			this.grpDates.Visible = !value;
+			this.grpIssues.Visible = !value;
+		}
+        
         private void OnHookupDataChange(THookupPartnerEditDataChangeEventArgs e)
         {
             if (HookupDataChange != null)
@@ -179,8 +192,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void PublicationCodeLeave(object sender, EventArgs e)
+        private void GratisSubscriptionChanged(object sender, EventArgs e)
         {
+            UpdatePublicationCost();
         }
         
         /// <summary>

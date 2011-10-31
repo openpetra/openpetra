@@ -55,12 +55,12 @@ RootNode:
                 Row2: [dtpPSubscriptionLastIssue]
                 Row3: [btnEditIssues]
 		
-        cmbPSubscriptionPublicationCode: {List=PublicationList, OnChange=PublicationCodeChanged, OnLeave=PublicationCodeLeave}
+        cmbPSubscriptionPublicationCode: {List=PublicationList, OnChange=PublicationCodeChanged}
             Label: Pub&lication Code
         cmbPSubscriptionSubscriptionStatus: {OnChange=PublicationStatusChanged}
             Label: S&ubscription Status
             OptionalValues: [=PERMANENT, PROVISIONAL, GIFT, CANCELLED, EXPIRED]
-        chkPSubscriptionGratisSubscription:
+        chkPSubscriptionGratisSubscription: {OnChange=GratisSubscriptionChanged}
             Label: Free Subscri&ption
 
         txtPublicationCost: {Format=Currency}
