@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       alanP
 //
 // Copyright 2004-2010 by OM International
 //
@@ -33,51 +33,166 @@ using Ict.Common.IO;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Client.App.Core;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
     public partial class TFrmCurrencyLanguageSetup
     {
+        private void InitializeManualCode()
+        {
+            // The controls have some characters that ar enot valid as Xml element names
+            // So we have to do additional initialization here.
+            rbtWords.Text = "In Words";
+            rbtNumeric.Text = "As a Number";
+            rbtPerHundred.Text = "As a Number/100";
+            rbtNone.Text = "Don't Show/None";
+            
+            lblPrintSample.Margin = new Padding(3, 0, 3, 7);
+            
+            // Add event handlers for our radio buttons so we can display our print sample text
+            rbtNone.CheckedChanged += new EventHandler(rbtNone_CheckedChanged);
+            rbtNumeric.CheckedChanged += new EventHandler(rbtNumeric_CheckedChanged);
+            rbtPerHundred.CheckedChanged += new EventHandler(rbtPerHundred_CheckedChanged);
+            rbtWords.CheckedChanged += new EventHandler(rbtWords_CheckedChanged);
+        }
         private void NewRowManual(ref ACurrencyLanguageRow ARow)
         {
             // Deal with primary key.  CurrencyCode (varchar(16)) and LanguageCode (varchar(20)) are unique.
-            // Initially we try a few popular currencies with a few popular languages
-            // Then we try the same currencies with much more unlikely languages
-            // In all we can try 11 x 17 = 187 possibilities
-            // We will only fail if you actually have chosen to store all our possibilities
-            // It is much more likely that you will want to store other combinations than all of these, so we will
-            // find something that has not been actually used.
-            string[] tryCurrencies =
+            if (FMainDS.ACurrencyLanguage.Rows.Count == 0)
             {
-                "USD", "GBP", "EUR", "INR", "JPY", "AUD", "NZD", "CHF", "RUR", "SEK", "ZAR"
-            };
-            string[] tryLanguages =
+                // Our first row is always USD/EN
+                ARow.CurrencyCode = "USD";
+                ARow.LanguageCode = "EN";
+                return;
+            }
+            else
             {
-                "EN", "DE", "ES", "FR", "HI", "IT", "JA", "MAN", "NO", "SV", "AF", "AR", "BG", "BN", "CAN", "CRE", "CY"
-            };
-            int nTryLanguage = 0;
-            int nTryCurrency = 0;
-
-            while (FMainDS.ACurrencyLanguage.Rows.Find(new object[] { tryCurrencies[nTryCurrency], tryLanguages[nTryLanguage] }) != null)
-            {
-                if (++nTryCurrency == tryCurrencies.Length)
+                // We already have some rows, so we use the currently selected language in the comboBox as a starter
+                // This may or may not be the most recently added language depending on how the main data set has been sorted
+                // But once we have started adding rows it should remain the 'active' row
+                string prevLanguage = cmbDetailLanguageCode.cmbCombobox.Text;
+                
+                // Try and find some popular or at least likely currencies
+                // Remember that we will almost certainly select a currency that the user does NOT want in their language
+                // So this will be the one we always propose!!!!
+                string[] tryCurrencies =
                 {
-                    if (++nTryLanguage == tryLanguages.Length)
+                    "USD", "GBP", "EUR", "INR", "AUD", "CAD", "CHF", "CNY", "JPY", "NZD", "PHP", "PKR", "ZAR"
+                };
+                int nTryCurrency = 0;
+                
+                bool bFoundCurrency = true;
+                while (FMainDS.ACurrencyLanguage.Rows.Find(new object[] { tryCurrencies[nTryCurrency], prevLanguage }) != null)
+                {
+                    if (++nTryCurrency == tryCurrencies.Length)
                     {
+                        // We have exhausted our popular choices
+                        bFoundCurrency = false;
                         break;
                     }
-
-                    nTryCurrency = 0;
                 }
-            }
+                if (bFoundCurrency)
+                {
+                    ARow.CurrencyCode = tryCurrencies[nTryCurrency];
+                    ARow.LanguageCode = prevLanguage;
+                    return;
+                }
 
-            ARow.CurrencyCode = tryCurrencies[nTryCurrency];
-            ARow.LanguageCode = tryLanguages[nTryLanguage];
+                // So we have tried all the popular currencies in the current language
+                // Now we fall back to trying all currencies in the current languages.
+                // Remember that we will almost certainly select a currency that the user does NOT want in their language
+                // So this will be the one we always propose!!!!
+                Type DataTableType;
+
+                ACurrencyTable allCurrencies = new ACurrencyTable();
+                DataTable CacheDT = TDataCache.GetCacheableDataTableFromCache("CurrencyCodeList", String.Empty, null, out DataTableType);
+                allCurrencies.Merge(CacheDT);
+                
+                nTryCurrency = 0;
+                bFoundCurrency = true;
+                while (FMainDS.ACurrencyLanguage.Rows.Find(new object[] { allCurrencies.Rows[nTryCurrency][0].ToString(), prevLanguage }) != null)
+                {
+                    if (++nTryCurrency == tryCurrencies.Length)
+                    {
+                        bFoundCurrency = false;
+                        break;
+                    }
+                }
+                if (bFoundCurrency)
+                {
+                    ARow.CurrencyCode = allCurrencies.Rows[nTryCurrency][0].ToString();
+                    ARow.LanguageCode = prevLanguage;
+                }
+                
+                // We could at this point start trying other languages - but there seems little point since the currency list contains 
+                // currencies that will never be used since they no longer exist!!  It is therefore assumed that by this time
+                // the user has gone on to a different langauge where we will have started again with USD ....
+            }
         }
 
         private void NewRecord(Object sender, EventArgs e)
         {
             CreateNewACurrencyLanguage();
+        }
+        
+        private void GetDetailDataFromControlsManual(ACurrencyLanguageRow ARow)
+        {
+            // Set the actual values that will go in the database column for DecimalOptions
+            if (rbtWords.Checked) ARow.DecimalOptions = "Words";
+            if (rbtNumeric.Checked) ARow.DecimalOptions = "Numeric";
+            if (rbtPerHundred.Checked) ARow.DecimalOptions = "PerHundred";
+            if (rbtNone.Checked) ARow.DecimalOptions = "None";
+        }
+        
+        private void ShowDetailsManual(ACurrencyLanguageRow ARow)
+        {
+            if (ARow == null) return;
+            
+            // deal with our own conversion.  Words is the default so must be last in the 'if' sequence
+            if (String.Compare(ARow.DecimalOptions, "None", true) == 0) rbtNone.Checked = true;
+            else if (String.Compare(ARow.DecimalOptions, "Numeric", true) == 0) rbtNumeric.Checked = true;
+            else if (String.Compare(ARow.DecimalOptions, "PerHundred", true) == 0) rbtPerHundred.Checked = true;
+            else rbtWords.Checked = true;
+        }
+        
+        // TODO: When we have the actual printing routine we should use that to generate the example text
+        //       in place of the fixed text below because that is the definitive sample text ...
+        //  This will be the c# translation of the 4GL method x_curamt.p
+        private void rbtNone_CheckedChanged(object Sender, EventArgs e)
+        {
+            lblPrintSample.Text = "e.g. 2105 dollars";
+            SetDecimalEnabledState(false);
+        }
+        
+        private void rbtWords_CheckedChanged(object Sender, EventArgs e)
+        {
+            lblPrintSample.Text = "e.g. two thousand one hundred five dollars and one cent";
+            SetDecimalEnabledState(true);
+        }
+        
+        private void rbtNumeric_CheckedChanged(object Sender, EventArgs e)
+        {
+            lblPrintSample.Text = "e.g. 2105 dollars 01 cent";
+            SetDecimalEnabledState(true);
+        }
+        
+        private void rbtPerHundred_CheckedChanged(object Sender, EventArgs e)
+        {
+            lblPrintSample.Text = "e.g. 2105 dollars 01/100 cent";
+            SetDecimalEnabledState(true);
+        }
+        
+        private void SetDecimalEnabledState(bool bEnable)
+        {
+            txtDetailDecimalLabelPlural.Enabled = bEnable;
+            txtDetailDecimalLabelSingular.Enabled = bEnable;
+            if (!bEnable)
+            {
+                txtDetailDecimalLabelPlural.Text = String.Empty;
+                txtDetailDecimalLabelSingular.Text = String.Empty;
+            }
         }
     }
 }
