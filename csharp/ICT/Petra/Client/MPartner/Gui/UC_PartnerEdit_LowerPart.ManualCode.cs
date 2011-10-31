@@ -324,6 +324,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        public void RefreshPersonnelDataAfterMerge()
+        {
+			ucoPersonnelTabSet.RefreshPersonnelDataAfterMerge();
+        }
+        
         #endregion
     }
 }

@@ -149,6 +149,17 @@ namespace Ict.Petra.Client.MPartner.Gui
         	}
         }
 
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        public void RefreshPersonnelDataAfterMerge()
+        {
+        	if (FUcoIndividualData != null) 
+        	{        	
+				FUcoIndividualData.RefreshPersonnelDataAfterMerge();
+        	}        	
+        }
+        
         #endregion
         
         #region Private Methods
@@ -162,7 +173,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpPersonnelIndividualData;
 
                     FUcoIndividualData.PartnerEditUIConnector = FPartnerEditUIConnector;
-                    FUcoIndividualData.HookupDataChange += new THookupPartnerEditDataChangeEventHandler(Uco_HookupPartnerEditDataChange);
                     
                     FUcoIndividualData.InitialiseUserControl();
 
@@ -173,12 +183,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpPersonnelApplications;
 
                     // Hook up RecalculateScreenParts Event
-                    FUcoApplications.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
+// TODO                    FUcoApplications.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
 
-//                    FUcoApplications.PartnerEditUIConnector = FPartnerEditUIConnector;
-                    FUcoApplications.HookupDataChange += new THookupPartnerEditDataChangeEventHandler(Uco_HookupPartnerEditDataChange);
+// TODO                   FUcoApplications.PartnerEditUIConnector = FPartnerEditUIConnector;
 
-//                    FUcoApplications.SpecialInitUserControl();
+// TODO                   FUcoApplications.SpecialInitUserControl();
 
                     CorrectDataGridWidthsAfterDataChange();
                 }

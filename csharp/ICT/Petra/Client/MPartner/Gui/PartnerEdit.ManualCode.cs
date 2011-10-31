@@ -127,11 +127,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         private TPartnerEditTabPageEnum FInitiallySelectedTabPage;
         private Boolean FUppperPartInitiallyCollapsed;
         private Boolean FFoundationDetailsEnabled;
-
-// TODO        private Boolean FPartnerTabSetInitialised;
-
-//TODO        private Boolean FPersonnelTabSetInitialised;
-//TODO        private Boolean FFinanceTabSetInitialised;
         private TModuleSwitchEnum FCurrentModuleTabGroup;
 
         /// <summary>Stores any Exception that occurs while the screen is loading</summary>
@@ -1177,6 +1172,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                             // end;
                             // $ENDIF
                             ucoLowerPart.RefreshAddressesAfterMerge();
+                            ucoLowerPart.RefreshPersonnelDataAfterMerge();
 
                             // Call AcceptChanges so that we don't have any changed data anymore!
                             AInspectDS.AcceptChanges();
@@ -1386,14 +1382,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                 this.Height = 600;
             }
 
-            // Determine which tab page will be shown
-            DetermineInitiallySelectedTabPage();
-
             /*
              * Load data for new Partner or existing Partner
              */
             LoadData();
-
+           
             if ((FMainDS == null) || (FMainDS.PPartner == null) || (FMainDS.PPartner.Count == 0))
             {
                 // screen has been cancelled, most probably the new partner dialog was cancelled
@@ -1406,6 +1399,10 @@ namespace Ict.Petra.Client.MPartner.Gui
              */
             FPartnerClass = FMainDS.PPartner[0].PartnerClass;
 
+            // Determine which tab page will be shown
+            DetermineInitiallySelectedTabPage();
+
+            
             // Determine whether Partner is of PartnerClass ORGANISATION and whether it is a Foundation
             DetermineOrganisationIsFoundation();
 
@@ -1449,14 +1446,20 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     ViewPartnerData(null, null);
 
-                    // TODO FPartnerTabSetInitialised = true;
-
                     break;
 
                 case TModuleSwitchEnum.msPersonnel:
 
-                    ViewPersonnelData(null, null);
-
+                    // Only switch to Personnel Tab Group if Partner is of Partner Class PERSON
+	                if (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
+	                {	                	
+                    	ViewPersonnelData(null, null);
+	                }
+                    else
+                    {
+	                    ViewPartnerData(null, null);
+                    }
+                    		
                     break;
 
                 case TModuleSwitchEnum.msFinance:
@@ -1788,7 +1791,14 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void MaintainIndividualData(System.Object sender, System.EventArgs e)
         {
-            ViewPersonnelData(null, null);
+        	if (FPartnerClass != SharedTypes.PartnerClassEnumToString(TPartnerClass.UNIT))
+        	{
+            	ViewPersonnelData(null, null);
+        	}
+        	else
+        	{
+        		throw new NotImplementedException();	
+        	}
         }
 
         private void MaintainDonorHistory(System.Object sender, System.EventArgs e)
@@ -1854,15 +1864,37 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void ViewPersonnelData(System.Object sender, System.EventArgs e)
         {
-            tbbViewPersonnelData.Checked = true;            
-            tbbViewPartnerData.Checked = false;
-            tbbViewFinanceData.Checked = false;
-            mniViewPersonnelData.Checked = true;
-            mniViewPartnerData.Checked = false;           
-            mniViewFinanceData.Checked = false;
-            
-            ucoLowerPart.CurrentModuleTabGroup = TModuleSwitchEnum.msPersonnel;
-            ucoLowerPart.InitChildUserControl();
+        	if (UserHasPersonnelAccess())
+        	{
+        		if (FPartnerClass != SharedTypes.PartnerClassEnumToString(TPartnerClass.UNIT))
+        		{
+	       		  	tbbViewPersonnelData.Checked = true;            
+		            tbbViewPartnerData.Checked = false;
+		            tbbViewFinanceData.Checked = false;
+		            mniViewPersonnelData.Checked = true;
+		            mniViewPartnerData.Checked = false;           
+		            mniViewFinanceData.Checked = false;
+		            
+		            ucoLowerPart.CurrentModuleTabGroup = TModuleSwitchEnum.msPersonnel;
+		            ucoLowerPart.InitChildUserControl();
+        		}
+        		else
+        		{
+        			// If editing a Partner of Partner Class UNIT, don't enable the Personnel Data TabGroup!
+        		}
+        	}
+        	else
+        	{
+        		MessageBox.Show(Catalog.GetString("You do not have access rights to the Personnel System of OpenPetra.\r\n\r\n" + 
+        		                                  "For that reason the Pesonnel Data Tabs cannot be switched to on the\r\n" +
+        		                                  "Partner Edit screen. Showing the Partner Data Tabs instead."), 
+        		                                  Catalog.GetString("Access Denied"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+        		tbbViewPersonnelData.Enabled = false;
+        		mniViewPersonnelData.Enabled = false;
+        		
+     			ViewPartnerData(null, null);
+        	}
         }
 
         private void ViewFinanceData(System.Object sender, System.EventArgs e)
@@ -1870,6 +1902,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             throw new NotImplementedException();
         }
 
+        private bool UserHasPersonnelAccess()
+        {
+        	return UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_PERSONNEL);
+        }
+        
         #endregion
 
         #region Help Menu
@@ -2438,16 +2475,29 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Personnel Module Data
             if ((ALockOnModule == TModuleSwitchEnum.msNone) || (ALockOnModule == TModuleSwitchEnum.msPersonnel))
             {
-                if (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
+            	if (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
                 {
-                    tbbViewPersonnelData.Enabled = AEnable;
-                    mniViewPersonnelData.Enabled = AEnable;
-                    mniMaintainPersonnelData.Enabled = AEnable;
+            	    if(UserHasPersonnelAccess())
+            	    {
+	                    tbbViewPersonnelData.Enabled = AEnable;
+	                    mniViewPersonnelData.Enabled = AEnable;
+	                    mniMaintainPersonnelData.Enabled = AEnable;
+            	    }
+            	    else
+            	    {
+	                    tbbViewPersonnelData.Enabled = false;
+	                    mniViewPersonnelData.Enabled = false;
+	                    mniMaintainPersonnelData.Enabled = false;            	    	
+            	    }
+            	    
                     mniMaintainPersonnelData.Text = Resourcestrings.StrPersonnelPersonMenuItemText;
                 }
                 else if (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.UNIT))
                 {
                     mniMaintainPersonnelData.Enabled = AEnable;
+                    tbbViewPersonnelData.Enabled = false;
+                    mniViewPersonnelData.Enabled = false;
+                    
                     mniMaintainPersonnelData.Text = Resourcestrings.StrPersonnelUnitMenuItemText;
                 }
                 else
@@ -2463,11 +2513,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 mniViewPersonnelData.Enabled = (!AEnable);
                 mniMaintainPersonnelData.Enabled = (!AEnable);
             }
-
-
-            tbbViewPersonnelData.Enabled = false;
-            mniViewPersonnelData.Enabled = false;
-
 
             // Finance Module Data
             if ((ALockOnModule == TModuleSwitchEnum.msNone) || (ALockOnModule == TModuleSwitchEnum.msFinance))
@@ -2499,18 +2544,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             mniMaintainFinanceReports.Visible = false;
             mniMaintainBankAccounts.Visible = false;
             mniMaintainGiftReceipting.Visible = false;
-
-            
-            if (SharedTypes.PartnerClassStringToEnum(FMainDS.PPartner[0].PartnerClass) == TPartnerClass.PERSON)
-            {
-                tbbViewPersonnelData.Enabled = true;
-                mniViewPersonnelData.Enabled = true;
-            }
-            else
-            {
-                tbbViewPersonnelData.Enabled = false;
-                mniViewPersonnelData.Enabled = false;
-            }                
         }
 
         private bool CheckSecurityOKToCreateNewPartner(Boolean AShowMessage)

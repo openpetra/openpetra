@@ -22,14 +22,15 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Data;
 using System.Drawing;
 using System.Collections.Generic;
 using System.Windows.Forms;
-
 using Ict.Common;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
+using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 
@@ -39,23 +40,35 @@ namespace Ict.Petra.Client.MPartner.Gui
     {
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
+        private Dictionary<string, string> FLinkLabelsOrigTexts;
         
         IndividualDataTDS FMainDS;          // FMainDS is NOT of Type 'PartnerEditTDS' in this UserControl!!!
         PartnerEditTDS FPartnerEditTDS;
 		private SortedList<TDynamicLoadableUserControls, UserControl> FUserControlSetup;        
 	    private Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_SpecialNeeds FUcoSpecialNeeds;
+	    private Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_PersonalLanguages FUcoPersonalLanguages;
 		
 	    /// <summary>
 	    /// Enumeration of dynamic loadable UserControls which are used
-	    /// on the Tabs of a TabControl. 
-	    /// TODO: AUTO-GENERATE at some point!!!
+	    /// on this UserControl. 
 	    /// </summary>
 	    private enum TDynamicLoadableUserControls
 	    {
+	    	dlucPersonalData,
+	    	dlucEmergencyData,
+	    	dlucPassportDetails,
+	    	dlucPersonalDocuments,
 	        ///<summary>Denotes dynamic loadable UserControl FUcoSpecialNeeds</summary>
 	        dlucSpecialNeeds,
+	        dlucLocalPersonnelData,
+	        dlucProfessionalAreas,
 	        ///<summary>Denotes dynamic loadable UserControl FUcoPersonalLanguages</summary>
 	        dlucPersonalLanguages,
+	        dlucPersonalAbilities,
+	        dlucPreviousExperience,
+	        dlucCommitmentPeriods,
+	        dlucJobAssignments,
+	        dlucProgressReports
 	    }
         
         #region Properties
@@ -88,15 +101,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
         #endregion
-        #region Events
-        
-        /// <summary>todoComment</summary>
-        public event TRecalculateScreenPartsEventHandler RecalculateScreenParts;
-
-        /// <summary>todoComment</summary>
-        public event THookupPartnerEditDataChangeEventHandler HookupDataChange;
-        
-        #endregion
         
         #region Public Methods
 
@@ -114,6 +118,11 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             ucoSummaryData.PartnerEditUIConnector = FPartnerEditUIConnector;
             ucoSummaryData.SpecialInitUserControl(FMainDS);
+            
+			FUserControlSetup = new SortedList<TDynamicLoadableUserControls, UserControl>();
+            StoreLinkLablesOrigText();
+            
+			CalculateLinkLabelCounters(this);            
         }
         
         /// <summary>
@@ -141,15 +150,37 @@ namespace Ict.Petra.Client.MPartner.Gui
 	
 	            if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucPersonalLanguages))
 	            {
-//                        TUC_PartnerDetails_Family UCPartnerDetailsFamily =
-//                            (TUC_PartnerDetails_Family)FTabSetup[TDynamicLoadableUserControls.dlucPersonalLanguages];
-//                        UCPartnerDetailsFamily.GetDataFromControls2();
-	            }	            
+                    TUC_IndividualData_PersonalLanguages UCPersonalLanguage =
+                        (TUC_IndividualData_PersonalLanguages)FUserControlSetup[TDynamicLoadableUserControls.dlucPersonalLanguages];
+                    UCPersonalLanguage.GetDataFromControls2();
+
+	                if (!FPartnerEditTDS.Tables.Contains(PmPersonLanguageTable.GetTableName()))
+	                {
+		                FPartnerEditTDS.Tables.Add(new PmPersonLanguageTable());
+	                }
+	                
+	                FPartnerEditTDS.Tables[PmPersonLanguageTable.GetTableName()].Rows.Clear();
+	                FPartnerEditTDS.Tables[PmPersonLanguageTable.GetTableName()].Merge(FMainDS.PmPersonLanguage);
+	            }
+	            
+	            // TODO add code for all remaining Individual Data Items
         	}
+        }
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        public void RefreshPersonnelDataAfterMerge()
+        {
+        	// Need to merge Tables from PartnerEditTDS into IndividualDataTDS so the updated s_modification_id_c of modififed Rows is held correctly in IndividualDataTDS, too!
+        	FMainDS.Merge(FPartnerEditTDS);
+        	
+        	// Call AcceptChanges on IndividualDataTDS so that we don't have any changed data anymore (this is done to PartnerEditTDS, too, after this Method returns)!
+        	FMainDS.AcceptChanges();
         }
         
         /// <summary>
-        /// This Method is needed for UserControls who get dynamicly loaded on TabPages.
+        /// This Method is needed for UserControls who get dynamicly loaded.
         /// Since we don't have controls on this UserControl that need adjusting after resizing
         /// on 'Large Fonts (120 DPI)', we don't need to do anything here.
         /// </summary>
@@ -163,7 +194,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         
 	    /// <summary>
 	    /// Creates UserControls on request. 
-	    /// TODO: AUTO-GENERATE at some point!!!
 	    /// </summary>
 	    /// <param name="AUserControl">UserControl to load.</param>
 	    private UserControl DynamicLoadUserControl(TDynamicLoadableUserControls AUserControl)
@@ -213,7 +243,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 	                pnlSelectedIndivDataItem.Controls.Add(pnlHostForUCPersonalLanguages);
 	
 	                // Create the UserControl
-	                Ict.Petra.Client.MPartner.Gui.TUC_PartnerNotes ucoPersonalLanguages = new Ict.Petra.Client.MPartner.Gui.TUC_PartnerNotes();
+	                Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_PersonalLanguages ucoPersonalLanguages = new Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_PersonalLanguages();
 	                FUserControlSetup.Add(TDynamicLoadableUserControls.dlucPersonalLanguages, ucoPersonalLanguages);
 	                ucoPersonalLanguages.Location = new Point(0, 2);
 	                ucoPersonalLanguages.Dock = DockStyle.Fill;
@@ -238,19 +268,26 @@ namespace Ict.Petra.Client.MPartner.Gui
 	        return ReturnValue;
 	    }
                
+	    private void StoreLinkLablesOrigText()
+	    {
+	    	FLinkLabelsOrigTexts = new Dictionary<string, string>();
+	    	
+	    	foreach (Control Cntrl in this.pnlIndivDataMenu.Controls[0].Controls)
+	    	{
+	    		if ((Cntrl is LinkLabel)
+	    		     && (Cntrl.Text.Contains("{")))
+	    		{
+	    			FLinkLabelsOrigTexts.Add(Cntrl.Name, Cntrl.Text);
+	    		}	
+	    	}
+	    }
+	    
         #endregion
         
         #region Event Handlers
         
         private void IndividualDataItemSelected(object Sender, EventArgs e)
         {
-
-	        if (FUserControlSetup == null)
-	        {
-	            FUserControlSetup = new SortedList<TDynamicLoadableUserControls, UserControl>();
-	        }
-	
-
 	        /*
 	         * Raise the following Event to inform the base Form that we might be loading some fresh data.
 	         * We need to bypass the ChangeDetection routine while this happens.
@@ -260,7 +297,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 	        
             if (Sender == llbOverview)
             {
-				// TODO                
+            	ucoSummaryData.Parent.BringToFront();
             }
             else if (Sender == llbSpecialNeeds)
             {
@@ -280,7 +317,13 @@ namespace Ict.Petra.Client.MPartner.Gui
 	                FUcoSpecialNeeds.InitUserControl();	                
 	                ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoSpecialNeeds);
 					
-	                FUcoSpecialNeeds.Parent.BringToFront();
+
+	                
+	                if (FUcoPersonalLanguages != null) 
+	                {
+	                	FUcoPersonalLanguages.SendToBack();	
+	                }
+	                
 //	TODO                OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
 	
 	                this.Cursor = Cursors.Default;
@@ -298,10 +341,55 @@ namespace Ict.Petra.Client.MPartner.Gui
 	                    FUcoSpecialNeeds.AdjustAfterResizing();
 	                }
 	            }
+	            
+	            FUcoSpecialNeeds.Parent.BringToFront();	            
             }
             else if (Sender == llbLanguages)
             {
-                // TODO
+	            if (!FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucPersonalLanguages))
+	            {
+	                if (TClientSettings.DelayedDataLoading)
+	                {
+	                    // Signalise the user that data is beeing loaded
+	                    this.Cursor = Cursors.AppStarting;
+	                }
+	
+	                FUcoPersonalLanguages = (Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_PersonalLanguages)DynamicLoadUserControl(TDynamicLoadableUserControls.dlucPersonalLanguages);
+	                
+                    // Hook up RecalculateScreenParts Event
+                    FUcoPersonalLanguages.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateLinkLabelCounters);
+	                	                
+	                FUcoPersonalLanguages.MainDS = FMainDS;
+	                FUcoPersonalLanguages.PetraUtilsObject = FPetraUtilsObject;
+	                FUcoPersonalLanguages.PartnerEditUIConnector = FPartnerEditUIConnector;
+	                FUcoPersonalLanguages.SpecialInitUserControl(FMainDS);
+	                FUcoPersonalLanguages.InitUserControl();	                
+	                ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoPersonalLanguages);
+					                
+	                if (FUcoSpecialNeeds != null) 
+	                {	                
+	                	FUcoSpecialNeeds.SendToBack();
+	                }
+	                
+//	TODO                OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
+	
+	                this.Cursor = Cursors.Default;
+	            }
+	            else
+	            {
+//	TODO                OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "SubsequentActivation"));
+	
+	                /*
+	                 * The following command seems strange and unnecessary; however, it is necessary
+	                 * to make things scale correctly on "Large Fonts (120DPI)" display setting.
+	                 */
+	                if (TClientSettings.GUIRunningOnNonStandardDPI)
+	                {
+	                    FUcoSpecialNeeds.AdjustAfterResizing();
+	                }
+	            }
+	            
+	            FUcoPersonalLanguages.Parent.BringToFront();
             }
             
             // TODO else branch for all remaining Individual Data Items
@@ -330,6 +418,163 @@ namespace Ict.Petra.Client.MPartner.Gui
             throw new NotImplementedException();
         }
 
+        private void RecalculateLinkLabelCounters(System.Object sender, TRecalculateScreenPartsEventArgs e)
+        {
+            if (e.ScreenPart == TScreenPartEnum.spCounters)
+            {
+                CalculateLinkLabelCounters(sender);
+            }
+        }
+
+        private void CalculateLinkLabelCounters(System.Object ASender)
+        {
+        	string OrigLabelText;
+        	
+        	if ((ASender is TUC_IndividualData)) // TODO: || (ASender is TUC_IndividualData_PassportDetails)))
+            {
+            	if (FLinkLabelsOrigTexts.TryGetValue(llbPassportDetails.Name, out OrigLabelText)) 
+            	{
+	                if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucPassportDetails))
+	                {
+	                    llbPassportDetails.Text = String.Format(OrigLabelText, 
+	                        new DataView(FMainDS.PmPassportDetails, "", "", DataViewRowState.CurrentRows).Count);
+	                }
+	                else
+	                {
+	                	llbPassportDetails.Text = String.Format(OrigLabelText, FMainDS.MiscellaneousData[0].ItemsCountPassportDetails);
+	                }            		
+            	}
+            }
+        	
+        	if ((ASender is TUC_IndividualData)) // TODO: || (ASender is TUC_IndividualData_PersonalDocuments)))
+            {
+            	if (FLinkLabelsOrigTexts.TryGetValue(llbPersonalDocuments.Name, out OrigLabelText)) 
+            	{
+	                if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucPersonalDocuments))
+	                {
+	                    llbPersonalDocuments.Text = String.Format(OrigLabelText, 
+	                        new DataView(FMainDS.PmDocument, "", "", DataViewRowState.CurrentRows).Count);
+	                }
+	                else
+	                {
+	                	llbPersonalDocuments.Text = String.Format(OrigLabelText, FMainDS.MiscellaneousData[0].ItemsCountPersonalDocuments);
+	                }            		
+            	}
+            }
+        	
+        	if ((ASender is TUC_IndividualData)) // TODO: || (ASender is TUC_IndividualData_ProfessionalAreas)))
+            {
+            	if (FLinkLabelsOrigTexts.TryGetValue(llbProfessionalAreas.Name, out OrigLabelText)) 
+            	{
+	                if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucProfessionalAreas))
+	                {
+	                    llbProfessionalAreas.Text = String.Format(OrigLabelText, 
+	                        new DataView(FMainDS.PmPersonQualification, "", "", DataViewRowState.CurrentRows).Count);
+	                }
+	                else
+	                {
+	                	llbProfessionalAreas.Text = String.Format(OrigLabelText, FMainDS.MiscellaneousData[0].ItemsCountProfessionalAreas);
+	                }            		
+            	}
+            }        	        	
+        	
+            if ((ASender is TUC_IndividualData) || (ASender is TUC_IndividualData_PersonalLanguages))
+            {
+            	if (FLinkLabelsOrigTexts.TryGetValue(llbLanguages.Name, out OrigLabelText)) 
+            	{
+	                if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucPersonalLanguages))
+	                {
+	                    llbLanguages.Text = String.Format(OrigLabelText, 
+	                        new DataView(FMainDS.PmPersonLanguage, "", "", DataViewRowState.CurrentRows).Count);
+	                }
+	                else
+	                {
+	                	llbLanguages.Text = String.Format(OrigLabelText, FMainDS.MiscellaneousData[0].ItemsCountPersonalLanguages);
+	                }            		
+            	}
+            }
+        	
+        	if ((ASender is TUC_IndividualData)) // TODO: || (ASender is TUC_IndividualData_PersonalAbilities)))
+            {
+            	if (FLinkLabelsOrigTexts.TryGetValue(llbPersonalAbilities.Name, out OrigLabelText)) 
+            	{
+	                if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucPersonalAbilities))
+	                {
+	                    llbPersonalAbilities.Text = String.Format(OrigLabelText, 
+	                        new DataView(FMainDS.PmPersonAbility, "", "", DataViewRowState.CurrentRows).Count);
+	                }
+	                else
+	                {
+	                	llbPersonalAbilities.Text = String.Format(OrigLabelText, FMainDS.MiscellaneousData[0].ItemsCountPersonalAbilities);
+	                }            		
+            	}
+            }        	        	
+        	
+        	if ((ASender is TUC_IndividualData)) // TODO: || (ASender is TUC_IndividualData_PreviousExperience)))
+            {
+            	if (FLinkLabelsOrigTexts.TryGetValue(llbPreviousExperience.Name, out OrigLabelText)) 
+            	{
+	                if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucPreviousExperience))
+	                {
+	                    llbPreviousExperience.Text = String.Format(OrigLabelText, 
+	                        new DataView(FMainDS.PmPastExperience, "", "", DataViewRowState.CurrentRows).Count);
+	                }
+	                else
+	                {
+	                	llbPreviousExperience.Text = String.Format(OrigLabelText, FMainDS.MiscellaneousData[0].ItemsCountPreviousExperience);
+	                }            		
+            	}
+            }        	        	
+
+        	if ((ASender is TUC_IndividualData)) // TODO: || (ASender is TUC_IndividualData_CommitmentPeriods)))
+            {
+            	if (FLinkLabelsOrigTexts.TryGetValue(llbCommitmentPeriods.Name, out OrigLabelText)) 
+            	{
+	                if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucCommitmentPeriods))
+	                {
+	                    llbCommitmentPeriods.Text = String.Format(OrigLabelText, 
+	                        new DataView(FMainDS.PmStaffData, "", "", DataViewRowState.CurrentRows).Count);
+	                }
+	                else
+	                {
+	                	llbCommitmentPeriods.Text = String.Format(OrigLabelText, FMainDS.MiscellaneousData[0].ItemsCountCommitmentPeriods);
+	                }            		
+            	}
+            }        	        	
+
+        	if ((ASender is TUC_IndividualData)) // TODO: || (ASender is TUC_IndividualData_JobAssignments)))
+            {
+            	if (FLinkLabelsOrigTexts.TryGetValue(llbJobAssignments.Name, out OrigLabelText)) 
+            	{
+	                if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucJobAssignments))
+	                {
+	                    llbJobAssignments.Text = String.Format(OrigLabelText, 
+	                        new DataView(FMainDS.PmJobAssignment, "", "", DataViewRowState.CurrentRows).Count);
+	                }
+	                else
+	                {
+	                	llbJobAssignments.Text = String.Format(OrigLabelText, FMainDS.MiscellaneousData[0].ItemsCountJobAssignments);
+	                }            		
+            	}
+            }        	        	
+
+        	if ((ASender is TUC_IndividualData)) // TODO: || (ASender is TUC_IndividualData_ProgressReports)))
+            {
+            	if (FLinkLabelsOrigTexts.TryGetValue(llbProgressReports.Name, out OrigLabelText)) 
+            	{
+	                if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucProgressReports))
+	                {
+	                    llbProgressReports.Text = String.Format(OrigLabelText, 
+	                        new DataView(FMainDS.PmPersonEvaluation, "", "", DataViewRowState.CurrentRows).Count);
+	                }
+	                else
+	                {
+	                	llbProgressReports.Text = String.Format(OrigLabelText, FMainDS.MiscellaneousData[0].ItemsCountProgressReports);
+	                }            		
+            	}
+            }        	        	
+        }
+        
         #endregion
     }
 }

@@ -17,17 +17,19 @@ RootNode:
             Dock: Fill
 
         pnlDataItems:
-#            Dock: Top
+            Dock: Fill
             ControlsOrientation: horizontal
             Controls: [pnlIndivDataMenu, pnlSelectedIndivDataItem]
             
         pnlButtons:
             Dock: Bottom
+            Height: 30
             ControlsOrientation: horizontal
             Controls: [pnlShepherds, pnlEmergencyData]
         
         pnlIndivDataMenu:
-#            Dock: Left
+            Dock: Left
+            BackColor: System.Drawing.Color.Beige
             Controls: 
                 Row0: [llbOverview]
                 Row1: [llbPersonalData]
@@ -61,7 +63,7 @@ RootNode:
         llbProgressReports: {Label=[&q] Progress Reports ({0}), Enabled=false, Action=actIndivDataItemSelected}
             
         pnlSelectedIndivDataItem:
- #           Dock: Fill
+            Dock: Fill
             Controls: [ucoSummaryData]
             
         ucoSummaryData:
@@ -70,6 +72,7 @@ RootNode:
             
         
         pnlShepherds:
+            Dock: Left
             ControlsOrientation: horizontal
             Controls: [btnBasicDataShepherd, btnIntranetRegistrationShepherd]
             
@@ -77,7 +80,8 @@ RootNode:
         btnIntranetRegistrationShepherd: {Label=Intranet Registration Shepherd...}
         
         pnlEmergencyData:
-            Dock: Right
+            Dock: Fill
+            Padding : 30, 0, 0, 0
             Controls: [btnEmergencyContacts]
             
-        btnEmergencyContacts: 
+        btnEmergencyContacts: {Label=Emergency Contacts...}

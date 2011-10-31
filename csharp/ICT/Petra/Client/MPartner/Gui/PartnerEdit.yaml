@@ -9,7 +9,7 @@ RootNode:
     UIConnectorType: Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors.IPartnerUIConnectorsPartnerEdit
     UIConnectorCreate: TRemote.MPartner.Partner.UIConnectors.PartnerEdit
     MasterTable: PPartner
-    WindowWidth: 750
+    WindowWidth: 800
     WindowHeight: 700
     
     Events:

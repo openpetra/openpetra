@@ -24,11 +24,9 @@
         <Table sqltable="pm_person_language"/>            <!-- Personal Languages -->
         <Table sqltable="pm_person_ability"/>             <!-- Personal Abilities (should be merged with Professional Areas)-->
         <Table sqltable="pm_past_experience"/>            <!-- Previous Experience -->
-        <Table sqltable="pm_person_vision"/>              <!-- Personal Vision -->
         <Table sqltable="pm_staff_data"/>                 <!-- Commitment Periods -->
         <Table sqltable="pm_job_assignment"/>             <!-- Job Assignments -->
         <Table sqltable="pm_person_evaluation"/>          <!-- Progress Reports -->
-        <Table sqltable="pm_long_term_support_figures"/>  <!-- Personal Budgets -->
           
         <CustomTable name="SummaryData">
             <Field sqltable="p_person" sqlfield="p_partner_key_n"/>
@@ -47,8 +45,22 @@
             
             <!-- TODO: Many more fields need to be added to that CustomTable (see diapro_i.w) -->
             
-            <PrimaryKey thisFields="PartnerKey"/>
+            <PrimaryKey thisFields="PartnerKey"/>           
         </CustomTable>
+        
+        <CustomTable name="MiscellaneousData">
+            <Field sqltable="p_person" sqlfield="p_partner_key_n"/>
+            <CustomField name="ItemsCountPassportDetails" type="Int32"/>        <!-- not in use yet! -->
+            <CustomField name="ItemsCountPersonalDocuments" type="Int32"/>      <!-- not in use yet! -->
+            <CustomField name="ItemsCountProfessionalAreas" type="Int32"/>      <!-- not in use yet! -->
+            <CustomField name="ItemsCountPersonalLanguages" type="Int32"/>          
+            <CustomField name="ItemsCountPersonalAbilities" type="Int32"/>      <!-- not in use yet! -->
+            <CustomField name="ItemsCountPreviousExperience" type="Int32"/>     <!-- not in use yet! -->
+            <CustomField name="ItemsCountCommitmentPeriods" type="Int32"/>      <!-- not in use yet! -->
+            <CustomField name="ItemsCountJobAssignments" type="Int32"/>         <!-- not in use yet! -->
+            <CustomField name="ItemsCountProgressReports" type="Int32"/>        <!-- not in use yet! -->
+            <PrimaryKey thisFields="PartnerKey"/>
+        </CustomTable>                    
    </DataSet>    
    
 </PetraDataSets>

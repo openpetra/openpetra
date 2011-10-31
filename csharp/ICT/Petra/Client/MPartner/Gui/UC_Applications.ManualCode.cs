@@ -31,11 +31,8 @@ namespace Ict.Petra.Client.MPartner.Gui
     {
         #region Events
         
-        /// <summary>todoComment</summary>
-        public event TRecalculateScreenPartsEventHandler RecalculateScreenParts;
-
-        /// <summary>todoComment</summary>
-        public event THookupPartnerEditDataChangeEventHandler HookupDataChange;
+// TODO        /// <summary>todoComment</summary>
+// TODO        public event TRecalculateScreenPartsEventHandler RecalculateScreenParts;
         
         #endregion
         

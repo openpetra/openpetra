@@ -2735,7 +2735,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 TempDS.Merge(AInspectDS);
                 TSubmitChangesResult IndividualDataResult;
                 
-                IndividualDataResult = TIndividualDataWebConnector.SubmitChangesServerSide(ref TempDS, ASubmitChangesTransaction, 
+                IndividualDataResult = TIndividualDataWebConnector.SubmitChangesServerSide(ref TempDS, ref AInspectDS, ASubmitChangesTransaction, 
 					out SingleVerificationResultCollection);
                 
                 if ((IndividualDataResult != TSubmitChangesResult.scrOK) 
