@@ -28,7 +28,10 @@ using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.DB;
+using Ict.Common.Data;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Gui;
@@ -38,7 +41,6 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.RemotedExceptions;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -882,7 +884,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                             if ((InspectDT.TableName != PLocationTable.GetTableName()) && (InspectDT.TableName != PPartnerLocationTable.GetTableName()))
                             {
                                 MaxColumn = InspectDT.Columns.Count;
-                                Int32 ChangedColumns = SharedDataUtilities.AcceptChangesForUnmodifiedRows(InspectDT, MaxColumn);
+                                Int32 ChangedColumns = DataUtilities.AcceptChangesForUnmodifiedRows(InspectDT, MaxColumn);
 
                                 if (ChangedColumns != 0)
                                 {
@@ -896,7 +898,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                                 MaxColumn = new PLocationTable().Columns.Count;
 
                                 // MessageBox.Show('PLocation MaxColumn: ' + MaxColumn.ToString);
-                                Int32 ChangedColumns = SharedDataUtilities.AcceptChangesForUnmodifiedRows(AInspectDS.PLocation, MaxColumn, true);
+                                Int32 ChangedColumns = DataUtilities.AcceptChangesForUnmodifiedRows(AInspectDS.PLocation, MaxColumn, true);
 
                                 if (ChangedColumns != 0)
                                 {
@@ -910,7 +912,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                                 MaxColumn = new PPartnerLocationTable().Columns.Count;
 
                                 // MessageBox.Show('PPartnerLocation MaxColumn: ' + MaxColumn.ToString);
-                                Int32 ChangedColumns = SharedDataUtilities.AcceptChangesForUnmodifiedRows(AInspectDS.PPartnerLocation,
+                                Int32 ChangedColumns = DataUtilities.AcceptChangesForUnmodifiedRows(AInspectDS.PPartnerLocation,
                                     MaxColumn,
                                     true);
 
@@ -1000,8 +1002,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     {
                         FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
                         this.Cursor = Cursors.Default;
-                        MessageBox.Show("The PETRA Server cannot be reached! Data cannot be saved!",
-                            "No Server response",
+                        MessageBox.Show(Catalog.GetString("The PETRA Server cannot be reached! Data cannot be saved!"),
+                            Catalog.GetString("No Server response"),
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Stop);
                         ReturnValue = false;
@@ -1698,6 +1700,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     // TPartnerEditTabPageEnum.petpDocuments:     SelectedTab := 4;
                     // TPartnerEditTabPageEnum.petpOfficeSpecific:     SelectedTab := 5;
                     // TPartnerEditTabPageEnum.petpFoundationDetails:     SelectedTab := 6;
+                    // TPartnerEditTabPageEnum.petpPartnerRelationshipsDetails:     SelectedTab := 7;
             }
 
             TPartnerPrintSectionDialog PrintSectionDialog = new TPartnerPrintSectionDialog();
@@ -2318,13 +2321,13 @@ namespace Ict.Petra.Client.MPartner.Gui
                 case TPartnerEditTabPageEnum.petpDetails:
                 case TPartnerEditTabPageEnum.petpSubscriptions:
                 case TPartnerEditTabPageEnum.petpPartnerTypes:
+                case TPartnerEditTabPageEnum.petpPartnerRelationships:
                 case TPartnerEditTabPageEnum.petpNotes:
                     FInitiallySelectedTabPage = FShowTabPage;
                     FCurrentModuleTabGroup = TModuleSwitchEnum.msPartner;
                     break;
 
 #if  SHOWUNFINISHEDTABS
-                case TPartnerEditTabPageEnum.petpRelationships:
                 case TPartnerEditTabPageEnum.petpContacts:
                 case TPartnerEditTabPageEnum.petpReminders:
                 case TPartnerEditTabPageEnum.petpInterests:
@@ -2333,7 +2336,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     break;
 
 #else
-                case TPartnerEditTabPageEnum.petpRelationships:
                 case TPartnerEditTabPageEnum.petpContacts:
                 case TPartnerEditTabPageEnum.petpReminders:
                 case TPartnerEditTabPageEnum.petpInterests:
@@ -2820,7 +2822,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FMainDS.PDataLabelValuePartner.ColumnChanging += new DataColumnChangeEventHandler(FPetraUtilsObject.OnAnyDataColumnChanging);
                     break;
 
-                case TPartnerEditTabPageEnum.petpRelationships:
+                case TPartnerEditTabPageEnum.petpPartnerRelationships:
+                    FMainDS.PPartnerRelationship.ColumnChanging += new DataColumnChangeEventHandler(FPetraUtilsObject.OnAnyDataColumnChanging);
+                    FMainDS.PPartnerRelationship.RowDeleting += new DataRowChangeEventHandler(FPetraUtilsObject.OnAnyDataRowChanging);
                     break;
 
                 case TPartnerEditTabPageEnum.petpContacts:

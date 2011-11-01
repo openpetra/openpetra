@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -29,6 +29,7 @@ using System.Windows.Forms;
 
 using Ict.Common;
 using Ict.Common.Controls;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.MPartner;
@@ -81,6 +82,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         /// <summary>todoComment</summary>
         public const String StrSpecialTypesTabHeader = "Special Types";
+
+        /// <summary>todoComment</summary>
+        public const String StrPartnerRelationshipsTabHeader = "Relationships";
 
         /// <summary>todoComment</summary>
         public const String StrFamilyMembersTabHeader = "Family Members";
@@ -275,7 +279,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             // for the time beeing, we always hide these Tabs that don't do anything yet...
 #if  SHOWUNFINISHEDTABS
 #else
-            TabsToHide.Add("tbpRelationships");
             TabsToHide.Add("tbpContacts");
             TabsToHide.Add("tbpReminders");
             TabsToHide.Add("tbpInterests");
@@ -583,6 +586,20 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     CorrectDataGridWidthsAfterDataChange();
                 }
+                else if (ATabPageEventArgs.Tab == tpgPartnerRelationships)
+                {
+                    FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpPartnerRelationships;
+
+                    // Hook up RecalculateScreenParts Event
+                    FUcoPartnerRelationships.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
+
+                    FUcoPartnerRelationships.PartnerEditUIConnector = FPartnerEditUIConnector;
+                    FUcoPartnerRelationships.HookupDataChange += new THookupPartnerEditDataChangeEventHandler(Uco_HookupPartnerEditDataChange);
+
+                    FUcoPartnerRelationships.SpecialInitUserControl();
+
+                    CorrectDataGridWidthsAfterDataChange();
+                }
                 else if (ATabPageEventArgs.Tab == tpgFamilyMembers)
                 {
                     FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpFamilyMembers;
@@ -717,6 +734,20 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
+            if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUC_PartnerRelationships))
+            {
+                if (FMainDS.Tables.Contains(PPartnerRelationshipTable.GetTableName()))
+                {
+                    Calculations.CalculateTabCountsPartnerRelationships(FMainDS.PPartnerRelationship, out CountAll);
+                }
+                else
+                {
+                    CountAll = FMainDS.MiscellaneousData[0].ItemsCountPartnerRelationships;
+                }
+
+                tpgPartnerRelationships.Text = String.Format(StrPartnerRelationshipsTabHeader + " ({0})", CountAll);
+            }
+
             if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUC_FamilyMembers))
             {
                 // determine Tab Title
@@ -796,6 +827,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                 if (FUcoPartnerTypes != null)
                 {
                     FUcoPartnerTypes.AdjustAfterResizing();
+                }
+
+                if (FUcoPartnerRelationships != null)
+                {
+                    FUcoPartnerRelationships.AdjustAfterResizing();
                 }
 
                 // TODO
@@ -921,6 +957,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                         tabPartners.SelectedTab = tpgPartnerTypes;
                         break;
     
+                    case TPartnerEditTabPageEnum.petpPartnerRelationships:
+                        tabPartners.SelectedTab = tpgPartnerRelationships;
+                        break;
+
                     case TPartnerEditTabPageEnum.petpFamilyMembers:
                         tabPartners.SelectedTab = tpgFamilyMembers;
                         break;
@@ -941,7 +981,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     case TPartnerEditTabPageEnum.petpRelationships:
                         tabPartners.SelectedTab = tpgRelationships;
                         break;
-    
+
                     case TPartnerEditTabPageEnum.petpContacts:
                         tabPartners.SelectedTab = tpgContacts;
                         break;

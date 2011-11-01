@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -30,6 +30,7 @@ using System.Collections;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.IO; // Implicit reference
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.MReporting.MFinance;
 using Ict.Petra.Server.MReporting.MFinDev;
 using Ict.Petra.Server.MReporting.MPartner;

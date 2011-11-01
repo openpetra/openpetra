@@ -26,6 +26,7 @@ using System.Collections;
 using System.IO;
 using System.Windows.Forms;
 
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;

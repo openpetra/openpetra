@@ -26,10 +26,12 @@ using System.Data;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Xml;
+using System.Collections.Specialized;
 using GNU.Gettext;
 using Ict.Common.Verification;
 using Ict.Common;
 using Ict.Common.IO;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared.MFinance.GL.Data;
@@ -50,27 +52,28 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
         {
             set
             {
-                FFilter = value;
                 FLedgerNumber = value;
 
-                LoadDataAndFinishScreenSetup();
-//                FMainDS = TRemote.MFinance.Gift.WebConnectors.LoadMotivationDetails(FLedgerNumber);
-//
+                FMainDS = TRemote.MFinance.Gift.WebConnectors.LoadMotivationDetails(FLedgerNumber);
+
+                // to get an empty AMotivationDetailFee table, instead of null reference
+                FMainDS.Merge(new GiftBatchTDS());
+
                 TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber, true, false, false, false);
 
                 // Do not include summary cost centres: we want to use one cost centre for each Motivation Details
                 TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, false, true);
-//
-//                DataView myDataView = FMainDS.AMotivationDetail.DefaultView;
-//                myDataView.AllowNew = false;
-//                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
-//                grdDetails.AutoSizeCells();
-            }
-        }
 
-        private object GetFilterCriteria()
-        {
-            return FLedgerNumber;
+                TFinanceControls.InitialiseFeesReceivableList(ref clbDetailFeesReceivable, FLedgerNumber);
+                TFinanceControls.InitialiseFeesPayableList(ref clbDetailFeesPayable, FLedgerNumber);
+
+                DataView myDataView = FMainDS.AMotivationDetail.DefaultView;
+                myDataView.AllowNew = false;
+                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+                grdDetails.AutoSizeCells();
+
+                this.Text = this.Text + "   [Ledger = " + FLedgerNumber.ToString() + "]";
+            }
         }
 
         private void NewRowManual(ref AMotivationDetailRow ARow)
@@ -104,6 +107,85 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
         private void NewRecord(Object sender, EventArgs e)
         {
             CreateNewAMotivationDetail();
+        }
+
+        private void ShowDetailsManual(AMotivationDetailRow ARow)
+        {
+            FMainDS.AMotivationDetailFee.DefaultView.RowFilter =
+                String.Format("{0}={1} and {2}='{3}' and {4}='{5}'",
+                    AMotivationDetailFeeTable.GetLedgerNumberDBName(),
+                    ARow.LedgerNumber,
+                    AMotivationDetailFeeTable.GetMotivationGroupCodeDBName(),
+                    ARow.MotivationGroupCode,
+                    AMotivationDetailFeeTable.GetMotivationDetailCodeDBName(),
+                    ARow.MotivationDetailCode);
+
+            string FeesPayable = string.Empty;
+            string FeesReceivable = string.Empty;
+
+            foreach (DataRowView rv in FMainDS.AMotivationDetailFee.DefaultView)
+            {
+                AMotivationDetailFeeRow detailFeeRow = (AMotivationDetailFeeRow)rv.Row;
+
+                if (StringHelper.StrSplit(clbDetailFeesPayable.GetAllStringList(), ",").Contains(detailFeeRow.FeeCode))
+                {
+                    FeesPayable = StringHelper.AddCSV(FeesPayable, detailFeeRow.FeeCode);
+                }
+                else
+                {
+                    FeesReceivable = StringHelper.AddCSV(FeesReceivable, detailFeeRow.FeeCode);
+                }
+            }
+
+            clbDetailFeesPayable.SetCheckedStringList(FeesPayable);
+            clbDetailFeesReceivable.SetCheckedStringList(FeesReceivable);
+        }
+
+        private void GetDetailDataFromControlsManual(AMotivationDetailRow ARow)
+        {
+            StringCollection TickedFees = StringHelper.StrSplit(
+                StringHelper.ConcatCSV(clbDetailFeesPayable.GetCheckedStringList(), clbDetailFeesReceivable.GetCheckedStringList()),
+                ",");
+
+            FMainDS.AMotivationDetailFee.DefaultView.RowFilter =
+                String.Format("{0}={1} and {2}='{3}' and {4}='{5}'",
+                    AMotivationDetailFeeTable.GetLedgerNumberDBName(),
+                    ARow.LedgerNumber,
+                    AMotivationDetailFeeTable.GetMotivationGroupCodeDBName(),
+                    ARow.MotivationGroupCode,
+                    AMotivationDetailFeeTable.GetMotivationDetailCodeDBName(),
+                    ARow.MotivationDetailCode);
+
+            StringCollection ExistingFees = new StringCollection();
+
+            foreach (DataRowView rv in FMainDS.AMotivationDetailFee.DefaultView)
+            {
+                AMotivationDetailFeeRow detailFeeRow = (AMotivationDetailFeeRow)rv.Row;
+
+                if (!TickedFees.Contains(detailFeeRow.FeeCode))
+                {
+                    // delete existing fees that have been unticked
+                    detailFeeRow.Delete();
+                }
+                else
+                {
+                    ExistingFees.Add(detailFeeRow.FeeCode);
+                }
+            }
+
+            // add new fees
+            foreach (string fee in TickedFees)
+            {
+                if (!ExistingFees.Contains(fee))
+                {
+                    AMotivationDetailFeeRow NewRow = FMainDS.AMotivationDetailFee.NewRowTyped();
+                    NewRow.LedgerNumber = ARow.LedgerNumber;
+                    NewRow.MotivationGroupCode = ARow.MotivationGroupCode;
+                    NewRow.MotivationDetailCode = ARow.MotivationDetailCode;
+                    NewRow.FeeCode = fee;
+                    FMainDS.AMotivationDetailFee.Rows.Add(NewRow);
+                }
+            }
         }
     }
 }

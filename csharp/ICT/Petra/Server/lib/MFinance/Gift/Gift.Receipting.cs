@@ -42,7 +42,6 @@ using Ict.Petra.Server.MPartner;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Shared.MPartner;
-using Ict.Petra.Server.App.ClientDomain;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Server.MCommon.Data.Access;
@@ -147,10 +146,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             // get details of the donor, and best address
 
             PLocationTable Location;
+            PPartnerLocationTable PartnerLocation;
             string CountryName;
             string EmailAddress;
 
-            if (!TAddressTools.GetBestAddress(ADonorKey, out Location, out CountryName, out EmailAddress, ATransaction))
+            if (!TAddressTools.GetBestAddress(ADonorKey, out Location, out PartnerLocation, out CountryName, out EmailAddress, ATransaction))
             {
                 return "";
             }

@@ -27,6 +27,7 @@ using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.Controls;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Client.CommonForms;
 
 namespace Ict.Petra.Client.App.PetraClient

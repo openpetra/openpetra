@@ -88,12 +88,20 @@
         </if>
         <if test="${DBMS.Type=='postgresql'}">
              <if test="${platform::is-unix()}">
-                 <echo message="please run sudo ls before calling this, then you don't need to enter a password for postgres user"/>
+                 <echo message="please run sudo ls before calling this, then you don't need to enter a password for the postgres user"/>
+                 <psql exe="${PostgreSQL.exe}" sqlcommand="DROP DATABASE IF EXISTS ${DBMS.DBName};" database="template1" username="postgres"/>
+                 <psql exe="${PostgreSQL.exe}" sqlcommand="DROP OWNED BY ${DBMS.UserName}; DROP USER IF EXISTS ${DBMS.UserName};" database="template1" failonerror="false" username="postgres"/>
+                 <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE USER ${DBMS.UserName} PASSWORD '${DBMS.Password}';" database="template1" failonerror="false" username="postgres"/>
+                 <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE DATABASE ${DBMS.DBName} WITH OWNER=${DBMS.UserName};" database="template1" username="postgres"/>
+                 <echo message="you need to add the following line at the top of your pg_hba.conf file (eg. /etc/postgresql/9.1/main/pg_hba.conf) and restart postgresql: "/>
+                 <echo message="local   all             ${DBMS.UserName}     md5"/>
              </if>
-             <psql exe="${PostgreSQL.exe}" sqlcommand="DROP DATABASE IF EXISTS ${DBMS.DBName};" database="template1" username="${DBMS.UserName}" password="${DBMS.Password}"/>
-             <psql exe="${PostgreSQL.exe}" sqlcommand="DROP OWNED BY ${DBMS.UserName}; DROP USER IF EXISTS ${DBMS.UserName};" database="template1" failonerror="false" username="${DBMS.UserName}" password="${DBMS.Password}"/>
-             <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE USER ${DBMS.UserName} PASSWORD '${DBMS.Password}';" database="template1" failonerror="false" username="${DBMS.UserName}" password="${DBMS.Password}"/>
-             <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE DATABASE ${DBMS.DBName} WITH OWNER=${DBMS.UserName};" database="template1" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+             <if test="${platform::is-windows()}">
+                 <psql exe="${PostgreSQL.exe}" sqlcommand="DROP DATABASE IF EXISTS ${DBMS.DBName};" database="template1" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+                 <psql exe="${PostgreSQL.exe}" sqlcommand="DROP OWNED BY ${DBMS.UserName}; DROP USER IF EXISTS ${DBMS.UserName};" database="template1" failonerror="false" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+                 <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE USER ${DBMS.UserName} PASSWORD '${DBMS.Password}';" database="template1" failonerror="false" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+                 <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE DATABASE ${DBMS.DBName} WITH OWNER=${DBMS.UserName};" database="template1" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+             </if>
              <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
         </if>
         <if test="${DBMS.Type=='mysql'}">

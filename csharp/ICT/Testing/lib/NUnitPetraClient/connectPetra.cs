@@ -29,9 +29,10 @@ using System.Threading;
 using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon;
-using Ict.Petra.Shared.RemotedExceptions;
 
 namespace Ict.Testing.NUnitPetraClient
 {
@@ -61,7 +62,7 @@ namespace Ict.Testing.NUnitPetraClient
             Catalog.Init();
 
             new TClientSettings();
-            TClientInfo.InitVersion();
+            TClientInfo.InitializeUnit();
             TCacheableTablesManager.InitializeUnit();
             Connect(TAppSettingsManager.GetValue("AutoLogin"), TAppSettingsManager.GetValue("AutoLoginPasswd"),
                 TAppSettingsManager.GetInt64("SiteKey"));
@@ -78,7 +79,8 @@ namespace Ict.Testing.NUnitPetraClient
             TLogging.Log("connecting UserId: " + AUserName + " to Server...");
             try
             {
-                ConnectionResult = TConnectionManagement.GConnectionManagement.ConnectToServer(AUserName.ToUpper(), APassword,
+                ConnectionResult = ((TConnectionManagement)TConnectionManagement.GConnectionManagement).ConnectToServer(
+                    AUserName.ToUpper(), APassword,
                     out ProcessID,
                     out WelcomeMessage,
                     out SystemEnabled,

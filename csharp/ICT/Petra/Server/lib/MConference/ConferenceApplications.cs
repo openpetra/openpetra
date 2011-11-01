@@ -1380,6 +1380,32 @@ namespace Ict.Petra.Server.MConference.Applications
         }
 
         /// <summary>
+        /// get all accepted participants of this conference.
+        /// used for seminar registration, which is an external software
+        /// </summary>
+        /// <param name="AConferenceKey"></param>
+        /// <param name="AEventCode"></param>
+        /// <returns></returns>
+        [RequireModulePermission("SEMINARS")]
+        public static DataTable GetAllParticipants(Int64 AConferenceKey, string AEventCode)
+        {
+            ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
+
+            GetApplications(ref MainDS, AConferenceKey, AEventCode, "accepted", -1, true, null, true);
+
+            MainDS.ApplicationGrid.Columns.Remove(MainDS.ApplicationGrid.ColumnDateOfBirth);
+            MainDS.ApplicationGrid.Columns.Remove(MainDS.ApplicationGrid.ColumnGenAppDate);
+            MainDS.ApplicationGrid.Columns.Remove(MainDS.ApplicationGrid.ColumnGenApplicationStatus);
+            MainDS.ApplicationGrid.Columns.Remove(MainDS.ApplicationGrid.ColumnBadgePrint);
+            MainDS.ApplicationGrid.Columns.Remove(MainDS.ApplicationGrid.ColumnStFieldCharged);
+            MainDS.ApplicationGrid.Columns.Remove(MainDS.ApplicationGrid.ColumnApplicationKey);
+            MainDS.ApplicationGrid.Columns.Remove(MainDS.ApplicationGrid.ColumnComment);
+            MainDS.ApplicationGrid.Columns.Remove(MainDS.ApplicationGrid.ColumnDateOfDeparture);
+
+            return MainDS.ApplicationGrid;
+        }
+
+        /// <summary>
         /// Import the file that you get as a result when you import the applications from the Online Registration into your local Petra.
         /// This file contains the partner keys in the local Petra,
         /// and avoids that the registration office has to redo all the importing for the next round of applicants.

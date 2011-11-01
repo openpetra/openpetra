@@ -27,6 +27,7 @@ using System.Drawing;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using Ict.Common;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
@@ -118,7 +119,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
 	        ucoSummaryData.PetraUtilsObject = FPetraUtilsObject;
 	        ucoSummaryData.MainDS = FMainDS;
-	        ucoSummaryData.InitUserControl();           
             ucoSummaryData.PartnerEditUIConnector = FPartnerEditUIConnector;
             ucoSummaryData.SpecialInitUserControl(FMainDS);
             

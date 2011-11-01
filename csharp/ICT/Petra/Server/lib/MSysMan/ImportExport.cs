@@ -33,9 +33,10 @@ using System.Globalization;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.DB;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
 using Ict.Petra.Server.App.Core.Security;
-using Ict.Petra.Server.App.ClientDomain;
+using Ict.Petra.Server.App.Core;
 
 namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 {
@@ -286,7 +287,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                 DBAccess.GDBAccessObj.CommitTransaction();
 
                 // reset all cached tables
-                DomainManager.GCacheableTablesManager.MarkAllCachedTableNeedsRefreshing();
+                TCacheableTablesManager.GCacheableTablesManager.MarkAllCachedTableNeedsRefreshing();
             }
             catch (Exception e)
             {

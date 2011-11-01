@@ -295,6 +295,16 @@ namespace Ict.Petra.Client.App.Core
                         AMotivationDetailTable.GetLedgerNumberDBName(), ALedgerNumber, out DataTableType);
                         break;
 
+                    case TCacheableFinanceTablesEnum.FeesPayableList:
+                        ReturnValue = GetBasedOnLedger(ACacheableTable,
+                        AFeesPayableTable.GetLedgerNumberDBName(), ALedgerNumber, out DataTableType);
+                        break;
+
+                    case TCacheableFinanceTablesEnum.FeesReceivableList:
+                        ReturnValue = GetBasedOnLedger(ACacheableTable,
+                        AFeesReceivableTable.GetLedgerNumberDBName(), ALedgerNumber, out DataTableType);
+                        break;
+
                     default:
 
                         // $IFDEF DEBUGMODE MessageBox.Show('GetCacheableFinanceTable: Cache Table ''' + Enum.GetName(typeof(
@@ -373,7 +383,7 @@ namespace Ict.Petra.Client.App.Core
                 catch (Exception ex)
                 {
                     // most probably a permission problem: System.Runtime.Remoting.RemotingException: Requested Service not found
-                    throw new Exception(Catalog.GetString("You do not have enough permissions to access the Finance module:\n") + ex);
+                    throw new Exception(Catalog.GetString("You do not have enough permissions to access the Finance module:") + "\n" + ex);
                 }
             }
         }

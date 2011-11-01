@@ -12,6 +12,7 @@ then
 fi
 
 if [ ! -d $OpenPetraOrgPath ]
+then
   export mono=/opt/novell/mono/bin
   export OpenPetraOrgPath=/usr/local/openpetraorg
   export CustomerName=DefaultTOREPLACE

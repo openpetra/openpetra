@@ -30,8 +30,9 @@ using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.DB;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces.AsynchronousExecution;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -82,7 +83,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 #if DEBUGMODE
                 if (TLogging.DL >= 7)
                 {
-                    Console.WriteLine("TPartnerFindUIConnector: AsyncExecProgress reqeusted.");
+                    Console.WriteLine("TPartnerFindUIConnector: AsyncExecProgress requested.");
                 }
 #endif
                 return FAsyncExecProgress;

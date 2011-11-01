@@ -114,11 +114,56 @@ namespace Ict.Petra.Shared.MFinance
         /// <summary>Used in Admin Grants Payable and Receivable</summary>
         public const int ADMIN_FEE_EXPENSE_ACCT = 4900;
 
+        /// <summary>Used in Admin Fee Charge Options</summary>
+        public const string ADMIN_CHARGE_OPTION_MAX = "MAXIMUM";
+
+        /// <summary>Used in Admin Fee Charge Options</summary>
+        public const string ADMIN_CHARGE_OPTION_MIN = "MINIMUM";
+
+        /// <summary>Used in Admin Fee Charge Options</summary>
+        public const string ADMIN_CHARGE_OPTION_FIXED = "FIXED";
+
+        /// <summary>Used in Admin Fee Charge Options</summary>
+        public const string ADMIN_CHARGE_OPTION_PERCENT = "PERCENTAGE";
+
         /// <summary>Sets the transaction to a debit transaction</summary>
         public const bool IS_DEBIT = true;
 
         /// <summary>Sets the transaction to a credit transaction</summary>
         public const bool IS_CREDIT = false;
+
+        /// standard account for earnings bf
+        public const int EARNINGS_BF_ACCT = 9700;
+
+        /// standard account
+        public const int DIRECT_XFER_ACCT = 5501;
+
+        /// standard account
+        public const int ICH_SETTLEMENT_ACCT = 5601;
+
+        /// standard account
+        public const int ICH_ACCT = 8500;
+
+        /// standard account
+        public const int INTERNAL_XFER_ACCT = 9800;
+
+        /// admin fee accounts.
+        public const int FUND_TRANSFER_INCOME_ACC = 3300;
+
+        /// admin fee accounts.
+        public const int FUND_TRANSFER_EXPENSE_ACCT = 4800;
+
+        /// Allocation Journal values
+        public const int MAX_AC_CC_SPLIT_INTO = 10;
+
+        /// Allocation Journal values
+        public const int MAX_ALLOCATION_DESTINATIONS = 10;
+
+        /// Number of fees which can be assigned to each motivation det. code
+        public const int MAX_FEE_CODES = 5;
+
+        /// Finance User Levels
+        public const string HIGH_FIN_USER_LEVEL = "FINANCE-3";
     }
 
     /// <summary>
@@ -187,5 +232,113 @@ namespace Ict.Petra.Shared.MFinance
         /// Used in a revaluation only ...
         /// </summary>
             REVAL
+    }
+
+    /// <summary>
+    /// enum for several runtime environments
+    /// </summary>
+    public enum TLedgerInitialisationArrayEnum
+    {
+        /// <summary>
+        /// Tax = 1
+        /// </summary>
+        liaTax,
+
+        /// <summary>
+        /// Currency = 2
+        /// </summary>
+            liaCurrency,
+
+        /// <summary>
+        /// AcctPeriods = 3
+        /// </summary>
+            liaAcctPeriods,
+
+        /// <summary>
+        /// DataRetain = 4
+        /// </summary>
+            liaDataRetain,
+
+        /// <summary>
+        /// PL = 5
+        /// </summary>
+            liaPL,
+
+        /// <summary>
+        /// ILT = 6
+        /// </summary>
+            liaILT,
+
+        /// <summary>
+        /// Forex = 7
+        /// </summary>
+            liaForex,
+
+        /// <summary>
+        /// SysInt = 8
+        /// </summary>
+            liaSysInt,
+
+        /// <summary>
+        /// SuspAcct = 9
+        /// </summary>
+            liaSuspAcct,
+
+        /// <summary>
+        /// Cal = 10
+        /// </summary>
+            liaCal,
+
+        /// <summary>
+        /// Budget = 11
+        /// </summary>
+            liaBudget,
+
+        /// <summary>
+        /// FwdPosting = 12
+        /// </summary>
+            liaFwdPosting,
+
+        /// <summary>
+        /// CurrentPeriod = 13
+        /// </summary>
+            liaCurrentPeriod,
+
+        /// <summary>
+        /// RevaluationRun = 14
+        /// </summary>
+            liaRevaluationRun
+    };
+
+
+    /// <summary>
+    /// enum for several runtime environments
+    /// </summary>
+    public enum TMOPTypeEnum
+    {
+        /// <summary>
+        /// UseExtraFields = 1
+        /// </summary>
+        moptUseExtraFields,
+
+        /// <summary>
+        /// RecurringOnly = 2
+        /// </summary>
+        moptRecurringOnly,
+
+        /// <summary>
+        /// EntireBatchOnly = 3
+        /// </summary>
+        moptEntireBatchOnly,
+
+        /// <summary>
+        /// NeedBankingDetailKey = 4
+        /// </summary>
+        moptNeedBankingDetailKey,
+
+        /// <summary>
+        /// BankingTypesAllowed = 5
+        /// </summary>
+        moptBankingTypesAllowed
     }
 }

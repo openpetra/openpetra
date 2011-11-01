@@ -33,6 +33,7 @@ using System.Globalization;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.IO;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner; // Implicit reference
 using Ict.Petra.Shared.Security;
@@ -94,6 +95,7 @@ namespace Ict.Petra.Client.App.PetraClient
             }
             catch (Exception e)
             {
+                TLogging.Log(e.ToString());
                 FSplashScreen.ShowMessageBox(e.Message, "Failure");
                 return false;
             }
@@ -302,15 +304,28 @@ namespace Ict.Petra.Client.App.PetraClient
         /// </summary>
         public static void StartUp()
         {
-            new TAppSettingsManager();
+            try
+            {
+                new TAppSettingsManager();
 
-            ExceptionHandling.GApplicationShutdownCallback = Shutdown.SaveUserDefaultsAndDisconnectAndStop;
+                ExceptionHandling.GApplicationShutdownCallback = Shutdown.SaveUserDefaultsAndDisconnectAndStop;
 
-            new TLogging(TClientSettings.GetPathLog() + Path.DirectorySeparatorChar + "PetraClient.log");
+                new TLogging(TClientSettings.GetPathLog() + Path.DirectorySeparatorChar + "PetraClient.log");
 
-            Catalog.Init();
+                Catalog.Init();
 
-            // TODO another Catalog.Init("org", "./locale") for organisation specific words?
+                // initialize the client
+                TClientTasksQueue.ClientTasksInstanceType = typeof(TClientTaskInstance);
+                TConnectionManagementBase.ConnectorType = typeof(TConnector);
+                TConnectionManagementBase.GConnectionManagement = new TConnectionManagement();
+
+                // TODO another Catalog.Init("org", "./locale") for organisation specific words?
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.ToString());
+                return;
+            }
 
             /* Show Splash Screen.
              * This is non-blocking since it is done in a separate Thread, that means
@@ -332,6 +347,7 @@ namespace Ict.Petra.Client.App.PetraClient
             catch (Exception e)
             {
                 FSplashScreen.Close();
+                TLogging.Log(e.ToString());
                 MessageBox.Show(e.Message);
                 Shutdown.StopPetraClient();
             }

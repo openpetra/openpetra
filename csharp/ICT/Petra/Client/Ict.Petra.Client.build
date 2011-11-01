@@ -20,6 +20,7 @@
                 MFinance/Gui/GL,
                 MFinance/Gui/Gift,
                 MFinance/Gui/AP,
+                MFinance/Gui/ICH,
                 MFinance/Gui/Common,
                 MFinance/Gui/Setup,
                 MFinance/Gui,

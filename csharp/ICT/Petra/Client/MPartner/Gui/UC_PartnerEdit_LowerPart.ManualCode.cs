@@ -191,9 +191,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                     ucoPartnerTabSet.InitiallySelectedTabPage = FInitiallySelectedTabPage;
                     ucoPartnerTabSet.MainDS = FMainDS;
                     ucoPartnerTabSet.SpecialInitUserControl();
+                    ucoPartnerTabSet.HookupDataChange += new THookupDataChangeEventHandler(ucoPartnerTabSet_HookupDataChange);
+                    ucoPartnerTabSet.HookupPartnerEditDataChange += new THookupPartnerEditDataChangeEventHandler(
+                    ucoPartnerTabSet_HookupPartnerEditDataChange);
                     ucoPartnerTabSet.Visible = true;
-                    ucoPersonnelTabSet.Visible = false;
-                    
+                    ucoPersonnelTabSet.Visible = false;                    
                     break;
 
                 case TFrmPartnerEdit.TModuleSwitchEnum.msPersonnel:
@@ -210,6 +212,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             // TODO Other TabSets (Personnel Data, Finance Data)
+        }
+
+        void ucoPartnerTabSet_HookupPartnerEditDataChange(object Sender, THookupPartnerEditDataChangeEventArgs e)
+        {
+            OnHookupPartnerEditDataChange(e);
+        }
+
+        void ucoPartnerTabSet_HookupDataChange(object Sender, EventArgs e)
+        {
+            OnHookupDataChange(e);
         }
 
         /// <summary>
@@ -230,7 +242,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void GetDataFromControls()
         {
             ucoPartnerTabSet.GetDataFromControls();
-			ucoPersonnelTabSet.GetDataFromControls();
+	    ucoPersonnelTabSet.GetDataFromControls();
 			
             // TODO Other TabSets (Finance Data)
         }
@@ -329,7 +341,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void RefreshPersonnelDataAfterMerge()
         {
-			ucoPersonnelTabSet.RefreshPersonnelDataAfterMerge();
+	    ucoPersonnelTabSet.RefreshPersonnelDataAfterMerge();
         }
         
         #endregion

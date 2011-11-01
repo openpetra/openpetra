@@ -44,6 +44,8 @@ using System.Threading;
 using System.Runtime.Remoting;
 using System.Security.Cryptography;
 using Ict.Common;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
 using Ict.Petra.Server.App.Core.Security;
 
@@ -131,7 +133,6 @@ using Ict.Common.Verification;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
-using Ict.Petra.Shared.RemotedExceptions;
 using Ict.Petra.Server.MCommon.UIConnectors;
 #endregion ManualCode
 namespace Ict.Petra.Server.MPartner.Instantiator
@@ -1554,11 +1555,12 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Mailing.WebConnectors
         /// generated method from connector
         public System.Boolean GetBestAddress(Int64 APartnerKey,
                                              out PLocationTable AAddress,
+                                             out PPartnerLocationTable APartnerLocation,
                                              out System.String ACountryNameLocal,
                                              out System.String AEmailAddress)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Mailing.WebConnectors.TAddressWebConnector), "GetBestAddress", ";LONG;PLOCATIONTABLE;STRING;STRING;");
-            return Ict.Petra.Server.MPartner.Mailing.WebConnectors.TAddressWebConnector.GetBestAddress(APartnerKey, out AAddress, out ACountryNameLocal, out AEmailAddress);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Mailing.WebConnectors.TAddressWebConnector), "GetBestAddress", ";LONG;PLOCATIONTABLE;PPARTNERLOCATIONTABLE;STRING;STRING;");
+            return Ict.Petra.Server.MPartner.Mailing.WebConnectors.TAddressWebConnector.GetBestAddress(APartnerKey, out AAddress, out APartnerLocation, out ACountryNameLocal, out AEmailAddress);
         }
 
         /// generated method from connector

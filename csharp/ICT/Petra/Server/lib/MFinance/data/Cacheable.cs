@@ -33,9 +33,10 @@ using Ict.Common.Data;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.RemotedExceptions;
-using Ict.Petra.Server.App.ClientDomain;
+using Ict.Petra.Server.App.Core;
 
 #region ManualCode
 using Ict.Petra.Shared.MFinance;
@@ -74,7 +75,7 @@ namespace Ict.Petra.Server.MFinance.Cacheable
             }
 #endif
             FStartTime = DateTime.Now;
-            FCacheableTablesManager = DomainManager.GCacheableTablesManager;
+            FCacheableTablesManager = TCacheableTablesManager.GCacheableTablesManager;
         }
 
 #if DEBUGMODE
@@ -135,7 +136,7 @@ namespace Ict.Petra.Server.MFinance.Cacheable
             }
 #endif
 
-            if ((ARefreshFromDB) || ((!DomainManager.GCacheableTablesManager.IsTableCached(TableName))))
+            if ((ARefreshFromDB) || ((!FCacheableTablesManager.IsTableCached(TableName))))
             {
                 Boolean NewTransaction;
                 TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
@@ -150,55 +151,55 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                         case TCacheableFinanceTablesEnum.AnalysisTypeList:
                         {
                             DataTable TmpTable = AAnalysisTypeAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
                         case TCacheableFinanceTablesEnum.FreeformAnalysisList:
                         {
                             DataTable TmpTable = AFreeformAnalysisAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
                         case TCacheableFinanceTablesEnum.AnalysisAttributeList:
                         {
                             DataTable TmpTable = AAnalysisAttributeAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
                         case TCacheableFinanceTablesEnum.BudgetTypeList:
                         {
                             DataTable TmpTable = ABudgetTypeAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
                         case TCacheableFinanceTablesEnum.CostCentreTypesList:
                         {
                             DataTable TmpTable = ACostCentreTypesAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
                         case TCacheableFinanceTablesEnum.MethodOfGivingList:
                         {
                             DataTable TmpTable = AMethodOfGivingAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
                         case TCacheableFinanceTablesEnum.MethodOfPaymentList:
                         {
                             DataTable TmpTable = AMethodOfPaymentAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
                         case TCacheableFinanceTablesEnum.MotivationGroupList:
                         {
                             DataTable TmpTable = AMotivationGroupAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
                         case TCacheableFinanceTablesEnum.LedgerNameList:
                         {
                             DataTable TmpTable = GetLedgerNameListTable(ReadTransaction, TableName);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
 
@@ -276,14 +277,14 @@ namespace Ict.Petra.Server.MFinance.Cacheable
             }
         #endif
         #if DEBUGMODE
-            if (DomainManager.GCacheableTablesManager.IsTableCached(TableName))
+            if (FCacheableTablesManager.IsTableCached(TableName))
             {
                 if (TLogging.DL >= 7)
                 {
                     Console.WriteLine("Cached DataTable has currently " +
-                        DomainManager.GCacheableTablesManager.GetCachedDataTable(TableName, out AType).Rows.Count.ToString() + " rows in total.");
+                        FCacheableTablesManager.GetCachedDataTable(TableName, out AType).Rows.Count.ToString() + " rows in total.");
                     Console.WriteLine("Cached DataTable has currently " +
-                        Convert.ToString(DomainManager.GCacheableTablesManager.GetCachedDataTable(TableName,
+                        Convert.ToString(FCacheableTablesManager.GetCachedDataTable(TableName,
                                 out AType).Select(
                                 ALedgerTable.GetLedgerNumberDBName() + " = " +
                                 ALedgerNumber.ToString()).Length) + " rows with ALedgerNumber=" + ALedgerNumber.ToString() + '.');
@@ -291,9 +292,9 @@ namespace Ict.Petra.Server.MFinance.Cacheable
             }
         #endif
 
-            if ((ARefreshFromDB) || ((!DomainManager.GCacheableTablesManager.IsTableCached(TableName)))
-                || ((DomainManager.GCacheableTablesManager.IsTableCached(TableName))
-                    && (DomainManager.GCacheableTablesManager.GetCachedDataTable(TableName,
+            if ((ARefreshFromDB) || ((!FCacheableTablesManager.IsTableCached(TableName)))
+                || ((FCacheableTablesManager.IsTableCached(TableName))
+                    && (FCacheableTablesManager.GetCachedDataTable(TableName,
                             out AType).Select(ALedgerTable.GetLedgerNumberDBName() + " = " +
                             ALedgerNumber.ToString()).Length == 0)))
             {
@@ -310,37 +311,49 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                         case TCacheableFinanceTablesEnum.MotivationList:
                         {
                             DataTable TmpTable = AMotivationDetailAccess.LoadViaALedger(ALedgerNumber, ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrMergeCachedTable(TableName, TmpTable, DomainManager.GClientID, (object)ALedgerNumber);
+                            FCacheableTablesManager.AddOrMergeCachedTable(TableName, TmpTable, DomainManager.GClientID, (object)ALedgerNumber);
+                            break;
+                        }
+                        case TCacheableFinanceTablesEnum.FeesPayableList:
+                        {
+                            DataTable TmpTable = AFeesPayableAccess.LoadViaALedger(ALedgerNumber, ReadTransaction);
+                            FCacheableTablesManager.AddOrMergeCachedTable(TableName, TmpTable, DomainManager.GClientID, (object)ALedgerNumber);
+                            break;
+                        }
+                        case TCacheableFinanceTablesEnum.FeesReceivableList:
+                        {
+                            DataTable TmpTable = AFeesReceivableAccess.LoadViaALedger(ALedgerNumber, ReadTransaction);
+                            FCacheableTablesManager.AddOrMergeCachedTable(TableName, TmpTable, DomainManager.GClientID, (object)ALedgerNumber);
                             break;
                         }
                         case TCacheableFinanceTablesEnum.AccountingPeriodList:
                         {
                             DataTable TmpTable = GetAccountingPeriodListTable(ReadTransaction, ALedgerNumber, TableName);
-                            DomainManager.GCacheableTablesManager.AddOrMergeCachedTable(TableName, TmpTable, DomainManager.GClientID, (object)ALedgerNumber);
+                            FCacheableTablesManager.AddOrMergeCachedTable(TableName, TmpTable, DomainManager.GClientID, (object)ALedgerNumber);
                             break;
                         }
                         case TCacheableFinanceTablesEnum.LedgerDetails:
                         {
                             DataTable TmpTable = GetLedgerDetailsTable(ReadTransaction, ALedgerNumber, TableName);
-                            DomainManager.GCacheableTablesManager.AddOrMergeCachedTable(TableName, TmpTable, DomainManager.GClientID, (object)ALedgerNumber);
+                            FCacheableTablesManager.AddOrMergeCachedTable(TableName, TmpTable, DomainManager.GClientID, (object)ALedgerNumber);
                             break;
                         }
                         case TCacheableFinanceTablesEnum.CostCentreList:
                         {
                             DataTable TmpTable = GetCostCentreListTable(ReadTransaction, ALedgerNumber, TableName);
-                            DomainManager.GCacheableTablesManager.AddOrMergeCachedTable(TableName, TmpTable, DomainManager.GClientID, (object)ALedgerNumber);
+                            FCacheableTablesManager.AddOrMergeCachedTable(TableName, TmpTable, DomainManager.GClientID, (object)ALedgerNumber);
                             break;
                         }
                         case TCacheableFinanceTablesEnum.AccountList:
                         {
                             DataTable TmpTable = GetAccountListTable(ReadTransaction, ALedgerNumber, TableName);
-                            DomainManager.GCacheableTablesManager.AddOrMergeCachedTable(TableName, TmpTable, DomainManager.GClientID, (object)ALedgerNumber);
+                            FCacheableTablesManager.AddOrMergeCachedTable(TableName, TmpTable, DomainManager.GClientID, (object)ALedgerNumber);
                             break;
                         }
                         case TCacheableFinanceTablesEnum.AccountHierarchyList:
                         {
                             DataTable TmpTable = GetAccountHierarchyListTable(ReadTransaction, ALedgerNumber, TableName);
-                            DomainManager.GCacheableTablesManager.AddOrMergeCachedTable(TableName, TmpTable, DomainManager.GClientID, (object)ALedgerNumber);
+                            FCacheableTablesManager.AddOrMergeCachedTable(TableName, TmpTable, DomainManager.GClientID, (object)ALedgerNumber);
                             break;
                         }
 
@@ -367,7 +380,7 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                 }
             }
 
-            DataView TmpView = new DataView(DomainManager.GCacheableTablesManager.GetCachedDataTable(TableName,
+            DataView TmpView = new DataView(FCacheableTablesManager.GetCachedDataTable(TableName,
                     out AType), ALedgerTable.GetLedgerNumberDBName() + " = " + ALedgerNumber.ToString(), "", DataViewRowState.CurrentRows);
 
             // Return the DataTable from the Cache only if the Hash is not the same
@@ -600,7 +613,7 @@ namespace Ict.Petra.Server.MFinance.Cacheable
              */
             if (SubmissionResult == TSubmitChangesResult.scrOK)
             {
-                //DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(ATableName, ASubmitTable, DomainManager.GClientID);
+                //FCacheableTablesManager.AddOrRefreshCachedTable(ATableName, ASubmitTable, DomainManager.GClientID);
                 GetCacheableTable(ACacheableTable, String.Empty, true, ALedgerNumber, out TmpType);
             }
 

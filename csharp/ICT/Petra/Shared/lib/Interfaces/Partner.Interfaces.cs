@@ -42,9 +42,9 @@ using Ict.Petra.Shared.MPersonnel.Person;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
-using Ict.Petra.Shared.Interfaces.AsynchronousExecution;
 using System.Collections.Specialized;
 #endregion ManualCode
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner.Extracts;
 using Ict.Petra.Shared.Interfaces.MPartner.ImportExport;
 using Ict.Petra.Shared.Interfaces.MPartner.Mailing;
@@ -316,6 +316,7 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Mailing.WebConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Mailing.WebConnectors.TAddressWebConnector)</summary>
         System.Boolean GetBestAddress(Int64 APartnerKey,
                                       out PLocationTable AAddress,
+                                      out PPartnerLocationTable APartnerLocation,
                                       out System.String ACountryNameLocal,
                                       out System.String AEmailAddress);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Mailing.WebConnectors.TAddressWebConnector)</summary>
@@ -560,6 +561,8 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors
         IndividualDataTDS GetDataPersonnelIndividualData(TIndividualDataItemEnum AIndividualDataItem);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.UIConnectors.TPartnerEditUIConnector)</summary>
         PPartnerTypeTable GetDataPartnerTypes();
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.UIConnectors.TPartnerEditUIConnector)</summary>
+        PartnerEditTDSPPartnerRelationshipTable GetDataPartnerRelationships();
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.UIConnectors.TPartnerEditUIConnector)</summary>
         PSubscriptionTable GetDataSubscriptions();
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.UIConnectors.TPartnerEditUIConnector)</summary>
