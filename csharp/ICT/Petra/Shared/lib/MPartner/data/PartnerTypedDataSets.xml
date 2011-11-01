@@ -341,7 +341,6 @@
         <Table sqltable="pm_past_experience"/>
         <Table sqltable="pm_person_language"/>
         <Table sqltable="pm_person_ability"/>
-        <Table sqltable="pm_person_vision"/>
         <Table sqltable="pm_commitment_status"/>
         <Table sqltable="pm_staff_data"/>
         <Table sqltable="pm_job_assignment"/>
