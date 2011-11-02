@@ -513,6 +513,12 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors
         TSubmitChangesResult SaveRecurringGiftBatchTDS(ref RecurringGiftBatchTDS AInspectDS,
                                                        out TVerificationResultCollection AVerificationResult);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
+        System.Decimal CalculateAdminFee(GiftBatchTDS MainDS,
+                                         Int32 ALedgerNumber,
+                                         System.String AFeeCode,
+                                         System.Decimal AGiftAmount,
+                                         out TVerificationResultCollection AVerificationResult);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
         System.Boolean PostGiftBatch(Int32 ALedgerNumber,
                                      Int32 ABatchNumber,
                                      out TVerificationResultCollection AVerifications);
@@ -685,15 +691,15 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.ICH.UIConnectors
     public interface IICHUIConnectorsNamespace : IInterface
     {
         /// <summary>auto generated from Connector constructor (Ict.Petra.Server.MFinance.ICH.UIConnectors.TStewardshipCalculationUIConnector)</summary>
-        IICHUIConnectorsStewardshipCalculation StewardshipCalculation(int ALedgerNumber,
-                                                                      int APeriodNumber);
+        IICHUIConnectorsStewardshipCalculation StewardshipCalculation(System.Int32 ALedgerNumber,
+                                                                      System.Int32 APeriodNumber);
     }
 
     /// <summary>auto generated</summary>
     public interface IICHUIConnectorsStewardshipCalculation : IInterface
     {
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.ICH.UIConnectors.TStewardshipCalculationUIConnector)</summary>
-        bool PerformStewardshipCalculation(out TVerificationResultCollection AVerificationResult);
+        System.Boolean PerformStewardshipCalculation(out TVerificationResultCollection AVerificationResult);
     }
 
 }

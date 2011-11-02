@@ -2282,6 +2282,17 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
         }
 
         /// generated method from connector
+        public System.Decimal CalculateAdminFee(GiftBatchTDS MainDS,
+                                                Int32 ALedgerNumber,
+                                                System.String AFeeCode,
+                                                System.Decimal AGiftAmount,
+                                                out TVerificationResultCollection AVerificationResult)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "CalculateAdminFee", ";GIFTBATCHTDS;INT;STRING;DECIMAL;TVERIFICATIONRESULTCOLLECTION;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.CalculateAdminFee(MainDS, ALedgerNumber, AFeeCode, AGiftAmount, out AVerificationResult);
+        }
+
+        /// generated method from connector
         public System.Boolean PostGiftBatch(Int32 ALedgerNumber,
                                             Int32 ABatchNumber,
                                             out TVerificationResultCollection AVerifications)
@@ -2971,8 +2982,8 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ICH.UIConnectors
         }
 
         /// generated method from interface
-        public IICHUIConnectorsStewardshipCalculation StewardshipCalculation(int ALedgerNumber,
-                                                                             int APeriodNumber)
+        public IICHUIConnectorsStewardshipCalculation StewardshipCalculation(System.Int32 ALedgerNumber,
+                                                                             System.Int32 APeriodNumber)
         {
             return new TStewardshipCalculationUIConnector(ALedgerNumber, APeriodNumber);
         }
