@@ -165,6 +165,20 @@ namespace Ict.Petra.Client.MPartner.Gui
         
         #region Private Methods
         
+		partial void PreInitUserControl(UserControl AUserControl)
+		{
+			if (AUserControl == FUcoIndividualData)
+			{
+				FUcoIndividualData.PartnerEditUIConnector = FPartnerEditUIConnector;
+                FUcoIndividualData.InitialiseUserControl();                
+			}	
+			else if (AUserControl == FUcoApplications)
+			{
+// TODO         FUcoApplications.PartnerEditUIConnector = FPartnerEditUIConnector;
+// TODO         FUcoApplications.InitialiseUserControl();
+			}
+		}
+		
         private void TabPageEventHandler(object sender, TTabPageEventArgs ATabPageEventArgs)
         {
             if (ATabPageEventArgs.Event == "InitialActivation")
@@ -172,10 +186,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 if (ATabPageEventArgs.Tab == tpgIndividualData)
                 {
                     FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpPersonnelIndividualData;
-
-                    FUcoIndividualData.PartnerEditUIConnector = FPartnerEditUIConnector;
-                    
-                    FUcoIndividualData.InitialiseUserControl();
 
                     CorrectDataGridWidthsAfterDataChange();
                 }
@@ -185,10 +195,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     // Hook up RecalculateScreenParts Event
 // TODO                    FUcoApplications.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
-
-// TODO                   FUcoApplications.PartnerEditUIConnector = FPartnerEditUIConnector;
-
-// TODO                   FUcoApplications.SpecialInitUserControl();
 
                     CorrectDataGridWidthsAfterDataChange();
                 }
