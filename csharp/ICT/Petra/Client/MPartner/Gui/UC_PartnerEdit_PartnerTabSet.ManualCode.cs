@@ -940,23 +940,23 @@ namespace Ict.Petra.Client.MPartner.Gui
                     case TPartnerEditTabPageEnum.petpDefault:
                         tabPartners.SelectedTab = tpgAddresses;
                         break;
-    
+
                     case TPartnerEditTabPageEnum.petpDetails:
                         tabPartners.SelectedTab = tpgPartnerDetails;
                         break;
-    
+
                     case TPartnerEditTabPageEnum.petpFoundationDetails:
                         tabPartners.SelectedTab = tpgFoundationDetails;
                         break;
-    
+
                     case TPartnerEditTabPageEnum.petpSubscriptions:
                         tabPartners.SelectedTab = tpgSubscriptions;
                         break;
-    
+
                     case TPartnerEditTabPageEnum.petpPartnerTypes:
                         tabPartners.SelectedTab = tpgPartnerTypes;
                         break;
-    
+
                     case TPartnerEditTabPageEnum.petpPartnerRelationships:
                         tabPartners.SelectedTab = tpgPartnerRelationships;
                         break;
@@ -964,20 +964,20 @@ namespace Ict.Petra.Client.MPartner.Gui
                     case TPartnerEditTabPageEnum.petpFamilyMembers:
                         tabPartners.SelectedTab = tpgFamilyMembers;
                         break;
-    
+
                     case TPartnerEditTabPageEnum.petpOfficeSpecific:
                         tabPartners.SelectedTab = tpgOfficeSpecific;
                         break;
-    
+
 #if TODO
                     case TPartnerEditTabPageEnum.petpInterests:
                         tabPartners.SelectedTab = tpgInterests;
                         break;
-    
+
                     case TPartnerEditTabPageEnum.petpReminders:
                         tabPartners.SelectedTab = tpgReminders;
                         break;
-    
+
                     case TPartnerEditTabPageEnum.petpRelationships:
                         tabPartners.SelectedTab = tpgRelationships;
                         break;
@@ -987,7 +987,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         break;
 #endif
                     case TPartnerEditTabPageEnum.petpNotes:
-    
+
                         if (tpgNotes.Enabled)
                         {
                             tabPartners.SelectedTab = tpgNotes;
@@ -996,9 +996,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                         {
                             tabPartners.SelectedTab = tpgAddresses;
                         }
-    
+
                         break;
-                }                
+                }
             }
             catch (Ict.Common.Controls.TSelectedIndexChangeDisallowedTabPagedIsDisabledException)
             {

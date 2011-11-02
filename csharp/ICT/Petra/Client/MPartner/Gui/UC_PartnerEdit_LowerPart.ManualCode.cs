@@ -195,7 +195,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     ucoPartnerTabSet.HookupPartnerEditDataChange += new THookupPartnerEditDataChangeEventHandler(
                     ucoPartnerTabSet_HookupPartnerEditDataChange);
                     ucoPartnerTabSet.Visible = true;
-                    ucoPersonnelTabSet.Visible = false;                    
+                    ucoPersonnelTabSet.Visible = false;
                     break;
 
                 case TFrmPartnerEdit.TModuleSwitchEnum.msPersonnel:
@@ -207,8 +207,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     ucoPersonnelTabSet.SpecialInitUserControl();
                     ucoPersonnelTabSet.Visible = true;
                     ucoPartnerTabSet.Visible = false;
-                    
-                    break;                    
+
+                    break;
             }
 
             // TODO Other TabSets (Personnel Data, Finance Data)
@@ -242,8 +242,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void GetDataFromControls()
         {
             ucoPartnerTabSet.GetDataFromControls();
-	    ucoPersonnelTabSet.GetDataFromControls();
-			
+            ucoPersonnelTabSet.GetDataFromControls();
+
             // TODO Other TabSets (Finance Data)
         }
 
@@ -341,9 +341,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void RefreshPersonnelDataAfterMerge()
         {
-	    ucoPersonnelTabSet.RefreshPersonnelDataAfterMerge();
+            ucoPersonnelTabSet.RefreshPersonnelDataAfterMerge();
         }
-        
+
         #endregion
     }
 }

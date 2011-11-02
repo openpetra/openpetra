@@ -35,14 +35,14 @@ using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MPersonnel.Person;
 
 namespace Ict.Petra.Client.MPartner.Gui
-{        
+{
     public partial class TUC_IndividualData_Summary
-    {   
+    {
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
-        
+
         #region Properties
-        
+
         /// <summary>used for passing through the Clientside Proxy for the UIConnector</summary>
         public IPartnerUIConnectorsPartnerEdit PartnerEditUIConnector
         {
@@ -55,34 +55,34 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 FPartnerEditUIConnector = value;
             }
-        }    
-        
+        }
+
         #endregion
-        
+
         /// <summary>
         /// todoComment
         /// </summary>
         public void SpecialInitUserControl(IndividualDataTDS AMainDS)
         {
             FMainDS = AMainDS;
-        
-			LoadDataOnDemand();
-            
-            ShowData((PPersonRow)FMainDS.PPerson.Rows[0]);  
-            
+
+            LoadDataOnDemand();
+
+            ShowData((PPersonRow)FMainDS.PPerson.Rows[0]);
+
             if (FMainDS.SummaryData.Rows.Count == 0)
             {
                 MessageBox.Show("FMainDS.SummaryData holds NO ROWS!", "DEVELOPER NEEDS TO FIX THIS!!!");
             }
-            
+
             dtpDateOfBirth.Enabled = true;
-            
-  	        DataView myDataView = FMainDS.JobAssignmentStaffDataCombined.DefaultView;
-	        myDataView.AllowNew = false;
-	        myDataView.Sort = PmJobAssignmentTable.GetFromDateDBName() + " DESC";
-	        grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+
+            DataView myDataView = FMainDS.JobAssignmentStaffDataCombined.DefaultView;
+            myDataView.AllowNew = false;
+            myDataView.Sort = PmJobAssignmentTable.GetFromDateDBName() + " DESC";
+            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
         }
-        
+
         /// <summary>
         /// This empty Method is needed so that the 'SAVEDATA' section of the template for the auto-generated class can be filled in.
         /// It is a HACK, since this screen is read-only and wouldn't need any saving code at all...
@@ -91,7 +91,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="ARow"></param>
         private void GetDataFromControlsManual(PPersonRow ARow)
         {
-            
         }
 
         /// <summary>
@@ -111,8 +110,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FMainDS.InitVars();
                 }
 
-                if (TClientSettings.DelayedDataLoading && 
-                    (FMainDS.SummaryData.Rows.Count == 0))
+                if (TClientSettings.DelayedDataLoading
+                    && (FMainDS.SummaryData.Rows.Count == 0))
                 {
                     FMainDS.Merge(FPartnerEditUIConnector.GetDataPersonnelIndividualData(TIndividualDataItemEnum.idiSummary));
 
@@ -143,8 +142,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 throw;
             }
-            
+
             return ReturnValue;
-        }        
+        }
     }
 }

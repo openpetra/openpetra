@@ -494,7 +494,7 @@ namespace Ict.Petra.Client.MPartner
         /// <param name="AOwner"></param>
         public static void OpenDonorGiftHistory(IWin32Window AOwner)
         {
-        	throw new NotImplementedException();
+            throw new NotImplementedException();
 // TODO OpenDonorGiftHistory
 #if TODO
             Int32 LedgerNumber;
@@ -524,7 +524,7 @@ namespace Ict.Petra.Client.MPartner
         /// <param name="AOwner"></param>
         public static void OpenRecipientGiftHistory(IWin32Window AOwner)
         {
-        	throw new NotImplementedException();
+            throw new NotImplementedException();
 // TODO OpenRecipientGiftHistory
 #if TODO
             Int32 LedgerNumber;

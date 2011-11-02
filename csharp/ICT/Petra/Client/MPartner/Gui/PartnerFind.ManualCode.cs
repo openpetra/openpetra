@@ -231,11 +231,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 if (CurrentMenu.Text == ClickedMenuItemText)
                 {
-                	ucoFindByPartnerDetails.OpenPartnerEditScreen(TPartnerEditTabPageEnum.petpDefault, (long)CurrentMenu.Tag, true);
+                    ucoFindByPartnerDetails.OpenPartnerEditScreen(TPartnerEditTabPageEnum.petpDefault, (long)CurrentMenu.Tag, true);
                 }
             }
         }
-        
+
         void MniEdit_DropDownOpening(object sender, EventArgs e)
         {
             DataRowView[] GridRows;
@@ -385,7 +385,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 MenuItemCollection = mniMaintain.DropDownItems;
                 SenderIsContextMenu = false;
             }
-// TODO Context Menu            
+
+// TODO Context Menu
 //            else
 //            {
 //                MenuItemCollection = mnuPartnerFindContext.DropDownItems;
@@ -451,8 +452,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                                     IndividualMenuItem.Text = Resourcestrings.StrFamilyMembersMenuItemText;
 
                                     // Exchange the 'Family' icon with the 'Family Members' icon!
-                                    // 
-// TODO 							  this.XPMenuItemExtender.SetMenuGlyph(mnuPartnerFindContext.MenuItems[Counter], imlMenuHelper.Images[1]);
+                                    //
+// TODO                                                           this.XPMenuItemExtender.SetMenuGlyph(mnuPartnerFindContext.MenuItems[Counter], imlMenuHelper.Images[1]);
                                     break;
                                 }
                                 else
@@ -492,12 +493,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                                 // Exchange the 'Family Members' icon with the 'Family' icon!
 // TODO                           this.XPMenuItemExtender.SetMenuGlyph(mnuPartnerFindContext.MenuItems[Counter], imlMenuHelper.Images[0]);
-                                
-                                if (!UserHasPersonnelAccess()) 
+
+                                if (!UserHasPersonnelAccess())
                                 {
-                                	IndividualMenuItem.Enabled = false;	
+                                    IndividualMenuItem.Enabled = false;
                                 }
-                                
+
                                 break;
                             }
 
@@ -511,11 +512,11 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                         // Exchange the 'Family Members' icon with the 'Family' icon!
 // TODO                   this.XPMenuItemExtender.SetMenuGlyph(this.mniMaintainFamilyMembers, imlMenuHelper.Images[0]);
-                        
-                        if (!UserHasPersonnelAccess()) 
+
+                        if (!UserHasPersonnelAccess())
                         {
-                        	mniMaintainFamilyMembers.Enabled = false;	
-                        }                        
+                            mniMaintainFamilyMembers.Enabled = false;
+                        }
                     }
                 }
                 else if (PartnerClass == "UNIT")
@@ -539,11 +540,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                                 else
                                 {
                                     IndividualMenuItem.Text = Resourcestrings.StrPersonnelUnitMenuItemText;
-                                    
-			                        if (!UserHasPersonnelAccess()) 
-			                        {
-			                        	IndividualMenuItem.Enabled = false;	
-			                        }                                                            
+
+                                    if (!UserHasPersonnelAccess())
+                                    {
+                                        IndividualMenuItem.Enabled = false;
+                                    }
                                 }
                             }
                         }
@@ -553,12 +554,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                         // Work on Maintain Menu
                         mniMaintainFamilyMembers.Enabled = false;
                         mniMaintainWorkerField.Enabled = false;
-                        mniMaintainPersonnelData.Text = Resourcestrings.StrPersonnelUnitMenuItemText;                        
-                        
-                        if (!UserHasPersonnelAccess()) 
+                        mniMaintainPersonnelData.Text = Resourcestrings.StrPersonnelUnitMenuItemText;
+
+                        if (!UserHasPersonnelAccess())
                         {
-                        	mniMaintainPersonnelData.Enabled = false;	
-                        }                            
+                            mniMaintainPersonnelData.Enabled = false;
+                        }
                     }
                 }
                 else
@@ -664,7 +665,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             ucoFindByPartnerDetails.HandleMenuItemOrToolBarButton(mniView, (ToolStripItem)sender, FRunAsModalForm);
         }
-        
+
         #endregion
 
         private void AddCopyContextMenuEntries(ContextMenu AMenuToAddInto)
@@ -759,11 +760,11 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             MessageBox.Show("Sorry, this function is not yet implemented...", TitlePrefix + "Not Yet Implemented");
         }
-        
+
         private bool UserHasPersonnelAccess()
         {
-        	return UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_PERSONNEL);
-        }        
+            return UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_PERSONNEL);
+        }
 
         private void TPartnerFindScreen_Activated(System.Object sender, System.EventArgs e)
         {

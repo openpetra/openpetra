@@ -48,7 +48,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private Boolean FUserControlInitialised;
 
         #endregion
-                
+
         #region Properties
 
         /// <summary>used for passing through the Clientside Proxy for the UIConnector</summary>
@@ -104,7 +104,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         public event THookupPartnerEditDataChangeEventHandler HookupPartnerEditDataChange;
 
         #endregion
-        
+
         #region Public Methods
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             OnDataLoadingStarted();
 
             FUserControlInitialised = true;
-            
+
             tpgApplications.Enabled = false;    // TODO This feature isn't implemented yet.
 
 
@@ -144,10 +144,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void GetDataFromControls()
         {
-        	if (FUcoIndividualData != null) 
-        	{
-        		FUcoIndividualData.GetDataFromControls();	
-        	}
+            if (FUcoIndividualData != null)
+            {
+                FUcoIndividualData.GetDataFromControls();
+            }
         }
 
         /// <summary>
@@ -155,30 +155,30 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void RefreshPersonnelDataAfterMerge()
         {
-        	if (FUcoIndividualData != null) 
-        	{        	
-				FUcoIndividualData.RefreshPersonnelDataAfterMerge();
-        	}        	
+            if (FUcoIndividualData != null)
+            {
+                FUcoIndividualData.RefreshPersonnelDataAfterMerge();
+            }
         }
-        
+
         #endregion
-        
+
         #region Private Methods
-        
-		partial void PreInitUserControl(UserControl AUserControl)
-		{
-			if (AUserControl == FUcoIndividualData)
-			{
-				FUcoIndividualData.PartnerEditUIConnector = FPartnerEditUIConnector;
-                FUcoIndividualData.InitialiseUserControl();                
-			}	
-			else if (AUserControl == FUcoApplications)
-			{
+
+        partial void PreInitUserControl(UserControl AUserControl)
+        {
+            if (AUserControl == FUcoIndividualData)
+            {
+                FUcoIndividualData.PartnerEditUIConnector = FPartnerEditUIConnector;
+                FUcoIndividualData.InitialiseUserControl();
+            }
+            else if (AUserControl == FUcoApplications)
+            {
 // TODO         FUcoApplications.PartnerEditUIConnector = FPartnerEditUIConnector;
 // TODO         FUcoApplications.InitialiseUserControl();
-			}
-		}
-		
+            }
+        }
+
         private void TabPageEventHandler(object sender, TTabPageEventArgs ATabPageEventArgs)
         {
             if (ATabPageEventArgs.Event == "InitialActivation")
@@ -212,7 +212,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void CalculateTabHeaderCounters(System.Object ASender)
         {
-            Int32 CountAll = 0;            
+            Int32 CountAll = 0;
 
             if ((ASender is TUC_PartnerEdit_PersonnelTabSet) || (ASender is TUC_Applications))
             {
@@ -250,15 +250,15 @@ namespace Ict.Petra.Client.MPartner.Gui
 //                HookupDataChange(this, e);
 //            }
 //        }
-        
+
         private void Uco_HookupPartnerEditDataChange(System.Object sender, THookupPartnerEditDataChangeEventArgs e)
         {
             if (HookupPartnerEditDataChange != null)
             {
                 HookupPartnerEditDataChange(this, e);
             }
-        }        
-        
+        }
+
         /// <summary>
         /// todoComment
         /// </summary>
@@ -284,12 +284,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                     case TPartnerEditTabPageEnum.petpPersonnelIndividualData:
                         tabPersonnel.SelectedTab = tpgIndividualData;
                         break;
-    
+
                     case TPartnerEditTabPageEnum.petpPersonnelApplications:
                         tabPersonnel.SelectedTab = tpgApplications;
                         break;
-    
-                }                
+                }
             }
             catch (Ict.Common.Controls.TSelectedIndexChangeDisallowedTabPagedIsDisabledException)
             {
@@ -305,7 +304,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             OnDataLoadingFinished();
         }
-        
+
         #endregion
     }
 }

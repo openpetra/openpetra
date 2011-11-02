@@ -35,14 +35,14 @@ using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MPersonnel.Person;
 
 namespace Ict.Petra.Client.MPartner.Gui
-{        
+{
     public partial class TUC_IndividualData_SpecialNeeds
-    {   
+    {
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
-        
+
         #region Properties
-        
+
         /// <summary>used for passing through the Clientside Proxy for the UIConnector</summary>
         public IPartnerUIConnectorsPartnerEdit PartnerEditUIConnector
         {
@@ -55,30 +55,30 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 FPartnerEditUIConnector = value;
             }
-        }    
-        
+        }
+
         #endregion
-        
+
         /// <summary>
         /// todoComment
         /// </summary>
         public void SpecialInitUserControl(IndividualDataTDS AMainDS)
         {
             FMainDS = AMainDS;
-        
-			LoadDataOnDemand();
-            
+
+            LoadDataOnDemand();
+
             if (FMainDS.PmSpecialNeed.Rows.Count == 0)
             {
-            	// There hasn't been data stored yet, so create a new Record
+                // There hasn't been data stored yet, so create a new Record
                 FMainDS.PmSpecialNeed.Rows.Add(FMainDS.PmSpecialNeed.NewRowTyped(true));
                 // ... and set its Primary Key
                 FMainDS.PmSpecialNeed[0].PartnerKey = FMainDS.PPerson[0].PartnerKey;
             }
-            
-            ShowData(FMainDS.PmSpecialNeed[0]);                         
+
+            ShowData(FMainDS.PmSpecialNeed[0]);
         }
-        
+
         /// <summary>
         /// Gets the data from all controls on this UserControl.
         /// The data is stored in the DataTables/DataColumns to which the Controls
@@ -97,7 +97,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void AdjustAfterResizing()
         {
         }
-        
+
         /// <summary>
         /// Loads Summary Data from Petra Server into FMainDS, if not already loaded.
         /// </summary>
@@ -115,8 +115,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FMainDS.InitVars();
                 }
 
-                if (TClientSettings.DelayedDataLoading && 
-                    (FMainDS.PmSpecialNeed.Rows.Count == 0))
+                if (TClientSettings.DelayedDataLoading
+                    && (FMainDS.PmSpecialNeed.Rows.Count == 0))
                 {
                     FMainDS.Merge(FPartnerEditUIConnector.GetDataPersonnelIndividualData(TIndividualDataItemEnum.idiSpecialNeeds));
 
@@ -147,8 +147,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 throw;
             }
-            
+
             return ReturnValue;
-        }        
+        }
     }
 }

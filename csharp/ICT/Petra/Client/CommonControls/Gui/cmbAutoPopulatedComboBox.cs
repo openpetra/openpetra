@@ -126,7 +126,7 @@ namespace Ict.Petra.Client.CommonControls
 
             /// <summary>todoComment</summary>
             LanguageLevelList,
-            
+
             /// <summary>todoComment</summary>
             LocationTypeList,
 
@@ -454,14 +454,14 @@ namespace Ict.Petra.Client.CommonControls
                     null);
                     break;
 
-               case TListTableEnum.LocationTypeList:
+                case TListTableEnum.LocationTypeList:
 
-                InitialiseUserControl(
-                TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.LocationTypeList),
-                PLocationTypeTable.GetCodeDBName(),
-                null,
-                null);
-                break;
+                    InitialiseUserControl(
+                    TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.LocationTypeList),
+                    PLocationTypeTable.GetCodeDBName(),
+                    null,
+                    null);
+                    break;
 
                 case TListTableEnum.MaritalStatusList:
 

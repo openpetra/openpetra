@@ -30,12 +30,12 @@ namespace Ict.Petra.Client.MPartner.Gui
     public partial class TUC_Applications
     {
         #region Events
-        
+
 // TODO        /// <summary>todoComment</summary>
 // TODO        public event TRecalculateScreenPartsEventHandler RecalculateScreenParts;
-        
+
         #endregion
-        
+
         #region Public Methods
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 //            FLogic.PartnerEditUIConnector = FPartnerEditUIConnector;
 //            FLogic.LoadDataOnDemand();
         }
-        
+
 //        /// <summary>
 //        /// Gets the data from all controls on this UserControl.
 //        /// The data is stored in the DataTables/DataColumns to which the Controls

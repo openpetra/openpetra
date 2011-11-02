@@ -37,16 +37,16 @@ using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MPersonnel.Person;
 
 namespace Ict.Petra.Client.MPartner.Gui
-{        
+{
     public partial class TUC_IndividualData_PersonalLanguages
-    {   
+    {
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
         private PLanguageTable FLanguageCodeDT;
         private PtLanguageLevelTable FLanguageLevelDT;
-        
+
         #region Properties
-        
+
         /// <summary>used for passing through the Clientside Proxy for the UIConnector</summary>
         public IPartnerUIConnectorsPartnerEdit PartnerEditUIConnector
         {
@@ -59,27 +59,27 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 FPartnerEditUIConnector = value;
             }
-        }    
-        
+        }
+
         #endregion
-        
+
         #region Events
-        
+
         /// <summary>todoComment</summary>
         public event TRecalculateScreenPartsEventHandler RecalculateScreenParts;
-        
+
         #endregion
-        
+
         /// <summary>
         /// todoComment
         /// </summary>
         public void SpecialInitUserControl(IndividualDataTDS AMainDS)
         {
             FMainDS = AMainDS;
-        	
-			LoadDataOnDemand();
-			
-			FLanguageCodeDT = (PLanguageTable)TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.LanguageCodeList);
+
+            LoadDataOnDemand();
+
+            FLanguageCodeDT = (PLanguageTable)TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.LanguageCodeList);
         }
 
         /// <summary>
@@ -96,11 +96,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             string newName;
             Int32 countNewDetail = 0;
-			
+
             ARow.PartnerKey = FMainDS.PPerson[0].PartnerKey;
             newName = FLanguageCodeDT[0].LanguageCode;
-            
-            if (FMainDS.PmPersonLanguage.Rows.Find(new object[] {ARow.PartnerKey, newName }) != null)
+
+            if (FMainDS.PmPersonLanguage.Rows.Find(new object[] { ARow.PartnerKey, newName }) != null)
             {
                 while (FMainDS.PmPersonLanguage.Rows.Find(new object[] { ARow.PartnerKey, newName }) != null)
                 {
@@ -108,10 +108,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                     newName = FLanguageCodeDT[countNewDetail].LanguageCode;
                 }
             }
-            
+
             ARow.LanguageCode = newName;
         }
-        
+
         private void DeleteRow(System.Object sender, EventArgs e)
         {
             if (FPreviouslySelectedDetailRow == null)
@@ -132,55 +132,59 @@ namespace Ict.Petra.Client.MPartner.Gui
 //            }
 
             if (MessageBox.Show(String.Format(Catalog.GetString(
-                                "You have choosen to delete this value ({0}).\n\nDo you really want to delete it?"),
-                            FPreviouslySelectedDetailRow.LanguageCode), Catalog.GetString("Confirm Delete"),
-                        MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
+                            "You have choosen to delete this value ({0}).\n\nDo you really want to delete it?"),
+                        FPreviouslySelectedDetailRow.LanguageCode), Catalog.GetString("Confirm Delete"),
+                    MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
             {
                 int rowIndex = CurrentRowIndex();
                 FPreviouslySelectedDetailRow.Delete();
                 FPetraUtilsObject.SetChangedFlag();
                 SelectByIndex(rowIndex);
-                
+
                 DoRecalculateScreenParts();
             }
         }
-        
+
         private void DoRecalculateScreenParts()
         {
-            OnRecalculateScreenParts(new TRecalculateScreenPartsEventArgs() {ScreenPart = TScreenPartEnum.spCounters});               
+            OnRecalculateScreenParts(new TRecalculateScreenPartsEventArgs() {
+                    ScreenPart = TScreenPartEnum.spCounters
+                });
         }
-        
+
         private void ShowDetailsManual(PmPersonLanguageRow ARow)
         {
-        	// In theory, the next Method call could be done in Methods NewRowManual; however, NewRowManual runs before 
-        	// the Row is actually added and this would result in the Count to be one too less, so we do the Method call here, short
-        	// of a non-existing 'AfterNewRowManual' Method....
-        	DoRecalculateScreenParts();        	
-        	
-        	EnableDisableTranslationDetails(null, null);
+            // In theory, the next Method call could be done in Methods NewRowManual; however, NewRowManual runs before
+            // the Row is actually added and this would result in the Count to be one too less, so we do the Method call here, short
+            // of a non-existing 'AfterNewRowManual' Method....
+            DoRecalculateScreenParts();
+
+            EnableDisableTranslationDetails(null, null);
         }
-        
+
         private void ShowLanguageLevelExplanation(System.Object sender, EventArgs e)
         {
-        	PtLanguageLevelRow LangLevelDR;
-        
-        	if (FLanguageLevelDT == null) 
-        	{
-        		FLanguageLevelDT = (PtLanguageLevelTable)TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.LanguageLevelList);
-        	}
-        	
-        	LangLevelDR = (PtLanguageLevelRow)FLanguageLevelDT.Rows.Find(new object[] {Convert.ToInt32(cmbLanguageLevel.cmbCombobox.SelectedValue)});
-        	
-        	if (LangLevelDR != null) 
-        	{
-        		MessageBox.Show(LangLevelDR.LanguageLevelDescr.Trim() + ":" + Environment.NewLine + LangLevelDR.LanguageComment, Catalog.GetString("Language Level Explanation"));
-        	}
-        	else
-        	{
-        		MessageBox.Show(String.Format(Catalog.GetString("There is no explanation available for Language Level {0}."), cmbLanguageLevel.Text));
-        	}
+            PtLanguageLevelRow LangLevelDR;
+
+            if (FLanguageLevelDT == null)
+            {
+                FLanguageLevelDT = (PtLanguageLevelTable)TDataCache.TMPersonnel.GetCacheablePersonnelTable(
+                    TCacheablePersonTablesEnum.LanguageLevelList);
+            }
+
+            LangLevelDR = (PtLanguageLevelRow)FLanguageLevelDT.Rows.Find(new object[] { Convert.ToInt32(cmbLanguageLevel.cmbCombobox.SelectedValue) });
+
+            if (LangLevelDR != null)
+            {
+                MessageBox.Show(LangLevelDR.LanguageLevelDescr.Trim() + ":" + Environment.NewLine + LangLevelDR.LanguageComment,
+                    Catalog.GetString("Language Level Explanation"));
+            }
+            else
+            {
+                MessageBox.Show(String.Format(Catalog.GetString("There is no explanation available for Language Level {0}."), cmbLanguageLevel.Text));
+            }
         }
-        
+
         /// <summary>
         /// Gets the data from all controls on this UserControl.
         /// The data is stored in the DataTables/DataColumns to which the Controls
@@ -188,11 +192,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void GetDataFromControls2()
         {
-        	// Get data out of the Controls only if there is at least one row of data (Note: Column Headers count as one row)
-        	if (grdDetails.Rows.Count > 1)
-        	{
-        		GetDataFromControls();	
-        	}            
+            // Get data out of the Controls only if there is at least one row of data (Note: Column Headers count as one row)
+            if (grdDetails.Rows.Count > 1)
+            {
+                GetDataFromControls();
+            }
         }
 
         /// <summary>
@@ -235,7 +239,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 grdDetails.Selection.SelectRow(rowIndex, true);
                 FPreviouslySelectedDetailRow = GetSelectedDetailRow();
                 ShowDetails(FPreviouslySelectedDetailRow);
-                
+
                 pnlDetails.Visible = true;
             }
             else
@@ -243,7 +247,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 pnlDetails.Visible = false;
             }
         }
-        
+
         /// <summary>
         /// Loads Person Language Data from Petra Server into FMainDS, if not already loaded.
         /// </summary>
@@ -261,8 +265,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FMainDS.InitVars();
                 }
 
-                if (TClientSettings.DelayedDataLoading && 
-                    (FMainDS.PmPersonLanguage.Rows.Count == 0))
+                if (TClientSettings.DelayedDataLoading
+                    && (FMainDS.PmPersonLanguage.Rows.Count == 0))
                 {
                     FMainDS.Merge(FPartnerEditUIConnector.GetDataPersonnelIndividualData(TIndividualDataItemEnum.idiPersonalLanguages));
 
@@ -293,22 +297,22 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 throw;
             }
-            
+
             return ReturnValue;
-        }        
-        
-	    private void EnableDisableTranslationDetails(object sender, System.EventArgs e)
-		{
-			chkTranslateOutOf.Enabled = chkWillingToTranslate.Checked;
-			chkTranslateInto.Enabled = chkWillingToTranslate.Checked;
-		}        
-	    
+        }
+
+        private void EnableDisableTranslationDetails(object sender, System.EventArgs e)
+        {
+            chkTranslateOutOf.Enabled = chkWillingToTranslate.Checked;
+            chkTranslateInto.Enabled = chkWillingToTranslate.Checked;
+        }
+
         private void OnRecalculateScreenParts(TRecalculateScreenPartsEventArgs e)
         {
             if (RecalculateScreenParts != null)
             {
                 RecalculateScreenParts(this, e);
             }
-        }	    
+        }
     }
 }
