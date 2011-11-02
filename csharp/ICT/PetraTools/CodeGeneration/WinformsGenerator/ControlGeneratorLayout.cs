@@ -444,7 +444,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
             XmlNode containerNode = writer.CodeStorage.GetControl(parentContainerName).xmlNode;
             XmlNode controlsNode = TXMLParser.GetChild(containerNode, "Controls");
 
-            FTabOrder = TXMLParser.GetAttribute(controlsNode, "TabOrder");
+            if (controlsNode != null)
+            {
+                FTabOrder = TXMLParser.GetAttribute(controlsNode, "TabOrder");
+            }
 
             List <XmlNode>childNodes = TYml2Xml.GetChildren(controlsNode, true);
 
