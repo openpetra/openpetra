@@ -44,9 +44,11 @@ using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Server.MFinance.Gift;
 using Ict.Petra.Server.MPartner.Partner;
+using Ict.Petra.Shared.MPersonnel.Person;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MCommon.UIConnectors;
@@ -54,6 +56,7 @@ using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.MPartner;
 using Ict.Petra.Server.MPartner.DataAggregates;
 using Ict.Petra.Server.MSysMan.Maintenance;
+using Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors;
 
 namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 {
@@ -752,7 +755,19 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     FPartnerEditScreenDS.Merge(OfficeSpecificDataLabels.PDataLabelValuePartner);
 
                     // Console.WriteLine('FPartnerEditScreenDS.PDataLabelValuePartner.Rows.Count: ' + FPartnerEditScreenDS.PDataLabelValuePartner.Rows.Count.ToString);
+                    
+                    #region Individual Data (Personnel Tab)
+
+                    if (((!ADelayedDataLoading)) || (ATabPage == TPartnerEditTabPageEnum.petpPersonnelIndividualData))
+                    {
+                        FPartnerEditScreenDS.Merge(TIndividualDataWebConnector.GetData(FPartnerKey, TIndividualDataItemEnum.idiSummary));
+//Console.WriteLine("FPartnerEditScreenDS.PDataLabelValuePartner.Rows.Count: " + FPartnerEditScreenDS.Tables["SummaryData"].Rows.Count.ToString());                        
+                    }
+               
                     #endregion
+                    
+                    #endregion
+                    
                     #region Process data
 
                     // Determination of Last Gift information
@@ -1398,6 +1413,20 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             return FPartnerEditScreenDS;
         }
 
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        /// <returns></returns>
+        public IndividualDataTDS GetDataPersonnelIndividualData(TIndividualDataItemEnum AIndividualDataItem)
+        {
+            return GetDataPersonnelIndividualDataInternal(AIndividualDataItem);
+        }
+        
+        private IndividualDataTDS GetDataPersonnelIndividualDataInternal(TIndividualDataItemEnum AIndividualDataItem)
+        {
+            return TIndividualDataWebConnector.GetData(FPartnerKey, AIndividualDataItem);
+        }
+        
         /// <summary>
         /// todoComment
         /// </summary>
@@ -2417,6 +2446,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
 
                 #endregion
+                
                 #region Partner Types
 
                 if (AInspectDS.Tables.Contains(PPartnerTypeTable.GetTableName()))
@@ -2437,6 +2467,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
 
                 #endregion
+                
                 #region Subscriptions
 
                 if (AInspectDS.Tables.Contains(PSubscriptionTable.GetTableName()))
@@ -2450,6 +2481,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
 
                 #endregion
+                
                 #region Partner Details according to PartnerClass
 
                 switch (FPartnerClass)
@@ -2625,6 +2657,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
 
                 #endregion
+                
                 #region Relationships
 
                 if (AInspectDS.Tables.Contains(PPartnerRelationshipTable.GetTableName()))
@@ -2638,6 +2671,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
 
                 #endregion
+                
                 #region Foundations
 
                 if (AInspectDS.Tables.Contains(PFoundationTable.GetTableName()))
@@ -2704,7 +2738,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     }
                 }
 
-                #endregion
+                #endregion                
+                
                 #region Office Specific Data Labels
 
                 if (AInspectDS.Tables.Contains(PDataLabelValuePartnerTable.GetTableName()))
@@ -2722,7 +2757,25 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
 
                 #endregion
-
+                
+                #region Individual Data (Personnel Tab)
+                
+                IndividualDataTDS TempDS = new IndividualDataTDS();
+                TempDS.Merge(AInspectDS);
+                TSubmitChangesResult IndividualDataResult;
+                
+                IndividualDataResult = TIndividualDataWebConnector.SubmitChangesServerSide(ref TempDS, ref AInspectDS, ASubmitChangesTransaction, 
+					out SingleVerificationResultCollection);
+                
+                if ((IndividualDataResult != TSubmitChangesResult.scrOK) 
+                    && (IndividualDataResult != TSubmitChangesResult.scrNothingToBeSaved))
+                {
+                    AllSubmissionsOK = false;
+                    AVerificationResult.AddCollection(SingleVerificationResultCollection);
+                }                	
+                	
+                #endregion
+                	
                 // Note: Locations and PartnerLocations are done sepearately in SubmitChangesAddresses!
 #if DEBUGMODE
                 if (TLogging.DL >= 9)

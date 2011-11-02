@@ -286,8 +286,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             ControlsUtilities.HideTabs(tabPartners, TabsToHide);
             FUserControlInitialised = true;
 
-//            this.tabPartners.SelectedIndexChanged += new EventHandler(this.tabPartners_SelectedIndexChanged);
-
             SelectTabPage(FInitiallySelectedTabPage);
 
             CalculateTabHeaderCounters(this);
@@ -934,66 +932,77 @@ namespace Ict.Petra.Client.MPartner.Gui
             // supress detection changing
             SelectedTabPageBeforeReSelecting = tabPartners.SelectedTab;
 
-            switch (ATabPage)
+            try
             {
-                case TPartnerEditTabPageEnum.petpAddresses:
-                case TPartnerEditTabPageEnum.petpDefault:
-                    tabPartners.SelectedTab = tpgAddresses;
-                    break;
-
-                case TPartnerEditTabPageEnum.petpDetails:
-                    tabPartners.SelectedTab = tpgPartnerDetails;
-                    break;
-
-                case TPartnerEditTabPageEnum.petpFoundationDetails:
-                    tabPartners.SelectedTab = tpgFoundationDetails;
-                    break;
-
-                case TPartnerEditTabPageEnum.petpSubscriptions:
-                    tabPartners.SelectedTab = tpgSubscriptions;
-                    break;
-
-                case TPartnerEditTabPageEnum.petpPartnerTypes:
-                    tabPartners.SelectedTab = tpgPartnerTypes;
-                    break;
-
-                case TPartnerEditTabPageEnum.petpPartnerRelationships:
-                    tabPartners.SelectedTab = tpgPartnerRelationships;
-                    break;
-
-                case TPartnerEditTabPageEnum.petpFamilyMembers:
-                    tabPartners.SelectedTab = tpgFamilyMembers;
-                    break;
-
-                case TPartnerEditTabPageEnum.petpOfficeSpecific:
-                    tabPartners.SelectedTab = tpgOfficeSpecific;
-                    break;
-
-#if TODO
-                case TPartnerEditTabPageEnum.petpInterests:
-                    tabPartners.SelectedTab = tpgInterests;
-                    break;
-
-                case TPartnerEditTabPageEnum.petpReminders:
-                    tabPartners.SelectedTab = tpgReminders;
-                    break;
-
-                case TPartnerEditTabPageEnum.petpContacts:
-                    tabPartners.SelectedTab = tpgContacts;
-                    break;
-#endif
-                case TPartnerEditTabPageEnum.petpNotes:
-
-                    if (tpgNotes.Enabled)
-                    {
-                        tabPartners.SelectedTab = tpgNotes;
-                    }
-                    else
-                    {
+                switch (ATabPage)
+                {
+                    case TPartnerEditTabPageEnum.petpAddresses:
+                    case TPartnerEditTabPageEnum.petpDefault:
                         tabPartners.SelectedTab = tpgAddresses;
-                    }
+                        break;
+    
+                    case TPartnerEditTabPageEnum.petpDetails:
+                        tabPartners.SelectedTab = tpgPartnerDetails;
+                        break;
+    
+                    case TPartnerEditTabPageEnum.petpFoundationDetails:
+                        tabPartners.SelectedTab = tpgFoundationDetails;
+                        break;
+    
+                    case TPartnerEditTabPageEnum.petpSubscriptions:
+                        tabPartners.SelectedTab = tpgSubscriptions;
+                        break;
+    
+                    case TPartnerEditTabPageEnum.petpPartnerTypes:
+                        tabPartners.SelectedTab = tpgPartnerTypes;
+                        break;
+    
+                    case TPartnerEditTabPageEnum.petpPartnerRelationships:
+                        tabPartners.SelectedTab = tpgPartnerRelationships;
+                        break;
 
-                    break;
+                    case TPartnerEditTabPageEnum.petpFamilyMembers:
+                        tabPartners.SelectedTab = tpgFamilyMembers;
+                        break;
+    
+                    case TPartnerEditTabPageEnum.petpOfficeSpecific:
+                        tabPartners.SelectedTab = tpgOfficeSpecific;
+                        break;
+    
+#if TODO
+                    case TPartnerEditTabPageEnum.petpInterests:
+                        tabPartners.SelectedTab = tpgInterests;
+                        break;
+    
+                    case TPartnerEditTabPageEnum.petpReminders:
+                        tabPartners.SelectedTab = tpgReminders;
+                        break;
+    
+                    case TPartnerEditTabPageEnum.petpRelationships:
+                        tabPartners.SelectedTab = tpgRelationships;
+                        break;
+
+                    case TPartnerEditTabPageEnum.petpContacts:
+                        tabPartners.SelectedTab = tpgContacts;
+                        break;
+#endif
+                    case TPartnerEditTabPageEnum.petpNotes:
+    
+                        if (tpgNotes.Enabled)
+                        {
+                            tabPartners.SelectedTab = tpgNotes;
+                        }
+                        else
+                        {
+                            tabPartners.SelectedTab = tpgAddresses;
+                        }
+    
+                        break;
+                }                
+            }
+            catch (Ict.Common.Controls.TSelectedIndexChangeDisallowedTabPagedIsDisabledException)
+            {
+                // Desired Tab Page isn't selectable because it is disabled; ignoring this Exception to ignore the selection.
             }
 
             // Check if the selected TabPage actually changed...

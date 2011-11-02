@@ -26,7 +26,6 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
-
 using System.Data;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Client;
@@ -45,6 +44,7 @@ using System.Globalization;
 using Ict.Petra.Shared;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 
 namespace Ict.Petra.Client.CommonControls
 {
@@ -124,6 +124,9 @@ namespace Ict.Petra.Client.CommonControls
             /// <summary>todoComment</summary>
             LanguageCodeList,
 
+            /// <summary>todoComment</summary>
+            LanguageLevelList,
+            
             /// <summary>todoComment</summary>
             LocationTypeList,
 
@@ -442,14 +445,23 @@ namespace Ict.Petra.Client.CommonControls
                     null);
                     break;
 
-                case TListTableEnum.LocationTypeList:
+                case TListTableEnum.LanguageLevelList:
 
                     InitialiseUserControl(
-                    TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.LocationTypeList),
-                    PLocationTypeTable.GetCodeDBName(),
-                    null,
+                    TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.LanguageLevelList),
+                    PtLanguageLevelTable.GetLanguageLevelDBName(),
+                    PtLanguageLevelTable.GetLanguageLevelDescrDBName(),
                     null);
                     break;
+
+               case TListTableEnum.LocationTypeList:
+
+                InitialiseUserControl(
+                TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.LocationTypeList),
+                PLocationTypeTable.GetCodeDBName(),
+                null,
+                null);
+                break;
 
                 case TListTableEnum.MaritalStatusList:
 
@@ -819,6 +831,11 @@ namespace Ict.Petra.Client.CommonControls
                     break;
 
                 case TListTableEnum.LanguageCodeList:
+                    this.ColumnWidthCol1 = 57;
+                    this.ColumnWidthCol2 = 130;
+                    break;
+
+                case TListTableEnum.LanguageLevelList:
                     this.ColumnWidthCol1 = 57;
                     this.ColumnWidthCol2 = 130;
                     break;

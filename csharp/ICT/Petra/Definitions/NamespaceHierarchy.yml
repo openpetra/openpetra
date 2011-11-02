@@ -38,8 +38,9 @@ NamespaceHierarchy:
                     UIConnectors: {Description=User Interface Connectors}
                 Cacheable: {Description=Cacheable DataTables}
                 UIConnectors: {Description=User Interface Connectors}
+                WebConnectors: {Description=Web Connectors}
             Shepherds: {Description=Shepherds Sub-System}
-                UIConnectors: {Description=User Interface Connectors}
+                UIConnectors: {Description=User Interface Connectors}            
         TableMaintenance: {Description=Table Maintenance Sub-System}
             UIConnectors: {Description=User Interface Connectors}
         Units: {Description=Units Sub-System}

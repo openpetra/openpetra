@@ -1081,7 +1081,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             SpecialNeedRow.PartnerKey = FPartnerKey;
 
             SpecialNeedRow.DateCreated = ReadNullableDate();
-            SpecialNeedRow.ContactHomeOffice = ReadBoolean();
+            ReadBoolean();  // needed for backwards compatibility - SpecialNeedRow.ContactHomeOffice used to be here, but this Column has been removed from the OpenPetra DB
             SpecialNeedRow.VegetarianFlag = ReadBoolean();
             SpecialNeedRow.DietaryComment = ReadString();
             SpecialNeedRow.MedicalComment = ReadString();
@@ -1149,24 +1149,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 ATransaction);
 
             // TODO: PInterest, PInterestCategory
-        }
-
-        private void ImportVision(TDBTransaction ATransaction)
-        {
-            PmPersonVisionRow PersonVisionRow = FMainDS.PmPersonVision.NewRowTyped();
-
-            PersonVisionRow.PartnerKey = FPartnerKey;
-
-            PersonVisionRow.VisionAreaName = ReadString();
-            PersonVisionRow.VisionLevel = ReadInt32();
-            PersonVisionRow.VisionComment = ReadString();
-
-            PmPersonVisionAccess.AddOrModifyRecord(PersonVisionRow.PartnerKey,
-                PersonVisionRow.VisionAreaName,
-                FMainDS.PmPersonVision,
-                PersonVisionRow,
-                FDoNotOverwrite,
-                ATransaction);
         }
 
         private void ImportUnitAbility(TDBTransaction ATransaction)
@@ -1450,10 +1432,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 else if (KeyWord == "INTEREST")
                 {
                     ImportInterest(ATransaction);
-                }
-                else if (KeyWord == "VISION")
-                {
-                    ImportVision(ATransaction);
                 }
                 else if (KeyWord == "U-ABILITY")
                 {

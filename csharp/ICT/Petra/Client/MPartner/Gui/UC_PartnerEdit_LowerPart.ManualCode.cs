@@ -194,7 +194,21 @@ namespace Ict.Petra.Client.MPartner.Gui
                     ucoPartnerTabSet.HookupDataChange += new THookupDataChangeEventHandler(ucoPartnerTabSet_HookupDataChange);
                     ucoPartnerTabSet.HookupPartnerEditDataChange += new THookupPartnerEditDataChangeEventHandler(
                     ucoPartnerTabSet_HookupPartnerEditDataChange);
+                    ucoPartnerTabSet.Visible = true;
+                    ucoPersonnelTabSet.Visible = false;                    
                     break;
+
+                case TFrmPartnerEdit.TModuleSwitchEnum.msPersonnel:
+
+                    ucoPersonnelTabSet.PetraUtilsObject = FPetraUtilsObject;
+                    ucoPersonnelTabSet.PartnerEditUIConnector = FPartnerEditUIConnector;
+                    ucoPersonnelTabSet.InitiallySelectedTabPage = FInitiallySelectedTabPage;
+                    ucoPersonnelTabSet.MainDS = FMainDS;
+                    ucoPersonnelTabSet.SpecialInitUserControl();
+                    ucoPersonnelTabSet.Visible = true;
+                    ucoPartnerTabSet.Visible = false;
+                    
+                    break;                    
             }
 
             // TODO Other TabSets (Personnel Data, Finance Data)
@@ -228,8 +242,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void GetDataFromControls()
         {
             ucoPartnerTabSet.GetDataFromControls();
-
-            // TODO Other TabSets (Personnel Data, Finance Data)
+	    ucoPersonnelTabSet.GetDataFromControls();
+			
+            // TODO Other TabSets (Finance Data)
         }
 
         /// <summary>
@@ -321,6 +336,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        public void RefreshPersonnelDataAfterMerge()
+        {
+	    ucoPersonnelTabSet.RefreshPersonnelDataAfterMerge();
+        }
+        
         #endregion
     }
 }

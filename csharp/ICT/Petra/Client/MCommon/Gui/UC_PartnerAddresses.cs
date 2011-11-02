@@ -478,7 +478,6 @@ namespace Ict.Petra.Client.MCommon.Gui
         /// <summary>
         /// Sets up the screen logic, retrieves data, databinds the Grid and the Detail
         /// UserControl.
-        ///
         /// </summary>
         /// <returns>void</returns>
         public void InitialiseUserControl()
