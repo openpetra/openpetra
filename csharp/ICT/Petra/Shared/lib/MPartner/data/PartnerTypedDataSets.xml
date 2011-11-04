@@ -8,91 +8,91 @@
   <ImportUnit name="Ict.Petra.Shared.MCommon.Data"/>
   
     <DataSet name="PartnerEditTDS">
-        <Table sqltable="p_partner"/>
-        <Table sqltable="p_partner_type"/>
-        <Table sqltable="p_subscription"/>     
-        <Table sqltable="p_location"/>
-        <Table sqltable="p_partner_location">
+      <Table sqltable="p_partner"/>
+      <Table sqltable="p_partner_type"/>
+      <Table sqltable="p_subscription"/>     
+      <Table sqltable="p_location"/>
+      <Table sqltable="p_partner_location">
           <CustomField name="BestAddress" type="bool"/>  
           <CustomField name="Icon" type="Int32"/>
-        </Table>
-        <Table sqltable="p_family">
+      </Table>
+      <Table sqltable="p_family">
           <Field sqltable="p_unit" sqlfield="p_unit_name_c"/> 
-        </Table>
-        <Table sqltable="p_person">
+      </Table>
+      <Table sqltable="p_person">
           <Field sqltable="p_unit" sqlfield="p_unit_name_c"/>
-        </Table>
-        <Table sqltable="p_unit"/>
-        <Table sqltable="um_unit_structure"/>
-        <Table sqltable="p_organisation"/>
-        <Table sqltable="p_church"/>
-        <Table sqltable="p_bank"/>
-        <Table sqltable="p_banking_details"/>
-        <Table sqltable="p_partner_banking_details"/>
-        <Table sqltable="p_venue"/>
-        <Table sqltable="p_foundation"/>
-        <Table sqltable="p_foundation_deadline"/>
-        <Table sqltable="p_foundation_proposal"/>
-        <Table sqltable="p_foundation_proposal_detail"/>  
-        <Table sqltable="p_partner_interest"/>
-        <Table sqltable="p_interest"/>                              <!-- will not be filled on the server, but using the cached table. needed for the relation PartnerInterestCategory, which is needed for the grid for partner interests -->
-        <Table sqltable="p_partner_reminder"/>                      <!-- not in use yet! -->
-        <Table sqltable="p_partner_relationship"/>                  <!-- not in use yet! -->
-        <Table sqltable="p_partner_contact"/>                       <!-- not in use yet! -->
-        <Table sqltable="p_data_label_value_application"/>
-        <Table sqltable="p_data_label_value_partner"/>
-        <CustomTable name="MiscellaneousData">
-            <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>
-            <Field name="SelectedSiteKey" sqltable="p_partner_location" sqlfield="p_site_key_n"/>
-            <Field name="SelectedLocationKey" sqltable="p_partner_location" sqlfield="p_location_key_i"/>
-            <CustomField name="LastGiftDate" type="DateTime"/>
-            <CustomField name="LastGiftInfo" type="string"/>
-            <CustomField name="LastContactDate" type="DateTime"/>     
-            <CustomField name="ItemsCountAddresses" type="Int32"/>
-            <CustomField name="ItemsCountAddressesActive" type="Int32"/>
-            <CustomField name="ItemsCountSubscriptions" type="Int32"/>
-            <CustomField name="ItemsCountSubscriptionsActive" type="Int32"/>          
-            <CustomField name="ItemsCountPartnerTypes" type="Int32"/>
-            <CustomField name="ItemsCountFamilyMembers" type="Int32"/>
-            <CustomField name="ItemsCountInterests" type="Int32"/>
-            <CustomField name="ItemsCountReminders" type="Int32"/>            <!-- not in use yet! -->
-            <CustomField name="ItemsCountRelationships" type="Int32"/>        <!-- not in use yet! -->
-            <CustomField name="ItemsCountContacts" type="Int32"/>         <!-- not in use yet! -->            
-            <CustomField name="OfficeSpecificDataLabelsAvailable" type="bool"/>
-            <CustomField name="FoundationOwner1Key" type="Int64"/>
-            <CustomField name="FoundationOwner2Key" type="Int64"/>
-            <CustomField name="HasEXWORKERPartnerType" type="bool"/>
-            <PrimaryKey thisFields="PartnerKey"/>
-        </CustomTable>
-        <CustomTable name="FamilyMembers">
-            <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>
-            <Field sqltable="p_partner" sqlfield="p_partner_short_name_c"/>
-            <Field sqltable="p_person" sqlfield="p_family_id_i"/>
-            <Field sqltable="p_person" sqlfield="p_gender_c"/>
-            <Field sqltable="p_person" sqlfield="p_date_of_birth_d"/>
-            <CustomField name="TypeCodeModify" type="bool"/>             
-            <CustomField name="TypeCodePresent" type="bool"/>              
-            <CustomField name="OtherTypeCodes" type="string"/>
-            <PrimaryKey thisFields="PartnerKey"/>
-        </CustomTable>
-        <CustomTable name="FamilyMembersInfoForStatusChange">
-            <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>
-        </CustomTable>        
-        <CustomTable name="PartnerTypeChangeFamilyMembersPromotion">
-            <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>
-            <CustomField name="TypeCode" type="string"/>
-            <CustomField name="AddTypeCode" type="bool"/>              
-            <CustomField name="RemoveTypeCode" type="bool"/>
-            <PrimaryKey thisFields="PartnerKey,TypeCode,AddTypeCode"/>
-        </CustomTable>
-        <CustomRelation name="Address" 
-            parentTable="PPartnerLocation" parentFields="SiteKey,LocationKey"
-            childTable="PLocation" childFields="SiteKey,LocationKey"
-            createConstraints="false"/>         
-        <CustomRelation name="PartnerInterestCategory"
-                childTable="PPartnerInterest" childFields="Interest"
-                parentTable="PInterest" parentFields="Interest"
-                createConstraints="false"/>
+      </Table>
+      <Table sqltable="p_unit"/>
+      <Table sqltable="um_unit_structure"/>
+      <Table sqltable="p_organisation"/>
+      <Table sqltable="p_church"/>
+      <Table sqltable="p_bank"/>
+      <Table sqltable="p_banking_details"/>
+      <Table sqltable="p_partner_banking_details"/>
+      <Table sqltable="p_venue"/>
+      <Table sqltable="p_foundation"/>
+      <Table sqltable="p_foundation_deadline"/>
+      <Table sqltable="p_foundation_proposal"/>
+      <Table sqltable="p_foundation_proposal_detail"/>  
+      <Table sqltable="p_partner_interest"/>
+      <Table sqltable="p_interest"/>                              <!-- will not be filled on the server, but using the cached table. needed for the relation PartnerInterestCategory, which is needed for the grid for partner interests -->
+      <Table sqltable="p_partner_reminder"/>                      <!-- not in use yet! -->
+      <Table sqltable="p_partner_relationship"/>                  <!-- not in use yet! -->
+      <Table sqltable="p_partner_contact"/>                       <!-- not in use yet! -->
+      <Table sqltable="p_data_label_value_application"/>
+      <Table sqltable="p_data_label_value_partner"/>
+      <CustomTable name="MiscellaneousData">
+          <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>
+          <Field name="SelectedSiteKey" sqltable="p_partner_location" sqlfield="p_site_key_n"/>
+          <Field name="SelectedLocationKey" sqltable="p_partner_location" sqlfield="p_location_key_i"/>
+          <CustomField name="LastGiftDate" type="DateTime"/>
+          <CustomField name="LastGiftInfo" type="string"/>
+          <CustomField name="LastContactDate" type="DateTime"/>     
+          <CustomField name="ItemsCountAddresses" type="Int32"/>
+          <CustomField name="ItemsCountAddressesActive" type="Int32"/>
+          <CustomField name="ItemsCountSubscriptions" type="Int32"/>
+          <CustomField name="ItemsCountSubscriptionsActive" type="Int32"/>          
+          <CustomField name="ItemsCountPartnerTypes" type="Int32"/>
+          <CustomField name="ItemsCountFamilyMembers" type="Int32"/>
+          <CustomField name="ItemsCountInterests" type="Int32"/>
+          <CustomField name="ItemsCountReminders" type="Int32"/>            <!-- not in use yet! -->
+          <CustomField name="ItemsCountRelationships" type="Int32"/>        <!-- not in use yet! -->
+          <CustomField name="ItemsCountContacts" type="Int32"/>         <!-- not in use yet! -->            
+          <CustomField name="OfficeSpecificDataLabelsAvailable" type="bool"/>
+          <CustomField name="FoundationOwner1Key" type="Int64"/>
+          <CustomField name="FoundationOwner2Key" type="Int64"/>
+          <CustomField name="HasEXWORKERPartnerType" type="bool"/>
+          <PrimaryKey thisFields="PartnerKey"/>
+      </CustomTable>
+      <CustomTable name="FamilyMembers">
+          <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>
+          <Field sqltable="p_partner" sqlfield="p_partner_short_name_c"/>
+          <Field sqltable="p_person" sqlfield="p_family_id_i"/>
+          <Field sqltable="p_person" sqlfield="p_gender_c"/>
+          <Field sqltable="p_person" sqlfield="p_date_of_birth_d"/>
+          <CustomField name="TypeCodeModify" type="bool"/>             
+          <CustomField name="TypeCodePresent" type="bool"/>              
+          <CustomField name="OtherTypeCodes" type="string"/>
+          <PrimaryKey thisFields="PartnerKey"/>
+      </CustomTable>
+      <CustomTable name="FamilyMembersInfoForStatusChange">
+          <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>
+      </CustomTable>        
+      <CustomTable name="PartnerTypeChangeFamilyMembersPromotion">
+          <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>
+          <CustomField name="TypeCode" type="string"/>
+          <CustomField name="AddTypeCode" type="bool"/>              
+          <CustomField name="RemoveTypeCode" type="bool"/>
+          <PrimaryKey thisFields="PartnerKey,TypeCode,AddTypeCode"/>
+      </CustomTable>
+      <CustomRelation name="Address" 
+          parentTable="PPartnerLocation" parentFields="SiteKey,LocationKey"
+          childTable="PLocation" childFields="SiteKey,LocationKey"
+          createConstraints="false"/>         
+      <CustomRelation name="PartnerInterestCategory"
+              childTable="PPartnerInterest" childFields="Interest"
+              parentTable="PInterest" parentFields="Interest"
+              createConstraints="false"/>
     </DataSet>
 
     <DataSet name="PartnerAddressAggregateTDS">
@@ -242,7 +242,12 @@
             <Field sqltable="p_partner" sqlfield="p_status_code_c"/>
             <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>
             <Field sqltable="p_partner" sqlfield="p_previous_name_c"/>
-            <Field sqltable="p_partner" sqlfield="p_acquisition_code_c"/>
+          <Field sqltable="p_partner" sqlfield="p_acquisition_code_c"/>
+
+          <Field sqltable="p_partner" sqlfield="s_created_by_c"/>
+          <Field sqltable="p_partner" sqlfield="s_date_created_d"/>
+          <Field sqltable="p_partner" sqlfield="s_modification_id_c"/>
+          
             <Field sqltable="p_person" sqlfield="p_first_name_c"/>
             <Field sqltable="p_person" sqlfield="p_family_name_c"/>
             <Field sqltable="p_person" sqlfield="p_family_key_n"/>
@@ -302,69 +307,83 @@
     </DataSet>
 
     <DataSet name="PartnerImportExportTDS">
-        <Table sqltable="p_acquisition"/>
-        <Table sqltable="p_occupation"/>
+      <Table sqltable="p_acquisition"/>
+      <Table sqltable="p_occupation"/>
+      <Table sqltable="p_language"/>
+      <Table sqltable="p_addressee_type"/>
 
-        <Table sqltable="p_partner"/>
-        <Table sqltable="p_location_type"/>
-        <Table sqltable="p_location"/>
-        <Table sqltable="p_partner_location"/>
+      <Table sqltable="p_partner"/>
+      <Table sqltable="p_location_type"/>
+      <Table sqltable="p_location"/>
+      <Table sqltable="p_partner_location"/>
 
-        <Table sqltable="p_unit"/>
-        <Table sqltable="p_family"/>
-        <Table sqltable="p_person"/>
-        <Table sqltable="p_organisation"/>
-        <Table sqltable="p_church"/>
-        <Table sqltable="p_bank"/>
-        <Table sqltable="p_venue"/>
+      <Table sqltable="u_unit_type"/>
+      <Table sqltable="p_unit"/>
+      <Table sqltable="pt_marital_status"/>
+      <Table sqltable="p_family"/>
+      <Table sqltable="p_person"/>
+      <Table sqltable="p_business"/>
+      <Table sqltable="p_organisation"/>
+      <Table sqltable="p_denomination"/>
+      <Table sqltable="p_church"/>
+      <Table sqltable="p_bank"/>
+      <Table sqltable="p_venue"/>
 
-        <Table sqltable="p_partner_comment"/>
-        <Table sqltable="p_type"/>
-        <Table sqltable="p_partner_type"/>
-        <Table sqltable="p_interest"/>
-        <Table sqltable="p_partner_interest"/>
+      <Table sqltable="p_publication"/>
+      <Table sqltable="p_reason_subscription_given"/>
+      <Table sqltable="p_reason_subscription_cancelled"/>
+      <Table sqltable="p_subscription"/>
+      <Table sqltable="p_partner_comment"/>
+      <Table sqltable="p_type"/>
+      <Table sqltable="p_partner_type"/>
+      <Table sqltable="p_interest_category"/>
+      <Table sqltable="p_interest"/>
+      <Table sqltable="p_partner_interest">
+        <CustomField name="Category" type="string"/>
+      </Table>
 
-        <Table sqltable="p_publication"/>
-        <Table sqltable="p_subscription"/>
+      <Table sqltable="pm_personal_data"/>
+      <Table sqltable="pt_passport_type"/>
+      <Table sqltable="pm_passport_details"/>
+      <Table sqltable="pm_document">
+        <CustomField name="DocCategory" type="string"/>
+      </Table>
+      <Table sqltable="pm_document_type"/>
+      <Table sqltable="pm_document_category"/>
+      <Table sqltable="pt_qualification_area"/>
+      <Table sqltable="pt_qualification_level"/>
+      <Table sqltable="pm_person_qualification"/>
+      <Table sqltable="pm_special_need"/>
+      <Table sqltable="pm_past_experience"/>
+      <Table sqltable="pm_person_language"/>
+      <Table sqltable="pt_ability_area"/>
+      <Table sqltable="pt_vision_area"/>
+      <Table sqltable="pt_vision_level"/>
+      <Table sqltable="pm_person_ability"/>
+      <Table sqltable="pm_person_vision"/>
+      <Table sqltable="pm_commitment_status"/>
+      <Table sqltable="pm_staff_data"/>
+      <Table sqltable="pm_person_evaluation"/>
+      <Table sqltable="pt_arrival_point"/>
+      <Table sqltable="pt_travel_type"/>
+      <Table sqltable="pt_applicant_status"/>
+      <Table sqltable="pt_application_type"/>
+      <Table sqltable="pt_contact"/>
+      <Table sqltable="pm_general_application"/>
+      <Table sqltable="pt_congress_code"/>
+      <Table sqltable="pt_position"/>
+      <Table sqltable="pt_special_applicant"/>
+      <Table sqltable="pt_leadership_rating"/>
+      <Table sqltable="pt_party_type"/>
+      <Table sqltable="pm_short_term_application"/>
+      <Table sqltable="pm_year_program_application"/>
+      <Table sqltable="pt_app_form_types"/>
+      <Table sqltable="pm_application_forms"/>
 
-        <Table sqltable="pm_personal_data"/>
-        <Table sqltable="pm_passport_details"/>
-        <Table sqltable="pm_document"/>
-        <Table sqltable="pm_document_type"/>
-        <Table sqltable="pm_document_category"/>
-        <Table sqltable="pt_qualification_area"/>
-        <Table sqltable="pm_person_qualification"/>
-        <Table sqltable="pm_special_need"/>
-        <Table sqltable="pm_past_experience"/>
-        <Table sqltable="pm_person_language"/>
-        <Table sqltable="pm_person_ability"/>
-        <Table sqltable="pm_person_vision"/>
-        <Table sqltable="pm_commitment_status"/>
-        <Table sqltable="pm_staff_data"/>
-        <Table sqltable="pm_job_assignment"/>
-        <Table sqltable="pm_person_evaluation"/>
-        <Table sqltable="pt_application_type"/>
-        <Table sqltable="pt_arrival_point"/>
-        <Table sqltable="pm_general_application"/>
-        <Table sqltable="pt_congress_code"/>
-        <Table sqltable="pm_short_term_application"/>
-        <Table sqltable="pm_year_program_application"/>
-        <Table sqltable="pt_app_form_types"/>
-        <Table sqltable="pm_application_forms"/>
+      <Table sqltable="um_unit_structure"/>
         
-        <Table sqltable="um_unit_structure"/>
-        <Table sqltable="um_unit_ability"/>
-        <Table sqltable="um_unit_language"/>
-        <Table sqltable="um_unit_vision"/>
-        <Table sqltable="um_unit_cost"/>
-        <Table sqltable="um_job"/>
-        <Table sqltable="um_job_requirement"/>
-        <Table sqltable="um_job_language"/>
-        <Table sqltable="um_job_qualification"/>
-        <Table sqltable="um_job_vision"/>
-        
-        <Table sqltable="pc_building"/>
-        <Table sqltable="pc_room"/>
+      <Table sqltable="pc_building"/>
+      <Table sqltable="pc_room"/>
     </DataSet>    
 
 </PetraDataSets>

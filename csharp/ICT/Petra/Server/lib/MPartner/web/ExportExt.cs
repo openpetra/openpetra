@@ -593,6 +593,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 WriteLine();
             }
 
+/*
+ * We don't do Job Assignments anymore.
+ * 
             foreach (PmJobAssignmentRow JobAssignmentRow in AMainDS.PmJobAssignment.Rows)
             {
                 Write("JOB");
@@ -611,7 +614,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 Write(JobAssignmentRow.IsLeavingCodeUpdatedDateNull()? "?" : JobAssignmentRow.LeavingCodeUpdatedDate.Value.ToString(DATEFORMAT));
                 WriteLine();
             }
-
+*/
             foreach (PmPersonEvaluationRow Row in AMainDS.PmPersonEvaluation.Rows)
             {
                 Write("PROGREP");
@@ -641,6 +644,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 WriteLine();
             }
 
+/*
+ *  There's a clutch of tables here we're not exporting anymore:
+ *  
             foreach (UmUnitAbilityRow UnitAbilityRow in AMainDS.UmUnitAbility.Rows)
             {
                 Write("U-ABILITY");
@@ -675,11 +681,10 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             AMainDS.UmUnitCost.DefaultView.Sort = UmUnitCostTable.GetValidFromDateDBName() + " desc";
             // TODO: A filter could be applied here, to get only current and future costs.
-            /*
-             AMainDS.UmUnitCost.DefaultView.RowFilter = String.Format ("{0} >= #{1}#", 
-                                                                     UmUnitCostTable.GetValidFromDateDBName(),
-                                                                     DateTime.Today);
-            */
+
+            // AMainDS.UmUnitCost.DefaultView.RowFilter = String.Format ("{0} >= #{1}#", 
+            //                                                         UmUnitCostTable.GetValidFromDateDBName(),
+            //                                                         DateTime.Today);
            
             foreach (DataRowView v in AMainDS.UmUnitCost.DefaultView)
             {
@@ -707,11 +712,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
 
             AMainDS.UmJob.DefaultView.Sort = UmJobTable.GetToDateDBName() + " desc";
-            /*
-            AMainDS.UmJob.DefaultView.RowFilter = String.Format ("{0} >= #{1}#", 
-                                                                     UmJobTable.GetToDateDBName(),
-                                                                     DateTime.Today);
-            */
+           // AMainDS.UmJob.DefaultView.RowFilter = String.Format ("{0} >= #{1}#", 
+           //                                                          UmJobTable.GetToDateDBName(),
+           //                                                          DateTime.Today);
 
             foreach (DataRowView v in AMainDS.UmJob.DefaultView)
             {
@@ -809,6 +812,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     }
                 }
             }
+*/
         }
 
         private void WriteVenueData(PartnerImportExportTDS AMainDS, StringCollection ASpecificBuildingInfo)

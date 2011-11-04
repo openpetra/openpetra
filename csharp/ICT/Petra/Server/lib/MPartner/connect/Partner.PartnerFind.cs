@@ -232,6 +232,10 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
             sb.AppendFormat("{0},{1}", "PUB.p_partner.p_acquisition_code_c", Environment.NewLine);
 
+            sb.AppendFormat("{0},{1}", "PUB.p_partner.s_date_created_d", Environment.NewLine);
+            sb.AppendFormat("{0},{1}", "PUB.p_partner.s_created_by_c", Environment.NewLine);
+            sb.AppendFormat("{0},{1}", "PUB.p_partner.s_modification_id_c", Environment.NewLine);
+
             // short
             sb.AppendFormat("{0},{1}", "PUB.p_location.p_location_key_i", Environment.NewLine);
 

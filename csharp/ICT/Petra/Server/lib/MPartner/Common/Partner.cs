@@ -72,7 +72,7 @@ namespace Ict.Petra.Server.MPartner.Partner
             Int64 APersonPartnerKey,
             Int64 AFromFamilyPartnerKey,
             Boolean AListAvailableIDs,
-            out Int32 APreferredFamilyID,
+            Int32 APreferredFamilyID,
             out Int32 ABestAvailableFamilyID,
             out string AProblemMessage,
             out ArrayList AAvailableFamilyIDs,
@@ -98,7 +98,6 @@ namespace Ict.Petra.Server.MPartner.Partner
             ReturnValue = TFamilyIDSuccessEnum.fiSuccess;
 
             // initialize out Arguments
-            APreferredFamilyID = 0;
             ABestAvailableFamilyID = 0;
             AProblemMessage = "";
             AAvailableFamilyIDs = new ArrayList();
@@ -415,7 +414,7 @@ namespace Ict.Petra.Server.MPartner.Partner
                 ReturnValue = GetAvailableFamilyID(AFamilyPartnerKey,
                     0,
                     0,
-                    out PreferredFamilyID,
+                    PreferredFamilyID,
                     out ANewFamilyID,
                     out AProblemMessage,
                     ReadTransaction);
@@ -548,7 +547,7 @@ namespace Ict.Petra.Server.MPartner.Partner
         public TFamilyIDSuccessEnum GetAvailableFamilyID(Int64 AFamilyPartnerKey,
             Int64 APersonPartnerKey,
             Int64 AFromFamilyPartnerKey,
-            out Int32 APreferredFamilyID,
+            Int32 APreferredFamilyID,
             out Int32 ABestAvailableFamilyID,
             out string AProblemMessage,
             TDBTransaction AReadTransaction)
@@ -559,7 +558,7 @@ namespace Ict.Petra.Server.MPartner.Partner
                 APersonPartnerKey,
                 AFromFamilyPartnerKey,
                 false,
-                out APreferredFamilyID,
+                APreferredFamilyID,
                 out ABestAvailableFamilyID,
                 out AProblemMessage,
                 out TempList,
@@ -595,7 +594,7 @@ namespace Ict.Petra.Server.MPartner.Partner
         public TFamilyIDSuccessEnum GetAvailableFamilyID(Int64 AFamilyPartnerKey,
             Int64 APersonPartnerKey,
             Int64 AFromFamilyPartnerKey,
-            out Int32 APreferredFamilyID,
+            Int32 APreferredFamilyID,
             out Int32 ABestAvailableFamilyID,
             out string AProblemMessage,
             out ArrayList AAvailableFamilyIDs,
@@ -605,7 +604,7 @@ namespace Ict.Petra.Server.MPartner.Partner
                 APersonPartnerKey,
                 AFromFamilyPartnerKey,
                 true,
-                out APreferredFamilyID,
+                APreferredFamilyID,
                 out ABestAvailableFamilyID,
                 out AProblemMessage,
                 out AAvailableFamilyIDs,

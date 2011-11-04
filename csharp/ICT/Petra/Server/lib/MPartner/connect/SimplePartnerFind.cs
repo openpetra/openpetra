@@ -46,7 +46,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
     public class TSimplePartnerFindWebConnector
     {
         /// <summary>
-        /// return all partners that match the given criteria. this is used for the partner import screen
+        /// Return all partners that match the given criteria. This is used for the partner import screen.
         /// </summary>
         [RequireModulePermission("PTNRUSER")]
         public static PartnerFindTDS FindPartners(string AFirstName, string AFamilyNameOrOrganisation, string ACity, StringCollection APartnerClasses)
@@ -72,7 +72,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 CriteriaRow.PartnerClass = "*";
             }
 
-            UIConnector.PerformSearch(CriteriaData, false);
+            UIConnector.PerformSearch(CriteriaData, true);
 
             Int32 TotalRecords;
             short TotalPages;

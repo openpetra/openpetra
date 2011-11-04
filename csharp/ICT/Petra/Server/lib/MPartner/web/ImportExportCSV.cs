@@ -32,6 +32,11 @@ using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MSysMan;
 using Ict.Petra.Server.MSysMan.Maintenance;
+using Ict.Petra.Shared.MPersonnel.Personnel.Data;
+using Ict.Common.Verification;
+using Ict.Common.DB;
+using Ict.Petra.Server.App.ClientDomain;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
 
 namespace Ict.Petra.Server.MPartner.ImportExport
 {
@@ -41,32 +46,79 @@ namespace Ict.Petra.Server.MPartner.ImportExport
     public class TPartnerImportCSV
     {
         private static Int32 FLocationKey = -1;
+        private static TVerificationResultCollection ResultsCol;
+        private static String ResultsContext;
+
+        private static void AddVerificationResult(String AResultText, TResultSeverity Severity)
+        {
+            if (Severity != TResultSeverity.Resv_Status)
+            {
+                TLogging.Log(AResultText);
+            }
+            ResultsCol.Add(new TVerificationResult(ResultsContext, AResultText, Severity));
+        }
+
+        private static void AddVerificationResult(String AResultText)
+        {
+            AddVerificationResult(AResultText, TResultSeverity.Resv_Noncritical);
+        }
+
+        
 
         /// <summary>
         /// Import data from a CSV file
         /// </summary>
-        /// <param name="AChildNode"></param>
+        /// <param name="ANode"></param>
+        /// <param name="ReferenceResults"></param>
         /// <returns></returns>
-        public static PartnerImportExportTDS ImportData(XmlNode AChildNode)
+        public static PartnerImportExportTDS ImportData(XmlNode ANode, ref TVerificationResultCollection ReferenceResults)
         {
             PartnerImportExportTDS ResultDS = new PartnerImportExportTDS();
 
             TPartnerImportCSV.FLocationKey = -1;
+            ResultsCol = ReferenceResults;
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
 
-            while (AChildNode != null)
+            while (ANode != null)
             {
-                CreateNewFamily(AChildNode, ref ResultDS);
+                ResultsContext = "CSV Import";
+                String PartnerClass = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PARTNERCLASS).ToUpper();
+                Int64 PartnerKey = 0;
+                int LocationKey = 0;
 
-                AChildNode = AChildNode.NextSibling;
+                if (PartnerClass.Length == 0)
+                {
+                    PartnerClass = MPartnerConstants.PARTNERCLASS_FAMILY;
+                }
+
+                if ((PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY) || (PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON))
+                {
+                    ResultsContext = "CSV Import Family";
+                    PartnerKey = CreateNewFamily(ANode, out LocationKey, ref ResultDS);
+                    CreateSpecialTypes(ANode, PartnerKey, "SpecialTypeFamily_", ref ResultDS);
+                }
+
+                if (PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
+                {
+                    ResultsContext = "CSV Import person";
+                    Int64 PersonKey = CreateNewPerson(PartnerKey, LocationKey, ANode, ref ResultDS);
+                    CreateShortTermApplication(ANode, PersonKey, ref ResultDS, Transaction);
+                    CreatePassport(ANode, PersonKey, ref ResultDS);
+                    CreateSubscriptions(ANode, PersonKey, ref ResultDS);
+                    CreateSpecialTypes(ANode, PersonKey, ref ResultDS);
+               }
+
+                ANode = ANode.NextSibling;
             }
+            DBAccess.GDBAccessObj.CommitTransaction();
 
             return ResultDS;
         }
 
         /// <summary>
-        /// create a new family record with the address and return the data
+        /// Create new partner, family, location and PartnerLocation records in MainDS
         /// </summary>
-        private static void CreateNewFamily(XmlNode ACurrentPartnerNode, ref PartnerImportExportTDS AMainDS)
+        private static Int64 CreateNewFamily(XmlNode ANode, out int ALocationKey, ref PartnerImportExportTDS AMainDS)
         {
             PPartnerRow newPartner = AMainDS.PPartner.NewRowTyped();
 
@@ -75,25 +127,20 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             newPartner.PartnerKey = (AMainDS.PPartner.Rows.Count + 1) * -1;
             newPartner.PartnerClass = MPartnerConstants.PARTNERCLASS_FAMILY;
             newPartner.StatusCode = MPartnerConstants.PARTNERSTATUS_ACTIVE;
+            newPartner.Comment = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_NOTES);
 
-            if (TXMLParser.HasAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_AQUISITION))
-            {
-                newPartner.AcquisitionCode = TXMLParser.GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_AQUISITION);
-            }
-            else
-            {
-                newPartner.AcquisitionCode = MPartnerConstants.PARTNERIMPORT_AQUISITION_DEFAULT;
-            }
+            String AcquisitionCode = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_AQUISITION);
+            newPartner.AcquisitionCode = (AcquisitionCode.Length > 0) ? AcquisitionCode : MPartnerConstants.PARTNERIMPORT_AQUISITION_DEFAULT;
 
             newPartner.AddresseeTypeCode = MPartnerConstants.ADDRESSEETYPE_DEFAULT;
 
-            if (TXMLParser.HasAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_ADDRESSEE_TYPE))
+            if (TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_ADDRESSEE_TYPE))
             {
-                newPartner.AddresseeTypeCode = TXMLParser.GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_ADDRESSEE_TYPE);
+                newPartner.AddresseeTypeCode = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_ADDRESSEE_TYPE);
             }
             else
             {
-                string gender = GetGenderCode(ACurrentPartnerNode);
+                string gender = GetGenderCode(ANode);
 
                 if (gender == MPartnerConstants.GENDER_MALE)
                 {
@@ -105,40 +152,54 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 }
             }
 
-            if (TXMLParser.HasAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_LANGUAGE))
+            if (TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_LANGUAGE))
             {
-                newPartner.LanguageCode = TXMLParser.GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_LANGUAGE);
+                newPartner.LanguageCode = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_LANGUAGE);
             }
             else if (TUserDefaults.HasDefault(MSysManConstants.PARTNER_LANGUAGECODE))
             {
                 newPartner.LanguageCode = TUserDefaults.GetStringDefault(MSysManConstants.PARTNER_LANGUAGECODE);
             }
+            string[] giftReceiptingDefaults = TSystemDefaults.GetSystemDefault("GiftReceiptingDefaults", ",no").Split(new char[] { ',' });
+            newPartner.ReceiptLetterFrequency = giftReceiptingDefaults[0];
+            newPartner.ReceiptEachGift = giftReceiptingDefaults[1] == "YES" || giftReceiptingDefaults[1] == "TRUE";
+
 
             PFamilyRow newFamily = AMainDS.PFamily.NewRowTyped();
             AMainDS.PFamily.Rows.Add(newFamily);
 
             newFamily.PartnerKey = newPartner.PartnerKey;
-            newFamily.FirstName = TXMLParser.GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_FIRSTNAME);
-            newFamily.FamilyName = TXMLParser.GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_FAMILYNAME);
-            newFamily.Title = TXMLParser.GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_TITLE);
+            newFamily.FirstName = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_FIRSTNAME);
+            newFamily.FamilyName = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_FAMILYNAME);
+            newFamily.MaritalStatus = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_MARITALSTATUS);
+            newFamily.Title = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_TITLE);
+            newFamily.MaritalStatus = GetMaritalStatusCode(ANode);
+            String OMerField = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_OMERFIELD);
+            if (OMerField.Length > 0)
+            {
+                try
+                {
+                    newFamily.FieldKey = long.Parse(OMerField);
+                }
+                catch (System.FormatException)
+                {
+                    AddVerificationResult("Bad number format in OMerField: " + OMerField);
+                }
+            }
+
+
+
             newPartner.PartnerShortName = Calculations.DeterminePartnerShortName(newFamily.FamilyName, newFamily.Title, newFamily.FirstName);
-
-            string[] giftReceiptingDefaults = TSystemDefaults.GetSystemDefault("GiftReceiptingDefaults", ",no").Split(new char[] { ',' });
-            newPartner.ReceiptLetterFrequency = giftReceiptingDefaults[0];
-            newPartner.ReceiptEachGift = giftReceiptingDefaults[1] == "YES" || giftReceiptingDefaults[1] == "TRUE";
-
-            newFamily.MaritalStatus = GetMaritalStatusCode(ACurrentPartnerNode);
-
             PLocationRow newLocation = AMainDS.PLocation.NewRowTyped(true);
             AMainDS.PLocation.Rows.Add(newLocation);
             newLocation.LocationKey = TPartnerImportCSV.FLocationKey;
-            newLocation.Locality = TXMLParser.GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_LOCALITY);
-            newLocation.StreetName = TXMLParser.GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_STREETNAME);
-            newLocation.Address3 = TXMLParser.GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_ADDRESS);
-            newLocation.PostalCode = TXMLParser.GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_POSTALCODE);
-            newLocation.City = TXMLParser.GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_CITY);
-            newLocation.County = TXMLParser.GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_COUNTY);
-            newLocation.CountryCode = TXMLParser.GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_COUNTRYCODE);
+            newLocation.Locality = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_LOCALITY);
+            newLocation.StreetName = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_STREETNAME);
+            newLocation.Address3 = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_ADDRESS);
+            newLocation.PostalCode = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_POSTALCODE);
+            newLocation.City = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CITY);
+            newLocation.County = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_COUNTY);
+            newLocation.CountryCode = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_COUNTRYCODE);
 
             PPartnerLocationRow partnerlocation = AMainDS.PPartnerLocation.NewRowTyped(true);
             partnerlocation.LocationKey = TPartnerImportCSV.FLocationKey;
@@ -147,27 +208,261 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             partnerlocation.DateEffective = DateTime.Now;
             partnerlocation.LocationType = MPartnerConstants.LOCATIONTYPE_HOME;
             partnerlocation.SendMail = true;
-            partnerlocation.EmailAddress = TXMLParser.GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_EMAIL);
-            partnerlocation.TelephoneNumber = TXMLParser.GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_PHONE);
-            partnerlocation.MobileNumber = TXMLParser.GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_MOBILEPHONE);
+            partnerlocation.EmailAddress = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_EMAIL);
+            partnerlocation.TelephoneNumber = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PHONE);
+            partnerlocation.MobileNumber = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_MOBILEPHONE);
             AMainDS.PPartnerLocation.Rows.Add(partnerlocation);
 
+            ALocationKey = TPartnerImportCSV.FLocationKey;
             TPartnerImportCSV.FLocationKey--;
+            return newPartner.PartnerKey;
+        }
 
-            // import special types
-            if (TXMLParser.GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_SPECIALTYPES).Length != 0)
+        /// <summary>
+        /// Create a Partner and a Person having this FamilyKey, living at this address.
+        /// </summary>
+        /// <param name="PartnerKey"></param>
+        /// <param name="AChildNode"></param>
+        /// <param name="ResultDS"></param>
+        private static Int64 CreateNewPerson(Int64 FamilyKey, int LocationKey, XmlNode ANode, ref PartnerImportExportTDS AMainDS)
+        {
+
+            AMainDS.PFamily.DefaultView.RowFilter = String.Format("{0}={1}", PFamilyTable.GetPartnerKeyDBName(), FamilyKey);
+            PFamilyRow FamilyRow = (PFamilyRow)AMainDS.PFamily.DefaultView[0].Row;
+
+            AMainDS.PPartner.DefaultView.RowFilter = String.Format("{0}={1}", PPartnerTable.GetPartnerKeyDBName(), FamilyKey);
+            PPartnerRow PartnerRow = (PPartnerRow)AMainDS.PPartner.DefaultView[0].Row;
+
+            PPartnerRow newPartner = AMainDS.PPartner.NewRowTyped();
+            AMainDS.PPartner.Rows.Add(newPartner);
+
+            newPartner.PartnerKey = (AMainDS.PPartner.Rows.Count + 1) * -1;
+            newPartner.PartnerClass = MPartnerConstants.PARTNERCLASS_PERSON;
+            newPartner.AddresseeTypeCode = PartnerRow.AddresseeTypeCode;
+            newPartner.PartnerShortName = PartnerRow.PartnerShortName;
+            newPartner.LanguageCode = PartnerRow.LanguageCode;
+            newPartner.Comment = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_NOTESPERSON);
+            newPartner.AcquisitionCode = PartnerRow.AcquisitionCode;
+            newPartner.StatusCode = MPartnerConstants.PARTNERSTATUS_ACTIVE;
+
+            PPersonRow newPerson = AMainDS.PPerson.NewRowTyped();
+            AMainDS.PPerson.Rows.Add(newPerson);
+
+            newPerson.PartnerKey = newPartner.PartnerKey;
+            newPerson.FamilyKey = FamilyKey;
+            // When this record is imported, newPerson.FamilyId must be unique for this family!
+            newPerson.FirstName = FamilyRow.FirstName;
+            newPerson.FamilyName = FamilyRow.FamilyName;
+            newPerson.Title = FamilyRow.Title;
+            newPerson.Gender = GetGenderCode(ANode);
+            newPerson.MaritalStatus = FamilyRow.MaritalStatus;
+            if (!FamilyRow.IsFieldKeyNull())
             {
-                string specialTypes = TXMLParser.GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_SPECIALTYPES);
+                newPerson.FieldKey = FamilyRow.FieldKey;
+            }
 
-                while (specialTypes.Length > 0)
+            PPartnerLocationRow newPartnerLocation = AMainDS.PPartnerLocation.NewRowTyped();
+            AMainDS.PPartnerLocation.Rows.Add(newPartnerLocation);
+
+            newPartnerLocation.LocationKey = LocationKey; // This person lives at the same address as the family.
+            newPartnerLocation.SiteKey = 0;
+            newPartnerLocation.PartnerKey = newPartner.PartnerKey;
+            newPartnerLocation.DateEffective = DateTime.Now;
+            newPartnerLocation.LocationType = MPartnerConstants.LOCATIONTYPE_HOME;
+            newPartnerLocation.SendMail = true;
+            newPartnerLocation.EmailAddress = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_EMAIL);
+            newPartnerLocation.TelephoneNumber = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PHONE);
+            newPartnerLocation.MobileNumber = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_MOBILEPHONE);
+            AddVerificationResult("Person Record Created.", TResultSeverity.Resv_Status);
+            return newPerson.PartnerKey;
+        }
+
+        private static void CreateSpecialTypes(XmlNode ANode, Int64 PartnerKey, String CSVKey, ref PartnerImportExportTDS AMainDS)
+        {
+            for (int Idx = 1; Idx < 6; Idx++)
+            {
+                String SpecialType = TXMLParser.GetAttribute(ANode, CSVKey + Idx.ToString());
+                if (SpecialType.Length > 0)
                 {
                     PPartnerTypeRow partnerType = AMainDS.PPartnerType.NewRowTyped(true);
-                    partnerType.PartnerKey = newPartner.PartnerKey;
-                    partnerType.TypeCode = StringHelper.GetNextCSV(ref specialTypes, ",").Trim().ToUpper();
+                    partnerType.PartnerKey = PartnerKey;
+                    partnerType.TypeCode = SpecialType;
                     AMainDS.PPartnerType.Rows.Add(partnerType);
                 }
             }
         }
+
+        private static void CreateSpecialTypes(XmlNode ANode, Int64 PartnerKey, ref PartnerImportExportTDS AMainDS)
+        {
+
+            // This previous code requires a format that doesn't conform to the documented standard:
+
+/*
+            if (TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_SPECIALTYPES).Length != 0)
+            {
+                string specialTypes = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_SPECIALTYPES);
+
+                while (specialTypes.Length > 0)
+                {
+                    PPartnerTypeRow partnerType = AMainDS.PPartnerType.NewRowTyped(true);
+                    partnerType.PartnerKey = PartnerKey;
+                    partnerType.TypeCode = StringHelper.GetNextCSV(ref specialTypes, ",").Trim().ToUpper();
+                    AMainDS.PPartnerType.Rows.Add(partnerType);
+                }
+            }
+ */
+            CreateSpecialTypes(ANode, PartnerKey, "SpecialType_", ref AMainDS);
+        }
+
+        private static void CreateShortTermApplication(XmlNode ANode, Int64 PartnerKey, ref PartnerImportExportTDS AMainDS, TDBTransaction ATransaction)
+        {
+            String strEventKey = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_EVENTKEY);
+            long EventKey = -1;
+
+            if (strEventKey.Length > 0)
+            {
+                try
+                {
+                    EventKey = long.Parse(strEventKey);
+                }
+                catch (System.FormatException)
+                {
+                    AddVerificationResult("Bad number format in EventKey: " + strEventKey);
+                }
+                if (!PUnitAccess.Exists(EventKey, ATransaction))
+                {
+                    AddVerificationResult("EventKey not known - application cannot be imported: " + EventKey);
+                    return;
+                }
+
+                PmGeneralApplicationRow GenAppRow = AMainDS.PmGeneralApplication.NewRowTyped();
+
+                GenAppRow.PartnerKey = PartnerKey;
+                GenAppRow.ApplicationKey = (int)DBAccess.GDBAccessObj.GetNextSequenceValue("seq_application", ATransaction);
+
+                GenAppRow.OldLink = "OldKey"; //OldLink is not supported and may be dropped, but it's currently "NOT NULL" in the database.
+                GenAppRow.RegistrationOffice = DomainManager.GSiteKey; // When this is imported, RegistrationOffice can't be null.
+
+                GenAppRow.GenAppDate = DateTime.Now;
+                GenAppRow.AppTypeName = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_APPTYPE);
+                GenAppRow.GenApplicationStatus = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_APPSTATUS);
+                GenAppRow.Comment = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_APPCOMMENTS);
+
+                PmShortTermApplicationRow ShortTermRow = AMainDS.PmShortTermApplication.NewRowTyped();
+                ShortTermRow.PartnerKey = PartnerKey;
+                ShortTermRow.ApplicationKey = GenAppRow.ApplicationKey;
+                ShortTermRow.RegistrationOffice = GenAppRow.RegistrationOffice; // When this is imported, RegistrationOffice can't be null.
+                ShortTermRow.StBasicOutreachId = "Unused field"; // This field is scheduled for deletion, but NOT NULL now.
+                ShortTermRow.StAppDate = DateTime.Now;
+                ShortTermRow.StApplicationType = GenAppRow.AppTypeName;
+                ShortTermRow.StConfirmedOption = EventKey;
+                String TimeString = "";
+
+                try
+                {
+                    TimeString = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_ARRIVALDATE);
+                    if (TimeString.Length > 0)
+                        ShortTermRow.Arrival = DateTime.Parse(TimeString);
+
+                    TimeString = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_DEPARTUREDATE);
+                    if (TimeString.Length > 0)
+                        ShortTermRow.Departure = DateTime.Parse(TimeString);
+                }
+                catch (System.FormatException)
+                {
+                    AddVerificationResult("Bad date format in Application: " + TimeString);
+                }
+
+                DateTime TempTime;
+
+                TimeString = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_ARRIVALTIME);
+                if (TimeString.Length > 0)
+                {
+                    try
+                    {
+                        TempTime = DateTime.Parse(TimeString);
+                        ShortTermRow.ArrivalHour = TempTime.Hour;
+                        ShortTermRow.ArrivalMinute = TempTime.Minute;
+                    }
+                    catch (System.FormatException)
+                    {
+                        AddVerificationResult("Bad time format in Application: " + TimeString);
+                    }
+                }
+
+                TimeString = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_DEPARTURETIME);
+                if (TimeString.Length > 0)
+                {
+                    try
+                    {
+                        TempTime = DateTime.Parse(TimeString);
+                        ShortTermRow.DepartureHour = TempTime.Hour;
+                        ShortTermRow.DepartureMinute = TempTime.Minute;
+                    }
+                    catch (System.FormatException)
+                    {
+                        AddVerificationResult("Bad time format in Application: " + TimeString);
+                    }
+                }
+                ShortTermRow.OutreachRole = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_EVENTROLE);
+                String ChargedField = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CHARGEDFIELD);
+                if (ChargedField.Length > 0)
+                {
+                    try
+                    {
+                        ShortTermRow.StFieldCharged = long.Parse(ChargedField);
+                    }
+                    catch
+                    {
+                        AddVerificationResult("Bad number format in ChargedField: " + ChargedField);
+                    }
+                }
+
+                AMainDS.PmGeneralApplication.Rows.Add(GenAppRow);
+                AMainDS.PmShortTermApplication.Rows.Add(ShortTermRow);
+                AddVerificationResult("Application Record Created.", TResultSeverity.Resv_Status);
+            }
+        }
+
+        private static void CreatePassport(XmlNode ANode, Int64 PartnerKey, ref PartnerImportExportTDS AMainDS)
+        {
+            string PassportNum = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTNUMBER);
+            if (PassportNum.Length > 0)
+            {
+                PmPassportDetailsRow NewRow = AMainDS.PmPassportDetails.NewRowTyped();
+                AMainDS.PmPassportDetails.Rows.Add(NewRow);
+                NewRow.PassportNumber = PassportNum;
+                NewRow.PassportDetailsType =  TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTTYPE);
+                NewRow.PlaceOfBirth = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTPLACEOFBIRTH);
+                NewRow.PassportNationalityCode = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTNATIONALITY);
+                NewRow.PlaceOfIssue = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTPLACEOFISSUE);
+                NewRow.CountryOfIssue = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTCOUNTRYOFISSUE);
+                NewRow.DateOfIssue = DateTime.Parse(TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTDATEOFISSUE));
+                NewRow.DateOfExpiration = DateTime.Parse(TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTDATEOFEXPIRATION));
+                AddVerificationResult("Passport Record Created.", TResultSeverity.Resv_Status);
+            }
+        }
+
+        private static void CreateSubscriptions(XmlNode ANode, Int64 PartnerKey, ref PartnerImportExportTDS AMainDS)
+        {
+            int SubsCount = 0;
+            foreach (XmlAttribute Attr in ANode.Attributes)
+            {
+                if ((Attr.Name.ToLower().IndexOf("subscribe_") == 0) && (Attr.Value.ToLower() == "yes"))
+                {
+                    PSubscriptionRow NewRow = AMainDS.PSubscription.NewRowTyped();
+                    NewRow.PartnerKey = PartnerKey;
+                    NewRow.PublicationCode = Attr.Name.Substring(10).ToUpper();
+                    AMainDS.PSubscription.Rows.Add(NewRow);
+                    SubsCount++;
+                }
+            }
+            if (SubsCount > 0)
+            {
+                AddVerificationResult("Subscriptions Created.", TResultSeverity.Resv_Status);
+            }
+        }
+
 
         /// <summary>
         /// returns the gender of the currently selected partner
@@ -204,8 +499,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
             else if (genderCode == MPartnerConstants.GENDER_FEMALE)
             {
-                // or should this be Ms?
-                return Catalog.GetString("Mrs");
+                return Catalog.GetString("Ms");
             }
 
             return "";

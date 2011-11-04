@@ -656,6 +656,11 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Partner.WebConnectors
     /// <summary>auto generated</summary>
     public interface IPartnerWebConnectorsNamespace : IInterface
     {
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerFindWebConnector)</summary>
+        PartnerFindTDS FindPartners(System.String AFirstName,
+                                    System.String AFamilyNameOrOrganisation,
+                                    System.String ACity,
+                                    StringCollection APartnerClasses);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TContactsWebConnector)</summary>
         System.Boolean AddContact(List<Int64> APartnerKeys,
                                   DateTime AContactDate,
@@ -684,11 +689,6 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Partner.WebConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerEditWebConnector)</summary>
         System.Boolean SavePartner(PartnerEditTDS AMainDS,
                                    out TVerificationResultCollection AVerificationResult);
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerFindWebConnector)</summary>
-        PartnerFindTDS FindPartners(System.String AFirstName,
-                                    System.String AFamilyNameOrOrganisation,
-                                    System.String ACity,
-                                    StringCollection APartnerClasses);
     }
 
 }
