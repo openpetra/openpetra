@@ -38,4 +38,3 @@ RootNode:
             Controls: [ucoDetails]
         ucoDetails: {Stretch=horizontally}
             Type: Ict.Petra.Client.MPartner.Gui.TUC_Subscription
-            

@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections;
 using System.Data;
 using System.Windows.Forms;
 using Ict.Common;
@@ -38,7 +39,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 {
     public partial class TUC_Subscriptions
     {
-
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
 
@@ -109,6 +109,20 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        private void RecalculateTabHeaderCounter ()
+        {
+            TRecalculateScreenPartsEventArgs RecalculateScreenPartsEventArgs;
+
+            /* Fire OnRecalculateScreenParts event to update the Tab Counters */
+            RecalculateScreenPartsEventArgs = new TRecalculateScreenPartsEventArgs();
+            RecalculateScreenPartsEventArgs.ScreenPart = TScreenPartEnum.spCounters;
+            OnRecalculateScreenParts(RecalculateScreenPartsEventArgs);
+        }
+        
+        /// <summary>
         /// Loads Partner Types Data from Petra Server into FMainDS.
         /// </summary>
         /// <returns>true if successful, otherwise false.</returns>
@@ -164,7 +178,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
 
             // Set up screen logic
-            //MultiTableDS = (PartnerEditTDS)FMainDS;
             PartnerEditUIConnector = FPartnerEditUIConnector;
             LoadDataOnDemand();
             
@@ -273,14 +286,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="e"></param>
         private void NewRow(System.Object sender, EventArgs e)
         {
-            TRecalculateScreenPartsEventArgs RecalculateScreenPartsEventArgs;
-
             CreateNewPSubscription();
-            
-            // Fire OnRecalculateScreenParts event: reset counter in tab header
-            RecalculateScreenPartsEventArgs = new TRecalculateScreenPartsEventArgs();
-            RecalculateScreenPartsEventArgs.ScreenPart = TScreenPartEnum.spCounters;
-            OnRecalculateScreenParts(RecalculateScreenPartsEventArgs);
+
+            // reset counter in tab header
+            RecalculateTabHeaderCounter();
         }
 
         /// <summary>
@@ -310,15 +319,103 @@ namespace Ict.Petra.Client.MPartner.Gui
 		/// <param name="e"></param>
         private void CancelAllSubscriptions(System.Object sender, EventArgs e)
         {
+            PerformCancelAllSubscriptions(DateTime.MinValue);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ACancelDate"></param>
+        /// <returns></returns>
+        public Boolean PerformCancelAllSubscriptions(DateTime ACancelDate)
+        {
+            Boolean ReturnValue;
+            TFrmSubscriptionsCancelAllDialog Scd;
+            string ReasonEnded;
+            DateTime DateEnded;
+            ArrayList SubscrCancelled;
+            int UpdateCounter;
+            DataRowView TmpDataRowView;
+            int TmpRowIndex;
+            String SubscrCancelledString = "";
+
+            ReturnValue = true;
+
+            /* Check whether there are any Subscriptions that can be cancelled */
+            if (CancelAllSubscriptionsCount() > 0)
+            {
+                /* Open 'Cancel All Subscriptions' Dialog */
+                Scd = new TFrmSubscriptionsCancelAllDialog(this.ParentForm);
+
+                if (ACancelDate != DateTime.MinValue)
+                {
+                    Scd.DateEnded = ACancelDate;
+                }
+
+                Scd.ShowDialog();
+
+                if (Scd.DialogResult != System.Windows.Forms.DialogResult.Cancel)
+                {
+                    /* Get values from the Dialog */
+                    Scd.GetReturnedParameters(out ReasonEnded, out DateEnded);
+
+                    /* Cancel the Subscriptions */
+                    SubscrCancelled = CancelAllSubscriptions(ReasonEnded, DateEnded, false);
+
+                    /* Build a String to tell the user what Subscriptions were cancelled. */
+                    for (UpdateCounter = 0; UpdateCounter <= SubscrCancelled.Count - 1; UpdateCounter += 1)
+                    {
+                        SubscrCancelledString = SubscrCancelledString + "   " + SubscrCancelled[UpdateCounter].ToString() + Environment.NewLine;
+                    }
+                    
+                    /* Update the Grid UserControl to reflect the changes in the records. */
+                    grdDetails.Refresh();
+
+                    /* Finally, select the first record in the Grid and update the Detail */
+                    /* UserControl (this one might have been Canceled) */
+                    this.SelectByIndex(1);
+
+                    /* reset counter in tab header */
+                    RecalculateTabHeaderCounter();
+                    
+                    /* Tell the user that cancelling of Subscriptions was succesful */
+                    MessageBox.Show(String.Format(Catalog.GetString("The following {0} Subscription(s) was/were cancelled:" + "\r\n" + "{1}" + "\r\n" + "The Partner has no active Subscriptions left."),
+                                                  SubscrCancelled.Count,
+                                                  SubscrCancelledString),
+			                        Catalog.GetString("All Subscriptions Cancelled"),
+                                    MessageBoxButtons.OK, 
+                                    MessageBoxIcon.Information);
+                }
+                else
+                {
+                    /* User pressed Cancel in the Dialog. Tell the user that nothing was done. */
+                    MessageBox.Show(Catalog.GetString("No Subscriptions were cancelled."),
+			                        Catalog.GetString("Cancel All Subscriptions"),
+                                    MessageBoxButtons.OK, 
+                                    MessageBoxIcon.Information);
+                    ReturnValue = false;
+                }
+
+                Scd.Dispose();
+            }
+            else
+            {
+                /* Tell the user that there are no Subscriptions that can be canceled. */
+                MessageBox.Show(Catalog.GetString("There are no Subscriptions to cancel."),
+		                        Catalog.GetString("Cancel All Subscriptions"),
+                                MessageBoxButtons.OK, 
+                                MessageBoxIcon.Information);
+            }
+
+            return ReturnValue;
+        }
+        
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
         private int CurrentRowIndex()
         {
-            //TODO WB: candidate for central method but not there yet?
             int rowIndex = -1;
 
             SourceGrid.RangeRegion selectedRegion = grdDetails.Selection.GetSelectionRegion();
@@ -337,7 +434,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="rowIndex"></param>
         private void SelectByIndex(int rowIndex)
         {
-            //TODO WB: candidate for central method but not there yet?
             if (rowIndex >= grdDetails.Rows.Count)
             {
                 rowIndex = grdDetails.Rows.Count - 1;
@@ -367,9 +463,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="e"></param>
         private void DeleteRow(System.Object sender, EventArgs e)
         {
-            TRecalculateScreenPartsEventArgs RecalculateScreenPartsEventArgs;
-
-            //TODO WB: candidate for central method but not there yet?
             if (FPreviouslySelectedDetailRow == null)
             {
                 return;
@@ -380,10 +473,77 @@ namespace Ict.Petra.Client.MPartner.Gui
             FPetraUtilsObject.SetChangedFlag();
             SelectByIndex(rowIndex);
 
-            // Fire OnRecalculateScreenParts event: reset counter in tab header
-            RecalculateScreenPartsEventArgs = new TRecalculateScreenPartsEventArgs();
-            RecalculateScreenPartsEventArgs.ScreenPart = TScreenPartEnum.spCounters;
-            OnRecalculateScreenParts(RecalculateScreenPartsEventArgs);
+            // reset counter in tab header
+            RecalculateTabHeaderCounter();
+            
+            if (grdDetails.Rows.Count <= 1)
+            {
+                // hide details part and disable buttons if no record in grid (first row for headings)
+                btnDelete.Enabled = false;
+                btnCancelAllSubscriptions.Enabled = false;
+                ucoDetails.MakeScreenInvisible(true);
+            }
+
+        }
+
+        /// <summary>
+        /// Counts all cancelable Subscriptions.
+        /// 
+        /// </summary>
+        /// <returns>Number of cancelable Subscriptions
+        /// </returns>
+        public Int32 CancelAllSubscriptionsCount()
+        {
+            return CancelAllSubscriptions("", DateTime.MinValue, true).Count;
+        }
+        
+        /// <summary>
+        /// Cancels all Subscriptions (that are not already CANCELED or EXPIRED).
+        /// 
+        /// </summary>
+        /// <param name="AReasonEnded">Text that gives the reason for ending the Subscriptions</param>
+        /// <param name="ADateEnded">Date when the Subscriptions should end (can be empty)</param>
+        /// <param name="ACountOnly">do not actually cancel subscriptions but return arrayList of subscriptions that can be cancelled for counting purposes</param>
+        /// <returns>ArrayList holding Publication Codes of the Subscriptions that were
+        /// canceled
+        /// </returns>
+        private ArrayList CancelAllSubscriptions(String AReasonEnded, System.DateTime ADateEnded, Boolean ACountOnly)
+        {
+            ArrayList ReturnValue;
+            DataView CurrentSubsDV;
+            PSubscriptionRow SubscriptionRow;
+            Int16 RowCounter;
+
+            ReturnValue = new ArrayList();
+
+            /* Loop over all nondeleted Subscriptions and check whether they should be */
+            /* Canceled. */
+            CurrentSubsDV = new DataView(FMainDS.PSubscription, "", "", DataViewRowState.CurrentRows);
+
+            for (RowCounter = 0; RowCounter <= CurrentSubsDV.Count - 1; RowCounter += 1)
+            {
+                SubscriptionRow = (PSubscriptionRow)CurrentSubsDV[RowCounter].Row;
+
+                if (SubscriptionRow.IsSubscriptionStatusNull() || (SubscriptionRow.SubscriptionStatus != MPartnerConstants.SUBSCRIPTIONS_STATUS_CANCELLED)
+                    && (SubscriptionRow.SubscriptionStatus != MPartnerConstants.SUBSCRIPTIONS_STATUS_EXPIRED))
+
+                /* this should not happen, but one never knows... */
+                {
+                    if (!ACountOnly)
+                    {
+                        SubscriptionRow.BeginEdit();
+                        SubscriptionRow.SubscriptionStatus = MPartnerConstants.SUBSCRIPTIONS_STATUS_CANCELLED;
+                        SubscriptionRow.DateCancelled = ADateEnded;
+                        SubscriptionRow.ReasonSubsCancelledCode = AReasonEnded;
+                        SubscriptionRow.GiftFromKey = 0;
+                        SubscriptionRow.EndEdit();
+                    }
+
+                    ReturnValue.Add(SubscriptionRow.PublicationCode);
+                }
+            }
+
+            return ReturnValue;
         }
         
         #endregion

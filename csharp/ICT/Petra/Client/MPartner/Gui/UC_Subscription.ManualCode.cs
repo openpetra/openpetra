@@ -120,6 +120,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void ShowDetails (PSubscriptionRow ARow)
         {
             FInitializationRunning = true;
+         
+            // show controls if not visible yet
+            MakeScreenInvisible(false);
             
             // set member
             FSubscriptionDR = ARow;
