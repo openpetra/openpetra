@@ -501,9 +501,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 WriteLine();
                 Write(PersonLanguageRow.LanguageCode);
                 WriteLine();
-                Write(PersonLanguageRow.WillingToTranslate);
-                Write(PersonLanguageRow.TranslateInto);
-                Write(PersonLanguageRow.TranslateOutOf);
+                Write(false);
+                Write(false);
+                Write(false);
                 Write(PersonLanguageRow.YearsOfExperience);
                 Write(PersonLanguageRow.LanguageLevel);
                 Write(PersonLanguageRow.YearsOfExperienceAsOf);

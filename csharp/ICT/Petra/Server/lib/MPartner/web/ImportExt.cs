@@ -901,9 +901,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             PersonLanguageRow.PartnerKey = FPartnerKey;
 
             PersonLanguageRow.LanguageCode = ReadString();
-            PersonLanguageRow.WillingToTranslate = ReadBoolean();
-            PersonLanguageRow.TranslateInto = ReadBoolean();
-            PersonLanguageRow.TranslateOutOf = ReadBoolean();
+            ReadBoolean(); // used to be: PersonLanguageRow.WillingToTranslate = ReadBoolean() - but that column got removed from the DB schema
+            ReadBoolean(); // used to be: PersonLanguageRow.TranslateInto = ReadBoolean() - but that column got removed from the DB schema
+            ReadBoolean(); // used to be: PersonLanguageRow.TranslateOutOf = ReadBoolean() - but that column got removed from the DB schema
             PersonLanguageRow.YearsOfExperience = ReadInt32();
             PersonLanguageRow.LanguageLevel = ReadInt32();
             PersonLanguageRow.YearsOfExperienceAsOf = ReadNullableDate();
