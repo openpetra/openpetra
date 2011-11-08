@@ -35,16 +35,17 @@ namespace Ict.Common
     /// the Application itself).
     /// It also supports parameters on the command line which override the values in the config file.
     /// </summary>
-    public class TAppSettingsManager : object
+    public class TAppSettingsManager
     {
         /// <summary>
         /// constant for undefined value
         /// </summary>
         public const String UNDEFINEDVALUE = "#UNDEFINED#";
 
+        /// <summary>The path where the application is started from.</summary>
         private static String FApplicationDirectory = Environment.CurrentDirectory;
 
-        /// <summary>the path where the application is started from. The name of the Configuration File that should be read from; static so it can be manipulated manually once for all (remoting nunit etc.)</summary>
+        /// <summary>The name of the Configuration File that should be read from; static so it can be manipulated manually once for all (remoting nunit etc.)</summary>
         private static String FConfigFileName = "";
 
         /// <summary>XML Element under which the AppSettings are found</summary>

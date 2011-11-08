@@ -30,6 +30,7 @@ using Ict.Common;
 using Ict.Common.Data; // Implicit reference
 using Ict.Common.IO;
 using Ict.Common.Controls;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.App.Core;

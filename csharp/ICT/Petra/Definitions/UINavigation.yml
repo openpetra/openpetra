@@ -104,6 +104,7 @@ OpenPetra:
                         #PrintSingleReceipt:
                     FormLetters:
                         PrintNewDonorSubscriptionLetters: {Description:Send a letter to new donors that will get subscribed to our publication, ActionOpenScreen=TFrmGiftNewDonorLetter}
+                        PrintDonorsOfWorkersLetters: {Description:Send a letter to all donors of a specific worker, ActionOpenScreen=TFrmGiftDonorsOfWorkerLetter}
                 AccountsPayable: {Namespace=Ict.Petra.Client.MFinance.Gui.AP}
                     AccountsPayable: {Description: Manage suppliers and invoices, ActionOpenScreen=TFrmAPMain}
                     Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}

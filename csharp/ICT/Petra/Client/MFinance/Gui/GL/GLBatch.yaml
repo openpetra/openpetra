@@ -7,7 +7,7 @@ RootNode:
     Template: windowTDS
     WindowWidth: 660
     WindowHeight: 700
-    UsingNamespaces: [Ict.Petra.Shared.Interfaces] 
+    UsingNamespaces: [Ict.Petra.Shared.Interfaces.MFinance]
     Controls:
         pnlContent:
             Controls: [tabGLBatch]

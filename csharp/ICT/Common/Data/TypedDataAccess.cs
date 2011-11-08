@@ -645,6 +645,16 @@ namespace Ict.Common.Data
         }
 
         /// <summary>
+        /// this function generates a where clause for the unique key of the given table
+        /// </summary>
+        /// <param name="ATableId"></param>
+        /// <returns></returns>
+        public static String GenerateWhereClauseFromUniqueKey(short ATableId)
+        {
+            return GenerateWhereClause(TTypedDataTable.GetUniqueKeyColumnStringList(ATableId));
+        }
+
+        /// <summary>
         /// This function expects a string list of all existing columns,
         /// and a datarow that has a value or an empty value for each column.
         /// It will return a Where clause, using the given values.
@@ -895,6 +905,17 @@ namespace Ict.Common.Data
         private static OdbcParameter[] CreateOdbcParameterArrayFromPrimaryKey(short ATableId, System.Object[] APrimaryKeyValues)
         {
             return CreateOdbcParameterArrayFromKey(ATableId, TTypedDataTable.GetPrimaryKeyColumnOrdList(ATableId), APrimaryKeyValues);
+        }
+
+        /// <summary>
+        /// create the odbc parameters for the unique key, with the actual values
+        /// </summary>
+        /// <param name="ATableId"></param>
+        /// <param name="AUniqueKeyValues"></param>
+        /// <returns></returns>
+        private static OdbcParameter[] CreateOdbcParameterArrayFromUniqueKey(short ATableId, System.Object[] AUniqueKeyValues)
+        {
+            return CreateOdbcParameterArrayFromKey(ATableId, TTypedDataTable.GetUniqueKeyColumnOrdList(ATableId), AUniqueKeyValues);
         }
 
         /// <summary>
@@ -1842,6 +1863,21 @@ namespace Ict.Common.Data
             return 1 == Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_" +
                     TTypedDataTable.GetTableNameSQL(ATableId) +
                     GenerateWhereClauseFromPrimaryKey(ATableId),
+                    ATransaction, false, ParametersArray));
+        }
+
+        /// <summary>
+        /// check if row exists with the unique key
+        /// </summary>
+        /// <param name="ATableId"></param>
+        /// <param name="AUniqueKeyValues"></param>
+        /// <param name="ATransaction"></param>
+        public static bool ExistsUniqueKey(short ATableId, System.Object[] AUniqueKeyValues, TDBTransaction ATransaction)
+        {
+            OdbcParameter[] ParametersArray = CreateOdbcParameterArrayFromUniqueKey(ATableId, AUniqueKeyValues);
+            return 1 == Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_" +
+                    TTypedDataTable.GetTableNameSQL(ATableId) +
+                    GenerateWhereClauseFromUniqueKey(ATableId),
                     ATransaction, false, ParametersArray));
         }
 

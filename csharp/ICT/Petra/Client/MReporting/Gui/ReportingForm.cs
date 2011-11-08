@@ -31,6 +31,7 @@ using System.Data;
 using System.Resources;
 using System.Threading;
 using GNU.Gettext;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Shared.MReporting;

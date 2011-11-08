@@ -93,7 +93,17 @@ namespace Ict.Petra.Shared.MPartner
         /// <summary>
         /// page for notes about the partner
         /// </summary>
-        petpNotes
+        petpNotes,
+
+        /// <summary>
+        /// page for individual data about the partner (Personnel Module)
+        /// </summary>
+        petpPersonnelIndividualData,
+
+        /// <summary>
+        /// page for applications of the partner (Personnel Module)
+        /// </summary>
+        petpPersonnelApplications
     };
 
     /// <summary>
@@ -135,6 +145,9 @@ namespace Ict.Petra.Shared.MPartner
 
         /// family name
             eOnlySurname,
+
+        /// first name
+            eOnlyFirstname,
 
         /// firstname l.; useful for data protection
             eReverseLastnameInitialsOnly,

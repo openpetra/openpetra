@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,10 +26,13 @@ using System.Data;
 using System.Data.Odbc;
 using System.Threading;
 using System.Web.Security;
+using System.Security.Principal;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Server;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared.MSysMan;
@@ -43,7 +46,7 @@ namespace Ict.Petra.Server.App.Core.Security
     /// The TUserManager class provides access to the security-related information
     /// of Users of a Petra DB.
     /// </summary>
-    public class TUserManager
+    public class TUserManager : IUserManager
     {
         private const int RELOADCACHEDUSERINFORETRIES = 5;
         private static int FReloadCachedUserInfoRetryCount = 0;
@@ -111,7 +114,6 @@ namespace Ict.Petra.Server.App.Core.Security
             Boolean UserExists;
             DateTime LastLoginDateTime;
             DateTime FailedLoginDateTime;
-            Int64 PartnerKey;
 
             ReadWriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
                 TEnforceIsolationLevel.eilMinimum,
@@ -204,6 +206,8 @@ namespace Ict.Petra.Server.App.Core.Security
                     LastLoginDateTime = DateTime.MinValue;
                 }
 
+                Int64 PartnerKey;
+
                 if (!UserDR.IsPartnerKeyNull())
                 {
                     PartnerKey = UserDR.PartnerKey;
@@ -233,34 +237,160 @@ namespace Ict.Petra.Server.App.Core.Security
         /// <param name="AProcessID"></param>
         /// <param name="ASystemEnabled"></param>
         /// <returns></returns>
-        public static Ict.Petra.Shared.Security.TPetraPrincipal PerformUserAuthentication(String AUserID,
+        public IPrincipal PerformUserAuthentication(String AUserID,
             String APassword,
             out Int32 AProcessID,
             out Boolean ASystemEnabled)
         {
-            SSystemStatusTable SystemStatusDT;
             TVerificationResultCollection VerificationResults;
             DateTime LoginDateTime;
-            TPetraPrincipal PetraPrincipal;
+            TPetraPrincipal PetraPrincipal = null;
 
-            SUserRow UserDR = LoadUser(AUserID, out PetraPrincipal);
+            AProcessID = -1;
+            ASystemEnabled = true;
 
-            // Already assign the global variable here, because it is needed for SUserAccess.SubmitChanges later in this function
-            UserInfo.GUserInfo = PetraPrincipal;
-
-            // Check if user is retired
-            if (PetraPrincipal.PetraIdentity.Retired)
+            try
             {
-                throw new EUserRetiredException(StrUserIsRetired);
-            }
+                SUserRow UserDR = LoadUser(AUserID, out PetraPrincipal);
 
-            // Console.WriteLine('PetraPrincipal.PetraIdentity.FailedLogins: ' + PetraPrincipal.PetraIdentity.FailedLogins.ToString +
-            // '; PetraPrincipal.PetraIdentity.Retired: ' + PetraPrincipal.PetraIdentity.Retired.ToString);
-            // Check if user should be autoretired
-            if ((PetraPrincipal.PetraIdentity.FailedLogins >= 5) && ((!PetraPrincipal.PetraIdentity.Retired)))
-            {
-                UserDR.Retired = true;
-                UserDR.FailedLogins = 4;
+                // Already assign the global variable here, because it is needed for SUserAccess.SubmitChanges later in this function
+                UserInfo.GUserInfo = PetraPrincipal;
+
+                // Check if user is retired
+                if (PetraPrincipal.PetraIdentity.Retired)
+                {
+                    throw new EUserRetiredException(StrUserIsRetired);
+                }
+
+                // Console.WriteLine('PetraPrincipal.PetraIdentity.FailedLogins: ' + PetraPrincipal.PetraIdentity.FailedLogins.ToString +
+                // '; PetraPrincipal.PetraIdentity.Retired: ' + PetraPrincipal.PetraIdentity.Retired.ToString);
+                // Check if user should be autoretired
+                if ((PetraPrincipal.PetraIdentity.FailedLogins >= 5) && ((!PetraPrincipal.PetraIdentity.Retired)))
+                {
+                    UserDR.Retired = true;
+                    UserDR.FailedLogins = 4;
+
+                    if (!SaveUser(AUserID, (SUserTable)UserDR.Table, out VerificationResults))
+                    {
+#if DEBUGMODE
+                        if (TLogging.DL >= 8)
+                        {
+                            Console.WriteLine(Messages.BuildMessageFromVerificationResult("Error while trying to auto-retire user: ",
+                                    VerificationResults));
+                        }
+#endif
+                    }
+
+                    throw new EAccessDeniedException(StrUserIsRetired);
+                }
+
+                // Check SystemLoginStatus (Petra enabled/disabled) in the SystemStatus table (always holds only one record)
+                Boolean NewTransaction = false;
+                SSystemStatusTable SystemStatusDT;
+
+                try
+                {
+                    TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                        TEnforceIsolationLevel.eilMinimum,
+                        out NewTransaction);
+                    SystemStatusDT = SSystemStatusAccess.LoadAll(ReadTransaction);
+                }
+                finally
+                {
+                    if (NewTransaction)
+                    {
+                        DBAccess.GDBAccessObj.CommitTransaction();
+#if DEBUGMODE
+                        if (TLogging.DL >= 7)
+                        {
+                            Console.WriteLine("TUserManager.PerformUserAuthentication: committed own transaction.");
+                        }
+#endif
+                    }
+                }
+
+                if (SystemStatusDT[0].SystemLoginStatus)
+                {
+                    ASystemEnabled = true;
+                }
+                else
+                {
+                    ASystemEnabled = false;
+
+                    if (PetraPrincipal.IsInGroup("SYSADMIN"))
+                    {
+                        // $IFDEF DEBUGMODE if TLogging.DL >= 8 then Console.WriteLine('SystemLoginStatus = false; is in SYSADMIN Group');$ENDIF
+                        PetraPrincipal.LoginMessage =
+                            String.Format(StrSystemDisabled1,
+                                SystemStatusDT[0].SystemDisabledReason) + Environment.NewLine + Environment.NewLine + StrSystemDisabled2Admin;
+                    }
+                    else
+                    {
+                        // $IFDEF DEBUGMODE if TLogging.DL >= 8 then Console.WriteLine('SystemLoginStatus = false; is NOT in SYSADMIN Group');$ENDIF
+
+                        if (!TLoginLog.AddLoginLogEntry(AUserID, "System disabled", true, out AProcessID, out VerificationResults))
+                        {
+                            // $IFDEF DEBUGMODE if TLogging.DL >= 8 then Console.WriteLine(BuildMessageFromVerificationResult('Error while trying to add a login entry: ', VerificationResults) );$ENDIF
+                        }
+
+                        throw new ESystemDisabledException(String.Format(StrSystemDisabled1,
+                                SystemStatusDT[0].SystemDisabledReason) + Environment.NewLine + Environment.NewLine +
+                            String.Format(StrSystemDisabled2, StringHelper.DateToLocalizedString(SystemStatusDT[0].SystemAvailableDate.Value),
+                                SystemStatusDT[0].SystemAvailableDate.Value.AddSeconds(SystemStatusDT[0].SystemAvailableTime).ToShortTimeString()));
+                    }
+                }
+
+                string UserAuthenticationMethod = TAppSettingsManager.GetValue("UserAuthenticationMethod", "OpenPetraDBSUser", false);
+
+                if (UserAuthenticationMethod == "OpenPetraDBSUser")
+                {
+                    // TODO 1 oChristianK cSecurity : Perform user authentication by verifying password hash in the DB
+                    // see also ICTPetraWiki: Todo_Petra.NET#Implement_Security_.7B2.7D_.5BChristian.5D
+                    if (FormsAuthentication.HashPasswordForStoringInConfigFile(String.Concat(APassword,
+                                UserDR.PasswordSalt), "SHA1") != UserDR.PasswordHash)
+                    {
+                        // increase failed logins
+                        UserDR.FailedLogins++;
+                        LoginDateTime = DateTime.Now;
+                        UserDR.FailedLoginDate = LoginDateTime;
+                        UserDR.FailedLoginTime = Conversions.DateTimeToInt32Time(LoginDateTime);
+                        SaveUser(AUserID, (SUserTable)UserDR.Table, out VerificationResults);
+
+                        throw new EPasswordWrongException(Catalog.GetString("Invalid User ID/Password."));
+                    }
+                }
+                else
+                {
+                    // namespace of the class TUserAuthentication, eg. Plugin.AuthenticationPhpBB
+                    // the dll has to be in the normal application directory
+                    string Namespace = UserAuthenticationMethod;
+                    string NameOfDll = Namespace + ".dll";
+                    string NameOfClass = Namespace + ".TUserAuthentication";
+                    string ErrorMessage;
+
+                    // dynamic loading of dll
+                    System.Reflection.Assembly assemblyToUse = System.Reflection.Assembly.LoadFrom(NameOfDll);
+                    System.Type CustomClass = assemblyToUse.GetType(NameOfClass);
+
+                    IUserAuthentication auth = (IUserAuthentication)Activator.CreateInstance(CustomClass);
+
+                    if (!auth.AuthenticateUser(AUserID, APassword, out ErrorMessage))
+                    {
+                        UserDR.FailedLogins++;
+                        LoginDateTime = DateTime.Now;
+                        UserDR.FailedLoginDate = LoginDateTime;
+                        UserDR.FailedLoginTime = Conversions.DateTimeToInt32Time(LoginDateTime);
+                        SaveUser(AUserID, (SUserTable)UserDR.Table, out VerificationResults);
+
+                        throw new EPasswordWrongException(ErrorMessage);
+                    }
+                }
+
+                // Save successful login
+                LoginDateTime = DateTime.Now;
+                UserDR.LastLoginDate = LoginDateTime;
+                UserDR.LastLoginTime = Conversions.DateTimeToInt32Time(LoginDateTime);
+                UserDR.FailedLogins = 0;
 
                 if (!SaveUser(AUserID, (SUserTable)UserDR.Table, out VerificationResults))
                 {
@@ -272,147 +402,44 @@ namespace Ict.Petra.Server.App.Core.Security
 #endif
                 }
 
-                throw new EAccessDeniedException(StrUserIsRetired);
-            }
+                PetraPrincipal.PetraIdentity.CurrentLogin = LoginDateTime;
 
-            // Check SystemLoginStatus (Petra enabled/disabled) in the SystemStatus table (always holds only one record)
-            Boolean NewTransaction = false;
-
-            try
-            {
-                TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
-                    out NewTransaction);
-                SystemStatusDT = SSystemStatusAccess.LoadAll(ReadTransaction);
-            }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine("TUserManager.PerformUserAuthentication: committed own transaction.");
-                    }
-#endif
-                }
-            }
-
-            if (SystemStatusDT[0].SystemLoginStatus)
-            {
-                ASystemEnabled = true;
-            }
-            else
-            {
-                ASystemEnabled = false;
+                // PetraPrincipal.PetraIdentity.FailedLogins := 0;
 
                 if (PetraPrincipal.IsInGroup("SYSADMIN"))
                 {
-                    // $IFDEF DEBUGMODE if TLogging.DL >= 8 then Console.WriteLine('SystemLoginStatus = false; is in SYSADMIN Group');$ENDIF
-                    PetraPrincipal.LoginMessage =
-                        String.Format(StrSystemDisabled1,
-                            SystemStatusDT[0].SystemDisabledReason) + Environment.NewLine + Environment.NewLine + StrSystemDisabled2Admin;
-                }
-                else
-                {
-                    // $IFDEF DEBUGMODE if TLogging.DL >= 8 then Console.WriteLine('SystemLoginStatus = false; is NOT in SYSADMIN Group');$ENDIF
-
-                    if (!TLoginLog.AddLoginLogEntry(AUserID, "System disabled", true, out AProcessID, out VerificationResults))
+                    if (!TLoginLog.AddLoginLogEntry(AUserID, "Successful  SYSADMIN", out AProcessID, out VerificationResults))
                     {
                         // $IFDEF DEBUGMODE if TLogging.DL >= 8 then Console.WriteLine(BuildMessageFromVerificationResult('Error while trying to add a login entry: ', VerificationResults) );$ENDIF
                     }
-
-                    throw new ESystemDisabledException(String.Format(StrSystemDisabled1,
-                            SystemStatusDT[0].SystemDisabledReason) + Environment.NewLine + Environment.NewLine +
-                        String.Format(StrSystemDisabled2, StringHelper.DateToLocalizedString(SystemStatusDT[0].SystemAvailableDate.Value),
-                            SystemStatusDT[0].SystemAvailableDate.Value.AddSeconds(SystemStatusDT[0].SystemAvailableTime).ToShortTimeString()));
                 }
-            }
-
-            string UserAuthenticationMethod = TAppSettingsManager.GetValue("UserAuthenticationMethod", "OpenPetraDBSUser", false);
-
-            if (UserAuthenticationMethod == "OpenPetraDBSUser")
-            {
-                // TODO 1 oChristianK cSecurity : Perform user authentication by verifying password hash in the DB
-                // see also ICTPetraWiki: Todo_Petra.NET#Implement_Security_.7B2.7D_.5BChristian.5D
-                if (FormsAuthentication.HashPasswordForStoringInConfigFile(String.Concat(APassword,
-                            UserDR.PasswordSalt), "SHA1") != UserDR.PasswordHash)
+                else
                 {
-                    // increase failed logins
-                    UserDR.FailedLogins++;
-                    LoginDateTime = DateTime.Now;
-                    UserDR.FailedLoginDate = LoginDateTime;
-                    UserDR.FailedLoginTime = Conversions.DateTimeToInt32Time(LoginDateTime);
-                    SaveUser(AUserID, (SUserTable)UserDR.Table, out VerificationResults);
-
-                    throw new EPasswordWrongException(Catalog.GetString("Invalid User ID/Password."));
+                    if (!TLoginLog.AddLoginLogEntry(AUserID, "Successful", out AProcessID, out VerificationResults))
+                    {
+                        // $IFDEF DEBUGMODE if TLogging.DL >= 8 then Console.WriteLine(BuildMessageFromVerificationResult('Error while trying to add a login entry: ', VerificationResults) );$ENDIF
+                    }
                 }
+
+                PetraPrincipal.ProcessID = AProcessID;
+                AProcessID = 0;
             }
-            else
+            catch (Exception)
             {
-                // namespace of the class TUserAuthentication, eg. Plugin.AuthenticationPhpBB
-                // the dll has to be in the normal application directory
-                string Namespace = UserAuthenticationMethod;
-                string NameOfDll = Namespace + ".dll";
-                string NameOfClass = Namespace + ".TUserAuthentication";
-                string ErrorMessage;
-
-                // dynamic loading of dll
-                System.Reflection.Assembly assemblyToUse = System.Reflection.Assembly.LoadFrom(NameOfDll);
-                System.Type CustomClass = assemblyToUse.GetType(NameOfClass);
-
-                IUserAuthentication auth = (IUserAuthentication)Activator.CreateInstance(CustomClass);
-
-                if (!auth.AuthenticateUser(AUserID, APassword, out ErrorMessage))
+                try
                 {
-                    UserDR.FailedLogins++;
-                    LoginDateTime = DateTime.Now;
-                    UserDR.FailedLoginDate = LoginDateTime;
-                    UserDR.FailedLoginTime = Conversions.DateTimeToInt32Time(LoginDateTime);
-                    SaveUser(AUserID, (SUserTable)UserDR.Table, out VerificationResults);
-
-                    throw new EPasswordWrongException(ErrorMessage);
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+                catch (System.InvalidOperationException)
+                {
+                    // ignore this exception since the RollBack is just a safety net,
+                    // and if it fails it means there was no running transaction.
+                }
+                catch (Exception)
+                {
+                    throw;
                 }
             }
-
-            // Save successful login
-            LoginDateTime = DateTime.Now;
-            UserDR.LastLoginDate = LoginDateTime;
-            UserDR.LastLoginTime = Conversions.DateTimeToInt32Time(LoginDateTime);
-            UserDR.FailedLogins = 0;
-
-            if (!SaveUser(AUserID, (SUserTable)UserDR.Table, out VerificationResults))
-            {
-#if DEBUGMODE
-                if (TLogging.DL >= 8)
-                {
-                    Console.WriteLine(Messages.BuildMessageFromVerificationResult("Error while trying to auto-retire user: ", VerificationResults));
-                }
-#endif
-            }
-
-            PetraPrincipal.PetraIdentity.CurrentLogin = LoginDateTime;
-
-            // PetraPrincipal.PetraIdentity.FailedLogins := 0;
-
-            if (PetraPrincipal.IsInGroup("SYSADMIN"))
-            {
-                if (!TLoginLog.AddLoginLogEntry(AUserID, "Successful  SYSADMIN", out AProcessID, out VerificationResults))
-                {
-                    // $IFDEF DEBUGMODE if TLogging.DL >= 8 then Console.WriteLine(BuildMessageFromVerificationResult('Error while trying to add a login entry: ', VerificationResults) );$ENDIF
-                }
-            }
-            else
-            {
-                if (!TLoginLog.AddLoginLogEntry(AUserID, "Successful", out AProcessID, out VerificationResults))
-                {
-                    // $IFDEF DEBUGMODE if TLogging.DL >= 8 then Console.WriteLine(BuildMessageFromVerificationResult('Error while trying to add a login entry: ', VerificationResults) );$ENDIF
-                }
-            }
-
-            PetraPrincipal.ProcessID = AProcessID;
-            AProcessID = 0;
 
             return PetraPrincipal;
         }

@@ -27,6 +27,7 @@ using System.Data;
 using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Controls;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner;
@@ -351,8 +352,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             DateTime DateEnded;
             ArrayList SubscrCancelled;
             int UpdateCounter;
-            DataRowView TmpDataRowView;
-            int TmpRowIndex;
             String SubscrCancelledString = "";
 
             ReturnValue = true;

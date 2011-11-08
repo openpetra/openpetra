@@ -90,6 +90,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// </summary>
         private System.Object[, ] FGrid;
 
+        /// <summary>
+        /// tab order for the set of controls. Can be ByColumn, or default is ByRow
+        /// </summary>
+        private string FTabOrder = string.Empty;
+
         /// first collect everything, in the end check for unnecessary columnspan, and then write the tablelayout
         public void InitTableLayoutGrid()
         {
@@ -126,6 +131,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             FGrid[column, row] = tmpChildCtrlName;
         }
+
+        private static int FCurrentTabIndex = 0;
 
         /// <summary>
         /// optimise the table layout, and write it;
@@ -326,6 +333,40 @@ namespace Ict.Tools.CodeGeneration.Winforms
                                 "Controls.Add(this." +
                                 childCtrlName + ", " +
                                 NewColumn.ToString() + ", " + rowCounter.ToString() + ")");
+
+                            if (FTabOrder == "Horizontal")
+                            {
+                                writer.SetControlProperty(childCtrlName, "TabIndex", FCurrentTabIndex.ToString(), false);
+                                FCurrentTabIndex++;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // by default, the TabOrder is by column, Vertical
+            if (FTabOrder != "Horizontal")
+            {
+                for (int rowCounter = 0; rowCounter < FRowCount; rowCounter++)
+                {
+                    for (int columnCounter = 0; columnCounter < FColumnCount; columnCounter++)
+                    {
+                        if (FGrid[columnCounter, rowCounter] != null)
+                        {
+                            string childCtrlName;
+
+                            if (FGrid[columnCounter, rowCounter].GetType() == typeof(TControlDef))
+                            {
+                                TControlDef childctrl = (TControlDef)FGrid[columnCounter, rowCounter];
+                                childCtrlName = childctrl.controlName;
+                            }
+                            else
+                            {
+                                childCtrlName = (string)FGrid[columnCounter, rowCounter];
+                            }
+
+                            writer.SetControlProperty(childCtrlName, "TabIndex", FCurrentTabIndex.ToString(), false);
+                            FCurrentTabIndex++;
                         }
                     }
                 }
@@ -402,6 +443,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
             // first check if the table layout has already been defined in the container with sets of rows?
             XmlNode containerNode = writer.CodeStorage.GetControl(parentContainerName).xmlNode;
             XmlNode controlsNode = TXMLParser.GetChild(containerNode, "Controls");
+
+            if (controlsNode != null)
+            {
+                FTabOrder = TXMLParser.GetAttribute(controlsNode, "TabOrder");
+            }
 
             List <XmlNode>childNodes = TYml2Xml.GetChildren(controlsNode, true);
 

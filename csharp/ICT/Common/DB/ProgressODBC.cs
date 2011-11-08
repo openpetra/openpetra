@@ -394,5 +394,13 @@ namespace Ict.Common.DB
         {
             // not implemented
         }
+
+        /// Updating of a Progress or ODBC database has not been implemented yet, need to do this still manually
+        public void UpdateDatabase(TFileVersionInfo ADBVersion, TFileVersionInfo AExeVersion,
+            string AHostOrFile, string ADatabasePort, string ADatabaseName, string AUsername, string APassword)
+        {
+            throw new Exception(
+                "Cannot connect to old database, please restore the latest clean demo database or run nant patchDatabase");
+        }
     }
 }

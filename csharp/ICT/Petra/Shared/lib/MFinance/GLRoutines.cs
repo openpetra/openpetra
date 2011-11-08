@@ -48,6 +48,14 @@ namespace Ict.Petra.Shared.MFinance
                 return;
             }
 
+            if (ACurrentJournal.ExchangeRateToBase == 0.0m)
+            {
+                ACurrentJournal.ExchangeRateToBase = 1.0m;
+//              throw new Exception(String.Format("Batch {0} Journal {1} has invalid exchange rate to base",
+//                                                ACurrentJournal.BatchNumber,
+//                                                ACurrentJournal.JournalNumber));
+            }
+
             ACurrentJournal.JournalDebitTotal = 0.0M;
             ACurrentJournal.JournalDebitTotalBase = 0.0M;
             ACurrentJournal.JournalCreditTotal = 0.0M;

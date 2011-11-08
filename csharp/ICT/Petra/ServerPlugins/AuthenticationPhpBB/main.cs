@@ -25,6 +25,8 @@ using System;
 using System.Collections.Generic;
 using Ict.Common;
 using Ict.Common.IO;
+using Ict.Common.Remoting.Server;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared.Interfaces.Plugins.MSysMan;
 using GNU.Gettext;
 

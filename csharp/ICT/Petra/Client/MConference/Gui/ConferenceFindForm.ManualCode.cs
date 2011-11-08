@@ -31,11 +31,13 @@ using System.Drawing;
 using System.Windows.Forms;
 using GNU.Gettext;
 using Ict.Common.Controls;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonForms;
-using Ict.Petra.Shared.Interfaces; // implicit reference
+using Ict.Petra.Shared.Interfaces.MConference;
 using Ict.Petra.Shared.MConference.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Common.Remoting.Client;
 //using Ict.Petra.Shared.MReporting;
 
 namespace Ict.Petra.Client.MConference.Gui

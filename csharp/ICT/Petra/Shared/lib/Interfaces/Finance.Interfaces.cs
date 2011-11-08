@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.Data;
 using Ict.Common;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared.Interfaces.MFinance.AP;
 using Ict.Petra.Shared.Interfaces.MFinance.AR;
 using Ict.Petra.Shared.Interfaces.MFinance.Budget;
@@ -66,7 +67,6 @@ using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.Interfaces.AsynchronousExecution;
 #endregion ManualCode
 using Ict.Petra.Shared.Interfaces.MFinance.Setup.WebConnectors;
 namespace Ict.Petra.Shared.Interfaces.MFinance
@@ -455,6 +455,11 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TAdjustmentWebConnector)</summary>
         System.Boolean GiftRevertAdjust(Hashtable requestParams,
                                         out TVerificationResultCollection AMessages);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TDonorsOfWorkerWebConnector)</summary>
+        NewDonorTDS GetDonorsOfWorker(Int64 AWorkerPartnerKey,
+                                      Int32 ALedgerNumber,
+                                      System.Boolean ADropForeignAddresses,
+                                      System.Boolean ADropPartnersWithNoMailing);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TGuiTools)</summary>
         Boolean GetMotivationGroupAndDetail(Int64 partnerKey,
                                             ref String motivationGroup,
@@ -507,6 +512,12 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
         TSubmitChangesResult SaveRecurringGiftBatchTDS(ref RecurringGiftBatchTDS AInspectDS,
                                                        out TVerificationResultCollection AVerificationResult);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
+        System.Decimal CalculateAdminFee(GiftBatchTDS MainDS,
+                                         Int32 ALedgerNumber,
+                                         System.String AFeeCode,
+                                         System.Decimal AGiftAmount,
+                                         out TVerificationResultCollection AVerificationResult);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
         System.Boolean PostGiftBatch(Int32 ALedgerNumber,
                                      Int32 ABatchNumber,
@@ -680,15 +691,15 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.ICH.UIConnectors
     public interface IICHUIConnectorsNamespace : IInterface
     {
         /// <summary>auto generated from Connector constructor (Ict.Petra.Server.MFinance.ICH.UIConnectors.TStewardshipCalculationUIConnector)</summary>
-        IICHUIConnectorsStewardshipCalculation StewardshipCalculation(int ALedgerNumber,
-                                                                      int APeriodNumber);
+        IICHUIConnectorsStewardshipCalculation StewardshipCalculation(System.Int32 ALedgerNumber,
+                                                                      System.Int32 APeriodNumber);
     }
 
     /// <summary>auto generated</summary>
     public interface IICHUIConnectorsStewardshipCalculation : IInterface
     {
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.ICH.UIConnectors.TStewardshipCalculationUIConnector)</summary>
-        bool PerformStewardshipCalculation(out TVerificationResultCollection AVerificationResult);
+        System.Boolean PerformStewardshipCalculation(out TVerificationResultCollection AVerificationResult);
     }
 
 }

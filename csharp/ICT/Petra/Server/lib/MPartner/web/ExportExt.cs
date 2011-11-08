@@ -464,7 +464,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 Write("SPECNEED");
                 WriteLine();
                 Write(SpecialNeedRow.DateCreated);
-                Write(SpecialNeedRow.ContactHomeOffice);
+                Write(false);
                 Write(SpecialNeedRow.VegetarianFlag);
                 WriteLine();
                 Write(SpecialNeedRow.DietaryComment);
@@ -522,17 +522,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 Write(PersonAbilityRow.BringingInstrument);
                 Write(PersonAbilityRow.YearsOfExperienceAsOf);
                 Write(PersonAbilityRow.Comment);
-                WriteLine();
-            }
-
-            foreach (PmPersonVisionRow PersonVisionRow in AMainDS.PmPersonVision.Rows)
-            {
-                Write("VISION");
-                WriteLine();
-                Write(PersonVisionRow.VisionAreaName);
-                WriteLine();
-                Write(PersonVisionRow.VisionLevel);
-                Write(PersonVisionRow.VisionComment);
                 WriteLine();
             }
 

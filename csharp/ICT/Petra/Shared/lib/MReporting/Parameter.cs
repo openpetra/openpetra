@@ -25,6 +25,7 @@ using System;
 using System.IO;
 using Ict.Common.IO;
 using Ict.Common;
+using Ict.Common.Remoting.Server;
 using System.Data;
 using System.Data.Odbc;
 using System.Collections;

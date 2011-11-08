@@ -26,9 +26,10 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
-
 using System.Data;
-using Ict.Petra.Shared.Interfaces; // Implicit references
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Client;
+using Ict.Petra.Shared.Interfaces.MCommon;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
@@ -43,6 +44,7 @@ using System.Globalization;
 using Ict.Petra.Shared;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 
 namespace Ict.Petra.Client.CommonControls
 {
@@ -121,6 +123,9 @@ namespace Ict.Petra.Client.CommonControls
 
             /// <summary>todoComment</summary>
             LanguageCodeList,
+
+            /// <summary>todoComment</summary>
+            LanguageLevelList,
 
             /// <summary>todoComment</summary>
             LocationTypeList,
@@ -437,6 +442,15 @@ namespace Ict.Petra.Client.CommonControls
                     TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.LanguageCodeList),
                     "p_language_code_c",
                     "p_language_description_c",
+                    null);
+                    break;
+
+                case TListTableEnum.LanguageLevelList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.LanguageLevelList),
+                    PtLanguageLevelTable.GetLanguageLevelDBName(),
+                    PtLanguageLevelTable.GetLanguageLevelDescrDBName(),
                     null);
                     break;
 
@@ -817,6 +831,11 @@ namespace Ict.Petra.Client.CommonControls
                     break;
 
                 case TListTableEnum.LanguageCodeList:
+                    this.ColumnWidthCol1 = 57;
+                    this.ColumnWidthCol2 = 130;
+                    break;
+
+                case TListTableEnum.LanguageLevelList:
                     this.ColumnWidthCol1 = 57;
                     this.ColumnWidthCol2 = 130;
                     break;
