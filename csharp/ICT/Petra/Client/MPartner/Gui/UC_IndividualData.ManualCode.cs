@@ -121,6 +121,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             ucoSummaryData.MainDS = FMainDS;
             ucoSummaryData.PartnerEditUIConnector = FPartnerEditUIConnector;
             ucoSummaryData.SpecialInitUserControl(FMainDS);
+            
+            // Hook up ColumnChanging Event of the FPartnerEditTDS's PPerson Table
+            FPartnerEditTDS.PPerson.ColumnChanged += delegate { 
+            	ucoSummaryData.FMainDS_PPerson_ColumnChanged(FPartnerEditTDS.PPerson[0]);
+            };;
 
             FUserControlSetup = new SortedList <TDynamicLoadableUserControls, UserControl>();
             StoreLinkLablesOrigText();

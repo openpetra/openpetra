@@ -30,120 +30,142 @@ using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.MPartner;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
+using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MPersonnel.Person;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
-    public partial class TUC_IndividualData_Summary
-    {
-        /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
-        private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
+	public partial class TUC_IndividualData_Summary
+	{
+		/// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
+		private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
 
-        #region Properties
+		#region Properties
 
-        /// <summary>used for passing through the Clientside Proxy for the UIConnector</summary>
-        public IPartnerUIConnectorsPartnerEdit PartnerEditUIConnector
-        {
-            get
-            {
-                return FPartnerEditUIConnector;
-            }
+		/// <summary>used for passing through the Clientside Proxy for the UIConnector</summary>
+		public IPartnerUIConnectorsPartnerEdit PartnerEditUIConnector
+		{
+			get
+			{
+				return FPartnerEditUIConnector;
+			}
 
-            set
-            {
-                FPartnerEditUIConnector = value;
-            }
-        }
+			set
+			{
+				FPartnerEditUIConnector = value;
+			}
+		}
 
-        #endregion
+		#endregion
 
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public void SpecialInitUserControl(IndividualDataTDS AMainDS)
-        {
-            FMainDS = AMainDS;
+		/// <summary>
+		/// todoComment
+		/// </summary>
+		public void SpecialInitUserControl(IndividualDataTDS AMainDS)
+		{
+			FMainDS = AMainDS;
 
-            LoadDataOnDemand();
+			LoadDataOnDemand();
 
-            ShowData((PPersonRow)FMainDS.PPerson.Rows[0]);
+			ShowData((PPersonRow)FMainDS.PPerson.Rows[0]);
 
-            if (FMainDS.SummaryData.Rows.Count == 0)
-            {
-                MessageBox.Show("FMainDS.SummaryData holds NO ROWS!", "DEVELOPER NEEDS TO FIX THIS!!!");
-            }
+			if (FMainDS.SummaryData.Rows.Count == 0)
+			{
+				MessageBox.Show("FMainDS.SummaryData holds NO ROWS!", "DEVELOPER NEEDS TO FIX THIS!!!");
+			}
 
-            dtpDateOfBirth.Enabled = true;
+			dtpDateOfBirth.Enabled = true;
 
-            DataView myDataView = FMainDS.JobAssignmentStaffDataCombined.DefaultView;
-            myDataView.AllowNew = false;
-            myDataView.Sort = PmJobAssignmentTable.GetFromDateDBName() + " DESC";
-            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
-        }
+			DataView myDataView = FMainDS.JobAssignmentStaffDataCombined.DefaultView;
+			myDataView.AllowNew = false;
+			myDataView.Sort = PmJobAssignmentTable.GetFromDateDBName() + " DESC";
+			grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+		}
 
-        /// <summary>
-        /// This empty Method is needed so that the 'SAVEDATA' section of the template for the auto-generated class can be filled in.
-        /// It is a HACK, since this screen is read-only and wouldn't need any saving code at all...
-        /// FIXME in the WinForms generator/devise another template for read-only screens...
-        /// </summary>
-        /// <param name="ARow"></param>
-        private void GetDataFromControlsManual(PPersonRow ARow)
-        {
-        }
+		/// <summary>
+		/// Triggered after a change to a DataRow in the PPerson DataTable in the *screen's main DataSet*.
+		/// </summary>
+		/// <param name="APersonRow">PPerson DataRow containing the changed data.</param>
+		public void FMainDS_PPerson_ColumnChanged(PPersonRow APersonRow)
+		{
+			string MaritalStatusDesc = PartnerCodeHelper.GetMaritalStatusDescription(
+				@TDataCache.GetCacheableDataTableFromCache, APersonRow.MaritalStatus);
+			
+			if (MaritalStatusDesc != String.Empty) 
+			{
+				MaritalStatusDesc = " - " + MaritalStatusDesc;				
+			}
+			
+			txtGender.Text = APersonRow.Gender;
+			txtMaritalStatus.Text = APersonRow.MaritalStatus + MaritalStatusDesc;
+			
+			dtpDateOfBirth.Date = APersonRow.DateOfBirth;
+		}
 
-        /// <summary>
-        /// Loads Summary Data from Petra Server into FMainDS, if not already loaded.
-        /// </summary>
-        /// <returns>true if successful, otherwise false.</returns>
-        private Boolean LoadDataOnDemand()
-        {
-            Boolean ReturnValue;
+		/// <summary>
+		/// This empty Method is needed so that the 'SAVEDATA' section of the template for the auto-generated class can be filled in.
+		/// It is a HACK, since this screen is read-only and wouldn't need any saving code at all...
+		/// FIXME in the WinForms generator/devise another template for read-only screens...
+		/// </summary>
+		/// <param name="ARow"></param>
+		private void GetDataFromControlsManual(PPersonRow ARow)
+		{
+		}
 
-            try
-            {
-                // Make sure that Typed DataTables are already there at Client side
-                if (FMainDS.SummaryData == null)
-                {
-                    FMainDS.Tables.Add(new IndividualDataTDSSummaryDataTable());
-                    FMainDS.InitVars();
-                }
+		/// <summary>
+		/// Loads Summary Data from Petra Server into FMainDS, if not already loaded.
+		/// </summary>
+		/// <returns>true if successful, otherwise false.</returns>
+		private Boolean LoadDataOnDemand()
+		{
+			Boolean ReturnValue;
 
-                if (TClientSettings.DelayedDataLoading
-                    && (FMainDS.SummaryData.Rows.Count == 0))
-                {
-                    FMainDS.Merge(FPartnerEditUIConnector.GetDataPersonnelIndividualData(TIndividualDataItemEnum.idiSummary));
+			try
+			{
+				// Make sure that Typed DataTables are already there at Client side
+				if (FMainDS.SummaryData == null)
+				{
+					FMainDS.Tables.Add(new IndividualDataTDSSummaryDataTable());
+					FMainDS.InitVars();
+				}
 
-                    // Make DataRows unchanged
-                    if (FMainDS.SummaryData.Rows.Count > 0)
-                    {
-                        if (FMainDS.SummaryData.Rows[0].RowState != DataRowState.Added)
-                        {
-                            FMainDS.SummaryData.AcceptChanges();
-                        }
-                    }
-                }
+				if (TClientSettings.DelayedDataLoading
+				    && (FMainDS.SummaryData.Rows.Count == 0))
+				{
+					FMainDS.Merge(FPartnerEditUIConnector.GetDataPersonnelIndividualData(TIndividualDataItemEnum.idiSummary));
 
-                if (FMainDS.SummaryData.Rows.Count != 0)
-                {
-                    ReturnValue = true;
-                }
-                else
-                {
-                    ReturnValue = false;
-                }
-            }
-            catch (System.NullReferenceException)
-            {
-                return false;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+					// Make DataRows unchanged
+					if (FMainDS.SummaryData.Rows.Count > 0)
+					{
+						if (FMainDS.SummaryData.Rows[0].RowState != DataRowState.Added)
+						{
+							FMainDS.SummaryData.AcceptChanges();
+						}
+					}
+				}
 
-            return ReturnValue;
-        }
-    }
+				if (FMainDS.SummaryData.Rows.Count != 0)
+				{
+					ReturnValue = true;
+				}
+				else
+				{
+					ReturnValue = false;
+				}
+			}
+			catch (System.NullReferenceException)
+			{
+				return false;
+			}
+			catch (Exception)
+			{
+				throw;
+			}
+
+			return ReturnValue;
+		}
+	}
 }

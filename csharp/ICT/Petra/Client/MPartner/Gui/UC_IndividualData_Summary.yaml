@@ -27,8 +27,8 @@ RootNode:
             
         dtpDateOfBirth: {Label=Birth date, ReadOnly=true, BorderStyle=None, DataField=SummaryData.DateOfBirth}
         txtGender: {ReadOnly=true, BorderStyle=None, DataField=SummaryData.Gender}
-        txtNationality: {Label=Nationalities, ReadOnly=true, BorderStyle=None, DataField=SummaryData.Nationality}
-        txtMaritalStatus: {ReadOnly=true, BorderStyle=None, DataField=SummaryData.MaritalStatus}
+        txtNationality: {Width=367, Label=Nationalities, ReadOnly=true, BorderStyle=None, DataField=SummaryData.Nationality, ColSpan=3}
+        txtMaritalStatus: {Width=367, ReadOnly=true, BorderStyle=None, DataField=SummaryData.MaritalStatus, ColSpan=3}
         txtPhone: {ReadOnly=true, BorderStyle=None, DataField=SummaryData.TelephoneNumber}
         txtEmail: {ReadOnly=true, BorderStyle=None, DataField=SummaryData.EmailAddress}
 

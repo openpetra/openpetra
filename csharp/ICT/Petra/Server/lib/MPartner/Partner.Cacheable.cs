@@ -108,6 +108,33 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
         /// caller to the appropriate TypedDataTable to have access to the features of
         /// a Typed DataTable!
         /// </summary>
+		/// <remarks>Can be used with the TGetCacheableDataTableFromCache delegate.</remarks>
+		/// <param name="ACacheableTableName">Tells what cacheable DataTable should be returned.</param>
+        /// <param name="AType">The Type of the DataTable (useful in case it's a
+        /// Typed DataTable)</param>
+        /// <returns>The specified DataTable.</returns>
+        public DataTable GetCacheableTable(String ACacheableTableName, out System.Type AType)
+		{
+        	TCacheablePartnerTablesEnum CacheableTable = 
+        		(TCacheablePartnerTablesEnum)Enum.Parse(typeof(TCacheablePartnerTablesEnum), ACacheableTableName);
+        	                                                        
+        	return GetCacheableTable(CacheableTable, String.Empty, false, out AType);
+		}
+        
+        /// <summary>
+        /// Returns a certain cachable DataTable that contains all columns and all
+        /// rows of a specified table.
+        ///
+        /// @comment Uses Ict.Petra.Shared.CacheableTablesManager to store the DataTable
+        /// once its contents got retrieved from the DB. It returns the cached
+        /// DataTable from it on subsequent calls, therefore making more no further DB
+        /// queries!
+        ///
+        /// @comment All DataTables are retrieved as Typed DataTables, but are passed
+        /// out as a normal DataTable. However, this DataTable can be cast by the
+        /// caller to the appropriate TypedDataTable to have access to the features of
+        /// a Typed DataTable!
+        /// </summary>
         ///
         /// <param name="ACacheableTable">Tells what cacheable DataTable should be returned.</param>
         /// <param name="AHashCode">Hash of the cacheable DataTable that the caller has. '' can

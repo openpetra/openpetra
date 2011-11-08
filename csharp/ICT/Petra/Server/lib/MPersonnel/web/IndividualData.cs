@@ -42,6 +42,7 @@ using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.MPartner.Partner.Cacheable;
 using Ict.Petra.Server.App.Core.Security;
 
 namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
@@ -146,7 +147,9 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
             PmJobAssignmentRow PmJobAssignmentDR;
             IndividualDataTDSJobAssignmentStaffDataCombinedRow JobAssiStaffDataCombDR;
             int JobAssiStaffDataCombKey = 0;
-
+            TPartnerCacheable PartnerCacheable = new TPartnerCacheable();
+			string MaritalStatusDescr;
+			
             SummaryDT = new IndividualDataTDSSummaryDataTable();
             SummaryDR = SummaryDT.NewRowTyped(false);
 
@@ -167,7 +170,16 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
             {
                 SummaryDR.DateOfBirth = PersonDR.DateOfBirth;
                 SummaryDR.Gender = PersonDR.Gender;
-                SummaryDR.MaritalStatus = PersonDR.MaritalStatus;
+                
+                MaritalStatusDescr = PartnerCodeHelper.GetMaritalStatusDescription(
+                	@PartnerCacheable.GetCacheableTable, PersonDR.MaritalStatus);
+				
+				if (MaritalStatusDescr != String.Empty) 
+				{
+					MaritalStatusDescr = " - " + MaritalStatusDescr;				
+				}
+				                
+                SummaryDR.MaritalStatus = PersonDR.MaritalStatus + MaritalStatusDescr;
             }
             else
             {
