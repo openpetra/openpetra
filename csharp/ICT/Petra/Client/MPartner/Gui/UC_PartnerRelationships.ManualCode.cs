@@ -384,7 +384,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             RecalculateScreenPartsEventArgs = new TRecalculateScreenPartsEventArgs();
             RecalculateScreenPartsEventArgs.ScreenPart = TScreenPartEnum.spCounters;
             OnRecalculateScreenParts(RecalculateScreenPartsEventArgs);
-            
+
             if (grdDetails.Rows.Count <= 1)
             {
                 // hide details part and disable buttons if no record in grid (first row for headings)
@@ -438,16 +438,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
-		/// <summary>
-		/// Sets this Usercontrol visible or unvisile true = visible, false = invisible.
-		/// </summary>
-		/// <returns>void</returns>
-		private void MakeDetailsInvisible(Boolean value)
-		{
-			/* make the details part of this screen visible or invisible. */
-		    this.pnlDetails.Visible = !value;
-		}
-        
+        /// <summary>
+        /// Sets this Usercontrol visible or unvisile true = visible, false = invisible.
+        /// </summary>
+        /// <returns>void</returns>
+        private void MakeDetailsInvisible(Boolean value)
+        {
+            /* make the details part of this screen visible or invisible. */
+            this.pnlDetails.Visible = !value;
+        }
+
         #endregion
     }
 }

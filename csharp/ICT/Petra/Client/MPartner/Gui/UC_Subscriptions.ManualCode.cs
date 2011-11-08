@@ -76,7 +76,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         public event THookupPartnerEditDataChangeEventHandler HookupDataChange;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -86,7 +86,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="e"></param>
         private void OnHookupDataChange(THookupPartnerEditDataChangeEventArgs e)
@@ -98,7 +98,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="e"></param>
         private void OnRecalculateScreenParts(TRecalculateScreenPartsEventArgs e)
@@ -110,10 +110,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <returns></returns>
-        private void RecalculateTabHeaderCounter ()
+        private void RecalculateTabHeaderCounter()
         {
             TRecalculateScreenPartsEventArgs RecalculateScreenPartsEventArgs;
 
@@ -122,7 +122,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             RecalculateScreenPartsEventArgs.ScreenPart = TScreenPartEnum.spCounters;
             OnRecalculateScreenParts(RecalculateScreenPartsEventArgs);
         }
-        
+
         /// <summary>
         /// Loads Partner Types Data from Petra Server into FMainDS.
         /// </summary>
@@ -184,26 +184,25 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             GetDetailsFromControls(GetSelectedDetailRow());
         }
-        
+
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public void SpecialInitUserControl()
         {
-
             // Set up screen logic
             PartnerEditUIConnector = FPartnerEditUIConnector;
             LoadDataOnDemand();
-            
+
             OnHookupDataChange(new THookupPartnerEditDataChangeEventArgs(TPartnerEditTabPageEnum.petpSubscriptions));
 
             // Hook up DataSavingStarted Event to be able to run code before SaveChanges is doing anything
             FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(this.DataSavingStarted);
-            
+
             // enable grid to react to insert and delete keyboard keys
             grdDetails.InsertKeyPressed += new TKeyPressedEventHandler(grdDetails_InsertKeyPressed);
             grdDetails.DeleteKeyPressed += new TKeyPressedEventHandler(grdDetails_DeleteKeyPressed);
-            
+
             if (grdDetails.Rows.Count > 1)
             {
                 grdDetails.SelectRowInGrid(1);
@@ -215,7 +214,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 btnCancelAllSubscriptions.Enabled = false;
             }
         }
-        
+
         /// <summary>
         /// This Method is needed for UserControls who get dynamicly loaded on TabPages.
         /// Since we don't have controls on this UserControl that need adjusting after resizing
@@ -224,13 +223,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void AdjustAfterResizing()
         {
         }
-        
+
         #endregion
 
         #region Private Methods
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InitializeManualCode()
         {
@@ -239,14 +238,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void ShowDataManual()
         {
         }
-        
+
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="ARow"></param>
         private void ShowDetailsManual(PSubscriptionRow ARow)
@@ -254,9 +253,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (ARow != null)
             {
                 ucoDetails.AllowEditIssues = true;
-                ucoDetails.ShowDetails (ARow);
+                ucoDetails.ShowDetails(ARow);
             }
-            
+
             btnDelete.Enabled = false;
 
             if (ARow != null)
@@ -265,14 +264,14 @@ namespace Ict.Petra.Client.MPartner.Gui
                 btnCancelAllSubscriptions.Enabled = true;
             }
         }
-        
+
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="ARow"></param>
         private void GetDetailDataFromControlsManual(PSubscriptionRow ARow)
         {
-            ucoDetails.GetDetails (ARow);
+            ucoDetails.GetDetails(ARow);
         }
 
         /// <summary>
@@ -295,9 +294,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 this.DeleteRow(this, null);
             }
         }
-        
+
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -310,7 +309,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="ARow"></param>
         private void NewRowManual(ref PSubscriptionRow ARow)
@@ -320,27 +319,27 @@ namespace Ict.Petra.Client.MPartner.Gui
             ARow.PublicationCode = "";
         }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void EditIssues(System.Object sender, EventArgs e)
         {
         }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CancelAllSubscriptions(System.Object sender, EventArgs e)
         {
             PerformCancelAllSubscriptions(DateTime.MinValue);
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="ACancelDate"></param>
         /// <returns></returns>
@@ -382,7 +381,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     {
                         SubscrCancelledString = SubscrCancelledString + "   " + SubscrCancelled[UpdateCounter].ToString() + Environment.NewLine;
                     }
-                    
+
                     /* Update the Grid UserControl to reflect the changes in the records. */
                     grdDetails.Refresh();
 
@@ -392,22 +391,23 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     /* reset counter in tab header */
                     RecalculateTabHeaderCounter();
-                    
+
                     /* Tell the user that cancelling of Subscriptions was succesful */
-                    MessageBox.Show(String.Format(Catalog.GetString("The following {0} Subscription(s) was/were cancelled:" + "\r\n" + "{1}" + "\r\n" + "The Partner has no active Subscriptions left."),
-                                                  SubscrCancelled.Count,
-                                                  SubscrCancelledString),
-			                        Catalog.GetString("All Subscriptions Cancelled"),
-                                    MessageBoxButtons.OK, 
-                                    MessageBoxIcon.Information);
+                    MessageBox.Show(String.Format(Catalog.GetString("The following {0} Subscription(s) was/were cancelled:" + "\r\n" + "{1}" +
+                                "\r\n" + "The Partner has no active Subscriptions left."),
+                            SubscrCancelled.Count,
+                            SubscrCancelledString),
+                        Catalog.GetString("All Subscriptions Cancelled"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
                 }
                 else
                 {
                     /* User pressed Cancel in the Dialog. Tell the user that nothing was done. */
                     MessageBox.Show(Catalog.GetString("No Subscriptions were cancelled."),
-			                        Catalog.GetString("Cancel All Subscriptions"),
-                                    MessageBoxButtons.OK, 
-                                    MessageBoxIcon.Information);
+                        Catalog.GetString("Cancel All Subscriptions"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
                     ReturnValue = false;
                 }
 
@@ -417,16 +417,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 /* Tell the user that there are no Subscriptions that can be canceled. */
                 MessageBox.Show(Catalog.GetString("There are no Subscriptions to cancel."),
-		                        Catalog.GetString("Cancel All Subscriptions"),
-                                MessageBoxButtons.OK, 
-                                MessageBoxIcon.Information);
+                    Catalog.GetString("Cancel All Subscriptions"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
             }
 
             return ReturnValue;
         }
-        
+
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <returns></returns>
         private int CurrentRowIndex()
@@ -444,7 +444,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="rowIndex"></param>
         private void SelectByIndex(int rowIndex)
@@ -470,9 +470,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FPreviouslySelectedDetailRow = null;
             }
         }
-        
+
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -490,7 +490,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // reset counter in tab header
             RecalculateTabHeaderCounter();
-            
+
             if (grdDetails.Rows.Count <= 1)
             {
                 // hide details part and disable buttons if no record in grid (first row for headings)
@@ -498,12 +498,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                 btnCancelAllSubscriptions.Enabled = false;
                 ucoDetails.MakeScreenInvisible(true);
             }
-
         }
 
         /// <summary>
         /// Counts all cancelable Subscriptions.
-        /// 
+        ///
         /// </summary>
         /// <returns>Number of cancelable Subscriptions
         /// </returns>
@@ -511,10 +510,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             return CancelAllSubscriptions("", DateTime.MinValue, true).Count;
         }
-        
+
         /// <summary>
         /// Cancels all Subscriptions (that are not already CANCELED or EXPIRED).
-        /// 
+        ///
         /// </summary>
         /// <param name="AReasonEnded">Text that gives the reason for ending the Subscriptions</param>
         /// <param name="ADateEnded">Date when the Subscriptions should end (can be empty)</param>
@@ -539,11 +538,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 SubscriptionRow = (PSubscriptionRow)CurrentSubsDV[RowCounter].Row;
 
-                if (SubscriptionRow.IsSubscriptionStatusNull() || (SubscriptionRow.SubscriptionStatus != MPartnerConstants.SUBSCRIPTIONS_STATUS_CANCELLED)
+                if (SubscriptionRow.IsSubscriptionStatusNull()
+                    || (SubscriptionRow.SubscriptionStatus != MPartnerConstants.SUBSCRIPTIONS_STATUS_CANCELLED)
                     && (SubscriptionRow.SubscriptionStatus != MPartnerConstants.SUBSCRIPTIONS_STATUS_EXPIRED))
-
-                /* this should not happen, but one never knows... */
                 {
+                    /* this should not happen, but one never knows... */
+
                     if (!ACountOnly)
                     {
                         SubscriptionRow.BeginEdit();
@@ -560,8 +560,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             return ReturnValue;
         }
-        
+
         #endregion
-        
     }
 }

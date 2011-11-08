@@ -1360,7 +1360,7 @@ namespace Ict.Common.Controls
         {
             Int32 PreviousSelectedIndex = SelectedIndex;
             Int32 NewSelectedIndex = this.FindStringExact(AStr);
-            
+
             if ((NewSelectedIndex == -1) && (Items.Count > 0))
             {
                 if (PreviousSelectedIndex != -1)

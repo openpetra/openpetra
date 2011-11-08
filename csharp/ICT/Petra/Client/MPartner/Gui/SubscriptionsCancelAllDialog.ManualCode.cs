@@ -45,13 +45,12 @@ namespace Ict.Petra.Client.MPartner.Gui
     /// manual methods for the generated window
     public partial class TFrmSubscriptionsCancelAllDialog : System.Windows.Forms.Form
     {
-
         private DateTime FDateEndedPreset = DateTime.MinValue;
 
         /// <summary>
         /// Set this Property to a Date to preset the 'Date Ended' date in the Dialog to
         /// this date (instead of to today, to which it defaults).
-        /// 
+        ///
         /// </summary>
         public DateTime DateEnded
         {
@@ -88,7 +87,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             dtpPSubscriptionDateCancelled.Date = DateEnded;
-            
         }
 
         private void CustomClosingHandler(System.Object sender, System.ComponentModel.CancelEventArgs e)
@@ -113,7 +111,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// Called by the instantiator of this Dialog to retrieve the values of Fields
         /// on the screen.
-        /// 
+        ///
         /// </summary>
         /// <param name="AReasonEnded">Text that gives the reason for ending the Subscriptions</param>
         /// <param name="ADateEnded">Date when the Subscriptions should end (can be empty)</param>
@@ -128,12 +126,11 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             return ReturnValue;
         }
-        
+
         private void BtnOK_Click(Object Sender, EventArgs e)
         {
             this.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.Close();
         }
-
     }
 }
