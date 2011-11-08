@@ -137,6 +137,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 this.btnEditIssues.Enabled = true;
             }
         
+            txtPublicationCost.ReadOnly = true;
+            
             FInitializationRunning = false;
 
         }

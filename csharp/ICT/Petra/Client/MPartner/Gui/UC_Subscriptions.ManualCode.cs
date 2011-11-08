@@ -172,6 +172,19 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
+        /// This Procedure will get called from the SaveChanges procedure before it
+        /// actually performs any saving operation.
+        /// </summary>
+        /// <param name="sender">The Object that throws this Event</param>
+        /// <param name="e">Event Arguments.
+        /// </param>
+        /// <returns>void</returns>
+        private void DataSavingStarted(System.Object sender, System.EventArgs e)
+        {
+            GetDetailsFromControls(GetSelectedDetailRow());
+        }
+        
+        /// <summary>
         /// 
         /// </summary>
         public void SpecialInitUserControl()
@@ -183,6 +196,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             
             OnHookupDataChange(new THookupPartnerEditDataChangeEventArgs(TPartnerEditTabPageEnum.petpSubscriptions));
 
+            // Hook up DataSavingStarted Event to be able to run code before SaveChanges is doing anything
+            FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(this.DataSavingStarted);
+            
             // enable grid to react to insert and delete keyboard keys
             grdDetails.InsertKeyPressed += new TKeyPressedEventHandler(grdDetails_InsertKeyPressed);
             grdDetails.DeleteKeyPressed += new TKeyPressedEventHandler(grdDetails_DeleteKeyPressed);
