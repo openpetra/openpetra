@@ -463,7 +463,7 @@ namespace Ict.Common.Remoting.Server
 
             if (TLogging.DL >= 10)
             {
-                TLogging.Log("Successfully created an instance of TRemoteLoader in Client's AppDomain '" + FAppDomain.FriendlyName,
+                TLogging.Log("Successfully created an instance of TRemoteLoader in Client's AppDomain '" + NewAppDomainConnection.FAppDomain.FriendlyName,
                     TLoggingType.ToConsole | TLoggingType.ToLogfile);
             }
 
