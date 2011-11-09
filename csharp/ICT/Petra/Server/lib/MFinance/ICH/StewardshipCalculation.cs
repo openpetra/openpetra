@@ -77,15 +77,15 @@ namespace Ict.Petra.Server.MFinance.ICH
                 Console.WriteLine(this.GetType().FullName + ": PerformStewardshipCalculation called.");
             }
 
-            AVerificationResult = null;
+            AVerificationResult = new TVerificationResultCollection();
 
             //Begin the transaction
             TDBTransaction DBTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
             try
             {
-                if (   GenerateAdminFeeBatch(ALedgerNumber, APeriodNumber, false, DBTransaction, ref AVerificationResult)
-                    && PostToLedger(ALedgerNumber, APeriodNumber, DBTransaction, ref AVerificationResult))
+                if (GenerateAdminFeeBatch(ALedgerNumber, APeriodNumber, false, DBTransaction, ref AVerificationResult))
+                    //&& PostToLedger(ALedgerNumber, APeriodNumber, DBTransaction, ref AVerificationResult))
                 {
                     
                     DBAccess.GDBAccessObj.CommitTransaction();
@@ -741,6 +741,7 @@ namespace Ict.Petra.Server.MFinance.ICH
             /* Make a temporary table to hold totals for gifts going to
              *  each account. */
             GLStewardshipCalculationTDSCreditFeeTotalTable CreditFeeTotalDT = new GLStewardshipCalculationTDSCreditFeeTotalTable();
+            //int x = CreditFeeTotalDT.Count;
             GLStewardshipCalculationTDSCreditFeeTotalRow CreditFeeTotalDR = null;
 
             //CreditFeeTotalDR = CreditFeeTotalDT.NewRowTyped();
@@ -992,6 +993,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                             TransactionRow.Reference = "AG";
                             TransactionRow.SystemGenerated = true;
                             AdminFeeDS.ATransaction.Rows.Add(TransactionRow);
+                            CreatedSuccessfully = true;
                         }
                     }
 
