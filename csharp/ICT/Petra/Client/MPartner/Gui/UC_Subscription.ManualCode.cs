@@ -41,8 +41,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
 
-        private CustomEnablingDisabling.TDelegateDisabledControlClick FDelegateDisabledControlClick;
-
         /// <summary> indicate if the "Edit Issues" button is allowed to be generally be enabled </summary>
         private Boolean FAllowEditIssues = false;
 
@@ -71,17 +69,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             set
             {
                 FPartnerEditUIConnector = value;
-            }
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        public CustomEnablingDisabling.TDelegateDisabledControlClick DisabledControlClickHandler
-        {
-            set
-            {
-                FDelegateDisabledControlClick = value;
             }
         }
 
