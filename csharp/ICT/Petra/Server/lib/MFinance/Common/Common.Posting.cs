@@ -1133,6 +1133,13 @@ namespace Ict.Petra.Server.MFinance.Common
                 ErrorType = TResultSeverity.Resv_Critical;
                 VerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
             }
+            finally
+            {
+                if (NewTransactionStarted)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();    
+                }
+            }
 
             return MainDS;
         }
