@@ -953,7 +953,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 if (AField.GetDotNetType().ToLower().Contains("string"))
                 {
                     snippetGetData.SetCodelet("GETVALUEORNULL", "{#ROW}.{#COLUMNNAME} = {#CONTROLVALUE};");
-                    snippetGetData.SetCodelet("GETROWVALUEORNULL", "{#ROW}.{#COLUMNNAME} = {#CONTROLVALUE};");
+                    snippetGetData.InsertSnippet("GETROWVALUEORNULL", writer.Template.GetSnippet("GETROWVALUEORNULLSTRING"));
                 }
                 else
                 {

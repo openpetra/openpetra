@@ -47,6 +47,10 @@ if ({#NOTDEFAULTTABLE} != null)
 {
     {#SETCONTROLVALUE}
 }
+else
+{
+    {#SETNULLVALUE}
+}
 
 {##GETROWVALUEORNULL}
 if (({#NOTDEFAULTTABLE} != null) && ({#NOTDEFAULTTABLE}.Rows.Count > 0))
@@ -59,6 +63,12 @@ if (({#NOTDEFAULTTABLE} != null) && ({#NOTDEFAULTTABLE}.Rows.Count > 0))
     {
         {#NOTDEFAULTTABLE}[0].{#COLUMNNAME} = {#CONTROLVALUE};
     }
+}
+
+{##GETROWVALUEORNULLSTRING}
+if (({#NOTDEFAULTTABLE} != null) && ({#NOTDEFAULTTABLE}.Rows.Count > 0))
+{
+    {#ROW}.{#COLUMNNAME} = {#CONTROLVALUE};
 }
 
 {##SETVALUEORNULL}
