@@ -24,6 +24,7 @@
 using System;
 using System.Collections.Specialized;
 using System.Collections.Generic;
+using Ict.Common;
 
 namespace Ict.Tools.DataDumpPetra2
 {
@@ -222,6 +223,45 @@ namespace Ict.Tools.DataDumpPetra2
                     if (val.Length > 20)
                     {
                         SetValue(AColumnNames, ref CurrentRow, "p_branch_code_c", val.Replace(" ", ""));
+                    }
+                }
+            }
+
+            // if target field is null or 0, use the home office partner key
+            if (ATableName == "pm_staff_data")
+            {
+                for (Int32 counter = 0; counter < ACSVLines.Count; counter++)
+                {
+                    string[] CurrentRow = ACSVLines[counter];
+                    string val = GetValue(AColumnNames, CurrentRow, "pm_receiving_field_n");
+
+                    if ((val == "0") || (val.Length == 0) || (val == "\\N"))
+                    {
+                        SetValue(AColumnNames, ref CurrentRow, "pm_receiving_field_n",
+                            GetValue(AColumnNames, CurrentRow, "pm_home_office_n"));
+                    }
+                }
+            }
+
+            // pm_st_basic_outreach_id_c cannot be null
+            if (ATableName == "pm_short_term_application")
+            {
+                for (Int32 counter = 0; counter < ACSVLines.Count; counter++)
+                {
+                    string[] CurrentRow = ACSVLines[counter];
+                    string val = GetValue(AColumnNames, CurrentRow, "pm_st_basic_outreach_id_c");
+
+                    if ((val == "0") || (val.Length == 0) || (val == "\\N"))
+                    {
+                        SetValue(AColumnNames, ref CurrentRow, "pm_st_basic_outreach_id_c", "INVALID");
+                    }
+
+                    val = GetValue(AColumnNames, CurrentRow, "pm_st_field_charged_n");
+
+                    if ((val == "0") || (val.Length == 0) || (val == "\\N"))
+                    {
+                        SetValue(AColumnNames, ref CurrentRow, "pm_st_field_charged_n",
+                            GetValue(AColumnNames, CurrentRow, "pm_registration_office_n"));
                     }
                 }
             }
