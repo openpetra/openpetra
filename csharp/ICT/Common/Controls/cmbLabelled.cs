@@ -414,6 +414,15 @@ namespace Ict.Common.Controls
         /// set the string that should be selected;
         /// uses TCmbVersatile.SetSelectedString
         /// </summary>
+        public bool SetSelectedString(string ASelectedString, Int32 ADefaultIndex)
+        {
+            return this.cmbCombobox.SetSelectedString(ASelectedString, ADefaultIndex);
+        }
+
+        /// <summary>
+        /// set the string that should be selected;
+        /// uses TCmbVersatile.SetSelectedString
+        /// </summary>
         /// <param name="ASelectedString"></param>
         public bool SetSelectedString(string ASelectedString)
         {

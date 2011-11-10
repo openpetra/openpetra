@@ -913,6 +913,17 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             ProcessTemplate snippetShowData = writer.Template.GetSnippet("SHOWDATAFORCOLUMN");
 
+            if (AField.GetDotNetType().ToLower().Contains("string"))
+            {
+                snippetShowData.SetCodelet("SETVALUEORNULL", "{#SETCONTROLVALUE}");
+                snippetShowData.SetCodelet("SETROWVALUEORNULL", "{#SETROWVALUE}");
+            }
+            else
+            {
+                snippetShowData.InsertSnippet("SETVALUEORNULL", writer.Template.GetSnippet("SETVALUEORNULL"));
+                snippetShowData.InsertSnippet("SETROWVALUEORNULL", writer.Template.GetSnippet("SETROWVALUEORNULL"));
+            }
+
             snippetShowData.SetCodelet("CANBENULL", !AField.bNotNull ? "yes" : "");
             snippetShowData.SetCodelet("DETERMINECONTROLISNULL", this.GetControlValue(ctrl, null));
             snippetShowData.SetCodelet("NOTDEFAULTTABLE", TestForNullTable);
@@ -920,6 +931,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             snippetShowData.SetCodelet("COLUMNNAME", fieldname);
             snippetShowData.SetCodelet("SETNULLVALUE", this.AssignValue(ctrl, null, null));
             snippetShowData.SetCodelet("SETCONTROLVALUE", this.AssignValue(ctrl, RowName + "." + fieldname, AField.GetDotNetType()));
+            snippetShowData.InsertSnippet("SETROWVALUE", writer.Template.GetSnippet("SETROWVALUE"));
 
             writer.Template.InsertSnippet(targetCodelet, snippetShowData);
 
@@ -937,6 +949,17 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 targetCodelet = targetCodelet.Replace("SHOW", "SAVE");
 
                 ProcessTemplate snippetGetData = writer.Template.GetSnippet("GETDATAFORCOLUMNTHATCANBENULL");
+
+                if (AField.GetDotNetType().ToLower().Contains("string"))
+                {
+                    snippetGetData.SetCodelet("GETVALUEORNULL", "{#ROW}.{#COLUMNNAME} = {#CONTROLVALUE};");
+                    snippetGetData.SetCodelet("GETROWVALUEORNULL", "{#ROW}.{#COLUMNNAME} = {#CONTROLVALUE};");
+                }
+                else
+                {
+                    snippetGetData.InsertSnippet("GETVALUEORNULL", writer.Template.GetSnippet("GETVALUEORNULL"));
+                    snippetGetData.InsertSnippet("GETROWVALUEORNULL", writer.Template.GetSnippet("GETROWVALUEORNULL"));
+                }
 
                 snippetGetData.SetCodelet("CANBENULL", !AField.bNotNull && (this.GetControlValue(ctrl, null) != null) ? "yes" : "");
                 snippetGetData.SetCodelet("NOTDEFAULTTABLE", TestForNullTable);

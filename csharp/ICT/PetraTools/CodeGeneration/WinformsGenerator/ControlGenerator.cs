@@ -634,6 +634,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 return ctrl.controlName + ".SelectedIndex = (" + AFieldOrNull + "?1:0);";
             }
 
+            if (AFieldTypeDotNet == "String")
+            {
+                return ctrl.controlName + ".SetSelected" + AFieldTypeDotNet + "(" + AFieldOrNull + ", -1);";
+            }
+
             return ctrl.controlName + ".SetSelected" + AFieldTypeDotNet + "(" + AFieldOrNull + ");";
         }
 
