@@ -108,7 +108,7 @@
             </if>
             <if test="${platform::is-windows()}">
                 <echo message="If this fails, make sure you have already manually created a database user in pgAdmin, username ${DBMS.UserName} and password ${DBMS.Password}, that has permissions to create databases."/>
-                <psql exe="${PostgreSQL.exe}" sqlcommand="DROP DATABASE IF EXISTS ${DBMS.DBName};" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+                <psql exe="${PostgreSQL.exe}" sqlcommand="DROP DATABASE IF EXISTS ${DBMS.DBName};" database="template1" username="${DBMS.UserName}" password="${DBMS.Password}"/>
                 <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE DATABASE ${DBMS.DBName} WITH OWNER=${DBMS.UserName};" database="template1" username="${DBMS.UserName}" password="${DBMS.Password}"/>
             </if>
 

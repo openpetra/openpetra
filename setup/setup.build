@@ -197,7 +197,6 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
   </if>
 
   <if test="${string::contains(LinuxTargetDistribution-list, 'postgresql')}">
-    <call target="refreshSudo"/>
     <call target="createPostgreSQLDB" unless="${target::has-executed('createPostgreSQLDB')}"/>
   </if>
   <if test="${string::contains(LinuxTargetDistribution-list, 'mysql')}">
