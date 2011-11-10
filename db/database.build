@@ -32,6 +32,89 @@
         </if>
     </target>
 
+<script language="C#" prefix="OP" >
+  <references>
+    <include name="System.Xml.dll" />
+  </references>
+  <imports>
+    <import namespace="System.Collections.Generic" />
+    <import namespace="System.Text" />
+    <import namespace="System.Xml" />
+    <import namespace="System.IO" />
+  </imports>
+  <code>
+    <![CDATA[
+    [Function("CreateMetaXMLForSchemaSpy")]
+        public static void CreateMetaXMLForSchemaSpy(string APetraXml, string AMetaFile)
+        {
+            XmlDocument doc = new XmlDocument();
+
+            doc.Load(APetraXml);
+            using (StreamWriter sw = new StreamWriter(AMetaFile))
+            {
+                sw.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                sw.WriteLine("<schemaMeta>");
+                sw.WriteLine("  <comments>OpenPetra Version 3 Database</comments>");
+                sw.WriteLine("  <tables>");
+                XmlNodeList tables = doc.DocumentElement.SelectNodes("table");
+                foreach (XmlNode t in tables)
+                {
+                    XmlAttribute attName = t.Attributes["name"];
+                    XmlAttribute attDescr = t.Attributes["descr"];
+                    if (attName != null && attDescr != null)
+                    {
+                        string s = attDescr.Value;
+                        s = s.Replace("<br/>", " ");
+                        s = s.Replace("\"\"", "");
+                        s = s.Replace("\r\n", "");
+                        s = s.Replace("&", "and");
+                        s = s.Replace("<=", "less than or equal to");
+                        sw.WriteLine(String.Format("    <table name=\"{0}\" comments=\"{1}\">", attName.Value, s));
+                    }
+                    XmlNodeList fields = t.SelectNodes("tablefield");
+                    foreach (XmlNode f in fields)
+                    {
+                        attName = f.Attributes["name"];
+                        attDescr = f.Attributes["descr"];
+                        if (attName != null && attDescr != null)
+                        {
+                            string s = attDescr.Value;
+                            s = s.Replace("<br/>", " ");
+                            s = s.Replace("\"\"", "");
+                            s = s.Replace("\r\n", "");
+                            s = s.Replace("&", "and");
+                            s = s.Replace("<=", "less than or equal to");
+                            sw.WriteLine(String.Format("      <column name=\"{0}\" comments=\"{1}\" />", attName.Value, s));
+                        }
+                    }
+                    sw.WriteLine("    </table>");
+                }
+                sw.WriteLine("  </tables>");
+                sw.WriteLine("</schemaMeta>");
+                sw.Close();
+            }
+        }
+]]>
+        </code>
+    </script>
+    
+    <target name="schemaSpy" depends="init">
+        <property name="createMetaFile" value="${OP::CreateMetaXMLForSchemaSpy(PetraXML.file, tempdir + '/petra.metadata.xml')}"/>
+
+        <echo message="This requires that Graphviz has been installed, and that schemaSpy_5.0.0.jar and postgresql-9.1-901.jdbc4.jar from http://jdbc.postgresql.org/ are placed in the delivery directory"/>
+        <echo message="Note: this process might take over 8000 seconds (ie. 133 minutes)"/>
+        
+        <exec program="${external.Java}" workingdir="${dir.delivery}" commandline="-jar schemaSpy_5.0.0.jar -t pgsql -dp postgresql-9.1-901.jdbc4.jar -host localhost:5432 -db ${DBMS.DBName} -u ${DBMS.UserName} -p ${DBMS.Password} -s public -o schemaSpyOutput -meta &quot;${tempdir}/petra.metadata.xml&quot; -noimplied -lq -gv &quot;${OP::GetDirInProgramDirectory('/Graphviz 2.28')}&quot;"/>
+        <!-- -i &quot;(a_ap_.*)&quot; -x &quot;(.*.s_date_created_d)|(.*.s_created_by_c)|(.*.s_date_modified_d)|(.*.s_modified_by_c)|(.*.s_modification_id_c)&quot; -->
+        
+        <delete>
+            <fileset>
+                <include name="${dir.delivery}/schemaSpyOutput/diagrams/*.dot" />
+                <include name="${dir.delivery}/schemaSpyOutput/diagrams/*.2degrees.png" />
+            </fileset>
+        </delete>        
+    </target>
+
     <target name="dbdoc" depends="init">
         <mkdir dir="${DBDoc.Output.dir}" failonerror="false"/>    
         <mkdir dir="${DBDoc.Output.dir}/tables" failonerror="false"/>    

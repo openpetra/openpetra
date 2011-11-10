@@ -320,6 +320,7 @@
   <!-- MS Windows specific -->
   <property name="external.Uncrustify" value="${OP::GetFileInProgramDirectory('/uncrustify/uncrustify.exe')}" 
             overwrite="false"/>
+  <property name="external.Java" value="${OP::GetFileInProgramDirectory('/Java/jre6/bin/java.exe')}" overwrite="false"/>
   <property name="external.Poedit.gettext" value="${OP::GetFileInProgramDirectory('/Poedit/bin/xgettext.exe')}" overwrite="false"/>
   <property name="external.Poedit.msgfmt" value="${OP::GetFileInProgramDirectory('/Poedit/bin/msgfmt.exe')}" overwrite="false"/>
   <property name="external.Poedit.msgcat" value="${OP::GetFileInProgramDirectory('/Poedit/bin/msgcat.exe')}" overwrite="false"/> 
@@ -328,8 +329,8 @@
 <if test="${'win32'!=platform::get-name()}">
   <if test="${'unix'==platform::get-name()}">
     <!-- Unix specific -->
-    <property name="external.Uncrustify" value="uncrustify" 
-              overwrite="false"/>
+    <property name="external.Uncrustify" value="uncrustify" overwrite="false"/>
+    <property name="external.Java" value="java" overwrite="false"/>
     <property name="external.Poedit.gettext" value="/usr/bin/xgettext" overwrite="false"/>
     <property name="external.Poedit.msgfmt" value="/usr/bin/msgfmt" overwrite="false"/>
     <property name="external.Poedit.msgcat" value="/usr/bin/msgcat" overwrite="false"/>     
