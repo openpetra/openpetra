@@ -253,7 +253,9 @@ namespace Ict.Tools.DataDumpPetra2
 
                     if ((val == "0") || (val.Length == 0) || (val == "\\N"))
                     {
-                        SetValue(AColumnNames, ref CurrentRow, "pm_st_basic_outreach_id_c", "INVALID");
+                        SetValue(AColumnNames, ref CurrentRow, "pm_st_basic_outreach_id_c",
+                            GetValue(AColumnNames, CurrentRow, "pm_registration_office_n") + "-" +
+                            GetValue(AColumnNames, CurrentRow, "pm_application_key_i"));
                     }
 
                     val = GetValue(AColumnNames, CurrentRow, "pm_st_field_charged_n");
