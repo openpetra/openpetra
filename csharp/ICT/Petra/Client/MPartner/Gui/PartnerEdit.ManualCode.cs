@@ -1435,7 +1435,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             ucoLowerPart.HookupDataChange += new THookupDataChangeEventHandler(this.UcoPartnerTabSet_HookupDataChange);
             ucoLowerPart.HookupPartnerEditDataChange += new THookupPartnerEditDataChangeEventHandler(
                 this.UcoPartnerTabSet_HookupPartnerEditDataChange);
-						
 
             switch (FCurrentModuleTabGroup)
             {
@@ -1443,12 +1442,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     ViewPartnerData(null, null);
 
-		            if (FNewPartnerWithAutoCreatedAddress)
-		            {
-		                // hardcoded for the first Address of a new Partner
-		                ucoLowerPart.DisableNewButtonOnAutoCreatedAddress();
-		            }                    
-		            
+                    if (FNewPartnerWithAutoCreatedAddress)
+                    {
+                        // hardcoded for the first Address of a new Partner
+                        ucoLowerPart.DisableNewButtonOnAutoCreatedAddress();
+                    }
+
                     break;
 
                 case TModuleSwitchEnum.msPersonnel:
