@@ -459,7 +459,7 @@ namespace Ict.Common.Remoting.Server
                                     null,
                                     new object[] { TRemoteLoader.CLIENTDOMAIN_DLLNAME, TRemoteLoader.CLIENTDOMAIN_CLASSNAME },
                                     Thread.CurrentThread.CurrentCulture,
-                                    null, null));
+                                    null));
 
             if (TLogging.DL >= 10)
             {

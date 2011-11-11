@@ -454,7 +454,7 @@ namespace Ict.Common
         /// <param name="separator">the delimiter/separator of the list</param>
         /// <param name="ATryAllSeparators">if this is true, a number of default separators (slash, comma, etc) will be used</param>
         /// <returns>the first value of the list</returns>
-        public static string GetNextCSV(ref string list, string separator, Boolean ATryAllSeparators)
+        public static string GetNextCSV(ref string list, string separator, Boolean ATryAllSeparators = false)
         {
             if (list.Length == 0)
             {
@@ -631,18 +631,6 @@ namespace Ict.Common
             }
 
             return value.ToString();
-        }
-
-        /// <summary>
-        /// overload for GetNextCSV
-        /// this will only use the given separator
-        /// </summary>
-        /// <param name="list">separated values; the first value will be removed</param>
-        /// <param name="separator">delimiter to be used</param>
-        /// <returns>the first value of the string</returns>
-        public static string GetNextCSV(ref string list, string separator)
-        {
-            return GetNextCSV(ref list, separator, false);
         }
 
         /// <summary>
