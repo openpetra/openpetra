@@ -166,7 +166,7 @@ namespace Ict.Common
             /// <returns></returns>
             public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
             {
-                if (value == typeof(string))
+                if (value.GetType() == typeof(string))
                 {
                     return value;
                 }
