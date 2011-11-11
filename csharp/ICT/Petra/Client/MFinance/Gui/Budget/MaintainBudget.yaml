@@ -1,0 +1,34 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain Budget
+    Namespace: Ict.Petra.Client.MFinance.Gui.Budget
+    DatasetType: Ict.Petra.Shared.MFinance.GL.Data.BudgetTDS
+    DetailTable: ABudget
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data]
+    FormType: edit
+    Template: windowEdit
+    Actions:
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew]
+        btnNew:
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailAccountCode, DetailCostCentreCode, DetailBudgetTypeCode]
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [cmbDetailAccountCode]
+                Row1: [cmbDetailCostCentreCode]
+        cmbDetailAccountCode: {Label=Account, List=UserDefinedList}
+        cmbDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList}
+        #TODO: radio buttons for selection of budget type, display different user controls depending on selection, similar to bankimport screen
+    Menu:
+    Toolbar:
