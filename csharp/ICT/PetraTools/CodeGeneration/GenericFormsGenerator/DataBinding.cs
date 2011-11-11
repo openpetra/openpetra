@@ -95,6 +95,7 @@ namespace Ict.Tools.CodeGeneration
                 {
                     tablename = TTable.NiceTableName(tableNode.Attributes["sqltable"].Value);
                     table = FPetraXMLStore.GetTable(tablename);
+
                     table.strVariableNameInDataset = TXMLParser.HasAttribute(tableNode, "name") ? tableNode.Attributes["name"].Value : tablename;
 
                     if ((tableNode.SelectNodes("CustomField").Count > 0) || (tableNode.SelectNodes("Field").Count > 0))
@@ -143,6 +144,12 @@ namespace Ict.Tools.CodeGeneration
                 {
                     TTable otherTable = FPetraXMLStore.GetTable(otherField.Attributes["sqltable"].Value);
                     TTableField newField = new TTableField(otherTable.GetField(otherField.Attributes["sqlfield"].Value));
+
+                    if (TXMLParser.HasAttribute(otherField, "name"))
+                    {
+                        newField.strNameDotNet = otherField.Attributes["name"].Value;
+                    }
+
                     newField.strTableName = tablename;
                     table.grpTableField.List.Add(newField);
                 }
@@ -321,7 +328,7 @@ namespace Ict.Tools.CodeGeneration
                 // this is probably no data field at all
                 if (AShowWarningNonExistingField)
                 {
-                    Console.WriteLine("Expected data field but cannot resolve " + ADataField);
+                    Console.WriteLine("Warning: Expected data field but cannot resolve " + ADataField);
                 }
 
                 return null;
