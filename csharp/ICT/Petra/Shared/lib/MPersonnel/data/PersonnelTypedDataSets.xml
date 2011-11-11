@@ -33,7 +33,7 @@
             <Field sqltable="p_person" sqlfield="p_date_of_birth_d"/>
             <Field sqltable="p_person" sqlfield="p_gender_c"/>
             <Field sqltable="p_person" sqlfield="p_marital_status_c"/>
-            <Field name="Nationality" sqltable="p_country" sqlfield="p_country_name_c"/>
+            <Field name="Nationality" sqltable="p_country" sqlfield="p_country_name_c" comment="Nationality of the Person"/>
             <Field sqltable="p_partner_location" sqlfield="p_email_address_c"/>
             <Field sqltable="p_partner_location" sqlfield="p_telephone_number_c"/>
             
