@@ -57,7 +57,7 @@ namespace Ict.Petra.Shared.MPartner
 
         /// <summary>
         /// Specifies how to format the String that is returned by Method
-        /// <see cref="DetermineLocationString(Ict.Petra.Shared.MPartner.Partner.Data.PLocationRow, Ict.Petra.Shared.MPartner.Calculations.TPartnerLocationFormatEnum)" />.
+        /// <see cref="M:Ict.Petra.Shared.MPartner.Calculations.DetermineLocationString(Ict.Petra.Shared.MPartner.Partner.Data.PLocationRow, Ict.Petra.Shared.MPartner.Calculations.TPartnerLocationFormatEnum)" />.
         /// </summary>
         public enum TPartnerLocationFormatEnum
         {
