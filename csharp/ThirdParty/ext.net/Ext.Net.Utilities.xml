@@ -4,6 +4,27 @@
         <name>Ext.Net.Utilities</name>
     </assembly>
     <members>
+        <member name="M:Ext.Net.Utilities.DateTimeUtils.ToISOString(System.DateTime)">
+            <summary>
+            Returns an ISO 8601 formatted DateTime string
+            </summary>
+            <param name="instance">The DateTime object to format</param>
+            <returns>The ISO 8601 formatted string</returns>
+        </member>
+        <member name="M:Ext.Net.Utilities.DateTimeUtils.ToISODateString(System.DateTime)">
+            <summary>
+            Returns the Date portion only of an ISO 8601 formatted DateTime string
+            </summary>
+            <param name="instance">The DateTime object to format</param>
+            <returns>The ISO 8601 formatted string</returns>
+        </member>
+        <member name="M:Ext.Net.Utilities.DateTimeUtils.ToISOTimeString(System.DateTime)">
+            <summary>
+            Returns the Time portion only of an ISO 8601 formatted DateTime string
+            </summary>
+            <param name="instance">The DateTime object to format</param>
+            <returns>The ISO 8601 formatted string</returns>
+        </member>
         <member name="M:Ext.Net.Utilities.DateTimeUtils.ConvertPHPToNet(System.String)">
             <summary>
             Accepts a Unix/PHP date string format and returns a valid .NET date format

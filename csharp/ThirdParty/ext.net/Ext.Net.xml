@@ -2331,6 +2331,13 @@
             
             </summary>
         </member>
+        <member name="M:Ext.Net.XControl.Builder`2.ItemID(System.String)">
+            <summary>
+            An itemId can be used as an alternative way to get a reference to a component when no object reference is available.
+            </summary>
+            <param name="itemId">The ItemID to assign to the Component.</param>
+            <returns>ControlBuilder</returns>
+        </member>
         <member name="M:Ext.Net.XControl.Builder`2.ToScript">
             <summary>
             
@@ -2471,6 +2478,11 @@
             <typeparam name="TConfig"></typeparam>
             <param name="config"></param>
             <returns></returns>
+        </member>
+        <member name="P:Ext.Net.XControl.Config.ItemID">
+            <summary>
+            An itemId can be used as an alternative way to get a reference to a component when no object reference is available.
+            </summary>
         </member>
         <member name="P:Ext.Net.XControl.Config.Enabled">
             <summary>
@@ -9898,7 +9910,7 @@
             Layout config of the inner hbox layout
             </summary>
         </member>
-        <!-- Badly formed XML comment ignored for member "P:Ext.Net.CompositeField.AutoDoLayout" -->
+        <!-- Ungültiger XML-Kommentar wurde für den Member "P:Ext.Net.CompositeField.AutoDoLayout" ignoriert -->
         <member name="P:Ext.Net.CompositeField.BuildLabel">
             <summary>
             Builds a label string from an array of subfield labels. Calls if CompositeField has no FieldLabel
@@ -13997,7 +14009,7 @@
             The group store ID to use.
             </summary>
         </member>
-        <!-- Badly formed XML comment ignored for member "P:Ext.Net.EventEditWindowBase.Width" -->
+        <!-- Ungültiger XML-Kommentar wurde für den Member "P:Ext.Net.EventEditWindowBase.Width" ignoriert -->
         <member name="P:Ext.Net.EventEditWindowBase.Height">
             <summary>
             The height of this component in pixels (defaults to auto).
@@ -18126,7 +18138,7 @@
             </summary>
             <returns>this Element</returns>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:Ext.Net.Element.AlignTo(Ext.Net.Element,System.String,System.Int32[],System.Boolean)" -->
+        <!-- Ungültiger XML-Kommentar wurde für den Member "M:Ext.Net.Element.AlignTo(Ext.Net.Element,System.String,System.Int32[],System.Boolean)" ignoriert -->
         <member name="M:Ext.Net.Element.AlignTo(Ext.Net.Element,System.String,System.Int32[],Ext.Net.ElementFxConfig)">
             <summary>
             Aligns this element with another element relative to the specified anchor points. If the other element is the document it aligns it to the viewport. 
@@ -18137,8 +18149,8 @@
             <param name="animate">Animation config</param>
             <returns>This element</returns>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:Ext.Net.Element.AlignTo(Ext.Net.Element,System.String,System.Int32[])" -->
-        <!-- Badly formed XML comment ignored for member "M:Ext.Net.Element.AlignTo(Ext.Net.Element,System.String)" -->
+        <!-- Ungültiger XML-Kommentar wurde für den Member "M:Ext.Net.Element.AlignTo(Ext.Net.Element,System.String,System.Int32[])" ignoriert -->
+        <!-- Ungültiger XML-Kommentar wurde für den Member "M:Ext.Net.Element.AlignTo(Ext.Net.Element,System.String)" ignoriert -->
         <member name="M:Ext.Net.Element.AlignTo(Ext.Net.Element)">
             <summary>
             Aligns this element with another element relative to the specified anchor points. If the other element is the document it aligns it to the viewport. 
@@ -20169,16 +20181,6 @@
             Get or Set the RawValue as a string value.
             </summary>
         </member>
-        <member name="P:Ext.Net.TextFieldBase.AutoCreate">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="P:Ext.Net.TextFieldBase.AutoCreateProxy">
-            <summary>
-            
-            </summary>
-        </member>
         <member name="P:Ext.Net.TextFieldBase.AllowBlank">
             <summary>
             False to validate that the value length > 0 (defaults to true).
@@ -20327,11 +20329,6 @@
         <member name="M:Ext.Net.TextFieldBase.Builder`2.RawText(System.String)">
             <summary>
             The Text value to initialize this field with.
-            </summary>
-        </member>
-        <member name="M:Ext.Net.TextFieldBase.Builder`2.AutoCreate(System.String)">
-            <summary>
-            
             </summary>
         </member>
         <member name="M:Ext.Net.TextFieldBase.Builder`2.AllowBlank(System.Boolean)">
@@ -20487,11 +20484,6 @@
         <member name="P:Ext.Net.TextFieldBase.Config.RawText">
             <summary>
             The Text value to initialize this field with.
-            </summary>
-        </member>
-        <member name="P:Ext.Net.TextFieldBase.Config.AutoCreate">
-            <summary>
-            
             </summary>
         </member>
         <member name="P:Ext.Net.TextFieldBase.Config.AllowBlank">
@@ -21772,7 +21764,7 @@
             
             </summary>
         </member>
-        <!-- Badly formed XML comment ignored for member "P:Ext.Net.TableLayoutConfig.TableAttrs" -->
+        <!-- Ungültiger XML-Kommentar wurde für den Member "P:Ext.Net.TableLayoutConfig.TableAttrs" ignoriert -->
         <member name="P:Ext.Net.TableLayoutConfig.ConfigOptions">
             <summary>
             
@@ -36671,6 +36663,11 @@
             </summary>
         </member>
         <member name="P:Ext.Net.MenuBase.IsDefault">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Ext.Net.MenuBase.RenderEmptyMenu">
             <summary>
             
             </summary>
@@ -57103,7 +57100,7 @@
             
             </summary>
         </member>
-        <!-- Badly formed XML comment ignored for member "P:Ext.Net.TableLayout.TableAttrs" -->
+        <!-- Ungültiger XML-Kommentar wurde für den Member "P:Ext.Net.TableLayout.TableAttrs" ignoriert -->
         <member name="P:Ext.Net.TableLayout.Columns">
             <summary>
             The total number of columns to create in the table for this layout. If not specified, all panels added to this layout will be rendered into a single row using a column per panel.
@@ -57159,7 +57156,7 @@
             
             </summary>
         </member>
-        <!-- Badly formed XML comment ignored for member "P:Ext.Net.TableLayout.Config.TableAttrs" -->
+        <!-- Ungültiger XML-Kommentar wurde für den Member "P:Ext.Net.TableLayout.Config.TableAttrs" ignoriert -->
         <member name="P:Ext.Net.TableLayout.Config.Columns">
             <summary>
             The total number of columns to create in the table for this layout. If not specified, all panels added to this layout will be rendered into a single row using a column per panel.
@@ -58061,11 +58058,6 @@
             </summary>
         </member>
         <member name="P:Ext.Net.TextArea.InstanceOf">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="P:Ext.Net.TextArea.AutoCreateProxy">
             <summary>
             
             </summary>
@@ -62394,18 +62386,6 @@
             
             </summary>
         </member>
-        <member name="M:Ext.Net.ExtControlDesigner.WriteLog(System.String)">
-            <summary>
-            
-            </summary>
-            <param name="message"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Ext.Net.ExtControlDesigner.Refresh">
-            <summary>
-            
-            </summary>
-        </member>
         <member name="M:Ext.Net.ExtControlDesigner.GetErrorDesignTimeHtml(System.Exception)">
             <summary>
             
@@ -63931,8 +63911,8 @@
             True to try to find a common work break
             </summary>
         </member>
-        <!-- Badly formed XML comment ignored for member "F:Ext.Net.RendererFormat.HtmlDecode" -->
-        <!-- Badly formed XML comment ignored for member "F:Ext.Net.RendererFormat.HtmlEncode" -->
+        <!-- Ungültiger XML-Kommentar wurde für den Member "F:Ext.Net.RendererFormat.HtmlDecode" ignoriert -->
+        <!-- Ungültiger XML-Kommentar wurde für den Member "F:Ext.Net.RendererFormat.HtmlEncode" ignoriert -->
         <member name="F:Ext.Net.RendererFormat.Nl2br">
             <summary>
             Converts newline characters to the HTML tag &lt;br/>

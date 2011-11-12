@@ -1,4 +1,4 @@
-Currently used version: ext.net community 1.1
+Currently used version: ext.net community 1.2
 
 The Newtonsoft.Json.Net20.dll has been compiled with the latest compiler built from Mono 2.8 trunk.
 This was necessary so that no Microsoft dlls were linked in.

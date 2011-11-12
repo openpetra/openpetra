@@ -1,12 +1,12 @@
-﻿Product      : Ext.NET Pro
-Version      : 1.1.0
-Last Updated : 2011-07-05
+﻿Product      : Ext.NET Community
+Version      : 1.2.0
+Last Updated : 2011-09-12
 
 --------------------------------------------------------------------------
    CONTENTS
 --------------------------------------------------------------------------
 
-I.    Version 1.0.0 CHANGELOG
+I.    Version 1.2.0 CHANGELOG
 II.   ADD TO VISUAL STUDIO (or VISUAL WEB DEVELOPER) PROJECT INSTRUCTIONS
 III.  SAMPLE WEB.CONFIG
 IV.   <extnet> WEB.CONFIG GLOBAL CONFIGURATION PROPERTIES
@@ -14,7 +14,7 @@ V.    CREDITS
 
 
 --------------------------------------------------------------------------
-   I. Version 1.0.0 CHANGELOG
+   I. Version 1.2.0 CHANGELOG
 --------------------------------------------------------------------------
 
 See CHANGELOG.txt
@@ -270,7 +270,7 @@ quickTips : boolean
                                
 --------------------------------------------------------------------------
 	
-        Copyright (c) 2011, Ext.NET, Inc. All rights reserved.
+      Copyright (c) 2006-2011, Ext.NET, Inc. All rights reserved.
 
                            Ext.NET, Inc.
                          support@ext.net
