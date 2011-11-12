@@ -30,6 +30,7 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Collections.Specialized;
 using Ict.Common;
+using Ict.Common.IO;
 using Ict.Tools.CodeGeneration;
 using Ict.Tools.DBXML;
 
