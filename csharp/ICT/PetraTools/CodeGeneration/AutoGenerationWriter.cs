@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,13 +22,15 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Reflection;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.IO;
 using Ict.Common;
 using Ict.Common.IO;
-using DDW;
+using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory;
 
 namespace Ict.Tools.CodeGeneration
 {
@@ -46,6 +48,7 @@ namespace Ict.Tools.CodeGeneration
      */
     public class AutoGenerationWriter
     {
+        /// a line should have only maximum number of characters
         public static Int32 CODE_LENGTH_UNCRUSTIFY = 150;
 
         private Int16 indent = 0;
@@ -64,6 +67,10 @@ namespace Ict.Tools.CodeGeneration
             BufferTemp = new List <string>();
         }
 
+        /// <summary>
+        /// write the string collections, line by line
+        /// </summary>
+        /// <param name="ABuffer"></param>
         public void WriteBuffer(StringCollection ABuffer)
         {
             foreach (string s in ABuffer)
@@ -136,6 +143,9 @@ namespace Ict.Tools.CodeGeneration
             }
         }
 
+        /// <summary>
+        /// write new line
+        /// </summary>
         public void WriteLine()
         {
             newVersion.Add(string.Empty);
@@ -216,6 +226,10 @@ namespace Ict.Tools.CodeGeneration
             return Result;
         }
 
+        /// <summary>
+        /// write a comment
+        /// </summary>
+        /// <param name="AComment"></param>
         public void WriteComment(string AComment)
         {
             StringCollection Lines = StringHelper.StrSplit(AComment, Environment.NewLine);
@@ -248,6 +262,10 @@ namespace Ict.Tools.CodeGeneration
             }
         }
 
+        /// <summary>
+        /// start a code block
+        /// </summary>
+        /// <param name="ALine"></param>
         public void StartBlock(String ALine)
         {
             if (ALine.Length > 0)
@@ -259,6 +277,9 @@ namespace Ict.Tools.CodeGeneration
             Indent();
         }
 
+        /// <summary>
+        /// close a code block, closing bracket
+        /// </summary>
         public void EndBlock()
         {
             DeIndent();
@@ -266,11 +287,17 @@ namespace Ict.Tools.CodeGeneration
             WriteLine();
         }
 
+        /// <summary>
+        /// indent the code by one level
+        /// </summary>
         public void Indent()
         {
             indent++;
         }
 
+        /// <summary>
+        /// the code moves by one level to the left again
+        /// </summary>
         public void DeIndent()
         {
             indent--;
@@ -285,9 +312,9 @@ namespace Ict.Tools.CodeGeneration
         /// <param name="align"></param>
         /// <param name="AParamName"></param>
         /// <param name="AParamModifier"></param>
-        /// <param name="AParamType"></param>
+        /// <param name="AParamTypeName"></param>
         public void AddParameter(ref string MethodDeclaration, ref bool firstParameter, int align,
-            string AParamName, Modifier AParamModifier, IType AParamType)
+            string AParamName, ParameterModifiers AParamModifier, string AParamTypeName)
         {
             if (!firstParameter)
             {
@@ -297,14 +324,14 @@ namespace Ict.Tools.CodeGeneration
 
             firstParameter = false;
 
-            String parameterType = CSParser.GetName(AParamType);
+            String parameterType = AParamTypeName;
             String StrParameter = "";
 
-            if ((AParamModifier & Modifier.Ref) != 0)
+            if ((ParameterModifiers.Ref & AParamModifier) > 0)
             {
                 StrParameter += "ref ";
             }
-            else if ((AParamModifier & Modifier.Out) != 0)
+            else if ((ParameterModifiers.Out & AParamModifier) > 0)
             {
                 StrParameter += "out ";
             }
@@ -314,15 +341,27 @@ namespace Ict.Tools.CodeGeneration
             MethodDeclaration += StrParameter;
         }
 
+        /// <summary>
+        /// default constructor
+        /// </summary>
         public AutoGenerationWriter()
         {
         }
 
+        /// <summary>
+        /// constructor, opens the file for reading, the file that we want to update
+        /// </summary>
+        /// <param name="AOutputFile"></param>
         public AutoGenerationWriter(string AOutputFile)
         {
             OpenFile(AOutputFile);
         }
 
+        /// <summary>
+        /// get the original version of the file that should be rewritten
+        /// </summary>
+        /// <param name="AOutputFile"></param>
+        /// <returns></returns>
         public bool OpenFile(string AOutputFile)
         {
             OutputFile = AOutputFile;
@@ -368,11 +407,18 @@ namespace Ict.Tools.CodeGeneration
             return -1;
         }
 
+        /// <summary>
+        /// merge the new content into the existing file
+        /// </summary>
         public void Close()
         {
             Close(true);
         }
 
+        /// <summary>
+        /// merge the new content into the existing file, if DoWrite is true
+        /// </summary>
+        /// <param name="DoWrite"></param>
         public void Close(bool DoWrite)
         {
             if (DoWrite)

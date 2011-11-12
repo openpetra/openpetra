@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -30,8 +30,8 @@ using Ict.Common.IO;
 
 namespace Ict.Tools.CodeGeneration
 {
-    // see http://en.wikibooks.org/wiki/Algorithm_implementation/Strings/Longest_common_subsequence
-    // and http://www.mycsharp.de/wbb2/thread.php?threadid=79055
+    /// see http://en.wikibooks.org/wiki/Algorithm_implementation/Strings/Longest_common_subsequence
+    /// and http://www.mycsharp.de/wbb2/thread.php?threadid=79055
     public class TFileDiffMerge
     {
         /// calculate md5hash for each line that is longer than 16 byte.
@@ -111,8 +111,8 @@ namespace Ict.Tools.CodeGeneration
         /// <summary>
         /// calculate the longest common subsequence matrix. this will tell us which parts have been added or removed
         /// </summary>
-        /// <param name="list1">a list of integers</param>
-        /// <param name="list2">list of integers to be compared with the first list</param>
+        /// <param name="AList1">a list of integers</param>
+        /// <param name="AList2">list of integers to be compared with the first list</param>
         /// <returns></returns>
         public static int[, ] GetLongestCommonSubsequenceMatrix(Int32[] AList1, Int32[] AList2)
         {

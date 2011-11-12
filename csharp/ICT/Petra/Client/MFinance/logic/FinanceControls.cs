@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -57,36 +57,30 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="ALocalOnly"></param>
         private static string PrepareCostCentreFilter(bool APostingOnly, bool AExcludePosting, bool AActiveOnly, bool ALocalOnly)
         {
-            string Filter = "";
+            string Filter = ACostCentreTable.GetCostCentreCodeDBName() + " = '' OR (";
+
+            Filter += "1=1";
 
             if (APostingOnly)
             {
-                Filter += ACostCentreTable.GetPostingCostCentreFlagDBName() + " = true";
+                Filter += " AND " + ACostCentreTable.GetPostingCostCentreFlagDBName() + " = true";
             }
             else if (AExcludePosting)
             {
-                Filter += ACostCentreTable.GetPostingCostCentreFlagDBName() + " = false";
+                Filter += " AND " + ACostCentreTable.GetPostingCostCentreFlagDBName() + " = false";
             }
 
             if (AActiveOnly)
             {
-                if (Filter.Length > 0)
-                {
-                    Filter += " AND ";
-                }
-
-                Filter += ACostCentreTable.GetCostCentreActiveFlagDBName() + " = true";
+                Filter += " AND " + ACostCentreTable.GetCostCentreActiveFlagDBName() + " = true";
             }
 
             if (ALocalOnly)
             {
-                if (Filter.Length > 0)
-                {
-                    Filter += " AND ";
-                }
-
-                Filter += ACostCentreTable.GetCostCentreTypeDBName() + " = 'Local'";
+                Filter += " AND " + ACostCentreTable.GetCostCentreTypeDBName() + " = 'Local'";
             }
+
+            Filter += ")";
 
             return Filter;
         }
@@ -111,36 +105,28 @@ namespace Ict.Petra.Client.MFinance.Logic
             bool AActiveOnly, bool ABankAccountOnly,
             string AForeignCurrencyName)
         {
-            string Filter = "";
+            string Filter = AAccountTable.GetAccountCodeDBName() + " = '' OR (";
+
+            Filter += "1=1";
 
             if (APostingOnly)
             {
-                Filter += AAccountTable.GetPostingStatusDBName() + " = true";
+                Filter += " AND " + AAccountTable.GetPostingStatusDBName() + " = true";
             }
             else if (AExcludePosting)
             {
-                Filter += AAccountTable.GetPostingStatusDBName() + " = false";
+                Filter += " AND " + AAccountTable.GetPostingStatusDBName() + " = false";
             }
 
             if (AActiveOnly)
             {
-                if (Filter.Length > 0)
-                {
-                    Filter += " AND ";
-                }
-
-                Filter += AAccountTable.GetAccountActiveFlagDBName() + " = true";
+                Filter += " AND " + AAccountTable.GetAccountActiveFlagDBName() + " = true";
             }
 
             // GetCacheableFinanceTable returns a DataTable with a bank flag
             if (ABankAccountOnly)
             {
-                if (Filter.Length > 0)
-                {
-                    Filter += " AND ";
-                }
-
-                Filter += GLSetupTDSAAccountTable.GetBankAccountFlagDBName() + " = true";
+                Filter += " AND " + GLSetupTDSAAccountTable.GetBankAccountFlagDBName() + " = true";
             }
 
             // AForeignCurrencyName.Equals("") means use default or do nothing!
@@ -156,6 +142,8 @@ namespace Ict.Petra.Client.MFinance.Logic
                 Filter += ")";       // Bracket 2
                 Filter += ")";       // Bracket 1
             }
+
+            Filter += ")";
 
             return Filter;
         }
@@ -248,6 +236,14 @@ namespace Ict.Petra.Client.MFinance.Logic
         {
             DataTable Table = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList, ALedgerNumber);
 
+            // add empty row so that SetSelectedString for invalid string will not result in undefined behaviour (selecting the first cost centre etc)
+            DataRow emptyRow = Table.NewRow();
+
+            emptyRow[ACostCentreTable.ColumnLedgerNumberId] = ALedgerNumber;
+            emptyRow[ACostCentreTable.ColumnCostCentreCodeId] = string.Empty;
+            emptyRow[ACostCentreTable.ColumnCostCentreNameId] = Catalog.GetString("Select a valid cost centre");
+            Table.Rows.Add(emptyRow);
+
             AControl.InitialiseUserControl(Table,
                 ACostCentreTable.GetCostCentreCodeDBName(),
                 ACostCentreTable.GetCostCentreNameDBName(),
@@ -291,6 +287,14 @@ namespace Ict.Petra.Client.MFinance.Logic
             string AForeignCurrencyName)
         {
             DataTable Table = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, ALedgerNumber);
+
+            // add empty row so that SetSelectedString for invalid string will not result in undefined behaviour (selecting the first account etc)
+            DataRow emptyRow = Table.NewRow();
+
+            emptyRow[AAccountTable.ColumnLedgerNumberId] = ALedgerNumber;
+            emptyRow[AAccountTable.ColumnAccountCodeId] = string.Empty;
+            emptyRow[AAccountTable.ColumnAccountCodeShortDescId] = Catalog.GetString("Select a valid account");
+            Table.Rows.Add(emptyRow);
 
             AControl.InitialiseUserControl(Table,
                 AAccountTable.GetAccountCodeDBName(),
@@ -563,7 +567,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             if (!FindAndSelect(ref cmbMinistry, APartnerKey))
             {
                 //Clear the combobox
-                cmbMinistry.SelectedValueCell = null;
+                cmbMinistry.SelectedIndex = -1;
             }
         }
 
@@ -573,7 +577,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             {
                 if (pr.PartnerKey == APartnerKey)
                 {
-                    AControl.SelectedValueCell = APartnerKey;
+                    AControl.SetSelectedInt64(APartnerKey);
                     return true;
                 }
             }
@@ -621,6 +625,58 @@ namespace Ict.Petra.Client.MFinance.Logic
             }
 
             return "ledger " + ALedgerNumber.ToString();
+        }
+
+        /// <summary>
+        /// fill checkedlistbox values with fees payable list
+        /// </summary>
+        /// <param name="AControl"></param>
+        /// <param name="ALedgerNumber"></param>
+        public static void InitialiseFeesPayableList(ref TClbVersatile AControl,
+            Int32 ALedgerNumber)
+        {
+            string CheckedMember = "CHECKED";
+            string DisplayMember = AFeesPayableTable.GetFeeDescriptionDBName();
+            string ValueMember = AFeesPayableTable.GetFeeCodeDBName();
+
+            DataTable Table = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.FeesPayableList, ALedgerNumber);
+            DataView view = new DataView(Table);
+
+            DataTable NewTable = view.ToTable(true, new string[] { ValueMember, DisplayMember });
+
+            NewTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
+
+            AControl.Columns.Clear();
+            AControl.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
+            AControl.AddTextColumn(Catalog.GetString("Code"), NewTable.Columns[ValueMember], 60);
+            AControl.AddTextColumn(Catalog.GetString("Cost Centre Description"), NewTable.Columns[DisplayMember], 200);
+            AControl.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
+        }
+
+        /// <summary>
+        /// fill checkedlistbox values with fees receivable list
+        /// </summary>
+        /// <param name="AControl"></param>
+        /// <param name="ALedgerNumber"></param>
+        public static void InitialiseFeesReceivableList(ref TClbVersatile AControl,
+            Int32 ALedgerNumber)
+        {
+            string CheckedMember = "CHECKED";
+            string DisplayMember = AFeesReceivableTable.GetFeeDescriptionDBName();
+            string ValueMember = AFeesReceivableTable.GetFeeCodeDBName();
+
+            DataTable Table = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.FeesReceivableList, ALedgerNumber);
+            DataView view = new DataView(Table);
+
+            DataTable NewTable = view.ToTable(true, new string[] { ValueMember, DisplayMember });
+
+            NewTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
+
+            AControl.Columns.Clear();
+            AControl.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
+            AControl.AddTextColumn(Catalog.GetString("Code"), NewTable.Columns[ValueMember], 60);
+            AControl.AddTextColumn(Catalog.GetString("Cost Centre Description"), NewTable.Columns[DisplayMember], 200);
+            AControl.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
         }
     }
 }

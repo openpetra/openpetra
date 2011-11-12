@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -31,7 +31,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
-using Ict.Petra.Server.App.ClientDomain;
+using Ict.Petra.Server.App.Core;
 
 namespace Ict.Petra.Server.MPartner.Common
 {
@@ -83,9 +83,11 @@ namespace Ict.Petra.Server.MPartner.Common
             if (NewTransaction)
             {
                 DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                Console.WriteLine("TNewPartnerKey.GetNewPartnerKey: committed own transaction.");
-#endif
+
+                if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_TRACE)
+                {
+                    Console.WriteLine("TNewPartnerKey.GetNewPartnerKey: committed own transaction.");
+                }
             }
 
             return PartnerLedgerTable[0].PartnerKey + PartnerLedgerTable[0].LastPartnerId + 1;
@@ -145,9 +147,11 @@ namespace Ict.Petra.Server.MPartner.Common
                     if (NewTransaction)
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                        Console.WriteLine("TNewPartnerKey.SubmitNewPartnerKey: committed own transaction.");
-#endif
+
+                        if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_TRACE)
+                        {
+                            Console.WriteLine("TNewPartnerKey.SubmitNewPartnerKey: committed own transaction.");
+                        }
                     }
                 }
                 PartnerLedgerDT[0].LastPartnerId = (int)(ANewPartnerKey - PartnerLedgerDT[0].PartnerKey);
@@ -191,9 +195,11 @@ namespace Ict.Petra.Server.MPartner.Common
                     if (NewTransaction)
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                        Console.WriteLine("TNewPartnerKey.SubmitNewPartnerKey: committed own transaction.");
-#endif
+
+                        if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_TRACE)
+                        {
+                            Console.WriteLine("TNewPartnerKey.SubmitNewPartnerKey: committed own transaction.");
+                        }
                     }
                 }
             }

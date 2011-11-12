@@ -41,8 +41,7 @@ namespace Ict.Petra.Client.MCommon.Gui
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources =
-                new System.ComponentModel.ComponentResourceManager(typeof(TFieldOfServiceWinForm));
+            new System.ComponentModel.ComponentResourceManager(typeof(TFieldOfServiceWinForm));
 
             this.lblPartnerKey = new System.Windows.Forms.Label();
             this.lblPartnerName = new System.Windows.Forms.Label();

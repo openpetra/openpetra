@@ -126,7 +126,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
                 || (MessageBox.Show(String.Format(Catalog.GetString(
-                                "You have choosen to delete this entry with start of commitment date ({0:d}).\n\nDo you really want to delete it?"),
+                                "You have chosen to delete this entry with start of commitment date ({0:d}).\n\nDo you really want to delete it?"),
                             FPreviouslySelectedDetailRow.StartOfCommitment), Catalog.GetString("Confirm Delete"),
                         MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes))
             {
@@ -196,7 +196,10 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             try
             {
-                DateTime StartOfCommitment = dtpDetailStartOfCommitment.Date.Value;
+                if (!dtpDetailStartOfCommitment.Date.HasValue)
+                {
+                    throw new Exception();
+                }
             }
             catch (Exception)
             {
@@ -207,7 +210,10 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             try
             {
-                DateTime EndOfCommitment = dtpDetailEndOfCommitment.Date.Value;
+                if (!dtpDetailEndOfCommitment.Date.HasValue)
+                {
+                    throw new Exception();
+                }
             }
             catch (Exception)
             {

@@ -258,6 +258,79 @@ namespace Ict.Common.Data
         }
 
         /// <summary>
+        /// compare the changed columns of a row.
+        /// for some reasons, on the client the values are read from the controls, and despite the row has not changed, the row is marked modified
+        /// </summary>
+        public static bool IsReallyChanged(DataRow ADataRow)
+        {
+            int DEBUGLEVEL_REALLYCHANGED = 1;
+
+            if (ADataRow.RowState == DataRowState.Added)
+            {
+                if (TLogging.DebugLevel >= DEBUGLEVEL_REALLYCHANGED)
+                {
+                    TLogging.Log("Row has been added:");
+
+                    foreach (DataColumn dc in ADataRow.Table.Columns)
+                    {
+                        TLogging.Log("  " + dc.ColumnName + ": " + ADataRow[dc.Ordinal].ToString());
+                    }
+                }
+
+                return true;
+            }
+            else if (ADataRow.RowState == DataRowState.Deleted)
+            {
+                if (TLogging.DebugLevel >= DEBUGLEVEL_REALLYCHANGED)
+                {
+                    TLogging.Log("Row has been deleted:");
+
+                    foreach (DataColumn dc in ADataRow.Table.Columns)
+                    {
+                        TLogging.Log("  " + dc.ColumnName + ": " + ADataRow[dc.Ordinal, DataRowVersion.Original].ToString());
+                    }
+                }
+
+                return true;
+            }
+            else if (ADataRow.RowState == DataRowState.Modified)
+            {
+                if (TLogging.DebugLevel >= DEBUGLEVEL_REALLYCHANGED)
+                {
+                    TLogging.Log("Row has been modified:");
+                }
+
+                bool changed = false;
+
+                foreach (DataColumn dc in ADataRow.Table.Columns)
+                {
+                    if (ADataRow[dc.Ordinal, DataRowVersion.Original].ToString() != ADataRow[dc.Ordinal, DataRowVersion.Current].ToString())
+                    {
+                        changed = true;
+
+                        if (TLogging.DebugLevel >= DEBUGLEVEL_REALLYCHANGED)
+                        {
+                            TLogging.Log("***  " + dc.ColumnName + ": from " +
+                                ADataRow[dc.Ordinal, DataRowVersion.Original].ToString() + " to " +
+                                ADataRow[dc.Ordinal, DataRowVersion.Current].ToString());
+                        }
+                    }
+                    else
+                    {
+                        if (TLogging.DebugLevel >= DEBUGLEVEL_REALLYCHANGED)
+                        {
+                            TLogging.Log("  " + dc.ColumnName + ": " + ADataRow[dc.Ordinal, DataRowVersion.Original].ToString());
+                        }
+                    }
+                }
+
+                return changed;
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// copy the modification ids from one datarow to another
         /// </summary>
         /// <param name="ADestinationDR">datarow to be modified</param>
@@ -465,6 +538,94 @@ namespace Ict.Common.Data
             {
                 ADest.ImportRow(r);
             }
+        }
+
+        /// <summary>
+        /// make sure that unmodified rows are marked as accepted
+        /// </summary>
+        /// <param name="AInspectDT"></param>
+        /// <param name="AMaxColumn"></param>
+        /// <param name="AExcludeLocation0"></param>
+        /// <returns></returns>
+        public static Int32 AcceptChangesForUnmodifiedRows(DataTable AInspectDT, Int32 AMaxColumn, Boolean AExcludeLocation0)
+        {
+            Int32 ReturnValue;
+            Int32 MaxColumn;
+            Int16 Counter;
+            Int16 Counter2;
+            Int16 ChangedDRColumns;
+
+            #region Process Arguments
+
+            if (AInspectDT == null)
+            {
+                throw new ArgumentException("AInspectDT must not be nil");
+            }
+
+            if (AMaxColumn != -1)
+            {
+                MaxColumn = AMaxColumn;
+            }
+            else
+            {
+                MaxColumn = AInspectDT.Columns.Count;
+            }
+
+            #endregion
+            ReturnValue = 0;
+
+            for (Counter = 0; Counter <= AInspectDT.Rows.Count - 1; Counter += 1)
+            {
+                ChangedDRColumns = 0;
+
+                if (((AInspectDT.Rows[Counter].RowState == DataRowState.Modified)
+                     || (AInspectDT.Rows[Counter].RowState == DataRowState.Added))
+                    && ((AExcludeLocation0) && (Convert.ToInt32(AInspectDT.Rows[Counter]["p_location_key_i"]) != 0)))
+                {
+                    for (Counter2 = 0; Counter2 <= MaxColumn - 1; Counter2 += 1)
+                    {
+                        if ((AInspectDT.Rows[Counter].RowState == DataRowState.Added)
+                            || (AInspectDT.Rows[Counter][Counter2,
+                                                         DataRowVersion.Original] != AInspectDT.Rows[Counter][Counter2, DataRowVersion.Current]))
+                        {
+                            ChangedDRColumns++;
+                            ReturnValue++;
+                        }
+                    }
+
+                    if (ChangedDRColumns == 0)
+                    {
+                        // Make DataRow unchanged since the Original values don't differ
+                        // from the Current values for any of the DataColumns!
+                        // MessageBox.Show('Calling AcceptChanges on Row ' + Counter.ToString + '; Contents of first 2 columns: ' +
+                        // AInspectDT.Rows[Counter][0].ToString + '; ' + AInspectDT.Rows[Counter][1].ToString);
+                        AInspectDT.Rows[Counter].AcceptChanges();
+                    }
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// make sure that unmodified rows are marked as accepted
+        /// </summary>
+        /// <param name="AInspectDT"></param>
+        /// <param name="AMaxColumn"></param>
+        /// <returns></returns>
+        public static Int32 AcceptChangesForUnmodifiedRows(DataTable AInspectDT, Int32 AMaxColumn)
+        {
+            return AcceptChangesForUnmodifiedRows(AInspectDT, AMaxColumn, false);
+        }
+
+        /// <summary>
+        /// make sure that unmodified rows are marked as accepted
+        /// </summary>
+        /// <param name="AInspectDT"></param>
+        /// <returns></returns>
+        public static Int32 AcceptChangesForUnmodifiedRows(DataTable AInspectDT)
+        {
+            return AcceptChangesForUnmodifiedRows(AInspectDT, -1, false);
         }
     }
 }

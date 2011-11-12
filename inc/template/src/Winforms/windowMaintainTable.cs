@@ -18,6 +18,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Client.CommonForms;
 {#USINGNAMESPACES}
 
@@ -35,7 +36,7 @@ namespace {#NAMESPACE}
     }
 
     /// constructor
-    public {#CLASSNAME}(IntPtr AParentFormHandle) : base()
+    public {#CLASSNAME}(Form AParentForm) : base()
     {
       Control[] FoundCheckBoxes;
       
@@ -51,7 +52,7 @@ namespace {#NAMESPACE}
       
       {#ASSIGNFONTATTRIBUTES}
       
-      FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentFormHandle, this, stbMain);
+      FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentForm, this, stbMain);
       {#INITUSERCONTROLS}
       FMainDS.{#DETAILTABLE} = new {#DETAILTABLE}Table();
       Ict.Common.Data.TTypedDataTable TypedTable;
@@ -202,7 +203,9 @@ namespace {#NAMESPACE}
     {
         if (ARow != null)
         {
+            ARow.BeginEdit();
             {#SAVEDETAILS}
+            ARow.EndEdit();
         }
     }
 {#ENDIF SAVEDETAILS}

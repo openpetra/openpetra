@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,9 +23,11 @@
 //
 using System;
 using System.Windows.Forms;
+using System.Reflection;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Verification;
+using Ict.Petra.Shared;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors;
 
@@ -45,13 +47,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             dtpCalendarStartDate.Date = new DateTime(DateTime.Now.Year, 1, 1);
             nudNumberOfFwdPostingPeriods.Value = 8;
             nudNumberOfPeriods.Value = 12;
-            nudCurrentPeriod.Value = DateTime.Now.Month;
+            nudCurrentPeriod.Value = 1;
             cmbBaseCurrency.SetSelectedString("EUR");
             cmbIntlCurrency.SetSelectedString("USD");
             cmbCountryCode.SetSelectedString("DE");
+
+            btnOK.Text = "C&reate Ledger";
         }
 
-        private void CreateLedger(System.Object sender, EventArgs e)
+        private void BtnOK_Click(System.Object sender, EventArgs e)
         {
             TVerificationResultCollection VerificationResult;
 
@@ -78,7 +82,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 if (VerificationResult != null)
                 {
                     MessageBox.Show(
-                        VerificationResult.GetVerificationResult(0).ResultText,
+                        VerificationResult.BuildVerificationResultString(),
                         Catalog.GetString("Problem: No Ledger has been created"));
                 }
                 else
@@ -95,6 +99,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         nudLedgerNumber.Value),
                     Catalog.GetString("Success"),
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                // reload permissions for user
+                UserInfo.GUserInfo = TRemote.MSysMan.Security.UserManager.ReloadCachedUserInfo();
+
+                // reload navigation
+                Form MainWindow = FPetraUtilsObject.GetCallerForm();
+                MethodInfo method = MainWindow.GetType().GetMethod("LoadNavigationUI");
+
+                if (method != null)
+                {
+                    method.Invoke(MainWindow, new object[] { });
+                }
+
+                Close();
             }
         }
     }

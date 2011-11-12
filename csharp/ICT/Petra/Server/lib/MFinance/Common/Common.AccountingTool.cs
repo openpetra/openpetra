@@ -50,8 +50,6 @@ namespace Ict.Petra.Server.MFinance.Common
 
         private bool blnReadyForTransaction;
 
-        private ATransactionRow lastTransaction = null;
-
         // The use of the default value requires an additional database request. So this is done in the
         // "last moment" and only if no other date value is used
         private bool blnInitBatchDate;
@@ -104,7 +102,7 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 if (blnReadyForTransaction)
                 {
-                    TerminateException terminate = new TerminateException(
+                    TVerificationException terminate = new TVerificationException(
                         "You cannot change the Date after you have created a journal!");
                     terminate.Context = "Common Accountig";
                     terminate.ErrorCode = "GL.CAT.01";
@@ -166,7 +164,7 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 if (!blnReadyForTransaction)
                 {
-                    TerminateException terminate = new TerminateException(
+                    TVerificationException terminate = new TVerificationException(
                         "You have to add a journal before you can change the JournalDescription!");
                     terminate.Context = "Common Accountig";
                     terminate.ErrorCode = "GL.CAT.02";
@@ -186,7 +184,7 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 if (!blnReadyForTransaction)
                 {
-                    TerminateException terminate = new TerminateException(
+                    TVerificationException terminate = new TVerificationException(
                         "You have to add a journal before you can change the TransactionTypeCode!");
                     terminate.Context = "Common Accountig";
                     terminate.ErrorCode = "GL.CAT.03";
@@ -206,7 +204,7 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 if (!blnReadyForTransaction)
                 {
-                    TerminateException terminate = new TerminateException(
+                    TVerificationException terminate = new TVerificationException(
                         "You have to add a journal before you can change the SubSystemCode!");
                     terminate.Context = "Common Accountig";
                     terminate.ErrorCode = "GL.CAT.04";
@@ -303,7 +301,7 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             if (!blnJournalIsInForeign)
             {
-                TerminateException terminate = new TerminateException(
+                TVerificationException terminate = new TVerificationException(
                     Catalog.GetString("You cannot account foreign currencies in a base journal!"));
                 terminate.Context = "Common Accountig";
                 terminate.ErrorCode = "GL.CAT.05";
@@ -325,7 +323,7 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             if (!blnReadyForTransaction)
             {
-                TerminateException terminate = new TerminateException(
+                TVerificationException terminate = new TVerificationException(
                     Catalog.GetString("You have to add a journal before you can add a transaction!"));
                 terminate.Context = "Common Accountig";
                 terminate.ErrorCode = "GL.CAT.06";
@@ -354,7 +352,7 @@ namespace Ict.Petra.Server.MFinance.Common
                                     AAccount,
                                     accountCheck.ForeignCurrencyCode,
                                     getForeignCurrencyInfo.CurrencyCode);
-                                TerminateException terminate = new TerminateException(strMessage);
+                                TVerificationException terminate = new TVerificationException(strMessage);
                                 terminate.Context = "Common Accountig";
                                 terminate.ErrorCode = "GL.CAT.07";
                                 throw terminate;
@@ -399,8 +397,6 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 journal.JournalCreditTotal += AAmountBaseCurrency;
             }
-
-            lastTransaction = transaction;
         }
 
         /// <summary>

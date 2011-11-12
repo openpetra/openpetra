@@ -33,7 +33,7 @@ using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Common.Verification;
-using Ict.Petra.Server.App.ClientDomain;
+using Ict.Petra.Server.App.Core;
 
 namespace Ict.Petra.Server.MPartner
 {

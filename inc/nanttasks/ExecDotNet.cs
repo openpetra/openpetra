@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,9 +28,15 @@ using System.Diagnostics;
 
 namespace Ict.Tools.NAntTasks
 {
+    /// <summary>
+    /// run a dot net program. On Linux this need to call mono explicitely
+    /// </summary>
     [TaskName("ExecDotNet")]
     public class ExecDotNetTask : NAnt.Core.Tasks.ExecTask
     {
+        /// <summary>
+        /// run the task
+        /// </summary>
         protected override void ExecuteTask()
         {
             if (NAnt.Core.PlatformHelper.IsMono)

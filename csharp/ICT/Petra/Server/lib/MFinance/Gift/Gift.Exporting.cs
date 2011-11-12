@@ -4,7 +4,7 @@
 // @Authors:
 //       matthiash
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -68,8 +68,6 @@ namespace Ict.Petra.Server.MFinance.Gift
         bool FTransactionsOnly;
         bool FExtraColumns;
         TDBTransaction FTransaction;
-        Int64 FRecipientNumber;
-        Int64 FFieldNumber;
         GiftBatchTDS FMainDS;
         GLSetupTDS FSetupTDS;
         TVerificationResultCollection FMessages = new TVerificationResultCollection();
@@ -89,7 +87,6 @@ namespace Ict.Petra.Server.MFinance.Gift
             out TVerificationResultCollection AMessages)
         {
             FStringWriter = new StringWriter();
-            StringBuilder line = new StringBuilder();
             FMainDS = new GiftBatchTDS();
             FSetupTDS = new GLSetupTDS();
             FDelimiter = (String)requestParams["Delimiter"];
@@ -102,8 +99,8 @@ namespace Ict.Petra.Server.MFinance.Gift
             String NumberFormat = (String)requestParams["NumberFormat"];
             FCultureInfo = new CultureInfo(NumberFormat.Equals("American") ? "en-US" : "de-DE");
             FTransactionsOnly = (bool)requestParams["TransactionsOnly"];
-            FRecipientNumber = (Int64)requestParams["RecipientNumber"];
-            FFieldNumber = (Int64)requestParams["FieldNumber"];
+            // FRecipientNumber = (Int64)requestParams["RecipientNumber"];
+            // FFieldNumber = (Int64)requestParams["FieldNumber"];
             FExtraColumns = (bool)requestParams["ExtraColumns"];
 
 
@@ -246,50 +243,6 @@ namespace Ict.Petra.Server.MFinance.Gift
             return true; //true=complete TODO (if needed) find reasonable limit for FStringWriter in main memory, interrupt
         }
 
-        private bool GiftRestricted(AGiftRow GiftDR)
-        {
-            SGroupGiftTable GroupGiftDT;
-            SUserGroupTable UserGroupDT;
-            Int16 Counter;
-
-            DataRow[] FoundUserGroups;
-
-            if (GiftDR.Restricted)
-            {
-                GroupGiftDT = SGroupGiftAccess.LoadViaAGift(
-                    GiftDR.LedgerNumber,
-                    GiftDR.BatchNumber,
-                    GiftDR.GiftTransactionNumber,
-                    FTransaction);
-                UserGroupDT = SUserGroupAccess.LoadViaSUser(UserInfo.GUserInfo.UserID, FTransaction);
-
-                // Loop over all rows of GroupGiftDT
-                for (Counter = 0; Counter <= GroupGiftDT.Rows.Count - 1; Counter += 1)
-                {
-                    // To be able to view a Gift, ReadAccess must be granted
-                    if (GroupGiftDT[Counter].ReadAccess)
-                    {
-                        // Find out whether the user has a row in s_user_group with the
-                        // GroupID of the GroupGift row
-                        FoundUserGroups = UserGroupDT.Select(SUserGroupTable.GetGroupIdDBName() + " = '" + GroupGiftDT[Counter].GroupId + "'");
-
-                        if (FoundUserGroups.Length != 0)
-                        {
-                            // The gift is not restricted because there is a read access for the group
-                            return false;
-                            // don't evaluate further GroupGiftDT rows
-                        }
-                    }
-                }
-            }
-            else
-            {
-                return false;
-            }
-
-            return true;
-        }
-
         private String PartnerShortName(Int64 partnerKey)
         {
             if (partnerKey > 0)
@@ -340,7 +293,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                 WriteStringQuoted("T");
             }
 
-            if (GiftRestricted(gift))
+            if (TGift.GiftRestricted(gift, FTransaction))
             {
                 WriteGeneralNumber(0);
                 WriteStringQuoted("Confidential");
@@ -488,12 +441,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
         void WriteGeneralNumber(decimal generalNumberField, bool bLineEnd)
         {
-            Int64 integerNumber = Convert.ToInt64(generalNumberField);
-
-
             FStringWriter.Write(String.Format(FCultureInfo, "{0:g}", generalNumberField));
-
-
             WriteDelimiter(bLineEnd);
         }
 

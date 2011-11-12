@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -69,7 +69,6 @@ namespace Ict.Petra.Server.MFinance.Common
         protected void RunPeriodEndCheck(AbstractPeriodEndOperation Apeo)
         {
             Apeo.IsInInfoMode = blnIsInInfoMode;
-            Apeo.VerificationResultCollection = verificationResults;
             Apeo.RunEndOfPeriodOperation();
 
             if (Apeo.HasCriticalErrors)
@@ -166,17 +165,17 @@ namespace Ict.Petra.Server.MFinance.Common
         protected int intCountJobs;
 
         /// <summary>
-        /// JobSize returns the number of data base records which are affected in this operation. Be shure
-        /// not only to find the data bases which are to be changed but also not to find the records which
+        /// JobSize returns the number of database records which are affected in this operation. Be sure
+        /// not only to find the databases which are to be changed but also not to find the records which
         /// are allready changed.
-        /// Or: Be shure that JobSize is zero after RunEndOfPeriodOperation has been done sucessfully.
+        /// Or: Be sure that JobSize is zero after RunEndOfPeriodOperation has been done sucessfully.
         /// </summary>
         public abstract int JobSize {
             get;
         }
 
         /// <summary>
-        /// The specific operation is done. Be shure to handle blnIsInInfoMode and blnCriticalErrors correctly
+        /// The specific operation is done. Be sure to handle blnIsInInfoMode and blnCriticalErrors correctly
         /// </summary>
         public abstract void RunEndOfPeriodOperation();
 
@@ -330,7 +329,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// This value is only defined if the TCarryForwardENum holds the value "year". In normal cases you can
         /// get the value of the actual accounting year from the table a_accounting_period
         /// of the open petra database. But this values are changed in the year end routine and in order
-        /// to make shure to get allways the same value, the year is stored in a_ledger_init_flag from the
+        /// to make sure to get allways the same value, the year is stored in a_ledger_init_flag from the
         /// entrance to the TCarryForwardENum.Year-Period to the next TCarryForwardENum.Month-Period.
         /// </summary>
         public int Year
@@ -519,14 +518,12 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
         /// <summary>
-        /// The years are actulized ...
+        /// The years are updated ...
         /// </summary>
         override public void RunEndOfPeriodOperation()
         {
             if (DoExecuteableCode)
             {
-                int year = intActualYear + 1;
-
                 for (int i = 0; i < accountingPeriodTable.Rows.Count; ++i)
                 {
                     accountingPeriodRow = accountingPeriodTable[i];
@@ -553,7 +550,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
                 try
                 {
-                    bool d = AAccountingPeriodAccess.SubmitChanges(
+                    AAccountingPeriodAccess.SubmitChanges(
                         accountingPeriodTable, transaction,
                         out verificationResults);
                     DBAccess.GDBAccessObj.CommitTransaction();
@@ -577,8 +574,6 @@ namespace Ict.Petra.Server.MFinance.Common
         GLBatchTDS glBatchTo = null;
         AGeneralLedgerMasterRow generalLedgerMasterRowFrom = null;
         AGeneralLedgerMasterRow generalLedgerMasterRowTo = null;
-
-        TVerificationResultCollection tVerificationResultCollection;
 
         int intThisYear;
         int intNextYear;
@@ -713,7 +708,7 @@ namespace Ict.Petra.Server.MFinance.Common
             if (DoExecuteableCode)
             {
                 TSubmitChangesResult tSubmitChangesResult =
-                    GLBatchTDSAccess.SubmitChanges(glBatchTo, out tVerificationResultCollection);
+                    GLBatchTDSAccess.SubmitChanges(glBatchTo, out verificationResults);
 
                 if (tSubmitChangesResult == TSubmitChangesResult.scrError)
                 {

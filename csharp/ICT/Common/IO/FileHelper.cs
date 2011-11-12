@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -106,7 +106,6 @@ namespace Ict.Common.IO
                 public static MemoryStream DeflateFilesFromStream(Stream AZippedStream)
                 {
                     MemoryStream UnzippedStream = new MemoryStream();
-                    ZipEntry ZippedFile;
                     Int32 size = 0;
 
                     // Always ensure we are reading from the beginning...
@@ -114,7 +113,7 @@ namespace Ict.Common.IO
 
                     using (ZipInputStream s = new ZipInputStream(AZippedStream))
                     {
-                        while ((ZippedFile = s.GetNextEntry()) != null)
+                        while (s.GetNextEntry() != null)
                         {
                             Byte[] buffer = new Byte[4096];
 
@@ -212,6 +211,28 @@ namespace Ict.Common.IO
                     AStream.Seek(0, SeekOrigin.Begin);
                 }
             }
+        }
+
+        /// <summary>
+        /// move the given file to a backup file, but do not overwrite an existing backup file.
+        /// use additional numbers instead.
+        /// </summary>
+        /// <param name="AOrigFilename"></param>
+        /// <returns>the name of the backed up file</returns>
+        public static string MoveToBackup(string AOrigFilename)
+        {
+            string BackupName = AOrigFilename + ".bak";
+            int backupnr = 1;
+
+            while (File.Exists(BackupName))
+            {
+                BackupName = AOrigFilename + "." + backupnr.ToString() + ".bak";
+                backupnr++;
+            }
+
+            File.Move(AOrigFilename, BackupName);
+
+            return BackupName;
         }
     }
 }

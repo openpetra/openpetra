@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -30,12 +30,16 @@ using Ict.Common.Controls;
 using Ict.Common.IO;
 using Ict.Common;
 
-//using Ict.Petra.Client.CommonControls;
-
 namespace Ict.Tools.CodeGeneration.Winforms
 {
+    /// <summary>
+    /// generator for the controls on a report parameter screen
+    /// </summary>
     public class ReportControls
     {
+        /// <summary>
+        /// form the name of a parameter
+        /// </summary>
         public static string GetParameterName(XmlNode curNode)
         {
             if (TYml2Xml.HasAttribute(curNode, "NoParameter") && (TYml2Xml.GetAttribute(curNode, "NoParameter").ToLower() == "true"))
@@ -53,6 +57,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return result;
         }
 
+        /// <summary>
+        /// write the code for reading and writing the controls with the parameters
+        /// </summary>
         public static void GenerateReadSetControls(TFormWriter writer, XmlNode curNode, ProcessTemplate ATargetTemplate, string ATemplateControlType)
         {
             string controlName = curNode.Name;
@@ -83,38 +90,61 @@ namespace Ict.Tools.CodeGeneration.Winforms
             ATargetTemplate.InsertSnippet("SETCONTROLS", snippetWriteControls);
         }
     }
+
+    /// <summary>
+    /// generator for auto populated comboboxes
+    /// </summary>
     public class TcmbAutoPopulatedReportGenerator : TcmbAutoPopulatedGenerator
     {
+        /// <summary>add GeneratedReadSetControls</summary>
         public override void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode)
         {
             ReportControls.GenerateReadSetControls(writer, curNode, writer.Template, "TCMBAUTOPOPULATED");
         }
     }
+
+    /// <summary>
+    /// generator for combobox
+    /// </summary>
     public class ComboBoxReportGenerator : ComboBoxGenerator
     {
+        /// <summary>add GeneratedReadSetControls</summary>
         public override void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode)
         {
             ReportControls.GenerateReadSetControls(writer, curNode, writer.Template, "COMBOBOX");
         }
     }
 
+    /// <summary>
+    /// generator for checkbox
+    /// </summary>
     public class CheckBoxReportGenerator : CheckBoxGenerator
     {
+        /// <summary>add GeneratedReadSetControls</summary>
         public override void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode)
         {
             ReportControls.GenerateReadSetControls(writer, curNode, writer.Template, "CHECKBOX");
         }
     }
+
+    /// <summary>
+    /// generator for textbox
+    /// </summary>
     public class TextBoxReportGenerator : TextBoxGenerator
     {
+        /// <summary>add GeneratedReadSetControls</summary>
         public override void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode)
         {
             ReportControls.GenerateReadSetControls(writer, curNode, writer.Template, "TEXTBOX");
         }
     }
 
+    /// <summary>
+    /// generator for numeric textbox
+    /// </summary>
     public class TTxtNumericTextBoxReportGenerator : TTxtNumericTextBoxGenerator
     {
+        /// <summary>add GeneratedReadSetControls</summary>
         public override void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode)
         {
             TControlDef ctrl = writer.CodeStorage.GetControl(curNode.Name);
@@ -131,24 +161,36 @@ namespace Ict.Tools.CodeGeneration.Winforms
         }
     }
 
+    /// <summary>
+    /// generator for versatile checked listbox
+    /// </summary>
     public class TClbVersatileReportGenerator : TClbVersatileGenerator
     {
+        /// <summary>add GeneratedReadSetControls</summary>
         public override void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode)
         {
             ReportControls.GenerateReadSetControls(writer, curNode, writer.Template, "TCLBVERSATILE");
         }
     }
 
+    /// <summary>
+    /// generator for date picker
+    /// </summary>
     public class DateTimePickerReportGenerator : DateTimePickerGenerator
     {
+        /// <summary>add GeneratedReadSetControls</summary>
         public override void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode)
         {
             ReportControls.GenerateReadSetControls(writer, curNode, writer.Template, "TTXTPETRADATE");
         }
     }
 
+    /// <summary>
+    /// generator for simple radio group, values are defined as strings only
+    /// </summary>
     public class RadioGroupSimpleReportGenerator : RadioGroupSimpleGenerator
     {
+        /// <summary>add GeneratedReadSetControls</summary>
         public override void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode)
         {
             string paramName = ReportControls.GetParameterName(curNode);
@@ -178,8 +220,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
         }
     }
 
+    /// <summary>
+    /// generator for complex radio group, selected options can contain more controls
+    /// </summary>
     public class RadioGroupComplexReportGenerator : RadioGroupComplexGenerator
     {
+        /// <summary>add GeneratedReadSetControls, and all dependent controls</summary>
         public override void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode)
         {
             string paramName = ReportControls.GetParameterName(curNode);
@@ -277,16 +323,24 @@ namespace Ict.Tools.CodeGeneration.Winforms
         }
     }
 
+    /// <summary>
+    /// generator for a single radio button
+    /// </summary>
     public class RadioButtonReportGenerator : RadioButtonGenerator
     {
+        /// <summary>not needed</summary>
         public override void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode)
         {
             // no writing or reading of parameters, should be done in RadioGroup
         }
     }
 
+    /// <summary>
+    /// generator for a user control
+    /// </summary>
     public class UserControlReportGenerator : UserControlGenerator
     {
+        /// <summary>add GeneratedReadSetControls</summary>
         public override void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode)
         {
             string controlName = curNode.Name;
@@ -309,8 +363,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
         }
     }
 
+    /// <summary>
+    /// generator for a SourceGrid data grid
+    /// </summary>
     public class SourceGridReportGenerator : SourceGridGenerator
     {
+        /// <summary>add GeneratedReadSetControls</summary>
         public override void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode)
         {
             string controlName = curNode.Name;

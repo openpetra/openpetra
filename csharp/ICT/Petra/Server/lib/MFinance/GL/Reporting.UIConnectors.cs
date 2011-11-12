@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,6 +26,7 @@ using System.Data;
 using Ict.Petra.Shared;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.MFinance.Cacheable;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -58,13 +59,36 @@ namespace Ict.Petra.Server.MFinance.Reporting
     ///</summary>
     public class TFinanceReportingUIConnector : TConfigurableMBRObject
     {
-//TODO: TFinanceReportingUIConnector needs to implement IFinanceUIConnectorsReporting
+// TODO: should be implementing IReportingUIConnectorsNamespace
+
         /// <summary>the currently selected ledger</summary>
         private System.Int32 FLedgerNr;
         private int FNumberAccountingPeriods;
         private int FNumberForwardingPeriods;
         private int FCurrentPeriod;
         private int FCurrentYear;
+
+        /// <summary>
+        /// get the number of forwarding periods. needed to avoid warning about unused FNumberForwardingPeriods
+        /// </summary>
+        public int NumberForwardingPeriods
+        {
+            get
+            {
+                return FNumberForwardingPeriods;
+            }
+        }
+
+        /// <summary>
+        /// get the number of the current period. needed to avoid warning about unused FNumberForwardingPeriods
+        /// </summary>
+        public int CurrentPeriod
+        {
+            get
+            {
+                return FCurrentPeriod;
+            }
+        }
 
         /// <summary>
         /// initialise the object, select the given ledger
@@ -319,6 +343,49 @@ namespace Ict.Petra.Server.MFinance.Reporting
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
             return ReturnTable;
+        }
+
+        private string GetReportingCostCentres(ACostCentreTable ACostCentres, string ASummaryCostCentreCode)
+        {
+            ACostCentres.DefaultView.Sort = ACostCentreTable.GetCostCentreToReportToDBName();
+
+            string result = string.Empty;
+
+            DataRowView[] ReportingCostCentres = ACostCentres.DefaultView.FindRows(ASummaryCostCentreCode);
+
+            foreach (DataRowView rv in ReportingCostCentres)
+            {
+                ACostCentreRow row = (ACostCentreRow)rv.Row;
+
+                if (row.PostingCostCentreFlag)
+                {
+                    result = StringHelper.AddCSV(result, row.CostCentreCode);
+                }
+                else
+                {
+                    result = StringHelper.ConcatCSV(result, GetReportingCostCentres(ACostCentres, row.CostCentreCode));
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Get all cost centres that report into the given summary cost centre
+        /// </summary>
+        /// <returns>a CSV list of the reporting cost centres</returns>
+        public string GetReportingCostCentres(String ASummaryCostCentreCode)
+        {
+            System.Type typeofTable = null;
+            TCacheable CachePopulator = new TCacheable();
+            ACostCentreTable CachedDataTable = (ACostCentreTable)CachePopulator.GetCacheableTable(
+                TCacheableFinanceTablesEnum.CostCentreList,
+                "",
+                false,
+                FLedgerNr,
+                out typeofTable);
+
+            return GetReportingCostCentres(CachedDataTable, ASummaryCostCentreCode);
         }
     }
 }

@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       matthiash
+//       matthiash, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -60,7 +60,6 @@ namespace Ict.Petra.Server.MFinance.Gift
         String FDateFormatString;
         bool FExtraColumns;
         TDBTransaction FTransaction;
-        GLSetupTDS FSetupTDS;
         GiftBatchTDS FMainDS;
         CultureInfo FCultureInfoNumberFormat;
         CultureInfo FCultureInfoDate;
@@ -88,7 +87,6 @@ namespace Ict.Petra.Server.MFinance.Gift
         {
             AMessages = new TVerificationResultCollection();
             FMainDS = new GiftBatchTDS();
-            FSetupTDS = new GLSetupTDS();
             StringReader sr = new StringReader(importString);
 
             FDelimiter = (String)requestParams["Delimiter"];
@@ -172,10 +170,8 @@ namespace Ict.Petra.Server.MFinance.Gift
                             giftDetails.GiftTransactionNumber = gift.GiftTransactionNumber;
                             FMainDS.AGiftDetail.Rows.Add(giftDetails);
 
-
                             gift.DonorKey = ImportInt64(Catalog.GetString("donor key"));
-                            String unused = ImportString(Catalog.GetString("short name of donor (unused)"));
-
+                            ImportString(Catalog.GetString("short name of donor (unused)")); // unused
 
                             gift.MethodOfGivingCode = ImportString(Catalog.GetString("method of giving Code"));
                             gift.MethodOfPaymentCode = ImportString(Catalog.GetString("method Of Payment Code"));
@@ -190,7 +186,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                             }
 
                             giftDetails.RecipientKey = ImportInt64(Catalog.GetString("recipient key"));
-                            unused = ImportString(Catalog.GetString("short name of recipient (unused)"));
+                            ImportString(Catalog.GetString("short name of recipient (unused)")); // unused
 
                             if (FExtraColumns)
                             {
@@ -290,6 +286,19 @@ namespace Ict.Petra.Server.MFinance.Gift
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// returns the most recently imported gift batch
+        /// </summary>
+        public Int32 GetLastGiftBatchNumber()
+        {
+            if ((FMainDS != null) && (FMainDS.AGiftBatch != null) && (FMainDS.AGiftBatch.Count > 0))
+            {
+                return FMainDS.AGiftBatch[FMainDS.AGiftBatch.Count - 1].BatchNumber;
+            }
+
+            return -1;
         }
 
         private String SpeakingExceptionMessage(Exception ex)

@@ -92,7 +92,7 @@ namespace Ict.Petra.Server.MConference.Applications
                     PmShortTermApplicationRow shorttermRow =
                         (PmShortTermApplicationRow)MainDS.PmShortTermApplication.DefaultView[IndexShorttermApp].Row;
 
-                    Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(TJsonTools.RemoveContainerControls(applicant.JSONData));
+                    Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(applicant.JSONData);
 
                     DateTime? DateCancelled = new Nullable <DateTime>();
 

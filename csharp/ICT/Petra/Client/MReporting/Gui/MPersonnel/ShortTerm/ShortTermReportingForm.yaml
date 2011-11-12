@@ -1,11 +1,11 @@
-﻿RootNode:
+RootNode:
     BaseYaml: ../../ReportingForm.yaml
     UtilObjectClass: TFrmPetraReportingUtils
     InterfaceName: IFrmReporting
     Template: reportwindow
     #don't generate this file with designer code, because it should not have the menuitems and toolbar
     FormType: abstract
-    Namespace: Ict.Petra.Client.MReporting.Gui.MPersonnel
+    Namespace: Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm
     TemplateParameters:
         REPORTSETTINGSDIRECTORY: Personnel
     Security:
@@ -22,5 +22,5 @@
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns
             Dock: Fill
         ucoShortTermerSelection:
-            Type: Ict.Petra.Client.MReporting.Gui.MPersonnel.TFrmUC_ShortTermerSelection
+            Type: Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm.TFrmUC_ShortTermerSelection
             Dock: Fill

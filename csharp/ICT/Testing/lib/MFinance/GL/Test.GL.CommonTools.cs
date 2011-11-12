@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -25,9 +25,9 @@ using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using Ict.Testing.NUnitForms;
+using Ict.Common.Verification;
 using Ict.Petra.Server.MFinance.GL;
 using Ict.Petra.Server.MFinance.Common;
-
 
 namespace Ict.Testing.Petra.Server.MFinance.GL
 {
@@ -101,10 +101,10 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             Assert.AreEqual(0, new FormatConverter(",>>>,>>9").digits, "Number of digits: 0");
             try
             {
-                decimal d = new FormatConverter("nonsens").digits;
+                new FormatConverter("nonsens");
                 Assert.Fail("No InternalException thrown");
             }
-            catch (TerminateException internalException)
+            catch (TVerificationException internalException)
             {
                 Assert.AreEqual("TCurrencyInfo03", internalException.ErrorCode, "Wrong Error Code");
             }
@@ -123,10 +123,10 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             Assert.AreEqual(2, new TCurrencyInfo("EUR").digits, "Number of digits: 2");
             try
             {
-                decimal d = new TCurrencyInfo("JPN").digits;
+                new TCurrencyInfo("JPN");
                 Assert.Fail("No InternalException thrown");
             }
-            catch (TerminateException internalException)
+            catch (TVerificationException internalException)
             {
                 Assert.AreEqual("TCurrencyInfo02", internalException.ErrorCode, "Wrong Error Code");
             }
@@ -137,10 +137,10 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             try
             {
-                decimal d = new TCurrencyInfo("DMG").digits;
+                new TCurrencyInfo("DMG");
                 Assert.Fail("No InternalException thrown");
             }
-            catch (TerminateException internalException)
+            catch (TVerificationException internalException)
             {
                 if (internalException.ErrorCode.Equals("TCurrencyInfo01"))
                 {
@@ -249,9 +249,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         {
             try
             {
-                TAccountPeriodInfo getAPI = new TAccountPeriodInfo(ALedgerNum, APeriodNum);
-                DateTime date = getAPI.PeriodEndDate;
-                return date != null;
+                new TAccountPeriodInfo(ALedgerNum, APeriodNum);
+                return true;
             }
             catch (IndexOutOfRangeException)
             {

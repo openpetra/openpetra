@@ -341,7 +341,7 @@
 				</query>
 			</calculation>
 			
-			<calculation align="left" id="Arrival Date" returns="text" returnsFormat="text">
+			<calculation align="left" id="Arrival Date" returns="text" returnsFormat="formatteddate">
 				<caption><value text="Arr. Date"></value></caption>
 				<query>
 					<queryDetail>
@@ -368,7 +368,7 @@
 				</query>
 			</calculation>
 			
-			<calculation align="left" id="Actual Arrival Date" returns="text" returnsFormat="text">
+			<calculation align="left" id="Actual Arrival Date" returns="text" returnsFormat="formatteddate">
 				<caption><value text="Act. Arr. Date"></value></caption>
 				<query>
 					<queryDetail>
@@ -377,7 +377,7 @@
 				</query>
 			</calculation>
 			
-			<calculation align="left" id="Departure Date" returns="text" returnsFormat="text">
+			<calculation align="left" id="Departure Date" returns="text" returnsFormat="formatteddate">
 				<caption><value text="Dep. Date"></value></caption>
 				<query>
 					<queryDetail>
@@ -404,7 +404,7 @@
 				</query>
 			</calculation>
 			
-			<calculation align="left" id="Actual Departure Date" returns="text" returnsFormat="text">
+			<calculation align="left" id="Actual Departure Date" returns="text" returnsFormat="formatteddate">
 				<caption><value text="Act. Dep. Date"></value></caption>
 				<query>
 					<queryDetail>
@@ -431,7 +431,7 @@
 				</query>
 			</calculation>
 			
-			<calculation align="left" id="Arrival Expected Date" returns="text" returnsFormat="text">
+			<calculation align="left" id="Arrival Expected Date" returns="text" returnsFormat="formatteddate">
 				<caption><value text="Arr. Expected Date"></value></caption>
 				<query>
 					<queryDetail>
@@ -458,7 +458,7 @@
 				</query>
 			</calculation>
 			
-			<calculation align="left" id="Departure Expected Date" returns="text" returnsFormat="text">
+			<calculation align="left" id="Departure Expected Date" returns="text" returnsFormat="formatteddate">
 				<caption><value text="Dep. Expected Date"></value></caption>
 				<query>
 					<queryDetail>

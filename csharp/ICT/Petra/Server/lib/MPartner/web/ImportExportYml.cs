@@ -75,8 +75,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     }
 
                     // get a new partner key
-                    Int64 SiteKey = Convert.ToInt64(TYml2Xml.GetAttributeRecursive(LocalNode, "SiteKey"));
-
                     if (TYml2Xml.HasAttribute(LocalNode, "PartnerKey"))
                     {
                         newPartner.PartnerKey = Convert.ToInt64(TYml2Xml.GetAttribute(LocalNode, "PartnerKey"));
@@ -87,11 +85,14 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                         TImportExportYml.NewPartnerKey--;
                     }
 
-                    TLogging.Log(
-                        TYml2Xml.GetAttributeRecursive(LocalNode, "class") + " " +
-                        LocalNode.Name + " " +
-                        "PartnerKey=" + newPartner.PartnerKey
-                        );
+                    if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_TRACE)
+                    {
+                        TLogging.Log(
+                            TYml2Xml.GetAttributeRecursive(LocalNode, "class") + " " +
+                            LocalNode.Name + " " +
+                            "PartnerKey=" + newPartner.PartnerKey
+                            );
+                    }
 
                     if (TYml2Xml.GetAttributeRecursive(LocalNode, "class") == MPartnerConstants.PARTNERCLASS_FAMILY)
                     {
@@ -117,7 +118,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                     if (TYml2Xml.GetAttributeRecursive(LocalNode, "class") == MPartnerConstants.PARTNERCLASS_PERSON)
                     {
-                        if (TAppSettingsManager.GetValue("AllowCreationPersonRecords", "false", false).ToLower() != "true")
+                        if (TAppSettingsManager.GetValue("AllowCreationPersonRecords", "true", false).ToLower() != "true")
                         {
                             throw new Exception(
                                 "We are currently not supporting import of PERSON records, until we have resolved the issues with household/family. "
@@ -328,22 +329,22 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     UmUnitStructureAccess.LoadViaPUnitChildUnitKey(MainDS, partnerKey, Transaction);
                 }
 
-                // just for debug
-                TLogging.Log("All in all:");
-                SortedList <string, int>sortedtables = new SortedList <string, int>();
-                sortedtables.Add("PLocation", MainDS.PLocation.Count);
-                sortedtables.Add("PPartnerLocation", MainDS.PPartnerLocation.Count);
-                sortedtables.Add("PPartnerType", MainDS.PPartnerType.Count);
-                sortedtables.Add("PPerson", MainDS.PPerson.Count);
-                sortedtables.Add("PFamily", MainDS.PFamily.Count);
-                sortedtables.Add("POrganisation", MainDS.POrganisation.Count);
-
-                foreach (KeyValuePair <string, int /*TTypedDataTable*/>pair  in sortedtables)
+                if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_TRACE)
                 {
-                    TLogging.Log(pair.Key + " : " + pair.Value.ToString());
-                }
+                    TLogging.Log("All in all:");
+                    SortedList <string, int>sortedtables = new SortedList <string, int>();
+                    sortedtables.Add("PLocation", MainDS.PLocation.Count);
+                    sortedtables.Add("PPartnerLocation", MainDS.PPartnerLocation.Count);
+                    sortedtables.Add("PPartnerType", MainDS.PPartnerType.Count);
+                    sortedtables.Add("PPerson", MainDS.PPerson.Count);
+                    sortedtables.Add("PFamily", MainDS.PFamily.Count);
+                    sortedtables.Add("POrganisation", MainDS.POrganisation.Count);
 
-                // end for debug
+                    foreach (KeyValuePair <string, int /*TTypedDataTable*/>pair  in sortedtables)
+                    {
+                        TLogging.Log(pair.Key + " : " + pair.Value.ToString());
+                    }
+                }
             }
             catch (Exception e)
             {
@@ -435,7 +436,11 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                 string category = partnerRow.PartnerClass + "," + countryCode + "," +
                                   partnerRow.StatusCode + "," + siteKey.ToString();
-                TLogging.Log("Partner " + partnerRow.PartnerKey.ToString() + ", Category: " + category);
+
+                if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_TRACE)
+                {
+                    TLogging.Log("Partner " + partnerRow.PartnerKey.ToString() + ", Category: " + category);
+                }
 
                 if (!PartnerCategories.ContainsKey(category))
                 {

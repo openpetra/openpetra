@@ -4,7 +4,7 @@
 // @Authors:
 //       berndr
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -31,11 +31,13 @@ using System.Drawing;
 using System.Windows.Forms;
 using GNU.Gettext;
 using Ict.Common.Controls;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonForms;
-using Ict.Petra.Shared.Interfaces; // implicit reference
+using Ict.Petra.Shared.Interfaces.MConference;
 using Ict.Petra.Shared.MConference.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Common.Remoting.Client;
 //using Ict.Petra.Shared.MReporting;
 
 namespace Ict.Petra.Client.MConference.Gui
@@ -77,7 +79,7 @@ namespace Ict.Petra.Client.MConference.Gui
 
         private void Accept(System.Object sender, EventArgs e)
         {
-            int[] SelectedRowIndex = grdConferences.Selection.GetSelectionRegion().GetRowsIndex();
+            // int[] SelectedRowIndex = grdConferences.Selection.GetSelectionRegion().GetRowsIndex();
 
             if (grdConferences.SelectedDataRows.Length == 1)
             {
@@ -138,21 +140,21 @@ namespace Ict.Petra.Client.MConference.Gui
         /// <param name="AOutreachCodePattern">Matching patterns for the outreach code</param>
         /// <param name="AConferenceKey">Conference key of the found conference</param>
         /// <param name="AConferenceName">Partner ShortName name of the found conference</param>
-        /// <param name="AParentFormHandle"></param>
+        /// <param name="AParentForm"></param>
         /// <returns>True if a conference was found and accepted by the user,
         /// otherwise false.</returns>
         public static bool OpenModalForm(String AConferenceNamePattern,
             String AOutreachCodePattern,
             out Int64 AConferenceKey,
             out String AConferenceName,
-            IntPtr AParentFormHandle)
+            Form AParentForm)
         {
             DialogResult dlgResult;
 
             AConferenceKey = -1;
             AConferenceName = String.Empty;
 
-            TFrmConferenceFindForm FindConference = new TFrmConferenceFindForm(AParentFormHandle);
+            TFrmConferenceFindForm FindConference = new TFrmConferenceFindForm(AParentForm);
 
             dlgResult = FindConference.ShowDialog();
 

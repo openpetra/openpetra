@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -498,7 +498,10 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 
                     foreach (DataRow TmpDR in AInspectDT.Rows)
                     {
-                        Console.WriteLine("LocationType: " + TmpDR[LocationTypeDBName].ToString());
+                        if (TLogging.DL >= 9)
+                        {
+                            Console.WriteLine("LocationType: " + TmpDR[LocationTypeDBName].ToString());
+                        }
 
                         if (TmpDR[LocationTypeDBName].ToString().EndsWith(SharedConstants.SECURITY_CAN_LOCATIONTYPE))
                         {

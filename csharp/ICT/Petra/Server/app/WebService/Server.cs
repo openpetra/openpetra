@@ -31,12 +31,14 @@ using Ict.Common;
 using Ict.Common.Data; // Implicit reference
 using Ict.Common.DB;
 using Ict.Common.IO;
-using Ict.Petra.Shared.Interfaces; // Implicit reference
-using Ict.Petra.Server.App.Main;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.App.Core;
-using Ict.Petra.Server.App.ClientDomain;
+using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Server.MFinance.AP.UIConnectors;
+using Ict.Petra.Server.MConference.Applications;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Jayrock.Json;
@@ -63,14 +65,14 @@ public class TOpenPetraOrg : WebService
     /// </summary>
     static TServerManager TheServerManager = null;
 
-    // make sure the correct config file is used
-    static TAppSettingsManager opts = new TAppSettingsManager(AppDomain.CurrentDomain.BaseDirectory + Path.DirectorySeparatorChar + "web.config");
-
     /// <summary>Initialise the server; this can only be called once, after that it will have no effect;
     /// it will be called automatically by Login</summary>
     [WebMethod]
     public bool InitServer()
     {
+        // make sure the correct config file is used
+        new TAppSettingsManager(AppDomain.CurrentDomain.BaseDirectory + Path.DirectorySeparatorChar + "web.config");
+
         if (TheServerManager == null)
         {
             Catalog.Init();
@@ -80,8 +82,9 @@ public class TOpenPetraOrg : WebService
             {
                 TheServerManager.EstablishDBConnection();
 
-                DomainManager.GSystemDefaultsCache = new TSystemDefaultsCache();
-                DomainManager.GSiteKey = DomainManager.GSystemDefaultsCache.GetInt64Default(Ict.Petra.Shared.SharedConstants.SYSDEFAULT_SITEKEY);
+                TSystemDefaultsCache.GSystemDefaultsCache = new TSystemDefaultsCache();
+                DomainManager.GSiteKey = TSystemDefaultsCache.GSystemDefaultsCache.GetInt64Default(
+                    Ict.Petra.Shared.SharedConstants.SYSDEFAULT_SITEKEY);
             }
             catch (Exception e)
             {
@@ -116,7 +119,7 @@ public class TOpenPetraOrg : WebService
             InitServer();
 
             // TODO? store user principal in http cache? HttpRuntime.Cache
-            TPetraPrincipal userData = TClientManager.PerformLoginChecks(
+            TClientManager.PerformLoginChecks(
                 username.ToUpper(), password.Trim(), "WEB", "127.0.0.1", out ProcessID, out ASystemEnabled);
             Session["LoggedIn"] = true;
 
@@ -242,7 +245,7 @@ public class TOpenPetraOrg : WebService
             TSupplierEditUIConnector uiconnector = new TSupplierEditUIConnector();
             TVerificationResultCollection VerificationResult;
             TSubmitChangesResult changesResult = uiconnector.SubmitChanges(ref AInspectDS, out VerificationResult);
-            return Jayrock.Json.Conversion.JsonConvert.ExportToString(new TCombinedSubmitChangesResult(changesResult, AInspectDS, VerificationResult));
+            return new TCombinedSubmitChangesResult(changesResult, AInspectDS, VerificationResult).ToJSON();
         }
 
         return "not enough permissions";
@@ -270,6 +273,25 @@ public class TOpenPetraOrg : WebService
             SubmitChangesResult = ASubmitChangesResult;
             UntypedDataSet = AUntypedDataSet;
             VerificationResultCollection = AVerificationResultCollection;
+        }
+
+        /// the only purpose of this function is to avoid the compiler warning on Mono:
+        /// The private field `xyz' is assigned but its value is never used
+        private void DummyFunction(out TSubmitChangesResult ASubmitChangesResult,
+            out DataSet AUntypedDataSet,
+            out TVerificationResultCollection AVerificationResultCollection)
+        {
+            ASubmitChangesResult = SubmitChangesResult;
+            AUntypedDataSet = UntypedDataSet;
+            AVerificationResultCollection = VerificationResultCollection;
+        }
+
+        /// <summary>
+        /// encode the value in JSON
+        /// </summary>
+        public string ToJSON()
+        {
+            return Jayrock.Json.Conversion.JsonConvert.ExportToString(this);
         }
     }
 
@@ -302,20 +324,34 @@ public class TOpenPetraOrg : WebService
     [WebMethod(EnableSession = true)]
     public string DataImportFromForm(string AFormID, string AJSONFormData)
     {
-        // user ANONYMOUS, can only write, not read
-        if (!IsUserLoggedIn())
+        try
         {
-            if (!LoginInternal("ANONYMOUS", TAppSettingsManager.GetValue("AnonymousUserPasswd")))
+            // user ANONYMOUS, can only write, not read
+            if (!IsUserLoggedIn())
             {
-                string message =
-                    "In order to process anonymous submission of data from the web, we need to have a user ANONYMOUS which does not have any read permissions";
-                TLogging.Log(message);
+                InitServer();
 
-                // do not disclose errors on production version
-                message = "There is a problem on the Server";
+                if (!LoginInternal("ANONYMOUS", TAppSettingsManager.GetValue("AnonymousUserPasswd")))
+                {
+                    string message =
+                        "In order to process anonymous submission of data from the web, we need to have a user ANONYMOUS which does not have any read permissions";
+                    TLogging.Log(message);
 
-                return "{\"failure\":true, \"data\":{\"result\":\"" + message + "\"}}";
+                    // do not disclose errors on production version
+                    message = "There is a problem on the Server";
+
+                    return "{\"failure\":true, \"data\":{\"result\":\"" + message + "\"}}";
+                }
             }
+        }
+        catch (Exception e)
+        {
+            TLogging.Log(e.Message);
+            TLogging.Log(e.StackTrace);
+
+            Logout();
+
+            return "{\"failure\":true, \"data\":{\"result\":\"Unexpected failure\"}}";
         }
 
         // remove ext-comp controls, for multi-page forms
@@ -323,7 +359,8 @@ public class TOpenPetraOrg : WebService
 
         try
         {
-            AJSONFormData = TJsonTools.RemoveContainerControls(AJSONFormData);
+            string RequiredCulture = string.Empty;
+            AJSONFormData = TJsonTools.RemoveContainerControls(AJSONFormData, ref RequiredCulture);
 
             AJSONFormData = AJSONFormData.Replace("\"txt", "\"").
                             Replace("\"chk", "\"").
@@ -365,7 +402,8 @@ public class TOpenPetraOrg : WebService
 
         try
         {
-            AJSONFormData = TJsonTools.RemoveContainerControls(AJSONFormData);
+            string RequiredCulture = string.Empty;
+            AJSONFormData = TJsonTools.RemoveContainerControls(AJSONFormData, ref RequiredCulture);
 
             AJSONFormData = AJSONFormData.Replace("\"txt", "\"").
                             Replace("\"chk", "\"").
@@ -425,6 +463,29 @@ public class TOpenPetraOrg : WebService
     public string SyncModifiedPartnerData(string AUsername, string APassword, DateTime AEarliestModifiedDate)
     {
         return "error";
+    }
+
+    /// <summary>
+    /// get data of all accepted participants, to sync with other tools (eg. seminar registration tool)
+    /// </summary>
+    [WebMethod(EnableSession = true)]
+    public string GetAllParticipants()
+    {
+        if (IsUserLoggedIn())
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MConference.Applications.TApplicationManagement),
+                "GetAllParticipants",
+                ";LONG;STRING;");
+
+            DataTable result = TApplicationManagement.GetAllParticipants(TAppSettingsManager.GetInt64("ConferenceTool.EventPartnerKey"),
+                TAppSettingsManager.GetValue("ConferenceTool.EventCode"));
+
+            StringWriter sw = new StringWriter();
+            result.WriteXml(sw);
+            return sw.ToString();
+        }
+
+        return string.Empty;
     }
 }
 }

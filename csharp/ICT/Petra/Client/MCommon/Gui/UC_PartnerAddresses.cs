@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -34,6 +34,7 @@ using SourceGrid.Cells.DataGrid;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Controls;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner;
@@ -477,16 +478,12 @@ namespace Ict.Petra.Client.MCommon.Gui
         /// <summary>
         /// Sets up the screen logic, retrieves data, databinds the Grid and the Detail
         /// UserControl.
-        ///
         /// </summary>
         /// <returns>void</returns>
         public void InitialiseUserControl()
         {
             DataColumn ForeignTableColumn;
             DataTable LocationTable;
-
-            DataColumn[] LocationPK = new DataColumn[1 - 0 + 1];
-            DataColumn[] PartnerLocationPK = new DataColumn[1 - 0 + 1];
 
             // Set up screen logic
             FLogic.MainDS = FMainDS;

@@ -130,7 +130,7 @@ ENDLOCAL
   </foreach>
   <!-- call generateI18N -->
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/>  
-  <ExecDotNet program="${dir.bin}/GenerateI18N.exe" 
+  <ExecDotNet program="${dir.bin}/Ict.Tools.GenerateI18N.exe" 
     commandline="-gettext:&quot;${external.Poedit.gettext}&quot; &quot;-petraxml:${PetraXML.file}&quot; &quot;-tmpPath:${tempdir}/i18n&quot; &quot;-poFile:${template.pot.file}&quot; &quot;-filelist:${tempdir}/i18n/sourcefile.list&quot;" />
   <!-- if GenerateI18N.CollectedGettext.cs was generated, we need to analyze it for po file -->
   <exec program="${external.Poedit.gettext}" workingdir="${dir.root}/i18n/"
@@ -142,7 +142,7 @@ ENDLOCAL
   </exec>
   
   <!-- remove all strings that should not be translated: demo labels, etc -->
-  <ExecDotNet program="${dir.bin}/GenerateI18N.exe" commandline="-do:removeDoNotTranslate &quot;-dntFile:${doNotTranslate.po.file}&quot;  &quot;-poFile:${template.pot.file}&quot;"/>   
+  <ExecDotNet program="${dir.bin}/Ict.Tools.GenerateI18N.exe" commandline="-do:removeDoNotTranslate &quot;-dntFile:${doNotTranslate.po.file}&quot;  &quot;-poFile:${template.pot.file}&quot;"/>   
 </target>
 
 </project>

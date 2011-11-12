@@ -64,7 +64,7 @@ RootNode:
         pnlDetails:
             Dock: Bottom
             # TODO: split gifts
-            Controls: 
+            Controls: {TabOrder=Horizontal}
                 Row0: [txtDetailDonorKey]
                 Row1: [cmbDetailMethodOfGivingCode,cmbDetailMethodOfPaymentCode]
                 Row2: [txtDetailReference,cmbDetailReceiptLetterCode]

@@ -132,7 +132,7 @@ namespace Ict.Petra.Server.MConference.Applications
                             rebukeValues = StringHelper.AddCSV(rebukeValues, applicant.FirstName);
                             rebukeValues = StringHelper.AddCSV(rebukeValues, applicant.Gender);
 
-                            Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(TJsonTools.RemoveContainerControls(applicant.JSONData));
+                            Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(applicant.JSONData);
 
                             if (rawDataObject.Contains("JobAssigned"))
                             {

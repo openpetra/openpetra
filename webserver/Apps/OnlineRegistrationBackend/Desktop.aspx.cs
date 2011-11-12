@@ -30,6 +30,7 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Text;
+using System.Globalization;
 
 using Ext.Net;
 using Jayrock.Json.Conversion;
@@ -561,8 +562,8 @@ namespace Ict.Petra.WebServer.MConference
                 dictionary.Add("FamilyName", row.FamilyName);
                 dictionary.Add("Gender", row.Gender);
                 dictionary.Add("DateOfBirth", row.DateOfBirth);
-                dictionary.Add("Arrival", row.Arrival);
-                dictionary.Add("Departure", row.Departure);
+                dictionary.Add("DateOfArrival", row.DateOfArrival);
+                dictionary.Add("DateOfDeparture", row.DateOfDeparture);
                 dictionary.Add("GenAppDate", row.GenAppDate);
                 dictionary.Add("GenApplicationStatus", row.GenApplicationStatus);
                 dictionary.Add("StCongressCode", row.StCongressCode);
@@ -574,7 +575,8 @@ namespace Ict.Petra.WebServer.MConference
 
                 List <string>FieldsOnFirstTab = new List <string>(new string[] {
                                                                       "TShirtStyle", "TShirtSize", "JobWish1", "JobWish2", "JobAssigned",
-                                                                      "SecondSibling", "CancelledByFinanceOffice", "GroupWish"
+                                                                      "SecondSibling", "CancelledByFinanceOffice", "GroupWish", "DateOfArrival",
+                                                                      "DateOfDeparture"
                                                                   });
 
                 foreach (string key in rawDataObject.Names)
@@ -703,10 +705,65 @@ namespace Ict.Petra.WebServer.MConference
             else
             {
                 string RawData = TApplicationManagement.GetRawApplicationData(row.PartnerKey, row.ApplicationKey, row.RegistrationOffice);
-                Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(TJsonTools.RemoveContainerControls(RawData));
+                Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(RawData);
 
-                // avoid problems with different formatting of dates, could cause parsing errors later, into the typed class
-                values["DateOfBirth"] = Convert.ToDateTime(values["DateOfBirth"]).ToShortDateString();
+                if (!rawDataObject.Contains("RegistrationCountryCode"))
+                {
+                    // some of the late registrations do not have a country code
+                    rawDataObject.Put("RegistrationCountryCode", "en-GB");
+                }
+
+                CultureInfo OrigCulture = Catalog.SetCulture(rawDataObject["RegistrationCountryCode"].ToString());
+
+                row.FamilyName = values["FamilyName"];
+                row.FirstName = values["FirstName"];
+                row.Gender = values["Gender"];
+
+                if (values["DateOfBirth"].Length == 0)
+                {
+                    row.DateOfBirth = new Nullable <DateTime>();
+                }
+                else
+                {
+                    // avoid problems with different formatting of dates, could cause parsing errors later, into the typed class
+                    values["DateOfBirth"] = Convert.ToDateTime(values["DateOfBirth"]).ToShortDateString();
+                    row.DateOfBirth = Convert.ToDateTime(values["DateOfBirth"]);
+                }
+
+                if (values["DateOfArrival"].Length == 0)
+                {
+                    row.SetDateOfArrivalNull();
+                }
+                else
+                {
+                    values["DateOfArrival"] = Convert.ToDateTime(values["DateOfArrival"]).ToShortDateString();
+                    row.DateOfArrival = Convert.ToDateTime(values["DateOfArrival"]);
+                }
+
+                if (values["DateOfDeparture"].Length == 0)
+                {
+                    row.SetDateOfDepartureNull();
+                }
+                else
+                {
+                    values["DateOfDeparture"] = Convert.ToDateTime(values["DateOfDeparture"]).ToShortDateString();
+                    row.DateOfDeparture = Convert.ToDateTime(values["DateOfDeparture"]);
+                }
+
+                row.GenAppDate = Convert.ToDateTime(values["GenAppDate"]);
+                row.StCongressCode = values["StCongressCode_Value"];
+                row.GenApplicationStatus = values["GenApplicationStatus_Value"];
+                row.StFgLeader = values.ContainsKey("StFgLeader");
+                row.StFgCode = values.ContainsKey("StFgCode") ? values["StFgCode"] : string.Empty;
+
+                if (values.ContainsKey("StFieldCharged_Value"))
+                {
+                    row.StFieldCharged = Convert.ToInt64(values["StFieldCharged_Value"]);
+                }
+
+                row.Comment = values["Comment"];
+
+                row.RebukeNotes = RebukeValues;
 
                 bool SecondSibling = false;
                 bool CancelledByFinanceOffice = false;
@@ -758,53 +815,7 @@ namespace Ict.Petra.WebServer.MConference
 
                 row.JSONData = TJsonTools.ToJsonString(rawDataObject);
 
-                row.FamilyName = values["FamilyName"];
-                row.FirstName = values["FirstName"];
-                row.Gender = values["Gender"];
-
-                if (values["DateOfBirth"].Length == 0)
-                {
-                    row.SetDateOfBirthNull();
-                }
-                else
-                {
-                    row.DateOfBirth = Convert.ToDateTime(values["DateOfBirth"]);
-                }
-
-                if (values["Arrival"].Length == 0)
-                {
-                    row.SetArrivalNull();
-                }
-                else
-                {
-                    values["Arrival"] = Convert.ToDateTime(values["Arrival"]).ToShortDateString();
-                    row.Arrival = Convert.ToDateTime(values["Arrival"]);
-                }
-
-                if (values["Departure"].Length == 0)
-                {
-                    row.SetDepartureNull();
-                }
-                else
-                {
-                    values["Departure"] = Convert.ToDateTime(values["Departure"]).ToShortDateString();
-                    row.Departure = Convert.ToDateTime(values["Departure"]);
-                }
-
-                row.GenAppDate = Convert.ToDateTime(values["GenAppDate"]);
-                row.StCongressCode = values["StCongressCode_Value"];
-                row.GenApplicationStatus = values["GenApplicationStatus_Value"];
-                row.StFgLeader = values.ContainsKey("StFgLeader");
-                row.StFgCode = values["StFgCode"];
-
-                if (values.ContainsKey("StFieldCharged_Value"))
-                {
-                    row.StFieldCharged = Convert.ToInt64(values["StFieldCharged_Value"]);
-                }
-
-                row.Comment = values["Comment"];
-
-                row.RebukeNotes = RebukeValues;
+                Catalog.SetCulture(OrigCulture);
             }
 
             if (TApplicationManagement.SaveApplication(EventCode, row) != TSubmitChangesResult.scrOK)
@@ -823,10 +834,8 @@ namespace Ict.Petra.WebServer.MConference
                 ConferenceApplicationTDSApplicationGridRow row = (ConferenceApplicationTDSApplicationGridRow)Session["CURRENTROW"];
                 string RawData = TApplicationManagement.GetRawApplicationData(row.PartnerKey, row.ApplicationKey, row.RegistrationOffice);
 
-                // will set the correct language code for parsing dates in the json data string
-                RawData = TJsonTools.RemoveContainerControls(RawData);
-
-                TApplicationFormData data = (TApplicationFormData)JsonConvert.Import(typeof(TApplicationFormData),
+                TApplicationFormData data = (TApplicationFormData)TJsonTools.ImportIntoTypedStructure(
+                    typeof(TApplicationFormData),
                     RawData);
                 data.RawData = RawData;
 
@@ -1508,7 +1517,8 @@ namespace Ict.Petra.WebServer.MConference
             Dictionary <string, string>values = JSON.Deserialize <Dictionary <string, string>>(e.ExtraParams["Values"]);
 
             string AJSONFormData = values["JSONData"].ToString();
-            AJSONFormData = TJsonTools.RemoveContainerControls(AJSONFormData);
+            string RequiredCulture = string.Empty;
+            AJSONFormData = TJsonTools.RemoveContainerControls(AJSONFormData, ref RequiredCulture);
 
             AJSONFormData = AJSONFormData.Replace("\"txt", "\"").
                             Replace("\"chk", "\"").

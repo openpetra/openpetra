@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,6 +28,7 @@ using System.Threading;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MSysMan.Data.Access;
 using Ict.Common.Data;
@@ -58,9 +59,6 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// <summary>tells whether the cache is containing data, or not</summary>
         private static Boolean UTableCached;
 
-        /// <summary>time when this object was instantiated</summary>
-        private DateTime FStartTime;
-
         /// <summary>
         /// initialize some static variables
         /// </summary>
@@ -73,15 +71,6 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
             UUserDefaultsDT = (SUserDefaultsTable)UUserDefaultsDS.Tables[USERDEFAULTSDT_NAME];
             UUserDefaultsDV = new DataView(UUserDefaultsDT);
             UUserDefaultsDV.Sort = SUserDefaultsTable.GetDefaultCodeDBName();
-        }
-
-        /// <summary>
-        /// constructor
-        /// </summary>
-        public TUserDefaults() : base()
-        {
-            // $IFDEF DEBUGMODE if TLogging.DL >= 9 then Console.WriteLine(this.GetType.FullName + ' created: Instance hash is ' + this.GetHashCode().ToString()); $ENDIF
-            FStartTime = DateTime.Now;
         }
 
         /// <summary>
@@ -476,9 +465,6 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         public static void MergeChanges(SUserDefaultsTable ADestinationDT, SUserDefaultsTable ASourceDT)
         {
             Int16 Counter;
-
-            DataColumn[] PrimaryKeyColumns;
-            object[] PrimaryKeyObj;
             SUserDefaultsRow UpdateRow;
             SUserDefaultsRow AddedRow;
 
@@ -492,8 +478,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                 throw new System.ArgumentException("ASourceDT must not be nil");
             }
 
-            PrimaryKeyColumns = ASourceDT.PrimaryKey;
-            PrimaryKeyObj = new object[PrimaryKeyColumns.Length];
+            // DataColumn[] PrimaryKeyColumns = ASourceDT.PrimaryKey;
 
             for (Counter = 0; Counter <= ASourceDT.Rows.Count - 1; Counter += 1)
             {
@@ -1197,12 +1182,12 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                 if (AUserName == UserInfo.GUserInfo.UserID)
                 {
                     // Queue a ClientTask to the current User's PetraClient
-                    Ict.Petra.Server.App.ClientDomain.DomainManager.ClientTaskAdd(SharedConstants.CLIENTTASKGROUP_USERDEFAULTSREFRESH, "All", 1);
+                    Ict.Petra.Server.App.Core.DomainManager.ClientTaskAdd(SharedConstants.CLIENTTASKGROUP_USERDEFAULTSREFRESH, "All", 1);
                 }
                 else
                 {
                     // Queue a ClientTask to any but the current User's PetraClient
-                    Ict.Petra.Server.App.ClientDomain.DomainManager.ClientTaskAddToOtherClient(AUserName,
+                    Ict.Petra.Server.App.Core.DomainManager.ClientTaskAddToOtherClient(AUserName,
                         SharedConstants.CLIENTTASKGROUP_USERDEFAULTSREFRESH,
                         "All",
                         1);
@@ -1222,7 +1207,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                 if (AUserName == UserInfo.GUserInfo.UserID)
                 {
                     // Queue a ClientTask to the current User's PetraClient
-                    Ict.Petra.Server.App.ClientDomain.DomainManager.ClientTaskAdd(SharedConstants.CLIENTTASKGROUP_USERDEFAULTSREFRESH,
+                    Ict.Petra.Server.App.Core.DomainManager.ClientTaskAdd(SharedConstants.CLIENTTASKGROUP_USERDEFAULTSREFRESH,
                         SingleOrMultipleIndicator,
                         AChangedUserDefaultCode,
                         AChangedUserDefaultValue,
@@ -1233,7 +1218,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
 
                 // Send the same ClientTask to all other running PetraClient instances where
                 // the same user is logged in!
-                Ict.Petra.Server.App.ClientDomain.DomainManager.ClientTaskAddToOtherClient(AUserName,
+                Ict.Petra.Server.App.Core.DomainManager.ClientTaskAddToOtherClient(AUserName,
                     SharedConstants.CLIENTTASKGROUP_USERDEFAULTSREFRESH,
                     SingleOrMultipleIndicator,
                     AChangedUserDefaultCode,
@@ -1284,11 +1269,11 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
             {
                 for (Counter = 0; Counter <= AChangedUserDefaultsDT.Rows.Count - 1; Counter += 1)
                 {
-                    ChangedUserDefaultCodes = ChangedUserDefaultCodes + TClientTasksManager.GCLIENTTASKPARAMETER_SEPARATOR +
+                    ChangedUserDefaultCodes = ChangedUserDefaultCodes + RemotingConstants.GCLIENTTASKPARAMETER_SEPARATOR +
                                               AChangedUserDefaultsDT[Counter].DefaultCode;
-                    ChangedUserDefaultValues = ChangedUserDefaultValues + TClientTasksManager.GCLIENTTASKPARAMETER_SEPARATOR +
+                    ChangedUserDefaultValues = ChangedUserDefaultValues + RemotingConstants.GCLIENTTASKPARAMETER_SEPARATOR +
                                                AChangedUserDefaultsDT[Counter].DefaultValue;
-                    ChangedUserDefaultModIds = ChangedUserDefaultModIds + TClientTasksManager.GCLIENTTASKPARAMETER_SEPARATOR +
+                    ChangedUserDefaultModIds = ChangedUserDefaultModIds + RemotingConstants.GCLIENTTASKPARAMETER_SEPARATOR +
                                                AChangedUserDefaultsDT[Counter].ModificationId;
                 }
 

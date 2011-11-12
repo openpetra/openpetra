@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -37,6 +37,7 @@ using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Server.MFinance.Cacheable;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MFinance.GL;
@@ -367,7 +368,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             Int32 AGiftBatchNumber,
             out TVerificationResultCollection AVerificationResult)
         {
-            AVerificationResult = null;
+            AVerificationResult = new TVerificationResultCollection();
 
             AMainDS.AEpTransaction.DefaultView.RowFilter =
                 String.Format("{0}={1}",
@@ -390,7 +391,6 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 string msg =
                     String.Format(Catalog.GetString("Cannot create a gift batch for date {0} since it is not in an open period of the ledger."),
                         stmt.Date.ToShortDateString());
-                AVerificationResult = new TVerificationResultCollection();
                 AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Creating Gift Batch"), msg, TResultSeverity.Resv_Critical));
                 DBAccess.GDBAccessObj.RollbackTransaction();
                 return -1;
@@ -413,7 +413,6 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                         string msg =
                             String.Format(Catalog.GetString("Cannot create a gift for transaction {0} since there is no valid donor."),
                                 transactionRow.Description);
-                        AVerificationResult = new TVerificationResultCollection();
                         AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Creating Gift Batch"), msg, TResultSeverity.Resv_Critical));
                         DBAccess.GDBAccessObj.RollbackTransaction();
                         return -1;
@@ -422,6 +421,14 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             }
 
             DBAccess.GDBAccessObj.RollbackTransaction();
+
+            System.Type typeofTable = null;
+            TCacheable CachePopulator = new TCacheable();
+            AAccountTable AccountTable = (AAccountTable)CachePopulator.GetCacheableTable(TCacheableFinanceTablesEnum.AccountList,
+                "",
+                false,
+                ALedgerNumber,
+                out typeofTable);
 
             GiftBatchTDS GiftDS = Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.CreateAGiftBatch(ALedgerNumber, stmt.Date);
 
@@ -468,9 +475,36 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                         detail.GiftCommentOne = transactionRow.Description;
                         detail.CostCentreCode = match.CostCentreCode;
 
+                        // check for active cost centre
+                        ACostCentreRow costcentre = (ACostCentreRow)AMainDS.ACostCentre.Rows.Find(new object[] { ALedgerNumber, match.CostCentreCode });
+
+                        if ((costcentre == null) || !costcentre.CostCentreActiveFlag)
+                        {
+                            AVerificationResult.Add(new TVerificationResult(
+                                    String.Format(Catalog.GetString("creating gift for match {0}"), transactionRow.Description),
+                                    Catalog.GetString("Invalid or inactive cost centre"),
+                                    TResultSeverity.Resv_Critical));
+                        }
+
+                        // check for active account
+                        AAccountRow account = (AAccountRow)AccountTable.Rows.Find(new object[] { ALedgerNumber, match.AccountCode });
+
+                        if ((account == null) || !account.AccountActiveFlag)
+                        {
+                            AVerificationResult.Add(new TVerificationResult(
+                                    String.Format(Catalog.GetString("creating gift for match {0}"), transactionRow.Description),
+                                    Catalog.GetString("Invalid or inactive account code"),
+                                    TResultSeverity.Resv_Critical));
+                        }
+
                         GiftDS.AGiftDetail.Rows.Add(detail);
                     }
                 }
+            }
+
+            if (AVerificationResult.HasCriticalError())
+            {
+                return -1;
             }
 
             giftbatchRow.HashTotal = HashTotal;
@@ -559,6 +593,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             gljournalRow.JournalDescription = glbatchRow.BatchDescription;
             gljournalRow.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
             gljournalRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.STD.ToString();
+            gljournalRow.ExchangeRateToBase = 1.0m;
             GLDS.AJournal.Rows.Add(gljournalRow);
 
             foreach (DataRowView dv in AMainDS.AEpTransaction.DefaultView)

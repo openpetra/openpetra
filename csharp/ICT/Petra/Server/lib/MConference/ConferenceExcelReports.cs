@@ -67,7 +67,6 @@ namespace Ict.Petra.Server.MConference.Applications
             try
             {
                 SortedList <string, XmlDocument>Worksheets = new SortedList <string, XmlDocument>();
-                PPartnerTable regOffices = TApplicationManagement.GetRegistrationOffices();
 
                 foreach (PPartnerRow regOffice in RegistrationOffices.Rows)
                 {
@@ -141,7 +140,7 @@ namespace Ict.Petra.Server.MConference.Applications
 
                     if (TConferenceFreeTShirt.AcceptedBeforeTShirtDeadLine(attendee, applicant))
                     {
-                        Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(TJsonTools.RemoveContainerControls(applicant.JSONData));
+                        Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(applicant.JSONData);
 
                         if (rawDataObject.Contains("TShirtStyle") && rawDataObject.Contains("TShirtSize"))
                         {
@@ -186,8 +185,6 @@ namespace Ict.Petra.Server.MConference.Applications
         public static bool GetNumbersOfRolesPerCountry(Int64 AConferenceKey, string AEventCode, MemoryStream AStream)
         {
             TAttendeeManagement.RefreshAttendees(AConferenceKey, AEventCode);
-
-            PPartnerTable RegistrationOffices = TApplicationManagement.GetRegistrationOffices();
 
             ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
             TApplicationManagement.GetApplications(ref MainDS, AConferenceKey, AEventCode, "accepted", -1, null, false);

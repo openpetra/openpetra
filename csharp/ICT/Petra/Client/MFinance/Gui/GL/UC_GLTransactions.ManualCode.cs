@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -42,25 +42,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Int32 FBatchNumber = -1;
         private Int32 FJournalNumber = -1;
 
-
-        //ForeignCurrencyCalculationss foreignCurrencyCalculations;
-
-
-        /// <summary>
-        /// Exchange rate for the forreign currency will be stored here after it is read from the
-        /// Journal tab. The "do not use" value is zero.
-        /// </summary>
-        private decimal exchangeRateForeign = 0m;
-
-        /// <summary>
-        /// Dito the exchnage rate for the international currency ...
-        /// Actualy the value is irrelevant becaus the international currency is only
-        /// to be used to translate a national currencey report into an international
-        /// readable and comparable form. So the reports are created in local currency
-        /// values and the are "transcalculated" to international currency.
-        /// </summary>
-        private decimal exchangeRateInternational = 1m;
-
         /// <summary>
         /// load the transactions into the grid
         /// </summary>
@@ -96,7 +77,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             // if this form is readonly, then we need all account and cost centre codes, because old codes might have been used
             bool ActiveOnly = this.Enabled;
-
+            FTransactionCurrency = AForeignCurrencyName;
             TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber,
                 true, false, ActiveOnly, false, AForeignCurrencyName);
             TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, ActiveOnly, false);
@@ -108,14 +89,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// get the details of the current journal
         /// </summary>
         /// <returns></returns>
-        private AJournalRow GetJournalRow()
+        private GLBatchTDSAJournalRow GetJournalRow()
         {
-            return (AJournalRow)FMainDS.AJournal.Rows.Find(new object[] { FLedgerNumber, FBatchNumber, FJournalNumber });
+            return ((TFrmGLBatch)ParentForm).GetJournalsControl().GetSelectedDetailRow();
         }
 
         private ABatchRow GetBatchRow()
         {
-            return (ABatchRow)FMainDS.ABatch.Rows.Find(new object[] { FLedgerNumber, FBatchNumber });
+            return ((TFrmGLBatch)ParentForm).GetBatchControl().GetSelectedDetailRow();
         }
 
         /// <summary>
@@ -126,7 +107,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void NewRow(System.Object sender, EventArgs e)
         {
             this.CreateNewATransaction();
-            ProcessAnalysisAttibutes();
+            ProcessAnalysisAttributes();
         }
 
         /// <summary>
@@ -136,6 +117,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ARefJournalRow">this can be null; otherwise this is the journal that the transaction should belong to</param>
         public void NewRowManual(ref GLBatchTDSATransactionRow ANewRow, AJournalRow ARefJournalRow)
         {
+            GLBatchTDSATransactionRow prevRow = GetSelectedDetailRow();
+
             if (ARefJournalRow == null)
             {
                 ARefJournalRow = GetJournalRow();
@@ -145,7 +128,24 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ANewRow.BatchNumber = ARefJournalRow.BatchNumber;
             ANewRow.JournalNumber = ARefJournalRow.JournalNumber;
             ANewRow.TransactionNumber = ARefJournalRow.LastTransactionNumber + 1;
+            ANewRow.TransactionDate = GetBatchRow().DateEffective;
             ARefJournalRow.LastTransactionNumber++;
+
+            if (prevRow != null)
+            {
+                ANewRow.AccountCode = prevRow.AccountCode;
+                ANewRow.CostCentreCode = prevRow.CostCentreCode;
+
+                if (ARefJournalRow.JournalCreditTotal != ARefJournalRow.JournalDebitTotal)
+                {
+                    ANewRow.Reference = prevRow.Reference;
+                    ANewRow.Narrative = prevRow.Narrative;
+                    ANewRow.TransactionDate = prevRow.TransactionDate;
+                    decimal Difference = ARefJournalRow.JournalDebitTotal - ARefJournalRow.JournalCreditTotal;
+                    ANewRow.TransactionAmount = Math.Abs(Difference);
+                    ANewRow.DebitCreditIndicator = Difference < 0;
+                }
+            }
         }
 
         /// <summary>
@@ -157,17 +157,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             NewRowManual(ref ANewRow, null);
         }
 
+        private string FTransactionCurrency = string.Empty;
+
         /// <summary>
         /// show ledger, batch and journal number
         /// </summary>
         private void ShowDataManual()
         {
-            txtLedgerNumber.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
-            txtBatchNumber.Text = FBatchNumber.ToString();
-            txtJournalNumber.Text = FJournalNumber.ToString();
-
-            if (FMainDS.ALedger.Count == 1)
+            if (FLedgerNumber != -1)
             {
+                txtLedgerNumber.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
+                txtBatchNumber.Text = FBatchNumber.ToString();
+                txtJournalNumber.Text = FJournalNumber.ToString();
+
                 string TransactionCurrency = GetJournalRow().TransactionCurrency;
                 string BaseCurrency = FMainDS.ALedger[0].BaseCurrency;
                 lblBaseCurrency.Text = String.Format(Catalog.GetString("{0} (Base Currency)"), BaseCurrency);
@@ -180,7 +182,25 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 txtDebitTotalAmountBase.CurrencySymbol = BaseCurrency;
                 txtCreditTotalAmount.CurrencySymbol = TransactionCurrency;
                 txtDebitTotalAmount.CurrencySymbol = TransactionCurrency;
+
+                // foreign currency accounts only get transactions in that currency
+                if (FTransactionCurrency != TransactionCurrency)
+                {
+                    string SelectedAccount = cmbDetailAccountCode.GetSelectedString();
+
+                    // if this form is readonly, then we need all account and cost centre codes, because old codes might have been used
+                    bool ActiveOnly = this.Enabled;
+
+                    TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber,
+                        true, false, ActiveOnly, false, TransactionCurrency);
+
+                    cmbDetailAccountCode.SetSelectedString(SelectedAccount);
+                }
+
+                FTransactionCurrency = TransactionCurrency;
             }
+
+            UpdateChangeableStatus();
         }
 
         private void ShowDetailsManual(ATransactionRow ARow)
@@ -200,17 +220,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 txtCreditAmount.NumberValueDecimal = ARow.TransactionAmount;
             }
 
-            AJournalRow journal = GetJournalRow();
-//            txtCreditTotalAmount.NumberValueDecimal = journal.JournalCreditTotal;
-//            txtDebitTotalAmount.NumberValueDecimal = journal.JournalDebitTotal;
-//            txtCreditTotalAmountBase.NumberValueDecimal = journal.JournalCreditTotal *
-//                                                          TExchangeRateCache.GetDailyExchangeRate(journal.TransactionCurrency,
-//                FMainDS.ALedger[0].BaseCurrency,
-//                dtpDetailTransactionDate.Date.Value);
-//            txtDebitTotalAmountBase.NumberValueDecimal = journal.JournalDebitTotal *
-//                                                         TExchangeRateCache.GetDailyExchangeRate(journal.TransactionCurrency,
-//                FMainDS.ALedger[0].BaseCurrency,
-//                dtpDetailTransactionDate.Date.Value);
+            UpdateTotals();
 
             if (ARow == null)
             {
@@ -246,65 +256,32 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if ((oldTransactionAmount != Convert.ToDecimal(ARow.TransactionAmount))
                 || (oldDebitCreditIndicator != ARow.DebitCreditIndicator))
             {
-                UpdateTotals(ARow);
+                UpdateTotals();
             }
         }
 
         /// <summary>
         /// update amount in other currencies (optional) and recalculate all totals for current batch and journal
         /// </summary>
-        /// <param name="ARow"></param>
-        public void UpdateTotals(ATransactionRow ARow)
+        public void UpdateTotals()
         {
-            AJournalRow journal = GetJournalRow();
-
-            if (ARow != null)
+            if ((FJournalNumber != -1) && !pnlDetailsProtected)
             {
-                ARow.AmountInBaseCurrency = ARow.TransactionAmount / exchangeRateForeign;
-                ARow.AmountInIntlCurrency = ARow.TransactionAmount / exchangeRateInternational;
+                GLBatchTDSAJournalRow journal = GetJournalRow();
+
+                GLRoutines.UpdateTotalsOfJournal(ref FMainDS, journal);
+
+                txtCreditTotalAmount.NumberValueDecimal = journal.JournalCreditTotal;
+                txtDebitTotalAmount.NumberValueDecimal = journal.JournalDebitTotal;
+                txtCreditTotalAmountBase.NumberValueDecimal = journal.JournalCreditTotalBase;
+                txtDebitTotalAmountBase.NumberValueDecimal = journal.JournalDebitTotalBase;
+
+                // refresh the currency symbols
+                ShowDataManual();
+
+                ((TFrmGLBatch)ParentForm).GetJournalsControl().UpdateTotals(GetBatchRow());
+                ((TFrmGLBatch)ParentForm).GetBatchControl().UpdateTotals();
             }
-
-            // transactions are filtered for this journal; add up the total amounts
-            decimal sumDebits = 0.0M;
-            decimal sumCredits = 0.0M;
-            decimal sumDebitsBase = 0.0M;
-            decimal sumCreditsBase = 0.0M;
-
-            foreach (DataRowView v in FMainDS.ATransaction.DefaultView)
-            {
-                ATransactionRow r = (ATransactionRow)v.Row;
-
-                if (r.DebitCreditIndicator)
-                {
-                    sumDebits += r.TransactionAmount;
-                    sumDebitsBase += r.AmountInBaseCurrency;
-                }
-                else
-                {
-                    sumCredits += r.TransactionAmount;
-                    sumCreditsBase += r.AmountInBaseCurrency;
-                }
-            }
-
-            if (FMainDS.ATransaction.Rows.Count == 0)
-            {
-                journal.JournalStatus = MFinanceConstants.BATCH_UNPOSTED;
-            }
-            else
-            {
-                journal.JournalStatus = MFinanceConstants.BATCH_HAS_TRANSACTIONS;
-            }
-
-            txtCreditTotalAmount.NumberValueDecimal = sumCredits;
-            txtDebitTotalAmount.NumberValueDecimal = sumDebits;
-            txtCreditTotalAmountBase.NumberValueDecimal = sumCreditsBase;
-            txtDebitTotalAmountBase.NumberValueDecimal = sumDebitsBase;
-
-            journal.JournalDebitTotal = sumDebitsBase;
-            journal.JournalCreditTotal = sumCreditsBase;
-
-            ((TFrmGLBatch)ParentForm).GetJournalsControl().UpdateTotals(GetBatchRow());
-            ((TFrmGLBatch)ParentForm).GetBatchControl().UpdateTotals();
         }
 
         /// <summary>
@@ -328,17 +305,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FocusedRowChanged(sender, egrid);
         }
 
-        private void UpdateBaseAndTotals(System.Object sender, EventArgs e)
+        /// <summary>
+        /// enable or disable the buttons
+        /// </summary>
+        public void UpdateChangeableStatus()
         {
-            try
-            {
-                AJournalRow journal = GetJournalRow();
-                exchangeRateForeign = journal.ExchangeRateToBase;
-            }
-            catch (Exception)
-            {
-                exchangeRateForeign = 0.0M;
-            }
+            Boolean changeable = !FPetraUtilsObject.DetailProtectedMode
+                                 && GetBatchRow() != null
+                                 && (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
+
+            this.btnRemove.Enabled = changeable;
+            this.btnNew.Enabled = changeable;
+            pnlDetails.Enabled = changeable;
+            pnlDetailsProtected = !changeable;
         }
 
         /// <summary>
@@ -355,14 +334,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
                 || (MessageBox.Show(String.Format(Catalog.GetString(
-                                "You have choosen to delete this transaction ({0}).\n\nDo you really want to delete it?"),
+                                "You have chosen to delete this transaction ({0}).\n\nDo you really want to delete it?"),
                             FPreviouslySelectedDetailRow.TransactionNumber), Catalog.GetString("Confirm Delete"),
                         MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes))
             {
                 int rowIndex = grdDetails.Selection.GetSelectionRegion().GetRowsIndex()[0];
                 ((TFrmGLBatch)ParentForm).GetAttributesControl().DeleteTransactionAttributes(FPreviouslySelectedDetailRow);
                 FPreviouslySelectedDetailRow.Delete();
-                UpdateTotals(null);
+                UpdateTotals();
                 FPetraUtilsObject.SetChangedFlag();
 
                 if (rowIndex == grdDetails.Rows.Count)
@@ -398,20 +377,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         private void AccountCodeDetailChanged(object sender, EventArgs e)
         {
-            ProcessAnalysisAttibutes();
+            ProcessAnalysisAttributes();
         }
 
-        /// <summary>
-        /// The FMainDS-Contol is only usable after the LedgerNumber has been set externaly.
-        /// In this case some "default"-Settings are to be done.
-        /// </summary>
-        public void FMainDS_ALedgerIsValidNow()
+        private void ProcessAnalysisAttributes()
         {
-        }
-
-        private void ProcessAnalysisAttibutes()
-        {
-            ((TFrmGLBatch)ParentForm).GetAttributesControl().CheckAnalysisAttributes((String)cmbDetailAccountCode.SelectedValue);
+            ((TFrmGLBatch)ParentForm).GetAttributesControl().CheckAnalysisAttributes(cmbDetailAccountCode.GetSelectedString());
         }
     }
 }

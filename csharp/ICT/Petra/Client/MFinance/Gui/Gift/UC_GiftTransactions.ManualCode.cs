@@ -55,9 +55,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             FLedgerNumber = ALedgerNumber;
             FBatchNumber = ABatchNumber;
-            btnDeleteDetail.Enabled = !FPetraUtilsObject.DetailProtectedMode;
-            btnNewDetail.Enabled = !FPetraUtilsObject.DetailProtectedMode;
-            btnNewGift.Enabled = !FPetraUtilsObject.DetailProtectedMode;
+            btnDeleteDetail.Enabled = !FPetraUtilsObject.DetailProtectedMode && !ViewMode;
+            btnNewDetail.Enabled = !FPetraUtilsObject.DetailProtectedMode && !ViewMode;
+            btnNewGift.Enabled = !FPetraUtilsObject.DetailProtectedMode && !ViewMode;
 
             FPreviouslySelectedDetailRow = null;
 
@@ -181,14 +181,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FInKeyMinistryChanging = true;
             try
             {
-                Object val = cmbMinistry.SelectedValueCell;
+                Int64 rcp = cmbMinistry.GetSelectedInt64();
 
-                if (val != null)
-                {
-                    Int64 rcp = (Int64)val;
-
-                    txtDetailRecipientKey.Text = String.Format("{0:0000000000}", rcp);
-                }
+                txtDetailRecipientKey.Text = String.Format("{0:0000000000}", rcp);
             }
             finally
             {
@@ -334,8 +329,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (giftDetailView.Count == 0)
             {
-                int oldGiftNumber = gift.GiftTransactionNumber;
-                int oldBatchNumber = gift.BatchNumber;
+                // TODO int oldGiftNumber = gift.GiftTransactionNumber;
+                // TODO int oldBatchNumber = gift.BatchNumber;
 
                 FMainDS.AGift.Rows.Remove(gift);
 
@@ -390,7 +385,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // this is coded manually, to use the correct gift record
 
             // we create the table locally, no dataset
-            AGiftDetailRow NewRow = NewGift();
+            NewGift(); // returns AGiftDetailRow
 
             FPetraUtilsObject.SetChangedFlag();
 
@@ -436,7 +431,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            TFrmGiftRevertAdjust revertForm = new TFrmGiftRevertAdjust(this.Handle);
+            TFrmGiftRevertAdjust revertForm = new TFrmGiftRevertAdjust(FPetraUtilsObject.GetForm());
             try
             {
                 ParentForm.ShowInTaskbar = false;
@@ -476,7 +471,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // this is coded manually, to use the correct gift record
 
             // we create the table locally, no dataset
-            AGiftDetailRow NewRow = NewGiftDetail((GiftBatchTDSAGiftDetailRow)FPreviouslySelectedDetailRow);
+            NewGiftDetail((GiftBatchTDSAGiftDetailRow)FPreviouslySelectedDetailRow); // returns AGiftDetailRow
 
             FPetraUtilsObject.SetChangedFlag();
 
@@ -596,9 +591,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             TFinanceControls.GetRecipientData(ref cmbMinistry, ref txtField, ARow.RecipientKey);
 
-            dtpDateEntered.Date = ((GiftBatchTDSAGiftDetailRow)ARow).DateEntered;
-            txtDetailDonorKey.Text = ((GiftBatchTDSAGiftDetailRow)ARow).DonorKey.ToString();
+            AGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
+            dtpDateEntered.Date = giftRow.DateEntered;
 
+            if (((GiftBatchTDSAGiftDetailRow)ARow).IsDonorKeyNull())
+            {
+                txtDetailDonorKey.Text = "0";
+            }
+            else
+            {
+                txtDetailDonorKey.Text = ((GiftBatchTDSAGiftDetailRow)ARow).DonorKey.ToString();
+            }
 
             UpdateControlsProtection(ARow);
 
@@ -686,7 +689,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void UpdateControlsProtection(AGiftDetailRow ARow)
         {
-            bool firstIsEnabled = (ARow != null) && (ARow.DetailNumber == 1);
+            bool firstIsEnabled = (ARow != null) && (ARow.DetailNumber == 1) && !ViewMode;
 
             dtpDateEntered.Enabled = firstIsEnabled;
             txtDetailDonorKey.Enabled = firstIsEnabled;
@@ -695,13 +698,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             cmbDetailMethodOfPaymentCode.Enabled = firstIsEnabled && !BatchHasMethodOfPayment();
             txtDetailReference.Enabled = firstIsEnabled;
             cmbDetailReceiptLetterCode.Enabled = firstIsEnabled;
-            PnlDetailsProtected = (ARow != null) && (ARow.GiftTransactionAmount < 0)
-                                  && // taken from old petra
-                                  (GetGiftRow(ARow.GiftTransactionNumber).ReceiptNumber != 0);
-
-            //	&& (ARow.ReceiptNumber) This is not
+            PnlDetailsProtected = ViewMode || ((ARow != null) && (ARow.GiftTransactionAmount < 0)
+                                               && // taken from old petra
+                                               (GetGiftRow(ARow.GiftTransactionNumber).ReceiptNumber != 0));
         }
 
+        private Boolean ViewMode
+        {
+            get
+            {
+                return ((TFrmGiftBatch)ParentForm).ViewMode;
+            }
+        }
         private Boolean BatchHasMethodOfPayment()
         {
             String batchMop =
@@ -775,6 +783,29 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             else
             {
                 giftRow.ReceiptLetterCode = cmbDetailReceiptLetterCode.GetSelectedString();
+            }
+        }
+
+        /// Select a special gift detail number from outside
+        public void SelectGiftDetailNumber(Int32 AGiftNumber, Int32 AGiftDetailNumber)
+        {
+            DataView myView = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView;
+
+            for (int counter = 0; (counter < myView.Count); counter++)
+            {
+                int myViewGiftNumber = (int)myView[counter][2];
+                int myViewGiftDetailNumber = (int)(int)myView[counter][3];
+
+                if ((myViewGiftNumber == AGiftNumber) && (myViewGiftDetailNumber == AGiftDetailNumber))
+                {
+                    grdDetails.Selection.ResetSelection(false);
+                    grdDetails.Selection.SelectRow(counter + 1, true);
+                    // scroll to the row
+                    grdDetails.ShowCell(new SourceGrid.Position(counter + 1, 0), true);
+
+                    FocusedRowChanged(this, new SourceGrid.RowEventArgs(counter + 1));
+                    break;
+                }
             }
         }
     }

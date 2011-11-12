@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,6 +27,8 @@ using Ict.Common.DB;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Verification;
+using Ict.Petra.Shared;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Server.MFinance.AP.Data.Access;
@@ -89,6 +91,18 @@ namespace Ict.Petra.Server.MCommon.DataReader
                 else if (ATablename == ADailyExchangeRateTable.GetTableDBName())
                 {
                     tempTable = ADailyExchangeRateAccess.LoadAll(ReadTransaction);
+                }
+                else if (ATablename == ACorporateExchangeRateTable.GetTableDBName())
+                {
+                    tempTable = ACorporateExchangeRateAccess.LoadAll(ReadTransaction);
+                }
+                else if (ATablename == AFeesPayableTable.GetTableDBName())
+                {
+                    tempTable = AFeesPayableAccess.LoadAll(ReadTransaction);
+                }
+                else if (ATablename == AFeesReceivableTable.GetTableDBName())
+                {
+                    tempTable = AFeesReceivableAccess.LoadAll(ReadTransaction);
                 }
                 else if (ATablename == AAnalysisTypeTable.GetTableDBName())
                 {
@@ -174,6 +188,48 @@ namespace Ict.Petra.Server.MCommon.DataReader
                         if (ADailyExchangeRateAccess.SubmitChanges((ADailyExchangeRateTable)ASubmitTable, SubmitChangesTransaction,
                                 out SingleVerificationResultCollection))
                         {
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
+                    else if (ATablename == ACorporateExchangeRateTable.GetTableDBName())
+                    {
+                        if (ACorporateExchangeRateAccess.SubmitChanges((ACorporateExchangeRateTable)ASubmitTable, SubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
+                    else if (ATablename == AFeesPayableTable.GetTableDBName())
+                    {
+                        if (AFeesPayableAccess.SubmitChanges((AFeesPayableTable)ASubmitTable, SubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
+                        {
+                            TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                                TCacheableFinanceTablesEnum.FeesPayableList.ToString());
+
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
+                    else if (ATablename == AFeesReceivableTable.GetTableDBName())
+                    {
+                        if (AFeesReceivableAccess.SubmitChanges((AFeesReceivableTable)ASubmitTable, SubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
+                        {
+                            TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                                TCacheableFinanceTablesEnum.FeesReceivableList.ToString());
+
                             SubmissionResult = TSubmitChangesResult.scrOK;
                         }
                         else

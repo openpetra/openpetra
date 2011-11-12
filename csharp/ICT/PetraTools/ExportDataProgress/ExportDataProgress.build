@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<project name="OpenPetra-csharp-ExportDataProgress-build">
-<property name="Namespace" value="ExportDataProgress" />
+<project name="OpenPetra-csharp-Ict.Tools.ExportDataProgress-build">
+<property name="Namespace" value="Ict.Tools.ExportDataProgress" />
 <property name="OutputType" value="exe" />
 
 <property name="RunCsDepend" value="true" />

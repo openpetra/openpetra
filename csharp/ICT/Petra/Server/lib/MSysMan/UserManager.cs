@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -78,7 +78,8 @@ namespace Ict.Petra.Server.MSysMan.Security
         /// <returns></returns>
         public static TPetraPrincipal PerformUserAuthentication(String AUserID, String APassword, ref Int32 AProcessID, ref Boolean ASystemEnabled)
         {
-            return Ict.Petra.Server.App.Core.Security.TUserManager.PerformUserAuthentication(AUserID, APassword, out AProcessID, out ASystemEnabled);
+            Server.App.Core.Security.TUserManager UserManager = new Server.App.Core.Security.TUserManager();
+            return (TPetraPrincipal)UserManager.PerformUserAuthentication(AUserID, APassword, out AProcessID, out ASystemEnabled);
         }
 
         /// <summary>
@@ -115,7 +116,7 @@ namespace Ict.Petra.Server.MSysMan.Security
         public static void SignalReloadCachedUserInfo(String AUserID)
         {
             // $IFDEF DEBUGMODE if TLogging.DL >= 7 then Console.WriteLine(this.GetType.FullName + '.SignalReloadCachedUserInfo: calling DomainManager.ClientTaskAddToOtherClient...'); $ENDIF
-            Ict.Petra.Server.App.ClientDomain.DomainManager.ClientTaskAddToOtherClient(AUserID,
+            Ict.Petra.Server.App.Core.DomainManager.ClientTaskAddToOtherClient(AUserID,
                 SharedConstants.CLIENTTASKGROUP_USERINFOREFRESH,
                 "",
                 1);

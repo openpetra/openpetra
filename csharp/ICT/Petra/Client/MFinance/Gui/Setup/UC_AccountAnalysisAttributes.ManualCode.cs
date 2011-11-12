@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -65,6 +65,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void NewRow(System.Object sender, EventArgs e)
         {
+            // reload analysis types from cache table
+            cmbDetailAnalysisTypeCode.InitialiseUserControl();
+
             if (cmbDetailAnalysisTypeCode.Count == 0)
             {
                 MessageBox.Show(Catalog.GetString("Please create an analysis type first"), Catalog.GetString("Error"),
@@ -110,7 +113,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
                 || (MessageBox.Show(String.Format(Catalog.GetString(
-                                "You have choosen to delete this value ({0}).\n\nDo you really want to delete it?"),
+                                "You have chosen to delete this value ({0}).\n\nDo you really want to delete it?"),
                             FPreviouslySelectedDetailRow.AnalysisValue), Catalog.GetString("Confirm Delete"),
                         MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes))
             {

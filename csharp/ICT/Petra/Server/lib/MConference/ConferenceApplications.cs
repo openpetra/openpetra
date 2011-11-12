@@ -285,8 +285,6 @@ namespace Ict.Petra.Server.MConference.Applications
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
-
-            return new ConferenceApplicationTDS();
         }
 
         private static bool LoadApplicationsFromDB(
@@ -457,8 +455,8 @@ namespace Ict.Petra.Server.MConference.Applications
                 newRow.StFgCode = shortTermRow.StFgCode;
                 newRow.StFgLeader = shortTermRow.StFgLeader;
                 newRow.StFieldCharged = shortTermRow.StFieldCharged;
-                newRow.Arrival = shortTermRow.Arrival;
-                newRow.Departure = shortTermRow.Departure;
+                newRow.DateOfArrival = shortTermRow.Arrival;
+                newRow.DateOfDeparture = shortTermRow.Departure;
 
                 // TODO: display the description of that application status
                 newRow.GenApplicationStatus = GeneralApplication.GenApplicationStatus;
@@ -893,6 +891,8 @@ namespace Ict.Petra.Server.MConference.Applications
                 ShortTermApplication.StFgLeader = AChangedRow.StFgLeader;
                 ShortTermApplication.StFgCode = AChangedRow.StFgCode;
                 ShortTermApplication.StFieldCharged = AChangedRow.StFieldCharged;
+                ShortTermApplication.Arrival = AChangedRow.DateOfArrival;
+                ShortTermApplication.Departure = AChangedRow.DateOfDeparture;
 
                 if (GeneralApplication.GenApplicationStatus != AChangedRow.GenApplicationStatus)
                 {
@@ -1252,7 +1252,6 @@ namespace Ict.Petra.Server.MConference.Applications
                     PmShortTermApplicationRow ShortTermApplicationRow = PmShortTermApplicationAccess.LoadUsingTemplate(TemplateRow, Transaction)[0];
 
                     PPersonRow PersonRow = PPersonAccess.LoadByPrimaryKey(ShortTermApplicationRow.PartnerKey, Transaction)[0];
-                    PLocationRow LocationRow = PLocationAccess.LoadViaPPartner(PersonRow.FamilyKey, Transaction)[0];
                     PPartnerLocationRow PartnerLocationRow = PPartnerLocationAccess.LoadViaPPartner(PersonRow.FamilyKey, Transaction)[0];
 
                     PmGeneralApplicationRow GeneralApplicationRow =
@@ -1381,6 +1380,32 @@ namespace Ict.Petra.Server.MConference.Applications
         }
 
         /// <summary>
+        /// get all accepted participants of this conference.
+        /// used for seminar registration, which is an external software
+        /// </summary>
+        /// <param name="AConferenceKey"></param>
+        /// <param name="AEventCode"></param>
+        /// <returns></returns>
+        [RequireModulePermission("SEMINARS")]
+        public static DataTable GetAllParticipants(Int64 AConferenceKey, string AEventCode)
+        {
+            ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
+
+            GetApplications(ref MainDS, AConferenceKey, AEventCode, "accepted", -1, true, null, true);
+
+            MainDS.ApplicationGrid.Columns.Remove(MainDS.ApplicationGrid.ColumnDateOfBirth);
+            MainDS.ApplicationGrid.Columns.Remove(MainDS.ApplicationGrid.ColumnGenAppDate);
+            MainDS.ApplicationGrid.Columns.Remove(MainDS.ApplicationGrid.ColumnGenApplicationStatus);
+            MainDS.ApplicationGrid.Columns.Remove(MainDS.ApplicationGrid.ColumnBadgePrint);
+            MainDS.ApplicationGrid.Columns.Remove(MainDS.ApplicationGrid.ColumnStFieldCharged);
+            MainDS.ApplicationGrid.Columns.Remove(MainDS.ApplicationGrid.ColumnApplicationKey);
+            MainDS.ApplicationGrid.Columns.Remove(MainDS.ApplicationGrid.ColumnComment);
+            MainDS.ApplicationGrid.Columns.Remove(MainDS.ApplicationGrid.ColumnDateOfDeparture);
+
+            return MainDS.ApplicationGrid;
+        }
+
+        /// <summary>
         /// Import the file that you get as a result when you import the applications from the Online Registration into your local Petra.
         /// This file contains the partner keys in the local Petra,
         /// and avoids that the registration office has to redo all the importing for the next round of applicants.
@@ -1390,8 +1415,6 @@ namespace Ict.Petra.Server.MConference.Applications
         public static bool UploadPetraImportResult(string APartnerKeyFile)
         {
             XmlDocument partnerKeys = TCsv2Xml.ParseCSV2Xml(APartnerKeyFile);
-
-            SortedList <Int64, XmlNode>PartnerKeys = new SortedList <long, XmlNode>();
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 

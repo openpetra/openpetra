@@ -29,6 +29,7 @@ using System.Data.Odbc;
 using System.Data.SQLite;
 using System.Collections;
 using Ict.Common;
+using Ict.Common.IO;
 using System.Text.RegularExpressions;
 
 namespace Ict.Common.DB
@@ -59,12 +60,6 @@ namespace Ict.Common.DB
         {
             ArrayList ExceptionList;
             SQLiteConnection TheConnection = null;
-
-            if (AServer.Contains("{userappdata}"))
-            {
-                AServer = AServer.Replace("{userappdata}",
-                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
-            }
 
             if (!File.Exists(AServer))
             {
@@ -382,6 +377,95 @@ namespace Ict.Common.DB
 
             return ASqlCommand.Substring(0, StartIndex) + "strftime(%j, " +
                    ASqlCommand.Substring(StartIndex + 10);
+        }
+
+        /// <summary>
+        /// For standalone installations, we update the SQLite database on the fly
+        /// </summary>
+        public void UpdateDatabase(TFileVersionInfo ADBVersion, TFileVersionInfo AExeVersion,
+            string AHostOrFile, string ADatabasePort, string ADatabaseName, string AUsername, string APassword)
+        {
+            // there have been drastic changes to the database after 0.2.8-1, which means we have to start with a clean database
+            // otherwise there are definitely errors with the s_login sequence, and outreach tables might cause a problem as well
+            if (ADBVersion.Compare(new TFileVersionInfo("0.2.8-1")) == 0)
+            {
+                DBAccess.GDBAccessObj.CloseDBConnection();
+
+                TLogging.Log("Please find your old data in " + TFileHelper.MoveToBackup(AHostOrFile));
+
+                DBAccess.GDBAccessObj.EstablishDBConnection(TDBType.SQLite,
+                    AHostOrFile,
+                    ADatabasePort,
+                    ADatabaseName,
+                    AUsername,
+                    APassword,
+                    "");
+            }
+
+            string dbpatchfilePath = Path.GetDirectoryName(TAppSettingsManager.GetValue("Server.SQLiteBaseFile"));
+
+            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+
+            ADBVersion.FilePrivatePart = 0;
+            AExeVersion.FilePrivatePart = 0;
+
+            try
+            {
+                // run all available patches. for each release there could be a patch file
+                string[] sqlFiles = Directory.GetFiles(dbpatchfilePath, "*.sql");
+
+                bool foundUpdate = true;
+
+                // run through all sql files until we have no matching update files anymore
+                while (foundUpdate)
+                {
+                    foundUpdate = false;
+
+                    foreach (string sqlFile in sqlFiles)
+                    {
+                        if (!sqlFile.EndsWith("pg.sql") && ((TPatchFileVersionInfo)ADBVersion).PatchApplies(sqlFile, AExeVersion))
+                        {
+                            foundUpdate = true;
+                            StreamReader sr = new StreamReader(sqlFile);
+
+                            while (!sr.EndOfStream)
+                            {
+                                string line = sr.ReadLine().Trim();
+
+                                if (!line.StartsWith("--"))
+                                {
+                                    DBAccess.GDBAccessObj.ExecuteNonQuery(line, transaction, false);
+                                }
+                            }
+
+                            sr.Close();
+                            ADBVersion = TPatchFileVersionInfo.GetLatestPatchVersionFromDiffZipName(sqlFile);
+                        }
+                    }
+                }
+
+                if (ADBVersion.Compare(AExeVersion) == 0)
+                {
+                    // if patches have been applied successfully, update the database version
+                    string newVersionSql =
+                        String.Format("UPDATE s_system_defaults SET s_default_value_c = '{0}' WHERE s_default_code_c = 'CurrentDatabaseVersion';",
+                            AExeVersion.ToStringDotsHyphen());
+                    DBAccess.GDBAccessObj.ExecuteNonQuery(newVersionSql, transaction, false);
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+                else
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    throw new Exception(String.Format("Cannot connect to old database (version {0}), there are some missing sql patch files",
+                            ADBVersion));
+                }
+            }
+            catch (Exception e)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+
+                throw e;
+            }
         }
     }
 }

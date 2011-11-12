@@ -7,7 +7,10 @@
     <DataSet name="GLBatchTDS">
         <Table sqltable="a_ledger"/>
         <Table sqltable="a_batch"/>
-        <Table sqltable="a_journal"/>
+        <Table sqltable="a_journal">
+            <CustomField name="JournalDebitTotalBase" type="decimal"/>
+            <CustomField name="JournalCreditTotalBase" type="decimal"/>
+        </Table>
         <Table sqltable="a_transaction">
             <CustomField name="DateEntered" type="DateTime"/>
             <CustomField name="AnalysisAttributes" type="string"/>
@@ -68,5 +71,13 @@
         <Table sqltable="p_partner_location"/>
         <Table sqltable="p_partner_ledger"/>
     </DataSet>
-
+    <DataSet name="GLStewardshipCalculationTDS">
+        <CustomTable name="CreditFeeTotal">
+            <Field sqltable="a_cost_centre" sqlfield="a_cost_centre_code_c"/>
+            <Field sqltable="a_account" sqlfield="a_account_code_c"/>
+            <Field sqltable="a_transaction" sqlfield="a_transaction_amount_n"/>
+            <PrimaryKey thisFields="CostCentreCode,AccountCode"/>
+        </CustomTable>
+    </DataSet>
+            
 </PetraDataSets>

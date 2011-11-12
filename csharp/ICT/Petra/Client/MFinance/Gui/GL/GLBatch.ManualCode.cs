@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -25,6 +25,7 @@ using System;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Common.Remoting.Client;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
@@ -43,10 +44,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FLedgerNumber = value;
                 ucoBatches.LoadBatches(FLedgerNumber);
                 ucoAttributes.LedgerNumber = value;
-
-                ucoBatches.FMainDS_ALedgerIsValidNow();
-                ucoTransactions.FMainDS_ALedgerIsValidNow();
-                ucoJournals.FMainDS_ALedgerIsValidNow();
 
                 ucoJournals.WorkAroundInitialization();
                 ucoTransactions.WorkAroundInitialization();

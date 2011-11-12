@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -148,7 +148,7 @@ namespace Ict.Tools.DBXML
         public string strArea;
 
         /// <summary>
-        /// even shorter description than strDescription; not used at the moment
+        /// even shorter description than strDescription
         /// </summary>
         public string strLabel;
 
@@ -347,7 +347,7 @@ namespace Ict.Tools.DBXML
 
             foreach (TTableField t in grpTableField.List)
             {
-                if ((t.strName == s) || (NiceFieldName(t) == s))
+                if ((t.strName == s) || (t.strNameDotNet == s))
                 {
                     return t;
                 }
@@ -358,7 +358,7 @@ namespace Ict.Tools.DBXML
                 // should be disabled for creating the diff between two Petra versions.
                 if ((GEnabledLoggingMissingFields) && (s != "s_modification_id_c") && AShowWarningNonExistingField)
                 {
-                    System.Console.WriteLine("TTable.GetField: cannot find field " + strName + '.' + s);
+                    System.Console.WriteLine("Warning: TTable.GetField: cannot find field " + strName + '.' + s);
                 }
             }
 
@@ -940,7 +940,27 @@ namespace Ict.Tools.DBXML
         /// <summary>
         /// name that should be used in generated code for this column
         /// </summary>
-        public string strNameDotNet;
+        private string FNameDotNet;
+
+        /// <summary>
+        /// property for dynamically calculating the .net name for the column
+        /// </summary>
+        public string strNameDotNet
+        {
+            set
+            {
+                FNameDotNet = value;
+            }
+            get
+            {
+                if ((FNameDotNet == null) || (FNameDotNet.Length == 0))
+                {
+                    return TTable.NiceFieldName(strName);
+                }
+
+                return FNameDotNet;
+            }
+        }
 
         /// <summary>
         /// help for this column for the user

@@ -36,28 +36,49 @@ using Ict.Common;
 
 namespace Ict.Tools.CodeGeneration.Winforms
 {
+    /// <summary>
+    /// generator for the table layout panel
+    /// </summary>
     public class TableLayoutPanelGenerator : TControlGenerator
     {
         private Int32 FColumnCount = -1, FRowCount = -1;
+
+        /// <summary>
+        /// constructor
+        /// </summary>
         public TableLayoutPanelGenerator()
             : base("tlp", typeof(TableLayoutPanel))
         {
             FAutoSize = true;
         }
 
+        /// <summary>
+        /// count the number of generated table layout panels for the names
+        /// </summary>
         public static Int32 countTableLayoutPanel = 0;
+
+        /// <summary>
+        /// generate the name for the layout panel
+        /// </summary>
+        /// <returns></returns>
         public string CalculateName()
         {
             countTableLayoutPanel++;
             return "tableLayoutPanel" + countTableLayoutPanel.ToString();
         }
 
+        /// <summary>
+        /// add container
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="ctrl"></param>
         public override void GenerateDeclaration(TFormWriter writer, TControlDef ctrl)
         {
             base.GenerateDeclaration(writer, ctrl);
             writer.AddContainer(ctrl.controlName);
         }
 
+        /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             ctrl.SetAttribute("Dock", "Fill");
@@ -68,6 +89,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// either null for no control, or TControlDef object, or string object for temporary controls.
         /// </summary>
         private System.Object[, ] FGrid;
+
+        /// <summary>
+        /// tab order for the set of controls. Can be ByColumn, or default is ByRow
+        /// </summary>
+        private string FTabOrder = string.Empty;
 
         /// first collect everything, in the end check for unnecessary columnspan, and then write the tablelayout
         public void InitTableLayoutGrid()
@@ -105,6 +131,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             FGrid[column, row] = tmpChildCtrlName;
         }
+
+        private static int FCurrentTabIndex = 0;
 
         /// <summary>
         /// optimise the table layout, and write it;
@@ -305,20 +333,74 @@ namespace Ict.Tools.CodeGeneration.Winforms
                                 "Controls.Add(this." +
                                 childCtrlName + ", " +
                                 NewColumn.ToString() + ", " + rowCounter.ToString() + ")");
+
+                            if (FTabOrder == "Horizontal")
+                            {
+                                writer.SetControlProperty(childCtrlName, "TabIndex", FCurrentTabIndex.ToString(), false);
+                                FCurrentTabIndex++;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // by default, the TabOrder is by column, Vertical
+            if (FTabOrder != "Horizontal")
+            {
+                for (int rowCounter = 0; rowCounter < FRowCount; rowCounter++)
+                {
+                    for (int columnCounter = 0; columnCounter < FColumnCount; columnCounter++)
+                    {
+                        if (FGrid[columnCounter, rowCounter] != null)
+                        {
+                            string childCtrlName;
+
+                            if (FGrid[columnCounter, rowCounter].GetType() == typeof(TControlDef))
+                            {
+                                TControlDef childctrl = (TControlDef)FGrid[columnCounter, rowCounter];
+                                childCtrlName = childctrl.controlName;
+                            }
+                            else
+                            {
+                                childCtrlName = (string)FGrid[columnCounter, rowCounter];
+                            }
+
+                            writer.SetControlProperty(childCtrlName, "TabIndex", FCurrentTabIndex.ToString(), false);
+                            FCurrentTabIndex++;
                         }
                     }
                 }
             }
         }
 
+        /// <summary>
+        /// orientation of a list of controls (above each other, besides, or in a table layout)
+        /// </summary>
         public enum eOrientation
         {
-            Vertical, Horizontal, TableLayout
+            /// arrange controls above each other
+            Vertical,
+            /// arrange controls besides each other
+            Horizontal,
+            /// arrange controls in a table layout
+            TableLayout
         };
 
+        /// <summary>
+        /// how to arrange the controls
+        /// </summary>
         protected eOrientation FOrientation = eOrientation.Vertical;
+        /// <summary>
+        /// cursor to determine the current row
+        /// </summary>
         protected Int32 FCurrentRow = 0;
+        /// <summary>
+        /// cursor to determine the current column
+        /// </summary>
         protected Int32 FCurrentColumn = 0;
+        /// <summary>
+        /// name of the current table layout panel
+        /// </summary>
         protected string FTlpName = "";
 
         /// <summary>
@@ -361,6 +443,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
             // first check if the table layout has already been defined in the container with sets of rows?
             XmlNode containerNode = writer.CodeStorage.GetControl(parentContainerName).xmlNode;
             XmlNode controlsNode = TXMLParser.GetChild(containerNode, "Controls");
+
+            if (controlsNode != null)
+            {
+                FTabOrder = TXMLParser.GetAttribute(controlsNode, "TabOrder");
+            }
 
             List <XmlNode>childNodes = TYml2Xml.GetChildren(controlsNode, true);
 
@@ -509,6 +596,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return FTlpName;
         }
 
+        /// <summary>
+        /// create the code
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="ctrl"></param>
         public void CreateCode(TFormWriter writer, TControlDef ctrl)
         {
             XmlNode curNode = ctrl.xmlNode;

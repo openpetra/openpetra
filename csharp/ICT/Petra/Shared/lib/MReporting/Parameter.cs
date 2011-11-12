@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,8 +22,10 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.IO;
 using Ict.Common.IO;
 using Ict.Common;
+using Ict.Common.Remoting.Server;
 using System.Data;
 using System.Data.Odbc;
 using System.Collections;
@@ -241,9 +243,10 @@ namespace Ict.Petra.Shared.MReporting
                         Convert.ToInt32(row["column"]), Convert.ToInt32(row["level"]), Convert.ToInt16(row["subreport"])));
             }
 
-#if DEBUGMODE
-            Save("param.xml");
-#endif
+            if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_REPORTING)
+            {
+                Save(Path.GetDirectoryName(TSrvSetting.ServerLogFile) + Path.DirectorySeparatorChar + "param.xml");
+            }
         }
 
         /// <summary>

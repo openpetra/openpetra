@@ -33,19 +33,22 @@ using Ict.Common.IO;
 using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Common.Data;
+using Ict.Common.Remoting.Server;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Server.MFinance.GL.Data.Access;
 using Ict.Petra.Server.MSysMan.Data.Access;
+using Ict.Petra.Shared.MSysMan;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.App.Core.Security;
-using Ict.Petra.Server.App.ClientDomain;
+using Ict.Petra.Server.App.Core;
 
 namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 {
@@ -64,6 +67,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         {
             GLSetupTDS MainDS = new GLSetupTDS();
 
+            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, null);
             AAccountHierarchyAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
             AAccountHierarchyDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
             AAccountAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
@@ -245,10 +249,12 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             TSubmitChangesResult returnValue = GLSetupTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
 
-            DomainManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+            TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
                 TCacheableFinanceTablesEnum.AccountList.ToString());
-            DomainManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+            TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
                 TCacheableFinanceTablesEnum.AnalysisTypeList.ToString());
+            TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                TCacheableFinanceTablesEnum.CostCentreList.ToString());
 
             return returnValue;
         }
@@ -291,6 +297,11 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                                                   MFinanceConstants.ACCOUNT_PROPERTY_BANK_ACCOUNT, "true" }) != null)
             {
                 accountNode.SetAttribute("bankaccount", "true");
+            }
+
+            if (account.ForeignCurrencyFlag)
+            {
+                accountNode.SetAttribute("currency", account.ForeignCurrencyCode);
             }
 
             AParentNode.AppendChild(accountNode);
@@ -355,8 +366,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             XmlElement costCentreNode = ADoc.CreateElement(TYml2Xml.XMLELEMENT);
 
             // CostCentreToReportTo is encoded implicitly
-            costCentreNode.SetAttribute("name", ADetailRow.CostCentreName);
-            costCentreNode.SetAttribute("code", ADetailRow.CostCentreCode);
+            costCentreNode.SetAttribute("name", ADetailRow.CostCentreCode);
+            costCentreNode.SetAttribute("descr", ADetailRow.CostCentreName);
             costCentreNode.SetAttribute("active", ADetailRow.CostCentreActiveFlag ? "True" : "False");
             costCentreNode.SetAttribute("type", ADetailRow.CostCentreType.ToString());
             AParentNode.AppendChild(costCentreNode);
@@ -475,6 +486,17 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 ((GLSetupTDSAAccountRow)newAccount).BankAccountFlag = true;
             }
 
+            if (TYml2Xml.HasAttributeRecursive(ACurrentNode, "currency"))
+            {
+                string currency = TYml2Xml.GetAttributeRecursive(ACurrentNode, "currency");
+
+                if (currency != AMainDS.ALedger[0].BaseCurrency)
+                {
+                    newAccount.ForeignCurrencyCode = currency;
+                    newAccount.ForeignCurrencyFlag = true;
+                }
+            }
+
             // account hierarchy has been deleted, so always add
             AAccountHierarchyDetailRow newAccountHDetail = AMainDS.AAccountHierarchyDetail.NewRowTyped();
             newAccountHDetail.LedgerNumber = AMainDS.AAccountHierarchy[0].LedgerNumber;
@@ -483,6 +505,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             newAccountHDetail.ReportingAccountCode = AccountCode;
 
             AMainDS.AAccountHierarchyDetail.Rows.Add(newAccountHDetail);
+
+            newAccount.PostingStatus = !ACurrentNode.HasChildNodes;
 
             foreach (XmlNode child in ACurrentNode.ChildNodes)
             {
@@ -559,7 +583,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         {
             ACostCentreRow newCostCentre = null;
 
-            string CostCentreCode = TYml2Xml.GetAttribute(ACurrentNode, "code");
+            string CostCentreCode = TYml2Xml.GetElementName(ACurrentNode);
 
             AImportedCostCentreCodes.Add(CostCentreCode);
 
@@ -579,7 +603,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             newCostCentre.LedgerNumber = ALedgerNumber;
             newCostCentre.CostCentreCode = CostCentreCode;
-            newCostCentre.CostCentreName = TYml2Xml.GetElementName(ACurrentNode);
+            newCostCentre.CostCentreName = TYml2Xml.GetAttribute(ACurrentNode, "descr");
             newCostCentre.CostCentreActiveFlag = TYml2Xml.GetAttributeRecursive(ACurrentNode, "active").ToLower() == "true";
             newCostCentre.CostCentreType = TYml2Xml.GetAttributeRecursive(ACurrentNode, "type");
             newCostCentre.PostingCostCentreFlag = (ACurrentNode.ChildNodes.Count == 0);
@@ -719,6 +743,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             AAccountRow accountRow = AMainDS.AAccount.NewRowTyped();
             accountRow.LedgerNumber = ALedgerNumber;
             accountRow.AccountCode = ALedgerNumber.ToString();
+            accountRow.PostingStatus = false;
             AMainDS.AAccount.Rows.Add(accountRow);
 
             XmlNode root = doc.FirstChild.NextSibling.FirstChild;
@@ -764,8 +789,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// <summary>
         /// create a new ledger and do the initial setup
         /// </summary>
-        [RequireModulePermission("OR(SYSMAN,FINANCE-3)")]
-        public static bool CreateNewLedger(Int32 ALedgerNumber,
+        [RequireModulePermission("FINANCE-3")]
+        public static bool CreateNewLedger(Int32 ANewLedgerNumber,
             String ALedgerName,
             String ACountryCode,
             String ABaseCurrency,
@@ -779,22 +804,23 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             AVerificationResult = null;
 
             // check if such a ledger already exists
-            ALedgerTable tempLedger = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, null);
+            ALedgerTable tempLedger = ALedgerAccess.LoadByPrimaryKey(ANewLedgerNumber, null);
 
             if (tempLedger.Count > 0)
             {
                 AVerificationResult = new TVerificationResultCollection();
                 string msg = String.Format(Catalog.GetString(
-                        "There is already a ledger with number {0}. Please choose another number."), ALedgerNumber);
+                        "There is already a ledger with number {0}. Please choose another number."), ANewLedgerNumber);
                 AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Creating Ledger"), msg, TResultSeverity.Resv_Critical));
                 return false;
             }
 
-            if ((ALedgerNumber <= 0) || (ALedgerNumber > 9999))
+            if ((ANewLedgerNumber <= 1) || (ANewLedgerNumber > 9999))
             {
+                // ledger number 1 does not work, because the root unit has partner key 1000000.
                 AVerificationResult = new TVerificationResultCollection();
                 string msg = String.Format(Catalog.GetString(
-                        "Invalid number {0} for a ledger. Please choose a number between 1 and 9999."), ALedgerNumber);
+                        "Invalid number {0} for a ledger. Please choose a number between 2 and 9999."), ANewLedgerNumber);
                 AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Creating Ledger"), msg, TResultSeverity.Resv_Critical));
                 return false;
             }
@@ -802,7 +828,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             GLSetupTDS MainDS = new GLSetupTDS();
 
             ALedgerRow ledgerRow = MainDS.ALedger.NewRowTyped();
-            ledgerRow.LedgerNumber = ALedgerNumber;
+            ledgerRow.LedgerNumber = ANewLedgerNumber;
             ledgerRow.LedgerName = ALedgerName;
             ledgerRow.CurrentPeriod = ACurrentPeriod;
             ledgerRow.NumberOfAccountingPeriods = ANumberOfPeriods;
@@ -815,7 +841,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             ledgerRow.ForexGainsLossesAccount = "5003";
             MainDS.ALedger.Rows.Add(ledgerRow);
 
-            Int64 PartnerKey = Convert.ToInt64(ALedgerNumber) * 1000000L;
+            Int64 PartnerKey = Convert.ToInt64(ANewLedgerNumber) * 1000000L;
 
             PPartnerRow partnerRow = MainDS.PPartner.NewRowTyped();
             ledgerRow.PartnerKey = PartnerKey;
@@ -853,7 +879,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             MainDS.PPartnerLedger.Rows.Add(partnerLedgerRow);
 
             SModuleRow moduleRow = MainDS.SModule.NewRowTyped();
-            moduleRow.ModuleId = "LEDGER" + ALedgerNumber.ToString("0000");
+            moduleRow.ModuleId = "LEDGER" + ANewLedgerNumber.ToString("0000");
             moduleRow.ModuleName = moduleRow.ModuleId;
             MainDS.SModule.Rows.Add(moduleRow);
 
@@ -876,7 +902,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             for (Int32 periodNumber = 1; periodNumber <= ANumberOfPeriods + ANumberOfFwdPostingPeriods; periodNumber++)
             {
                 AAccountingPeriodRow accountingPeriodRow = MainDS.AAccountingPeriod.NewRowTyped();
-                accountingPeriodRow.LedgerNumber = ALedgerNumber;
+                accountingPeriodRow.LedgerNumber = ANewLedgerNumber;
                 accountingPeriodRow.AccountingPeriodNumber = periodNumber;
                 accountingPeriodRow.PeriodStartDate = periodStartDate;
                 accountingPeriodRow.PeriodEndDate = periodStartDate.AddMonths(1).AddDays(-1);
@@ -886,7 +912,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             }
 
             AAccountingSystemParameterRow accountingSystemParameterRow = MainDS.AAccountingSystemParameter.NewRowTyped();
-            accountingSystemParameterRow.LedgerNumber = ALedgerNumber;
+            accountingSystemParameterRow.LedgerNumber = ANewLedgerNumber;
             accountingSystemParameterRow.ActualsDataRetention = ledgerRow.ActualsDataRetention;
             accountingSystemParameterRow.GiftDataRetention = ledgerRow.GiftDataRetention;
             accountingSystemParameterRow.NumberFwdPostingPeriods = ledgerRow.NumberFwdPostingPeriods;
@@ -895,25 +921,25 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             MainDS.AAccountingSystemParameter.Rows.Add(accountingSystemParameterRow);
 
             ASystemInterfaceRow systemInterfaceRow = MainDS.ASystemInterface.NewRowTyped();
-            systemInterfaceRow.LedgerNumber = ALedgerNumber;
+            systemInterfaceRow.LedgerNumber = ANewLedgerNumber;
 
             systemInterfaceRow.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
             systemInterfaceRow.SetUpComplete = true;
             MainDS.ASystemInterface.Rows.Add(systemInterfaceRow);
             systemInterfaceRow = MainDS.ASystemInterface.NewRowTyped();
-            systemInterfaceRow.LedgerNumber = ALedgerNumber;
+            systemInterfaceRow.LedgerNumber = ANewLedgerNumber;
             systemInterfaceRow.SubSystemCode = CommonAccountingSubSystemsEnum.GR.ToString();
             systemInterfaceRow.SetUpComplete = true;
             MainDS.ASystemInterface.Rows.Add(systemInterfaceRow);
             systemInterfaceRow = MainDS.ASystemInterface.NewRowTyped();
-            systemInterfaceRow.LedgerNumber = ALedgerNumber;
+            systemInterfaceRow.LedgerNumber = ANewLedgerNumber;
             systemInterfaceRow.SubSystemCode = CommonAccountingSubSystemsEnum.AP.ToString();
             systemInterfaceRow.SetUpComplete = true;
             MainDS.ASystemInterface.Rows.Add(systemInterfaceRow);
 
             // TODO: this might be different for other account or costcentre names
             ATransactionTypeRow transactionTypeRow = MainDS.ATransactionType.NewRowTyped();
-            transactionTypeRow.LedgerNumber = ALedgerNumber;
+            transactionTypeRow.LedgerNumber = ANewLedgerNumber;
             transactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.AP.ToString();
             transactionTypeRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.INV.ToString();
             transactionTypeRow.DebitAccountCode = "BAL SHT";
@@ -922,7 +948,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             transactionTypeRow.SpecialTransactionType = true;
             MainDS.ATransactionType.Rows.Add(transactionTypeRow);
             transactionTypeRow = MainDS.ATransactionType.NewRowTyped();
-            transactionTypeRow.LedgerNumber = ALedgerNumber;
+            transactionTypeRow.LedgerNumber = ANewLedgerNumber;
             transactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
             transactionTypeRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.ALLOC.ToString();
             transactionTypeRow.DebitAccountCode = "BAL SHT";
@@ -931,7 +957,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             transactionTypeRow.SpecialTransactionType = true;
             MainDS.ATransactionType.Rows.Add(transactionTypeRow);
             transactionTypeRow = MainDS.ATransactionType.NewRowTyped();
-            transactionTypeRow.LedgerNumber = ALedgerNumber;
+            transactionTypeRow.LedgerNumber = ANewLedgerNumber;
             transactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
             transactionTypeRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.REALLOC.ToString();
             transactionTypeRow.DebitAccountCode = "BAL SHT";
@@ -940,7 +966,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             transactionTypeRow.SpecialTransactionType = true;
             MainDS.ATransactionType.Rows.Add(transactionTypeRow);
             transactionTypeRow = MainDS.ATransactionType.NewRowTyped();
-            transactionTypeRow.LedgerNumber = ALedgerNumber;
+            transactionTypeRow.LedgerNumber = ANewLedgerNumber;
             transactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
             transactionTypeRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.REVAL.ToString();
             transactionTypeRow.DebitAccountCode = "5003";
@@ -949,7 +975,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             transactionTypeRow.SpecialTransactionType = true;
             MainDS.ATransactionType.Rows.Add(transactionTypeRow);
             transactionTypeRow = MainDS.ATransactionType.NewRowTyped();
-            transactionTypeRow.LedgerNumber = ALedgerNumber;
+            transactionTypeRow.LedgerNumber = ANewLedgerNumber;
             transactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
             transactionTypeRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.STD.ToString();
             transactionTypeRow.DebitAccountCode = "BAL SHT";
@@ -958,7 +984,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             transactionTypeRow.SpecialTransactionType = false;
             MainDS.ATransactionType.Rows.Add(transactionTypeRow);
             transactionTypeRow = MainDS.ATransactionType.NewRowTyped();
-            transactionTypeRow.LedgerNumber = ALedgerNumber;
+            transactionTypeRow.LedgerNumber = ANewLedgerNumber;
             transactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.GR.ToString();
             transactionTypeRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.GR.ToString();
             transactionTypeRow.DebitAccountCode = "CASH";
@@ -967,67 +993,95 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             transactionTypeRow.SpecialTransactionType = true;
             MainDS.ATransactionType.Rows.Add(transactionTypeRow);
 
-            AValidLedgerNumberTable validLedgerNumberTable = AValidLedgerNumberAccess.LoadByPrimaryKey(ALedgerNumber, PartnerKey, null);
+            AValidLedgerNumberTable validLedgerNumberTable = AValidLedgerNumberAccess.LoadByPrimaryKey(ANewLedgerNumber, PartnerKey, null);
 
             if (validLedgerNumberTable.Rows.Count == 0)
             {
                 AValidLedgerNumberRow validLedgerNumberRow = MainDS.AValidLedgerNumber.NewRowTyped();
                 validLedgerNumberRow.PartnerKey = PartnerKey;
-                validLedgerNumberRow.LedgerNumber = ALedgerNumber;
+                validLedgerNumberRow.LedgerNumber = ANewLedgerNumber;
 
                 // TODO can we assume that ledger 4 is used for international clearing?
                 // but in the empty database, that ledger and therefore p_partner with key 4000000 does not exist
                 // validLedgerNumberRow.IltProcessingCentre = 4000000;
 
-                validLedgerNumberRow.CostCentreCode = (ALedgerNumber * 100).ToString();
+                validLedgerNumberRow.CostCentreCode = (ANewLedgerNumber * 100).ToString("0000");
                 MainDS.AValidLedgerNumber.Rows.Add(validLedgerNumberRow);
             }
 
             ACostCentreTypesRow costCentreTypesRow = MainDS.ACostCentreTypes.NewRowTyped();
-            costCentreTypesRow.LedgerNumber = ALedgerNumber;
+            costCentreTypesRow.LedgerNumber = ANewLedgerNumber;
             costCentreTypesRow.CostCentreType = "Local";
             costCentreTypesRow.Deletable = false;
             MainDS.ACostCentreTypes.Rows.Add(costCentreTypesRow);
             costCentreTypesRow = MainDS.ACostCentreTypes.NewRowTyped();
-            costCentreTypesRow.LedgerNumber = ALedgerNumber;
+            costCentreTypesRow.LedgerNumber = ANewLedgerNumber;
             costCentreTypesRow.CostCentreType = "Foreign";
             costCentreTypesRow.Deletable = false;
             MainDS.ACostCentreTypes.Rows.Add(costCentreTypesRow);
 
             AMotivationGroupRow motivationGroupRow = MainDS.AMotivationGroup.NewRowTyped();
-            motivationGroupRow.LedgerNumber = ALedgerNumber;
+            motivationGroupRow.LedgerNumber = ANewLedgerNumber;
             motivationGroupRow.MotivationGroupCode = "GIFT";
             motivationGroupRow.MotivationGroupDescLocal = Catalog.GetString("Gifts");
             motivationGroupRow.MotivationGroupDescription = motivationGroupRow.MotivationGroupDescLocal;
             MainDS.AMotivationGroup.Rows.Add(motivationGroupRow);
 
             AMotivationDetailRow motivationDetailRow = MainDS.AMotivationDetail.NewRowTyped();
-            motivationDetailRow.LedgerNumber = ALedgerNumber;
+            motivationDetailRow.LedgerNumber = ANewLedgerNumber;
             motivationDetailRow.MotivationGroupCode = "GIFT";
             motivationDetailRow.MotivationDetailCode = "SUPPORT";
             motivationDetailRow.MotivationDetailDesc = Catalog.GetString("Personal Support");
             motivationDetailRow.MotivationDetailDescLocal = motivationDetailRow.MotivationDetailDesc;
             motivationDetailRow.AccountCode = "0100";
-            motivationDetailRow.CostCentreCode = (ALedgerNumber * 100).ToString("0000");
+            motivationDetailRow.CostCentreCode = (ANewLedgerNumber * 100).ToString("0000");
             MainDS.AMotivationDetail.Rows.Add(motivationDetailRow);
 
             motivationDetailRow = MainDS.AMotivationDetail.NewRowTyped();
-            motivationDetailRow.LedgerNumber = ALedgerNumber;
+            motivationDetailRow.LedgerNumber = ANewLedgerNumber;
             motivationDetailRow.MotivationGroupCode = "GIFT";
             motivationDetailRow.MotivationDetailCode = "FIELD";
             motivationDetailRow.MotivationDetailDesc = Catalog.GetString("Gifts for Field");
             motivationDetailRow.MotivationDetailDescLocal = motivationDetailRow.MotivationDetailDesc;
             motivationDetailRow.AccountCode = "1200";
-            motivationDetailRow.CostCentreCode = (ALedgerNumber * 100).ToString("0000");
+            motivationDetailRow.CostCentreCode = (ANewLedgerNumber * 100).ToString("0000");
             MainDS.AMotivationDetail.Rows.Add(motivationDetailRow);
 
-            ImportDefaultAccountHierarchy(ref MainDS, ALedgerNumber);
-            ImportDefaultCostCentreHierarchy(ref MainDS, ALedgerNumber, ALedgerName);
+            ImportDefaultAccountHierarchy(ref MainDS, ANewLedgerNumber);
+            ImportDefaultCostCentreHierarchy(ref MainDS, ANewLedgerNumber, ALedgerName);
 
             // TODO: modify UI navigation yml file etc?
             // TODO: permissions for which users?
 
             TSubmitChangesResult result = GLSetupTDSAccess.SubmitChanges(MainDS, out AVerificationResult);
+
+            if (result == TSubmitChangesResult.scrOK)
+            {
+                // give the current user access permissions to this new ledger
+                SUserModuleAccessPermissionTable moduleAccessPermissionTable = new SUserModuleAccessPermissionTable();
+
+                SUserModuleAccessPermissionRow moduleAccessPermissionRow = moduleAccessPermissionTable.NewRowTyped();
+                moduleAccessPermissionRow.UserId = UserInfo.GUserInfo.UserID;
+                moduleAccessPermissionRow.ModuleId = "LEDGER" + ANewLedgerNumber.ToString("0000");
+                moduleAccessPermissionRow.CanAccess = true;
+                moduleAccessPermissionTable.Rows.Add(moduleAccessPermissionRow);
+
+                TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
+
+                try
+                {
+                    if (!SUserModuleAccessPermissionAccess.SubmitChanges(moduleAccessPermissionTable, Transaction, out AVerificationResult))
+                    {
+                        return false;
+                    }
+
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+                finally
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+            }
 
             return result == TSubmitChangesResult.scrOK;
         }

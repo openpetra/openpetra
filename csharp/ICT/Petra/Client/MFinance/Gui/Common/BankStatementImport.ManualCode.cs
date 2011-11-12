@@ -28,9 +28,10 @@ using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Data; // Implicit reference
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Core;
-using Ict.Petra.Shared.Interfaces;
 using Ict.Petra.Shared.Interfaces.Plugins.MFinance;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -241,8 +242,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
 
             AMotivationDetailRow motivationDetailRow = (AMotivationDetailRow)v[0].Row;
 
-            cmbGiftAccount.Filter = AAccountTable.GetAccountCodeDBName() + " = '" + motivationDetailRow.AccountCode + "'";
-            cmbGiftCostCentre.Filter = ACostCentreTable.GetCostCentreCodeDBName() + " = '" + motivationDetailRow.CostCentreCode + "'";
+            cmbGiftAccount.SetSelectedString(motivationDetailRow.AccountCode);
+            cmbGiftCostCentre.SetSelectedString(motivationDetailRow.CostCentreCode);
         }
 
         private void NewTransactionCategory(System.Object sender, EventArgs e)
@@ -253,8 +254,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
 
             rbtGLWasChecked = rbtGL.Checked;
             rbtGiftWasChecked = rbtGift.Checked;
-            rbtUnmatchedWasChecked = rbtUnmatched.Checked;
-            rbtIgnoredWasChecked = rbtIgnored.Checked;
 
             pnlGiftEdit.Visible = rbtGift.Checked;
             pnlGLEdit.Visible = rbtGL.Checked;
@@ -304,8 +303,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
         private BankImportTDSAEpMatchRow CurrentlySelectedMatch = null;
         private bool rbtGLWasChecked = false;
         private bool rbtGiftWasChecked = false;
-        private bool rbtUnmatchedWasChecked = false;
-        private bool rbtIgnoredWasChecked = false;
 
         private void DeleteStatement(System.Object Sender, EventArgs e)
         {
@@ -444,8 +441,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
 
             rbtGLWasChecked = rbtGL.Checked;
             rbtGiftWasChecked = rbtGift.Checked;
-            rbtUnmatchedWasChecked = rbtUnmatched.Checked;
-            rbtIgnoredWasChecked = rbtIgnored.Checked;
         }
 
         private void GiftDetailsFocusedRowChanged(System.Object sender, EventArgs e)
@@ -671,6 +666,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             // TODO: should we first ask? also when closing the window?
             SaveMatches(null, null);
 
+            if (cmbSelectBankAccount.SelectedIndex == -1)
+            {
+                MessageBox.Show(Catalog.GetString("Please select a bank account first!"), Catalog.GetString("No gift batch has been created"));
+                return;
+            }
+
             TVerificationResultCollection VerificationResult;
             Int32 GiftBatchNumber = TRemote.MFinance.ImportExport.WebConnectors.CreateGiftBatch(FMainDS,
                 FLedgerNumber,
@@ -687,13 +688,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                 if (VerificationResult != null)
                 {
                     MessageBox.Show(
-                        VerificationResult.GetVerificationResult(0).ResultText,
+                        VerificationResult.BuildVerificationResultString(),
                         Catalog.GetString("Problem: No gift batch has been created"));
                 }
                 else
                 {
                     MessageBox.Show(
-                        VerificationResult.GetVerificationResult(0).ResultText,
+                        VerificationResult.BuildVerificationResultString(),
                         Catalog.GetString("Problem: No gift batch has been created"));
                 }
             }
@@ -705,6 +706,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
 
             // TODO: should we first ask? also when closing the window?
             SaveMatches(null, null);
+
+            if (cmbSelectBankAccount.SelectedIndex == -1)
+            {
+                MessageBox.Show(Catalog.GetString("Please select a bank account first!"), Catalog.GetString("No gift batch has been created"));
+                return;
+            }
 
             TVerificationResultCollection VerificationResult;
             Int32 GLBatchNumber = TRemote.MFinance.ImportExport.WebConnectors.CreateGLBatch(FMainDS,
@@ -722,7 +729,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                 if (VerificationResult != null)
                 {
                     MessageBox.Show(
-                        VerificationResult.GetVerificationResult(0).ResultText,
+                        VerificationResult.BuildVerificationResultString(),
                         Catalog.GetString("Problem: No GL batch has been created"));
                 }
                 else

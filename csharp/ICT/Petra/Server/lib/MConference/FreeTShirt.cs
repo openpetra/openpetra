@@ -120,7 +120,7 @@ namespace Ict.Petra.Server.MConference.Applications
                     (ConferenceApplicationTDSApplicationGridRow)MainDS.ApplicationGrid.DefaultView[MainDS.ApplicationGrid.DefaultView.Find(attendee
                                                                                                        .PartnerKey)].Row;
 
-                Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(TJsonTools.RemoveContainerControls(applicant.JSONData));
+                Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(applicant.JSONData);
 
                 if (!rawDataObject.Contains("TShirtSize") || !rawDataObject.Contains("TShirtStyle"))
                 {

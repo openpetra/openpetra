@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -40,9 +40,9 @@ using System.Windows.Forms;
 
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.RemotedExceptions;
 using Ict.Common;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 
@@ -62,7 +62,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private Int32 FLedgerNumber;
 
-        private DateTime DefaultDate;
         private DateTime StartDateCurrentPeriod;
         private DateTime EndDateLastForwardingPeriod;
 
@@ -86,19 +85,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 FLedgerNumber = value;
 
-                Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbAccountList;
-                cmbAccountList = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
-                TFinanceControls.InitialiseCostCentreList(ref cmbCostCenter, FLedgerNumber,
-                    true, false, true, false);
-
                 TLedgerSelection.GetCurrentPostingRangeDates(FLedgerNumber,
                     out StartDateCurrentPeriod,
-                    out EndDateLastForwardingPeriod,
-                    out DefaultDate);
+                    out EndDateLastForwardingPeriod);
 
-
-                //TCurrencyInfo getCurrencyInfo = new TCurrencyInfo(FLedgerNumber);
-                //TCurrencyInfo
                 CreateDataGridHeader();
                 GetListOfRevaluationCurrencies();
 
@@ -124,7 +114,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void GetListOfRevaluationCurrencies()
         {
             TFrmSetupDailyExchangeRate frmExchangeRate =
-                new TFrmSetupDailyExchangeRate(this.Handle);
+                new TFrmSetupDailyExchangeRate(this);
 
             DataTable table = TDataCache.TMFinance.GetCacheableFinanceTable(
                 TCacheableFinanceTablesEnum.AccountList, FLedgerNumber);
@@ -234,19 +224,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void SaveUserDefaults()
         {
-            TUserDefaults.SetDefault(REVALUATIONCOSTCENTRE, cmbCostCenter.GetSelectedString());
         }
 
         private void LoadUserDefaults()
         {
-            try
-            {
-                cmbCostCenter.SetSelectedString(
-                    TUserDefaults.GetStringDefault(REVALUATIONCOSTCENTRE));
-            }
-            catch (Exception)
-            {
-            }
         }
 
         private void CancelRevaluation(object btn, EventArgs e)
@@ -284,7 +265,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             TVerificationResultCollection verificationResult;
             bool blnRevalutationState =
                 TRemote.MFinance.GL.WebConnectors.Revaluate(FLedgerNumber, 1,
-                    cmbCostCenter.GetSelectedString(),
                     currencies, rates, out verificationResult);
 
             if (blnRevalutationState)
@@ -475,15 +455,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 base.OnClick(sender, e);
 
-                SourceGrid.DataGrid grid = (SourceGrid.DataGrid)sender.Grid;
-
                 ++ix;
                 System.Diagnostics.Debug.WriteLine(sender.Position.Row.ToString());
 
                 int iRow = sender.Position.Row - 1;
 
                 TFrmSetupDailyExchangeRate frmExchangeRate =
-                    new TFrmSetupDailyExchangeRate(mainForm.Handle);
+                    new TFrmSetupDailyExchangeRate(mainForm);
                 frmExchangeRate.LedgerNumber = mainForm.FLedgerNumber;
                 frmExchangeRate.SetDataFilters(dteStart, dteEnd,
                     currencyExchangeList[iRow].Currency,
@@ -491,7 +469,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 frmExchangeRate.ShowDialog(mainForm);
 
                 currencyExchangeList[iRow].updateExchangeRate(
-                    Decimal.Parse(frmExchangeRate.CurrencyExchangeRate));
+                    frmExchangeRate.CurrencyExchangeRate);
             }
 
             public void InitFrmData(TGLRevaluation AMain, DateTime ADateStart, DateTime ADateEnd)

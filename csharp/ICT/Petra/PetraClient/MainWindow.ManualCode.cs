@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,6 +27,7 @@ using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.Controls;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Client.CommonForms;
 
 namespace Ict.Petra.Client.App.PetraClient
@@ -59,7 +60,7 @@ namespace Ict.Petra.Client.App.PetraClient
 
             if (TFrmMainWindowNew.MainForm == null)
             {
-                TFrmMainWindowNew.MainForm = new TFrmMainWindowNew(IntPtr.Zero);
+                TFrmMainWindowNew.MainForm = new TFrmMainWindowNew(null);
             }
 
             this.Hide();

@@ -242,17 +242,7 @@ namespace Ict.Common.IO
                 if (System.IO.File.Exists(AOrigFilename))
                 {
                     // create backup of original file
-                    int backupnr = 0;
-
-                    while (File.Exists(AOrigFilename + "." + backupnr.ToString() + ".bak"))
-                    {
-                        backupnr++;
-                    }
-
-                    File.Copy(AOrigFilename, AOrigFilename + "." + backupnr.ToString() + ".bak");
-
-                    // delete original file
-                    System.IO.File.Delete(AOrigFilename);
+                    TFileHelper.MoveToBackup(AOrigFilename);
                 }
 
                 System.IO.File.Move(NewFilename, AOrigFilename);

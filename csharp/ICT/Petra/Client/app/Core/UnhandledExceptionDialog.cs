@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -31,6 +31,7 @@ using System.Net.Sockets;
 using System.Runtime.Remoting;
 
 using Ict.Common;
+using Ict.Common.Remoting.Client;
 
 namespace Ict.Petra.Client.App.Core
 {
@@ -67,8 +68,6 @@ namespace Ict.Petra.Client.App.Core
             "You may be able to continue working with OpenPetra, but we recommend closing OpenPetra and starting over again. We are sorry for any inconvenience caused.");
         readonly String StrRecoverableInfo3 = Catalog.GetString("Choose 'OK' to close this error information. ");
         readonly String StrNonRecoverableInfo3 = Catalog.GetString("Choose 'Close OpenPetra' to close the OpenPetra application. ");
-        readonly String StrRecoverableInfo3Email = Catalog.GetString(
-            "Choose 'Report Error' to send an error report in an e-mail to your OpenPetra Support Team.");
         readonly String StrErrorDetailsInfo = Catalog.GetString("Choose 'Error Details...' to see detailed information. ");
         readonly String StrRecoverableInfo3NoEmail = Catalog.GetString(
             "If you want to send this information to your OpenPetra Support Team, copy the information to the Clipboard and paste it into an e-mail. The e-mail address is: {0}.");
@@ -241,7 +240,7 @@ namespace Ict.Petra.Client.App.Core
         {
             TFrmUnhandledExceptionDetailsDialog UHEDDialogue;
 
-            UHEDDialogue = new TFrmUnhandledExceptionDetailsDialog(this.Handle);
+            UHEDDialogue = new TFrmUnhandledExceptionDetailsDialog(this);
             UHEDDialogue.ErrorDetails = FErrorDetails;
             UHEDDialogue.ShowDialog();
 
@@ -324,7 +323,9 @@ namespace Ict.Petra.Client.App.Core
 
             if (TClientSettings.PetraSupportTeamEmail != String.Empty)
             {
-                FInfo3Text = FInfo3Text + String.Format(StrRecoverableInfo3NoEmail, TClientSettings.PetraSupportTeamEmail);   // TODO Replace with StrRecoverableInfo3Email once emailing of exception details works!
+                // TODO Replace TClientSettings.PetraSupportTeamEmail with StrRecoverableInfo3Email once emailing of exception details works!
+                // readonly String StrRecoverableInfo3Email = Catalog.GetString("Choose 'Report Error' to send an error report in an e-mail to your OpenPetra Support Team.");
+                FInfo3Text = FInfo3Text + String.Format(StrRecoverableInfo3NoEmail, TClientSettings.PetraSupportTeamEmail);
             }
 
             if (FFormTitle != "")

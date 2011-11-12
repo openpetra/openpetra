@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -25,7 +25,6 @@ using System;
 using System.Data;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MSysMan.Data;
-using Ict.Petra.Server.App.ClientDomain;
 using Ict.Petra.Server.App.Core;
 
 namespace Ict.Petra.Server.MSysMan.Maintenance
@@ -36,18 +35,6 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
     /// </summary>
     public class TSystemDefaults
     {
-        /// <summary>time when this object was instantiated</summary>
-        private DateTime FStartTime;
-
-        /// <summary>
-        /// constructor
-        /// </summary>
-        public TSystemDefaults() : base()
-        {
-            // $IFDEF DEBUGMODE if TLogging.DL >= 9 then Console.WriteLine(this.GetType.FullName + ' created: Instance hash is ' + this.GetHashCode().ToString()); $ENDIF
-            FStartTime = DateTime.Now;
-        }
-
         /// <summary>
         /// Returns the value of the specified System Default.
         /// </summary>
@@ -106,7 +93,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         {
             // $IFDEF DEBUGMODE if TLogging.DL >= 7 then Console.WriteLine(this.GetType.FullName + '.GetSystemDefaults called.'); $ENDIF
 
-            return DomainManager.GSystemDefaultsCache.GetSystemDefaultsTable();
+            return TSystemDefaultsCache.GSystemDefaultsCache.GetSystemDefaultsTable();
 
             // $IFDEF DEBUGMODE Console.WriteLine('SystemDefault "LocalisedCountyLabel": ' + GSystemDefaultsCache.GetSystemDefault('LocalisedCountyLabel'));$ENDIF
         }
@@ -138,10 +125,10 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         public void ReloadSystemDefaultsTable()
         {
             // $IFDEF DEBUGMODE if TLogging.DL >= 7 then Console.WriteLine(this.GetType.FullName + '.ReloadSystemDefaultsTable called.'); $ENDIF
-            DomainManager.GSystemDefaultsCache.ReloadSystemDefaultsTable();
+            TSystemDefaultsCache.GSystemDefaultsCache.ReloadSystemDefaultsTable();
 
             // $IFDEF DEBUGMODE if TLogging.DL >= 7 then Console.WriteLine(this.GetType.FullName + '.ReloadSystemDefaultsTable: calling DomainManager.ClientTaskAddToOtherClient...'); $ENDIF
-            Ict.Petra.Server.App.ClientDomain.DomainManager.ClientTaskAddToOtherClient(-1,
+            Ict.Petra.Server.App.Core.DomainManager.ClientTaskAddToOtherClient(-1,
                 SharedConstants.CLIENTTASKGROUP_SYSTEMDEFAULTSREFRESH,
                 "",
                 1);
@@ -161,7 +148,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// </returns>
         public Boolean SaveSystemDefaults(SSystemDefaultsTable ASystemDefaultsDataTable)
         {
-            return DomainManager.GSystemDefaultsCache.SaveSystemDefaults(ASystemDefaultsDataTable);
+            return TSystemDefaultsCache.GSystemDefaultsCache.SaveSystemDefaults(ASystemDefaultsDataTable);
         }
     }
 }

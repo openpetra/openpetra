@@ -43,7 +43,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
 
-        private TDelegateIsNewPartner FDelegateIsNewPartner;
+        // private TDelegateIsNewPartner FDelegateIsNewPartner;
 
         #endregion
 
@@ -191,11 +191,37 @@ namespace Ict.Petra.Client.MPartner.Gui
                     ucoPartnerTabSet.InitiallySelectedTabPage = FInitiallySelectedTabPage;
                     ucoPartnerTabSet.MainDS = FMainDS;
                     ucoPartnerTabSet.SpecialInitUserControl();
+                    ucoPartnerTabSet.HookupDataChange += new THookupDataChangeEventHandler(ucoPartnerTabSet_HookupDataChange);
+                    ucoPartnerTabSet.HookupPartnerEditDataChange += new THookupPartnerEditDataChangeEventHandler(
+                    ucoPartnerTabSet_HookupPartnerEditDataChange);
+                    ucoPartnerTabSet.Visible = true;
+                    ucoPersonnelTabSet.Visible = false;
+                    break;
+
+                case TFrmPartnerEdit.TModuleSwitchEnum.msPersonnel:
+
+                    ucoPersonnelTabSet.PetraUtilsObject = FPetraUtilsObject;
+                    ucoPersonnelTabSet.PartnerEditUIConnector = FPartnerEditUIConnector;
+                    ucoPersonnelTabSet.InitiallySelectedTabPage = FInitiallySelectedTabPage;
+                    ucoPersonnelTabSet.MainDS = FMainDS;
+                    ucoPersonnelTabSet.SpecialInitUserControl();
+                    ucoPersonnelTabSet.Visible = true;
+                    ucoPartnerTabSet.Visible = false;
 
                     break;
             }
 
             // TODO Other TabSets (Personnel Data, Finance Data)
+        }
+
+        void ucoPartnerTabSet_HookupPartnerEditDataChange(object Sender, THookupPartnerEditDataChangeEventArgs e)
+        {
+            OnHookupPartnerEditDataChange(e);
+        }
+
+        void ucoPartnerTabSet_HookupDataChange(object Sender, EventArgs e)
+        {
+            OnHookupDataChange(e);
         }
 
         /// <summary>
@@ -205,7 +231,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void InitialiseDelegateIsNewPartner(TDelegateIsNewPartner ADelegateFunction)
         {
             // set the delegate function from the calling System.Object
-            FDelegateIsNewPartner = ADelegateFunction;
+            // TODO FDelegateIsNewPartner = ADelegateFunction;
         }
 
         /// <summary>
@@ -216,8 +242,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void GetDataFromControls()
         {
             ucoPartnerTabSet.GetDataFromControls();
+            ucoPersonnelTabSet.GetDataFromControls();
 
-            // TODO Other TabSets (Personnel Data, Finance Data)
+            // TODO Other TabSets (Finance Data)
         }
 
         /// <summary>
@@ -307,6 +334,14 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 ucoPartnerTabSet.ProcessServerResponseAddressAddedOrChanged(AAddedOrChangedPromotionDT, AParameterDT);
             }
+        }
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        public void RefreshPersonnelDataAfterMerge()
+        {
+            ucoPersonnelTabSet.RefreshPersonnelDataAfterMerge();
         }
 
         #endregion

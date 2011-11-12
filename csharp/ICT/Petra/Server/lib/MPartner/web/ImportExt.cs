@@ -297,7 +297,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                 PPersonAccess.AddOrModifyRecord(PersonRow.PartnerKey, FMainDS.PPerson, PersonRow, FDoNotOverwrite, ATransaction);
 
-                if (TAppSettingsManager.GetValue("AllowCreationPersonRecords", "false", false).ToLower() != "true")
+                if (TAppSettingsManager.GetValue("AllowCreationPersonRecords", "true", false).ToLower() != "true")
                 {
                     throw new Exception(
                         "We are currently not supporting import of PERSON records, until we have resolved the issues with household/family. " +
@@ -982,7 +982,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             DocumentRow.SiteKey = ReadInt64();
             DocumentRow.DocumentKey = ReadInt64();
             DocumentRow.DocCode = ReadString();
-            string DocCategory = ReadString();
+            ReadString(); // DocCategory
             DocumentRow.DocumentId = ReadString();
             DocumentRow.PlaceOfIssue = ReadString();
             DocumentRow.DateOfIssue = ReadNullableDate();
@@ -1081,7 +1081,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             SpecialNeedRow.PartnerKey = FPartnerKey;
 
             SpecialNeedRow.DateCreated = ReadNullableDate();
-            SpecialNeedRow.ContactHomeOffice = ReadBoolean();
+            ReadBoolean();  // needed for backwards compatibility - SpecialNeedRow.ContactHomeOffice used to be here, but this Column has been removed from the OpenPetra DB
             SpecialNeedRow.VegetarianFlag = ReadBoolean();
             SpecialNeedRow.DietaryComment = ReadString();
             SpecialNeedRow.MedicalComment = ReadString();
@@ -1137,7 +1137,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             PartnerInterestRow.FieldKey = ReadInt64();
             PartnerInterestRow.Country = ReadString();
             PartnerInterestRow.Interest = ReadString();
-            string Category = ReadString();
+            ReadString(); // Category
             PartnerInterestRow.Level = ReadInt32();
             PartnerInterestRow.Comment = ReadString();
 
@@ -1149,24 +1149,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 ATransaction);
 
             // TODO: PInterest, PInterestCategory
-        }
-
-        private void ImportVision(TDBTransaction ATransaction)
-        {
-            PmPersonVisionRow PersonVisionRow = FMainDS.PmPersonVision.NewRowTyped();
-
-            PersonVisionRow.PartnerKey = FPartnerKey;
-
-            PersonVisionRow.VisionAreaName = ReadString();
-            PersonVisionRow.VisionLevel = ReadInt32();
-            PersonVisionRow.VisionComment = ReadString();
-
-            PmPersonVisionAccess.AddOrModifyRecord(PersonVisionRow.PartnerKey,
-                PersonVisionRow.VisionAreaName,
-                FMainDS.PmPersonVision,
-                PersonVisionRow,
-                FDoNotOverwrite,
-                ATransaction);
         }
 
         private void ImportUnitAbility(TDBTransaction ATransaction)
@@ -1451,10 +1433,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 {
                     ImportInterest(ATransaction);
                 }
-                else if (KeyWord == "VISION")
-                {
-                    ImportVision(ATransaction);
-                }
                 else if (KeyWord == "U-ABILITY")
                 {
                     ImportUnitAbility(ATransaction);
@@ -1550,8 +1528,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             InitReading(ALinesToImport);
 
             TFileVersionInfo PetraVersion = new TFileVersionInfo(ReadString());
-            Int64 SiteKey = ReadInt64();
-            Int32 SubVersion = ReadInt32();
+            ReadInt64(); // SiteKey
+            ReadInt32(); // SubVersion
 
             try
             {

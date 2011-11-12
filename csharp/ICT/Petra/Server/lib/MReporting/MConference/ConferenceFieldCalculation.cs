@@ -63,10 +63,12 @@ namespace Ict.Petra.Server.MReporting.MConference
         private decimal FVolunteerDiscountConferenceConference;
         private decimal FRoleDiscountAccommodationPre;
         private decimal FRoleDiscountAccommodationConference;
-        private decimal FRoleDiscountAccommodationPost;
         private decimal FRoleDiscountConferencePre;
         private decimal FRoleDiscountConferenceConference;
         private decimal FRoleDiscountConferencePost;
+
+        // this does not seem to be used anywhere, see Mantis #412
+        // private decimal FRoleDiscountAccommodationPost;
 
         private decimal FConferenceDayRate;
         private decimal FConferenceRate;
@@ -931,7 +933,6 @@ namespace Ict.Petra.Server.MReporting.MConference
             FParticipantDiscountAccommodationPre = 0;
             FParticipantDiscountConferencePre = 0;
             FRoleDiscountAccommodationConference = 0;
-            FRoleDiscountAccommodationPost = 0;
             FRoleDiscountAccommodationPre = 0;
             FRoleDiscountConferenceConference = 0;
             FRoleDiscountConferencePost = 0;
@@ -940,6 +941,9 @@ namespace Ict.Petra.Server.MReporting.MConference
             FVolunteerDiscountAccommodationPre = 0;
             FVolunteerDiscountConferenceConference = 0;
             FVolunteerDiscountConferencePre = 0;
+
+            // this does not seem to be used anywhere, see Mantis #412
+            // FRoleDiscountAccommodationPost = 0;
 
             DiscountTable = PcDiscountAccess.LoadViaPcConference(AConferenceKey, ASituation.GetDatabaseConnection().Transaction);
 
@@ -974,7 +978,8 @@ namespace Ict.Petra.Server.MReporting.MConference
                         }
                         else if (Row.Validity == "POST")
                         {
-                            FRoleDiscountAccommodationPost = Row.Discount;
+                            // this does not seem to be used anywhere, see Mantis #412
+                            // FRoleDiscountAccommodationPost = Row.Discount;
                         }
                     }
                 }

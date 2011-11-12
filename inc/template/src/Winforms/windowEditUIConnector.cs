@@ -15,6 +15,8 @@ using System.Collections.Specialized;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
@@ -33,7 +35,7 @@ namespace {#NAMESPACE}
     private {#UICONNECTORTYPE} FUIConnector = null;
 
     /// constructor
-    public {#CLASSNAME}(IntPtr AParentFormHandle) : base()
+    public {#CLASSNAME}(Form AParentForm) : base()
     {
       //
       // Required for Windows Form Designer support
@@ -47,7 +49,7 @@ namespace {#NAMESPACE}
 
       {#ASSIGNFONTATTRIBUTES}
       
-      FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentFormHandle, this, stbMain);
+      FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentForm, this, stbMain);
       {#INITUSERCONTROLS}
       {#INITMANUALCODE}
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
@@ -118,7 +120,9 @@ namespace {#NAMESPACE}
     {
         if (ARow != null)
         {
+            ARow.BeginEdit();
             {#SAVEDETAILS}
+            ARow.EndEdit();
         }
     }
 {#ENDIF SAVEDETAILS}

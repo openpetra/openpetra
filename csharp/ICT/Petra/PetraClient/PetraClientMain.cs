@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -33,6 +33,7 @@ using System.Globalization;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.IO;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner; // Implicit reference
 using Ict.Petra.Shared.Security;
@@ -62,15 +63,14 @@ namespace Ict.Petra.Client.App.PetraClient
 
         private static Boolean FUseNewNavigation = true;
 
-        /// <summary>ProcessID (unique) assigned by the PetraServer</summary>
-        private static Int32 FProcessID;
+        // <summary>ProcessID (unique) assigned by the PetraServer</summary>
+        // TODO private static Int32 FProcessID;
 
-        /// <summary>Welcome message (passed on to the MainWindow)</summary>
-        private static String FWelcomeMessage;
+        // <summary>Welcome message (passed on to the MainWindow)</summary>
+        // TODO private static String FWelcomeMessage;
 
-        /// <summary>Tells whether the Petra System is enabled, or not (passed on to the MainWindow)</summary>
-        private static Boolean FSystemEnabled;
-        private static TLogging FLogging;
+        // <summary>Tells whether the Petra System is enabled, or not (passed on to the MainWindow)</summary>
+        // TODO private static Boolean FSystemEnabled;
 
         [DllImport("user32.dll")] private static extern int FindWindow(string classname, string windowname);
         [DllImport("user32.dll")] private static extern int SendMessage(
@@ -95,6 +95,7 @@ namespace Ict.Petra.Client.App.PetraClient
             }
             catch (Exception e)
             {
+                TLogging.Log(e.ToString());
                 FSplashScreen.ShowMessageBox(e.Message, "Failure");
                 return false;
             }
@@ -131,7 +132,7 @@ namespace Ict.Petra.Client.App.PetraClient
                 else
                 {
                     // TODO reset any caches
-                    AConnectDialog.GetReturnedParameters(out FProcessID, out FWelcomeMessage, out FSystemEnabled);
+                    // TODO AConnectDialog.GetReturnedParameters(out FProcessID, out FWelcomeMessage, out FSystemEnabled);
 
                     // get Connection Dialog out of memory
                     AConnectDialog.Dispose();
@@ -303,15 +304,28 @@ namespace Ict.Petra.Client.App.PetraClient
         /// </summary>
         public static void StartUp()
         {
-            new TAppSettingsManager();
+            try
+            {
+                new TAppSettingsManager();
 
-            ExceptionHandling.GApplicationShutdownCallback = Shutdown.SaveUserDefaultsAndDisconnectAndStop;
+                ExceptionHandling.GApplicationShutdownCallback = Shutdown.SaveUserDefaultsAndDisconnectAndStop;
 
-            FLogging = new TLogging(TClientSettings.GetPathLog() + Path.DirectorySeparatorChar + "PetraClient.log");
+                new TLogging(TClientSettings.GetPathLog() + Path.DirectorySeparatorChar + "PetraClient.log");
 
-            Catalog.Init();
+                Catalog.Init();
 
-            // TODO another Catalog.Init("org", "./locale") for organisation specific words?
+                // initialize the client
+                TClientTasksQueue.ClientTasksInstanceType = typeof(TClientTaskInstance);
+                TConnectionManagementBase.ConnectorType = typeof(TConnector);
+                TConnectionManagementBase.GConnectionManagement = new TConnectionManagement();
+
+                // TODO another Catalog.Init("org", "./locale") for organisation specific words?
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.ToString());
+                return;
+            }
 
             /* Show Splash Screen.
              * This is non-blocking since it is done in a separate Thread, that means
@@ -333,6 +347,7 @@ namespace Ict.Petra.Client.App.PetraClient
             catch (Exception e)
             {
                 FSplashScreen.Close();
+                TLogging.Log(e.ToString());
                 MessageBox.Show(e.Message);
                 Shutdown.StopPetraClient();
             }
@@ -409,11 +424,11 @@ namespace Ict.Petra.Client.App.PetraClient
 
                     if (FUseNewNavigation)
                     {
-                        MainWindow = new TFrmMainWindowNew(IntPtr.Zero);
+                        MainWindow = new TFrmMainWindowNew(null);
                     }
                     else
                     {
-                        MainWindow = new TFrmMainWindow(IntPtr.Zero);
+                        MainWindow = new TFrmMainWindow(null);
                     }
 
                     // TODO: user defined constructor with more details

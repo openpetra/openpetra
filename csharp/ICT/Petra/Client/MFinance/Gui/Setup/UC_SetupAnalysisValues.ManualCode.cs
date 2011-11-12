@@ -114,7 +114,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
                 || (MessageBox.Show(String.Format(Catalog.GetString(
-                                "You have choosen to delete this value ({0}).\n\nDo you really want to delete it?"),
+                                "You have chosen to delete this value ({0}).\n\nDo you really want to delete it?"),
                             FPreviouslySelectedDetailRow.AnalysisValue), Catalog.GetString("Confirm Delete"),
                         MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes))
             {

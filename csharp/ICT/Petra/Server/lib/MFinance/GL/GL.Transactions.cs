@@ -185,6 +185,27 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         }
 
         /// <summary>
+        /// load the specified batch and its journals and transactions.
+        /// this method is called after a batch has been posted.
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GLBatchTDS LoadABatchAndContent(Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            GLBatchTDS MainDS = new GLBatchTDS();
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            ABatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+            AJournalAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+            ATransactionAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            return MainDS;
+        }
+
+        /// <summary>
         /// loads a list of journals for the given ledger and batch
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -266,7 +287,172 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static TSubmitChangesResult SaveGLBatchTDS(ref GLBatchTDS AInspectDS,
             out TVerificationResultCollection AVerificationResult)
         {
-            // TODO: calculate debit and credit sums for journal and batch?
+            AVerificationResult = new TVerificationResultCollection();
+
+            // calculate debit and credit sums for journal and batch? but careful: we only have the changed parts!
+            // no, we calculate the debit and credit sums before the posting, with GLRoutines.UpdateTotalsOfBatch
+
+            // check added and modified and deleted rows: are they related to a posted or cancelled batch? we must not save adjusted posted batches!
+            List <Int32>BatchNumbersInvolved = new List <int>();
+            Int32 LedgerNumber = -1;
+
+            if (AInspectDS.ABatch != null)
+            {
+                foreach (ABatchRow batch in AInspectDS.ABatch.Rows)
+                {
+                    if (batch.RowState != DataRowState.Added)
+                    {
+                        Int32 BatchNumber;
+
+                        try
+                        {
+                            BatchNumber = batch.BatchNumber;
+                            LedgerNumber = batch.LedgerNumber;
+                        }
+                        catch (Exception)
+                        {
+                            // for deleted batches
+                            BatchNumber = (Int32)batch[ABatchTable.ColumnBatchNumberId, DataRowVersion.Original];
+                            LedgerNumber = (Int32)batch[ABatchTable.ColumnLedgerNumberId, DataRowVersion.Original];
+                        }
+
+                        if (!BatchNumbersInvolved.Contains(BatchNumber))
+                        {
+                            BatchNumbersInvolved.Add(BatchNumber);
+                        }
+                    }
+                }
+            }
+
+            if (AInspectDS.AJournal != null)
+            {
+                foreach (GLBatchTDSAJournalRow journal in AInspectDS.AJournal.Rows)
+                {
+                    Int32 BatchNumber;
+
+                    try
+                    {
+                        BatchNumber = journal.BatchNumber;
+                        LedgerNumber = journal.LedgerNumber;
+                    }
+                    catch (Exception)
+                    {
+                        // for deleted journals
+                        BatchNumber = (Int32)journal[AJournalTable.ColumnBatchNumberId, DataRowVersion.Original];
+                        LedgerNumber = (Int32)journal[AJournalTable.ColumnLedgerNumberId, DataRowVersion.Original];
+                    }
+
+                    if (!BatchNumbersInvolved.Contains(BatchNumber))
+                    {
+                        BatchNumbersInvolved.Add(BatchNumber);
+                    }
+                }
+            }
+
+            if (AInspectDS.ATransaction != null)
+            {
+                GLBatchTDS TestAccountsAndCostCentres = new GLBatchTDS();
+
+                foreach (ATransactionRow transaction in AInspectDS.ATransaction.Rows)
+                {
+                    Int32 BatchNumber;
+
+                    try
+                    {
+                        BatchNumber = transaction.BatchNumber;
+                        LedgerNumber = transaction.LedgerNumber;
+
+                        if (TestAccountsAndCostCentres.AAccount.Count == 0)
+                        {
+                            AAccountAccess.LoadViaALedger(TestAccountsAndCostCentres, LedgerNumber, null);
+                            ACostCentreAccess.LoadViaALedger(TestAccountsAndCostCentres, LedgerNumber, null);
+                        }
+
+                        // TODO could check for active accounts and cost centres?
+
+                        // check for valid accounts and cost centres
+                        if (TestAccountsAndCostCentres.AAccount.Rows.Find(new object[] { LedgerNumber, transaction.AccountCode }) == null)
+                        {
+                            AVerificationResult.Add(new TVerificationResult(
+                                    Catalog.GetString("Cannot save transaction"),
+                                    String.Format(Catalog.GetString("Invalid account code {0} in batch {1}, journal {2}, transaction {3}"),
+                                        transaction.AccountCode,
+                                        transaction.BatchNumber,
+                                        transaction.JournalNumber,
+                                        transaction.TransactionNumber),
+                                    TResultSeverity.Resv_Critical));
+                        }
+
+                        if (TestAccountsAndCostCentres.ACostCentre.Rows.Find(new object[] { LedgerNumber, transaction.CostCentreCode }) == null)
+                        {
+                            AVerificationResult.Add(new TVerificationResult(
+                                    Catalog.GetString("Cannot save transaction"),
+                                    String.Format(Catalog.GetString("Invalid cost centre code {0} in batch {1}, journal {2}, transaction {3}"),
+                                        transaction.CostCentreCode,
+                                        transaction.BatchNumber,
+                                        transaction.JournalNumber,
+                                        transaction.TransactionNumber),
+                                    TResultSeverity.Resv_Critical));
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        // for deleted transactions
+                        BatchNumber = (Int32)transaction[ATransactionTable.ColumnBatchNumberId, DataRowVersion.Original];
+                        LedgerNumber = (Int32)transaction[ATransactionTable.ColumnLedgerNumberId, DataRowVersion.Original];
+                    }
+
+                    if (!BatchNumbersInvolved.Contains(BatchNumber))
+                    {
+                        BatchNumbersInvolved.Add(BatchNumber);
+                    }
+                }
+            }
+
+            // load previously stored batches and check for posted status
+            if (BatchNumbersInvolved.Count > 0)
+            {
+                string ListOfBatchNumbers = string.Empty;
+
+                foreach (Int32 BatchNumber in BatchNumbersInvolved)
+                {
+                    ListOfBatchNumbers = StringHelper.AddCSV(ListOfBatchNumbers, BatchNumber.ToString());
+                }
+
+                string SQLStatement = "SELECT * " +
+                                      " FROM PUB_" + ABatchTable.GetTableDBName() + " WHERE " + ABatchTable.GetLedgerNumberDBName() + " = " +
+                                      LedgerNumber.ToString() +
+                                      " AND " + ABatchTable.GetBatchNumberDBName() + " IN (" + ListOfBatchNumbers + ")";
+
+                GLBatchTDS BatchDS = new GLBatchTDS();
+                TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+                try
+                {
+                    DBAccess.GDBAccessObj.Select(BatchDS, SQLStatement, BatchDS.ABatch.TableName, Transaction);
+                }
+                finally
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+
+                foreach (ABatchRow batch in BatchDS.ABatch.Rows)
+                {
+                    if ((batch.BatchStatus == MFinanceConstants.BATCH_POSTED)
+                        || (batch.BatchStatus == MFinanceConstants.BATCH_CANCELLED))
+                    {
+                        AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Saving Batch"),
+                                String.Format(Catalog.GetString("Cannot modify Batch {0} because it is {1}"),
+                                    batch.BatchNumber, batch.BatchStatus),
+                                TResultSeverity.Resv_Critical));
+                    }
+                }
+
+                if (AVerificationResult.HasCriticalError())
+                {
+                    return TSubmitChangesResult.scrError;
+                }
+            }
 
             TSubmitChangesResult SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
 
@@ -283,6 +469,81 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static bool PostGLBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out TVerificationResultCollection AVerifications)
         {
             return TGLPosting.PostGLBatch(ALedgerNumber, ABatchNumber, out AVerifications);
+        }
+
+        /// <summary>
+        /// return a string that shows the balances of the accounts involved, if the GL Batch was posted
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AVerifications"></param>
+        [RequireModulePermission("FINANCE-1")]
+        public static List <TVariant>TestPostGLBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out TVerificationResultCollection AVerifications)
+        {
+            GLBatchTDS MainDS;
+            bool success = TGLPosting.PostGLBatchInternal(ALedgerNumber, ABatchNumber, out AVerifications, out MainDS, false);
+
+            List <TVariant>Result = new List <TVariant>();
+
+            if (success)
+            {
+                MainDS.AGeneralLedgerMaster.DefaultView.RowFilter = string.Empty;
+                MainDS.AAccount.DefaultView.RowFilter = string.Empty;
+                MainDS.ACostCentre.DefaultView.RowFilter = string.Empty;
+                MainDS.AGeneralLedgerMaster.DefaultView.Sort = AGeneralLedgerMasterTable.GetGlmSequenceDBName();
+                MainDS.ACostCentre.DefaultView.Sort = ACostCentreTable.GetCostCentreCodeDBName();
+                MainDS.AAccount.DefaultView.Sort = AAccountTable.GetAccountCodeDBName();
+
+                foreach (AGeneralLedgerMasterPeriodRow glmpRow in MainDS.AGeneralLedgerMasterPeriod.Rows)
+                {
+                    if ((glmpRow.PeriodNumber == MainDS.ABatch[0].BatchPeriod) && (glmpRow.RowState != DataRowState.Unchanged))
+                    {
+                        AGeneralLedgerMasterRow masterRow =
+                            (AGeneralLedgerMasterRow)MainDS.AGeneralLedgerMaster.Rows.Find(glmpRow.GlmSequence);
+
+                        ACostCentreRow ccRow = (ACostCentreRow)MainDS.ACostCentre.Rows.Find(new object[] { ALedgerNumber, masterRow.CostCentreCode });
+
+                        // only consider the posting cost centres
+                        // TODO or consider only the top cost centre?
+                        if (ccRow.PostingCostCentreFlag)
+                        {
+                            AAccountRow accRow =
+                                (AAccountRow)
+                                MainDS.AAccount.DefaultView[MainDS.AAccount.DefaultView.Find(masterRow.AccountCode)].Row;
+
+                            // only modified accounts have been loaded to the dataset, therefore report on all accounts available
+                            if (accRow.PostingStatus)
+                            {
+                                decimal CurrentValue = 0.0m;
+
+                                if (glmpRow.RowState == DataRowState.Modified)
+                                {
+                                    CurrentValue = (decimal)glmpRow[AGeneralLedgerMasterPeriodTable.ColumnActualBaseId, DataRowVersion.Original];
+                                }
+
+                                decimal DebitCredit = 1.0m;
+
+                                if (accRow.DebitCreditIndicator && (accRow.AccountType != MFinanceConstants.ACCOUNT_TYPE_ASSET))
+                                {
+                                    DebitCredit = -1.0m;
+                                }
+
+                                // only return values, the client compiles the message, with Catalog.GetString
+                                TVariant values = new TVariant(accRow.AccountCode);
+                                values.Add(new TVariant(accRow.AccountCodeShortDesc), "", false);
+                                values.Add(new TVariant(ccRow.CostCentreCode), "", false);
+                                values.Add(new TVariant(ccRow.CostCentreName), "", false);
+                                values.Add(new TVariant(CurrentValue * DebitCredit), "", false);
+                                values.Add(new TVariant(glmpRow.ActualBase * DebitCredit), "", false);
+
+                                Result.Add(values);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return Result;
         }
 
         /// <summary>
@@ -308,84 +569,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         [RequireModulePermission("NONE")]
         public static decimal GetDailyExchangeRate(string ACurrencyFrom, string ACurrencyTo, DateTime ADateEffective)
         {
-            if (ACurrencyFrom == ACurrencyTo)
-            {
-                return 1.0M;
-            }
-
-            bool NewTransaction;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
-
-            ADailyExchangeRateRow fittingRate = null;
-
-            // TODO: get the most recent exchange rate for the given date and currencies
-            bool oppositeRate = false;
-            ADailyExchangeRateTable rates = ADailyExchangeRateAccess.LoadByPrimaryKey(ACurrencyFrom, ACurrencyTo, ADateEffective, 0, Transaction);
-
-            if (rates.Count == 0)
-            {
-                // try other way round
-                rates = ADailyExchangeRateAccess.LoadByPrimaryKey(ACurrencyTo, ACurrencyFrom, ADateEffective, 0, Transaction);
-                oppositeRate = true;
-            }
-
-            if (rates.Count == 1)
-            {
-                fittingRate = rates[0];
-            }
-            else if (rates.Count == 0)
-            {
-                // TODO: collect exchange rate from the web; save to db
-                // see tracker http://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=87
-
-                // Or look for most recent exchange rate???
-                ADailyExchangeRateTable tempTable = new ADailyExchangeRateTable();
-                ADailyExchangeRateRow templateRow = tempTable.NewRowTyped(false);
-                templateRow.FromCurrencyCode = ACurrencyFrom;
-                templateRow.ToCurrencyCode = ACurrencyTo;
-                oppositeRate = false;
-                rates = ADailyExchangeRateAccess.LoadUsingTemplate(templateRow, Transaction);
-
-                if (rates.Count == 0)
-                {
-                    templateRow.FromCurrencyCode = ACurrencyTo;
-                    templateRow.ToCurrencyCode = ACurrencyFrom;
-                    oppositeRate = true;
-                    rates = ADailyExchangeRateAccess.LoadUsingTemplate(templateRow, Transaction);
-                }
-
-                if (rates.Count > 0)
-                {
-                    // sort rates by date, look for rate just before the date we are looking for
-                    rates.DefaultView.Sort = ADailyExchangeRateTable.GetDateEffectiveFromDBName();
-                    rates.DefaultView.RowFilter = ADailyExchangeRateTable.GetDateEffectiveFromDBName() + "<= '" +
-                                                  ADateEffective.ToString("dd/MM/yyyy") + "'";
-
-                    if (rates.DefaultView.Count > 0)
-                    {
-                        fittingRate = (ADailyExchangeRateRow)rates.DefaultView[rates.DefaultView.Count - 1].Row;
-                    }
-                }
-            }
-
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
-
-            if (fittingRate != null)
-            {
-                if (oppositeRate)
-                {
-                    return 1.0M / fittingRate.RateOfExchange;
-                }
-
-                return fittingRate.RateOfExchange;
-            }
-
-            TLogging.Log("cannot find rate for " + ACurrencyFrom + " " + ACurrencyTo);
-
-            return 1.0M;
+            return TExchangeRateTools.GetDailyExchangeRate(ACurrencyFrom, ACurrencyTo, ADateEffective);
         }
 
         /// <summary>
@@ -399,183 +583,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         [RequireModulePermission("NONE")]
         public static decimal GetCorporateExchangeRate(string ACurrencyFrom, string ACurrencyTo, DateTime AStartDate, DateTime AEndDate)
         {
-            decimal ExchangeRate = 1.0M;
-
-            if (ACurrencyFrom == ACurrencyTo)
-            {
-                return ExchangeRate;
-            }
-
-            if (!GetCorporateExchangeRate(ACurrencyFrom, ACurrencyTo, AStartDate, AEndDate, out ExchangeRate))
-            {
-                if (!GetCorporateExchangeRateFromPreviousYears(ACurrencyFrom, ACurrencyTo, AStartDate, AEndDate, out ExchangeRate))
-                {
-                    ExchangeRate = 1.0M;
-                    TLogging.Log("cannot find rate for " + ACurrencyFrom + " " + ACurrencyTo);
-                }
-            }
-
-            return ExchangeRate;
-        }
-
-        /// <summary>
-        /// get corporate exchange rate for the given currencies and date;
-        /// </summary>
-        /// <param name="ACurrencyFrom"></param>
-        /// <param name="ACurrencyTo"></param>
-        /// <param name="AStartDate"></param>
-        /// <param name="AEndDate"></param>
-        /// <param name="AExchangeRate"></param>
-        /// <returns>true if a exchange rate was found for the date. Otherwise false</returns>
-        private static bool GetCorporateExchangeRate(string ACurrencyFrom,
-            string ACurrencyTo,
-            DateTime AStartDate,
-            DateTime AEndDate,
-            out decimal AExchangeRate)
-        {
-            AExchangeRate = decimal.MinValue;
-
-            bool NewTransaction;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
-
-            ACorporateExchangeRateTable tempTable = new ACorporateExchangeRateTable();
-            ACorporateExchangeRateRow templateRow = tempTable.NewRowTyped(false);
-
-            templateRow.FromCurrencyCode = ACurrencyFrom;
-            templateRow.ToCurrencyCode = ACurrencyTo;
-
-            ACorporateExchangeRateTable ExchangeRates = ACorporateExchangeRateAccess.LoadUsingTemplate(templateRow, Transaction);
-
-            if (ExchangeRates.Count > 0)
-            {
-                // sort rates by date, look for rate just before the date we are looking for
-                ExchangeRates.DefaultView.Sort = ACorporateExchangeRateTable.GetDateEffectiveFromDBName();
-                ExchangeRates.DefaultView.RowFilter = ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + ">= '" +
-                                                      AStartDate.ToString("dd/MM/yyyy") + "' AND " +
-                                                      ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + "<= '" +
-                                                      AEndDate.ToString("dd/MM/yyyy") + "'";
-
-                if (ExchangeRates.DefaultView.Count > 0)
-                {
-                    AExchangeRate = ((ACorporateExchangeRateRow)ExchangeRates.DefaultView[0].Row).RateOfExchange;
-                }
-            }
-
-            if (AExchangeRate == decimal.MinValue)
-            {
-                // try other way round
-                templateRow.FromCurrencyCode = ACurrencyTo;
-                templateRow.ToCurrencyCode = ACurrencyFrom;
-
-                ExchangeRates = ACorporateExchangeRateAccess.LoadUsingTemplate(templateRow, Transaction);
-
-                if (ExchangeRates.Count > 0)
-                {
-                    // sort rates by date, look for rate just before the date we are looking for
-                    ExchangeRates.DefaultView.Sort = ACorporateExchangeRateTable.GetDateEffectiveFromDBName();
-                    ExchangeRates.DefaultView.RowFilter = ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + ">= '" +
-                                                          AStartDate.ToString("dd/MM/yyyy") + "' AND " +
-                                                          ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + "<= '" +
-                                                          AEndDate.ToString("dd/MM/yyyy") + "'";
-
-                    if (ExchangeRates.DefaultView.Count > 0)
-                    {
-                        AExchangeRate = 1 / ((ACorporateExchangeRateRow)ExchangeRates.DefaultView[0].Row).RateOfExchange;
-                    }
-                }
-            }
-
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
-
-            if (AExchangeRate == decimal.MinValue)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// get corporate exchange rate from the previous years for the given currencies and date;
-        /// </summary>
-        /// <param name="ACurrencyFrom"></param>
-        /// <param name="ACurrencyTo"></param>
-        /// <param name="AStartDate"></param>
-        /// <param name="AEndDate"></param>
-        /// <param name="AExchangeRate"></param>
-        /// <returns>true if a exchange rate was found for the date. Otherwise false</returns>
-        private static bool GetCorporateExchangeRateFromPreviousYears(string ACurrencyFrom,
-            string ACurrencyTo,
-            DateTime AStartDate,
-            DateTime AEndDate,
-            out decimal AExchangeRate)
-        {
-            AExchangeRate = decimal.MinValue;
-
-            bool NewTransaction;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
-
-            APrevYearCorpExRateTable PrevTempTable = new APrevYearCorpExRateTable();
-            APrevYearCorpExRateRow PrevTemplateRow = PrevTempTable.NewRowTyped(false);
-
-            PrevTemplateRow.FromCurrencyCode = ACurrencyFrom;
-            PrevTemplateRow.ToCurrencyCode = ACurrencyTo;
-
-            APrevYearCorpExRateTable PrevExchangeRates = APrevYearCorpExRateAccess.LoadUsingTemplate(PrevTemplateRow, Transaction);
-
-            if (PrevExchangeRates.Count > 0)
-            {
-                // sort rates by date, look for rate just before the date we are looking for
-                PrevExchangeRates.DefaultView.Sort = APrevYearCorpExRateTable.GetDateEffectiveFromDBName();
-                PrevExchangeRates.DefaultView.RowFilter = APrevYearCorpExRateTable.GetDateEffectiveFromDBName() + ">= '" +
-                                                          AStartDate.ToString("dd/MM/yyyy") + "' AND " +
-                                                          APrevYearCorpExRateTable.GetDateEffectiveFromDBName() + "<= '" +
-                                                          AEndDate.ToString("dd/MM/yyyy") + "'";
-
-                if (PrevExchangeRates.DefaultView.Count > 0)
-                {
-                    AExchangeRate = ((APrevYearCorpExRateRow)PrevExchangeRates.DefaultView[0].Row).RateOfExchange;
-                }
-            }
-
-            if (AExchangeRate == decimal.MinValue)
-            {
-                // try other way round
-                PrevTemplateRow.FromCurrencyCode = ACurrencyTo;
-                PrevTemplateRow.ToCurrencyCode = ACurrencyFrom;
-
-                PrevExchangeRates = APrevYearCorpExRateAccess.LoadUsingTemplate(PrevTemplateRow, Transaction);
-
-                if (PrevExchangeRates.Count > 0)
-                {
-                    // sort rates by date, look for rate just before the date we are looking for
-                    PrevExchangeRates.DefaultView.Sort = APrevYearCorpExRateTable.GetDateEffectiveFromDBName();
-                    PrevExchangeRates.DefaultView.RowFilter = APrevYearCorpExRateTable.GetDateEffectiveFromDBName() + ">= '" +
-                                                              AStartDate.ToString("dd/MM/yyyy") + "' AND " +
-                                                              APrevYearCorpExRateTable.GetDateEffectiveFromDBName() + "<= '" +
-                                                              AEndDate.ToString("dd/MM/yyyy") + "'";
-
-                    if (PrevExchangeRates.DefaultView.Count > 0)
-                    {
-                        AExchangeRate = 1 / ((APrevYearCorpExRateRow)PrevExchangeRates.DefaultView[0].Row).RateOfExchange;
-                    }
-                }
-            }
-
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
-
-            if (AExchangeRate == decimal.MinValue)
-            {
-                return false;
-            }
-
-            return true;
+            return TExchangeRateTools.GetCorporateExchangeRate(ACurrencyFrom, ACurrencyTo, AStartDate, AEndDate);
         }
 
         /// <summary>

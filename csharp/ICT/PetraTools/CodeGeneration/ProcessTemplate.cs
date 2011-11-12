@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -38,16 +38,38 @@ namespace Ict.Tools.CodeGeneration
     /// </summary>
     public class ProcessTemplate
     {
+        /// <summary>
+        /// the template
+        /// </summary>
         public String FTemplateCode = "";
+
+        /// <summary>
+        /// the name of the file to write to
+        /// </summary>
         public String FDestinationFile = "";
+
+        /// <summary>
+        /// temporary strings to store code into that will later each be inserted into a placeholder
+        /// </summary>
         public SortedList FCodelets = new SortedList();
+
+        /// <summary>
+        /// snippets are smaller pieces of template code
+        /// </summary>
         public SortedList FSnippets = new SortedList();
 
+        /// <summary>
+        /// constructor
+        /// </summary>
         public ProcessTemplate()
         {
             // need to set FTemplateCode manually
         }
 
+        /// <summary>
+        /// constructor, open template from file
+        /// </summary>
+        /// <param name="AFullPath"></param>
         public ProcessTemplate(string AFullPath)
         {
             if (!File.Exists(AFullPath))
@@ -230,7 +252,7 @@ namespace Ict.Tools.CodeGeneration
             }
         }
 
-        // check if all placeholders have been replaced in the template; ignore IFDEF
+        /// check if all placeholders have been replaced in the template; ignore IFDEF
         public Boolean CheckTemplateCompletion(string s)
         {
             int posPlaceholder = s.IndexOf("{#");
@@ -263,6 +285,9 @@ namespace Ict.Tools.CodeGeneration
             return true;
         }
 
+        /// <summary>
+        /// remove all ifdefs that are not defined
+        /// </summary>
         public string RemoveUndefinedIFDEFs(string s)
         {
             int posPlaceholder = s.IndexOf("{#IFDEF ");
@@ -289,6 +314,9 @@ namespace Ict.Tools.CodeGeneration
             return s;
         }
 
+        /// <summary>
+        /// remove all ifndefs that are defined
+        /// </summary>
         public string RemoveDefinedIFNDEF(string s, string APlaceHolderName)
         {
             int posPlaceholder = s.IndexOf("{#IFNDEF " + APlaceHolderName + "}");
@@ -316,6 +344,9 @@ namespace Ict.Tools.CodeGeneration
             return s;
         }
 
+        /// <summary>
+        /// activate all ifdefs that are defined
+        /// </summary>
         public string ActivateDefinedIFDEF(string s, string APlaceholder)
         {
             s = s.Replace("{#IFDEF " + APlaceholder + "}" + Environment.NewLine, "");
@@ -323,7 +354,10 @@ namespace Ict.Tools.CodeGeneration
             return s;
         }
 
-        public string ActivateUndefinedIFNDEFs(string s)
+        /// <summary>
+        /// activate all ifndefs that are not defined
+        /// </summary>
+        private string ActivateUndefinedIFNDEFs(string s)
         {
             int posPlaceholder = s.IndexOf("{#IFNDEF ");
 
@@ -340,82 +374,15 @@ namespace Ict.Tools.CodeGeneration
             return s;
         }
 
-        private int GetNextParameterisedTemplate(string APlaceholder, int posPlaceholder, ref ArrayList result)
-        {
-            int posEndPlaceholder = FTemplateCode.IndexOf("}", posPlaceholder);
-            string parameterisedPlaceholder = FTemplateCode.Substring(posPlaceholder, posEndPlaceholder - posPlaceholder + 1);
-            string line = parameterisedPlaceholder;
-
-            // this will get the {
-            StringHelper.GetNextToken(ref parameterisedPlaceholder);
-
-            // this will get the #APlaceholder
-            StringHelper.GetNextToken(ref parameterisedPlaceholder);
-
-            // now get all the parameters
-            while (parameterisedPlaceholder.Length > 0 && parameterisedPlaceholder != "}")
-            {
-                string paramId = StringHelper.GetNextToken(ref parameterisedPlaceholder);
-
-                // = character
-                StringHelper.GetNextToken(ref parameterisedPlaceholder);
-                string paramValue = StringHelper.GetNextToken(ref parameterisedPlaceholder);
-
-                // cut away the quotes
-                paramValue = paramValue.Substring(1, paramValue.Length - 2);
-                line = StringHelper.AddCSV(line, paramId);
-                line = StringHelper.AddCSV(line, paramValue);
-            }
-
-            result.Add(line);
-            posPlaceholder = FTemplateCode.IndexOf("{#" + APlaceholder + " ", posEndPlaceholder);
-            return posPlaceholder;
-        }
-
-        // this can be used to fill in code that just depends on one or two parameters
-        // e.g. {#COLUMNCALC text="Gift Reference"} in the report xml file should be extended to a full column calculation
-        // the extending is done by the calling function (may involve procedures like UpperCamelCase etc)
-        // @returns list of occurances, each a comma separated list of first the original (for later replacement),
-        //          then the parameter ids and parameter values
-        public ArrayList GetParameterisedTemplates(string APlaceholder)
-        {
-            int posPlaceholder = FTemplateCode.IndexOf("{#" + APlaceholder + " ");
-            ArrayList result = new ArrayList();
-
-            while (posPlaceholder > -1)
-            {
-                posPlaceholder = GetNextParameterisedTemplate(APlaceholder, posPlaceholder, ref result);
-            }
-
-            return result;
-        }
-
-        public string GetFirstParameterisedTemplate(string APlaceholder)
-        {
-            int posPlaceholder = FTemplateCode.IndexOf("{#" + APlaceholder + " ");
-            ArrayList result = new ArrayList();
-
-            if (posPlaceholder > -1)
-            {
-                posPlaceholder = GetNextParameterisedTemplate(APlaceholder, posPlaceholder, ref result);
-            }
-
-            if (result.Count > 0)
-            {
-                return result[0].ToString();
-            }
-
-            return null;
-        }
-
-        private Int32 FTempCodeletCounter = 0;
+        /// <summary>
+        /// this helps to distinguish codelets when nesting codelets
+        /// </summary>
         protected String FCodeletPostfix = "";
-        public String GetNewTempCodelet()
-        {
-            FTempCodeletCounter++;
-            return FTempCodeletCounter.ToString();
-        }
 
+        /// <summary>
+        /// set the postfix for codelets. this helps to distinguish codelets when nesting codelets
+        /// </summary>
+        /// <param name="APostfix"></param>
         public void SetCodeLetPostfix(string APostfix)
         {
             FCodeletPostfix = APostfix;
@@ -511,7 +478,7 @@ namespace Ict.Tools.CodeGeneration
             return FCodelets.GetByIndex(index).ToString();
         }
 
-        // create a new codelet, overwrites existing one
+        /// create a new codelet, overwrites existing one
         public string SetCodelet(string APlaceholder, string ACodelet)
         {
             if (ACodelet == null)
@@ -554,6 +521,9 @@ namespace Ict.Tools.CodeGeneration
             }
         }
 
+        /// <summary>
+        /// insert the codelets into the template that have been collected until now
+        /// </summary>
         protected void ReplaceCodelets()
         {
             Boolean somethingWasReplaced = true;
@@ -607,6 +577,12 @@ namespace Ict.Tools.CodeGeneration
             AddToCodelet(APlaceholder, AValue);
         }
 
+        /// <summary>
+        /// replace a placeholder with an actual value.
+        /// overload with empty default.
+        /// </summary>
+        /// <param name="APlaceholder"></param>
+        /// <param name="AValue"></param>
         public void ReplacePlaceHolder(string APlaceholder, string AValue)
         {
             ReplacePlaceHolder(APlaceholder, AValue, "");
@@ -699,6 +675,12 @@ namespace Ict.Tools.CodeGeneration
             return false;
         }
 
+        /// <summary>
+        /// replace a region with new content
+        /// </summary>
+        /// <param name="regionName"></param>
+        /// <param name="content"></param>
+        /// <returns></returns>
         public Boolean ReplaceRegion(string regionName, string content)
         {
             // todo: if there is no region, create one, in the right place? before the brackets close of the last class?
@@ -710,6 +692,11 @@ namespace Ict.Tools.CodeGeneration
             return true;
         }
 
+        /// <summary>
+        /// insert parameters into placeholders
+        /// </summary>
+        /// <param name="curNode"></param>
+        /// <returns></returns>
         public Boolean processTemplateParameters(XmlNode curNode)
         {
             // add all attributes as template parameters
@@ -735,6 +722,11 @@ namespace Ict.Tools.CodeGeneration
             return true;
         }
 
+        /// <summary>
+        /// clean up the code, remove spaces, too many empty lines
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
         public string BeautifyCode(string s)
         {
             // remove spaces at end of line
@@ -752,6 +744,14 @@ namespace Ict.Tools.CodeGeneration
             return s;
         }
 
+        /// <summary>
+        /// write the content to a file.
+        /// deal with conditional defines etc.
+        /// </summary>
+        /// <param name="AXAMLFilename"></param>
+        /// <param name="ADestFileExtension"></param>
+        /// <param name="ACheckTemplateCompletion"></param>
+        /// <returns></returns>
         public Boolean FinishWriting(string AXAMLFilename, string ADestFileExtension, Boolean ACheckTemplateCompletion)
         {
             ReplaceCodelets();

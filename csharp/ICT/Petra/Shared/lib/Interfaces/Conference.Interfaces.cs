@@ -32,9 +32,11 @@ using System.Collections.Generic;
 using System.Data;
 using Ict.Common;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared.Interfaces.MConference.Cacheable;
 using Ict.Petra.Shared.Interfaces.MConference.WebConnectors;
 #region ManualCode
+using Ict.Common.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MConference.Data;
 using Ict.Petra.Shared.MConference;
@@ -66,6 +68,19 @@ namespace Ict.Petra.Shared.Interfaces.MConference.Cacheable
     /// <summary>auto generated</summary>
     public interface ICacheableNamespace : IInterface
     {
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MConference.Instantiator.Cacheable.Class)</summary>
+        System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MConference.TCacheableConferenceTablesEnum ACacheableTable,
+                                                System.String AHashCode,
+                                                out System.Type AType);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MConference.Instantiator.Cacheable.Class)</summary>
+        void RefreshCacheableTable(Ict.Petra.Shared.MConference.TCacheableConferenceTablesEnum ACacheableTable);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MConference.Instantiator.Cacheable.Class)</summary>
+        void RefreshCacheableTable(Ict.Petra.Shared.MConference.TCacheableConferenceTablesEnum ACacheableTable,
+                                   out System.Data.DataTable ADataTable);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MConference.Instantiator.Cacheable.Class)</summary>
+        TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableConferenceTablesEnum ACacheableTable,
+                                                               ref TTypedDataTable ASubmitTable,
+                                                               out TVerificationResultCollection AVerificationResult);
     }
 
 }
@@ -82,19 +97,19 @@ namespace Ict.Petra.Shared.Interfaces.MConference.WebConnectors
         SelectConferenceTDS GetConferences(String AConferenceName,
                                            String APrefix);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions)</summary>
-        bool GetEarliestAndLatestDate(Int64 AConferenceKey,
-                                      out DateTime AEarliestArrivalDate,
-                                      out DateTime ALatestDepartureDate,
-                                      out DateTime AStartDate,
-                                      out DateTime AEndDate);
+        System.Boolean GetEarliestAndLatestDate(Int64 AConferenceKey,
+                                                out DateTime AEarliestArrivalDate,
+                                                out DateTime ALatestDepartureDate,
+                                                out DateTime AStartDate,
+                                                out DateTime AEndDate);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions)</summary>
-        System.Boolean GetOutreachOptions(long AUnitKey,
+        System.Boolean GetOutreachOptions(System.Int64 AUnitKey,
                                           out System.Data.DataTable AConferenceTable);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MConference.WebConnectors.TConferenceOptions)</summary>
-        bool GetFieldUnits(Int64 AConferenceKey,
-                           TUnitTypeEnum AFieldTypes,
-                           out DataTable AFieldsTable,
-                           out String AConferencePrefix);
+        System.Boolean GetFieldUnits(Int64 AConferenceKey,
+                                     TUnitTypeEnum AFieldTypes,
+                                     out DataTable AFieldsTable,
+                                     out String AConferencePrefix);
     }
 
 }

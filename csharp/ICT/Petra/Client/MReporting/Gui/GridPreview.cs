@@ -25,6 +25,7 @@ using System;
 using System.IO;
 using System.Windows.Forms;
 using System.Threading;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Shared.MReporting;
 using System.Data;
@@ -230,7 +231,6 @@ namespace Ict.Petra.Client.MReporting.Gui
             String paramName;
             String paramValue;
             String SettingsDirectory;
-            Int64 PartnerKey;
             MenuItem ClickedMenuItem = (MenuItem)sender;
             TheDataRowViewArray = FGridView.SelectedDataRowsAsDataRowView;
 
@@ -259,9 +259,9 @@ namespace Ict.Petra.Client.MReporting.Gui
 
             if (action == "PartnerEditScreen")
             {
-                // get the partner key
-                PartnerKey = Convert.ToInt64(SelectedResult.column[Convert.ToInt32(detailReportCSV)].ToString());
 #if TODO
+                // get the partner key
+                Int64 PartnerKey = Convert.ToInt64(SelectedResult.column[Convert.ToInt32(detailReportCSV)].ToString());
                 // TODO: open Partner Edit screen with the given partner key
 #endif
             }

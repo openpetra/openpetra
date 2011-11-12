@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -494,6 +494,7 @@ namespace Ict.Petra.Client.MPartner
         /// <param name="AOwner"></param>
         public static void OpenDonorGiftHistory(IWin32Window AOwner)
         {
+            throw new NotImplementedException();
 // TODO OpenDonorGiftHistory
 #if TODO
             Int32 LedgerNumber;
@@ -520,17 +521,10 @@ namespace Ict.Petra.Client.MPartner
         /// <summary>
         /// todoComment
         /// </summary>
-        public static void OpenWorkerField()
-        {
-// TODO            Logic.UCmdMPartner.RunMaintainField(Logic.ULogic.ParentForm, Logic.ULogic.PartnerKey, OpenWorkerFieldCallback);
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
         /// <param name="AOwner"></param>
         public static void OpenRecipientGiftHistory(IWin32Window AOwner)
         {
+            throw new NotImplementedException();
 // TODO OpenRecipientGiftHistory
 #if TODO
             Int32 LedgerNumber;
@@ -552,82 +546,6 @@ namespace Ict.Petra.Client.MPartner
         public static void PrintPartner()
         {
 // TODO            Logic.UCmdMPartner.RunPrintPartner(Logic.ULogic.ParentForm, Logic.ULogic.PartnerKey);
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public static void OpenPartnerContacts()
-        {
-// TODO            Logic.UCmdMPartner.RunMaintainContacts(Logic.ULogic.ParentForm, Logic.ULogic.PartnerKey);
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public static void OpenPartnerFinanceDetails()
-        {
-// TODO            Logic.UCmdMPartner.RunMaintainFinanceDetails(Logic.ULogic.ParentForm, Logic.ULogic.PartnerKey);
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public static void OpenPartnerInterests()
-        {
-// TODO            Logic.UCmdMPartner.RunMaintainInterests(Logic.ULogic.ParentForm, Logic.ULogic.PartnerKey);
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public static void OpenPartnerQuickView()
-        {
-            TLocationPK LocationPK;
-
-            LocationPK = TPartnerFindScreenLogic.ULogic.DetermineCurrentLocationPK();
-
-// TODO            Logic.UCmdMPartner.OpenPartnerQuickView(Logic.ULogic.ParentForm, Logic.ULogic.PartnerKey,
-//                LocationPK.SiteKey, LocationPK.LocationKey);
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public static void OpenPartnerRelationships()
-        {
-// TODO            Logic.UCmdMPartner.RunMaintainRelationships(Logic.ULogic.ParentForm, Logic.ULogic.PartnerKey);
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public static void OpenPartnerReminders()
-        {
-// TODO            Logic.UCmdMPartner.RunMaintainReminders(Logic.ULogic.ParentForm, Logic.ULogic.PartnerKey);
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public static void OpenPersonnelIndivData()
-        {
-// TODO OpenPersonnelIndivData
-#if TODO
-            String PartnerClass;
-
-            PartnerClass = Logic.ULogic.DetermineCurrentPartnerClass();
-
-            if ((PartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
-                || (PartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.UNIT)))
-            {
-                Logic.UCmdMPartner.RunMaintainPersonnel(Logic.ULogic.ParentForm, Logic.ULogic.PartnerKey);
-            }
-            else
-            {
-                MessageBox.Show(CommonResourcestrings.StrErrorOnlyForPersonOrUnit, CommonResourcestrings.StrGenericFunctionalityNotAvailable);
-            }
-#endif
         }
 
         /// <summary>

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -25,7 +25,7 @@ using System;
 using System.Net.Sockets;
 using System.Runtime.Remoting;
 using Ict.Common;
-using Ict.Petra.Shared.Interfaces.ServerAdminInterface;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.ServerAdmin.App.Core;
 using System.Reflection;
 using System.Diagnostics;
@@ -43,7 +43,6 @@ public class TAdminConsole
     /// the command prompt
     /// </summary>
     public const String ServerAdminPrompt = "SERVERADMIN> ";
-    private static TLogging Logger;
 
     /// <summary>
     /// todoComment
@@ -448,9 +447,7 @@ public class TAdminConsole
 
         try
         {
-            // effectively this is currently in the bin22 directory
-            // in 2.3 I would like to move the file to /usr/local/petra
-            Logger = new TLogging();
+            new TLogging();
             new TAppSettingsManager();
             SilentSysadm = true;
 
@@ -461,7 +458,7 @@ public class TAdminConsole
 
             if (TAppSettingsManager.HasValue("ServerAdmin.LogFile"))
             {
-                Logger = new TLogging(TAppSettingsManager.GetValue("ServerAdmin.LogFile"));
+                new TLogging(TAppSettingsManager.GetValue("ServerAdmin.LogFile"));
             }
 
             if ((!SilentSysadm))

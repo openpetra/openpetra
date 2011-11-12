@@ -1,0 +1,29 @@
+RootNode:
+    BaseYaml: ../../CommonForms/PetraFormDialog.yaml
+    FormTitle: Cancel All Subscriptions
+    Namespace: Ict.Petra.Client.MPartner.Gui
+    FormType: dialog
+    Template: window
+    
+    Events:
+        Closing: {class=System.ComponentModel.CancelEventHandler,method=CustomClosingHandler}
+
+    Controls:
+        pnlDialogContent: {Width= 800, Height=500}
+            Controls:
+                Row0: [lblExplanationHeader]
+                Row1: [lblExplanationText]
+                Row2: [cmbPSubscriptionReasonSubsCancelledCode]
+                Row3: [dtpPSubscriptionDateCancelled]
+                
+        lblExplanationHeader:
+            Text: This Dialog allows cancelling of all active Subscriptions in one go.
+
+        lblExplanationText:
+            Text: Select the 'Reason ended' and enter the 'Date ended'. On clicking OK these will be applied to all active Subscriptions. The Partner will be left with no active Subscriptions!
+            
+        cmbPSubscriptionReasonSubsCancelledCode: {List=ReasonSubscriptionCancelledList}
+            Label: Reason Ended
+
+        dtpPSubscriptionDateCancelled:
+            Label: Date E&nded

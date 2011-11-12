@@ -43,7 +43,7 @@ Source: ..\..\..\delivery\bin\Ict.Petra.ServerAdmin*.dll; DestDir: {app}/bin30; 
 Source: ..\..\..\delivery\bin\PetraServerAdminConsole.exe; DestDir: {app}/bin30; Flags: ignoreversion
 Source: ..\..\..\delivery\bin\PetraClient.exe; DestDir: {app}/bin30; Flags: ignoreversion
 Source: ..\..\..\delivery\bin\PetraServerConsole.exe; DestDir: {app}/bin30; Flags: ignoreversion
-Source: ..\..\..\csharp\ICT\Petra\Definitions\UINavigation.yml; DestDir: {app}/bin30
+Source: ..\..\..\tmp\UINavigation.yml; DestDir: {app}/bin30
 Source: ..\..\..\delivery\bin\de-DE\OpenPetra.resources.dll; DestDir: {app}/bin30/de-DE
 Source: ..\..\..\delivery\bin\es-ES\OpenPetra.resources.dll; DestDir: {app}/bin30/es-ES
 Source: ..\..\..\delivery\bin\da-DK\OpenPetra.resources.dll; DestDir: {app}/bin30/da-DK
@@ -63,7 +63,7 @@ Source: ..\..\..\resources\petraico-big.ico; DestDir: {app}
 Source: ..\..\..\resources\*.ico; DestDir: {app}/resources30
 Source: ..\..\..\resources\*.png; DestDir: {app}/resources30
 Source: ..\..\..\LICENSE; DestDir: {app}
-Source: version.txt; DestDir: {app}/bin30
+Source: ..\..\..\tmp\version.txt; DestDir: {app}/bin30
 
 [Icons]
 Name: {group}\{cm:cmIconStandaloneLabel}; Filename: {app}\bin30\PetraClient.exe; WorkingDir: {app}/bin30; IconFilename: {app}\petraico-big.ico; Comment: {cm:cmIconStandaloneComment}; IconIndex: 0; Parameters: "-C:""{app}\PetraClient-3.0.config"" -AutoLogin:demo"
@@ -115,16 +115,16 @@ begin
   begin
     Dirname := ExpandConstant('{app}');
     StringChangeEx(Dirname, ExpandConstant('{pf}') + '\', '', true);
-    ReplaceInTextFile(ExpandConstant('{app}/PetraServerConsole-3.0.config'), 'PETRA.DB', '{userappdata}/' + Dirname + '/db30/petra.db', true);
-    ReplaceInTextFile(ExpandConstant('{app}/PetraServerConsole-3.0.config'), 'BASE.DB', ExpandConstant('{app}/db30/demo.db'), true);
-    ReplaceInTextFile(ExpandConstant('{app}/PetraServerConsole-3.0.config'), 'REPORTS30', ExpandConstant('{app}/reports30'), true);
-    ReplaceInTextFile(ExpandConstant('{app}/PetraServerConsole-3.0.config'), 'SQL30', ExpandConstant('{app}/sql30'), true);
-    ReplaceInTextFile(ExpandConstant('{app}/PetraServerConsole-3.0.config'), 'TMP30', '{userappdata}/' + Dirname + '/tmp30', true);
-    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'PetraServerConsole.exe.config', ExpandConstant('{app}/PetraServerConsole-3.0.config'), true);
-    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'PetraServerAdminConsole.exe.config', ExpandConstant('{app}/PetraServerAdminConsole-3.0.config'), true);
-    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'TMP30', '{userappdata}/' + Dirname + '/tmp30', true);
-    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'REPORTSETTINGSPATH', ExpandConstant('{app}/reports30/Settings'), true);
-    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'REPORTUSERSETTINGSPATH', '{userappdata}/' + Dirname + '/reports30/Settings', true);
+    ReplaceInTextFile(ExpandConstant('{app}/PetraServerConsole-3.0.config'), 'PETRA.DB', '{userappdata}/' + Dirname + '\db30\petra.db', true);
+    ReplaceInTextFile(ExpandConstant('{app}/PetraServerConsole-3.0.config'), 'BASE.DB', ExpandConstant('{app}\db30\demo.db'), true);
+    ReplaceInTextFile(ExpandConstant('{app}/PetraServerConsole-3.0.config'), 'REPORTS30', ExpandConstant('{app}\reports30'), true);
+    ReplaceInTextFile(ExpandConstant('{app}/PetraServerConsole-3.0.config'), 'SQL30', ExpandConstant('{app}\sql30'), true);
+    ReplaceInTextFile(ExpandConstant('{app}/PetraServerConsole-3.0.config'), 'TMP30', '{userappdata}/' + Dirname + '\tmp30', true);
+    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'PetraServerConsole.exe.config', ExpandConstant('{app}\PetraServerConsole-3.0.config'), true);
+    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'PetraServerAdminConsole.exe.config', ExpandConstant('{app}\PetraServerAdminConsole-3.0.config'), true);
+    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'TMP30', '{userappdata}/' + Dirname + '\tmp30', true);
+    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'REPORTSETTINGSPATH', ExpandConstant('{app}\reports30\Settings'), true);
+    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'REPORTUSERSETTINGSPATH', '{userappdata}\' + Dirname + '\reports30\Settings', true);
   end;
 
   // allow the .net remoting communication between client and server

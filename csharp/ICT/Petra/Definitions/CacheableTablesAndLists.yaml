@@ -102,7 +102,9 @@ CachedTables:
                 AMethodOfPayment:
                 AMotivationGroup: {Comment="This is used to track a partner's reason for contacting the organisation/sending money. Divided into Motivation Detail codes"}
                 AMotivationDetail: {Enum=MotivationList, Comment="list of motivations (for gifts)", DependsOnLedger=true}
-                
+                AFeesPayable: {DependsOnLedger=true}
+                AFeesReceivable: {DependsOnLedger=true}
+
             CalculatedLists: {DependsOnLedger=true}
                 AccountingPeriodList:
                 LedgerNameList: {Comment=names of available ledgers, DependsOnLedger=false}
@@ -114,4 +116,8 @@ CachedTables:
         Conference:
             DatabaseTables:
                 PcConferenceOptionType:
-    #SysMan:
+    SysMan:
+        SysMan:
+            DatabaseTables:
+                SUser:
+                SLanguageSpecific:

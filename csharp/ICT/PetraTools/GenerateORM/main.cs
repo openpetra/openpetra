@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -33,8 +33,17 @@ namespace Ict.Tools.CodeGeneration.DataStore
     /// This program generates the tables and datasets for the typed datasets
     public class generateTypedTables
     {
+        /// <summary>
+        /// a parser for the petra.xml, which contains the database definition for OpenPetra
+        /// </summary>
         public static TDataDefinitionParser parser;
+        /// <summary>
+        /// the data from the petra.xml with the database definition
+        /// </summary>
         public static TDataDefinitionStore store;
+        /// <summary>
+        /// the options from the command line
+        /// </summary>
         public static TCmdOpts cmdLine;
 
         int run()
@@ -78,51 +87,51 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 {
                     if ((cmdLine.GetOptValue("do") == "defaulttables") || (cmdLine.GetOptValue("do") == "datatables"))
                     {
-                        codeGenerationTable.WriteTypedTable(store, "partner", cmdLine.GetOptValue(
+                        CodeGenerationTable.WriteTypedTable(store, "partner", cmdLine.GetOptValue(
                                 "outputshared") + "\\lib\\data\\",
                             "Ict.Petra.Shared.MPartner.Partner.Data",
                             "Partner.Tables");
-                        codeGenerationTable.WriteTypedTable(store, "mailroom", cmdLine.GetOptValue(
+                        CodeGenerationTable.WriteTypedTable(store, "mailroom", cmdLine.GetOptValue(
                                 "outputshared") + "\\lib\\data\\",
                             "Ict.Petra.Shared.MPartner.Mailroom.Data",
                             "Mailroom.Tables");
-                        codeGenerationTable.WriteTypedTable(store, "personnel", cmdLine.GetOptValue(
+                        CodeGenerationTable.WriteTypedTable(store, "personnel", cmdLine.GetOptValue(
                                 "outputshared") + "\\lib\\data\\",
                             "Ict.Petra.Shared.MPersonnel.Personnel.Data",
                             "Personnel.Tables");
-                        codeGenerationTable.WriteTypedTable(store, "units", cmdLine.GetOptValue(
+                        CodeGenerationTable.WriteTypedTable(store, "units", cmdLine.GetOptValue(
                                 "outputshared") + "\\lib\\data\\",
                             "Ict.Petra.Shared.MPersonnel.Units.Data",
                             "Units.Tables");
-                        codeGenerationTable.WriteTypedTable(store, "conference", cmdLine.GetOptValue(
+                        CodeGenerationTable.WriteTypedTable(store, "conference", cmdLine.GetOptValue(
                                 "outputshared") + "\\lib\\data\\",
                             "Ict.Petra.Shared.MConference.Data",
                             "Conference.Tables");
-                        codeGenerationTable.WriteTypedTable(store, "hospitality", cmdLine.GetOptValue(
+                        CodeGenerationTable.WriteTypedTable(store, "hospitality", cmdLine.GetOptValue(
                                 "outputshared") + "\\lib\\data\\",
                             "Ict.Petra.Shared.MHospitality.Data",
                             "Hospitality.Tables");
-                        codeGenerationTable.WriteTypedTable(store, "account", cmdLine.GetOptValue(
+                        CodeGenerationTable.WriteTypedTable(store, "account", cmdLine.GetOptValue(
                                 "outputshared") + "\\lib\\data\\",
                             "Ict.Petra.Shared.MFinance.Account.Data",
                             "Account.Tables");
-                        codeGenerationTable.WriteTypedTable(store, "ap", cmdLine.GetOptValue(
+                        CodeGenerationTable.WriteTypedTable(store, "ap", cmdLine.GetOptValue(
                                 "outputshared") + "\\lib\\data\\",
                             "Ict.Petra.Shared.MFinance.AP.Data",
                             "AP.Tables");
-                        codeGenerationTable.WriteTypedTable(store, "ar", cmdLine.GetOptValue(
+                        CodeGenerationTable.WriteTypedTable(store, "ar", cmdLine.GetOptValue(
                                 "outputshared") + "\\lib\\data\\",
                             "Ict.Petra.Shared.MFinance.AR.Data",
                             "AR.Tables");
-                        codeGenerationTable.WriteTypedTable(store, "gift", cmdLine.GetOptValue(
+                        CodeGenerationTable.WriteTypedTable(store, "gift", cmdLine.GetOptValue(
                                 "outputshared") + "\\lib\\data\\",
                             "Ict.Petra.Shared.MFinance.Gift.Data",
                             "Gift.Tables");
-                        codeGenerationTable.WriteTypedTable(store, "sysman", cmdLine.GetOptValue(
+                        CodeGenerationTable.WriteTypedTable(store, "sysman", cmdLine.GetOptValue(
                                 "outputshared") + "\\lib\\data\\",
                             "Ict.Petra.Shared.MSysMan.Data",
                             "SysMan.Tables");
-                        codeGenerationTable.WriteTypedTable(store, "common", cmdLine.GetOptValue(
+                        CodeGenerationTable.WriteTypedTable(store, "common", cmdLine.GetOptValue(
                                 "outputshared") + "\\lib\\data\\",
                             "Ict.Petra.Shared.MCommon.Data",
                             "Common.Tables");
@@ -132,55 +141,55 @@ namespace Ict.Tools.CodeGeneration.DataStore
                     }
                     else if (cmdLine.GetOptValue("do") == "dataaccess")
                     {
-                        codeGenerationAccess.WriteTypedDataAccess(store, "partner", cmdLine.GetOptValue(
+                        CodeGenerationAccess.WriteTypedDataAccess(store, "partner", cmdLine.GetOptValue(
                                 "outputshared") + "\\lib\\data\\",
                             "Ict.Petra.Server.MPartner.Partner.Data.Access",
                             "Partner.Access");
-                        codeGenerationAccess.WriteTypedDataAccess(store, "mailroom", cmdLine.GetOptValue(
+                        CodeGenerationAccess.WriteTypedDataAccess(store, "mailroom", cmdLine.GetOptValue(
                                 "outputshared") + "\\lib\\data\\",
                             "Ict.Petra.Server.MPartner.Mailroom.Data.Access",
                             "Mailroom.Access");
-                        codeGenerationAccess.WriteTypedDataAccess(store, "personnel", cmdLine.GetOptValue(
+                        CodeGenerationAccess.WriteTypedDataAccess(store, "personnel", cmdLine.GetOptValue(
                                 "outputshared") + "\\lib\\data\\",
                             "Ict.Petra.Server.MPersonnel.Personnel.Data.Access",
                             "Personnel.Access");
-                        codeGenerationAccess.WriteTypedDataAccess(store, "units", cmdLine.GetOptValue(
+                        CodeGenerationAccess.WriteTypedDataAccess(store, "units", cmdLine.GetOptValue(
                                 "outputshared") + "\\lib\\data\\",
                             "Ict.Petra.Server.MPersonnel.Units.Data.Access",
                             "Units.Access");
-                        codeGenerationAccess.WriteTypedDataAccess(store, "conference", cmdLine.GetOptValue(
+                        CodeGenerationAccess.WriteTypedDataAccess(store, "conference", cmdLine.GetOptValue(
                                 "outputshared") + "\\lib\\data\\",
                             "Ict.Petra.Server.MConference.Data.Access",
                             "Conference.Access");
-                        codeGenerationAccess.WriteTypedDataAccess(store, "hospitality", cmdLine.GetOptValue(
+                        CodeGenerationAccess.WriteTypedDataAccess(store, "hospitality", cmdLine.GetOptValue(
                                 "outputshared") + "\\lib\\data\\",
                             "Ict.Petra.Server.MHospitality.Data.Access",
                             "Hospitality.Access");
-                        codeGenerationAccess.WriteTypedDataAccess(store, "account", cmdLine.GetOptValue(
+                        CodeGenerationAccess.WriteTypedDataAccess(store, "account", cmdLine.GetOptValue(
                                 "outputshared") + "\\lib\\data\\",
                             "Ict.Petra.Server.MFinance.Account.Data.Access",
                             "Account.Access");
-                        codeGenerationAccess.WriteTypedDataAccess(store, "ap", cmdLine.GetOptValue(
+                        CodeGenerationAccess.WriteTypedDataAccess(store, "ap", cmdLine.GetOptValue(
                                 "outputshared") + "\\lib\\data\\",
                             "Ict.Petra.Server.MFinance.AP.Data.Access",
                             "AP.Access");
-                        codeGenerationAccess.WriteTypedDataAccess(store, "ar", cmdLine.GetOptValue(
+                        CodeGenerationAccess.WriteTypedDataAccess(store, "ar", cmdLine.GetOptValue(
                                 "outputshared") + "\\lib\\data\\",
                             "Ict.Petra.Server.MFinance.AR.Data.Access",
                             "AR.Access");
-                        codeGenerationAccess.WriteTypedDataAccess(store, "gift", cmdLine.GetOptValue(
+                        CodeGenerationAccess.WriteTypedDataAccess(store, "gift", cmdLine.GetOptValue(
                                 "outputshared") + "\\lib\\data\\",
                             "Ict.Petra.Server.MFinance.Gift.Data.Access",
                             "Gift.Access");
-                        codeGenerationAccess.WriteTypedDataAccess(store, "sysman", cmdLine.GetOptValue(
+                        CodeGenerationAccess.WriteTypedDataAccess(store, "sysman", cmdLine.GetOptValue(
                                 "outputshared") + "\\lib\\data\\",
                             "Ict.Petra.Server.MSysMan.Data.Access",
                             "SysMan.Access");
-                        codeGenerationAccess.WriteTypedDataAccess(store, "common", cmdLine.GetOptValue(
+                        CodeGenerationAccess.WriteTypedDataAccess(store, "common", cmdLine.GetOptValue(
                                 "outputshared") + "\\lib\\data\\",
                             "Ict.Petra.Server.MCommon.Data.Access",
                             "Common.Access");
-                        codeGenerationCascading.WriteTypedDataCascading(store, cmdLine.GetOptValue(
+                        CodeGenerationCascading.WriteTypedDataCascading(store, cmdLine.GetOptValue(
                                 "outputshared") + "\\lib\\data\\",
                             "Ict.Petra.Server.MCommon.Data.Cascading",
                             "Cascading");
@@ -192,7 +201,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                             "account", "gift", "ap", "ar", "personnel", "units", "conference", "hospitality"
                         };
 
-                        codeGenerationDataset.CreateTypedDataSets(cmdLine.GetOptValue("input"),
+                        CodeGenerationDataset.CreateTypedDataSets(cmdLine.GetOptValue("input"),
                             cmdLine.GetOptValue("outputdir"),
                             cmdLine.GetOptValue("outputNamespace"),
                             store, groups,
@@ -205,7 +214,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                             "account", "gift", "ap", "ar", "personnel", "units", "conference", "hospitality"
                         };
 
-                        codeGenerationDatasetAccess.CreateTypedDataSets(cmdLine.GetOptValue("input"),
+                        CodeGenerationDatasetAccess.CreateTypedDataSets(cmdLine.GetOptValue("input"),
                             cmdLine.GetOptValue("outputdir"),
                             cmdLine.GetOptValue("outputNamespace"),
                             store, groups,
@@ -235,6 +244,11 @@ namespace Ict.Tools.CodeGeneration.DataStore
             return 0;
         }
 
+        /// <summary>
+        /// main function for program
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
         public static int Main(string[] args)
         {
             generateTypedTables myApp = new generateTypedTables();

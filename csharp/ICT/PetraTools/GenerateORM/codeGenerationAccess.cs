@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -34,7 +34,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
 {
     /// This will generate most of the datastore.
     /// Only here should SQL queries happen.
-    public class codeGenerationAccess
+    public class CodeGenerationAccess
     {
         /// <summary>
         /// used for each table, to avoid duplicate loadvialink etc
@@ -60,12 +60,22 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 StringHelper.StrMerge(AConstraint.strOtherFields, ","));
         }
 
+        /// <summary>
+        /// do we want a special load via function for this foreign key?
+        /// </summary>
+        /// <param name="AConstraint"></param>
+        /// <returns></returns>
         public static Boolean ValidForeignKeyConstraintForLoadVia(TConstraint AConstraint)
         {
             return (AConstraint.strType == "foreignkey") && (!AConstraint.strThisFields.Contains("s_created_by_c"))
                    && (!AConstraint.strThisFields.Contains("s_modified_by_c")) && (AConstraint.strThisTable != "a_ledger");
         }
 
+        /// <summary>
+        /// get the namespace for a given table group name
+        /// </summary>
+        /// <param name="ATableGroup"></param>
+        /// <returns></returns>
         public static string GetNamespace(String ATableGroup)
         {
             String NamespaceTable;
@@ -121,6 +131,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
         /// <summary>
         /// get formal and actual parameters for a unique or primary key
         /// </summary>
+        /// <param name="ACurrentTable"></param>
         /// <param name="AConstraint"></param>
         /// <param name="formalParametersKey"></param>
         /// <param name="actualParametersKey"></param>
@@ -258,7 +269,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                                             " = PUB_" + AConstraint.strOtherTable + "." + otherfield;
 
                 odbcParametersForeignKey += "ParametersArray[" + counterKeyField.ToString() + "] = " +
-                                            "new OdbcParameter(\"\", " + codeGenerationPetra.ToOdbcTypeString(otherTypedField) +
+                                            "new OdbcParameter(\"\", " + CodeGenerationPetra.ToOdbcTypeString(otherTypedField) +
                                             (otherTypedField.iLength != -1 ? ", " +
                                              otherTypedField.iLength.ToString() : "") + ");" + Environment.NewLine;
                 odbcParametersForeignKey += "ParametersArray[" + counterKeyField.ToString() + "].Value = " +
@@ -330,7 +341,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
         /// <param name="AStore"></param>
         /// <param name="AConstraint"></param>
         /// <param name="ACurrentTable"></param>
-        /// <param name="OtherTable"></param>
+        /// <param name="AOtherTable"></param>
         /// <param name="ATemplate"></param>
         /// <param name="ASnippet"></param>
         private static void InsertViaOtherTableConstraint(TDataDefinitionStore AStore,
@@ -722,6 +733,15 @@ namespace Ict.Tools.CodeGeneration.DataStore
             }
         }
 
+        /// <summary>
+        /// generate code for reading and writing typed data tables from and to the database
+        /// </summary>
+        /// <param name="AStore"></param>
+        /// <param name="strGroup"></param>
+        /// <param name="AFilePath"></param>
+        /// <param name="ANamespaceName"></param>
+        /// <param name="AFilename"></param>
+        /// <returns></returns>
         public static Boolean WriteTypedDataAccess(TDataDefinitionStore AStore,
             string strGroup,
             string AFilePath,
