@@ -14,7 +14,6 @@ RootNode:
             Controls:
                 Row0: [pnlDetailsLeft, pnlDetailsRight]
             Dock: Fill
-        lblDummy:
         pnlDetailsLeft:
             Controls:
                 Row0: [grpSubscription]
