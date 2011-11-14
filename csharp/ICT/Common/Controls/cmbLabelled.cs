@@ -204,10 +204,14 @@ namespace Ict.Common.Controls
                     this.cmbCombobox.Bounds.Y,
                     value,
                     UNIT_HEIGHT);
-                this.lblDescription.SetBounds(this.cmbCombobox.Bounds.X + value,
-                    this.cmbCombobox.Bounds.Y,
-                    this.Bounds.Width - value,
-                    UNIT_HEIGHT);
+
+                if (lblDescription.Visible)
+                {
+                    this.lblDescription.SetBounds(this.cmbCombobox.Bounds.X + value,
+                        this.cmbCombobox.Bounds.Y,
+                        this.Bounds.Width - value,
+                        UNIT_HEIGHT);
+                }
             }
         }
 
@@ -626,7 +630,7 @@ namespace Ict.Common.Controls
         private void SetDefaultProperties()
         {
             this.SetDefaultHeight();
-            this.Set_LabelWidth();
+            this.SetLabelWidth();
             this.Invalidate();
         }
 
@@ -637,7 +641,7 @@ namespace Ict.Common.Controls
         ///
         /// </summary>
         /// <returns>void</returns>
-        protected void Set_LabelWidth()
+        protected void SetLabelWidth()
         {
             Int32 mLabelWidth = this.Size.Width - this.ComboBoxWidth;
 
@@ -647,6 +651,16 @@ namespace Ict.Common.Controls
             }
 
             this.lblDescription.Width = mLabelWidth;
+        }
+
+        /// <summary>
+        /// in some cases, we don't want the labelled combobox, the description and the display are the same
+        /// </summary>
+        public void RemoveDescriptionLabel()
+        {
+            cmbCombobox.Width = this.Width;
+            lblDescription.Visible = false;
+            this.Invalidate();
         }
 
         #region Event handling
@@ -742,12 +756,15 @@ namespace Ict.Common.Controls
             e.Graphics.Clear(this.lblDescription.BackColor);
 
             // Draw String
-            e.Graphics.DrawString(
-                this.lblDescription.Text,
-                this.lblDescription.Font,
-                new System.Drawing.SolidBrush(this.lblDescription.ForeColor),
-                new System.Drawing.PointF(mXCoord, mYCoord),
-                mStringFormat);
+            if (lblDescription.Visible)
+            {
+                e.Graphics.DrawString(
+                    this.lblDescription.Text,
+                    this.lblDescription.Font,
+                    new System.Drawing.SolidBrush(this.lblDescription.ForeColor),
+                    new System.Drawing.PointF(mXCoord, mYCoord),
+                    mStringFormat);
+            }
         }
 
         /// <summary>

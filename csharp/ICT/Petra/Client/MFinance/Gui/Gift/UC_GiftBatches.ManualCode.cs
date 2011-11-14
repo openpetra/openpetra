@@ -61,15 +61,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             ((TFrmGiftBatch)ParentForm).ClearCurrentSelections();
 
-            // TODO: more criteria: state of batch, period, etc
             if (ViewMode)
             {
                 FMainDS.Merge(ViewModeTDS);
                 rbtAll.Checked = true;
+                cmbYear.Enabled = false;
+                cmbPeriod.Enabled = false;
             }
             else
             {
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(ALedgerNumber));
+                TFinanceControls.InitialiseAvailableGiftYearsList(ref cmbYear, FLedgerNumber);
             }
 
             // Load Motivation detail in this central place; it will be used by UC_GiftTransactions
@@ -89,7 +90,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             cmbDetailMethodOfPaymentCode.AddNotSetRow("", "");
             TFinanceControls.InitialiseMethodOfPaymentCodeList(ref cmbDetailMethodOfPaymentCode, ActiveOnly);
 
-
             DateTime StartDateCurrentPeriod;
             DateTime EndDateLastForwardingPeriod;
             DateTime DefaultDate;
@@ -99,6 +99,68 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             dtpDetailGlEffectiveDate.Date = DefaultDate;
 
             ShowData();
+        }
+
+        void RefreshPeriods(Object sender, EventArgs e)
+        {
+            TFinanceControls.InitialiseAvailableFinancialPeriodsList(ref cmbPeriod, FLedgerNumber, cmbYear.GetSelectedInt32());
+            cmbPeriod.SelectedIndex = 0;
+        }
+
+        void RefreshFilter(Object sender, EventArgs e)
+        {
+            Int32 SelectedYear = cmbYear.GetSelectedInt32();
+            Int32 SelectedPeriod = cmbPeriod.GetSelectedInt32();
+
+            // TODO set filter to hide batches from not selected periods that do accumulate when loading several periods each at a time
+            if (!FMainDS.HasChanges())
+            {
+                FMainDS.AGiftBatch.Rows.Clear();
+            }
+
+            if (rbtEditing.Checked)
+            {
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, MFinanceConstants.BATCH_UNPOSTED, SelectedYear,
+                        SelectedPeriod));
+            }
+            else if (rbtPosted.Checked)
+            {
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, MFinanceConstants.BATCH_POSTED, SelectedYear,
+                        SelectedPeriod));
+            }
+            else
+            {
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, string.Empty, SelectedYear, SelectedPeriod));
+            }
+
+            FMainDS.AcceptChanges();
+        }
+
+        private void ChangeBatchFilter(System.Object sender, System.EventArgs e)
+        {
+            if ((FMainDS == null) || (FMainDS.AGiftBatch == null))
+            {
+                return;
+            }
+
+            RefreshFilter(sender, e);
+
+            if (rbtAll.Checked)
+            {
+                FMainDS.AGiftBatch.DefaultView.RowFilter = "";
+            }
+            else if (rbtEditing.Checked)
+            {
+                FMainDS.AGiftBatch.DefaultView.RowFilter = String.Format("{0} = '{1}'",
+                    AGiftBatchTable.GetBatchStatusDBName(),
+                    MFinanceConstants.BATCH_UNPOSTED);
+            }
+            else if (rbtPosted.Checked)
+            {
+                FMainDS.AGiftBatch.DefaultView.RowFilter = String.Format("{0} = '{1}'",
+                    AGiftBatchTable.GetBatchStatusDBName(),
+                    MFinanceConstants.BATCH_POSTED);
+            }
         }
 
         /// reset the control
@@ -125,10 +187,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ShowDetailsManual(AGiftBatchRow ARow)
         {
-            FPetraUtilsObject.DetailProtectedMode = (ARow.BatchStatus.Equals("Posted") || ARow.BatchStatus.Equals("Cancelled")) || ViewMode;
+            FPetraUtilsObject.DetailProtectedMode =
+                (ARow.BatchStatus.Equals(MFinanceConstants.BATCH_POSTED) || ARow.BatchStatus.Equals(MFinanceConstants.BATCH_CANCELLED)) || ViewMode;
             ((TFrmGiftBatch)ParentForm).EnableTransactionsTab();
             UpdateChangeableStatus();
-            FPetraUtilsObject.DetailProtectedMode = (ARow.BatchStatus.Equals("Posted") || ARow.BatchStatus.Equals("Cancelled")) || ViewMode;
+            FPetraUtilsObject.DetailProtectedMode =
+                (ARow.BatchStatus.Equals(MFinanceConstants.BATCH_POSTED) || ARow.BatchStatus.Equals(MFinanceConstants.BATCH_CANCELLED)) || ViewMode;
             ((TFrmGiftBatch)ParentForm).LoadTransactions(
                 ARow.LedgerNumber,
                 ARow.BatchNumber);
@@ -230,31 +294,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        private void ChangeBatchFilter(System.Object sender, System.EventArgs e)
-        {
-            if ((FMainDS == null) || (FMainDS.AGiftBatch == null))
-            {
-                return;
-            }
-
-            if (rbtAll.Checked)
-            {
-                FMainDS.AGiftBatch.DefaultView.RowFilter = "";
-            }
-            else if (rbtEditing.Checked)
-            {
-                FMainDS.AGiftBatch.DefaultView.RowFilter = String.Format("{0} = '{1}'",
-                    AGiftBatchTable.GetBatchStatusDBName(),
-                    MFinanceConstants.BATCH_UNPOSTED);
-            }
-            else if (rbtPosted.Checked)
-            {
-                FMainDS.AGiftBatch.DefaultView.RowFilter = String.Format("{0} = '{1}'",
-                    AGiftBatchTable.GetBatchStatusDBName(),
-                    MFinanceConstants.BATCH_POSTED);
-            }
-        }
-
         private void ExportBatches(System.Object sender, System.EventArgs e)
         {
             if (FPetraUtilsObject.HasChanges)
@@ -267,7 +306,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             TFrmGiftBatchExport exportForm = new TFrmGiftBatchExport(FPetraUtilsObject.GetForm());
             exportForm.LedgerNumber = FLedgerNumber;
-            exportForm.MainDS = FMainDS;
             exportForm.Show();
         }
 

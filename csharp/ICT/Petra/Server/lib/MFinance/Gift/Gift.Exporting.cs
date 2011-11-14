@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       matthiash
+//       matthiash, timop
 //
 // Copyright 2004-2011 by OM International
 //
@@ -25,6 +25,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Odbc;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -33,17 +34,16 @@ using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
+using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MSysMan.Data.Access;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MSysMan.Data;
-
-//using Ict.Petra.Server.MFinance.Account.Data.Access;
-//using Ict.Petra.Shared.MFinance.Account.Data;
-
 
 namespace Ict.Petra.Server.MFinance.Gift
 {
@@ -56,91 +56,107 @@ namespace Ict.Petra.Server.MFinance.Gift
         private const String summarizedData = "Summarised Gift Data";
         private const String sGift = "Gift";
         private const String sConfidential = "Confidential";
+        TDBTransaction FTransaction;
         StringWriter FStringWriter;
         String FDelimiter;
-        Int32 FLedgerNumber;
         String FDateFormatString;
         CultureInfo FCultureInfo;
-        bool FSummary;
-        bool FUseBaseCurrency;
-        String FBaseCurrency;
-        DateTime FDateForSummary;
         bool FTransactionsOnly;
         bool FExtraColumns;
-        TDBTransaction FTransaction;
-        GiftBatchTDS FMainDS;
-        GLSetupTDS FSetupTDS;
+        DateTime FDateForSummary;
+        bool FUseBaseCurrency;
+        Int32 FLedgerNumber;
+
         TVerificationResultCollection FMessages = new TVerificationResultCollection();
 
-
         /// <summary>
-        /// export all the Data of the batches array list to a String
+        /// export all the Data of the batches matching the parameters to a String
         /// </summary>
-        /// <param name="batches">Arraylist containing the batch numbers of the gift batches to export</param>
         /// <param name="requestParams">Hashtable containing the given params </param>
         /// <param name="exportString">Big parts of the export file as a simple String</param>
         /// <param name="AMessages">Additional messages to display in a messagebox</param>
-        /// <returns>false if not completed</returns>
-        public bool ExportAllGiftBatchData(ref ArrayList batches,
+        /// <returns>number of exported batches</returns>
+        public Int32 ExportAllGiftBatchData(
             Hashtable requestParams,
             out String exportString,
             out TVerificationResultCollection AMessages)
         {
             FStringWriter = new StringWriter();
-            FMainDS = new GiftBatchTDS();
-            FSetupTDS = new GLSetupTDS();
+            GiftBatchTDS MainDS = new GiftBatchTDS();
+            GLSetupTDS SetupTDS = new GLSetupTDS();
             FDelimiter = (String)requestParams["Delimiter"];
             FLedgerNumber = (Int32)requestParams["ALedgerNumber"];
             FDateFormatString = (String)requestParams["DateFormatString"];
-            FSummary = (bool)requestParams["Summary"];
+            bool Summary = (bool)requestParams["Summary"];
+
             FUseBaseCurrency = (bool)requestParams["bUseBaseCurrency"];
-            FBaseCurrency = (String)requestParams["BaseCurrency"];
             FDateForSummary = (DateTime)requestParams["DateForSummary"];
             String NumberFormat = (String)requestParams["NumberFormat"];
             FCultureInfo = new CultureInfo(NumberFormat.Equals("American") ? "en-US" : "de-DE");
             FTransactionsOnly = (bool)requestParams["TransactionsOnly"];
-            // FRecipientNumber = (Int64)requestParams["RecipientNumber"];
-            // FFieldNumber = (Int64)requestParams["FieldNumber"];
             FExtraColumns = (bool)requestParams["ExtraColumns"];
-
-
-            SortedDictionary <String, AGiftSummaryRow>sdSummary = new SortedDictionary <String, AGiftSummaryRow>();
 
             FTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
-            while (batches.Count > 0)
+            ALedgerAccess.LoadByPrimaryKey(MainDS, FLedgerNumber, FTransaction);
+            string BaseCurrency = MainDS.ALedger[0].BaseCurrency;
+
+            List <OdbcParameter>parameters = new List <OdbcParameter>();
+
+            List <String>SQLCommandDefines = new List <string>();
+
+            if ((bool)requestParams["IncludeUnposted"])
             {
-                Int32 ABatchNumber = (Int32)batches[0];
-                AGiftBatchAccess.LoadByPrimaryKey(FMainDS, FLedgerNumber, ABatchNumber, FTransaction);
-                AGiftAccess.LoadViaAGiftBatch(FMainDS, FLedgerNumber, ABatchNumber, FTransaction);
-
-                foreach (AGiftRow gift in FMainDS.AGift.Rows)
-                {
-                    if (gift.BatchNumber.Equals(ABatchNumber) && gift.LedgerNumber.Equals(FLedgerNumber))
-                    {
-                        AGiftDetailAccess.LoadViaAGift(FMainDS, gift.LedgerNumber,
-                            gift.BatchNumber,
-                            gift.GiftTransactionNumber,
-                            FTransaction);
-                    }
-                }
-
-                batches.RemoveAt(0);
+                SQLCommandDefines.Add("INCLUDEUNPOSTED");
             }
 
+            OdbcParameter param = new OdbcParameter("LedgerNumber", OdbcType.Int);
+            param.Value = FLedgerNumber;
+            parameters.Add(param);
+
+            if (requestParams.ContainsKey("BatchNumberStart"))
+            {
+                SQLCommandDefines.Add("BYBATCHNUMBER");
+                param = new OdbcParameter("BatchNumberStart", OdbcType.Int);
+                param.Value = (Int32)requestParams["BatchNumberStart"];
+                parameters.Add(param);
+                param = new OdbcParameter("BatchNumberEnd", OdbcType.Int);
+                param.Value = (Int32)requestParams["BatchNumberEnd"];
+                parameters.Add(param);
+            }
+            else
+            {
+                SQLCommandDefines.Add("BYDATERANGE");
+                param = new OdbcParameter("BatchDateFrom", OdbcType.DateTime);
+                param.Value = (Int32)requestParams["BatchDateFrom"];
+                parameters.Add(param);
+                param = new OdbcParameter("BatchDateTo", OdbcType.DateTime);
+                param.Value = (Int32)requestParams["BatchDateTo"];
+                parameters.Add(param);
+            }
+
+            string sqlStatement = TDataBase.ReadSqlFile("Gift.GetGiftsToExport.sql", SQLCommandDefines);
+
+            DBAccess.GDBAccessObj.Select(MainDS, sqlStatement, MainDS.AGiftBatch.TableName, FTransaction);
+            DBAccess.GDBAccessObj.Select(MainDS, sqlStatement, MainDS.AGift.TableName, FTransaction);
+            DBAccess.GDBAccessObj.Select(MainDS, sqlStatement, MainDS.AGiftDetail.TableName, FTransaction);
+
             DBAccess.GDBAccessObj.RollbackTransaction();
+
+            SortedDictionary <String, AGiftSummaryRow>sdSummary = new SortedDictionary <String, AGiftSummaryRow>();
+
             UInt32 counter = 0;
             AGiftSummaryRow giftSummary = null;
 
-            foreach (AGiftBatchRow giftBatch in FMainDS.AGiftBatch.Rows)
+            foreach (AGiftBatchRow giftBatch in MainDS.AGiftBatch.Rows)
             {
-                if (!FTransactionsOnly & !FSummary)
+                if (!FTransactionsOnly & !Summary)
                 {
                     WriteGiftBatchLine(giftBatch);
                 }
 
                 //foreach (AGiftRow gift in giftDS.AGift.Rows)
-                foreach (AGiftRow gift in FMainDS.AGift.Rows)
+                foreach (AGiftRow gift in MainDS.AGift.Rows)
                 {
                     String mapCurrency;
 
@@ -154,8 +170,8 @@ namespace Ict.Petra.Server.MFinance.Gift
 //                            }
 //                        }
 
-                        FMainDS.AGiftDetail.DefaultView.Sort = AGiftDetailTable.GetDetailNumberDBName();
-                        FMainDS.AGiftDetail.DefaultView.RowFilter =
+                        MainDS.AGiftDetail.DefaultView.Sort = AGiftDetailTable.GetDetailNumberDBName();
+                        MainDS.AGiftDetail.DefaultView.RowFilter =
                             String.Format("{0}={1} and {2}={3} and {4}={5}",
                                 AGiftDetailTable.GetLedgerNumberDBName(),
                                 gift.LedgerNumber,
@@ -164,16 +180,16 @@ namespace Ict.Petra.Server.MFinance.Gift
                                 AGiftDetailTable.GetGiftTransactionNumberDBName(),
                                 gift.GiftTransactionNumber);
 
-                        foreach (DataRowView dv in FMainDS.AGiftDetail.DefaultView)
+                        foreach (DataRowView dv in MainDS.AGiftDetail.DefaultView)
                         {
                             AGiftDetailRow giftDetail = (AGiftDetailRow)dv.Row;
-                            Ict.Petra.Server.MPartner.Partner.Data.Access.PPartnerAccess.LoadByPrimaryKey(FSetupTDS,
+                            Ict.Petra.Server.MPartner.Partner.Data.Access.PPartnerAccess.LoadByPrimaryKey(SetupTDS,
                                 giftDetail.RecipientKey,
                                 FTransaction);
 
-                            if (FSummary)
+                            if (Summary)
                             {
-                                mapCurrency = FUseBaseCurrency ? FBaseCurrency : giftBatch.CurrencyCode;
+                                mapCurrency = FUseBaseCurrency ? BaseCurrency : giftBatch.CurrencyCode;
                                 decimal mapExchangeRateToBase = FUseBaseCurrency ? 1 : giftBatch.ExchangeRateToBase;
 
 
@@ -222,7 +238,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                 }
             }
 
-            if (FSummary)
+            if (Summary)
             {
                 bool first = true;
 
@@ -240,7 +256,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             exportString = FStringWriter.ToString();
             AMessages = FMessages;
-            return true; //true=complete TODO (if needed) find reasonable limit for FStringWriter in main memory, interrupt
+            return MainDS.AGiftBatch.Count;
         }
 
         private String PartnerShortName(Int64 partnerKey)
