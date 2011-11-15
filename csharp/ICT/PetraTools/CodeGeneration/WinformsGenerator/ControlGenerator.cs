@@ -2308,6 +2308,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 {
                     writer.SetControlProperty(ctrl, "Text", "\"" + ctrl.Label + "\"");
                 }
+
+                FGenerateLabel = false;
             }
 
             return writer.FTemplate;
