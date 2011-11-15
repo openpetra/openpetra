@@ -106,9 +106,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             LoadDataOnDemand();
 
-        	ucoGrid.PerformDataBinding(FMainDS.PDataLabelValuePartner, 
-        	                           ((PPartnerRow)FMainDS.PPartner.Rows[0]).PartnerKey,
-        	                           MCommonTypes.PartnerClassStringToOfficeSpecificDataLabelUseEnum(((PPartnerRow)FMainDS.PPartner.Rows[0]).PartnerClass));
+        	ucoGrid.InitialiseUserControl(FMainDS.PDataLabelValuePartner, 
+        	                              ((PPartnerRow)FMainDS.PPartner.Rows[0]).PartnerKey,
+        	                              MCommonTypes.PartnerClassStringToOfficeSpecificDataLabelUseEnum(((PPartnerRow)FMainDS.PPartner.Rows[0]).PartnerClass));
             
             OnHookupDataChange(new THookupPartnerEditDataChangeEventArgs(TPartnerEditTabPageEnum.petpOfficeSpecific));
 

@@ -217,7 +217,7 @@ namespace Ict.Petra.Client.MCommon.Gui
         /// <param name="ADataTable"></param>
         /// <param name="APartnerKey"></param>
         /// <param name="AOfficeSpecificDataLabelUse"></param>
-        public void PerformDataBinding(PDataLabelValuePartnerTable ADataTable,
+        public void InitialiseUserControl(PDataLabelValuePartnerTable ADataTable,
             System.Int64 APartnerKey,
             TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse)
         {
@@ -225,17 +225,41 @@ namespace Ict.Petra.Client.MCommon.Gui
 
             if (!FUserControlInitialised)
             {
-                InitialiseUserControl(ADataTable, null, AOfficeSpecificDataLabelUse);
+                InitialiseUserControlInternal(ADataTable, null, AOfficeSpecificDataLabelUse);
             }
         }
 
         /// <summary>
         /// todoComment
         /// </summary>
+        /// <param name="ADataTable"></param>
+        /// <param name="APartnerKey"></param>
+        /// <param name="AApplicationKey"></param>
+        /// <param name="ARegistrationOffice"></param>
+        /// <param name="AOfficeSpecificDataLabelUse"></param>
+        public void InitialiseUserControl(PDataLabelValueApplicationTable ADataTable,
+            Int64 APartnerKey,
+            Int32 AApplicationKey,
+            Int64 ARegistrationOffice,
+            TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse)
+        {
+            FPartnerKey = APartnerKey;
+            FApplicationKey = AApplicationKey;
+            FRegistrationOffice = ARegistrationOffice;
+
+            if (!FUserControlInitialised)
+            {
+                InitialiseUserControlInternal(null, ADataTable, AOfficeSpecificDataLabelUse);
+            }
+        }
+        
+        /// <summary>
+        /// todoComment
+        /// </summary>
         /// <param name="ADataTableValuePartner"></param>
         /// <param name="ADataTableValueApplication"></param>
         /// <param name="AOfficeSpecificDataLabelUse"></param>
-        private void InitialiseUserControl(PDataLabelValuePartnerTable ADataTableValuePartner,
+        private void InitialiseUserControlInternal(PDataLabelValuePartnerTable ADataTableValuePartner,
             PDataLabelValueApplicationTable ADataTableValueApplication,
             TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse)
         {
@@ -259,29 +283,8 @@ namespace Ict.Petra.Client.MCommon.Gui
         }
 
         /// <summary>
-        /// todoComment
+        /// 
         /// </summary>
-        /// <param name="ADataTable"></param>
-        /// <param name="APartnerKey"></param>
-        /// <param name="AApplicationKey"></param>
-        /// <param name="ARegistrationOffice"></param>
-        /// <param name="AOfficeSpecificDataLabelUse"></param>
-        public void PerformDataBinding(PDataLabelValueApplicationTable ADataTable,
-            Int64 APartnerKey,
-            Int32 AApplicationKey,
-            Int64 ARegistrationOffice,
-            TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse)
-        {
-            FPartnerKey = APartnerKey;
-            FApplicationKey = AApplicationKey;
-            FRegistrationOffice = ARegistrationOffice;
-
-            if (!FUserControlInitialised)
-            {
-                InitialiseUserControl(null, ADataTable, AOfficeSpecificDataLabelUse);
-            }
-        }
-
         private void PossiblySaveSomething()
         {
             if (this.ParentForm != null)
@@ -307,22 +310,13 @@ namespace Ict.Petra.Client.MCommon.Gui
             }
         }
 
-        /// <summary>
-        /// test code
-        /// </summary>
-        /// <returns>void</returns>
-        private void TestDataColumnChanging(System.Object sender, System.Data.DataColumnChangeEventArgs e)
-        {
-            // MessageBox.Show('Column: ' + e.Column.ColumnName.ToString);
-            // MessageBox.Show('New Value: ' + e.ProposedValue.toString());
-        }
 
         /// <summary>
         /// Initialises DataSets and Tables
         ///
         /// </summary>
         /// <returns>void</returns>
-        public void InitialiseDataStructures(PDataLabelValuePartnerTable ADataTableValuePartner,
+        private void InitialiseDataStructures(PDataLabelValuePartnerTable ADataTableValuePartner,
             PDataLabelValueApplicationTable ADataTableValueApplication)
         {
             FDataLabelDT = (PDataLabelTable)TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.DataLabelList);
@@ -358,7 +352,6 @@ namespace Ict.Petra.Client.MCommon.Gui
         /// <returns>void</returns>
         private void SetupGridValueCell(Int32 ARowIndex, PDataLabelRow ADataLabelRow)
         {
-            SourceGrid.EditableMode DefaultEditableMode;
             System.Windows.Forms.TextBox TextBoxEditor;
             TtxtPetraDate DateEditor;
             System.Windows.Forms.CheckBox CheckBoxEditor;
@@ -370,12 +363,6 @@ namespace Ict.Petra.Client.MCommon.Gui
             SourceGrid.Cells.Views.Cell SuffixModel;
             PDataLabelValuePartnerRow DataLabelValuePartnerRow;
             PDataLabelValueApplicationRow DataLabelValueApplicationRow;
-
-            // Set default values for the Grid
-            // set attributes for default editable mode of a cell
-            // (this mode must not be used with the check box, because otherwise the space
-            // bar will not work to tick/untick the check box)
-            DefaultEditableMode = SourceGrid.EditableMode.Focus | SourceGrid.EditableMode.AnyKey | SourceGrid.EditableMode.SingleClick;
 
             // prepare model for the value cells
             ValueModel = new SourceGrid.Cells.Views.Cell();
@@ -539,11 +526,11 @@ namespace Ict.Petra.Client.MCommon.Gui
 					
                 if (DataLabelValuePartnerRow != null)
                 {
-                    TextBoxCurrencyEditor.NumberValueDecimal = DataLabelValuePartnerRow.ValueNum;
+                    TextBoxCurrencyEditor.NumberValueDecimal = DataLabelValuePartnerRow.ValueCurrency;
                 }
                 else if (DataLabelValueApplicationRow != null)
                 {
-                    TextBoxCurrencyEditor.NumberValueDecimal = DataLabelValueApplicationRow.ValueNum;
+                    TextBoxCurrencyEditor.NumberValueDecimal = DataLabelValueApplicationRow.ValueCurrency;
                 }
                 else
                 {
@@ -606,8 +593,22 @@ namespace Ict.Petra.Client.MCommon.Gui
                 PartnerKeyEditor.AutomaticallyUpdateDataSource = true;
                 PartnerKeyEditor.Enter += new EventHandler(this.UpdateGridFocusFromExternalControl);
 
-                // perform data binding for user control depending on type etc.
-                //PerformDataBinding(ADataLabelRow, DataLabelValuePartnerRow, DataLabelValueApplicationRow, PartnerKeyEditor);
+                if (DataLabelValuePartnerRow != null)
+                {
+					PartnerKeyEditor.Text = StringHelper.PartnerKeyToStr(DataLabelValuePartnerRow.ValuePartnerKey);
+                }
+                else if (DataLabelValueApplicationRow != null)
+                {
+					PartnerKeyEditor.Text = StringHelper.PartnerKeyToStr(DataLabelValueApplicationRow.ValuePartnerKey);
+                }
+                else
+                {
+                    // Default value if no Label data exists for the Partner
+					PartnerKeyEditor.Text = StringHelper.PartnerKeyToStr(0);
+                }
+
+                // display partner name linked to partner key
+                PartnerKeyEditor.ResetLabelText();
 
                 FOfficeSpecificGrid[ARowIndex, 0] = new SourceGrid.Cells.Cell();
                 FOfficeSpecificGrid.LinkedControls.Add(new LinkedControlValue(PartnerKeyEditor, new Position(ARowIndex, 0)));
@@ -632,10 +633,20 @@ namespace Ict.Petra.Client.MCommon.Gui
                 LookupValueEditor.InitialiseUserControl();
                 LookupValueEditor.Enter += new EventHandler(this.UpdateGridFocusFromExternalControl);
 
-                // perform data binding for user control depending on type etc.
-                PerformDataBinding(ADataLabelRow, DataLabelValuePartnerRow, DataLabelValueApplicationRow, LookupValueEditor);
-                LookupValueEditor.TabStop = false;
-
+                if (DataLabelValuePartnerRow != null)
+                {
+                	LookupValueEditor.SetSelectedString(DataLabelValuePartnerRow.ValueLookup);
+                }
+                else if (DataLabelValueApplicationRow != null)
+                {
+                	LookupValueEditor.SetSelectedString(DataLabelValueApplicationRow.ValueLookup);
+                }
+                else
+                {
+                    // Default value if no Label data exists for the Partner
+                	LookupValueEditor.SetSelectedString("");
+                }
+                
                 FOfficeSpecificGrid[ARowIndex, 1] = new SourceGrid.Cells.Cell();
                 FOfficeSpecificGrid.LinkedControls.Add(new LinkedControlValue((Control)LookupValueEditor, new Position(ARowIndex, 1)));
                 FOfficeSpecificGrid[ARowIndex, 1].Tag = LookupValueEditor;
@@ -718,86 +729,6 @@ namespace Ict.Petra.Client.MCommon.Gui
             }
         }
 
-        /// <summary>
-        /// perform data binding for user control depending on type etc.
-        ///
-        /// </summary>
-        /// <returns>void</returns>
-        private void PerformDataBinding(PDataLabelRow ADataLabelRow,
-            PDataLabelValuePartnerRow ADataLabelValuePartnerRow,
-            PDataLabelValueApplicationRow ADataLabelValueApplicationRow,
-            Control AControl)
-        {
-            TCmbAutoPopulated LookupValueEditor;
-            TtxtAutoPopulatedButtonLabel PartnerKeyEditor;
-            String ValueRowFilter;
-            DataView ValueRowDataView;
-
-            if (AControl == null)
-            {
-                return;
-            }
-
-            if (AControl.GetType() == typeof(TtxtAutoPopulatedButtonLabel))
-            {
-                PartnerKeyEditor = (TtxtAutoPopulatedButtonLabel)AControl;
-
-                if (ADataLabelValuePartnerRow != null)
-                {
-                    ValueRowFilter = PDataLabelValuePartnerTable.GetPartnerKeyDBName() + " = '" + FPartnerKey.ToString() + "' AND " +
-                                     PDataLabelValuePartnerTable.GetDataLabelKeyDBName() + " = '" + ADataLabelRow.Key.ToString() + "'";
-                    ValueRowDataView = new DataView(FDataLabelValuePartnerDT, ValueRowFilter, "", DataViewRowState.CurrentRows);
-                    PartnerKeyEditor.PerformDataBinding(ValueRowDataView, PDataLabelValuePartnerTable.GetValuePartnerKeyDBName());
-
-                    // test code
-                    ValueRowDataView.Table.ColumnChanging += new DataColumnChangeEventHandler(this.@TestDataColumnChanging);
-
-                    // end of test code
-                }
-                else if (ADataLabelValueApplicationRow != null)
-                {
-                    ValueRowFilter = PDataLabelValueApplicationTable.GetPartnerKeyDBName() + " = '" + FPartnerKey.ToString() + "' AND " +
-                                     PDataLabelValueApplicationTable.GetApplicationKeyDBName() + " = '" + FApplicationKey.ToString() + "' AND " +
-                                     PDataLabelValueApplicationTable.GetRegistrationOfficeDBName() + " = '" + FRegistrationOffice.ToString() +
-                                     "' AND " +
-                                     PDataLabelValuePartnerTable.GetDataLabelKeyDBName() + " = '" + ADataLabelRow.Key.ToString() + "'";
-                    ValueRowDataView = new DataView(FDataLabelValueApplicationDT, ValueRowFilter, "", DataViewRowState.CurrentRows);
-                    PartnerKeyEditor.PerformDataBinding(ValueRowDataView, PDataLabelValueApplicationTable.GetValuePartnerKeyDBName());
-                }
-                else
-                {
-                    // Default value if no Label data exists for the Partner
-                    PartnerKeyEditor.Text = StringHelper.PartnerKeyToStr(0);
-                }
-            }
-            else if (AControl.GetType() == typeof(TCmbAutoPopulated))
-            {
-                LookupValueEditor = (TCmbAutoPopulated)AControl;
-
-                if (ADataLabelValuePartnerRow != null)
-                {
-                    ValueRowFilter = PDataLabelValuePartnerTable.GetPartnerKeyDBName() + " = '" + FPartnerKey.ToString() + "' AND " +
-                                     PDataLabelValuePartnerTable.GetDataLabelKeyDBName() + " = '" + ADataLabelRow.Key.ToString() + "'";
-                    ValueRowDataView = new DataView(FDataLabelValuePartnerDT, ValueRowFilter, "", DataViewRowState.CurrentRows);
-                    LookupValueEditor.PerformDataBinding(ValueRowDataView, PDataLabelValuePartnerTable.GetValueLookupDBName());
-                }
-                else if (ADataLabelValueApplicationRow != null)
-                {
-                    ValueRowFilter = PDataLabelValueApplicationTable.GetPartnerKeyDBName() + " = '" + FPartnerKey.ToString() + "' AND " +
-                                     PDataLabelValueApplicationTable.GetApplicationKeyDBName() + " = '" + FApplicationKey.ToString() + "' AND " +
-                                     PDataLabelValueApplicationTable.GetRegistrationOfficeDBName() + " = '" + FRegistrationOffice.ToString() +
-                                     "' AND " +
-                                     PDataLabelValuePartnerTable.GetDataLabelKeyDBName() + " = '" + ADataLabelRow.Key.ToString() + "'";
-                    ValueRowDataView = new DataView(FDataLabelValueApplicationDT, ValueRowFilter, "", DataViewRowState.CurrentRows);
-                    LookupValueEditor.PerformDataBinding(ValueRowDataView, PDataLabelValueApplicationTable.GetValueLookupDBName());
-                }
-                else
-                {
-                    // Default value if no Label data exists for the Partner
-                    LookupValueEditor.SetSelectedString(string.Empty);
-                }
-            }
-        }
 
         private void UpdateGridFocusFromExternalControl(System.Object sender, System.EventArgs e)
         {
@@ -856,7 +787,7 @@ namespace Ict.Petra.Client.MCommon.Gui
         ///
         /// </summary>
         /// <returns>void</returns>
-        public void SetupGridColumnsAndRows()
+        private void SetupGridColumnsAndRows()
         {
             Int32 GroupHeaderCount;
             Int32 Counter;
@@ -1322,7 +1253,7 @@ namespace Ict.Petra.Client.MCommon.Gui
                     {
                         if (CellValue != null)
                         {
-                        	DataLabelValuePartnerRow.ValueChar = ((TCmbAutoPopulated)CurrentControl).GetSelectedString();
+                        	DataLabelValuePartnerRow.ValueLookup = ((TCmbAutoPopulated)CurrentControl).GetSelectedString();
                         }
                         else
                         {
@@ -1333,11 +1264,11 @@ namespace Ict.Petra.Client.MCommon.Gui
                     {
                         if (CellValue != null)
                         {
-                            DataLabelValueApplicationRow.ValueChar = ((TCmbAutoPopulated)CurrentControl).GetSelectedString();
+                            DataLabelValueApplicationRow.ValueLookup = ((TCmbAutoPopulated)CurrentControl).GetSelectedString();
                         }
                         else
                         {
-                            DataLabelValueApplicationRow.SetValueCharNull();
+                            DataLabelValueApplicationRow.SetValueLookupNull();
                         }
                     }
                 }
