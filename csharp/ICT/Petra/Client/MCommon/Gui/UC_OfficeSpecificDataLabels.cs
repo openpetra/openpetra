@@ -359,16 +359,13 @@ namespace Ict.Petra.Client.MCommon.Gui
         private void SetupGridValueCell(Int32 ARowIndex, PDataLabelRow ADataLabelRow)
         {
             SourceGrid.EditableMode DefaultEditableMode;
-            SourceGrid.Cells.Editors.TextBox TextBoxEditor;
+            System.Windows.Forms.TextBox TextBoxEditor;
             TtxtPetraDate DateEditor;
             System.Windows.Forms.CheckBox CheckBoxEditor;
-            SourceGrid.Cells.Editors.TextBoxNumeric TextBoxNumericEditor;
-            SourceGrid.Cells.Editors.TextBoxCurrency TextBoxCurrencyEditor;
+            TTxtNumericTextBox TextBoxNumericEditor;
+            TTxtNumericTextBox TextBoxCurrencyEditor;
             TCmbAutoPopulated LookupValueEditor;
             TtxtAutoPopulatedButtonLabel PartnerKeyEditor;
-            CultureInfo CurrencyCultureInfo;
-            CultureInfo NumericCultureInfo;
-            NumberFormatInfo LocalNumberFormatInfo;
             SourceGrid.Cells.Views.Cell ValueModel;
             SourceGrid.Cells.Views.Cell SuffixModel;
             PDataLabelValuePartnerRow DataLabelValuePartnerRow;
@@ -407,68 +404,64 @@ namespace Ict.Petra.Client.MCommon.Gui
             // Create character field
             if (ADataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_CHAR)
             {
-                TextBoxEditor = new SourceGrid.Cells.Editors.TextBox(typeof(String));
-
-                // Limit length of entry field according to database setting
-                TextBoxEditor.Control.MaxLength = ADataLabelRow.CharLength;
-
+            	TextBoxEditor = new System.Windows.Forms.TextBox();
+					
                 if (DataLabelValuePartnerRow != null)
                 {
-                    FOfficeSpecificGrid[ARowIndex, 1] = new SourceGrid.Cells.Cell(DataLabelValuePartnerRow.ValueChar);
+                    TextBoxEditor.Text = DataLabelValuePartnerRow.ValueChar;
                 }
                 else if (DataLabelValueApplicationRow != null)
                 {
-                    FOfficeSpecificGrid[ARowIndex, 1] = new SourceGrid.Cells.Cell(DataLabelValueApplicationRow.ValueChar);
+                    TextBoxEditor.Text = DataLabelValueApplicationRow.ValueChar;
                 }
                 else
                 {
                     // Default value if no Label data exists for the Partner
-                    FOfficeSpecificGrid[ARowIndex, 1] = new SourceGrid.Cells.Cell("", typeof(String));
+                    TextBoxEditor.Text = "";
                 }
 
-                FOfficeSpecificGrid[ARowIndex, 1].Editor = TextBoxEditor;
-                FOfficeSpecificGrid[ARowIndex, 1].View = ValueModel;
-                FOfficeSpecificGrid[ARowIndex, 1].Editor.EditableMode = DefaultEditableMode;
+                // remember the added control to get the value back lateron
+                FGridRowInfo.SetControl(ARowIndex, TextBoxEditor);
+                
+                FOfficeSpecificGrid[ARowIndex, 1] = new SourceGrid.Cells.Cell();
+                FOfficeSpecificGrid.LinkedControls.Add(new LinkedControlValue((Control)TextBoxEditor, new Position(ARowIndex, 1)));
+                FOfficeSpecificGrid[ARowIndex, 1].Tag = TextBoxEditor;
                 
                 // set help text for control
-                PetraUtilsObject.SetStatusBarText(TextBoxEditor.Control, ADataLabelRow.Description);
+                PetraUtilsObject.SetStatusBarText(TextBoxEditor, ADataLabelRow.Description);
 
             }
             // Create float field
             else if (ADataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_FLOAT)
             {
-                TextBoxNumericEditor = new SourceGrid.Cells.Editors.TextBoxNumeric(typeof(double));
-
-                // prepare numeric editor (set number of decimal places according to label)
-                NumericCultureInfo = new CultureInfo(CultureInfo.CurrentCulture.Name);
-                TextBoxNumericEditor.CultureInfo = NumericCultureInfo;
-
-                // TextBoxNumericEditor.CultureInfo.NumberFormat.CurrentInfo.NumberDecimalDigits := ADataLabelRow.NumDecimalPlaces;
-                LocalNumberFormatInfo = TextBoxNumericEditor.CultureInfo.NumberFormat;
-                LocalNumberFormatInfo.NumberDecimalDigits = ADataLabelRow.NumDecimalPlaces;
-                TextBoxNumericEditor.CultureInfo.NumberFormat = LocalNumberFormatInfo;
-
+            	TextBoxNumericEditor = new TTxtNumericTextBox();
+				TextBoxNumericEditor.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Decimal;
+			    TextBoxNumericEditor.DecimalPlaces = ADataLabelRow.NumDecimalPlaces;
+				TextBoxNumericEditor.NullValueAllowed = true;
+					
                 if (DataLabelValuePartnerRow != null)
                 {
-                    FOfficeSpecificGrid[ARowIndex, 1] = new SourceGrid.Cells.Cell((System.Object)DataLabelValuePartnerRow.ValueNum);
+                    TextBoxNumericEditor.NumberValueDecimal = DataLabelValuePartnerRow.ValueNum;
                 }
                 else if (DataLabelValueApplicationRow != null)
                 {
-                    FOfficeSpecificGrid[ARowIndex, 1] = new SourceGrid.Cells.Cell((System.Object)DataLabelValueApplicationRow.ValueNum);
+                    TextBoxNumericEditor.NumberValueDecimal = DataLabelValueApplicationRow.ValueNum;
                 }
                 else
                 {
                     // Default value if no Label data exists for the Partner
-                    FOfficeSpecificGrid[ARowIndex, 1] = new SourceGrid.Cells.Cell(null);
+                	TextBoxNumericEditor.NumberValueDecimal = null;
                 }
 
-                FOfficeSpecificGrid[ARowIndex, 1].Editor = TextBoxNumericEditor;
-                FOfficeSpecificGrid[ARowIndex, 1].Editor.AllowNull = true;
-                FOfficeSpecificGrid[ARowIndex, 1].View = ValueModel;
-                FOfficeSpecificGrid[ARowIndex, 1].Editor.EditableMode = DefaultEditableMode;
+                // remember the added control to get the value back lateron
+                FGridRowInfo.SetControl(ARowIndex, TextBoxNumericEditor);
+                
+                FOfficeSpecificGrid[ARowIndex, 1] = new SourceGrid.Cells.Cell();
+                FOfficeSpecificGrid.LinkedControls.Add(new LinkedControlValue((Control)TextBoxNumericEditor, new Position(ARowIndex, 1)));
+                FOfficeSpecificGrid[ARowIndex, 1].Tag = TextBoxNumericEditor;
                 
                 // set help text for control
-                PetraUtilsObject.SetStatusBarText(TextBoxNumericEditor.Control, ADataLabelRow.Description);
+                PetraUtilsObject.SetStatusBarText(TextBoxNumericEditor, ADataLabelRow.Description);
                 
             }
             // Create data field
@@ -506,69 +499,67 @@ namespace Ict.Petra.Client.MCommon.Gui
             // Create integer field
             else if (ADataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_INTEGER)
             {
-                TextBoxNumericEditor = new SourceGrid.Cells.Editors.TextBoxNumeric(typeof(System.Int32));
-
+            	TextBoxNumericEditor = new TTxtNumericTextBox();
+				TextBoxNumericEditor.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Integer;
+				TextBoxNumericEditor.NullValueAllowed = true;
+					
                 if (DataLabelValuePartnerRow != null)
                 {
-                    FOfficeSpecificGrid[ARowIndex,
-                                        1] = new SourceGrid.Cells.Cell((System.Object)DataLabelValuePartnerRow.ValueInt, typeof(System.Int32));
+                    TextBoxNumericEditor.NumberValueInt = DataLabelValuePartnerRow.ValueInt;
                 }
                 else if (DataLabelValueApplicationRow != null)
                 {
-                    FOfficeSpecificGrid[ARowIndex,
-                                        1] = new SourceGrid.Cells.Cell((System.Object)DataLabelValueApplicationRow.ValueInt, typeof(System.Int32));
+                    TextBoxNumericEditor.NumberValueInt = DataLabelValueApplicationRow.ValueInt;
                 }
                 else
                 {
                     // Default value if no Label data exists for the Partner
-                    FOfficeSpecificGrid[ARowIndex, 1] = new SourceGrid.Cells.Cell(null, typeof(System.Int32));
+                	TextBoxNumericEditor.NumberValueInt = null;
                 }
 
-                FOfficeSpecificGrid[ARowIndex, 1].Editor = TextBoxNumericEditor;
-                FOfficeSpecificGrid[ARowIndex, 1].Editor.AllowNull = true;
-                FOfficeSpecificGrid[ARowIndex, 1].View = ValueModel;
-                FOfficeSpecificGrid[ARowIndex, 1].Editor.EditableMode = DefaultEditableMode;
-
+                // remember the added control to get the value back lateron
+                FGridRowInfo.SetControl(ARowIndex, TextBoxNumericEditor);
+                
+                FOfficeSpecificGrid[ARowIndex, 1] = new SourceGrid.Cells.Cell();
+                FOfficeSpecificGrid.LinkedControls.Add(new LinkedControlValue((Control)TextBoxNumericEditor, new Position(ARowIndex, 1)));
+                FOfficeSpecificGrid[ARowIndex, 1].Tag = TextBoxNumericEditor;
+                
                 // set help text for control
-                PetraUtilsObject.SetStatusBarText(TextBoxNumericEditor.Control, ADataLabelRow.Description);
+                PetraUtilsObject.SetStatusBarText(TextBoxNumericEditor, ADataLabelRow.Description);
                 
             }
             // Create currency field
             else if (ADataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_CURRENCY)
             {
-                TextBoxCurrencyEditor = new SourceGrid.Cells.Editors.TextBoxCurrency(typeof(decimal));
-
-                // prepare currency editor (suppress currency symbol since it is shown in cell behind amount cell)
-                CurrencyCultureInfo = new CultureInfo(CultureInfo.CurrentCulture.Name);
-                TextBoxCurrencyEditor.CultureInfo = CurrencyCultureInfo;
-                TextBoxCurrencyEditor.CultureInfo.NumberFormat.CurrencySymbol = "";
-
+            	TextBoxCurrencyEditor = new TTxtNumericTextBox();
+				TextBoxCurrencyEditor.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Currency;
+                TextBoxCurrencyEditor.DecimalPlaces = 2;
+                TextBoxCurrencyEditor.CurrencySymbol = ADataLabelRow.CurrencyCode;
+				TextBoxCurrencyEditor.NullValueAllowed = true;
+					
                 if (DataLabelValuePartnerRow != null)
                 {
-                    FOfficeSpecificGrid[ARowIndex, 1] = new SourceGrid.Cells.Cell((System.Object)DataLabelValuePartnerRow.ValueCurrency);
+                    TextBoxCurrencyEditor.NumberValueDecimal = DataLabelValuePartnerRow.ValueNum;
                 }
                 else if (DataLabelValueApplicationRow != null)
                 {
-                    FOfficeSpecificGrid[ARowIndex, 1] = new SourceGrid.Cells.Cell((System.Object)DataLabelValueApplicationRow.ValueCurrency);
+                    TextBoxCurrencyEditor.NumberValueDecimal = DataLabelValueApplicationRow.ValueNum;
                 }
                 else
                 {
                     // Default value if no Label data exists for the Partner
-                    FOfficeSpecificGrid[ARowIndex, 1] = new SourceGrid.Cells.Cell(null);
+                	TextBoxCurrencyEditor.NumberValueDecimal = null;
                 }
 
-                FOfficeSpecificGrid[ARowIndex, 1].Editor = TextBoxCurrencyEditor;
-                FOfficeSpecificGrid[ARowIndex, 1].Editor.AllowNull = true;
-                FOfficeSpecificGrid[ARowIndex, 1].View = ValueModel;
-                FOfficeSpecificGrid[ARowIndex, 1].Editor.EditableMode = DefaultEditableMode;
-
-                // create the cell for the currency code
-                FOfficeSpecificGrid[ARowIndex, 2] = new SourceGrid.Cells.Cell(ADataLabelRow.CurrencyCode);
-                FOfficeSpecificGrid[ARowIndex, 2].View = SuffixModel;
-                FOfficeSpecificGrid[ARowIndex, 2].AddController(SourceGrid.Cells.Controllers.Unselectable.Default);
-
+                // remember the added control to get the value back lateron
+                FGridRowInfo.SetControl(ARowIndex, TextBoxCurrencyEditor);
+                
+                FOfficeSpecificGrid[ARowIndex, 1] = new SourceGrid.Cells.Cell();
+                FOfficeSpecificGrid.LinkedControls.Add(new LinkedControlValue((Control)TextBoxCurrencyEditor, new Position(ARowIndex, 1)));
+                FOfficeSpecificGrid[ARowIndex, 1].Tag = TextBoxCurrencyEditor;
+                
                 // set help text for control
-                PetraUtilsObject.SetStatusBarText(TextBoxCurrencyEditor.Control, ADataLabelRow.Description);
+                PetraUtilsObject.SetStatusBarText(TextBoxCurrencyEditor, ADataLabelRow.Description);
                 
             }
             // Create boolean field
@@ -616,7 +607,7 @@ namespace Ict.Petra.Client.MCommon.Gui
                 PartnerKeyEditor.Enter += new EventHandler(this.UpdateGridFocusFromExternalControl);
 
                 // perform data binding for user control depending on type etc.
-                PerformDataBinding(ADataLabelRow, DataLabelValuePartnerRow, DataLabelValueApplicationRow, PartnerKeyEditor);
+                //PerformDataBinding(ADataLabelRow, DataLabelValuePartnerRow, DataLabelValueApplicationRow, PartnerKeyEditor);
 
                 FOfficeSpecificGrid[ARowIndex, 0] = new SourceGrid.Cells.Cell();
                 FOfficeSpecificGrid.LinkedControls.Add(new LinkedControlValue(PartnerKeyEditor, new Position(ARowIndex, 0)));
@@ -1073,6 +1064,8 @@ namespace Ict.Petra.Client.MCommon.Gui
                 	// In this case CellValue will not be used other than comparing it against null.
                 	CellValue = true;
                 }
+
+                	CellValue = true;
                 
                 // Get the data label value row to save the value in (this time only if
                 // the row is already existing)
@@ -1117,11 +1110,12 @@ namespace Ict.Petra.Client.MCommon.Gui
                 // apply character value
                 if (DataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_CHAR)
                 {
+                    CurrentControl = (System.Windows.Forms.Control)((SourceGrid.Cells.Cell)FOfficeSpecificGrid.GetCell(ARow, AColumn)).Tag;
                     if (DataLabelValuePartnerRow != null)
                     {
                         if (CellValue != null)
                         {
-                            DataLabelValuePartnerRow.ValueChar = CellValue.ToString();
+                            DataLabelValuePartnerRow.ValueChar = ((System.Windows.Forms.TextBox)CurrentControl).Text;
                         }
                         else
                         {
@@ -1132,7 +1126,7 @@ namespace Ict.Petra.Client.MCommon.Gui
                     {
                         if (CellValue != null)
                         {
-                            DataLabelValueApplicationRow.ValueChar = CellValue.ToString();
+                            DataLabelValueApplicationRow.ValueChar = ((System.Windows.Forms.TextBox)CurrentControl).Text;
                         }
                         else
                         {
@@ -1144,11 +1138,12 @@ namespace Ict.Petra.Client.MCommon.Gui
                 // apply float value
                 if (DataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_FLOAT)
                 {
+                    CurrentControl = (System.Windows.Forms.Control)((SourceGrid.Cells.Cell)FOfficeSpecificGrid.GetCell(ARow, AColumn)).Tag;
                     if (DataLabelValuePartnerRow != null)
                     {
                         if (CellValue != null)
                         {
-                            DataLabelValuePartnerRow.ValueNum = (decimal)CellValue;
+                        	DataLabelValuePartnerRow.ValueNum = ((TTxtNumericTextBox)CurrentControl).NumberValueDecimal.GetValueOrDefault();
                         }
                         else
                         {
@@ -1159,7 +1154,7 @@ namespace Ict.Petra.Client.MCommon.Gui
                     {
                         if (CellValue != null)
                         {
-                            DataLabelValueApplicationRow.ValueNum = (decimal)CellValue;
+                            DataLabelValueApplicationRow.ValueNum = ((TTxtNumericTextBox)CurrentControl).NumberValueDecimal.GetValueOrDefault();
                         }
                         else
                         {
@@ -1199,11 +1194,13 @@ namespace Ict.Petra.Client.MCommon.Gui
                 // apply integer value
                 if (DataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_INTEGER)
                 {
-                    if (DataLabelValuePartnerRow != null)
+                    CurrentControl = (System.Windows.Forms.Control)((SourceGrid.Cells.Cell)FOfficeSpecificGrid.GetCell(ARow, AColumn)).Tag;
+
+                	if (DataLabelValuePartnerRow != null)
                     {
                         if (CellValue != null)
                         {
-                            DataLabelValuePartnerRow.ValueInt = (Int32)CellValue;
+                        	DataLabelValuePartnerRow.ValueInt = ((TTxtNumericTextBox)CurrentControl).NumberValueInt.GetValueOrDefault();
                         }
                         else
                         {
@@ -1214,7 +1211,7 @@ namespace Ict.Petra.Client.MCommon.Gui
                     {
                         if (CellValue != null)
                         {
-                            DataLabelValueApplicationRow.ValueInt = (Int32)CellValue;
+                        	DataLabelValueApplicationRow.ValueInt = ((TTxtNumericTextBox)CurrentControl).NumberValueInt.GetValueOrDefault();
                         }
                         else
                         {
@@ -1226,11 +1223,13 @@ namespace Ict.Petra.Client.MCommon.Gui
                 // apply currency value
                 if (DataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_CURRENCY)
                 {
+                    CurrentControl = (System.Windows.Forms.Control)((SourceGrid.Cells.Cell)FOfficeSpecificGrid.GetCell(ARow, AColumn)).Tag;
+                	
                     if (DataLabelValuePartnerRow != null)
                     {
                         if (CellValue != null)
                         {
-                            DataLabelValuePartnerRow.ValueCurrency = (decimal)CellValue;
+                        	DataLabelValuePartnerRow.ValueCurrency = ((TTxtNumericTextBox)CurrentControl).NumberValueDecimal.GetValueOrDefault();
                         }
                         else
                         {
@@ -1241,7 +1240,7 @@ namespace Ict.Petra.Client.MCommon.Gui
                     {
                         if (CellValue != null)
                         {
-                            DataLabelValueApplicationRow.ValueCurrency = (decimal)CellValue;
+                            DataLabelValueApplicationRow.ValueCurrency = ((TTxtNumericTextBox)CurrentControl).NumberValueDecimal.GetValueOrDefault();
                         }
                         else
                         {
@@ -1288,15 +1287,37 @@ namespace Ict.Petra.Client.MCommon.Gui
                     // This in turn calls UpdateLabeltext in txtBtnLabel(Ict.Common.Controls)
                     // This ensures the new value makes it to the datasource!
                     CurrentControl = (System.Windows.Forms.Control)((SourceGrid.Cells.Cell)FOfficeSpecificGrid.GetCell(ARow, AColumn)).Tag;
-                    ((TtxtAutoPopulatedButtonLabel)CurrentControl).ResetLabelText();
+//                    ((TtxtAutoPopulatedButtonLabel)CurrentControl).ResetLabelText();
+
+                    if (DataLabelValuePartnerRow != null)
+                    {
+                        if (CellValue != null)
+                        {
+                        	DataLabelValuePartnerRow.ValuePartnerKey = Convert.ToInt64(((TtxtAutoPopulatedButtonLabel)CurrentControl).Text);
+                        }
+                        else
+                        {
+                            DataLabelValuePartnerRow.SetValuePartnerKeyNull();
+                        }
+                    }
+                    else if (DataLabelValueApplicationRow != null)
+                    {
+                        if (CellValue != null)
+                        {
+                            DataLabelValueApplicationRow.ValuePartnerKey = Convert.ToInt64(((TtxtAutoPopulatedButtonLabel)CurrentControl).Text);
+                        }
+                        else
+                        {
+                            DataLabelValueApplicationRow.SetValuePartnerKeyNull();
+                        }
+                    }
+                    
                 }
 
                 // apply lookup value
                 if (DataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_LOOKUP)
                 {
                     CurrentControl = (System.Windows.Forms.Control)((SourceGrid.Cells.Cell)FOfficeSpecificGrid.GetCell(ARow, AColumn)).Tag;
-//                    ((TCmbAutoPopulated)CurrentControl).SaveValueNow();
-                    //TODO: WB???
                     if (DataLabelValuePartnerRow != null)
                     {
                         if (CellValue != null)
