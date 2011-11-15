@@ -2302,7 +2302,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if ((base.FPrefix == "grp") || (base.FPrefix == "rgr") || (base.FPrefix == "tpg"))
             {
-                writer.SetControlProperty(ctrl, "Text", "\"" + ctrl.Label + "\"");
+                FGenerateLabel = true;
+
+                if (GenerateLabel(ctrl))
+                {
+                    writer.SetControlProperty(ctrl, "Text", "\"" + ctrl.Label + "\"");
+                }
             }
 
             return writer.FTemplate;
