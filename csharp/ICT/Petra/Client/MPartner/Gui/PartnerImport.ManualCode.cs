@@ -3,8 +3,9 @@
 //
 // @Authors:
 //       timop
+//       Tim Ingham
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -77,26 +78,26 @@ namespace Ict.Petra.Client.MPartner.Gui
         int UserSelLocationKey = -1;
         PartnerFindTDSSearchResultRow UserSelectedRow;
 
-        private void AddStatus(String NewStuff)
+        private void AddStatus(String ANewStuff)
         {
             if (txtPartnerInfo.InvokeRequired)
             {
-                txtPartnerInfo.Invoke(new MethodInvoker(delegate { AddStatus(NewStuff); }));
+                txtPartnerInfo.Invoke(new MethodInvoker(delegate { AddStatus(ANewStuff); }));
                 return;
             }
-            txtPartnerInfo.AppendText(NewStuff);
+            txtPartnerInfo.AppendText(ANewStuff);
             txtPartnerInfo.SelectionStart = txtPartnerInfo.Text.Length;
             txtPartnerInfo.ScrollToCaret();
         }
 
-        private String FormatVerificationResult(String Title, TVerificationResultCollection Results)
+        private String FormatVerificationResult(String ATitle, TVerificationResultCollection AResults)
         {
             String VerifyContext = "";
-            String Res = Title;
+            String Res = ATitle;
             if (Res != "")
                 Res += Environment.NewLine;
 
-            foreach (TVerificationResult verif in Results)
+            foreach (TVerificationResult verif in AResults)
             {
                 if (verif.ResultContext.ToString() != VerifyContext)
                 {
@@ -187,8 +188,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     return;
                 }
-
-//              TRemote.MPartner.ImportExport.WebConnectors.CommitChanges (FMainDS,  out VerificationResult);
             }
         }
 
@@ -239,6 +238,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 if (UserSelectedRow.PartnerKey == FoundPartnerMatchingKey)
                 {
                     btnUseSelectedPerson.Enabled = true;
+                    btnUseSelectedPerson.Focus();
                     btnCreateNewPartner.Enabled = false;
                     Msg += ", or update the existing partner";
                 }
@@ -489,6 +489,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
                 else
                 {
+                	btnCreateNewPartner.Focus();
                     txtHint.Text = "Select \"Create Partner\" to import this partner.";
                 }
 
@@ -617,49 +618,49 @@ namespace Ict.Petra.Client.MPartner.Gui
             NextRecord();
         }
 
-        private void ImportRecordsByPartnerKey(DataTable DestTable, DataTable SourceTable, String KeyDbName, Int64 OrigPartnerKey, Int64 NewPartnerKey, bool UpdateExistingRecord)
+        private void ImportRecordsByPartnerKey(DataTable ADestTable, DataTable ASourceTable, String AKeyDbName, Int64 AOrigPartnerKey, Int64 ANewPartnerKey, bool AUpdateExistingRecord)
         {
-            SourceTable.DefaultView.RowFilter = String.Format("{0}={1}", KeyDbName, OrigPartnerKey);
-            foreach (DataRowView rv in SourceTable.DefaultView)
+            ASourceTable.DefaultView.RowFilter = String.Format("{0}={1}", AKeyDbName, AOrigPartnerKey);
+            foreach (DataRowView rv in ASourceTable.DefaultView)
             {
-                if (UpdateExistingRecord)
+                if (AUpdateExistingRecord)
                 {
-                    rv.Row[KeyDbName] = NewPartnerKey;
+                    rv.Row[AKeyDbName] = ANewPartnerKey;
                     rv.Row.AcceptChanges(); // This removes the RowState: Added
                 }
 
-                rv.Row[KeyDbName] = NewPartnerKey;
-                DestTable.ImportRow(rv.Row);
+                rv.Row[AKeyDbName] = ANewPartnerKey;
+                ADestTable.ImportRow(rv.Row);
             }
        }
 
-        private void ImportRecordsByPartnerKey(DataTable DestTable, DataTable SourceTable, String KeyDbName, Int64 OrigPartnerKey, Int64 NewPartnerKey)
+        private void ImportRecordsByPartnerKey(DataTable ADestTable, DataTable ASourceTable, String AKeyDbName, Int64 AOrigPartnerKey, Int64 ANewPartnerKey)
         {
-            ImportRecordsByPartnerKey(DestTable, SourceTable, KeyDbName, OrigPartnerKey, NewPartnerKey, false);
+            ImportRecordsByPartnerKey(ADestTable, ASourceTable, AKeyDbName, AOrigPartnerKey, ANewPartnerKey, false);
         }
 
-        private void AddAbility(Int64 OrigPartnerKey, Int64 NewPartnerKey, ref PartnerImportExportTDS NewPartnerDS)
+        private void AddAbility(Int64 AOrigPartnerKey, Int64 ANewPartnerKey, ref PartnerImportExportTDS ANewPartnerDS)
         {
-             ImportRecordsByPartnerKey(NewPartnerDS.PmPersonAbility, FMainDS.PmPersonAbility,
-                PmPersonAbilityTable.GetPartnerKeyDBName(), OrigPartnerKey, NewPartnerKey);
+             ImportRecordsByPartnerKey(ANewPartnerDS.PmPersonAbility, FMainDS.PmPersonAbility,
+                PmPersonAbilityTable.GetPartnerKeyDBName(), AOrigPartnerKey, ANewPartnerKey);
         }
 
-        private void AddApplication(Int64 OrigPartnerKey, Int64 NewPartnerKey, ref PartnerImportExportTDS NewPartnerDS)
+        private void AddApplication(Int64 AOrigPartnerKey, Int64 ANewPartnerKey, ref PartnerImportExportTDS ANewPartnerDS)
         {
-            ImportRecordsByPartnerKey(NewPartnerDS.PmGeneralApplication, FMainDS.PmGeneralApplication,
-                PmGeneralApplicationTable.GetPartnerKeyDBName(), OrigPartnerKey, NewPartnerKey);
+            ImportRecordsByPartnerKey(ANewPartnerDS.PmGeneralApplication, FMainDS.PmGeneralApplication,
+                PmGeneralApplicationTable.GetPartnerKeyDBName(), AOrigPartnerKey, ANewPartnerKey);
 
-            ImportRecordsByPartnerKey(NewPartnerDS.PmShortTermApplication, FMainDS.PmShortTermApplication,
-                PmShortTermApplicationTable.GetPartnerKeyDBName(), OrigPartnerKey, NewPartnerKey);
+            ImportRecordsByPartnerKey(ANewPartnerDS.PmShortTermApplication, FMainDS.PmShortTermApplication,
+                PmShortTermApplicationTable.GetPartnerKeyDBName(), AOrigPartnerKey, ANewPartnerKey);
 
-            ImportRecordsByPartnerKey(NewPartnerDS.PmYearProgramApplication, FMainDS.PmYearProgramApplication,
-                PmYearProgramApplicationTable.GetPartnerKeyDBName(), OrigPartnerKey, NewPartnerKey);
+            ImportRecordsByPartnerKey(ANewPartnerDS.PmYearProgramApplication, FMainDS.PmYearProgramApplication,
+                PmYearProgramApplicationTable.GetPartnerKeyDBName(), AOrigPartnerKey, ANewPartnerKey);
         }
 
-        private void AddAddresses(Int64 OrigPartnerKey, Int64 NewPartnerKey, ref PartnerImportExportTDS ANewPartnerDS)
+        private void AddAddresses(Int64 AOrigPartnerKey, Int64 ANewPartnerKey, ref PartnerImportExportTDS ANewPartnerDS)
         {
             FMainDS.PPartnerLocation.DefaultView.RowFilter = String.Format("{0}={1}",
-                PPartnerLocationTable.GetPartnerKeyDBName(), OrigPartnerKey);
+                PPartnerLocationTable.GetPartnerKeyDBName(), AOrigPartnerKey);
 
             foreach (DataRowView rv in FMainDS.PPartnerLocation.DefaultView)
             {
@@ -676,7 +677,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     if ((FMainDS.PLocation.DefaultView.Count == 0) && (PartnerLocationRow.LocationKey > 0))
                     {
-                        PartnerLocationRow.PartnerKey = NewPartnerKey;
+                        PartnerLocationRow.PartnerKey = ANewPartnerKey;
                         ANewPartnerDS.PPartnerLocation.ImportRow(PartnerLocationRow); // If this PartnerLocation has a real database key, import it anyway!
                     }
                     else
@@ -709,7 +710,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                                 ANewPartnerDS.PPartnerLocation.ImportRow(PartnerLocationRow);
                                 // Set the PartnerKey for the new Row
                                 int NewRow = ANewPartnerDS.PPartnerLocation.Rows.Count -1;
-                                ANewPartnerDS.PPartnerLocation[NewRow].PartnerKey = NewPartnerKey; ;
+                                ANewPartnerDS.PPartnerLocation[NewRow].PartnerKey = ANewPartnerKey; ;
                             }
                         }
                     }
@@ -717,127 +718,133 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
-        private void AddCommentSeq(Int64 OrigPartnerKey, Int64 NewPartnerKey, ref PartnerImportExportTDS NewPartnerDS)
+        private void AddCommentSeq(Int64 AOrigPartnerKey, Int64 ANewPartnerKey, ref PartnerImportExportTDS ANewPartnerDS)
         {
-            ImportRecordsByPartnerKey(NewPartnerDS.PPartnerComment, FMainDS.PPartnerComment,
-                PPartnerCommentTable.GetPartnerKeyDBName(), OrigPartnerKey, NewPartnerKey);
+            ImportRecordsByPartnerKey(ANewPartnerDS.PPartnerComment, FMainDS.PPartnerComment,
+                PPartnerCommentTable.GetPartnerKeyDBName(), AOrigPartnerKey, ANewPartnerKey);
         }
 
-        private void AddStaffData(Int64 OrigPartnerKey, Int64 NewPartnerKey, ref PartnerImportExportTDS NewPartnerDS)
+        private void AddStaffData(Int64 AOrigPartnerKey, Int64 ANewPartnerKey, ref PartnerImportExportTDS ANewPartnerDS)
         {
-            ImportRecordsByPartnerKey(NewPartnerDS.PmStaffData, FMainDS.PmStaffData,
-                PmStaffDataTable.GetPartnerKeyDBName(), OrigPartnerKey, NewPartnerKey);
+            ImportRecordsByPartnerKey(ANewPartnerDS.PmStaffData, FMainDS.PmStaffData,
+                PmStaffDataTable.GetPartnerKeyDBName(), AOrigPartnerKey, ANewPartnerKey);
         }
 
-        private void AddPmPersonLanguage(Int64 OrigPartnerKey, Int64 NewPartnerKey, ref PartnerImportExportTDS NewPartnerDS)
+        private void AddPmPersonLanguage(Int64 AOrigPartnerKey, Int64 ANewPartnerKey, ref PartnerImportExportTDS ANewPartnerDS)
         {
-            ImportRecordsByPartnerKey(NewPartnerDS.PmPersonLanguage, FMainDS.PmPersonLanguage,
-                PmPersonLanguageTable.GetPartnerKeyDBName(), OrigPartnerKey, NewPartnerKey);
+            ImportRecordsByPartnerKey(ANewPartnerDS.PmPersonLanguage, FMainDS.PmPersonLanguage,
+                PmPersonLanguageTable.GetPartnerKeyDBName(), AOrigPartnerKey, ANewPartnerKey);
         }
 
-        private void AddPreviousExperience(Int64 OrigPartnerKey, Int64 NewPartnerKey, ref PartnerImportExportTDS NewPartnerDS)
+        private void AddPreviousExperience(Int64 AOrigPartnerKey, Int64 ANewPartnerKey, ref PartnerImportExportTDS ANewPartnerDS)
         {
-            ImportRecordsByPartnerKey(NewPartnerDS.PmPastExperience, FMainDS.PmPastExperience,
-                PmPastExperienceTable.GetPartnerKeyDBName(), OrigPartnerKey, NewPartnerKey);
+            ImportRecordsByPartnerKey(ANewPartnerDS.PmPastExperience, FMainDS.PmPastExperience,
+                PmPastExperienceTable.GetPartnerKeyDBName(), AOrigPartnerKey, ANewPartnerKey);
         }
 
-        private void AddPassport(Int64 OrigPartnerKey, Int64 NewPartnerKey, ref PartnerImportExportTDS NewPartnerDS)
+        private void AddPassport(Int64 AOrigPartnerKey, Int64 ANewPartnerKey, ref PartnerImportExportTDS ANewPartnerDS)
         {
-            ImportRecordsByPartnerKey(NewPartnerDS.PmPassportDetails, FMainDS.PmPassportDetails,
-                PmPassportDetailsTable.GetPartnerKeyDBName(), OrigPartnerKey, NewPartnerKey);
+            ImportRecordsByPartnerKey(ANewPartnerDS.PmPassportDetails, FMainDS.PmPassportDetails,
+                PmPassportDetailsTable.GetPartnerKeyDBName(), AOrigPartnerKey, ANewPartnerKey);
         }
 
-        private void AddPersonalData(Int64 OrigPartnerKey, Int64 NewPartnerKey, ref PartnerImportExportTDS NewPartnerDS)
+        private void AddPersonalData(Int64 AOrigPartnerKey, Int64 ANewPartnerKey, ref PartnerImportExportTDS ANewPartnerDS)
         {
-            ImportRecordsByPartnerKey(NewPartnerDS.PmPersonalData, FMainDS.PmPersonalData,
-                PmPersonalDataTable.GetPartnerKeyDBName(), OrigPartnerKey, NewPartnerKey);
+            ImportRecordsByPartnerKey(ANewPartnerDS.PmPersonalData, FMainDS.PmPersonalData,
+                PmPersonalDataTable.GetPartnerKeyDBName(), AOrigPartnerKey, ANewPartnerKey);
         }
 
-        private void AddPersonalDocument(Int64 OrigPartnerKey, Int64 NewPartnerKey, ref PartnerImportExportTDS NewPartnerDS)
+        private void AddPersonalDocument(Int64 AOrigPartnerKey, Int64 ANewPartnerKey, ref PartnerImportExportTDS ANewPartnerDS)
         {
-            ImportRecordsByPartnerKey(NewPartnerDS.PmDocument, FMainDS.PmDocument,
-                PmDocumentTable.GetPartnerKeyDBName(), OrigPartnerKey, NewPartnerKey);
+            ImportRecordsByPartnerKey(ANewPartnerDS.PmDocument, FMainDS.PmDocument,
+                PmDocumentTable.GetPartnerKeyDBName(), AOrigPartnerKey, ANewPartnerKey);
         }
 
-        private void AddProfessionalData(Int64 OrigPartnerKey, Int64 NewPartnerKey, ref PartnerImportExportTDS NewPartnerDS)
+        private void AddProfessionalData(Int64 AOrigPartnerKey, Int64 ANewPartnerKey, ref PartnerImportExportTDS ANewPartnerDS)
         {
-            ImportRecordsByPartnerKey(NewPartnerDS.PmPersonQualification, FMainDS.PmPersonQualification,
-                PmPersonQualificationTable.GetPartnerKeyDBName(), OrigPartnerKey, NewPartnerKey);
+            ImportRecordsByPartnerKey(ANewPartnerDS.PmPersonQualification, FMainDS.PmPersonQualification,
+                PmPersonQualificationTable.GetPartnerKeyDBName(), AOrigPartnerKey, ANewPartnerKey);
         }
 
-        private void AddPersonalEvaluation(Int64 OrigPartnerKey, Int64 NewPartnerKey, ref PartnerImportExportTDS NewPartnerDS)
+        private void AddPersonalEvaluation(Int64 AOrigPartnerKey, Int64 ANewPartnerKey, ref PartnerImportExportTDS ANewPartnerDS)
         {
-            ImportRecordsByPartnerKey(NewPartnerDS.PmPersonEvaluation, FMainDS.PmPersonEvaluation,
-                PmPersonEvaluationTable.GetPartnerKeyDBName(), OrigPartnerKey, NewPartnerKey);
+            ImportRecordsByPartnerKey(ANewPartnerDS.PmPersonEvaluation, FMainDS.PmPersonEvaluation,
+                PmPersonEvaluationTable.GetPartnerKeyDBName(), AOrigPartnerKey, ANewPartnerKey);
         }
 
-        private void AddSpecialNeeds(Int64 OrigPartnerKey, Int64 NewPartnerKey, ref PartnerImportExportTDS NewPartnerDS)
+        private void AddSpecialNeeds(Int64 AOrigPartnerKey, Int64 ANewPartnerKey, ref PartnerImportExportTDS ANewPartnerDS)
         {
-            ImportRecordsByPartnerKey(NewPartnerDS.PmSpecialNeed, FMainDS.PmSpecialNeed,
-                PmSpecialNeedTable.GetPartnerKeyDBName(), OrigPartnerKey, NewPartnerKey);
+            ImportRecordsByPartnerKey(ANewPartnerDS.PmSpecialNeed, FMainDS.PmSpecialNeed,
+                PmSpecialNeedTable.GetPartnerKeyDBName(), AOrigPartnerKey, ANewPartnerKey);
         }
 
-        private void AddPartnerType(Int64 OrigPartnerKey, Int64 NewPartnerKey, ref PartnerImportExportTDS NewPartnerDS)
+        private void AddPartnerType(Int64 AOrigPartnerKey, Int64 ANewPartnerKey, ref PartnerImportExportTDS ANewPartnerDS)
         {
-            ImportRecordsByPartnerKey(NewPartnerDS.PPartnerType, FMainDS.PPartnerType,
-                PPartnerTypeTable.GetPartnerKeyDBName(), OrigPartnerKey, NewPartnerKey);
+            ImportRecordsByPartnerKey(ANewPartnerDS.PPartnerType, FMainDS.PPartnerType,
+                PPartnerTypeTable.GetPartnerKeyDBName(), AOrigPartnerKey, ANewPartnerKey);
         }
 
-        private void AddInterest(Int64 OrigPartnerKey, Int64 NewPartnerKey, ref PartnerImportExportTDS NewPartnerDS)
+        private void AddInterest(Int64 AOrigPartnerKey, Int64 ANewPartnerKey, ref PartnerImportExportTDS ANewPartnerDS)
         {
-            ImportRecordsByPartnerKey(NewPartnerDS.PPartnerInterest, FMainDS.PPartnerInterest,
-                PPartnerInterestTable.GetPartnerKeyDBName(), OrigPartnerKey, NewPartnerKey);
+            ImportRecordsByPartnerKey(ANewPartnerDS.PPartnerInterest, FMainDS.PPartnerInterest,
+                PPartnerInterestTable.GetPartnerKeyDBName(), AOrigPartnerKey, ANewPartnerKey);
         }
 
+/*        
         private void AddVision(Int64 OrigPartnerKey, Int64 NewPartnerKey, ref PartnerImportExportTDS NewPartnerDS)
         {
             ImportRecordsByPartnerKey(NewPartnerDS.PmPersonVision, FMainDS.PmPersonVision,
                 PmPersonVisionTable.GetPartnerKeyDBName(), OrigPartnerKey, NewPartnerKey);
         }
-
-        private void AddUnitstructure(Int64 OrigPartnerKey, Int64 NewPartnerKey, ref PartnerImportExportTDS NewPartnerDS)
+*/
+        private void AddUnitstructure(Int64 AOrigPartnerKey, Int64 ANewPartnerKey, ref PartnerImportExportTDS ANewPartnerDS)
         {
-            ImportRecordsByPartnerKey(NewPartnerDS.UmUnitStructure, FMainDS.UmUnitStructure,
-                UmUnitStructureTable.GetChildUnitKeyDBName(), OrigPartnerKey, NewPartnerKey);
+            ImportRecordsByPartnerKey(ANewPartnerDS.UmUnitStructure, FMainDS.UmUnitStructure,
+                UmUnitStructureTable.GetChildUnitKeyDBName(), AOrigPartnerKey, ANewPartnerKey);
         }
 
-        private void AddBuilding(Int64 OrigPartnerKey, Int64 NewPartnerKey, ref PartnerImportExportTDS NewPartnerDS)
+        private void AddBuilding(Int64 AOrigPartnerKey, Int64 ANewPartnerKey, ref PartnerImportExportTDS ANewPartnerDS)
         {
-            ImportRecordsByPartnerKey(NewPartnerDS.PcBuilding, FMainDS.PcBuilding,
-                PcBuildingTable.GetVenueKeyDBName(), OrigPartnerKey, NewPartnerKey);
+            ImportRecordsByPartnerKey(ANewPartnerDS.PcBuilding, FMainDS.PcBuilding,
+                PcBuildingTable.GetVenueKeyDBName(), AOrigPartnerKey, ANewPartnerKey);
         }
 
-        private void AddRoom(Int64 OrigPartnerKey, Int64 NewPartnerKey, ref PartnerImportExportTDS NewPartnerDS)
+        private void AddRoom(Int64 AOrigPartnerKey, Int64 ANewPartnerKey, ref PartnerImportExportTDS ANewPartnerDS)
         {
-            ImportRecordsByPartnerKey(NewPartnerDS.PcRoom, FMainDS.PcRoom,
-                PcRoomTable.GetVenueKeyDBName(), OrigPartnerKey, NewPartnerKey);
+            ImportRecordsByPartnerKey(ANewPartnerDS.PcRoom, FMainDS.PcRoom,
+                PcRoomTable.GetVenueKeyDBName(), AOrigPartnerKey, ANewPartnerKey);
         }
 
-        private void AddSubscriptions(Int64 OrigPartnerKey, Int64 NewPartnerKey, ref PartnerImportExportTDS NewPartnerDS)
+        private void AddSubscriptions(Int64 AOrigPartnerKey, Int64 ANewPartnerKey, ref PartnerImportExportTDS ANewPartnerDS)
         {
-            ImportRecordsByPartnerKey(NewPartnerDS.PSubscription, FMainDS.PSubscription,
-                PSubscriptionTable.GetPartnerKeyDBName(), OrigPartnerKey, NewPartnerKey);
+            ImportRecordsByPartnerKey(ANewPartnerDS.PSubscription, FMainDS.PSubscription,
+                PSubscriptionTable.GetPartnerKeyDBName(), AOrigPartnerKey, ANewPartnerKey);
 
             // I'll also import any related Publication rows.
-            NewPartnerDS.PSubscription.DefaultView.RowFilter = String.Format("{0} = {1}", PSubscriptionTable.GetPartnerKeyDBName(), NewPartnerKey);
-            foreach (DataRowView rv in NewPartnerDS.PSubscription.DefaultView)
+            ANewPartnerDS.PSubscription.DefaultView.RowFilter = String.Format("{0} = {1}", PSubscriptionTable.GetPartnerKeyDBName(), ANewPartnerKey);
+            foreach (DataRowView rv in ANewPartnerDS.PSubscription.DefaultView)
             {
                 PSubscriptionRow Row = (PSubscriptionRow)rv.Row;
                 FMainDS.PPublication.DefaultView.RowFilter = String.Format("{0}='{1}'", PPublicationTable.GetPublicationCodeDBName(),Row.PublicationCode);
                 foreach (DataRowView Pubrv in FMainDS.PPublication.DefaultView)
                 {
-                    NewPartnerDS.PPublication.ImportRow(Pubrv.Row);
+                    ANewPartnerDS.PPublication.ImportRow(Pubrv.Row);
                 }
             }
         }
 
+        private void AddContacts(Int64 AOrigPartnerKey, Int64 ANewPartnerKey, ref PartnerImportExportTDS ANewPartnerDS)
+        {
+            ImportRecordsByPartnerKey(ANewPartnerDS.PPartnerContact, FMainDS.PPartnerContact,
+                PPartnerContactTable.GetPartnerKeyDBName(), AOrigPartnerKey, ANewPartnerKey);
+        }
+        
         /// <summary>
         /// Copy this Partner, and all the data linked to it, from the large DataSet into a new one,
         /// and send it back to the server for committing. 
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private Int64 CreateOrUpdatePartner(PPartnerRow PartnerRow)
+        /// <param name="APartnerRow"></param>
+        private Int64 CreateOrUpdatePartner(PPartnerRow APartnerRow)
         {
             if ((FCurrentNumberOfRecord < 1) || (FCurrentNumberOfRecord > FTotalNumberOfRecords))
             {
@@ -846,8 +853,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             PartnerImportExportTDS NewPartnerDS = new PartnerImportExportTDS();
 
-            NewPartnerDS.PPartner.ImportRow(PartnerRow);
-            Int64 OrigPartnerKey = PartnerRow.PartnerKey;
+            NewPartnerDS.PPartner.ImportRow(APartnerRow);
+            Int64 OrigPartnerKey = APartnerRow.PartnerKey;
             Int64 NewPartnerKey = OrigPartnerKey;
             bool UpdateExistingRecord = false;
             
@@ -954,12 +961,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             AddInterest(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS);
-            AddVision(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS);
+//            AddVision(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS);
 
             AddUnitstructure(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS);
             AddBuilding(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS);
             AddRoom(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS);
             AddSubscriptions(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS);
+            AddContacts(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS);
 
 
             TVerificationResultCollection VerificationResult;

@@ -1,63 +1,43 @@
 required packages:
  sudo (for the initialisation of the database)
- mono-2.0-runtime (>= Mono 2.4.x), also winforms (Ict.Common.* dlls depend on it)
+ mono-2.0-runtime (>= Mono 2.6.7), also winforms (Ict.Common.* dlls depend on it)
  on Debian eg.: apt-get -t lenny-backports install mono-runtime libmono-data2.0-cil libmono-system-web2.0-cil libmono-system-runtime2.0-cil libmono-winforms2.0-cil
  one of the following RDBMS:
-   sqlite3 (requires > 3.6.1)
    postgresql (recommended, default)
    mysql
 
-The default configuration for the server is to use postgresql. But mysql should now work as well.
-
-Notes for sqlite:
-If you want to use sqlite, you need to change the symbolic link:
-cd etc30; rm PetraServerConsole.config; ln -s PetraServerConsole-sqlite.config PetraServerConsole.config
-Sqlite requires quite a new version of sqlite, which might not be available on your distribution of Linux.
-If you use sqlite, it will automatically create a copy of the demo database, and put it into your home directory: 
-~/.config/OpenPetra.org/db30/petra.db
-
-Notes for postgresql:
-To load the initial database: 
-sudo ./initpg.sh
-
-Notes for mysql:
-If you want to use mysql, you need to change the symbolic link:
-cd etc30; rm PetraServerConsole.config; ln -s PetraServerConsole-mysql.config PetraServerConsole.config
-To load the initial database (you need to know the db password for root, or change the script):
-./initmysql.sh
+The default configuration for the server is to use postgresql. But mysql should now work as well. Sqlite is not recommended for the use on Linux with this tar.gz file.
 
 firewall: 
-in order for clients to connect from outside, you need to open ports 9000 and above (or what you have defined in your config files).
+in order for clients to connect from outside, you need to open ports 9000 and above (or what you have defined in your config file).
 eg if you are using iptables, add such a line:
 /sbin/iptables -A int-in -j ACCEPT -p tcp --dport 9000:9100
 
-secure connection:
-By default, the connection between server and client happens in clear text, which means it is not suitable to be run over the Internet.
-To secure the connection between client and server, you need to create a public/private key pair, and change some config files.
-Please follow the instructions at
-http://sourceforge.net/apps/mediawiki/openpetraorg/index.php?title=N-tier_architecture#Encrypted_Connection_between_Server_and_Client
+For initialising the installation:
+rename the sample configuration file and change it if you want:
+cp config-sample.sh config.sh
+Run that file: . config.sh
+then run: . setup.sh
 
-Please modify the file openpetraorg-server.sh, and modify the OpenPetraOrgPath containing TOREPLACE, so that it points to your openpetraorg directory.
+To load the initial database:
+/etc/init.d/MyOpenPetra init
 
 To start the server, type:
 
-./openpetraorg-server.sh start
+/etc/init.d/MyOpenPetra start
 
 To see the menu and administrate the server, type:
 
-./openpetraorg-server.sh menu
+/etc/init.d/MyOpenPetra menu
 
 To stop the server, type:
 
-./openpetraorg-server.sh stop
+/etc/init.d/MyOpenPetra stop
 
-To start the client, type:
+To backup the database, type:
 
-./startClient.sh
+/etc/init.d/MyOpenPetra backup
 
-To operate the automated patching, you should run this:
-ln -s /your/path/openpetraorg/patches30 /var/www/somekrypticLinkThatOnlyYourUsersNeedToKnowAndIsInTheRemoteClientConfigFile
+To restore the database from a backup, type:
 
-To make OpenPetra.org start with the server, eg. in Debian/Ubuntu:
-ln -s /your/path/openpetraorg/openpetraorg-server.sh /etc/init.d/openpetraorg
-update-rc.d openpetraorg defaults
+/etc/init.d/MyOpenPetra restore

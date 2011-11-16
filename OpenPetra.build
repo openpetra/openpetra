@@ -25,7 +25,6 @@ list of available commands:
   stopPetraServer: stop the local Petra Server
   startPetraClient: run the Petra Client
   deleteBakFiles: delete all backup files
-  buildRelease: Build the release for the target platform we are building on
   initConfigFiles: write and overwrite the config files for client, server and testing, and the version.txt
 
 compat:
@@ -41,25 +40,31 @@ compat:
   generateORM: generates Object Relational Mapping routines from petra.xml
     sub items: generateORMCachedTables, generateORMData, generateORMAccess
   generateGlue: generates the interfaces and instantiators, which is the glue between client and server
+  generateWinforms: generates all yaml files in csharp\ICT\Petra\Client
+  generateWinform: generate a single yaml file, and optionally compile and start the client
+       nant generateWinform startPetraClient -D:file=MFinance/Gui/GL/GLBatch.yaml
+       nant generateWinform -D:file=MFinance/Gui/GL/GLBatch.yaml -D:donotcompile=true
   cleanPetra: prepare for a clean build
   compilePetra: build all Petra C# code
   translationCompilePOFile: create the dlls required to be delivered with a new release
   translation: extracts string in winforms, creates and updates the .po files, and compiles the dll files for delivery
 
+releases:
+  buildWindowsStandalone: uses InnoSetup, therefore only works on Windows
+  buildLinuxSourceforgeRelease: will build the linux files that we upload to Sourceforge. creates tar files for local server and client
+  buildRemoteInstallers -D:ReleaseID=0.0.2.0 -D:OrgName=&quot;Your Organisation&quot; -D:PublisherUrl=www.ProviderWebsite.com -D:HostedServer=app.Provider.com -D:HostedPort=9000 -D:WithLinuxClient=false
+
 list of commands, which works in the specific csharp directories:
   indent: beautify the code according to coding style guide
   uncrustify: calls indent
-
 
 not supported
   loc, ploc: count the lines of code, to be used for COCOMO etc
   generateWebforms: generates the User Interface using the Ext.js AJAX framework
   generateWebform: generate a single Webform. requires parameter: -D:file=SampleApplicationForm
   startWebServer: start a webservice with Mono XSP and Postgresl (does not work with sqlite at the moment)
-  setupRemote -D:ReleaseID=0.0.2.0 -D:OrgName=&quot;Your Organisation&quot; -D:PublisherUrl=www.ProviderWebsite.com -D:ServerHost=app.Provider.com -D:ServerPort=9000
   createPatch: requires these parameters: -D:OldVersion=0.0.8-1 -D:NewVersion=0.0.10-0
-  packTestReportingRelease: quick snapshot of all debug executables and dlls and config files for quick test on another machine
-  
+
 useful parameters
   -logfile:test.log
 </echo>
@@ -92,7 +97,7 @@ useful parameters
     </fileset>
   </delete>
   <property name="target" value="clean" />
-  <call target="translationCompilePOFile" />    
+  <call target="translationCompilePOFile" />
 </target>
 
 <target name="quickClean" description="cleans all generated files and the delivery directory">
@@ -304,6 +309,14 @@ useful parameters
 <target name="generateORMAccess">
   <!-- generate the files for Ict.Petra.Server.lib.data, ie. the access files for reading from and writing to the database -->
   <nant inheritall="false" target="custdepend" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Server/Ict.Petra.Server.build')}" verbose="${verbose}"/>
+</target>
+
+<target name="generateWinforms">
+  <nant inheritall="false" target="custdepend" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Client/Ict.Petra.Client.build')}" verbose="${verbose}"/>
+</target>
+
+<target name="generateWinform">
+  <nant inheritall="true" target="generateWinform" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Client/Ict.Petra.Client.build')}" verbose="${verbose}"/>
 </target>
 
 </project>

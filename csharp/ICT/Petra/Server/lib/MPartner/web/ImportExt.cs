@@ -3,6 +3,7 @@
 //
 // @Authors:
 //       timop
+//       Tim Ingham
 //
 // Copyright 2004-2011 by OM International
 //
@@ -41,7 +42,8 @@ using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPersonnel.Units.Data.Access;
 using Ict.Petra.Server.MHospitality.Data.Access;
-using Ict.Petra.Server.App.ClientDomain;
+using Ict.Common.Remoting.Server;
+using Ict.Petra.Server.App.Core;
 
 namespace Ict.Petra.Server.MPartner.ImportExport
 {
@@ -63,10 +65,18 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         private bool FIgnoreApplication = false;
         private static String ImportContext;
 
+        private void AddVerificationResult(String AResultText, TResultSeverity ASeverity)
+        {
+        	if (ASeverity != TResultSeverity.Resv_Status)
+        	{
+	        	TLogging.Log(AResultText);
+        	}
+            FResultList.Add(new TVerificationResult(ImportContext, AResultText, ASeverity));
+        }
+        
         private void AddVerificationResult(String AResultText)
         {
-            TLogging.Log(AResultText);
-            FResultList.Add(new TVerificationResult(ImportContext, AResultText, TResultSeverity.Resv_Noncritical));
+        	AddVerificationResult(AResultText,TResultSeverity.Resv_Noncritical);
         }
 
         private void AddRequiredOffice(Int64 AOfficeKey)
@@ -104,6 +114,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                             AddVerificationResult("Unknown StConfirmedOption in ShortTermApplicationRow: " + OptionCode);
                             Row.SetStConfirmedOptionNull();
                         }
+/* StOption1 and StOption2 are removed.
+ *                         
                         if (!Row.IsStOption1Null() && Row.StOption1 == OptionCode)
                         {
                             AddVerificationResult("Unknown StOption1 in ShortTermApplicationRow: " + OptionCode);
@@ -114,6 +126,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                             AddVerificationResult("Unknown StOption2 in ShortTermApplicationRow: " + OptionCode);
                             Row.SetStOption2Null();
                         }
+*/                        
                     }
                 }
             }
@@ -162,7 +175,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
 /*
                     // I can't do this because RegistrationOffice is part of PmShortTermApplication's primary Key
-                    // So I mustn't change it after calling AddOrModifyRecord.
+                    // so I mustn't change it after calling AddOrModifyRecord.
 
                         if (!Row.IsRegistrationOfficeNull() && Row.RegistrationOffice == OfficeCode)
                         {
@@ -262,7 +275,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         /// <summary>
         /// If I'm importing an unknown country code, use "99" instead
         /// </summary>
-        /// <param name="CountryCode"></param>
+        /// <param name="ACountryCode"></param>
         /// <param name="ATransaction"></param>
         /// <returns></returns>
         private String CheckCountryCode(String ACountryCode, TDBTransaction ATransaction)
@@ -297,6 +310,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         /// but limit the registration offices to the existing congress codes (roles)
         /// </summary>
         /// <param name="ACongressCode"></param>
+        /// <param name="ATransaction"></param>
         private String CheckCongressCode(string ACongressCode, TDBTransaction ATransaction)
         {
             if (FIgnoreApplication || (ACongressCode.Length == 0))
@@ -317,18 +331,18 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         /// <summary>
         /// If I'm importing an unknown Language level, use 99 instead
         /// </summary>
-        /// <param name="LanguageLevel"></param>
+        /// <param name="ALanguageLevel"></param>
         /// <param name="ATransaction"></param>
         /// <returns></returns>
-        private int CheckLanguageLevel(int LanguageLevel, TDBTransaction ATransaction)
+        private int CheckLanguageLevel(int ALanguageLevel, TDBTransaction ATransaction)
         {
-            if (PtLanguageLevelAccess.Exists(LanguageLevel, ATransaction))
+            if (PtLanguageLevelAccess.Exists(ALanguageLevel, ATransaction))
             {
-                return LanguageLevel;
+                return ALanguageLevel;
             }
             else
             {
-                AddVerificationResult("Unknown Language Level " + LanguageLevel);
+                AddVerificationResult("Unknown Language Level " + ALanguageLevel);
                 return 99;  // "Unknown" code
             }
         }
@@ -487,8 +501,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 if (TAppSettingsManager.GetValue("AllowCreationPersonRecords", "false", false).ToLower() != "true")
                 {
                     throw new Exception(
-                        "We are currently not supporting import of PERSON records, until we have resolved the issues with household/family. " +
-                        "Please add configuration parameter AllowCreationPersonRecords with value true if you want to use PERSON records");
+                        "Import of PERSON records is currently not supported. " +
+                        "Add configuration parameter AllowCreationPersonRecords with value true to use PERSON records.");
                 }
                 if (!FIgnorePartner)
                 {
@@ -653,7 +667,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
         }
 
-        private void ReadShortApplicationForm(PmGeneralApplicationRow AGeneralApplicationRow, TDBTransaction ATransaction)
+        private void ReadShortApplicationForm(TFileVersionInfo APetraVersion, PmGeneralApplicationRow AGeneralApplicationRow, TDBTransaction ATransaction)
         {
             PmShortTermApplicationRow ShortTermApplicationRow = FMainDS.PmShortTermApplication.NewRowTyped();
 
@@ -721,33 +735,45 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             {
                 AddRequiredOffice(ShortTermApplicationRow.StFieldCharged);
             }
-            ShortTermApplicationRow.StLeadershipRating = ReadString();
-
-            Int64? StOption1 = ReadNullableInt64();
-
-            if (!FIgnoreApplication && StOption1.HasValue && (StOption1.Value != 0))
+            
+            if (APetraVersion.FileMajorPart < 3)
             {
-                ShortTermApplicationRow.StOption1 = StOption1.Value;
-                AddUnitOption(ShortTermApplicationRow.StOption1);
+	
+	            /* ShortTermApplicationRow.StLeadershipRating = */ ReadString();  // field removed
+	
+	            Int64? StOption1 = ReadNullableInt64();
+	            Int64? StOption2 = ReadNullableInt64();
+	/*          // Fields removed.
+	 * 
+	            if (!FIgnoreApplication && StOption1.HasValue && (StOption1.Value != 0))
+	            {
+	                ShortTermApplicationRow.StOption1 = StOption1.Value;
+	                AddUnitOption(ShortTermApplicationRow.StOption1);
+	            }
+	
+	
+	            if (!FIgnoreApplication && StOption2.HasValue && (StOption2.Value != 0))
+	            {
+	                ShortTermApplicationRow.StOption2 = StOption2.Value;
+	                AddUnitOption(ShortTermApplicationRow.StOption2);
+	            }
+	*/            
+	
+	            /* ShortTermApplicationRow.StPartyContact =  */ ReadInt64();  // field removed
+	            /* ShortTermApplicationRow.StPartyTogether = */ ReadString();  // field removed
             }
-
-            Int64? StOption2 = ReadNullableInt64();
-
-            if (!FIgnoreApplication && StOption2.HasValue && (StOption2.Value != 0))
-            {
-                ShortTermApplicationRow.StOption2 = StOption2.Value;
-                AddUnitOption(ShortTermApplicationRow.StOption2);
-            }
-
-            ShortTermApplicationRow.StPartyContact = ReadInt64();
-            ShortTermApplicationRow.StPartyTogether = ReadString();
             ShortTermApplicationRow.StPreCongressCode = CheckCongressCode(ReadString(), ATransaction);
-            ShortTermApplicationRow.StProgramFeeReceived = ReadBoolean();
-            ShortTermApplicationRow.StRecruitEfforts = ReadString();
-            ShortTermApplicationRow.StScholarshipAmount = ReadDecimal();
-            ShortTermApplicationRow.StScholarshipApprovedBy = ReadString();
-            ShortTermApplicationRow.StScholarshipPeriod = ReadString();
-            ShortTermApplicationRow.StScholarshipReviewDate = ReadNullableDate();
+            
+            if (APetraVersion.FileMajorPart < 3)
+            {
+	            
+	            /* ShortTermApplicationRow.StProgramFeeReceived = */ ReadBoolean();  // field removed
+	            /* ShortTermApplicationRow.StRecruitEfforts = */ ReadString();  // field removed
+	            /* ShortTermApplicationRow.StScholarshipAmount = */ ReadDecimal();  // field removed
+	            /* ShortTermApplicationRow.StScholarshipApprovedBy = */ ReadString();  // field removed
+	            /* ShortTermApplicationRow.StScholarshipPeriod = */ ReadString();  // field removed
+	            /* ShortTermApplicationRow.StScholarshipReviewDate = */ ReadNullableDate();  // field removed
+            }
 
             ShortTermApplicationRow.StSpecialApplicant = ReadString();
             ShortTermApplicationRow.StActivityPref = ReadString();
@@ -761,22 +787,27 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             ShortTermApplicationRow.ContactNumber = ReadString();
             ShortTermApplicationRow.ArrivalDetailsStatus = ReadString();
             ShortTermApplicationRow.ArrivalTransportNeeded = ReadBoolean();
-            ShortTermApplicationRow.ArrivalExp = ReadNullableDate();
-            ShortTermApplicationRow.ArrivalExpHour = ReadInt32();
-            ShortTermApplicationRow.ArrivalExpMinute = ReadInt32();
+            if (APetraVersion.FileMajorPart < 3)
+            {
+	            /* ShortTermApplicationRow.ArrivalExp = */ ReadNullableDate();  // field removed
+	            /* ShortTermApplicationRow.ArrivalExpHour = */ ReadInt32();     // field removed
+	            /* ShortTermApplicationRow.ArrivalExpMinute = */ ReadInt32();   // field removed
+            }
             ShortTermApplicationRow.ArrivalComments = ReadString();
             ShortTermApplicationRow.TransportInterest = ReadBoolean();
 
             ShortTermApplicationRow.DepartureDetailsStatus = ReadString();
             ShortTermApplicationRow.DepartureTransportNeeded = ReadBoolean();
-            ShortTermApplicationRow.DepartureExp = ReadNullableDate();
-            ShortTermApplicationRow.DepartureExpHour = ReadInt32();
-            ShortTermApplicationRow.DepartureExpMinute = ReadInt32();
+            if (APetraVersion.FileMajorPart < 3)
+            {
+	            /* ShortTermApplicationRow.DepartureExp = */ ReadNullableDate();  // field removed
+	            /* ShortTermApplicationRow.DepartureExpHour = */ ReadInt32();     // field removed
+	            /* ShortTermApplicationRow.DepartureExpMinute = */ ReadInt32();   // field removed
+            }
             ShortTermApplicationRow.DepartureComments = ReadString();
 
-            // StPartyContact must point to an existing partner, or one I'm importing now.
-            // TODO: I don't know how I can link this to a partner that will be imported later in this
-            // batch - unless it's already been imported I can't refer to it.
+/*            
+            // StPartyContact has been removed.
             if (!PPartnerAccess.Exists(ShortTermApplicationRow.StPartyContact, ATransaction))
             {
                 FMainDS.PPartner.DefaultView.RowFilter = String.Format("{0}='{1}'", PPartnerTable.GetPartnerKeyDBName(), ShortTermApplicationRow.StPartyContact);
@@ -786,7 +817,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     ShortTermApplicationRow.SetStPartyContactNull();
                 }
             }
-
+*/
             /*
              *  I don't think that this should be done - In "old Petra" we could have 0 in StFieldCharged,
              *  but in OpenPetra that's not a legal value.
@@ -809,7 +840,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
         }
 
-        private void ReadLongApplicationForm(PmGeneralApplicationRow AGeneralApplicationRow, TDBTransaction ATransaction)
+        private void ReadLongApplicationForm(TFileVersionInfo APetraVersion, PmGeneralApplicationRow AGeneralApplicationRow, TDBTransaction ATransaction)
         {
             PmYearProgramApplicationRow YearProgramApplicationRow = FMainDS.PmYearProgramApplication.NewRowTyped();
 
@@ -822,7 +853,10 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             YearProgramApplicationRow.HoOrientConfBookingKey = ReadString();
             YearProgramApplicationRow.YpAgreedJoiningCharge = ReadDecimal();
             YearProgramApplicationRow.YpAgreedSupportFigure = ReadDecimal();
-            YearProgramApplicationRow.YpAppFeeReceived = ReadBoolean();
+			if (APetraVersion.FileMajorPart < 3)
+            {
+	            /* YearProgramApplicationRow.YpAppFeeReceived = */ ReadBoolean(); // Field removed
+			}
             YearProgramApplicationRow.YpBasicDeleteFlag = ReadBoolean();
             YearProgramApplicationRow.YpJoiningConf = ReadInt32();
             YearProgramApplicationRow.StartOfCommitment = ReadNullableDate();
@@ -832,12 +866,15 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             YearProgramApplicationRow.PositionScope = ReadString();
             YearProgramApplicationRow.AssistantTo = ReadBoolean();
 
-            YearProgramApplicationRow.YpScholarshipAthrizedBy = ReadString();
-            YearProgramApplicationRow.YpScholarshipBeginDate = ReadNullableDate();
-            YearProgramApplicationRow.YpScholarshipEndDate = ReadNullableDate();
-            YearProgramApplicationRow.YpScholarship = ReadDecimal();
-            YearProgramApplicationRow.YpScholarshipPeriod = ReadString();
-            YearProgramApplicationRow.YpScholarshipReviewDate = ReadNullableDate();
+			if (APetraVersion.FileMajorPart < 3)
+			{
+	            /* YearProgramApplicationRow.YpScholarshipAthrizedBy = */ ReadString(); // Field removed
+	            /* YearProgramApplicationRow.YpScholarshipBeginDate = */ ReadNullableDate(); // Field removed
+				/* YearProgramApplicationRow.YpScholarshipEndDate = */ ReadNullableDate(); // Field removed
+	            /* YearProgramApplicationRow.YpScholarship = */ ReadDecimal(); // Field removed
+	            /* YearProgramApplicationRow.YpScholarshipPeriod = */ ReadString(); // Field removed
+	            /* YearProgramApplicationRow.YpScholarshipReviewDate = */ ReadNullableDate(); // Field removed
+			}
             YearProgramApplicationRow.YpSupportPeriod = ReadString();
 
             if (!FIgnoreApplication)
@@ -887,7 +924,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
         }
 
-        private void ImportApplication(TDBTransaction ATransaction)
+        private void ImportApplication(TFileVersionInfo APetraVersion, TDBTransaction ATransaction)
         {
             FIgnoreApplication = FIgnorePartner;
 
@@ -956,11 +993,11 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             if (ApplicationTypeRow.AppFormType == MPersonnelConstants.APPLICATIONFORMTYPE_SHORTFORM)
             {
-                ReadShortApplicationForm(GeneralApplicationRow, ATransaction);
+                ReadShortApplicationForm(APetraVersion, GeneralApplicationRow, ATransaction);
             }
             else if (ApplicationTypeRow.AppFormType == MPersonnelConstants.APPLICATIONFORMTYPE_LONGFORM)
             {
-                ReadLongApplicationForm(GeneralApplicationRow, ATransaction);
+                ReadLongApplicationForm(APetraVersion, GeneralApplicationRow, ATransaction);
             }
 
             if (!FIgnoreApplication)
@@ -1060,16 +1097,20 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
         }
 
-        private void ImportLanguage(TDBTransaction ATransaction)
+        private void ImportLanguage(TFileVersionInfo APetraVersion, TDBTransaction ATransaction)
         {
             PmPersonLanguageRow PersonLanguageRow = FMainDS.PmPersonLanguage.NewRowTyped();
 
             PersonLanguageRow.PartnerKey = FPartnerKey;
 
             PersonLanguageRow.LanguageCode = ReadString();
-            PersonLanguageRow.WillingToTranslate = ReadBoolean();
-            PersonLanguageRow.TranslateInto = ReadBoolean();
-            PersonLanguageRow.TranslateOutOf = ReadBoolean();
+            
+			if (APetraVersion.FileMajorPart < 3)
+			{
+	            /* PersonLanguageRow.WillingToTranslate = */ ReadBoolean(); // field removed.
+	            /* PersonLanguageRow.TranslateInto = */ ReadBoolean(); // field removed.
+	            /* PersonLanguageRow.TranslateOutOf = */ ReadBoolean(); // field removed.
+			}
             PersonLanguageRow.YearsOfExperience = ReadInt32();
             PersonLanguageRow.LanguageLevel = CheckLanguageLevel(ReadInt32(), ATransaction);
             PersonLanguageRow.YearsOfExperienceAsOf = ReadNullableDate();
@@ -1161,7 +1202,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             DocumentRow.SiteKey = ReadInt64();
             DocumentRow.DocumentKey = ReadInt64();
             DocumentRow.DocCode = ReadString();
-            DocumentRow.DocCategory = ReadString(); // DocumentCategory is a "custom field" - I'll need to add it to PmDocumentCategory later if it's not present.
+            DocumentRow.DocCategory = ReadString(); // DocCategory is a "custom field" - I'll need to add it to PmDocumentCategory later if it's not present.
             DocumentRow.DocumentId = ReadString();
             DocumentRow.PlaceOfIssue = ReadString();
             DocumentRow.DateOfIssue = ReadNullableDate();
@@ -1182,20 +1223,26 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
         }
 
-        private void ImportPersonalData(TDBTransaction ATransaction)
+        private void ImportPersonalData(TFileVersionInfo APetraVersion, TDBTransaction ATransaction)
         {
             PmPersonalDataRow PersonalDataRow = FMainDS.PmPersonalData.NewRowTyped();
 
             PersonalDataRow.PartnerKey = FPartnerKey;
-
-            PersonalDataRow.DriverStatus = ReadString(); // This must be constrained to be a value in PtDriverStatus table.
-            if (!PtDriverStatusAccess.Exists(PersonalDataRow.DriverStatus, ATransaction))
+            if (APetraVersion.FileMajorPart < 3)
             {
-                PersonalDataRow.DriverStatus = "U"; // If someone entered some weird unknown code, I'll use this "unknown" value.
+	
+	            /* PersonalDataRow.DriverStatus = */ ReadString(); // Field removed
+	/*            
+	            // when I had DriverStatus, it must be a value in PtDriverStatus table.
+	            if (!PtDriverStatusAccess.Exists(PersonalDataRow.DriverStatus, ATransaction))
+	            {
+	                PersonalDataRow.DriverStatus = "U"; // If someone entered some weird unknown code, I'll use this "unknown" value.
+	            }
+	*/            
+	            /* PersonalDataRow.GenDriverLicense = */ ReadBoolean(); // Field removed
+	            /* PersonalDataRow.DrivingLicenseNumber = */ ReadString(); // Field removed
+	            /* PersonalDataRow.InternalDriverLicense = */ ReadBoolean(); // Field removed
             }
-            PersonalDataRow.GenDriverLicense = ReadBoolean();
-            PersonalDataRow.DrivingLicenseNumber = ReadString();
-            PersonalDataRow.InternalDriverLicense = ReadBoolean();
             if (!FIgnorePartner)
             {
                 PmPersonalDataAccess.AddOrModifyRecord(FPartnerKey, FMainDS.PmPersonalData, PersonalDataRow, FDoNotOverwrite, ATransaction);
@@ -1253,14 +1300,17 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
         }
 
-        private void ImportSpecialNeeds(TDBTransaction ATransaction)
+        private void ImportSpecialNeeds(TFileVersionInfo APetraVersion, TDBTransaction ATransaction)
         {
             PmSpecialNeedRow SpecialNeedRow = FMainDS.PmSpecialNeed.NewRowTyped();
 
             SpecialNeedRow.PartnerKey = FPartnerKey;
 
             SpecialNeedRow.DateCreated = ReadNullableDate();
-            SpecialNeedRow.ContactHomeOffice = ReadBoolean();
+            if (APetraVersion.FileMajorPart < 3)
+            {
+	            /* SpecialNeedRow.ContactHomeOffice = */ ReadBoolean();  // Field removed
+            }
             SpecialNeedRow.VegetarianFlag = ReadBoolean();
             SpecialNeedRow.DietaryComment = ReadString();
             SpecialNeedRow.MedicalComment = ReadString();
@@ -1320,27 +1370,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     PartnerInterestRow.InterestNumber,
                     FMainDS.PPartnerInterest,
                     PartnerInterestRow,
-                    FDoNotOverwrite,
-                    ATransaction);
-            }
-        }
-
-        private void ImportVision(TDBTransaction ATransaction)
-        {
-            PmPersonVisionRow PersonVisionRow = FMainDS.PmPersonVision.NewRowTyped();
-
-            PersonVisionRow.PartnerKey = FPartnerKey;
-
-            PersonVisionRow.VisionAreaName = ReadString();
-            PersonVisionRow.VisionLevel = ReadInt32();
-            PersonVisionRow.VisionComment = ReadString();
-
-            if (!FIgnorePartner)
-            {
-                PmPersonVisionAccess.AddOrModifyRecord(PersonVisionRow.PartnerKey,
-                    PersonVisionRow.VisionAreaName,
-                    FMainDS.PmPersonVision,
-                    PersonVisionRow,
                     FDoNotOverwrite,
                     ATransaction);
             }
@@ -1534,7 +1563,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 }
                 else if (KeyWord == "APPLCTN")
                 {
-                    ImportApplication(ATransaction);
+                    ImportApplication(APetraVersion, ATransaction);
                 }
                 else if (KeyWord == "COMMENT")
                 {
@@ -1554,7 +1583,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 }
                 else if (KeyWord == "LANGUAGE")
                 {
-                    ImportLanguage(ATransaction);
+                    ImportLanguage(APetraVersion, ATransaction);
                 }
                 else if (KeyWord == "PREVEXP")
                 {
@@ -1570,7 +1599,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 }
                 else if (KeyWord == "PERSONAL")
                 {
-                    ImportPersonalData(ATransaction);
+                    ImportPersonalData(APetraVersion, ATransaction);
                 }
                 else if (KeyWord == "PROFESN")
                 {
@@ -1582,7 +1611,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 }
                 else if (KeyWord == "SPECNEED")
                 {
-                    ImportSpecialNeeds(ATransaction);
+                    ImportSpecialNeeds(APetraVersion, ATransaction);
                 }
                 else if (KeyWord == "TYPE")
                 {
@@ -1591,10 +1620,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 else if (KeyWord == "INTEREST")
                 {
                     ImportInterest(ATransaction);
-                }
-                else if (KeyWord == "VISION")
-                {
-                    ImportVision(ATransaction);
                 }
                 else if (KeyWord == "U-ABILITY")
                 {
@@ -1676,64 +1701,50 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             FMainDS = new PartnerImportExportTDS();
             TDBTransaction Transaction;
 
-/*
- * This section reads some chunks of pre-defined data from the database, 
- * but due to re-work, I don't think I need it...
- * 
-            Transaction = DBAccess.GDBAccessObj.BeginTransaction();
-            PtApplicationTypeAccess.LoadAll(FMainDS, Transaction);
-            PtArrivalPointAccess.LoadAll(FMainDS, Transaction);
-            PAcquisitionAccess.LoadAll(FMainDS, Transaction);
-            PTypeAccess.LoadAll(FMainDS, Transaction);
-            PLocationTypeAccess.LoadAll(FMainDS, Transaction);
-            POccupationAccess.LoadAll(FMainDS, Transaction);
-            PmCommitmentStatusAccess.LoadAll(FMainDS, Transaction);
-            PmDocumentTypeAccess.LoadAll(FMainDS, Transaction);
-            PmDocumentCategoryAccess.LoadAll(FMainDS, Transaction);
-            PtAppFormTypesAccess.LoadAll(FMainDS, Transaction);
-            PtCongressCodeAccess.LoadAll(FMainDS, Transaction);
-            PtQualificationAreaAccess.LoadAll(FMainDS, Transaction);
-            PInterestAccess.LoadAll(FMainDS, Transaction);
-            DBAccess.GDBAccessObj.RollbackTransaction();
-*/
             InitReading(ALinesToImport);
 
             TFileVersionInfo PetraVersion = new TFileVersionInfo(ReadString());
             ReadInt64(); // SiteKey
             ReadInt32(); // SubVersion
 
-//            try Disabled for debugging - I'll put it back later!
+            if ((PetraVersion.FileMajorPart < 3) && (PetraVersion.FileMinorPart < 2))
             {
-                Transaction = DBAccess.GDBAccessObj.BeginTransaction();
-
-                while (CheckForKeyword("PARTNER"))
-                {
-                    PPartnerRow PartnerRow = ImportPartner(Transaction);
-
-                    ImportPartnerClassSpecific(PartnerRow.PartnerClass, Transaction);
-
-                    ImportLocation(Transaction);
-
-                    ImportOptionalDetails(PartnerRow, PetraVersion, Transaction);
-                }
-                ImportContext = "Checking data references";
-
-                CheckRequiredUnits(Transaction);
-//                AddRequiredUnits(FRequiredOfficeKeys, "F", 1000000, "Office", Transaction);
-//                AddRequiredUnits(FRequiredOptionKeys, "CONF", 1000000, "Conference", Transaction);
+                AddVerificationResult(
+            		"EXT import not supported from old file type: " + PetraVersion.ToString(), TResultSeverity.Resv_Critical);
             }
-/*
-            catch (Exception e)
+            else
             {
-                TLogging.Log(e.GetType().ToString() + ": " + e.Message + " in line " + (CurrentLineCounter + 1).ToString());
-                TLogging.Log(CurrentLine);
-                TLogging.Log(e.StackTrace);
-                throw;
-            }
-            finally
- */
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
+	            try 
+	            {
+	                Transaction = DBAccess.GDBAccessObj.BeginTransaction();
+	
+	                while (CheckForKeyword("PARTNER"))
+	                {
+	                    PPartnerRow PartnerRow = ImportPartner(Transaction);
+	
+	                    ImportPartnerClassSpecific(PartnerRow.PartnerClass, Transaction);
+	
+	                    ImportLocation(Transaction);
+	
+	                    ImportOptionalDetails(PartnerRow, PetraVersion, Transaction);
+	                }
+	                ImportContext = "Checking data references";
+	
+	                CheckRequiredUnits(Transaction);
+	//                AddRequiredUnits(FRequiredOfficeKeys, "F", 1000000, "Office", Transaction);
+	//                AddRequiredUnits(FRequiredOptionKeys, "CONF", 1000000, "Conference", Transaction);
+	            }
+	            catch (Exception e)
+	            {
+	                TLogging.Log(e.GetType().ToString() + ": " + e.Message + " in line " + (CurrentLineCounter + 1).ToString());
+	                TLogging.Log(CurrentLine);
+	                TLogging.Log(e.StackTrace);
+	                throw;
+	            }
+	            finally
+	            {
+	                DBAccess.GDBAccessObj.RollbackTransaction();
+	            }
             }
 
             AResultList = FResultList;

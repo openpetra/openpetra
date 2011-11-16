@@ -280,8 +280,8 @@ namespace Ict.Common.IO
                     }
                     else
                     {
-                        // read separator from header line. at least the first column need to be quoted
-                        separator = headerLine[StringHelper.FindMatchingQuote(headerLine.Substring(1)) + 3].ToString();
+                        // read separator from header line. at least the first column needs to be quoted
+                        separator = headerLine[StringHelper.FindMatchingQuote(headerLine, 0) + 2].ToString();
                     }
                 }
 

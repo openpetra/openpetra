@@ -160,175 +160,190 @@ namespace Ict.Petra.Shared.MPartner
         /// <summary>Gender</summary>
         public const String GENDER_MALE = "Male";
 
-        /// <summary>Gender</summary>
+        /// <summary>Unknown</summary>
         public const String GENDER_UNKNOWN = "Unknown";
 
-        /// <summary>Addresseetype</summary>
+        /// <summary>1-MALE</summary>
         public const String ADDRESSEETYPE_MALE = "1-MALE";
 
-        /// <summary>Addresseetype</summary>
+        /// <summary>1-FEMALE</summary>
         public const String ADDRESSEETYPE_FEMALE = "1-FEMALE";
 
-        /// <summary>Addresseetype</summary>
+        /// <summary>DEFAULT</summary>
         public const String ADDRESSEETYPE_DEFAULT = "DEFAULT";
 
-        /// <summary>Marital Status</summary>
+        /// <summary>U</summary>
         public const String MARITALSTATUS_UNDEFINED = "U";
 
-        /// <summary>Marital Status</summary>
+        /// <summary>N</summary>
         public const String MARITALSTATUS_SINGLE = "N";
 
-        /// <summary>Marital Status</summary>
+        /// <summary>E</summary>
         public const String MARITALSTATUS_ENGAGED = "E";
 
-        /// <summary>Marital Status</summary>
+        /// <summary>M</summary>
         public const String MARITALSTATUS_MARRIED = "M";
 
-        /// <summary>Marital Status</summary>
+        /// <summary>D</summary>
         public const String MARITALSTATUS_DIVORCED = "D";
 
-        /// <summary>Location Type</summary>
+        /// <summary>HOME</summary>
         public const String LOCATIONTYPE_HOME = "HOME";
 
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>PartnerClass</summary>
         public const String PARTNERIMPORT_PARTNERCLASS = "PartnerClass";
 
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>PartnerKey</summary>
         public const String PARTNERIMPORT_PARTNERKEY = "PartnerKey";
 
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>FamilyName</summary>
         public const String PARTNERIMPORT_FAMILYNAME = "FamilyName";
 
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>MaritalStatus</summary>
         public const String PARTNERIMPORT_MARITALSTATUS = "MaritalStatus";
 
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>StreetName</summary>
+        public const String PARTNERIMPORT_STREETNAME = "StreetName";
+ 
+        /// <summary>Locality</summary>
         public const String PARTNERIMPORT_LOCALITY = "Locality";
 
-        /// <summary>Partner Import Column Name</summary>
-        public const String PARTNERIMPORT_STREETNAME = "StreetName";
+        /// <summary>Address3</summary>
+        public const String PARTNERIMPORT_ADDRESS = "Address3";
 
-        /// <summary>Partner Import Column Name</summary>
-        public const String PARTNERIMPORT_ADDRESS = "Address";
-
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>PostalCode</summary>
         public const String PARTNERIMPORT_POSTALCODE = "PostalCode";
 
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>City</summary>
         public const String PARTNERIMPORT_CITY = "City";
 
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>County</summary>
         public const String PARTNERIMPORT_COUNTY = "County";
 
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>CountryCode</summary>
         public const String PARTNERIMPORT_COUNTRYCODE = "CountryCode";
 
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>Aquisition</summary>
         public const String PARTNERIMPORT_AQUISITION = "Aquisition";
 
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>Gender</summary>
         public const String PARTNERIMPORT_GENDER = "Gender";
 
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>AddresseeType</summary>
         public const String PARTNERIMPORT_ADDRESSEE_TYPE = "AddresseeType";
 
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>Language</summary>
         public const String PARTNERIMPORT_LANGUAGE = "Language";
 
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>OMerField</summary>
         public const String PARTNERIMPORT_OMERFIELD = "OMerField";
 
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>FirstName</summary>
         public const String PARTNERIMPORT_FIRSTNAME = "FirstName";
 
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>Email</summary>
         public const String PARTNERIMPORT_EMAIL = "Email";
 
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>Phone</summary>
         public const String PARTNERIMPORT_PHONE = "Phone";
 
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>MobilePhone</summary>
         public const String PARTNERIMPORT_MOBILEPHONE = "MobilePhone";
 
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>Title</summary>
         public const String PARTNERIMPORT_TITLE = "Title";
 
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>SpecialTypes</summary>
         public const String PARTNERIMPORT_SPECIALTYPES = "SpecialTypes";
 
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>Vegetarian</summary>
         public const String PARTNERIMPORT_VEGETARIAN = "Vegetarian";
 
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>MedicalNeeds</summary>
         public const String PARTNERIMPORT_MEDICALNEEDS = "MedicalNeeds";
 
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>EventPartnerKey</summary>
         public const String PARTNERIMPORT_EVENTKEY = "EventPartnerKey";
 
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>ArrivalDate</summary>
         public const String PARTNERIMPORT_ARRIVALDATE = "ArrivalDate";
 
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>ArrivalTime</summary>
         public const String PARTNERIMPORT_ARRIVALTIME = "ArrivalTime";
 
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>DepartureDate</summary>
         public const String PARTNERIMPORT_DEPARTUREDATE = "DepartureDate";
 
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>DepartureTime</summary>
         public const String PARTNERIMPORT_DEPARTURETIME = "DepartureTime";
 
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>EventRole</summary>
         public const String PARTNERIMPORT_EVENTROLE = "EventRole";
 
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>AppStatus</summary>
         public const String PARTNERIMPORT_APPSTATUS = "AppStatus";
 
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>AppType</summary>
         public const String PARTNERIMPORT_APPTYPE = "AppType";
 
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>PreviousAttendance</summary>
         public const String PARTNERIMPORT_PREVIOUSATTENDANCE = "PreviousAttendance";
 
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>ChargedField</summary>
         public const String PARTNERIMPORT_CHARGEDFIELD = "ChargedField";
 
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>AppComments</summary>
         public const String PARTNERIMPORT_APPCOMMENTS = "AppComments";
 
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>Notes</summary>
         public const String PARTNERIMPORT_NOTES = "Notes";
 
-        /// <summary>Partner Import Column Name</summary>
-        public const String PARTNERIMPORT_NOTESPERSON = "NotesPerson";
+        /// <summary>NotesFamily</summary>
+        public const String PARTNERIMPORT_NOTESFAMILY = "NotesFamily";
 
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>ContactCode</summary>
+        public const String PARTNERIMPORT_CONTACTCODE = "ContactCode";
+        /// <summary>ContactDate</summary>
+        public const String PARTNERIMPORT_CONTACTDATE = "ContactDate";
+        /// <summary>ContactTime</summary>
+        public const String PARTNERIMPORT_CONTACTTIME = "ContactTime";
+        /// <summary>Contactor</summary>
+        public const String PARTNERIMPORT_CONTACTOR = "Contactor";
+        /// <summary>ContactNotes</summary>
+        public const String PARTNERIMPORT_CONTACTNOTES = "ContactNotes";
+        /// <summary>ContactAttr</summary>
+        public const String PARTNERIMPORT_CONTACTATTR = "ContactAttr";
+        /// <summary>ContactDetail</summary>
+        public const String PARTNERIMPORT_CONTACTDETAIL = "ContactDetail";
+        
+        /// <summary>PassportNumber</summary>
         public const String PARTNERIMPORT_PASSPORTNUMBER = "PassportNumber";
 
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>PassportType</summary>
         public const String PARTNERIMPORT_PASSPORTTYPE = "PassportType";
 
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>PassportPlaceOfBirth</summary>
         public const String PARTNERIMPORT_PASSPORTPLACEOFBIRTH = "PassportPlaceOfBirth";
 
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>PassportNationality</summary>
         public const String PARTNERIMPORT_PASSPORTNATIONALITY = "PassportNationality";
 
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>PassportPlaceOfIssue</summary>
         public const String PARTNERIMPORT_PASSPORTPLACEOFISSUE = "PassportPlaceOfIssue";
 
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>PassportCountryOfIssue</summary>
         public const String PARTNERIMPORT_PASSPORTCOUNTRYOFISSUE = "PassportCountryOfIssue";
 
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>PassportDateOfIssue</summary>
         public const String PARTNERIMPORT_PASSPORTDATEOFISSUE = "PassportDateOfIssue";
 
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>PassportDateOfExpiration</summary>
         public const String PARTNERIMPORT_PASSPORTDATEOFEXPIRATION = "PassportDateOfExpiration";
 
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>FamilyPartnerKey</summary>
         public const String PARTNERIMPORT_FAMILYPARTNERKEY = "FamilyPartnerKey";
 
-        /// <summary>Partner Import Column Name</summary>
+        /// <summary>RecordImported</summary>
         public const String PARTNERIMPORT_RECORDIMPORTED = "RecordImported";
 
 

@@ -26,6 +26,7 @@ using System.Collections;
 using System.IO;
 using System.Windows.Forms;
 
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
@@ -240,7 +241,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 requestParams.Add("BaseCurrency", FMainDS.ALedger[0].BaseCurrency);
                 requestParams.Add("TransactionsOnly", chkTransactionsOnly.Checked);
                 requestParams.Add("bDontSummarize", chkDontSummarize.Checked);
-                requestParams.Add("DontSummarizeAccount", cmbDontSummarizeAccount.SelectedItem);
+                requestParams.Add("DontSummarizeAccount", cmbDontSummarizeAccount.GetSelectedString());
                 requestParams.Add("DateForSummary", dtpDateSummary.Date);
                 requestParams.Add("NumberFormat", ConvertNumberFormat(cmbNumberFormat));
 

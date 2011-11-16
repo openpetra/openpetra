@@ -44,6 +44,8 @@ using System.Threading;
 using System.Runtime.Remoting;
 using System.Security.Cryptography;
 using Ict.Common;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
 using Ict.Petra.Server.App.Core.Security;
 
@@ -56,7 +58,9 @@ using Ict.Petra.Server.MConference.Cacheable;
 using Ict.Petra.Server.MConference.WebConnectors;
 
 #region ManualCode
-using Ict.Petra.Shared .MPartner.Partner.Data;
+using Ict.Common.Data;
+using Ict.Common.Verification;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MConference.Data;
 using Ict.Petra.Shared.MConference;
 #endregion ManualCode
@@ -287,6 +291,10 @@ namespace Ict.Petra.Server.MConference.Instantiator.Cacheable
 #if DEBUGMODE
         private DateTime FStartTime;
 #endif
+        #region ManualCode
+        /// <summary>holds reference to the CachePopulator object (only once instantiated)</summary>
+        private TCacheable FCachePopulator;
+        #endregion ManualCode
 
         /// <summary>Constructor</summary>
         public TCacheableNamespace()
@@ -299,6 +307,9 @@ namespace Ict.Petra.Server.MConference.Instantiator.Cacheable
 
             FStartTime = DateTime.Now;
 #endif
+            #region ManualCode
+            FCachePopulator = new Ict.Petra.Server.MConference.Cacheable.TCacheable();
+            #endregion ManualCode
         }
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
@@ -348,6 +359,85 @@ namespace Ict.Petra.Server.MConference.Instantiator.Cacheable
             return null; // make sure that the TCacheableNamespace object exists until this AppDomain is unloaded!
         }
 
+        #region ManualCode
+
+        /// <summary>
+        /// Returns the desired cacheable DataTable.
+        ///
+        /// </summary>
+        /// <param name="ACacheableTable">Used to select the desired DataTable</param>
+        /// <param name="AHashCode">Hash of the cacheable DataTable that the caller has. '' can
+        /// be specified to always get a DataTable back (see @return)</param>
+        /// <param name="ARefreshFromDB">Set to true to reload the cached DataTable from the
+        /// DB and through that refresh the Table in the Cache with what is now in the
+        /// DB (this would be done when it is known that the DB Table has changed).
+        /// The CacheableTablesManager will notify other Clients that they need to
+        /// retrieve this Cacheable DataTable anew from the PetraServer the next time
+        /// the Client accesses the Cacheable DataTable. Otherwise set to false.</param>
+        /// <param name="AType">The Type of the DataTable (useful in case it's a
+        /// Typed DataTable)</param>
+        /// <returns>)
+        /// DataTable The desired DataTable
+        /// </returns>
+        private DataTable GetCacheableTableInternal(TCacheableConferenceTablesEnum ACacheableTable,
+            String AHashCode,
+            Boolean ARefreshFromDB,
+            out System.Type AType)
+        {
+            DataTable ReturnValue = FCachePopulator.GetCacheableTable(ACacheableTable, AHashCode, ARefreshFromDB, out AType);
+
+            if (ReturnValue != null)
+            {
+                if (Enum.GetName(typeof(TCacheableConferenceTablesEnum), ACacheableTable) != ReturnValue.TableName)
+                {
+                    throw new ECachedDataTableTableNameMismatchException(
+                        "Warning: cached table name '" + ReturnValue.TableName + "' does not match enum '" +
+                        Enum.GetName(typeof(TCacheableConferenceTablesEnum), ACacheableTable) + "'");
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        #endregion ManualCode
+        /// generated method from interface
+        public System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MConference.TCacheableConferenceTablesEnum ACacheableTable,
+                                                       System.String AHashCode,
+                                                       out System.Type AType)
+        {
+            #region ManualCode
+            return GetCacheableTableInternal(ACacheableTable, AHashCode, false, out AType);
+            #endregion ManualCode
+        }
+
+        /// generated method from interface
+        public void RefreshCacheableTable(Ict.Petra.Shared.MConference.TCacheableConferenceTablesEnum ACacheableTable)
+        {
+            #region ManualCode
+            System.Type TmpType;
+            GetCacheableTableInternal(ACacheableTable, "", true, out TmpType);
+            #endregion ManualCode
+        }
+
+        /// generated method from interface
+        public void RefreshCacheableTable(Ict.Petra.Shared.MConference.TCacheableConferenceTablesEnum ACacheableTable,
+                                          out System.Data.DataTable ADataTable)
+        {
+            #region ManualCode
+            System.Type TmpType;
+            ADataTable = GetCacheableTableInternal(ACacheableTable, "", true, out TmpType);
+            #endregion ManualCode
+        }
+
+        /// generated method from interface
+        public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableConferenceTablesEnum ACacheableTable,
+                                                                      ref TTypedDataTable ASubmitTable,
+                                                                      out TVerificationResultCollection AVerificationResult)
+        {
+            #region ManualCode
+            return FCachePopulator.SaveChangedStandardCacheableTable(ACacheableTable, ref ASubmitTable, out AVerificationResult);
+            #endregion ManualCode                                    
+        }
     }
 }
 

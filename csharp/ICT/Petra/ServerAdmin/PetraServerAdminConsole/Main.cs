@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -25,7 +25,7 @@ using System;
 using System.Net.Sockets;
 using System.Runtime.Remoting;
 using Ict.Common;
-using Ict.Petra.Shared.Interfaces.ServerAdminInterface;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.ServerAdmin.App.Core;
 using System.Reflection;
 using System.Diagnostics;

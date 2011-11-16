@@ -25,6 +25,7 @@ using System;
 using System.IO;
 using System.Windows.Forms;
 using System.Threading;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Shared.MReporting;
 using System.Data;

@@ -25,13 +25,54 @@ using System;
 
 namespace Ict.Petra.Shared.MPersonnel.Person
 {
-    class DataElements
+    /// <summary>
+    /// Individual Data Items.
+    /// </summary>
+    /// <remarks>Displayed in the Partner Edit screen, on the 'Personnel Data' Tab Group, 'Indidivual Data' Tab.</remarks>
+    public enum TIndividualDataItemEnum
     {
-        /*
-         *   Enums holding the possible cacheable tables for the Petra Personnel Module.
-         */
+        /// <summary>
+        /// The Summary page (initially displayed)
+        /// </summary>
+        idiSummary,
 
-        // [Serializable()]
-        // TVariableDataLabelsTypesEnum = (Office, Personal, LongTermApp, ShortTermApp);
+        /// <summary>TODO</summary>
+        idiPersonalData,
+
+        /// <summary>TODO</summary>
+        idiEmergencyData,
+
+        /// <summary>TODO</summary>
+        idiPassportDetails,
+
+        /// <summary>TODO</summary>
+        idiPersonalDocuments,
+
+        /// <summary>Special Needs</summary>
+        idiSpecialNeeds,
+
+        /// <summary>TODO</summary>
+        idiLocalPersonnelData,
+
+        /// <summary>TODO</summary>
+        idiProfessionalAreas,
+
+        /// <summary>Personal Languages</summary>
+        idiPersonalLanguages,
+
+        /// <summary>TODO</summary>
+        idiPersonalAbilities,
+
+        /// <summary>TODO</summary>
+        idiPreviousExperiences,
+
+        /// <summary>TODO</summary>
+        idiCommitmentPeriods,
+
+        /// <summary>TODO</summary>
+        idiJobAssignments,
+
+        /// <summary>TODO</summary>
+        idiProgressReports
     }
 }

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -502,6 +502,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                         {
                             Console.WriteLine("LocationType: " + TmpDR[LocationTypeDBName].ToString());
                         }
+
                         if (TmpDR[LocationTypeDBName].ToString().EndsWith(SharedConstants.SECURITY_CAN_LOCATIONTYPE))
                         {
 #if DEBUGMODE

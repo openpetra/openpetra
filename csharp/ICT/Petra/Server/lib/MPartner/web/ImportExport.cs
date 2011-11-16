@@ -3,6 +3,7 @@
 //
 // @Authors:
 //       timop
+//       Tim Ingham
 //
 // Copyright 2004-2011 by OM International
 //
@@ -50,7 +51,7 @@ using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Petra.Shared.MPersonnel.Units.Data;
 using Ict.Petra.Server.MPersonnel.Units.Data.Access;
-using Ict.Petra.Server.App.ClientDomain;
+using Ict.Common.Remoting.Server;
 
 namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
 {
@@ -661,41 +662,98 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             }
         }
 
+        private static void CheckContactRefs (PartnerImportExportTDS MainDS, ref TVerificationResultCollection ReferenceResults, TDBTransaction ATransaction)
+        {
+        	int ContactId = 0;
+        	foreach (PartnerImportExportTDSPPartnerContactRow Row in MainDS.PPartnerContact.Rows)
+        	{
+        		PPartnerContactTable Tbl = PPartnerContactAccess.LoadByUniqueKey(Row.PartnerKey,Row.ContactDate,Row.ContactTime,ATransaction);
+        		bool HereAlready = false;
+        		                                                                 
+        		if (Tbl.Rows.Count > 0) // I've already imported this..
+        		{
+        			Row.AcceptChanges(); // This should make the DB update instead of Add
+        			Row.ContactId = Tbl[0].ContactId;
+        			Row.ModificationId = Tbl[0].ModificationId;
+        			HereAlready = true;
+        		}
+        		if (Row.ContactId == 0)
+        		{
+        			Row.ContactId = --ContactId;
+        		}
+        		
+        		// The row has custom Attr and Detail fields, which I need to put into the right tables..
+        		if (!HereAlready && (Row.ContactAttr != ""))
+        		{
+                    AddVerificationResult(ref ReferenceResults, "Adding new contact attribute: " + Row.ContactAttr, TResultSeverity.Resv_Status);
+        			PContactAttributeDetailRow PcadRow = MainDS.PContactAttributeDetail.NewRowTyped();
+        			PcadRow.ContactAttributeCode = Row.ContactAttr;
+        			PcadRow.ContactAttrDetailCode = Row.ContactDetail;
+        			PcadRow.ContactAttrDetailDescr = NewRowDescription;
+        			PContactAttributeDetailAccess.AddOrModifyRecord(
+        				PcadRow.ContactAttributeCode,
+        				PcadRow.ContactAttrDetailCode,
+        				MainDS.PContactAttributeDetail,
+        				PcadRow,false,ATransaction);
+        			
+        			PPartnerContactAttributeRow PcaRow = MainDS.PPartnerContactAttribute.NewRowTyped();
+        			PcaRow.ContactId = Row.ContactId;
+        			PcaRow.ContactAttributeCode = Row.ContactAttr;
+        			PcaRow.ContactAttrDetailCode = Row.ContactDetail;
+        			PPartnerContactAttributeAccess.AddOrModifyRecord(
+        				PcaRow.ContactId,
+        				PcaRow.ContactAttributeCode,
+        				PcaRow.ContactAttrDetailCode,
+        				MainDS.PPartnerContactAttribute,
+        				PcaRow, false,ATransaction);
+        			
+        			PContactAttributeRow CaRow = MainDS.PContactAttribute.NewRowTyped();
+        			CaRow.ContactAttributeDescr = NewRowDescription;
+        			CaRow.ContactAttributeCode = Row.ContactAttr;
+        			PContactAttributeAccess.AddOrModifyRecord(
+        				CaRow.ContactAttributeCode,
+        				MainDS.PContactAttribute,
+        				CaRow,
+        				false,
+        				ATransaction);
+        		}
+        		
+        		if(!PMethodOfContactAccess.Exists(Row.ContactCode, ATransaction))
+				{
+                    AddVerificationResult(ref ReferenceResults, "Adding new method of contact: " + Row.ContactCode, TResultSeverity.Resv_Status);
+        		   	PMethodOfContactRow MocRow = MainDS.PMethodOfContact.NewRowTyped();
+        		   	MocRow.MethodOfContactCode = Row.ContactCode;
+        		   	MocRow.Description = NewRowDescription;
+        		   	MocRow.ValidMethod = true;
+        		   	MainDS.PMethodOfContact.Rows.Add(MocRow);
+				}
+        	}
+        }
+        
         private static void CheckApplication (PartnerImportExportTDS MainDS, ref TVerificationResultCollection ReferenceResults, TDBTransaction Transaction)
         {
-            // The Application must be unique - if not I can't add it.
+            // The Application must be unique - if it's present already, I can update the existing record.
             // ApplicationStatus: Application Status must be listed in PtApplicantStatus
             // ApplicantType: applicants must be of known types
             // ApplicationType: applications must be of known types
 
-            for (int RowIdx= 0; RowIdx< MainDS.PmGeneralApplication.Rows.Count;) // NOTE no auto-increment!
+            for (int RowIdx= 0; RowIdx< MainDS.PmGeneralApplication.Rows.Count; RowIdx++)
             {
                 PmGeneralApplicationRow GenAppRow = MainDS.PmGeneralApplication[RowIdx];
-                // Setting these two keys here may upset the DB Access layer, causing it to Update rather than Add.
-                // I need to ensure these keys are set before coming to this point.
-
-                //if (GenAppRow.IsOldLinkNull())
-                //{
-                //    GenAppRow.OldLink = "OldKey"; //OldLink is not supported and may be dropped, but it's currently "NOT NULL" in the database.
-                //}
-
-                //if (GenAppRow.IsRegistrationOfficeNull())
-                //{
-                //    GenAppRow.RegistrationOffice = DomainManager.GSiteKey;
-                //}
-/*
-    *              // TODO: I can't do this because the "Exists" call (unique key variant) below doesn't work. (Oct 2011)
-    *              // Timo may provide a fix soon.
-    *              
-                // check if this row already exists, using the unique key
+                // Check if this row already exists, using the unique key
                 if (PmGeneralApplicationAccess.Exists(GenAppRow.PartnerKey, GenAppRow.GenAppDate, GenAppRow.AppTypeName, GenAppRow.OldLink, Transaction))
                 {
-                    // If it does, I can't add this row.
-                    MainDS.PmGeneralApplication.Rows.Remove(GenAppRow);
-                    AddVerificationResult(ref ReferenceResults, "General Application cannot be stored\nbecause it is not unique. ");
-                    continue; // This will go round again without incrementing the counter.
+                    // If it does, I need to update and not add.
+                    PmGeneralApplicationTable Tbl = PmGeneralApplicationAccess.LoadByUniqueKey(
+                    	GenAppRow.PartnerKey, GenAppRow.GenAppDate, GenAppRow.AppTypeName, GenAppRow.OldLink, Transaction);
+                    PmGeneralApplicationRow ExistingRow = Tbl[0];
+                    
+                    GenAppRow.AcceptChanges();
+                    GenAppRow.ModificationId = ExistingRow.ModificationId;
+                    
+                    AddVerificationResult(ref ReferenceResults, "Existing Application record updated.");
                 }
-*/
+                
                 if ((GenAppRow.GenApplicationStatus != "") && (!PtApplicantStatusAccess.Exists(GenAppRow.GenApplicationStatus, Transaction)))
                 {
                     MainDS.PtApplicantStatus.DefaultView.RowFilter = String.Format("{0}='{1}'", PtApplicantStatusTable.GetCodeDBName(), GenAppRow.GenApplicationStatus);
@@ -756,7 +814,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         MainDS.PtContact.Rows.Add(Row);
                     }
                 }
-                RowIdx++;
             }
         }
 
@@ -898,6 +955,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             }
         }
 
+/*
         private static void CheckVisionRefs(PartnerImportExportTDS MainDS, ref TVerificationResultCollection ReferenceResults, TDBTransaction Transaction)
        {
             // Vision: update _area and _level tables
@@ -926,6 +984,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                 }
             }
         }
+*/        
 
         private static void CheckYearProgramRefs(PartnerImportExportTDS MainDS, ref TVerificationResultCollection ReferenceResults, TDBTransaction Transaction)
         {
@@ -1243,10 +1302,11 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             CheckPartnerInterest (MainDS, ref ReferenceResults, Transaction);
             CheckPartnerType(MainDS, ref ReferenceResults, Transaction);
             CheckChurchDenomination(MainDS, ref ReferenceResults, Transaction);
+            CheckContactRefs(MainDS, ref ReferenceResults, Transaction);
             CheckApplication(MainDS, ref ReferenceResults, Transaction);
             CheckCommitmentStatus(MainDS, ref ReferenceResults, Transaction);
             CheckSTApplicationRefs(MainDS, ref ReferenceResults, Transaction);
-            CheckVisionRefs(MainDS, ref ReferenceResults, Transaction);
+//          CheckVisionRefs(MainDS, ref ReferenceResults, Transaction);
             CheckYearProgramRefs(MainDS, ref ReferenceResults, Transaction);
             CheckQualificationRefs(MainDS, ref ReferenceResults, Transaction);
             CheckMaritalStatus(MainDS, PartnerRow, ref ReferenceResults, Transaction);

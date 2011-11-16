@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -30,6 +30,7 @@ using System.Windows.Forms;
 using System.Reflection;
 using GNU.Gettext;
 using System.Xml;
+using System.IO;
 using Ict.Common;
 using Ict.Common.Controls;
 
@@ -447,7 +448,18 @@ namespace Ict.Common.Controls
         /// </summary>
         private UserControl RealiseUserControl()
         {
-            Assembly asm = Assembly.LoadFrom(FUserControlNamespace + ".dll");
+            Assembly asm;
+            string dllName = TAppSettingsManager.ApplicationDirectory + Path.DirectorySeparatorChar + FUserControlNamespace + ".dll";
+
+            try
+            {
+                asm = Assembly.LoadFrom(dllName);
+            }
+            catch (Exception)
+            {
+                TLogging.Log("TPnlCollapsible.RealiseUserControl: cannot load file " + dllName);
+                return null;
+            }
 
             System.Type classType = asm.GetType(FUserControlNamespace + "." + FUserControlClass);
 

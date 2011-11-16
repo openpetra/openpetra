@@ -69,7 +69,6 @@ namespace Ict.Petra.Server.MPartner.Import
             PmPastExperienceAccess.LoadViaPPerson(MainDS, APartnerKey, Transaction);
             PmPersonLanguageAccess.LoadViaPPerson(MainDS, APartnerKey, Transaction);
             PmPersonAbilityAccess.LoadViaPPerson(MainDS, APartnerKey, Transaction);
-            PmPersonVisionAccess.LoadViaPPerson(MainDS, APartnerKey, Transaction);
             PmStaffDataAccess.LoadViaPPerson(MainDS, APartnerKey, Transaction);
             PmJobAssignmentAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
             PmPersonEvaluationAccess.LoadViaPPerson(MainDS, APartnerKey, Transaction);

@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
 // Copyright 2004-2011 by OM International
 //
@@ -30,8 +30,9 @@ using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.DB;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces.AsynchronousExecution;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -82,7 +83,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 #if DEBUGMODE
                 if (TLogging.DL >= 7)
                 {
-                    Console.WriteLine("TPartnerFindUIConnector: AsyncExecProgress reqeusted.");
+                    Console.WriteLine("TPartnerFindUIConnector: AsyncExecProgress requested.");
                 }
 #endif
                 return FAsyncExecProgress;
@@ -267,6 +268,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 sb.AppendFormat("{0}{1}", "LEFT OUTER JOIN PUB.p_family", Environment.NewLine);
                 sb.AppendFormat("{0}{1}", "ON PUB.p_family.p_partner_key_n = PUB.p_partner.p_partner_key_n", Environment.NewLine);
                 sbWhereClause.AppendFormat("{0}{1}", "PUB.p_location.p_location_key_i = PUB.p_partner_location.p_location_key_i", Environment.NewLine);
+                sbWhereClause.AppendFormat("{0}{1}", "AND PUB.p_location.p_site_key_n = PUB.p_partner_location.p_site_key_n", Environment.NewLine);
             }
             else
             {
@@ -280,6 +282,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 sb.AppendFormat("{0}{1}", "ON PUB.p_family.p_partner_key_n = PUB.p_partner.p_partner_key_n", Environment.NewLine);
                 sb.AppendFormat("{0}{1}", ", PUB.p_location", Environment.NewLine);
                 sbWhereClause.AppendFormat("{0}{1}", "PUB.p_partner_location.p_location_key_i = PUB.p_location.p_location_key_i", Environment.NewLine);
+                sbWhereClause.AppendFormat("{0}{1}", "AND PUB.p_location.p_site_key_n = PUB.p_partner_location.p_site_key_n", Environment.NewLine);
             }
 
             FromClause = sb.ToString();
@@ -552,8 +555,11 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 InternalParameters.Clear();
 
                 CustomWhereCriteria = String.Format("{0} AND PUB.{1}.{2} = ?", CustomWhereCriteria,
-                    PLocationTable.GetTableDBName(), PLocationTable.GetLocationKeyDBName());                                                                                                                                 // CustomWhereCriteria + '
-                                                                                                                                                                                                                             // AND p_location_key_i = ?';
+                    PLocationTable.GetTableDBName(), PLocationTable.GetLocationKeyDBName());
+
+                // CustomWhereCriteria + '
+                // AND p_location_key_i = ?';
+
                 OdbcParameter miParam = new OdbcParameter("", OdbcType.Decimal, 10);
                 miParam.Value = (object)CriteriaRow["LocationKey"];
                 InternalParameters.Add(miParam);

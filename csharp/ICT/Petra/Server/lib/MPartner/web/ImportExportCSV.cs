@@ -3,8 +3,9 @@
 //
 // @Authors:
 //       timop
+//       Tim Ingham
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -35,8 +36,9 @@ using Ict.Petra.Server.MSysMan.Maintenance;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Common.Verification;
 using Ict.Common.DB;
-using Ict.Petra.Server.App.ClientDomain;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.App.Core;
 
 namespace Ict.Petra.Server.MPartner.ImportExport
 {
@@ -49,13 +51,13 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         private static TVerificationResultCollection ResultsCol;
         private static String ResultsContext;
 
-        private static void AddVerificationResult(String AResultText, TResultSeverity Severity)
+        private static void AddVerificationResult(String AResultText, TResultSeverity ASeverity)
         {
-            if (Severity != TResultSeverity.Resv_Status)
+            if (ASeverity != TResultSeverity.Resv_Status)
             {
                 TLogging.Log(AResultText);
             }
-            ResultsCol.Add(new TVerificationResult(ResultsContext, AResultText, Severity));
+            ResultsCol.Add(new TVerificationResult(ResultsContext, AResultText, ASeverity));
         }
 
         private static void AddVerificationResult(String AResultText)
@@ -69,14 +71,14 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         /// Import data from a CSV file
         /// </summary>
         /// <param name="ANode"></param>
-        /// <param name="ReferenceResults"></param>
+        /// <param name="AReferenceResults"></param>
         /// <returns></returns>
-        public static PartnerImportExportTDS ImportData(XmlNode ANode, ref TVerificationResultCollection ReferenceResults)
+        public static PartnerImportExportTDS ImportData(XmlNode ANode, ref TVerificationResultCollection AReferenceResults)
         {
             PartnerImportExportTDS ResultDS = new PartnerImportExportTDS();
 
             TPartnerImportCSV.FLocationKey = -1;
-            ResultsCol = ReferenceResults;
+            ResultsCol = AReferenceResults;
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
 
             while (ANode != null)
@@ -103,9 +105,11 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     ResultsContext = "CSV Import person";
                     Int64 PersonKey = CreateNewPerson(PartnerKey, LocationKey, ANode, ref ResultDS);
                     CreateShortTermApplication(ANode, PersonKey, ref ResultDS, Transaction);
-                    CreatePassport(ANode, PersonKey, ref ResultDS);
-                    CreateSubscriptions(ANode, PersonKey, ref ResultDS);
                     CreateSpecialTypes(ANode, PersonKey, ref ResultDS);
+                    CreateSubscriptions(ANode, PersonKey, ref ResultDS);
+                    CreateContacts(ANode, PersonKey, ref ResultDS, "_1");
+                    CreateContacts(ANode, PersonKey, ref ResultDS, "_2");
+                    CreatePassport(ANode, PersonKey, ref ResultDS);
                }
 
                 ANode = ANode.NextSibling;
@@ -127,7 +131,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             newPartner.PartnerKey = (AMainDS.PPartner.Rows.Count + 1) * -1;
             newPartner.PartnerClass = MPartnerConstants.PARTNERCLASS_FAMILY;
             newPartner.StatusCode = MPartnerConstants.PARTNERSTATUS_ACTIVE;
-            newPartner.Comment = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_NOTES);
+            newPartner.Comment = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_NOTESFAMILY);
 
             String AcquisitionCode = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_AQUISITION);
             newPartner.AcquisitionCode = (AcquisitionCode.Length > 0) ? AcquisitionCode : MPartnerConstants.PARTNERIMPORT_AQUISITION_DEFAULT;
@@ -221,16 +225,17 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         /// <summary>
         /// Create a Partner and a Person having this FamilyKey, living at this address.
         /// </summary>
-        /// <param name="PartnerKey"></param>
-        /// <param name="AChildNode"></param>
-        /// <param name="ResultDS"></param>
-        private static Int64 CreateNewPerson(Int64 FamilyKey, int LocationKey, XmlNode ANode, ref PartnerImportExportTDS AMainDS)
+        /// <param name="AFamilyKey"></param>
+        /// <param name="ALocationKey"></param>
+        /// <param name="ANode"></param>
+        /// <param name="AMainDS"></param>
+        private static Int64 CreateNewPerson(Int64 AFamilyKey, int ALocationKey, XmlNode ANode, ref PartnerImportExportTDS AMainDS)
         {
 
-            AMainDS.PFamily.DefaultView.RowFilter = String.Format("{0}={1}", PFamilyTable.GetPartnerKeyDBName(), FamilyKey);
+            AMainDS.PFamily.DefaultView.RowFilter = String.Format("{0}={1}", PFamilyTable.GetPartnerKeyDBName(), AFamilyKey);
             PFamilyRow FamilyRow = (PFamilyRow)AMainDS.PFamily.DefaultView[0].Row;
 
-            AMainDS.PPartner.DefaultView.RowFilter = String.Format("{0}={1}", PPartnerTable.GetPartnerKeyDBName(), FamilyKey);
+            AMainDS.PPartner.DefaultView.RowFilter = String.Format("{0}={1}", PPartnerTable.GetPartnerKeyDBName(), AFamilyKey);
             PPartnerRow PartnerRow = (PPartnerRow)AMainDS.PPartner.DefaultView[0].Row;
 
             PPartnerRow newPartner = AMainDS.PPartner.NewRowTyped();
@@ -241,7 +246,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             newPartner.AddresseeTypeCode = PartnerRow.AddresseeTypeCode;
             newPartner.PartnerShortName = PartnerRow.PartnerShortName;
             newPartner.LanguageCode = PartnerRow.LanguageCode;
-            newPartner.Comment = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_NOTESPERSON);
+            newPartner.Comment = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_NOTES);
             newPartner.AcquisitionCode = PartnerRow.AcquisitionCode;
             newPartner.StatusCode = MPartnerConstants.PARTNERSTATUS_ACTIVE;
 
@@ -249,7 +254,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             AMainDS.PPerson.Rows.Add(newPerson);
 
             newPerson.PartnerKey = newPartner.PartnerKey;
-            newPerson.FamilyKey = FamilyKey;
+            newPerson.FamilyKey = AFamilyKey;
             // When this record is imported, newPerson.FamilyId must be unique for this family!
             newPerson.FirstName = FamilyRow.FirstName;
             newPerson.FamilyName = FamilyRow.FamilyName;
@@ -264,7 +269,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             PPartnerLocationRow newPartnerLocation = AMainDS.PPartnerLocation.NewRowTyped();
             AMainDS.PPartnerLocation.Rows.Add(newPartnerLocation);
 
-            newPartnerLocation.LocationKey = LocationKey; // This person lives at the same address as the family.
+            newPartnerLocation.LocationKey = ALocationKey; // This person lives at the same address as the family.
             newPartnerLocation.SiteKey = 0;
             newPartnerLocation.PartnerKey = newPartner.PartnerKey;
             newPartnerLocation.DateEffective = DateTime.Now;
@@ -277,22 +282,22 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             return newPerson.PartnerKey;
         }
 
-        private static void CreateSpecialTypes(XmlNode ANode, Int64 PartnerKey, String CSVKey, ref PartnerImportExportTDS AMainDS)
+        private static void CreateSpecialTypes(XmlNode ANode, Int64 APartnerKey, String ACSVKey, ref PartnerImportExportTDS AMainDS)
         {
             for (int Idx = 1; Idx < 6; Idx++)
             {
-                String SpecialType = TXMLParser.GetAttribute(ANode, CSVKey + Idx.ToString());
+                String SpecialType = TXMLParser.GetAttribute(ANode, ACSVKey + Idx.ToString());
                 if (SpecialType.Length > 0)
                 {
                     PPartnerTypeRow partnerType = AMainDS.PPartnerType.NewRowTyped(true);
-                    partnerType.PartnerKey = PartnerKey;
+                    partnerType.PartnerKey = APartnerKey;
                     partnerType.TypeCode = SpecialType;
                     AMainDS.PPartnerType.Rows.Add(partnerType);
                 }
             }
         }
 
-        private static void CreateSpecialTypes(XmlNode ANode, Int64 PartnerKey, ref PartnerImportExportTDS AMainDS)
+        private static void CreateSpecialTypes(XmlNode ANode, Int64 APartnerKey, ref PartnerImportExportTDS AMainDS)
         {
 
             // This previous code requires a format that doesn't conform to the documented standard:
@@ -311,10 +316,10 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 }
             }
  */
-            CreateSpecialTypes(ANode, PartnerKey, "SpecialType_", ref AMainDS);
+            CreateSpecialTypes(ANode, APartnerKey, "SpecialType_", ref AMainDS);
         }
 
-        private static void CreateShortTermApplication(XmlNode ANode, Int64 PartnerKey, ref PartnerImportExportTDS AMainDS, TDBTransaction ATransaction)
+        private static void CreateShortTermApplication(XmlNode ANode, Int64 APartnerKey, ref PartnerImportExportTDS AMainDS, TDBTransaction ATransaction)
         {
             String strEventKey = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_EVENTKEY);
             long EventKey = -1;
@@ -337,7 +342,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                 PmGeneralApplicationRow GenAppRow = AMainDS.PmGeneralApplication.NewRowTyped();
 
-                GenAppRow.PartnerKey = PartnerKey;
+                GenAppRow.PartnerKey = APartnerKey;
                 GenAppRow.ApplicationKey = (int)DBAccess.GDBAccessObj.GetNextSequenceValue("seq_application", ATransaction);
 
                 GenAppRow.OldLink = "OldKey"; //OldLink is not supported and may be dropped, but it's currently "NOT NULL" in the database.
@@ -349,7 +354,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 GenAppRow.Comment = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_APPCOMMENTS);
 
                 PmShortTermApplicationRow ShortTermRow = AMainDS.PmShortTermApplication.NewRowTyped();
-                ShortTermRow.PartnerKey = PartnerKey;
+                ShortTermRow.PartnerKey = APartnerKey;
                 ShortTermRow.ApplicationKey = GenAppRow.ApplicationKey;
                 ShortTermRow.RegistrationOffice = GenAppRow.RegistrationOffice; // When this is imported, RegistrationOffice can't be null.
                 ShortTermRow.StBasicOutreachId = "Unused field"; // This field is scheduled for deletion, but NOT NULL now.
@@ -424,13 +429,12 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
         }
 
-        private static void CreatePassport(XmlNode ANode, Int64 PartnerKey, ref PartnerImportExportTDS AMainDS)
+        private static void CreatePassport(XmlNode ANode, Int64 APartnerKey, ref PartnerImportExportTDS AMainDS)
         {
             string PassportNum = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTNUMBER);
             if (PassportNum.Length > 0)
             {
                 PmPassportDetailsRow NewRow = AMainDS.PmPassportDetails.NewRowTyped();
-                AMainDS.PmPassportDetails.Rows.Add(NewRow);
                 NewRow.PassportNumber = PassportNum;
                 NewRow.PassportDetailsType =  TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTTYPE);
                 NewRow.PlaceOfBirth = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTPLACEOFBIRTH);
@@ -439,11 +443,12 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 NewRow.CountryOfIssue = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTCOUNTRYOFISSUE);
                 NewRow.DateOfIssue = DateTime.Parse(TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTDATEOFISSUE));
                 NewRow.DateOfExpiration = DateTime.Parse(TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTDATEOFEXPIRATION));
+                AMainDS.PmPassportDetails.Rows.Add(NewRow);
                 AddVerificationResult("Passport Record Created.", TResultSeverity.Resv_Status);
             }
         }
 
-        private static void CreateSubscriptions(XmlNode ANode, Int64 PartnerKey, ref PartnerImportExportTDS AMainDS)
+        private static void CreateSubscriptions(XmlNode ANode, Int64 APartnerKey, ref PartnerImportExportTDS AMainDS)
         {
             int SubsCount = 0;
             foreach (XmlAttribute Attr in ANode.Attributes)
@@ -451,7 +456,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 if ((Attr.Name.ToLower().IndexOf("subscribe_") == 0) && (Attr.Value.ToLower() == "yes"))
                 {
                     PSubscriptionRow NewRow = AMainDS.PSubscription.NewRowTyped();
-                    NewRow.PartnerKey = PartnerKey;
+                    NewRow.PartnerKey = APartnerKey;
                     NewRow.PublicationCode = Attr.Name.Substring(10).ToUpper();
                     AMainDS.PSubscription.Rows.Add(NewRow);
                     SubsCount++;
@@ -464,8 +469,30 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         }
 
 
+        private static void CreateContacts(XmlNode ANode, Int64 APartnerKey, ref PartnerImportExportTDS AMainDS, string Suffix)
+        {
+            string ContactCode = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTCODE + Suffix);
+            
+            if (ContactCode.Length > 0)
+            {
+            	PartnerImportExportTDSPPartnerContactRow Row = AMainDS.PPartnerContact.NewRowTyped();
+            	Row.PartnerKey = APartnerKey;
+            	Row.ContactCode = ContactCode;
+            	Row.ContactDate = DateTime.Parse(TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTDATE + Suffix));
+            	DateTime ContactTime = DateTime.Parse(TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTTIME + Suffix));
+            	Row.ContactTime = ((ContactTime.Hour * 60) + ContactTime.Minute * 60) + ContactTime.Second;
+            	Row.Contactor = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTOR + Suffix);
+            	Row.ContactComment = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTNOTES + Suffix);
+            	Row.ContactAttr = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTATTR + Suffix);
+            	Row.ContactDetail = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTDETAIL + Suffix);
+            	AMainDS.PPartnerContact.Rows.Add(Row);
+                AddVerificationResult("Contact Record Created.", TResultSeverity.Resv_Status);
+            }
+        	
+        }
+        
         /// <summary>
-        /// returns the gender of the currently selected partner
+        /// Returns the gender of the currently selected partner
         /// </summary>
         /// <returns></returns>
         private static string GetGenderCode(XmlNode ACurrentPartnerNode)

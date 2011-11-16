@@ -47,7 +47,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             dtpCalendarStartDate.Date = new DateTime(DateTime.Now.Year, 1, 1);
             nudNumberOfFwdPostingPeriods.Value = 8;
             nudNumberOfPeriods.Value = 12;
-            nudCurrentPeriod.Value = DateTime.Now.Month;
+            nudCurrentPeriod.Value = 1;
             cmbBaseCurrency.SetSelectedString("EUR");
             cmbIntlCurrency.SetSelectedString("USD");
             cmbCountryCode.SetSelectedString("DE");
@@ -82,7 +82,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 if (VerificationResult != null)
                 {
                     MessageBox.Show(
-                        VerificationResult.GetVerificationResult(0).ResultText,
+                        VerificationResult.BuildVerificationResultString(),
                         Catalog.GetString("Problem: No Ledger has been created"));
                 }
                 else

@@ -19,9 +19,14 @@
             <CustomField name="MethodOfGivingCode" type="String"/>
             <CustomField name="MethodOfPaymentCode" type="String"/>
             <CustomField name="AccountCode" type="String"/>
+            <CustomField name="Reference" type="String"/>
         </Table>
         <Table sqltable="a_motivation_group"/>
         <Table sqltable="a_motivation_detail"/>
+		<Table sqltable="a_motivation_detail_fee"/>
+		<Table sqltable="a_fees_payable"/>
+		<Table sqltable="a_fees_receivable"/>
+		<Table sqltable="a_processed_fee"/>
     </DataSet>
     <DataSet name="RecurringGiftBatchTDS">
         <Table sqltable="a_ledger"/>

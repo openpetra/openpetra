@@ -175,7 +175,7 @@ namespace Ict.Common.IO
                 XmlReaderSettings settings = new XmlReaderSettings();
                 settings.IgnoreWhitespace = false;
                 settings.ProhibitDtd = false;
-                settings.XmlResolver = new MyUrlResolver(Path.GetDirectoryName(filename));
+                settings.XmlResolver = new MyUrlResolver(Path.GetDirectoryName(Path.GetFullPath(filename)));
                 settings.ValidationType = withValidation ? ValidationType.DTD : ValidationType.None;
                 settings.ValidationEventHandler += new ValidationEventHandler(eventHandler);
 

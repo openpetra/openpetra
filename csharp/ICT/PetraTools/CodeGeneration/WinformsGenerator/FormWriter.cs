@@ -129,6 +129,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AddControlGenerator(new SplitContainerGenerator());
                 AddControlGenerator(new UserControlGenerator());
                 AddControlGenerator(new LabelGenerator());
+                AddControlGenerator(new LinkLabelGenerator());
                 AddControlGenerator(new ButtonGenerator());
                 AddControlGenerator(new CheckBoxGenerator());
                 AddControlGenerator(new TClbVersatileGenerator());
@@ -331,7 +332,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (!File.Exists(FResourceDirectory + System.IO.Path.DirectorySeparatorChar + AImageName))
             {
-                Console.WriteLine("Warning: Cannot find image file " + FResourceDirectory + System.IO.Path.DirectorySeparatorChar + AImageName);
+                TLogging.Log("Warning !!! Cannot find image file " + FResourceDirectory + System.IO.Path.DirectorySeparatorChar + AImageName);
                 return;
             }
 
@@ -1010,7 +1011,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     msg += o.controlName + " ";
                 }
 
-                TLogging.Log("WARNING: There are some controls that will not be part of the screen (missing parent control?): " + msg);
+                TLogging.Log("Warning !!! There are some controls that will not be part of the screen (missing parent control?): " + msg);
             }
 
             // add form events

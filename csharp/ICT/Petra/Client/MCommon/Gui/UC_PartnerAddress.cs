@@ -30,6 +30,7 @@ using System.Data;
 using System.Resources;
 using Ict.Common;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Formatting;
 using Ict.Petra.Client.MCommon;
@@ -373,7 +374,7 @@ namespace Ict.Petra.Client.MCommon.Gui
                         e.ProposedValue = e.Row[e.Column.ColumnName];
 
                         // need to assign this to make the change actually visible...
-                        cmbLocationType.SelectedItem = e.ProposedValue.ToString();
+                        cmbLocationType.SetSelectedString(e.ProposedValue.ToString());
                         BoundControl = TDataBinding.GetBoundControlForColumn(BindingContext[FPartnerLocationDV], e.Column);
 
                         // MessageBox.Show('Bound control: ' + BoundControl.ToString);
@@ -584,13 +585,13 @@ namespace Ict.Petra.Client.MCommon.Gui
                 ((PLocationRow)FLocationDV[0].Row).CountryCode = cmbCountry.SelectedValue.ToString();
             }
 
-            if (cmbLocationType.SelectedValue == null)
+            if (cmbLocationType.SelectedIndex == -1)
             {
                 ((PPartnerLocationRow)FPartnerLocationDV[0].Row).SetLocationTypeNull();
             }
             else
             {
-                ((PPartnerLocationRow)FPartnerLocationDV[0].Row).LocationType = cmbLocationType.SelectedValue.ToString();
+                ((PPartnerLocationRow)FPartnerLocationDV[0].Row).LocationType = cmbLocationType.GetSelectedString();
             }
         }
 

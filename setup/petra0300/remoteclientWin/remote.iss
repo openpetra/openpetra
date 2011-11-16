@@ -34,12 +34,12 @@ Source: ..\..\..\csharp\ThirdParty\DevAge\SourceGrid.dll; DestDir: {userappdata}
 Source: ..\..\..\csharp\ThirdParty\SQLite\System.Data.SQLite.dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
 Source: ..\..\..\csharp\ThirdParty\ICSharpCode\ICSharpCode.SharpZipLib.dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
 Source: ..\..\..\csharp\ThirdParty\GNU\GNU.Gettext.dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
-	Source: ..\..\..\csharp\ThirdParty\Npgsql\Npgsql.dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ThirdParty\Npgsql\Npgsql.dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
 Source: ..\..\..\delivery\bin\Ict.Common*dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
 Source: ..\..\..\delivery\bin\Ict.Petra.Client*dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
 Source: ..\..\..\delivery\bin\Ict.Petra.Shared*dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
 Source: ..\..\..\delivery\bin\PetraClient.exe; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
-Source: ..\..\..\csharp\ICT\Petra\Definitions\{#UINAVIGATION}; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30
+Source: ..\..\..\tmp\UINavigation.yml; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30
 Source: ..\..\..\delivery\bin\de-DE\OpenPetra.resources.dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30/de-DE
 Source: ..\..\..\delivery\bin\es-ES\OpenPetra.resources.dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30/es-ES
 Source: ..\..\..\delivery\bin\da-DK\OpenPetra.resources.dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30/da-DK
@@ -162,16 +162,9 @@ end;
 procedure CurStepChanged(CurStep: TSetupStep);
 var
     ResultCode: Integer;
-    Dirname: String;
 begin
   if CurStep=ssPostInstall then
   begin
-    Dirname := ExpandConstant('{userappdata}\OpenPetra{#ORGNAME}');
-    ReplaceInTextFile(ExpandConstant('{userappdata}/OpenPetra{#ORGNAME}/etc30/PetraClientRemote.config'), 'TMP30', Dirname + '\tmp30', true);
-    ReplaceInTextFile(ExpandConstant('{userappdata}/OpenPetra{#ORGNAME}/etc30/PetraClientRemote.config'), 'PATCHES30', Dirname + '\patches30', true);
-    ReplaceInTextFile(ExpandConstant('{userappdata}/OpenPetra{#ORGNAME}/etc30/PetraClientRemote.config'), 'REMOTEPATCHESPATH', 'https://{#SERVERHOST}/patches/{#ORGNAME}/', true);
-    ReplaceInTextFile(ExpandConstant('{userappdata}/OpenPetra{#ORGNAME}/etc30/PetraClientRemote.config'), 'REPORTUSERSETTINGSPATH', Dirname + '\reports30\Settings', true);
-    ReplaceInTextFile(ExpandConstant('{userappdata}/OpenPetra{#ORGNAME}/etc30/PetraClientRemote.config'), 'REPORTSETTINGSPATH', Dirname + '\reports30\Settings', true);
     ReplaceInTextFile(ExpandConstant('{userappdata}/OpenPetra{#ORGNAME}/etc30/PetraClientRemote.config'), 'PETRAHOST', strServer, true);
     ReplaceInTextFile(ExpandConstant('{userappdata}/OpenPetra{#ORGNAME}/etc30/PetraClientRemote.config'), 'PETRAPORT', IntToStr(NetPort), true);
   end;

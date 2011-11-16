@@ -567,7 +567,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             if (!FindAndSelect(ref cmbMinistry, APartnerKey))
             {
                 //Clear the combobox
-                cmbMinistry.SelectedValueCell = null;
+                cmbMinistry.SelectedIndex = -1;
             }
         }
 
@@ -577,7 +577,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             {
                 if (pr.PartnerKey == APartnerKey)
                 {
-                    AControl.SelectedValueCell = APartnerKey;
+                    AControl.SetSelectedInt64(APartnerKey);
                     return true;
                 }
             }
@@ -625,6 +625,58 @@ namespace Ict.Petra.Client.MFinance.Logic
             }
 
             return "ledger " + ALedgerNumber.ToString();
+        }
+
+        /// <summary>
+        /// fill checkedlistbox values with fees payable list
+        /// </summary>
+        /// <param name="AControl"></param>
+        /// <param name="ALedgerNumber"></param>
+        public static void InitialiseFeesPayableList(ref TClbVersatile AControl,
+            Int32 ALedgerNumber)
+        {
+            string CheckedMember = "CHECKED";
+            string DisplayMember = AFeesPayableTable.GetFeeDescriptionDBName();
+            string ValueMember = AFeesPayableTable.GetFeeCodeDBName();
+
+            DataTable Table = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.FeesPayableList, ALedgerNumber);
+            DataView view = new DataView(Table);
+
+            DataTable NewTable = view.ToTable(true, new string[] { ValueMember, DisplayMember });
+
+            NewTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
+
+            AControl.Columns.Clear();
+            AControl.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
+            AControl.AddTextColumn(Catalog.GetString("Code"), NewTable.Columns[ValueMember], 60);
+            AControl.AddTextColumn(Catalog.GetString("Cost Centre Description"), NewTable.Columns[DisplayMember], 200);
+            AControl.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
+        }
+
+        /// <summary>
+        /// fill checkedlistbox values with fees receivable list
+        /// </summary>
+        /// <param name="AControl"></param>
+        /// <param name="ALedgerNumber"></param>
+        public static void InitialiseFeesReceivableList(ref TClbVersatile AControl,
+            Int32 ALedgerNumber)
+        {
+            string CheckedMember = "CHECKED";
+            string DisplayMember = AFeesReceivableTable.GetFeeDescriptionDBName();
+            string ValueMember = AFeesReceivableTable.GetFeeCodeDBName();
+
+            DataTable Table = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.FeesReceivableList, ALedgerNumber);
+            DataView view = new DataView(Table);
+
+            DataTable NewTable = view.ToTable(true, new string[] { ValueMember, DisplayMember });
+
+            NewTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
+
+            AControl.Columns.Clear();
+            AControl.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
+            AControl.AddTextColumn(Catalog.GetString("Code"), NewTable.Columns[ValueMember], 60);
+            AControl.AddTextColumn(Catalog.GetString("Cost Centre Description"), NewTable.Columns[DisplayMember], 200);
+            AControl.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
         }
     }
 }

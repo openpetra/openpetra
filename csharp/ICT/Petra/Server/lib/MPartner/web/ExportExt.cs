@@ -3,6 +3,7 @@
 //
 // @Authors:
 //       timop
+//       Tim Ingham
 //
 // Copyright 2004-2011 by OM International
 //
@@ -32,9 +33,10 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MPersonnel.Units.Data;
 using Ict.Petra.Shared.MHospitality.Data;
-using Ict.Petra.Server.App.ClientDomain;
 using System.Globalization;
-    
+using Ict.Common.Remoting.Server;
+using Ict.Petra.Server.App.Core;
+
 namespace Ict.Petra.Server.MPartner.ImportExport
 {
     /// <summary>
@@ -106,8 +108,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     PmShortTermApplicationTable.GetRegistrationOfficeDBName(),
                     AGeneralApplicationRow.RegistrationOffice);
 
-            // The RowFilter above will be applied when the Count property is accessed.
-            //
             if (AMainDS.PmShortTermApplication.DefaultView.Count > 0)
             {
                 PmShortTermApplicationRow ShortTermApplicationRow = (PmShortTermApplicationRow)AMainDS.PmShortTermApplication.DefaultView[0].Row;
@@ -143,19 +143,19 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 Write(ShortTermApplicationRow.IsStFgCodeNull()? "" : ShortTermApplicationRow.StFgCode);
                 Write(ShortTermApplicationRow.IsStFgLeaderNull()? false : ShortTermApplicationRow.StFgLeader);
                 Write(ShortTermApplicationRow.IsStFieldChargedNull()? 0 : ShortTermApplicationRow.StFieldCharged);
-                Write(ShortTermApplicationRow.IsStLeadershipRatingNull()? "" : ShortTermApplicationRow.StLeadershipRating);
-                Write(ShortTermApplicationRow.IsStOption1Null()? 0 : ShortTermApplicationRow.StOption1);
-                Write(ShortTermApplicationRow.IsStOption2Null()? 0 : ShortTermApplicationRow.StOption2);
+                // Write(ShortTermApplicationRow.IsStLeadershipRatingNull()? "" : ShortTermApplicationRow.StLeadershipRating); // fields removed
+                // Write(ShortTermApplicationRow.IsStOption1Null()? 0 : ShortTermApplicationRow.StOption1);
+                // Write(ShortTermApplicationRow.IsStOption2Null()? 0 : ShortTermApplicationRow.StOption2);
                 WriteLine();
-                Write(ShortTermApplicationRow.IsStPartyContactNull()? 0 : ShortTermApplicationRow.StPartyContact);
-                Write(ShortTermApplicationRow.IsStPartyTogetherNull()? "" :  ShortTermApplicationRow.StPartyTogether);
+                // Write(ShortTermApplicationRow.IsStPartyContactNull()? 0 : ShortTermApplicationRow.StPartyContact);
+                // Write(ShortTermApplicationRow.IsStPartyTogetherNull()? "" :  ShortTermApplicationRow.StPartyTogether);
                 Write(ShortTermApplicationRow.IsStPreCongressCodeNull()? "" : ShortTermApplicationRow.StPreCongressCode);
-                Write(ShortTermApplicationRow.IsStProgramFeeReceivedNull()? false : ShortTermApplicationRow.StProgramFeeReceived);
-                Write(ShortTermApplicationRow.IsStRecruitEffortsNull()? "" : ShortTermApplicationRow.StRecruitEfforts);
-                Write(ShortTermApplicationRow.IsStScholarshipAmountNull()? 0 : ShortTermApplicationRow.StScholarshipAmount);
-                Write(ShortTermApplicationRow.IsStScholarshipApprovedByNull()? "" : ShortTermApplicationRow.StScholarshipApprovedBy);
-                Write(ShortTermApplicationRow.IsStScholarshipPeriodNull()? "" : ShortTermApplicationRow.StScholarshipPeriod);
-                Write(ShortTermApplicationRow.IsStScholarshipReviewDateNull()? "?" : ShortTermApplicationRow.StScholarshipReviewDate.Value.ToString(DATEFORMAT));
+                // Write(ShortTermApplicationRow.IsStProgramFeeReceivedNull()? false : ShortTermApplicationRow.StProgramFeeReceived);
+                // Write(ShortTermApplicationRow.IsStRecruitEffortsNull()? "" : ShortTermApplicationRow.StRecruitEfforts);
+                // Write(ShortTermApplicationRow.IsStScholarshipAmountNull()? 0 : ShortTermApplicationRow.StScholarshipAmount);
+                // Write(ShortTermApplicationRow.IsStScholarshipApprovedByNull()? "" : ShortTermApplicationRow.StScholarshipApprovedBy);
+                // Write(ShortTermApplicationRow.IsStScholarshipPeriodNull()? "" : ShortTermApplicationRow.StScholarshipPeriod);
+                // Write(ShortTermApplicationRow.IsStScholarshipReviewDateNull()? "?" : ShortTermApplicationRow.StScholarshipReviewDate.Value.ToString(DATEFORMAT));
                 WriteLine();
                 Write(ShortTermApplicationRow.IsStSpecialApplicantNull()? "" : ShortTermApplicationRow.StSpecialApplicant);
                 Write(ShortTermApplicationRow.IsStActivityPrefNull()? "" : ShortTermApplicationRow.StActivityPref);
@@ -168,17 +168,17 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 Write(ShortTermApplicationRow.IsContactNumberNull()? "" : ShortTermApplicationRow.ContactNumber);
                 Write(ShortTermApplicationRow.IsArrivalDetailsStatusNull()? "" : ShortTermApplicationRow.ArrivalDetailsStatus);
                 Write(ShortTermApplicationRow.IsArrivalTransportNeededNull()? false : ShortTermApplicationRow.ArrivalTransportNeeded);
-                Write(ShortTermApplicationRow.IsArrivalExpNull()? "?" : ShortTermApplicationRow.ArrivalExp.Value.ToString(DATEFORMAT));
-                Write(ShortTermApplicationRow.IsArrivalExpHourNull()? 0 : ShortTermApplicationRow.ArrivalExpHour);
-                Write(ShortTermApplicationRow.IsArrivalMinuteNull()? 0 : ShortTermApplicationRow.ArrivalExpMinute);
+                // Write(ShortTermApplicationRow.IsArrivalExpNull()? "?" : ShortTermApplicationRow.ArrivalExp.Value.ToString(DATEFORMAT));
+                // Write(ShortTermApplicationRow.IsArrivalExpHourNull()? 0 : ShortTermApplicationRow.ArrivalExpHour);
+                // Write(ShortTermApplicationRow.IsArrivalMinuteNull()? 0 : ShortTermApplicationRow.ArrivalExpMinute);
                 Write(ShortTermApplicationRow.IsArrivalCommentsNull()? "" : ShortTermApplicationRow.ArrivalComments);
                 Write(ShortTermApplicationRow.IsTransportInterestNull()? false : ShortTermApplicationRow.TransportInterest);
                 WriteLine();
                 Write(ShortTermApplicationRow.IsDepartureDetailsStatusNull()? "" : ShortTermApplicationRow.DepartureDetailsStatus);
                 Write(ShortTermApplicationRow.IsDepartureTransportNeededNull()? false : ShortTermApplicationRow.DepartureTransportNeeded);
-                Write(ShortTermApplicationRow.IsDepartureExpNull()? "?" : ShortTermApplicationRow.DepartureExp.Value.ToString(DATEFORMAT));
-                Write(ShortTermApplicationRow.IsDepartureHourNull()? 0 : ShortTermApplicationRow.DepartureExpHour);
-                Write(ShortTermApplicationRow.IsDepartureMinuteNull()? 0 : ShortTermApplicationRow.DepartureExpMinute);
+                // Write(ShortTermApplicationRow.IsDepartureExpNull()? "?" : ShortTermApplicationRow.DepartureExp.Value.ToString(DATEFORMAT));
+                // Write(ShortTermApplicationRow.IsDepartureHourNull()? 0 : ShortTermApplicationRow.DepartureExpHour);
+                // Write(ShortTermApplicationRow.IsDepartureMinuteNull()? 0 : ShortTermApplicationRow.DepartureExpMinute);
                 Write(ShortTermApplicationRow.IsDepartureCommentsNull()? "" : ShortTermApplicationRow.DepartureComments);
                 WriteLine();
             }
@@ -216,19 +216,19 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 Write("");                 // ShortTermApplicationRow.StFgCode
                 Write(false);              // ShortTermApplicationRow.StFgLeader
                 Write(0);                  // ShortTermApplicationRow.StFieldCharged
-                Write("");                 // ShortTermApplicationRow.StLeadershipRating
-                Write(0);                  // ShortTermApplicationRow.StOption1
-                Write(0);                  // ShortTermApplicationRow.StOption2
+                // Write("");              // ShortTermApplicationRow.StLeadershipRating removed
+                // Write(0);               // ShortTermApplicationRow.StOption1
+                // Write(0);               // ShortTermApplicationRow.StOption2
                 WriteLine();
-                Write(0);                  // ShortTermApplicationRow.StPartyContact
-                Write("");                 // ShortTermApplicationRow.StPartyTogether
+                // Write(0);               // ShortTermApplicationRow.StPartyContact
+                // Write("");              // ShortTermApplicationRow.StPartyTogether
                 Write("");                 // ShortTermApplicationRow.StPreCongressCode
-                Write(false);              // ShortTermApplicationRow.StProgramFeeReceived
-                Write("");                 // ShortTermApplicationRow.StRecruitEfforts
-                Write(0);                  // ShortTermApplicationRow.StScholarshipAmount
-                Write("");                 // ShortTermApplicationRow.StScholarshipApprovedBy
-                Write("");                 // ShortTermApplicationRow.StScholarshipPeriod
-                Write("?");                // ShortTermApplicationRow.StScholarshipReviewDate
+                // Write(false);           // ShortTermApplicationRow.StProgramFeeReceived
+                // Write("");              // ShortTermApplicationRow.StRecruitEfforts
+                // Write(0);               // ShortTermApplicationRow.StScholarshipAmount
+                // Write("");              // ShortTermApplicationRow.StScholarshipApprovedBy
+                // Write("");              // ShortTermApplicationRow.StScholarshipPeriod
+                // Write("?");             // ShortTermApplicationRow.StScholarshipReviewDate
                 WriteLine();
                 Write("");                 // ShortTermApplicationRow.StSpecialApplicant
                 Write("");                 // ShortTermApplicationRow.StActivityPref
@@ -241,17 +241,17 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 Write("");                 // ShortTermApplicationRow.ContactNumber
                 Write("");                 // ShortTermApplicationRow.ArrivalDetailsStatus
                 Write(false);              // ShortTermApplicationRow.ArrivalTransportNeeded
-                Write("?");                // ShortTermApplicationRow.ArrivalExp
-                Write(0);                  // ShortTermApplicationRow.ArrivalExpHour
-                Write(0);                  // ShortTermApplicationRow.ArrivalExpMinute
+                // Write("?");             // ShortTermApplicationRow.ArrivalExp
+                // Write(0);               // ShortTermApplicationRow.ArrivalExpHour
+                // Write(0);               // ShortTermApplicationRow.ArrivalExpMinute
                 Write("");                 // ShortTermApplicationRow.ArrivalComments
                 Write(false);              // ShortTermApplicationRow.TransportInterest
                 WriteLine();
                 Write("");                 // ShortTermApplicationRow.DepartureDetailsStatus
                 Write(false);              // ShortTermApplicationRow.DepartureTransportNeeded
-                Write("?");                // ShortTermApplicationRow.DepartureExp
-                Write(0);                  // ShortTermApplicationRow.DepartureExpHour
-                Write(0);                  // ShortTermApplicationRow.DepartureExpMinute
+                // Write("?");             // ShortTermApplicationRow.DepartureExp
+                // Write(0);               // ShortTermApplicationRow.DepartureExpHour
+                // Write(0);               // ShortTermApplicationRow.DepartureExpMinute
                 Write("");                 // ShortTermApplicationRow.DepartureComments
                 WriteLine();
             }
@@ -278,7 +278,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 Write(Row.IsHoOrientConfBookingKeyNull()? "" : Row.HoOrientConfBookingKey);
                 Write(Row.IsYpAgreedJoiningChargeNull()? 0 : Row.YpAgreedJoiningCharge);
                 Write(Row.IsYpAgreedSupportFigureNull()? 0 : Row.YpAgreedSupportFigure);
-                Write(Row.IsYpAppFeeReceivedNull()? false : Row.YpAppFeeReceived);
+                // Write(Row.IsYpAppFeeReceivedNull()? false : Row.YpAppFeeReceived);  // Field removed
                 Write(Row.IsYpBasicDeleteFlagNull()? false : Row.YpBasicDeleteFlag);
                 Write(Row.IsYpJoiningConfNull()? 0 : Row.YpJoiningConf);
                 Write(Row.IsStartOfCommitmentNull()? "?" : Row.StartOfCommitment.Value.ToString(DATEFORMAT));
@@ -288,12 +288,12 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 Write(Row.IsPositionScopeNull()? "" : Row.PositionScope);
                 Write(Row.IsAssistantToNull()? false : Row.AssistantTo);
                 WriteLine();
-                Write(Row.IsYpScholarshipAthrizedByNull()? "" : Row.YpScholarshipAthrizedBy);
-                Write(Row.IsYpScholarshipBeginDateNull()? "?" : Row.YpScholarshipBeginDate.Value.ToString(DATEFORMAT));
-                Write(Row.IsYpScholarshipEndDateNull()? "?" : Row.YpScholarshipEndDate.Value.ToString(DATEFORMAT));
-                Write(Row.IsYpScholarshipNull()? 0 : Row.YpScholarship);
-                Write(Row.IsYpScholarshipPeriodNull()? "" : Row.YpScholarshipPeriod);
-                Write(Row.IsYpScholarshipReviewDateNull()? "?" : Row.YpScholarshipReviewDate.Value.ToString(DATEFORMAT));
+                // Write(Row.IsYpScholarshipAthrizedByNull()? "" : Row.YpScholarshipAthrizedBy);
+                // Write(Row.IsYpScholarshipBeginDateNull()? "?" : Row.YpScholarshipBeginDate.Value.ToString(DATEFORMAT));
+                // Write(Row.IsYpScholarshipEndDateNull()? "?" : Row.YpScholarshipEndDate.Value.ToString(DATEFORMAT));
+                // Write(Row.IsYpScholarshipNull()? 0 : Row.YpScholarship);
+                // Write(Row.IsYpScholarshipPeriodNull()? "" : Row.YpScholarshipPeriod);
+                // Write(Row.IsYpScholarshipReviewDateNull()? "?" : Row.YpScholarshipReviewDate.Value.ToString(DATEFORMAT));
                 Write(Row.IsYpSupportPeriodNull()? "" : Row.YpSupportPeriod);
                 WriteLine();
             }
@@ -302,24 +302,24 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 // PmYearProgramApplicationRow YearProgramApplicationRow =
                 //    (PmYearProgramApplicationRow)AMainDS.PmYearProgramApplication.DefaultView[0].Row;
                 Write("");                 // YearProgramApplicationRow.HoOrientConfBookingKey
-                Write(0);                 // YearProgramApplicationRow.YpAgreedJoiningCharge
-                Write(0);                 // YearProgramApplicationRow.YpAgreedSupportFigure
-                Write(false);                 // YearProgramApplicationRow.YpAppFeeReceived
-                Write(false);                 // YearProgramApplicationRow.YpBasicDeleteFlag
-                Write(0);                 // YearProgramApplicationRow.YpJoiningConf
-                Write("?");                 // YearProgramApplicationRow.StartOfCommitment
-                Write("?");                 // YearProgramApplicationRow.EndOfCommitment
-                Write(0);                 // YearProgramApplicationRow.IntendedComLengthMonths
+                Write(0);                  // YearProgramApplicationRow.YpAgreedJoiningCharge
+                Write(0);                  // YearProgramApplicationRow.YpAgreedSupportFigure
+                // Write(false);           // YearProgramApplicationRow.YpAppFeeReceived
+                Write(false);              // YearProgramApplicationRow.YpBasicDeleteFlag
+                Write(0);                  // YearProgramApplicationRow.YpJoiningConf
+                Write("?");                // YearProgramApplicationRow.StartOfCommitment
+                Write("?");                // YearProgramApplicationRow.EndOfCommitment
+                Write(0);                  // YearProgramApplicationRow.IntendedComLengthMonths
                 Write("");                 // YearProgramApplicationRow.PositionName
                 Write("");                 // YearProgramApplicationRow.PositionScope
-                Write(false);                 // YearProgramApplicationRow.AssistantTo
+                Write(false);              // YearProgramApplicationRow.AssistantTo
                 WriteLine();
-                Write("");                 // YearProgramApplicationRow.YpScholarshipAthrizedBy
-                Write("?");                 // YearProgramApplicationRow.YpScholarshipBeginDate
-                Write("?");                 // YearProgramApplicationRow.YpScholarshipEndDate
-                Write(0);                 // YearProgramApplicationRow.YpScholarship
-                Write("");                 // YearProgramApplicationRow.YpScholarshipPeriod
-                Write("?");                 // YearProgramApplicationRow.YpScholarshipReviewDate
+                // Write("");              // YearProgramApplicationRow.YpScholarshipAthrizedBy
+                // Write("?");             // YearProgramApplicationRow.YpScholarshipBeginDate
+                // Write("?");             // YearProgramApplicationRow.YpScholarshipEndDate
+                // Write(0);               // YearProgramApplicationRow.YpScholarship
+                // Write("");              // YearProgramApplicationRow.YpScholarshipPeriod
+                // Write("?");             // YearProgramApplicationRow.YpScholarshipReviewDate
                 Write("");                 // YearProgramApplicationRow.YpSupportPeriod
                 WriteLine();
             }
@@ -424,11 +424,11 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             {
                 Write("PERSONAL");
                 WriteLine();
-                Write(PersonalDataRow.IsDriverStatusNull()? "" : PersonalDataRow.DriverStatus);
-                Write(PersonalDataRow.IsGenDriverLicenseNull()? false : PersonalDataRow.GenDriverLicense);
-                Write(PersonalDataRow.IsDrivingLicenseNumberNull()? "" : PersonalDataRow.DrivingLicenseNumber);
-                Write(PersonalDataRow.IsInternalDriverLicenseNull()? false : PersonalDataRow.InternalDriverLicense);
-                WriteLine();
+                // Write(PersonalDataRow.IsDriverStatusNull()? "" : PersonalDataRow.DriverStatus);
+                // Write(PersonalDataRow.IsGenDriverLicenseNull()? false : PersonalDataRow.GenDriverLicense);
+                // Write(PersonalDataRow.IsDrivingLicenseNumberNull()? "" : PersonalDataRow.DrivingLicenseNumber);
+                // Write(PersonalDataRow.IsInternalDriverLicenseNull()? false : PersonalDataRow.InternalDriverLicense);
+                // WriteLine();
             }
 
             foreach (PmPassportDetailsRow PassportDetailsRow in AMainDS.PmPassportDetails.Rows)
@@ -500,7 +500,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 Write("SPECNEED");
                 WriteLine();
                 Write(SpecialNeedRow.IsDateCreatedNull()? "?" : SpecialNeedRow.DateCreated.Value.ToString(DATEFORMAT));
-                Write(SpecialNeedRow.IsContactHomeOfficeNull()? false : SpecialNeedRow.ContactHomeOffice);
+                // Write(false); // ContactHomeOffice is removed
                 Write(SpecialNeedRow.IsVegetarianFlagNull()? false : SpecialNeedRow.VegetarianFlag);
                 WriteLine();
                 Write(SpecialNeedRow.IsDietaryCommentNull()? "" : SpecialNeedRow.DietaryComment);
@@ -537,9 +537,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 WriteLine();
                 Write(PersonLanguageRow.IsLanguageCodeNull()? "" : PersonLanguageRow.LanguageCode);
                 WriteLine();
-                Write(PersonLanguageRow.IsWillingToTranslateNull()? false : PersonLanguageRow.WillingToTranslate);
-                Write(PersonLanguageRow.IsTranslateIntoNull()? false : PersonLanguageRow.TranslateInto);
-                Write(PersonLanguageRow.IsTranslateOutOfNull()? false : PersonLanguageRow.TranslateOutOf);
+                // Write(PersonLanguageRow.IsWillingToTranslateNull()? false : PersonLanguageRow.WillingToTranslate);
+                // Write(PersonLanguageRow.IsTranslateIntoNull()? false : PersonLanguageRow.TranslateInto);
+                // Write(PersonLanguageRow.IsTranslateOutOfNull()? false : PersonLanguageRow.TranslateOutOf);
                 Write(PersonLanguageRow.IsYearsOfExperienceNull()? 0 : PersonLanguageRow.YearsOfExperience);
                 Write(PersonLanguageRow.IsLanguageLevelNull()? 0 : PersonLanguageRow.LanguageLevel);
                 Write(PersonLanguageRow.IsYearsOfExperienceAsOfNull()? "?" : PersonLanguageRow.YearsOfExperienceAsOf.Value.ToString(DATEFORMAT));
@@ -558,17 +558,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 Write(PersonAbilityRow.IsBringingInstrumentNull()? false : PersonAbilityRow.BringingInstrument);
                 Write(PersonAbilityRow.IsYearsOfExperienceAsOfNull()? "?" : PersonAbilityRow.YearsOfExperienceAsOf.Value.ToString(DATEFORMAT));
                 Write(PersonAbilityRow.IsCommentNull()? "" : PersonAbilityRow.Comment);
-                WriteLine();
-            }
-
-            foreach (PmPersonVisionRow PersonVisionRow in AMainDS.PmPersonVision.Rows)
-            {
-                Write("VISION");
-                WriteLine();
-                Write(PersonVisionRow.IsVisionAreaNameNull()? "" : PersonVisionRow.VisionAreaName);
-                WriteLine();
-                Write(PersonVisionRow.IsVisionLevelNull()? 0 : PersonVisionRow.VisionLevel);
-                Write(PersonVisionRow.IsVisionCommentNull()? "" : PersonVisionRow.VisionComment);
                 WriteLine();
             }
 

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -180,8 +180,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.cmbAcquisitionCode.ListTable = TCmbAutoPopulated.TListTableEnum.AcquisitionCodeList;
             this.cmbAcquisitionCode.Location = new System.Drawing.Point(118, 242);
             this.cmbAcquisitionCode.Name = "cmbAcquisitionCode";
-            this.cmbAcquisitionCode.SelectedItem = ((System.Object)(resources.GetObject('c' + "mbAcquisitionCode.SelectedItem")));
-            this.cmbAcquisitionCode.SelectedValue = null;
             this.cmbAcquisitionCode.Size = new System.Drawing.Size(384, 22);
             this.cmbAcquisitionCode.TabIndex = 8;
 
@@ -214,8 +212,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.cmbPartnerClass.ListTable = TCmbAutoPopulated.TListTableEnum.PartnerClassList;
             this.cmbPartnerClass.Location = new System.Drawing.Point(118, 219);
             this.cmbPartnerClass.Name = "cmbPartnerClass";
-            this.cmbPartnerClass.SelectedItem = ((System.Object)(resources.GetObject('c' + "mbPartnerClass.SelectedItem")));
-            this.cmbPartnerClass.SelectedValue = null;
             this.cmbPartnerClass.Size = new System.Drawing.Size(132, 22);
             this.cmbPartnerClass.TabIndex = 5;
             this.cmbPartnerClass.SelectedValueChanged += new System.EventHandler(this.CmbPartnerClass_SelectedValueChanged);

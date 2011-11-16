@@ -248,18 +248,6 @@ namespace Ict.Common
     }
 
     /// <summary>
-    /// Surrogate Base Interface
-    /// All Interfaces can safely derive from this Interface. The reason why we have this is:
-    /// that all Types that implement any Interfaces that themselves derives from IInterface
-    /// can be cast to IInterface (and passed as Function Argument: eg. IInterface AnObject).
-    /// This is important for .NET Remoting scenarios.
-    ///
-    /// </summary>
-    public interface IInterface
-    {
-    }
-
-    /// <summary>
     /// some functions that are useful for operating with the enums defined in Ict.Common
     /// </summary>
     public class CommonTypes

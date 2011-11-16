@@ -93,6 +93,54 @@
         
         return Path.GetFullPath(workingDirectory + Path.DirectorySeparatorChar + relativePath);
     }
+
+    private static void GetProgramFiles(out string ProgramFiles, out string ProgramFilesX86)
+    {
+        ProgramFiles = Environment.GetEnvironmentVariable("ProgramFiles");
+        ProgramFilesX86 = Environment.GetEnvironmentVariable("ProgramFiles(x86)");
+        if (ProgramFiles == ProgramFilesX86)
+        {
+            ProgramFiles = Environment.GetEnvironmentVariable("ProgramW6432");
+        }
+    }
+
+    /// for Windows: check if the program exists in the 32bit or 64bit location of the Program Files.
+    /// returns the full path of the file
+    [Function("GetFileInProgramDirectory")]
+    public static string GetFileInProgramDirectory(string relativePath)
+    {
+        string ProgramFiles;
+        string ProgramFilesX86;
+        GetProgramFiles(out ProgramFiles, out ProgramFilesX86);
+        if (File.Exists(ProgramFiles + relativePath))
+        {
+            return ProgramFiles + relativePath;
+        }
+        else if (File.Exists(ProgramFilesX86 + relativePath))
+        {
+            return ProgramFilesX86 + relativePath;
+        }
+        return ProgramFiles + relativePath;
+    }
+
+    /// for Windows: check if the directory exists in the 32bit or 64bit location of the Program Files.
+    /// returns the full path of the file
+    [Function("GetDirInProgramDirectory")]
+    public static string GetDirInProgramDirectory(string relativePath)
+    {
+        string ProgramFiles;
+        string ProgramFilesX86;
+        GetProgramFiles(out ProgramFiles, out ProgramFilesX86);
+        if (Directory.Exists(ProgramFiles + relativePath))
+        {
+            return ProgramFiles + relativePath;
+        }
+        else if (Directory.Exists(ProgramFilesX86 + relativePath))
+        {
+            return ProgramFilesX86 + relativePath;
+        }
+        return ProgramFiles + relativePath;
+    }
 ]]>
     </code>
 </script>
@@ -153,6 +201,16 @@
  <!-- webserver -->
 <property name="dir.webserver" value="${path::combine(dir.delivery, 'webserver')}" overwrite="false" />
 <property name="dir.webserver.bin" value="${path::combine(dir.webserver, 'bin')}" overwrite="false" />
+<property name="webserver.includeSamples" value="true" overwrite="false"/>
+<property name="dir.webforms.source" value="${dir.root}/webserver" overwrite="false"/>
+<property name="dir.webforms.delivery" value="${dir.webserver}" overwrite="false"/>
+<property name="dir.webserver.OnlineRegBackend.doc" value="" overwrite="false"/>
+<property name="dir.webserver.OnlineReg.doc" value="" overwrite="false"/>
+<property name="dir.webserver.DirectLinks" value="" overwrite="false"/>
+<property name="dir.webserver.ProductionConfig" value="" overwrite="false"/>
+<property name="dir.webserver.Formletters" value="${dir.root}/demodata/formletters" overwrite="false"/>
+<property name="dir.webserver.Badges" value="" overwrite="false"/>
+<property name="dir.webserver.HtmlReports" value="" overwrite="false"/>
 
 <!-- build tools -->
 <property name="devenv-name" value="sharpdevelop3"
@@ -231,9 +289,15 @@
 
 <!-- generateWinforms -->
 <property name="tool-generateWinForms" value="${dir.bin}/Ict.Tools.GenerateWinForms.exe" overwrite="false" />
-<!-- leave this empty for MS.net and AutoSize/TableLayoutPanel, mono-x.x needs it set! -->
-<property name="GUILocalisation" value="" overwrite="false" unless="${string::starts-with(framework::get-target-framework(), 'mono-')}"/> 
-<property name="GUILocalisation" value="en" overwrite="false" if="${string::starts-with(framework::get-target-framework(), 'mono-')}" />
+<!-- leave this empty for MS.net and AutoSize/TableLayoutPanel, mono-x.x needs GUILocalisation value en! -->
+<property name="GUILocalisation" value="" overwrite="false"/> 
+<!-- the gui is either generated for mono or net. This is due to some problems with AutoSize of filled docking panels -->
+<property name="TargetPlatformGUI" value="net" overwrite="false"/>
+
+<property name="tool-generateEncryptionKey" value="${dir.bin}/Ict.Tools.GenerateEncryptionKey.exe" overwrite="false" />
+
+<property name="OrgName" value="MyOpenPetra" overwrite="false"/>
+<property name="OrgNameWithoutSpace" value="${string::replace(OrgName, ' ', '')}" overwrite="false"/>
     
 <!-- loglevel -->
 <property name="verbose" value="false"  overwrite="false" />
@@ -254,11 +318,11 @@
 
 <if test="${'win32'==platform::get-name()}" >
   <!-- MS Windows specific -->
-  <property name="external.Uncrustify" value="${environment::get-variable('ProgramFiles')}/uncrustify/uncrustify.exe" 
+  <property name="external.Uncrustify" value="${OP::GetFileInProgramDirectory('/uncrustify/uncrustify.exe')}" 
             overwrite="false"/>
-  <property name="external.Poedit.gettext" value="${environment::get-variable('ProgramFiles')}/Poedit/bin/xgettext.exe" overwrite="false"/>
-  <property name="external.Poedit.msgfmt" value="${environment::get-variable('ProgramFiles')}/Poedit/bin/msgfmt.exe" overwrite="false"/>
-  <property name="external.Poedit.msgcat" value="${environment::get-variable('ProgramFiles')}/Poedit/bin/msgcat.exe" overwrite="false"/> 
+  <property name="external.Poedit.gettext" value="${OP::GetFileInProgramDirectory('/Poedit/bin/xgettext.exe')}" overwrite="false"/>
+  <property name="external.Poedit.msgfmt" value="${OP::GetFileInProgramDirectory('/Poedit/bin/msgfmt.exe')}" overwrite="false"/>
+  <property name="external.Poedit.msgcat" value="${OP::GetFileInProgramDirectory('/Poedit/bin/msgcat.exe')}" overwrite="false"/> 
             
 </if>
 <if test="${'win32'!=platform::get-name()}">

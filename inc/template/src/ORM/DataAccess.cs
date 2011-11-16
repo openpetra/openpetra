@@ -252,7 +252,7 @@ public class {#TABLENAME}Access : TTypedDataAccess
     /// check if a row exists by using the unique key
     public static bool Exists({#FORMALPARAMETERSUNIQUEKEY}, TDBTransaction ATransaction)
     {
-        return Exists({#TABLENAME}Table.TableId, new System.Object[{#UNIQUEKEYNUMBERCOLUMNS}]{{#ACTUALPARAMETERSUNIQUEKEY}}, ATransaction);
+        return ExistsUniqueKey({#TABLENAME}Table.TableId, new System.Object[{#UNIQUEKEYNUMBERCOLUMNS}]{{#ACTUALPARAMETERSUNIQUEKEY}}, ATransaction);
     }
 {#ENDIF FORMALPARAMETERSUNIQUEKEY}
 

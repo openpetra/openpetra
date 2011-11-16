@@ -617,7 +617,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 {
                     // for Mono, no other size information required; AutoSize would make the elements too high
                     // for Windows .Net, we need AutoSize, otherwise the controls have no size at all
-                    if (writer.CodeStorage.FTargetWinforms == "net-2.0")
+                    if (writer.CodeStorage.FTargetWinforms == "net")
                     {
                         writer.SetControlProperty(ctrl, "AutoSize", "true");
                     }
@@ -757,7 +757,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             else if (writer.CodeStorage.HasAttribute("MasterTable") || writer.CodeStorage.HasAttribute("DetailTable"))
             {
                 //if (ctrl.controlTypePrefix != "lbl" && ctrl.controlTypePrefix != "pnl" && ctrl.controlTypePrefix != "grp" &&
-                if (!(this is LabelGenerator))
+                if (!((this is LabelGenerator) || (this is LinkLabelGenerator)))
                 {
                     bool IsDetailNotMaster;
                     TTableField field = TDataBinding.GetTableField(ctrl, ctrl.controlName.Substring(
