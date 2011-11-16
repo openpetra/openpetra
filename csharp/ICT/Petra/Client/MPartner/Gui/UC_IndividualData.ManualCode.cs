@@ -41,7 +41,7 @@ namespace Ict.Petra.Client.MPartner.Gui
     {
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
-        
+
         private Dictionary <string, string>FLinkLabelsOrigTexts;
         private IndividualDataTDS FMainDS;          // FMainDS is NOT of Type 'PartnerEditTDS' in this UserControl!!!
         private PartnerEditTDS FPartnerEditTDS;
@@ -101,7 +101,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FPartnerEditTDS = value;
             }
         }
-        
+
         #endregion
 
         #region Public Methods
@@ -122,10 +122,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             ucoSummaryData.MainDS = FMainDS;
             ucoSummaryData.PartnerEditUIConnector = FPartnerEditUIConnector;
             ucoSummaryData.SpecialInitUserControl(FMainDS);
-            
+
             // Hook up ColumnChanging Event of the FPartnerEditTDS's PPerson Table
-            FPartnerEditTDS.PPerson.ColumnChanged += delegate { 
-            	ucoSummaryData.FMainDS_PPerson_ColumnChanged(FPartnerEditTDS.PPerson[0]);
+            FPartnerEditTDS.PPerson.ColumnChanged += delegate {
+                ucoSummaryData.FMainDS_PPerson_ColumnChanged(FPartnerEditTDS.PPerson[0]);
             };
 
             // Store the text that the LinkLabels show originally (used for repeated updating the numbers in the strings)
@@ -146,7 +146,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (FUserControlSetup != null)
             {
-            	// Special Needs
+                // Special Needs
                 if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucSpecialNeeds))
                 {
                     TUC_IndividualData_SpecialNeeds UCSpecialNeeds =
@@ -192,38 +192,37 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>void</returns>
         public void RefreshPersonnelDataAfterMerge(bool AAddressesOrRelationsChanged)
         {
-        	//
-        	// Need to merge Tables from PartnerEditTDS into IndividualDataTDS so the updated s_modification_id_c of modififed Rows is held correctly in IndividualDataTDS, too!
-        	//
-        	
-        	// ...but first empty relevant DataTables to ensure that DataRows that got deleted in FPartnerEditTDS are reflected in FMainDS (just performing a Merge wouldn't remove them!)
-        	if (FMainDS.Tables.Contains(PPartnerLocationTable.GetTableName()))
-        	{
-        		FMainDS.Tables[PPartnerLocationTable.GetTableName()].Rows.Clear();	
-        	}
-        	
-        	if (FMainDS.Tables.Contains(PLocationTable.GetTableName()))
-        	{
-        		FMainDS.Tables[PLocationTable.GetTableName()].Rows.Clear();	
-        	}        	
-        	
-        	if (FMainDS.Tables.Contains(PPartnerRelationshipTable.GetTableName()))
-        	{
-        		FMainDS.Tables[PPartnerRelationshipTable.GetTableName()].Rows.Clear();	
-        	}
-        	
+            //
+            // Need to merge Tables from PartnerEditTDS into IndividualDataTDS so the updated s_modification_id_c of modififed Rows is held correctly in IndividualDataTDS, too!
+            //
+
+            // ...but first empty relevant DataTables to ensure that DataRows that got deleted in FPartnerEditTDS are reflected in FMainDS (just performing a Merge wouldn't remove them!)
+            if (FMainDS.Tables.Contains(PPartnerLocationTable.GetTableName()))
+            {
+                FMainDS.Tables[PPartnerLocationTable.GetTableName()].Rows.Clear();
+            }
+
+            if (FMainDS.Tables.Contains(PLocationTable.GetTableName()))
+            {
+                FMainDS.Tables[PLocationTable.GetTableName()].Rows.Clear();
+            }
+
+            if (FMainDS.Tables.Contains(PPartnerRelationshipTable.GetTableName()))
+            {
+                FMainDS.Tables[PPartnerRelationshipTable.GetTableName()].Rows.Clear();
+            }
+
             // Now perform the Merge operation
             FMainDS.Merge(FPartnerEditTDS);
 
             // Call AcceptChanges on IndividualDataTDS so that we don't have any changed data anymore (this is done to PartnerEditTDS, too, after this Method returns)!
             FMainDS.AcceptChanges();
-            
-            
+
             // Let the 'Overview' UserControl determine whether it needs to refresh the data it displays.
-            if (AAddressesOrRelationsChanged) 
+            if (AAddressesOrRelationsChanged)
             {
-            	ucoSummaryData.CheckForRefreshOfDisplayedData();
-            }            
+                ucoSummaryData.CheckForRefreshOfDisplayedData();
+            }
         }
 
         /// <summary>
@@ -238,7 +237,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         #endregion
 
-        
+
         #region Private Methods
 
         /// <summary>
@@ -314,8 +313,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     ReturnValue = ucoPersonalLanguages;
                     break;
-                    
-            	// TODO Add case code blocks for all remaining Individual Data Items
+
+                    // TODO Add case code blocks for all remaining Individual Data Items
             }
 
             return ReturnValue;
@@ -341,7 +340,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         #endregion
 
-        
+
         #region Event Handlers
 
         /// <summary>
@@ -484,7 +483,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (e.ScreenPart == TScreenPartEnum.spCounters)
             {
-            	// Update the numbers in the strings of the LinkLabels
+                // Update the numbers in the strings of the LinkLabels
                 CalculateLinkLabelCounters(sender);
             }
         }

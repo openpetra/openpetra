@@ -26,8 +26,8 @@ using System.Data;
 
 namespace Ict.Petra.Shared
 {
-	/// <summary>
-	/// Delegate for both client- and serverside use to retrieve a DataTable of the data cache (client- or serverside).
-	/// </summary>
+    /// <summary>
+    /// Delegate for both client- and serverside use to retrieve a DataTable of the data cache (client- or serverside).
+    /// </summary>
     public delegate DataTable TGetCacheableDataTableFromCache(String ACacheableTableName, out System.Type AType);
 }

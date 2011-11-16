@@ -42,52 +42,52 @@ namespace Ict.Petra.Server.MPartner
         /// Determines which address is the 'Best Address' of a Partner.
         /// </summary>
         /// <remarks>There are two similar shared Methods in Namespace Ict.Petra.Shared.MPartner.Calculations,
-        /// both called 'DetermineBestAddress' which work by passing in the PartnerLocations of a Partner in an Argument 
+        /// both called 'DetermineBestAddress' which work by passing in the PartnerLocations of a Partner in an Argument
         /// and which return a <see cref="TLocationPK" />. As those Methods don't access the database, these Methods
         /// can be used client-side as well!</remarks>
-        /// <param name="APartnerKey">PartnerKey of the Partner whose addresses should be checked.</param>        
-        /// <returns>A <see cref="TLocationPK" /> which points to the 'Best Address'. If no 'Best Address' was found, 
+        /// <param name="APartnerKey">PartnerKey of the Partner whose addresses should be checked.</param>
+        /// <returns>A <see cref="TLocationPK" /> which points to the 'Best Address'. If no 'Best Address' was found,
         /// SiteKey and LocationKey of this instance will be both -1.</returns>
         public static TLocationPK DetermineBestAddress(Int64 APartnerKey)
         {
-        	TLocationPK BestLocation = new TLocationPK();      	
-        	PPartnerLocationRow Tmp;
-        	
-        	BestLocation = DetermineBestAddress(APartnerKey, out Tmp);
+            TLocationPK BestLocation = new TLocationPK();
+            PPartnerLocationRow Tmp;
 
-			return BestLocation;
+            BestLocation = DetermineBestAddress(APartnerKey, out Tmp);
+
+            return BestLocation;
         }
-    	
+
         /// <summary>
-        /// Determines which address is the 'Best Address' of a Partner, and returns the PPartnerLocation record which is the 
+        /// Determines which address is the 'Best Address' of a Partner, and returns the PPartnerLocation record which is the
         /// 'Best Address'.
         /// </summary>
         /// <remarks>There are two similar shared Methods in Namespace Ict.Petra.Shared.MPartner.Calculations,
-        /// both called 'DetermineBestAddress' which work by passing in the PartnerLocations of a Partner in an Argument 
+        /// both called 'DetermineBestAddress' which work by passing in the PartnerLocations of a Partner in an Argument
         /// and which return a <see cref="TLocationPK" />. As those Methods don't access the database, these Methods
         /// can be used client-side as well!</remarks>
         /// <param name="APartnerKey">PartnerKey of the Partner whose addresses should be checked.</param>
-		/// <param name="APartnerLocationDR">PPartnerLocation Record that is the record that is the Location of the 'Best Address'.</param>
-        /// <returns>A <see cref="TLocationPK" /> which points to the 'Best Address'. If no 'Best Address' was found, 
+        /// <param name="APartnerLocationDR">PPartnerLocation Record that is the record that is the Location of the 'Best Address'.</param>
+        /// <returns>A <see cref="TLocationPK" /> which points to the 'Best Address'. If no 'Best Address' was found,
         /// SiteKey and LocationKey of this instance will be both -1.</returns>
         public static TLocationPK DetermineBestAddress(Int64 APartnerKey, out PPartnerLocationRow APartnerLocationDR)
         {
-        	TLocationPK ReturnValue = new TLocationPK();
-			PPartnerLocationTable PartnerLocationDT;
+            TLocationPK ReturnValue = new TLocationPK();
+            PPartnerLocationTable PartnerLocationDT;
             Boolean NewTransaction;
-            
+
             TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
                 Ict.Petra.Server.MCommon.MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
-            
+
             try
-            {				
-				PartnerLocationDT = PPartnerLocationAccess.LoadViaPPartner(APartnerKey, ReadTransaction);
-				ReturnValue = Ict.Petra.Shared.MPartner.Calculations.DetermineBestAddress(PartnerLocationDT);				
-				
-				APartnerLocationDR = (PPartnerLocationRow)PartnerLocationDT.Rows.Find(new object[]
-				    {APartnerKey, ReturnValue.SiteKey, ReturnValue.LocationKey});
+            {
+                PartnerLocationDT = PPartnerLocationAccess.LoadViaPPartner(APartnerKey, ReadTransaction);
+                ReturnValue = Ict.Petra.Shared.MPartner.Calculations.DetermineBestAddress(PartnerLocationDT);
+
+                APartnerLocationDR = (PPartnerLocationRow)PartnerLocationDT.Rows.Find(new object[]
+                    { APartnerKey, ReturnValue.SiteKey, ReturnValue.LocationKey });
             }
             finally
             {
@@ -102,72 +102,71 @@ namespace Ict.Petra.Server.MPartner
 #endif
                 }
             }
-        
-			return ReturnValue;            
+
+            return ReturnValue;
         }
-               
-        
+
         /// <summary>
-        /// Determines which address is the 'Best Address' of a Partner, and returns the PLocation record which the 
+        /// Determines which address is the 'Best Address' of a Partner, and returns the PLocation record which the
         /// 'Best Address' is pointing to.
         /// </summary>
         /// <remarks>There are two similar shared Methods in Namespace Ict.Petra.Shared.MPartner.Calculations,
-        /// both called 'DetermineBestAddress' which work by passing in the PartnerLocations of a Partner in an Argument 
+        /// both called 'DetermineBestAddress' which work by passing in the PartnerLocations of a Partner in an Argument
         /// and which return a <see cref="TLocationPK" />. As those Methods don't access the database, these Methods
         /// can be used client-side as well!</remarks>
         /// <param name="APartnerKey">PartnerKey of the Partner whose addresses should be checked.</param>
         /// <param name="ALocationDR">PLocation Record that the 'Best Address' is pointing to.</param>
-        /// <returns>A <see cref="TLocationPK" /> which points to the 'Best Address'. If no 'Best Address' was found, 
+        /// <returns>A <see cref="TLocationPK" /> which points to the 'Best Address'. If no 'Best Address' was found,
         /// SiteKey and LocationKey of this instance will be both -1.</returns>
         public static TLocationPK DetermineBestAddress(Int64 APartnerKey, out PLocationRow ALocationDR)
         {
-        	TLocationPK BestLocation = new TLocationPK();
-			PPartnerLocationRow Tmp;
-        	
-        	ALocationDR = null;
-        	
-        	BestLocation = DetermineBestAddress(APartnerKey, out Tmp, out ALocationDR);
+            TLocationPK BestLocation = new TLocationPK();
+            PPartnerLocationRow Tmp;
 
-			return BestLocation;
+            ALocationDR = null;
+
+            BestLocation = DetermineBestAddress(APartnerKey, out Tmp, out ALocationDR);
+
+            return BestLocation;
         }
-        
+
         /// <summary>
-        /// Determines which address is the 'Best Address' of a Partner, and returns the PLocation record which the 
+        /// Determines which address is the 'Best Address' of a Partner, and returns the PLocation record which the
         /// 'Best Address' is pointing to.
         /// </summary>
         /// <remarks>There are two similar shared Methods in Namespace Ict.Petra.Shared.MPartner.Calculations,
-        /// both called 'DetermineBestAddress' which work by passing in the PartnerLocations of a Partner in an Argument 
+        /// both called 'DetermineBestAddress' which work by passing in the PartnerLocations of a Partner in an Argument
         /// and which return a <see cref="TLocationPK" />. As those Methods don't access the database, these Methods
         /// can be used client-side as well!</remarks>
         /// <param name="APartnerKey">PartnerKey of the Partner whose addresses should be checked.</param>
-		/// <param name="APartnerLocationDR">PPartnerLocation Record that is the record that is the Location of the 'Best Address'.</param>
+        /// <param name="APartnerLocationDR">PPartnerLocation Record that is the record that is the Location of the 'Best Address'.</param>
         /// <param name="ALocationDR">PLocation Record that the 'Best Address' is pointing to.</param>
-        /// <returns>A <see cref="TLocationPK" /> which points to the 'Best Address'. If no 'Best Address' was found, 
+        /// <returns>A <see cref="TLocationPK" /> which points to the 'Best Address'. If no 'Best Address' was found,
         /// SiteKey and LocationKey of this instance will be both -1.</returns>
         public static TLocationPK DetermineBestAddress(Int64 APartnerKey, out PPartnerLocationRow APartnerLocationDR, out PLocationRow ALocationDR)
         {
-        	PLocationTable LocationDT;
-        	TLocationPK BestLocation = new TLocationPK();
-        	Boolean NewTransaction;
-        	
-        	APartnerLocationDR = null;
-        	ALocationDR = null;
-        	
-        	BestLocation = DetermineBestAddress(APartnerKey, out APartnerLocationDR);
+            PLocationTable LocationDT;
+            TLocationPK BestLocation = new TLocationPK();
+            Boolean NewTransaction;
+
+            APartnerLocationDR = null;
+            ALocationDR = null;
+
+            BestLocation = DetermineBestAddress(APartnerKey, out APartnerLocationDR);
 
             TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
                 Ict.Petra.Server.MCommon.MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
-            
+
             try
-            {				
-            	LocationDT = PLocationAccess.LoadByPrimaryKey(BestLocation.SiteKey, BestLocation.LocationKey, ReadTransaction);
-				
-				if (LocationDT.Rows.Count > 0) 
-				{
-					ALocationDR = LocationDT[0];
-				}            	
+            {
+                LocationDT = PLocationAccess.LoadByPrimaryKey(BestLocation.SiteKey, BestLocation.LocationKey, ReadTransaction);
+
+                if (LocationDT.Rows.Count > 0)
+                {
+                    ALocationDR = LocationDT[0];
+                }
             }
             finally
             {
@@ -181,10 +180,9 @@ namespace Ict.Petra.Server.MPartner
                     }
 #endif
                 }
-            }         
+            }
 
-			return BestLocation;
-        }        
+            return BestLocation;
+        }
     }
 }
-	

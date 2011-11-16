@@ -833,7 +833,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             bool AddressesOrRelationsChanged = false;
             System.Int32 ChangedColumns;
 #if SHOWCHANGES
-            System.Int32 Counter;            
+            System.Int32 Counter;
             String DebugMessage;
 #endif
 
@@ -986,12 +986,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                     SubmitDS = AInspectDS.GetChangesTyped(true);
 
                     if ((SubmitDS.Tables.Contains(PLocationTable.GetTableName()))
-                    	|| (SubmitDS.Tables.Contains(PPartnerLocationTable.GetTableName()))
-                    		|| (SubmitDS.Tables.Contains(PPartnerRelationshipTable.GetTableName())))
-                	{
-                		AddressesOrRelationsChanged = true;	
-                	}
-                    
+                        || (SubmitDS.Tables.Contains(PPartnerLocationTable.GetTableName()))
+                        || (SubmitDS.Tables.Contains(PPartnerRelationshipTable.GetTableName())))
+                    {
+                        AddressesOrRelationsChanged = true;
+                    }
+
                     // $IFDEF DEBUGMODE if SubmitDS = nil then MessageBox.Show('SubmitDS = nil!'); $ENDIF
                     // TLogging.Log('Before submitting data to the Server  Client DataSet: ' + SubmitDS.GetXml);
                     // Submit changes to the PETRAServer
@@ -1444,7 +1444,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             ucoLowerPart.HookupDataChange += new THookupDataChangeEventHandler(this.UcoPartnerTabSet_HookupDataChange);
             ucoLowerPart.HookupPartnerEditDataChange += new THookupPartnerEditDataChangeEventHandler(
                 this.UcoPartnerTabSet_HookupPartnerEditDataChange);
-						
 
             switch (FCurrentModuleTabGroup)
             {
@@ -1867,12 +1866,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             ucoLowerPart.CurrentModuleTabGroup = TModuleSwitchEnum.msPartner;
             ucoLowerPart.InitChildUserControl();
-            
+
             if (FNewPartnerWithAutoCreatedAddress)
             {
                 // hardcoded for the first Address of a new Partner
                 ucoLowerPart.DisableNewButtonOnAutoCreatedAddress();
-            }                    
+            }
         }
 
         private void ViewPersonnelData(System.Object sender, System.EventArgs e)

@@ -143,10 +143,10 @@ namespace Ict.Petra.Shared.MPartner
         /// <summary>
         /// Determines which address is the 'Best Address' of a Partner, and marks it in the DataColumn 'BestAddress'.
         /// </summary>
-        /// <remarks>There are convenient overloaded server-side Methods, Ict.Petra.Server.MPartner.ServerCalculations.DetermineBestAddress, 
+        /// <remarks>There are convenient overloaded server-side Methods, Ict.Petra.Server.MPartner.ServerCalculations.DetermineBestAddress,
         /// which work by specifying the PartnerKey of a Partner in an Argument.</remarks>
         /// <param name="APartnerLocationsDS">Dataset containing the addresses of a Partner.</param>
-        /// <returns>A <see cref="TLocationPK" /> which points to the 'Best Address'. If no 'Best Address' was found, 
+        /// <returns>A <see cref="TLocationPK" /> which points to the 'Best Address'. If no 'Best Address' was found,
         /// SiteKey and LocationKey of this instance will be both -1.</returns>
         public static TLocationPK DetermineBestAddress(DataSet APartnerLocationsDS)
         {
@@ -168,10 +168,10 @@ namespace Ict.Petra.Shared.MPartner
         /// <summary>
         /// Determines which address is the 'Best Address' of a Partner, and marks it in the DataColumn 'BestAddress'.
         /// </summary>
-        /// <remarks>There are convenient overloaded server-side Methods, Ict.Petra.Server.MPartner.ServerCalculations.DetermineBestAddress, 
+        /// <remarks>There are convenient overloaded server-side Methods, Ict.Petra.Server.MPartner.ServerCalculations.DetermineBestAddress,
         /// which work by specifying the PartnerKey of a Partner in an Argument.</remarks>
         /// <param name="APartnerLocationsDT">DataTable containing the addresses of a Partner.</param>
-        /// <returns>A <see cref="TLocationPK" /> which points to the 'Best Address'. If no 'Best Address' was found, 
+        /// <returns>A <see cref="TLocationPK" /> which points to the 'Best Address'. If no 'Best Address' was found,
         /// SiteKey and LocationKey of this instance will be both -1.</returns>
         public static TLocationPK DetermineBestAddress(DataTable APartnerLocationsDT)
         {
@@ -194,11 +194,11 @@ namespace Ict.Petra.Shared.MPartner
             }
 #endif
 
-			if (APartnerLocationsDT == null) 
-			{
-				throw new ArgumentException("Argument APartnerLocationsDT must not be null");
-			}
-			
+            if (APartnerLocationsDT == null)
+            {
+                throw new ArgumentException("Argument APartnerLocationsDT must not be null");
+            }
+
             if (!APartnerLocationsDT.Columns.Contains(PARTNERLOCATION_BESTADDR_COLUMN))
             {
                 DeterminePartnerLocationsDateStatus(APartnerLocationsDT, DateTime.Today);
@@ -780,36 +780,36 @@ namespace Ict.Petra.Shared.MPartner
         /// <param name="APhoneNumber">Phone Number.</param>
         /// <param name="APhoneExtension">Phone Extension.</param>
         /// <param name="ACountryCode">Country Code of the Country in which the phone number is registered/to be reached.</param>
-        /// <param name="ACacheRetriever">Delegate that returns the a DataTable from the data cache (client- or serverside). 
+        /// <param name="ACacheRetriever">Delegate that returns the a DataTable from the data cache (client- or serverside).
         /// Delegate Method needs to be for the MCommon Cache (that is, it needs to work with the <see cref="TCacheableCommonTablesEnum" /> Enum!</param>
         /// <returns></returns>
-        public static string FormatIntlPhoneNumber(string APhoneNumber, string APhoneExtension, string ACountryCode, 
+        public static string FormatIntlPhoneNumber(string APhoneNumber, string APhoneExtension, string ACountryCode,
             TGetCacheableDataTableFromCache ACacheRetriever)
         {
             string IntlTelephoneCode = CommonCodeHelper.GetCountryIntlTelephoneCode(
-            	ACacheRetriever, ACountryCode);
-        	
-			if (APhoneExtension != String.Empty) 
-			{
-				APhoneNumber += "-" + APhoneExtension;
-			}
-			
-			if (IntlTelephoneCode != String.Empty)
-			{							
-				if ((APhoneNumber.StartsWith("0")
-				     && APhoneNumber.Substring(1, 1) != "0"))
-				{
-					APhoneNumber = "(0)" + APhoneNumber.Substring(1);
-				}
-				
-				return "+" + IntlTelephoneCode + " " + APhoneNumber;
-			}
-			else
-			{
-				return APhoneNumber;
-			}        	
+                ACacheRetriever, ACountryCode);
+
+            if (APhoneExtension != String.Empty)
+            {
+                APhoneNumber += "-" + APhoneExtension;
+            }
+
+            if (IntlTelephoneCode != String.Empty)
+            {
+                if ((APhoneNumber.StartsWith("0")
+                     && (APhoneNumber.Substring(1, 1) != "0")))
+                {
+                    APhoneNumber = "(0)" + APhoneNumber.Substring(1);
+                }
+
+                return "+" + IntlTelephoneCode + " " + APhoneNumber;
+            }
+            else
+            {
+                return APhoneNumber;
+            }
         }
-        
+
         /// format a formal greeting for the given partner short name. this formal greeting can be used in a letter
         public static string FormalGreeting(string APartnerShortName)
         {

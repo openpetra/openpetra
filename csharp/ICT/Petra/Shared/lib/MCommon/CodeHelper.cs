@@ -34,53 +34,53 @@ namespace Ict.Petra.Shared.MCommon
     /// </summary>
     public class CommonCodeHelper
     {
-		/// <summary>
-    	/// Returns the name of a Country.
-    	/// </summary>
-    	/// <param name="ACacheRetriever">Delegate that returns the specified DataTable from the data cache (client- or serverside).</param>
-    	/// <param name="ACountryCode">Country Code.</param>
-    	/// <returns>The description of a Country Code, or empty string if the Country Code could not be identified.</returns>
-		public static string GetCountryName(TGetCacheableDataTableFromCache ACacheRetriever, string ACountryCode)
-		{
-			DataTable CachedDT;
-			DataRow FoundDR;
-			string ReturnValue = "";
-			Type tmp;
-			
-			CachedDT = ACacheRetriever(Enum.GetName(typeof(TCacheableCommonTablesEnum), TCacheableCommonTablesEnum.CountryList), out tmp);
-			FoundDR = CachedDT.Rows.Find(new object[] { ACountryCode });
-			
-			if (FoundDR != null) 
-			{
-				ReturnValue = FoundDR[PCountryTable.ColumnCountryNameId].ToString();
-			}
-			
-			return ReturnValue;
-		}
-		
-		/// <summary>
-    	/// Returns the International Telephone Code of a Country.
-    	/// </summary>
-    	/// <param name="ACacheRetriever">Delegate that returns the specified DataTable from the data cache (client- or serverside).
-    	/// Delegate Method needs to be for the MCommon Cache (that is, it needs to work with the <see cref="TCacheableCommonTablesEnum" /> Enum!</param>
-    	/// <param name="AIntlTelephoneCode">International Telephone Code.</param>
-    	/// <returns>The description of a Country Code, or empty string if the Country Code could not be identified.</returns>
-		public static string GetCountryIntlTelephoneCode(TGetCacheableDataTableFromCache ACacheRetriever, string AIntlTelephoneCode)
-		{
-			DataTable CachedDT;
-			DataRow FoundDR;
-			string ReturnValue = "";
-			Type tmp;
-			
-			CachedDT = ACacheRetriever(Enum.GetName(typeof(TCacheableCommonTablesEnum), TCacheableCommonTablesEnum.CountryList), out tmp);
-			FoundDR = CachedDT.Rows.Find(new object[] { AIntlTelephoneCode });
-			
-			if (FoundDR != null) 
-			{
-				ReturnValue = FoundDR[PCountryTable.ColumnInternatTelephoneCodeId].ToString();
-			}
-			
-			return ReturnValue;
-		}		
+        /// <summary>
+        /// Returns the name of a Country.
+        /// </summary>
+        /// <param name="ACacheRetriever">Delegate that returns the specified DataTable from the data cache (client- or serverside).</param>
+        /// <param name="ACountryCode">Country Code.</param>
+        /// <returns>The description of a Country Code, or empty string if the Country Code could not be identified.</returns>
+        public static string GetCountryName(TGetCacheableDataTableFromCache ACacheRetriever, string ACountryCode)
+        {
+            DataTable CachedDT;
+            DataRow FoundDR;
+            string ReturnValue = "";
+            Type tmp;
+
+            CachedDT = ACacheRetriever(Enum.GetName(typeof(TCacheableCommonTablesEnum), TCacheableCommonTablesEnum.CountryList), out tmp);
+            FoundDR = CachedDT.Rows.Find(new object[] { ACountryCode });
+
+            if (FoundDR != null)
+            {
+                ReturnValue = FoundDR[PCountryTable.ColumnCountryNameId].ToString();
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Returns the International Telephone Code of a Country.
+        /// </summary>
+        /// <param name="ACacheRetriever">Delegate that returns the specified DataTable from the data cache (client- or serverside).
+        /// Delegate Method needs to be for the MCommon Cache (that is, it needs to work with the <see cref="TCacheableCommonTablesEnum" /> Enum!</param>
+        /// <param name="AIntlTelephoneCode">International Telephone Code.</param>
+        /// <returns>The description of a Country Code, or empty string if the Country Code could not be identified.</returns>
+        public static string GetCountryIntlTelephoneCode(TGetCacheableDataTableFromCache ACacheRetriever, string AIntlTelephoneCode)
+        {
+            DataTable CachedDT;
+            DataRow FoundDR;
+            string ReturnValue = "";
+            Type tmp;
+
+            CachedDT = ACacheRetriever(Enum.GetName(typeof(TCacheableCommonTablesEnum), TCacheableCommonTablesEnum.CountryList), out tmp);
+            FoundDR = CachedDT.Rows.Find(new object[] { AIntlTelephoneCode });
+
+            if (FoundDR != null)
+            {
+                ReturnValue = FoundDR[PCountryTable.ColumnInternatTelephoneCodeId].ToString();
+            }
+
+            return ReturnValue;
+        }
     }
 }

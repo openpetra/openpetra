@@ -132,7 +132,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
 
             return IndividualDataDS;
         }
-        
+
         /// <summary>
         /// Retrieves data that will be shown on the 'Overview' UserControl and adds it to <paramref name="AIndividualDataDS" />.
         /// </summary>
@@ -141,17 +141,17 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
         [RequireModulePermission("AND(PERSONNEL,PTNRUSER)")]
         public static bool GetSummaryData(Int64 APartnerKey, ref IndividualDataTDS AIndividualDataDS)
         {
-        	TLocationPK ReturnValue = new TLocationPK();
+            TLocationPK ReturnValue = new TLocationPK();
             Boolean NewTransaction;
 
             TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
                 Ict.Petra.Server.MCommon.MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
-            
+
             try
-            {				
-            	BuildSummaryData(APartnerKey, ref AIndividualDataDS, ReadTransaction);
+            {
+                BuildSummaryData(APartnerKey, ref AIndividualDataDS, ReadTransaction);
             }
             finally
             {
@@ -161,15 +161,16 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
 #if DEBUGMODE
                     if (TLogging.DL >= 7)
                     {
-                        Console.WriteLine("Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors.TIndividualDataWebConnector.BuildSummaryData (public overload): commited own transaction.");
+                        Console.WriteLine(
+                            "Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors.TIndividualDataWebConnector.BuildSummaryData (public overload): commited own transaction.");
                     }
 #endif
                 }
-            } 
+            }
 
-			return true;            
+            return true;
         }
-        
+
         /// <summary>
         /// Retrieves data that will be shown on the 'Overview' UserControl and adds it to <paramref name="AIndividualDataDS" />.
         /// </summary>
@@ -195,19 +196,19 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
             int JobAssiStaffDataCombKey = 0;
             TCacheable CommonCacheable = new TCacheable();
             TPartnerCacheable PartnerCacheable = new TPartnerCacheable();
-			string MaritalStatusDescr;
-			string Nationality = String.Empty;
-			string Nationalities = String.Empty;
-			PPartnerRelationshipTable PartnerRelationshipDT;
-			PPartnerTable PartnerDT;
-			PPartnerRow PartnerDR = null;
-			PLocationRow LocationDR;
-			PPartnerLocationRow PartnerLocationDR;
-			TLocationPK BestAddress;
-			string PhoneNumber;
-			string PhoneExtension = String.Empty;
-			Int64 ChurchPartnerKey;
-			
+            string MaritalStatusDescr;
+            string Nationality = String.Empty;
+            string Nationalities = String.Empty;
+            PPartnerRelationshipTable PartnerRelationshipDT;
+            PPartnerTable PartnerDT;
+            PPartnerRow PartnerDR = null;
+            PLocationRow LocationDR;
+            PPartnerLocationRow PartnerLocationDR;
+            TLocationPK BestAddress;
+            string PhoneNumber;
+            string PhoneExtension = String.Empty;
+            Int64 ChurchPartnerKey;
+
             SummaryDT = new IndividualDataTDSSummaryDataTable();
             SummaryDR = SummaryDT.NewRowTyped(false);
 
@@ -226,15 +227,15 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
             {
                 SummaryDR.DateOfBirth = PersonDR.DateOfBirth;
                 SummaryDR.Gender = PersonDR.Gender;
-                
+
                 MaritalStatusDescr = PartnerCodeHelper.GetMaritalStatusDescription(
-                	@PartnerCacheable.GetCacheableTable, PersonDR.MaritalStatus);
-				
-				if (MaritalStatusDescr != String.Empty) 
-				{
-					MaritalStatusDescr = " - " + MaritalStatusDescr;				
-				}
-				                
+                    @PartnerCacheable.GetCacheableTable, PersonDR.MaritalStatus);
+
+                if (MaritalStatusDescr != String.Empty)
+                {
+                    MaritalStatusDescr = " - " + MaritalStatusDescr;
+                }
+
                 SummaryDR.MaritalStatus = PersonDR.MaritalStatus + MaritalStatusDescr;
             }
             else
@@ -242,78 +243,78 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                 SummaryDR.SetDateOfBirthNull();
                 SummaryDR.Gender = StrNotAvailable;
                 SummaryDR.MaritalStatus = StrNotAvailable;
-            }           
+            }
 
             #region Nationalities
 
             PmPassportDetailsDT = PmPassportDetailsAccess.LoadViaPPerson(APartnerKey, AReadTransaction);
 
-            foreach(PmPassportDetailsRow PassportDR in PmPassportDetailsDT.Rows)
+            foreach (PmPassportDetailsRow PassportDR in PmPassportDetailsDT.Rows)
             {
                 Nationality = CommonCodeHelper.GetCountryName(
-                	@CommonCacheable.GetCacheableTable, PassportDR.PassportNationalityCode);
-				
-				if (Nationality != String.Empty) 
-				{
-					Nationalities += Nationality + ", ";
-				}            
-				else
-				{
-					Nationalities += PassportDR.PassportNationalityCode + ", ";
-				}
-           	}
-                        
-			SummaryDR.Nationalities = Nationalities.Substring(0, Nationalities.Length - 2); // remove last comma
-			
+                    @CommonCacheable.GetCacheableTable, PassportDR.PassportNationalityCode);
+
+                if (Nationality != String.Empty)
+                {
+                    Nationalities += Nationality + ", ";
+                }
+                else
+                {
+                    Nationalities += PassportDR.PassportNationalityCode + ", ";
+                }
+            }
+
+            SummaryDR.Nationalities = Nationalities.Substring(0, Nationalities.Length - 2);             // remove last comma
+
             #endregion
 
             #region Phone and Email (from 'Best Address')
 
             BestAddress = ServerCalculations.DetermineBestAddress(APartnerKey, out PartnerLocationDR, out LocationDR);
-            
-			if (LocationDR != null)
-			{						
-				SummaryDR.EmailAddress = PartnerLocationDR.EmailAddress;
-				
-				if (PartnerLocationDR.TelephoneNumber != String.Empty) 
-				{
-					PhoneNumber = PartnerLocationDR.TelephoneNumber;
-					
-					if (!PartnerLocationDR.IsExtensionNull()) 
-					{
-						PhoneExtension = PartnerLocationDR.Extension.ToString();	
-					}						
-					
-					SummaryDR.TelephoneNumber = Calculations.FormatIntlPhoneNumber(PhoneNumber, PhoneExtension, LocationDR.CountryCode, 
-					     @CommonCacheable.GetCacheableTable);					
-				}
-				else if (PartnerLocationDR.MobileNumber != String.Empty) 
-				{
-					SummaryDR.TelephoneNumber = Calculations.FormatIntlPhoneNumber(PartnerLocationDR.MobileNumber, String.Empty, LocationDR.CountryCode, 
-					     @CommonCacheable.GetCacheableTable) + " " + 
-						Catalog.GetString("(Mobile)");
-				}
-				else
-				{
-					SummaryDR.TelephoneNumber = StrNotAvailable;					
-				}
-			}
-			else
-			{
-				SummaryDR.TelephoneNumber = StrNotAvailable;
-				SummaryDR.EmailAddress = StrNotAvailable;
-			}
+
+            if (LocationDR != null)
+            {
+                SummaryDR.EmailAddress = PartnerLocationDR.EmailAddress;
+
+                if (PartnerLocationDR.TelephoneNumber != String.Empty)
+                {
+                    PhoneNumber = PartnerLocationDR.TelephoneNumber;
+
+                    if (!PartnerLocationDR.IsExtensionNull())
+                    {
+                        PhoneExtension = PartnerLocationDR.Extension.ToString();
+                    }
+
+                    SummaryDR.TelephoneNumber = Calculations.FormatIntlPhoneNumber(PhoneNumber, PhoneExtension, LocationDR.CountryCode,
+                        @CommonCacheable.GetCacheableTable);
+                }
+                else if (PartnerLocationDR.MobileNumber != String.Empty)
+                {
+                    SummaryDR.TelephoneNumber = Calculations.FormatIntlPhoneNumber(PartnerLocationDR.MobileNumber,
+                        String.Empty, LocationDR.CountryCode, @CommonCacheable.GetCacheableTable) + " " +
+                        Catalog.GetString("(Mobile)");
+                }
+                else
+                {
+                    SummaryDR.TelephoneNumber = StrNotAvailable;
+                }
+            }
+            else
+            {
+                SummaryDR.TelephoneNumber = StrNotAvailable;
+                SummaryDR.EmailAddress = StrNotAvailable;
+            }
 
             #endregion
 
             #endregion
 
-            
+
             #region Commitments/Jobs
 
             PmStaffDataDT = PmStaffDataAccess.LoadViaPPerson(APartnerKey, AReadTransaction);
             MiscellaneousDataDR.ItemsCountCommitmentPeriods = PmStaffDataDT.Rows.Count;
-           
+
             // First check if the PERSON has got any Commitments
             if (PmStaffDataDT.Rows.Count > 0)
             {
@@ -348,8 +349,8 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
             }
             else
             {
-            	// The PERSON hasn't got any Commitments, therefore check if the PERSON has any Job Assignments 
-            	
+                // The PERSON hasn't got any Commitments, therefore check if the PERSON has any Job Assignments
+
                 PmJobAssignmentDT = PmJobAssignmentAccess.LoadViaPPartner(APartnerKey, AReadTransaction);
 
                 if (PmJobAssignmentDT.Rows.Count > 0)
@@ -386,135 +387,138 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
 
             #endregion
 
-            
+
             #region Church Info
-            
-			SummaryDR.ChurchName = StrNotAvailable;
-			SummaryDR.ChurchAddress = StrNotAvailable;
-			SummaryDR.ChurchPhone = StrNotAvailable;
-			SummaryDR.ChurchPastor = StrNotAvailable;
-			SummaryDR.ChurchPastorsPhone = StrNotAvailable;
-			SummaryDR.NumberOfShownSupportingChurchPastors = 0;
-			
+
+            SummaryDR.ChurchName = StrNotAvailable;
+            SummaryDR.ChurchAddress = StrNotAvailable;
+            SummaryDR.ChurchPhone = StrNotAvailable;
+            SummaryDR.ChurchPastor = StrNotAvailable;
+            SummaryDR.ChurchPastorsPhone = StrNotAvailable;
+            SummaryDR.NumberOfShownSupportingChurchPastors = 0;
+
             // Find SUPPCHURCH Relationship
-            PartnerRelationshipDT = PPartnerRelationshipAccess.LoadUsingTemplate(new TSearchCriteria[] { 
-             	new TSearchCriteria(PPartnerRelationshipTable.GetRelationKeyDBName(), APartnerKey),
-             	new TSearchCriteria(PPartnerRelationshipTable.GetRelationNameDBName(), "SUPPCHURCH") }, AReadTransaction);
+            PartnerRelationshipDT = PPartnerRelationshipAccess.LoadUsingTemplate(new TSearchCriteria[] {
+                new TSearchCriteria(PPartnerRelationshipTable.GetRelationKeyDBName(), APartnerKey),
+                new TSearchCriteria(PPartnerRelationshipTable.GetRelationNameDBName(), "SUPPCHURCH")}, 
+                AReadTransaction);
 
-			SummaryDR.NumberOfShownSupportingChurches = PartnerRelationshipDT.Rows.Count;			
-            
-			if (PartnerRelationshipDT.Rows.Count > 0) 
-			{
-				ChurchPartnerKey = PartnerRelationshipDT[0].PartnerKey;
-				
-				// Load Church Partner
-				PartnerDT = PPartnerAccess.LoadByPrimaryKey(ChurchPartnerKey, AReadTransaction);
-			
-				if (PartnerDT.Rows.Count > 0) 
-				{						
-					PartnerDR = PartnerDT[0];
-					
-					// Church Name
-					if(PartnerDR.PartnerShortName != String.Empty)
-					{
-						SummaryDR.ChurchName = PartnerDR.PartnerShortName;
-					}
-					
-					#region Church Address and Phone			
-					
-					BestAddress = ServerCalculations.DetermineBestAddress(PartnerRelationshipDT[0].PartnerKey, out PartnerLocationDR, out LocationDR);
+            SummaryDR.NumberOfShownSupportingChurches = PartnerRelationshipDT.Rows.Count;
 
-					if (LocationDR != null)
-					{						
-						SummaryDR.ChurchAddress = Calculations.DetermineLocationString(LocationDR,
-							Calculations.TPartnerLocationFormatEnum.plfCommaSeparated);					
-						
-						// Church Phone
-						if (PartnerLocationDR.TelephoneNumber != String.Empty) 
-						{
-							PhoneNumber = PartnerLocationDR.TelephoneNumber;
-							
-							if (!PartnerLocationDR.IsExtensionNull()) 
-							{
-								PhoneExtension = PartnerLocationDR.Extension.ToString();	
-							}						
-							
-							SummaryDR.ChurchPhone = Calculations.FormatIntlPhoneNumber(PhoneNumber, PhoneExtension, LocationDR.CountryCode, 
-							     @CommonCacheable.GetCacheableTable);
-						}
-						else if (PartnerLocationDR.MobileNumber != String.Empty) 
-						{
-							SummaryDR.ChurchPhone = Calculations.FormatIntlPhoneNumber(PartnerLocationDR.MobileNumber, String.Empty, LocationDR.CountryCode, 
-							     @CommonCacheable.GetCacheableTable) + " " + 
-								Catalog.GetString("(Mobile)");
-						}						
-					}
-					
-					#endregion
-					
-					#region Pastor				
-							
-		            // Find PASTOR Relationship
-		            PartnerRelationshipDT.Rows.Clear();
-		            PartnerRelationshipDT = PPartnerRelationshipAccess.LoadUsingTemplate(new TSearchCriteria[] { 
-		             	new TSearchCriteria(PPartnerRelationshipTable.GetPartnerKeyDBName(), ChurchPartnerKey),
-		             	new TSearchCriteria(PPartnerRelationshipTable.GetRelationNameDBName(), "PASTOR") }, AReadTransaction);					
-		            
-					SummaryDR.NumberOfShownSupportingChurchPastors = PartnerRelationshipDT.Rows.Count;		            
-					
-					if (PartnerRelationshipDT.Rows.Count > 0) 
-					{											
-						// Load PASTOR Partner
-						PartnerDT = PPartnerAccess.LoadByPrimaryKey(PartnerRelationshipDT[0].RelationKey, AReadTransaction);
-					
-						if (PartnerDT.Rows.Count > 0) 
-						{			        
-							PartnerDR = PartnerDT[0];							
-							
-							// Pastor's Name
-							if(PartnerDR.PartnerShortName != String.Empty)
-							{
-								SummaryDR.ChurchPastor = PartnerDR.PartnerShortName;
-							}
-							
-							#region Pastor's Phone			
-							
-							BestAddress = ServerCalculations.DetermineBestAddress(PartnerRelationshipDT[0].RelationKey, out PartnerLocationDR, out LocationDR);
-		
-							if (LocationDR != null)
-							{						
-								// Pastor's Phone
-								if (PartnerLocationDR.TelephoneNumber != String.Empty) 
-								{
-									PhoneNumber = PartnerLocationDR.TelephoneNumber;
-									
-									if (!PartnerLocationDR.IsExtensionNull()) 
-									{
-										PhoneExtension = PartnerLocationDR.Extension.ToString();	
-									}						
-									
-									SummaryDR.ChurchPastorsPhone = Calculations.FormatIntlPhoneNumber(PhoneNumber, PhoneExtension, LocationDR.CountryCode, 
-									     @CommonCacheable.GetCacheableTable);
-								}
-								else if (PartnerLocationDR.MobileNumber != String.Empty) 
-								{
-									SummaryDR.ChurchPastorsPhone = Calculations.FormatIntlPhoneNumber(PartnerLocationDR.MobileNumber, String.Empty, LocationDR.CountryCode, 
-									     @CommonCacheable.GetCacheableTable) + " " + 
-										Catalog.GetString("(Mobile)");
-								}								
-							}
-							
-							#endregion														
-						}
-					}
-					
-		            #endregion
-				}
-			}
-			
+            if (PartnerRelationshipDT.Rows.Count > 0)
+            {
+                ChurchPartnerKey = PartnerRelationshipDT[0].PartnerKey;
+
+                // Load Church Partner
+                PartnerDT = PPartnerAccess.LoadByPrimaryKey(ChurchPartnerKey, AReadTransaction);
+
+                if (PartnerDT.Rows.Count > 0)
+                {
+                    PartnerDR = PartnerDT[0];
+
+                    // Church Name
+                    if (PartnerDR.PartnerShortName != String.Empty)
+                    {
+                        SummaryDR.ChurchName = PartnerDR.PartnerShortName;
+                    }
+
+                    #region Church Address and Phone
+
+                    BestAddress = ServerCalculations.DetermineBestAddress(PartnerRelationshipDT[0].PartnerKey, out PartnerLocationDR, out LocationDR);
+
+                    if (LocationDR != null)
+                    {
+                        SummaryDR.ChurchAddress = Calculations.DetermineLocationString(LocationDR,
+                            Calculations.TPartnerLocationFormatEnum.plfCommaSeparated);
+
+                        // Church Phone
+                        if (PartnerLocationDR.TelephoneNumber != String.Empty)
+                        {
+                            PhoneNumber = PartnerLocationDR.TelephoneNumber;
+
+                            if (!PartnerLocationDR.IsExtensionNull())
+                            {
+                                PhoneExtension = PartnerLocationDR.Extension.ToString();
+                            }
+
+                            SummaryDR.ChurchPhone = Calculations.FormatIntlPhoneNumber(PhoneNumber, PhoneExtension, LocationDR.CountryCode,
+                                @CommonCacheable.GetCacheableTable);
+                        }
+                        else if (PartnerLocationDR.MobileNumber != String.Empty)
+                        {
+                            SummaryDR.ChurchPhone = Calculations.FormatIntlPhoneNumber(PartnerLocationDR.MobileNumber,
+                                String.Empty, LocationDR.CountryCode, @CommonCacheable.GetCacheableTable) + " " +
+                                Catalog.GetString("(Mobile)");
+                        }
+                    }
+
+                    #endregion
+
+                    #region Pastor
+
+                    // Find PASTOR Relationship
+                    PartnerRelationshipDT.Rows.Clear();
+                    PartnerRelationshipDT = PPartnerRelationshipAccess.LoadUsingTemplate(new TSearchCriteria[] {
+                        new TSearchCriteria(PPartnerRelationshipTable.GetPartnerKeyDBName(), ChurchPartnerKey),
+                        new TSearchCriteria(PPartnerRelationshipTable.GetRelationNameDBName(), "PASTOR")}, 
+                        AReadTransaction);
+
+                    SummaryDR.NumberOfShownSupportingChurchPastors = PartnerRelationshipDT.Rows.Count;
+
+                    if (PartnerRelationshipDT.Rows.Count > 0)
+                    {
+                        // Load PASTOR Partner
+                        PartnerDT = PPartnerAccess.LoadByPrimaryKey(PartnerRelationshipDT[0].RelationKey, AReadTransaction);
+
+                        if (PartnerDT.Rows.Count > 0)
+                        {
+                            PartnerDR = PartnerDT[0];
+
+                            // Pastor's Name
+                            if (PartnerDR.PartnerShortName != String.Empty)
+                            {
+                                SummaryDR.ChurchPastor = PartnerDR.PartnerShortName;
+                            }
+
+                            #region Pastor's Phone
+
+                            BestAddress = ServerCalculations.DetermineBestAddress(PartnerRelationshipDT[0].RelationKey,
+                                out PartnerLocationDR, out LocationDR);
+
+                            if (LocationDR != null)
+                            {
+                                // Pastor's Phone
+                                if (PartnerLocationDR.TelephoneNumber != String.Empty)
+                                {
+                                    PhoneNumber = PartnerLocationDR.TelephoneNumber;
+
+                                    if (!PartnerLocationDR.IsExtensionNull())
+                                    {
+                                        PhoneExtension = PartnerLocationDR.Extension.ToString();
+                                    }
+
+                                    SummaryDR.ChurchPastorsPhone = Calculations.FormatIntlPhoneNumber(PhoneNumber,
+                                        PhoneExtension, LocationDR.CountryCode, @CommonCacheable.GetCacheableTable);
+                                }
+                                else if (PartnerLocationDR.MobileNumber != String.Empty)
+                                {
+                                    SummaryDR.ChurchPastorsPhone = Calculations.FormatIntlPhoneNumber(PartnerLocationDR.MobileNumber,
+                                        String.Empty, LocationDR.CountryCode, @CommonCacheable.GetCacheableTable) + " " +
+                                        Catalog.GetString("(Mobile)");
+                                }
+                            }
+
+                            #endregion
+                        }
+                    }
+
+                    #endregion
+                }
+            }
+
             #endregion
 
-            
+
             // Add Summary DataRow to Summary DataTable
             SummaryDT.Rows.Add(SummaryDR);
 
@@ -630,7 +634,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
 #endif
                     }
                 }
-                
+
                 // TODO Add if code blocks for all remaining Individual Data Items
             }
             else

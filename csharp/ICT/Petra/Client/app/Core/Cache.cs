@@ -835,7 +835,7 @@ namespace Ict.Petra.Client.App.Core
         {
             return GetCacheableDataTableFromCache(ACacheableTableName, "", null, out AType);
         }
-        
+
         /// <summary>
         /// Returns the chosen DataTable from the Client-side Cache.
         ///
