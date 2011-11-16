@@ -94,33 +94,22 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
         }
 #endif
 
-        /// <summary>
-        /// Returns a certain cachable DataTable that contains all columns and all
-        /// rows of a specified table.
-        ///
-        /// @comment Uses Ict.Petra.Shared.CacheableTablesManager to store the DataTable
-        /// once its contents got retrieved from the DB. It returns the cached
-        /// DataTable from it on subsequent calls, therefore making more no further DB
-        /// queries!
-        ///
-        /// @comment All DataTables are retrieved as Typed DataTables, but are passed
-        /// out as a normal DataTable. However, this DataTable can be cast by the
-        /// caller to the appropriate TypedDataTable to have access to the features of
-        /// a Typed DataTable!
-        /// </summary>
-		/// <remarks>Can be used with the TGetCacheableDataTableFromCache delegate.</remarks>
-		/// <param name="ACacheableTableName">Tells what cacheable DataTable should be returned.</param>
-        /// <param name="AType">The Type of the DataTable (useful in case it's a
-        /// Typed DataTable)</param>
-        /// <returns>The specified DataTable.</returns>
-        public DataTable GetCacheableTable(String ACacheableTableName, out System.Type AType)
+#region ManualCode
+		/// <summary>
+		/// Overload of <see cref="GetCacheableTable(TCacheablePartnerTablesEnum, string, bool, out System.Type)" />. See description there.
+		/// </summary>
+		/// <remarks>Can be used with Delegate TGetCacheableDataTableFromCache.</remarks>
+		/// <param name="ACacheableTable">Tells what cacheable DataTable should be returned.</param>
+	    /// <param name="AType">The Type of the DataTable (useful in case it's a
+	    /// Typed DataTable)</param>
+		/// <returns>The specified Cacheable DataTable is returned if the string matches a Cacheable DataTable, 
+		/// otherwise <see cref="String.Empty" />.</returns>
+        public DataTable GetCacheableTable(string ACacheableTable, out System.Type AType)		
 		{
-        	TCacheablePartnerTablesEnum CacheableTable = 
-        		(TCacheablePartnerTablesEnum)Enum.Parse(typeof(TCacheablePartnerTablesEnum), ACacheableTableName);
-        	                                                        
-        	return GetCacheableTable(CacheableTable, String.Empty, false, out AType);
+        	return GetCacheableTable((TCacheablePartnerTablesEnum)Enum.Parse(typeof(TCacheablePartnerTablesEnum), ACacheableTable), 
+        	    String.Empty, false, out AType);
 		}
-        
+#endregion ManualCode
         /// <summary>
         /// Returns a certain cachable DataTable that contains all columns and all
         /// rows of a specified table.

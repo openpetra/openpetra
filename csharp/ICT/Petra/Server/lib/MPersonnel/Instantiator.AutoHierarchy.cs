@@ -1441,6 +1441,14 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.WebConnec
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors.TIndividualDataWebConnector), "GetData", ";LONG;TINDIVIDUALDATAITEMENUM;");
             return Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors.TIndividualDataWebConnector.GetData(APartnerKey, AIndivDataItem);
         }
+
+        /// generated method from connector
+        public System.Boolean GetSummaryData(Int64 APartnerKey,
+                                             ref IndividualDataTDS AIndividualDataDS)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors.TIndividualDataWebConnector), "GetSummaryData", ";LONG;INDIVIDUALDATATDS;");
+            return Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors.TIndividualDataWebConnector.GetSummaryData(APartnerKey, ref AIndividualDataDS);
+        }
     }
 }
 

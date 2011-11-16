@@ -19,18 +19,18 @@ RootNode:
             Controls:
                 Row0: [dtpDateOfBirth]
                 Row1: [txtGender]
-                Row2: [txtNationality]
+                Row2: [txtNationalities]
                 Row3: [txtMaritalStatus]
-                Row4: [txtPhone, txtEmail]
-            RowHeights: [3=Fixed:35]
-            Margin: 15,0,0,0
+                Row4: [txtPhone]
+                Row5: [txtEmail]                
+            Margin: 23,0,0,0
             
         dtpDateOfBirth: {Label=Birth date, ReadOnly=true, BorderStyle=None, DataField=SummaryData.DateOfBirth}
         txtGender: {ReadOnly=true, BorderStyle=None, DataField=SummaryData.Gender}
-        txtNationality: {Width=367, Label=Nationalities, ReadOnly=true, BorderStyle=None, DataField=SummaryData.Nationality, ColSpan=3}
-        txtMaritalStatus: {Width=367, ReadOnly=true, BorderStyle=None, DataField=SummaryData.MaritalStatus, ColSpan=3}
-        txtPhone: {ReadOnly=true, BorderStyle=None, DataField=SummaryData.TelephoneNumber}
-        txtEmail: {ReadOnly=true, BorderStyle=None, DataField=SummaryData.EmailAddress}
+        txtNationalities: {Width=427, Label=Nationalities, ReadOnly=true, BorderStyle=None, DataField=SummaryData.Nationalities}
+        txtMaritalStatus: {Width=427, ReadOnly=true, BorderStyle=None, DataField=SummaryData.MaritalStatus}
+        txtPhone: {Width=427, ReadOnly=true, BorderStyle=None, DataField=SummaryData.TelephoneNumber}
+        txtEmail: {Width=427, ReadOnly=true, BorderStyle=None, DataField=SummaryData.EmailAddress}
 
         grpJobCommitment:
             Label: Job(s)/Commitment(s)
@@ -56,10 +56,16 @@ RootNode:
             Controls:
                 Row0: [txtChurchName]
                 Row1: [txtChurchAddress]
-                Row2: [txtChurchTelephoneNumber, txtPastor]
-            Margin: 60,0,0,0
+                Row2: [txtChurchPhone]
+                Row3: [txtPastor]
+                Row4: [txtPastorPhone]
+                Row5: [lblMultipleRecordsInfo]
+            RowHeights: [2=Fixed:25]
+            Margin: 10,0,0,0
             
-        txtChurchName: {Label=Name, ReadOnly=true, BorderStyle=None}
-        txtChurchAddress: {Label=Address, ReadOnly=true, BorderStyle=None}
-        txtChurchTelephoneNumber: {Label=Phone, ReadOnly=true, BorderStyle=None}
-        txtPastor: {ReadOnly=true, BorderStyle=None}
+        txtChurchName: {Width=427, Label=Name, ReadOnly=true, BorderStyle=None, DataField=SummaryData.ChurchName}
+        txtChurchAddress: {Width=427, Label=Church Address, ReadOnly=true, BorderStyle=None, DataField=SummaryData.ChurchAddress}
+        txtChurchPhone: {Width=427, Label=Church Phone, ReadOnly=true, BorderStyle=None, DataField=SummaryData.ChurchPhone}
+        txtPastor: {Width=427, ReadOnly=true, BorderStyle=None, DataField=SummaryData.ChurchPastor}
+        txtPastorPhone: {Width=427, Label=Pastor's Phone, ReadOnly=true, BorderStyle=None, DataField=SummaryData.ChurchPastorsPhone}
+        lblMultipleRecordsInfo: {Text=, Visible=false}

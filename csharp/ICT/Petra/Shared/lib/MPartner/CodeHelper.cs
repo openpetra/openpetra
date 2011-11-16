@@ -24,7 +24,6 @@
 using System;
 using System.Data;
 
-
 using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.Shared.MPartner
@@ -37,25 +36,26 @@ namespace Ict.Petra.Shared.MPartner
     	/// <summary>
     	/// Returns the description of a Marital Status Code.
     	/// </summary>
-    	/// <param name="ACacheRetriever">Delegate that returns the specified DataTable from the data cache (client- or serverside).</param>
+    	/// <param name="ACacheRetriever">Delegate that returns the specified DataTable from the data cache (client- or serverside).
+    	/// Delegate Method needs to be for the MPartner Cache (that is, it needs to work with the <see cref="TCacheablePartnerTablesEnum" /> Enum!</param>
     	/// <param name="AMaritalStatusCode">Marital Status Code.</param>
     	/// <returns>The description of a Marital Status Code, or empty string if the Marital Status Code could not be identified.</returns>
 		public static string GetMaritalStatusDescription(TGetCacheableDataTableFromCache ACacheRetriever, string AMaritalStatusCode)
 		{
-			DataTable MaritalStatusDT;
-			DataRow MaritalStatusDR;
+			DataTable CachedDT;
+			DataRow FoundDR;
 			string ReturnValue = "";
 			Type tmp;
 			
-			MaritalStatusDT = ACacheRetriever(Enum.GetName(typeof(TCacheablePartnerTablesEnum), TCacheablePartnerTablesEnum.MaritalStatusList), out tmp);
-			MaritalStatusDR = MaritalStatusDT.Rows.Find(new object[] { AMaritalStatusCode });
+			CachedDT = ACacheRetriever(Enum.GetName(typeof(TCacheablePartnerTablesEnum), TCacheablePartnerTablesEnum.MaritalStatusList), out tmp);
+			FoundDR = CachedDT.Rows.Find(new object[] { AMaritalStatusCode });
 			
-			if (MaritalStatusDR != null) 
+			if (FoundDR != null) 
 			{
-				ReturnValue = MaritalStatusDR[PtMaritalStatusTable.ColumnDescriptionId].ToString();
+				ReturnValue = FoundDR[PtMaritalStatusTable.ColumnDescriptionId].ToString();
 			}
 			
 			return ReturnValue;
-		}    	
+		}   
     }
 }

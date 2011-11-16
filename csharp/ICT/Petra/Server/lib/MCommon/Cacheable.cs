@@ -87,6 +87,22 @@ namespace Ict.Petra.Server.MCommon.Cacheable
         }
 #endif
 
+#region ManualCode
+		/// <summary>
+		/// Overload of <see cref="GetCacheableTable(TCacheableCommonTablesEnum, string, bool, out System.Type)" />. See description there.
+		/// </summary>
+		/// <remarks>Can be used with Delegate TGetCacheableDataTableFromCache.</remarks>
+		/// <param name="ACacheableTable">Tells what cacheable DataTable should be returned.</param>
+	    /// <param name="AType">The Type of the DataTable (useful in case it's a
+	    /// Typed DataTable)</param>
+		/// <returns>The specified Cacheable DataTable is returned if the string matches a Cacheable DataTable, 
+		/// otherwise <see cref="String.Empty" />.</returns>
+        public DataTable GetCacheableTable(string ACacheableTable, out System.Type AType)		
+		{
+        	return GetCacheableTable((TCacheableCommonTablesEnum)Enum.Parse(typeof(TCacheableCommonTablesEnum), ACacheableTable), 
+        	    String.Empty, false, out AType);
+		}
+#endregion ManualCode
         /// <summary>
         /// Returns a certain cachable DataTable that contains all columns and all
         /// rows of a specified table.
