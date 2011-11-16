@@ -287,6 +287,12 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
 					SummaryDR.TelephoneNumber = Calculations.FormatIntlPhoneNumber(PhoneNumber, PhoneExtension, LocationDR.CountryCode, 
 					     @CommonCacheable.GetCacheableTable);					
 				}
+				else if (PartnerLocationDR.MobileNumber != String.Empty) 
+				{
+					SummaryDR.TelephoneNumber = Calculations.FormatIntlPhoneNumber(PartnerLocationDR.MobileNumber, String.Empty, LocationDR.CountryCode, 
+					     @CommonCacheable.GetCacheableTable) + " " + 
+						Catalog.GetString("(Mobile)");
+				}
 				else
 				{
 					SummaryDR.TelephoneNumber = StrNotAvailable;					
@@ -436,6 +442,12 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
 							SummaryDR.ChurchPhone = Calculations.FormatIntlPhoneNumber(PhoneNumber, PhoneExtension, LocationDR.CountryCode, 
 							     @CommonCacheable.GetCacheableTable);
 						}
+						else if (PartnerLocationDR.MobileNumber != String.Empty) 
+						{
+							SummaryDR.ChurchPhone = Calculations.FormatIntlPhoneNumber(PartnerLocationDR.MobileNumber, String.Empty, LocationDR.CountryCode, 
+							     @CommonCacheable.GetCacheableTable) + " " + 
+								Catalog.GetString("(Mobile)");
+						}						
 					}
 					
 					#endregion
@@ -463,7 +475,6 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
 							if(PartnerDR.PartnerShortName != String.Empty)
 							{
 								SummaryDR.ChurchPastor = PartnerDR.PartnerShortName;
-
 							}
 							
 							#region Pastor's Phone			
@@ -485,6 +496,12 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
 									SummaryDR.ChurchPastorsPhone = Calculations.FormatIntlPhoneNumber(PhoneNumber, PhoneExtension, LocationDR.CountryCode, 
 									     @CommonCacheable.GetCacheableTable);
 								}
+								else if (PartnerLocationDR.MobileNumber != String.Empty) 
+								{
+									SummaryDR.ChurchPastorsPhone = Calculations.FormatIntlPhoneNumber(PartnerLocationDR.MobileNumber, String.Empty, LocationDR.CountryCode, 
+									     @CommonCacheable.GetCacheableTable) + " " + 
+										Catalog.GetString("(Mobile)");
+								}								
 							}
 							
 							#endregion														
