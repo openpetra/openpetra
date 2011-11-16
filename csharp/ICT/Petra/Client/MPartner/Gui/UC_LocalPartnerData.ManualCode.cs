@@ -77,7 +77,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>void</returns>
         private void DataSavingStarted(System.Object sender, System.EventArgs e)
         {
-            //TODO GetDetailsFromControls(GetSelectedDetailRow());
+        	ucoGrid.GetDataFromControlsManual();
         }
         
         /// <summary>
@@ -99,6 +99,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
         }
 
+        
         /// <summary>
         /// 
         /// </summary>
@@ -111,6 +112,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         	                              MCommonTypes.PartnerClassStringToOfficeSpecificDataLabelUseEnum(((PPartnerRow)FMainDS.PPartner.Rows[0]).PartnerClass));
             
             OnHookupDataChange(new THookupPartnerEditDataChangeEventArgs(TPartnerEditTabPageEnum.petpOfficeSpecific));
+
+            this.SizeChanged += new System.EventHandler(ucoGrid.GrdLocalDataLabelValues_SizeChanged);
+
 
             // Hook up DataSavingStarted Event to be able to run code before SaveChanges is doing anything
             FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(this.DataSavingStarted);
@@ -144,7 +148,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 if (TClientSettings.DelayedDataLoading)
                 {
-//                    FMainDS.Merge(FPartnerEditUIConnector.xxxGetDataPartnerRelationships());
+                	FMainDS.Merge(FPartnerEditUIConnector.GetDataLocalPartnerDataValues());
 
                     // Make DataRows unchanged
                     if (FMainDS.PDataLabelValuePartner.Rows.Count > 0)

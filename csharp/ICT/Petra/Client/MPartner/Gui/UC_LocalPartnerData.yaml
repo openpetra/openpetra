@@ -10,11 +10,13 @@ RootNode:
         pnlContent:
             Controls: [pnlGrid]
             Dock: Fill
-        pnlGrid: {Stretch=fully}
-            Dock: Top
+        pnlGrid:
+            Dock: Fill
             Controls: [grpLocalPartnerData]
-        grpLocalPartnerData: {Stretch=horizontally}
-            Label: -
+        grpLocalPartnerData: {NoLabel=true}
             Controls: [ucoGrid]
-        ucoGrid: {Stretch=horizontally}
-            Type: Ict.Petra.Client.MCommon.Gui.TUCOfficeSpecificDataLabels
+            Dock: Fill
+        ucoGrid:
+            Type: Ict.Petra.Client.MCommon.Gui.TUC_LocalDataLabelValues
+            Dock: Fill
+
