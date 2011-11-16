@@ -58,6 +58,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             BudgetTDS MainDS = new BudgetTDS();
 
             ABudgetAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
+            ABudgetRevisionAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
             // TODO ABudgetPeriodAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
 
             // Accept row changes here so that the Client gets 'unmodified' rows

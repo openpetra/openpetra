@@ -8436,6 +8436,11 @@
     <primarykey name="a_budget_revision_pk"
                 descr=""
                 thisFields="a_ledger_number_i, a_year_i, a_revision_i"/>
+    <foreignkey name="a_budget_revision_fk1"
+                descr=""
+                thisFields="a_ledger_number_i"
+                otherTable="a_ledger"
+                otherFields="a_ledger_number_i"/>
     <!-- Explicit Indexes on table a_valid_ledger_number  -->
   </table>
   <table name="a_budget"
