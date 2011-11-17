@@ -198,6 +198,7 @@
 <property name="uuidFile" value="${path::combine(dir.projectfiles, 'projectuuid.map')}"
           overwrite="false" />
 <property name="projectfiles.templates-list" value="sharpdevelop4" overwrite="false" />
+<property name="devenv-name" value="sharpdevelop4" overwrite="false" />
  <!-- webserver -->
 <property name="dir.webserver" value="${path::combine(dir.delivery, 'webserver')}" overwrite="false" />
 <property name="dir.webserver.bin" value="${path::combine(dir.webserver, 'bin')}" overwrite="false" />
@@ -213,8 +214,6 @@
 <property name="dir.webserver.HtmlReports" value="" overwrite="false"/>
 
 <!-- build tools -->
-<property name="devenv-name" value="sharpdevelop3"
-          overwrite="false" />
 <property name="msbuildtask.file" value="${nant::get-base-directory()}/extensions/common/neutral/NAntContrib/NAnt.Contrib.Tasks.dll"
           overwrite="false"/>
 <property name="Configuration" value="DEBUG" overwrite="false"/>

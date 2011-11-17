@@ -8,6 +8,7 @@ OutputBaseFilename=NAnt-Setup-0.91
 
 [Files]
 Source: nant-0.91\*.*; DestDir: {app}; Flags: recursesubdirs createallsubdirs
+Source: nantcontrib-0.91\bin\*.*; DestDir: {app}\bin\extensions\common\neutral\nantcontrib; Flags: recursesubdirs createallsubdirs
 
 [Code]
 procedure CurStepChanged(CurStep: TSetupStep);
