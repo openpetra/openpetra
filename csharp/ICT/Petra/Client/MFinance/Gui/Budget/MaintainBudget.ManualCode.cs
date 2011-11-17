@@ -41,12 +41,16 @@ using Ict.Petra.Client.App.Core;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared.MFinance.GL.Data;
+using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.Interfaces;
 using Ict.Petra.Shared.Interfaces.MFinance.Budget.WebConnectors;
+using Ict.Petra.Shared.MFinance;
 
 namespace Ict.Petra.Client.MFinance.Gui.Budget
 {
+	
     public partial class TFrmMaintainBudget
     {
         private Int32 FLedgerNumber;
@@ -59,12 +63,123 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             set
             {
                 FLedgerNumber = value;
+                
+                FMainDS = TRemote.MFinance.Budget.WebConnectors.LoadBudget(FLedgerNumber);
+                
+                                // to get an empty ABudgetFee table, instead of null reference
+                FMainDS.Merge(new BudgetTDS());
+
+                TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber, true, false, false, false);
+
+                // Do not include summary cost centres: we want to use one cost centre for each Motivation Details
+                TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, false, true);
+
+                DataView myDataView = FMainDS.ABudget.DefaultView;
+                myDataView.AllowNew = false;
+                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+                grdDetails.AutoSizeCells();
+
+                this.Text = this.Text + "   [Ledger = " + FLedgerNumber.ToString() + "]";
             }
         }
+        
+        private void NewRowManual(ref ABudgetRow ARow)
+        {
+            int newSequence = -1;
+
+            if (FMainDS.ABudget.Rows.Find(new object[] { newSequence }) != null)
+            {
+                while (FMainDS.ABudget.Rows.Find(new object[] { newSequence }) != null)
+                {
+                    newSequence--;
+                }
+            }
+
+            ARow.BudgetSequence = newSequence;
+            ARow.LedgerNumber = FLedgerNumber;
+            //TODO replace line below
+            ARow.Revision = Math.Abs(newSequence);
+            //ARow.Year = 2010
+        }
+
 
         private TSubmitChangesResult StoreManualCode(ref BudgetTDS ASubmitChanges, out TVerificationResultCollection AVerificationResult)
         {
-            return TRemote.MFinance.Budget.WebConnectors.SaveBudget(ref ASubmitChanges, out AVerificationResult);
+            TSubmitChangesResult TSCR = TRemote.MFinance.Budget.WebConnectors.SaveBudget(ref ASubmitChanges, out AVerificationResult);
+            FMainDS.Merge(ASubmitChanges);
+            //Delete any rows with a_budget_sequence < 0 because in SaveBudget identical rows
+            //  are added with a correct sequence.
+            
+            
+            return TSCR;
         }
+        
+        private void NewRecord(Object sender, EventArgs e)
+        {
+            CreateNewABudget();
+        }
+
+        private bool GetDetailDataFromControlsManual(ABudgetRow ARow)
+	    {
+	        if (ARow != null)
+	        {
+	            ARow.BeginEdit();
+	            if (rbtSplit.Checked)
+	            {
+		            ARow.BudgetTypeCode = MFinanceConstants.BUDGET_SPLIT;
+	            }
+	            else if (rbtAdHoc.Checked)
+	            {
+		            ARow.BudgetTypeCode = MFinanceConstants.BUDGET_ADHOC;
+	            }
+	            else if (rbtSame.Checked)
+	            {
+		            ARow.BudgetTypeCode = MFinanceConstants.BUDGET_SAME;
+	            }
+	            else if (rbtInflateBase.Checked)
+	            {
+		            ARow.BudgetTypeCode = MFinanceConstants.BUDGET_INFLATE_BASE;
+	            }
+	            else  //Inf. n
+	            {
+		            ARow.BudgetTypeCode = MFinanceConstants.BUDGET_INFLATE_N;
+	            }
+	            
+	            //TODO switch to using Ledger financial year
+	            ARow.Year = 2012;
+	            ARow.Revision = CreateBudgetRevisionRow(FLedgerNumber, ARow.Year);
+	            ARow.EndEdit();
+	        }
+	
+	        return true;
+	    }
+        
+        
+        private int CreateBudgetRevisionRow(int ALedgerNumber, int AYear)
+        {
+        	
+        	int newRevision = 0;
+
+            if (FMainDS.ABudgetRevision.Rows.Find(new object[] { ALedgerNumber, AYear, newRevision }) == null)
+            {
+	        	ABudgetRevisionRow BudgetRevisionRow = FMainDS.ABudgetRevision.NewRowTyped();
+	        	
+	        	BudgetRevisionRow.LedgerNumber = ALedgerNumber;
+	        	BudgetRevisionRow.Year = AYear;
+	
+	        	BudgetRevisionRow.Revision = newRevision;
+	        	FMainDS.ABudgetRevision.Rows.Add(BudgetRevisionRow);
+	
+	        	//TODO check with Rob about budget versioning
+	        	//        	while (FMainDS.ABudgetRevision.Rows.Find(new object[] { ALedgerNumber, AYear, newRevision }) != null)
+				//                {
+				//                    newRevision++;
+				//                }
+            }
+        	
+        	return newRevision;
+        }
+        
+        
     }
 }

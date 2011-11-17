@@ -164,6 +164,22 @@ namespace Ict.Petra.Shared.MFinance
 
         /// Finance User Levels
         public const string HIGH_FIN_USER_LEVEL = "FINANCE-3";
+        
+        /// Budget Types
+        public const string BUDGET_SPLIT = "Split";
+
+        /// Budget Types
+        public const string BUDGET_ADHOC = "Adhoc";
+
+        /// Budget Types
+        public const string BUDGET_SAME = "Same";
+
+        /// Budget Types
+        public const string BUDGET_INFLATE_BASE = "Inf.Base";
+
+        /// Budget Types
+        public const string BUDGET_INFLATE_N = "Inf. n";
+        
     }
 
     /// <summary>

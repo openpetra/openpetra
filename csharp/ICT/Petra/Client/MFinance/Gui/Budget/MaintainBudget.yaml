@@ -7,10 +7,13 @@ RootNode:
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data]
     FormType: edit
     Template: windowEdit
+    #Template: windowEditUIConnector
+    WindowWidth: 858
     Actions:
+        actNew: {Label=New, ActionClick=NewRecord}
     Controls:
         pnlContent:
-            Controls: [pnlGrid, pnlDetails]
+            Controls: [pnlGrid, pnlFilter]
             Dock: Fill
         pnlGrid:
             Dock: Fill
@@ -18,17 +21,29 @@ RootNode:
         pnlButtons:
             Dock: Right
             Controls: [btnNew]
+        rgrSelectBudgetType:
+            OptionalValues: [Split, Ad hoc, Same, Inflate Base, Inflate n]
+            ControlsOrientation: horizontal
+            Align: left
+            NoLabel: true
+            #OnChange: TransactionFilterChanged
         btnNew:
         grdDetails:
             Dock: Fill
-            Columns: [DetailAccountCode, DetailCostCentreCode, DetailBudgetTypeCode]
+            Columns: [DetailCostCentreCode, DetailAccountCode, DetailBudgetTypeCode]
+            ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom
             Controls:
-                Row0: [cmbDetailAccountCode]
-                Row1: [cmbDetailCostCentreCode]
-        cmbDetailAccountCode: {Label=Account, List=UserDefinedList}
+                Row0: [cmbDetailCostCentreCode]
+                Row1: [cmbDetailAccountCode]
+        pnlFilter:
+            Dock: Bottom
+            Controls:
+                Row0: [pnlDetails, rgrSelectBudgetType]
+            #ColWidths: [0=Fixed:244, 1=Fixed:200]
         cmbDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList}
+        cmbDetailAccountCode: {Label=Account, List=UserDefinedList}
         #TODO: radio buttons for selection of budget type, display different user controls depending on selection, similar to bankimport screen
     Menu:
     Toolbar:
