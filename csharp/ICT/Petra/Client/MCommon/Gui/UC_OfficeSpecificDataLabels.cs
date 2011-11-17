@@ -64,7 +64,6 @@ namespace Ict.Petra.Client.MCommon.Gui
     /// <summary>
     /// Contains User Control Office Specific Data Labels
     /// </summary>
-    //TODO WB: rename class to TUC_LocalDataValues
     public partial class TUC_LocalDataLabelValues : System.Windows.Forms.UserControl, Ict.Petra.Client.CommonForms.IFrmPetra
     {
         private TFrmPetraEditUtils FPetraUtilsObject;
@@ -216,7 +215,7 @@ namespace Ict.Petra.Client.MCommon.Gui
         /// <param name="ADataTable"></param>
         /// <param name="APartnerKey"></param>
         /// <param name="AOfficeSpecificDataLabelUse"></param>
-        public void InitialiseUserControl(PDataLabelValuePartnerTable ADataTable,
+        public void InitialiseUserControlAndShowData(PDataLabelValuePartnerTable ADataTable,
             System.Int64 APartnerKey,
             TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse)
         {
@@ -236,7 +235,7 @@ namespace Ict.Petra.Client.MCommon.Gui
         /// <param name="AApplicationKey"></param>
         /// <param name="ARegistrationOffice"></param>
         /// <param name="AOfficeSpecificDataLabelUse"></param>
-        public void InitialiseUserControl(PDataLabelValueApplicationTable ADataTable,
+        public void InitialiseUserControlAndShowData(PDataLabelValueApplicationTable ADataTable,
             Int64 APartnerKey,
             Int32 AApplicationKey,
             Int64 ARegistrationOffice,
@@ -351,6 +350,7 @@ namespace Ict.Petra.Client.MCommon.Gui
         /// <returns>void</returns>
         private void SetupGridValueCell(Int32 ARowIndex, PDataLabelRow ADataLabelRow)
         {
+            Control cellControl;
             System.Windows.Forms.TextBox TextBoxEditor;
             TtxtPetraDate DateEditor;
             System.Windows.Forms.CheckBox CheckBoxEditor;
@@ -376,11 +376,15 @@ namespace Ict.Petra.Client.MCommon.Gui
             // In this case the data value rows will only be created once a value is entered
             GetOrCreateDataLabelValueRow(false, ADataLabelRow, out DataLabelValuePartnerRow, out DataLabelValueApplicationRow);
 
+            // initialize cell control
+            cellControl = null;
+            
             // Create field, according to specified data type
             // Create character field
             if (ADataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_CHAR)
             {
                 TextBoxEditor = new System.Windows.Forms.TextBox();
+                cellControl = TextBoxEditor;
                     
                 if (DataLabelValuePartnerRow != null)
                 {
@@ -395,16 +399,10 @@ namespace Ict.Petra.Client.MCommon.Gui
                     // Default value if no Label data exists for the Partner
                     TextBoxEditor.Text = "";
                 }
-
-                // remember the added control to get the value back lateron
-                FGridRowInfo.SetControl(ARowIndex, TextBoxEditor);
                 
                 FLocalDataLabelValuesGrid[ARowIndex, 1] = new SourceGrid.Cells.Cell();
                 FLocalDataLabelValuesGrid.LinkedControls.Add(new LinkedControlValue((Control)TextBoxEditor, new Position(ARowIndex, 1)));
                 FLocalDataLabelValuesGrid[ARowIndex, 1].Tag = TextBoxEditor;
-                
-                // set help text for control
-                PetraUtilsObject.SetStatusBarText(TextBoxEditor, ADataLabelRow.Description);
 
             }
             // Create float field
@@ -414,6 +412,7 @@ namespace Ict.Petra.Client.MCommon.Gui
                 TextBoxNumericEditor.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Decimal;
                 TextBoxNumericEditor.DecimalPlaces = ADataLabelRow.NumDecimalPlaces;
                 TextBoxNumericEditor.NullValueAllowed = true;
+                cellControl = TextBoxNumericEditor;
                     
                 if (DataLabelValuePartnerRow != null)
                 {
@@ -428,16 +427,10 @@ namespace Ict.Petra.Client.MCommon.Gui
                     // Default value if no Label data exists for the Partner
                     TextBoxNumericEditor.NumberValueDecimal = null;
                 }
-
-                // remember the added control to get the value back lateron
-                FGridRowInfo.SetControl(ARowIndex, TextBoxNumericEditor);
                 
                 FLocalDataLabelValuesGrid[ARowIndex, 1] = new SourceGrid.Cells.Cell();
                 FLocalDataLabelValuesGrid.LinkedControls.Add(new LinkedControlValue((Control)TextBoxNumericEditor, new Position(ARowIndex, 1)));
                 FLocalDataLabelValuesGrid[ARowIndex, 1].Tag = TextBoxNumericEditor;
-                
-                // set help text for control
-                PetraUtilsObject.SetStatusBarText(TextBoxNumericEditor, ADataLabelRow.Description);
                 
             }
             // Create data field
@@ -445,6 +438,7 @@ namespace Ict.Petra.Client.MCommon.Gui
             {
                 DateEditor = new TtxtPetraDate();
                 DateEditor.Date = null;
+                cellControl = DateEditor;
                 
                 if (DataLabelValuePartnerRow != null)
                 {
@@ -461,15 +455,9 @@ namespace Ict.Petra.Client.MCommon.Gui
                     }
                 }
                 
-                // remember the added control to get the value back lateron
-                FGridRowInfo.SetControl(ARowIndex, DateEditor);
-                
                 FLocalDataLabelValuesGrid[ARowIndex, 1] = new SourceGrid.Cells.Cell();
                 FLocalDataLabelValuesGrid.LinkedControls.Add(new LinkedControlValue((Control)DateEditor, new Position(ARowIndex, 1)));
                 FLocalDataLabelValuesGrid[ARowIndex, 1].Tag = DateEditor;
-
-                // set help text for control
-                PetraUtilsObject.SetStatusBarText(DateEditor, ADataLabelRow.Description);
 
             }
             // Create integer field
@@ -478,6 +466,7 @@ namespace Ict.Petra.Client.MCommon.Gui
                 TextBoxNumericEditor = new TTxtNumericTextBox();
                 TextBoxNumericEditor.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Integer;
                 TextBoxNumericEditor.NullValueAllowed = true;
+                cellControl = TextBoxNumericEditor;
                     
                 if (DataLabelValuePartnerRow != null)
                 {
@@ -492,16 +481,10 @@ namespace Ict.Petra.Client.MCommon.Gui
                     // Default value if no Label data exists for the Partner
                     TextBoxNumericEditor.NumberValueInt = null;
                 }
-
-                // remember the added control to get the value back lateron
-                FGridRowInfo.SetControl(ARowIndex, TextBoxNumericEditor);
                 
                 FLocalDataLabelValuesGrid[ARowIndex, 1] = new SourceGrid.Cells.Cell();
                 FLocalDataLabelValuesGrid.LinkedControls.Add(new LinkedControlValue((Control)TextBoxNumericEditor, new Position(ARowIndex, 1)));
                 FLocalDataLabelValuesGrid[ARowIndex, 1].Tag = TextBoxNumericEditor;
-                
-                // set help text for control
-                PetraUtilsObject.SetStatusBarText(TextBoxNumericEditor, ADataLabelRow.Description);
                 
             }
             // Create currency field
@@ -512,6 +495,7 @@ namespace Ict.Petra.Client.MCommon.Gui
                 TextBoxCurrencyEditor.DecimalPlaces = 2;
                 TextBoxCurrencyEditor.CurrencySymbol = ADataLabelRow.CurrencyCode;
                 TextBoxCurrencyEditor.NullValueAllowed = true;
+                cellControl = TextBoxCurrencyEditor;
                     
                 if (DataLabelValuePartnerRow != null)
                 {
@@ -526,22 +510,17 @@ namespace Ict.Petra.Client.MCommon.Gui
                     // Default value if no Label data exists for the Partner
                     TextBoxCurrencyEditor.NumberValueDecimal = null;
                 }
-
-                // remember the added control to get the value back lateron
-                FGridRowInfo.SetControl(ARowIndex, TextBoxCurrencyEditor);
                 
                 FLocalDataLabelValuesGrid[ARowIndex, 1] = new SourceGrid.Cells.Cell();
                 FLocalDataLabelValuesGrid.LinkedControls.Add(new LinkedControlValue((Control)TextBoxCurrencyEditor, new Position(ARowIndex, 1)));
                 FLocalDataLabelValuesGrid[ARowIndex, 1].Tag = TextBoxCurrencyEditor;
-                
-                // set help text for control
-                PetraUtilsObject.SetStatusBarText(TextBoxCurrencyEditor, ADataLabelRow.Description);
                 
             }
             // Create boolean field
             else if (ADataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_BOOLEAN)
             {
                 CheckBoxEditor = new System.Windows.Forms.CheckBox();
+                cellControl = CheckBoxEditor;
                 
                 if (DataLabelValuePartnerRow != null)
                 {
@@ -557,16 +536,10 @@ namespace Ict.Petra.Client.MCommon.Gui
                     CheckBoxEditor.Checked = false;
                 }
 
-                // remember the added control to get the value back lateron
-                FGridRowInfo.SetControl(ARowIndex, CheckBoxEditor);
-                
                 FLocalDataLabelValuesGrid[ARowIndex, 1] = new SourceGrid.Cells.Cell();
                 FLocalDataLabelValuesGrid.LinkedControls.Add(new LinkedControlValue((Control)CheckBoxEditor, new Position(ARowIndex, 1)));
                 FLocalDataLabelValuesGrid[ARowIndex, 1].Tag = CheckBoxEditor;
 
-                // set help text for control
-                PetraUtilsObject.SetStatusBarText(CheckBoxEditor, ADataLabelRow.Description);
-                
             }
             // Create partner key field
             else if (ADataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_PARTNERKEY)
@@ -577,10 +550,10 @@ namespace Ict.Petra.Client.MCommon.Gui
                 PartnerKeyEditor.ButtonTextAlign = System.Drawing.ContentAlignment.MiddleRight;
                 PartnerKeyEditor.ListTable = TtxtAutoPopulatedButtonLabel.TListTableEnum.PartnerKey;
                 PartnerKeyEditor.TabStop = false;
+                cellControl = PartnerKeyEditor;
 
                 // AutomaticallyUpdateDataSource: very rare, but needed here
                 PartnerKeyEditor.AutomaticallyUpdateDataSource = true;
-                PartnerKeyEditor.Enter += new EventHandler(this.UpdateGridFocusFromExternalControl);
 
                 if (DataLabelValuePartnerRow != null)
                 {
@@ -604,13 +577,6 @@ namespace Ict.Petra.Client.MCommon.Gui
                 FLocalDataLabelValuesGrid[ARowIndex, 0].Tag = PartnerKeyEditor;
                 FLocalDataLabelValuesGrid[ARowIndex, 0].ColumnSpan = 3;
 
-                // FLocalDataLabelValuesGrid[ARowIndex, 1].AddController(SourceGrid.Cells.Controllers.Unselectable.Default);
-                // remember the added control to get the value back lateron
-                FGridRowInfo.SetControl(ARowIndex, PartnerKeyEditor);
-
-                // set help text for control
-                PetraUtilsObject.SetStatusBarText(PartnerKeyEditor, ADataLabelRow.Description);
-                
             }
             // Create lookup field
             else if (ADataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_LOOKUP)
@@ -620,7 +586,7 @@ namespace Ict.Petra.Client.MCommon.Gui
                 LookupValueEditor.Filter = PDataLabelLookupTable.GetCategoryCodeDBName() + " = '" + ADataLabelRow.LookupCategoryCode + "'";
                 LookupValueEditor.ListTable = TCmbAutoPopulated.TListTableEnum.DataLabelLookupList;
                 LookupValueEditor.InitialiseUserControl();
-                LookupValueEditor.Enter += new EventHandler(this.UpdateGridFocusFromExternalControl);
+                cellControl = LookupValueEditor;
 
                 if (DataLabelValuePartnerRow != null)
                 {
@@ -635,21 +601,28 @@ namespace Ict.Petra.Client.MCommon.Gui
                     // Default value if no Label data exists for the Partner
                     LookupValueEditor.Text = "";
                 }
-                
+
                 FLocalDataLabelValuesGrid[ARowIndex, 1] = new SourceGrid.Cells.Cell();
                 FLocalDataLabelValuesGrid.LinkedControls.Add(new LinkedControlValue((Control)LookupValueEditor, new Position(ARowIndex, 1)));
                 FLocalDataLabelValuesGrid[ARowIndex, 1].Tag = LookupValueEditor;
                 FLocalDataLabelValuesGrid[ARowIndex, 1].ColumnSpan = 2;
 
-                // FLocalDataLabelValuesGrid[ARowIndex, 1].AddController(SourceGrid.Cells.Controllers.Unselectable.Default);
-                // remember the added control to get the value back lateron
-                FGridRowInfo.SetControl(ARowIndex, LookupValueEditor);
-
-                // set help text for control
-                PetraUtilsObject.SetStatusBarText(LookupValueEditor, ADataLabelRow.Description);
-                
             }
 
+            // perform actions that need to be done for each control
+            if (cellControl != null)
+            {
+                // remember the added control to get the value back lateron
+                FGridRowInfo.SetControl(ARowIndex, cellControl);
+
+                // handle focus change when field is entered
+                cellControl.Enter += new EventHandler(this.UpdateGridFocusFromExternalControl);
+                
+                // set help text for control
+                PetraUtilsObject.SetStatusBarText(cellControl, ADataLabelRow.Description);
+            	
+            }
+            
             // check if value is editable
             if (!ADataLabelRow.Editable)
             {
@@ -721,10 +694,8 @@ namespace Ict.Petra.Client.MCommon.Gui
 
         private void UpdateGridFocusFromExternalControl(System.Object sender, System.EventArgs e)
         {
-            TtxtAutoPopulatedButtonLabel PartnerKeyEditor;
-            TCmbAutoPopulated LookupValueEditor;
             Int32 Row;
-
+           
             // exit;
             if (FInFocussingMode)
             {
@@ -734,21 +705,18 @@ namespace Ict.Petra.Client.MCommon.Gui
             // set mode to prevent recursive calls
             FInFocussingMode = true;
 
-            if (sender.GetType() == typeof(TtxtAutoPopulatedButtonLabel))
+            if (   sender.GetType() == typeof(System.Windows.Forms.TextBox)
+                || sender.GetType() == typeof(TtxtPetraDate)
+                || sender.GetType() == typeof(System.Windows.Forms.CheckBox)
+                || sender.GetType() == typeof(TTxtNumericTextBox)
+                || sender.GetType() == typeof(TCmbAutoPopulated)
+                || sender.GetType() == typeof(TtxtAutoPopulatedButtonLabel))
             {
-                PartnerKeyEditor = (TtxtAutoPopulatedButtonLabel)sender;
-                Row = FGridRowInfo.GetRow(PartnerKeyEditor);
+                Row = FGridRowInfo.GetRow((Control)sender);
                 FLocalDataLabelValuesGrid.Selection.Focus(
                     new Position(FLocalDataLabelValuesGrid[Row, 1].Row.Index, FLocalDataLabelValuesGrid[Row, 1].Column.Index), true);
             }
-            else if (sender.GetType() == typeof(TCmbAutoPopulated))
-            {
-                LookupValueEditor = (TCmbAutoPopulated)sender;
-                Row = FGridRowInfo.GetRow(LookupValueEditor);
-                FLocalDataLabelValuesGrid.Selection.Focus(
-                    new Position(FLocalDataLabelValuesGrid[Row, 1].Row.Index, FLocalDataLabelValuesGrid[Row, 1].Column.Index), true);
-            }
-
+            
             // reset mode
             FInFocussingMode = false;
         }

@@ -107,7 +107,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             LoadDataOnDemand();
 
-        	ucoGrid.InitialiseUserControl(FMainDS.PDataLabelValuePartner, 
+        	ucoGrid.InitialiseUserControlAndShowData(FMainDS.PDataLabelValuePartner, 
         	                              ((PPartnerRow)FMainDS.PPartner.Rows[0]).PartnerKey,
         	                              MCommonTypes.PartnerClassStringToOfficeSpecificDataLabelUseEnum(((PPartnerRow)FMainDS.PPartner.Rows[0]).PartnerClass));
             
