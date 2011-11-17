@@ -271,7 +271,7 @@ namespace Ict.Petra.Client.MCommon.Gui
             FOfficeSpecificDataLabelUse = AOfficeSpecificDataLabelUse;
             FLocalDataLabelValuesGrid = grdLocalDataLabelValues;
 
-            PossiblySomethingToSave += new TTellGuiToEnableSaveButton(this.@PossiblySaveSomething);
+            //PossiblySomethingToSave += new TTellGuiToEnableSaveButton(this.@PossiblySaveSomething);
 
             // Set up Grid
             SetupGridColumnsAndRows();
@@ -290,7 +290,31 @@ namespace Ict.Petra.Client.MCommon.Gui
                 ((TFrmPetraEditUtils)((IFrmPetraEdit) this.ParentForm).GetPetraUtilsObject()).SetChangedFlag();
             }
         }
-    
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private void ControlValueHasChanged(System.Object sender, EventArgs e)
+        {
+            if (this.ParentForm != null)
+            {
+                ((TFrmPetraEditUtils)((IFrmPetraEdit) this.ParentForm).GetPetraUtilsObject()).SetChangedFlag();
+            }
+        }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        private void PartnerKeyControlValueHasChanged(Int64 APartnerKey,
+            String APartnerShortName,
+            bool AValidSelection)
+        {
+        	if (this.ParentForm != null)
+            {
+                ((TFrmPetraEditUtils)((IFrmPetraEdit) this.ParentForm).GetPetraUtilsObject()).SetChangedFlag();
+            }
+        }
+        
         /// <summary>
         /// todoComment
         /// </summary>
@@ -385,7 +409,7 @@ namespace Ict.Petra.Client.MCommon.Gui
             {
                 TextBoxEditor = new System.Windows.Forms.TextBox();
                 cellControl = TextBoxEditor;
-                    
+
                 if (DataLabelValuePartnerRow != null)
                 {
                     TextBoxEditor.Text = DataLabelValuePartnerRow.ValueChar;
@@ -399,6 +423,9 @@ namespace Ict.Petra.Client.MCommon.Gui
                     // Default value if no Label data exists for the Partner
                     TextBoxEditor.Text = "";
                 }
+
+				// enable save button in editor when cell contents have changed
+                TextBoxEditor.TextChanged += new EventHandler(this.ControlValueHasChanged);
                 
                 FLocalDataLabelValuesGrid[ARowIndex, 1] = new SourceGrid.Cells.Cell();
                 FLocalDataLabelValuesGrid.LinkedControls.Add(new LinkedControlValue((Control)TextBoxEditor, new Position(ARowIndex, 1)));
@@ -427,6 +454,9 @@ namespace Ict.Petra.Client.MCommon.Gui
                     // Default value if no Label data exists for the Partner
                     TextBoxNumericEditor.NumberValueDecimal = null;
                 }
+
+				// enable save button in editor when cell contents have changed
+                TextBoxNumericEditor.TextChanged += new EventHandler(this.ControlValueHasChanged);
                 
                 FLocalDataLabelValuesGrid[ARowIndex, 1] = new SourceGrid.Cells.Cell();
                 FLocalDataLabelValuesGrid.LinkedControls.Add(new LinkedControlValue((Control)TextBoxNumericEditor, new Position(ARowIndex, 1)));
@@ -454,6 +484,9 @@ namespace Ict.Petra.Client.MCommon.Gui
                         DateEditor.Date = DataLabelValueApplicationRow.ValueDate;
                     }
                 }
+
+				// enable save button in editor when cell contents have changed
+                DateEditor.DateChanged += new TPetraDateChangedEventHandler(this.ControlValueHasChanged);
                 
                 FLocalDataLabelValuesGrid[ARowIndex, 1] = new SourceGrid.Cells.Cell();
                 FLocalDataLabelValuesGrid.LinkedControls.Add(new LinkedControlValue((Control)DateEditor, new Position(ARowIndex, 1)));
@@ -481,7 +514,10 @@ namespace Ict.Petra.Client.MCommon.Gui
                     // Default value if no Label data exists for the Partner
                     TextBoxNumericEditor.NumberValueInt = null;
                 }
-                
+
+				// enable save button in editor when cell contents have changed
+                TextBoxNumericEditor.TextChanged += new EventHandler(this.ControlValueHasChanged);
+
                 FLocalDataLabelValuesGrid[ARowIndex, 1] = new SourceGrid.Cells.Cell();
                 FLocalDataLabelValuesGrid.LinkedControls.Add(new LinkedControlValue((Control)TextBoxNumericEditor, new Position(ARowIndex, 1)));
                 FLocalDataLabelValuesGrid[ARowIndex, 1].Tag = TextBoxNumericEditor;
@@ -510,6 +546,9 @@ namespace Ict.Petra.Client.MCommon.Gui
                     // Default value if no Label data exists for the Partner
                     TextBoxCurrencyEditor.NumberValueDecimal = null;
                 }
+
+				// enable save button in editor when cell contents have changed
+                TextBoxCurrencyEditor.TextChanged += new EventHandler(this.ControlValueHasChanged);
                 
                 FLocalDataLabelValuesGrid[ARowIndex, 1] = new SourceGrid.Cells.Cell();
                 FLocalDataLabelValuesGrid.LinkedControls.Add(new LinkedControlValue((Control)TextBoxCurrencyEditor, new Position(ARowIndex, 1)));
@@ -536,6 +575,9 @@ namespace Ict.Petra.Client.MCommon.Gui
                     CheckBoxEditor.Checked = false;
                 }
 
+   				// enable save button in editor when cell contents have changed
+                CheckBoxEditor.CheckedChanged += new EventHandler(this.ControlValueHasChanged);
+
                 FLocalDataLabelValuesGrid[ARowIndex, 1] = new SourceGrid.Cells.Cell();
                 FLocalDataLabelValuesGrid.LinkedControls.Add(new LinkedControlValue((Control)CheckBoxEditor, new Position(ARowIndex, 1)));
                 FLocalDataLabelValuesGrid[ARowIndex, 1].Tag = CheckBoxEditor;
@@ -554,7 +596,7 @@ namespace Ict.Petra.Client.MCommon.Gui
 
                 // AutomaticallyUpdateDataSource: very rare, but needed here
                 PartnerKeyEditor.AutomaticallyUpdateDataSource = true;
-
+                
                 if (DataLabelValuePartnerRow != null)
                 {
                     PartnerKeyEditor.Text = StringHelper.PartnerKeyToStr(DataLabelValuePartnerRow.ValuePartnerKey);
@@ -571,7 +613,10 @@ namespace Ict.Petra.Client.MCommon.Gui
 
                 // display partner name linked to partner key
                 PartnerKeyEditor.ResetLabelText();
-
+                
+   				// enable save button in editor when cell contents have changed
+                PartnerKeyEditor.ValueChanged += new TDelegatePartnerChanged(this.PartnerKeyControlValueHasChanged);
+                
                 FLocalDataLabelValuesGrid[ARowIndex, 0] = new SourceGrid.Cells.Cell();
                 FLocalDataLabelValuesGrid.LinkedControls.Add(new LinkedControlValue(PartnerKeyEditor, new Position(ARowIndex, 0)));
                 FLocalDataLabelValuesGrid[ARowIndex, 0].Tag = PartnerKeyEditor;
@@ -602,6 +647,9 @@ namespace Ict.Petra.Client.MCommon.Gui
                     LookupValueEditor.Text = "";
                 }
 
+   				// enable save button in editor when cell contents have changed
+                LookupValueEditor.SelectedValueChanged += new EventHandler(this.ControlValueHasChanged);
+                
                 FLocalDataLabelValuesGrid[ARowIndex, 1] = new SourceGrid.Cells.Cell();
                 FLocalDataLabelValuesGrid.LinkedControls.Add(new LinkedControlValue((Control)LookupValueEditor, new Position(ARowIndex, 1)));
                 FLocalDataLabelValuesGrid[ARowIndex, 1].Tag = LookupValueEditor;
