@@ -17,6 +17,7 @@
                 MReporting/Gui/MFinDev,
                 MReporting/Gui/MConference,
                 MReporting/Gui,
+                MFinance/Gui/Budget,
                 MFinance/Gui/GL,
                 MFinance/Gui/Gift,
                 MFinance/Gui/AP,
