@@ -248,6 +248,7 @@ namespace Ict.Petra.Server.App.Core.Security
                     if (ParameterTypes == AParameterTypes)
                     {
                         MethodToTest = method;
+                        break;
                     }
                 }
             }
