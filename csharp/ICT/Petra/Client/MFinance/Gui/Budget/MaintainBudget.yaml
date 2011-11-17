@@ -21,6 +21,11 @@ RootNode:
         pnlButtons:
             Dock: Right
             Controls: [btnNew]
+        pnlFilter:
+            Dock: Bottom
+            Controls:
+                Row0: [pnlDetails, rgrSelectBudgetType]
+            #ColWidths: [0=Fixed:244, 1=Fixed:200]
         rgrSelectBudgetType:
             OptionalValues: [Split, Ad hoc, Same, Inflate Base, Inflate n]
             ControlsOrientation: horizontal
@@ -37,11 +42,6 @@ RootNode:
             Controls:
                 Row0: [cmbDetailCostCentreCode]
                 Row1: [cmbDetailAccountCode]
-        pnlFilter:
-            Dock: Bottom
-            Controls:
-                Row0: [pnlDetails, rgrSelectBudgetType]
-            #ColWidths: [0=Fixed:244, 1=Fixed:200]
         cmbDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList}
         cmbDetailAccountCode: {Label=Account, List=UserDefinedList}
         #TODO: radio buttons for selection of budget type, display different user controls depending on selection, similar to bankimport screen
