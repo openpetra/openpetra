@@ -106,11 +106,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         private TSubmitChangesResult StoreManualCode(ref BudgetTDS ASubmitChanges, out TVerificationResultCollection AVerificationResult)
         {
             TSubmitChangesResult TSCR = TRemote.MFinance.Budget.WebConnectors.SaveBudget(ref ASubmitChanges, out AVerificationResult);
-            FMainDS.Merge(ASubmitChanges);
-            //Delete any rows with a_budget_sequence < 0 because in SaveBudget identical rows
-            //  are added with a correct sequence.
-            
-            
+
             return TSCR;
         }
         

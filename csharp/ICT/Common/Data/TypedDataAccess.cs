@@ -2073,6 +2073,8 @@ namespace Ict.Common.Data
                             // this is needed when creating location 0 for a new site/ledger
                             if (Convert.ToInt64(TheRow[ASequenceField]) < 0)
                             {
+                                // accept changes for the row, so that we can update the dataset on the client and still know the negative temp sequence number
+                                TheRow.AcceptChanges();
                                 TheRow[ASequenceField] = (System.Object)DBAccess.GDBAccessObj.GetNextSequenceValue(ASequenceName, ATransaction);
                             }
                         }
