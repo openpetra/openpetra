@@ -136,6 +136,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
+                MakeDetailsInvisible(true);
                 btnDelete.Enabled = false;
                 btnEditOtherPartner.Enabled = false;
             }
@@ -169,6 +170,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void ShowDetailsManual(PPartnerRelationshipRow ARow)
         {
             long RelationPartnerKey;
+
+            // show controls if not visible yet
+            MakeDetailsInvisible(false);
 
             btnDelete.Enabled = false;
             btnEditOtherPartner.Enabled = false;
@@ -282,6 +286,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        /// <summary>
+        /// adding a new partner relationship record
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void NewRow(System.Object sender, EventArgs e)
         {
             TRecalculateScreenPartsEventArgs RecalculateScreenPartsEventArgs;
@@ -294,6 +303,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             OnRecalculateScreenParts(RecalculateScreenPartsEventArgs);
         }
 
+        /// <summary>
+        /// manual code when adding new row
+        /// </summary>
+        /// <param name="ARow"></param>
         private void NewRowManual(ref PartnerEditTDSPPartnerRelationshipRow ARow)
         {
             // Initialize relation with key of this partner on both sides, needs to be changed by user
@@ -302,9 +315,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             ARow.RelationKey = ARow.PartnerKey;
         }
 
+        /// <summary>
+        /// return index of currently selected row
+        /// </summary>
+        /// <returns></returns>
         private int CurrentRowIndex()
         {
-            //TODO WB: candidate for central method but not there yet?
             int rowIndex = -1;
 
             SourceGrid.RangeRegion selectedRegion = grdDetails.Selection.GetSelectionRegion();
@@ -317,9 +333,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             return rowIndex;
         }
 
+        /// <summary>
+        /// select row with given index in grid
+        /// </summary>
+        /// <param name="rowIndex"></param>
         private void SelectByIndex(int rowIndex)
         {
-            //TODO WB: candidate for central method but not there yet?
             if (rowIndex >= grdDetails.Rows.Count)
             {
                 rowIndex = grdDetails.Rows.Count - 1;
@@ -342,11 +361,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        /// <summary>
+        /// delete row from table and grid
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DeleteRow(System.Object sender, EventArgs e)
         {
             TRecalculateScreenPartsEventArgs RecalculateScreenPartsEventArgs;
 
-            //TODO WB: candidate for central method but not there yet?
             if (FPreviouslySelectedDetailRow == null)
             {
                 return;
@@ -361,8 +384,21 @@ namespace Ict.Petra.Client.MPartner.Gui
             RecalculateScreenPartsEventArgs = new TRecalculateScreenPartsEventArgs();
             RecalculateScreenPartsEventArgs.ScreenPart = TScreenPartEnum.spCounters;
             OnRecalculateScreenParts(RecalculateScreenPartsEventArgs);
+
+            if (grdDetails.Rows.Count <= 1)
+            {
+                // hide details part and disable buttons if no record in grid (first row for headings)
+                btnDelete.Enabled = false;
+                btnEditOtherPartner.Enabled = false;
+                MakeDetailsInvisible(true);
+            }
         }
 
+        /// <summary>
+        /// button was pressed to edit other partner in relationship record
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void EditOtherPartner(System.Object sender, EventArgs e)
         {
             long RelationPartnerKey;
@@ -400,6 +436,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 this.Cursor = Cursors.Default;
             }
+        }
+
+        /// <summary>
+        /// Sets this Usercontrol visible or unvisile true = visible, false = invisible.
+        /// </summary>
+        /// <returns>void</returns>
+        private void MakeDetailsInvisible(Boolean value)
+        {
+            /* make the details part of this screen visible or invisible. */
+            this.pnlDetails.Visible = !value;
         }
 
         #endregion

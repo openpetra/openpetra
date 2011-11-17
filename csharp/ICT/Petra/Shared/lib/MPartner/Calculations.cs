@@ -57,7 +57,7 @@ namespace Ict.Petra.Shared.MPartner
 
         /// <summary>
         /// Specifies how to format the String that is returned by Method
-        /// <see cref="DetermineLocationString(PLocationRow, TPartnerLocationFormatEnum)" />.
+        /// <see cref="M:Ict.Petra.Shared.MPartner.Calculations.DetermineLocationString(Ict.Petra.Shared.MPartner.Partner.Data.PLocationRow, Ict.Petra.Shared.MPartner.Calculations.TPartnerLocationFormatEnum)" />.
         /// </summary>
         public enum TPartnerLocationFormatEnum
         {
@@ -388,20 +388,10 @@ namespace Ict.Petra.Shared.MPartner
         /// Builds a formatted String out of the data that is contained in a Location.
         /// </summary>
         /// <param name="ALocationDR">DataRow containing the Location data.</param>
-        /// <returns>Formatted String.</returns>
-        public static String DetermineLocationString(PLocationRow ALocationDR)
-        {
-            return DetermineLocationString(ALocationDR, TPartnerLocationFormatEnum.plfLineBreakSeparated);
-        }
-
-        /// <summary>
-        /// Builds a formatted String out of the data that is contained in a Location.
-        /// </summary>
-        /// <param name="ALocationDR">DataRow containing the Location data.</param>
         /// <param name="APartnerLocationStringFormat">Specifies how to format the String that is returned.</param>
         /// <returns>Formatted String.</returns>
         public static String DetermineLocationString(PLocationRow ALocationDR,
-            TPartnerLocationFormatEnum APartnerLocationStringFormat)
+            TPartnerLocationFormatEnum APartnerLocationStringFormat = TPartnerLocationFormatEnum.plfLineBreakSeparated)
         {
             return DetermineLocationString(ALocationDR.Building1,
                 ALocationDR.Building2,

@@ -71,27 +71,26 @@ namespace Ict.Petra.Client.MPartner.Gui
             frm.Show();
         }
 
-            /// export partners into file
+        /// export partners into file
         public static void ExportPartners(Form AParentForm)
         {
+            String FileName = TImportExportDialogs.GetExportFilename(Catalog.GetString("Save Partners into File"));
 
-            String FileName = TImportExportDialogs.GetExportFilename (Catalog.GetString("Save Partners into File"));
             if (FileName.Length > 0)
             {
                 if (FileName.EndsWith("ext"))
                 {
                     Int64 PartnerKey = 10000026;
                     StringCollection ASpecificBuildingInfo = null;
-                    String doc = TRemote.MPartner.ImportExport.WebConnectors.GetExtFileHeader ();
+                    String doc = TRemote.MPartner.ImportExport.WebConnectors.GetExtFileHeader();
                     Int32 SiteKey = 0;
                     Int32 LocationKey = 0;
 
                     doc += TRemote.MPartner.ImportExport.WebConnectors.ExportPartnerExt(
                         PartnerKey, SiteKey, LocationKey, false, ASpecificBuildingInfo);
-                    
-                    doc += TRemote.MPartner.ImportExport.WebConnectors.GetExtFileFooter ();
+
+                    doc += TRemote.MPartner.ImportExport.WebConnectors.GetExtFileFooter();
                     TImportExportDialogs.ExportTofile(doc, FileName);
-                
                 }
                 else
                 {

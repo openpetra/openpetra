@@ -114,7 +114,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
 
                     if (TYml2Xml.GetAttributeRecursive(LocalNode, "class") == MPartnerConstants.PARTNERCLASS_PERSON)
                     {
-                        if (TAppSettingsManager.GetValue("AllowCreationPersonRecords", "false", false).ToLower() != "true")
+                        if (TAppSettingsManager.GetValue("AllowCreationPersonRecords", "true", false).ToLower() != "true")
                         {
                             throw new Exception(
                                 "We are currently not supporting import of PERSON records, until we have resolved the issues with household/family. "
@@ -240,8 +240,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
 
             PartnerImportExportTDS MainDS = TPartnerImportCSV.ImportData(root, ref AVerificationResult);
 
-            // TODO: check for updated partners, matching addresses etc.
-
             return MainDS;
         }
 
@@ -266,18 +264,18 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             {
                 TLogging.Log(AResultText);
             }
+
             ReferenceResults.Add(new TVerificationResult(ImportContext, AResultText, Severity));
         }
 
-        private static void AddVerificationResult (ref TVerificationResultCollection ReferenceResults, String AResultText)
+        private static void AddVerificationResult(ref TVerificationResultCollection ReferenceResults, String AResultText)
         {
-            AddVerificationResult (ref ReferenceResults, AResultText, TResultSeverity.Resv_Noncritical);
+            AddVerificationResult(ref ReferenceResults, AResultText, TResultSeverity.Resv_Noncritical);
         }
 
-        
         /// <summary>
         /// Check that I seem to have the right partner tables for this PartnerClass.
-        /// 
+        ///
         /// If the child records (PPerson, PFamily, etc) have no ModificationID,
         /// (because these are new records - not originally from the database)
         /// I need to get the current one from the server to prevent it sulking.
@@ -287,7 +285,10 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         /// <param name="ReferenceResults"></param>
         /// <param name="Transaction"></param>
         /// <returns></returns>
-        private static bool CheckPartnerClass(PPartnerRow PartnerRow, PartnerImportExportTDS MainDS, ref TVerificationResultCollection ReferenceResults, TDBTransaction Transaction)
+        private static bool CheckPartnerClass(PPartnerRow PartnerRow,
+            PartnerImportExportTDS MainDS,
+            ref TVerificationResultCollection ReferenceResults,
+            TDBTransaction Transaction)
         {
             if (PartnerRow.PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY)
             {
@@ -296,7 +297,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     AddVerificationResult(ref ReferenceResults, "Internal Error - No Family row for FAMILY", TResultSeverity.Resv_Critical);
                     return false;
                 }
+
                 PFamilyTable Table = PFamilyAccess.LoadByPrimaryKey(PartnerRow.PartnerKey, Transaction);
+
                 if (Table.Rows.Count > 0)
                 {
                     MainDS.PFamily[0].DateCreated = Table[0].DateCreated;
@@ -312,7 +315,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     AddVerificationResult(ref ReferenceResults, "Internal Error - No Person row for PERSON", TResultSeverity.Resv_Critical);
                     return false;
                 }
+
                 PPersonTable Table = PPersonAccess.LoadByPrimaryKey(PartnerRow.PartnerKey, Transaction);
+
                 if (Table.Rows.Count > 0)
                 {
                     MainDS.PPerson[0].DateCreated = Table[0].DateCreated;
@@ -327,6 +332,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     if (MainDS.PPerson[0].PartnerKey > 0) // If I've got a real key, then my existing FamilyId might also be real
                     {
                         PPersonTable PersonTable = PPersonAccess.LoadByPrimaryKey(MainDS.PPerson[0].PartnerKey, Transaction);
+
                         if (PersonTable.Rows.Count != 0)
                         {
                             MainDS.PPerson[0].FamilyId = PersonTable[0].FamilyId;
@@ -342,13 +348,16 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         String NewFamilyMsg;
 
                         FamIdRes = IdFactory.GetNewFamilyID(MainDS.PPerson[0].FamilyKey, out NewFamilyId, out NewFamilyMsg);
+
                         if (FamIdRes != TFamilyIDSuccessEnum.fiError)
                         {
                             MainDS.PPerson[0].FamilyId = NewFamilyId;
                         }
                         else
                         {
-                            AddVerificationResult(ref ReferenceResults, "Problem generating family id: " + NewFamilyMsg,TResultSeverity.Resv_Critical);
+                            AddVerificationResult(ref ReferenceResults,
+                                "Problem generating family id: " + NewFamilyMsg,
+                                TResultSeverity.Resv_Critical);
                             return false;
                         }
                     }
@@ -362,7 +371,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     AddVerificationResult(ref ReferenceResults, "Internal Error - No Unit row for UNIT", TResultSeverity.Resv_Critical);
                     return false;
                 }
+
                 PUnitTable Table = PUnitAccess.LoadByPrimaryKey(PartnerRow.PartnerKey, Transaction);
+
                 if (Table.Rows.Count > 0)
                 {
                     MainDS.PUnit[0].DateCreated = Table[0].DateCreated;
@@ -371,14 +382,16 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                 }
             }
 
-            if (PartnerRow.PartnerClass == MPartnerConstants.PARTNERCLASS_CHURCH) 
+            if (PartnerRow.PartnerClass == MPartnerConstants.PARTNERCLASS_CHURCH)
             {
                 if (MainDS.PChurch.Rows.Count < 1)
                 {
                     AddVerificationResult(ref ReferenceResults, "Internal Error - No Church row for CHURCH", TResultSeverity.Resv_Critical);
                     return false;
                 }
+
                 PChurchTable Table = PChurchAccess.LoadByPrimaryKey(PartnerRow.PartnerKey, Transaction);
+
                 if (Table.Rows.Count > 0)
                 {
                     MainDS.PChurch[0].DateCreated = Table[0].DateCreated;
@@ -391,10 +404,14 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             {
                 if (MainDS.POrganisation.Rows.Count < 1)
                 {
-                    AddVerificationResult(ref ReferenceResults, "Internal Error - No Organisation row for ORGANISATION", TResultSeverity.Resv_Critical);
+                    AddVerificationResult(ref ReferenceResults,
+                        "Internal Error - No Organisation row for ORGANISATION",
+                        TResultSeverity.Resv_Critical);
                     return false;
                 }
+
                 POrganisationTable Table = POrganisationAccess.LoadByPrimaryKey(PartnerRow.PartnerKey, Transaction);
+
                 if (Table.Rows.Count > 0)
                 {
                     MainDS.POrganisation[0].DateCreated = Table[0].DateCreated;
@@ -410,7 +427,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     AddVerificationResult(ref ReferenceResults, "Internal Error - No Bank row for BANK", TResultSeverity.Resv_Critical);
                     return false;
                 }
+
                 PBankTable Table = PBankAccess.LoadByPrimaryKey(PartnerRow.PartnerKey, Transaction);
+
                 if (Table.Rows.Count > 0)
                 {
                     MainDS.PBank[0].DateCreated = Table[0].DateCreated;
@@ -422,7 +441,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             return true;
         }
 
-        private static void CheckLocationType (PartnerImportExportTDS MainDS, ref TVerificationResultCollection ReferenceResults, TDBTransaction Transaction)
+        private static void CheckLocationType(PartnerImportExportTDS MainDS,
+            ref TVerificationResultCollection ReferenceResults,
+            TDBTransaction Transaction)
         {
             // LocationType in PartnerLocation row
             foreach (PPartnerLocationRow rv in MainDS.PPartnerLocation.Rows)
@@ -430,6 +451,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                 if ((rv.LocationType != "") && (!PLocationTypeAccess.Exists(rv.LocationType, Transaction)))
                 {
                     MainDS.PLocationType.DefaultView.RowFilter = String.Format("{0}='{1}'", PLocationTypeTable.GetCodeDBName(), rv.LocationType);
+
                     if (MainDS.PLocationType.DefaultView.Count == 0) // Check I've not just added this a moment ago..
                     {
                         AddVerificationResult(ref ReferenceResults, "Adding new location type " + rv.LocationType);
@@ -438,11 +460,13 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         Row.Description = NewRowDescription;
                         MainDS.PLocationType.Rows.Add(Row);
                     }
-               }
+                }
             }
         }
 
-        private static void CheckBusiness (PartnerImportExportTDS MainDS, ref TVerificationResultCollection ReferenceResults, TDBTransaction Transaction)
+        private static void CheckBusiness(PartnerImportExportTDS MainDS,
+            ref TVerificationResultCollection ReferenceResults,
+            TDBTransaction Transaction)
         {
             // PBusiness: If I'm importing any organisations, they can only do business that I'm expecting.
             foreach (POrganisationRow rv in MainDS.POrganisation.Rows)
@@ -458,34 +482,41 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             }
         }
 
-
-        private static void CheckLanguage (PartnerImportExportTDS MainDS, PPartnerRow PartnerRow, ref TVerificationResultCollection ReferenceResults, TDBTransaction Transaction)
+        private static void CheckLanguage(PartnerImportExportTDS MainDS,
+            PPartnerRow PartnerRow,
+            ref TVerificationResultCollection ReferenceResults,
+            TDBTransaction Transaction)
         {
             // Language: we can only speak languages that we've heard of
             StringCollection RequiredLanguages = new StringCollection();
+
             if (!PLanguageAccess.Exists(PartnerRow.LanguageCode, Transaction))
             {
                 RequiredLanguages.Add(PartnerRow.LanguageCode);
             }
-            foreach(PmPersonLanguageRow rv in MainDS.PmPersonLanguage.Rows)
+
+            foreach (PmPersonLanguageRow rv in MainDS.PmPersonLanguage.Rows)
             {
                 if ((!RequiredLanguages.Contains(rv.LanguageCode)) && (!PLanguageAccess.Exists(rv.LanguageCode, Transaction)))
                 {
                     RequiredLanguages.Add(rv.LanguageCode);
                 }
             }
-            foreach(PmShortTermApplicationRow rv in MainDS.PmShortTermApplication.Rows)
+
+            foreach (PmShortTermApplicationRow rv in MainDS.PmShortTermApplication.Rows)
             {
                 if ((!RequiredLanguages.Contains(rv.StCongressLanguage)) && (!PLanguageAccess.Exists(rv.StCongressLanguage, Transaction)))
                 {
                     RequiredLanguages.Add(rv.StCongressLanguage);
                 }
             }
+
             foreach (String NewLanguage in RequiredLanguages)
             {
                 if (NewLanguage != "")
                 {
                     MainDS.PLanguage.DefaultView.RowFilter = String.Format("{0}='{1}'", PLanguageTable.GetLanguageCodeDBName(), NewLanguage);
+
                     if (MainDS.PLanguage.DefaultView.Count == 0) // Check I've not just added this a moment ago..
                     {
                         AddVerificationResult(ref ReferenceResults, "Adding new Language Code " + NewLanguage);
@@ -498,7 +529,10 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             }
         }
 
-        private static void CheckAcquisitionCode (PartnerImportExportTDS MainDS, PPartnerRow PartnerRow, ref TVerificationResultCollection ReferenceResults, TDBTransaction Transaction)
+        private static void CheckAcquisitionCode(PartnerImportExportTDS MainDS,
+            PPartnerRow PartnerRow,
+            ref TVerificationResultCollection ReferenceResults,
+            TDBTransaction Transaction)
         {
             // Acquisition: Check that partner's acquisition code exists in database
             if ((PartnerRow.AcquisitionCode != "") && (!PAcquisitionAccess.Exists(PartnerRow.AcquisitionCode, Transaction)))
@@ -518,30 +552,39 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         /// <param name="PartnerRow"></param>
         /// <param name="ReferenceResults"></param>
         /// <param name="Transaction"></param>
-        private static void CheckAddresses(PartnerImportExportTDS MainDS, PPartnerRow PartnerRow, ref TVerificationResultCollection ReferenceResults, TDBTransaction Transaction)
+        private static void CheckAddresses(PartnerImportExportTDS MainDS,
+            PPartnerRow PartnerRow,
+            ref TVerificationResultCollection ReferenceResults,
+            TDBTransaction Transaction)
         {
             PLocationTable LocationTable = PLocationAccess.LoadViaPPartner(PartnerRow.PartnerKey, Transaction);
-            if (LocationTable.Rows.Count == 0)
-                return;
 
-            for (int ImportPartnerLocationRowIdx = 0;  ImportPartnerLocationRowIdx < MainDS.PPartnerLocation.Rows.Count;)
+            if (LocationTable.Rows.Count == 0)
+            {
+                return;
+            }
+
+            for (int ImportPartnerLocationRowIdx = 0; ImportPartnerLocationRowIdx < MainDS.PPartnerLocation.Rows.Count; )
             {
                 PPartnerLocationRow ImportPartnerLocationRow = (PPartnerLocationRow)MainDS.PPartnerLocation[ImportPartnerLocationRowIdx];
-                MainDS.PLocation.DefaultView.RowFilter = String.Format("{0}={1}", PLocationTable.GetLocationKeyDBName(), ImportPartnerLocationRow.LocationKey);
+                MainDS.PLocation.DefaultView.RowFilter = String.Format("{0}={1}",
+                    PLocationTable.GetLocationKeyDBName(), ImportPartnerLocationRow.LocationKey);
                 PLocationRow ImportLocationRow = (PLocationRow)MainDS.PLocation.DefaultView[0].Row;
 
                 bool RowRemoved = false;
+
                 // Now I want to find out whether this row exists in my database.
                 foreach (PLocationRow DbLocationRow in LocationTable.Rows)
                 {
                     if (
                         (DbLocationRow.StreetName == ImportLocationRow.StreetName)
-                    && (DbLocationRow.Locality == ImportLocationRow.Locality)
-                    && (DbLocationRow.City == ImportLocationRow.City)
-                    && (DbLocationRow.PostalCode == ImportLocationRow.PostalCode)
-                    )
+                        && (DbLocationRow.Locality == ImportLocationRow.Locality)
+                        && (DbLocationRow.City == ImportLocationRow.City)
+                        && (DbLocationRow.PostalCode == ImportLocationRow.PostalCode)
+                        )
                     {
-                        String ExistingAddress = Calculations.DetermineLocationString(DbLocationRow, Calculations.TPartnerLocationFormatEnum.plfCommaSeparated);
+                        String ExistingAddress = Calculations.DetermineLocationString(DbLocationRow,
+                            Calculations.TPartnerLocationFormatEnum.plfCommaSeparated);
 
                         MainDS.PLocation.Rows.Remove(ImportLocationRow);
                         MainDS.PPartnerLocation.Rows.RemoveAt(ImportPartnerLocationRowIdx);
@@ -551,15 +594,18 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         break;  // If there's already a duplicate in the database, I can't fix that here...
                     }
                 }
+
                 if (!RowRemoved)
                 {
                     ImportPartnerLocationRowIdx++; // There is no auto-increment on the "for" loop.
                 }
-
             }
         }
 
-        private static void CheckAddresseeTypeCode (PartnerImportExportTDS MainDS, PPartnerRow PartnerRow, ref TVerificationResultCollection ReferenceResults, TDBTransaction Transaction)
+        private static void CheckAddresseeTypeCode(PartnerImportExportTDS MainDS,
+            PPartnerRow PartnerRow,
+            ref TVerificationResultCollection ReferenceResults,
+            TDBTransaction Transaction)
         {
             // Addresssee type: Check that we know how to address this partner:
             if ((PartnerRow.AddresseeTypeCode != "") && (!PAddresseeTypeAccess.Exists(PartnerRow.AddresseeTypeCode, Transaction)))
@@ -572,7 +618,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             }
         }
 
-        private static void CheckAbilityArea (PartnerImportExportTDS MainDS, ref TVerificationResultCollection ReferenceResults, TDBTransaction Transaction)
+        private static void CheckAbilityArea(PartnerImportExportTDS MainDS,
+            ref TVerificationResultCollection ReferenceResults,
+            TDBTransaction Transaction)
         {
             // Ability Area: if there's any abilities, they must only be in known areas!
             // Ability Level: only import known level identifiers
@@ -580,7 +628,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             {
                 if ((rv.AbilityAreaName != "") && (!PtAbilityAreaAccess.Exists(rv.AbilityAreaName, Transaction)))
                 {
-                    MainDS.PtAbilityArea.DefaultView.RowFilter = String.Format("{0}='{1}'", PtAbilityAreaTable.GetAbilityAreaNameDBName(), rv.AbilityAreaName);
+                    MainDS.PtAbilityArea.DefaultView.RowFilter = String.Format("{0}='{1}'",
+                        PtAbilityAreaTable.GetAbilityAreaNameDBName(), rv.AbilityAreaName);
+
                     if (MainDS.PtAbilityArea.DefaultView.Count == 0) // Check I've not just added this a moment ago..
                     {
                         AddVerificationResult(ref ReferenceResults, "Adding new Ability Area " + rv.AbilityAreaName);
@@ -590,6 +640,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         MainDS.PtAbilityArea.Rows.Add(Row);
                     }
                 }
+
                 if (!PtAbilityLevelAccess.Exists(rv.AbilityLevel, Transaction))
                 {
                     AddVerificationResult(ref ReferenceResults, "Removing unknown Ability level " + rv.AbilityLevel);
@@ -598,7 +649,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             }
         }
 
-        private static void CheckPartnerInterest (PartnerImportExportTDS MainDS, ref TVerificationResultCollection ReferenceResults, TDBTransaction Transaction)
+        private static void CheckPartnerInterest(PartnerImportExportTDS MainDS,
+            ref TVerificationResultCollection ReferenceResults,
+            TDBTransaction Transaction)
         {
             // Interest: A PartnerInterest entry must have a cossesponding entry in PInterest
             // (The PPartnerInterest table has the category as a custom field)
@@ -615,9 +668,12 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
 
                     MainDS.PInterest.Rows.Add(Row);
                 }
+
                 if ((rv.Category != "") && (!PInterestCategoryAccess.Exists(rv.Category, Transaction)))
                 {
-                    MainDS.PInterestCategory.DefaultView.RowFilter = String.Format("{0}='{1}'", PInterestCategoryTable.GetCategoryDBName(), rv.Category);
+                    MainDS.PInterestCategory.DefaultView.RowFilter = String.Format("{0}='{1}'",
+                        PInterestCategoryTable.GetCategoryDBName(), rv.Category);
+
                     if (MainDS.PInterestCategory.DefaultView.Count == 0) // Check I've not just added this a moment ago..
                     {
                         AddVerificationResult(ref ReferenceResults, "Adding new Interest Category " + rv.Category);
@@ -630,7 +686,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             }
         }
 
-        private static void CheckPartnerType (PartnerImportExportTDS MainDS, ref TVerificationResultCollection ReferenceResults, TDBTransaction Transaction)
+        private static void CheckPartnerType(PartnerImportExportTDS MainDS,
+            ref TVerificationResultCollection ReferenceResults,
+            TDBTransaction Transaction)
         {
             // PType: In the previous version, unknown types were not imported.
             foreach (PPartnerTypeRow rv in MainDS.PPartnerType.Rows)
@@ -646,7 +704,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             }
         }
 
-        private static void CheckChurchDenomination (PartnerImportExportTDS MainDS, ref TVerificationResultCollection ReferenceResults, TDBTransaction Transaction)
+        private static void CheckChurchDenomination(PartnerImportExportTDS MainDS,
+            ref TVerificationResultCollection ReferenceResults,
+            TDBTransaction Transaction)
         {
             // Denomination: If a church belongs to one, we need to know about it.
             foreach (PChurchRow rv in MainDS.PChurch.Rows)
@@ -662,101 +722,111 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             }
         }
 
-        private static void CheckContactRefs (PartnerImportExportTDS MainDS, ref TVerificationResultCollection ReferenceResults, TDBTransaction ATransaction)
+        private static void CheckContactRefs(PartnerImportExportTDS MainDS,
+            ref TVerificationResultCollection ReferenceResults,
+            TDBTransaction ATransaction)
         {
-        	int ContactId = 0;
-        	foreach (PartnerImportExportTDSPPartnerContactRow Row in MainDS.PPartnerContact.Rows)
-        	{
-        		PPartnerContactTable Tbl = PPartnerContactAccess.LoadByUniqueKey(Row.PartnerKey,Row.ContactDate,Row.ContactTime,ATransaction);
-        		bool HereAlready = false;
-        		                                                                 
-        		if (Tbl.Rows.Count > 0) // I've already imported this..
-        		{
-        			Row.AcceptChanges(); // This should make the DB update instead of Add
-        			Row.ContactId = Tbl[0].ContactId;
-        			Row.ModificationId = Tbl[0].ModificationId;
-        			HereAlready = true;
-        		}
-        		if (Row.ContactId == 0)
-        		{
-        			Row.ContactId = --ContactId;
-        		}
-        		
-        		// The row has custom Attr and Detail fields, which I need to put into the right tables..
-        		if (!HereAlready && (Row.ContactAttr != ""))
-        		{
+            int ContactId = 0;
+
+            foreach (PartnerImportExportTDSPPartnerContactRow Row in MainDS.PPartnerContact.Rows)
+            {
+                PPartnerContactTable Tbl = PPartnerContactAccess.LoadByUniqueKey(Row.PartnerKey, Row.ContactDate, Row.ContactTime, ATransaction);
+                bool HereAlready = false;
+
+                if (Tbl.Rows.Count > 0)         // I've already imported this..
+                {
+                    Row.AcceptChanges();             // This should make the DB update instead of Add
+                    Row.ContactId = Tbl[0].ContactId;
+                    Row.ModificationId = Tbl[0].ModificationId;
+                    HereAlready = true;
+                }
+
+                if (Row.ContactId == 0)
+                {
+                    Row.ContactId = --ContactId;
+                }
+
+                // The row has custom Attr and Detail fields, which I need to put into the right tables..
+                if (!HereAlready && (Row.ContactAttr != ""))
+                {
                     AddVerificationResult(ref ReferenceResults, "Adding new contact attribute: " + Row.ContactAttr, TResultSeverity.Resv_Status);
-        			PContactAttributeDetailRow PcadRow = MainDS.PContactAttributeDetail.NewRowTyped();
-        			PcadRow.ContactAttributeCode = Row.ContactAttr;
-        			PcadRow.ContactAttrDetailCode = Row.ContactDetail;
-        			PcadRow.ContactAttrDetailDescr = NewRowDescription;
-        			PContactAttributeDetailAccess.AddOrModifyRecord(
-        				PcadRow.ContactAttributeCode,
-        				PcadRow.ContactAttrDetailCode,
-        				MainDS.PContactAttributeDetail,
-        				PcadRow,false,ATransaction);
-        			
-        			PPartnerContactAttributeRow PcaRow = MainDS.PPartnerContactAttribute.NewRowTyped();
-        			PcaRow.ContactId = Row.ContactId;
-        			PcaRow.ContactAttributeCode = Row.ContactAttr;
-        			PcaRow.ContactAttrDetailCode = Row.ContactDetail;
-        			PPartnerContactAttributeAccess.AddOrModifyRecord(
-        				PcaRow.ContactId,
-        				PcaRow.ContactAttributeCode,
-        				PcaRow.ContactAttrDetailCode,
-        				MainDS.PPartnerContactAttribute,
-        				PcaRow, false,ATransaction);
-        			
-        			PContactAttributeRow CaRow = MainDS.PContactAttribute.NewRowTyped();
-        			CaRow.ContactAttributeDescr = NewRowDescription;
-        			CaRow.ContactAttributeCode = Row.ContactAttr;
-        			PContactAttributeAccess.AddOrModifyRecord(
-        				CaRow.ContactAttributeCode,
-        				MainDS.PContactAttribute,
-        				CaRow,
-        				false,
-        				ATransaction);
-        		}
-        		
-        		if(!PMethodOfContactAccess.Exists(Row.ContactCode, ATransaction))
-				{
+                    PContactAttributeDetailRow PcadRow = MainDS.PContactAttributeDetail.NewRowTyped();
+                    PcadRow.ContactAttributeCode = Row.ContactAttr;
+                    PcadRow.ContactAttrDetailCode = Row.ContactDetail;
+                    PcadRow.ContactAttrDetailDescr = NewRowDescription;
+                    PContactAttributeDetailAccess.AddOrModifyRecord(
+                        PcadRow.ContactAttributeCode,
+                        PcadRow.ContactAttrDetailCode,
+                        MainDS.PContactAttributeDetail,
+                        PcadRow, false, ATransaction);
+
+                    PPartnerContactAttributeRow PcaRow = MainDS.PPartnerContactAttribute.NewRowTyped();
+                    PcaRow.ContactId = Row.ContactId;
+                    PcaRow.ContactAttributeCode = Row.ContactAttr;
+                    PcaRow.ContactAttrDetailCode = Row.ContactDetail;
+                    PPartnerContactAttributeAccess.AddOrModifyRecord(
+                        PcaRow.ContactId,
+                        PcaRow.ContactAttributeCode,
+                        PcaRow.ContactAttrDetailCode,
+                        MainDS.PPartnerContactAttribute,
+                        PcaRow, false, ATransaction);
+
+                    PContactAttributeRow CaRow = MainDS.PContactAttribute.NewRowTyped();
+                    CaRow.ContactAttributeDescr = NewRowDescription;
+                    CaRow.ContactAttributeCode = Row.ContactAttr;
+                    PContactAttributeAccess.AddOrModifyRecord(
+                        CaRow.ContactAttributeCode,
+                        MainDS.PContactAttribute,
+                        CaRow,
+                        false,
+                        ATransaction);
+                }
+
+                if (!PMethodOfContactAccess.Exists(Row.ContactCode, ATransaction))
+                {
                     AddVerificationResult(ref ReferenceResults, "Adding new method of contact: " + Row.ContactCode, TResultSeverity.Resv_Status);
-        		   	PMethodOfContactRow MocRow = MainDS.PMethodOfContact.NewRowTyped();
-        		   	MocRow.MethodOfContactCode = Row.ContactCode;
-        		   	MocRow.Description = NewRowDescription;
-        		   	MocRow.ValidMethod = true;
-        		   	MainDS.PMethodOfContact.Rows.Add(MocRow);
-				}
-        	}
+                    PMethodOfContactRow MocRow = MainDS.PMethodOfContact.NewRowTyped();
+                    MocRow.MethodOfContactCode = Row.ContactCode;
+                    MocRow.Description = NewRowDescription;
+                    MocRow.ValidMethod = true;
+                    MainDS.PMethodOfContact.Rows.Add(MocRow);
+                }
+            }
         }
-        
-        private static void CheckApplication (PartnerImportExportTDS MainDS, ref TVerificationResultCollection ReferenceResults, TDBTransaction Transaction)
+
+        private static void CheckApplication(PartnerImportExportTDS MainDS,
+            ref TVerificationResultCollection ReferenceResults,
+            TDBTransaction Transaction)
         {
             // The Application must be unique - if it's present already, I can update the existing record.
             // ApplicationStatus: Application Status must be listed in PtApplicantStatus
             // ApplicantType: applicants must be of known types
             // ApplicationType: applications must be of known types
 
-            for (int RowIdx= 0; RowIdx< MainDS.PmGeneralApplication.Rows.Count; RowIdx++)
+            for (int RowIdx = 0; RowIdx < MainDS.PmGeneralApplication.Rows.Count; RowIdx++)
             {
                 PmGeneralApplicationRow GenAppRow = MainDS.PmGeneralApplication[RowIdx];
+
                 // Check if this row already exists, using the unique key
-                if (PmGeneralApplicationAccess.Exists(GenAppRow.PartnerKey, GenAppRow.GenAppDate, GenAppRow.AppTypeName, GenAppRow.OldLink, Transaction))
+                if (PmGeneralApplicationAccess.Exists(GenAppRow.PartnerKey, GenAppRow.GenAppDate, GenAppRow.AppTypeName, GenAppRow.OldLink,
+                        Transaction))
                 {
                     // If it does, I need to update and not add.
                     PmGeneralApplicationTable Tbl = PmGeneralApplicationAccess.LoadByUniqueKey(
-                    	GenAppRow.PartnerKey, GenAppRow.GenAppDate, GenAppRow.AppTypeName, GenAppRow.OldLink, Transaction);
+                        GenAppRow.PartnerKey, GenAppRow.GenAppDate, GenAppRow.AppTypeName, GenAppRow.OldLink, Transaction);
                     PmGeneralApplicationRow ExistingRow = Tbl[0];
-                    
+
                     GenAppRow.AcceptChanges();
                     GenAppRow.ModificationId = ExistingRow.ModificationId;
-                    
+
                     AddVerificationResult(ref ReferenceResults, "Existing Application record updated.");
                 }
-                
+
                 if ((GenAppRow.GenApplicationStatus != "") && (!PtApplicantStatusAccess.Exists(GenAppRow.GenApplicationStatus, Transaction)))
                 {
-                    MainDS.PtApplicantStatus.DefaultView.RowFilter = String.Format("{0}='{1}'", PtApplicantStatusTable.GetCodeDBName(), GenAppRow.GenApplicationStatus);
+                    MainDS.PtApplicantStatus.DefaultView.RowFilter = String.Format("{0}='{1}'",
+                        PtApplicantStatusTable.GetCodeDBName(), GenAppRow.GenApplicationStatus);
+
                     if (MainDS.PtApplicantStatus.DefaultView.Count == 0) // I've not just added this a moment ago..
                     {
                         AddVerificationResult(ref ReferenceResults, "Adding new Applicant Status " + GenAppRow.GenApplicationStatus);
@@ -779,7 +849,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
 
                 if ((GenAppRow.AppTypeName != "") && (!PtApplicationTypeAccess.Exists(GenAppRow.AppTypeName, Transaction)))
                 {
-                    MainDS.PtApplicationType.DefaultView.RowFilter = String.Format("{0}='{1}'", PtApplicationTypeTable.GetAppTypeNameDBName(), GenAppRow.AppTypeName);
+                    MainDS.PtApplicationType.DefaultView.RowFilter = String.Format("{0}='{1}'",
+                        PtApplicationTypeTable.GetAppTypeNameDBName(), GenAppRow.AppTypeName);
+
                     if (MainDS.PtApplicationType.DefaultView.Count == 0) // I've not just added this a moment ago..
                     {
                         AddVerificationResult(ref ReferenceResults, "Adding new Application Type " + GenAppRow.AppTypeName);
@@ -793,6 +865,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                 if ((GenAppRow.GenContact1 != "") && (!PtContactAccess.Exists(GenAppRow.GenContact1, Transaction)))
                 {
                     MainDS.PtContact.DefaultView.RowFilter = String.Format("{0}='{1}'", PtContactTable.GetContactNameDBName(), GenAppRow.GenContact1);
+
                     if (MainDS.PtContact.DefaultView.Count == 0) // I've not just added this a moment ago..
                     {
                         AddVerificationResult(ref ReferenceResults, "Adding new Contact Name " + GenAppRow.GenContact1);
@@ -802,9 +875,11 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         MainDS.PtContact.Rows.Add(Row);
                     }
                 }
+
                 if ((GenAppRow.GenContact2 != "") && (!PtContactAccess.Exists(GenAppRow.GenContact2, Transaction)))
                 {
                     MainDS.PtContact.DefaultView.RowFilter = String.Format("{0}='{1}'", PtContactTable.GetContactNameDBName(), GenAppRow.GenContact2);
+
                     if (MainDS.PtContact.DefaultView.Count == 0) // I've not just added this a moment ago..
                     {
                         AddVerificationResult(ref ReferenceResults, "Adding new Contact Name " + GenAppRow.GenContact2);
@@ -817,7 +892,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             }
         }
 
-        private static void CheckCommitmentStatus (PartnerImportExportTDS MainDS, ref TVerificationResultCollection ReferenceResults, TDBTransaction Transaction)
+        private static void CheckCommitmentStatus(PartnerImportExportTDS MainDS,
+            ref TVerificationResultCollection ReferenceResults,
+            TDBTransaction Transaction)
         {
             // Commitment Status Code: I'm not going to add this, but I should inform the user...
             foreach (PmStaffDataRow rv in MainDS.PmStaffData.Rows)
@@ -826,32 +903,36 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                 {
                     AddVerificationResult(ref ReferenceResults, "Removing unknown Commitment Status " + rv.StatusCode);
                     rv.StatusCode = "";
+
 /*
-                    TLogging.Log("Adding new commitment status code " + rv.StatusCode);
-                    PmCommitmentStatusRow commitmentStatusRow = MainDS.PmCommitmentStatus.NewRowTyped();
-                    commitmentStatusRow.Code = rv.StatusCode;
-                    commitmentStatusRow.Desc = NewRowDescription;
-                    MainDS.PmCommitmentStatus.Rows.Add(commitmentStatusRow);
+ *                  TLogging.Log("Adding new commitment status code " + rv.StatusCode);
+ *                  PmCommitmentStatusRow commitmentStatusRow = MainDS.PmCommitmentStatus.NewRowTyped();
+ *                  commitmentStatusRow.Code = rv.StatusCode;
+ *                  commitmentStatusRow.Desc = NewRowDescription;
+ *                  MainDS.PmCommitmentStatus.Rows.Add(commitmentStatusRow);
  */
                 }
             }
         }
 
-
-        private static void CheckSTApplicationRefs(PartnerImportExportTDS MainDS, ref TVerificationResultCollection ReferenceResults, TDBTransaction Transaction)
+        private static void CheckSTApplicationRefs(PartnerImportExportTDS MainDS,
+            ref TVerificationResultCollection ReferenceResults,
+            TDBTransaction Transaction)
         {
             // Special Applicant: keep a list of them!
             // Arrival Point:
             // Transport Type:
             // Leadership Rating:
-            // PartyType: 
+            // PartyType:
             // PmOutreachRole: All from Short Term Application Rows
 
             foreach (PmShortTermApplicationRow rv in MainDS.PmShortTermApplication.Rows)
             {
                 if ((rv.StSpecialApplicant != "") && (!PtSpecialApplicantAccess.Exists(rv.StSpecialApplicant, Transaction)))
                 {
-                    MainDS.PtSpecialApplicant.DefaultView.RowFilter = String.Format("{0}='{1}'", PtSpecialApplicantTable.GetCodeDBName(), rv.StSpecialApplicant);
+                    MainDS.PtSpecialApplicant.DefaultView.RowFilter = String.Format("{0}='{1}'",
+                        PtSpecialApplicantTable.GetCodeDBName(), rv.StSpecialApplicant);
+
                     if (MainDS.PtSpecialApplicant.DefaultView.Count == 0) // Check I've not just added this a moment ago..
                     {
                         AddVerificationResult(ref ReferenceResults, "Adding Special Applicant " + rv.StSpecialApplicant);
@@ -864,20 +945,23 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
 
                 if ((rv.ArrivalPointCode != "") && (!PtArrivalPointAccess.Exists(rv.ArrivalPointCode, Transaction)))
                 {
-                     MainDS.PtArrivalPoint.DefaultView.RowFilter = String.Format("{0}='{1}'", PtArrivalPointTable.GetCodeDBName(), rv.ArrivalPointCode);
-                     if (MainDS.PtArrivalPoint.DefaultView.Count == 0) // I've not just added this a moment ago..
-                     {
-                         AddVerificationResult(ref ReferenceResults, "Adding new arrival point code '" + rv.ArrivalPointCode + "'");
-                         PtArrivalPointRow Row = MainDS.PtArrivalPoint.NewRowTyped();
-                         Row.Code = rv.ArrivalPointCode;
-                         Row.Description = NewRowDescription;
-                         MainDS.PtArrivalPoint.Rows.Add(Row);
-                     }
+                    MainDS.PtArrivalPoint.DefaultView.RowFilter = String.Format("{0}='{1}'", PtArrivalPointTable.GetCodeDBName(), rv.ArrivalPointCode);
+
+                    if (MainDS.PtArrivalPoint.DefaultView.Count == 0)  // I've not just added this a moment ago..
+                    {
+                        AddVerificationResult(ref ReferenceResults, "Adding new arrival point code '" + rv.ArrivalPointCode + "'");
+                        PtArrivalPointRow Row = MainDS.PtArrivalPoint.NewRowTyped();
+                        Row.Code = rv.ArrivalPointCode;
+                        Row.Description = NewRowDescription;
+                        MainDS.PtArrivalPoint.Rows.Add(Row);
+                    }
                 }
 
                 if ((rv.DeparturePointCode != "") && (!PtArrivalPointAccess.Exists(rv.DeparturePointCode, Transaction)))
                 {
-                    MainDS.PtArrivalPoint.DefaultView.RowFilter = String.Format("{0}='{1}'", PtArrivalPointTable.GetCodeDBName(), rv.DeparturePointCode);
+                    MainDS.PtArrivalPoint.DefaultView.RowFilter = String.Format("{0}='{1}'",
+                        PtArrivalPointTable.GetCodeDBName(), rv.DeparturePointCode);
+
                     if (MainDS.PtArrivalPoint.DefaultView.Count == 0) // I've not just added this a moment ago..
                     {
                         AddVerificationResult(ref ReferenceResults, "Adding new arrival point code '" + rv.DeparturePointCode + "'");
@@ -891,6 +975,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                 if ((rv.TravelTypeToCongCode != "") && (!PtTravelTypeAccess.Exists(rv.TravelTypeToCongCode, Transaction)))
                 {
                     MainDS.PtTravelType.DefaultView.RowFilter = String.Format("{0}='{1}'", PtTravelTypeTable.GetCodeDBName(), rv.TravelTypeToCongCode);
+
                     if (MainDS.PtTravelType.DefaultView.Count == 0) // I've not just added this a moment ago..
                     {
                         AddVerificationResult(ref ReferenceResults, "Adding new Travel Type " + rv.TravelTypeToCongCode);
@@ -903,7 +988,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
 
                 if ((rv.TravelTypeFromCongCode != "") && (!PtTravelTypeAccess.Exists(rv.TravelTypeFromCongCode, Transaction)))
                 {
-                    MainDS.PtTravelType.DefaultView.RowFilter = String.Format("{0}='{1}'", PtTravelTypeTable.GetCodeDBName(), rv.TravelTypeFromCongCode);
+                    MainDS.PtTravelType.DefaultView.RowFilter = String.Format("{0}='{1}'",
+                        PtTravelTypeTable.GetCodeDBName(), rv.TravelTypeFromCongCode);
+
                     if (MainDS.PtTravelType.DefaultView.Count == 0) // I've not just added this a moment ago..
                     {
                         AddVerificationResult(ref ReferenceResults, "Adding new Travel Type " + rv.TravelTypeFromCongCode);
@@ -916,7 +1003,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
 
                 if ((rv.StLeadershipRating != "") && (!PtLeadershipRatingAccess.Exists(rv.StLeadershipRating, Transaction)))
                 {
-                    MainDS.PtLeadershipRating.DefaultView.RowFilter = String.Format("{0}='{1}'", PtLeadershipRatingTable.GetCodeDBName(), rv.StLeadershipRating);
+                    MainDS.PtLeadershipRating.DefaultView.RowFilter = String.Format("{0}='{1}'",
+                        PtLeadershipRatingTable.GetCodeDBName(), rv.StLeadershipRating);
+
                     if (MainDS.PtLeadershipRating.DefaultView.Count == 0) // Check I've not just added this a moment ago..
                     {
                         AddVerificationResult(ref ReferenceResults, "Adding new Leadership Rating " + rv.StLeadershipRating);
@@ -930,6 +1019,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                 if ((rv.StPartyTogether != "") && (!PtPartyTypeAccess.Exists(rv.StPartyTogether, Transaction)))
                 {
                     MainDS.PtPartyType.DefaultView.RowFilter = String.Format("{0}='{1}'", PtPartyTypeTable.GetCodeDBName(), rv.StPartyTogether);
+
                     if (MainDS.PtPartyType.DefaultView.Count == 0) // Check I've not just added this a moment ago..
                     {
                         AddVerificationResult(ref ReferenceResults, "Adding new Party Type " + rv.StPartyTogether);
@@ -943,6 +1033,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                 if ((rv.OutreachRole != "") && (!PtCongressCodeAccess.Exists(rv.OutreachRole, Transaction)))
                 {
                     MainDS.PtCongressCode.DefaultView.RowFilter = String.Format("{0}='{1}'", PtCongressCodeTable.GetCodeDBName(), (rv.OutreachRole));
+
                     if (MainDS.PtCongressCode.DefaultView.Count == 0) // Check I've not just added this a moment ago..
                     {
                         AddVerificationResult(ref ReferenceResults, "Adding new Congress Code " + rv.OutreachRole);
@@ -956,37 +1047,39 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         }
 
 /*
-        private static void CheckVisionRefs(PartnerImportExportTDS MainDS, ref TVerificationResultCollection ReferenceResults, TDBTransaction Transaction)
-       {
-            // Vision: update _area and _level tables
-            foreach (PmPersonVisionRow rv in MainDS.PmPersonVision.Rows)
-            {
-                if ((rv.VisionAreaName != "") && (!PtVisionAreaAccess.Exists(rv.VisionAreaName, Transaction)))
-                {
-                    MainDS.PtVisionArea.DefaultView.RowFilter = String.Format("{0}='{1}'", PtVisionAreaTable.GetVisionAreaNameDBName(), rv.VisionAreaName);
-                    if (MainDS.PtVisionArea.DefaultView.Count == 0) // Check I've not just added this a moment ago..
-                    {
-                        AddVerificationResult(ref ReferenceResults, "Adding new Vision Area " + rv.VisionAreaName);
-                        PtVisionAreaRow Row = MainDS.PtVisionArea.NewRowTyped();
-                        Row.VisionAreaName = rv.VisionAreaName;
-                        Row.VisionAreaDescr = NewRowDescription;
-                        MainDS.PtVisionArea.Rows.Add(Row);
-                    }
-                }
+ *      private static void CheckVisionRefs(PartnerImportExportTDS MainDS, ref TVerificationResultCollection ReferenceResults, TDBTransaction Transaction)
+ *     {
+ *          // Vision: update _area and _level tables
+ *          foreach (PmPersonVisionRow rv in MainDS.PmPersonVision.Rows)
+ *          {
+ *              if ((rv.VisionAreaName != "") && (!PtVisionAreaAccess.Exists(rv.VisionAreaName, Transaction)))
+ *              {
+ *                  MainDS.PtVisionArea.DefaultView.RowFilter = String.Format("{0}='{1}'", PtVisionAreaTable.GetVisionAreaNameDBName(), rv.VisionAreaName);
+ *                  if (MainDS.PtVisionArea.DefaultView.Count == 0) // Check I've not just added this a moment ago..
+ *                  {
+ *                      AddVerificationResult(ref ReferenceResults, "Adding new Vision Area " + rv.VisionAreaName);
+ *                      PtVisionAreaRow Row = MainDS.PtVisionArea.NewRowTyped();
+ *                      Row.VisionAreaName = rv.VisionAreaName;
+ *                      Row.VisionAreaDescr = NewRowDescription;
+ *                      MainDS.PtVisionArea.Rows.Add(Row);
+ *                  }
+ *              }
+ *
+ *              if (!PtVisionLevelAccess.Exists(rv.VisionLevel, Transaction))
+ *              {
+ *                  AddVerificationResult(ref ReferenceResults, "Adding new Vision Level " + rv.VisionLevel);
+ *                  PtVisionLevelRow Row = MainDS.PtVisionLevel.NewRowTyped();
+ *                  Row.VisionLevel = rv.VisionLevel;
+ *                  Row.VisionLevelDescr = NewRowDescription;
+ *                  MainDS.PtVisionLevel.Rows.Add(Row);
+ *              }
+ *          }
+ *      }
+ */
 
-                if (!PtVisionLevelAccess.Exists(rv.VisionLevel, Transaction))
-                {
-                    AddVerificationResult(ref ReferenceResults, "Adding new Vision Level " + rv.VisionLevel);
-                    PtVisionLevelRow Row = MainDS.PtVisionLevel.NewRowTyped();
-                    Row.VisionLevel = rv.VisionLevel;
-                    Row.VisionLevelDescr = NewRowDescription;
-                    MainDS.PtVisionLevel.Rows.Add(Row);
-                }
-            }
-        }
-*/        
-
-        private static void CheckYearProgramRefs(PartnerImportExportTDS MainDS, ref TVerificationResultCollection ReferenceResults, TDBTransaction Transaction)
+        private static void CheckYearProgramRefs(PartnerImportExportTDS MainDS,
+            ref TVerificationResultCollection ReferenceResults,
+            TDBTransaction Transaction)
         {
             // Position: We can't apply for positions we've not heard of
             foreach (PmYearProgramApplicationRow rv in MainDS.PmYearProgramApplication.Rows)
@@ -994,6 +1087,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                 if ((rv.PositionName != "") && (!PtPositionAccess.Exists(rv.PositionName, rv.PositionScope, Transaction)))
                 {
                     MainDS.PtPosition.DefaultView.RowFilter = String.Format("{0}='{1}'", PtPositionTable.GetPositionNameDBName(), rv.PositionName);
+
                     if (MainDS.PtPosition.DefaultView.Count == 0) // Check I've not just added this a moment ago..
                     {
                         AddVerificationResult(ref ReferenceResults, "Adding new Position " + rv.PositionName);
@@ -1007,15 +1101,18 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             }
         }
 
-        private static void CheckQualificationRefs(PartnerImportExportTDS MainDS, ref TVerificationResultCollection ReferenceResults, TDBTransaction Transaction)
+        private static void CheckQualificationRefs(PartnerImportExportTDS MainDS,
+            ref TVerificationResultCollection ReferenceResults,
+            TDBTransaction Transaction)
         {
             // Qualification Area and Qualification Level - Add them if they're not present.
             foreach (PmPersonQualificationRow rv in MainDS.PmPersonQualification.Rows)
             {
                 if ((rv.QualificationAreaName != "") && (!PtQualificationAreaAccess.Exists(rv.QualificationAreaName, Transaction)))
                 {
-                    MainDS.PtQualificationArea.DefaultView.RowFilter = String.Format("{0}='{1}'", 
+                    MainDS.PtQualificationArea.DefaultView.RowFilter = String.Format("{0}='{1}'",
                         PtQualificationAreaTable.GetQualificationAreaNameDBName(), rv.QualificationAreaName);
+
                     if (MainDS.PtQualificationArea.DefaultView.Count == 0) // Check I've not just added this a moment ago..
                     {
                         AddVerificationResult(ref ReferenceResults, "Adding Qualification Area " + rv.QualificationAreaName);
@@ -1025,10 +1122,12 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         MainDS.PtQualificationArea.Rows.Add(Row);
                     }
                 }
+
                 if (!PtQualificationLevelAccess.Exists(rv.QualificationLevel, Transaction))
                 {
-                    MainDS.PtQualificationLevel.DefaultView.RowFilter = String.Format("{0}='{1}'", 
+                    MainDS.PtQualificationLevel.DefaultView.RowFilter = String.Format("{0}='{1}'",
                         PtQualificationLevelTable.GetQualificationLevelDBName(), rv.QualificationLevel);
+
                     if (MainDS.PtQualificationLevel.DefaultView.Count == 0) // Check I've not just added this a moment ago..
                     {
                         AddVerificationResult(ref ReferenceResults, "Adding Qualification Level " + rv.QualificationLevel);
@@ -1041,7 +1140,10 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             }
         }
 
-        private static void CheckMaritalStatus(PartnerImportExportTDS MainDS, PPartnerRow PartnerRow, ref TVerificationResultCollection ReferenceResults, TDBTransaction Transaction)
+        private static void CheckMaritalStatus(PartnerImportExportTDS MainDS,
+            PPartnerRow PartnerRow,
+            ref TVerificationResultCollection ReferenceResults,
+            TDBTransaction Transaction)
         {
             // Marital Status: The Marital status code used must be present in PTMaritalStatus
             String RequiredMaritalStatus = "";
@@ -1050,6 +1152,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             {
                 RequiredMaritalStatus = ((PFamilyRow)MainDS.PFamily.Rows[0]).MaritalStatus;
             }
+
             if (PartnerRow.PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
             {
                 RequiredMaritalStatus = ((PPersonRow)MainDS.PPerson.Rows[0]).MaritalStatus;
@@ -1061,16 +1164,19 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                 PtMaritalStatusRow Row = MainDS.PtMaritalStatus.NewRowTyped();
                 Row.Code = RequiredMaritalStatus;
                 Row.Description = NewRowDescription;
-                MainDS.PtMaritalStatus.Rows.Add (Row);
+                MainDS.PtMaritalStatus.Rows.Add(Row);
             }
         }
 
-        private static void CheckOccupation(PartnerImportExportTDS MainDS, ref TVerificationResultCollection ReferenceResults, TDBTransaction Transaction)
+        private static void CheckOccupation(PartnerImportExportTDS MainDS,
+            ref TVerificationResultCollection ReferenceResults,
+            TDBTransaction Transaction)
         {
             // POccupation: If there's a person, and they have an occupation, I need to have it listed.
             if (MainDS.PPerson.Rows.Count > 0)
             {
                 String RequiredOccupation = ((PPersonRow)MainDS.PPerson.Rows[0]).OccupationCode;
+
                 if ((RequiredOccupation != "") && (!POccupationAccess.Exists(RequiredOccupation, Transaction)))
                 {
                     AddVerificationResult(ref ReferenceResults, "Adding Occupation Code " + RequiredOccupation);
@@ -1082,12 +1188,15 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             }
         }
 
-        private static void CheckUnitType(PartnerImportExportTDS MainDS, ref TVerificationResultCollection ReferenceResults, TDBTransaction Transaction)
+        private static void CheckUnitType(PartnerImportExportTDS MainDS,
+            ref TVerificationResultCollection ReferenceResults,
+            TDBTransaction Transaction)
         {
             // UUnitType: If there's a unit, I need to have its type listed.
             if (MainDS.PUnit.Rows.Count > 0)
             {
                 String RequiredUnitType = ((PUnitRow)MainDS.PUnit.Rows[0]).UnitTypeCode;
+
                 if ((RequiredUnitType != "") && (!UUnitTypeAccess.Exists(RequiredUnitType, Transaction)))
                 {
                     AddVerificationResult(ref ReferenceResults, "Adding Unit Type " + RequiredUnitType);
@@ -1106,23 +1215,30 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         /// <param name="MainDS"></param>
         /// <param name="ReferenceResults"></param>
         /// <param name="Transaction"></param>
-        private static void CheckPassport(PartnerImportExportTDS MainDS, ref TVerificationResultCollection ReferenceResults, TDBTransaction Transaction)
+        private static void CheckPassport(PartnerImportExportTDS MainDS,
+            ref TVerificationResultCollection ReferenceResults,
+            TDBTransaction Transaction)
         {
             if (MainDS.PmPassportDetails.Rows.Count < 1)
+            {
                 return;
+            }
 
             PmPassportDetailsTable DbPassportTbl = PmPassportDetailsAccess.LoadViaPPerson(MainDS.PPartner[0].PartnerKey, Transaction);
-            if (DbPassportTbl.Rows.Count < 1)
-                return;
 
-            for (int ImportPassprtRowIdx = 0; ImportPassprtRowIdx < MainDS.PmPassportDetails.Rows.Count;ImportPassprtRowIdx++)
+            if (DbPassportTbl.Rows.Count < 1)
+            {
+                return;
+            }
+
+            for (int ImportPassprtRowIdx = 0; ImportPassprtRowIdx < MainDS.PmPassportDetails.Rows.Count; ImportPassprtRowIdx++)
             {
                 PmPassportDetailsRow ImportPassport = (PmPassportDetailsRow)MainDS.PmPassportDetails[ImportPassprtRowIdx];
+
                 foreach (PmPassportDetailsRow DbPassport in DbPassportTbl.Rows)
                 {
                     if (DbPassport.PassportNumber == ImportPassport.PassportNumber) // This simple match ought to be unique
-                        // These rows are the same passport. I want my imported data to overwrite the data in the database.
-                    {
+                    {   // These rows are the same passport. I want my imported data to overwrite the data in the database.
                         ImportPassport.AcceptChanges(); // This should cause the passport to be updated rather then added.
                         ImportPassport.DateCreated = DbPassport.DateCreated;
                         ImportPassport.CreatedBy = DbPassport.CreatedBy;
@@ -1132,17 +1248,20 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     }
                 }
             }
-            
         }
 
-        private static void CheckPassportType(PartnerImportExportTDS MainDS, ref TVerificationResultCollection ReferenceResults, TDBTransaction Transaction)
+        private static void CheckPassportType(PartnerImportExportTDS MainDS,
+            ref TVerificationResultCollection ReferenceResults,
+            TDBTransaction Transaction)
         {
             // PassportDetails: If there's a passport, I need to have its type listed.
             foreach (PmPassportDetailsRow rv in MainDS.PmPassportDetails.Rows)
             {
                 if ((rv.PassportDetailsType != "") && (!PtPassportTypeAccess.Exists(rv.PassportDetailsType, Transaction)))
                 {
-                    MainDS.PtPassportType.DefaultView.RowFilter = String.Format("{0}='{1}'", PtPassportTypeTable.GetCodeDBName(), rv.PassportDetailsType);
+                    MainDS.PtPassportType.DefaultView.RowFilter = String.Format("{0}='{1}'",
+                        PtPassportTypeTable.GetCodeDBName(), rv.PassportDetailsType);
+
                     if (MainDS.PtPassportType.DefaultView.Count == 0) // Check I've not just added this a moment ago..
                     {
                         AddVerificationResult(ref ReferenceResults, "Adding Passport Type " + rv.PassportDetailsType);
@@ -1155,7 +1274,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             }
         }
 
-        private static void CheckDocumentRefs(PartnerImportExportTDS MainDS, ref TVerificationResultCollection ReferenceResults, TDBTransaction Transaction)
+        private static void CheckDocumentRefs(PartnerImportExportTDS MainDS,
+            ref TVerificationResultCollection ReferenceResults,
+            TDBTransaction Transaction)
         {
             //
             // PMDocumentType and PmDocumentCategory
@@ -1166,7 +1287,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             {
                 if ((rv.DocCategory != "") && (!PmDocumentCategoryAccess.Exists(rv.DocCategory, Transaction)))
                 {
-                    MainDS.PmDocumentCategory.DefaultView.RowFilter = String.Format("{0}='{1}'", PmDocumentCategoryTable.GetCodeDBName(), rv.DocCategory);
+                    MainDS.PmDocumentCategory.DefaultView.RowFilter = String.Format("{0}='{1}'",
+                        PmDocumentCategoryTable.GetCodeDBName(), rv.DocCategory);
+
                     if (MainDS.PmDocumentCategory.DefaultView.Count == 0) // Check I've not just added this a moment ago..
                     {
                         AddVerificationResult(ref ReferenceResults, "Adding Document Category " + rv.DocCategory);
@@ -1180,6 +1303,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                 if ((rv.DocCode != "") && (!PmDocumentTypeAccess.Exists(rv.DocCode, Transaction)))
                 {
                     MainDS.PmDocumentType.DefaultView.RowFilter = String.Format("{0}='{1}'", PmDocumentTypeTable.GetDocCodeDBName(), rv.DocCode);
+
                     if (MainDS.PmDocumentType.DefaultView.Count == 0) // Check I've not just added this a moment ago..
                     {
                         AddVerificationResult(ref ReferenceResults, "Adding Document Code " + rv.DocCode);
@@ -1192,11 +1316,14 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             }
         }
 
-        private static void CheckSubscriptions(PartnerImportExportTDS MainDS, ref TVerificationResultCollection ReferenceResults, TDBTransaction Transaction)
+        private static void CheckSubscriptions(PartnerImportExportTDS MainDS,
+            ref TVerificationResultCollection ReferenceResults,
+            TDBTransaction Transaction)
         {
             foreach (PSubscriptionRow SubsRow in MainDS.PSubscription.Rows)
             {
                 PSubscriptionTable Tbl = PSubscriptionAccess.LoadByPrimaryKey(SubsRow.PublicationCode, SubsRow.PartnerKey, Transaction); // If the record is present, I need to update rather than add.
+
                 if (Tbl.Rows.Count > 0)
                 {
                     PSubscriptionRow DbRow = Tbl[0];
@@ -1222,7 +1349,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     MainDS.PReasonSubscriptionGiven.Rows.Add(NewRow);
                 }
 
-                if ((SubsRow.ReasonSubsCancelledCode != "") && (!PReasonSubscriptionCancelledAccess.Exists(SubsRow.ReasonSubsCancelledCode, Transaction)))
+                if ((SubsRow.ReasonSubsCancelledCode != "")
+                    && (!PReasonSubscriptionCancelledAccess.Exists(SubsRow.ReasonSubsCancelledCode, Transaction)))
                 {
                     AddVerificationResult(ref ReferenceResults, "Adding Subscription reason: " + SubsRow.ReasonSubsCancelledCode);
                     PReasonSubscriptionCancelledRow NewRow = MainDS.PReasonSubscriptionCancelled.NewRowTyped();
@@ -1239,7 +1367,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     NewRow.PublicationDescription = NewRowDescription;
                     NewRow.FrequencyCode = "Daily"; // I can't leave this blank, so I need to make something up...
                     MainDS.PPublication.Rows.Add(NewRow);
-
                 }
             }
         }
@@ -1247,30 +1374,35 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         /// <summary>
         /// If the PPartner record on the server has changed since the start of the import process,
         /// I need to abort, with a note to the user.
-        /// 
+        ///
         /// </summary>
         /// <param name="MainDS"></param>
         /// <param name="ReferenceResults"></param>
         /// <param name="Transaction"></param>
         /// <returns>false if this data can't be imported.</returns>
-        private static bool CheckModificationId(PartnerImportExportTDS MainDS, ref TVerificationResultCollection ReferenceResults, TDBTransaction Transaction)
+        private static bool CheckModificationId(PartnerImportExportTDS MainDS,
+            ref TVerificationResultCollection ReferenceResults,
+            TDBTransaction Transaction)
         {
             Int64 PartnerKey = MainDS.PPartner[0].PartnerKey;
             String MyModifId = MainDS.PPartner[0].ModificationId; // This ModificationId was read at start of import.
 
             PPartnerTable Table = PPartnerAccess.LoadByPrimaryKey(PartnerKey, Transaction);
+
             if (Table.Rows.Count == 0)
             {
                 return true; // I don't have this Partner on the database, but that's OK..
             }
+
             String OrignModified = Table[0].ModificationId;
 
             if (MyModifId != OrignModified)
             {
-                AddVerificationResult(ref ReferenceResults, "PPartner record in database has been updated during import process.",TResultSeverity.Resv_Critical);
+                AddVerificationResult(ref ReferenceResults,
+                    "PPartner record in database has been updated during import process.",
+                    TResultSeverity.Resv_Critical);
                 return false;
             }
-
 
             return true;
         }
@@ -1284,22 +1416,27 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         /// <param name="ReferenceResults"></param>
         /// <param name="Transaction"></param>
         /// <returns>false if this data can't be imported.</returns>
-        private static bool CheckReferencedTables(PartnerImportExportTDS MainDS, ref TVerificationResultCollection ReferenceResults, TDBTransaction Transaction)
+        private static bool CheckReferencedTables(PartnerImportExportTDS MainDS,
+            ref TVerificationResultCollection ReferenceResults,
+            TDBTransaction Transaction)
         {
             PPartnerRow PartnerRow = (PPartnerRow)MainDS.PPartner.Rows[0];
+
             ImportContext = String.Format("While importing partner [{0}]", PartnerRow.PartnerKey);
 
             if (!CheckPartnerClass(PartnerRow, MainDS, ref ReferenceResults, Transaction))
+            {
                 return false;
+            }
 
             CheckLocationType(MainDS, ref ReferenceResults, Transaction);
-            CheckBusiness (MainDS, ref ReferenceResults, Transaction);
-            CheckLanguage (MainDS, PartnerRow, ref ReferenceResults, Transaction);
-            CheckAcquisitionCode (MainDS, PartnerRow, ref ReferenceResults, Transaction);
+            CheckBusiness(MainDS, ref ReferenceResults, Transaction);
+            CheckLanguage(MainDS, PartnerRow, ref ReferenceResults, Transaction);
+            CheckAcquisitionCode(MainDS, PartnerRow, ref ReferenceResults, Transaction);
             CheckAddresses(MainDS, PartnerRow, ref ReferenceResults, Transaction);
-            CheckAddresseeTypeCode (MainDS, PartnerRow, ref ReferenceResults, Transaction);
-            CheckAbilityArea (MainDS, ref ReferenceResults, Transaction);
-            CheckPartnerInterest (MainDS, ref ReferenceResults, Transaction);
+            CheckAddresseeTypeCode(MainDS, PartnerRow, ref ReferenceResults, Transaction);
+            CheckAbilityArea(MainDS, ref ReferenceResults, Transaction);
+            CheckPartnerInterest(MainDS, ref ReferenceResults, Transaction);
             CheckPartnerType(MainDS, ref ReferenceResults, Transaction);
             CheckChurchDenomination(MainDS, ref ReferenceResults, Transaction);
             CheckContactRefs(MainDS, ref ReferenceResults, Transaction);
@@ -1321,19 +1458,20 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
 
         /// <summary>
         /// Web connector for commit changes after importing a partner
-        /// Before calling SubmitChanges on the dataset, this does a load of checks 
+        /// Before calling SubmitChanges on the dataset, this does a load of checks
         /// and supllies values to index tables.
         /// </summary>
         /// <param name="MainDS"></param>
         /// <param name="AVerificationResult"></param>
         /// <returns>true if no error</returns>
-         [RequireModulePermission("PTNRUSER")]
-       public static Boolean CommitChanges (PartnerImportExportTDS MainDS,  out TVerificationResultCollection AVerificationResult)
+        [RequireModulePermission("PTNRUSER")]
+        public static Boolean CommitChanges(PartnerImportExportTDS MainDS, out TVerificationResultCollection AVerificationResult)
         {
             TVerificationResultCollection ReferenceResults = new TVerificationResultCollection();
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
 
             bool CanImport = CheckModificationId(MainDS, ref ReferenceResults, Transaction);
+
             if (CanImport)
             {
                 CanImport = CheckReferencedTables(MainDS, ref ReferenceResults, Transaction);
@@ -1350,15 +1488,15 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             }
 
             AddVerificationResult(ref ReferenceResults, String.Format("Import of {0} {1}\r\n {2}",
-                ((PPartnerRow) MainDS.PPartner.Rows[0]).PartnerClass,
-                ((PPartnerRow) MainDS.PPartner.Rows[0]).PartnerShortName,
-                Res==0?"Successful":"Error"
-                ),
+                    ((PPartnerRow)MainDS.PPartner.Rows[0]).PartnerClass,
+                    ((PPartnerRow)MainDS.PPartner.Rows[0]).PartnerShortName,
+                    Res == 0 ? "Successful" : "Error"
+                    ),
                 TResultSeverity.Resv_Status);
             AVerificationResult = ReferenceResults;
             AVerificationResult.AddCollection(SubmitResults);
 
-            return (TSubmitChangesResult.scrOK == Res);
+            return TSubmitChangesResult.scrOK == Res;
         }
 
         /// <summary>
@@ -1371,40 +1509,45 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         {
             return TImportExportYml.ExportPartners();
         }
-        
+
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <returns>A string that will form the first two lines of a .ext file</returns>
         [RequireModulePermission("PTNRUSER")]
-        public static string GetExtFileHeader ()
-        { 
+        public static string GetExtFileHeader()
+        {
             TPartnerFileExport Exporter = new TPartnerFileExport();
+
             return Exporter.ExtFileHeader();
         }
-        
+
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <returns>A string that will form the final line of a .ext file</returns>
         [RequireModulePermission("PTNRUSER")]
-        public static string GetExtFileFooter ()
+        public static string GetExtFileFooter()
         {
             return "0  \"FINISH\"\n";
         }
-        
-       /// <summary>
-       /// Format a partner as ext (Petra 2.x format)
-       /// If I've been asked to export a PERSON, I can also export the FAMILY record first.
-       /// </summary>
-       /// <param name="APartnerKey">Partner key</param>
-       /// <param name="ASiteKey">Partner's site key</param>
-       /// <param name="ALocationKey">Partner's primary location key</param>
-       /// <param name="ANoFamily">Set this flag for a PERSON, to prevent the FAMILY being exported too.</param>
-       /// <param name="ASpecificBuildingInfo">Only include these buildings (null for all)</param>
-       /// <returns></returns>
+
+        /// <summary>
+        /// Format a partner as ext (Petra 2.x format)
+        /// If I've been asked to export a PERSON, I can also export the FAMILY record first.
+        /// </summary>
+        /// <param name="APartnerKey">Partner key</param>
+        /// <param name="ASiteKey">Partner's site key</param>
+        /// <param name="ALocationKey">Partner's primary location key</param>
+        /// <param name="ANoFamily">Set this flag for a PERSON, to prevent the FAMILY being exported too.</param>
+        /// <param name="ASpecificBuildingInfo">Only include these buildings (null for all)</param>
+        /// <returns></returns>
         [RequireModulePermission("PTNRUSER")]
-        public static string ExportPartnerExt(Int64 APartnerKey, Int32 ASiteKey, Int32 ALocationKey, Boolean ANoFamily, StringCollection ASpecificBuildingInfo)
+        public static string ExportPartnerExt(Int64 APartnerKey,
+            Int32 ASiteKey,
+            Int32 ALocationKey,
+            Boolean ANoFamily,
+            StringCollection ASpecificBuildingInfo)
         {
             String extRecord = "";
             //
@@ -1414,41 +1557,45 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             TPartnerClass PartnerClass;
             Boolean IsMergedPartner = false;
             Boolean UserCanAccessPartner = false;
-            
+
             if (APartnerKey != 0)
             {
                 PartnerAccessOk = TPartnerServerLookups.VerifyPartner(APartnerKey,
-                        out ShortName, out PartnerClass, 
-                        out IsMergedPartner, out UserCanAccessPartner);
+                    out ShortName, out PartnerClass,
+                    out IsMergedPartner, out UserCanAccessPartner);
             }
+
             if (!PartnerAccessOk || !UserCanAccessPartner)
             {
                 return extRecord;  // This is empty - TODO: I'm not returning any error code here.
             }
-            
+
             TPartnerFileExport Exporter = new TPartnerFileExport();
             PartnerImportExportTDS AMainDS = TExportAllPartnerData.ExportPartner(APartnerKey);
-            
+
             if (!ANoFamily)  // I'll check whether there's a FAMILY to go with this Partner.
             {
                 PPartnerRow PartnerRow = AMainDS.PPartner[0];
+
                 if (PartnerRow.PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
                 {
                     PPersonRow PersonRow = AMainDS.PPerson[0];
                     long FamilyKey = PersonRow.FamilyKey;
                     PartnerAccessOk = TPartnerServerLookups.VerifyPartner(FamilyKey,
-                            out ShortName, out PartnerClass, 
-                            out IsMergedPartner, out UserCanAccessPartner);
-                    if ((FamilyKey > 0) && PartnerAccessOk  && UserCanAccessPartner)
+                        out ShortName, out PartnerClass,
+                        out IsMergedPartner, out UserCanAccessPartner);
+
+                    if ((FamilyKey > 0) && PartnerAccessOk && UserCanAccessPartner)
                     {
                         PartnerImportExportTDS FamilyDS = TExportAllPartnerData.ExportPartner(FamilyKey);
                         extRecord += Exporter.ExportPartnerExt(FamilyDS, ASiteKey, ALocationKey, ASpecificBuildingInfo);
                     }
+
                     // TODO: If I couldn't access the FAMILY for a PERSON, I should perhaps stop exporting?
                 }
             }
-            
-            extRecord += Exporter.ExportPartnerExt( AMainDS, ASiteKey, ALocationKey, ASpecificBuildingInfo);
+
+            extRecord += Exporter.ExportPartnerExt(AMainDS, ASiteKey, ALocationKey, ASpecificBuildingInfo);
             return extRecord;
         }
 
@@ -1461,15 +1608,15 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         /// <param name="AResultList"></param>
         [RequireModulePermission("PTNRUSER")]
         public static Boolean ImportDataExt(string[] ALinesToImport,
-                    string ALimitToOption,
-                    bool ADoNotOverwrite,
-                    out TVerificationResultCollection AResultList)
+            string ALimitToOption,
+            bool ADoNotOverwrite,
+            out TVerificationResultCollection AResultList)
         {
             TPartnerFileImport Importer = new TPartnerFileImport();
-            Importer.ImportAllData(ALinesToImport,
-                    ALimitToOption, ADoNotOverwrite,  out AResultList);
-         return true;   
-        }
 
+            Importer.ImportAllData(ALinesToImport,
+                ALimitToOption, ADoNotOverwrite, out AResultList);
+            return true;
+        }
     }
 }

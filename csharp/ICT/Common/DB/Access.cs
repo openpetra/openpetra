@@ -2563,13 +2563,13 @@ namespace Ict.Common.DB
     /// <remarks>
     /// <em>IMPORTANT:</em> This Transaction Class does not have Commit or
     /// Rollback methods! This is so that the programmers are forced to use the
-    /// CommitTransaction and RollbackTransaction methods of the <see cref="DB.TDataBase" /> Class.
+    /// CommitTransaction and RollbackTransaction methods of the <see cref="TDataBase" /> Class.
     /// <para>
     /// The reasons for this:
     /// <list type="bullet">
-    /// <item><see cref="DB.TDataBase" /> can know whether a Transaction is
+    /// <item><see cref="TDataBase" /> can know whether a Transaction is
     /// running (unbelievably, there is no way to find this out through ADO.NET!)</item>
-    /// <item><see cref="DB.TDataBase" /> can log Commits and Rollbacks. Another benefit of using this
+    /// <item><see cref="TDataBase" /> can log Commits and Rollbacks. Another benefit of using this
     /// Class instead of a concrete implementation of ADO.NET Transaction Classes
     /// (eg. <see cref="OdbcTransaction" />) is that it is not tied to a specific ADO.NET
     /// provider, therefore making it easier to use a different ADO.NET provider than ODBC.</item>
@@ -2613,7 +2613,7 @@ namespace Ict.Common.DB
         /// The actual IDbTransaction.
         /// <para><em><b>WARNING:</b> do not do anything
         /// with this Object other than inspecting it; the correct
-        /// working of Transactions in the <see cref="DB.TDataBase" />
+        /// working of Transactions in the <see cref="TDataBase" />
         /// Object relies on the fact that it manages everything about
         /// a Transaction!!!</em>
         /// </para>

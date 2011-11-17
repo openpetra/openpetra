@@ -47,7 +47,8 @@ namespace Ict.Common.IO
             SaveFileDialog DialogSave = new SaveFileDialog();
 
             DialogSave.DefaultExt = "yml";
-            DialogSave.Filter = Catalog.GetString("Text file (*.yml)|*.yml|XML file (*.xml)|*.xml|Petra export (*.ext)|*.ext|Spreadsheet file (*.csv)|*.csv");
+            DialogSave.Filter = Catalog.GetString(
+                "Text file (*.yml)|*.yml|XML file (*.xml)|*.xml|Petra export (*.ext)|*.ext|Spreadsheet file (*.csv)|*.csv");
             DialogSave.AddExtension = true;
             DialogSave.RestoreDirectory = true;
             DialogSave.Title = ADialogTitle;
@@ -61,14 +62,14 @@ namespace Ict.Common.IO
                 return String.Empty;
             }
         }
-        
+
         /// <summary>
         /// Put this (ext formatted) string onto a file
         /// </summary>
         /// <param name="doc"></param>
         /// <param name="FileName"></param>
         /// <returns></returns>
-        public static bool ExportTofile (string doc, string FileName)
+        public static bool ExportTofile(string doc, string FileName)
         {
             if (FileName.EndsWith("ext"))
             {
@@ -77,16 +78,17 @@ namespace Ict.Common.IO
                 outfile.Close();
                 return true;
             }
+
             return false;
-        
         }
+
         /// <summary>
         /// Put this (XML formatted) data on a local file
         /// </summary>
         /// <param name="doc">XML data to be exported</param>
         /// <param name="FileName">Filename from GetExportFilename, above</param>
         /// <returns>true if successful</returns>
-        public static bool ExportTofile (XmlDocument doc, string FileName)
+        public static bool ExportTofile(XmlDocument doc, string FileName)
         {
             if (FileName.EndsWith("xml"))
             {
@@ -101,16 +103,16 @@ namespace Ict.Common.IO
             {
                 return TYml2Xml.Xml2Yml(doc, FileName);
             }
+
             return false;
         }
-   
-        
+
         /// <summary>
         /// Export data to a range of different file formats;
         /// ask the user for filename and file format
-        /// 
+        ///
         /// NOTE this has been replaced by the two-part scheme above:
-        ///   first get the filename, then the caller loads the data 
+        ///   first get the filename, then the caller loads the data
         ///   from the server, then it calls ExportToFile.
         /// </summary>
         /// <param name="doc"></param>
@@ -124,7 +126,8 @@ namespace Ict.Common.IO
             SaveFileDialog DialogSave = new SaveFileDialog();
 
             DialogSave.DefaultExt = "yml";
-            DialogSave.Filter = Catalog.GetString("Text file (*.yml)|*.yml|XML file (*.xml)|*.xml|Petra export (*.ext)|*.ext|Spreadsheet file (*.csv)|*.csv");
+            DialogSave.Filter = Catalog.GetString(
+                "Text file (*.yml)|*.yml|XML file (*.xml)|*.xml|Petra export (*.ext)|*.ext|Spreadsheet file (*.csv)|*.csv");
             DialogSave.AddExtension = true;
             DialogSave.RestoreDirectory = true;
             DialogSave.Title = ADialogTitle;

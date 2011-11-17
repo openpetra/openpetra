@@ -1438,17 +1438,17 @@ namespace Ict.Petra.Client.MPartner.Gui
             ucoLowerPart.HookupPartnerEditDataChange += new THookupPartnerEditDataChangeEventHandler(
                 this.UcoPartnerTabSet_HookupPartnerEditDataChange);
 
-            if (FNewPartnerWithAutoCreatedAddress)
-            {
-                // hardcoded for the first Address of a new Partner
-                ucoLowerPart.DisableNewButtonOnAutoCreatedAddress();
-            }
-
             switch (FCurrentModuleTabGroup)
             {
                 case TModuleSwitchEnum.msPartner:
 
                     ViewPartnerData(null, null);
+
+                    if (FNewPartnerWithAutoCreatedAddress)
+                    {
+                        // hardcoded for the first Address of a new Partner
+                        ucoLowerPart.DisableNewButtonOnAutoCreatedAddress();
+                    }
 
                     break;
 
@@ -1714,20 +1714,21 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void FileExportPartner(System.Object sender, System.EventArgs e)
         {
-            String FileName = TImportExportDialogs.GetExportFilename (Catalog.GetString("Save Partners into File"));
+            String FileName = TImportExportDialogs.GetExportFilename(Catalog.GetString("Save Partners into File"));
+
             if (FileName.Length > 0)
             {
                 if (FileName.EndsWith("ext"))
                 {
                     StringCollection ASpecificBuildingInfo = null;
-                    String doc = TRemote.MPartner.ImportExport.WebConnectors.GetExtFileHeader ();
+                    String doc = TRemote.MPartner.ImportExport.WebConnectors.GetExtFileHeader();
                     Int32 SiteKey = 0;
                     Int32 LocationKey = 0;
 
                     doc += TRemote.MPartner.ImportExport.WebConnectors.ExportPartnerExt(
                         this.PartnerKey, SiteKey, LocationKey, false, ASpecificBuildingInfo);
-                    
-                    doc += TRemote.MPartner.ImportExport.WebConnectors.GetExtFileFooter ();
+
+                    doc += TRemote.MPartner.ImportExport.WebConnectors.GetExtFileFooter();
                     TImportExportDialogs.ExportTofile(doc, FileName);
                 }
             }

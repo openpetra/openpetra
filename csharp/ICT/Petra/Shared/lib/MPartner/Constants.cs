@@ -204,7 +204,7 @@ namespace Ict.Petra.Shared.MPartner
 
         /// <summary>StreetName</summary>
         public const String PARTNERIMPORT_STREETNAME = "StreetName";
- 
+
         /// <summary>Locality</summary>
         public const String PARTNERIMPORT_LOCALITY = "Locality";
 
@@ -315,7 +315,7 @@ namespace Ict.Petra.Shared.MPartner
         public const String PARTNERIMPORT_CONTACTATTR = "ContactAttr";
         /// <summary>ContactDetail</summary>
         public const String PARTNERIMPORT_CONTACTDETAIL = "ContactDetail";
-        
+
         /// <summary>PassportNumber</summary>
         public const String PARTNERIMPORT_PASSPORTNUMBER = "PassportNumber";
 
@@ -345,7 +345,6 @@ namespace Ict.Petra.Shared.MPartner
 
         /// <summary>RecordImported</summary>
         public const String PARTNERIMPORT_RECORDIMPORTED = "RecordImported";
-
 
 
         /// <summary>Default Aquisition Code to use for Partner Import</summary>

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -137,8 +137,6 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
             IndividualDataTDSMiscellaneousDataRow MiscellaneousDataDR = AIndividualDataDS.MiscellaneousData[0];
             PPersonTable PPersonDT;
             PPersonRow PersonDR = null;
-            POccupationTable POccupationDT = null;
-            PmPassportDetailsTable PmPassportDetailsDT;
             PmStaffDataTable PmStaffDataDT;
             PmStaffDataRow PmStaffDataDR = null;
             PmJobAssignmentTable PmJobAssignmentDT = null;
@@ -160,7 +158,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
             {
                 PersonDR = (PPersonRow)PPersonDT.Rows[0];
 
-                POccupationDT = POccupationAccess.LoadByPrimaryKey(PersonDR.OccupationCode, AReadTransaction);
+                // POccupationTable POccupationDT = POccupationAccess.LoadByPrimaryKey(PersonDR.OccupationCode, AReadTransaction);
             }
 
             if (PersonDR != null)
@@ -178,7 +176,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
 
             #region Nationality
 
-            PmPassportDetailsDT = PmPassportDetailsAccess.LoadViaPPerson(APartnerKey, AReadTransaction);
+            // PmPassportDetailsTable PmPassportDetailsDT = PmPassportDetailsAccess.LoadViaPPerson(APartnerKey, AReadTransaction);
 
             // TODO
 

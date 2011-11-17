@@ -634,6 +634,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 return ctrl.controlName + ".SelectedIndex = (" + AFieldOrNull + "?1:0);";
             }
 
+            if (AFieldTypeDotNet == "String")
+            {
+                return ctrl.controlName + ".SetSelected" + AFieldTypeDotNet + "(" + AFieldOrNull + ", -1);";
+            }
+
             return ctrl.controlName + ".SetSelected" + AFieldTypeDotNet + "(" + AFieldOrNull + ");";
         }
 
@@ -2297,7 +2302,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if ((base.FPrefix == "grp") || (base.FPrefix == "rgr") || (base.FPrefix == "tpg"))
             {
-                writer.SetControlProperty(ctrl, "Text", "\"" + ctrl.Label + "\"");
+                FGenerateLabel = true;
+
+                if (GenerateLabel(ctrl))
+                {
+                    writer.SetControlProperty(ctrl, "Text", "\"" + ctrl.Label + "\"");
+                }
+
+                FGenerateLabel = false;
             }
 
             return writer.FTemplate;

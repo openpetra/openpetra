@@ -57,6 +57,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             {
                 TLogging.Log(AResultText);
             }
+
             ResultsCol.Add(new TVerificationResult(ResultsContext, AResultText, ASeverity));
         }
 
@@ -64,8 +65,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         {
             AddVerificationResult(AResultText, TResultSeverity.Resv_Noncritical);
         }
-
-        
 
         /// <summary>
         /// Import data from a CSV file
@@ -110,10 +109,11 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     CreateContacts(ANode, PersonKey, ref ResultDS, "_1");
                     CreateContacts(ANode, PersonKey, ref ResultDS, "_2");
                     CreatePassport(ANode, PersonKey, ref ResultDS);
-               }
+                }
 
                 ANode = ANode.NextSibling;
             }
+
             DBAccess.GDBAccessObj.CommitTransaction();
 
             return ResultDS;
@@ -164,6 +164,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             {
                 newPartner.LanguageCode = TUserDefaults.GetStringDefault(MSysManConstants.PARTNER_LANGUAGECODE);
             }
+
             string[] giftReceiptingDefaults = TSystemDefaults.GetSystemDefault("GiftReceiptingDefaults", ",no").Split(new char[] { ',' });
             newPartner.ReceiptLetterFrequency = giftReceiptingDefaults[0];
             newPartner.ReceiptEachGift = giftReceiptingDefaults[1] == "YES" || giftReceiptingDefaults[1] == "TRUE";
@@ -179,6 +180,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             newFamily.Title = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_TITLE);
             newFamily.MaritalStatus = GetMaritalStatusCode(ANode);
             String OMerField = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_OMERFIELD);
+
             if (OMerField.Length > 0)
             {
                 try
@@ -190,8 +192,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     AddVerificationResult("Bad number format in OMerField: " + OMerField);
                 }
             }
-
-
 
             newPartner.PartnerShortName = Calculations.DeterminePartnerShortName(newFamily.FamilyName, newFamily.Title, newFamily.FirstName);
             PLocationRow newLocation = AMainDS.PLocation.NewRowTyped(true);
@@ -231,7 +231,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         /// <param name="AMainDS"></param>
         private static Int64 CreateNewPerson(Int64 AFamilyKey, int ALocationKey, XmlNode ANode, ref PartnerImportExportTDS AMainDS)
         {
-
             AMainDS.PFamily.DefaultView.RowFilter = String.Format("{0}={1}", PFamilyTable.GetPartnerKeyDBName(), AFamilyKey);
             PFamilyRow FamilyRow = (PFamilyRow)AMainDS.PFamily.DefaultView[0].Row;
 
@@ -261,6 +260,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             newPerson.Title = FamilyRow.Title;
             newPerson.Gender = GetGenderCode(ANode);
             newPerson.MaritalStatus = FamilyRow.MaritalStatus;
+
             if (!FamilyRow.IsFieldKeyNull())
             {
                 newPerson.FieldKey = FamilyRow.FieldKey;
@@ -287,6 +287,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             for (int Idx = 1; Idx < 6; Idx++)
             {
                 String SpecialType = TXMLParser.GetAttribute(ANode, ACSVKey + Idx.ToString());
+
                 if (SpecialType.Length > 0)
                 {
                     PPartnerTypeRow partnerType = AMainDS.PPartnerType.NewRowTyped(true);
@@ -299,27 +300,29 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
         private static void CreateSpecialTypes(XmlNode ANode, Int64 APartnerKey, ref PartnerImportExportTDS AMainDS)
         {
-
             // This previous code requires a format that doesn't conform to the documented standard:
 
 /*
-            if (TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_SPECIALTYPES).Length != 0)
-            {
-                string specialTypes = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_SPECIALTYPES);
-
-                while (specialTypes.Length > 0)
-                {
-                    PPartnerTypeRow partnerType = AMainDS.PPartnerType.NewRowTyped(true);
-                    partnerType.PartnerKey = PartnerKey;
-                    partnerType.TypeCode = StringHelper.GetNextCSV(ref specialTypes, ",").Trim().ToUpper();
-                    AMainDS.PPartnerType.Rows.Add(partnerType);
-                }
-            }
+ *          if (TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_SPECIALTYPES).Length != 0)
+ *          {
+ *              string specialTypes = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_SPECIALTYPES);
+ *
+ *              while (specialTypes.Length > 0)
+ *              {
+ *                  PPartnerTypeRow partnerType = AMainDS.PPartnerType.NewRowTyped(true);
+ *                  partnerType.PartnerKey = PartnerKey;
+ *                  partnerType.TypeCode = StringHelper.GetNextCSV(ref specialTypes, ",").Trim().ToUpper();
+ *                  AMainDS.PPartnerType.Rows.Add(partnerType);
+ *              }
+ *          }
  */
             CreateSpecialTypes(ANode, APartnerKey, "SpecialType_", ref AMainDS);
         }
 
-        private static void CreateShortTermApplication(XmlNode ANode, Int64 APartnerKey, ref PartnerImportExportTDS AMainDS, TDBTransaction ATransaction)
+        private static void CreateShortTermApplication(XmlNode ANode,
+            Int64 APartnerKey,
+            ref PartnerImportExportTDS AMainDS,
+            TDBTransaction ATransaction)
         {
             String strEventKey = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_EVENTKEY);
             long EventKey = -1;
@@ -334,6 +337,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 {
                     AddVerificationResult("Bad number format in EventKey: " + strEventKey);
                 }
+
                 if (!PUnitAccess.Exists(EventKey, ATransaction))
                 {
                     AddVerificationResult("EventKey not known - application cannot be imported: " + EventKey);
@@ -366,12 +370,18 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 try
                 {
                     TimeString = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_ARRIVALDATE);
+
                     if (TimeString.Length > 0)
+                    {
                         ShortTermRow.Arrival = DateTime.Parse(TimeString);
+                    }
 
                     TimeString = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_DEPARTUREDATE);
+
                     if (TimeString.Length > 0)
+                    {
                         ShortTermRow.Departure = DateTime.Parse(TimeString);
+                    }
                 }
                 catch (System.FormatException)
                 {
@@ -381,6 +391,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 DateTime TempTime;
 
                 TimeString = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_ARRIVALTIME);
+
                 if (TimeString.Length > 0)
                 {
                     try
@@ -396,6 +407,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 }
 
                 TimeString = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_DEPARTURETIME);
+
                 if (TimeString.Length > 0)
                 {
                     try
@@ -409,8 +421,10 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                         AddVerificationResult("Bad time format in Application: " + TimeString);
                     }
                 }
+
                 ShortTermRow.OutreachRole = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_EVENTROLE);
                 String ChargedField = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CHARGEDFIELD);
+
                 if (ChargedField.Length > 0)
                 {
                     try
@@ -432,11 +446,12 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         private static void CreatePassport(XmlNode ANode, Int64 APartnerKey, ref PartnerImportExportTDS AMainDS)
         {
             string PassportNum = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTNUMBER);
+
             if (PassportNum.Length > 0)
             {
                 PmPassportDetailsRow NewRow = AMainDS.PmPassportDetails.NewRowTyped();
                 NewRow.PassportNumber = PassportNum;
-                NewRow.PassportDetailsType =  TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTTYPE);
+                NewRow.PassportDetailsType = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTTYPE);
                 NewRow.PlaceOfBirth = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTPLACEOFBIRTH);
                 NewRow.PassportNationalityCode = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTNATIONALITY);
                 NewRow.PlaceOfIssue = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTPLACEOFISSUE);
@@ -451,6 +466,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         private static void CreateSubscriptions(XmlNode ANode, Int64 APartnerKey, ref PartnerImportExportTDS AMainDS)
         {
             int SubsCount = 0;
+
             foreach (XmlAttribute Attr in ANode.Attributes)
             {
                 if ((Attr.Name.ToLower().IndexOf("subscribe_") == 0) && (Attr.Value.ToLower() == "yes"))
@@ -462,35 +478,34 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     SubsCount++;
                 }
             }
+
             if (SubsCount > 0)
             {
                 AddVerificationResult("Subscriptions Created.", TResultSeverity.Resv_Status);
             }
         }
 
-
         private static void CreateContacts(XmlNode ANode, Int64 APartnerKey, ref PartnerImportExportTDS AMainDS, string Suffix)
         {
             string ContactCode = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTCODE + Suffix);
-            
+
             if (ContactCode.Length > 0)
             {
-            	PartnerImportExportTDSPPartnerContactRow Row = AMainDS.PPartnerContact.NewRowTyped();
-            	Row.PartnerKey = APartnerKey;
-            	Row.ContactCode = ContactCode;
-            	Row.ContactDate = DateTime.Parse(TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTDATE + Suffix));
-            	DateTime ContactTime = DateTime.Parse(TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTTIME + Suffix));
-            	Row.ContactTime = ((ContactTime.Hour * 60) + ContactTime.Minute * 60) + ContactTime.Second;
-            	Row.Contactor = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTOR + Suffix);
-            	Row.ContactComment = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTNOTES + Suffix);
-            	Row.ContactAttr = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTATTR + Suffix);
-            	Row.ContactDetail = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTDETAIL + Suffix);
-            	AMainDS.PPartnerContact.Rows.Add(Row);
+                PartnerImportExportTDSPPartnerContactRow Row = AMainDS.PPartnerContact.NewRowTyped();
+                Row.PartnerKey = APartnerKey;
+                Row.ContactCode = ContactCode;
+                Row.ContactDate = DateTime.Parse(TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTDATE + Suffix));
+                DateTime ContactTime = DateTime.Parse(TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTTIME + Suffix));
+                Row.ContactTime = ((ContactTime.Hour * 60) + ContactTime.Minute * 60) + ContactTime.Second;
+                Row.Contactor = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTOR + Suffix);
+                Row.ContactComment = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTNOTES + Suffix);
+                Row.ContactAttr = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTATTR + Suffix);
+                Row.ContactDetail = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTDETAIL + Suffix);
+                AMainDS.PPartnerContact.Rows.Add(Row);
                 AddVerificationResult("Contact Record Created.", TResultSeverity.Resv_Status);
             }
-        	
         }
-        
+
         /// <summary>
         /// Returns the gender of the currently selected partner
         /// </summary>

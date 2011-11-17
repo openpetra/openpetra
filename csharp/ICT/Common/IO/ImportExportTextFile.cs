@@ -29,7 +29,7 @@ using System.Globalization;
 
 namespace Ict.Common.IO
 {
-   /// <summary>
+    /// <summary>
     /// write and read a text file in a format that Petra 2.x uses
     /// </summary>
     public class TImportExportTextFile
@@ -103,7 +103,7 @@ namespace Ict.Common.IO
             FTextToWrite = new StringBuilder();
             FStartOfLine = true;
         }
-        
+
         /// <summary>
         /// returns the string that has been assembled during all the previous write function calls
         /// </summary>

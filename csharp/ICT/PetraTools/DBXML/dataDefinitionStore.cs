@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -347,7 +347,7 @@ namespace Ict.Tools.DBXML
 
             foreach (TTableField t in grpTableField.List)
             {
-                if ((t.strName == s) || (NiceFieldName(t) == s))
+                if ((t.strName == s) || (t.strNameDotNet == s))
                 {
                     return t;
                 }
@@ -358,7 +358,7 @@ namespace Ict.Tools.DBXML
                 // should be disabled for creating the diff between two Petra versions.
                 if ((GEnabledLoggingMissingFields) && (s != "s_modification_id_c") && AShowWarningNonExistingField)
                 {
-                    System.Console.WriteLine("TTable.GetField: cannot find field " + strName + '.' + s);
+                    System.Console.WriteLine("Warning: TTable.GetField: cannot find field " + strName + '.' + s);
                 }
             }
 
