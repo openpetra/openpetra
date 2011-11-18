@@ -245,21 +245,21 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
             }
 
             #region Nationalities
-            
+
             PassportColumns = StringHelper.StrSplit(
-            	PmPassportDetailsTable.GetDateOfIssueDBName() + "," +
-            	PmPassportDetailsTable.GetDateOfExpirationDBName() + "," +
-            	PmPassportDetailsTable.GetPassportNationalityCodeDBName() + "," +
-            	PmPassportDetailsTable.GetMainPassportDBName(), ",");
+                PmPassportDetailsTable.GetDateOfIssueDBName() + "," +
+                PmPassportDetailsTable.GetDateOfExpirationDBName() + "," +
+                PmPassportDetailsTable.GetPassportNationalityCodeDBName() + "," +
+                PmPassportDetailsTable.GetMainPassportDBName(), ",");
 
             PassportDetailsDT = PmPassportDetailsAccess.LoadViaPPerson(APartnerKey,
                 PassportColumns, AReadTransaction, null, 0, 0);
 
             SummaryDR.Nationalities = Ict.Petra.Shared.MPersonnel.Calculations.DeterminePersonsNationalities(
-            	@CommonCacheable.GetCacheableTable, PassportDetailsDT);
-            
+                @CommonCacheable.GetCacheableTable, PassportDetailsDT);
+
             #endregion
-            
+
             #region Phone and Email (from 'Best Address')
 
             BestAddress = ServerCalculations.DetermineBestAddress(APartnerKey, out PartnerLocationDR, out LocationDR);
@@ -284,7 +284,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                 {
                     SummaryDR.TelephoneNumber = Calculations.FormatIntlPhoneNumber(PartnerLocationDR.MobileNumber,
                         String.Empty, LocationDR.CountryCode, @CommonCacheable.GetCacheableTable) + " " +
-                        Catalog.GetString("(Mobile)");
+                                                Catalog.GetString("(Mobile)");
                 }
                 else
                 {
@@ -389,8 +389,9 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
 
             // Find SUPPCHURCH Relationship
             PartnerRelationshipDT = PPartnerRelationshipAccess.LoadUsingTemplate(new TSearchCriteria[] {
-                new TSearchCriteria(PPartnerRelationshipTable.GetRelationKeyDBName(), APartnerKey),
-                new TSearchCriteria(PPartnerRelationshipTable.GetRelationNameDBName(), "SUPPCHURCH")}, 
+                    new TSearchCriteria(PPartnerRelationshipTable.GetRelationKeyDBName(), APartnerKey),
+                    new TSearchCriteria(PPartnerRelationshipTable.GetRelationNameDBName(), "SUPPCHURCH")
+                },
                 AReadTransaction);
 
             SummaryDR.NumberOfShownSupportingChurches = PartnerRelationshipDT.Rows.Count;
@@ -438,7 +439,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                         {
                             SummaryDR.ChurchPhone = Calculations.FormatIntlPhoneNumber(PartnerLocationDR.MobileNumber,
                                 String.Empty, LocationDR.CountryCode, @CommonCacheable.GetCacheableTable) + " " +
-                                Catalog.GetString("(Mobile)");
+                                                    Catalog.GetString("(Mobile)");
                         }
                     }
 
@@ -449,8 +450,9 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                     // Find PASTOR Relationship
                     PartnerRelationshipDT.Rows.Clear();
                     PartnerRelationshipDT = PPartnerRelationshipAccess.LoadUsingTemplate(new TSearchCriteria[] {
-                        new TSearchCriteria(PPartnerRelationshipTable.GetPartnerKeyDBName(), ChurchPartnerKey),
-                        new TSearchCriteria(PPartnerRelationshipTable.GetRelationNameDBName(), "PASTOR")}, 
+                            new TSearchCriteria(PPartnerRelationshipTable.GetPartnerKeyDBName(), ChurchPartnerKey),
+                            new TSearchCriteria(PPartnerRelationshipTable.GetRelationNameDBName(), "PASTOR")
+                        },
                         AReadTransaction);
 
                     SummaryDR.NumberOfShownSupportingChurchPastors = PartnerRelationshipDT.Rows.Count;
@@ -494,7 +496,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                                 {
                                     SummaryDR.ChurchPastorsPhone = Calculations.FormatIntlPhoneNumber(PartnerLocationDR.MobileNumber,
                                         String.Empty, LocationDR.CountryCode, @CommonCacheable.GetCacheableTable) + " " +
-                                        Catalog.GetString("(Mobile)");
+                                                                   Catalog.GetString("(Mobile)");
                                 }
                             }
 
@@ -514,7 +516,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
             // Add Row to 'SummaryData' DataTable in Typed DataSet 'IndividualDataTDS'
             AIndividualDataDS.Merge(SummaryDT);
         }
-        
+
         /// <summary>
         /// Determines the number of DataRows for the Individual Data Items that work on multiple DataRows.
         /// </summary>
