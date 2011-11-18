@@ -329,7 +329,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns><see cref="TLocationPK" /> pointing to the 'Best Address' of the PERSON.</returns>
         private TLocationPK DetermineAddressComponents(out string APhoneNumberOfPerson, out string AEmailAddressOfPerson)
         {
-            TLocationPK ReturnValue = Calculations.DetermineBestAddress(
+            TLocationPK ReturnValue = Ict.Petra.Shared.MPartner.Calculations.DetermineBestAddress(
                 FMainDS.Tables[PartnerEditTDSPPartnerLocationTable.GetTableName()]);
             DataRow BestPartnerLocationDR;
             DataRow BestLocationDR;
@@ -346,7 +346,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 BestLocationDR = FMainDS.Tables[PLocationTable.GetTableName()].Rows.Find(new object[]
                     { ReturnValue.SiteKey, ReturnValue.LocationKey });
 
-                APhoneNumberOfPerson = Calculations.FormatIntlPhoneNumber(
+                APhoneNumberOfPerson = Ict.Petra.Shared.MPartner.Calculations.FormatIntlPhoneNumber(
                     (string)BestPartnerLocationDR[PPartnerLocationTable.GetTelephoneNumberDBName()],
                     ((int)BestPartnerLocationDR[PPartnerLocationTable.GetExtensionDBName()]).ToString(),
                     (string)BestLocationDR[PLocationTable.GetCountryCodeDBName()],

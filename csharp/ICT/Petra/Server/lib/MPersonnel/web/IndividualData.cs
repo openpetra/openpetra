@@ -186,7 +186,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
             IndividualDataTDSMiscellaneousDataRow MiscellaneousDataDR = AIndividualDataDS.MiscellaneousData[0];
             PPersonTable PPersonDT;
             PPersonRow PersonDR = null;
-            PmPassportDetailsTable PmPassportDetailsDT;
+            PmPassportDetailsTable PassportDetailsDT;
             PmStaffDataTable PmStaffDataDT;
             PmStaffDataRow PmStaffDataDR = null;
             PmJobAssignmentTable PmJobAssignmentDT = null;
@@ -197,8 +197,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
             TCacheable CommonCacheable = new TCacheable();
             TPartnerCacheable PartnerCacheable = new TPartnerCacheable();
             string MaritalStatusDescr;
-            string Nationality = String.Empty;
-            string Nationalities = String.Empty;
+            StringCollection PassportColumns;
             PPartnerRelationshipTable PartnerRelationshipDT;
             PPartnerTable PartnerDT;
             PPartnerRow PartnerDR = null;
@@ -247,27 +246,20 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
 
             #region Nationalities
             
-            PmPassportDetailsDT = PmPassportDetailsAccess.LoadViaPPerson(APartnerKey, AReadTransaction);
+            PassportColumns = StringHelper.StrSplit(
+            	PmPassportDetailsTable.GetDateOfIssueDBName() + "," +
+            	PmPassportDetailsTable.GetDateOfExpirationDBName() + "," +
+            	PmPassportDetailsTable.GetPassportNationalityCodeDBName() + "," +
+            	PmPassportDetailsTable.GetMainPassportDBName(), ",");
 
-            foreach (PmPassportDetailsRow PassportDR in PmPassportDetailsDT.Rows)
-            {
-                Nationality = CommonCodeHelper.GetCountryName(
-                    @CommonCacheable.GetCacheableTable, PassportDR.PassportNationalityCode);
+            PassportDetailsDT = PmPassportDetailsAccess.LoadViaPPerson(APartnerKey,
+                PassportColumns, AReadTransaction, null, 0, 0);
 
-                if (Nationality != String.Empty)
-                {
-                    Nationalities += Nationality + ", ";
-                }
-                else
-                {
-                    Nationalities += PassportDR.PassportNationalityCode + ", ";
-                }
-            }
-
-            SummaryDR.Nationalities = Nationalities.Substring(0, Nationalities.Length - 2);             // remove last comma
-
+            SummaryDR.Nationalities = Ict.Petra.Shared.MPersonnel.Calculations.DeterminePersonsNationalities(
+            	@CommonCacheable.GetCacheableTable, PassportDetailsDT);
+            
             #endregion
-
+            
             #region Phone and Email (from 'Best Address')
 
             BestAddress = ServerCalculations.DetermineBestAddress(APartnerKey, out PartnerLocationDR, out LocationDR);
@@ -308,7 +300,6 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
             #endregion
 
             #endregion
-
 
             #region Commitments/Jobs
 
@@ -386,7 +377,6 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
             }
 
             #endregion
-
 
             #region Church Info
 
@@ -518,14 +508,13 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
 
             #endregion
 
-
             // Add Summary DataRow to Summary DataTable
             SummaryDT.Rows.Add(SummaryDR);
 
             // Add Row to 'SummaryData' DataTable in Typed DataSet 'IndividualDataTDS'
             AIndividualDataDS.Merge(SummaryDT);
         }
-
+        
         /// <summary>
         /// Determines the number of DataRows for the Individual Data Items that work on multiple DataRows.
         /// </summary>

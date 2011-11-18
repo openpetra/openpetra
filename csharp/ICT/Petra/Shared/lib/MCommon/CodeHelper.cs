@@ -37,7 +37,8 @@ namespace Ict.Petra.Shared.MCommon
         /// <summary>
         /// Returns the name of a Country.
         /// </summary>
-        /// <param name="ACacheRetriever">Delegate that returns the specified DataTable from the data cache (client- or serverside).</param>
+        /// <param name="ACacheRetriever">Delegate that returns the specified DataTable from the data cache (client- or serverside).
+        /// Delegate Method needs to be for the MCommon Cache (that is, it needs to work with the <see cref="TCacheableCommonTablesEnum" /> Enum!</param>
         /// <param name="ACountryCode">Country Code.</param>
         /// <returns>The description of a Country Code, or empty string if the Country Code could not be identified.</returns>
         public static string GetCountryName(TGetCacheableDataTableFromCache ACacheRetriever, string ACountryCode)
