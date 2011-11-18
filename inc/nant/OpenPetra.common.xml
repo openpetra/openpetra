@@ -197,7 +197,8 @@
           overwrite="false" />
 <property name="uuidFile" value="${path::combine(dir.projectfiles, 'projectuuid.map')}"
           overwrite="false" />
-<property name="projectfiles.templates-list" value="vs2008,sharpdevelop3" overwrite="false" />
+<property name="projectfiles.templates-list" value="sharpdevelop4" overwrite="false" />
+<property name="devenv-name" value="sharpdevelop4" overwrite="false" />
  <!-- webserver -->
 <property name="dir.webserver" value="${path::combine(dir.delivery, 'webserver')}" overwrite="false" />
 <property name="dir.webserver.bin" value="${path::combine(dir.webserver, 'bin')}" overwrite="false" />
@@ -213,8 +214,6 @@
 <property name="dir.webserver.HtmlReports" value="" overwrite="false"/>
 
 <!-- build tools -->
-<property name="devenv-name" value="sharpdevelop3"
-          overwrite="false" />
 <property name="msbuildtask.file" value="${nant::get-base-directory()}/extensions/common/neutral/NAntContrib/NAnt.Contrib.Tasks.dll"
           overwrite="false"/>
 <property name="Configuration" value="DEBUG" overwrite="false"/>
@@ -267,7 +266,7 @@
 
 
 <!-- Set correct .NET platform -->
-<property name="NETframework-version" value ="3.5" overwrite="false" />
+<property name="NETframework-version" value ="4.0" overwrite="false" />
 <property name="nant.settings.currentframework" value="net-${NETframework-version}"
           overwrite="false" if="${platform::is-windows()}" />
 <property name="nant.settings.currentframework" value="mono-${NETframework-version}" 
@@ -320,6 +319,7 @@
   <!-- MS Windows specific -->
   <property name="external.Uncrustify" value="${OP::GetFileInProgramDirectory('/uncrustify/uncrustify.exe')}" 
             overwrite="false"/>
+  <property name="external.Java" value="${OP::GetFileInProgramDirectory('/Java/jre6/bin/java.exe')}" overwrite="false"/>
   <property name="external.Poedit.gettext" value="${OP::GetFileInProgramDirectory('/Poedit/bin/xgettext.exe')}" overwrite="false"/>
   <property name="external.Poedit.msgfmt" value="${OP::GetFileInProgramDirectory('/Poedit/bin/msgfmt.exe')}" overwrite="false"/>
   <property name="external.Poedit.msgcat" value="${OP::GetFileInProgramDirectory('/Poedit/bin/msgcat.exe')}" overwrite="false"/> 
@@ -328,8 +328,8 @@
 <if test="${'win32'!=platform::get-name()}">
   <if test="${'unix'==platform::get-name()}">
     <!-- Unix specific -->
-    <property name="external.Uncrustify" value="uncrustify" 
-              overwrite="false"/>
+    <property name="external.Uncrustify" value="uncrustify" overwrite="false"/>
+    <property name="external.Java" value="java" overwrite="false"/>
     <property name="external.Poedit.gettext" value="/usr/bin/xgettext" overwrite="false"/>
     <property name="external.Poedit.msgfmt" value="/usr/bin/msgfmt" overwrite="false"/>
     <property name="external.Poedit.msgcat" value="/usr/bin/msgcat" overwrite="false"/>     

@@ -771,7 +771,7 @@ namespace Ict.Tools.CodeGeneration
             {
                 if (TFileDiffMerge.Merge2Files(FDestinationFile, FTemplateCode.Replace("\r", "").Split(new char[] { '\n' })))
                 {
-                    Console.WriteLine("Writing " + Path.GetFullPath(FDestinationFile));
+                    Console.WriteLine("Writing " + Path.GetFileName(FDestinationFile));
                 }
 
                 return true;
