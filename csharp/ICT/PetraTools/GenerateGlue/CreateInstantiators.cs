@@ -79,6 +79,11 @@ class CreateInstantiators : AutoGenerationWriter
 
                             string ParameterType = p.TypeReference.Type.Replace("&", "");
 
+                            if (ParameterType == "List")
+                            {
+                                ParameterType = p.TypeReference.GenericTypes[0].Type + "?";
+                            }
+
                             if (ParameterType.Contains("."))
                             {
                                 ParameterType = ParameterType.Substring(ParameterType.LastIndexOf(".") + 1);
