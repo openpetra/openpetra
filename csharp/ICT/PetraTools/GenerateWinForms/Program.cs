@@ -24,6 +24,7 @@
 using System;
 using System.Xml;
 using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.IO;
 using Ict.Common;
 using Ict.Common.IO; // Implicit reference
@@ -144,7 +145,21 @@ class Program
                 }
                 else if (System.IO.Directory.Exists(ymlfileParam))
                 {
-                    foreach (string file in System.IO.Directory.GetFiles(ymlfileParam, "*.yaml", SearchOption.AllDirectories))
+                    string[] yamlfiles = System.IO.Directory.GetFiles(ymlfileParam, "*.yaml", SearchOption.AllDirectories);
+                    // sort the files so that the deepest files are first processed,
+                    // since the files higher up are depending on them
+                    // eg. FinanceMain.yaml needs to check for GLBatch-generated.cs
+
+                    List <string>yamlFilesSorted = new List <string>(yamlfiles.Length);
+
+                    foreach (string file in yamlfiles)
+                    {
+                        yamlFilesSorted.Add(file);
+                    }
+
+                    yamlFilesSorted.Sort(new YamlFileOrderComparer());
+
+                    foreach (string file in yamlFilesSorted)
                     {
                         // reset the dataset each time to force reload
                         TDataBinding.FDatasetTables = null;
@@ -188,6 +203,42 @@ class Program
 
             Environment.Exit(-1);
         }
+    }
+}
+
+
+/// <summary>
+/// for sorting the yaml files
+/// </summary>
+public class YamlFileOrderComparer : IComparer <string>
+{
+    /// <summary>
+    /// compare two file names; a file in a subdirectory comes before the file in the main directory
+    /// </summary>
+    /// <param name="node1"></param>
+    /// <param name="node2"></param>
+    /// <returns>-1 if node1 depends on node2, +1 if node2 depends on node1, and 0 if they are identical</returns>
+    public int Compare(string node1, string node2)
+    {
+        string path1 = Path.GetDirectoryName(node1);
+        string path2 = Path.GetDirectoryName(node2);
+
+        if ((path1.Length > path2.Length) && path1.StartsWith(path2))
+        {
+            return -1;
+        }
+
+        if ((path2.Length > path1.Length) && path2.StartsWith(path1))
+        {
+            return +1;
+        }
+
+        if (path1 == path2)
+        {
+            return 0;
+        }
+
+        return -1;
     }
 }
 }

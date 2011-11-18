@@ -559,7 +559,7 @@ namespace Ict.Tools.CodeGeneration
 
             foreach (string dir in dirList)
             {
-                Console.WriteLine("Namespace '" + AServerNamespace + "' found in '" + dir + "'\n");
+                // Console.WriteLine("Namespace '" + AServerNamespace + "' found in '" + dir + "'\n");
 
                 foreach (CSParser tempCSFile in GetCSFilesForDirectory(dir, SearchOption.TopDirectoryOnly))
                 {
