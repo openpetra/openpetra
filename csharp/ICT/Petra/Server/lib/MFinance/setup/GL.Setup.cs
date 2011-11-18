@@ -978,8 +978,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             transactionTypeRow.LedgerNumber = ANewLedgerNumber;
             transactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
             transactionTypeRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.STD.ToString();
-            transactionTypeRow.DebitAccountCode = "BAL SHT";
-            transactionTypeRow.CreditAccountCode = "BAL SHT";
+            transactionTypeRow.DebitAccountCode = MFinanceConstants.BAL_SHT;
+            transactionTypeRow.CreditAccountCode = MFinanceConstants.BAL_SHT;
             transactionTypeRow.TransactionTypeDescription = "Standard Journal";
             transactionTypeRow.SpecialTransactionType = false;
             MainDS.ATransactionType.Rows.Add(transactionTypeRow);
@@ -990,6 +990,15 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             transactionTypeRow.DebitAccountCode = "CASH";
             transactionTypeRow.CreditAccountCode = "GIFT";
             transactionTypeRow.TransactionTypeDescription = "Gift Receipting";
+            transactionTypeRow.SpecialTransactionType = true;
+            MainDS.ATransactionType.Rows.Add(transactionTypeRow);
+            transactionTypeRow = MainDS.ATransactionType.NewRowTyped();
+            transactionTypeRow.LedgerNumber = ANewLedgerNumber;
+            transactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.AP.ToString();
+            transactionTypeRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.INV.ToString();
+            transactionTypeRow.DebitAccountCode = MFinanceConstants.ACCOUNT_BAL_SHT;
+            transactionTypeRow.CreditAccountCode = MFinanceConstants.ACCOUNT_CREDITORS;
+            transactionTypeRow.TransactionTypeDescription = "Input Creditor's Invoice";
             transactionTypeRow.SpecialTransactionType = true;
             MainDS.ATransactionType.Rows.Add(transactionTypeRow);
 

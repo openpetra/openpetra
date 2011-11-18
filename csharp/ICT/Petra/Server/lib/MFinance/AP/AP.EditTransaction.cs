@@ -407,7 +407,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 journal.DateEffective = batch.DateEffective;
                 journal.TransactionCurrency = CurrencyCode;
                 journal.JournalDescription = "TODO"; // TODO: journal description for posting AP documents
-                journal.TransactionTypeCode = CommonAccountingTransactionTypesEnum.STD.ToString();
+                journal.TransactionTypeCode = CommonAccountingTransactionTypesEnum.INV.ToString();
                 journal.SubSystemCode = CommonAccountingSubSystemsEnum.AP.ToString();
                 journal.DateOfEntry = DateTime.Now;
 
