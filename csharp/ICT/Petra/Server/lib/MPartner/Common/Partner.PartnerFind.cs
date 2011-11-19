@@ -46,7 +46,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
     /// Base for the Partner Find Screen UIConnector.
     /// We need this in MPartner.Common, so that we can use the functionality from the SimplePartnerFind WebConnector as well
     /// </summary>
-    public class TPartnerFind: TConfigurableMBRObject, IPartnerUIConnectorsPartnerFind
+    public class TPartnerFind : TConfigurableMBRObject, IPartnerUIConnectorsPartnerFind
     {
         /// <summary>Paged query object</summary>
         TPagedDataSet FPagedDataSetObject;

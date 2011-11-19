@@ -68,11 +68,11 @@ namespace Ict.Tools.NAntTasks
         /// <summary>
         /// map namespace to assembly
         /// </summary>
-        private Dictionary<string, string> _namespace2assembly = new Dictionary<string, string>();
+        private Dictionary <string, string>_namespace2assembly = new Dictionary <string, string>();
         /// <summary>
         /// map assembly to uuid for project file
         /// </summary>
-        private Dictionary<string, string> _assembly2uuid = new Dictionary<string, string>();
+        private Dictionary <string, string>_assembly2uuid = new Dictionary <string, string>();
         /// <summary>
         /// Stores assembly specific data
         /// </summary>
@@ -321,12 +321,13 @@ namespace Ict.Tools.NAntTasks
 
             // Read in the Namespace Maps
             ReadNamespaceMaps();
-            
+
             // Load templates for the xml files
             LoadTemplates(templatefile);
 
             // Check all sourcefiles
             Regex fileRegex = new Regex(CSDependFiles);
+
             foreach (string filename in Directory.GetFiles(Project.BaseDirectory, "*.cs", SearchOption.AllDirectories))
             {
                 Match match = fileRegex.Match(filename.Replace("\\", "/"));
@@ -420,8 +421,8 @@ namespace Ict.Tools.NAntTasks
             {
                 Log(Level.Debug, "Processing assembly '" + assembly.name + "'");
                 // Get all references we need
-                Dictionary<string, string> refsList = new Dictionary<string, string>(); // All references we know about
-                Dictionary<string, string> pkgRefsList = new Dictionary<string, string>(); // All references in our package
+                Dictionary <string, string>refsList = new Dictionary <string, string>(); // All references we know about
+                Dictionary <string, string>pkgRefsList = new Dictionary <string, string>(); // All references in our package
 
                 foreach (string used in assembly.GetUsings())
                 {
@@ -564,7 +565,7 @@ namespace Ict.Tools.NAntTasks
             return rc;
         }
 
-        private void WriteMap(string filename, Dictionary<string, string> map)
+        private void WriteMap(string filename, Dictionary <string, string>map)
         {
             // If the directory does not exist, we have to create it
             string dirname = Path.GetDirectoryName(filename);
@@ -592,7 +593,7 @@ namespace Ict.Tools.NAntTasks
         /// </summary>
         /// <param name="filename">file to open for reading</param>
         /// <param name="map">The map to write</param>
-        private void ReadMap(string filename, Dictionary<string, string> map)
+        private void ReadMap(string filename, Dictionary <string, string>map)
         {
             StreamReader sr = new StreamReader(filename);
 
@@ -606,7 +607,7 @@ namespace Ict.Tools.NAntTasks
                     string key = match.Groups[1].ToString();
                     string val = match.Groups[2].ToString();
                     Log(Level.Debug, "Found map entry: " + key + "=" + val);
-                    
+
                     map.Add(key, val);
                 }
             }
@@ -629,8 +630,8 @@ namespace Ict.Tools.NAntTasks
                 // file has already been loaded
                 return;
             }
-            
-            string filename = _nsDir + "/namespace.map"; 
+
+            string filename = _nsDir + "/namespace.map";
 
             // Read in the file
             Log(Level.Debug, "Read namespace map:" + filename);
@@ -654,7 +655,7 @@ namespace Ict.Tools.NAntTasks
         /// <param name="map">The hashtable to add to</param>
         /// <param name="key">The string used as key</param>
         /// <param name="value">The string used as value</param>
-        static private void AddToDict(Dictionary<string, string> map, string key, string value)
+        static private void AddToDict(Dictionary <string, string>map, string key, string value)
         {
             if (!map.ContainsKey(key))
             {
@@ -664,7 +665,7 @@ namespace Ict.Tools.NAntTasks
             {
                 throw new Exception(
                     string.Format("did not expect to have different values for {0}: {1} and {2}",
-                                  key, value, map[key]));
+                        key, value, map[key]));
             }
         }
 

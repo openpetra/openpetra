@@ -40,7 +40,7 @@ namespace Ict.Tools.NAntTasks
     public class GenerateProjectFiles : NAnt.Core.Task
     {
         string DATE_TIME_STRING = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-        
+
         private string FDependencyMapFilename = null;
         /// <summary>
         /// path of the file, where the dependancy map will be saved and read from
@@ -56,7 +56,7 @@ namespace Ict.Tools.NAntTasks
                 FDependencyMapFilename = value;
             }
         }
-        
+
         private string FGUIDMapFilename = null;
         /// <summary>
         /// path of the file, where the guids of the projects are stored
@@ -104,7 +104,7 @@ namespace Ict.Tools.NAntTasks
                 FTemplateDir = value;
             }
         }
-        
+
         private string FDevEnvironments = null;
         /// <summary>
         /// the list of IDEs that we should build the project files for
@@ -168,40 +168,39 @@ namespace Ict.Tools.NAntTasks
                 FDirProjectFiles = value;
             }
         }
-        
-        private Dictionary<string, string> FProjectGUIDs;
-        private Dictionary<string, TDetailsOfDll> FProjectDependencies;
-        
+
+        private Dictionary <string, string>FProjectGUIDs;
+        private Dictionary <string, TDetailsOfDll>FProjectDependencies;
+
         /// <summary>
         /// create project files
         /// </summary>
         protected override void ExecuteTask()
         {
-            
             ReadMap(FDependencyMapFilename, out FProjectDependencies);
             FProjectGUIDs = ReadProjectGUIDs(FGUIDMapFilename);
-            
-            string[]IDEs = FDevEnvironments.Split(new char[]{','});
-            
+
+            string[] IDEs = FDevEnvironments.Split(new char[] { ',' });
+
             foreach (string ide in IDEs)
             {
-                foreach(string projectName in FProjectDependencies.Keys)
+                foreach (string projectName in FProjectDependencies.Keys)
                 {
                     if (!Directory.Exists(FDirProjectFiles + Path.DirectorySeparatorChar + ide))
                     {
                         Directory.CreateDirectory(FDirProjectFiles + Path.DirectorySeparatorChar + ide);
                     }
-                    
-                    string srcPath = FCodeRootDir + Path.DirectorySeparatorChar + 
-                        projectName.
-                            Replace("Ict.Tools.", "ICT.PetraTools.").
-                            Replace("Ict.", "ICT.").
-                            Replace('.', Path.DirectorySeparatorChar);
+
+                    string srcPath = FCodeRootDir + Path.DirectorySeparatorChar +
+                                     projectName.
+                                     Replace("Ict.Tools.", "ICT.PetraTools.").
+                                     Replace("Ict.", "ICT.").
+                                     Replace('.', Path.DirectorySeparatorChar);
 
                     string ProjectType = FProjectDependencies[projectName].OutputType;
-                    
+
                     string ProjectGUID = GetProjectGUID(projectName);
-    
+
                     WriteProjectFile(
                         FTemplateDir,
                         ide.Trim(),
@@ -211,28 +210,28 @@ namespace Ict.Tools.NAntTasks
                         FProjectDependencies[projectName].ReferencedDlls,
                         ProjectGUID);
                 }
-                
-                WriteSolutionFile(FTemplateDir, ide.Trim(), 
-                                  "OpenPetra.sln", 
-                                  "Ict.Common,Ict.Petra,Ict.Tools,Ict.Testing");
-                WriteSolutionFile(FTemplateDir, ide.Trim(), 
-                                  "OpenPetra.Server.sln", 
-                                  "Ict.Common,Ict.Petra.Shared,Ict.Petra.Server,Ict.Petra.ServerPlugins,Ict.Petra.PetraServerConsole");
-                WriteSolutionFile(FTemplateDir, ide.Trim(), 
-                                  "OpenPetra.Client.sln", 
-                                  "Ict.Common,Ict.Petra.Shared,Ict.Petra.Client,Ict.Petra.ClientPlugins,Ict.Petra.PetraClient");
-                WriteSolutionFile(FTemplateDir, ide.Trim(), 
-                                  "OpenPetra.Tools.sln", 
-                                  "Ict.Common,Ict.Tools");
-                WriteSolutionFile(FTemplateDir, ide.Trim(), 
-                                  "OpenPetra.Testing.sln", 
-                                  "Ict.Common,Ict.Petra,Ict.Testing");
+
+                WriteSolutionFile(FTemplateDir, ide.Trim(),
+                    "OpenPetra.sln",
+                    "Ict.Common,Ict.Petra,Ict.Tools,Ict.Testing");
+                WriteSolutionFile(FTemplateDir, ide.Trim(),
+                    "OpenPetra.Server.sln",
+                    "Ict.Common,Ict.Petra.Shared,Ict.Petra.Server,Ict.Petra.ServerPlugins,Ict.Petra.PetraServerConsole");
+                WriteSolutionFile(FTemplateDir, ide.Trim(),
+                    "OpenPetra.Client.sln",
+                    "Ict.Common,Ict.Petra.Shared,Ict.Petra.Client,Ict.Petra.ClientPlugins,Ict.Petra.PetraClient");
+                WriteSolutionFile(FTemplateDir, ide.Trim(),
+                    "OpenPetra.Tools.sln",
+                    "Ict.Common,Ict.Tools");
+                WriteSolutionFile(FTemplateDir, ide.Trim(),
+                    "OpenPetra.Testing.sln",
+                    "Ict.Common,Ict.Petra,Ict.Testing");
             }
-            
+
             WriteProjectGUIDs(FGUIDMapFilename, FProjectGUIDs);
         }
-        
-        Dictionary<string, string> FTemplateFiles = new Dictionary<string, string>();
+
+        Dictionary <string, string>FTemplateFiles = new Dictionary <string, string>();
         private StringBuilder GetTemplateFile(string filename)
         {
             if (!FTemplateFiles.ContainsKey(filename))
@@ -241,28 +240,28 @@ namespace Ict.Tools.NAntTasks
                 FTemplateFiles.Add(filename, sr.ReadToEnd());
                 sr.Close();
             }
-            
+
             return new StringBuilder(FTemplateFiles[filename]);
         }
-        
+
         private void WriteSolutionFile(
             string ATemplateDir,
             string ADevName,
-            string ASolutionFilename, 
+            string ASolutionFilename,
             string AIncludeNamespaces)
         {
             ATemplateDir += Path.DirectorySeparatorChar + ADevName + Path.DirectorySeparatorChar;
             StringBuilder template = GetTemplateFile(ATemplateDir + "template.sln");
-            List<string>IncludeNamespaces = new List<string>(AIncludeNamespaces.Split(new char[]{','}));
+            List <string>IncludeNamespaces = new List <string>(AIncludeNamespaces.Split(new char[] { ',' }));
 
             string Projects = string.Empty;
             string ProjectConfiguration = string.Empty;
             string SolutionFilename = FDirProjectFiles + Path.DirectorySeparatorChar + ADevName + Path.DirectorySeparatorChar + ASolutionFilename;
-            
+
             foreach (string projectName in FProjectDependencies.Keys)
             {
                 bool includeProject = false;
-                
+
                 foreach (string incNamespace in IncludeNamespaces)
                 {
                     if (projectName.StartsWith(incNamespace))
@@ -271,25 +270,26 @@ namespace Ict.Tools.NAntTasks
                         break;
                     }
                 }
-                
+
                 if (includeProject)
                 {
                     StringBuilder temp = GetTemplateFile(ATemplateDir + "template.sln.project");
                     temp.Replace("${SolutionGuid}", GetProjectGUID(ASolutionFilename));
                     temp.Replace("${ProjectName}", projectName);
-                    temp.Replace("${ProjectFile}", FDirProjectFiles + Path.DirectorySeparatorChar + ADevName + Path.DirectorySeparatorChar + projectName + ".csproj");
+                    temp.Replace("${ProjectFile}",
+                        FDirProjectFiles + Path.DirectorySeparatorChar + ADevName + Path.DirectorySeparatorChar + projectName + ".csproj");
                     temp.Replace("${ProjectGuid}", GetProjectGUID(projectName));
                     Projects += temp.ToString();
-                    
+
                     temp = GetTemplateFile(ATemplateDir + "template.sln.configuration");
                     temp.Replace("${ProjectGuid}", GetProjectGUID(projectName));
-                    ProjectConfiguration += temp.ToString();                    
+                    ProjectConfiguration += temp.ToString();
                 }
             }
-            
+
             template.Replace("${TemplateProject}", Projects);
             template.Replace("${TemplateConfiguration}", ProjectConfiguration);
-            
+
             StreamWriter sw = new StreamWriter(SolutionFilename);
             sw.WriteLine(template.ToString());
             sw.Close();
@@ -301,12 +301,12 @@ namespace Ict.Tools.NAntTasks
             string ASrcPath,
             string AProjectName,
             string AProjectType,
-            List<string> AProjectDependencies,
+            List <string>AProjectDependencies,
             string AProjectGUID)
         {
             ATemplateDir += Path.DirectorySeparatorChar + ADevName + Path.DirectorySeparatorChar;
             StringBuilder template = GetTemplateFile(ATemplateDir + "template.csproj");
-            
+
             // replace simple variables
             template.Replace("${ProjectGuid}", AProjectGUID);
             template.Replace("${OutputType}", AProjectType);
@@ -314,15 +314,15 @@ namespace Ict.Tools.NAntTasks
             template.Replace("${NETframework-version}", FNetFrameworkVersion);
             template.Replace("${dir.bin}", FDirBin);
             template.Replace("${DebugStartArguments}", ""); // TODO? read from directory
-            
+
             StringBuilder templateReference = GetTemplateFile(ATemplateDir + "template.csproj.reference");
             StringBuilder temp;
-            
+
             // replace references
             StringBuilder ProjectReferences = new StringBuilder();
             StringBuilder OtherReferences = new StringBuilder();
-            
-            foreach(string referencedProject in AProjectDependencies)
+
+            foreach (string referencedProject in AProjectDependencies)
             {
                 if (!FProjectDependencies.ContainsKey(referencedProject))
                 {
@@ -342,16 +342,18 @@ namespace Ict.Tools.NAntTasks
                     ProjectReferences.Append(temp.ToString());
                 }
             }
+
             template.Replace("${TemplateProjectReferences}", ProjectReferences.ToString());
-                             
+
             template.Replace("${TemplateReferences}", OtherReferences.ToString());
 
             // TODO: create assembly info file
             // TODO: relative paths for other IDEs
-            
-            StringBuilder CompileFile= new StringBuilder();
-                
-            List<string>ContainsFiles = new List<string>(Directory.GetFiles(ASrcPath, "*.cs", SearchOption.TopDirectoryOnly));
+
+            StringBuilder CompileFile = new StringBuilder();
+
+            List <string>ContainsFiles = new List <string>(Directory.GetFiles(ASrcPath, "*.cs", SearchOption.TopDirectoryOnly));
+
             foreach (string ContainedFile in ContainsFiles)
             {
                 if (ContainedFile.EndsWith(".ManualCode.cs") || ContainedFile.EndsWith(".Designer.cs"))
@@ -381,12 +383,13 @@ namespace Ict.Tools.NAntTasks
                     }
                 }
             }
-            
+
             template.Replace("${TemplateCompile}", CompileFile.ToString());
 
             StringBuilder Resources = new StringBuilder();
-            
-            string[]ContainsResources = Directory.GetFiles(ASrcPath, "*.resx", SearchOption.TopDirectoryOnly);
+
+            string[] ContainsResources = Directory.GetFiles(ASrcPath, "*.resx", SearchOption.TopDirectoryOnly);
+
             foreach (string ContainedFile in ContainsResources)
             {
                 if (ContainsFiles.Contains(ContainedFile.Replace(".resx", ".cs")))
@@ -402,91 +405,92 @@ namespace Ict.Tools.NAntTasks
                     temp.Replace("${filename}", ContainedFile);
                     Resources.Append(temp.ToString());
                 }
-            }            
+            }
 
             template.Replace("${TemplateResource}", Resources.ToString());
-            
+
             string completedFile = template.ToString();
-            
+
             string filename = FDirProjectFiles + Path.DirectorySeparatorChar + ADevName + Path.DirectorySeparatorChar + AProjectName + ".csproj";
             StreamWriter sw = new StreamWriter(filename);
             sw.WriteLine(completedFile);
             sw.Close();
-            
+
             if (completedFile.Contains("${"))
             {
                 File.Move(filename, filename + ".error");
                 throw new Exception("Template has not been filled in completely yet. See " + filename + ".error");
             }
         }
-        
+
         string GetProjectGUID(string projectName)
         {
             if (!FProjectGUIDs.ContainsKey(projectName))
             {
                 FProjectGUIDs.Add(projectName, "{" + Guid.NewGuid().ToString("D").ToUpper() + "}");
             }
-            
+
             return FProjectGUIDs[projectName];
         }
-        
-        private Dictionary<string, string> ReadProjectGUIDs(string filename)
+
+        private Dictionary <string, string>ReadProjectGUIDs(string filename)
         {
-            Dictionary<string, string> Result = new Dictionary<string, string>();
-            
+            Dictionary <string, string>Result = new Dictionary <string, string>();
+
             if (!File.Exists(filename))
             {
                 return Result;
             }
-            
+
             StreamReader sr = new StreamReader(filename);
-            
+
             while (!sr.EndOfStream)
             {
                 string line = sr.ReadLine();
-                
+
                 if (line[0] != '#')
                 {
-                    string[] values = line.Split(new char[]{'='});
+                    string[] values = line.Split(new char[] { '=' });
                     Result.Add(values[0], values[1]);
                 }
             }
-            
+
             sr.Close();
-            
+
             return Result;
         }
 
-        private void WriteProjectGUIDs(string filename, Dictionary<string, string> guids)
+        private void WriteProjectGUIDs(string filename, Dictionary <string, string>guids)
         {
             StreamWriter sw = new StreamWriter(filename);
 
             sw.WriteLine("# Generated with GenerateProjectFiles at " + DATE_TIME_STRING);
-            
+
             foreach (string key in guids.Keys)
             {
                 sw.WriteLine(key + "=" + guids[key]);
             }
-            
+
             sw.Close();
         }
-        
-        private void ReadMap(string filename, out Dictionary<string, TDetailsOfDll> map)
+
+        private void ReadMap(string filename, out Dictionary <string, TDetailsOfDll>map)
         {
             if (!File.Exists(filename))
             {
                 throw new Exception("Cannot find file " + filename + ". Please first run nant generateNamespaceMap!");
             }
-            
+
             StreamReader sr = new StreamReader(filename);
 
-            map = new Dictionary<string, TDetailsOfDll>();
+            map = new Dictionary <string, TDetailsOfDll>();
             TDetailsOfDll currentDll = null;
-            
+
             while (!sr.EndOfStream)
             {
                 string line = sr.ReadLine();
                 char firstChar = line[0];
+
                 if (firstChar == ' ')
                 {
                     currentDll.ReferencedDlls.Add(line.Substring(2));
@@ -494,7 +498,7 @@ namespace Ict.Tools.NAntTasks
                 else if (firstChar != '#')
                 {
                     currentDll = new TDetailsOfDll();
-                    string[] LineDetails = line.Split(new char[]{','});
+                    string[] LineDetails = line.Split(new char[] { ',' });
                     currentDll.OutputType = LineDetails[1];
                     map.Add(LineDetails[0], currentDll);
                 }
@@ -502,6 +506,5 @@ namespace Ict.Tools.NAntTasks
 
             sr.Close();
         }
-        
     }
 }
