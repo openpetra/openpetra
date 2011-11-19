@@ -15,33 +15,33 @@ using System.Windows.Forms;
 
 namespace ControlTestBench
 {
-    /// <summary>
-    /// Description of ShepherdTest.
-    /// </summary>
-    public partial class ShepherdTest : Form
+/// <summary>
+/// Description of ShepherdTest.
+/// </summary>
+public partial class ShepherdTest : Form
+{
+    public ShepherdTest()
     {
-        public ShepherdTest()
-        {
-            //
-            // The InitializeComponent() call is required for Windows Forms designer support.
-            //
-            InitializeComponent();
-            
-            //
-            // TODO: Add constructor code after the InitializeComponent() call.
-            //
-        }
-        
-        public ShepherdTest(XmlNode AXmlNode)
-        {
-            //
-            // The InitializeComponent() call is required for Windows Forms designer support.
-            //
-            InitializeComponent();
-            
-            tPnlCollapsible1.TaskListNode = AXmlNode;            
-            tPnlCollapsible1.Collapse();
-            tPnlCollapsible1.Expand();
-        }
+        //
+        // The InitializeComponent() call is required for Windows Forms designer support.
+        //
+        InitializeComponent();
+
+        //
+        // TODO: Add constructor code after the InitializeComponent() call.
+        //
     }
+
+    public ShepherdTest(XmlNode AXmlNode)
+    {
+        //
+        // The InitializeComponent() call is required for Windows Forms designer support.
+        //
+        InitializeComponent();
+
+        tPnlCollapsible1.TaskListNode = AXmlNode;
+        tPnlCollapsible1.Collapse();
+        tPnlCollapsible1.Expand();
+    }
+}
 }

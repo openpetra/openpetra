@@ -30,24 +30,23 @@ using Ict.Common;
 
 namespace TextBoxNumberFormatting
 {
+/// <summary>
+/// Class with program entry point.
+/// </summary>
+internal sealed class Program
+{
     /// <summary>
-    /// Class with program entry point.
+    /// Program entry point.
     /// </summary>
-    internal sealed class Program
+    [STAThread]
+    private static void Main(string[] args)
     {
-        /// <summary>
-        /// Program entry point.
-        /// </summary>
-        [STAThread]
-        private static void Main(string[] args)
-        {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(true);             
-                        
-            
-            TLogging Logging = new TLogging("TextBoxNumberFormatting.log");
-            Application.Run(new MainForm());
-        }
-        
+        Application.EnableVisualStyles();
+        Application.SetCompatibleTextRenderingDefault(true);
+
+
+        TLogging Logging = new TLogging("TextBoxNumberFormatting.log");
+        Application.Run(new MainForm());
     }
+}
 }
