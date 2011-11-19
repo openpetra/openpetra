@@ -119,7 +119,7 @@ namespace ControlTestBench
             	    break;
             }
 	
-            new TestCollapsible.MainForm2(UINavigation.FirstChild.NextSibling.FirstChild, EnumStyle).Show();
+            new MainForm2(UINavigation.FirstChild.NextSibling.FirstChild, EnumStyle).Show();
 		}
 		
 		void Button3Click(object sender, EventArgs e)
@@ -128,7 +128,7 @@ namespace ControlTestBench
             TYml2Xml parser = new TYml2Xml(yamlFile);
             XmlDocument UINavigation = parser.ParseYML2XML();            
 	
-            new TestCollapsible.ShepherdTest(UINavigation.FirstChild.NextSibling.FirstChild).Show();
+            new ShepherdTest(UINavigation.FirstChild.NextSibling.FirstChild).Show();
 		}		
 	}
 }

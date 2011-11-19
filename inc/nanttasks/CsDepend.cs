@@ -630,7 +630,7 @@ namespace Ict.Tools.NAntTasks
                 return;
             }
             
-            string filename = _nsDir + "/namespacemap.txt"; 
+            string filename = _nsDir + "/namespace.map"; 
 
             // Read in the file
             Log(Level.Debug, "Read namespace map:" + filename);

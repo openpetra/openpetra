@@ -37,7 +37,7 @@ namespace ControlTestBench
 		    
 		    this.tPnlCollapsible2.HostedControlKind = THostedControlKind.hckUserControl;
 		    this.tPnlCollapsible2.UserControlClass = "TUC_PartnerInfo";  // TUC_PartnerInfo
-		    this.tPnlCollapsible2.UserControlNamespace = "Ict.Petra.Client.MPartner.Gui";
+		    this.tPnlCollapsible2.UserControlNamespace = "";
 		    this.tPnlCollapsible2.Text = "Number 2";
             
 		    this.tPnlCollapsible3.HostedControlKind = THostedControlKind.hckTaskList;

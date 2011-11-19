@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop, thiasg
+//       timop
 //
 // Copyright 2004-2011 by OM International
 //
@@ -57,6 +57,22 @@ namespace Ict.Tools.NAntTasks
             }
         }
 
+        private string FDependencyMapFilename = null;
+        /// <summary>
+        /// path of the file, where the dependancy map will be saved and read from
+        /// </summary>
+        [TaskAttribute("DependencyMapFilename", Required = true)]
+        public string DependencyMapFilename {
+            get
+            {
+                return FDependencyMapFilename;
+            }
+            set
+            {
+                FDependencyMapFilename = value;
+            }
+        }
+        
         private string FCodeRootDir = null;
         /// <summary>
         /// should point to csharp directory
@@ -79,58 +95,88 @@ namespace Ict.Tools.NAntTasks
         protected override void ExecuteTask()
         {
             Dictionary <string, string> map = new Dictionary<string, string>();
-            
+            Dictionary <string, TDetailsOfDll> UsingMap = new Dictionary<string, TDetailsOfDll>();
+                
             string[] csfiles = Directory.GetFiles(FCodeRootDir, "*.cs", SearchOption.AllDirectories);
             foreach (string csfile in csfiles)
             {
-                string Namespace = GetNamespaceFromCSFile(csfile);
-                
-                if (Namespace != string.Empty)
+                if (!csfile.Contains("ThirdParty"))
                 {
-                    string DllName = 
-                        Path.GetDirectoryName(csfile).Substring(FCodeRootDir.Length + 1).
-                            Replace(Path.DirectorySeparatorChar, '.');
-                    
-                    if (DllName.StartsWith("ICT."))
-                    {
-                        DllName = "Ict." + DllName.Substring("ICT.".Length);
-                    }
-                    
-                    DllName = DllName.Replace("Ict.PetraTools.", "Ict.Tools.");
-                    
-                    if (!map.ContainsKey(Namespace))
-                    {
-                        map.Add(Namespace, DllName);
-                    }
-                    else
-                    {
-                        if (map[Namespace] != DllName)
-                        {
-                            throw new Exception(
-                                string.Format("Error: GenerateNamespaceMap: a namespace cannot exist in two different directories! {0} exists in {1} and {2}",
-                                              Namespace, map[Namespace], DllName));
-                        }
-                        
-                    }
+                    ParseCSFile(map, UsingMap, csfile);
                 }
             }
             
             WriteMap(FNamespaceMapFilename, map);
+            
+            WriteMap(FDependencyMapFilename, UsingNamespaceMapToDll(map, UsingMap));
         }
         
-        private string GetNamespaceFromCSFile(string filename)
+        private string ParseCSFile(Dictionary <string, string> NamespaceMap, Dictionary<string, TDetailsOfDll> UsingNamespaces, string filename)
         {
             StreamReader sr = new StreamReader(filename);
+
+            string DllName = 
+                Path.GetDirectoryName(filename).Substring(FCodeRootDir.Length + 1).
+                    Replace(Path.DirectorySeparatorChar, '.');
             
+            if (DllName.StartsWith("ICT."))
+            {
+                DllName = "Ict." + DllName.Substring("ICT.".Length);
+            }
+            
+            DllName = DllName.Replace("Ict.PetraTools.", "Ict.Tools.");
+
+            TDetailsOfDll DetailsOfDll;
+            if (UsingNamespaces.ContainsKey(DllName))
+            {
+                DetailsOfDll = UsingNamespaces[DllName];
+            }
+            else
+            {
+                DetailsOfDll = new TDetailsOfDll();
+                UsingNamespaces.Add(DllName, DetailsOfDll);
+            }
+
             try
             {
                 while (!sr.EndOfStream)
                 {
                     string line = sr.ReadLine();
-                    if (line.Trim().StartsWith("namespace"))
+                    if (line.Trim().StartsWith("namespace "))
                     {
-                        sr.Close();
-                        return line.Substring("namespace".Length).Trim(new char[]{' ', '\t', '\n', '\r', ';'});
+                        string Namespace = line.Substring("namespace".Length).Trim(new char[]{' ', '\t', '\n', '\r', ';'});
+                        if (Namespace != string.Empty)
+                        {
+                            if (!NamespaceMap.ContainsKey(Namespace))
+                            {
+                                NamespaceMap.Add(Namespace, DllName);
+                            }
+                            else
+                            {
+                                if (NamespaceMap[Namespace] != DllName)
+                                {
+                                    throw new Exception(
+                                        string.Format("Error: GenerateNamespaceMap: a namespace cannot exist in two different directories! {0} exists in {1} and {2}",
+                                                      Namespace, NamespaceMap[Namespace], DllName));
+                                }
+                                
+                            }
+                        }
+                    }
+                    else if (line.Trim().StartsWith("using "))
+                    {
+                        string Namespace = line.Substring("using".Length).Trim(new char[]{' ', '\t', '\n', '\r', ';'});
+                        if (Namespace != string.Empty && !Namespace.Contains(" "))
+                        {
+                            if (!DetailsOfDll.UsedNamespaces.Contains(Namespace))
+                            {
+                                DetailsOfDll.UsedNamespaces.Add(Namespace);
+                            }
+                        }
+                    }
+                    else if (line.Contains("static void Main("))
+                    {
+                        DetailsOfDll.OutputType = "exe";
                     }
                 }
             }
@@ -142,6 +188,51 @@ namespace Ict.Tools.NAntTasks
             return string.Empty;
         }
             
+        /// <summary>
+        /// now reduce the namespace names to dll names
+        /// </summary>
+        /// <param name="NamespaceMap"></param>
+        /// <param name="UsingNamespaces"></param>
+        /// <returns></returns>
+        private Dictionary<string, TDetailsOfDll> UsingNamespaceMapToDll(Dictionary <string, string> NamespaceMap, Dictionary<string, TDetailsOfDll> UsingNamespaces)
+        {
+            Dictionary<string, TDetailsOfDll> result = new Dictionary<string, TDetailsOfDll>();
+            
+            foreach (string key in UsingNamespaces.Keys)
+            {
+                TDetailsOfDll DetailsOfDll = new TDetailsOfDll();
+                DetailsOfDll.OutputType = UsingNamespaces[key].OutputType;
+                result.Add(key, DetailsOfDll);
+
+                foreach(string usingNamespace in UsingNamespaces[key].UsedNamespaces)
+                {
+                    if (!NamespaceMap.ContainsKey(usingNamespace))
+                    {
+                        if (usingNamespace.StartsWith("Ict."))
+                        {
+                            Console.WriteLine("Warning: missing dllname for namespace " + usingNamespace);
+                        }
+                        else
+                        {
+                            NamespaceMap.Add(usingNamespace, usingNamespace);
+                        }
+                    }
+                    
+                    if (NamespaceMap.ContainsKey(usingNamespace))
+                    {
+                        string dllname = NamespaceMap[usingNamespace];
+                        
+                        if (dllname != key && !DetailsOfDll.ReferencedDlls.Contains(dllname))
+                        {
+                            DetailsOfDll.ReferencedDlls.Add(dllname);
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+        
         private void WriteMap(string filename, Dictionary<string, string> map)
         {
             // If the directory does not exist, we have to create it
@@ -162,5 +253,52 @@ namespace Ict.Tools.NAntTasks
 
             sw.Close();
         }
+
+        private void WriteMap(string filename, Dictionary<string, TDetailsOfDll> map)
+        {
+            // If the directory does not exist, we have to create it
+            string dirname = Path.GetDirectoryName(filename);
+
+            if (!Directory.Exists(dirname))
+            {
+                Directory.CreateDirectory(dirname);
+            }
+
+            StreamWriter sw = new StreamWriter(filename);
+            sw.WriteLine("# Generated with GenerateNamespaceMap at " + DATE_TIME_STRING);
+
+            foreach (string key in map.Keys)
+            {
+                sw.WriteLine(key + "," + map[key].OutputType);
+                foreach(string referencedDll in map[key].ReferencedDlls)
+                {
+                    sw.Write("  ");
+                    sw.WriteLine(referencedDll);
+                }
+            }
+
+            sw.Close();
+        }
+    }
+    
+    /// <summary>
+    /// this is used to store details of a cs project
+    /// </summary>
+    public class TDetailsOfDll
+    {
+        /// <summary>
+        /// library or exe
+        /// </summary>
+        public string OutputType = "library";
+        
+        /// <summary>
+        /// this dll is using the following namespaces
+        /// </summary>
+        public List<string> UsedNamespaces = new List<string>();
+        
+        /// <summary>
+        /// this dll is referencing the following assemblies
+        /// </summary>
+        public List<string> ReferencedDlls = new List<string>();
     }
 }

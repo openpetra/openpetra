@@ -44,6 +44,8 @@ using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.CommonControls.Logic;
 using Ict.Petra.Client.MConference.Gui;
 using Ict.Petra.Client.MPartner.Gui;
+using Ict.Petra.Client.MPersonnel.Gui;
+using Ict.Petra.Client.MFinance.Gui;
 using SplashScreen;
 using PetraClientShutdown;
 

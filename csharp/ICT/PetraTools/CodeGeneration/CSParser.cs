@@ -468,7 +468,7 @@ namespace Ict.Tools.CodeGeneration
             {
                 _nsmap = new Hashtable();
 
-                string filename = ICTPath + "/../../delivery/nsMap/namespacemap.txt";
+                string filename = ICTPath + "/../../delivery/projects/namespace.map";
 
                 // Read in the file
                 StreamReader sr = new StreamReader(filename);

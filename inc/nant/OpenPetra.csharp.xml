@@ -68,7 +68,6 @@
         <include name="${dir.bin}/${AssemblyName}" asis="true" />
         <include name="${dir.bin}/${Namespace}.xml" asis="true" />
         <include name="${dir.bin}/${Namespace}.pdb" asis="true" />
-        <include name="${path::combine(dir.namespace.map, Namespace + '.namespace-map')}" />        
       </fileset>
     </delete>
     <delete dir="${namespace-temp-dir}" />
@@ -88,9 +87,8 @@
 <target name="depend" depends="custdepend">
   <if test="${true==bool::parse(RunCsDepend)}">
     <mkdir dir="${namespace-temp-dir}" />
-    <mkdir dir="${dir.namespace.map}" />
     <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('CsDepend')}"/>
-    <CsDepend ns-default="${Namespace}" ns-map-dir="${dir.namespace.map}" 
+    <CsDepend ns-default="${Namespace}" ns-map-dir="${dir.projectfiles}" 
       basedir="${project::get-base-directory()}" uuidfile="${uuidFile}"
       referencesfile="${referencesFile}" buildincfile="${path::combine(dir.buildfiles, 'OpenPetra.csharp.xml')}"
       templatefile="${path::combine(dir.root,'inc/nanttasks/CsDependTemplates.txt')}" 

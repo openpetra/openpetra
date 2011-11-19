@@ -105,7 +105,8 @@ useful parameters
 <target name="quickClean" description="cleans all generated files and the delivery directory">
   <!-- Do not remove dir.delivery, because this would change all UUIDs from the project files -->
   <delete dir="${dir.bin}"/>
-  <delete dir="${dir.namespace.map}"/>
+  <delete file="${namespaceFile}"/>
+  <delete file="${projectDependenciesFile}"/>
   <foreach item="String" property="devenv-name" delim="," in="${projectfiles.templates-list}" >
     <delete dir="${path::combine(dir.projectfiles,devenv-name)}" />
   </foreach>
@@ -155,10 +156,19 @@ useful parameters
   <delete file="${dir.bin}/dont_compile.txt"/>
 </target>
 
+<target name="generateNamespaceMap">
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('CsDepend')}"/>
+  <GenerateNamespaceMap
+    CodeRootDir="${dir.csharp}"
+    NamespaceMapFilename="${namespaceFile}" 
+    DependencyMapFilename="${projectDependenciesFile}"/>
+</target>
+
 <target name="generateTools">
   <call target="nanttasks"/>
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('CsDepend')}"/>
-  <GenerateNamespaceMap NamespaceMapFilename="${dir.namespace.map}/namespacemap.txt" CodeRootDir="${dir.csharp}"/>
+  <call target="generateNamespaceMap"/>
+  <delete file="${dir.bin}/dont_compile.txt"/>
   <nant inheritall="false" target="compile" 
         buildfile="csharp/ThirdParty/ThirdParty.build" />
   <property name="csdependfilesRegEx" value="(.*/Common/[^/]*.cs)|(.*/Common/IO/[^/]*.cs)|(.*/Common/DB/[^/]*.cs)"/>
@@ -169,7 +179,24 @@ useful parameters
         buildfile="csharp/ICT/PetraTools/ICT.PetraTools.build" />
 </target>
 
+<target name="generateProjectFiles">
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('CsDepend')}"/>
+  <GenerateProjectFiles 
+    CodeRootDir="${dir.csharp}"
+    DependencyMapFilename="${projectDependenciesFile}"
+    GUIDMapFilename="${uuidFile}"
+    TemplateDir="${dir.incdir.template}"
+    DevEnvironments="${projectfiles.templates-list}"
+    DirBin="${dir.bin}"
+    DirProjectFiles="${dir.projectfiles}"
+    NetFrameworkVersion="${NETframework-version}"
+    />
+</target>
+
 <target name="generateSolution" description="compiles OpenPetra and generates the project and solution files">
+  <call target="nanttasks"/>
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('CsDepend')}"/>
+  <call target="generateNamespaceMap"/>
   <delete file="${dir.bin}/dont_compile.txt"/>
   <call target="compile" />
   <call target="generateSolutionNoCompile" />
