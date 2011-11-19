@@ -1218,6 +1218,20 @@ namespace Ict.Tools.CodeGeneration.Winforms
         }
 
         /// <summary>
+        /// constructor
+        /// </summary>
+        /// <param name="prefix"></param>
+        /// <param name="AType"></param>
+        public ToolStripGenerator(string prefix, string AType)
+            : base(prefix, AType)
+        {
+            FGenerateLabel = false;
+            FLocation = false;
+            FDefaultHeight = 24;
+            FDefaultWidth = 10;
+        }
+
+        /// <summary>
         /// declare the control
         /// </summary>
         /// <param name="writer"></param>

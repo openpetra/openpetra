@@ -36,7 +36,7 @@ using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Server.MPartner.Partner.UIConnectors;
+using Ict.Petra.Server.MPartner.PartnerFind;
 using Ict.Petra.Server.App.Core.Security;
 
 namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
@@ -52,7 +52,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static PartnerFindTDS FindPartners(string AFirstName, string AFamilyNameOrOrganisation, string ACity, StringCollection APartnerClasses)
         {
-            TPartnerFindUIConnector UIConnector = new TPartnerFindUIConnector();
+            TPartnerFind PartnerFind = new TPartnerFind();
 
             PartnerFindTDSSearchCriteriaTable CriteriaData = new PartnerFindTDSSearchCriteriaTable();
             PartnerFindTDSSearchCriteriaRow CriteriaRow = CriteriaData.NewRowTyped();
@@ -73,7 +73,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 CriteriaRow.PartnerClass = "*";
             }
 
-            UIConnector.PerformSearch(CriteriaData, true);
+            PartnerFind.PerformSearch(CriteriaData, true);
 
             Int32 TotalRecords;
             short TotalPages;
@@ -81,7 +81,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             PartnerFindTDS result = new PartnerFindTDS();
 
-            DataTable typedResult = UIConnector.GetDataPagedResult(0, MaxRecords, out TotalRecords, out TotalPages);
+            DataTable typedResult = PartnerFind.GetDataPagedResult(0, MaxRecords, out TotalRecords, out TotalPages);
 
             if (typedResult != null)
             {

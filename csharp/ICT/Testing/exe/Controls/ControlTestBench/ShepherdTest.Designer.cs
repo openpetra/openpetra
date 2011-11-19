@@ -8,7 +8,7 @@
  * Version: $Revision: 1.3 $ / $Date: 2008/11/27 11:47:02 $
  */
 
-namespace TestCollapsible
+namespace ControlTestBench
 {
     partial class ShepherdTest
     {

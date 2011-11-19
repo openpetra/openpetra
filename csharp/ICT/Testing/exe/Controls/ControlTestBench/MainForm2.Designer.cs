@@ -11,7 +11,7 @@ using Ict.Common.Controls;
 using System.Xml;
 using Ict.Common.IO;
 
-namespace TestCollapsible 
+namespace ControlTestBench 
 {
 	partial class MainForm2
 	{

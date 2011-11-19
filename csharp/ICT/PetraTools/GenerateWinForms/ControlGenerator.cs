@@ -28,7 +28,6 @@ using System.Collections.Specialized;
 using System.Windows.Forms;
 using System.Xml;
 using Ict.Tools.CodeGeneration;
-using Ict.Common.Controls;
 using Ict.Common.IO;
 using Ict.Common;
 using Ict.Tools.DBXML;
@@ -466,7 +465,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
     {
         /// <summary>constructor</summary>
         public TreeViewGenerator()
-            : base("trv", typeof(Ict.Common.Controls.TTrvTreeView))
+            : base("trv", "Ict.Common.Controls.TTrvTreeView")
         {
         }
     }
@@ -797,7 +796,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
     {
         /// <summary>constructor</summary>
         public TClbVersatileGenerator()
-            : base("clb", typeof(TClbVersatile))
+            : base("clb", "Ict.Common.Controls.TClbVersatile")
         {
             FDefaultHeight = 100;
         }
@@ -1095,7 +1094,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
         /// <summary>constructor</summary>
         public SourceGridGenerator()
-            : base("grd", typeof(Ict.Common.Controls.TSgrdDataGridPaged))
+            : base("grd", "Ict.Common.Controls.TSgrdDataGridPaged")
         {
             FGenerateLabel = false;
         }
@@ -1726,7 +1725,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
     /// </summary>
     public class TTxtNumericTextBoxGenerator : TControlGenerator
     {
-        TTxtNumericTextBox.TNumericTextBoxMode FControlMode;
+        string FControlMode;
         Int16 FDecimalPrecision = 2;
         bool FNullValueAllowed = true;
 
@@ -1757,7 +1756,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 if ((NumberFormat == "Integer")
                     || (NumberFormat == "PercentInteger"))
                 {
-                    FControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Integer;
+                    FControlMode = "Integer";
 
                     ReturnValue = true;
                 }
@@ -1767,7 +1766,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     || (NumberFormat.StartsWith("Decimal("))
                     || (NumberFormat.StartsWith("PercentDecimal(")))
                 {
-                    FControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Decimal;
+                    FControlMode = "Decimal";
 
                     ReturnValue = true;
                 }
@@ -1775,7 +1774,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 if ((NumberFormat == "Currency")
                     || (NumberFormat.StartsWith("Currency(")))
                 {
-                    FControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Currency;
+                    FControlMode = "Currency";
                     FDefaultWidth = 150;
                     ReturnValue = true;
                 }
@@ -1840,8 +1839,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             if (AFieldOrNull == null)
             {
-                if ((FControlMode == TTxtNumericTextBox.TNumericTextBoxMode.Decimal)
-                    || (FControlMode == TTxtNumericTextBox.TNumericTextBoxMode.Currency))
+                if ((FControlMode == "Decimal")
+                    || (FControlMode == "Currency"))
                 {
                     return ctrl.controlName + ".NumberValueDecimal = null;";
                 }
@@ -1893,8 +1892,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             if (AFieldTypeDotNet == null)
             {
-                if ((FControlMode == TTxtNumericTextBox.TNumericTextBoxMode.Decimal)
-                    || (FControlMode == TTxtNumericTextBox.TNumericTextBoxMode.Currency))
+                if ((FControlMode == "Decimal")
+                    || (FControlMode == "Currency"))
                 {
                     return ctrl.controlName + ".NumberValueDecimal == null";
                 }
@@ -1938,8 +1937,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             // Note: the control defaults to 'ShowLabel' true, so this doesn't need to be set to 'true' in code.
 
-            writer.SetControlProperty(ctrl, "ControlMode", "TTxtNumericTextBox.TNumericTextBoxMode." +
-                Enum.GetName(typeof(TTxtNumericTextBox.TNumericTextBoxMode), FControlMode));
+            writer.SetControlProperty(ctrl, "ControlMode", "TTxtNumericTextBox.TNumericTextBoxMode." + FControlMode);
             writer.SetControlProperty(ctrl, "DecimalPlaces", FDecimalPrecision.ToString());
             writer.SetControlProperty(ctrl, "NullValueAllowed", FNullValueAllowed.ToString().ToLower());
 
@@ -2782,7 +2780,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
     {
         /// <summary>constructor</summary>
         public StatusBarGenerator()
-            : base("stb", typeof(Ict.Common.Controls.TExtStatusBarHelp))
+            : base("stb", "Ict.Common.Controls.TExtStatusBarHelp")
         {
             FDocking = "Bottom";
         }

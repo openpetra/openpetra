@@ -17,8 +17,7 @@
 <property name="referencesFile" value="${path::combine(namespace-temp-dir,Namespace+'.generated.refs')}" />
 <property name="resourcefiles" value="*.resx"  overwrite="false"/>
 <property name="compilefiles" value="*.cs"  overwrite="false"/>
-<property name="csdependfiles" value="**/*.cs"  overwrite="false"/>
-<property name="excludecsfiles" value=".doc"  overwrite="false"/>
+<property name="csdependfilesRegEx" value=".*"  overwrite="false"/>
 <property name="DebugStartArguments" value="" overwrite="false"/>
 
 
@@ -95,12 +94,8 @@
       basedir="${project::get-base-directory()}" uuidfile="${uuidFile}"
       referencesfile="${referencesFile}" buildincfile="${path::combine(dir.buildfiles, 'OpenPetra.csharp.xml')}"
       templatefile="${path::combine(dir.root,'inc/nanttasks/CsDependTemplates.txt')}" 
-      additionalRefs="${CsDependAdditionalLibReferences}" outputtype="${OutputType}" >
-      <sources>
-        <include name="${csdependfiles}" />
-        <exclude name="${excludecsfiles}" />
-      </sources>    
-    </CsDepend>
+      additionalRefs="${CsDependAdditionalLibReferences}" outputtype="${OutputType}"
+      csdependfilesRegEx="${csdependfilesRegEx}"/>
   </if>
   <call target="setreferences" />
 </target>

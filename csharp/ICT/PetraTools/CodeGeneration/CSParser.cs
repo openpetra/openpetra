@@ -467,49 +467,45 @@ namespace Ict.Tools.CodeGeneration
             if (null == _nsmap)       // singelton
             {
                 _nsmap = new Hashtable();
-                // TODO: The directory should not be hardcoded!!
-                string[] filePaths = Directory.GetFiles(ICTPath + "/../../delivery/nsMap", "*.namespace-map");
 
-                foreach (string filename in filePaths)
+                string filename = ICTPath + "/../../delivery/nsMap/namespacemap.txt";
+
+                // Read in the file
+                StreamReader sr = new StreamReader(filename);
+
+                while (sr.Peek() >= 0)
                 {
-                    // Read in the file
-                    StreamReader sr = new StreamReader(filename);
+                    string line = sr.ReadLine();
+                    Match match = exceptionRegex.Match(line);
 
-                    while (sr.Peek() >= 0)
+                    if (match.Success && (match.Groups.Count > 2))
                     {
-                        string line = sr.ReadLine();
-                        Match match = exceptionRegex.Match(line);
+                        string key = match.Groups[1].ToString();
+                        string val = match.Groups[2].ToString();
 
-                        if (match.Success && (match.Groups.Count > 2))
-                        {
-                            string key = match.Groups[1].ToString();
-                            string val = match.Groups[2].ToString();
-
-                            if (!_nsmap.Contains(key))
-                            {
-                                _nsmap.Add(key, new List <string>());
-                            }
-
-                            // Add value as directory name TODO: Convention of "Ict." only once in name!!
-                            ((List <string> )_nsmap[key]).Add(ICTPath + val.Replace("Ict.", "/").Replace('.', '/'));
-                        }
+                        _nsmap.Add(key, val);
                     }
-
-                    sr.Close();
                 }
+
+                sr.Close();
             }
         }
 
         /// <summary>
-        /// Reads the nsmap generated from csdepend and searches for all directories
-        /// including this namespace
+        /// Reads the nsmap generated from GenerateNamespaceMap and get the directory that includes this namespace
         /// </summary>
         /// <param name="ns"></param>
         /// <returns></returns>
-        public static List <string>GetSourceDirectory(string ns)
+        public static string GetSourceDirectory(string ns)
         {
             ReadNamespaceMaps();
-            return (List <string> )_nsmap[ns];
+
+            if (_nsmap[ns] == null)
+            {
+                return null;
+            }
+
+            return Path.GetFullPath(ICTPath + "/../" + ((string)_nsmap[ns]).Replace("Ict.", "ICT.").Replace(".", "/"));
         }
 
         private static Hashtable _CSFilesPerDir = new Hashtable();
@@ -548,24 +544,21 @@ namespace Ict.Tools.CodeGeneration
         public static List <TypeDeclaration>GetWebConnectorClasses(string AServerNamespace)
         {
             // Look up in nsmap for directory
-            List <string>dirList = GetSourceDirectory(AServerNamespace);
+            string directoryOfNamespace = GetSourceDirectory(AServerNamespace);
 
-            if (null == dirList)
+            if (null == directoryOfNamespace)
             {
                 return null;
             }
 
             List <CSParser>CSFiles = new List <CSParser>();
 
-            foreach (string dir in dirList)
-            {
-                // Console.WriteLine("Namespace '" + AServerNamespace + "' found in '" + dir + "'\n");
+            // Console.WriteLine("Namespace '" + AServerNamespace + "' found in '" + directoryOfNamespace + "'\n");
 
-                foreach (CSParser tempCSFile in GetCSFilesForDirectory(dir, SearchOption.TopDirectoryOnly))
-                {
-                    // Copy the list, because namespace could be in more then one directory
-                    CSFiles.Add(tempCSFile);
-                }
+            foreach (CSParser tempCSFile in GetCSFilesForDirectory(directoryOfNamespace, SearchOption.TopDirectoryOnly))
+            {
+                // Copy the list, because namespace could be in more then one directory
+                CSFiles.Add(tempCSFile);
             }
 
             return CSParser.GetClassesInNamespace(CSFiles, AServerNamespace);

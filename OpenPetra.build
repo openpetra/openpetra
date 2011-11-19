@@ -13,6 +13,7 @@
 list of available commands:
   clean: cleans everything
   compile: compiles OpenPetra including testing
+  generateTools: build the basic tools only
   generateSolution: compiles OpenPetra and generates the project and solution files
   generateSolutionNoCompile: generates the project and solution files. compile should already be executed
   minimalGenerateSolution: generates the project and solution files. compiles what it needs, but does not compile all code
@@ -142,13 +143,7 @@ useful parameters
 
 <target name="minimalGenerateSolution" description="compile minimal code for generating source code and the project and solution files">
   <!-- compile minimal needed tools -->
-  <call target="nanttasks"/>
-  <nant inheritall="false" target="compile" 
-        buildfile="csharp/ThirdParty/ThirdParty.build" />
-  <nant inheritall="false" target="compile" 
-        buildfile="csharp/ICT/Common/ICT.Common.build" />
-  <nant inheritall="false" target="compile" 
-        buildfile="csharp/ICT/PetraTools/ICT.PetraTools.build" />
+  <call target="generateTools"/>
   <!-- Find all dependencies -->
   <mkdir dir="${dir.bin}" />
   <!-- write this information to a file, since the properties are not passed through to the sub directories -->
@@ -158,6 +153,20 @@ useful parameters
   <!-- Generate the project/solution files -->
   <call target="generateSolutionNoCompile" />
   <delete file="${dir.bin}/dont_compile.txt"/>
+</target>
+
+<target name="generateTools">
+  <call target="nanttasks"/>
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('CsDepend')}"/>
+  <GenerateNamespaceMap NamespaceMapFilename="${dir.namespace.map}/namespacemap.txt" CodeRootDir="${dir.csharp}"/>
+  <nant inheritall="false" target="compile" 
+        buildfile="csharp/ThirdParty/ThirdParty.build" />
+  <property name="csdependfilesRegEx" value="(.*/Common/[^/]*.cs)|(.*/Common/IO/[^/]*.cs)|(.*/Common/DB/[^/]*.cs)"/>
+  <nant inheritall="true" target="compile" 
+        buildfile="csharp/ICT/Common/ICT.Common.build" />
+  <property name="csdependfilesRegEx" value=".*"/>
+  <nant inheritall="true" target="compile" 
+        buildfile="csharp/ICT/PetraTools/ICT.PetraTools.build" />
 </target>
 
 <target name="generateSolution" description="compiles OpenPetra and generates the project and solution files">

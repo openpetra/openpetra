@@ -68,11 +68,11 @@ namespace Ict.Tools.NAntTasks
         /// <summary>
         /// map namespace to assembly
         /// </summary>
-        private Hashtable _namespace2assembly = new Hashtable();
+        private Dictionary<string, string> _namespace2assembly = new Dictionary<string, string>();
         /// <summary>
         /// map assembly to uuid for project file
         /// </summary>
-        private Hashtable _assembly2uuid = new Hashtable();
+        private Dictionary<string, string> _assembly2uuid = new Dictionary<string, string>();
         /// <summary>
         /// Stores assembly specific data
         /// </summary>
@@ -153,19 +153,19 @@ namespace Ict.Tools.NAntTasks
         /// </summary>
         private Hashtable _assembly2data = new Hashtable();
 
-        private FileSet _sources = new FileSet();
+        private string _csdependfiles;
         /// <summary>
-        /// The set of source files for checking for dependencies.
+        /// A regular expression for the files that should be included in this run of csdepend
         /// </summary>
-        [BuildElement("sources", Required = true)]
-        public FileSet Sources {
+        [TaskAttribute("csdependfilesRegEx", Required = true)]
+        public string CSDependFiles {
             get
             {
-                return _sources;
+                return _csdependfiles;
             }
             set
             {
-                _sources = value;
+                _csdependfiles = value;
             }
         }
         private string _nsDir = null;
@@ -319,25 +319,23 @@ namespace Ict.Tools.NAntTasks
         {
             Log(Level.Info, "Running for namespace " + nsDefault + " ...");
 
+            // Read in the Namespace Maps
+            ReadNamespaceMaps();
+            
             // Load templates for the xml files
             LoadTemplates(templatefile);
 
-            if (Sources.BaseDirectory == null)
-            {
-                Sources.BaseDirectory = new DirectoryInfo(Project.BaseDirectory);
-            }
-
             // Check all sourcefiles
-            foreach (string fileName in Sources.FileNames)
+            Regex fileRegex = new Regex(CSDependFiles);
+            foreach (string filename in Directory.GetFiles(Project.BaseDirectory, "*.cs", SearchOption.AllDirectories))
             {
-                ProcessFile(fileName);
+                Match match = fileRegex.Match(filename.Replace("\\", "/"));
+
+                if (match.Success)
+                {
+                    ProcessFile(filename);
+                }
             }
-
-            // Write map, which namespace is provided by what assembly
-            WriteNamespaceMap();
-
-            // Read in Additional Namespace Maps
-            ReadNamespaceMaps();
 
             // Handle full qualified access and put it to usings
             AddRefsToUsings();
@@ -373,7 +371,7 @@ namespace Ict.Tools.NAntTasks
                     string reference = refToCheck;
                     Log(Level.Debug, "Search reference '" + refToCheck + "'");
 
-                    while (!_namespace2assembly.Contains(reference))
+                    while (!_namespace2assembly.ContainsKey(reference))
                     {
                         int idx = reference.LastIndexOf('.');
 
@@ -422,12 +420,12 @@ namespace Ict.Tools.NAntTasks
             {
                 Log(Level.Debug, "Processing assembly '" + assembly.name + "'");
                 // Get all references we need
-                Hashtable refsList = new Hashtable(); // All references we know about
-                Hashtable pkgRefsList = new Hashtable(); // All references in our package
+                Dictionary<string, string> refsList = new Dictionary<string, string>(); // All references we know about
+                Dictionary<string, string> pkgRefsList = new Dictionary<string, string>(); // All references in our package
 
                 foreach (string used in assembly.GetUsings())
                 {
-                    if (!_namespace2assembly.Contains(used))
+                    if (!_namespace2assembly.ContainsKey(used))
                     {
                         if (used.StartsWith("Ict."))
                         {
@@ -439,18 +437,17 @@ namespace Ict.Tools.NAntTasks
 
                     Log(Level.Debug, "Process using: " + used);
 
-                    foreach (string usedAssembly in ((Hashtable)_namespace2assembly[used]).Keys)
+                    string usedAssembly = _namespace2assembly[used];
+
+                    Log(Level.Debug, "Process used assembly: " + usedAssembly);
+
+                    if (usedAssembly != assembly.name)   // Do not add ourselfs
                     {
-                        Log(Level.Debug, "Process used assembly: " + usedAssembly);
+                        AddToDict(refsList, usedAssembly, usedAssembly);
 
-                        if (usedAssembly != assembly.name)   // Do not add ourselfs
+                        if (usedAssembly.StartsWith(nsDefault))
                         {
-                            AddToDict(refsList, usedAssembly, usedAssembly);
-
-                            if (usedAssembly.StartsWith(nsDefault))
-                            {
-                                AddToDict(pkgRefsList, usedAssembly, usedAssembly);
-                            }
+                            AddToDict(pkgRefsList, usedAssembly, usedAssembly);
                         }
                     }
                 }
@@ -567,7 +564,7 @@ namespace Ict.Tools.NAntTasks
             return rc;
         }
 
-        private void WriteMap(string filename, Hashtable map)
+        private void WriteMap(string filename, Dictionary<string, string> map)
         {
             // If the directory does not exist, we have to create it
             string dirname = Path.GetDirectoryName(filename);
@@ -580,12 +577,9 @@ namespace Ict.Tools.NAntTasks
             StreamWriter sw = new StreamWriter(filename);
             sw.WriteLine("# Generated with CsDepend at " + DATE_TIME_STRING);
 
-            foreach (string key in ToSortedArray(map.Keys))
+            foreach (string key in map.Keys)
             {
-                foreach (string name in ToSortedArray(((Hashtable)map[key]).Values))
-                {
-                    sw.WriteLine(key + "=" + name);
-                }
+                sw.WriteLine(key + "=" + map[key]);
             }
 
             sw.Close();
@@ -598,7 +592,7 @@ namespace Ict.Tools.NAntTasks
         /// </summary>
         /// <param name="filename">file to open for reading</param>
         /// <param name="map">The map to write</param>
-        private void ReadMap(string filename, Hashtable map)
+        private void ReadMap(string filename, Dictionary<string, string> map)
         {
             StreamReader sr = new StreamReader(filename);
 
@@ -612,7 +606,8 @@ namespace Ict.Tools.NAntTasks
                     string key = match.Groups[1].ToString();
                     string val = match.Groups[2].ToString();
                     Log(Level.Debug, "Found map entry: " + key + "=" + val);
-                    AddToDict(map, key, val);
+                    
+                    map.Add(key, val);
                 }
             }
 
@@ -629,47 +624,28 @@ namespace Ict.Tools.NAntTasks
                 return; // Not directory for namespace map. Abort.
             }
 
-            string[] filePaths = Directory.GetFiles(_nsDir, "*.namespace-map");
-
-            foreach (string filename in filePaths)
+            if (_namespace2assembly.Count > 0)
             {
-                if (Path.GetFileNameWithoutExtension(filename) == nsDefault)
-                {
-                    continue; // We have read this file allready
-                }
-
-                // Read in the file
-                Log(Level.Debug, "Read namespace map:" + filename);
-                ReadMap(filename, _namespace2assembly);
+                // file has already been loaded
+                return;
             }
+            
+            string filename = _nsDir + "/namespacemap.txt"; 
+
+            // Read in the file
+            Log(Level.Debug, "Read namespace map:" + filename);
+            ReadMap(filename, _namespace2assembly);
         }
 
         private string GetUUID(string assemblyname)
         {
-            if (!_assembly2uuid.Contains(assemblyname))
+            if (!_assembly2uuid.ContainsKey(assemblyname))
             {
                 Log(Level.Debug, "UUID for " + assemblyname + " not found!");
                 AddToDict(_assembly2uuid, assemblyname, Guid.NewGuid().ToString("D").ToUpper());
             }
 
-            IEnumerable uuids = ((Hashtable)(_assembly2uuid[assemblyname])).Keys;
-            IEnumerator uuidsIter = uuids.GetEnumerator();
-            uuidsIter.MoveNext();
-            return (string)(uuidsIter.Current);
-        }
-
-        /// <summary>
-        /// Writes a map with the known namespaces to assembly names into a file
-        /// </summary>
-        private void WriteNamespaceMap()
-        {
-            if (null == _nsDir)
-            {
-                return; // Not directory for namespace map. Abort.
-            }
-
-            string filename = Path.Combine(_nsDir, nsDefault + ".namespace-map");
-            WriteMap(filename, _namespace2assembly);
+            return _assembly2uuid[assemblyname];
         }
 
         /// <summary>
@@ -678,23 +654,17 @@ namespace Ict.Tools.NAntTasks
         /// <param name="map">The hashtable to add to</param>
         /// <param name="key">The string used as key</param>
         /// <param name="value">The string used as value</param>
-        static private void AddToDict(Hashtable map, string key, string value)
+        static private void AddToDict(Dictionary<string, string> map, string key, string value)
         {
-            Hashtable items;
-
-            if (map.Contains(key))
+            if (!map.ContainsKey(key))
             {
-                items = (Hashtable)map[key];
+                map.Add(key, value);
             }
-            else
+            else if (map[key] != value)
             {
-                items = new Hashtable();
-                map.Add(key, items);
-            }
-
-            if (!items.Contains(value))
-            {
-                items.Add(value, value);
+                throw new Exception(
+                    string.Format("did not expect to have different values for {0}: {1} and {2}",
+                                  key, value, map[key]));
             }
         }
 
@@ -767,8 +737,6 @@ namespace Ict.Tools.NAntTasks
                     {
                         fileNamespace = nsMatch.Groups[1].ToString();
                         Log(Level.Debug, "Found namespace: " + fileNamespace);
-                        // Add the namespace to the map
-                        AddToDict(_namespace2assembly, fileNamespace, assemblyname);
                         assembly.AddNamespace(fileNamespace);
                     }
                     else

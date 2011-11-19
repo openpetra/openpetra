@@ -13,7 +13,7 @@ using System.Windows.Forms;
 using Ict.Common.Controls;
 using System.Xml;
 
-namespace TestCollapsible
+namespace ControlTestBench
 {
 	/// <summary>
 	/// Description of MainForm.

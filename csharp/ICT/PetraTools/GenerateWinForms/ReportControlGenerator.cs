@@ -26,7 +26,6 @@ using System.Xml;
 using System.Collections.Specialized;
 using System.Windows.Forms;
 using Ict.Tools.CodeGeneration;
-using Ict.Common.Controls;
 using Ict.Common.IO;
 using Ict.Common;
 

@@ -13,7 +13,7 @@ using System.Xml;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace TestCollapsible
+namespace ControlTestBench
 {
     /// <summary>
     /// Description of ShepherdTest.
