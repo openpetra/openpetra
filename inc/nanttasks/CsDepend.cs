@@ -643,7 +643,7 @@ namespace Ict.Tools.NAntTasks
             if (!_assembly2uuid.ContainsKey(assemblyname))
             {
                 Log(Level.Debug, "UUID for " + assemblyname + " not found!");
-                AddToDict(_assembly2uuid, assemblyname, Guid.NewGuid().ToString("D").ToUpper());
+                AddToDict(_assembly2uuid, assemblyname, "{" + Guid.NewGuid().ToString("D").ToUpper() + "}");
             }
 
             return _assembly2uuid[assemblyname];
