@@ -206,19 +206,16 @@ useful parameters
        quickCompile is intended as an alternative to compile in SharpDevelop directly.
   -->
   <property name="solution" value="OpenPetra" overwrite="false"/>
-  <property name="solution.file" value="${path::combine(dir.projectfiles,
-                                path::combine(devenv-name, 'OpenPetra.'+solution+'.sln'))}"/>
-  <property name="solution.file" value="${string::replace(solution.file, 'OpenPetra.OpenPetra.sln', 'OpenPetra.sln')}"/>
   <if test="${not platform::is-windows()}" >
-    <if test="${property::exists('xbuild')}">
-      <exec program="${xbuild}" commandline="${solution.file}">
-         <environment>
-           <variable name="MONO_PATH" value="${NAntBin.dir}"/> <!-- variable does not exist yet; otherwise: value="${NAntBin.dir}:${environment::get-variable('MONO_PATH')}" -->
-         </environment>
-      </exec>
-    </if>
+    <property name="solution.file" value="${path::combine(dir.projectfiles,
+                                  path::combine(devenv-xbuild, 'OpenPetra.'+solution+'.sln'))}"/>
+    <property name="solution.file" value="${string::replace(solution.file, 'OpenPetra.OpenPetra.sln', 'OpenPetra.sln')}"/>
+    <exec program="${xbuild}" commandline="${solution.file}"/>
   </if>
   <if test="${platform::is-windows()}" >
+    <property name="solution.file" value="${path::combine(dir.projectfiles,
+                                path::combine(devenv-msbuild, 'OpenPetra.'+solution+'.sln'))}"/>
+    <property name="solution.file" value="${string::replace(solution.file, 'OpenPetra.OpenPetra.sln', 'OpenPetra.sln')}"/>
     <if test="${file::exists(msbuildtask.file)}">
       <msbuild project="${solution.file}" verbosity="Minimal">
         <property name="Configuration" value="${Configuration}"/>

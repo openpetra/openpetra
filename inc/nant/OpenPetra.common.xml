@@ -201,8 +201,9 @@
           overwrite="false" />
 <property name="projectDependenciesFile" value="${path::combine(dir.projectfiles, 'project.map')}"
           overwrite="false" />
-<property name="projectfiles.templates-list" value="sharpdevelop4" overwrite="false" />
-<property name="devenv-name" value="sharpdevelop4" overwrite="false" />
+<property name="projectfiles.templates-list" value="sharpdevelop4,monodevelop2,vs2010" overwrite="false" />
+<property name="devenv-msbuild" value="sharpdevelop4" overwrite="false" />
+<property name="devenv-xbuild" value="monodevelop2" overwrite="false" />
  <!-- webserver -->
 <property name="dir.webserver" value="${path::combine(dir.delivery, 'webserver')}" overwrite="false" />
 <property name="dir.webserver.bin" value="${path::combine(dir.webserver, 'bin')}" overwrite="false" />
