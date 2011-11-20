@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using Ict.Common;
+using Ict.Common.Controls;
 
 namespace TestCollapsible
 {
@@ -32,7 +34,7 @@ public partial class MainForm : Form
 
     void Button1Click(object sender, EventArgs e)
     {
-        tPnlCollapsible1.ToggleDirection();
+        // TODO tPnlCollapsible1.ToggleDirection();
     }
 }
 }

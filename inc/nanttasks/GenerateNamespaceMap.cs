@@ -57,6 +57,22 @@ namespace Ict.Tools.NAntTasks
             }
         }
 
+        private string FNamespaceMap3rdParty = null;
+        /// <summary>
+        /// path of the file, where the namespace map for the 3rd Party and .net libraries is stored
+        /// </summary>
+        [TaskAttribute("NamespaceMap3rdParty", Required = true)]
+        public string NamespaceMap3rdParty {
+            get
+            {
+                return FNamespaceMap3rdParty;
+            }
+            set
+            {
+                FNamespaceMap3rdParty = value;
+            }
+        }
+
         private string FDependencyMapFilename = null;
         /// <summary>
         /// path of the file, where the dependancy map will be saved and read from
@@ -109,7 +125,9 @@ namespace Ict.Tools.NAntTasks
 
             WriteMap(FNamespaceMapFilename, map);
 
-            WriteMap(FDependencyMapFilename, UsingNamespaceMapToDll(map, UsingMap));
+            Dictionary <string, string>ThirdPartyMap = ReadMap(FNamespaceMap3rdParty);
+
+            WriteMap(FDependencyMapFilename, UsingNamespaceMapToDll(map, ThirdPartyMap, UsingMap));
         }
 
         private string ParseCSFile(Dictionary <string, string>NamespaceMap, Dictionary <string, TDetailsOfDll>UsingNamespaces, string filename)
@@ -136,6 +154,8 @@ namespace Ict.Tools.NAntTasks
             else
             {
                 DetailsOfDll = new TDetailsOfDll();
+                DetailsOfDll.UsedNamespaces.Add("System");
+                DetailsOfDll.UsedNamespaces.Add("System.Xml");
                 UsingNamespaces.Add(DllName, DetailsOfDll);
             }
 
@@ -169,7 +189,16 @@ namespace Ict.Tools.NAntTasks
                     }
                     else if (line.Trim().StartsWith("using "))
                     {
-                        string Namespace = line.Substring("using".Length).Trim(new char[] { ' ', '\t', '\n', '\r', ';' });
+                        string Namespace = line.Substring("using".Length);
+                        int indexComment = Namespace.IndexOf("//");
+
+                        if (indexComment != -1)
+                        {
+                            // eg. // Implicit reference
+                            Namespace = Namespace.Substring(0, indexComment);
+                        }
+
+                        Namespace = Namespace.Trim(new char[] { ' ', '\t', '\n', '\r', ';' });
 
                         if ((Namespace != string.Empty) && !Namespace.Contains(" "))
                         {
@@ -196,10 +225,9 @@ namespace Ict.Tools.NAntTasks
         /// <summary>
         /// now reduce the namespace names to dll names
         /// </summary>
-        /// <param name="NamespaceMap"></param>
-        /// <param name="UsingNamespaces"></param>
-        /// <returns></returns>
-        private Dictionary <string, TDetailsOfDll>UsingNamespaceMapToDll(Dictionary <string, string>NamespaceMap,
+        private Dictionary <string, TDetailsOfDll>UsingNamespaceMapToDll(
+            Dictionary <string, string>NamespaceMap,
+            Dictionary <string, string>Namespace3rdPartyMap,
             Dictionary <string, TDetailsOfDll>UsingNamespaces)
         {
             Dictionary <string, TDetailsOfDll>result = new Dictionary <string, TDetailsOfDll>();
@@ -214,13 +242,23 @@ namespace Ict.Tools.NAntTasks
                 {
                     if (!NamespaceMap.ContainsKey(usingNamespace))
                     {
-                        if (usingNamespace.StartsWith("Ict."))
+                        // check the 3rd party namespace map to find the correct DLL
+                        bool found = false;
+
+                        foreach (string namespace3rdParty in Namespace3rdPartyMap.Keys)
                         {
-                            Console.WriteLine("Warning: missing dllname for namespace " + usingNamespace);
+                            if ((namespace3rdParty == usingNamespace)
+                                || (namespace3rdParty.EndsWith("*") && usingNamespace.StartsWith(namespace3rdParty.Replace("*", ""))))
+                            {
+                                NamespaceMap.Add(usingNamespace, Namespace3rdPartyMap[namespace3rdParty]);
+                                found = true;
+                                break;
+                            }
                         }
-                        else
+
+                        if (!found)
                         {
-                            NamespaceMap.Add(usingNamespace, usingNamespace);
+                            Console.WriteLine("Warning: we do not know in which dll the namespace " + usingNamespace + " is defined");
                         }
                     }
 
@@ -237,6 +275,28 @@ namespace Ict.Tools.NAntTasks
             }
 
             return result;
+        }
+
+        private Dictionary <string, string>ReadMap(string filename)
+        {
+            Dictionary <string, string>Result = new Dictionary <string, string>();
+
+            StreamReader sr = new StreamReader(filename);
+
+            while (!sr.EndOfStream)
+            {
+                string line = sr.ReadLine();
+
+                if (line[0] != '#')
+                {
+                    string[] values = line.Split(new char[] { '=' });
+                    Result.Add(values[0], values[1]);
+                }
+            }
+
+            sr.Close();
+
+            return Result;
         }
 
         private void WriteMap(string filename, Dictionary <string, string>map)

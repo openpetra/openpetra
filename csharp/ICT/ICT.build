@@ -22,9 +22,8 @@
         buildfile="Testing/ICT.Testing.build" />
 </target>
 
-<!-- TODO: add testing after fixing bugs -->
 <target name="internal-subdirs" 
-        depends="common,petra,petratools" />
+        depends="common,petra,petratools,testing" />
 
 <!-- Include default implementation -->
 <include buildfile="../../inc/nant/OpenPetra.subdirs.xml"/> 

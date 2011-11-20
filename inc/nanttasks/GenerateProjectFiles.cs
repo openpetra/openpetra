@@ -295,6 +295,42 @@ namespace Ict.Tools.NAntTasks
             sw.Close();
         }
 
+        /// get the relative path, that leads from the workingDirectory to the absolutePath
+        public static string GetRelativePath(string absolutePath, string workingDirectory)
+        {
+            absolutePath = absolutePath.Replace("\\", "/");
+            workingDirectory = workingDirectory.Replace("\\", "/");
+
+            int countSame = 0;
+
+            while (countSame < absolutePath.Length
+                   && countSame < workingDirectory.Length
+                   && absolutePath[countSame] == workingDirectory[countSame])
+            {
+                countSame++;
+            }
+
+            // go back to the last directory seperator
+            countSame = absolutePath.Substring(0, countSame).LastIndexOf("/") + 1;
+            string Result = absolutePath.Substring(countSame);
+
+            if (countSame > 0)
+            {
+                // how many directories do we need to go up from the working Directory
+                while (countSame < workingDirectory.Length)
+                {
+                    if (workingDirectory[countSame] == '/')
+                    {
+                        Result = "../" + Result;
+                    }
+
+                    countSame++;
+                }
+            }
+
+            return Result;
+        }
+
         private void WriteProjectFile(
             string ATemplateDir,
             string ADevName,
@@ -324,16 +360,21 @@ namespace Ict.Tools.NAntTasks
 
             foreach (string referencedProject in AProjectDependencies)
             {
+                // TODO referencenohint?
                 if (!FProjectDependencies.ContainsKey(referencedProject))
                 {
                     temp = GetTemplateFile(ATemplateDir + "template.csproj.reference");
-                    temp.Replace("${reference-name}", referencedProject);
-                    temp.Replace("${reference-path}", "TODO");
+                    temp.Replace("${reference-name}", Path.GetFileName(referencedProject));
+                    temp.Replace("${reference-path}", referencedProject.Replace('/', '\\'));
+                    temp.Replace("${relative-reference-path}", referencedProject);
                     ProjectReferences.Append(temp.ToString());
                 }
                 else
                 {
                     temp = GetTemplateFile(ATemplateDir + "template.csproj.projectreference");
+                    temp.Replace("${reference-project-file-name}", referencedProject + ".csproj");
+                    temp.Replace("${relative-reference-project-file}", referencedProject + ".csproj");
+                    temp.Replace("${relative-reference-path}", referencedProject + ".csproj");
                     temp.Replace(
                         "${reference-project-file}",
                         FDirProjectFiles + Path.DirectorySeparatorChar + ADevName + Path.DirectorySeparatorChar + referencedProject + ".csproj");
@@ -348,7 +389,6 @@ namespace Ict.Tools.NAntTasks
             template.Replace("${TemplateReferences}", OtherReferences.ToString());
 
             // TODO: create assembly info file
-            // TODO: relative paths for other IDEs
 
             StringBuilder CompileFile = new StringBuilder();
 
@@ -356,7 +396,11 @@ namespace Ict.Tools.NAntTasks
 
             foreach (string ContainedFile in ContainsFiles)
             {
-                if (ContainedFile.EndsWith(".ManualCode.cs") || ContainedFile.EndsWith(".Designer.cs"))
+                string relativeFilename = GetRelativePath(ContainedFile, ATemplateDir).Replace('\\', '/');
+                string relativeFilenameBackslash = relativeFilename.Replace('/', '\\');
+
+                if ((ContainedFile.EndsWith(".ManualCode.cs") && File.Exists(ContainedFile.Replace(".ManualCode.cs", "-generated.cs")))
+                    || (ContainedFile.EndsWith(".Designer.cs") && File.Exists(ContainedFile.Replace(".Designer.cs", ".cs"))))
                 {
                     // ignore and insert with the main file
                 }
@@ -364,21 +408,34 @@ namespace Ict.Tools.NAntTasks
                 {
                     temp = GetTemplateFile(ATemplateDir + "template.csproj.compile");
                     temp.Replace("${filename}", ContainedFile);
+                    temp.Replace("${relative-filename-backslash}", relativeFilenameBackslash);
+                    temp.Replace("${relative-filename}", relativeFilename);
+                    temp.Replace("${justfilename}", Path.GetFileName(ContainedFile));
                     CompileFile.Append(temp.ToString());
 
                     if (ContainsFiles.Contains(ContainedFile.Replace(".cs", ".Designer.cs")))
                     {
+                        string OtherFile = ContainedFile.Replace(".cs", ".Designer.cs");
+
                         temp = GetTemplateFile(ATemplateDir + "template.csproj.compile.DependentUpon");
-                        temp.Replace("${filename}", ContainedFile.Replace(".cs", ".Designer.cs"));
+                        temp.Replace("${filename}", OtherFile);
+                        temp.Replace("${relative-filename-backslash}", relativeFilenameBackslash.Replace(".cs", ".Designer.cs"));
+                        temp.Replace("${relative-filename}", relativeFilename.Replace(".cs", ".Designer.cs"));
                         temp.Replace("${DependentUpon}", ContainedFile);
+                        temp.Replace("${relative-DependentUpon}", relativeFilename);
                         CompileFile.Append(temp.ToString());
                     }
 
-                    if (ContainsFiles.Contains(ContainedFile.Replace(".cs", ".ManualCode.cs")))
+                    if (ContainedFile.Contains("-generated.cs") && ContainsFiles.Contains(ContainedFile.Replace("-generated.cs", ".ManualCode.cs")))
                     {
+                        string OtherFile = ContainedFile.Replace("-generated.cs", ".ManualCode.cs");
+
                         temp = GetTemplateFile(ATemplateDir + "template.csproj.compile.DependentUpon");
-                        temp.Replace("${filename}", ContainedFile.Replace(".cs", ".ManualCode.cs"));
+                        temp.Replace("${filename}", OtherFile);
+                        temp.Replace("${relative-filename-backslash}", relativeFilenameBackslash.Replace("-generated.cs", ".ManualCode.cs"));
+                        temp.Replace("${relative-filename}", relativeFilename.Replace("-generated.cs", ".ManualCode.cs"));
                         temp.Replace("${DependentUpon}", ContainedFile);
+                        temp.Replace("${relative-DependentUpon}", relativeFilename);
                         CompileFile.Append(temp.ToString());
                     }
                 }
@@ -392,22 +449,33 @@ namespace Ict.Tools.NAntTasks
 
             foreach (string ContainedFile in ContainsResources)
             {
+                string relativeFilename = GetRelativePath(ContainedFile, ATemplateDir);
+                string relativeFilenameBackslash = relativeFilename.Replace('/', '\\');
+
                 if (ContainsFiles.Contains(ContainedFile.Replace(".resx", ".cs")))
                 {
                     temp = GetTemplateFile(ATemplateDir + "template.csproj.resource.DependentUpon");
                     temp.Replace("${filename}", ContainedFile);
+                    temp.Replace("${relative-filename-backslash}", relativeFilenameBackslash);
+                    temp.Replace("${relative-filename}", relativeFilename);
                     temp.Replace("${DependentUpon}", ContainedFile.Replace(".resx", ".cs"));
+                    temp.Replace("${relative-DependentUpon}", relativeFilename.Replace(".resx", ".cs"));
                     Resources.Append(temp.ToString());
                 }
                 else
                 {
                     temp = GetTemplateFile(ATemplateDir + "template.csproj.resource");
                     temp.Replace("${filename}", ContainedFile);
+                    temp.Replace("${relative-filename-backslash}", relativeFilenameBackslash);
+                    temp.Replace("${relative-filename}", relativeFilename);
                     Resources.Append(temp.ToString());
                 }
             }
 
             template.Replace("${TemplateResource}", Resources.ToString());
+
+            template.Replace("${dir.3rdParty}", FCodeRootDir + "\\ThirdParty");
+            template.Replace("${csharpStdLibs}", "");
 
             string completedFile = template.ToString();
 
@@ -418,6 +486,11 @@ namespace Ict.Tools.NAntTasks
 
             if (completedFile.Contains("${"))
             {
+                if (File.Exists(filename + ".error"))
+                {
+                    File.Delete(filename + ".error");
+                }
+
                 File.Move(filename, filename + ".error");
                 throw new Exception("Template has not been filled in completely yet. See " + filename + ".error");
             }

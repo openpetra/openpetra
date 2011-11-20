@@ -687,8 +687,16 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     "protected void OpenScreen" + ctrl.controlName.Substring(ctrl.controlTypePrefix.Length) + "(object sender, EventArgs e)" +
                     Environment.NewLine +
                     "{" + Environment.NewLine;
-                ActionHandler += "    " + ctrl.GetAttribute("ActionOpenScreen") + " frm = new " + ctrl.GetAttribute("ActionOpenScreen") +
+
+                string ActionOpenScreen = ctrl.GetAttribute("ActionOpenScreen");
+                ActionHandler += "    " + ActionOpenScreen + " frm = new " + ActionOpenScreen +
                                  "(this);" + Environment.NewLine;
+
+                if (ActionOpenScreen.Contains("."))
+                {
+                    string namespaceOfScreen = ActionOpenScreen.Substring(0, ActionOpenScreen.LastIndexOf("."));
+                    writer.Template.AddToCodelet("USINGNAMESPACES", "using " + namespaceOfScreen + ";" + Environment.NewLine, false);
+                }
 
                 // Does PropertyForSubScreens fit a property in the new screen? eg LedgerNumber
                 if (FCodeStorage.HasAttribute("PropertyForSubScreens"))

@@ -6,8 +6,8 @@
  *
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
+using Ict.Common.Controls;
 
-//using Ict.Petra.Client.MPartner.Gui;
 namespace TestCollapsible
 {
 partial class MainForm
@@ -41,16 +41,18 @@ partial class MainForm
     /// </summary>
     private void InitializeComponent()
     {
-        this.tPnlCollapsible1 = new Ict.Petra.Client.MPartner.Gui.TPnlCollapsible();
+        this.tPnlCollapsible1 = new Ict.Common.Controls.TPnlCollapsible();
         this.button1 = new System.Windows.Forms.Button();
-        this.tPnlCollapsible2 = new Ict.Petra.Client.MPartner.Gui.TPnlCollapsible("testing alternate constructor", TCollapseDirection.cdHorizontal);
+        this.tPnlCollapsible2 = new Ict.Common.Controls.TPnlCollapsible(THostedControlKind.hckTaskList,
+            "testing alternate constructor",
+            TCollapseDirection.cdHorizontal);
         this.SuspendLayout();
         //
         // tPnlCollapsible1
         //
         this.tPnlCollapsible1.AutoSize = true;
         this.tPnlCollapsible1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-        this.tPnlCollapsible1.CollapseDirection = Ict.Petra.Client.MPartner.Gui.TCollapseDirection.cdVertical;
+        this.tPnlCollapsible1.CollapseDirection = Ict.Common.Controls.TCollapseDirection.cdVertical;
         this.tPnlCollapsible1.IsCollapsed = false;
         this.tPnlCollapsible1.Location = new System.Drawing.Point(19, 74);
         this.tPnlCollapsible1.Margin = new System.Windows.Forms.Padding(0);
@@ -93,8 +95,8 @@ partial class MainForm
         this.PerformLayout();
     }
 
-//		private Ict.Petra.Client.MPartner.Gui.TPnlCollapsible tPnlCollapsible2;
+    private Ict.Common.Controls.TPnlCollapsible tPnlCollapsible2;
     private System.Windows.Forms.Button button1;
-//		private Ict.Petra.Client.MPartner.Gui.TPnlCollapsible tPnlCollapsible1;
+    private Ict.Common.Controls.TPnlCollapsible tPnlCollapsible1;
 }
 }

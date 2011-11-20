@@ -16,10 +16,6 @@
   <property name="generateWinformsParameters" value="-TemplateDir:${dir.incdir.template.src}/Winforms -ResourceDir:${dir.root}/resources -petraxml:${PetraXML.file} -localisation:${GUILocalisation} -TargetPlatformGUI:${TargetPlatformGUI}"/>
   <property name="ClientPath" value="${dir.root}/csharp/ICT/Petra/Client"/>
   <ExecDotNet program="${tool-generateWinForms}" commandline="-op:generate -ymldir:${ClientPath} ${generateWinformsParameters}"/>
-  <GenerateNamespaceMap
-    CodeRootDir="${dir.csharp}"
-    NamespaceMapFilename="${namespaceFile}" 
-    DependencyMapFilename="${projectDependenciesFile}"/>
 </target>
 
 <target name="generateWinform">

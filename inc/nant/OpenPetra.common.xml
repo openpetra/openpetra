@@ -197,6 +197,8 @@
           overwrite="false" />
 <property name="namespaceFile" value="${path::combine(dir.projectfiles, 'namespace.map')}"
           overwrite="false" />
+<property name="namespaceFile3rdParty" value="${path::combine(dir.3rdParty, 'namespace.map')}"
+          overwrite="false" />
 <property name="projectDependenciesFile" value="${path::combine(dir.projectfiles, 'project.map')}"
           overwrite="false" />
 <property name="projectfiles.templates-list" value="sharpdevelop4" overwrite="false" />

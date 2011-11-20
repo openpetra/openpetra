@@ -103,7 +103,7 @@ partial class MainForm2
         this.tPnlCollapsible2.TaskListInstance = null;
         this.tPnlCollapsible2.TaskListNode = null;
         this.tPnlCollapsible2.UserControlClass = "TUC_PartnerInfo";
-        this.tPnlCollapsible2.UserControlNamespace = "";
+        this.tPnlCollapsible2.UserControlNamespace = "Ict.Petra.Client.MPartner.Gui";
         this.tPnlCollapsible2.VisualStyle = Ict.Common.Controls.TVisualStylesEnum.vsDashboard;
         //
         // tPnlCollapsible3
