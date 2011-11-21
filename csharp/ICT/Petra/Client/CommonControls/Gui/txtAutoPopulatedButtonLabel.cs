@@ -1422,11 +1422,10 @@ namespace Ict.Petra.Client.CommonControls
                                         }
 
                                         if ((ValueChanged != null) && (mTextBoxStringOld != TextBoxStringOut))
-					                    {
-                              	            bool ValidResult = true;
-					                        ValueChanged(mResultIntTxt, mResultStringLbl, ValidResult);
-					                    }
-
+                                        {
+                                            bool ValidResult = true;
+                                            ValueChanged(mResultIntTxt, mResultStringLbl, ValidResult);
+                                        }
                                     }
                                     else
                                     {

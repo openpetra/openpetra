@@ -270,7 +270,7 @@ namespace Ict.Petra.Client.CommonControls
                 TextChanged(this, e);
             }
         }
-        
+
         /// <summary>
         /// constructor
         /// </summary>
@@ -640,7 +640,7 @@ namespace Ict.Petra.Client.CommonControls
             // Pass on any set Tag
             cmbCombobox.Tag = this.Tag;
             this.cmbCombobox.SelectedValueChanged += new System.EventHandler(this.CmbCombobox_SelectedValueChanged);
-            this.cmbCombobox.TextChanged          += new System.EventHandler(this.CmbCombobox_TextChanged);
+            this.cmbCombobox.TextChanged += new System.EventHandler(this.CmbCombobox_TextChanged);
 
             if (FAddNotSetValue)
             {

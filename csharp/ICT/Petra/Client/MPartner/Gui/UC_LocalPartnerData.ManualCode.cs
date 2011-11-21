@@ -28,14 +28,14 @@ using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-	
+
 namespace Ict.Petra.Client.MPartner.Gui
 {
     public partial class TUC_LocalPartnerData
     {
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
-    	
+
         #region Public Methods
 
         /// <summary>used for passing through the Clientside Proxy for the UIConnector</summary>
@@ -56,7 +56,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         public event THookupPartnerEditDataChangeEventHandler HookupDataChange;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="e"></param>
         private void OnHookupDataChange(THookupPartnerEditDataChangeEventArgs e)
@@ -66,7 +66,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 HookupDataChange(this, e);
             }
         }
-        
+
         /// <summary>
         /// This Procedure will get called from the SaveChanges procedure before it
         /// actually performs any saving operation.
@@ -77,9 +77,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>void</returns>
         private void DataSavingStarted(System.Object sender, System.EventArgs e)
         {
-        	ucoGrid.GetDataFromControlsManual();
+            ucoGrid.GetDataFromControlsManual();
         }
-        
+
         /// <summary>
         /// Gets the data from all controls on this UserControl.
         /// The data is stored in the DataTables/DataColumns to which the Controls
@@ -99,18 +99,17 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
         }
 
-        
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public void SpecialInitUserControl()
         {
             LoadDataOnDemand();
 
-        	ucoGrid.InitialiseUserControlAndShowData(FMainDS.PDataLabelValuePartner, 
-        	                              ((PPartnerRow)FMainDS.PPartner.Rows[0]).PartnerKey,
-        	                              MCommonTypes.PartnerClassStringToOfficeSpecificDataLabelUseEnum(((PPartnerRow)FMainDS.PPartner.Rows[0]).PartnerClass));
-            
+            ucoGrid.InitialiseUserControlAndShowData(FMainDS.PDataLabelValuePartner,
+                ((PPartnerRow)FMainDS.PPartner.Rows[0]).PartnerKey,
+                MCommonTypes.PartnerClassStringToOfficeSpecificDataLabelUseEnum(((PPartnerRow)FMainDS.PPartner.Rows[0]).PartnerClass));
+
             OnHookupDataChange(new THookupPartnerEditDataChangeEventArgs(TPartnerEditTabPageEnum.petpOfficeSpecific));
 
             this.SizeChanged += new System.EventHandler(ucoGrid.GrdLocalDataLabelValues_SizeChanged);
@@ -119,7 +118,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Hook up DataSavingStarted Event to be able to run code before SaveChanges is doing anything
             FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(this.DataSavingStarted);
         }
-        
+
         #endregion
 
         #region Private Methods
@@ -148,7 +147,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 if (TClientSettings.DelayedDataLoading)
                 {
-                	FMainDS.Merge(FPartnerEditUIConnector.GetDataLocalPartnerDataValues());
+                    FMainDS.Merge(FPartnerEditUIConnector.GetDataLocalPartnerDataValues());
 
                     // Make DataRows unchanged
                     if (FMainDS.PDataLabelValuePartner.Rows.Count > 0)
@@ -161,7 +160,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     ReturnValue = false;
                 }
-                
             }
             catch (System.NullReferenceException)
             {
@@ -173,8 +171,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             return ReturnValue;
         }
-        
+
         #endregion
-        
     }
 }

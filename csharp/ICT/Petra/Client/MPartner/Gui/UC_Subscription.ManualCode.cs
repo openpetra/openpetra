@@ -174,12 +174,12 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="e"></param>
         private void PublicationCodeChanged(object sender, EventArgs e)
         {
-        	// only react to a changed publication code if there is a record to display
-        	if (FSubscriptionDR != null)
-        	{
-	            UpdatePublicationCost();
-	            CheckPublicationValidity();
-        	}
+            // only react to a changed publication code if there is a record to display
+            if (FSubscriptionDR != null)
+            {
+                UpdatePublicationCost();
+                CheckPublicationValidity();
+            }
         }
 
         /// <summary>

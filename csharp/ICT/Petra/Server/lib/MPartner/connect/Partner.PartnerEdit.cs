@@ -743,17 +743,16 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                     #endregion
 
-                    
                     // Office Specific Data
                     if ((!ADelayedDataLoading) || (ATabPage == TPartnerEditTabPageEnum.petpOfficeSpecific))
                     {
                         FPartnerEditScreenDS.Merge(GetDataLocalPartnerDataValuesInternal(out OfficeSpecificDataLabelsAvailable, false));
-                  	}
-                  	else
-                   	{
-	                    FPartnerEditScreenDS.Merge(GetDataLocalPartnerDataValuesInternal(out OfficeSpecificDataLabelsAvailable, true));
                     }
-                    	
+                    else
+                    {
+                        FPartnerEditScreenDS.Merge(GetDataLocalPartnerDataValuesInternal(out OfficeSpecificDataLabelsAvailable, true));
+                    }
+
                     // Console.WriteLine('FPartnerEditScreenDS.PDataLabelValuePartner.Rows.Count: ' + FPartnerEditScreenDS.PDataLabelValuePartner.Rows.Count.ToString);
 
                     #region Individual Data (Personnel Tab)
@@ -1548,7 +1547,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
             return GetDataLocalPartnerDataValuesInternal(out LabelsAvailable, false);
         }
-        
+
         /// <summary>
         /// todoComment
         /// </summary>
@@ -3240,8 +3239,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         {
             TDBTransaction ReadTransaction;
             Boolean NewTransaction = false;
-        	TOfficeSpecificDataLabelsUIConnector OfficeSpecificDataLabelsUIConnector;
-        	PDataLabelValuePartnerTable DataLabelValuePartnerDT;
+            TOfficeSpecificDataLabelsUIConnector OfficeSpecificDataLabelsUIConnector;
+            PDataLabelValuePartnerTable DataLabelValuePartnerDT;
             OfficeSpecificDataLabelsTDS OfficeSpecificDataLabels;
 
             ALabelsAvailable = false;
@@ -3250,21 +3249,21 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
             try
             {
-	            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
-	                TEnforceIsolationLevel.eilMinimum,
-	                out NewTransaction);
-	            
-	        	
-	            OfficeSpecificDataLabelsUIConnector = new TOfficeSpecificDataLabelsUIConnector(FPartnerKey,
-	                MCommonTypes.PartnerClassEnumToOfficeSpecificDataLabelUseEnum(FPartnerClass));
-	            OfficeSpecificDataLabels = OfficeSpecificDataLabelsUIConnector.GetData();
-	            ALabelsAvailable =
-	                (OfficeSpecificDataLabelsUIConnector.CountLabelUse(SharedTypes.PartnerClassEnumToString(FPartnerClass), ReadTransaction) != 0);
-	
-	            if (!ACountOnly)
-	            {
-	                DataLabelValuePartnerDT.Merge(OfficeSpecificDataLabels.PDataLabelValuePartner);
-	            }        	
+                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+                    TEnforceIsolationLevel.eilMinimum,
+                    out NewTransaction);
+
+
+                OfficeSpecificDataLabelsUIConnector = new TOfficeSpecificDataLabelsUIConnector(FPartnerKey,
+                    MCommonTypes.PartnerClassEnumToOfficeSpecificDataLabelUseEnum(FPartnerClass));
+                OfficeSpecificDataLabels = OfficeSpecificDataLabelsUIConnector.GetData();
+                ALabelsAvailable =
+                    (OfficeSpecificDataLabelsUIConnector.CountLabelUse(SharedTypes.PartnerClassEnumToString(FPartnerClass), ReadTransaction) != 0);
+
+                if (!ACountOnly)
+                {
+                    DataLabelValuePartnerDT.Merge(OfficeSpecificDataLabels.PDataLabelValuePartner);
+                }
             }
             finally
             {

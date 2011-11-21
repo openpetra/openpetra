@@ -60,16 +60,16 @@ namespace Ict.Petra.Client.MCommon.Gui
     /// todoComment
     /// </summary>
     public delegate void TTellGuiToEnableSaveButton();
-    
+
     /// <summary>
     /// Contains User Control Office Specific Data Labels
     /// </summary>
     public partial class TUC_LocalDataLabelValues : System.Windows.Forms.UserControl, Ict.Petra.Client.CommonForms.IFrmPetra
     {
         private TFrmPetraEditUtils FPetraUtilsObject;
-        
+
         private Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS FMainDS;
-        
+
         private Int64 FPartnerKey;
         private Int32 FApplicationKey;
         private Int64 FRegistrationOffice;
@@ -95,8 +95,8 @@ namespace Ict.Petra.Client.MCommon.Gui
         private PDataLabelValuePartnerTable FDataLabelValuePartnerDT;
         private PDataLabelValueApplicationTable FDataLabelValueApplicationDT;
         private Boolean FGridIsSetUp;
-        
-        
+
+
         /// <summary>
         /// constructor
         /// </summary>
@@ -121,7 +121,7 @@ namespace Ict.Petra.Client.MCommon.Gui
             {
                 return FPetraUtilsObject;
             }
-    
+
             set
             {
                 FPetraUtilsObject = value;
@@ -145,7 +145,7 @@ namespace Ict.Petra.Client.MCommon.Gui
                 return FLocalDataDS;
             }
         }
-        
+
         /// helper object for the whole screen
         public SourceGrid.Grid LocalDataLabelValuesGrid
         {
@@ -154,27 +154,28 @@ namespace Ict.Petra.Client.MCommon.Gui
                 return FLocalDataLabelValuesGrid;
             }
         }
-        
-#region Implement interface functions
+
+        #region Implement interface functions
 
         /// auto generated
         public void RunOnceOnActivation()
         {
         }
-    
+
         /// auto generated
         public bool CanClose()
         {
             return FPetraUtilsObject.CanClose();
         }
-    
+
         /// auto generated
         public TFrmPetraUtils GetPetraUtilsObject()
         {
             return (TFrmPetraUtils)FPetraUtilsObject;
         }
-#endregion
-        
+
+        #endregion
+
         public void GrdLocalDataLabelValues_SizeChanged(System.Object sender, System.EventArgs e)
         {
             // inform the logic that the grid has been resized
@@ -250,7 +251,7 @@ namespace Ict.Petra.Client.MCommon.Gui
                 InitialiseUserControlInternal(null, ADataTable, AOfficeSpecificDataLabelUse);
             }
         }
-        
+
         /// <summary>
         /// todoComment
         /// </summary>
@@ -281,7 +282,7 @@ namespace Ict.Petra.Client.MCommon.Gui
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void PossiblySaveSomething()
         {
@@ -292,7 +293,7 @@ namespace Ict.Petra.Client.MCommon.Gui
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void ControlValueHasChanged(System.Object sender, EventArgs e)
         {
@@ -303,18 +304,18 @@ namespace Ict.Petra.Client.MCommon.Gui
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void PartnerKeyControlValueHasChanged(Int64 APartnerKey,
             String APartnerShortName,
             bool AValidSelection)
         {
-        	if (this.ParentForm != null)
+            if (this.ParentForm != null)
             {
                 ((TFrmPetraEditUtils)((IFrmPetraEdit) this.ParentForm).GetPetraUtilsObject()).SetChangedFlag();
             }
         }
-        
+
         /// <summary>
         /// todoComment
         /// </summary>
@@ -331,7 +332,6 @@ namespace Ict.Petra.Client.MCommon.Gui
                 PossiblySomethingToSave();
             }
         }
-
 
         /// <summary>
         /// Initialises DataSets and Tables
@@ -375,6 +375,7 @@ namespace Ict.Petra.Client.MCommon.Gui
         private void SetupGridValueCell(Int32 ARowIndex, PDataLabelRow ADataLabelRow)
         {
             Control cellControl;
+
             System.Windows.Forms.TextBox TextBoxEditor;
             TtxtPetraDate DateEditor;
             System.Windows.Forms.CheckBox CheckBoxEditor;
@@ -402,7 +403,7 @@ namespace Ict.Petra.Client.MCommon.Gui
 
             // initialize cell control
             cellControl = null;
-            
+
             // Create field, according to specified data type
             // Create character field
             if (ADataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_CHAR)
@@ -424,13 +425,12 @@ namespace Ict.Petra.Client.MCommon.Gui
                     TextBoxEditor.Text = "";
                 }
 
-				// enable save button in editor when cell contents have changed
+                // enable save button in editor when cell contents have changed
                 TextBoxEditor.TextChanged += new EventHandler(this.ControlValueHasChanged);
-                
+
                 FLocalDataLabelValuesGrid[ARowIndex, 1] = new SourceGrid.Cells.Cell();
                 FLocalDataLabelValuesGrid.LinkedControls.Add(new LinkedControlValue((Control)TextBoxEditor, new Position(ARowIndex, 1)));
                 FLocalDataLabelValuesGrid[ARowIndex, 1].Tag = TextBoxEditor;
-
             }
             // Create float field
             else if (ADataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_FLOAT)
@@ -440,7 +440,7 @@ namespace Ict.Petra.Client.MCommon.Gui
                 TextBoxNumericEditor.DecimalPlaces = ADataLabelRow.NumDecimalPlaces;
                 TextBoxNumericEditor.NullValueAllowed = true;
                 cellControl = TextBoxNumericEditor;
-                    
+
                 if (DataLabelValuePartnerRow != null)
                 {
                     TextBoxNumericEditor.NumberValueDecimal = DataLabelValuePartnerRow.ValueNum;
@@ -455,13 +455,12 @@ namespace Ict.Petra.Client.MCommon.Gui
                     TextBoxNumericEditor.NumberValueDecimal = null;
                 }
 
-				// enable save button in editor when cell contents have changed
+                // enable save button in editor when cell contents have changed
                 TextBoxNumericEditor.TextChanged += new EventHandler(this.ControlValueHasChanged);
-                
+
                 FLocalDataLabelValuesGrid[ARowIndex, 1] = new SourceGrid.Cells.Cell();
                 FLocalDataLabelValuesGrid.LinkedControls.Add(new LinkedControlValue((Control)TextBoxNumericEditor, new Position(ARowIndex, 1)));
                 FLocalDataLabelValuesGrid[ARowIndex, 1].Tag = TextBoxNumericEditor;
-                
             }
             // Create data field
             else if (ADataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_DATE)
@@ -469,7 +468,7 @@ namespace Ict.Petra.Client.MCommon.Gui
                 DateEditor = new TtxtPetraDate();
                 DateEditor.Date = null;
                 cellControl = DateEditor;
-                
+
                 if (DataLabelValuePartnerRow != null)
                 {
                     if (!DataLabelValuePartnerRow.IsValueDateNull())
@@ -485,13 +484,12 @@ namespace Ict.Petra.Client.MCommon.Gui
                     }
                 }
 
-				// enable save button in editor when cell contents have changed
+                // enable save button in editor when cell contents have changed
                 DateEditor.DateChanged += new TPetraDateChangedEventHandler(this.ControlValueHasChanged);
-                
+
                 FLocalDataLabelValuesGrid[ARowIndex, 1] = new SourceGrid.Cells.Cell();
                 FLocalDataLabelValuesGrid.LinkedControls.Add(new LinkedControlValue((Control)DateEditor, new Position(ARowIndex, 1)));
                 FLocalDataLabelValuesGrid[ARowIndex, 1].Tag = DateEditor;
-
             }
             // Create integer field
             else if (ADataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_INTEGER)
@@ -500,7 +498,7 @@ namespace Ict.Petra.Client.MCommon.Gui
                 TextBoxNumericEditor.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Integer;
                 TextBoxNumericEditor.NullValueAllowed = true;
                 cellControl = TextBoxNumericEditor;
-                    
+
                 if (DataLabelValuePartnerRow != null)
                 {
                     TextBoxNumericEditor.NumberValueInt = DataLabelValuePartnerRow.ValueInt;
@@ -515,13 +513,12 @@ namespace Ict.Petra.Client.MCommon.Gui
                     TextBoxNumericEditor.NumberValueInt = null;
                 }
 
-				// enable save button in editor when cell contents have changed
+                // enable save button in editor when cell contents have changed
                 TextBoxNumericEditor.TextChanged += new EventHandler(this.ControlValueHasChanged);
 
                 FLocalDataLabelValuesGrid[ARowIndex, 1] = new SourceGrid.Cells.Cell();
                 FLocalDataLabelValuesGrid.LinkedControls.Add(new LinkedControlValue((Control)TextBoxNumericEditor, new Position(ARowIndex, 1)));
                 FLocalDataLabelValuesGrid[ARowIndex, 1].Tag = TextBoxNumericEditor;
-                
             }
             // Create currency field
             else if (ADataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_CURRENCY)
@@ -532,7 +529,7 @@ namespace Ict.Petra.Client.MCommon.Gui
                 TextBoxCurrencyEditor.CurrencySymbol = ADataLabelRow.CurrencyCode;
                 TextBoxCurrencyEditor.NullValueAllowed = true;
                 cellControl = TextBoxCurrencyEditor;
-                    
+
                 if (DataLabelValuePartnerRow != null)
                 {
                     TextBoxCurrencyEditor.NumberValueDecimal = DataLabelValuePartnerRow.ValueCurrency;
@@ -547,20 +544,19 @@ namespace Ict.Petra.Client.MCommon.Gui
                     TextBoxCurrencyEditor.NumberValueDecimal = null;
                 }
 
-				// enable save button in editor when cell contents have changed
+                // enable save button in editor when cell contents have changed
                 TextBoxCurrencyEditor.TextChanged += new EventHandler(this.ControlValueHasChanged);
-                
+
                 FLocalDataLabelValuesGrid[ARowIndex, 1] = new SourceGrid.Cells.Cell();
                 FLocalDataLabelValuesGrid.LinkedControls.Add(new LinkedControlValue((Control)TextBoxCurrencyEditor, new Position(ARowIndex, 1)));
                 FLocalDataLabelValuesGrid[ARowIndex, 1].Tag = TextBoxCurrencyEditor;
-                
             }
             // Create boolean field
             else if (ADataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_BOOLEAN)
             {
                 CheckBoxEditor = new System.Windows.Forms.CheckBox();
                 cellControl = CheckBoxEditor;
-                
+
                 if (DataLabelValuePartnerRow != null)
                 {
                     CheckBoxEditor.Checked = DataLabelValuePartnerRow.ValueBool;
@@ -575,13 +571,12 @@ namespace Ict.Petra.Client.MCommon.Gui
                     CheckBoxEditor.Checked = false;
                 }
 
-   				// enable save button in editor when cell contents have changed
+                // enable save button in editor when cell contents have changed
                 CheckBoxEditor.CheckedChanged += new EventHandler(this.ControlValueHasChanged);
 
                 FLocalDataLabelValuesGrid[ARowIndex, 1] = new SourceGrid.Cells.Cell();
                 FLocalDataLabelValuesGrid.LinkedControls.Add(new LinkedControlValue((Control)CheckBoxEditor, new Position(ARowIndex, 1)));
                 FLocalDataLabelValuesGrid[ARowIndex, 1].Tag = CheckBoxEditor;
-
             }
             // Create partner key field
             else if (ADataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_PARTNERKEY)
@@ -596,7 +591,7 @@ namespace Ict.Petra.Client.MCommon.Gui
 
                 // AutomaticallyUpdateDataSource: very rare, but needed here
                 PartnerKeyEditor.AutomaticallyUpdateDataSource = true;
-                
+
                 if (DataLabelValuePartnerRow != null)
                 {
                     PartnerKeyEditor.Text = StringHelper.PartnerKeyToStr(DataLabelValuePartnerRow.ValuePartnerKey);
@@ -613,17 +608,16 @@ namespace Ict.Petra.Client.MCommon.Gui
 
                 // display partner name linked to partner key
                 PartnerKeyEditor.ResetLabelText();
-                
-   				// enable save button in editor when cell contents have changed
+
+                // enable save button in editor when cell contents have changed
                 PartnerKeyEditor.ValueChanged += new TDelegatePartnerChanged(this.PartnerKeyControlValueHasChanged);
                 PartnerKeyEditor.TextChanged += new System.EventHandler(this.ControlValueHasChanged);
-                
-                
+
+
                 FLocalDataLabelValuesGrid[ARowIndex, 0] = new SourceGrid.Cells.Cell();
                 FLocalDataLabelValuesGrid.LinkedControls.Add(new LinkedControlValue(PartnerKeyEditor, new Position(ARowIndex, 0)));
                 FLocalDataLabelValuesGrid[ARowIndex, 0].Tag = PartnerKeyEditor;
                 FLocalDataLabelValuesGrid[ARowIndex, 0].ColumnSpan = 3;
-
             }
             // Create lookup field
             else if (ADataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_LOOKUP)
@@ -649,15 +643,14 @@ namespace Ict.Petra.Client.MCommon.Gui
                     LookupValueEditor.Text = "";
                 }
 
-   				// enable save button in editor when cell contents have changed
+                // enable save button in editor when cell contents have changed
                 LookupValueEditor.SelectedValueChanged += new EventHandler(this.ControlValueHasChanged);
                 LookupValueEditor.TextChanged += new EventHandler(this.ControlValueHasChanged);
-                
+
                 FLocalDataLabelValuesGrid[ARowIndex, 1] = new SourceGrid.Cells.Cell();
                 FLocalDataLabelValuesGrid.LinkedControls.Add(new LinkedControlValue((Control)LookupValueEditor, new Position(ARowIndex, 1)));
                 FLocalDataLabelValuesGrid[ARowIndex, 1].Tag = LookupValueEditor;
                 FLocalDataLabelValuesGrid[ARowIndex, 1].ColumnSpan = 2;
-
             }
 
             // perform actions that need to be done for each control
@@ -668,12 +661,11 @@ namespace Ict.Petra.Client.MCommon.Gui
 
                 // handle focus change when field is entered
                 cellControl.Enter += new EventHandler(this.UpdateGridFocusFromExternalControl);
-                
+
                 // set help text for control
                 PetraUtilsObject.SetStatusBarText(cellControl, ADataLabelRow.Description);
-            	
             }
-            
+
             // check if value is editable
             if (!ADataLabelRow.Editable)
             {
@@ -742,11 +734,10 @@ namespace Ict.Petra.Client.MCommon.Gui
             }
         }
 
-
         private void UpdateGridFocusFromExternalControl(System.Object sender, System.EventArgs e)
         {
             Int32 Row;
-           
+
             // exit;
             if (FInFocussingMode)
             {
@@ -756,18 +747,18 @@ namespace Ict.Petra.Client.MCommon.Gui
             // set mode to prevent recursive calls
             FInFocussingMode = true;
 
-            if (   sender.GetType() == typeof(System.Windows.Forms.TextBox)
-                || sender.GetType() == typeof(TtxtPetraDate)
-                || sender.GetType() == typeof(System.Windows.Forms.CheckBox)
-                || sender.GetType() == typeof(TTxtNumericTextBox)
-                || sender.GetType() == typeof(TCmbAutoPopulated)
-                || sender.GetType() == typeof(TtxtAutoPopulatedButtonLabel))
+            if ((sender.GetType() == typeof(System.Windows.Forms.TextBox))
+                || (sender.GetType() == typeof(TtxtPetraDate))
+                || (sender.GetType() == typeof(System.Windows.Forms.CheckBox))
+                || (sender.GetType() == typeof(TTxtNumericTextBox))
+                || (sender.GetType() == typeof(TCmbAutoPopulated))
+                || (sender.GetType() == typeof(TtxtAutoPopulatedButtonLabel)))
             {
                 Row = FGridRowInfo.GetRow((Control)sender);
                 FLocalDataLabelValuesGrid.Selection.Focus(
                     new Position(FLocalDataLabelValuesGrid[Row, 1].Row.Index, FLocalDataLabelValuesGrid[Row, 1].Column.Index), true);
             }
-            
+
             // reset mode
             FInFocussingMode = false;
         }
@@ -963,7 +954,7 @@ namespace Ict.Petra.Client.MCommon.Gui
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public void GetDataFromControlsManual()
         {
@@ -989,7 +980,7 @@ namespace Ict.Petra.Client.MCommon.Gui
                 }
             }
         }
-        
+
         /// <summary>
         /// Apply value in specified cell to underlying data structure
         ///
@@ -1017,47 +1008,48 @@ namespace Ict.Petra.Client.MCommon.Gui
                     return false;
                 }
 
-				// check if cell value is null
+                // check if cell value is null
                 CellValueIsNull = IsCellValueNull(DataLabelRow, ARow, AColumn);
-                
+
                 // Get the data label value row to save the value in. (this time only if
                 // the row is already existing)
                 GetOrCreateDataLabelValueRow(false, DataLabelRow, out DataLabelValuePartnerRow, out DataLabelValueApplicationRow);
-                
-				// remove data value row if it exists but the cell value is null so the row is not needed any longer
-				if (!InUseForApplication())
-                {
-                	if (CellValueIsNull)
-                	{
-                		if (DataLabelValuePartnerRow != null)
-	                	{
-                			DataLabelValuePartnerRow.Delete();
-	                	}
 
-                		return true;
-                	}
+                // remove data value row if it exists but the cell value is null so the row is not needed any longer
+                if (!InUseForApplication())
+                {
+                    if (CellValueIsNull)
+                    {
+                        if (DataLabelValuePartnerRow != null)
+                        {
+                            DataLabelValuePartnerRow.Delete();
+                        }
+
+                        return true;
+                    }
                 }
                 else
                 {
-                	if (CellValueIsNull)
-                	{
-                		if (DataLabelValueApplicationRow != null)
-	                	{
-                			DataLabelValueApplicationRow.Delete();
-	                	}
+                    if (CellValueIsNull)
+                    {
+                        if (DataLabelValueApplicationRow != null)
+                        {
+                            DataLabelValueApplicationRow.Delete();
+                        }
 
-                		return true;
-                	}
+                        return true;
+                    }
                 }
 
                 // now we definitely have a cell value, so we need to create a row if we don't have one yet
                 GetOrCreateDataLabelValueRow(true, DataLabelRow, out DataLabelValuePartnerRow, out DataLabelValueApplicationRow);
-                
+
                 // Apply cell value according to data type
                 // apply character value
                 if (DataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_CHAR)
                 {
                     CurrentControl = (System.Windows.Forms.Control)((SourceGrid.Cells.Cell)FLocalDataLabelValuesGrid.GetCell(ARow, AColumn)).Tag;
+
                     if (DataLabelValuePartnerRow != null)
                     {
                         DataLabelValuePartnerRow.ValueChar = ((System.Windows.Forms.TextBox)CurrentControl).Text;
@@ -1072,6 +1064,7 @@ namespace Ict.Petra.Client.MCommon.Gui
                 if (DataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_FLOAT)
                 {
                     CurrentControl = (System.Windows.Forms.Control)((SourceGrid.Cells.Cell)FLocalDataLabelValuesGrid.GetCell(ARow, AColumn)).Tag;
+
                     if (DataLabelValuePartnerRow != null)
                     {
                         DataLabelValuePartnerRow.ValueNum = ((TTxtNumericTextBox)CurrentControl).NumberValueDecimal.GetValueOrDefault();
@@ -1086,6 +1079,7 @@ namespace Ict.Petra.Client.MCommon.Gui
                 if (DataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_DATE)
                 {
                     CurrentControl = (System.Windows.Forms.Control)((SourceGrid.Cells.Cell)FLocalDataLabelValuesGrid.GetCell(ARow, AColumn)).Tag;
+
                     if (DataLabelValuePartnerRow != null)
                     {
                         DataLabelValuePartnerRow.ValueDate = ((TtxtPetraDate)CurrentControl).Date;
@@ -1100,6 +1094,7 @@ namespace Ict.Petra.Client.MCommon.Gui
                 if (DataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_INTEGER)
                 {
                     CurrentControl = (System.Windows.Forms.Control)((SourceGrid.Cells.Cell)FLocalDataLabelValuesGrid.GetCell(ARow, AColumn)).Tag;
+
                     if (DataLabelValuePartnerRow != null)
                     {
                         DataLabelValuePartnerRow.ValueInt = ((TTxtNumericTextBox)CurrentControl).NumberValueInt.GetValueOrDefault();
@@ -1114,6 +1109,7 @@ namespace Ict.Petra.Client.MCommon.Gui
                 if (DataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_CURRENCY)
                 {
                     CurrentControl = (System.Windows.Forms.Control)((SourceGrid.Cells.Cell)FLocalDataLabelValuesGrid.GetCell(ARow, AColumn)).Tag;
+
                     if (DataLabelValuePartnerRow != null)
                     {
                         DataLabelValuePartnerRow.ValueCurrency = ((TTxtNumericTextBox)CurrentControl).NumberValueDecimal.GetValueOrDefault();
@@ -1128,6 +1124,7 @@ namespace Ict.Petra.Client.MCommon.Gui
                 if (DataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_BOOLEAN)
                 {
                     CurrentControl = (System.Windows.Forms.Control)((SourceGrid.Cells.Cell)FLocalDataLabelValuesGrid.GetCell(ARow, AColumn)).Tag;
+
                     if (DataLabelValuePartnerRow != null)
                     {
                         DataLabelValuePartnerRow.ValueBool = ((System.Windows.Forms.CheckBox)CurrentControl).Checked;
@@ -1142,6 +1139,7 @@ namespace Ict.Petra.Client.MCommon.Gui
                 if (DataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_PARTNERKEY)
                 {
                     CurrentControl = (System.Windows.Forms.Control)((SourceGrid.Cells.Cell)FLocalDataLabelValuesGrid.GetCell(ARow, AColumn)).Tag;
+
                     if (DataLabelValuePartnerRow != null)
                     {
                         DataLabelValuePartnerRow.ValuePartnerKey = Convert.ToInt64(((TtxtAutoPopulatedButtonLabel)CurrentControl).Text);
@@ -1150,13 +1148,13 @@ namespace Ict.Petra.Client.MCommon.Gui
                     {
                         DataLabelValueApplicationRow.ValuePartnerKey = Convert.ToInt64(((TtxtAutoPopulatedButtonLabel)CurrentControl).Text);
                     }
-                    
                 }
 
                 // apply lookup value
                 if (DataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_LOOKUP)
                 {
                     CurrentControl = (System.Windows.Forms.Control)((SourceGrid.Cells.Cell)FLocalDataLabelValuesGrid.GetCell(ARow, AColumn)).Tag;
+
                     if (DataLabelValuePartnerRow != null)
                     {
                         DataLabelValuePartnerRow.ValueLookup = ((TCmbAutoPopulated)CurrentControl).GetSelectedString();
@@ -1178,72 +1176,81 @@ namespace Ict.Petra.Client.MCommon.Gui
         /// <param name="ARow"></param>
         /// <param name="AColumn"></param>
         /// <returns></returns>
-        private Boolean IsCellValueNull (PDataLabelRow ADataLabelRow, int ARow, int AColumn)
+        private Boolean IsCellValueNull(PDataLabelRow ADataLabelRow, int ARow, int AColumn)
         {
             Boolean ReturnValue = false;
+
             System.Windows.Forms.Control CurrentControl;
 
             switch (ADataLabelRow.DataType)
             {
                 case MCommonConstants.OFFICESPECIFIC_DATATYPE_CHAR:
-            		
+
                     CurrentControl = (System.Windows.Forms.Control)((SourceGrid.Cells.Cell)FLocalDataLabelValuesGrid.GetCell(ARow, AColumn)).Tag;
+
                     if (((System.Windows.Forms.TextBox)CurrentControl).Text.Trim() == "")
                     {
                         ReturnValue = true;
                     }
+
                     break;
-                    
+
                 case MCommonConstants.OFFICESPECIFIC_DATATYPE_FLOAT:
                 case MCommonConstants.OFFICESPECIFIC_DATATYPE_INTEGER:
                 case MCommonConstants.OFFICESPECIFIC_DATATYPE_CURRENCY:
-                    
+
                     CurrentControl = (System.Windows.Forms.Control)((SourceGrid.Cells.Cell)FLocalDataLabelValuesGrid.GetCell(ARow, AColumn)).Tag;
+
                     if (((TTxtNumericTextBox)CurrentControl).Text.Trim() == "")
                     {
                         ReturnValue = true;
                     }
+
                     break;
-                    
+
                 case MCommonConstants.OFFICESPECIFIC_DATATYPE_DATE:
                     CurrentControl = (System.Windows.Forms.Control)((SourceGrid.Cells.Cell)FLocalDataLabelValuesGrid.GetCell(ARow, AColumn)).Tag;
+
                     if (((TtxtPetraDate)CurrentControl).Text.Trim() == "")
                     {
                         ReturnValue = true;
                     }
+
                     break;
-                    
+
                 case MCommonConstants.OFFICESPECIFIC_DATATYPE_BOOLEAN:
                     // can't determine at the moment if "unchecked" is set on purpose
                     ReturnValue = false;
                     break;
-                    
+
                 case MCommonConstants.OFFICESPECIFIC_DATATYPE_PARTNERKEY:
                     CurrentControl = (System.Windows.Forms.Control)((SourceGrid.Cells.Cell)FLocalDataLabelValuesGrid.GetCell(ARow, AColumn)).Tag;
-                    if (   ((TtxtAutoPopulatedButtonLabel)CurrentControl).Text.Trim() == ""
-                        || Convert.ToInt64(((TtxtAutoPopulatedButtonLabel)CurrentControl).Text) == 0)
+
+                    if ((((TtxtAutoPopulatedButtonLabel)CurrentControl).Text.Trim() == "")
+                        || (Convert.ToInt64(((TtxtAutoPopulatedButtonLabel)CurrentControl).Text) == 0))
                     {
                         ReturnValue = true;
                     }
+
                     break;
-                    
+
                 case MCommonConstants.OFFICESPECIFIC_DATATYPE_LOOKUP:
                     CurrentControl = (System.Windows.Forms.Control)((SourceGrid.Cells.Cell)FLocalDataLabelValuesGrid.GetCell(ARow, AColumn)).Tag;
+
                     if (((TCmbAutoPopulated)CurrentControl).GetSelectedString().Trim() == "")
                     {
                         ReturnValue = true;
                     }
+
                     break;
 
                 default:
                     break;
             }
-            
 
             return ReturnValue;
-
         }
-        
+
         private void ApplySecurity()
         {
             String MissingTableAccessRight;
@@ -1432,7 +1439,6 @@ namespace Ict.Petra.Client.MCommon.Gui
             try
             {
                 FControlArray[AGridRowIndex] = AControl;
-                
             }
             catch (Exception Exp)
             {
@@ -1589,7 +1595,7 @@ namespace Ict.Petra.Client.MCommon.Gui
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="AGridControl"></param>
         public void Initialize(TUC_LocalDataLabelValues AGridControl)
@@ -1634,5 +1640,5 @@ namespace Ict.Petra.Client.MCommon.Gui
         public override void OnFocusLeaving(SourceGrid.CellContext ASender, CancelEventArgs ACancelEventArgs)
         {
         }
-    }    
+    }
 }
