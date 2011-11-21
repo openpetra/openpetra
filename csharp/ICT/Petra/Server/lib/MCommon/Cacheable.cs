@@ -89,7 +89,7 @@ namespace Ict.Petra.Server.MCommon.Cacheable
 
 #region ManualCode
 		/// <summary>
-		/// Overload of <see cref="GetCacheableTable(TCacheableCommonTablesEnum, string, bool, out System.Type)" />. See description there.
+		/// Overload of <see cref="GetCacheableTable(TCacheableCommonTablesEnum, string, bool, out Type)" />. See description there.
 		/// </summary>
 		/// <remarks>Can be used with Delegate TGetCacheableDataTableFromCache.</remarks>
 		/// <param name="ACacheableTable">Tells what cacheable DataTable should be returned.</param>

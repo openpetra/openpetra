@@ -26,7 +26,7 @@ RootNode:
         grdDetails:
             Dock: Fill
             TableName: PmPersonLanguage
-            Columns: [LanguageCode, LanguageLevel, YearsOfExperience, YearsOfExperienceAsOf, WillingToTranslate]
+            Columns: [LanguageCode, LanguageLevel, YearsOfExperience, YearsOfExperienceAsOf]
             CustomColumns:
                 LanguageCode: {Label=Language}
                 LanguageLevel: {Label=Language Level}

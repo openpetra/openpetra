@@ -141,7 +141,6 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
         [RequireModulePermission("AND(PERSONNEL,PTNRUSER)")]
         public static bool GetSummaryData(Int64 APartnerKey, ref IndividualDataTDS AIndividualDataDS)
         {
-            TLocationPK ReturnValue = new TLocationPK();
             Boolean NewTransaction;
 
             TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
@@ -203,7 +202,6 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
             PPartnerRow PartnerDR = null;
             PLocationRow LocationDR;
             PPartnerLocationRow PartnerLocationDR;
-            TLocationPK BestAddress;
             string PhoneNumber;
             string PhoneExtension = String.Empty;
             Int64 ChurchPartnerKey;
@@ -262,7 +260,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
 
             #region Phone and Email (from 'Best Address')
 
-            BestAddress = ServerCalculations.DetermineBestAddress(APartnerKey, out PartnerLocationDR, out LocationDR);
+            ServerCalculations.DetermineBestAddress(APartnerKey, out PartnerLocationDR, out LocationDR);
 
             if (LocationDR != null)
             {
@@ -415,7 +413,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
 
                     #region Church Address and Phone
 
-                    BestAddress = ServerCalculations.DetermineBestAddress(PartnerRelationshipDT[0].PartnerKey, out PartnerLocationDR, out LocationDR);
+                    ServerCalculations.DetermineBestAddress(PartnerRelationshipDT[0].PartnerKey, out PartnerLocationDR, out LocationDR);
 
                     if (LocationDR != null)
                     {
@@ -474,7 +472,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
 
                             #region Pastor's Phone
 
-                            BestAddress = ServerCalculations.DetermineBestAddress(PartnerRelationshipDT[0].RelationKey,
+                            ServerCalculations.DetermineBestAddress(PartnerRelationshipDT[0].RelationKey,
                                 out PartnerLocationDR, out LocationDR);
 
                             if (LocationDR != null)

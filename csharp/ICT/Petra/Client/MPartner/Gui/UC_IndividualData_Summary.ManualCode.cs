@@ -47,7 +47,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
 
-        private TLocationPK FBestAddressOfPerson = null;
         private string FPhoneOfPerson = null;
         private string FEmailOfPerson = null;
         private Int64[] FSupportingChurchesPartnerKeys = null;
@@ -112,7 +111,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Record current 'Best Address' and it's Phone Number and Email Address of the PERSON
             if (FMainDS.Tables[PartnerEditTDSPPartnerLocationTable.GetTableName()] != null)
             {
-                FBestAddressOfPerson = DetermineAddressComponents(out FPhoneOfPerson, out FEmailOfPerson);
+                DetermineAddressComponents(out FPhoneOfPerson, out FEmailOfPerson);
             }
 
             // Record current relationship(s) that are supporting Church(es) of the PERSON
@@ -152,7 +151,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void CheckForRefreshOfDisplayedData()
         {
             bool RefreshNecessary = false;
-            TLocationPK CurrentBestAddressOfPerson;
             string PhoneOfPerson;
             string EmailOfPerson;
 
@@ -161,7 +159,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (FMainDS.Tables[PartnerEditTDSPPartnerLocationTable.GetTableName()] != null)
             {
                 // Check for change of 'Best Address' and it's Phone Number and Email Address
-                CurrentBestAddressOfPerson = DetermineAddressComponents(out PhoneOfPerson, out EmailOfPerson);
+                DetermineAddressComponents(out PhoneOfPerson, out EmailOfPerson);
 
                 if (PhoneOfPerson != null)
                 {
@@ -326,7 +324,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         /// <param name="APhoneNumberOfPerson">Phone Number of the PERSON in international format.</param>
         /// <param name="AEmailAddressOfPerson">Email Address of the PERSON.</param>
-        /// <returns><see cref="TLocationPK" /> pointing to the 'Best Address' of the PERSON.</returns>
+        /// <returns><see cref="Ict.Petra.Shared.MPartner.TLocationPK" /> pointing to the 'Best Address' of the PERSON.</returns>
         private TLocationPK DetermineAddressComponents(out string APhoneNumberOfPerson, out string AEmailAddressOfPerson)
         {
             TLocationPK ReturnValue = Ict.Petra.Shared.MPartner.Calculations.DetermineBestAddress(

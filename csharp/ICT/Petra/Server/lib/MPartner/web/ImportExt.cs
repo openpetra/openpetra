@@ -761,8 +761,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 /* ShortTermApplicationRow.StLeadershipRating = */
                 ReadString();                                                         // field removed
 
-                Int64? StOption1 = ReadNullableInt64();
-                Int64? StOption2 = ReadNullableInt64();
+//                Int64? StOption1 = ReadNullableInt64();
+//                Int64? StOption2 = ReadNullableInt64();
 
                 /*          // Fields removed.
                  *
