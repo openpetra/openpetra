@@ -29,7 +29,6 @@ using System.IO;
 using System.Globalization;
 using System.Collections;
 using System.Collections.Generic;
-using Ict.Petra.Shared.Interfaces; // Implicit reference
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common;
 using Ict.Common.IO;
