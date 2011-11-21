@@ -32,7 +32,7 @@ using Ict.Tools.DBXML;
 using Ict.Tools.CodeGeneration;
 using Ict.Tools.CodeGeneration.Winforms;
 
-namespace Ict.Tools.GenerateWinforms
+namespace Ict.Tools.GenerateWinForms
 {
     class Program
     {
