@@ -30,8 +30,9 @@ using Ict.Common;
 using Ict.Common.IO; // Implicit reference
 using Ict.Tools.DBXML;
 using Ict.Tools.CodeGeneration;
+using Ict.Tools.CodeGeneration.Winforms;
 
-namespace Ict.Tools.CodeGeneration.Winforms
+namespace Ict.Tools.GenerateWinforms
 {
     class Program
     {

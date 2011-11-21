@@ -33,7 +33,7 @@ using Ict.Common.IO;
 using Ict.Tools.CodeGeneration;
 using GenerateSharedCode;
 
-namespace Ict.Tools.GenerateSharedCode
+namespace Ict.Tools.GenerateGlue
 {
     class Program
     {
