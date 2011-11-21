@@ -67,7 +67,7 @@ namespace Ict.Petra.Client.MCommon.Gui
     {
         private TFrmPetraEditUtils FPetraUtilsObject;
 
-        private Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS FMainDS;
+        // private Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS FMainDS;
 
         private Int64 FPartnerKey;
         private Int32 FApplicationKey;
@@ -132,7 +132,7 @@ namespace Ict.Petra.Client.MCommon.Gui
         {
             set
             {
-                FMainDS = value;
+                // FMainDS = value;
             }
         }
 
