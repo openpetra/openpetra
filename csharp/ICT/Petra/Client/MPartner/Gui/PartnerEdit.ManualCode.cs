@@ -832,6 +832,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             Control FirstErrorControl;
             System.Object FirstErrorContext;
             Int32 MaxColumn;
+            bool AddressesOrRelationsChanged = false;
+            System.Int32 ChangedColumns;
 #if SHOWCHANGES
             System.Int32 Counter;
             String DebugMessage;
@@ -886,7 +888,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                             if ((InspectDT.TableName != PLocationTable.GetTableName()) && (InspectDT.TableName != PPartnerLocationTable.GetTableName()))
                             {
                                 MaxColumn = InspectDT.Columns.Count;
-                                Int32 ChangedColumns = DataUtilities.AcceptChangesForUnmodifiedRows(InspectDT, MaxColumn);
+                                ChangedColumns = DataUtilities.AcceptChangesForUnmodifiedRows(InspectDT, MaxColumn);
 
                                 if (ChangedColumns != 0)
                                 {
@@ -900,7 +902,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                                 MaxColumn = new PLocationTable().Columns.Count;
 
                                 // MessageBox.Show('PLocation MaxColumn: ' + MaxColumn.ToString);
-                                Int32 ChangedColumns = DataUtilities.AcceptChangesForUnmodifiedRows(AInspectDS.PLocation, MaxColumn, true);
+                                ChangedColumns = DataUtilities.AcceptChangesForUnmodifiedRows(AInspectDS.PLocation, MaxColumn, true);
 
                                 if (ChangedColumns != 0)
                                 {
@@ -914,7 +916,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                                 MaxColumn = new PPartnerLocationTable().Columns.Count;
 
                                 // MessageBox.Show('PPartnerLocation MaxColumn: ' + MaxColumn.ToString);
-                                Int32 ChangedColumns = DataUtilities.AcceptChangesForUnmodifiedRows(AInspectDS.PPartnerLocation,
+                                ChangedColumns = DataUtilities.AcceptChangesForUnmodifiedRows(AInspectDS.PPartnerLocation,
                                     MaxColumn,
                                     true);
 
@@ -984,6 +986,13 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
 
                     SubmitDS = AInspectDS.GetChangesTyped(true);
+
+                    if ((SubmitDS.Tables.Contains(PLocationTable.GetTableName()))
+                        || (SubmitDS.Tables.Contains(PPartnerLocationTable.GetTableName()))
+                        || (SubmitDS.Tables.Contains(PPartnerRelationshipTable.GetTableName())))
+                    {
+                        AddressesOrRelationsChanged = true;
+                    }
 
                     // $IFDEF DEBUGMODE if SubmitDS = nil then MessageBox.Show('SubmitDS = nil!'); $ENDIF
                     // TLogging.Log('Before submitting data to the Server  Client DataSet: ' + SubmitDS.GetXml);
@@ -1176,7 +1185,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                             // end;
                             // $ENDIF
                             ucoLowerPart.RefreshAddressesAfterMerge();
-                            ucoLowerPart.RefreshPersonnelDataAfterMerge();
+                            ucoLowerPart.RefreshPersonnelDataAfterMerge(AddressesOrRelationsChanged);
 
                             // Call AcceptChanges so that we don't have any changed data anymore!
                             AInspectDS.AcceptChanges();
@@ -1443,12 +1452,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 case TModuleSwitchEnum.msPartner:
 
                     ViewPartnerData(null, null);
-
-                    if (FNewPartnerWithAutoCreatedAddress)
-                    {
-                        // hardcoded for the first Address of a new Partner
-                        ucoLowerPart.DisableNewButtonOnAutoCreatedAddress();
-                    }
 
                     break;
 
@@ -1882,6 +1885,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             ucoLowerPart.CurrentModuleTabGroup = TModuleSwitchEnum.msPartner;
             ucoLowerPart.InitChildUserControl();
+
+            if (FNewPartnerWithAutoCreatedAddress)
+            {
+                // hardcoded for the first Address of a new Partner
+                ucoLowerPart.DisableNewButtonOnAutoCreatedAddress();
+            }
         }
 
         private void ViewPersonnelData(System.Object sender, System.EventArgs e)

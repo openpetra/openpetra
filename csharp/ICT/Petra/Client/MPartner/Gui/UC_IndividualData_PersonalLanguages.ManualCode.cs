@@ -158,8 +158,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             // the Row is actually added and this would result in the Count to be one too less, so we do the Method call here, short
             // of a non-existing 'AfterNewRowManual' Method....
             DoRecalculateScreenParts();
-
-            EnableDisableTranslationDetails(null, null);
         }
 
         private void ShowLanguageLevelExplanation(System.Object sender, EventArgs e)
@@ -299,12 +297,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             return ReturnValue;
-        }
-
-        private void EnableDisableTranslationDetails(object sender, System.EventArgs e)
-        {
-            chkTranslateOutOf.Enabled = chkWillingToTranslate.Checked;
-            chkTranslateInto.Enabled = chkWillingToTranslate.Checked;
         }
 
         private void OnRecalculateScreenParts(TRecalculateScreenPartsEventArgs e)

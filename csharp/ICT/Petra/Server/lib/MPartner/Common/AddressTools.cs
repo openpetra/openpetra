@@ -44,7 +44,7 @@ using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.MSysMan.Data.Access;
 using Ict.Petra.Server.App.Core;
 
-namespace Ict.Petra.Server.MPartner
+namespace Ict.Petra.Server.MPartner.Common
 {
     ///<summary>
     /// useful functions for the address of a partner
