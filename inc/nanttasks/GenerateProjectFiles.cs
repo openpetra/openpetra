@@ -283,19 +283,16 @@ namespace Ict.Tools.NAntTasks
                     StringBuilder temp = GetTemplateFile(ATemplateDir + "template.sln.project");
                     temp.Replace("${SolutionGuid}", GetProjectGUID(ASolutionFilename));
 
-                    string OutputName = FProjectDependencies[projectName].OutputName;
+                    string OutputName = projectName;
 
-                    if (OutputName.Length > 0)
+                    if (FProjectDependencies[projectName].OutputName.Length > 0)
                     {
-                        temp.Replace("${ProjectName}", OutputName);
-                    }
-                    else
-                    {
-                        temp.Replace("${ProjectName}", projectName);
+                        OutputName = FProjectDependencies[projectName].OutputName;
                     }
 
+                    temp.Replace("${ProjectName}", OutputName);
                     temp.Replace("${ProjectFile}",
-                        FDirProjectFiles + Path.DirectorySeparatorChar + ADevName + Path.DirectorySeparatorChar + projectName + ".csproj");
+                        FDirProjectFiles + Path.DirectorySeparatorChar + ADevName + Path.DirectorySeparatorChar + OutputName + ".csproj");
                     temp.Replace("${ProjectGuid}", GetProjectGUID(projectName));
                     Projects += temp.ToString();
 
