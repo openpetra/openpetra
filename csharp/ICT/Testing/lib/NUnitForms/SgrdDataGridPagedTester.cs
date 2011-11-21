@@ -21,6 +21,7 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 using System;
+using System.Data;
 using System.Windows.Forms;
 using NUnit.Extensions.Forms;
 using Ict.Common.Controls;

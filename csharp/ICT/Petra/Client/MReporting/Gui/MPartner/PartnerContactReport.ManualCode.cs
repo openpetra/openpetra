@@ -28,7 +28,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using System.Data;
 using GNU.Gettext;
-using Ict.Petra.Shared;
+using SourceGrid;
 using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;

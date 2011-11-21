@@ -267,6 +267,11 @@ namespace Ict.Tools.CodeGeneration.DataStore
                                         field.strNameDotNet = TXMLParser.GetAttribute(tableNodes, "name");
                                     }
 
+                                    if (TXMLParser.HasAttribute(tableNodes, "comment"))
+                                    {
+                                        field.strDescription = TXMLParser.GetAttribute(tableNodes, "comment");
+                                    }
+
                                     table.grpTableField.List.Add(field);
 
                                     OverloadTable = true;
@@ -388,6 +393,11 @@ namespace Ict.Tools.CodeGeneration.DataStore
                                     if (TXMLParser.HasAttribute(customTableNodes, "name"))
                                     {
                                         field.strNameDotNet = TXMLParser.GetAttribute(customTableNodes, "name");
+                                    }
+
+                                    if (TXMLParser.HasAttribute(customTableNodes, "comment"))
+                                    {
+                                        field.strDescription = TXMLParser.GetAttribute(customTableNodes, "comment");
                                     }
 
                                     customTable.grpTableField.List.Add(field);

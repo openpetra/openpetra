@@ -28,7 +28,6 @@ using System.Text.RegularExpressions;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Tools.CodeGeneration;
-using Ict.Tools.CodeGeneration.Winforms;
 using Ict.Tools.DBXML;
 
 namespace GenerateI18N
@@ -155,7 +154,7 @@ public class TGenerateCatalogStrings
                 // see also FormWriter.cs, SetControlProperty; it also calls ProperI18NCatalogGetString
                 try
                 {
-                    if (TWinFormsWriter.ProperI18NCatalogGetString(content))
+                    if (TFormWriter.ProperI18NCatalogGetString(content))
                     {
                         writer.WriteLine(identation +
                             designerLine.Substring(0, designerLine.IndexOf(" = ")).Trim() +

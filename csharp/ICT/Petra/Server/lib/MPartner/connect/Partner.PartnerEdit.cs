@@ -57,6 +57,7 @@ using Ict.Petra.Server.MPartner;
 using Ict.Petra.Server.MPartner.DataAggregates;
 using Ict.Petra.Server.MSysMan.Maintenance;
 using Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors;
+using Ict.Petra.Server.MFinance.Common;
 
 namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 {

@@ -459,11 +459,12 @@ namespace Ict.Common.Remoting.Server
                                     null,
                                     new object[] { TRemoteLoader.CLIENTDOMAIN_DLLNAME, TRemoteLoader.CLIENTDOMAIN_CLASSNAME },
                                     Thread.CurrentThread.CurrentCulture,
-                                    null, null));
+                                    null));
 
             if (TLogging.DL >= 10)
             {
-                TLogging.Log("Successfully created an instance of TRemoteLoader in Client's AppDomain '" + FAppDomain.FriendlyName,
+                TLogging.Log(
+                    "Successfully created an instance of TRemoteLoader in Client's AppDomain '" + NewAppDomainConnection.FAppDomain.FriendlyName,
                     TLoggingType.ToConsole | TLoggingType.ToLogfile);
             }
 

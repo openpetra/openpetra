@@ -13,8 +13,9 @@
 list of available commands:
   clean: cleans everything
   compile: compiles OpenPetra including testing
+  generateTools: build the basic tools only
   generateSolution: compiles OpenPetra and generates the project and solution files
-  generateSolutionNoCompile: generates the project and solution files. compile should already be executed
+  generateSolutionNoCompile: generates the project and solution files. minimalGenerateSolution should already be executed
   minimalGenerateSolution: generates the project and solution files. compiles what it needs, but does not compile all code
   quickCompile: will just compile the solution file, with msbuild (Windows) or xbuild (Linux)
       nant quickCompile                    will compile the OpenPetra.sln
@@ -30,6 +31,7 @@ list of available commands:
 compat:
   createSQLStatements: generates the sql create table statements etc from the petra.xml
   dbdoc: generates database design documentation using sql2diagram
+  schemaSpy: generates database documentation using schemaSpy
   recreateDatabase: needed after changes in table structure in petra.xml
   resetDatabase: just resets the data, resets the permissions
   patchDatabase: update the database to the latest development version
@@ -103,7 +105,8 @@ useful parameters
 <target name="quickClean" description="cleans all generated files and the delivery directory">
   <!-- Do not remove dir.delivery, because this would change all UUIDs from the project files -->
   <delete dir="${dir.bin}"/>
-  <delete dir="${dir.namespace.map}"/>
+  <delete file="${namespaceFile}"/>
+  <delete file="${projectDependenciesFile}"/>
   <foreach item="String" property="devenv-name" delim="," in="${projectfiles.templates-list}" >
     <delete dir="${path::combine(dir.projectfiles,devenv-name)}" />
   </foreach>
@@ -134,128 +137,58 @@ useful parameters
 <target name="internal-subdirs" description="Goes into all necessary subdirectories" 
         depends="csharp,nanttasks" />
 
-<target name="generateSolutionNoCompile" description="generates the project and solution files. Target compile should already be executed">
-  <call target="generateCsprojectNoCompile" />
-  <call target="generate-solution-all-internal" />
-</target>
+<target name="generateSolutionNoCompile" description="generates the project and solution files. minimalGenerateSolution should already be executed"
+        depends="nanttasks,generateNamespaceMap,generateProjectFiles"/>
 
 <target name="minimalGenerateSolution" description="compile minimal code for generating source code and the project and solution files">
-  <!-- compile minimal needed tools -->
+    <call target="nanttasks"/>
+    <call target="generateTools"/>
+    <call target="generateWinforms"/>
+    <call target="generateORM"/>
+    <!-- need to call generateNamespaceMap again, even though it was called in generateTools already. but now the winforms and ORM have been generated -->
+    <call target="generateNamespaceMap"/>
+    <call target="generateProjectFiles"/>
+</target>
+
+<target name="generateSolution" description="compiles OpenPetra and generates the project and solution files"
+        depends="minimalGenerateSolution,quickCompile"/>
+
+<target name="generateNamespaceMap">
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('CsDepend')}"/>
+  <GenerateNamespaceMap
+    CodeRootDir="${dir.csharp}"
+    NamespaceMapFilename="${namespaceFile}"
+    NamespaceMap3rdParty="${namespaceFile3rdParty}"
+    DependencyMapFilename="${projectDependenciesFile}"/>
+</target>
+
+<target name="generateTools">
   <call target="nanttasks"/>
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('CsDepend')}"/>
+  <call target="generateNamespaceMap"/>
+  <delete file="${dir.bin}/dont_compile.txt"/>
   <nant inheritall="false" target="compile" 
         buildfile="csharp/ThirdParty/ThirdParty.build" />
-  <nant inheritall="false" target="compile" 
+  <property name="csdependfilesRegEx" value="(.*/Common/[^/]*.cs)|(.*/Common/IO/[^/]*.cs)|(.*/Common/DB/[^/]*.cs)"/>
+  <nant inheritall="true" target="compile" 
         buildfile="csharp/ICT/Common/ICT.Common.build" />
-  <nant inheritall="false" target="compile" 
+  <property name="csdependfilesRegEx" value=".*"/>
+  <nant inheritall="true" target="compile" 
         buildfile="csharp/ICT/PetraTools/ICT.PetraTools.build" />
-  <!-- Find all dependencies -->
-  <mkdir dir="${dir.bin}" />
-  <!-- write this information to a file, since the properties are not passed through to the sub directories -->
-  <echo file="${dir.bin}/dont_compile.txt">true</echo>
-  <nant inheritall="false" target="depend" 
-        buildfile="csharp/csharp.build" />
-  <!-- Generate the project/solution files -->
-  <call target="generateSolutionNoCompile" />
-  <delete file="${dir.bin}/dont_compile.txt"/>
 </target>
 
-<target name="generateSolution" description="compiles OpenPetra and generates the project and solution files">
-  <delete file="${dir.bin}/dont_compile.txt"/>
-  <call target="compile" />
-  <call target="generateSolutionNoCompile" />
-</target>
-
-<!-- Generate solution targets -->
-<target name="generate-solution-all-internal" >
-  <foreach item="String" property="devenv-name" delim="," in="${projectfiles.templates-list}" >
-    <!-- OpenPetra.sln -->
-    <property name="includepaths" value="Common,Petra,PetraTools,Testing"/>
-    <property name="solution-name" value="OpenPetra.sln"/>
-    <call target="generate-solution-internal" />
-    <!-- OpenPetra.Server.sln -->
-    <property name="includepaths" value="Common,Petra/Shared,Petra/Server,Petra/ServerPlugins,Petra/PetraServerConsole"/>
-    <property name="solution-name" value="OpenPetra.Server.sln"/>
-    <call target="generate-solution-internal" />
-    <!-- OpenPetra.Client.sln -->
-    <property name="includepaths" value="Common,Petra/Shared,Petra/Client,Petra/ClientPlugins,Petra/PetraClient"/>
-    <property name="solution-name" value="OpenPetra.Client.sln"/>
-    <call target="generate-solution-internal" />
-    <!-- OpenPetra.Tools.sln -->
-    <property name="includepaths" value="Common,PetraTools"/>
-    <property name="solution-name" value="OpenPetra.Tools.sln"/>
-    <call target="generate-solution-internal" />
-    <!-- OpenPetra.Testing.sln -->
-    <property name="includepaths" value="Common,PetraTools,Petra/Shared,Petra/Client,Petra/ClientPlugins,Petra/Server,Petra/ServerPlugins,Testing"/>
-    <property name="solution-name" value="OpenPetra.Testing.sln"/>
-    <call target="generate-solution-internal" />
-  </foreach>
-</target>
-
-
-<target name="generate-solution-internal" >
-  <property name="templatedir" value="${path::combine(dir.incdir.template, devenv-name)}" />
-  <property name="TemplateProject" value="" />
-  <property name="TemplateConfiguration" value="" />
-  <property name="SolutionGuid" value="{${OP::GUIDGen()}}" />
-  <!-- collect all project files -->
-  <property name="projectfiles" value="^"/>
-  <foreach item="File" property="ProjectFile">
-    <in>
-      <items basedir="${path::combine(dir.projectfiles, devenv-name)}">
-        <include name="*.csproj"/>
-      </items>
-    </in>
-    <do>
-      <property name="projectfiles" value="${projectfiles},${ProjectFile}"/>
-    </do>
-  </foreach>
-  <property name="projectfiles" value="${string::replace(projectfiles,'^,','')}"/>
-  <foreach item="String" property="ProjectFile" delim="," in="${projectfiles}">
-    <do>
-      <!-- do we need to remove the xmlns="http://schemas.microsoft.com/developer/msbuild/2003" from the project file so that xmlpeek works? -->
-      <property name="temp" value="${script::ReplaceInFile(ProjectFile, 'xmlns', 'xmlnsDeactivated')}"/>  
-      <xmlpeek file="${ProjectFile}"
-              xpath="/Project/PropertyGroup/ProjectGuid"
-              property="ProjectGuid"/>
-      <xmlpeek file="${ProjectFile}"
-              xpath="//Compile[1]/@Include"
-              property="FirstCSFile"/>
-      <property name="temp" value="${script::ReplaceInFile(ProjectFile, 'xmlnsDeactivated', 'xmlns')}"/>
-      
-      <property name="FirstCSFile" value="${OP::MakeAbsolute(FirstCSFile, dir.projectfiles + '/' + devenv-name + '/')}"/>
-      <property name="FirstCSFile" value="${string::replace(FirstCSFile,dir.root,'')}"/>
-      <property name="FirstCSFile" value="${string::replace(FirstCSFile,'\','/')}"/>
-      <property name="FirstCSFile" value="${string::replace(FirstCSFile,'/csharp/ICT/','')}"/>
-      <foreach item="String" property="includePath" delim="," in="${includepaths}" >
-        <if test="${string::starts-with(FirstCSFile,includePath+'/')}">
-          <property name="ProjectName" value="${path::get-file-name-without-extension(ProjectFile)}" />
-          <loadfile file="${path::combine(templatedir, 'template.sln.project')}"
-                    property="tempTemplateProject" encoding="utf-8">  
-            <filterchain>
-              <expandproperties />
-            </filterchain>
-          </loadfile>
-          <property name="TemplateProject" value="${TemplateProject}${tempTemplateProject}" />
-          <loadfile file="${path::combine(templatedir, 'template.sln.configuration')}"
-                    property="tempTemplateConfiguration" encoding="utf-8">  
-            <filterchain>
-              <expandproperties />
-            </filterchain>
-          </loadfile>
-          <property name="TemplateConfiguration" value="${TemplateConfiguration}${tempTemplateConfiguration}" />
-        </if>
-      </foreach>
-    </do>
-  </foreach>
-  <copy file="${path::combine(templatedir, 'template.sln')}"
-        tofile="${path::combine(dir.projectfiles,
-                                path::combine(devenv-name, solution-name))}" 
-        overwrite="true">  
-    <filterchain>
-      <expandproperties />
-    </filterchain>
-  </copy>
-
+<target name="generateProjectFiles">
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('CsDepend')}"/>
+  <GenerateProjectFiles 
+    CodeRootDir="${dir.csharp}"
+    DependencyMapFilename="${projectDependenciesFile}"
+    GUIDMapFilename="${uuidFile}"
+    TemplateDir="${dir.incdir.template}"
+    DevEnvironments="${projectfiles.templates-list}"
+    DirBin="${dir.bin}"
+    DirProjectFiles="${dir.projectfiles}"
+    NetFrameworkVersion="${NETframework-version}"
+    />
 </target>
 
 <!-- Include default implementation -->
@@ -273,19 +206,16 @@ useful parameters
        quickCompile is intended as an alternative to compile in SharpDevelop directly.
   -->
   <property name="solution" value="OpenPetra" overwrite="false"/>
-  <property name="solution.file" value="${path::combine(dir.projectfiles,
-                                path::combine(devenv-name, 'OpenPetra.'+solution+'.sln'))}"/>
-  <property name="solution.file" value="${string::replace(solution.file, 'OpenPetra.OpenPetra.sln', 'OpenPetra.sln')}"/>
   <if test="${not platform::is-windows()}" >
-    <if test="${property::exists('xbuild')}">
-      <exec program="${xbuild}" commandline="${solution.file}">
-         <environment>
-           <variable name="MONO_PATH" value="${NAntBin.dir}"/> <!-- variable does not exist yet; otherwise: value="${NAntBin.dir}:${environment::get-variable('MONO_PATH')}" -->
-         </environment>
-      </exec>
-    </if>
+    <property name="solution.file" value="${path::combine(dir.projectfiles,
+                                  path::combine(devenv-xbuild, 'OpenPetra.'+solution+'.sln'))}"/>
+    <property name="solution.file" value="${string::replace(solution.file, 'OpenPetra.OpenPetra.sln', 'OpenPetra.sln')}"/>
+    <exec program="xbuild" commandline="${solution.file}"/>
   </if>
   <if test="${platform::is-windows()}" >
+    <property name="solution.file" value="${path::combine(dir.projectfiles,
+                                path::combine(devenv-msbuild, 'OpenPetra.'+solution+'.sln'))}"/>
+    <property name="solution.file" value="${string::replace(solution.file, 'OpenPetra.OpenPetra.sln', 'OpenPetra.sln')}"/>
     <if test="${file::exists(msbuildtask.file)}">
       <msbuild project="${solution.file}" verbosity="Minimal">
         <property name="Configuration" value="${Configuration}"/>
@@ -313,6 +243,7 @@ useful parameters
 
 <target name="generateWinforms">
   <nant inheritall="false" target="custdepend" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Client/Ict.Petra.Client.build')}" verbose="${verbose}"/>
+  <nant inheritall="false" target="custdepend" buildfile="${path::combine(dir.csharp, 'ICT/Petra/PetraClient/PetraClient.build')}" verbose="${verbose}"/>
 </target>
 
 <target name="generateWinform">
