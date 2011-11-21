@@ -13,9 +13,7 @@ RootNode:
         actCancelAllSubscriptions: {Label=&Cancel All Subscriptions, ActionClick=CancelAllSubscriptions}
     Controls:
         pnlContent:
-            Controls: 
-                Row0: [pnlGrid]
-                Row1: [pnlDetails]
+            Controls: [pnlGrid, pnlDetails]
             Dock: Fill
         pnlGrid: {Stretch=horizontally}
             Dock: Fill
@@ -33,7 +31,7 @@ RootNode:
             Dock: Fill
             Columns: [PSubscription.PublicationCode, PSubscription.SubscriptionStatus, PSubscription.GratisSubscription]
             ActionFocusRow: FocusedRowChanged
-        pnlDetails: {Stretch=fully}
+        pnlDetails: 
             Dock: Bottom
             Controls: [ucoDetails]
         ucoDetails: {Stretch=horizontally}

@@ -301,7 +301,7 @@ namespace Ict.Petra.Client.MCommon.Gui
                 ((TFrmPetraEditUtils)((IFrmPetraEdit) this.ParentForm).GetPetraUtilsObject()).SetChangedFlag();
             }
         }
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -616,6 +616,8 @@ namespace Ict.Petra.Client.MCommon.Gui
                 
    				// enable save button in editor when cell contents have changed
                 PartnerKeyEditor.ValueChanged += new TDelegatePartnerChanged(this.PartnerKeyControlValueHasChanged);
+                PartnerKeyEditor.TextChanged += new System.EventHandler(this.ControlValueHasChanged);
+                
                 
                 FLocalDataLabelValuesGrid[ARowIndex, 0] = new SourceGrid.Cells.Cell();
                 FLocalDataLabelValuesGrid.LinkedControls.Add(new LinkedControlValue(PartnerKeyEditor, new Position(ARowIndex, 0)));
@@ -649,6 +651,7 @@ namespace Ict.Petra.Client.MCommon.Gui
 
    				// enable save button in editor when cell contents have changed
                 LookupValueEditor.SelectedValueChanged += new EventHandler(this.ControlValueHasChanged);
+                LookupValueEditor.TextChanged += new EventHandler(this.ControlValueHasChanged);
                 
                 FLocalDataLabelValuesGrid[ARowIndex, 1] = new SourceGrid.Cells.Cell();
                 FLocalDataLabelValuesGrid.LinkedControls.Add(new LinkedControlValue((Control)LookupValueEditor, new Position(ARowIndex, 1)));
