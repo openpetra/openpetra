@@ -201,11 +201,18 @@ namespace Ict.Tools.NAntTasks
 
                     string ProjectGUID = GetProjectGUID(projectName);
 
+                    string exeProjectName = projectName;
+
+                    if (FProjectDependencies[projectName].OutputName.Length > 0)
+                    {
+                        exeProjectName = FProjectDependencies[projectName].OutputName;
+                    }
+
                     WriteProjectFile(
                         FTemplateDir,
                         ide.Trim(),
                         srcPath,
-                        projectName,
+                        exeProjectName,
                         ProjectType,
                         FProjectDependencies[projectName].ReferencedDlls,
                         ProjectGUID);
@@ -275,7 +282,18 @@ namespace Ict.Tools.NAntTasks
                 {
                     StringBuilder temp = GetTemplateFile(ATemplateDir + "template.sln.project");
                     temp.Replace("${SolutionGuid}", GetProjectGUID(ASolutionFilename));
-                    temp.Replace("${ProjectName}", projectName);
+
+                    string OutputName = FProjectDependencies[projectName].OutputName;
+
+                    if (OutputName.Length > 0)
+                    {
+                        temp.Replace("${ProjectName}", OutputName);
+                    }
+                    else
+                    {
+                        temp.Replace("${ProjectName}", projectName);
+                    }
+
                     temp.Replace("${ProjectFile}",
                         FDirProjectFiles + Path.DirectorySeparatorChar + ADevName + Path.DirectorySeparatorChar + projectName + ".csproj");
                     temp.Replace("${ProjectGuid}", GetProjectGUID(projectName));
@@ -581,6 +599,12 @@ namespace Ict.Tools.NAntTasks
                     currentDll = new TDetailsOfDll();
                     string[] LineDetails = line.Split(new char[] { ',' });
                     currentDll.OutputType = LineDetails[1];
+
+                    if (LineDetails.Length > 2)
+                    {
+                        currentDll.OutputName = LineDetails[2];
+                    }
+
                     map.Add(LineDetails[0], currentDll);
                 }
             }

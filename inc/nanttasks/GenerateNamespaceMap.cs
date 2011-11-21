@@ -161,6 +161,8 @@ namespace Ict.Tools.NAntTasks
 
             try
             {
+                string LastNamespace = string.Empty;
+
                 while (!sr.EndOfStream)
                 {
                     string line = sr.ReadLine();
@@ -171,6 +173,8 @@ namespace Ict.Tools.NAntTasks
 
                         if (Namespace != string.Empty)
                         {
+                            LastNamespace = Namespace;
+
                             if (!NamespaceMap.ContainsKey(Namespace))
                             {
                                 NamespaceMap.Add(Namespace, DllName);
@@ -211,6 +215,7 @@ namespace Ict.Tools.NAntTasks
                     else if (line.Contains("static void Main("))
                     {
                         DetailsOfDll.OutputType = "exe";
+                        DetailsOfDll.OutputName = LastNamespace;
                     }
                 }
             }
@@ -236,6 +241,7 @@ namespace Ict.Tools.NAntTasks
             {
                 TDetailsOfDll DetailsOfDll = new TDetailsOfDll();
                 DetailsOfDll.OutputType = UsingNamespaces[key].OutputType;
+                DetailsOfDll.OutputName = UsingNamespaces[key].OutputName;
                 result.Add(key, DetailsOfDll);
 
                 foreach (string usingNamespace in UsingNamespaces[key].UsedNamespaces)
@@ -341,7 +347,7 @@ namespace Ict.Tools.NAntTasks
 
             foreach (string key in sortedDlls)
             {
-                sw.WriteLine(key + "," + map[key].OutputType);
+                sw.WriteLine(key + "," + map[key].OutputType + "," + map[key].OutputName);
 
                 List <string>sortedReferences = new List <string>(map[key].ReferencedDlls);
                 sortedReferences.Sort();
@@ -366,6 +372,11 @@ namespace Ict.Tools.NAntTasks
         /// library or exe
         /// </summary>
         public string OutputType = "library";
+
+        /// <summary>
+        /// sometimes an exe has a different name than the directory structure. using the namespace of the main class
+        /// </summary>
+        public string OutputName = String.Empty;
 
         /// <summary>
         /// this dll is using the following namespaces
