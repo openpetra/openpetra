@@ -371,6 +371,7 @@ namespace Ict.Tools.NAntTasks
                     {
                         temp = GetTemplateFile(ATemplateDir + "template.csproj.reference");
                     }
+
                     temp.Replace("${reference-name}", Path.GetFileNameWithoutExtension(referencedProject));
                     temp.Replace("${reference-path}", referencedProject.Replace('/', '\\'));
                     temp.Replace("${relative-reference-path}", referencedProject);

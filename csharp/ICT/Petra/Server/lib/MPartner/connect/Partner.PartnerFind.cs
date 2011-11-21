@@ -64,7 +64,92 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
     ///          However, Server Objects that derive from these objects and that
     ///          are also UIConnectors are feasible.
     /// </summary>
-    public class TPartnerFindUIConnector : TPartnerFind
+    public class TPartnerFindUIConnector : TConfigurableMBRObject, IPartnerUIConnectorsPartnerFind
     {
+        private TPartnerFind FPartnerFind = new TPartnerFind();
+
+        /// <summary>
+        /// constructor
+        /// </summary>
+        public TPartnerFindUIConnector() : base()
+        {
+        }
+
+        /// <summary>Returns reference to the Asynchronous execution control object to the caller</summary>
+        public IAsynchronousExecutionProgress AsyncExecProgress
+        {
+            get
+            {
+                return FPartnerFind.AsyncExecProgress;
+            }
+        }
+
+        /// <summary>
+        /// Procedure to execute a Find query. Although the full
+        /// query results are retrieved from the DB and stored internally in an object,
+        /// data will be returned in 'pages' of data, each page holding a defined number
+        /// of records.
+        ///
+        /// </summary>
+        /// <param name="ACriteriaData">HashTable containing non-empty Partner Find parameters</param>
+        /// <param name="ADetailedResults">Returns more (when true) or less (when false) columns
+        /// </param>
+        public void PerformSearch(DataTable ACriteriaData, bool ADetailedResults)
+        {
+            FPartnerFind.PerformSearch(ACriteriaData, ADetailedResults);
+        }
+
+        /// <summary>
+        /// Returns the specified find results page.
+        ///
+        /// @comment Pages can be requested in any order!
+        ///
+        /// </summary>
+        /// <param name="APage">Page to return</param>
+        /// <param name="APageSize">Number of records to return per page</param>
+        /// <param name="ATotalRecords">The amount of rows found by the SELECT statement</param>
+        /// <param name="ATotalPages">The number of pages that will be needed on client-side to
+        /// hold all rows found by the SELECT statement</param>
+        /// <returns>DataTable containing the find result records for the specified page
+        /// </returns>
+        public DataTable GetDataPagedResult(System.Int16 APage, System.Int16 APageSize, out System.Int32 ATotalRecords, out System.Int16 ATotalPages)
+        {
+            return FPartnerFind.GetDataPagedResult(APage, APageSize, out ATotalRecords, out ATotalPages);
+        }
+
+        /// <summary>
+        /// Stops the query execution.
+        ///
+        /// Is intended to be called as an Event from FAsyncExecProgress.Cancel.
+        ///
+        /// @comment It might take some time until the executing query is cancelled by
+        /// the DB, but this procedure returns immediately. The reason for this is that
+        /// we consider the query cancellation as done since the application can
+        /// 'forget' about the result of the cancellation process (but beware of
+        /// executing another query while the other is stopping - this leads to ADO.NET
+        /// errors that state that a ADO.NET command is still executing!).
+        ///
+        /// </summary>
+        /// <param name="ASender">Object that requested the stopping (not evaluated)</param>
+        /// <param name="AArgs">(not evaluated)
+        /// </param>
+        /// <returns>void</returns>
+        public void StopSearch(object ASender, EventArgs AArgs)
+        {
+            FPartnerFind.StopSearch(ASender, AArgs);
+        }
+
+        /// <summary>
+        /// Adds all Partners that were last found to an Extract.
+        /// </summary>
+        /// <param name="AExtractID">ExtractID of the Extract to add the Partners to.</param>
+        /// <param name="AVerificationResult">Contains DB call exceptions, if there are any.</param>
+        /// <returns>The number of Partners that were added to the Extract, or -1
+        /// if DB call exeptions occured.</returns>
+        public Int32 AddAllFoundPartnersToExtract(int AExtractID,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            return AddAllFoundPartnersToExtract(AExtractID, out AVerificationResult);
+        }
     }
 }

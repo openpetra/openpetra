@@ -46,7 +46,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
     /// Base for the Partner Find Screen UIConnector.
     /// We need this in MPartner.Common, so that we can use the functionality from the SimplePartnerFind WebConnector as well
     /// </summary>
-    public class TPartnerFind : TConfigurableMBRObject, IPartnerUIConnectorsPartnerFind
+    public class TPartnerFind
     {
         /// <summary>Paged query object</summary>
         TPagedDataSet FPagedDataSetObject;
@@ -71,36 +71,6 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                 return FAsyncExecProgress;
             }
         }
-
-
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        /// <returns>void</returns>
-        public TPartnerFind() : base()
-        {
-#if DEBUGMODE
-            if (TLogging.DL >= 7)
-            {
-                Console.WriteLine(this.GetType().FullName + " called.");
-            }
-#endif
-        }
-
-#if DEBUGMODE
-        /// <summary>
-        /// Destructor.
-        /// </summary>
-        ~TPartnerFind()
-        {
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ".FINALIZE called!");
-            }
-        }
-#endif
-
-
 
         /// <summary>
         /// Procedure to execute a Find query. Although the full

@@ -312,7 +312,10 @@ namespace Ict.Tools.NAntTasks
             StreamWriter sw = new StreamWriter(filename);
             sw.WriteLine("# Generated with GenerateNamespaceMap at " + DATE_TIME_STRING);
 
-            foreach (string key in map.Keys)
+            List <string>sortedNamespaces = new List <string>(map.Keys);
+            sortedNamespaces.Sort();
+
+            foreach (string key in sortedNamespaces)
             {
                 sw.WriteLine(key + "=" + map[key]);
             }
@@ -333,11 +336,17 @@ namespace Ict.Tools.NAntTasks
             StreamWriter sw = new StreamWriter(filename);
             sw.WriteLine("# Generated with GenerateNamespaceMap at " + DATE_TIME_STRING);
 
-            foreach (string key in map.Keys)
+            List <string>sortedDlls = new List <string>(map.Keys);
+            sortedDlls.Sort();
+
+            foreach (string key in sortedDlls)
             {
                 sw.WriteLine(key + "," + map[key].OutputType);
 
-                foreach (string referencedDll in map[key].ReferencedDlls)
+                List <string>sortedReferences = new List <string>(map[key].ReferencedDlls);
+                sortedReferences.Sort();
+
+                foreach (string referencedDll in sortedReferences)
                 {
                     sw.Write("  ");
                     sw.WriteLine(referencedDll);
