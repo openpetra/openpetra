@@ -181,6 +181,27 @@ namespace Ict.Tools.NAntTasks
             }
         }
 
+        private Dictionary <string, string>FDebugParameters = new Dictionary <string, string>();
+        /// <summary>
+        /// a comma separated list of project names and their parameters,
+        /// eg. PetraClient,-C:${ClientConfigFile},PetraServerConsole,-C:${ServerConfigFile}
+        /// </summary>
+        [TaskAttribute("DebugParameters", Required = false)]
+        public string DebugParameters {
+            set
+            {
+                FDebugParameters = new Dictionary <string, string>();
+
+                string[] values = value.Split(new char[] { ',' });
+
+                for (int counter = 0; counter < values.Length; counter += 2)
+                {
+                    FDebugParameters.Add(values[counter], values[counter + 1]);
+                }
+            }
+        }
+
+
         private Dictionary <string, string>FProjectGUIDs;
         private Dictionary <string, TDetailsOfDll>FProjectDependencies;
 
@@ -409,7 +430,15 @@ namespace Ict.Tools.NAntTasks
             template.Replace("${Namespace}", AProjectName);
             template.Replace("${NETframework-version}", FNetFrameworkVersion);
             template.Replace("${dir.bin}", FDirBin);
-            template.Replace("${DebugStartArguments}", ""); // TODO? read from directory
+
+            if (FDebugParameters.ContainsKey(AProjectName))
+            {
+                template.Replace("${DebugStartArguments}", FDebugParameters[AProjectName]);
+            }
+            else
+            {
+                template.Replace("${DebugStartArguments}", "");
+            }
 
             StringBuilder temp;
 
@@ -454,8 +483,6 @@ namespace Ict.Tools.NAntTasks
             template.Replace("${TemplateProjectReferences}", ProjectReferences.ToString());
 
             template.Replace("${TemplateReferences}", OtherReferences.ToString());
-
-            // TODO: create assembly info file
 
             StringBuilder CompileFile = new StringBuilder();
 

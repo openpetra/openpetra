@@ -192,6 +192,7 @@ useful parameters
     DirProjectFiles="${dir.projectfiles}"
     NetFrameworkVersion="${NETframework-version}"
     ProjectVersion="${ReleaseID}"
+    DebugParameters="PetraClient,-C:${ClientConfigFile},PetraServerConsole,-C:${ServerConfigFile}"
     />
 </target>
 
