@@ -448,7 +448,6 @@ namespace Ict.Tools.NAntTasks
 
             foreach (string referencedProject in AProjectDependencies)
             {
-                // TODO referencenohint?
                 if (!FProjectDependencies.ContainsKey(referencedProject))
                 {
                     if (referencedProject.Contains("${csharpStdLibs}"))
@@ -573,7 +572,7 @@ namespace Ict.Tools.NAntTasks
             template.Replace("${TemplateResource}", Resources.ToString());
 
             template.Replace("${dir.3rdParty}", FCodeRootDir + "\\ThirdParty");
-            template.Replace("${csharpStdLibs}", ""); // TODO?
+            template.Replace("${csharpStdLibs}", "");
 
             string completedFile = template.ToString();
 
