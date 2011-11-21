@@ -26,7 +26,7 @@ using System.Data;
 using Ict.Common;
 using Ict.Common.DB;
 
-namespace SQLiteConsole
+namespace Ict.Tools.SQLiteConsole
 {
 /// <summary>
 /// the problem is that there are no admin tools to look at an encrypted SQLite file

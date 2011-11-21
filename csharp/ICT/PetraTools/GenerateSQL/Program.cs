@@ -24,8 +24,9 @@
 using System;
 using Ict.Common;
 using Ict.Tools.DBXML;
+using GenerateSQL;
 
-namespace GenerateSQL
+namespace Ict.Tools.GenerateSQL
 {
 class Program
 {

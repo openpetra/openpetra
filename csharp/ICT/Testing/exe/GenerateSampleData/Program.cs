@@ -28,7 +28,7 @@ using Ict.Common;
 using Ict.Common.IO;
 using Ict.Petra.Shared.MPartner;
 
-namespace GenerateSampleData
+namespace Ict.Tools.GenerateSampleData
 {
 /// <summary>
 /// Using Data that has been generated with the script from http://www.generatedata.com/#generator,

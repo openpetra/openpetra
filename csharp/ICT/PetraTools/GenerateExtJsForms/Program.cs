@@ -31,7 +31,7 @@ using Ict.Tools.DBXML;
 using Ict.Tools.CodeGeneration;
 using Ict.Tools.CodeGeneration.ExtJs;
 
-namespace GenerateExtJsForms
+namespace Ict.Tools.GenerateExtJsForms
 {
 class Program
 {

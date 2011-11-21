@@ -25,7 +25,7 @@
 using System;
 using GNU.Gettext; //Required namespace for i18n
 
-namespace I18N_GNU.Gettext
+namespace Ict.Testing.I18N_GNU.Gettext
 {
     class Example
     {

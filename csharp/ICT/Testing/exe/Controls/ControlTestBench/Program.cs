@@ -8,8 +8,9 @@
  */
 using System;
 using System.Windows.Forms;
+using ControlTestBench;
 
-namespace ControlTestBench
+namespace Ict.Testing.ControlTestBench
 {
 /// <summary>
 /// Class with program entry point.

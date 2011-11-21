@@ -29,8 +29,9 @@ using System.Collections.Specialized;
 using Ict.Common;
 using Ict.Tools.DBXML;
 using Ict.Tools.CodeGeneration;
+using GenerateI18N;
 
-namespace GenerateI18N
+namespace Ict.Tools.GenerateI18N
 {
 class Program
 {

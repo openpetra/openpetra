@@ -31,8 +31,9 @@ using NamespaceHierarchy;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Tools.CodeGeneration;
+using GenerateSharedCode;
 
-namespace GenerateSharedCode
+namespace Ict.Tools.GenerateSharedCode
 {
 class Program
 {

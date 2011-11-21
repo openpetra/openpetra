@@ -15,6 +15,7 @@ using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.Controls;
+using ControlTestBench;
 
 /*using Ict.Petra.Client.App.PetraClient;
  * using Ict.Petra.Shared;
@@ -23,7 +24,7 @@ using Ict.Common.Controls;
  * using Ict.Petra.Client.App.Core.RemoteObjects;
  */
 
-namespace ControlTestBench
+namespace Ict.Testing.ControlTestBench
 {
 /// <summary>
 /// Description of MainForm.

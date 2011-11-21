@@ -28,7 +28,7 @@ using System.Globalization;
 using GNU.Gettext;
 using Ict.Common;
 
-namespace I18N
+namespace Ict.Testing.I18N
 {
 /// <summary>
 /// see http://www.gnu.org/software/gettext/manual/gettext.html#C_0023

@@ -25,7 +25,7 @@ using System;
 using System.IO;
 using Ict.Common;
 
-namespace ConvertExtToCSV
+namespace Ict.Tools.ConvertExtToCSV
 {
 class Program
 {

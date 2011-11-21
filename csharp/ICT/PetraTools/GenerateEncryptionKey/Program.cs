@@ -27,7 +27,7 @@ using System.Security.Cryptography;
 using Ict.Common;
 using Ict.Common.IO;
 
-namespace GenerateEncryptionKey
+namespace Ict.Tools.GenerateEncryptionKey
 {
 class Program
 {

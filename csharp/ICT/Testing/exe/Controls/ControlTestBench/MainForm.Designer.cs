@@ -16,7 +16,8 @@ using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.Controls;
-namespace ControlTestBench
+
+namespace Ict.Testing.ControlTestBench
 {
 partial class MainForm
 {

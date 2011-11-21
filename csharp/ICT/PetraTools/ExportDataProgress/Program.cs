@@ -29,7 +29,7 @@ using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.IO;
 
-namespace ExportDataProgress
+namespace Ict.Tools.ExportDataProgress
 {
 class Program
 {
