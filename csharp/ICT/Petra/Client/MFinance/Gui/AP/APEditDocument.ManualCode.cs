@@ -68,10 +68,23 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 FMainDS.AApDocument[0].LastDetailNumber);
             FMainDS.AApDocument[0].LastDetailNumber++;
 
-            // for the moment, set all to approved, since we don't support approval of documents at the moment
+            // for the moment, set all to approved, since we don't yet support approval of documents
             FMainDS.AApDocument[0].DocumentStatus = MFinanceConstants.AP_DOCUMENT_APPROVED;
+        	btnRemoveDetail.Enabled = (GetSelectedDetailRow() != null);
         }
 
+        private void RemoveDetail(Object sender, EventArgs e)
+        {
+        	AApDocumentDetailRow Row = GetSelectedDetailRow();
+        	if (Row == null)
+        		return;
+        	
+		    GetDataFromControls(FMainDS.AApDocument[0]);
+        	FMainDS.AApDocumentDetail.Rows.Remove(Row);
+	        ShowData(FMainDS.AApDocument[0]);
+        	btnRemoveDetail.Enabled = (GetSelectedDetailRow() != null);
+        }
+        
         private void UpdateCreditTerms(object sender, TPetraDateChangedEventArgs e)
         {
             if (sender == dtpDateDue)
@@ -113,6 +126,25 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, ARow.LedgerNumber, true, false, ActiveOnly, false);
             TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, ARow.LedgerNumber, true, false, ActiveOnly, false);
         }
+        
+        private bool BatchBalanceOK()
+        {
+        	decimal DocumentBalance = FMainDS.AApDocument[0].TotalAmount;
+        	
+        	foreach (AApDocumentDetailRow Row in FMainDS.AApDocumentDetail.Rows)
+        	{
+        		DocumentBalance -= Row.Amount;
+        	}
+        	if (DocumentBalance == 0.0m)
+        	{
+        		return true;
+        	}
+        	else
+        	{
+         		System.Windows.Forms.MessageBox.Show(Catalog.GetString("The document Amount does not equal the sum of the detail lines."), Catalog.GetString("Balance Problem"));
+	         	return false;
+        	}
+        }
 
         /// <summary>
         /// Post document as a GL Batch
@@ -130,6 +162,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
 
             // TODO: make sure that there are uptodate exchange rates
+            
+            // If the batch will not balance, I'll stop right here..
+            if (!BatchBalanceOK())
+            	return;
 
             TVerificationResultCollection Verifications;
 
@@ -172,7 +208,12 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 // TODO: show posting register of GL Batch?
 
                 // TODO: refresh the screen, to reflect that the transactions have been posted
-                // TODO: refresh/notify other screens as well?
+
+                Form Opener = FPetraUtilsObject.GetCallerForm();
+                if (Opener.GetType() == typeof(TFrmAPSupplierTransactions))
+                {
+                	((TFrmAPSupplierTransactions)Opener).Reload();
+                }
             }
         }
     }

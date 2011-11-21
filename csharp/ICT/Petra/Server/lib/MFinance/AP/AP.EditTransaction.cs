@@ -292,6 +292,17 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             return MainDS;
         }
 
+        private static bool BatchBalanceOK(AccountsPayableTDS AMainDS)
+        {
+        	decimal DocumentBalance = AMainDS.AApDocument[0].TotalAmount;
+        	
+        	foreach (AApDocumentDetailRow Row in AMainDS.AApDocumentDetail.Rows)
+        	{
+        		DocumentBalance -= Row.Amount;
+        	}
+        	return (DocumentBalance == 0.0m);
+        }
+        
         /// <summary>
         /// load the AP documents and see if they are ready to be posted
         /// </summary>
@@ -327,7 +338,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                                 row.ApNumber, row.DocumentStatus), TResultSeverity.Resv_Critical));
                 }
 
-                // TODO: also check if details are filled, and they each have a costcentre and account? totals match sum of details
+                // TODO: also check if details are filled, and they each have a costcentre and account?
 
                 // TODO: check for document.apaccount, if not set, get the default apaccount from the supplier, and save the ap document
             }
@@ -347,8 +358,15 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             }
 
             DBAccess.GDBAccessObj.RollbackTransaction();
-
-            // TODO: check if the amount of the document equals the totals of details
+            
+            // Check that the amount of the document equals the totals of details
+            if (!BatchBalanceOK(MainDS))
+            {
+            	AVerifications.Add(new TVerificationResult(
+                        String.Format(Catalog.GetString("Cannot post the AP documents in Ledger {0}"), ALedgerNumber),
+                        String.Format(Catalog.GetString("The value does not match the sum of the details.")),
+                        TResultSeverity.Resv_Critical));
+            }
 
             return MainDS;
         }

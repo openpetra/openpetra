@@ -13,6 +13,7 @@ RootNode:
     Actions:
         cndDiscountEnabled: {InitialValue=false}
         actNewDetail: {Label=Add De&tail, ActionClick=NewDetail}
+        actRemoveDetail:  {Label=&Remove Detail, ActionClick=RemoveDetail}
         actPostDocument: {Label=Post Document, ActionClick=PostDocument}
     Controls:
         pnlContent:
@@ -102,7 +103,7 @@ RootNode:
         btnAddDetail:
             Width: 100
             Action: actNewDetail
-        btnRemoveDetail:
+        btnRemoveDetail: {Enabled=false}
             Label: &Remove Detail
             Width: 100
             Action: actRemoveDetail

@@ -74,6 +74,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             ShowData(FMainDS.AApSupplier[0]);
         }
+        
+        /// <summary>
+        /// This will re-draw the form, so that any data changes are shown.
+        /// </summary>
+        public void Reload ()
+        {
+        	LoadSupplier(FLedgerNumber, FPartnerKey);
+        }
 
         /// <summary>
         /// needed for generated code
