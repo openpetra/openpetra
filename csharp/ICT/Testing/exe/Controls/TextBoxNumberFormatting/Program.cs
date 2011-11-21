@@ -27,8 +27,9 @@ using System;
 using System.Windows.Forms;
 
 using Ict.Common;
+using TextBoxNumberFormatting;
 
-namespace TextBoxNumberFormatting
+namespace Ict.Testing.TextBoxNumberFormatting
 {
 /// <summary>
 /// Class with program entry point.

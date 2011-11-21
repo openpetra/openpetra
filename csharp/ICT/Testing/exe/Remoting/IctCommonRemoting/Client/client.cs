@@ -29,8 +29,9 @@ using Ict.Common;
 using Ict.Common.Remoting.Client;
 using Ict.Common.Remoting.Shared;
 using Tests.IctCommonRemoting.Interface;
+using Tests.IctCommonRemoting.Client;
 
-namespace Tests.IctCommonRemoting.Client
+namespace Ict.Testing.IctCommonRemoting.Client
 {
     class Client
     {

@@ -8,8 +8,9 @@
  */
 using System;
 using System.Windows.Forms;
+using TestCollapsible;
 
-namespace TestCollapsible
+namespace Ict.Testing.TestCollapsible
 {
 /// <summary>
 /// Class with program entry point.
