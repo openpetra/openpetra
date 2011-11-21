@@ -191,6 +191,7 @@ useful parameters
     DirBin="${dir.bin}"
     DirProjectFiles="${dir.projectfiles}"
     NetFrameworkVersion="${NETframework-version}"
+    ProjectVersion="${ReleaseID}"
     />
 </target>
 

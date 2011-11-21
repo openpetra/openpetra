@@ -169,6 +169,18 @@ namespace Ict.Tools.NAntTasks
             }
         }
 
+        private string FProjectVersion = null;
+        /// <summary>
+        /// the version number (4 numbers separated by dots) for the AssemblyInfo.cs file
+        /// </summary>
+        [TaskAttribute("ProjectVersion", Required = true)]
+        public string ProjectVersion {
+            set
+            {
+                FProjectVersion = value;
+            }
+        }
+
         private Dictionary <string, string>FProjectGUIDs;
         private Dictionary <string, TDetailsOfDll>FProjectDependencies;
 
@@ -188,7 +200,7 @@ namespace Ict.Tools.NAntTasks
                 {
                     Directory.CreateDirectory(FDirProjectFiles + Path.DirectorySeparatorChar + ide);
                 }
-                
+
                 foreach (string projectName in FProjectDependencies.Keys)
                 {
                     string srcPath = FCodeRootDir + Path.DirectorySeparatorChar +
@@ -346,6 +358,39 @@ namespace Ict.Tools.NAntTasks
             return Result;
         }
 
+        /// add AssemblyInfo file
+        private string AddAssemblyInfoFile(string AProjectName,
+            string ATemplateDir)
+        {
+            string AssemblyInfoPath = Path.GetFullPath(FDirProjectFiles + "/../bin/" +
+                AProjectName + "/AssemblyInfo.cs");
+
+            StringBuilder temp = GetTemplateFile(ATemplateDir + "/../src/AssemblyInfo.cs");
+
+            temp.Replace("${projectname}", AProjectName);
+            temp.Replace("${projectversion}", FProjectVersion);
+
+            if (!Directory.Exists(Path.GetDirectoryName(AssemblyInfoPath)))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(AssemblyInfoPath));
+            }
+
+            StreamWriter swAssemblyInfo = new StreamWriter(AssemblyInfoPath);
+            swAssemblyInfo.WriteLine(temp.ToString());
+            swAssemblyInfo.Close();
+
+            string relativeFilename = GetRelativePath(AssemblyInfoPath, FDirProjectFiles + Path.DirectorySeparatorChar + "dummy").Replace('\\', '/');
+            string relativeFilenameBackslash = relativeFilename.Replace('/', '\\');
+
+            temp = GetTemplateFile(ATemplateDir + "template.csproj.compile");
+            temp.Replace("${filename}", AssemblyInfoPath);
+            temp.Replace("${relative-filename-backslash}", relativeFilenameBackslash);
+            temp.Replace("${relative-filename}", relativeFilename);
+            temp.Replace("${justfilename}", Path.GetFileName(AssemblyInfoPath));
+
+            return temp.ToString();
+        }
+
         private void WriteProjectFile(
             string ATemplateDir,
             string ADevName,
@@ -418,7 +463,7 @@ namespace Ict.Tools.NAntTasks
 
             foreach (string ContainedFile in ContainsFiles)
             {
-                string relativeFilename = GetRelativePath(ContainedFile, ATemplateDir).Replace('\\', '/');
+                string relativeFilename = GetRelativePath(ContainedFile, FDirProjectFiles + Path.DirectorySeparatorChar + ADevName).Replace('\\', '/');
                 string relativeFilenameBackslash = relativeFilename.Replace('/', '\\');
 
                 if ((ContainedFile.EndsWith(".ManualCode.cs") && File.Exists(ContainedFile.Replace(".ManualCode.cs", "-generated.cs")))
@@ -463,6 +508,10 @@ namespace Ict.Tools.NAntTasks
                 }
             }
 
+            // add AssemblyInfo file
+            CompileFile.Append(AddAssemblyInfoFile(AProjectName, ATemplateDir));
+
+            // finish Compile file section
             template.Replace("${TemplateCompile}", CompileFile.ToString());
 
             StringBuilder Resources = new StringBuilder();
@@ -471,7 +520,7 @@ namespace Ict.Tools.NAntTasks
 
             foreach (string ContainedFile in ContainsResources)
             {
-                string relativeFilename = GetRelativePath(ContainedFile, ATemplateDir);
+                string relativeFilename = GetRelativePath(ContainedFile, FDirProjectFiles + Path.DirectorySeparatorChar + ADevName);
                 string relativeFilenameBackslash = relativeFilename.Replace('/', '\\');
 
                 if (ContainsFiles.Contains(ContainedFile.Replace(".resx", ".cs")))

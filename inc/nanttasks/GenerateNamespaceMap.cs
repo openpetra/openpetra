@@ -118,7 +118,7 @@ namespace Ict.Tools.NAntTasks
             }
         }
 
-        private List<string> FLimitToNamespaces = new List<string>();
+        private List <string>FLimitToNamespaces = new List <string>();
         /// <summary>
         /// set this if you only want to generate the project mapping for some namespaces (eg. Ict.Common and Ict.Tools*)
         /// </summary>
@@ -126,10 +126,10 @@ namespace Ict.Tools.NAntTasks
         public string LimitToNamespaces {
             set
             {
-                FLimitToNamespaces = new List<string>(value.Split(new char[]{','}));
+                FLimitToNamespaces = new List <string>(value.Split(new char[] { ',' }));
             }
         }
-        
+
         /// <summary>
         /// create namespace map
         /// </summary>
@@ -146,7 +146,7 @@ namespace Ict.Tools.NAntTasks
                 {
                     continue;
                 }
-                
+
                 ParseCSFile(map, UsingMap, csfile);
             }
 
@@ -156,23 +156,23 @@ namespace Ict.Tools.NAntTasks
 
             WriteMap(FDependencyMapFilename, UsingNamespaceMapToDll(map, ThirdPartyMap, UsingMap, FShowWarnings));
         }
-        
+
         private bool IgnoreNamespace(string ANamespace)
         {
             if (FLimitToNamespaces.Count > 0)
             {
                 foreach (string name in FLimitToNamespaces)
                 {
-                    if (name == ANamespace
-                       || (name.EndsWith("*") && ANamespace.StartsWith(name.Substring(0, name.Length - 1))))
+                    if ((name == ANamespace)
+                        || (name.EndsWith("*") && ANamespace.StartsWith(name.Substring(0, name.Length - 1))))
                     {
                         return false;
                     }
                 }
-                
+
                 return true;
             }
-            
+
             return false;
         }
 
@@ -304,7 +304,7 @@ namespace Ict.Tools.NAntTasks
                 {
                     continue;
                 }
-                
+
                 TDetailsOfDll DetailsOfDll = new TDetailsOfDll();
                 DetailsOfDll.OutputType = UsingNamespaces[key].OutputType;
                 DetailsOfDll.OutputName = UsingNamespaces[key].OutputName;
