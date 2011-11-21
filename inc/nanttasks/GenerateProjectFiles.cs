@@ -400,7 +400,7 @@ namespace Ict.Tools.NAntTasks
             swAssemblyInfo.WriteLine(temp.ToString());
             swAssemblyInfo.Close();
 
-            string relativeFilename = GetRelativePath(AssemblyInfoPath, FDirProjectFiles + Path.DirectorySeparatorChar + "dummy").Replace('\\', '/');
+            string relativeFilename = GetRelativePath(AssemblyInfoPath, FDirProjectFiles + "/dummy/").Replace('\\', '/');
             string relativeFilenameBackslash = relativeFilename.Replace('/', '\\');
 
             temp = GetTemplateFile(ATemplateDir + "template.csproj.compile");
@@ -489,7 +489,7 @@ namespace Ict.Tools.NAntTasks
 
             foreach (string ContainedFile in ContainsFiles)
             {
-                string relativeFilename = GetRelativePath(ContainedFile, FDirProjectFiles + Path.DirectorySeparatorChar + ADevName).Replace('\\', '/');
+                string relativeFilename = GetRelativePath(ContainedFile, FDirProjectFiles + "/dummy/").Replace('\\', '/');
                 string relativeFilenameBackslash = relativeFilename.Replace('/', '\\');
 
                 if ((ContainedFile.EndsWith(".ManualCode.cs") && File.Exists(ContainedFile.Replace(".ManualCode.cs", "-generated.cs")))
@@ -546,7 +546,8 @@ namespace Ict.Tools.NAntTasks
 
             foreach (string ContainedFile in ContainsResources)
             {
-                string relativeFilename = GetRelativePath(ContainedFile, FDirProjectFiles + Path.DirectorySeparatorChar + ADevName);
+                string relativeFilename = GetRelativePath(ContainedFile, FDirProjectFiles + "/dummy/");
+                
                 string relativeFilenameBackslash = relativeFilename.Replace('/', '\\');
 
                 if (ContainsFiles.Contains(ContainedFile.Replace(".resx", ".cs")))
