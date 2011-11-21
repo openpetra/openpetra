@@ -184,13 +184,13 @@ namespace Ict.Tools.NAntTasks
 
             foreach (string ide in IDEs)
             {
+                if (!Directory.Exists(FDirProjectFiles + Path.DirectorySeparatorChar + ide))
+                {
+                    Directory.CreateDirectory(FDirProjectFiles + Path.DirectorySeparatorChar + ide);
+                }
+                
                 foreach (string projectName in FProjectDependencies.Keys)
                 {
-                    if (!Directory.Exists(FDirProjectFiles + Path.DirectorySeparatorChar + ide))
-                    {
-                        Directory.CreateDirectory(FDirProjectFiles + Path.DirectorySeparatorChar + ide);
-                    }
-
                     string srcPath = FCodeRootDir + Path.DirectorySeparatorChar +
                                      projectName.
                                      Replace("Ict.Tools.", "ICT.PetraTools.").

@@ -151,10 +151,12 @@ useful parameters
 </target>
 
 <target name="generateSolution" description="compiles OpenPetra and generates the project and solution files"
-        depends="minimalGenerateSolution,quickCompile"/>
+        depends="minimalGenerateSolution">
+    <call target="quickCompile"/>
+</target>
 
 <target name="generateNamespaceMap">
-  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('CsDepend')}"/>
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateNamespaceMap')}"/>
   <GenerateNamespaceMap
     CodeRootDir="${dir.csharp}"
     NamespaceMapFilename="${namespaceFile}"
@@ -164,21 +166,22 @@ useful parameters
 
 <target name="generateTools">
   <call target="nanttasks"/>
-  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('CsDepend')}"/>
-  <call target="generateNamespaceMap"/>
-  <delete file="${dir.bin}/dont_compile.txt"/>
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateNamespaceMap')}"/>
+  <GenerateNamespaceMap
+    CodeRootDir="${dir.csharp}"
+    NamespaceMapFilename="${namespaceFile}"
+    NamespaceMap3rdParty="${namespaceFile3rdParty}"
+    DependencyMapFilename="${projectDependenciesFile}"
+    ShowWarnings="false"
+    LimitToNamespaces="Ict.Common,Ict.Common.IO,Ict.Common.DB,Ict.Tools*"/>
   <nant inheritall="false" target="compile" 
         buildfile="csharp/ThirdParty/ThirdParty.build" />
-  <property name="csdependfilesRegEx" value="(.*/Common/[^/]*.cs)|(.*/Common/IO/[^/]*.cs)|(.*/Common/DB/[^/]*.cs)"/>
-  <nant inheritall="true" target="compile" 
-        buildfile="csharp/ICT/Common/ICT.Common.build" />
-  <property name="csdependfilesRegEx" value=".*"/>
-  <nant inheritall="true" target="compile" 
-        buildfile="csharp/ICT/PetraTools/ICT.PetraTools.build" />
+  <call target="generateProjectFiles"/>
+  <call target="quickCompile"/>
 </target>
 
 <target name="generateProjectFiles">
-  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('CsDepend')}"/>
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateProjectFiles')}"/>
   <GenerateProjectFiles 
     CodeRootDir="${dir.csharp}"
     DependencyMapFilename="${projectDependenciesFile}"
