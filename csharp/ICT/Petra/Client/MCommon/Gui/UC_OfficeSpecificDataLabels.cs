@@ -175,6 +175,9 @@ namespace Ict.Petra.Client.MCommon.Gui
 
         #endregion
 
+        /// <summary>
+        /// event handler
+        /// </summary>
         public void GrdLocalDataLabelValues_SizeChanged(System.Object sender, System.EventArgs e)
         {
             // inform the logic that the grid has been resized

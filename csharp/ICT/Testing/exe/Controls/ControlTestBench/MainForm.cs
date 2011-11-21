@@ -31,16 +31,15 @@ namespace Ict.Testing.ControlTestBench
 /// </summary>
 public partial class MainForm : Form
 {
+    /// <summary>
+    /// constructor
+    /// </summary>
     public MainForm()
     {
         //
         // The InitializeComponent() call is required for Windows Forms designer support.
         //
         InitializeComponent();
-
-        //
-        // TODO: Add constructor code after the InitializeComponent() call.
-        //
     }
 
     void Button1Click(object sender, EventArgs e)

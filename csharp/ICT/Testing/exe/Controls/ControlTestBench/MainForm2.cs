@@ -23,6 +23,9 @@ public partial class MainForm2 : Form
     private XmlNode FXmlNode = null;
     private TVisualStylesEnum FVisualStyle;
 
+    /// <summary>
+    /// constructor
+    /// </summary>
     public MainForm2(XmlNode xmlNode, TVisualStylesEnum AVisualStyle)
     {
         this.FVisualStyle = AVisualStyle;

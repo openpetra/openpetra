@@ -37,6 +37,9 @@ namespace TextBoxNumberFormatting
 /// </summary>
 public partial class MainForm : Form
 {
+    /// <summary>
+    /// constructor
+    /// </summary>
     public MainForm()
     {
         //
