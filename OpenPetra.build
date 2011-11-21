@@ -15,7 +15,7 @@ list of available commands:
   compile: compiles OpenPetra including testing
   generateTools: build the basic tools only
   generateSolution: compiles OpenPetra and generates the project and solution files
-  generateSolutionNoCompile: generates the project and solution files. compile should already be executed
+  generateSolutionNoCompile: generates the project and solution files. minimalGenerateSolution should already be executed
   minimalGenerateSolution: generates the project and solution files. compiles what it needs, but does not compile all code
   quickCompile: will just compile the solution file, with msbuild (Windows) or xbuild (Linux)
       nant quickCompile                    will compile the OpenPetra.sln
@@ -137,7 +137,7 @@ useful parameters
 <target name="internal-subdirs" description="Goes into all necessary subdirectories" 
         depends="csharp,nanttasks" />
 
-<target name="generateSolutionNoCompile" description="generates the project and solution files. Target compile should already be executed"
+<target name="generateSolutionNoCompile" description="generates the project and solution files. minimalGenerateSolution should already be executed"
         depends="nanttasks,generateNamespaceMap,generateProjectFiles"/>
 
 <target name="minimalGenerateSolution" description="compile minimal code for generating source code and the project and solution files">
