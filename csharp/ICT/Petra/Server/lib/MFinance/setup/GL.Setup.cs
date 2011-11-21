@@ -978,8 +978,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             transactionTypeRow.LedgerNumber = ANewLedgerNumber;
             transactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
             transactionTypeRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.STD.ToString();
-            transactionTypeRow.DebitAccountCode = MFinanceConstants.BAL_SHT;
-            transactionTypeRow.CreditAccountCode = MFinanceConstants.BAL_SHT;
+            transactionTypeRow.DebitAccountCode = MFinanceConstants.ACCOUNT_BAL_SHT;
+            transactionTypeRow.CreditAccountCode = MFinanceConstants.ACCOUNT_BAL_SHT;
             transactionTypeRow.TransactionTypeDescription = "Standard Journal";
             transactionTypeRow.SpecialTransactionType = false;
             MainDS.ATransactionType.Rows.Add(transactionTypeRow);
