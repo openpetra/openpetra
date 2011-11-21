@@ -29,57 +29,57 @@ using Ict.Common.IO;
 
 namespace Ict.Tools.GenerateEncryptionKey
 {
-class Program
-{
-    public static void Main(string[] args)
+    class Program
     {
-        try
+        public static void Main(string[] args)
         {
-            new TAppSettingsManager(false);
-            CspParameters cp = new CspParameters();
-            cp.KeyContainerName = "OpenPetraServerKeyContainer";
-
-            // first make sure, we really get a new key
-            RSACryptoServiceProvider RSA = new RSACryptoServiceProvider(cp);
-            RSA.PersistKeyInCsp = false;
-            RSA.Clear();
-
-            // now create the new key
-            RSACryptoServiceProvider RSANew = new RSACryptoServiceProvider(cp);
-
-            string PublicKeyFile = TAppSettingsManager.GetValue("PublicKeyFile", "", false);
-
-            if (PublicKeyFile.Length > 0)
+            try
             {
-                StreamWriter sw = new StreamWriter(PublicKeyFile);
-                sw.WriteLine(RSANew.ToXmlString(false));
-                sw.Close();
-                Console.WriteLine("public key has been written to " + PublicKeyFile);
-            }
-            else
-            {
-                Console.WriteLine("public key only: ");
-            }
+                new TAppSettingsManager(false);
+                CspParameters cp = new CspParameters();
+                cp.KeyContainerName = "OpenPetraServerKeyContainer";
 
-            string PrivateKeyFile = TAppSettingsManager.GetValue("PrivateKeyFile", "", false);
+                // first make sure, we really get a new key
+                RSACryptoServiceProvider RSA = new RSACryptoServiceProvider(cp);
+                RSA.PersistKeyInCsp = false;
+                RSA.Clear();
 
-            if (PrivateKeyFile.Length > 0)
-            {
-                StreamWriter sw = new StreamWriter(PrivateKeyFile);
-                sw.WriteLine(RSANew.ToXmlString(true));
-                sw.Close();
-                Console.WriteLine("public key has been written to " + PrivateKeyFile);
+                // now create the new key
+                RSACryptoServiceProvider RSANew = new RSACryptoServiceProvider(cp);
+
+                string PublicKeyFile = TAppSettingsManager.GetValue("PublicKeyFile", "", false);
+
+                if (PublicKeyFile.Length > 0)
+                {
+                    StreamWriter sw = new StreamWriter(PublicKeyFile);
+                    sw.WriteLine(RSANew.ToXmlString(false));
+                    sw.Close();
+                    Console.WriteLine("public key has been written to " + PublicKeyFile);
+                }
+                else
+                {
+                    Console.WriteLine("public key only: ");
+                }
+
+                string PrivateKeyFile = TAppSettingsManager.GetValue("PrivateKeyFile", "", false);
+
+                if (PrivateKeyFile.Length > 0)
+                {
+                    StreamWriter sw = new StreamWriter(PrivateKeyFile);
+                    sw.WriteLine(RSANew.ToXmlString(true));
+                    sw.Close();
+                    Console.WriteLine("public key has been written to " + PrivateKeyFile);
+                }
+                else
+                {
+                    Console.WriteLine("Private key with public key: ");
+                }
             }
-            else
+            catch (Exception e)
             {
-                Console.WriteLine("Private key with public key: ");
+                Console.WriteLine("error: " + e.Message);
+                Console.WriteLine("error: " + e.StackTrace);
             }
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine("error: " + e.Message);
-            Console.WriteLine("error: " + e.StackTrace);
         }
     }
-}
 }

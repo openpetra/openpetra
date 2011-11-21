@@ -12,20 +12,20 @@ using ControlTestBench;
 
 namespace Ict.Testing.ControlTestBench
 {
-/// <summary>
-/// Class with program entry point.
-/// </summary>
-internal sealed class Program
-{
     /// <summary>
-    /// Program entry point.
+    /// Class with program entry point.
     /// </summary>
-    [STAThread]
-    private static void Main(string[] args)
+    internal sealed class Program
     {
-        Application.EnableVisualStyles();
-        Application.SetCompatibleTextRenderingDefault(false);
-        Application.Run(new MainForm());
+        /// <summary>
+        /// Program entry point.
+        /// </summary>
+        [STAThread]
+        private static void Main(string[] args)
+        {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new MainForm());
+        }
     }
-}
 }

@@ -33,122 +33,122 @@ using GenerateI18N;
 
 namespace Ict.Tools.GenerateI18N
 {
-class Program
-{
-    private static void ParseWithGettext(string AGettextApp, string APoFile, string AListOfFilesToParse)
+    class Program
     {
-        System.Diagnostics.Process GettextProcess;
-        GettextProcess = new System.Diagnostics.Process();
-        GettextProcess.EnableRaisingEvents = false;
-        GettextProcess.StartInfo.FileName = AGettextApp;
-        GettextProcess.StartInfo.Arguments = String.Format(
-            "-j --add-comments=/// --no-location --from-code=UTF-8 {0} -o \"{1}\"",
-            AListOfFilesToParse, APoFile);
-        GettextProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-        GettextProcess.EnableRaisingEvents = true;
-        try
+        private static void ParseWithGettext(string AGettextApp, string APoFile, string AListOfFilesToParse)
         {
-            if (!GettextProcess.Start())
+            System.Diagnostics.Process GettextProcess;
+            GettextProcess = new System.Diagnostics.Process();
+            GettextProcess.EnableRaisingEvents = false;
+            GettextProcess.StartInfo.FileName = AGettextApp;
+            GettextProcess.StartInfo.Arguments = String.Format(
+                "-j --add-comments=/// --no-location --from-code=UTF-8 {0} -o \"{1}\"",
+                AListOfFilesToParse, APoFile);
+            GettextProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            GettextProcess.EnableRaisingEvents = true;
+            try
             {
-                throw new Exception("cannot start gettext");
-            }
-        }
-        catch (Exception)
-        {
-            TLogging.Log("Cannot start external gettext program. Is it on the path?");
-            TLogging.Log("Arguments: " + GettextProcess.StartInfo.Arguments);
-            throw new Exception("Problem running gettext");
-        }
-
-        while ((!GettextProcess.HasExited))
-        {
-            Thread.Sleep(100);
-        }
-    }
-
-    public static void Main(string[] args)
-    {
-        new TAppSettingsManager(false);
-
-        try
-        {
-            if (TAppSettingsManager.HasValue("do") && (TAppSettingsManager.GetValue("do") == "removeDoNotTranslate"))
-            {
-                string doNotTranslatePath = TAppSettingsManager.GetValue("dntFile");
-                string poFilePath = TAppSettingsManager.GetValue("poFile");
-
-                // remove all strings from po file that are listed in the "Do Not Translate" file
-                TDropUnwantedStrings.RemoveUnwantedStringsFromTranslation(doNotTranslatePath, poFilePath);
-            }
-            else if (TAppSettingsManager.HasValue("file"))
-            {
-                TGenerateCatalogStrings.Execute(TAppSettingsManager.GetValue("file"), null, null);
-            }
-            else if (TAppSettingsManager.HasValue("filelist"))
-            {
-                TDataDefinitionStore store = new TDataDefinitionStore();
-                Console.WriteLine("parsing " + TAppSettingsManager.GetValue("petraxml", true));
-                TDataDefinitionParser parser = new TDataDefinitionParser(TAppSettingsManager.GetValue("petraxml", true));
-                parser.ParseDocument(ref store, true, true);
-
-                string CollectedStringsFilename = TAppSettingsManager.GetValue("tmpPath") +
-                                                  Path.DirectorySeparatorChar +
-                                                  "GenerateI18N.CollectedGettext.cs";
-                StreamWriter writerCollectedStringsFile = new StreamWriter(CollectedStringsFilename);
-
-                string GettextApp = TAppSettingsManager.GetValue("gettext");
-
-                string filesToParseWithGettext = string.Empty;
-                StreamReader readerFilelist = new StreamReader(TAppSettingsManager.GetValue("filelist"));
-
-                while (!readerFilelist.EndOfStream)
+                if (!GettextProcess.Start())
                 {
-                    string pathCodeFile = readerFilelist.ReadLine().Trim();
-                    string ext = Path.GetExtension(pathCodeFile);
+                    throw new Exception("cannot start gettext");
+                }
+            }
+            catch (Exception)
+            {
+                TLogging.Log("Cannot start external gettext program. Is it on the path?");
+                TLogging.Log("Arguments: " + GettextProcess.StartInfo.Arguments);
+                throw new Exception("Problem running gettext");
+            }
 
-                    if (".cs" == ext)
+            while ((!GettextProcess.HasExited))
+            {
+                Thread.Sleep(100);
+            }
+        }
+
+        public static void Main(string[] args)
+        {
+            new TAppSettingsManager(false);
+
+            try
+            {
+                if (TAppSettingsManager.HasValue("do") && (TAppSettingsManager.GetValue("do") == "removeDoNotTranslate"))
+                {
+                    string doNotTranslatePath = TAppSettingsManager.GetValue("dntFile");
+                    string poFilePath = TAppSettingsManager.GetValue("poFile");
+
+                    // remove all strings from po file that are listed in the "Do Not Translate" file
+                    TDropUnwantedStrings.RemoveUnwantedStringsFromTranslation(doNotTranslatePath, poFilePath);
+                }
+                else if (TAppSettingsManager.HasValue("file"))
+                {
+                    TGenerateCatalogStrings.Execute(TAppSettingsManager.GetValue("file"), null, null);
+                }
+                else if (TAppSettingsManager.HasValue("filelist"))
+                {
+                    TDataDefinitionStore store = new TDataDefinitionStore();
+                    Console.WriteLine("parsing " + TAppSettingsManager.GetValue("petraxml", true));
+                    TDataDefinitionParser parser = new TDataDefinitionParser(TAppSettingsManager.GetValue("petraxml", true));
+                    parser.ParseDocument(ref store, true, true);
+
+                    string CollectedStringsFilename = TAppSettingsManager.GetValue("tmpPath") +
+                                                      Path.DirectorySeparatorChar +
+                                                      "GenerateI18N.CollectedGettext.cs";
+                    StreamWriter writerCollectedStringsFile = new StreamWriter(CollectedStringsFilename);
+
+                    string GettextApp = TAppSettingsManager.GetValue("gettext");
+
+                    string filesToParseWithGettext = string.Empty;
+                    StreamReader readerFilelist = new StreamReader(TAppSettingsManager.GetValue("filelist"));
+
+                    while (!readerFilelist.EndOfStream)
                     {
-                        if (TGenerateCatalogStrings.Execute(pathCodeFile, store, writerCollectedStringsFile))
-                        {
-                            filesToParseWithGettext += "\"" + pathCodeFile + "\" ";
+                        string pathCodeFile = readerFilelist.ReadLine().Trim();
+                        string ext = Path.GetExtension(pathCodeFile);
 
-                            if (filesToParseWithGettext.Length > 1500)
+                        if (".cs" == ext)
+                        {
+                            if (TGenerateCatalogStrings.Execute(pathCodeFile, store, writerCollectedStringsFile))
                             {
-                                ParseWithGettext(GettextApp, TAppSettingsManager.GetValue("poFile"), filesToParseWithGettext);
-                                filesToParseWithGettext = string.Empty;
+                                filesToParseWithGettext += "\"" + pathCodeFile + "\" ";
+
+                                if (filesToParseWithGettext.Length > 1500)
+                                {
+                                    ParseWithGettext(GettextApp, TAppSettingsManager.GetValue("poFile"), filesToParseWithGettext);
+                                    filesToParseWithGettext = string.Empty;
+                                }
                             }
                         }
+                        else if (".yml" == ext)
+                        {
+                            TGenerateCatalogStrings.AddTranslationUINavigation(pathCodeFile, writerCollectedStringsFile);
+                        }
+                        else
+                        {
+                            Console.WriteLine("the file " + pathCodeFile + " has an unknown extension! File ignored!");
+                        }
                     }
-                    else if (".yml" == ext)
+
+                    if (filesToParseWithGettext.Length > 0)
                     {
-                        TGenerateCatalogStrings.AddTranslationUINavigation(pathCodeFile, writerCollectedStringsFile);
+                        ParseWithGettext(GettextApp, TAppSettingsManager.GetValue("poFile"), filesToParseWithGettext);
                     }
-                    else
+
+                    writerCollectedStringsFile.Close();
+
+                    // delete the file if it is empty
+                    if (File.ReadAllText(CollectedStringsFilename).Length == 0)
                     {
-                        Console.WriteLine("the file " + pathCodeFile + " has an unknown extension! File ignored!");
+                        File.Delete(CollectedStringsFilename);
                     }
-                }
-
-                if (filesToParseWithGettext.Length > 0)
-                {
-                    ParseWithGettext(GettextApp, TAppSettingsManager.GetValue("poFile"), filesToParseWithGettext);
-                }
-
-                writerCollectedStringsFile.Close();
-
-                // delete the file if it is empty
-                if (File.ReadAllText(CollectedStringsFilename).Length == 0)
-                {
-                    File.Delete(CollectedStringsFilename);
                 }
             }
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-            Console.WriteLine(e.StackTrace);
-            Environment.Exit(-1);
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
+                Environment.Exit(-1);
+            }
         }
     }
-}
 }

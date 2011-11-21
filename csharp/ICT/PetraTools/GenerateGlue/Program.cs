@@ -35,86 +35,86 @@ using GenerateSharedCode;
 
 namespace Ict.Tools.GenerateSharedCode
 {
-class Program
-{
-    private static String sampleCall =
-        "GenerateSharedCode -ymlfile:..\\..\\..\\Petra\\Definitions\\NamespaceHierarchy.yml -outputdir:..\\..\\..\\Petra\\ -TemplateDir:..\\..\\..\\PetraTools\\Templates\\ClientServerGlue\\";
-
-    public static void Main(string[] args)
+    class Program
     {
-        TCmdOpts cmd = new TCmdOpts();
+        private static String sampleCall =
+            "GenerateSharedCode -ymlfile:..\\..\\..\\Petra\\Definitions\\NamespaceHierarchy.yml -outputdir:..\\..\\..\\Petra\\ -TemplateDir:..\\..\\..\\PetraTools\\Templates\\ClientServerGlue\\";
 
-        new TAppSettingsManager(false);
-
-        String YmlFileName, OutputDir;
-
-        if (cmd.IsFlagSet("ymlfile"))
+        public static void Main(string[] args)
         {
-            YmlFileName = cmd.GetOptValue("ymlfile");
-        }
-        else
-        {
-            Console.WriteLine("call: " + sampleCall);
-            return;
-        }
+            TCmdOpts cmd = new TCmdOpts();
 
-        if (cmd.IsFlagSet("outputdir"))
-        {
-            OutputDir = cmd.GetOptValue("outputdir");
+            new TAppSettingsManager(false);
 
-            // calculate ICTPath from outputdir
-            string fullOutputPath = Path.GetFullPath(OutputDir).Replace("\\", "/");
+            String YmlFileName, OutputDir;
 
-            if (!fullOutputPath.Contains("csharp/ICT"))
+            if (cmd.IsFlagSet("ymlfile"))
             {
-                Console.WriteLine("Output path must be below the csharp/ICT directory");
+                YmlFileName = cmd.GetOptValue("ymlfile");
             }
-
-            CSParser.ICTPath = fullOutputPath.Substring(0, fullOutputPath.IndexOf("csharp/ICT") + "csharp/ICT".Length);
-        }
-        else
-        {
-            Console.WriteLine("call: " + sampleCall);
-            return;
-        }
-
-        List <TNamespace>namespaces;
-
-        try
-        {
-            TYml2Xml ymlParser = new TYml2Xml(YmlFileName);
-            XmlDocument xmlDoc = ymlParser.ParseYML2XML();
-
-            // Preferred approach in .NET 2.0:
-            // ->  returns a Strongly Typed List of Type 'TNamespace'.
-            namespaces = TNamespace.ReadFromFile(xmlDoc);
-
-            if (namespaces.Count < 1)
+            else
             {
-                Console.WriteLine("problems with reading " + YmlFileName);
+                Console.WriteLine("call: " + sampleCall);
                 return;
             }
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-            Console.WriteLine(e.StackTrace);
-            return;
-        }
 
-        try
-        {
-            CreateInterfaces interfaces = new CreateInterfaces();
-            interfaces.CreateFiles(namespaces, OutputDir + "/Shared/lib/Interfaces", YmlFileName);
-            CreateInstantiators instantiators = new CreateInstantiators();
-            instantiators.CreateFiles(namespaces, OutputDir + "/Server/lib", YmlFileName, cmd.GetOptValue("TemplateDir"));
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-            Console.WriteLine(e.StackTrace);
-            Environment.Exit(-1);
+            if (cmd.IsFlagSet("outputdir"))
+            {
+                OutputDir = cmd.GetOptValue("outputdir");
+
+                // calculate ICTPath from outputdir
+                string fullOutputPath = Path.GetFullPath(OutputDir).Replace("\\", "/");
+
+                if (!fullOutputPath.Contains("csharp/ICT"))
+                {
+                    Console.WriteLine("Output path must be below the csharp/ICT directory");
+                }
+
+                CSParser.ICTPath = fullOutputPath.Substring(0, fullOutputPath.IndexOf("csharp/ICT") + "csharp/ICT".Length);
+            }
+            else
+            {
+                Console.WriteLine("call: " + sampleCall);
+                return;
+            }
+
+            List <TNamespace>namespaces;
+
+            try
+            {
+                TYml2Xml ymlParser = new TYml2Xml(YmlFileName);
+                XmlDocument xmlDoc = ymlParser.ParseYML2XML();
+
+                // Preferred approach in .NET 2.0:
+                // ->  returns a Strongly Typed List of Type 'TNamespace'.
+                namespaces = TNamespace.ReadFromFile(xmlDoc);
+
+                if (namespaces.Count < 1)
+                {
+                    Console.WriteLine("problems with reading " + YmlFileName);
+                    return;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
+                return;
+            }
+
+            try
+            {
+                CreateInterfaces interfaces = new CreateInterfaces();
+                interfaces.CreateFiles(namespaces, OutputDir + "/Shared/lib/Interfaces", YmlFileName);
+                CreateInstantiators instantiators = new CreateInstantiators();
+                instantiators.CreateFiles(namespaces, OutputDir + "/Server/lib", YmlFileName, cmd.GetOptValue("TemplateDir"));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
+                Environment.Exit(-1);
+            }
         }
     }
-}
 }
