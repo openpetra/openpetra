@@ -366,7 +366,6 @@ namespace Ict.Tools.NAntTasks
             template.Replace("${dir.bin}", FDirBin);
             template.Replace("${DebugStartArguments}", ""); // TODO? read from directory
 
-            StringBuilder templateReference = GetTemplateFile(ATemplateDir + "template.csproj.reference");
             StringBuilder temp;
 
             // replace references
