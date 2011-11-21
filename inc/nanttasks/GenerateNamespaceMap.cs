@@ -162,6 +162,7 @@ namespace Ict.Tools.NAntTasks
             try
             {
                 string LastNamespace = string.Empty;
+                bool ReferencesWinForms = false;
 
                 while (!sr.EndOfStream)
                 {
@@ -206,6 +207,11 @@ namespace Ict.Tools.NAntTasks
 
                         if ((Namespace != string.Empty) && !Namespace.Contains(" "))
                         {
+                            if (Namespace == "System.Windows.Forms")
+                            {
+                                ReferencesWinForms = true;
+                            }
+
                             if (!DetailsOfDll.UsedNamespaces.Contains(Namespace))
                             {
                                 DetailsOfDll.UsedNamespaces.Add(Namespace);
@@ -214,7 +220,15 @@ namespace Ict.Tools.NAntTasks
                     }
                     else if (line.Contains("static void Main("))
                     {
-                        DetailsOfDll.OutputType = "exe";
+                        if (ReferencesWinForms)
+                        {
+                            DetailsOfDll.OutputType = "winexe";
+                        }
+                        else
+                        {
+                            DetailsOfDll.OutputType = "exe";
+                        }
+
                         DetailsOfDll.OutputName = LastNamespace;
                     }
                 }
