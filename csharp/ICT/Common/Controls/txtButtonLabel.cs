@@ -1433,8 +1433,6 @@ namespace Ict.Common.Controls
         /// </summary>
         public void UpdateLabelText()
         {
-            String mFoundText;
-
             // Initialization
             // TLogging.Log('TtxtButtonLabel.UpdateLabelText: Start', [TLoggingType.ToLogfile]);
             // TLogging.LogStackTrace([TLoggingType.ToLogfile]);
@@ -1462,9 +1460,11 @@ namespace Ict.Common.Controls
             {
                 if (this.SetLabel != null)
                 {
+                    String mFoundText = this.lblLabel.Text;
+
                     // Get text from hosting control
                     // TLogging.Log('TtxtButtonLabel.UpdateLabelText: Text of control: ' + this.txtTextBox.Text);
-                    SetLabel(this.txtTextBox.Text, out mFoundText);
+                    SetLabel(this.txtTextBox.Text, ref mFoundText);
 
                     // TLogging.Log('TtxtButtonLabel.UpdateLabelText: Text from function: >' + mFoundText + '<', [TLoggingType.ToLogfile]);
                     // Set text
@@ -2055,7 +2055,7 @@ namespace Ict.Common.Controls
     /// <param name="ALookupText">A lookup text goes here</param>
     /// <param name="ALabelText">Updated Label text
     /// </param>
-    public delegate void TDelegateSetLabel(String ALookupText, out System.String ALabelText);
+    public delegate void TDelegateSetLabel(String ALookupText, ref System.String ALabelText);
 
     /// <summary>
     /// This delegate is used to notify the hosting control of an error.

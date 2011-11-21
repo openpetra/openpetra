@@ -254,6 +254,23 @@ namespace Ict.Petra.Client.CommonControls
             }
         }
 
+        /**
+         * This Event is thrown when the internal ComboBox throws the SelectedValueChanged Event.
+         */
+        [Category("Action"),
+         Browsable(true),
+         RefreshPropertiesAttribute(System.ComponentModel.RefreshProperties.All),
+         Description("Occurs when when the internal ComboBox throws the TextChanged Event.")]
+        public new event System.EventHandler TextChanged;
+
+        private void CmbCombobox_TextChanged(System.Object sender, EventArgs e)
+        {
+            if (TextChanged != null)
+            {
+                TextChanged(this, e);
+            }
+        }
+
         /// <summary>
         /// constructor
         /// </summary>
@@ -623,6 +640,7 @@ namespace Ict.Petra.Client.CommonControls
             // Pass on any set Tag
             cmbCombobox.Tag = this.Tag;
             this.cmbCombobox.SelectedValueChanged += new System.EventHandler(this.CmbCombobox_SelectedValueChanged);
+            this.cmbCombobox.TextChanged += new System.EventHandler(this.CmbCombobox_TextChanged);
 
             if (FAddNotSetValue)
             {

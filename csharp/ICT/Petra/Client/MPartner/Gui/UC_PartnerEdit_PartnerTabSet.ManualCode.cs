@@ -268,7 +268,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (!FMainDS.MiscellaneousData[0].OfficeSpecificDataLabelsAvailable)
             {
-                TabsToHide.Add("tbpOfficeSpecific");
+                TabsToHide.Add("tpgOfficeSpecific");
             }
 
             // for the time beeing, we always hide these Tabs that don't do anything yet...
@@ -619,7 +619,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpOfficeSpecific;
 
-                    // TODO
+                    FUcoOfficeSpecific.PartnerEditUIConnector = FPartnerEditUIConnector;
+                    FUcoOfficeSpecific.HookupDataChange += new THookupPartnerEditDataChangeEventHandler(Uco_HookupPartnerEditDataChange);
+
+                    FUcoOfficeSpecific.SpecialInitUserControl();
+
+                    CorrectDataGridWidthsAfterDataChange();
                 }
             }
         }

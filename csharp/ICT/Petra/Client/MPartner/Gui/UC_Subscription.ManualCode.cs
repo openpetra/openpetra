@@ -51,7 +51,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private PPublicationCostTable FPublicationCostDT;
 
         /// <summary>DataRow for the p_subscription record we are working with</summary>
-        private PSubscriptionRow FSubscriptionDR;
+        private PSubscriptionRow FSubscriptionDR = null;
 
         /// <summary>CachedDataset.TmpCacheDS: DataSet; Currently selected PublicationCode. Won't update automatically!</summary>
         private System.Object FSelectedPublicationCode;
@@ -174,8 +174,12 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="e"></param>
         private void PublicationCodeChanged(object sender, EventArgs e)
         {
-            UpdatePublicationCost();
-            CheckPublicationValidity();
+            // only react to a changed publication code if there is a record to display
+            if (FSubscriptionDR != null)
+            {
+                UpdatePublicationCost();
+                CheckPublicationValidity();
+            }
         }
 
         /// <summary>
