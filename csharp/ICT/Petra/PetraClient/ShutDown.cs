@@ -71,17 +71,19 @@ public static class Shutdown
 #endif
 #if  TESTMODE
 #else
-#if DEBUGMODE
-                MessageBox.Show(CantDisconnectReason, "Error on Client Disconnection");
-#endif
+                if (TLogging.DebugLevel > 0)
+                {
+                    MessageBox.Show(CantDisconnectReason, "Error on Client Disconnection");
+                }
 #endif
             }
         }
         catch (Exception Exp)
         {
-#if DEBUGMODE
-            MessageBox.Show("DEBUGMODE Information: Unhandled exception while disconnecting from Servers: " + "\r\n" + Exp.ToString());
-#endif
+            if (TLogging.DebugLevel > 0)
+            {
+                MessageBox.Show("DEBUGMODE Information: Unhandled exception while disconnecting from Servers: " + "\r\n" + Exp.ToString());
+            }
         }
     }
 
