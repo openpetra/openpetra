@@ -8,6 +8,7 @@
   <include name="Microsoft.Vsa.dll" />
   <include name="System.Configuration.dll" />
   <include name="System.Configuration.Install.dll" />
+  <include name="System.Core.dll" />
   <include name="System.Data.dll" />
   <include name="System.Data.OracleClient.dll" />
   <include name="System.Design.dll" />

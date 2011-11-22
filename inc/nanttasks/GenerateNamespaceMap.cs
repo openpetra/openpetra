@@ -105,6 +105,31 @@ namespace Ict.Tools.NAntTasks
             }
         }
 
+        private bool FShowWarnings = true;
+        /// <summary>
+        /// show warnings when namespace seems to be missing and cannot be resolved.
+        /// it only makes sense to show warnings, after all winforms have been generated
+        /// </summary>
+        [TaskAttribute("ShowWarnings", Required = false)]
+        public bool ShowWarnings {
+            set
+            {
+                FShowWarnings = value;
+            }
+        }
+
+        private List <string>FLimitToNamespaces = new List <string>();
+        /// <summary>
+        /// set this if you only want to generate the project mapping for some namespaces (eg. Ict.Common and Ict.Tools*)
+        /// </summary>
+        [TaskAttribute("LimitToNamespaces", Required = false)]
+        public string LimitToNamespaces {
+            set
+            {
+                FLimitToNamespaces = new List <string>(value.Split(new char[] { ',' }));
+            }
+        }
+
         /// <summary>
         /// create namespace map
         /// </summary>
@@ -117,17 +142,38 @@ namespace Ict.Tools.NAntTasks
 
             foreach (string csfile in csfiles)
             {
-                if (!csfile.Contains("ThirdParty"))
+                if (csfile.Contains("ThirdParty"))
                 {
-                    ParseCSFile(map, UsingMap, csfile);
+                    continue;
                 }
+
+                ParseCSFile(map, UsingMap, csfile);
             }
 
             WriteMap(FNamespaceMapFilename, map);
 
             Dictionary <string, string>ThirdPartyMap = ReadMap(FNamespaceMap3rdParty);
 
-            WriteMap(FDependencyMapFilename, UsingNamespaceMapToDll(map, ThirdPartyMap, UsingMap));
+            WriteMap(FDependencyMapFilename, UsingNamespaceMapToDll(map, ThirdPartyMap, UsingMap, FShowWarnings));
+        }
+
+        private bool IgnoreNamespace(string ANamespace)
+        {
+            if (FLimitToNamespaces.Count > 0)
+            {
+                foreach (string name in FLimitToNamespaces)
+                {
+                    if ((name == ANamespace)
+                        || (name.EndsWith("*") && ANamespace.StartsWith(name.Substring(0, name.Length - 1))))
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            return false;
         }
 
         private string ParseCSFile(Dictionary <string, string>NamespaceMap, Dictionary <string, TDetailsOfDll>UsingNamespaces, string filename)
@@ -162,6 +208,7 @@ namespace Ict.Tools.NAntTasks
             try
             {
                 string LastNamespace = string.Empty;
+                bool ReferencesWinForms = false;
 
                 while (!sr.EndOfStream)
                 {
@@ -206,15 +253,28 @@ namespace Ict.Tools.NAntTasks
 
                         if ((Namespace != string.Empty) && !Namespace.Contains(" "))
                         {
+                            if (Namespace == "System.Windows.Forms")
+                            {
+                                ReferencesWinForms = true;
+                            }
+
                             if (!DetailsOfDll.UsedNamespaces.Contains(Namespace))
                             {
                                 DetailsOfDll.UsedNamespaces.Add(Namespace);
                             }
                         }
                     }
-                    else if (line.Contains("static void Main("))
+                    else if (line.Contains("static void Main(") || line.Contains("static int Main("))
                     {
-                        DetailsOfDll.OutputType = "exe";
+                        if (ReferencesWinForms)
+                        {
+                            DetailsOfDll.OutputType = "winexe";
+                        }
+                        else
+                        {
+                            DetailsOfDll.OutputType = "exe";
+                        }
+
                         DetailsOfDll.OutputName = LastNamespace;
                     }
                 }
@@ -233,12 +293,18 @@ namespace Ict.Tools.NAntTasks
         private Dictionary <string, TDetailsOfDll>UsingNamespaceMapToDll(
             Dictionary <string, string>NamespaceMap,
             Dictionary <string, string>Namespace3rdPartyMap,
-            Dictionary <string, TDetailsOfDll>UsingNamespaces)
+            Dictionary <string, TDetailsOfDll>UsingNamespaces,
+            bool AShowWarnings)
         {
             Dictionary <string, TDetailsOfDll>result = new Dictionary <string, TDetailsOfDll>();
 
             foreach (string key in UsingNamespaces.Keys)
             {
+                if (IgnoreNamespace(key))
+                {
+                    continue;
+                }
+
                 TDetailsOfDll DetailsOfDll = new TDetailsOfDll();
                 DetailsOfDll.OutputType = UsingNamespaces[key].OutputType;
                 DetailsOfDll.OutputName = UsingNamespaces[key].OutputName;
@@ -262,7 +328,7 @@ namespace Ict.Tools.NAntTasks
                             }
                         }
 
-                        if (!found)
+                        if (!found && AShowWarnings)
                         {
                             Console.WriteLine("Warning: we do not know in which dll the namespace " + usingNamespace + " is defined");
                         }

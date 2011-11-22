@@ -1,0 +1,74 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MPartner.Gui   
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data]
+    DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
+    FormType: edit
+    Template: usercontrolUnbound
+    Actions:
+        actEditFamily: {Label=Edit Family, ActionClick=EditFamily}
+        actChangeFamily: {Label=Change Family, ActionClick=ChangeFamily}
+        actMoveUp: {Label=Move Up, ActionClick=MoveUp}
+        actMoveDown: {Label=Move Down, ActionClick=MoveDown}
+        actManualEdit: {Label=Manual Edit, ActionClick=ManualEdit}
+        actEditPerson: {Label=Edit Selected Person, ActionClick=EditPerson}
+        actMovePersonToOtherFamily: {Label=Move selected Person to other Family, ActionClick=MovePersonToOtherFamily}
+        actMovePersonToThisFamily: {Label=Move existing Person to this Family, ActionClick=MovePersonToThisFamily}
+        actCreateNewPersonForThisFamily: {Label=Create new Person for this Family, ActionClick=CreateNewPersonForThisFamily}
+        actRefreshGrid: {Label=Refresh List, ActionClick=RefreshFamilyMembersList}
+    Controls:
+        pnlDetails:
+            Dock: Fill
+            Controls: [grpFamily, grpFamilyMembers]
+        grpFamily: {Label=Family, Stretch=horizontally, ControlsOrientation = horizontal}
+            Dock: Top
+            Controls: [txtFamilyKey, txtFamilyShortName, btnEditFamily, btnChangeFamily]
+        grpFamilyMembers: {Label=Family Members, Stretch=horizontally}
+            Dock: Fill
+            Controls: [pnlGrid, pnlButtons]
+            
+        pnlGrid: {ControlsOrientation = horizontal}
+            Controls: [grdFamilyMembers, pnlGridActions]
+            
+        pnlGridActions:
+            #Dock: Right
+            Controls: [grpFamilyId, btnRefreshGrid]
+            
+        grdFamilyMembers:
+            Dock: Fill
+        grpFamilyId: {Label=Change Family ID}
+            Controls: [btnMoveUp, btnMoveDown, btnManualEdit]
+
+        txtFamilyKey: {NoLabel=true}
+        txtFamilyShortName: {NoLabel=true, Stretch=horizontally}
+        btnEditFamily:
+            Action: actEditFamily
+        btnChangeFamily:
+            Action: actChangeFamily
+            
+        btnMoveUp:
+            Action: actMoveUp
+        btnMoveDown:
+            Action: actMoveDown
+        btnManualEdit:
+            Action: actManualEdit
+        btnRefreshGrid:
+            Action: actRefreshGrid
+
+        pnlButtons:
+            Controls: [btnEditPerson, grpMoveFamilyMembers]
+        
+        btnEditPerson:
+            Action: actEditPerson
+
+        grpMoveFamilyMembers: {Label=Move or Create Family Members}
+            Controls: [btnMovePersonToOtherFamily, btnMovePersonToThisFamily, btnCreateNewPersonForThisFamily]
+            
+        btnMovePersonToOtherFamily: {Stretch=horizontally}
+            Action: actMovePersonToOtherFamily
+        btnMovePersonToThisFamily: {Stretch=horizontally}
+            Action: actMovePersonToThisFamily
+        btnCreateNewPersonForThisFamily: {Stretch=horizontally}
+            Action: actCreateNewPersonForThisFamily
+		

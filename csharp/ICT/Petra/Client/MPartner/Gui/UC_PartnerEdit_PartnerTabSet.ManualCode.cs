@@ -58,13 +58,6 @@ namespace Ict.Petra.Client.MPartner.Gui
     {
     }
 
-    /// <summary>
-    /// temporary class until FamilyMembers are implemented properly
-    /// </summary>
-    public class TUC_FamilyMembers
-    {
-    }
-
     public partial class TUC_PartnerEdit_PartnerTabSet
     {
         #region TODO ResourceStrings
@@ -605,7 +598,13 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpFamilyMembers;
 
-                    // TODO
+                    // Hook up RecalculateScreenParts Event
+                    FUcoFamilyMembers.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
+
+                    FUcoFamilyMembers.PartnerEditUIConnector = FPartnerEditUIConnector;
+                    FUcoFamilyMembers.HookupDataChange += new THookupPartnerEditDataChangeEventHandler(Uco_HookupPartnerEditDataChange);
+
+                    FUcoFamilyMembers.SpecialInitUserControl();
 
                     CorrectDataGridWidthsAfterDataChange();
                 }

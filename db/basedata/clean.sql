@@ -127,7 +127,6 @@ DELETE FROM pm_person_skill;
 DELETE FROM pm_person_qualification;
 DELETE FROM pm_person_ability;
 DELETE FROM pm_past_experience;
-DELETE FROM pm_ownership;
 DELETE FROM pm_person_language;
 DELETE FROM pm_passport_details;
 DELETE FROM pm_document;

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2010 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,30 +22,12 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Windows.Forms;
+using System.Data;
 
-using Ict.Common;
-using TextBoxNumberFormatting;
-
-namespace Ict.Testing.TextBoxNumberFormatting
+namespace Ict.Petra.Shared
 {
     /// <summary>
-    /// Class with program entry point.
+    /// Delegate for both client- and serverside use to retrieve a DataTable of the data cache (client- or serverside).
     /// </summary>
-    internal sealed class Program
-    {
-        /// <summary>
-        /// Program entry point.
-        /// </summary>
-        [STAThread]
-        private static void Main(string[] args)
-        {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(true);
-
-
-            new TLogging("TextBoxNumberFormatting.log");
-            Application.Run(new MainForm());
-        }
-    }
+    public delegate DataTable TGetCacheableDataTableFromCache(String ACacheableTableName, out System.Type AType);
 }

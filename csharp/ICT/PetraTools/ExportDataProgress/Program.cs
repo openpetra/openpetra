@@ -29,110 +29,110 @@ using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.IO;
 
-namespace ExportDataProgress
+namespace Ict.Tools.ExportDataProgress
 {
-class Program
-{
-    public static void Main(string[] args)
+    class Program
     {
-        try
+        public static void Main(string[] args)
         {
-            // establish connection to database
-            TCmdOpts settings = new TCmdOpts();
-
-            if (!settings.IsFlagSet("Server.ODBC_DSN"))
+            try
             {
-                Console.WriteLine(
-                    "sample call: " +
-                    "ExportDataProgress.exe -Server.ODBC_DSN:Petra2_2sa -username:demo_sql -password:demo -sql:\"SELECT * from pub.a_account\" -output:test.xml");
-                Environment.Exit(-1);
-            }
+                // establish connection to database
+                TCmdOpts settings = new TCmdOpts();
 
-            new TLogging("debug.log");
-
-            TDataBase db = new TDataBase();
-
-            TDBType dbtype = TDBType.ProgressODBC;
-
-            if (settings.IsFlagSet("Server.RDBMSType"))
-            {
-                dbtype = CommonTypes.ParseDBType(settings.GetOptValue("Server.RDBMSType"));
-            }
-
-            if (dbtype != TDBType.ProgressODBC)
-            {
-                throw new Exception("at the moment only Progress ODBC db is supported");
-            }
-
-            db.EstablishDBConnection(dbtype,
-                settings.GetOptValue("Server.ODBC_DSN"),
-                "",
-                "",
-                settings.GetOptValue("username"),
-                settings.GetOptValue("password"),
-                "");
-            DBAccess.GDBAccessObj = db;
-
-            TLogging.DebugLevel = 10;
-
-            string sqlText = "";
-
-            if (!settings.IsFlagSet("sql"))
-            {
-                Console.WriteLine("Please enter sql and finish with semicolon: ");
-
-                while (!sqlText.Trim().EndsWith(";"))
+                if (!settings.IsFlagSet("Server.ODBC_DSN"))
                 {
-                    sqlText += " " + Console.ReadLine();
+                    Console.WriteLine(
+                        "sample call: " +
+                        "ExportDataProgress.exe -Server.ODBC_DSN:Petra2_2sa -username:demo_sql -password:demo -sql:\"SELECT * from pub.a_account\" -output:test.xml");
+                    Environment.Exit(-1);
                 }
 
-                sqlText = sqlText.Substring(0, sqlText.Length - 1);
-            }
-            else
-            {
-                sqlText = settings.GetOptValue("sql");
-                Console.WriteLine(sqlText);
-            }
+                new TLogging("debug.log");
 
-            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadUncommitted);
+                TDataBase db = new TDataBase();
 
-            DataTable table = db.SelectDT(sqlText, "temp", transaction);
+                TDBType dbtype = TDBType.ProgressODBC;
 
-            XmlDocument doc = TDataBase.DataTableToXml(table);
-
-            if (settings.IsFlagSet("output"))
-            {
-                if (settings.GetOptValue("output").EndsWith("yml"))
+                if (settings.IsFlagSet("Server.RDBMSType"))
                 {
-                    TYml2Xml.Xml2Yml(doc, settings.GetOptValue("output"));
+                    dbtype = CommonTypes.ParseDBType(settings.GetOptValue("Server.RDBMSType"));
                 }
-                else if (settings.GetOptValue("output").EndsWith("csv"))
-                {
-                    TCsv2Xml.Xml2Csv(doc, settings.GetOptValue("output"));
-                }
-                else if (settings.GetOptValue("output").EndsWith("xml"))
-                {
-                    StreamWriter sw = new StreamWriter(settings.GetOptValue("output"));
-                    sw.Write(TXMLParser.XmlToString(doc, true));
-                    sw.Close();
-                }
-            }
-            else
-            {
-                TYml2Xml.Xml2Yml(doc, "temp.yml");
-                StreamReader sr = new StreamReader("temp.yml");
-                Console.WriteLine(sr.ReadToEnd());
-                sr.Close();
-            }
 
-            db.RollbackTransaction();
-            db.CloseDBConnection();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-            Console.WriteLine(e.StackTrace);
+                if (dbtype != TDBType.ProgressODBC)
+                {
+                    throw new Exception("at the moment only Progress ODBC db is supported");
+                }
+
+                db.EstablishDBConnection(dbtype,
+                    settings.GetOptValue("Server.ODBC_DSN"),
+                    "",
+                    "",
+                    settings.GetOptValue("username"),
+                    settings.GetOptValue("password"),
+                    "");
+                DBAccess.GDBAccessObj = db;
+
+                TLogging.DebugLevel = 10;
+
+                string sqlText = "";
+
+                if (!settings.IsFlagSet("sql"))
+                {
+                    Console.WriteLine("Please enter sql and finish with semicolon: ");
+
+                    while (!sqlText.Trim().EndsWith(";"))
+                    {
+                        sqlText += " " + Console.ReadLine();
+                    }
+
+                    sqlText = sqlText.Substring(0, sqlText.Length - 1);
+                }
+                else
+                {
+                    sqlText = settings.GetOptValue("sql");
+                    Console.WriteLine(sqlText);
+                }
+
+                TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadUncommitted);
+
+                DataTable table = db.SelectDT(sqlText, "temp", transaction);
+
+                XmlDocument doc = TDataBase.DataTableToXml(table);
+
+                if (settings.IsFlagSet("output"))
+                {
+                    if (settings.GetOptValue("output").EndsWith("yml"))
+                    {
+                        TYml2Xml.Xml2Yml(doc, settings.GetOptValue("output"));
+                    }
+                    else if (settings.GetOptValue("output").EndsWith("csv"))
+                    {
+                        TCsv2Xml.Xml2Csv(doc, settings.GetOptValue("output"));
+                    }
+                    else if (settings.GetOptValue("output").EndsWith("xml"))
+                    {
+                        StreamWriter sw = new StreamWriter(settings.GetOptValue("output"));
+                        sw.Write(TXMLParser.XmlToString(doc, true));
+                        sw.Close();
+                    }
+                }
+                else
+                {
+                    TYml2Xml.Xml2Yml(doc, "temp.yml");
+                    StreamReader sr = new StreamReader("temp.yml");
+                    Console.WriteLine(sr.ReadToEnd());
+                    sr.Close();
+                }
+
+                db.RollbackTransaction();
+                db.CloseDBConnection();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
+            }
         }
     }
-}
 }

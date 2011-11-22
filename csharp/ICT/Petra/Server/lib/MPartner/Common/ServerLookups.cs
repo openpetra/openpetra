@@ -34,6 +34,7 @@ using Ict.Petra.Server.MCommon;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
+using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
@@ -259,7 +260,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
                     PartnerStatus = SharedTypes.StdPartnerStatusCodeStringToEnum(PartnerTable[0].StatusCode);
 
                     // check if user can access partner
-                    if (TSecurity.CanAccessPartner(PartnerTable[0]) == TPartnerAccessLevelEnum.palGranted)
+                    if (Ict.Petra.Server.MPartner.Common.TSecurity.CanAccessPartner(PartnerTable[0]) == TPartnerAccessLevelEnum.palGranted)
                     {
                         AUserCanAccessPartner = true;
                     }

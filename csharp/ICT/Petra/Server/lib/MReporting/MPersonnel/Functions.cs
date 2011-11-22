@@ -755,21 +755,6 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
                     SpokenLanguages += Row.LanguageCode + " (" + Row.LanguageLevel;
                 }
 
-                if (Row.WillingToTranslate)
-                {
-                    SpokenLanguages += ", tx";
-
-                    if (Row.TranslateInto)
-                    {
-                        SpokenLanguages += " into";
-                    }
-
-                    if (Row.TranslateOutOf)
-                    {
-                        SpokenLanguages += " from";
-                    }
-                }
-
                 SpokenLanguages += "), ";
             }
 

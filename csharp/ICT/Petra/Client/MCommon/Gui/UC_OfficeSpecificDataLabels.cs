@@ -45,7 +45,6 @@ using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
-using Ict.Petra.Client;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.CommonControls;
@@ -68,7 +67,7 @@ namespace Ict.Petra.Client.MCommon.Gui
     {
         private TFrmPetraEditUtils FPetraUtilsObject;
 
-        private Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS FMainDS;
+        // private Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS FMainDS;
 
         private Int64 FPartnerKey;
         private Int32 FApplicationKey;
@@ -133,7 +132,7 @@ namespace Ict.Petra.Client.MCommon.Gui
         {
             set
             {
-                FMainDS = value;
+                // FMainDS = value;
             }
         }
 
@@ -176,6 +175,9 @@ namespace Ict.Petra.Client.MCommon.Gui
 
         #endregion
 
+        /// <summary>
+        /// event handler
+        /// </summary>
         public void GrdLocalDataLabelValues_SizeChanged(System.Object sender, System.EventArgs e)
         {
             // inform the logic that the grid has been resized

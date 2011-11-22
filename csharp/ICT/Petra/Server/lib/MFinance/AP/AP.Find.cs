@@ -37,7 +37,6 @@ using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.MCommon;
 
 #region ManualCode
-using Ict.Petra.Server.MFinance;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Server.MFinance.AP.Data.Access;
