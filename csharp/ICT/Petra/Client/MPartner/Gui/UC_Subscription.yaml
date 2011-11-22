@@ -1,0 +1,80 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MPartner.Gui   
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data]
+    DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
+    FormType: edit
+    Template: usercontrol
+    MasterTable: PSubscription
+    Actions:
+        actEditIssues: {Label=Edit I&ssues, ActionClick=EditIssues}
+    Controls:
+        pnlDetails:
+            Controls: [pnlDetailsLeft, pnlDetailsRight]
+            Dock: Fill
+        pnlDetailsLeft:
+            Dock: Fill
+            Controls: [grpSubscription, grpMisc]
+        pnlDetailsRight: {Stretch=horizontally}
+            Dock: Right
+            Controls: [grpDates, grpIssues]
+                
+        grpSubscription: {Label=Subscription, Stretch=horizontally}
+            Controls: [cmbPSubscriptionPublicationCode, cmbPSubscriptionSubscriptionStatus, chkPSubscriptionGratisSubscription]
+
+        grpMisc: {Label=Miscellaneous, Stretch=horizontally}
+            Controls: [txtPublicationCost, txtPSubscriptionNumberComplimentary, txtPSubscriptionPublicationCopies, cmbPSubscriptionReasonSubsGivenCode, cmbPSubscriptionReasonSubsCancelledCode, txtPSubscriptionGiftFromKey]
+        
+        grpDates: {Label=Dates, Stretch=horizontally}
+            Controls: [dtpPSubscriptionStartDate, dtpPSubscriptionExpiryDate, dtpPSubscriptionSubscriptionRenewalDate, dtpPSubscriptionDateNoticeSent, dtpPSubscriptionDateCancelled]
+        
+        grpIssues: {Label=Issues, Stretch=horizontally}
+            Controls: [txtPSubscriptionNumberIssuesReceived, dtpPSubscriptionFirstIssue, dtpPSubscriptionLastIssue, btnEditIssues]
+		
+        cmbPSubscriptionPublicationCode: {List=PublicationList, OnChange=PublicationCodeChanged}
+            Dock: Fill
+            Label: Pub&lication Code
+        cmbPSubscriptionSubscriptionStatus: {OnChange=PublicationStatusChanged}
+            Label: S&ubscription Status
+            OptionalValues: [=PERMANENT, PROVISIONAL, GIFT, CANCELLED, EXPIRED]
+        chkPSubscriptionGratisSubscription: {OnChange=GratisSubscriptionChanged}
+            Label: Free Subscri&ption
+
+        txtPublicationCost: {Format=Currency}
+            Label: Publication Cost
+        txtPSubscriptionNumberComplimentary: {Format=Integer}
+            Label: Complimentar&y
+        txtPSubscriptionPublicationCopies: {Format=Integer}
+            Label: &Copies
+        cmbPSubscriptionReasonSubsGivenCode: {List=ReasonSubscriptionGivenList}
+            Dock: Fill
+            Label: Reason &Given
+        cmbPSubscriptionReasonSubsCancelledCode: {List=ReasonSubscriptionCancelledList}
+            Dock: Fill
+            Label: Reason Ended
+        txtPSubscriptionGiftFromKey:
+            Label: Gift Given By
+            Type: PartnerKey
+
+        dtpPSubscriptionStartDate:
+            Label: S&tart Date
+        dtpPSubscriptionExpiryDate:
+            Label: E&xpiry Date
+        dtpPSubscriptionSubscriptionRenewalDate:
+            Label: Date Rene&wed
+        dtpPSubscriptionDateNoticeSent:
+            Label: Not&ice Sent
+        dtpPSubscriptionDateCancelled:
+            Label: Date E&nded
+
+        txtPSubscriptionNumberIssuesReceived: {Format=Integer, Width=60}
+            Label: Issues Received
+        dtpPSubscriptionFirstIssue:
+            Label: Fi&rst Issue Sent
+        dtpPSubscriptionLastIssue:
+            Label: L&ast Issue Sent
+        btnEditIssues: {Stretch=horizontally}
+            Label: Edit Issues
+            Action: actEditIssues
+		

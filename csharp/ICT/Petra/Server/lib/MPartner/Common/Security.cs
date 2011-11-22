@@ -32,7 +32,7 @@ using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 
-namespace Ict.Petra.Server.MPartner
+namespace Ict.Petra.Server.MPartner.Common
 {
     /// <summary>
     /// Contains security-related functions for Partners that that can be used by any Class.

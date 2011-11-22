@@ -1,14 +1,77 @@
 <PetraDataSets>
- <ImportUnit name="Ict.Petra.Shared.MPartner.Partner.Data"/>
-  <ImportUnit name="Ict.Petra.Shared.MPartner.Mailroom.Data"/>
-  <ImportUnit name="Ict.Petra.Shared.MPersonnel.Personnel.Data"/>
-  <ImportUnit name="Ict.Petra.Shared.MPersonnel.Units.Data"/>
-  <ImportUnit name="Ict.Petra.Shared.MFinance.Account.Data"/>
-  <ImportUnit name="Ict.Petra.Shared.MHospitality.Data"/>
-  <ImportUnit name="Ict.Petra.Shared.MCommon.Data"/>
-   <DataSet name="PersonnelTDS">
-          <Table sqltable="p_partner"/>
-          <Table sqltable="pm_staff_data"/> 
-          <Table sqltable="pm_commitment_status"/>
+    <ImportUnit name="Ict.Petra.Shared.MPartner.Partner.Data"/>
+    <ImportUnit name="Ict.Petra.Shared.MPartner.Mailroom.Data"/>
+    <ImportUnit name="Ict.Petra.Shared.MPersonnel.Personnel.Data"/>
+    <ImportUnit name="Ict.Petra.Shared.MPersonnel.Units.Data"/>
+    <ImportUnit name="Ict.Petra.Shared.MFinance.Account.Data"/>
+    <ImportUnit name="Ict.Petra.Shared.MHospitality.Data"/>
+    <ImportUnit name="Ict.Petra.Shared.MCommon.Data"/>
+  
+    <DataSet name="PersonnelTDS">
+        <Table sqltable="p_partner"/>
+        <Table sqltable="pm_staff_data"/> 
+        <Table sqltable="pm_commitment_status"/>
+    </DataSet>  
+
+    <DataSet name="IndividualDataTDS">
+        <Table sqltable="p_person"/>                      <!-- Personal Data -->
+        <Table sqltable="pm_personal_data"/>              <!-- Personal Data -->
+        <Table sqltable="pt_personal_data_labels"/>       <!-- Personal Data -->
+        <Table sqltable="pm_passport_details"/>           <!-- Passport Details -->
+        <Table sqltable="pm_document"/>                   <!-- Personal Documents -->
+        <Table sqltable="pm_special_need"/>               <!-- Special Needs -->
+        <Table sqltable="pm_person_qualification"/>       <!-- Professional Areas (should be merged with Personal Abilities) -->
+        <Table sqltable="pm_person_language"/>            <!-- Personal Languages -->
+        <Table sqltable="pm_person_ability"/>             <!-- Personal Abilities (should be merged with Professional Areas)-->
+        <Table sqltable="pm_past_experience"/>            <!-- Previous Experience -->
+        <Table sqltable="pm_staff_data"/>                 <!-- Commitment Periods -->
+        <Table sqltable="pm_job_assignment"/>             <!-- Job Assignments -->
+        <Table sqltable="pm_person_evaluation"/>          <!-- Progress Reports -->
+          
+        <CustomTable name="SummaryData">
+            <Field sqltable="p_person" sqlfield="p_partner_key_n"/>
+            <Field sqltable="p_person" sqlfield="p_date_of_birth_d"/>
+            <Field sqltable="p_person" sqlfield="p_gender_c"/>
+            <Field sqltable="p_person" sqlfield="p_marital_status_c"/>
+            <Field name="Nationalities" sqltable="p_country" sqlfield="p_country_name_c" comment="Nationality/Nationalities of the PERSON (taken from his-her Passports)"/>
+            <Field sqltable="p_partner_location" sqlfield="p_email_address_c"/>
+            <Field sqltable="p_partner_location" sqlfield="p_telephone_number_c"/>       
+            <CustomField name="ChurchName" type="string" comment="Name of *a* supporting church of the PERSON"/>
+            <CustomField name="ChurchAddress" type="string" comment="Address of *this* supporting church of the PERSON"/>
+            <CustomField name="ChurchPhone" type="string" comment="Phone of *this* supporting church of the PERSON"/>
+            <CustomField name="ChurchPastor" type="string" comment="Pastor of *this* supporting church of the PERSON"/>
+            <CustomField name="ChurchPastorsPhone" type="string" comment="Phone of *this* pastor of *this* supporting church of the PERSON"/>
+            <CustomField name="NumberOfShownSupportingChurchPastors" type="int" comment="Number of pastors at *this* supporting church of the PERSON"/>
+            <CustomField name="NumberOfShownSupportingChurches" type="int" comment="Number of supporting churches of the PERSON"/>
+            
+            <PrimaryKey thisFields="PartnerKey"/>           
+        </CustomTable>
+
+        <CustomTable name="JobAssignmentStaffDataCombined">
+            <CustomField name="Key" type="Int32"/>
+            <Field sqltable="p_person" sqlfield="p_partner_key_n"/>
+            <Field name="FieldKey" sqltable="pm_job_assignment" sqlfield="pm_unit_key_n"/>
+            <CustomField name="FieldName" type="string"/>
+            <CustomField name="Position" type="string"/>
+            <Field sqltable="pm_job_assignment" sqlfield="pm_from_date_d"/>
+            <Field sqltable="pm_job_assignment" sqlfield="pm_to_date_d"/>
+            
+            <PrimaryKey thisFields="Key"/>           
+        </CustomTable>
+        
+        <CustomTable name="MiscellaneousData">
+            <Field sqltable="p_person" sqlfield="p_partner_key_n"/>
+            <CustomField name="ItemsCountPassportDetails" type="Int32"/>        <!-- not in use yet! -->
+            <CustomField name="ItemsCountPersonalDocuments" type="Int32"/>      <!-- not in use yet! -->
+            <CustomField name="ItemsCountProfessionalAreas" type="Int32"/>      <!-- not in use yet! -->
+            <CustomField name="ItemsCountPersonalLanguages" type="Int32"/>          
+            <CustomField name="ItemsCountPersonalAbilities" type="Int32"/>      <!-- not in use yet! -->
+            <CustomField name="ItemsCountPreviousExperience" type="Int32"/>     <!-- not in use yet! -->
+            <CustomField name="ItemsCountCommitmentPeriods" type="Int32"/>      <!-- not in use yet! -->
+            <CustomField name="ItemsCountJobAssignments" type="Int32"/>         <!-- not in use yet! -->
+            <CustomField name="ItemsCountProgressReports" type="Int32"/>        <!-- not in use yet! -->
+            <PrimaryKey thisFields="PartnerKey"/>
+        </CustomTable>                    
    </DataSet>    
+   
 </PetraDataSets>

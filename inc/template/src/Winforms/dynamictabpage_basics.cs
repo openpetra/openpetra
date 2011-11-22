@@ -48,6 +48,14 @@ private void TabSelectionChanged(System.Object sender, EventArgs e)
     
     {#DYNAMICTABPAGEUSERCONTROLSELECTIONCHANGED}
 }
+
+/// <summary>
+/// This Method *CAN* be implemented in ManualCode to perform special initialisations *before* 
+/// InitUserControl() gets called.
+/// </summary>
+/// <param name="AUserControl"></param>
+partial void PreInitUserControl(UserControl AUserControl);
+
 {#ENDIF ISUSERCONTROL}
 {#DYNAMICTABPAGEUSERCONTROLSETUPMETHODS}
 

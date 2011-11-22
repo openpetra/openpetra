@@ -38,6 +38,8 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
+using Ict.Petra.Shared.MPersonnel.Person;
+using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 using System.Collections.Specialized;
@@ -243,7 +245,25 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.ImportExport.WebConnectors
         PartnerImportExportTDS ImportFromPartnerExtract(System.String[] ATextFileLines,
                                                         out TVerificationResultCollection AVerificationResult);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector)</summary>
+        Boolean CommitChanges(PartnerImportExportTDS MainDS,
+                              out TVerificationResultCollection AVerificationResult);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector)</summary>
         System.String ExportPartners();
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector)</summary>
+        System.String GetExtFileHeader();
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector)</summary>
+        System.String GetExtFileFooter();
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector)</summary>
+        System.String ExportPartnerExt(Int64 APartnerKey,
+                                       Int32 ASiteKey,
+                                       Int32 ALocationKey,
+                                       Boolean ANoFamily,
+                                       StringCollection ASpecificBuildingInfo);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector)</summary>
+        Boolean ImportDataExt(System.String[] ALinesToImport,
+                              System.String ALimitToOption,
+                              System.Boolean ADoNotOverwrite,
+                              out TVerificationResultCollection AResultList);
     }
 
 }
@@ -556,11 +576,15 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors
                                          Int32 AFamilyLocationKey,
                                          out String ASiteCountryCode);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.UIConnectors.TPartnerEditUIConnector)</summary>
+        IndividualDataTDS GetDataPersonnelIndividualData(TIndividualDataItemEnum AIndividualDataItem);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.UIConnectors.TPartnerEditUIConnector)</summary>
         PPartnerTypeTable GetDataPartnerTypes();
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.UIConnectors.TPartnerEditUIConnector)</summary>
+        PSubscriptionTable GetDataSubscriptions();
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.UIConnectors.TPartnerEditUIConnector)</summary>
         PartnerEditTDSPPartnerRelationshipTable GetDataPartnerRelationships();
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.UIConnectors.TPartnerEditUIConnector)</summary>
-        PSubscriptionTable GetDataSubscriptions();
+        PDataLabelValuePartnerTable GetDataLocalPartnerDataValues();
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.UIConnectors.TPartnerEditUIConnector)</summary>
         PartnerEditTDSFamilyMembersTable GetDataFamilyMembers(Int64 AFamilyPartnerKey,
                                                               String AWorkWithSpecialType);

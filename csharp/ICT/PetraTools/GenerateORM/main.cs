@@ -26,9 +26,9 @@ using System.IO;
 using Ict.Tools.CodeGeneration;
 using Ict.Tools.DBXML;
 using Ict.Common;
+using Ict.Tools.CodeGeneration.DataStore;
 
-
-namespace Ict.Tools.CodeGeneration.DataStore
+namespace Ict.Tools.GenerateORM
 {
     /// This program generates the tables and datasets for the typed datasets
     public class generateTypedTables

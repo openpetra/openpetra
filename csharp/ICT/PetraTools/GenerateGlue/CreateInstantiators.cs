@@ -315,6 +315,24 @@ class CreateInstantiators : AutoGenerationWriter
         {
             foreach (MethodDeclaration m in CSParser.GetMethods(connectorClass))
             {
+                bool AttributeNoRemoting = false;
+
+                foreach (AttributeSection attrSection in m.Attributes)
+                {
+                    foreach (ICSharpCode.NRefactory.Ast.Attribute attr in attrSection.Attributes)
+                    {
+                        if (attr.Name == "NoRemoting")
+                        {
+                            AttributeNoRemoting = true;
+                        }
+                    }
+                }
+
+                if (AttributeNoRemoting)
+                {
+                    continue;
+                }
+
                 string MethodName = m.Name;
 
                 String returnType = CreateInterfaces.TypeToString(m.TypeReference, "");

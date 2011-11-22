@@ -44,9 +44,11 @@ using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Server.MFinance.Gift;
 using Ict.Petra.Server.MPartner.Partner;
+using Ict.Petra.Shared.MPersonnel.Person;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MCommon.UIConnectors;
@@ -54,6 +56,8 @@ using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.MPartner;
 using Ict.Petra.Server.MPartner.DataAggregates;
 using Ict.Petra.Server.MSysMan.Maintenance;
+using Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors;
+using Ict.Petra.Server.MFinance.Common;
 
 namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 {
@@ -402,9 +406,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             DateTime LastContactDate;
             String LastGiftInfo;
             TLocationPK LocationPK;
-            TOfficeSpecificDataLabelsUIConnector OfficeSpecificDataLabelsUIConnector;
-            OfficeSpecificDataLabelsTDS OfficeSpecificDataLabels;
-            Boolean OfficeSpecificDataLabelsAvailable;
+            Boolean OfficeSpecificDataLabelsAvailable = false;
             TRecentPartnersHandling RecentPartnersHandling;
             Int32 ItemsCountAddresses = 0;
             Int32 ItemsCountAddressesActive = 0;
@@ -741,18 +743,30 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                     #endregion
 
-                    /*
-                     * Office Specific Data
-                     */
-                    OfficeSpecificDataLabelsUIConnector = new TOfficeSpecificDataLabelsUIConnector(FPartnerKey,
-                        MCommonTypes.PartnerClassEnumToOfficeSpecificDataLabelUseEnum(FPartnerClass));
-                    OfficeSpecificDataLabels = OfficeSpecificDataLabelsUIConnector.GetData(ReadTransaction);
-                    OfficeSpecificDataLabelsAvailable =
-                        (OfficeSpecificDataLabelsUIConnector.CountLabelUse(SharedTypes.PartnerClassEnumToString(FPartnerClass), ReadTransaction) != 0);
-                    FPartnerEditScreenDS.Merge(OfficeSpecificDataLabels.PDataLabelValuePartner);
+                    // Office Specific Data
+                    if ((!ADelayedDataLoading) || (ATabPage == TPartnerEditTabPageEnum.petpOfficeSpecific))
+                    {
+                        FPartnerEditScreenDS.Merge(GetDataLocalPartnerDataValuesInternal(out OfficeSpecificDataLabelsAvailable, false));
+                    }
+                    else
+                    {
+                        FPartnerEditScreenDS.Merge(GetDataLocalPartnerDataValuesInternal(out OfficeSpecificDataLabelsAvailable, true));
+                    }
 
                     // Console.WriteLine('FPartnerEditScreenDS.PDataLabelValuePartner.Rows.Count: ' + FPartnerEditScreenDS.PDataLabelValuePartner.Rows.Count.ToString);
+
+                    #region Individual Data (Personnel Tab)
+
+                    if (((!ADelayedDataLoading)) || (ATabPage == TPartnerEditTabPageEnum.petpPersonnelIndividualData))
+                    {
+                        FPartnerEditScreenDS.Merge(TIndividualDataWebConnector.GetData(FPartnerKey, TIndividualDataItemEnum.idiSummary));
+//Console.WriteLine("FPartnerEditScreenDS.PDataLabelValuePartner.Rows.Count: " + FPartnerEditScreenDS.Tables["SummaryData"].Rows.Count.ToString());
+                    }
+
                     #endregion
+
+                    #endregion
+
                     #region Process data
 
                     // Determination of Last Gift information
@@ -1402,6 +1416,20 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         /// todoComment
         /// </summary>
         /// <returns></returns>
+        public IndividualDataTDS GetDataPersonnelIndividualData(TIndividualDataItemEnum AIndividualDataItem)
+        {
+            return GetDataPersonnelIndividualDataInternal(AIndividualDataItem);
+        }
+
+        private IndividualDataTDS GetDataPersonnelIndividualDataInternal(TIndividualDataItemEnum AIndividualDataItem)
+        {
+            return TIndividualDataWebConnector.GetData(FPartnerKey, AIndividualDataItem);
+        }
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        /// <returns></returns>
         public PPartnerTypeTable GetDataPartnerTypes()
         {
             Int32 PartnerTypesCount;
@@ -1507,6 +1535,17 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             Int32 RelationshipsCount;
 
             return GetPartnerRelationshipsInternal(out RelationshipsCount, false);
+        }
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        /// <returns></returns>
+        public PDataLabelValuePartnerTable GetDataLocalPartnerDataValues()
+        {
+            Boolean LabelsAvailable;
+
+            return GetDataLocalPartnerDataValuesInternal(out LabelsAvailable, false);
         }
 
         /// <summary>
@@ -2417,6 +2456,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
 
                 #endregion
+
                 #region Partner Types
 
                 if (AInspectDS.Tables.Contains(PPartnerTypeTable.GetTableName()))
@@ -2437,6 +2477,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
 
                 #endregion
+
                 #region Subscriptions
 
                 if (AInspectDS.Tables.Contains(PSubscriptionTable.GetTableName()))
@@ -2450,6 +2491,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
 
                 #endregion
+
                 #region Partner Details according to PartnerClass
 
                 switch (FPartnerClass)
@@ -2625,6 +2667,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
 
                 #endregion
+
                 #region Relationships
 
                 if (AInspectDS.Tables.Contains(PPartnerRelationshipTable.GetTableName()))
@@ -2638,6 +2681,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
 
                 #endregion
+
                 #region Foundations
 
                 if (AInspectDS.Tables.Contains(PFoundationTable.GetTableName()))
@@ -2705,6 +2749,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
 
                 #endregion
+
                 #region Office Specific Data Labels
 
                 if (AInspectDS.Tables.Contains(PDataLabelValuePartnerTable.GetTableName()))
@@ -2719,6 +2764,24 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         AllSubmissionsOK = false;
                         AVerificationResult.AddCollection(SingleVerificationResultCollection);
                     }
+                }
+
+                #endregion
+
+                #region Individual Data (Personnel Tab)
+
+                IndividualDataTDS TempDS = new IndividualDataTDS();
+                TempDS.Merge(AInspectDS);
+                TSubmitChangesResult IndividualDataResult;
+
+                IndividualDataResult = TIndividualDataWebConnector.SubmitChangesServerSide(ref TempDS, ref AInspectDS, ASubmitChangesTransaction,
+                    out SingleVerificationResultCollection);
+
+                if ((IndividualDataResult != TSubmitChangesResult.scrOK)
+                    && (IndividualDataResult != TSubmitChangesResult.scrNothingToBeSaved))
+                {
+                    AllSubmissionsOK = false;
+                    AVerificationResult.AddCollection(SingleVerificationResultCollection);
                 }
 
                 #endregion
@@ -3170,6 +3233,53 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
             }
             return RelationshipDT;
+        }
+
+        private PDataLabelValuePartnerTable GetDataLocalPartnerDataValuesInternal(out Boolean ALabelsAvailable, Boolean ACountOnly)
+        {
+            TDBTransaction ReadTransaction;
+            Boolean NewTransaction = false;
+            TOfficeSpecificDataLabelsUIConnector OfficeSpecificDataLabelsUIConnector;
+            PDataLabelValuePartnerTable DataLabelValuePartnerDT;
+            OfficeSpecificDataLabelsTDS OfficeSpecificDataLabels;
+
+            ALabelsAvailable = false;
+
+            DataLabelValuePartnerDT = new PDataLabelValuePartnerTable();
+
+            try
+            {
+                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+                    TEnforceIsolationLevel.eilMinimum,
+                    out NewTransaction);
+
+
+                OfficeSpecificDataLabelsUIConnector = new TOfficeSpecificDataLabelsUIConnector(FPartnerKey,
+                    MCommonTypes.PartnerClassEnumToOfficeSpecificDataLabelUseEnum(FPartnerClass));
+                OfficeSpecificDataLabels = OfficeSpecificDataLabelsUIConnector.GetData();
+                ALabelsAvailable =
+                    (OfficeSpecificDataLabelsUIConnector.CountLabelUse(SharedTypes.PartnerClassEnumToString(FPartnerClass), ReadTransaction) != 0);
+
+                if (!ACountOnly)
+                {
+                    DataLabelValuePartnerDT.Merge(OfficeSpecificDataLabels.PDataLabelValuePartner);
+                }
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+#if DEBUGMODE
+                    if (TLogging.DL >= 7)
+                    {
+                        Console.WriteLine(this.GetType().FullName + ".GetDataLocalPartnerDataValuesInternal: committed own transaction.");
+                    }
+#endif
+                }
+            }
+
+            return DataLabelValuePartnerDT;
         }
 
         /// <summary>

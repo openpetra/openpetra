@@ -195,7 +195,7 @@ namespace Ict.Tools.NAntTasks
 
             string SuperUser = string.Empty;
 
-            if (NAnt.Core.PlatformHelper.IsUnix && FUsername == "postgres")
+            if (NAnt.Core.PlatformHelper.IsUnix && (FUsername == "postgres"))
             {
                 SuperUser = "postgres";
             }

@@ -32,6 +32,7 @@ using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Server.MPartner.Common;
 
 namespace Ict.Petra.Server.MPartner.Extracts
 {

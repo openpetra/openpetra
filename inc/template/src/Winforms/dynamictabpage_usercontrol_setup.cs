@@ -8,6 +8,7 @@ if (TClientSettings.DelayedDataLoading)
 FUco{#CONTROLNAMEWITHOUTPREFIX} = ({#DYNAMICCONTROLTYPE})DynamicLoadUserControl(TDynamicLoadableUserControls.dluc{#CONTROLNAMEWITHOUTPREFIX});
 FUco{#CONTROLNAMEWITHOUTPREFIX}.MainDS = FMainDS;
 FUco{#CONTROLNAMEWITHOUTPREFIX}.PetraUtilsObject = FPetraUtilsObject;
+PreInitUserControl(FUco{#CONTROLNAMEWITHOUTPREFIX});
 FUco{#CONTROLNAMEWITHOUTPREFIX}.InitUserControl();
 {#IFDEF ISUSERCONTROL}
 ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUco{#CONTROLNAMEWITHOUTPREFIX});

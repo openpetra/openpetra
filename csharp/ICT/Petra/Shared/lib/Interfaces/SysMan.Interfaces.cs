@@ -54,6 +54,7 @@ using Ict.Petra.Shared.Interfaces.MSysMan.Security.UserManager;
 #region ManualCode
 using System.Xml;
 using Ict.Petra.Shared.MSysMan.Data;
+using Ict.Petra.Shared.MSysMan;
 #endregion ManualCode
 namespace Ict.Petra.Shared.Interfaces.MSysMan
 {
