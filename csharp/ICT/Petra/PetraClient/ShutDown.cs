@@ -24,6 +24,7 @@
 using System;
 using System.Diagnostics;
 using System.Windows.Forms;
+using Ict.Common;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
 using SplashScreen;
