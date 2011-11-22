@@ -215,7 +215,7 @@ useful parameters
     <property name="solution.file" value="${path::combine(dir.projectfiles,
                                   path::combine(devenv-xbuild, 'OpenPetra.'+solution+'.sln'))}"/>
     <property name="solution.file" value="${string::replace(solution.file, 'OpenPetra.OpenPetra.sln', 'OpenPetra.sln')}"/>
-    <exec program="xbuild" commandline="${solution.file}"/>
+    <exec program="xbuild" commandline="/verbosity:quiet ${solution.file}"/>
   </if>
   <if test="${platform::is-windows()}" >
     <property name="solution.file" value="${path::combine(dir.projectfiles,
