@@ -60,8 +60,6 @@ RootNode:
                 Row0: [lblToBeDebited, lblToBeCredited]
                 Row1: [txtReceivingFund, cmbDetailCostCentreCode]
                 Row2: [cmbDetailDrAccountCode, cmbDetailAccountCode]
-            ColWidths: [0=Fixed:96, 1=Fixed:284, 2=Fixed:319]
-
     Toolbar:
         tbbNew:
             Label: New Payable Admin. Grant

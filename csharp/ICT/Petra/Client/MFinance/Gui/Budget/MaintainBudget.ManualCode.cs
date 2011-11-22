@@ -115,6 +115,159 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             CreateNewABudget();
         }
 
+
+        private void DeleteRow(System.Object sender, EventArgs e)
+        {
+            if (FPreviouslySelectedDetailRow == null)
+            {
+                return;
+            }
+
+            //TODO need to create CheckDeleteABudgetSequence
+            int num = 0; //TRemote.MFinance.Budget.WebConnectors.CheckDeleteABudgetSequence(FPreviouslySelectedDetailRow.BudgetSequence);
+
+            if (num > 0)
+            {
+                MessageBox.Show(Catalog.GetString("This budget is already referenced and cannot be deleted."));
+                return;
+            }
+
+            bool isBudgetUsed = false;
+            
+            for (int i = 0; i < 13; i++)
+            {
+	            if (FMainDS.ABudgetPeriod.Rows.Find(new object[] { FPreviouslySelectedDetailRow.BudgetSequence, i }) != null)
+	            {
+	            	isBudgetUsed = true;
+	            	break;
+	            }
+            }
+            
+			if (isBudgetUsed) 
+			{
+                MessageBox.Show(Catalog.GetString("Budget figures exist for last year and this year. The budget cannot be deleted. Do you wish to cancel the budget figures for next year?"));
+                return;
+			}            
+            
+            if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
+                || (MessageBox.Show(String.Format(Catalog.GetString(
+                                "You have chosen to delete this budget (Cost Centre: {0}, Account: {1}, Type: {2}, Revision: {3}).\n\nDo you really want to delete it?"),
+                            FPreviouslySelectedDetailRow.CostCentreCode,
+                            FPreviouslySelectedDetailRow.AccountCode,
+                            FPreviouslySelectedDetailRow.BudgetTypeCode,
+                            FPreviouslySelectedDetailRow.Revision), Catalog.GetString("Confirm Delete"),
+                        MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes))
+            {
+                int rowIndex = CurrentRowIndex();
+                FPreviouslySelectedDetailRow.Delete();
+                FPetraUtilsObject.SetChangedFlag();
+                SelectByIndex(rowIndex);
+            }
+
+        }
+
+
+        private int CurrentRowIndex()
+        {
+            int rowIndex = -1;
+
+            SourceGrid.RangeRegion selectedRegion = grdDetails.Selection.GetSelectionRegion();
+
+            if ((selectedRegion != null) && (selectedRegion.GetRowsIndex().Length > 0))
+            {
+                rowIndex = selectedRegion.GetRowsIndex()[0];
+            }
+
+            return rowIndex;
+        }
+
+        private void SelectByIndex(int rowIndex)
+        {
+            if (rowIndex >= grdDetails.Rows.Count)
+            {
+                rowIndex = grdDetails.Rows.Count - 1;
+            }
+
+            if ((rowIndex < 1) && (grdDetails.Rows.Count > 1))
+            {
+                rowIndex = 1;
+            }
+
+            if ((rowIndex >= 1) && (grdDetails.Rows.Count > 1))
+            {
+                grdDetails.Selection.SelectRow(rowIndex, true);
+                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+                ShowDetails(FPreviouslySelectedDetailRow);
+            }
+            else
+            {
+                FPreviouslySelectedDetailRow = null;
+            }
+        }
+
+        private void BudgetTypeChanged(System.Object sender, EventArgs e)
+        {
+        	
+        }
+        
+        private void TotalSplitAmountChanged(System.Object sender, EventArgs e)
+        {
+        	decimal annualAmount = 0;
+        	decimal perPeriodAmount = 0;
+        	decimal remainder = 0;
+        	
+        	TTxtNumericTextBox txt = (TTxtNumericTextBox)sender;
+        	txt.CurrencySymbol = "";
+        	//string strAmount = txt.Text.Substring(0,
+        	if(Decimal.TryParse(txt.Text, out annualAmount))
+        	{
+        		perPeriodAmount = Math.Truncate(annualAmount / 12);
+        		remainder = annualAmount - perPeriodAmount * 12;
+        	} 
+        	else
+        	{
+        		MessageBox.Show("Not numeric");
+        	}
+        	
+        	txtPerPeriodAmount.Text = perPeriodAmount.ToString();
+        	txtPeriod12Amount.Text = (perPeriodAmount + remainder).ToString();
+        }
+
+        private void ShowDetailsManual(ABudgetRow ARow)
+        {
+	            if (ARow.BudgetTypeCode == MFinanceConstants.BUDGET_SPLIT)
+	            {
+		            rbtSplit.Checked = true;
+	            }
+	            else if (ARow.BudgetTypeCode == MFinanceConstants.BUDGET_ADHOC)
+	            {
+		            rbtAdHoc.Checked = true;
+	            }
+	            else if (ARow.BudgetTypeCode == MFinanceConstants.BUDGET_SAME)
+	            {
+		            rbtSame.Checked = true;
+	            }
+	            else if (ARow.BudgetTypeCode == MFinanceConstants.BUDGET_INFLATE_BASE)
+	            {
+		            rbtInflateBase.Checked = true;
+	            }
+	            else  //ARow.BudgetTypeCode = MFinanceConstants.BUDGET_INFLATE_N
+	            {
+		            rbtInflateN.Checked = true;
+	            }
+	            
+	            if (!grpBudgetDetails.AutoSize)
+	            {
+		            grpBudgetDetails.AutoSize = true;	
+	            }
+	            
+                pnlBudgetTypeAdhoc.Visible = rbtAdHoc.Checked;
+	            pnlBudgetTypeSame.Visible = rbtSame.Checked;
+	            pnlBudgetTypeSplit.Visible = rbtSplit.Checked;
+	            pnlBudgetTypeInflateN.Visible = rbtInflateN.Checked;
+	            pnlBudgetTypeInflateBase.Visible = rbtInflateBase.Checked;	
+        }
+        
         private bool GetDetailDataFromControlsManual(ABudgetRow ARow)
 	    {
 	        if (ARow != null)

@@ -9,8 +9,10 @@ RootNode:
     Template: windowEdit
     #Template: windowEditUIConnector
     WindowWidth: 858
+    #WindowHeight: 900
     Actions:
         actNew: {Label=New, ActionClick=NewRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRow}      
     Controls:
         pnlContent:
             Controls: [pnlGrid, pnlFilter]
@@ -20,19 +22,22 @@ RootNode:
             Controls: [grdDetails, pnlButtons]
         pnlButtons:
             Dock: Right
-            Controls: [btnNew]
+            Controls: [btnNew, btnDelete]
         pnlFilter:
             Dock: Bottom
             Controls:
                 Row0: [pnlDetails, rgrSelectBudgetType]
-            #ColWidths: [0=Fixed:244, 1=Fixed:200]
+                Row1: [grpBudgetDetails]
         rgrSelectBudgetType:
             OptionalValues: [Split, Ad hoc, Same, Inflate Base, Inflate n]
             ControlsOrientation: horizontal
             Align: left
             NoLabel: true
-            #OnChange: TransactionFilterChanged
+            #OnChange: BudgetTypeChanged
         btnNew:
+            Action: actNew
+        btnDelete:
+            Action: actDelete
         grdDetails:
             Dock: Fill
             Columns: [DetailCostCentreCode, DetailAccountCode, DetailBudgetTypeCode]
@@ -42,8 +47,92 @@ RootNode:
             Controls:
                 Row0: [cmbDetailCostCentreCode]
                 Row1: [cmbDetailAccountCode]
+        pnlBudgetTypeAdhoc:
+            Dock: Fill
+            Visible: false
+            Controls:
+                Row0: [txtPeriod01Amount, txtPeriod07Amount]
+                Row1: [txtPeriod02Amount, txtPeriod08Amount]
+                Row2: [txtPeriod03Amount, txtPeriod09Amount]
+                Row3: [txtPeriod04Amount, txtPeriod10Amount]
+                Row4: [txtPeriod05Amount, txtPeriod11Amount]
+                Row5: [txtPeriod06Amount, txtPeriod12Amount]
+        pnlBudgetTypeSame:
+            Dock: Fill
+            Visible: false
+            Controls:
+                Row0: [txtAmount]
+        pnlBudgetTypeSplit:
+            Dock: Fill
+            Visible: false
+            Controls:
+                Row0: [txtTotalSplitAmount]
+                Row1: [txtPerPeriodAmount]
+                Row2: [txtPeriod12AmountPlus]
+        pnlBudgetTypeInflateN:
+            Dock: Fill
+            Visible: false
+            Controls:
+                Row0: [txtFirstPeriodAmount]
+                Row1: [txtInflateAfterPeriod]
+                Row2: [txtInflationRate]
+        pnlBudgetTypeInflateBase:
+            Dock: Fill
+            Visible: false
+            Controls:
+                Row0: [txtPeriod1Amount, txtPeriod07Index]
+                Row1: [txtPeriod02Index, txtPeriod08Index]
+                Row2: [txtPeriod03Index, txtPeriod09Index]
+                Row3: [txtPeriod04Index, txtPeriod10Index]
+                Row4: [txtPeriod05Index, txtPeriod11Index]
+                Row5: [txtPeriod06Index, txtPeriod12Index]
+        grpBudgetDetails: {ColSpan=5, Width:775, Height: 190}
+            Align: top-left
+            Controls: 
+                Row0: [pnlBudgetTypeAdhoc]
+                Row1: [pnlBudgetTypeSame]
+                Row2: [pnlBudgetTypeSplit]
+                Row3: [pnlBudgetTypeInflateN]
+                Row4: [pnlBudgetTypeInflateBase]
+            #ColWidths: [0=Fixed:96, 1=Fixed:284, 2=Fixed:319]
         cmbDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList}
         cmbDetailAccountCode: {Label=Account, List=UserDefinedList}
+        #Adhoc controls
+        txtPeriod01Amount: {Label=Period 1, Format=Currency}
+        txtPeriod02Amount: {Label=Period 2, Format=Currency}
+        txtPeriod03Amount: {Label=Period 3, Format=Currency}
+        txtPeriod04Amount: {Label=Period 4, Format=Currency}
+        txtPeriod05Amount: {Label=Period 5, Format=Currency}
+        txtPeriod06Amount: {Label=Period 6, Format=Currency}
+        txtPeriod07Amount: {Label=Period 7, Format=Currency}
+        txtPeriod08Amount: {Label=Period 8, Format=Currency}
+        txtPeriod09Amount: {Label=Period 9, Format=Currency}
+        txtPeriod10Amount: {Label=Period 10, Format=Currency}
+        txtPeriod11Amount: {Label=Period 11, Format=Currency}
+        txtPeriod12Amount: {Label=Period 12, Format=Currency}
+        #Same controls
+        txtAmount: {Label = Amount, Format=Currency}
+        #Split controls
+        txtTotalSplitAmount: {Label = Total Amount, Format=Currency, OnChange=TotalSplitAmountChanged}
+        txtPerPeriodAmount: {Label = Amounts for Period 1 to 11, Format=Currency, ReadOnly=true}
+        txtPeriod12AmountPlus: {Label = Amount for period 12, Format=Currency, ReadOnly=true}
+        #Inflate N controls
+        txtFirstPeriodAmount: {Label = First Period Amount, Format=Currency}
+        txtInflateAfterPeriod: {Label = Inflate after period}
+        txtInflationRate: {Label = Inflation Rate, Format=PercentDecimal}
+        #Inflate Base controls
+        txtPeriod1Amount: {Label=Period 1 Amount, Format=Currency}
+        txtPeriod02Index: {Label=Period 2 Index, Format=PercentDecimal}
+        txtPeriod03Index: {Label=Period 3 Index, Format=PercentDecimal}
+        txtPeriod04Index: {Label=Period 4 Index, Format=PercentDecimal}
+        txtPeriod05Index: {Label=Period 5 Index, Format=PercentDecimal}
+        txtPeriod06Index: {Label=Period 6 Index, Format=PercentDecimal}
+        txtPeriod07Index: {Label=Period 7 Index, Format=PercentDecimal}
+        txtPeriod08Index: {Label=Period 8 Index, Format=PercentDecimal}
+        txtPeriod09Index: {Label=Period 9 Index, Format=PercentDecimal}
+        txtPeriod10Index: {Label=Period 10 Index, Format=PercentDecimal}
+        txtPeriod11Index: {Label=Period 11 Index, Format=PercentDecimal}
+        txtPeriod12Index: {Label=Period 12 Index, Format=PercentDecimal}
         #TODO: radio buttons for selection of budget type, display different user controls depending on selection, similar to bankimport screen
     Menu:
     Toolbar:
