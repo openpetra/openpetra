@@ -158,6 +158,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             String fileName = txtFilename.Text;
 
+            if (!Directory.Exists(Path.GetDirectoryName(fileName)))
+            {
+                MessageBox.Show(Catalog.GetString("Please select an existing directory for this file!"),
+                    Catalog.GetString("Error"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                return;
+            }
+
             Hashtable requestParams = new Hashtable();
 
             requestParams.Add("ALedgerNumber", FLedgerNumber);

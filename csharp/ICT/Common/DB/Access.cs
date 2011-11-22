@@ -2147,7 +2147,7 @@ namespace Ict.Common.DB
             {
                 if (!line.Trim().StartsWith("--"))
                 {
-                    stmt += line.Trim() + " ";
+                    stmt += line.Trim() + Environment.NewLine;
                 }
             }
 
@@ -2163,10 +2163,10 @@ namespace Ict.Common.DB
                     template.SetCodelet(define, "enabled");
                 }
 
-                return template.FinishWriting(true);
+                return template.FinishWriting(true).Replace(Environment.NewLine, " ");
             }
 
-            return stmt;
+            return stmt.Replace(Environment.NewLine, " ");
         }
 
         private bool FConnectionReady = false;

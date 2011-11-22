@@ -98,50 +98,68 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             FTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
-            ALedgerAccess.LoadByPrimaryKey(MainDS, FLedgerNumber, FTransaction);
+            try
+            {
+                ALedgerAccess.LoadByPrimaryKey(MainDS, FLedgerNumber, FTransaction);
+
+                List <OdbcParameter>parameters = new List <OdbcParameter>();
+
+                List <String>SQLCommandDefines = new List <string>();
+
+                if ((bool)requestParams["IncludeUnposted"])
+                {
+                    SQLCommandDefines.Add("INCLUDEUNPOSTED");
+                }
+
+                OdbcParameter param = new OdbcParameter("LedgerNumber", OdbcType.Int);
+                param.Value = FLedgerNumber;
+                parameters.Add(param);
+
+                if (requestParams.ContainsKey("BatchNumberStart"))
+                {
+                    SQLCommandDefines.Add("BYBATCHNUMBER");
+                    param = new OdbcParameter("BatchNumberStart", OdbcType.Int);
+                    param.Value = (Int32)requestParams["BatchNumberStart"];
+                    parameters.Add(param);
+                    param = new OdbcParameter("BatchNumberEnd", OdbcType.Int);
+                    param.Value = (Int32)requestParams["BatchNumberEnd"];
+                    parameters.Add(param);
+                }
+                else
+                {
+                    SQLCommandDefines.Add("BYDATERANGE");
+                    param = new OdbcParameter("BatchDateFrom", OdbcType.DateTime);
+                    param.Value = (Int32)requestParams["BatchDateFrom"];
+                    parameters.Add(param);
+                    param = new OdbcParameter("BatchDateTo", OdbcType.DateTime);
+                    param.Value = (Int32)requestParams["BatchDateTo"];
+                    parameters.Add(param);
+                }
+
+                string sqlStatement = TDataBase.ReadSqlFile("Gift.GetGiftsToExport.sql", SQLCommandDefines);
+
+                DBAccess.GDBAccessObj.Select(MainDS,
+                    "SELECT DISTINCT PUB_a_gift_batch.* " + sqlStatement,
+                    MainDS.AGiftBatch.TableName,
+                    FTransaction,
+                    parameters.ToArray());
+                DBAccess.GDBAccessObj.Select(MainDS,
+                    "SELECT DISTINCT PUB_a_gift.* " + sqlStatement,
+                    MainDS.AGift.TableName,
+                    FTransaction,
+                    parameters.ToArray());
+                DBAccess.GDBAccessObj.Select(MainDS,
+                    "SELECT DISTINCT PUB_a_gift_detail.* " + sqlStatement,
+                    MainDS.AGiftDetail.TableName,
+                    FTransaction,
+                    parameters.ToArray());
+            }
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
             string BaseCurrency = MainDS.ALedger[0].BaseCurrency;
-
-            List <OdbcParameter>parameters = new List <OdbcParameter>();
-
-            List <String>SQLCommandDefines = new List <string>();
-
-            if ((bool)requestParams["IncludeUnposted"])
-            {
-                SQLCommandDefines.Add("INCLUDEUNPOSTED");
-            }
-
-            OdbcParameter param = new OdbcParameter("LedgerNumber", OdbcType.Int);
-            param.Value = FLedgerNumber;
-            parameters.Add(param);
-
-            if (requestParams.ContainsKey("BatchNumberStart"))
-            {
-                SQLCommandDefines.Add("BYBATCHNUMBER");
-                param = new OdbcParameter("BatchNumberStart", OdbcType.Int);
-                param.Value = (Int32)requestParams["BatchNumberStart"];
-                parameters.Add(param);
-                param = new OdbcParameter("BatchNumberEnd", OdbcType.Int);
-                param.Value = (Int32)requestParams["BatchNumberEnd"];
-                parameters.Add(param);
-            }
-            else
-            {
-                SQLCommandDefines.Add("BYDATERANGE");
-                param = new OdbcParameter("BatchDateFrom", OdbcType.DateTime);
-                param.Value = (Int32)requestParams["BatchDateFrom"];
-                parameters.Add(param);
-                param = new OdbcParameter("BatchDateTo", OdbcType.DateTime);
-                param.Value = (Int32)requestParams["BatchDateTo"];
-                parameters.Add(param);
-            }
-
-            string sqlStatement = TDataBase.ReadSqlFile("Gift.GetGiftsToExport.sql", SQLCommandDefines);
-
-            DBAccess.GDBAccessObj.Select(MainDS, sqlStatement, MainDS.AGiftBatch.TableName, FTransaction);
-            DBAccess.GDBAccessObj.Select(MainDS, sqlStatement, MainDS.AGift.TableName, FTransaction);
-            DBAccess.GDBAccessObj.Select(MainDS, sqlStatement, MainDS.AGiftDetail.TableName, FTransaction);
-
-            DBAccess.GDBAccessObj.RollbackTransaction();
 
             SortedDictionary <String, AGiftSummaryRow>sdSummary = new SortedDictionary <String, AGiftSummaryRow>();
 
