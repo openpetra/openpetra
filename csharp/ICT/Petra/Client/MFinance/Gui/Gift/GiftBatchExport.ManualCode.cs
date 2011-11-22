@@ -125,7 +125,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (impOptions.Length > 0)
             {
-                cmbDelimiter.SelectedItem = ConvertDelimiter(impOptions.Substring(0, 1), true);
+                cmbDelimiter.SetSelectedString(ConvertDelimiter(impOptions.Substring(0, 1), true));
             }
 
             if (impOptions.Length > 1)
@@ -133,7 +133,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 cmbNumberFormat.SelectedIndex = impOptions.Substring(1) == "American" ? 0 : 1;
             }
 
-            cmbDateFormat.SelectedItem = TUserDefaults.GetStringDefault("Imp Date", "MDY");
+            cmbDateFormat.SetSelectedString(TUserDefaults.GetStringDefault("Imp Date", "MDY"));
         }
 
         private void SaveUserDefaults()
