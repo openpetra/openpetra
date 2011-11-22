@@ -256,10 +256,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 		            rbtInflateN.Checked = true;
 	            }
 	            
-	            if (!grpBudgetDetails.AutoSize)
-	            {
-		            grpBudgetDetails.AutoSize = true;	
-	            }
+//	            if (!grpBudgetDetails.AutoSize)
+//	            {
+//		            grpBudgetDetails.AutoSize = true;	
+//	            }
 	            
                 pnlBudgetTypeAdhoc.Visible = rbtAdHoc.Checked;
 	            pnlBudgetTypeSame.Visible = rbtSame.Checked;
