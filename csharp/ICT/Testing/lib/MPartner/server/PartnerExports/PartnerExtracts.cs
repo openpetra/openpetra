@@ -77,7 +77,7 @@ namespace Tests.MPartner.Server.PartnerExports
 
             TVerificationResultCollection VerificationResult;
             TPartnerFileImport importer = new TPartnerFileImport();
-            PartnerImportExportTDS MainDS = importer.ImportAllData(lines, SelectedEventCode, true, out VerificationResult);
+            PartnerImportExportTDS MainDS = importer.ImportAllData(lines, SelectedEventCode, false, out VerificationResult);
 
             if (VerificationResult.HasCriticalError())
             {

@@ -36,9 +36,9 @@ namespace Ict.Petra.Server.MPartner.Import
     public class TExportAllPartnerData
     {
         /// <summary>
-        /// export all relevant data of a partner
+        /// Load all the data of a partner into a TDS
         /// </summary>
-        public static PartnerImportExportTDS ExportPartner(Int64 APartnerKey, Int32 ASiteKey, Int32 ALocationKey)
+        public static PartnerImportExportTDS ExportPartner(Int64 APartnerKey)
         {
             PartnerImportExportTDS MainDS = new PartnerImportExportTDS();
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);

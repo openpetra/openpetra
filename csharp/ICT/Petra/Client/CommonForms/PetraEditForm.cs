@@ -32,6 +32,7 @@ using System.Resources;
 using System.Runtime.Remoting.Lifetime;
 using System.Runtime.InteropServices;
 using GNU.Gettext;
+using SourceGrid;
 
 using Ict.Common;
 using Ict.Common.Verification;
@@ -267,6 +268,7 @@ namespace Ict.Petra.Client.CommonForms
                 else if (ctrl.GetType() == typeof(TCmbVersatile))
                 {
                     ((TCmbVersatile)ctrl).SelectedValueChanged += new EventHandler(this.MultiEventHandler);
+                    ((TCmbVersatile)ctrl).TextChanged += new EventHandler(this.MultiEventHandler);
                 }
                 else if (ctrl.GetType() == typeof(TClbVersatile))
                 {

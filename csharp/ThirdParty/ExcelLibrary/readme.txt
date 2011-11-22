@@ -1,6 +1,6 @@
 http://code.google.com/p/excellibrary/
 
-Current version: dll based on source code from r51, March 31 2011
+Current version: dll based on source code from r55, Jul 30, 2011
 
 Code license: GNU Lesser GPL
 

@@ -250,6 +250,9 @@ namespace Ict.Petra.Shared.Interfaces.MPersonnel.Person.DataElements.WebConnecto
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors.TIndividualDataWebConnector)</summary>
         IndividualDataTDS GetData(Int64 APartnerKey,
                                   TIndividualDataItemEnum AIndivDataItem);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors.TIndividualDataWebConnector)</summary>
+        System.Boolean GetSummaryData(Int64 APartnerKey,
+                                      ref IndividualDataTDS AIndividualDataDS);
     }
 
 }

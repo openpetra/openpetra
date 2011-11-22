@@ -36,18 +36,22 @@ using Ict.Common.Data;
 using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPersonnel.Person;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Server.MCommon.Cacheable;
+using Ict.Petra.Server.MPartner;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.MPartner.Partner.Cacheable;
 using Ict.Petra.Server.App.Core.Security;
 
 namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
 {
     /// <summary>
-    /// Web Connector for the Individual Data of a Person.
+    /// Web Connector for the Individual Data of a PERSON.
     /// </summary>
     public class TIndividualDataWebConnector
     {
@@ -57,8 +61,8 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
         /// <remarks>Starts and ends a DB Transaction automatically if there isn't one running yet.</remarks>
         /// <param name="APartnerKey">PartnerKey of the Person to load data for.</param>
         /// <param name="AIndivDataItem">The Individual Data Item for which data should be returned.</param>
-        /// <returns></returns>
-        [RequireModulePermission("PERSONNEL")]
+        /// <returns>A Typed DataSet containing a DataTable that corresponds with <paramref name="AIndivDataItem"></paramref>.</returns>
+        [RequireModulePermission("AND(PERSONNEL,PTNRUSER)")]
         public static IndividualDataTDS GetData(Int64 APartnerKey, TIndividualDataItemEnum AIndivDataItem)
         {
             IndividualDataTDS ReturnValue;
@@ -89,7 +93,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
         /// </summary>
         /// <param name="APartnerKey">PartnerKey of the Person to load data for.</param>
         /// <param name="AIndivDataItem">The Individual Data Item for which data should be returned.</param>
-        /// <param name="AReadTransaction"></param>
+        /// <param name="AReadTransaction">Open Database transaction.</param>
         /// <returns>A Typed DataSet containing a DataTable that corresponds with <paramref name="AIndivDataItem"></paramref>.</returns>
         private static IndividualDataTDS GetData(Int64 APartnerKey, TIndividualDataItemEnum AIndivDataItem, TDBTransaction AReadTransaction)
         {
@@ -112,7 +116,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                 case TIndividualDataItemEnum.idiSummary:
                     BuildSummaryData(APartnerKey, ref IndividualDataDS, AReadTransaction);
 
-                    CalculateItemCounts(MiscellaneousDataDR, AReadTransaction);
+                    DetermineItemCounts(MiscellaneousDataDR, AReadTransaction);
                     break;
 
                 case TIndividualDataItemEnum.idiPersonalLanguages:
@@ -129,6 +133,50 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
             return IndividualDataDS;
         }
 
+        /// <summary>
+        /// Retrieves data that will be shown on the 'Overview' UserControl and adds it to <paramref name="AIndividualDataDS" />.
+        /// </summary>
+        /// <param name="APartnerKey">PartnerKey of the PERSON to load data for.</param>
+        /// <param name="AIndividualDataDS">Typed DataSet of Type <see cref="IndividualDataTDS" />. Needs to be instantiated already!</param>
+        [RequireModulePermission("AND(PERSONNEL,PTNRUSER)")]
+        public static bool GetSummaryData(Int64 APartnerKey, ref IndividualDataTDS AIndividualDataDS)
+        {
+            Boolean NewTransaction;
+
+            TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
+                Ict.Petra.Server.MCommon.MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+
+            try
+            {
+                BuildSummaryData(APartnerKey, ref AIndividualDataDS, ReadTransaction);
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+#if DEBUGMODE
+                    if (TLogging.DL >= 7)
+                    {
+                        Console.WriteLine(
+                            "Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors.TIndividualDataWebConnector.BuildSummaryData (public overload): commited own transaction.");
+                    }
+#endif
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Retrieves data that will be shown on the 'Overview' UserControl and adds it to <paramref name="AIndividualDataDS" />.
+        /// </summary>
+        /// <param name="APartnerKey">PartnerKey of the Person to load data for.</param>
+        /// <param name="AIndividualDataDS">Typed DataSet of Type <see cref="IndividualDataTDS" />. Needs to be instantiated already!</param>
+        /// <param name="AReadTransaction">Open Database transaction.</param>
+        /// <returns>void</returns>
         private static void BuildSummaryData(Int64 APartnerKey, ref IndividualDataTDS AIndividualDataDS, TDBTransaction AReadTransaction)
         {
             string StrNotAvailable = Catalog.GetString("Not Available");
@@ -137,6 +185,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
             IndividualDataTDSMiscellaneousDataRow MiscellaneousDataDR = AIndividualDataDS.MiscellaneousData[0];
             PPersonTable PPersonDT;
             PPersonRow PersonDR = null;
+            PmPassportDetailsTable PassportDetailsDT;
             PmStaffDataTable PmStaffDataDT;
             PmStaffDataRow PmStaffDataDR = null;
             PmJobAssignmentTable PmJobAssignmentDT = null;
@@ -144,6 +193,18 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
             PmJobAssignmentRow PmJobAssignmentDR;
             IndividualDataTDSJobAssignmentStaffDataCombinedRow JobAssiStaffDataCombDR;
             int JobAssiStaffDataCombKey = 0;
+            TCacheable CommonCacheable = new TCacheable();
+            TPartnerCacheable PartnerCacheable = new TPartnerCacheable();
+            string MaritalStatusDescr;
+            StringCollection PassportColumns;
+            PPartnerRelationshipTable PartnerRelationshipDT;
+            PPartnerTable PartnerDT;
+            PPartnerRow PartnerDR = null;
+            PLocationRow LocationDR;
+            PPartnerLocationRow PartnerLocationDR;
+            string PhoneNumber;
+            string PhoneExtension = String.Empty;
+            Int64 ChurchPartnerKey;
 
             SummaryDT = new IndividualDataTDSSummaryDataTable();
             SummaryDR = SummaryDT.NewRowTyped(false);
@@ -157,15 +218,22 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
             if (PPersonDT.Rows.Count == 1)
             {
                 PersonDR = (PPersonRow)PPersonDT.Rows[0];
-
-                // POccupationTable POccupationDT = POccupationAccess.LoadByPrimaryKey(PersonDR.OccupationCode, AReadTransaction);
             }
 
             if (PersonDR != null)
             {
                 SummaryDR.DateOfBirth = PersonDR.DateOfBirth;
                 SummaryDR.Gender = PersonDR.Gender;
-                SummaryDR.MaritalStatus = PersonDR.MaritalStatus;
+
+                MaritalStatusDescr = PartnerCodeHelper.GetMaritalStatusDescription(
+                    @PartnerCacheable.GetCacheableTable, PersonDR.MaritalStatus);
+
+                if (MaritalStatusDescr != String.Empty)
+                {
+                    MaritalStatusDescr = " - " + MaritalStatusDescr;
+                }
+
+                SummaryDR.MaritalStatus = PersonDR.MaritalStatus + MaritalStatusDescr;
             }
             else
             {
@@ -174,27 +242,69 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                 SummaryDR.MaritalStatus = StrNotAvailable;
             }
 
-            #region Nationality
+            #region Nationalities
 
-            // PmPassportDetailsTable PmPassportDetailsDT = PmPassportDetailsAccess.LoadViaPPerson(APartnerKey, AReadTransaction);
+            PassportColumns = StringHelper.StrSplit(
+                PmPassportDetailsTable.GetDateOfIssueDBName() + "," +
+                PmPassportDetailsTable.GetDateOfExpirationDBName() + "," +
+                PmPassportDetailsTable.GetPassportNationalityCodeDBName() + "," +
+                PmPassportDetailsTable.GetMainPassportDBName(), ",");
 
-            // TODO
+            PassportDetailsDT = PmPassportDetailsAccess.LoadViaPPerson(APartnerKey,
+                PassportColumns, AReadTransaction, null, 0, 0);
+
+            SummaryDR.Nationalities = Ict.Petra.Shared.MPersonnel.Calculations.DeterminePersonsNationalities(
+                @CommonCacheable.GetCacheableTable, PassportDetailsDT);
 
             #endregion
 
             #region Phone and Email (from 'Best Address')
 
-            // TODO
+            ServerCalculations.DetermineBestAddress(APartnerKey, out PartnerLocationDR, out LocationDR);
+
+            if (LocationDR != null)
+            {
+                SummaryDR.EmailAddress = PartnerLocationDR.EmailAddress;
+
+                if (PartnerLocationDR.TelephoneNumber != String.Empty)
+                {
+                    PhoneNumber = PartnerLocationDR.TelephoneNumber;
+
+                    if (!PartnerLocationDR.IsExtensionNull())
+                    {
+                        PhoneExtension = PartnerLocationDR.Extension.ToString();
+                    }
+
+                    SummaryDR.TelephoneNumber = Calculations.FormatIntlPhoneNumber(PhoneNumber, PhoneExtension, LocationDR.CountryCode,
+                        @CommonCacheable.GetCacheableTable);
+                }
+                else if (PartnerLocationDR.MobileNumber != String.Empty)
+                {
+                    SummaryDR.TelephoneNumber = Calculations.FormatIntlPhoneNumber(PartnerLocationDR.MobileNumber,
+                        String.Empty, LocationDR.CountryCode, @CommonCacheable.GetCacheableTable) + " " +
+                                                Catalog.GetString("(Mobile)");
+                }
+                else
+                {
+                    SummaryDR.TelephoneNumber = StrNotAvailable;
+                }
+            }
+            else
+            {
+                SummaryDR.TelephoneNumber = StrNotAvailable;
+                SummaryDR.EmailAddress = StrNotAvailable;
+            }
 
             #endregion
 
             #endregion
 
-            #region Job/Commitment
+            #region Commitments/Jobs
 
             PmStaffDataDT = PmStaffDataAccess.LoadViaPPerson(APartnerKey, AReadTransaction);
             MiscellaneousDataDR.ItemsCountCommitmentPeriods = PmStaffDataDT.Rows.Count;
 
+            // First check if the PERSON has got any Commitments
             if (PmStaffDataDT.Rows.Count > 0)
             {
                 foreach (DataRow DR in PmStaffDataDT.Rows)
@@ -202,7 +312,6 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                     JobAssiStaffDataCombDR = AIndividualDataDS.JobAssignmentStaffDataCombined.NewRowTyped(false);
                     JobAssiStaffDataCombDR.Key = JobAssiStaffDataCombKey++;
                     JobAssiStaffDataCombDR.PartnerKey = APartnerKey;
-
 
                     PmStaffDataDR = (PmStaffDataRow)DR;
 
@@ -229,6 +338,8 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
             }
             else
             {
+                // The PERSON hasn't got any Commitments, therefore check if the PERSON has any Job Assignments
+
                 PmJobAssignmentDT = PmJobAssignmentAccess.LoadViaPPartner(APartnerKey, AReadTransaction);
 
                 if (PmJobAssignmentDT.Rows.Count > 0)
@@ -261,28 +372,156 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                         AIndividualDataDS.JobAssignmentStaffDataCombined.Rows.Add(JobAssiStaffDataCombDR);
                     }
                 }
-
-                // TODO
             }
-
-            // TODO
 
             #endregion
 
             #region Church Info
 
-            // TODO
+            SummaryDR.ChurchName = StrNotAvailable;
+            SummaryDR.ChurchAddress = StrNotAvailable;
+            SummaryDR.ChurchPhone = StrNotAvailable;
+            SummaryDR.ChurchPastor = StrNotAvailable;
+            SummaryDR.ChurchPastorsPhone = StrNotAvailable;
+            SummaryDR.NumberOfShownSupportingChurchPastors = 0;
+
+            // Find SUPPCHURCH Relationship
+            PartnerRelationshipDT = PPartnerRelationshipAccess.LoadUsingTemplate(new TSearchCriteria[] {
+                    new TSearchCriteria(PPartnerRelationshipTable.GetRelationKeyDBName(), APartnerKey),
+                    new TSearchCriteria(PPartnerRelationshipTable.GetRelationNameDBName(), "SUPPCHURCH")
+                },
+                AReadTransaction);
+
+            SummaryDR.NumberOfShownSupportingChurches = PartnerRelationshipDT.Rows.Count;
+
+            if (PartnerRelationshipDT.Rows.Count > 0)
+            {
+                ChurchPartnerKey = PartnerRelationshipDT[0].PartnerKey;
+
+                // Load Church Partner
+                PartnerDT = PPartnerAccess.LoadByPrimaryKey(ChurchPartnerKey, AReadTransaction);
+
+                if (PartnerDT.Rows.Count > 0)
+                {
+                    PartnerDR = PartnerDT[0];
+
+                    // Church Name
+                    if (PartnerDR.PartnerShortName != String.Empty)
+                    {
+                        SummaryDR.ChurchName = PartnerDR.PartnerShortName;
+                    }
+
+                    #region Church Address and Phone
+
+                    ServerCalculations.DetermineBestAddress(PartnerRelationshipDT[0].PartnerKey, out PartnerLocationDR, out LocationDR);
+
+                    if (LocationDR != null)
+                    {
+                        SummaryDR.ChurchAddress = Calculations.DetermineLocationString(LocationDR,
+                            Calculations.TPartnerLocationFormatEnum.plfCommaSeparated);
+
+                        // Church Phone
+                        if (PartnerLocationDR.TelephoneNumber != String.Empty)
+                        {
+                            PhoneNumber = PartnerLocationDR.TelephoneNumber;
+
+                            if (!PartnerLocationDR.IsExtensionNull())
+                            {
+                                PhoneExtension = PartnerLocationDR.Extension.ToString();
+                            }
+
+                            SummaryDR.ChurchPhone = Calculations.FormatIntlPhoneNumber(PhoneNumber, PhoneExtension, LocationDR.CountryCode,
+                                @CommonCacheable.GetCacheableTable);
+                        }
+                        else if (PartnerLocationDR.MobileNumber != String.Empty)
+                        {
+                            SummaryDR.ChurchPhone = Calculations.FormatIntlPhoneNumber(PartnerLocationDR.MobileNumber,
+                                String.Empty, LocationDR.CountryCode, @CommonCacheable.GetCacheableTable) + " " +
+                                                    Catalog.GetString("(Mobile)");
+                        }
+                    }
+
+                    #endregion
+
+                    #region Pastor
+
+                    // Find PASTOR Relationship
+                    PartnerRelationshipDT.Rows.Clear();
+                    PartnerRelationshipDT = PPartnerRelationshipAccess.LoadUsingTemplate(new TSearchCriteria[] {
+                            new TSearchCriteria(PPartnerRelationshipTable.GetPartnerKeyDBName(), ChurchPartnerKey),
+                            new TSearchCriteria(PPartnerRelationshipTable.GetRelationNameDBName(), "PASTOR")
+                        },
+                        AReadTransaction);
+
+                    SummaryDR.NumberOfShownSupportingChurchPastors = PartnerRelationshipDT.Rows.Count;
+
+                    if (PartnerRelationshipDT.Rows.Count > 0)
+                    {
+                        // Load PASTOR Partner
+                        PartnerDT = PPartnerAccess.LoadByPrimaryKey(PartnerRelationshipDT[0].RelationKey, AReadTransaction);
+
+                        if (PartnerDT.Rows.Count > 0)
+                        {
+                            PartnerDR = PartnerDT[0];
+
+                            // Pastor's Name
+                            if (PartnerDR.PartnerShortName != String.Empty)
+                            {
+                                SummaryDR.ChurchPastor = PartnerDR.PartnerShortName;
+                            }
+
+                            #region Pastor's Phone
+
+                            ServerCalculations.DetermineBestAddress(PartnerRelationshipDT[0].RelationKey,
+                                out PartnerLocationDR, out LocationDR);
+
+                            if (LocationDR != null)
+                            {
+                                // Pastor's Phone
+                                if (PartnerLocationDR.TelephoneNumber != String.Empty)
+                                {
+                                    PhoneNumber = PartnerLocationDR.TelephoneNumber;
+
+                                    if (!PartnerLocationDR.IsExtensionNull())
+                                    {
+                                        PhoneExtension = PartnerLocationDR.Extension.ToString();
+                                    }
+
+                                    SummaryDR.ChurchPastorsPhone = Calculations.FormatIntlPhoneNumber(PhoneNumber,
+                                        PhoneExtension, LocationDR.CountryCode, @CommonCacheable.GetCacheableTable);
+                                }
+                                else if (PartnerLocationDR.MobileNumber != String.Empty)
+                                {
+                                    SummaryDR.ChurchPastorsPhone = Calculations.FormatIntlPhoneNumber(PartnerLocationDR.MobileNumber,
+                                        String.Empty, LocationDR.CountryCode, @CommonCacheable.GetCacheableTable) + " " +
+                                                                   Catalog.GetString("(Mobile)");
+                                }
+                            }
+
+                            #endregion
+                        }
+                    }
+
+                    #endregion
+                }
+            }
 
             #endregion
 
-
+            // Add Summary DataRow to Summary DataTable
             SummaryDT.Rows.Add(SummaryDR);
 
             // Add Row to 'SummaryData' DataTable in Typed DataSet 'IndividualDataTDS'
             AIndividualDataDS.Merge(SummaryDT);
         }
 
-        private static void CalculateItemCounts(IndividualDataTDSMiscellaneousDataRow AMiscellaneousDataDR, TDBTransaction AReadTransaction)
+        /// <summary>
+        /// Determines the number of DataRows for the Individual Data Items that work on multiple DataRows.
+        /// </summary>
+        /// <param name="AMiscellaneousDataDR">Instance of <see cref="IndividualDataTDSMiscellaneousDataRow" />.</param>
+        /// <param name="AReadTransaction">Open Database transaction.</param>
+        /// <returns>void</returns>
+        private static void DetermineItemCounts(IndividualDataTDSMiscellaneousDataRow AMiscellaneousDataDR, TDBTransaction AReadTransaction)
         {
             Int64 PartnerKey = AMiscellaneousDataDR.PartnerKey;
 
@@ -300,16 +539,17 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
         }
 
         /// <summary>
-        /// Saves data from the Individual Data UserControl (contained in a DataTable).
+        /// Saves data from the Individual Data UserControls (contained in a DataSet).
         /// </summary>
-        /// <param name="AInspectDS">DataSet for the Personnel Individual Data</param>
-        /// <param name="APartnerEditInspectDS">DataSet for the whole Partner Edit screen</param>
-        /// <param name="ASubmitChangesTransaction">Current Transaction</param>
+        /// <param name="AInspectDS">DataSet for the Personnel Individual Data.</param>
+        /// <param name="APartnerEditInspectDS">DataSet for the whole Partner Edit screen.</param>
+        /// <param name="ASubmitChangesTransaction">Open Database transaction.</param>
         /// <param name="AVerificationResult">Nil if all verifications are OK and all DB calls
         /// succeded, otherwise filled with 1..n TVerificationResult objects
-        /// (can also contain DB call exceptions)</param>
-        /// <returns>true if all verifications are OK and all DB calls succeeded, false if
-        /// any verification or DB call failed
+        /// (can also contain DB call exceptions).</param>
+        /// <returns>
+        /// True if all verifications are OK and all DB calls succeeded, false if
+        /// any verification or DB call failed.
         /// </returns>
         [NoRemoting]
         public static TSubmitChangesResult SubmitChangesServerSide(ref IndividualDataTDS AInspectDS,
@@ -328,6 +568,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
             {
                 SubmissionResult = TSubmitChangesResult.scrOK;
 
+                // Special Needs
                 if (AInspectDS.Tables.Contains(PmSpecialNeedTable.GetTableName())
                     && (AInspectDS.PmSpecialNeed.Rows.Count > 0))
                 {
@@ -355,6 +596,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                     }
                 }
 
+                // Personal Languages
                 if (AInspectDS.Tables.Contains(PmPersonLanguageTable.GetTableName())
                     && (AInspectDS.PmPersonLanguage.Rows.Count > 0))
                 {
@@ -381,6 +623,8 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
 #endif
                     }
                 }
+
+                // TODO Add if code blocks for all remaining Individual Data Items
             }
             else
             {

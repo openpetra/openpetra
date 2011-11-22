@@ -245,7 +245,25 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.ImportExport.WebConnectors
         PartnerImportExportTDS ImportFromPartnerExtract(System.String[] ATextFileLines,
                                                         out TVerificationResultCollection AVerificationResult);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector)</summary>
+        Boolean CommitChanges(PartnerImportExportTDS MainDS,
+                              out TVerificationResultCollection AVerificationResult);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector)</summary>
         System.String ExportPartners();
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector)</summary>
+        System.String GetExtFileHeader();
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector)</summary>
+        System.String GetExtFileFooter();
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector)</summary>
+        System.String ExportPartnerExt(Int64 APartnerKey,
+                                       Int32 ASiteKey,
+                                       Int32 ALocationKey,
+                                       Boolean ANoFamily,
+                                       StringCollection ASpecificBuildingInfo);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector)</summary>
+        Boolean ImportDataExt(System.String[] ALinesToImport,
+                              System.String ALimitToOption,
+                              System.Boolean ADoNotOverwrite,
+                              out TVerificationResultCollection AResultList);
     }
 
 }
@@ -565,6 +583,8 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors
         PSubscriptionTable GetDataSubscriptions();
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.UIConnectors.TPartnerEditUIConnector)</summary>
         PartnerEditTDSPPartnerRelationshipTable GetDataPartnerRelationships();
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.UIConnectors.TPartnerEditUIConnector)</summary>
+        PDataLabelValuePartnerTable GetDataLocalPartnerDataValues();
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.UIConnectors.TPartnerEditUIConnector)</summary>
         PartnerEditTDSFamilyMembersTable GetDataFamilyMembers(Int64 AFamilyPartnerKey,
                                                               String AWorkWithSpecialType);

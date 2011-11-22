@@ -545,7 +545,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                             else
                             {
                                 throw new Exception(
-                                    "Units have to have exactly one ParentUnit. " +
+                                    "Units must have exactly one ParentUnit. " +
                                     "The unit with partnerKey " + partnerKey.ToString() + " has " +
                                     numParents.ToString() + ".");
                             }
@@ -642,6 +642,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                         }
 
                         // TODO: notes
+                        // TODO: This doesn't export as much data as it should?
                     }
                 }
             }

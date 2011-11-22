@@ -181,7 +181,7 @@ namespace Ict.Tools.PatchTool
                     try
                     {
                         BZip2.Compress(System.IO.File.OpenRead(NewDirectory + '/' + Path.GetFileName(filename)),
-                            System.IO.File.OpenWrite(PatchDirectory + '/' + Path.GetFileName(filename) + ".new"), 4096);
+                            System.IO.File.OpenWrite(PatchDirectory + '/' + Path.GetFileName(filename) + ".new"), true, 4096);
                     }
                     catch (Exception)
                     {
