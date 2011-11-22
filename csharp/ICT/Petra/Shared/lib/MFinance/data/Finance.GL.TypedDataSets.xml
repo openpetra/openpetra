@@ -34,6 +34,7 @@
 
         <Table sqltable="a_account">
             <CustomField name="BankAccountFlag" type="bool"/>
+            <CustomField name="CashAccountFlag" type="bool"/> <!-- will be set to true for the cacheable tables when this account reports to CASH -->
         </Table>
         <Table sqltable="a_account_hierarchy"/>
         <Table sqltable="a_account_hierarchy_detail"/>

@@ -153,6 +153,9 @@ namespace Ict.Petra.Shared.MFinance
         /// admin fee accounts.
         public const int FUND_TRANSFER_EXPENSE_ACCT = 4800;
 
+        /// standard account
+        public const string CASH_ACCT = "CASH";
+
         /// Allocation Journal values
         public const int MAX_AC_CC_SPLIT_INTO = 10;
 
