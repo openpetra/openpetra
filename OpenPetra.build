@@ -122,7 +122,7 @@ useful parameters
   </delete>
 </target>
 
-<target name="nanttasks" depends="" description="goes into the directory inc/nanttasks">
+<target name="nanttasks" description="goes into the directory inc/nanttasks">
   <property name="target" value="compile" overwrite="false" />
   <nant inheritall="false" target="${target}" 
         buildfile="inc/nanttasks/nanttasks.build" />
