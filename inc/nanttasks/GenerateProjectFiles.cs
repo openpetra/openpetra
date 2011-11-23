@@ -547,7 +547,7 @@ namespace Ict.Tools.NAntTasks
             foreach (string ContainedFile in ContainsResources)
             {
                 string relativeFilename = GetRelativePath(ContainedFile, FDirProjectFiles + "/dummy/");
-                
+
                 string relativeFilenameBackslash = relativeFilename.Replace('/', '\\');
 
                 if (ContainsFiles.Contains(ContainedFile.Replace(".resx", ".cs")))
