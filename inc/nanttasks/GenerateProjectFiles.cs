@@ -646,7 +646,7 @@ namespace Ict.Tools.NAntTasks
 
             template.Replace("${TemplateResource}", Resources.ToString());
 
-            template.Replace("${dir.3rdParty}", FCodeRootDir + "\\ThirdParty");
+            template.Replace("${dir.3rdParty}", FCodeRootDir + Path.DirectorySeparatorChar + "ThirdParty");
             template.Replace("${csharpStdLibs}", "");
 
             string completedFile = template.ToString();
