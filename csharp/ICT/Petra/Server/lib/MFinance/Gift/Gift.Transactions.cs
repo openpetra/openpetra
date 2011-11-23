@@ -42,6 +42,7 @@ using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MFinance.Common;
+using Ict.Petra.Server.MFinance.Cacheable;
 
 namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 {
@@ -337,20 +338,114 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
+        /// Loads all available years with gift data into a table
+        /// To be used by a combobox to select the financial year
+        ///
+        /// </summary>
+        /// <returns>DataTable</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static DataTable GetAvailableGiftYears(Int32 ALedgerNumber, out String ADisplayMember, out String AValueMember)
+        {
+            ADisplayMember = "YearDate";
+            AValueMember = "YearNumber";
+            DataTable tab = new DataTable();
+            tab.Columns.Add(AValueMember, typeof(System.Int32));
+            tab.Columns.Add(ADisplayMember, typeof(String));
+
+            System.Type typeofTable = null;
+            TCacheable CachePopulator = new TCacheable();
+            ALedgerTable LedgerTable = (ALedgerTable)CachePopulator.GetCacheableTable(TCacheableFinanceTablesEnum.LedgerDetails,
+                "",
+                false,
+                ALedgerNumber,
+                out typeofTable);
+
+            AAccountingPeriodTable AccountingPeriods = (AAccountingPeriodTable)CachePopulator.GetCacheableTable(
+                TCacheableFinanceTablesEnum.AccountingPeriodList,
+                "",
+                false,
+                ALedgerNumber,
+                out typeofTable);
+
+            AAccountingPeriodRow currentYearEndPeriod =
+                (AAccountingPeriodRow)AccountingPeriods.Rows.Find(new object[] { ALedgerNumber, LedgerTable[0].NumberOfAccountingPeriods });
+            DateTime currentYearEnd = currentYearEndPeriod.PeriodEndDate;
+
+            TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction();
+            try
+            {
+                // add the years, which are retrieved by reading from the gift batch tables
+                string sql =
+                    String.Format("SELECT DISTINCT {0} AS availYear " + " FROM PUB_{1} " + " WHERE {2} = " +
+                        ALedgerNumber.ToString() + " ORDER BY 1 DESC",
+                        AGiftBatchTable.GetBatchYearDBName(),
+                        AGiftBatchTable.GetTableDBName(),
+                        AGiftBatchTable.GetLedgerNumberDBName());
+
+                DataTable BatchYearTable = DBAccess.GDBAccessObj.SelectDT(sql, "BatchYearTable", ReadTransaction);
+
+                foreach (DataRow row in BatchYearTable.Rows)
+                {
+                    DataRow resultRow = tab.NewRow();
+                    resultRow[0] = row[0];
+                    resultRow[1] = currentYearEnd.AddYears(-1 * (LedgerTable[0].CurrentFinancialYear - Convert.ToInt32(row[0]))).ToString("yyyy");
+                    tab.Rows.Add(resultRow);
+                }
+            }
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+            return tab;
+        }
+
+        /// <summary>
         /// loads a list of batches for the given ledger
         /// also get the ledger for the base currency etc
-        /// TODO: limit to period, limit to batch status, etc
         /// </summary>
         /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchStatus"></param>
+        /// <param name="AYear">if -1, the year will be ignored</param>
+        /// <param name="APeriod">if AYear is -1 or period is -1, the period will be ignored.
+        /// if APeriod is 0 and the current year is selected, then the current and the forwarding periods are used</param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GiftBatchTDS LoadAGiftBatch(Int32 ALedgerNumber)
+        public static GiftBatchTDS LoadAGiftBatch(Int32 ALedgerNumber, string ABatchStatus, Int32 AYear, Int32 APeriod)
         {
             GiftBatchTDS MainDS = new GiftBatchTDS();
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
             ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
-            AGiftBatchAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+
+            StringCollection templateOperators = new StringCollection();
+
+            AGiftBatchRow templateRow = MainDS.AGiftBatch.NewRowTyped(false);
+            templateRow.LedgerNumber = ALedgerNumber;
+
+            if ((ABatchStatus != null) && (ABatchStatus.Length > 0))
+            {
+                templateRow.BatchStatus = ABatchStatus;
+                templateOperators.Add("=");
+            }
+
+            if (AYear != -1)
+            {
+                templateRow.BatchYear = AYear;
+                templateOperators.Add("=");
+
+                if ((APeriod == 0) && (AYear == MainDS.ALedger[0].CurrentFinancialYear))
+                {
+                    templateRow.BatchPeriod = MainDS.ALedger[0].CurrentPeriod;
+                    templateOperators.Add(">=");
+                }
+                else if (APeriod != -1)
+                {
+                    templateRow.BatchPeriod = APeriod;
+                    templateOperators.Add("=");
+                }
+            }
+
+            AGiftBatchAccess.LoadUsingTemplate(MainDS, templateRow, templateOperators, null, Transaction, null, 0, 0);
             DBAccess.GDBAccessObj.RollbackTransaction();
             return MainDS;
         }
@@ -1188,22 +1283,21 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
-        /// export all the Data of the batches array list to a String
+        /// export all the Data of the batches matching the parameters to a String
         /// </summary>
-        /// <param name="batches">Arraylist containing the batch numbers of the gift batches to export</param>
         /// <param name="requestParams">Hashtable containing the given params </param>
         /// <param name="exportString">Big parts of the export file as a simple String</param>
         /// <param name="AMessages">Additional messages to display in a messagebox</param>
-        /// <returns>false if not completed</returns>
+        /// <returns>number of exported batches</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static bool ExportAllGiftBatchData(ref ArrayList batches,
+        static public Int32 ExportAllGiftBatchData(
             Hashtable requestParams,
             out String exportString,
             out TVerificationResultCollection AMessages)
         {
             TGiftExporting exporting = new TGiftExporting();
 
-            return exporting.ExportAllGiftBatchData(ref batches, requestParams, out exportString, out AMessages);
+            return exporting.ExportAllGiftBatchData(requestParams, out exportString, out AMessages);
         }
 
         /// <summary>

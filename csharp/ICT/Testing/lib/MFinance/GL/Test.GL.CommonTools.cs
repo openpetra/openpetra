@@ -219,15 +219,15 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             TGetAccountHierarchyDetailInfo gahdi = new TGetAccountHierarchyDetailInfo(
                 new TLedgerInfo(LedgerNumber));
 
-            Assert.IsTrue(gahdi.HasNoChilds("6800"), "Base Account without childs");
-            Assert.IsFalse(gahdi.HasNoChilds("6800S"), "Root Account");
-            IList <String>list = gahdi.ChildList("7000S");
+            Assert.IsTrue(gahdi.HasNoChildren("6800"), "Base Account without childs");
+            Assert.IsFalse(gahdi.HasNoChildren("6800S"), "Root Account");
+            List <String>list = gahdi.GetChildren("7000S");
             Assert.AreEqual(2, list.Count, "Two entries ...");
             Assert.AreEqual("7000", list[0], "7000 is the first account");
             Assert.AreEqual("7010", list[1], "7010 is the second account");
             Assert.AreEqual("7000S", gahdi.GetParentAccount("7010"));
 
-            IList <String>list2 = gahdi.ChildList("ASSETS");
+            List <String>list2 = gahdi.GetChildren("ASSETS");
             Assert.AreEqual(40, list2.Count, "Atually 40 chield entries ...");
         }
 
