@@ -159,11 +159,8 @@ namespace Ict.Tools.NAntTasks
                 csc.OutputTarget = mainProperties["OutputType"];
 
                 csc.Define = "DEBUGMODE";
-                csc.NoConfig = true;
 
                 String FrameworkDLLPath = Path.GetDirectoryName(System.Reflection.Assembly.GetAssembly(typeof(System.Type)).Location);
-
-                // csc.References = new NAnt.DotNet.Types.AssemblyFileSet();
 
                 foreach (XmlNode ProjectNodeChild in doc.DocumentElement)
                 {
