@@ -28,8 +28,8 @@ RootNode:
             SuppressChangeDetection: true
             OptionalValues: [Posted, =Editing, All]
             OnChange: RefreshFilter
-        cmbYear: {List: UserDefinedList, OnChange:RefreshPeriods, Width=100}
-        cmbPeriod: {List: UserDefinedList, OnChange:RefreshFilter, Width=250}
+        cmbYear: {List: UserDefinedList, OnChange:RefreshPeriods, SuppressChangeDetection: true, Width=100}
+        cmbPeriod: {List: UserDefinedList, OnChange:RefreshFilter, SuppressChangeDetection: true, Width=250}
         pnlLedgerInfo:
             Controls: [txtLedgerNumber]
         txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}

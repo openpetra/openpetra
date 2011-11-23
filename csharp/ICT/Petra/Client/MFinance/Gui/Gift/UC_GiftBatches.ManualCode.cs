@@ -122,6 +122,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
+            ClearCurrentSelection();
+
             Int32 SelectedYear = cmbYear.GetSelectedInt32();
             Int32 SelectedPeriod = cmbPeriod.GetSelectedInt32();
 
@@ -174,7 +176,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// reset the control
         public void ClearCurrentSelection()
         {
+            GetDataFromControls();
             this.FPreviouslySelectedDetailRow = null;
+            ShowData();
         }
 
         /// <summary>
