@@ -40,6 +40,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private Int32 FLedgerNumber;
         private Int32 FSelectedBatchNumber;
         private DateTime FDateEffective;
+        private string FStatusFilter = "1 = 1";
+        private string FPeriodFilter = "1 = 1";
+
         /// <summary>
         /// Refresh the data in the grid and the details after the database content was changed on the server
         /// </summary>
@@ -70,7 +73,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else
             {
+                FPetraUtilsObject.DisableDataChangedEvent();
                 TFinanceControls.InitialiseAvailableGiftYearsList(ref cmbYear, FLedgerNumber);
+                FPetraUtilsObject.EnableDataChangedEvent();
+
+                // only refresh once, seems we are doing too many loads from the db otherwise
+                RefreshFilter(null, null);
             }
 
             // Load Motivation detail in this central place; it will be used by UC_GiftTransactions
@@ -109,58 +117,58 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         void RefreshFilter(Object sender, EventArgs e)
         {
+            if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection)
+            {
+                return;
+            }
+
             Int32 SelectedYear = cmbYear.GetSelectedInt32();
             Int32 SelectedPeriod = cmbPeriod.GetSelectedInt32();
 
-            // TODO set filter to hide batches from not selected periods that do accumulate when loading several periods each at a time
-            if (!FMainDS.HasChanges())
+            FPeriodFilter = String.Format(
+                "{0} = {1} AND ",
+                AGiftBatchTable.GetBatchYearDBName(), SelectedYear);
+
+            if (SelectedPeriod == 0)
             {
-                FMainDS.AGiftBatch.Rows.Clear();
+                ALedgerRow Ledger =
+                    ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
+
+                FPeriodFilter += String.Format(
+                    "{0} >= {1}",
+                    AGiftBatchTable.GetBatchPeriodDBName(), Ledger.CurrentPeriod);
+            }
+            else
+            {
+                FPeriodFilter += String.Format(
+                    "{0} = {1}",
+                    AGiftBatchTable.GetBatchPeriodDBName(), SelectedPeriod);
             }
 
             if (rbtEditing.Checked)
             {
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, MFinanceConstants.BATCH_UNPOSTED, SelectedYear,
                         SelectedPeriod));
-            }
-            else if (rbtPosted.Checked)
-            {
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, MFinanceConstants.BATCH_POSTED, SelectedYear,
-                        SelectedPeriod));
-            }
-            else
-            {
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, string.Empty, SelectedYear, SelectedPeriod));
-            }
-
-            FMainDS.AcceptChanges();
-        }
-
-        private void ChangeBatchFilter(System.Object sender, System.EventArgs e)
-        {
-            if ((FMainDS == null) || (FMainDS.AGiftBatch == null))
-            {
-                return;
-            }
-
-            RefreshFilter(sender, e);
-
-            if (rbtAll.Checked)
-            {
-                FMainDS.AGiftBatch.DefaultView.RowFilter = "";
-            }
-            else if (rbtEditing.Checked)
-            {
-                FMainDS.AGiftBatch.DefaultView.RowFilter = String.Format("{0} = '{1}'",
+                FStatusFilter = String.Format("{0} = '{1}'",
                     AGiftBatchTable.GetBatchStatusDBName(),
                     MFinanceConstants.BATCH_UNPOSTED);
             }
             else if (rbtPosted.Checked)
             {
-                FMainDS.AGiftBatch.DefaultView.RowFilter = String.Format("{0} = '{1}'",
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, MFinanceConstants.BATCH_POSTED, SelectedYear,
+                        SelectedPeriod));
+                FStatusFilter = String.Format("{0} = '{1}'",
                     AGiftBatchTable.GetBatchStatusDBName(),
                     MFinanceConstants.BATCH_POSTED);
             }
+            else
+            {
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, string.Empty, SelectedYear, SelectedPeriod));
+                FStatusFilter = "1 = 1";
+            }
+
+            FMainDS.AGiftBatch.DefaultView.RowFilter =
+                String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
         }
 
         /// reset the control
