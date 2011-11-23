@@ -141,7 +141,6 @@ useful parameters
         depends="nanttasks,generateNamespaceMap,generateProjectFiles"/>
 
 <target name="minimalGenerateSolution" description="compile minimal code for generating source code and the project and solution files">
-    <call target="nanttasks"/>
     <call target="generateTools"/>
     <call target="generateWinforms"/>
     <call target="generateORM"/>

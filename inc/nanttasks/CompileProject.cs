@@ -130,6 +130,12 @@ namespace Ict.Tools.NAntTasks
                 CscTask csc = new CscTask();
                 this.CopyTo(csc);
 
+                if (this.Project.PlatformName == "unix")
+                {
+                    // on Windows this is csc, but on Mono on Linux or Mac we need dmcs
+                    csc.ExeName = "dmcs";
+                }
+
                 XmlDocument doc = new XmlDocument();
                 doc.Load(FCSProjFile);
 

@@ -474,8 +474,8 @@ namespace Ict.Tools.NAntTasks
             swAssemblyInfo.WriteLine(temp.ToString());
             swAssemblyInfo.Close();
 
-            string relativeFilename = GetRelativePath(AssemblyInfoPath, FDirProjectFiles + "/dummy/").Replace('\\', '/');
-            string relativeFilenameBackslash = relativeFilename.Replace('/', '\\');
+            string relativeFilename = GetRelativePath(AssemblyInfoPath, FDirProjectFiles + "/dummy/").Replace('\\', Path.DirectorySeparatorChar);
+            string relativeFilenameBackslash = relativeFilename.Replace('/', Path.DirectorySeparatorChar);
 
             temp = GetTemplateFile(ATemplateDir + "template.csproj.compile");
             temp.Replace("${filename}", AssemblyInfoPath);
@@ -534,7 +534,7 @@ namespace Ict.Tools.NAntTasks
                     }
 
                     temp.Replace("${reference-name}", Path.GetFileNameWithoutExtension(referencedProject));
-                    temp.Replace("${reference-path}", referencedProject.Replace('/', '\\'));
+                    temp.Replace("${reference-path}", referencedProject.Replace('/', Path.DirectorySeparatorChar));
                     temp.Replace("${relative-reference-path}", referencedProject);
                     OtherReferences.Append(temp.ToString());
                 }
@@ -563,8 +563,8 @@ namespace Ict.Tools.NAntTasks
 
             foreach (string ContainedFile in ContainsFiles)
             {
-                string relativeFilename = GetRelativePath(ContainedFile, FDirProjectFiles + "/dummy/").Replace('\\', '/');
-                string relativeFilenameBackslash = relativeFilename.Replace('/', '\\');
+                string relativeFilename = GetRelativePath(ContainedFile, FDirProjectFiles + "/dummy/").Replace('\\', Path.DirectorySeparatorChar);
+                string relativeFilenameBackslash = relativeFilename.Replace('/', Path.DirectorySeparatorChar);
 
                 if ((ContainedFile.EndsWith(".ManualCode.cs") && File.Exists(ContainedFile.Replace(".ManualCode.cs", "-generated.cs")))
                     || (ContainedFile.EndsWith(".Designer.cs") && File.Exists(ContainedFile.Replace(".Designer.cs", ".cs"))))
@@ -622,7 +622,7 @@ namespace Ict.Tools.NAntTasks
             {
                 string relativeFilename = GetRelativePath(ContainedFile, FDirProjectFiles + "/dummy/");
 
-                string relativeFilenameBackslash = relativeFilename.Replace('/', '\\');
+                string relativeFilenameBackslash = relativeFilename.Replace('/', Path.DirectorySeparatorChar);
 
                 if (ContainsFiles.Contains(ContainedFile.Replace(".resx", ".cs")))
                 {
