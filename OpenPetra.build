@@ -17,7 +17,7 @@ list of available commands:
   generateSolution: compiles OpenPetra and generates the project and solution files
   generateSolutionNoCompile: generates the project and solution files. minimalGenerateSolution should already be executed
   minimalGenerateSolution: generates the project and solution files. compiles what it needs, but does not compile all code
-  quickCompile: will just compile the solution file, with msbuild (Windows) or xbuild (Linux)
+  quickCompile: will just compile the solution file, with msbuild (Windows) or our own builder (Linux)
       nant quickCompile                    will compile the OpenPetra.sln
       nant quickCompile -D:solution=Tools  will compile the OpenPetra.Tools.sln
                                            other solutions are: Client, Server, Testing
@@ -215,7 +215,31 @@ useful parameters
                               path::combine(devenv-msbuild, 'OpenPetra.'+solution+'.sln'))}"/>
   <property name="solution.file" value="${string::replace(solution.file, 'OpenPetra.OpenPetra.sln', 'OpenPetra.sln')}"/>
 
-  <CompileSolution SolutionFile="${solution.file}"/>
+  <if test="${not platform::is-windows()}" >
+    <!-- on linux, xbuild could work as well. 
+         but it shows so many warnings, and the return code is not reliable... -->
+    <CompileSolution SolutionFile="${solution.file}"/>
+
+    <!--
+    <property name="solution.file" value="${path::combine(dir.projectfiles,
+                                  path::combine(devenv-xbuild, 'OpenPetra.'+solution+'.sln'))}"/>
+    <property name="solution.file" value="${string::replace(solution.file, 'OpenPetra.OpenPetra.sln', 'OpenPetra.sln')}"/>
+    <exec program="xbuild" commandline="/verbosity:quiet ${solution.file}"/>
+    -->
+  </if>
+
+  <if test="${platform::is-windows()}" >
+    <if test="${file::exists(msbuildtask.file)}">
+      <msbuild project="${solution.file}" verbosity="Minimal">
+        <property name="Configuration" value="${Configuration}"/>
+      </msbuild>
+    </if>
+    <if test="${not file::exists(msbuildtask.file)}">
+      <!-- CompileSolution is quite slower than msbuild. so only use CompileSolution if msbuild is not available -->
+      <CompileSolution SolutionFile="${solution.file}"/>
+      <echo message="For faster compile, you need the NAnt.Contrib.Tasks.dll for msbuild" />
+    </if>
+  </if>
 </target>
 
 <target name="generateORM" depends="generateORMCachedTables,generateORMData,generateORMAccess">
