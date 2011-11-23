@@ -265,6 +265,13 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         #region Private Methods
 
+        private void ShowDataManual(PPartnerRow ARow)
+        {
+        	// Ensure that the PartnerKey, which is the PrimaryKey of the p_partner Table, is always read-only
+        	// (Read-Only gets set to false in ShowData() for a NEW Partner because it is the PrimaryKey).
+        	txtPartnerKey.ReadOnly = true;
+        }
+        
         private void GetDataFromControlsExtra(PPartnerRow ARow)
         {
             /*
