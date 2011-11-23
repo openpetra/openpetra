@@ -210,26 +210,13 @@ useful parameters
        quickCompile uses the solution and csproj files and msbuild.
        quickCompile is intended as an alternative to compile in SharpDevelop directly.
   -->
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('CompileSolution')}"/>
   <property name="solution" value="OpenPetra" overwrite="false"/>
-  <if test="${not platform::is-windows()}" >
-    <property name="solution.file" value="${path::combine(dir.projectfiles,
-                                  path::combine(devenv-xbuild, 'OpenPetra.'+solution+'.sln'))}"/>
-    <property name="solution.file" value="${string::replace(solution.file, 'OpenPetra.OpenPetra.sln', 'OpenPetra.sln')}"/>
-    <exec program="xbuild" commandline="/verbosity:quiet ${solution.file}"/>
-  </if>
-  <if test="${platform::is-windows()}" >
-    <property name="solution.file" value="${path::combine(dir.projectfiles,
-                                path::combine(devenv-msbuild, 'OpenPetra.'+solution+'.sln'))}"/>
-    <property name="solution.file" value="${string::replace(solution.file, 'OpenPetra.OpenPetra.sln', 'OpenPetra.sln')}"/>
-    <if test="${file::exists(msbuildtask.file)}">
-      <msbuild project="${solution.file}" verbosity="Minimal">
-        <property name="Configuration" value="${Configuration}"/>
-      </msbuild>
-    </if>
-    <if test="${not file::exists(msbuildtask.file)}">
-      <fail message="you need the NAnt.Contrib.Tasks.dll for msbuild" />
-    </if>
-  </if>
+  <property name="solution.file" value="${path::combine(dir.projectfiles,
+                              path::combine(devenv-msbuild, 'OpenPetra.'+solution+'.sln'))}"/>
+  <property name="solution.file" value="${string::replace(solution.file, 'OpenPetra.OpenPetra.sln', 'OpenPetra.sln')}"/>
+
+  <CompileSolution SolutionFile="${solution.file}"/>
 </target>
 
 <target name="generateORM" depends="generateORMCachedTables,generateORMData,generateORMAccess">

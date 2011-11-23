@@ -51,6 +51,10 @@ namespace Ict.Tools.NAntTasks
             {
                 FCSProjFile = value;
             }
+            get
+            {
+                return FCSProjFile;
+            }
         }
 
         private string FCSFile = null;
@@ -64,6 +68,10 @@ namespace Ict.Tools.NAntTasks
             {
                 FCSFile = value;
             }
+            get
+            {
+                return FCSFile;
+            }
         }
 
         private string FCodeRootDir = null;
@@ -75,6 +83,10 @@ namespace Ict.Tools.NAntTasks
             set
             {
                 FCodeRootDir = value;
+            }
+            get
+            {
+                return FCodeRootDir;
             }
         }
 
@@ -88,10 +100,14 @@ namespace Ict.Tools.NAntTasks
             {
                 FProjectFilesDir = value;
             }
+            get
+            {
+                return FProjectFilesDir;
+            }
         }
 
         /// <summary>
-        /// create namespace map
+        /// compile the project
         /// </summary>
         protected override void ExecuteTask()
         {
@@ -105,7 +121,7 @@ namespace Ict.Tools.NAntTasks
 
             if (FCSProjFile != null)
             {
-                Console.WriteLine("compiling " + Path.GetFileNameWithoutExtension(FCSProjFile));
+                // Console.WriteLine("compiling " + Path.GetFileNameWithoutExtension(FCSProjFile));
 
                 // could call msbuild or xbuild with the project files as parameter
                 // OR: process csproj file, and call csc task directly. might avoid some warnings, and work around xbuild issues
@@ -171,7 +187,9 @@ namespace Ict.Tools.NAntTasks
                             else if (ItemNode.Name == "ProjectReference")
                             {
                                 string ReferencedProjectName = ItemNode.ChildNodes[1].InnerText;
-                                csc.References.AsIs.Add(Path.GetDirectoryName(OutputFile) + "/" + ReferencedProjectName + ".dll");
+                                csc.References.AsIs.Add(
+                                    Path.GetDirectoryName(OutputFile) + Path.DirectorySeparatorChar +
+                                    ReferencedProjectName + ".dll");
                             }
                             else if (ItemNode.Name == "Compile")
                             {
