@@ -32,6 +32,7 @@ using NAnt.Core;
 using NAnt.Core.Attributes;
 using NAnt.Core.Types;
 using NAnt.DotNet.Tasks;
+using NAnt.DotNet.Types;
 
 namespace Ict.Tools.NAntTasks
 {
@@ -197,7 +198,9 @@ namespace Ict.Tools.NAntTasks
                             }
                             else if (ItemNode.Name == "EmbeddedResource")
                             {
-                                //csc.ResourcesList.Add( Add(ItemNode.Attributes["Include"].Value);
+                                ResourceFileSet fs = new ResourceFileSet();
+                                fs.AsIs.Add(ItemNode.Attributes["Include"].Value);
+                                csc.ResourcesList.Add(fs);
                             }
                         }
                     }
