@@ -613,7 +613,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpNotes;
 
-                    // TODO
+                    // Hook up RecalculateScreenParts Event
+                    FUcoNotes.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
                 }
                 else if (ATabPageEventArgs.Tab == tpgOfficeSpecific)
                 {
