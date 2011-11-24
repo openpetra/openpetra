@@ -1,11 +1,6 @@
 <?xml version="1.0"?>
 <project name="Ict.Petra.Shared-Build">
 
-<property name="Namespace" value="Ict.Petra.Shared" />
-<property name="ProjectGuid" value="{5F8FBEF6-2E30-4E12-B3E4-80BC29932B7D}" />
-
-<property name="RunCsDepend" value="true" overwrite="true"/>
-
 <target name="custclean">
   <delete>
     <fileset basedir="${dir.root}/csharp/ICT/Petra/Shared/lib/data">
@@ -32,6 +27,5 @@
 </target>
 
 <include buildfile="../../../../inc/nant/OpenPetra.csharp.xml"/> 
-
 
 </project>

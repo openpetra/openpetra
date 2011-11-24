@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="ThirdParty-Build">
 
-<include buildfile="../../inc/nant/OpenPetra.references.xml"/> 
+<include buildfile="../../inc/nant/OpenPetra.common.xml"/>
 
 <target name="clean" >
   <delete>
@@ -19,6 +19,25 @@
 <target name="indent">
   <!-- nothing to do here -->
 </target>
+
+<patternset id="3rdPartyPattern">
+  <include name="GNU.Gettext.dll"/>
+  <include name="SourceGrid.dll"/>
+  <include name="PdfSharp.dll"/>
+  <include name="System.Data.SQLite.dll"/>
+  <include name="Npgsql.dll"/>
+  <include name="Mono.Security.dll" /> <!-- Needed for Npgsql.dll -->
+  <include name="MySql.Data.dll"/>
+  <include name="ICSharpCode.SharpZipLib.dll"/>
+  <include name="ExcelLibrary.dll"/>
+  <include name="Jayrock.Json.dll"/>
+  <include name="ICSharpCode.NRefactory.dll"/> <!-- Winforms Generator -->
+</patternset>
+
+<patternset id="NunitPattern">
+  <include name="nunit.framework.dll"/>
+  <include name="NUnitForms.dll"/>
+</patternset>
 
 <target name="compile" description="Copy Thirdparty DLLs to bin directory">
   <foreach item="Folder" in="${dir.3rdParty}" property="foldername">
@@ -41,6 +60,5 @@
 <target name="generateCsproject" />
 
 <target name="generateCsprojectNoCompile" />
-
 
 </project>

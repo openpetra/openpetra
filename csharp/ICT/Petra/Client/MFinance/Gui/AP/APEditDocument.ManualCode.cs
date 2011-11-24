@@ -45,7 +45,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
     	
     	private void RunOnceOnActivationManual()
     	{
-    		
+    		grdDetails.Columns[0].Width = 10;
+    		grdDetails.Columns[3].Width = 10;
     	}
     		
     	private void EnableControls()
@@ -201,7 +202,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// initialise some comboboxes
         private void BeforeShowDetailsManual(AApDocumentDetailRow ARow)
         {
-            // if this form is readonly, then we need all account and cost centre codes, because old codes might have been used
+    		grdDetails.Columns[0].Width = 10;
+    		grdDetails.Columns[3].Width = 10;
+
+    		// if this form is readonly, then we need all account and cost centre codes, because old codes might have been used
             bool ActiveOnly = this.Enabled;
 
             TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, ARow.LedgerNumber, true, false, ActiveOnly, false);

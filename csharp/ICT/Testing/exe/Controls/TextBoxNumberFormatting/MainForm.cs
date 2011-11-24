@@ -48,7 +48,8 @@ public partial class MainForm : Form
 //            MessageBox.Show("BEFORE initialising Control values");
         this.txtDecimal.NumberValueDouble = 1234.21;
         this.txtCurrency.NumberValueDouble = 77.86;
-        this.txtInteger.NumberValueInt = 7;
+        this.txtInteger.NumberValueInt = 2147483647;			// highest allowed value
+        this.txtLongInteger.NumberValueLongInt = 9223372036854775807;	// highest allowed value
 //            MessageBox.Show("AFTER initialising Control values");
     }
 
@@ -57,6 +58,7 @@ public partial class MainForm : Form
         this.txtDecimal.DecimalPlaces = (int)numericUpDown1.Value;
         this.txtCurrency.DecimalPlaces = (int)numericUpDown1.Value;
         this.txtInteger.DecimalPlaces = (int)numericUpDown1.Value;         // while this doesn't make sense, it must do no harm to set this property on this Control
+        this.txtLongInteger.DecimalPlaces = (int)numericUpDown1.Value;         // while this doesn't make sense, it must do no harm to set this property on this Control
         this.txtNormal.DecimalPlaces = (int)numericUpDown1.Value;          // while this doesn't make sense, it must do no harm to set this property on this Control
     }
 
@@ -65,6 +67,7 @@ public partial class MainForm : Form
         this.txtDecimal.NullValueAllowed = checkBox1.Checked;
         this.txtCurrency.NullValueAllowed = checkBox1.Checked;
         this.txtInteger.NullValueAllowed = checkBox1.Checked;
+        this.txtLongInteger.NullValueAllowed = checkBox1.Checked;
         this.txtNormal.NullValueAllowed = checkBox1.Checked;
     }
 
@@ -76,6 +79,7 @@ public partial class MainForm : Form
             "Currency: " + txtCurrency.NumberValueDouble.ToString() + Environment.NewLine +
             "  as Decimal: " + txtCurrency.NumberValueDecimal.ToString() + Environment.NewLine +
             "Integer: " + txtInteger.NumberValueInt.ToString() + Environment.NewLine +
+            "Long Integer: " + txtLongInteger.NumberValueLongInt.ToString() + Environment.NewLine +
             "Normal: " + txtNormal.Text.ToString() + Environment.NewLine,
             "Values of the txtNumericTextBoxes");
     }
@@ -112,6 +116,15 @@ public partial class MainForm : Form
         {
             txtInteger.NumberValueInt = 81;
         }
+        
+        if (txtLongInteger.NumberValueLongInt != null)
+        {
+            txtLongInteger.NumberValueLongInt = txtLongInteger.NumberValueLongInt + 8;
+        }
+        else
+        {
+            txtLongInteger.NumberValueInt = 101;
+        }        
     }
 
     private void button4_Click(object sender, EventArgs e)
@@ -119,12 +132,14 @@ public partial class MainForm : Form
         txtDecimal.NumberValueDouble = null;
         txtCurrency.NumberValueDouble = null;
         txtInteger.NumberValueInt = null;
+        txtLongInteger.NumberValueLongInt = null;
     }
 
     void ChkPercentFormattingCheckedChanged(object sender, EventArgs e)
     {
         this.txtDecimal.ShowPercentSign = chkPercentFormatting.Checked;
         this.txtInteger.ShowPercentSign = chkPercentFormatting.Checked;
+        this.txtLongInteger.ShowPercentSign = chkPercentFormatting.Checked;
         this.txtCurrency.ShowPercentSign = chkPercentFormatting.Checked;               // while this doesn't make sense, it must do no harm to set this property on this Control
         this.txtNormal.ShowPercentSign = chkPercentFormatting.Checked;                 // while this doesn't make sense, it must do no harm to set this property on this Control
     }
@@ -134,6 +149,7 @@ public partial class MainForm : Form
         txtCurrency.CurrencySymbolRightAligned = false;
         txtDecimal.CurrencySymbolRightAligned = false;               // while this doesn't make sense, it must do no harm to set this property on this Control
         txtInteger.CurrencySymbolRightAligned = false;               // while this doesn't make sense, it must do no harm to set this property on this Control
+        txtLongInteger.CurrencySymbolRightAligned = false;               // while this doesn't make sense, it must do no harm to set this property on this Control
         txtNormal.CurrencySymbolRightAligned = false;                // while this doesn't make sense, it must do no harm to set this property on this Control
     }
 
@@ -142,6 +158,7 @@ public partial class MainForm : Form
         txtCurrency.CurrencySymbolRightAligned = true;
         txtDecimal.CurrencySymbolRightAligned = true;               // while this doesn't make sense, it must do no harm to set this property on this Control
         txtInteger.CurrencySymbolRightAligned = true;               // while this doesn't make sense, it must do no harm to set this property on this Control
+        txtLongInteger.CurrencySymbolRightAligned = true;               // while this doesn't make sense, it must do no harm to set this property on this Control
         txtNormal.CurrencySymbolRightAligned = true;                // while this doesn't make sense, it must do no harm to set this property on this Control
     }
 }
