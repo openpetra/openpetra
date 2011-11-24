@@ -33,6 +33,7 @@ CachedTables:
                 FoundationOwnerList: {Comment=list of users that are associated with foundations}
                 InstalledSitesList: {Comment=list of installed sites}
                 CountryListFromExistingLocations: {Comment="list of countries that are actually used in the database (smaller than the full country list)"}
+                DataLabelsForPartnerClassesList: {Comment="list of available DataLabels for PartnerClasses"}
         Mailing:
             DatabaseTables:
                 PContactAttribute:

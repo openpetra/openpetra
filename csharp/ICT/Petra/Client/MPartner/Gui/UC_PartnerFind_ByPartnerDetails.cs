@@ -630,7 +630,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else if (ClickedMenuItemName == "mniMaintainRelationships")
             {
-                throw new NotImplementedException();
+                OpenPartnerEditScreen(TPartnerEditTabPageEnum.petpPartnerRelationships);
             }
             else if (ClickedMenuItemName == "mniMaintainInterests")
             {
@@ -650,7 +650,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else if (ClickedMenuItemName == "mniMaintainWorkerField")
             {
-                throw new NotImplementedException();
+	            TFrmPersonnelStaffData staffDataForm = new TFrmPersonnelStaffData(FPetraUtilsObject.GetForm());
+	
+	            staffDataForm.PartnerKey = FLogic.PartnerKey;
+	            staffDataForm.Show();
             }
             else if (AToolStripItem.Name == "mniMaintainPersonnelData")
             {
