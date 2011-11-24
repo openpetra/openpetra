@@ -1785,6 +1785,13 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.ImportExport.WebConnectors
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector), "ResetDatabase", ";STRING;");
             return Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector.ResetDatabase(AZippedNewDatabaseData);
         }
+
+        /// generated method from connector
+        public bool SaveTDS(SampleDataConstructorTDS dataTDS,
+                            out TVerificationResultCollection AVerificationResult)
+        {
+            return Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector.SaveTDS(dataTDS, out AVerificationResult);
+        }
     }
 }
 
