@@ -28,6 +28,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Remoting.Shared;
+using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -1201,7 +1202,7 @@ namespace Ict.Petra.Client.MCommon
                 {
                     // MessageBox.Show('FJustDeletedPartnerLocationsRow <> nil');
                     NewPartnerLocationRow.LocationType =
-                        TAddressHandling.GetDefaultLocationType(SharedTypes.PartnerClassStringToEnum(FMainDS.PPartner[0].PartnerClass));
+                        TSharedAddressHandling.GetDefaultLocationType(SharedTypes.PartnerClassStringToEnum(FMainDS.PPartner[0].PartnerClass));
                 }
 
                 NewPartnerLocationRow.LocationKey = 0;

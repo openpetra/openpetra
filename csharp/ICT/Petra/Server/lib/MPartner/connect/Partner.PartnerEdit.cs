@@ -1065,10 +1065,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 switch (APartnerClass)
                 {
                     case TPartnerClass.PERSON:
-
                         // Load p_family record of the FAMILY that the PERSON will belong to
                         PersonFamilyDT = PFamilyAccess.LoadByPrimaryKey(AFamilyPartnerKey, ReadTransaction);
-                        PartnerRow.AddresseeTypeCode = SharedTypes.StdAddresseeTypeCodeEnumToString(TStdAddresseeTypeCode.satcFAMILY);
 
                         // Create DataRow for PPerson using the default values for all DataColumns
 #if DEBUGMODE
@@ -1111,7 +1109,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         break;
 
                     case TPartnerClass.FAMILY:
-                        PartnerRow.AddresseeTypeCode = SharedTypes.StdAddresseeTypeCodeEnumToString(TStdAddresseeTypeCode.satcFAMILY);
 #if DEBUGMODE
                         if (TLogging.DL >= 7)
                         {
@@ -1141,8 +1138,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         break;
 
                     case TPartnerClass.CHURCH:
-                        PartnerRow.AddresseeTypeCode = SharedTypes.StdAddresseeTypeCodeEnumToString(TStdAddresseeTypeCode.satcCHURCH);
-
                         // Create DataRow for PChurch using the default values for all DataColumns
                         ChurchRow = FPartnerEditScreenDS.PChurch.NewRowTyped(true);
                         ChurchRow.PartnerKey = FPartnerKey;
@@ -1170,8 +1165,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         break;
 
                     case TPartnerClass.ORGANISATION:
-                        PartnerRow.AddresseeTypeCode = SharedTypes.StdAddresseeTypeCodeEnumToString(TStdAddresseeTypeCode.satcORGANISA);
-
                         // Create DataRow for POrganisation using the default values for all DataColumns
                         OrganisationRow = FPartnerEditScreenDS.POrganisation.NewRowTyped(true);
                         OrganisationRow.PartnerKey = FPartnerKey;
@@ -1198,8 +1191,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         break;
 
                     case TPartnerClass.BANK:
-                        PartnerRow.AddresseeTypeCode = SharedTypes.StdAddresseeTypeCodeEnumToString(TStdAddresseeTypeCode.satcORGANISA);
-
                         // Create DataRow for PBank using the default values for all DataColumns
                         BankRow = FPartnerEditScreenDS.PBank.NewRowTyped(true);
                         BankRow.PartnerKey = FPartnerKey;
@@ -1222,8 +1213,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         break;
 
                     case TPartnerClass.UNIT:
-                        PartnerRow.AddresseeTypeCode = SharedTypes.StdAddresseeTypeCodeEnumToString(TStdAddresseeTypeCode.satcORGANISA);
-
                         // Create DataRow for PUnit using the default values for all DataColumns
                         UnitRow = FPartnerEditScreenDS.PUnit.NewRowTyped(true);
                         UnitRow.PartnerKey = FPartnerKey;
@@ -1246,8 +1235,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         break;
 
                     case TPartnerClass.VENUE:
-                        PartnerRow.AddresseeTypeCode = SharedTypes.StdAddresseeTypeCodeEnumToString(TStdAddresseeTypeCode.satcORGANISA);
-
                         // Create DataRow for PVenue using the default values for all DataColumns
                         VenueRow = FPartnerEditScreenDS.PVenue.NewRowTyped(true);
                         VenueRow.PartnerKey = FPartnerKey;
@@ -1273,6 +1260,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         break;
                 }
 
+                PartnerRow.AddresseeTypeCode = TSharedAddressHandling.GetDefaultAddresseeType(APartnerClass);
 #if DEBUGMODE
                 if (TLogging.DL >= 7)
                 {
