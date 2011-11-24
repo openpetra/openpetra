@@ -1,5 +1,5 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="opDevelopersAssistant.Properties" GeneratedClassName="Settings">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Ict.Tools.DevelopersAssistant.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
     <Setting Name="BranchLocation" Type="System.String" Scope="User">
@@ -43,6 +43,9 @@
     </Setting>
     <Setting Name="FlashAfterSeconds" Type="System.UInt32" Scope="User">
       <Value Profile="(Default)">15</Value>
+    </Setting>
+    <Setting Name="BazaarPath" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
     </Setting>
   </Settings>
 </SettingsFile>

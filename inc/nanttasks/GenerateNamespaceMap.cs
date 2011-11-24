@@ -176,13 +176,13 @@ namespace Ict.Tools.NAntTasks
             return false;
         }
 
-        private string ParseCSFile(Dictionary <string, string>NamespaceMap, Dictionary <string, TDetailsOfDll>UsingNamespaces, string filename)
+        /// get the project name, without extension and without path, of a file.
+        /// using the path of the file
+        public static string GetProjectNameFromCSFile(string filename, string ACodeRootDir)
         {
-            StreamReader sr = new StreamReader(filename);
-
             string DllName =
-                Path.GetDirectoryName(filename).Substring(FCodeRootDir.Length + 1).
-                Replace(Path.DirectorySeparatorChar, '.');
+                Path.GetDirectoryName(filename).Substring(ACodeRootDir.Length + 1).
+                Replace('/', '.').Replace('\\', '.');
 
             if (DllName.StartsWith("ICT."))
             {
@@ -190,6 +190,15 @@ namespace Ict.Tools.NAntTasks
             }
 
             DllName = DllName.Replace("Ict.PetraTools.", "Ict.Tools.");
+
+            return DllName;
+        }
+
+        private string ParseCSFile(Dictionary <string, string>NamespaceMap, Dictionary <string, TDetailsOfDll>UsingNamespaces, string filename)
+        {
+            StreamReader sr = new StreamReader(filename);
+
+            string DllName = GetProjectNameFromCSFile(filename, FCodeRootDir);
 
             TDetailsOfDll DetailsOfDll;
 

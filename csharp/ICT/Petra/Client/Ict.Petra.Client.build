@@ -1,8 +1,6 @@
 <?xml version="1.0"?>
 <project name="Ict.Petra.Client-Build">
 
-<property name="Namespace" value="Ict.Petra.Client" />
-
 <target name="custclean"> 
   <!-- Remove generated files from generateWinForms -->
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
@@ -23,22 +21,11 @@
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/>
   <property name="generateWinformsParameters" value="-TemplateDir:${dir.incdir.template.src}/Winforms -ResourceDir:${dir.root}/resources -petraxml:${PetraXML.file} -localisation:${GUILocalisation} -TargetPlatformGUI:${TargetPlatformGUI}"/>
   <ExecDotNet program="${tool-generateWinForms}" commandline="-op:generate -ymlfile:${file} ${generateWinformsParameters}"/>
-
-  <property name="donotcompile" value="false" overwrite="false"/>
-  <if test="${donotcompile == 'false'}">
-      <!-- now compile -->
-      <nant inheritall="true" target="compile" verbose="${verbose}">
-          <buildfiles>
-            <include name="${path::combine(path::get-directory-name(path::combine(path::combine(dir.csharp, 'ICT/Petra/Client'), file)), '*.build')}"/>
-          </buildfiles>
-      </nant>
-  </if>
+  
+  <property name="ClientPath" value="${dir.root}/csharp/ICT/Petra/Client"/>
+  <CompileProject CSFile="${ClientPath}/${string::replace(file,'.yaml', '-generated.cs')}" ProjectFilesDir="${dir.projectfiles}/${devenv-msbuild}" CodeRootDir="${dir.csharp}"/>
 </target>
 
-
-
-  
 <include buildfile="../../../../inc/nant/OpenPetra.csharp.xml"/> 
-
  
 </project>

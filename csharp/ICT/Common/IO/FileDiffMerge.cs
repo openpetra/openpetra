@@ -26,9 +26,8 @@ using System.IO;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
-using Ict.Common.IO;
 
-namespace Ict.Tools.CodeGeneration
+namespace Ict.Common.IO
 {
     /// see http://en.wikibooks.org/wiki/Algorithm_implementation/Strings/Longest_common_subsequence
     /// and http://www.mycsharp.de/wbb2/thread.php?threadid=79055

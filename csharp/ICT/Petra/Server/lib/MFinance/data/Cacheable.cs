@@ -39,6 +39,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Server.App.Core;
 
 #region ManualCode
+using System.Collections.Generic;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
@@ -46,6 +47,7 @@ using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MCommon;
+using Ict.Petra.Server.MFinance.Common;
 using Ict.Petra.Server.MFinance.DataAggregates;
 #endregion ManualCode
 namespace Ict.Petra.Server.MFinance.Cacheable
@@ -698,6 +700,21 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                     GLSetupTDSAAccountRow acc = (GLSetupTDSAAccountRow)TempDS.AAccount.DefaultView[0].Row;
                     acc.BankAccountFlag = true;
                     TempDS.AAccount.DefaultView.RowFilter = "";
+                }
+            }
+
+            // load AAccountHierarchyDetails and check if this account reports to the CASH account
+            AAccountHierarchyDetailAccess.LoadViaAAccountHierarchy(TempDS, ALedgerNumber, MFinanceConstants.ACCOUNT_HIERARCHY_STANDARD, AReadTransaction);
+
+            TLedgerInfo ledgerInfo = new TLedgerInfo(ALedgerNumber);
+            TGetAccountHierarchyDetailInfo accountHierarchyTools = new TGetAccountHierarchyDetailInfo(ledgerInfo);
+            List<string> children = accountHierarchyTools.GetChildren(MFinanceConstants.CASH_ACCT);
+
+            foreach (GLSetupTDSAAccountRow account in TempDS.AAccount.Rows)
+            {
+                if (children.Contains(account.AccountCode))
+                {
+                    account.CashAccountFlag = true;
                 }
             }
 

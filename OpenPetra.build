@@ -11,17 +11,15 @@
 <target name="help" depends="" description="Displays the available targets and parameters.">
     <echo>
 list of available commands:
-  clean: cleans everything
-  compile: compiles OpenPetra including testing
-  generateTools: build the basic tools only
+  quickClean: cleans all generated files and the delivery directory
   generateSolution: compiles OpenPetra and generates the project and solution files
-  generateSolutionNoCompile: generates the project and solution files. minimalGenerateSolution should already be executed
+  generateTools: build the basic tools only
   minimalGenerateSolution: generates the project and solution files. compiles what it needs, but does not compile all code
-  quickCompile: will just compile the solution file, with msbuild (Windows) or xbuild (Linux)
+  generateSolutionNoCompile: generates the project and solution files. minimalGenerateSolution should already be executed
+  quickCompile: will just compile the solution file, with msbuild (Windows) or our own builder (Linux)
       nant quickCompile                    will compile the OpenPetra.sln
       nant quickCompile -D:solution=Tools  will compile the OpenPetra.Tools.sln
                                            other solutions are: Client, Server, Testing
-  quickClean: cleans all generated files and the delivery directory
   startPetraServer: run a local Petra Server
   stopPetraServer: stop the local Petra Server
   startPetraClient: run the Petra Client
@@ -122,7 +120,7 @@ useful parameters
   </delete>
 </target>
 
-<target name="nanttasks" depends="" description="goes into the directory inc/nanttasks">
+<target name="nanttasks" description="goes into the directory inc/nanttasks">
   <property name="target" value="compile" overwrite="false" />
   <nant inheritall="false" target="${target}" 
         buildfile="inc/nanttasks/nanttasks.build" />
@@ -141,7 +139,6 @@ useful parameters
         depends="nanttasks,generateNamespaceMap,generateProjectFiles"/>
 
 <target name="minimalGenerateSolution" description="compile minimal code for generating source code and the project and solution files">
-    <call target="nanttasks"/>
     <call target="generateTools"/>
     <call target="generateWinforms"/>
     <call target="generateORM"/>
@@ -187,7 +184,7 @@ useful parameters
     DependencyMapFilename="${projectDependenciesFile}"
     GUIDMapFilename="${uuidFile}"
     TemplateDir="${dir.incdir.template}"
-    DevEnvironments="${projectfiles.templates-list}"
+    DevEnvironments="${devenv-msbuild},${projectfiles.templates-list}"
     DirBin="${dir.bin}"
     DirProjectFiles="${dir.projectfiles}"
     NetFrameworkVersion="${NETframework-version}"
@@ -210,24 +207,35 @@ useful parameters
        quickCompile uses the solution and csproj files and msbuild.
        quickCompile is intended as an alternative to compile in SharpDevelop directly.
   -->
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('CompileSolution')}"/>
   <property name="solution" value="OpenPetra" overwrite="false"/>
+  <property name="solution.file" value="${path::combine(dir.projectfiles,
+                              path::combine(devenv-msbuild, 'OpenPetra.'+solution+'.sln'))}"/>
+  <property name="solution.file" value="${string::replace(solution.file, 'OpenPetra.OpenPetra.sln', 'OpenPetra.sln')}"/>
+
   <if test="${not platform::is-windows()}" >
+    <!-- on linux, xbuild could work as well. 
+         but it shows so many warnings, and the return code is not reliable... -->
+    <CompileSolution SolutionFile="${solution.file}"/>
+
+    <!--
     <property name="solution.file" value="${path::combine(dir.projectfiles,
                                   path::combine(devenv-xbuild, 'OpenPetra.'+solution+'.sln'))}"/>
     <property name="solution.file" value="${string::replace(solution.file, 'OpenPetra.OpenPetra.sln', 'OpenPetra.sln')}"/>
-    <exec program="xbuild" commandline="${solution.file}"/>
+    <exec program="xbuild" commandline="/verbosity:quiet ${solution.file}"/>
+    -->
   </if>
+
   <if test="${platform::is-windows()}" >
-    <property name="solution.file" value="${path::combine(dir.projectfiles,
-                                path::combine(devenv-msbuild, 'OpenPetra.'+solution+'.sln'))}"/>
-    <property name="solution.file" value="${string::replace(solution.file, 'OpenPetra.OpenPetra.sln', 'OpenPetra.sln')}"/>
     <if test="${file::exists(msbuildtask.file)}">
       <msbuild project="${solution.file}" verbosity="Minimal">
         <property name="Configuration" value="${Configuration}"/>
       </msbuild>
     </if>
     <if test="${not file::exists(msbuildtask.file)}">
-      <fail message="you need the NAnt.Contrib.Tasks.dll for msbuild" />
+      <!-- CompileSolution is quite slower than msbuild. so only use CompileSolution if msbuild is not available -->
+      <CompileSolution SolutionFile="${solution.file}"/>
+      <echo message="For faster compile, you need the NAnt.Contrib.Tasks.dll for msbuild" />
     </if>
   </if>
 </target>
