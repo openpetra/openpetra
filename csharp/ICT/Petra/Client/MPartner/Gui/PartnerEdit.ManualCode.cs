@@ -1884,7 +1884,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             mniViewFinanceData.Checked = false;
 
             ucoLowerPart.CurrentModuleTabGroup = TModuleSwitchEnum.msPartner;
-            ucoLowerPart.InitChildUserControl();
+            ucoLowerPart.ShowChildUserControl();
 
             if (FNewPartnerWithAutoCreatedAddress)
             {
@@ -1907,7 +1907,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     mniViewFinanceData.Checked = false;
 
                     ucoLowerPart.CurrentModuleTabGroup = TModuleSwitchEnum.msPersonnel;
-                    ucoLowerPart.InitChildUserControl();
+                    ucoLowerPart.ShowChildUserControl();
                 }
                 else
                 {
@@ -2431,27 +2431,33 @@ namespace Ict.Petra.Client.MPartner.Gui
                     IsEnabled = AEnable;
                 }
 
-                tbbViewPartnerData.Enabled = IsEnabled;
-                mniViewPartnerData.Enabled = IsEnabled;
-
                 if (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
                 {
+	                tbbViewPartnerData.Enabled = IsEnabled;
+	                mniViewPartnerData.Enabled = IsEnabled;
+
                     mniMaintainFamilyMembers.Enabled = IsEnabled;
                     mniMaintainWorkerField.Enabled = IsEnabled;
                     mniMaintainFamilyMembers.Text = Resourcestrings.StrFamilyMenuItemText;
-
+                    
                     // TODO
 //                    // Exchange the 'Family Members' icon with the 'Family' icon!
 //                    this.XPMenuItemExtender.SetMenuGlyph(this.mniMaintainFamilyMembers, imlMenuHelper.Images[0]);
                 }
                 else if (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.FAMILY))
                 {
-                    mniMaintainFamilyMembers.Enabled = IsEnabled;
+	                tbbViewPartnerData.Enabled = false;
+	                mniViewPartnerData.Enabled = false;
+
+                	mniMaintainFamilyMembers.Enabled = IsEnabled;
                     mniMaintainWorkerField.Enabled = IsEnabled;
                     mniMaintainFamilyMembers.Text = Resourcestrings.StrFamilyMembersMenuItemText;
                 }
                 else
                 {
+	                tbbViewPartnerData.Enabled = false;
+	                mniViewPartnerData.Enabled = false;
+
                     // Following functionality is available only for PERSON and FAMILY
                     mniMaintainFamilyMembers.Enabled = false;
                     mniMaintainWorkerField.Enabled = false;
@@ -2478,8 +2484,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
-                //tbbViewPartnerData.Enabled = (!IsEnabled);  // This Tab Group is not functional yet
-                //mniViewFinanceData.Enabled = (!IsEnabled);  // This Tab Group is not functional yet
+                tbbViewPartnerData.Enabled = (!IsEnabled);
+                tbbViewPartnerData.Enabled = (!IsEnabled);
                 mniMaintainAddresses.Enabled = (!IsEnabled);
                 mniEditFindNewAddress.Enabled = (!IsEnabled);
                 mniMaintainPartnerDetails.Enabled = (!IsEnabled);
