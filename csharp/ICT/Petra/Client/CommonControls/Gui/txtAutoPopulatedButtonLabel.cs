@@ -1291,7 +1291,6 @@ namespace Ict.Petra.Client.CommonControls
                 // reset timer and start it again
                 timerGetKey.Stop();
                 timerGetKey.Start();
-                txtAutoPopulated.lblLabel.Text = "";
             }
         }
 
@@ -1421,6 +1420,12 @@ namespace Ict.Petra.Client.CommonControls
                                         {
                                             PartnerFound(mResultIntTxt, mResultLocationPK.LocationKey);
                                         }
+
+                                        if ((ValueChanged != null) && (mTextBoxStringOld != TextBoxStringOut))
+                                        {
+                                            bool ValidResult = true;
+                                            ValueChanged(mResultIntTxt, mResultStringLbl, ValidResult);
+                                        }
                                     }
                                     else
                                     {
@@ -1536,7 +1541,6 @@ namespace Ict.Petra.Client.CommonControls
         public void UpdateDisplayedValue()
         {
             string currentText;
-            string result;
 
             currentText = txtAutoPopulated.txtTextBox.Text;
 
@@ -1544,15 +1548,19 @@ namespace Ict.Petra.Client.CommonControls
             {
                 if (ShowLabel)
                 {
-                    this.TxtAutoPopulated_SetLabel(currentText, out result);
+                    string result = this.txtAutoPopulated.lblLabel.Text;
+                    this.TxtAutoPopulated_SetLabel(currentText, ref result);
                     this.txtAutoPopulated.lblLabel.Text = result;
                 }
             }
         }
 
-        private void TxtAutoPopulated_SetLabel(string ALookUpText, out string ALabelText)
+        private void TxtAutoPopulated_SetLabel(string ALookUpText, ref string ALabelText)
         {
+            string OldLabelText = ALabelText;
+
             ALabelText = "";
+
             bool ServerResult;
             bool ValidResult = false;
             System.Int64 mPartnerKey;
@@ -1563,7 +1571,7 @@ namespace Ict.Petra.Client.CommonControls
             /* Occupation list mode  seems to work differently.
              * It sets the label to blank, and the label is populated when the input is verified.
              *
-             * Partner Key Mode  we call Serverlookups to retireve the partner key name */
+             * Partner Key Mode  we call Serverlookups to retrieve the partner key name */
 
             // TLogging.Log('Start txtAutoPopulated_SetLabel', [TLoggingType.ToLogfile]);
             // Initialisation
@@ -1610,7 +1618,7 @@ namespace Ict.Petra.Client.CommonControls
                         mPartnerShortName = "";
                     }
 
-                    if (ValueChanged != null)
+                    if ((ValueChanged != null) && (OldLabelText != mPartnerShortName))
                     {
                         ValueChanged(mPartnerKey, mPartnerShortName, ValidResult);
                     }
@@ -1678,7 +1686,7 @@ namespace Ict.Petra.Client.CommonControls
                         mPartnerShortName = "";
                     }
 
-                    if (ValueChanged != null)
+                    if ((ValueChanged != null) && (OldLabelText != mPartnerShortName))
                     {
                         ValueChanged(mPartnerKey, mPartnerShortName, ValidResult);
                     }

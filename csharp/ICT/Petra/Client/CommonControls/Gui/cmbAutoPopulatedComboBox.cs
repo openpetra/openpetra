@@ -254,6 +254,23 @@ namespace Ict.Petra.Client.CommonControls
             }
         }
 
+        /**
+         * This Event is thrown when the internal ComboBox throws the SelectedValueChanged Event.
+         */
+        [Category("Action"),
+         Browsable(true),
+         RefreshPropertiesAttribute(System.ComponentModel.RefreshProperties.All),
+         Description("Occurs when when the internal ComboBox throws the TextChanged Event.")]
+        public new event System.EventHandler TextChanged;
+
+        private void CmbCombobox_TextChanged(System.Object sender, EventArgs e)
+        {
+            if (TextChanged != null)
+            {
+                TextChanged(this, e);
+            }
+        }
+
         /// <summary>
         /// constructor
         /// </summary>
@@ -623,6 +640,7 @@ namespace Ict.Petra.Client.CommonControls
             // Pass on any set Tag
             cmbCombobox.Tag = this.Tag;
             this.cmbCombobox.SelectedValueChanged += new System.EventHandler(this.CmbCombobox_SelectedValueChanged);
+            this.cmbCombobox.TextChanged += new System.EventHandler(this.CmbCombobox_TextChanged);
 
             if (FAddNotSetValue)
             {
@@ -638,19 +656,33 @@ namespace Ict.Petra.Client.CommonControls
                 FDataCache_ListTable.Rows.InsertAt(Dr, 0);
             }
 
-            string DescriptionDBName = (ADescDBName != null && ADescDBName.Length > 0) ? ADescDBName : null;
-
-            LabelDisplaysColumn = DescriptionDBName;
+            if ((ADescDBName == null) || (ADescDBName.Length == 0))
+            {
+                RemoveDescriptionLabel();
+            }
+            else
+            {
+                LabelDisplaysColumn = ADescDBName;
+            }
 
             cmbCombobox.BeginUpdate();
             FDataView = new DataView(FDataCache_ListTable);
             FDataView.RowFilter = FFilter;
-            FDataView.Sort = ADisplayDBName;
+
+            if ((ATable.DefaultView.Sort == null) || (ATable.DefaultView.Sort.Length == 0))
+            {
+                FDataView.Sort = ADisplayDBName;
+            }
+            else
+            {
+                FDataView.Sort = ATable.DefaultView.Sort;
+            }
+
             cmbCombobox.DescriptionMember = ADescDBName;
             cmbCombobox.DisplayMember = ADisplayDBName;
             cmbCombobox.ValueMember = AValueDBName;
             cmbCombobox.DisplayInColumn1 = ADisplayDBName;
-            cmbCombobox.DisplayInColumn2 = DescriptionDBName;
+            cmbCombobox.DisplayInColumn2 = (ADescDBName != null && ADescDBName.Length > 0) ? ADescDBName : null;
             cmbCombobox.DisplayInColumn3 = null;
             cmbCombobox.DisplayInColumn4 = null;
             cmbCombobox.ColumnsToSearch = AColumnsToSearch;

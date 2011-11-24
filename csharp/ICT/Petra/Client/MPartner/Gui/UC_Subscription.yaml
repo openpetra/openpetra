@@ -11,50 +11,29 @@ RootNode:
         actEditIssues: {Label=Edit I&ssues, ActionClick=EditIssues}
     Controls:
         pnlDetails:
-            Controls:
-                Row0: [pnlDetailsLeft, pnlDetailsRight]
+            Controls: [pnlDetailsLeft, pnlDetailsRight]
             Dock: Fill
         pnlDetailsLeft:
-            Controls:
-                Row0: [grpSubscription]
-                Row1: [grpMisc]
-            Dock: Left
+            Dock: Fill
+            Controls: [grpSubscription, grpMisc]
         pnlDetailsRight: {Stretch=horizontally}
-            Controls:
-                Row0: [grpDates]
-                Row1: [grpIssues]
+            Dock: Right
+            Controls: [grpDates, grpIssues]
                 
         grpSubscription: {Label=Subscription, Stretch=horizontally}
-            Controls:
-                Row0: [cmbPSubscriptionPublicationCode]
-                Row1: [cmbPSubscriptionSubscriptionStatus]
-                Row2: [chkPSubscriptionGratisSubscription]
+            Controls: [cmbPSubscriptionPublicationCode, cmbPSubscriptionSubscriptionStatus, chkPSubscriptionGratisSubscription]
 
         grpMisc: {Label=Miscellaneous, Stretch=horizontally}
-            Controls:
-                Row0: [txtPublicationCost]
-                Row1: [txtPSubscriptionNumberComplimentary]
-                Row2: [txtPSubscriptionPublicationCopies]
-                Row3: [cmbPSubscriptionReasonSubsGivenCode]
-                Row4: [cmbPSubscriptionReasonSubsCancelledCode]
-                Row5: [txtPSubscriptionGiftFromKey]
+            Controls: [txtPublicationCost, txtPSubscriptionNumberComplimentary, txtPSubscriptionPublicationCopies, cmbPSubscriptionReasonSubsGivenCode, cmbPSubscriptionReasonSubsCancelledCode, txtPSubscriptionGiftFromKey]
         
         grpDates: {Label=Dates, Stretch=horizontally}
-            Controls:
-                Row0: [dtpPSubscriptionStartDate]
-                Row1: [dtpPSubscriptionExpiryDate]
-                Row2: [dtpPSubscriptionSubscriptionRenewalDate]
-                Row3: [dtpPSubscriptionDateNoticeSent]
-                Row4: [dtpPSubscriptionDateCancelled]
+            Controls: [dtpPSubscriptionStartDate, dtpPSubscriptionExpiryDate, dtpPSubscriptionSubscriptionRenewalDate, dtpPSubscriptionDateNoticeSent, dtpPSubscriptionDateCancelled]
         
         grpIssues: {Label=Issues, Stretch=horizontally}
-            Controls:
-                Row0: [txtPSubscriptionNumberIssuesReceived]
-                Row1: [dtpPSubscriptionFirstIssue]
-                Row2: [dtpPSubscriptionLastIssue]
-                Row3: [btnEditIssues]
+            Controls: [txtPSubscriptionNumberIssuesReceived, dtpPSubscriptionFirstIssue, dtpPSubscriptionLastIssue, btnEditIssues]
 		
         cmbPSubscriptionPublicationCode: {List=PublicationList, OnChange=PublicationCodeChanged}
+            Dock: Fill
             Label: Pub&lication Code
         cmbPSubscriptionSubscriptionStatus: {OnChange=PublicationStatusChanged}
             Label: S&ubscription Status
@@ -64,13 +43,15 @@ RootNode:
 
         txtPublicationCost: {Format=Currency}
             Label: Publication Cost
-        txtPSubscriptionNumberComplimentary:
+        txtPSubscriptionNumberComplimentary: {Format=Integer}
             Label: Complimentar&y
-        txtPSubscriptionPublicationCopies:
+        txtPSubscriptionPublicationCopies: {Format=Integer}
             Label: &Copies
         cmbPSubscriptionReasonSubsGivenCode: {List=ReasonSubscriptionGivenList}
+            Dock: Fill
             Label: Reason &Given
         cmbPSubscriptionReasonSubsCancelledCode: {List=ReasonSubscriptionCancelledList}
+            Dock: Fill
             Label: Reason Ended
         txtPSubscriptionGiftFromKey:
             Label: Gift Given By
@@ -87,7 +68,7 @@ RootNode:
         dtpPSubscriptionDateCancelled:
             Label: Date E&nded
 
-        txtPSubscriptionNumberIssuesReceived: {Width=60}
+        txtPSubscriptionNumberIssuesReceived: {Format=Integer, Width=60}
             Label: Issues Received
         dtpPSubscriptionFirstIssue:
             Label: Fi&rst Issue Sent

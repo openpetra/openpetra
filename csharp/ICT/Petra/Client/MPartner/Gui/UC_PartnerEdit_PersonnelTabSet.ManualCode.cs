@@ -153,11 +153,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// todoComment
         /// </summary>
-        public void RefreshPersonnelDataAfterMerge()
+        public void RefreshPersonnelDataAfterMerge(bool AAddressesOrRelationsChanged)
         {
             if (FUcoIndividualData != null)
             {
-                FUcoIndividualData.RefreshPersonnelDataAfterMerge();
+                FUcoIndividualData.RefreshPersonnelDataAfterMerge(AAddressesOrRelationsChanged);
             }
         }
 

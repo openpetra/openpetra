@@ -27,7 +27,7 @@ using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Tcp;
 using Tests.SimpleDotNetRemoting.Interface;
 
-namespace Tests.SimpleDotNetRemoting.Server
+namespace Ict.Testing.SimpleDotNetRemoting.Server
 {
     class Server
     {

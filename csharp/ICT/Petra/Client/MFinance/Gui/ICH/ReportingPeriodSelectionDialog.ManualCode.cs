@@ -37,10 +37,10 @@ using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces;
 using Ict.Petra.Shared.Interfaces.MFinance.ICH.UIConnectors;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.CommonControls;
+using Ict.Petra.Client.MFinance.Logic;
 
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -78,36 +78,6 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
         /// Field to store the relevant Ledger number
         /// </summary>
         public Int32 FLedgerNumber = 0;
-        private int FNumberAccountingPeriods;
-        private int FNumberForwardingPeriods;
-        private int FCurrentPeriod;
-        private int FCurrentYear;
-
-        /// <summary>
-        /// get the number of accounting periods. needed to avoid warning about unused FNumberAccountingPeriods
-        /// </summary>
-        public int NumberAccountingPeriods
-        {
-            get
-            {
-                return FNumberAccountingPeriods;
-            }
-        }
-
-        /// <summary>
-        /// get the number of the current year. needed to avoid warning about unused FCurrentYear
-        /// </summary>
-        public int CurrentYear
-        {
-            get
-            {
-                return FCurrentYear;
-            }
-        }
-
-        private void InitializeManualCode()
-        {
-        }
 
         private void CustomClosingHandler(System.Object sender, System.ComponentModel.CancelEventArgs e)
         {
@@ -194,31 +164,10 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             set
             {
                 FLedgerNumber = value;
-                string currentPeriodDBName;
 
-                DataTable Table = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountingPeriodList, FLedgerNumber);
-
-                //Ict.Petra.Client.CommonControls.TCmbAutoPopulated this.Controls["cmbReportPeriod"];
-                TCmbAutoPopulated cmb = cmbReportPeriod;
-
-                TRemote.MFinance.Reporting.UIConnectors.SelectLedger(FLedgerNumber);
-                TRemote.MFinance.Reporting.UIConnectors.GetLedgerPeriodDetails(out FNumberAccountingPeriods,
-                    out FNumberForwardingPeriods,
-                    out FCurrentPeriod,
-                    out FCurrentYear);
-
-                Table.DefaultView.Sort = AAccountingPeriodTable.GetAccountingPeriodDescDBName() + " ASC";
-
-                currentPeriodDBName = AAccountingPeriodTable.GetAccountingPeriodNumberDBName();
-                Table.DefaultView.RowFilter = currentPeriodDBName + " >= " + FCurrentPeriod +
-                                              " AND " +
-                                              currentPeriodDBName + " <= " + FNumberForwardingPeriods + FCurrentPeriod + "";
-                //" AND " + AAccountingPeriodTable. ;
-
-                cmb.InitialiseUserControl(Table,
-                    AAccountingPeriodTable.GetAccountingPeriodNumberDBName(), AAccountingPeriodTable.GetAccountingPeriodDescDBName(), null, null);
-
-                cmb.AppearanceSetup(new int[] { -1 }, -1);
+                TFinanceControls.InitialiseOpenFinancialPeriodsList(
+                    ref cmbReportPeriod,
+                    FLedgerNumber);
             }
         }
 

@@ -26,87 +26,87 @@ using System.Data;
 using Ict.Common;
 using Ict.Common.DB;
 
-namespace SQLiteConsole
+namespace Ict.Tools.SQLiteConsole
 {
 /// <summary>
 /// the problem is that there are no admin tools to look at an encrypted SQLite file
 /// this is a console tool that will help analyzing the content of an encrypted sqlite file,
 /// using the same encryption as the OpenPetra program.
 /// </summary>
-class TSQLiteConsole
-{
-    private static TDataBase db;
-
-    // establish connection to database
-    public static bool InitDBConnection(
-        string ADBFile, string ADBPassword)
+    class TSQLiteConsole
     {
-        db = new TDataBase();
+        private static TDataBase db;
 
-        new TLogging("debug.log");
-        TLogging.DebugLevel = TAppSettingsManager.GetInt16("DebugLevel", 0);
-
-        db.EstablishDBConnection(TDBType.SQLite,
-            ADBFile,
-            "",
-            "",
-            "",
-            ADBPassword,
-            "");
-        DBAccess.GDBAccessObj = db;
-
-        return true;
-    }
-
-    public static void Main(string[] args)
-    {
-        new TAppSettingsManager(false);
-
-        if (!TAppSettingsManager.HasValue("file"))
+        // establish connection to database
+        public static bool InitDBConnection(
+            string ADBFile, string ADBPassword)
         {
-            Console.WriteLine("call: echo SELECT * FROM s_user | SQLiteConsole -file:mydatabase.db -password:secret");
-            Environment.Exit(1);
+            db = new TDataBase();
+
+            new TLogging("debug.log");
+            TLogging.DebugLevel = TAppSettingsManager.GetInt16("DebugLevel", 0);
+
+            db.EstablishDBConnection(TDBType.SQLite,
+                ADBFile,
+                "",
+                "",
+                "",
+                ADBPassword,
+                "");
+            DBAccess.GDBAccessObj = db;
+
+            return true;
         }
 
-        try
+        public static void Main(string[] args)
         {
-            if (!System.IO.File.Exists(TAppSettingsManager.GetValue("file")))
-            {
-                Console.WriteLine("database file " + TAppSettingsManager.GetValue("file") + " does not exist");
+            new TAppSettingsManager(false);
 
-                // this is to avoid InitDBConnection trying to find/copy the base database
+            if (!TAppSettingsManager.HasValue("file"))
+            {
+                Console.WriteLine("call: echo SELECT * FROM s_user | SQLiteConsole -file:mydatabase.db -password:secret");
                 Environment.Exit(1);
             }
 
-            if (!InitDBConnection(TAppSettingsManager.GetValue("file"), TAppSettingsManager.GetValue("password", "")))
+            try
             {
-                Console.WriteLine("cannot connect to database " + TAppSettingsManager.GetValue("file"));
-                Environment.Exit(1);
+                if (!System.IO.File.Exists(TAppSettingsManager.GetValue("file")))
+                {
+                    Console.WriteLine("database file " + TAppSettingsManager.GetValue("file") + " does not exist");
+
+                    // this is to avoid InitDBConnection trying to find/copy the base database
+                    Environment.Exit(1);
+                }
+
+                if (!InitDBConnection(TAppSettingsManager.GetValue("file"), TAppSettingsManager.GetValue("password", "")))
+                {
+                    Console.WriteLine("cannot connect to database " + TAppSettingsManager.GetValue("file"));
+                    Environment.Exit(1);
+                }
+
+                string SQLCommand = "";
+                string line;
+
+                while ((line = Console.ReadLine()) != null && line.Length > 0)
+                {
+                    SQLCommand += " " + line.Trim();
+                }
+
+                TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+                DataTable result = DBAccess.GDBAccessObj.SelectDT(SQLCommand, "temp", transaction);
+                TDataBase.LogTable(result);
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
             }
 
-            string SQLCommand = "";
-            string line;
-
-            while ((line = Console.ReadLine()) != null && line.Length > 0)
+            if (db.ConnectionOK)
             {
-                SQLCommand += " " + line.Trim();
+                db.CloseDBConnection();
             }
-
-            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-            DataTable result = DBAccess.GDBAccessObj.SelectDT(SQLCommand, "temp", transaction);
-            TDataBase.LogTable(result);
-            DBAccess.GDBAccessObj.RollbackTransaction();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-            Console.WriteLine(e.StackTrace);
-        }
-
-        if (db.ConnectionOK)
-        {
-            db.CloseDBConnection();
         }
     }
-}
 }

@@ -19,14 +19,17 @@ RootNode:
             Dock: Fill
             Controls: [pnlInfo, pnlDetailGrid, pnlDetails]
         pnlInfo: 
-            Controls: [pnlLedgerInfo, rgrShowBatches]
+            ControlsOrientation: horizontal
+            Controls: [pnlLedgerInfo, rgrShowBatches, cmbYear, cmbPeriod]
             Dock: Top
         rgrShowBatches: 
             Label: Show batches
             ControlsOrientation: horizontal
             SuppressChangeDetection: true
             OptionalValues: [Posted, =Editing, All]
-            OnChange: ChangeBatchFilter
+            OnChange: RefreshFilter
+        cmbYear: {List: UserDefinedList, OnChange:RefreshPeriods, SuppressChangeDetection: true, Width=100}
+        cmbPeriod: {List: UserDefinedList, OnChange:RefreshFilter, SuppressChangeDetection: true, Width=250}
         pnlLedgerInfo:
             Controls: [txtLedgerNumber]
         txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}

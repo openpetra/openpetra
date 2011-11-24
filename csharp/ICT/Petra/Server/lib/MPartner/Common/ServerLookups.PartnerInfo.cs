@@ -41,7 +41,7 @@ using Ict.Petra.Server.MCommon;
 using Ict.Petra.Server.MPartner;
 using Ict.Petra.Server.MPartner.DataAggregates;
 
-namespace Ict.Petra.Server.MPartner
+namespace Ict.Petra.Server.MPartner.Common
 {
     /// <summary>
     /// Contains Methods that looks up miscellaneous Partner data.

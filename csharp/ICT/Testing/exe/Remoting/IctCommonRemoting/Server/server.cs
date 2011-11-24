@@ -29,10 +29,11 @@ using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Tcp;
 using System.Runtime.Serialization.Formatters;
 using Tests.IctCommonRemoting.Interface;
+using Tests.IctCommonRemoting.Server;
 using Ict.Common;
 using Ict.Common.Remoting.Server;
 
-namespace Tests.IctCommonRemoting.Server
+namespace Ict.Testing.IctCommonRemoting.Server
 {
     class Server
     {

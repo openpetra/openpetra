@@ -2,31 +2,6 @@
 <project name="Ict.Petra.Client-Build">
 
 <property name="Namespace" value="Ict.Petra.Client" />
-<property name="directories-with-yaml" 
-          value="MConference/Gui,
-                MCommon/Gui,
-                MCommon/Gui/Setup,
-                MPartner/Gui,
-                MPartner/Gui/Setup,
-                MPersonnel/Gui,
-                MPersonnel/Gui/Setup,
-                MReporting/Gui/MPartner,
-                MReporting/Gui/MPersonnel,
-                MReporting/Gui/MPersonnel/ShortTerm,
-                MReporting/Gui/MFinance,
-                MReporting/Gui/MFinDev,
-                MReporting/Gui/MConference,
-                MReporting/Gui,
-                MFinance/Gui/GL,
-                MFinance/Gui/Gift,
-                MFinance/Gui/AP,
-                MFinance/Gui/ICH,
-                MFinance/Gui/Common,
-                MFinance/Gui/Setup,
-                MFinance/Gui,
-                MSysMan/Gui,
-                MSysMan/Gui/Setup" overwrite="false" />
-
 
 <target name="custclean"> 
   <!-- Remove generated files from generateWinForms -->

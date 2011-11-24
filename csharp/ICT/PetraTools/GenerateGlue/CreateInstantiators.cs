@@ -32,6 +32,7 @@ using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory;
 using NamespaceHierarchy;
 using Ict.Common;
+using Ict.Common.IO;
 using Ict.Tools.CodeGeneration;
 
 

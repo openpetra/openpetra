@@ -36,7 +36,6 @@ using Ict.Common.DB;
 using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.MFinance;
-using Ict.Petra.Shared.MFinance.GL;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
@@ -51,97 +50,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
     ///</summary>
     public class TTransactionWebConnector
     {
-        /// <summary>
-        /// retrieve the start and end dates of the current period of the ledger
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="AStartDate"></param>
-        /// <param name="AEndDate"></param>
-        [RequireModulePermission("FINANCE-1")]
-        public static bool GetCurrentPeriodDates(Int32 ALedgerNumber, out DateTime AStartDate, out DateTime AEndDate)
-        {
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
-            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-            AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber,
-                LedgerTable[0].CurrentPeriod,
-                Transaction);
-
-            AStartDate = AccountingPeriodTable[0].PeriodStartDate;
-            AEndDate = AccountingPeriodTable[0].PeriodEndDate;
-
-            DBAccess.GDBAccessObj.CommitTransaction();
-
-            return true;
-        }
-
-        /// <summary>
-        /// Get the valid dates for posting;
-        /// based on current period and number of forwarding periods
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="AStartDateCurrentPeriod"></param>
-        /// <param name="AEndDateLastForwardingPeriod"></param>
-        [RequireModulePermission("FINANCE-1")]
-        public static bool GetCurrentPostingRangeDates(Int32 ALedgerNumber,
-            out DateTime AStartDateCurrentPeriod,
-            out DateTime AEndDateLastForwardingPeriod)
-        {
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
-            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-            AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber,
-                LedgerTable[0].CurrentPeriod,
-                Transaction);
-
-            AStartDateCurrentPeriod = AccountingPeriodTable[0].PeriodStartDate;
-
-            AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber,
-                LedgerTable[0].CurrentPeriod + LedgerTable[0].NumberFwdPostingPeriods,
-                Transaction);
-            AEndDateLastForwardingPeriod = AccountingPeriodTable[0].PeriodEndDate;
-
-            DBAccess.GDBAccessObj.CommitTransaction();
-
-            return true;
-        }
-
-        /// <summary>
-        /// Get the start date and end date
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="AYearNumber"></param>
-        /// <param name="ADiffPeriod"></param>
-        /// <param name="APeriodNumber"></param>
-        /// <param name="AStartDatePeriod"></param>
-        /// <param name="AEndDatePeriod"></param>
-        /// <returns></returns>
-        [RequireModulePermission("FINANCE-1")]
-        public static bool GetPeriodDates(Int32 ALedgerNumber,
-            Int32 AYearNumber,
-            Int32 ADiffPeriod,
-            Int32 APeriodNumber,
-            out DateTime AStartDatePeriod,
-            out DateTime AEndDatePeriod)
-        {
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
-            AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, APeriodNumber, Transaction);
-
-            // TODO: ADiffPeriod for support of different financial years
-
-            AStartDatePeriod = AccountingPeriodTable[0].PeriodStartDate;
-            AEndDatePeriod = AccountingPeriodTable[0].PeriodEndDate;
-
-            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-            AStartDatePeriod = AStartDatePeriod.AddMonths(-12 * (LedgerTable[0].CurrentFinancialYear - AYearNumber));
-            AEndDatePeriod = AEndDatePeriod.AddMonths(-12 * (LedgerTable[0].CurrentFinancialYear - AYearNumber));
-
-            DBAccess.GDBAccessObj.CommitTransaction();
-
-            return true;
-        }
-
         /// <summary>
         /// create a new batch with a consecutive batch number in the ledger,
         /// and immediately store the batch and the new number in the database

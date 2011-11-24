@@ -73,7 +73,7 @@ namespace Ict.Petra.Shared.MFinance
         public const String AP_DOCUMENT_PAID = "PAID";
 
         /// <summary>Account Property</summary>
-        public const String ACCOUNT_PROPERTY_BANK_ACCOUNT = "Bank Account";
+        public const String ACCOUNT_PROPERTY_BANK_ACCOUNT = "BANK ACCOUNT";
 
         /// <summary>Bank statements</summary>
         public const String BANK_STMT_STATUS_MATCHED = "MATCHED";
@@ -161,6 +161,9 @@ namespace Ict.Petra.Shared.MFinance
 
         /// standard creditors account
         public const string ACCOUNT_CREDITORS = "CRS CTRL";
+
+        /// standard account
+        public const string CASH_ACCT = "CASH";
 
         /// Allocation Journal values
         public const int MAX_AC_CC_SPLIT_INTO = 10;

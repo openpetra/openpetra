@@ -33,7 +33,6 @@ using Ict.Common.DB;
 using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.MPartner;
-using Ict.Petra.Server.MFinance;
 using Ict.Petra.Server.MFinance.GL;
 using Ict.Petra.Server.MFinance.Common;
 using Ict.Petra.Shared.MFinance;

@@ -1,1 +1,0 @@
-    <EmbeddedResource Include="${filename}" />

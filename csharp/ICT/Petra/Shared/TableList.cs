@@ -259,7 +259,6 @@ namespace Ict.Petra.Shared
             list.Add("pm_document");
             list.Add("pm_passport_details");
             list.Add("pm_person_language");
-            list.Add("pm_ownership");
             list.Add("pm_past_experience");
             list.Add("pm_person_ability");
             list.Add("pm_person_qualification");

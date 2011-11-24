@@ -41,10 +41,10 @@ namespace Ict.Petra.Client.MPartner.Gui
     {
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
-        private Dictionary <string, string>FLinkLabelsOrigTexts;
 
-        IndividualDataTDS FMainDS;          // FMainDS is NOT of Type 'PartnerEditTDS' in this UserControl!!!
-        PartnerEditTDS FPartnerEditTDS;
+        private Dictionary <string, string>FLinkLabelsOrigTexts;
+        private IndividualDataTDS FMainDS;          // FMainDS is NOT of Type 'PartnerEditTDS' in this UserControl!!!
+        private PartnerEditTDS FPartnerEditTDS;
         private SortedList <TDynamicLoadableUserControls, UserControl>FUserControlSetup;
         private Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_SpecialNeeds FUcoSpecialNeeds;
         private Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_PersonalLanguages FUcoPersonalLanguages;
@@ -101,6 +101,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FPartnerEditTDS = value;
             }
         }
+
         #endregion
 
         #region Public Methods
@@ -122,21 +123,30 @@ namespace Ict.Petra.Client.MPartner.Gui
             ucoSummaryData.PartnerEditUIConnector = FPartnerEditUIConnector;
             ucoSummaryData.SpecialInitUserControl(FMainDS);
 
+            // Hook up ColumnChanging Event of the FPartnerEditTDS's PPerson Table
+            FPartnerEditTDS.PPerson.ColumnChanged += delegate {
+                ucoSummaryData.FMainDS_PPerson_ColumnChanged(FPartnerEditTDS.PPerson[0]);
+            };
+
+            // Store the text that the LinkLabels show originally (used for repeated updating the numbers in the strings)
             FUserControlSetup = new SortedList <TDynamicLoadableUserControls, UserControl>();
             StoreLinkLablesOrigText();
 
+            // Initialise the numbers in the strings of the LinkLabels
             CalculateLinkLabelCounters(this);
         }
 
         /// <summary>
-        /// Gets the data from all controls on this TabControl.
+        /// Gets the data from all UserControls on this TabControl.
         /// The data is stored in the DataTables/DataColumns to which the Controls
         /// are mapped.
         /// </summary>
+        /// <returns>void</returns>
         public void GetDataFromControls()
         {
             if (FUserControlSetup != null)
             {
+                // Special Needs
                 if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucSpecialNeeds))
                 {
                     TUC_IndividualData_SpecialNeeds UCSpecialNeeds =
@@ -151,6 +161,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FPartnerEditTDS.Tables[PmSpecialNeedTable.GetTableName()].Merge(FMainDS.PmSpecialNeed);
                 }
 
+                // Personal Languages
                 if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucPersonalLanguages))
                 {
                     TUC_IndividualData_PersonalLanguages UCPersonalLanguage =
@@ -171,15 +182,47 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
-        /// todoComment
+        /// Called when data got saved in the screen. This Method takes over changed data
+        /// into FMainDS, which is different than the Partner Edit screen's FMainDS, in
+        /// order to have current data on which decisions on whether to refresh certain
+        /// parts of the 'Overview' need to be updated.
         /// </summary>
-        public void RefreshPersonnelDataAfterMerge()
+        /// <param name="AAddressesOrRelationsChanged">Set to true by the SaveChanges Method
+        /// of the Partner Edit screen if Addresses or Relationships have changed.</param>
+        /// <returns>void</returns>
+        public void RefreshPersonnelDataAfterMerge(bool AAddressesOrRelationsChanged)
         {
+            //
             // Need to merge Tables from PartnerEditTDS into IndividualDataTDS so the updated s_modification_id_c of modififed Rows is held correctly in IndividualDataTDS, too!
+            //
+
+            // ...but first empty relevant DataTables to ensure that DataRows that got deleted in FPartnerEditTDS are reflected in FMainDS (just performing a Merge wouldn't remove them!)
+            if (FMainDS.Tables.Contains(PPartnerLocationTable.GetTableName()))
+            {
+                FMainDS.Tables[PPartnerLocationTable.GetTableName()].Rows.Clear();
+            }
+
+            if (FMainDS.Tables.Contains(PLocationTable.GetTableName()))
+            {
+                FMainDS.Tables[PLocationTable.GetTableName()].Rows.Clear();
+            }
+
+            if (FMainDS.Tables.Contains(PPartnerRelationshipTable.GetTableName()))
+            {
+                FMainDS.Tables[PPartnerRelationshipTable.GetTableName()].Rows.Clear();
+            }
+
+            // Now perform the Merge operation
             FMainDS.Merge(FPartnerEditTDS);
 
             // Call AcceptChanges on IndividualDataTDS so that we don't have any changed data anymore (this is done to PartnerEditTDS, too, after this Method returns)!
             FMainDS.AcceptChanges();
+
+            // Let the 'Overview' UserControl determine whether it needs to refresh the data it displays.
+            if (AAddressesOrRelationsChanged)
+            {
+                ucoSummaryData.CheckForRefreshOfDisplayedData();
+            }
         }
 
         /// <summary>
@@ -187,11 +230,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// Since we don't have controls on this UserControl that need adjusting after resizing
         /// on 'Large Fonts (120 DPI)', we don't need to do anything here.
         /// </summary>
+        /// <returns>void</returns>
         public void AdjustAfterResizing()
         {
         }
 
         #endregion
+
 
         #region Private Methods
 
@@ -268,11 +313,17 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     ReturnValue = ucoPersonalLanguages;
                     break;
+
+                    // TODO Add case code blocks for all remaining Individual Data Items
             }
 
             return ReturnValue;
         }
 
+        /// <summary>
+        /// Stores the text that the LinkLabels show originally (used for repeated updating the numbers in the strings).
+        /// </summary>
+        /// <returns>void</returns>
         private void StoreLinkLablesOrigText()
         {
             FLinkLabelsOrigTexts = new Dictionary <string, string>();
@@ -289,9 +340,16 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         #endregion
 
+
         #region Event Handlers
 
-        private void IndividualDataItemSelected(object Sender, EventArgs e)
+        /// <summary>
+        /// Event is fired when an Individual Data Item LinkLabel is 'clicked'.
+        /// </summary>
+        /// <param name="ASender">One of the Individual Data Item LinkLabels. Determines what action is taken.</param>
+        /// <param name="e">Not evaluated.</param>
+        /// <returns>void</returns>
+        private void IndividualDataItemSelected(object ASender, EventArgs e)
         {
             /*
              * Raise the following Event to inform the base Form that we might be loading some fresh data.
@@ -299,11 +357,11 @@ namespace Ict.Petra.Client.MPartner.Gui
              */
             OnDataLoadingStarted(this, new EventArgs());
 
-            if (Sender == llbOverview)
+            if (ASender == llbOverview)
             {
                 ucoSummaryData.Parent.BringToFront();
             }
-            else if (Sender == llbSpecialNeeds)
+            else if (ASender == llbSpecialNeeds)
             {
                 if (!FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucSpecialNeeds))
                 {
@@ -347,7 +405,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 FUcoSpecialNeeds.Parent.BringToFront();
             }
-            else if (Sender == llbLanguages)
+            else if (ASender == llbLanguages)
             {
                 if (!FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucPersonalLanguages))
                 {
@@ -396,7 +454,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FUcoPersonalLanguages.Parent.BringToFront();
             }
 
-            // TODO else branch for all remaining Individual Data Items
+            // TODO Add else branch for all remaining Individual Data Items
 
 
             /*
@@ -425,10 +483,16 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (e.ScreenPart == TScreenPartEnum.spCounters)
             {
+                // Update the numbers in the strings of the LinkLabels
                 CalculateLinkLabelCounters(sender);
             }
         }
 
+        /// <summary>
+        /// Updates the numbers in the strings of the LinkLabels.
+        /// </summary>
+        /// <param name="ASender">UserControl that corresponds to one of the Individual Data Item LinkLabels.</param>
+        /// <returns>void</returns>
         private void CalculateLinkLabelCounters(System.Object ASender)
         {
             string OrigLabelText;
