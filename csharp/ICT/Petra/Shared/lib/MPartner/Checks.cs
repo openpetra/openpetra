@@ -86,7 +86,7 @@ namespace Ict.Petra.Shared.MPartner
 
             return false;
         }
-        
+
         /// <summary>
         /// Determines whether DataLabels exist for a specified Partner Class.
         /// </summary>
@@ -98,9 +98,10 @@ namespace Ict.Petra.Shared.MPartner
         public static bool HasPartnerClassLocalPartnerDataLabels(TPartnerClass APartnerClass, DataTable ACacheableDataLabelsForPartnerClassesList)
         {
             bool ReturnValue = false;
-            
-            DataRow[] PartnerClassDR = ACacheableDataLabelsForPartnerClassesList.Select("PartnerClass = '" + SharedTypes.PartnerClassEnumToString(APartnerClass) + "'");
-                                    
+
+            DataRow[] PartnerClassDR =
+                ACacheableDataLabelsForPartnerClassesList.Select("PartnerClass = '" + SharedTypes.PartnerClassEnumToString(APartnerClass) + "'");
+
             if (PartnerClassDR.Length > 0)
             {
                 if (Convert.ToBoolean(PartnerClassDR[0]["DataLabelsAvailable"]) == true)
@@ -108,8 +109,8 @@ namespace Ict.Petra.Shared.MPartner
                     ReturnValue = true;
                 }
             }
-            
+
             return ReturnValue;
-        }        
+        }
     }
 }

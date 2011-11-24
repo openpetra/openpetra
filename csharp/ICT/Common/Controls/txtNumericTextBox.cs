@@ -206,10 +206,10 @@ namespace Ict.Common.Controls
                     {
                         base.Text = "1234";
                     }
-                    
-	                if ((FControlMode == TNumericTextBoxMode.NormalTextBox)
-	                    || (FControlMode == TNumericTextBoxMode.Integer)
-	                    || (FControlMode == TNumericTextBoxMode.LongInteger))
+
+                    if ((FControlMode == TNumericTextBoxMode.NormalTextBox)
+                        || (FControlMode == TNumericTextBoxMode.Integer)
+                        || (FControlMode == TNumericTextBoxMode.LongInteger))
                     {
                         if (value != 0)
                         {
@@ -511,7 +511,7 @@ namespace Ict.Common.Controls
             }
         }
 
-        
+
         /// This property gets hidden because it doesn't make sense in the Designer!
         [Browsable(false),
          DefaultValue(0)]
@@ -588,7 +588,7 @@ namespace Ict.Common.Controls
                 }
             }
         }
-        
+
         /// <summary>
         /// Determines where a percent sign ( % ) is shown. Only has an effect if ControlMode is 'Integer' or 'Decimal'.
         /// </summary>
@@ -765,7 +765,7 @@ namespace Ict.Common.Controls
                 switch (FControlMode)
                 {
                     case TNumericTextBoxMode.Integer :
-                	case TNumericTextBoxMode.LongInteger :
+                    case TNumericTextBoxMode.LongInteger :
                     case TNumericTextBoxMode.Decimal :
                     case TNumericTextBoxMode.Currency :
                         {
@@ -1260,172 +1260,173 @@ namespace Ict.Common.Controls
             if (AValue != String.Empty)
             {
 //MessageBox.Show("FormatValue input string AValue: " + AValue);
-				try 
-				{					
-	                switch (FControlMode)
-	                {
-	                    case TNumericTextBoxMode.Decimal:
-	
-	                        if (FNumberPrecision == TNumberPrecision.Double)
-	                        {
-	                            NumberValueDouble = Convert.ToDouble(AValue, FCurrentCulture);
-	                            //                CultureInfo ci = CultureInfo.CreateSpecificCulture("en-US");
-	                            //                NumberFormatInfo ni = ci.NumberFormat;
-	
-	                            base.Text = NumberValueDouble.ToString("N" + FDecimalPlaces, FCurrentCulture);
-	                            //                string strnumformat = d.ToString("c", ni);
-	                            //                this.Text = strnumformat.Remove(0, 1);
-	                        }
-	                        else if (FNumberPrecision == TNumberPrecision.Decimal)
-	                        {
-	                            NumberValueDecimal = Convert.ToDecimal(AValue, FCurrentCulture);
-	                            //                CultureInfo ci = CultureInfo.CreateSpecificCulture("en-US");
-	                            //                NumberFormatInfo ni = ci.NumberFormat;
-	
-	                            base.Text = NumberValueDecimal.ToString("N" + FDecimalPlaces, FCurrentCulture);
-	                            //                string strnumformat = d.ToString("c", ni);
-	                            //                this.Text = strnumformat.Remove(0, 1);
-	                        }
-	
-	                        if (FShowPercentSign)
-	                        {
-	                            base.Text = base.Text + " %";
-	                        }
-	
-	                        break;
-	
-	                    case TNumericTextBoxMode.Currency:
-	
-	                        string FormatString = "0";
-	
-	                        if (FDecimalPlaces > 0)
-	                        {
-	                            FormatString += "." + new String('0', FDecimalPlaces);
-	                        }
-	
-	                        if (FNumberPrecision == TNumberPrecision.Double)
-	                        {
-	                            NumberValueDouble = Convert.ToDouble(AValue, FCurrentCulture);
-	
-	                            if (NumberValueDouble >= 1000)
-	                            {
-	                                FormatString = "0,00" + FormatString;
-	                            }
-	
-	                            strnumformat = NumberValueDouble.ToString(FormatString, FCurrentCulture);
-	                        }
-	                        else if (FNumberPrecision == TNumberPrecision.Decimal)
-	                        {
-	                            NumberValueDecimal = Convert.ToDecimal(AValue, FCurrentCulture);
-	
-	                            if (NumberValueDecimal >= 1000)
-	                            {
-	                                FormatString = "0,00" + FormatString;
-	                            }
-	
-	                            strnumformat = NumberValueDecimal.ToString(FormatString, FCurrentCulture);
-	                        }
-	
-	                        if (FCurrencySymbolRightAligned)
-	                        {
-	                            base.Text = strnumformat + " " + FCurrencySymbol;
-	                        }
-	                        else
-	                        {
-	                            base.Text = FCurrencySymbol + " " + strnumformat;
-	                        }
-	
-	                        break;
-	
-	                    case TNumericTextBoxMode.Integer:
-	                    case TNumericTextBoxMode.LongInteger:
-	
-	                        if (FShowPercentSign)
-	                        {
-	                            if ((!AValue.EndsWith(" %"))
-	                                && !AValue.EndsWith("%"))
-	                            {
-	                        		if (FControlMode == TNumericTextBoxMode.Integer) 
-	                        		{
-	                        			base.Text = System.Int32.Parse(AValue.Trim()) + " %";	
-	                        		}
-	                        		else
-	                        		{
-	                        			base.Text = System.Int64.Parse(AValue.Trim()) + " %";
-	                        		}	                                
-	                            }
-	                            else if ((AValue.EndsWith("%")
-	                                      && !AValue.EndsWith(" %")))
-	                            {
-	                        		if (FControlMode == TNumericTextBoxMode.Integer) 
-	                        		{	                        		
-	                                	base.Text = System.Int32.Parse(AValue.Substring(0, AValue.Length - 1)) + " %";
-	                        		}
-	                        		else
-	                        		{
-	                        			base.Text = System.Int64.Parse(AValue.Substring(0, AValue.Length - 1)) + " %";
-	                        		}
-	                            }
-	                            else
-	                            {
-	                                if (!AValue.StartsWith("0" + FCurrencyDecimalSeparator))
-	                                {
-		                        		if (FControlMode == TNumericTextBoxMode.Integer) 
-		                        		{	                                	
-	                                 	   base.Text = System.Int32.Parse(AValue).ToString() + " %";
-		                        		}
-		                        		else
-		                        		{
-		                        			base.Text = System.Int64.Parse(AValue).ToString() + " %";
-		                        		}
-	                                }
-	                                else
-	                                {
-	                                    base.Text = "0 %";
-	                                }
-	                            }
-	                        }
-	                        else
-	                        {
-	                            if (!AValue.StartsWith("0" + FCurrencyDecimalSeparator))
-	                            {
-	                        		if (FControlMode == TNumericTextBoxMode.Integer) 
-	                        		{	                            	
-	                                	base.Text = System.Int32.Parse(AValue).ToString();
-	                        		}
-	                        		else
-	                        		{
-	                        			base.Text = System.Int64.Parse(AValue).ToString();
-	                        		}
-	                            }
-	                            else
-	                            {
-	                                base.Text = "0";
-	                            }
-	                        }
-	
-	                        break;
-	
-	                    default:
-	                        // No formatting is done
-	                        base.Text = AValue;
-	
-	                        break;
-	                }
-				} 
-				catch (System.OverflowException) 
-				{
-					MessageBox.Show(Catalog.GetString(String.Format(
-						"The value entered{0}{1}{2}exceeds the valid value range, i.e. is either too large or too small.{3}Please enter a value that is valid.",
-						Environment.NewLine + Environment.NewLine, "    " + AValue, Environment.NewLine + Environment.NewLine, Environment.NewLine)),
-						Catalog.GetString("Value Out of Range"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                try
+                {
+                    switch (FControlMode)
+                    {
+                        case TNumericTextBoxMode.Decimal:
 
-					base.Text = AValue;
-				}
-				catch (Exception) 
-				{				
-					throw;
-				}
+                            if (FNumberPrecision == TNumberPrecision.Double)
+                            {
+                                NumberValueDouble = Convert.ToDouble(AValue, FCurrentCulture);
+                                //                CultureInfo ci = CultureInfo.CreateSpecificCulture("en-US");
+                                //                NumberFormatInfo ni = ci.NumberFormat;
+
+                                base.Text = NumberValueDouble.ToString("N" + FDecimalPlaces, FCurrentCulture);
+                                //                string strnumformat = d.ToString("c", ni);
+                                //                this.Text = strnumformat.Remove(0, 1);
+                            }
+                            else if (FNumberPrecision == TNumberPrecision.Decimal)
+                            {
+                                NumberValueDecimal = Convert.ToDecimal(AValue, FCurrentCulture);
+                                //                CultureInfo ci = CultureInfo.CreateSpecificCulture("en-US");
+                                //                NumberFormatInfo ni = ci.NumberFormat;
+
+                                base.Text = NumberValueDecimal.ToString("N" + FDecimalPlaces, FCurrentCulture);
+                                //                string strnumformat = d.ToString("c", ni);
+                                //                this.Text = strnumformat.Remove(0, 1);
+                            }
+
+                            if (FShowPercentSign)
+                            {
+                                base.Text = base.Text + " %";
+                            }
+
+                            break;
+
+                        case TNumericTextBoxMode.Currency:
+
+                            string FormatString = "0";
+
+                            if (FDecimalPlaces > 0)
+                            {
+                                FormatString += "." + new String('0', FDecimalPlaces);
+                            }
+
+                            if (FNumberPrecision == TNumberPrecision.Double)
+                            {
+                                NumberValueDouble = Convert.ToDouble(AValue, FCurrentCulture);
+
+                                if (NumberValueDouble >= 1000)
+                                {
+                                    FormatString = "0,00" + FormatString;
+                                }
+
+                                strnumformat = NumberValueDouble.ToString(FormatString, FCurrentCulture);
+                            }
+                            else if (FNumberPrecision == TNumberPrecision.Decimal)
+                            {
+                                NumberValueDecimal = Convert.ToDecimal(AValue, FCurrentCulture);
+
+                                if (NumberValueDecimal >= 1000)
+                                {
+                                    FormatString = "0,00" + FormatString;
+                                }
+
+                                strnumformat = NumberValueDecimal.ToString(FormatString, FCurrentCulture);
+                            }
+
+                            if (FCurrencySymbolRightAligned)
+                            {
+                                base.Text = strnumformat + " " + FCurrencySymbol;
+                            }
+                            else
+                            {
+                                base.Text = FCurrencySymbol + " " + strnumformat;
+                            }
+
+                            break;
+
+                        case TNumericTextBoxMode.Integer:
+                        case TNumericTextBoxMode.LongInteger:
+
+                            if (FShowPercentSign)
+                            {
+                                if ((!AValue.EndsWith(" %"))
+                                    && !AValue.EndsWith("%"))
+                                {
+                                    if (FControlMode == TNumericTextBoxMode.Integer)
+                                    {
+                                        base.Text = System.Int32.Parse(AValue.Trim()) + " %";
+                                    }
+                                    else
+                                    {
+                                        base.Text = System.Int64.Parse(AValue.Trim()) + " %";
+                                    }
+                                }
+                                else if ((AValue.EndsWith("%")
+                                          && !AValue.EndsWith(" %")))
+                                {
+                                    if (FControlMode == TNumericTextBoxMode.Integer)
+                                    {
+                                        base.Text = System.Int32.Parse(AValue.Substring(0, AValue.Length - 1)) + " %";
+                                    }
+                                    else
+                                    {
+                                        base.Text = System.Int64.Parse(AValue.Substring(0, AValue.Length - 1)) + " %";
+                                    }
+                                }
+                                else
+                                {
+                                    if (!AValue.StartsWith("0" + FCurrencyDecimalSeparator))
+                                    {
+                                        if (FControlMode == TNumericTextBoxMode.Integer)
+                                        {
+                                            base.Text = System.Int32.Parse(AValue).ToString() + " %";
+                                        }
+                                        else
+                                        {
+                                            base.Text = System.Int64.Parse(AValue).ToString() + " %";
+                                        }
+                                    }
+                                    else
+                                    {
+                                        base.Text = "0 %";
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (!AValue.StartsWith("0" + FCurrencyDecimalSeparator))
+                                {
+                                    if (FControlMode == TNumericTextBoxMode.Integer)
+                                    {
+                                        base.Text = System.Int32.Parse(AValue).ToString();
+                                    }
+                                    else
+                                    {
+                                        base.Text = System.Int64.Parse(AValue).ToString();
+                                    }
+                                }
+                                else
+                                {
+                                    base.Text = "0";
+                                }
+                            }
+
+                            break;
+
+                        default:
+                            // No formatting is done
+                            base.Text = AValue;
+
+                            break;
+                    }
+                }
+                catch (System.OverflowException)
+                {
+                    MessageBox.Show(Catalog.GetString(String.Format(
+                                "The value entered{0}{1}{2}exceeds the valid value range, i.e. is either too large or too small.{3}Please enter a value that is valid.",
+                                Environment.NewLine + Environment.NewLine, "    " + AValue, Environment.NewLine + Environment.NewLine,
+                                Environment.NewLine)),
+                        Catalog.GetString("Value Out of Range"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    base.Text = AValue;
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
             }
             else
             {

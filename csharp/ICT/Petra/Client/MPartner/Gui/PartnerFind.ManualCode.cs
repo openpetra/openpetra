@@ -632,10 +632,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
                 }
             }
-            
+
             // Disable 'Local Partner Data' MenuItem if there are no DataLabels for the Partner's PartnerClass available
             if (!Checks.HasPartnerClassLocalPartnerDataLabels(SharedTypes.PartnerClassStringToEnum(PartnerClass),
-                                                              TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.DataLabelsForPartnerClassesList)))
+                    TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.DataLabelsForPartnerClassesList)))
             {
                 if (SenderIsContextMenu)
                 {
@@ -653,7 +653,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     mniMaintainLocalPartnerData.Enabled = false;
                 }
             }
-            
         }
 
         #region Menu/ToolBar command handling

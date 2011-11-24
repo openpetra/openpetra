@@ -58,10 +58,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             uictPartnerKey,
 
             /// <summary>Call the UIConnector with Partner Key, Location Key and Site Key Arguments</summary>
-           uictLocationKey,
+            uictLocationKey,
 
             /// <summary>Call the UIConnector without any Arguments, thus signalising that a new Partner should be created</summary>
-           uictNewPartner
+            uictNewPartner
         }
 
         #region Fields
@@ -1751,7 +1751,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void MaintainFamilyMembers(System.Object sender, System.EventArgs e)
         {
-       		if ((FMainDS.PPartner[0].PartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.FAMILY))
+            if ((FMainDS.PPartner[0].PartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.FAMILY))
                 || (FMainDS.PPartner[0].PartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON)))
             {
                 ucoLowerPart.SelectTabPage(TPartnerEditTabPageEnum.petpFamilyMembers);
@@ -1760,7 +1760,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 MessageBox.Show(CommonResourcestrings.StrErrorOnlyForFamilyOrPerson,
                     CommonResourcestrings.StrGenericFunctionalityNotAvailable);
-            }            
+            }
         }
 
         private void MaintainRelationships(System.Object sender, System.EventArgs e)
@@ -1780,7 +1780,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void MaintainNotes(System.Object sender, System.EventArgs e)
         {
-        	ucoLowerPart.SelectTabPage(TPartnerEditTabPageEnum.petpNotes);
+            ucoLowerPart.SelectTabPage(TPartnerEditTabPageEnum.petpNotes);
         }
 
         private void MaintainLocalPartnerData(System.Object sender, System.EventArgs e)
@@ -2296,7 +2296,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     // TODO 2 oChristianK cPartner Edit / Tabs : Introduce a User Default that can specify which TabPage is the one the User wants to see as default.
                     FShowTabPage = TPartnerEditTabPageEnum.petpAddresses;
                     FInitiallySelectedTabPage = FShowTabPage;
-                    
+
                     break;
 
                 case TPartnerEditTabPageEnum.petpFoundationDetails:
@@ -2366,14 +2366,14 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FInitiallySelectedTabPage = FShowTabPage;
 
                     break;
-                    
-               default:
-					FInitiallySelectedTabPage = TPartnerEditTabPageEnum.petpAddresses;        	                    
-					
-					break;
+
+                default:
+                    FInitiallySelectedTabPage = TPartnerEditTabPageEnum.petpAddresses;
+
+                    break;
             }
-            
-			FCurrentModuleTabGroup = TPartnerEditScreenLogic.DetermineTabGroup(FInitiallySelectedTabPage);
+
+            FCurrentModuleTabGroup = TPartnerEditScreenLogic.DetermineTabGroup(FInitiallySelectedTabPage);
         }
 
         /// <summary>
@@ -2406,7 +2406,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // TODO 2 oChristianK cSecurity : Take security settings into consideration.
             // Partner Module Data
-            if ((ALockOnModule == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgNone) || (ALockOnModule == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner))
+            if ((ALockOnModule == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgNone)
+                || (ALockOnModule == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner))
             {
                 if (ALockOnModule == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner)
                 {
@@ -2419,30 +2420,30 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 if (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
                 {
-	                tbbViewPartnerData.Enabled = IsEnabled;
-	                mniViewPartnerData.Enabled = IsEnabled;
+                    tbbViewPartnerData.Enabled = IsEnabled;
+                    mniViewPartnerData.Enabled = IsEnabled;
 
                     mniMaintainFamilyMembers.Enabled = IsEnabled;
                     mniMaintainWorkerField.Enabled = IsEnabled;
                     mniMaintainFamilyMembers.Text = Resourcestrings.StrFamilyMenuItemText;
-                    
+
                     // TODO
 //                    // Exchange the 'Family Members' icon with the 'Family' icon!
 //                    this.XPMenuItemExtender.SetMenuGlyph(this.mniMaintainFamilyMembers, imlMenuHelper.Images[0]);
                 }
                 else if (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.FAMILY))
                 {
-	                tbbViewPartnerData.Enabled = false;
-	                mniViewPartnerData.Enabled = false;
+                    tbbViewPartnerData.Enabled = false;
+                    mniViewPartnerData.Enabled = false;
 
-                	mniMaintainFamilyMembers.Enabled = IsEnabled;
+                    mniMaintainFamilyMembers.Enabled = IsEnabled;
                     mniMaintainWorkerField.Enabled = IsEnabled;
                     mniMaintainFamilyMembers.Text = Resourcestrings.StrFamilyMembersMenuItemText;
                 }
                 else
                 {
-	                tbbViewPartnerData.Enabled = false;
-	                mniViewPartnerData.Enabled = false;
+                    tbbViewPartnerData.Enabled = false;
+                    mniViewPartnerData.Enabled = false;
 
                     // Following functionality is available only for PERSON and FAMILY
                     mniMaintainFamilyMembers.Enabled = false;
@@ -2495,7 +2496,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             // Personnel Module Data
-            if ((ALockOnModule == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgNone) || (ALockOnModule == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPersonnel))
+            if ((ALockOnModule == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgNone)
+                || (ALockOnModule == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPersonnel))
             {
                 if (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
                 {
@@ -2537,7 +2539,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             // Finance Module Data
-            if ((ALockOnModule == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgNone) || (ALockOnModule == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgFinance))
+            if ((ALockOnModule == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgNone)
+                || (ALockOnModule == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgFinance))
             {
                 //tbbViewFinanceData.Enabled = AEnable;   // This Tab Group is not functional yet
                 //mniViewFinanceData.Enabled = AEnable;   // This Tab Group is not functional yet
