@@ -14,7 +14,9 @@ RootNode:
         cndDiscountEnabled: {InitialValue=false}
         actNewDetail: {Label=Add De&tail, ActionClick=NewDetail}
         actRemoveDetail:  {Label=&Remove Detail, ActionClick=RemoveDetail}
+        actAnalyse: {ActionClick=Analyse}
         actPostDocument: {Label=Post Document, ActionClick=PostDocument}
+        actUseTaxAccount: {ActionClick=UseTaxAccount}
     Controls:
         pnlContent:
             Controls: [pnlSupplierInfo, grpDocumentInfo, grpDetails]
@@ -53,6 +55,7 @@ RootNode:
         txtDiscountPercentage: {Label=Discount &Value (%), Enabled=cndDiscountEnabled}
         txtTotalAmount:
             Label: &Amount
+            Format: Currency
         txtExchangeRateToBase:
             Label: E&xchange Rate
             # TODO: default value from daily exchange rate? update daily exchange rate?
@@ -75,7 +78,8 @@ RootNode:
             Controls:
                 Row0: [txtDetailNarrative]
                 Row1: [txtDetailItemRef]
-                Row2: [txtDetailAmount, cmbDetailCostCentreCode, btnUseTaxAccountCostCentre]
+                Row2: [txtDetailAmount, cmbDetailCostCentreCode]
+                Row2a: [Empty1, btnUseTaxAccountCostCentre]
                 Row3: [txtDetailBaseAmount, cmbDetailAccountCode]
         txtDetailNarrative:
             ColSpan: 2
@@ -86,11 +90,15 @@ RootNode:
             Width: 350
             Label: Detail &Ref
         txtDetailAmount:
+            Format: Currency
             Label: A&mount
         txtDetailBaseAmount:
             Label: Base
+            Format: Currency
             ReadOnly: true
             #TODO: calculate using exchange rate from document
+        Empty1:
+
 # TODO: Approval completely disabled for the moment
 #        dtpDetailApprovalDate:
 #            Label: Approved On
@@ -99,17 +107,19 @@ RootNode:
         cmbDetailAccountCode: {Label=Accou&nt, List=UserDefinedList}
         btnUseTaxAccountCostCentre:
             Label: Use Ta&x Acct+CC
-            #TODO
+            Action: actUseTaxAccount
         btnAddDetail:
             Width: 100
             Action: actNewDetail
-        btnRemoveDetail: {Enabled=false}
+        btnRemoveDetail:
+            Enabled: false
             Label: &Remove Detail
             Width: 100
             Action: actRemoveDetail
         btnAnalysisAttributes:
             Label: Analysis Attri&b.
             Width: 100
+            Action: actAnalyse
 # TODO: Approval completely disabled for the moment
 #        btnApproveDetail:
 #            Label: A&pprove Detail

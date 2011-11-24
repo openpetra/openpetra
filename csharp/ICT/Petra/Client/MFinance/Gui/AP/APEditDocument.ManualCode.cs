@@ -39,6 +39,56 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 {
     public partial class TFrmAPEditDocument
     {
+    	private void InitializeManualCode()
+    	{
+    	}
+    	
+    	private void EnableControls()
+    	{
+    		// I need to make everything read-only if this document was already posted.
+    		if ("|POSTED|PARTPAID|PAID|".IndexOf(FMainDS.AApDocument[0].DocumentStatus) > 0)
+    		{
+    			tbbPostDocument.Enabled = false;
+    			
+    			txtSupplierName.Enabled = false;
+    			txtSupplierCurrency.Enabled = false;
+    			txtDocumentCode.Enabled = false;
+    			cmbDocumentType.Enabled = false;
+    			txtReference.Enabled = false;
+    			dtpDateIssued.Enabled = false;
+    			dtpDateDue.Enabled = false;
+    			nudCreditTerms.Enabled = false;
+    			nudDiscountDays.Enabled = false;
+    			txtDiscountPercentage.Enabled = false;
+				txtTotalAmount.Enabled = false;
+				txtExchangeRateToBase.Enabled = false;
+				
+				btnAddDetail.Enabled = false;
+				btnRemoveDetail.Enabled = false;
+				btnAnalysisAttributes.Enabled = false;
+				
+				txtDetailNarrative.Enabled = false;
+				txtDetailItemRef.Enabled = false;
+				txtDetailAmount.Enabled = false;
+				cmbDetailCostCentreCode.Enabled = false;
+				btnUseTaxAccountCostCentre.Enabled = false;
+				txtDetailBaseAmount.Enabled = false;
+				cmbDetailAccountCode.Enabled = false;
+    		}
+    		else
+    		{
+	        	btnRemoveDetail.Enabled = (GetSelectedDetailRow() != null);
+    		}
+    		
+    	}
+    		
+    	private void ShowDataManual()
+    	{
+    		txtTotalAmount.CurrencySymbol = FMainDS.AApSupplier[0].CurrencyCode;
+    		txtDetailAmount.CurrencySymbol = FMainDS.AApSupplier[0].CurrencyCode;
+    		EnableControls();
+    	}
+    	
         private void NewDetail(Object sender, EventArgs e)
         {
             // get the entered amounts, so that we can calculate the missing amount for the new detail
@@ -50,7 +100,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 foreach (AApDocumentDetailRow detailRow in FMainDS.AApDocumentDetail.Rows)
                 {
-                    DetailAmount -= detailRow.Amount;
+                	if (detailRow.RowState != DataRowState.Deleted)
+                	{
+                    	DetailAmount -= detailRow.Amount;
+                	}
                 }
             }
 
@@ -70,7 +123,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             // for the moment, set all to approved, since we don't yet support approval of documents
             FMainDS.AApDocument[0].DocumentStatus = MFinanceConstants.AP_DOCUMENT_APPROVED;
-        	btnRemoveDetail.Enabled = (GetSelectedDetailRow() != null);
+    		EnableControls();
+        	txtDetailNarrative.Focus();
         }
 
         private void RemoveDetail(Object sender, EventArgs e)
@@ -80,9 +134,31 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         		return;
         	
 		    GetDataFromControls(FMainDS.AApDocument[0]);
-        	FMainDS.AApDocumentDetail.Rows.Remove(Row);
-	        ShowData(FMainDS.AApDocument[0]);
-        	btnRemoveDetail.Enabled = (GetSelectedDetailRow() != null);
+            int rowIndex = grdDetails.Selection.GetSelectionRegion().GetRowsIndex()[0];
+            MessageBox.Show("Deleting "+ Row.Narrative, "Remove Row");
+            
+		    Row.Delete();  // This row is not removed, but marked for deletion.
+		    
+		    // I have to prevent the auto-generated code from attempting to access this deleted row.
+		    grdDetails.Selection.SelectRow(rowIndex, true);
+		    FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+		    ShowDetails(FPreviouslySelectedDetailRow);
+		    // Then I need to re-draw the grid, and enable controls as appropriate.
+		    grdDetails.Refresh();
+	        FPetraUtilsObject.SetChangedFlag();
+    		EnableControls();
+        }
+        
+        private void Analyse (Object sender, EventArgs e)
+        	
+        {
+        	
+        }
+        
+        private void UseTaxAccount(Object sender, EventArgs e)
+        	
+        {
+        	
         }
         
         private void UpdateCreditTerms(object sender, TPetraDateChangedEventArgs e)
@@ -125,9 +201,22 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, ARow.LedgerNumber, true, false, ActiveOnly, false);
             TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, ARow.LedgerNumber, true, false, ActiveOnly, false);
+    		EnableControls();
+        	
+        	if (ARow.IsAmountNull() || (FMainDS.AApDocument[0].IsExchangeRateToBaseNull() || FMainDS.AApDocument[0].ExchangeRateToBase == 0))
+        	{
+	            txtDetailBaseAmount.NumberValueDecimal = null;
+        	}
+        	else
+        	{
+	        	decimal DetailAmount = Convert.ToDecimal(ARow.Amount);
+	        	DetailAmount *= FMainDS.AApDocument[0].ExchangeRateToBase;
+	            txtDetailBaseAmount.NumberValueDecimal = DetailAmount;
+        	}
+        	
         }
         
-        private bool BatchBalanceOK()
+        private bool BatchBalancesOK()
         {
         	decimal DocumentBalance = FMainDS.AApDocument[0].TotalAmount;
         	
@@ -164,7 +253,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             // TODO: make sure that there are uptodate exchange rates
             
             // If the batch will not balance, I'll stop right here..
-            if (!BatchBalanceOK())
+            if (!BatchBalancesOK())
             	return;
 
             TVerificationResultCollection Verifications;

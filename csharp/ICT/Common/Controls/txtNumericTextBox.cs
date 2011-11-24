@@ -347,7 +347,7 @@ namespace Ict.Common.Controls
                         else
                         {
                             throw new ArgumentNullException(
-                                "The 'NumberValueDecimal' Property must not be set to if the 'NullValueAllowed' Property is false.");
+                                "The 'NumberValueDecimal' Property must not be set to null if the 'NullValueAllowed' Property is false.");
                         }
                     }
 
