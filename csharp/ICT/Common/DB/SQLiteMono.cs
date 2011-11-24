@@ -26,7 +26,7 @@ using System.IO;
 using System.Data;
 using System.Data.Common;
 using System.Data.Odbc;
-using System.Data.SQLite;
+using Mono.Data.Sqlite;
 using System.Collections;
 using Ict.Common;
 using Ict.Common.IO;
@@ -35,14 +35,13 @@ using System.Text.RegularExpressions;
 namespace Ict.Common.DB
 {
     /// <summary>
-    /// this class allows access to SQLite databases
+    /// this class allows access to SQLite databases on Linux, using Mono.Data.Sqlite
     /// </summary>
-    public class TSQLite : IDataBaseRDBMS
+    public class TSQLiteMono : IDataBaseRDBMS
     {
         /// <summary>
-        /// Create a SQLite connection using
-        /// the ADO.NET 2.0 Provider for SQLite
-        /// from http://system.data.sqlite.org/
+        /// Create a SQLite connection using Mono.Data.Sqlite.
+        /// Somehow this works on Linux, while TSqlite works on Windows
         /// </summary>
         /// <param name="AServer">The Database file</param>
         /// <param name="APort">the port that the db server is running on</param>
@@ -59,7 +58,8 @@ namespace Ict.Common.DB
             StateChangeEventHandler AStateChangeEventHandler)
         {
             ArrayList ExceptionList;
-            SQLiteConnection TheConnection = null;
+
+            SqliteConnection TheConnection = null;
 
             if (!File.Exists(AServer))
             {
@@ -81,7 +81,7 @@ namespace Ict.Common.DB
 
             if (AConnectionString == "")
             {
-                AConnectionString = "Data Source=" + AServer;
+                AConnectionString = "URI=file:" + AServer;
 
                 if (APassword.Length > 0)
                 {
@@ -92,7 +92,7 @@ namespace Ict.Common.DB
             try
             {
                 // Now try to connect to the DB
-                TheConnection = new SQLiteConnection(AConnectionString + APassword);
+                TheConnection = new SqliteConnection(AConnectionString + APassword);
             }
             catch (Exception exp)
             {
@@ -104,7 +104,7 @@ namespace Ict.Common.DB
 
             if (TheConnection != null)
             {
-                ((SQLiteConnection)TheConnection).StateChange += AStateChangeEventHandler;
+                TheConnection.StateChange += AStateChangeEventHandler;
             }
 
             return TheConnection;
@@ -118,9 +118,9 @@ namespace Ict.Common.DB
         /// <returns>true if this is an SQLiteException</returns>
         public bool LogException(Exception AException, ref string AErrorMessage)
         {
-            if (AException is SQLiteException)
+            if (AException is SqliteException)
             {
-                AErrorMessage = AErrorMessage + ((SQLiteException)AException).ErrorCode.ToString() +
+                AErrorMessage = AErrorMessage + ((SqliteException)AException).ErrorCode.ToString() +
                                 Environment.NewLine;
                 return true;
             }
@@ -183,22 +183,22 @@ namespace Ict.Common.DB
         /// <returns>Array of SQLiteParameter (converted from <paramref name="AParameterArray" />.</returns>
         public DbParameter[] ConvertOdbcParameters(DbParameter[] AParameterArray, ref string ASqlStatement)
         {
-            SQLiteParameter[] ReturnValue = new SQLiteParameter[AParameterArray.Length];
+            SqliteParameter[] ReturnValue = new SqliteParameter[AParameterArray.Length];
             OdbcParameter[] AParameterArrayOdbc;
 
-            if (!(AParameterArray is SQLiteParameter[]))
+            if (!(AParameterArray is SqliteParameter[]))
             {
                 AParameterArrayOdbc = (OdbcParameter[])AParameterArray;
 
                 for (int Counter = 0; Counter < AParameterArray.Length; Counter++)
                 {
-                    ReturnValue[Counter] = new SQLiteParameter();
+                    ReturnValue[Counter] = new SqliteParameter();
                     ReturnValue[Counter].Value = AParameterArrayOdbc[Counter].Value;
                 }
             }
             else
             {
-                ReturnValue = (SQLiteParameter[])AParameterArray;
+                ReturnValue = (SqliteParameter[])AParameterArray;
             }
 
             return ReturnValue;
@@ -224,19 +224,19 @@ namespace Ict.Common.DB
                 TLogging.Log("Query formatted for SQLite: " + ACommandText);
             }
 
-            SQLiteParameter[] SQLiteParametersArray = null;
+            SqliteParameter[] SQLiteParametersArray = null;
 
             if ((AParametersArray != null)
                 && (AParametersArray.Length > 0))
             {
                 if (AParametersArray != null)
                 {
-                    SQLiteParametersArray = (SQLiteParameter[])ConvertOdbcParameters(AParametersArray, ref ACommandText);
+                    SQLiteParametersArray = (SqliteParameter[])ConvertOdbcParameters(AParametersArray, ref ACommandText);
                 }
             }
 
-            ObjReturn = ((SQLiteConnection)AConnection).CreateCommand();
-            ((SQLiteCommand)ObjReturn).CommandText = ACommandText;
+            ObjReturn = ((SqliteConnection)AConnection).CreateCommand();
+            ((SqliteCommand)ObjReturn).CommandText = ACommandText;
 
             if (SQLiteParametersArray != null)
             {
@@ -256,7 +256,7 @@ namespace Ict.Common.DB
         /// <returns></returns>
         public IDbDataAdapter NewAdapter()
         {
-            IDbDataAdapter TheAdapter = new SQLiteDataAdapter();
+            IDbDataAdapter TheAdapter = new SqliteDataAdapter();
 
             return TheAdapter;
         }
@@ -275,7 +275,7 @@ namespace Ict.Common.DB
             Int32 AMaxRecords,
             string ADataTableName)
         {
-            ((SQLiteDataAdapter)TheAdapter).Fill(AFillDataSet, AStartRecord, AMaxRecords, ADataTableName);
+            ((SqliteDataAdapter)TheAdapter).Fill(AFillDataSet, AStartRecord, AMaxRecords, ADataTableName);
         }
 
         /// <summary>
@@ -291,7 +291,7 @@ namespace Ict.Common.DB
             Int32 AStartRecord,
             Int32 AMaxRecords)
         {
-            ((SQLiteDataAdapter)TheAdapter).Fill(AFillDataTable);
+            ((SqliteDataAdapter)TheAdapter).Fill(AFillDataTable);
         }
 
         /// <summary>
@@ -323,7 +323,7 @@ namespace Ict.Common.DB
         public System.Int64 GetNextSequenceValue(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase, IDbConnection AConnection)
         {
             string stmt = "INSERT INTO " + ASequenceName + " VALUES(NULL, -1);";
-            SQLiteCommand cmd = new SQLiteCommand(stmt, (SQLiteConnection)AConnection);
+            SqliteCommand cmd = new SqliteCommand(stmt, (SqliteConnection)AConnection);
 
             cmd.ExecuteNonQuery();
             return GetCurrentSequenceValue(ASequenceName, ATransaction, ADatabase, AConnection);
@@ -341,7 +341,7 @@ namespace Ict.Common.DB
         public System.Int64 GetCurrentSequenceValue(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase, IDbConnection AConnection)
         {
             string stmt = "SELECT MAX(sequence) FROM " + ASequenceName + ";";
-            SQLiteCommand cmd = new SQLiteCommand(stmt, (SQLiteConnection)AConnection);
+            SqliteCommand cmd = new SqliteCommand(stmt, (SqliteConnection)AConnection);
 
             return Convert.ToInt64(cmd.ExecuteScalar());
         }

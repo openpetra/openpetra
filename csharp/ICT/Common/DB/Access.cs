@@ -439,7 +439,14 @@ namespace Ict.Common.DB
             }
             else if (FDbType == TDBType.SQLite)
             {
-                FDataBaseRDBMS = (IDataBaseRDBMS) new TSQLite();
+                if (Utilities.DetermineExecutingOS() == TExecutingOSEnum.eosWinNTOrLater)
+                {
+                    FDataBaseRDBMS = (IDataBaseRDBMS) new TSQLite();
+                }
+                else
+                {
+                    FDataBaseRDBMS = (IDataBaseRDBMS) new TSQLiteMono();
+                }
             }
             else if (FDbType == TDBType.ProgressODBC)
             {
