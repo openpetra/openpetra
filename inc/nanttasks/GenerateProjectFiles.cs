@@ -214,9 +214,18 @@ namespace Ict.Tools.NAntTasks
             FProjectGUIDs = ReadProjectGUIDs(FGUIDMapFilename);
 
             string[] IDEs = FDevEnvironments.Split(new char[] { ',' });
+            List <string>IDEsDone = new List <string>();
 
             foreach (string ide in IDEs)
             {
+                if (IDEsDone.Contains(ide))
+                {
+                    // we force to run sharpdevelop4 (devenv-msbuild), but don't want to run it twice if it is part of the user's projectfiles.templates-list
+                    continue;
+                }
+
+                IDEsDone.Add(ide);
+
                 if (!Directory.Exists(FDirProjectFiles + Path.DirectorySeparatorChar + ide))
                 {
                     Directory.CreateDirectory(FDirProjectFiles + Path.DirectorySeparatorChar + ide);
