@@ -1,10 +1,6 @@
 <?xml version="1.0"?>
 <project name="Ict.Petra.Server-Build">
 
-<property name="Namespace" value="Ict.Petra.Server" />
-
-<property name="RunCsDepend" value="true" overwrite="true"/>
-
 <target name="custclean">
   <delete>
     <fileset basedir="${dir.root}/csharp/ICT/Petra/Server/lib/data">
@@ -12,7 +8,6 @@
     </fileset>
   </delete>
 </target>
-
 
 <target name="custdepend">
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/>
