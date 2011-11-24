@@ -107,6 +107,7 @@ using Ict.Petra.Server.MSysMan.ImportExport.WebConnectors;
 
 #region ManualCode
 using Ict.Common.Verification;
+using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Shared.MSysMan;
 #endregion ManualCode
