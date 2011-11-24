@@ -505,20 +505,20 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                 col.ColumnName = colName;
             }
         }
-        
-		/// <summary>
-		/// Commits the given SampleDataConstructorTDS TDS to the database
-		/// </summary>
-		/// <remarks>
-		/// Why did I have to spend _several hours_ trying to get into how OpenPetra does things
-		/// just in order to add this one line?
-		/// </remarks>
-		/// <param name="dataTDS"></param>
-		/// <param name="AVerificationResult"></param>
-		/// <returns></returns>
+
+        /// <summary>
+        /// Commits the given SampleDataConstructorTDS TDS to the database
+        /// </summary>
+        /// <remarks>
+        /// Why did I have to spend _several hours_ trying to get into how OpenPetra does things
+        /// just in order to add this one line?
+        /// </remarks>
+        /// <param name="dataTDS"></param>
+        /// <param name="AVerificationResult"></param>
+        /// <returns></returns>
         public static bool SaveTDS(SampleDataConstructorTDS dataTDS, out TVerificationResultCollection AVerificationResult)
         {
-             return SampleDataConstructorTDSAccess.SubmitChanges(dataTDS, out AVerificationResult) == TSubmitChangesResult.scrOK;
+            return SampleDataConstructorTDSAccess.SubmitChanges(dataTDS, out AVerificationResult) == TSubmitChangesResult.scrOK;
         }
     }
 }

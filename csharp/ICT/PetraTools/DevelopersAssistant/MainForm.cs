@@ -1222,18 +1222,27 @@ namespace Ict.Tools.DevelopersAssistant
         private void btnBrowseBazaar_Click(object sender, EventArgs e)
         {
             string x86 = Environment.GetEnvironmentVariable("ProgramFiles(x86)", EnvironmentVariableTarget.Process);
-            if (x86 == null) x86 = Environment.GetEnvironmentVariable("ProgramFiles", EnvironmentVariableTarget.Process);
+
+            if (x86 == null)
+            {
+                x86 = Environment.GetEnvironmentVariable("ProgramFiles", EnvironmentVariableTarget.Process);
+            }
 
             OpenFileDialog dlg = new OpenFileDialog();
             dlg.Title = "Browse for the Bazaar Explorer Application";
             dlg.FileName = "bzrw.exe";
             dlg.Filter = "Applications|*.exe";
             dlg.CheckFileExists = true;
+
             if (x86 != null)
             {
                 dlg.InitialDirectory = x86;
             }
-            if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.Cancel) return;
+
+            if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
+            {
+                return;
+            }
 
             txtBazaarPath.Text = dlg.FileName;
             linkLabelBazaar.Enabled = true;
@@ -1277,11 +1286,24 @@ namespace Ict.Tools.DevelopersAssistant
             {
                 // We will try and find it
                 string x86 = Environment.GetEnvironmentVariable("ProgramFiles(x86)", EnvironmentVariableTarget.Process);
-                if (x86 == null) x86 = Environment.GetEnvironmentVariable("ProgramFiles", EnvironmentVariableTarget.Process);
-                if (x86 == null) return;
+
+                if (x86 == null)
+                {
+                    x86 = Environment.GetEnvironmentVariable("ProgramFiles", EnvironmentVariableTarget.Process);
+                }
+
+                if (x86 == null)
+                {
+                    return;
+                }
 
                 string[] tryPath = Directory.GetFiles(x86, "bzrw.exe", SearchOption.AllDirectories);
-                if (tryPath == null || tryPath.Length < 1) return;
+
+                if ((tryPath == null) || (tryPath.Length < 1))
+                {
+                    return;
+                }
+
                 txtBazaarPath.Text = tryPath[0];
                 linkLabelBazaar.Enabled = true;
             }
