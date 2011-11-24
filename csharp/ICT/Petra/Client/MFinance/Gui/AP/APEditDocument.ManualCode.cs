@@ -43,6 +43,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
     	{
     	}
     	
+    	private void RunOnceOnActivationManual()
+    	{
+    		
+    	}
+    		
     	private void EnableControls()
     	{
     		// I need to make everything read-only if this document was already posted.
@@ -71,7 +76,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 				txtDetailItemRef.Enabled = false;
 				txtDetailAmount.Enabled = false;
 				cmbDetailCostCentreCode.Enabled = false;
-				btnUseTaxAccountCostCentre.Enabled = false;
+				btnUseTaxAccount.Enabled = false;
 				txtDetailBaseAmount.Enabled = false;
 				cmbDetailAccountCode.Enabled = false;
     		}

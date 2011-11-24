@@ -71,7 +71,7 @@ RootNode:
             Controls: [btnAddDetail, btnRemoveDetail, btnAnalysisAttributes]
         grdDetails:
             Dock: Fill
-            Columns: [AApDocumentDetail.Amount, AApDocumentDetail.Narrative, AApDocumentDetail.ItemRef]
+            Columns: [AApDocumentDetail.Amount, AApDocumentDetail.Narrative, AApDocumentDetail.ItemRef, AApDocumentDetail.AccountCode]
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom
@@ -79,8 +79,8 @@ RootNode:
                 Row0: [txtDetailNarrative]
                 Row1: [txtDetailItemRef]
                 Row2: [txtDetailAmount, cmbDetailCostCentreCode]
-                Row2a: [Empty1, btnUseTaxAccountCostCentre]
                 Row3: [txtDetailBaseAmount, cmbDetailAccountCode]
+                Row4: [Empty1, btnUseTaxAccount]
         txtDetailNarrative:
             ColSpan: 2
             Width: 350
@@ -105,8 +105,8 @@ RootNode:
 #            ReadOnly: true
         cmbDetailCostCentreCode: {Label=C&ost Centre, List=UserDefinedList}
         cmbDetailAccountCode: {Label=Accou&nt, List=UserDefinedList}
-        btnUseTaxAccountCostCentre:
-            Label: Use Ta&x Acct+CC
+        btnUseTaxAccount:
+            Label: Use Ta&x Acct
             Action: actUseTaxAccount
         btnAddDetail:
             Width: 100
