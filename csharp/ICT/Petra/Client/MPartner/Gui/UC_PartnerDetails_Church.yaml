@@ -37,6 +37,7 @@ RootNode:
         
         txtApproximateSize:
             Width: 45
+            Format: Integer
             
         chkMapOnFile:
             CheckBoxAttachedLabel: right
