@@ -516,6 +516,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
         /// <param name="dataTDS"></param>
         /// <param name="AVerificationResult"></param>
         /// <returns></returns>
+        [RequireModulePermission("SYSMAN")]
         public static bool SaveTDS(SampleDataConstructorTDS dataTDS, out TVerificationResultCollection AVerificationResult)
         {
             return SampleDataConstructorTDSAccess.SubmitChanges(dataTDS, out AVerificationResult) == TSubmitChangesResult.scrOK;

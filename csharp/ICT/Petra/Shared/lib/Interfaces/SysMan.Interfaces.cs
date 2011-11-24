@@ -343,10 +343,9 @@ namespace Ict.Petra.Shared.Interfaces.MSysMan.ImportExport.WebConnectors
         System.String ExportAllTables();
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector)</summary>
         System.Boolean ResetDatabase(System.String AZippedNewDatabaseData);
-        bool ResetDatabase(string AZippedNewDatabaseData);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector)</summary>
-        bool SaveTDS(SampleDataConstructorTDS dataTDS,
-                     out TVerificationResultCollection AVerificationResult);
+        System.Boolean SaveTDS(SampleDataConstructorTDS dataTDS,
+                               out TVerificationResultCollection AVerificationResult);
     }
 
 }

@@ -1787,9 +1787,10 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.ImportExport.WebConnectors
         }
 
         /// generated method from connector
-        public bool SaveTDS(SampleDataConstructorTDS dataTDS,
-                            out TVerificationResultCollection AVerificationResult)
+        public System.Boolean SaveTDS(SampleDataConstructorTDS dataTDS,
+                                      out TVerificationResultCollection AVerificationResult)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector), "SaveTDS", ";SAMPLEDATACONSTRUCTORTDS;TVERIFICATIONRESULTCOLLECTION;");
             return Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector.SaveTDS(dataTDS, out AVerificationResult);
         }
     }
