@@ -36,7 +36,7 @@ using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Npgsql;
 
-namespace Ict.Common.DB.Testing
+namespace Ict.Common.Data.Testing
 {
     ///  This is a testing program for Ict.Common.DB.dll
     [TestFixture]

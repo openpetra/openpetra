@@ -24,7 +24,6 @@
 using System;
 using Ict.Common;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.RemotedExceptions;
 using Ict.Petra.Shared.Security;
 
 namespace Ict.Petra.Shared.MPartner

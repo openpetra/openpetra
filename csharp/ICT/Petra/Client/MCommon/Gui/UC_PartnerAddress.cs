@@ -30,6 +30,7 @@ using System.Data;
 using System.Resources;
 using Ict.Common;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Formatting;
 using Ict.Petra.Client.MCommon;

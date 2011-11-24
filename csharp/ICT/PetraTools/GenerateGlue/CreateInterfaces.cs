@@ -32,6 +32,7 @@ using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory;
 using NamespaceHierarchy;
 using Ict.Common;
+using Ict.Common.IO;
 using Ict.Tools.CodeGeneration;
 
 namespace GenerateSharedCode
@@ -55,11 +56,16 @@ public class CreateInterfaces : AutoGenerationWriter
         {
             foreach (TypeDeclaration t in CSFile.GetClasses())
             {
-                foreach (ICSharpCode.NRefactory.Ast.TypeReference ti in t.BaseTypes)
+                string FullClassNameWithNamespace = CSFile.GetFullClassNameWithNamespace(t);
+
+                if (FullClassNameWithNamespace.Contains("Connector"))
                 {
-                    if (ti.Type.StartsWith("I"))
+                    foreach (ICSharpCode.NRefactory.Ast.TypeReference ti in t.BaseTypes)
                     {
-                        Result.Add(ti.Type, CSFile.GetFullClassNameWithNamespace(t));
+                        if (ti.Type.StartsWith("I"))
+                        {
+                            Result.Add(ti.Type, CSFile.GetFullClassNameWithNamespace(t));
+                        }
                     }
                 }
             }
@@ -698,6 +704,7 @@ public class CreateInterfaces : AutoGenerationWriter
         WriteLine("using System.Data;");
         WriteLine("using Ict.Common;");
         WriteLine("using Ict.Common.Verification;");
+        WriteLine("using Ict.Common.Remoting.Shared;");
 
         foreach (TNamespace sn in tn.Children)
         {

@@ -290,7 +290,7 @@ namespace Ict.Tools.PatchTool
                     }
 
                     // unzip the file
-                    BZip2.Decompress(System.IO.File.OpenRead(filename), System.IO.File.OpenWrite(TargetFile));
+                    BZip2.Decompress(System.IO.File.OpenRead(filename), System.IO.File.OpenWrite(TargetFile), true);
                 }
                 else if ((action == "patch") && File.Exists(TargetFile))
                 {

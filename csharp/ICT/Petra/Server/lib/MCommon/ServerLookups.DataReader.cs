@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,6 +27,8 @@ using Ict.Common.DB;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Verification;
+using Ict.Petra.Shared;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Server.MFinance.AP.Data.Access;
@@ -244,6 +246,9 @@ namespace Ict.Petra.Server.MCommon.DataReader
                         if (AFeesPayableAccess.SubmitChanges((AFeesPayableTable)ASubmitTable, SubmitChangesTransaction,
                                 out SingleVerificationResultCollection))
                         {
+                            TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                                TCacheableFinanceTablesEnum.FeesPayableList.ToString());
+
                             SubmissionResult = TSubmitChangesResult.scrOK;
                         }
                         else
@@ -256,6 +261,9 @@ namespace Ict.Petra.Server.MCommon.DataReader
                         if (AFeesReceivableAccess.SubmitChanges((AFeesReceivableTable)ASubmitTable, SubmitChangesTransaction,
                                 out SingleVerificationResultCollection))
                         {
+                            TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                                TCacheableFinanceTablesEnum.FeesReceivableList.ToString());
+
                             SubmissionResult = TSubmitChangesResult.scrOK;
                         }
                         else

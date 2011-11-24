@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       timop, christophert
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,6 +26,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
+using System.Windows.Forms;
 
 using Ict.Common;
 using Ict.Common.DB;
@@ -41,6 +42,7 @@ using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MFinance.Common;
+using Ict.Petra.Server.MFinance.Cacheable;
 
 namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 {
@@ -336,20 +338,114 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
+        /// Loads all available years with gift data into a table
+        /// To be used by a combobox to select the financial year
+        ///
+        /// </summary>
+        /// <returns>DataTable</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static DataTable GetAvailableGiftYears(Int32 ALedgerNumber, out String ADisplayMember, out String AValueMember)
+        {
+            ADisplayMember = "YearDate";
+            AValueMember = "YearNumber";
+            DataTable tab = new DataTable();
+            tab.Columns.Add(AValueMember, typeof(System.Int32));
+            tab.Columns.Add(ADisplayMember, typeof(String));
+
+            System.Type typeofTable = null;
+            TCacheable CachePopulator = new TCacheable();
+            ALedgerTable LedgerTable = (ALedgerTable)CachePopulator.GetCacheableTable(TCacheableFinanceTablesEnum.LedgerDetails,
+                "",
+                false,
+                ALedgerNumber,
+                out typeofTable);
+
+            AAccountingPeriodTable AccountingPeriods = (AAccountingPeriodTable)CachePopulator.GetCacheableTable(
+                TCacheableFinanceTablesEnum.AccountingPeriodList,
+                "",
+                false,
+                ALedgerNumber,
+                out typeofTable);
+
+            AAccountingPeriodRow currentYearEndPeriod =
+                (AAccountingPeriodRow)AccountingPeriods.Rows.Find(new object[] { ALedgerNumber, LedgerTable[0].NumberOfAccountingPeriods });
+            DateTime currentYearEnd = currentYearEndPeriod.PeriodEndDate;
+
+            TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction();
+            try
+            {
+                // add the years, which are retrieved by reading from the gift batch tables
+                string sql =
+                    String.Format("SELECT DISTINCT {0} AS availYear " + " FROM PUB_{1} " + " WHERE {2} = " +
+                        ALedgerNumber.ToString() + " ORDER BY 1 DESC",
+                        AGiftBatchTable.GetBatchYearDBName(),
+                        AGiftBatchTable.GetTableDBName(),
+                        AGiftBatchTable.GetLedgerNumberDBName());
+
+                DataTable BatchYearTable = DBAccess.GDBAccessObj.SelectDT(sql, "BatchYearTable", ReadTransaction);
+
+                foreach (DataRow row in BatchYearTable.Rows)
+                {
+                    DataRow resultRow = tab.NewRow();
+                    resultRow[0] = row[0];
+                    resultRow[1] = currentYearEnd.AddYears(-1 * (LedgerTable[0].CurrentFinancialYear - Convert.ToInt32(row[0]))).ToString("yyyy");
+                    tab.Rows.Add(resultRow);
+                }
+            }
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+            return tab;
+        }
+
+        /// <summary>
         /// loads a list of batches for the given ledger
         /// also get the ledger for the base currency etc
-        /// TODO: limit to period, limit to batch status, etc
         /// </summary>
         /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchStatus"></param>
+        /// <param name="AYear">if -1, the year will be ignored</param>
+        /// <param name="APeriod">if AYear is -1 or period is -1, the period will be ignored.
+        /// if APeriod is 0 and the current year is selected, then the current and the forwarding periods are used</param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GiftBatchTDS LoadAGiftBatch(Int32 ALedgerNumber)
+        public static GiftBatchTDS LoadAGiftBatch(Int32 ALedgerNumber, string ABatchStatus, Int32 AYear, Int32 APeriod)
         {
             GiftBatchTDS MainDS = new GiftBatchTDS();
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
             ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
-            AGiftBatchAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+
+            StringCollection templateOperators = new StringCollection();
+
+            AGiftBatchRow templateRow = MainDS.AGiftBatch.NewRowTyped(false);
+            templateRow.LedgerNumber = ALedgerNumber;
+
+            if ((ABatchStatus != null) && (ABatchStatus.Length > 0))
+            {
+                templateRow.BatchStatus = ABatchStatus;
+                templateOperators.Add("=");
+            }
+
+            if (AYear != -1)
+            {
+                templateRow.BatchYear = AYear;
+                templateOperators.Add("=");
+
+                if ((APeriod == 0) && (AYear == MainDS.ALedger[0].CurrentFinancialYear))
+                {
+                    templateRow.BatchPeriod = MainDS.ALedger[0].CurrentPeriod;
+                    templateOperators.Add(">=");
+                }
+                else if (APeriod != -1)
+                {
+                    templateRow.BatchPeriod = APeriod;
+                    templateOperators.Add("=");
+                }
+            }
+
+            AGiftBatchAccess.LoadUsingTemplate(MainDS, templateRow, templateOperators, null, Transaction, null, 0, 0);
             DBAccess.GDBAccessObj.RollbackTransaction();
             return MainDS;
         }
@@ -875,9 +971,227 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             AGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
             AMotivationDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
 
+            // for calculation of admin fees
+            AMotivationDetailFeeAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+            AFeesPayableAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+            AFeesReceivableAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+            AProcessedFeeAccess.LoadViaAGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+
             DBAccess.GDBAccessObj.RollbackTransaction();
 
             return MainDS;
+        }
+
+        /// <summary>
+        /// calculate the admin fee for a given amount.
+        /// public so that it can be tested by NUnit tests.
+        /// </summary>
+        /// <param name="MainDS"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AFeeCode"></param>
+        /// <param name="AGiftAmount"></param>
+        /// <param name="AVerificationResult"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-3")]
+        public static decimal CalculateAdminFee(GiftBatchTDS MainDS,
+            Int32 ALedgerNumber,
+            string AFeeCode,
+            decimal AGiftAmount,
+            out TVerificationResultCollection AVerificationResult
+            )
+        {
+            //Amount to return
+            decimal FeeAmount = 0;
+
+            decimal GiftPercentageAmount;
+            decimal ChargeAmount;
+            string ChargeOption;
+
+            //Error handling
+            string ErrorContext = String.Empty;
+            string ErrorMessage = String.Empty;
+            //Set default type as non-critical
+            TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
+
+            AVerificationResult = null;
+
+            try
+            {
+                AFeesPayableRow feePayableRow = (AFeesPayableRow)MainDS.AFeesPayable.Rows.Find(new object[] { ALedgerNumber, AFeeCode });
+
+                if (feePayableRow == null)
+                {
+                    AFeesReceivableRow feeReceivableRow = (AFeesReceivableRow)MainDS.AFeesReceivable.Rows.Find(new object[] { ALedgerNumber, AFeeCode });
+
+                    if (feeReceivableRow == null)
+                    {
+                        ErrorContext = "Calculate Admin Fee";
+                        ErrorMessage = String.Format(Catalog.GetString("The Ledger no.: {0} or Fee Code: {1} does not exist."),
+                            ALedgerNumber,
+                            AFeeCode
+                            );
+                        ErrorType = TResultSeverity.Resv_Noncritical;
+                        throw new System.ArgumentException(ErrorMessage);
+                    }
+                    else
+                    {
+                        GiftPercentageAmount = feeReceivableRow.ChargePercentage * AGiftAmount / 100;
+                        ChargeOption = feeReceivableRow.ChargeOption.ToUpper();
+                        ChargeAmount = feeReceivableRow.ChargeAmount;
+                    }
+                }
+                else
+                {
+                    GiftPercentageAmount = feePayableRow.ChargePercentage * AGiftAmount / 100;
+                    ChargeOption = feePayableRow.ChargeOption.ToUpper();
+                    ChargeAmount = feePayableRow.ChargeAmount;
+                }
+
+                switch (ChargeOption)
+                {
+                    case MFinanceConstants.ADMIN_CHARGE_OPTION_FIXED:
+
+                        if (AGiftAmount >= 0)
+                        {
+                            FeeAmount = ChargeAmount;
+                        }
+                        else
+                        {
+                            FeeAmount = -ChargeAmount;
+                        }
+
+                        break;
+
+                    case MFinanceConstants.ADMIN_CHARGE_OPTION_MIN:
+
+                        if (AGiftAmount >= 0)
+                        {
+                            if (ChargeAmount >= GiftPercentageAmount)
+                            {
+                                FeeAmount = ChargeAmount;
+                            }
+                            else
+                            {
+                                FeeAmount = GiftPercentageAmount;
+                            }
+                        }
+                        else
+                        {
+                            if (-ChargeAmount <= GiftPercentageAmount)
+                            {
+                                FeeAmount = -ChargeAmount;
+                            }
+                            else
+                            {
+                                FeeAmount = GiftPercentageAmount;
+                            }
+                        }
+
+                        break;
+
+                    case MFinanceConstants.ADMIN_CHARGE_OPTION_MAX:
+
+                        if (AGiftAmount >= 0)
+                        {
+                            if (ChargeAmount <= GiftPercentageAmount)
+                            {
+                                FeeAmount = ChargeAmount;
+                            }
+                            else
+                            {
+                                FeeAmount = GiftPercentageAmount;
+                            }
+                        }
+                        else
+                        {
+                            if (-ChargeAmount >= GiftPercentageAmount)
+                            {
+                                FeeAmount = -ChargeAmount;
+                            }
+                            else
+                            {
+                                FeeAmount = GiftPercentageAmount;
+                            }
+                        }
+
+                        break;
+
+                    case MFinanceConstants.ADMIN_CHARGE_OPTION_PERCENT:
+                        FeeAmount = GiftPercentageAmount;
+                        break;
+
+                    default:
+                        ErrorContext = "Calculate Admin Fee";
+                        ErrorMessage =
+                            String.Format(Catalog.GetString("Unexpected Fee Payable/Receivable Charge Option in Ledger: {0} and Fee Code: '{1}'."),
+                                ALedgerNumber,
+                                AFeeCode
+                                );
+                        ErrorType = TResultSeverity.Resv_Noncritical;
+                        throw new System.InvalidOperationException(ErrorMessage);
+                }
+            }
+            catch (ArgumentException ex)
+            {
+                AVerificationResult.Add(new TVerificationResult(ErrorContext, ex.Message, ErrorType));
+            }
+            catch (InvalidOperationException ex)
+            {
+                AVerificationResult.Add(new TVerificationResult(ErrorContext, ex.Message, ErrorType));
+            }
+            catch (Exception ex)
+            {
+                ErrorContext = "Calculate Admin Fee";
+                ErrorMessage = String.Format(Catalog.GetString("Unknown error while calculating admin fee for Ledger: {0} and Fee Code: {1}" +
+                        Environment.NewLine + Environment.NewLine + ex.ToString()),
+                    ALedgerNumber,
+                    AFeeCode
+                    );
+                ErrorType = TResultSeverity.Resv_Critical;
+                AVerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
+            }
+
+            // calculate the admin fee for the specific amount and admin fee. see gl4391.p
+
+            return FeeAmount;
+        }
+
+        private static void AddToFeeTotals(GiftBatchTDS AMainDS,
+            AGiftDetailRow AGiftDetailRow,
+            string AFeeCode,
+            decimal AFeeAmount,
+            int APostingPeriod)
+        {
+            // TODO CT
+            // see Add_To_Fee_Totals in gr1210.p
+
+            /* Get the record for the totals of the processed fees. */
+            AProcessedFeeTable ProcessedFeeDataTable = AMainDS.AProcessedFee;
+            AProcessedFeeRow ProcessedFeeRow =
+                (AProcessedFeeRow)ProcessedFeeDataTable.Rows.Find(new object[] { AGiftDetailRow.LedgerNumber,
+                                                                                 AFeeCode,
+                                                                                 AGiftDetailRow.BatchNumber,
+                                                                                 AGiftDetailRow.GiftTransactionNumber,
+                                                                                 AGiftDetailRow.DetailNumber });
+
+            if (ProcessedFeeRow == null)
+            {
+                ProcessedFeeRow = (AProcessedFeeRow)ProcessedFeeDataTable.NewRowTyped(false);
+                ProcessedFeeRow.LedgerNumber = AGiftDetailRow.LedgerNumber;
+                ProcessedFeeRow.BatchNumber = AGiftDetailRow.BatchNumber;
+                ProcessedFeeRow.GiftTransactionNumber = AGiftDetailRow.GiftTransactionNumber;
+                ProcessedFeeRow.DetailNumber = AGiftDetailRow.DetailNumber;
+                ProcessedFeeRow.FeeCode = AFeeCode;
+                ProcessedFeeRow.PeriodicAmount = 0;
+
+                ProcessedFeeDataTable.Rows.Add(ProcessedFeeRow);
+            }
+
+            ProcessedFeeRow.CostCentreCode = AGiftDetailRow.CostCentreCode;
+            ProcessedFeeRow.PeriodNumber = APostingPeriod;
+
+            /* Add the amount to the existing total. */
+            ProcessedFeeRow.PeriodicAmount += AFeeAmount;
         }
 
         /// <summary>
@@ -894,6 +1208,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             GiftBatchTDS MainDS = LoadGiftBatchForPosting(ALedgerNumber, ABatchNumber);
 
+            // TODO: make sure that MainDS.AGiftBatch[0].BatchPeriod has the correct and valid value
+
             foreach (GiftBatchTDSAGiftDetailRow giftDetail in MainDS.AGiftDetail.Rows)
             {
                 // find motivation detail
@@ -907,13 +1223,27 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 giftDetail.AccountCode = motivationRow.AccountCode;
 
                 // TODO deal with different currencies; at the moment assuming base currency
-                giftDetail.GiftAmount = giftDetail.GiftTransactionAmount;
+                //giftDetail.GiftAmount = giftDetail.GiftTransactionAmount;
+                giftDetail.GiftAmount = giftDetail.GiftTransactionAmount * MainDS.AGiftBatch[0].ExchangeRateToBase;
+
+                // get all motivation detail fees for this gift
+                foreach (AMotivationDetailFeeRow motivationFeeRow in MainDS.AMotivationDetailFee.Rows)
+                {
+                    if ((motivationFeeRow.MotivationDetailCode == motivationRow.MotivationDetailCode)
+                        && (motivationFeeRow.MotivationGroupCode == motivationRow.MotivationGroupCode))
+                    {
+                        decimal FeeAmount = CalculateAdminFee(MainDS,
+                            ALedgerNumber,
+                            motivationFeeRow.FeeCode,
+                            giftDetail.GiftAmount,
+                            out AVerifications);
+                        AddToFeeTotals(MainDS, giftDetail, motivationFeeRow.FeeCode, FeeAmount, MainDS.AGiftBatch[0].BatchPeriod);
+                    }
+                }
             }
 
             // TODO if already posted, fail
             MainDS.AGiftBatch[0].BatchStatus = MFinanceConstants.BATCH_POSTED;
-
-            TDBTransaction SubmitChangesTransaction = null;
 
             try
             {
@@ -935,22 +1265,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     }
                     else
                     {
-                        SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
-                        // store GiftBatch and GiftDetails to database
-                        if (AGiftBatchAccess.SubmitChanges(MainDS.AGiftBatch, SubmitChangesTransaction,
-                                out AVerifications))
-                        {
-                            if (AGiftAccess.SubmitChanges(MainDS.AGift, SubmitChangesTransaction,
-                                    out AVerifications))
-                            {
-                                // save changed motivation details, costcentre etc to database
-                                if (AGiftDetailAccess.SubmitChanges(MainDS.AGiftDetail, SubmitChangesTransaction, out AVerifications))
-                                {
-                                    ResultValue = true;
-                                }
-                            }
-                        }
+                        ResultValue = (GiftBatchTDSAccess.SubmitChanges(MainDS, out AVerifications) == TSubmitChangesResult.scrOK);
                     }
                 }
             }
@@ -961,43 +1276,28 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 TLogging.Log("after submitchanges: exception " + e.Message);
 
-                if (SubmitChangesTransaction != null)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-
                 throw new Exception(e.ToString() + " " + e.Message);
-            }
-
-            if (ResultValue)
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
-            }
-            else
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
             }
 
             return ResultValue;
         }
 
         /// <summary>
-        /// export all the Data of the batches array list to a String
+        /// export all the Data of the batches matching the parameters to a String
         /// </summary>
-        /// <param name="batches">Arraylist containing the batch numbers of the gift batches to export</param>
         /// <param name="requestParams">Hashtable containing the given params </param>
         /// <param name="exportString">Big parts of the export file as a simple String</param>
         /// <param name="AMessages">Additional messages to display in a messagebox</param>
-        /// <returns>false if not completed</returns>
+        /// <returns>number of exported batches</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static bool ExportAllGiftBatchData(ref ArrayList batches,
+        static public Int32 ExportAllGiftBatchData(
             Hashtable requestParams,
             out String exportString,
             out TVerificationResultCollection AMessages)
         {
             TGiftExporting exporting = new TGiftExporting();
 
-            return exporting.ExportAllGiftBatchData(ref batches, requestParams, out exportString, out AMessages);
+            return exporting.ExportAllGiftBatchData(requestParams, out exportString, out AMessages);
         }
 
         /// <summary>

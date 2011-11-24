@@ -28,6 +28,7 @@ using System.Threading;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Common.Data;
 using Ict.Common;
+using Ict.Common.Remoting.Shared;
 
 namespace Ict.Petra.Shared
 {
@@ -81,8 +82,11 @@ namespace Ict.Petra.Shared
     /// settings is probably not quite finished yet (due to time constraints).
     ///
     /// </summary>
-    public class TCacheableTablesManager : MarshalByRefObject
+    public class TCacheableTablesManager : MarshalByRefObject, ICacheableTablesManager
     {
+        /// a static instance for this class
+        public static TCacheableTablesManager GCacheableTablesManager;
+
         /// <summary>Holds all cached tables (typed/untyped DataTable), plus one Typed DataTable for the 'Table of Contents' of the Cache</summary>
         private static CacheableTablesTDS UDataCacheDataSet;
 
@@ -114,7 +118,46 @@ namespace Ict.Petra.Shared
         {
             get
             {
-                return Get_CacheSize();
+                Int32 ReturnValue;
+                int Counter;
+
+                ReturnValue = 0;
+                try
+                {
+#if DEBUGMODE
+                    if (TLogging.DL >= 10)
+                    {
+                        TLogging.Log(this.GetType().FullName + ".get_CacheSize waiting for a ReaderLock...");
+                    }
+#endif
+
+                    // Try to get a read lock [We don't specify a timeout because reading the DB tables into the cached table should be fairly quick]
+                    FReadWriteLock.AcquireReaderLock(SharedConstants.THREADING_WAIT_INFINITE);
+#if DEBUGMODE
+                    if (TLogging.DL >= 10)
+                    {
+                        TLogging.Log(this.GetType().FullName + ".get_CacheSize grabbed a ReaderLock.");
+                    }
+#endif
+
+                    // Add up all TableSizes
+                    for (Counter = 0; Counter <= UDataCacheContentsDT.Rows.Count - 1; Counter += 1)
+                    {
+                        ReturnValue = ReturnValue + UDataCacheContentsDT[Counter].TableSize;
+                    }
+                }
+                finally
+                {
+                    // Release read lock
+                    FReadWriteLock.ReleaseReaderLock();
+#if DEBUGMODE
+                    if (TLogging.DL >= 10)
+                    {
+                        TLogging.Log(this.GetType().FullName + ".get_CacheSize released the ReaderLock.");
+                    }
+#endif
+                }
+                return ReturnValue;
             }
         }
 
@@ -123,7 +166,42 @@ namespace Ict.Petra.Shared
         {
             get
             {
-                return Get_CachedTablesCount();
+                Int32 ReturnValue;
+
+                try
+                {
+#if DEBUGMODE
+                    if (TLogging.DL >= 10)
+                    {
+                        TLogging.Log(this.GetType().FullName + ".get_CachedTablesCount waiting for a ReaderLock...");
+                    }
+#endif
+
+                    // Try to get a read lock [We don't specify a timeout because reading the DB tables into the cached table should be fairly quick]
+                    FReadWriteLock.AcquireReaderLock(SharedConstants.THREADING_WAIT_INFINITE);
+#if DEBUGMODE
+                    if (TLogging.DL >= 10)
+                    {
+                        TLogging.Log(this.GetType().FullName + ".get_CachedTablesCount grabbed a ReaderLock.");
+                    }
+#endif
+
+                    // Return the number of DataTables in UDataCacheDataSet minus 1 (to account
+                    // for the Contents Table)
+                    ReturnValue = UDataCacheDataSet.Tables.Count - 1;
+                }
+                finally
+                {
+                    // Release read lock
+                    FReadWriteLock.ReleaseReaderLock();
+#if DEBUGMODE
+                    if (TLogging.DL >= 10)
+                    {
+                        TLogging.Log(this.GetType().FullName + ".get_CachedTablesCount released the ReaderLock.");
+                    }
+#endif
+                }
+                return ReturnValue;
             }
         }
 
@@ -132,12 +210,13 @@ namespace Ict.Petra.Shared
         {
             get
             {
-                return Get_MaxCacheSize();
+                return UMaxCacheSize;
             }
 
             set
             {
-                Set_MaxCacheSize(value);
+                UMaxCacheSize = value;
+                ShrinkCacheToMaxSize();
             }
         }
 
@@ -146,12 +225,13 @@ namespace Ict.Petra.Shared
         {
             get
             {
-                return Get_MaxTimeInCache();
+                return UMaxTimeInCache;
             }
 
             set
             {
-                Set_MaxTimeInCache(value);
+                UMaxTimeInCache = value;
+                RemoveOldestCachedTables();
             }
         }
 
@@ -189,140 +269,6 @@ namespace Ict.Petra.Shared
         {
             return null; // make sure that TCacheableTablesManager exists until this AppDomain is unloaded!
         }
-
-        #region Property Accessors
-
-        /// <summary>
-        /// Property accessor
-        /// </summary>
-        /// <returns>void</returns>
-        public Int32 Get_CachedTablesCount()
-        {
-            Int32 ReturnValue;
-
-            try
-            {
-#if DEBUGMODE
-                if (TLogging.DL >= 10)
-                {
-                    TLogging.Log(this.GetType().FullName + ".get_CachedTablesCount waiting for a ReaderLock...");
-                }
-#endif
-
-                // Try to get a read lock [We don't specify a timeout because reading the DB tables into the cached table should be fairly quick]
-                FReadWriteLock.AcquireReaderLock(SharedConstants.THREADING_WAIT_INFINITE);
-#if DEBUGMODE
-                if (TLogging.DL >= 10)
-                {
-                    TLogging.Log(this.GetType().FullName + ".get_CachedTablesCount grabbed a ReaderLock.");
-                }
-#endif
-
-                // Return the number of DataTables in UDataCacheDataSet minus 1 (to account
-                // for the Contents Table)
-                ReturnValue = UDataCacheDataSet.Tables.Count - 1;
-            }
-            finally
-            {
-                // Release read lock
-                FReadWriteLock.ReleaseReaderLock();
-#if DEBUGMODE
-                if (TLogging.DL >= 10)
-                {
-                    TLogging.Log(this.GetType().FullName + ".get_CachedTablesCount released the ReaderLock.");
-                }
-#endif
-            }
-            return ReturnValue;
-        }
-
-        /// <summary>
-        /// Property accessor
-        /// </summary>
-        /// <returns>void</returns>
-        public Int32 Get_CacheSize()
-        {
-            Int32 ReturnValue;
-            int Counter;
-
-            ReturnValue = 0;
-            try
-            {
-#if DEBUGMODE
-                if (TLogging.DL >= 10)
-                {
-                    TLogging.Log(this.GetType().FullName + ".get_CacheSize waiting for a ReaderLock...");
-                }
-#endif
-
-                // Try to get a read lock [We don't specify a timeout because reading the DB tables into the cached table should be fairly quick]
-                FReadWriteLock.AcquireReaderLock(SharedConstants.THREADING_WAIT_INFINITE);
-#if DEBUGMODE
-                if (TLogging.DL >= 10)
-                {
-                    TLogging.Log(this.GetType().FullName + ".get_CacheSize grabbed a ReaderLock.");
-                }
-#endif
-
-                // Add up all TableSizes
-                for (Counter = 0; Counter <= UDataCacheContentsDT.Rows.Count - 1; Counter += 1)
-                {
-                    ReturnValue = ReturnValue + UDataCacheContentsDT[Counter].TableSize;
-                }
-            }
-            finally
-            {
-                // Release read lock
-                FReadWriteLock.ReleaseReaderLock();
-#if DEBUGMODE
-                if (TLogging.DL >= 10)
-                {
-                    TLogging.Log(this.GetType().FullName + ".get_CacheSize released the ReaderLock.");
-                }
-#endif
-            }
-            return ReturnValue;
-        }
-
-        /// <summary>
-        /// Property accessor
-        /// </summary>
-        /// <returns>void</returns>
-        public Int32 Get_MaxCacheSize()
-        {
-            return UMaxCacheSize;
-        }
-
-        /// <summary>
-        /// Property accessor
-        /// </summary>
-        /// <returns>void</returns>
-        public void Set_MaxCacheSize(Int32 AValue)
-        {
-            UMaxCacheSize = AValue;
-            ShrinkCacheToMaxSize();
-        }
-
-        /// <summary>
-        /// Property accessor
-        /// </summary>
-        /// <returns>void</returns>
-        public TimeSpan Get_MaxTimeInCache()
-        {
-            return UMaxTimeInCache;
-        }
-
-        /// <summary>
-        /// Property accessor
-        /// </summary>
-        /// <returns>void</returns>
-        public void Set_MaxTimeInCache(TimeSpan AValue)
-        {
-            UMaxTimeInCache = AValue;
-            RemoveOldestCachedTables();
-        }
-
-        #endregion
 
         #region Public Methods
 
@@ -1611,7 +1557,7 @@ namespace Ict.Petra.Shared
             Int32 CacheSizeBeforeShrinking;
             Int32 ShrinkedCacheSize;
 
-            CacheSizeBeforeShrinking = Get_CacheSize();
+            CacheSizeBeforeShrinking = CacheSize;
 
             if (CacheSizeBeforeShrinking > UMaxCacheSize)
             {

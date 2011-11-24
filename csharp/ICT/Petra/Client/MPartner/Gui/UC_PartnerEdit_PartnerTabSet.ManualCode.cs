@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -29,6 +29,7 @@ using System.Windows.Forms;
 
 using Ict.Common;
 using Ict.Common.Controls;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.MPartner;
@@ -49,11 +50,6 @@ namespace Ict.Petra.Client.MPartner.Gui
     /// todoComment
     /// </summary>
     public delegate bool TDelegateIsNewPartner(PartnerEditTDS AInspectDataSet);
-
-    /// just temporary until TUCPartnerSubscriptions are included properly
-    public class TUCPartnerSubscriptions
-    {
-    }
 
     /// <summary>
     /// temporary class until PartnerInterests are implemented properly
@@ -81,6 +77,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         /// <summary>todoComment</summary>
         public const String StrSpecialTypesTabHeader = "Special Types";
+
+        /// <summary>todoComment</summary>
+        public const String StrPartnerRelationshipsTabHeader = "Relationships";
 
         /// <summary>todoComment</summary>
         public const String StrFamilyMembersTabHeader = "Family Members";
@@ -269,21 +268,18 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (!FMainDS.MiscellaneousData[0].OfficeSpecificDataLabelsAvailable)
             {
-                TabsToHide.Add("tbpOfficeSpecific");
+                TabsToHide.Add("tpgOfficeSpecific");
             }
 
             // for the time beeing, we always hide these Tabs that don't do anything yet...
 #if  SHOWUNFINISHEDTABS
 #else
-            TabsToHide.Add("tbpRelationships");
             TabsToHide.Add("tbpContacts");
             TabsToHide.Add("tbpReminders");
             TabsToHide.Add("tbpInterests");
 #endif
             ControlsUtilities.HideTabs(tabPartners, TabsToHide);
             FUserControlInitialised = true;
-
-//            this.tabPartners.SelectedIndexChanged += new EventHandler(this.tabPartners_SelectedIndexChanged);
 
             SelectTabPage(FInitiallySelectedTabPage);
 
@@ -567,7 +563,13 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpSubscriptions;
 
-                    // TODO
+                    // Hook up RecalculateScreenParts Event
+                    FUcoSubscriptions.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
+
+                    FUcoSubscriptions.PartnerEditUIConnector = FPartnerEditUIConnector;
+                    FUcoSubscriptions.HookupDataChange += new THookupPartnerEditDataChangeEventHandler(Uco_HookupPartnerEditDataChange);
+
+                    FUcoSubscriptions.SpecialInitUserControl();
 
                     CorrectDataGridWidthsAfterDataChange();
                 }
@@ -582,6 +584,20 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FUcoPartnerTypes.HookupDataChange += new THookupPartnerEditDataChangeEventHandler(Uco_HookupPartnerEditDataChange);
 
                     FUcoPartnerTypes.SpecialInitUserControl();
+
+                    CorrectDataGridWidthsAfterDataChange();
+                }
+                else if (ATabPageEventArgs.Tab == tpgPartnerRelationships)
+                {
+                    FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpPartnerRelationships;
+
+                    // Hook up RecalculateScreenParts Event
+                    FUcoPartnerRelationships.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
+
+                    FUcoPartnerRelationships.PartnerEditUIConnector = FPartnerEditUIConnector;
+                    FUcoPartnerRelationships.HookupDataChange += new THookupPartnerEditDataChangeEventHandler(Uco_HookupPartnerEditDataChange);
+
+                    FUcoPartnerRelationships.SpecialInitUserControl();
 
                     CorrectDataGridWidthsAfterDataChange();
                 }
@@ -603,7 +619,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpOfficeSpecific;
 
-                    // TODO
+                    FUcoOfficeSpecific.PartnerEditUIConnector = FPartnerEditUIConnector;
+                    FUcoOfficeSpecific.HookupDataChange += new THookupPartnerEditDataChangeEventHandler(Uco_HookupPartnerEditDataChange);
+
+                    FUcoOfficeSpecific.SpecialInitUserControl();
+
+                    CorrectDataGridWidthsAfterDataChange();
                 }
             }
         }
@@ -669,7 +690,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
-            if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUCPartnerSubscriptions))
+            if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUC_Subscriptions))
             {
                 if (FMainDS.Tables.Contains(PSubscriptionTable.GetTableName()))
                 {
@@ -717,6 +738,20 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     tpgPartnerTypes.Text = StrSpecialTypesTabHeader + " (" + FMainDS.MiscellaneousData[0].ItemsCountPartnerTypes.ToString() + ')';
                 }
+            }
+
+            if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUC_PartnerRelationships))
+            {
+                if (FMainDS.Tables.Contains(PPartnerRelationshipTable.GetTableName()))
+                {
+                    Calculations.CalculateTabCountsPartnerRelationships(FMainDS.PPartnerRelationship, out CountAll);
+                }
+                else
+                {
+                    CountAll = FMainDS.MiscellaneousData[0].ItemsCountPartnerRelationships;
+                }
+
+                tpgPartnerRelationships.Text = String.Format(StrPartnerRelationshipsTabHeader + " ({0})", CountAll);
             }
 
             if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUC_FamilyMembers))
@@ -789,15 +824,19 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FUcoAddresses.AdjustAfterResizing();
                 }
 
-                // TODO
-//                if (FUcoPartnerSubscriptions != null)
-//                {
-//                    FUcoPartnerSubscriptions.AdjustAfterResizing();
-//                }
+                if (FUcoSubscriptions != null)
+                {
+                    FUcoSubscriptions.AdjustAfterResizing();
+                }
 
                 if (FUcoPartnerTypes != null)
                 {
                     FUcoPartnerTypes.AdjustAfterResizing();
+                }
+
+                if (FUcoPartnerRelationships != null)
+                {
+                    FUcoPartnerRelationships.AdjustAfterResizing();
                 }
 
                 // TODO
@@ -898,66 +937,77 @@ namespace Ict.Petra.Client.MPartner.Gui
             // supress detection changing
             SelectedTabPageBeforeReSelecting = tabPartners.SelectedTab;
 
-            switch (ATabPage)
+            try
             {
-                case TPartnerEditTabPageEnum.petpAddresses:
-                case TPartnerEditTabPageEnum.petpDefault:
-                    tabPartners.SelectedTab = tpgAddresses;
-                    break;
+                switch (ATabPage)
+                {
+                    case TPartnerEditTabPageEnum.petpAddresses:
+                    case TPartnerEditTabPageEnum.petpDefault:
+                        tabPartners.SelectedTab = tpgAddresses;
+                        break;
 
-                case TPartnerEditTabPageEnum.petpDetails:
-                    tabPartners.SelectedTab = tpgPartnerDetails;
-                    break;
+                    case TPartnerEditTabPageEnum.petpDetails:
+                        tabPartners.SelectedTab = tpgPartnerDetails;
+                        break;
 
-                case TPartnerEditTabPageEnum.petpFoundationDetails:
-                    tabPartners.SelectedTab = tpgFoundationDetails;
-                    break;
+                    case TPartnerEditTabPageEnum.petpFoundationDetails:
+                        tabPartners.SelectedTab = tpgFoundationDetails;
+                        break;
 
-                case TPartnerEditTabPageEnum.petpSubscriptions:
-                    tabPartners.SelectedTab = tpgSubscriptions;
-                    break;
+                    case TPartnerEditTabPageEnum.petpSubscriptions:
+                        tabPartners.SelectedTab = tpgSubscriptions;
+                        break;
 
-                case TPartnerEditTabPageEnum.petpPartnerTypes:
-                    tabPartners.SelectedTab = tpgPartnerTypes;
-                    break;
+                    case TPartnerEditTabPageEnum.petpPartnerTypes:
+                        tabPartners.SelectedTab = tpgPartnerTypes;
+                        break;
 
-                case TPartnerEditTabPageEnum.petpFamilyMembers:
-                    tabPartners.SelectedTab = tpgFamilyMembers;
-                    break;
+                    case TPartnerEditTabPageEnum.petpPartnerRelationships:
+                        tabPartners.SelectedTab = tpgPartnerRelationships;
+                        break;
 
-                case TPartnerEditTabPageEnum.petpOfficeSpecific:
-                    tabPartners.SelectedTab = tpgOfficeSpecific;
-                    break;
+                    case TPartnerEditTabPageEnum.petpFamilyMembers:
+                        tabPartners.SelectedTab = tpgFamilyMembers;
+                        break;
+
+                    case TPartnerEditTabPageEnum.petpOfficeSpecific:
+                        tabPartners.SelectedTab = tpgOfficeSpecific;
+                        break;
 
 #if TODO
-                case TPartnerEditTabPageEnum.petpInterests:
-                    tabPartners.SelectedTab = tpgInterests;
-                    break;
+                    case TPartnerEditTabPageEnum.petpInterests:
+                        tabPartners.SelectedTab = tpgInterests;
+                        break;
 
-                case TPartnerEditTabPageEnum.petpReminders:
-                    tabPartners.SelectedTab = tpgReminders;
-                    break;
+                    case TPartnerEditTabPageEnum.petpReminders:
+                        tabPartners.SelectedTab = tpgReminders;
+                        break;
 
-                case TPartnerEditTabPageEnum.petpRelationships:
-                    tabPartners.SelectedTab = tpgRelationships;
-                    break;
+                    case TPartnerEditTabPageEnum.petpRelationships:
+                        tabPartners.SelectedTab = tpgRelationships;
+                        break;
 
-                case TPartnerEditTabPageEnum.petpContacts:
-                    tabPartners.SelectedTab = tpgContacts;
-                    break;
+                    case TPartnerEditTabPageEnum.petpContacts:
+                        tabPartners.SelectedTab = tpgContacts;
+                        break;
 #endif
-                case TPartnerEditTabPageEnum.petpNotes:
+                    case TPartnerEditTabPageEnum.petpNotes:
 
-                    if (tpgNotes.Enabled)
-                    {
-                        tabPartners.SelectedTab = tpgNotes;
-                    }
-                    else
-                    {
-                        tabPartners.SelectedTab = tpgAddresses;
-                    }
+                        if (tpgNotes.Enabled)
+                        {
+                            tabPartners.SelectedTab = tpgNotes;
+                        }
+                        else
+                        {
+                            tabPartners.SelectedTab = tpgAddresses;
+                        }
 
-                    break;
+                        break;
+                }
+            }
+            catch (Ict.Common.Controls.TSelectedIndexChangeDisallowedTabPagedIsDisabledException)
+            {
+                // Desired Tab Page isn't selectable because it is disabled; ignoring this Exception to ignore the selection.
             }
 
             // Check if the selected TabPage actually changed...

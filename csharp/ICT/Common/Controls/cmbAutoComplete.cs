@@ -23,6 +23,7 @@
 //
 using System;
 using Ict.Common;
+using Accessibility;
 using System.Collections;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -1236,10 +1237,6 @@ namespace Ict.Common.Controls
                     ReturnValue = (string)this.Items[SelectedIndex];
                 }
             }
-            else
-            {
-                return this.Text;
-            }
 
             return ReturnValue;
         }
@@ -1358,8 +1355,19 @@ namespace Ict.Common.Controls
         /// </returns>
         public bool SetSelectedString(String AStr)
         {
+            return SetSelectedString(AStr, 0);
+        }
+
+        /// <summary>
+        /// This function selects an item with the given string value.
+        /// Set index to ADefaultIndex if the string value is not existing
+        /// </summary>
+        /// <returns>false if the string value is not existing
+        /// </returns>
+        public bool SetSelectedString(String AStr, Int32 ADefaultIndex)
+        {
             Int32 PreviousSelectedIndex = SelectedIndex;
-            Int32 NewSelectedIndex = FindStringInComboBox(AStr);
+            Int32 NewSelectedIndex = this.FindStringExact(AStr);
 
             if ((NewSelectedIndex == -1) && (Items.Count > 0))
             {

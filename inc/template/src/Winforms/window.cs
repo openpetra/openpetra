@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from {#XAMLSRCFILE}
+// auto generated with nant generateWinforms from {#XAMLSRCFILE} and template window
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -9,6 +9,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Data;
+using SourceGrid;
 using Ict.Petra.Shared;
 using System.Resources;
 using System.Collections.Specialized;

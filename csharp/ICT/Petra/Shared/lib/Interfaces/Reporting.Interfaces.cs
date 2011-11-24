@@ -32,9 +32,7 @@ using System.Collections.Generic;
 using System.Data;
 using Ict.Common;
 using Ict.Common.Verification;
-#region ManualCode
-using Ict.Petra.Shared.Interfaces.AsynchronousExecution;
-#endregion ManualCode
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared.Interfaces.MReporting.LogicConnectors;
 namespace Ict.Petra.Shared.Interfaces.MReporting
 {

@@ -33,15 +33,16 @@ using Ict.Common.Data;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.RemotedExceptions;
-using Ict.Petra.Server.App.ClientDomain;
 #region ManualCode
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.MCommon;
 #endregion ManualCode
+using Ict.Petra.Server.App.Core;
 
 namespace Ict.Petra.Server.MCommon.Cacheable
 {
@@ -70,7 +71,7 @@ namespace Ict.Petra.Server.MCommon.Cacheable
             }
 #endif
             FStartTime = DateTime.Now;
-            FCacheableTablesManager = DomainManager.GCacheableTablesManager;
+            FCacheableTablesManager = TCacheableTablesManager.GCacheableTablesManager;
         }
 
 #if DEBUGMODE
@@ -86,6 +87,22 @@ namespace Ict.Petra.Server.MCommon.Cacheable
         }
 #endif
 
+#region ManualCode
+		/// <summary>
+		/// Overload of <see cref="M:GetCacheableTable(TCacheableCommonTablesEnum, string, bool, out System.Type)" />. See description there.
+		/// </summary>
+		/// <remarks>Can be used with Delegate TGetCacheableDataTableFromCache.</remarks>
+		/// <param name="ACacheableTable">Tells what cacheable DataTable should be returned.</param>
+	    /// <param name="AType">The Type of the DataTable (useful in case it's a
+	    /// Typed DataTable)</param>
+		/// <returns>The specified Cacheable DataTable is returned if the string matches a Cacheable DataTable, 
+		/// otherwise <see cref="String.Empty" />.</returns>
+        public DataTable GetCacheableTable(string ACacheableTable, out System.Type AType)		
+		{
+        	return GetCacheableTable((TCacheableCommonTablesEnum)Enum.Parse(typeof(TCacheableCommonTablesEnum), ACacheableTable), 
+        	    String.Empty, false, out AType);
+		}
+#endregion ManualCode
         /// <summary>
         /// Returns a certain cachable DataTable that contains all columns and all
         /// rows of a specified table.
@@ -131,7 +148,7 @@ namespace Ict.Petra.Server.MCommon.Cacheable
             }
 #endif
 
-            if ((ARefreshFromDB) || ((!DomainManager.GCacheableTablesManager.IsTableCached(TableName))))
+            if ((ARefreshFromDB) || ((!FCacheableTablesManager.IsTableCached(TableName))))
             {
                 Boolean NewTransaction;
                 TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
@@ -146,19 +163,19 @@ namespace Ict.Petra.Server.MCommon.Cacheable
                         case TCacheableCommonTablesEnum.CountryList:
                         {
                             DataTable TmpTable = PCountryAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
                         case TCacheableCommonTablesEnum.FrequencyList:
                         {
                             DataTable TmpTable = AFrequencyAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
                         case TCacheableCommonTablesEnum.LanguageCodeList:
                         {
                             DataTable TmpTable = PLanguageAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
 

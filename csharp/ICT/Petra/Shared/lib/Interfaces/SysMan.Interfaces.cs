@@ -33,6 +33,7 @@ using System.Data;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared.Interfaces.MSysMan.Application;
 using Ict.Petra.Shared.Interfaces.MSysMan.Maintenance;
 using Ict.Petra.Shared.Interfaces.MSysMan.TableMaintenance;
@@ -54,6 +55,7 @@ using Ict.Petra.Shared.Interfaces.MSysMan.Security.UserManager;
 #region ManualCode
 using System.Xml;
 using Ict.Petra.Shared.MSysMan.Data;
+using Ict.Petra.Shared.MSysMan;
 #endregion ManualCode
 namespace Ict.Petra.Shared.Interfaces.MSysMan
 {

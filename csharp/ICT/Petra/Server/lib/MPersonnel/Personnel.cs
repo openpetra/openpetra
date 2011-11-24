@@ -37,7 +37,6 @@ using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
-using Ict.Petra.Shared.MPersonnel.Personnel;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;

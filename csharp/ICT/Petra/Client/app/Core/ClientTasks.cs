@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,92 +26,20 @@ using System.Data;
 using System.Threading;
 using Ict.Common;
 using System.Windows.Forms;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared;
-using Ict.Petra.Client.App.Core;
 
 namespace Ict.Petra.Client.App.Core
 {
     /// <summary>
-    /// Manages the execution of Client Tasks.
-    ///
-    /// Tasks are first retrieved by the KeepAlive tread. TClientTasksQueue then
-    /// executes the separate Tasks asynchronously using a TClientTaskInstance for
-    /// each Task.
-    /// </summary>
-    public class TClientTasksQueue : object
-    {
-        // only needed for debugging
-        // private static Int32 UClientID;
-
-        /// Holds the ClientTasksDataTable that was passed in when Create got called.
-        private DataTable FClientTasksDataTable;
-
-        #region TClientTasks
-
-        /// <summary>
-        /// Passes in the ClientTasksDataTable which contains the Client Tasks.
-        /// </summary>
-        /// <param name="AClientID"></param>
-        /// <param name="AClientTasksDataTable"></param>
-        public TClientTasksQueue(Int32 AClientID, DataTable AClientTasksDataTable)
-        {
-            // only needed for debugging
-            // UClientID = AClientID;
-            FClientTasksDataTable = AClientTasksDataTable;
-        }
-
-        /// <summary>
-        /// Gets called by KeepAliveThread if new ClientTasks were sent by the Server.
-        /// </summary>
-        public void QueueClientTasks()
-        {
-            TClientTaskInstance ClientTaskInstance;
-            Thread ClientTaskThread;
-
-            // TODO 2 ochristiank cClient Tasks : Work the queue of Client Tasks according to their Priority
-            foreach (DataRow NewEntryRow in FClientTasksDataTable.Rows)
-            {
-                ClientTaskInstance = new TClientTaskInstance();
-                ClientTaskInstance.ClientTask = NewEntryRow;
-                ClientTaskThread = new Thread(new ThreadStart(ClientTaskInstance.Execute));
-                ClientTaskThread.Start();
-            }
-        }
-
-        #endregion
-    }
-
-    /// <summary>
     /// Executes a certain Task.
     /// </summary>
-    public class TClientTaskInstance
+    public class TClientTaskInstance : TClientTaskInstanceBase
     {
-        /// Holds a certain row of the ClientTasksDataTable that was passed in when ClientTask property got set.
-        private DataRow FClientTaskDataRow;
-
-        /// <summary>
-        /// Property for passing the DataRow of a Client Task.
-        /// </summary>
-        public DataRow ClientTask
-        {
-            get
-            {
-                return FClientTaskDataRow;
-            }
-
-            set
-            {
-                FClientTaskDataRow = value;
-            }
-        }
-
-
-        #region TClientTaskInstance
-
         /// <summary>
         /// Executes the Client Task.
         /// </summary>
-        public void Execute()
+        public override void Execute()
         {
             try
             {
@@ -180,7 +108,5 @@ namespace Ict.Petra.Client.App.Core
 #endif
             }
         }
-
-        #endregion
     }
 }

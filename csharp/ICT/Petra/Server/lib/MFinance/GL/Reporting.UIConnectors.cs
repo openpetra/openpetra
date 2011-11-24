@@ -26,6 +26,7 @@ using System.Data;
 using Ict.Petra.Shared;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.MFinance.Cacheable;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -62,32 +63,6 @@ namespace Ict.Petra.Server.MFinance.Reporting
 
         /// <summary>the currently selected ledger</summary>
         private System.Int32 FLedgerNr;
-        private int FNumberAccountingPeriods;
-        private int FNumberForwardingPeriods;
-        private int FCurrentPeriod;
-        private int FCurrentYear;
-
-        /// <summary>
-        /// get the number of forwarding periods. needed to avoid warning about unused FNumberForwardingPeriods
-        /// </summary>
-        public int NumberForwardingPeriods
-        {
-            get
-            {
-                return FNumberForwardingPeriods;
-            }
-        }
-
-        /// <summary>
-        /// get the number of the current period. needed to avoid warning about unused FNumberForwardingPeriods
-        /// </summary>
-        public int CurrentPeriod
-        {
-            get
-            {
-                return FCurrentPeriod;
-            }
-        }
 
         /// <summary>
         /// initialise the object, select the given ledger
@@ -96,7 +71,6 @@ namespace Ict.Petra.Server.MFinance.Reporting
         public void SelectLedger(System.Int32 ALedgerNr)
         {
             FLedgerNr = ALedgerNr;
-            GetLedgerPeriodDetails(out FNumberAccountingPeriods, out FNumberForwardingPeriods, out FCurrentPeriod, out FCurrentYear);
         }
 
         /// <summary>
@@ -113,20 +87,19 @@ namespace Ict.Petra.Server.MFinance.Reporting
         {
             System.Type typeofTable = null;
             TCacheable CachePopulator = new TCacheable();
-            DataTable CachedDataTable = CachePopulator.GetCacheableTable(TCacheableFinanceTablesEnum.LedgerDetails,
+            ALedgerTable CachedDataTable = (ALedgerTable)CachePopulator.GetCacheableTable(
+                TCacheableFinanceTablesEnum.LedgerDetails,
                 "",
                 false,
                 FLedgerNr,
                 out typeofTable);
-            string whereClause = ALedgerTable.GetLedgerNumberDBName() + " = " + FLedgerNr.ToString();
-            DataRow[] filteredRows = CachedDataTable.Select(whereClause, ALedgerTable.GetLedgerNumberDBName());
 
-            if (filteredRows.Length > 0)
+            if (CachedDataTable.Rows.Count > 0)
             {
-                ANumberAccountingPeriods = ((ALedgerRow)filteredRows[0]).NumberOfAccountingPeriods;
-                ANumberForwardingPeriods = ((ALedgerRow)filteredRows[0]).NumberFwdPostingPeriods;
-                ACurrentPeriod = ((ALedgerRow)filteredRows[0]).CurrentPeriod;
-                ACurrentYear = ((ALedgerRow)filteredRows[0]).CurrentFinancialYear;
+                ANumberAccountingPeriods = CachedDataTable[0].NumberOfAccountingPeriods;
+                ANumberForwardingPeriods = CachedDataTable[0].NumberFwdPostingPeriods;
+                ACurrentPeriod = CachedDataTable[0].CurrentPeriod;
+                ACurrentYear = CachedDataTable[0].CurrentFinancialYear;
             }
             else
             {
@@ -138,116 +111,6 @@ namespace Ict.Petra.Server.MFinance.Reporting
         }
 
         /// <summary>
-        /// get the real period stored in the database
-        /// this is needed for reports that run on a different financial year, ahead or behind by several months
-        /// </summary>
-        /// <param name="ADiffPeriod"></param>
-        /// <param name="AYear"></param>
-        /// <param name="APeriod"></param>
-        /// <param name="ARealPeriod"></param>
-        /// <param name="ARealYear"></param>
-        public void GetRealPeriod(System.Int32 ADiffPeriod,
-            System.Int32 AYear,
-            System.Int32 APeriod,
-            out System.Int32 ARealPeriod,
-            out System.Int32 ARealYear)
-        {
-            ARealPeriod = APeriod + ADiffPeriod;
-            ARealYear = AYear;
-
-            if (ADiffPeriod == 0)
-            {
-                return;
-            }
-
-            // the period is in the last year
-            // this treatment only applies to situations with different financial years.
-            // in a financial year equals to the glm year, the period 0 represents the start balance
-            if ((ADiffPeriod == 0) && (ARealPeriod == 0))
-            {
-                //do nothing
-            }
-            else if (ARealPeriod < 1)
-            {
-                ARealPeriod = FNumberAccountingPeriods + ARealPeriod;
-                ARealYear = ARealYear - 1;
-            }
-
-            // forwarding periods are only allowed in the current year
-            if ((ARealPeriod > FNumberAccountingPeriods) && (ARealYear != FCurrentYear))
-            {
-                ARealPeriod = ARealPeriod - FNumberAccountingPeriods;
-                ARealYear = ARealYear + 1;
-            }
-        }
-
-        /// <summary>
-        /// get the start date of the given period
-        /// </summary>
-        /// <param name="AYear"></param>
-        /// <param name="ADiffPeriod"></param>
-        /// <param name="APeriod"></param>
-        /// <returns></returns>
-        public System.DateTime GetPeriodStartDate(System.Int32 AYear, System.Int32 ADiffPeriod, System.Int32 APeriod)
-        {
-            System.Int32 RealYear = 0;
-            System.Int32 RealPeriod = 0;
-            System.Type typeofTable = null;
-            TCacheable CachePopulator = new TCacheable();
-            DateTime ReturnValue = DateTime.Now;
-            GetRealPeriod(ADiffPeriod, AYear, APeriod, out RealPeriod, out RealYear);
-            DataTable CachedDataTable = CachePopulator.GetCacheableTable(TCacheableFinanceTablesEnum.AccountingPeriodList,
-                "",
-                false,
-                FLedgerNr,
-                out typeofTable);
-            string whereClause = AAccountingPeriodTable.GetLedgerNumberDBName() + " = " + FLedgerNr.ToString() + " and " +
-                                 AAccountingPeriodTable.GetAccountingPeriodNumberDBName() + " = " + RealPeriod.ToString();
-            DataRow[] filteredRows = CachedDataTable.Select(whereClause);
-
-            if (filteredRows.Length > 0)
-            {
-                ReturnValue = ((AAccountingPeriodRow)filteredRows[0]).PeriodStartDate;
-                ReturnValue = ReturnValue.AddYears(RealYear - FCurrentYear);
-            }
-
-            return ReturnValue;
-        }
-
-        /// <summary>
-        /// get the end date of the given period
-        /// </summary>
-        /// <param name="AYear"></param>
-        /// <param name="ADiffPeriod"></param>
-        /// <param name="APeriod"></param>
-        /// <returns></returns>
-        public System.DateTime GetPeriodEndDate(System.Int32 AYear, System.Int32 ADiffPeriod, System.Int32 APeriod)
-        {
-            System.Int32 RealYear = 0;
-            System.Int32 RealPeriod = 0;
-            System.Type typeofTable = null;
-            TCacheable CachePopulator = new TCacheable();
-            DateTime ReturnValue = DateTime.Now;
-            GetRealPeriod(ADiffPeriod, AYear, APeriod, out RealPeriod, out RealYear);
-            DataTable CachedDataTable = CachePopulator.GetCacheableTable(TCacheableFinanceTablesEnum.AccountingPeriodList,
-                "",
-                false,
-                FLedgerNr,
-                out typeofTable);
-            string whereClause = AAccountingPeriodTable.GetLedgerNumberDBName() + " = " + FLedgerNr.ToString() + " and " +
-                                 AAccountingPeriodTable.GetAccountingPeriodNumberDBName() + " = " + RealPeriod.ToString();
-            DataRow[] filteredRows = CachedDataTable.Select(whereClause);
-
-            if (filteredRows.Length > 0)
-            {
-                ReturnValue = ((AAccountingPeriodRow)filteredRows[0]).PeriodEndDate;
-                ReturnValue = ReturnValue.AddYears(RealYear - FCurrentYear);
-            }
-
-            return ReturnValue;
-        }
-
-        /// <summary>
         /// Loads all available financial years into a table
         /// To be used by a combobox to select the financial year
         ///
@@ -255,53 +118,11 @@ namespace Ict.Petra.Server.MFinance.Reporting
         /// <returns>DataTable</returns>
         public DataTable GetAvailableFinancialYears(System.Int32 ADiffPeriod, out String ADisplayMember, out String AValueMember)
         {
-            DataTable tab;
-            DataTable BatchYearTable;
-            DataRow resultRow;
-            String sql;
-
-            System.DateTime currentYearEnd;
-            Int32 counter;
-            TDBTransaction ReadTransaction;
-            currentYearEnd = GetPeriodEndDate(FCurrentYear, ADiffPeriod, FNumberAccountingPeriods);
-            ADisplayMember = "YearDate";
-            AValueMember = "YearNumber";
-            tab = new DataTable();
-            tab.Columns.Add(AValueMember, typeof(System.Int32));
-            tab.Columns.Add(ADisplayMember, typeof(String));
-            counter = 0;
-
-            // add the current year
-            resultRow = tab.NewRow();
-            resultRow[0] = (System.Object)FCurrentYear;
-            resultRow[1] = currentYearEnd.ToString("yyyy");
-            tab.Rows.InsertAt(resultRow, counter);
-            counter = counter + 1;
-            ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction();
-            try
-            {
-                // add the previous years, which are retrieved by reading from the old batches
-                // TODO: use GetDBName of the table
-                sql = "SELECT DISTINCT a_batch_year_i AS availYear " + " FROM PUB_a_previous_year_batch " + " WHERE a_ledger_number_i = " +
-                      FLedgerNr.ToString() + " ORDER BY 1 DESC";
-                BatchYearTable = DBAccess.GDBAccessObj.SelectDT(sql, "BatchYearTable", ReadTransaction);
-
-                foreach (DataRow row in BatchYearTable.Rows)
-                {
-                    resultRow = tab.NewRow();
-                    resultRow[0] = row[0];
-
-                    // resultRow.item[1] := DateToLocalizedString(CurrentYearEnd.AddYears(1  (CurrentFinancialYear  Convert.ToInt32(row[0]))));
-                    resultRow[1] = currentYearEnd.AddYears(-1 * (FCurrentYear - Convert.ToInt32(row[0]))).ToString("yyyy");
-                    tab.Rows.InsertAt(resultRow, counter);
-                    counter = counter + 1;
-                }
-            }
-            finally
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
-            return tab;
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TAccountingPeriodsWebConnector.GetAvailableGLYears(
+                FLedgerNr,
+                ADiffPeriod,
+                out ADisplayMember,
+                out AValueMember);
         }
 
         /// <summary>

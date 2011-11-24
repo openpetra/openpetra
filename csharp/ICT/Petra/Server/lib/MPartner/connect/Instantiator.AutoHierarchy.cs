@@ -44,6 +44,8 @@ using System.Threading;
 using System.Runtime.Remoting;
 using System.Security.Cryptography;
 using Ict.Common;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
 using Ict.Petra.Server.App.Core.Security;
 
@@ -109,17 +111,17 @@ using Ict.Petra.Server.MPartner.Extracts.UIConnectors;
 //using Ict.Petra.Server.MPartner.Extracts.WebConnectors;
 //using Ict.Petra.Server.MPartner.ImportExport.UIConnectors;
 using Ict.Petra.Server.MPartner.ImportExport.WebConnectors;
-//using Ict.Petra.Server.MPartner.Mailing.Cacheable;
+using Ict.Petra.Server.MPartner.Mailing.Cacheable;
 //using Ict.Petra.Server.MPartner.Mailing.UIConnectors;
 using Ict.Petra.Server.MPartner.Mailing.WebConnectors;
-//using Ict.Petra.Server.MPartner.Partner.Cacheable;
+using Ict.Petra.Server.MPartner.Partner.Cacheable;
 //using Ict.Petra.Server.MPartner.Partner.DataElements;
 //using Ict.Petra.Server.MPartner.Partner.DataElements.UIConnectors;
 using Ict.Petra.Server.MPartner.Partner.ServerLookups;
 using Ict.Petra.Server.MPartner.Partner.UIConnectors;
 using Ict.Petra.Server.MPartner.Partner.WebConnectors;
 //using Ict.Petra.Server.MPartner.PartnerMerge.UIConnectors;
-//using Ict.Petra.Server.MPartner.Subscriptions.Cacheable;
+using Ict.Petra.Server.MPartner.Subscriptions.Cacheable;
 //using Ict.Petra.Server.MPartner.Subscriptions.UIConnectors;
 //using Ict.Petra.Server.MPartner.TableMaintenance.UIConnectors;
 using Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors;
@@ -131,7 +133,6 @@ using Ict.Common.Verification;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
-using Ict.Petra.Shared.RemotedExceptions;
 using Ict.Petra.Server.MCommon.UIConnectors;
 #endregion ManualCode
 namespace Ict.Petra.Server.MPartner.Instantiator
@@ -1090,10 +1091,53 @@ namespace Ict.Petra.Server.MPartner.Instantiator.ImportExport.WebConnectors
         }
 
         /// generated method from connector
+        public Boolean CommitChanges(PartnerImportExportTDS MainDS,
+                                     out TVerificationResultCollection AVerificationResult)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector), "CommitChanges", ";PARTNERIMPORTEXPORTTDS;TVERIFICATIONRESULTCOLLECTION;");
+            return Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector.CommitChanges(MainDS, out AVerificationResult);
+        }
+
+        /// generated method from connector
         public System.String ExportPartners()
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector), "ExportPartners", ";");
             return Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector.ExportPartners();
+        }
+
+        /// generated method from connector
+        public System.String GetExtFileHeader()
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector), "GetExtFileHeader", ";");
+            return Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector.GetExtFileHeader();
+        }
+
+        /// generated method from connector
+        public System.String GetExtFileFooter()
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector), "GetExtFileFooter", ";");
+            return Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector.GetExtFileFooter();
+        }
+
+        /// generated method from connector
+        public System.String ExportPartnerExt(Int64 APartnerKey,
+                                              Int32 ASiteKey,
+                                              Int32 ALocationKey,
+                                              Boolean ANoFamily,
+                                              StringCollection ASpecificBuildingInfo)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector), "ExportPartnerExt", ";LONG;INT;INT;BOOL;STRINGCOLLECTION;");
+            return Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector.ExportPartnerExt(APartnerKey, ASiteKey, ALocationKey, ANoFamily, ASpecificBuildingInfo);
+        }
+
+        /// generated method from connector
+        public Boolean ImportDataExt(System.String[] ALinesToImport,
+                                     System.String ALimitToOption,
+                                     System.Boolean ADoNotOverwrite,
+                                     out TVerificationResultCollection AResultList)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector), "ImportDataExt", ";STRING.ARRAY;STRING;BOOL;TVERIFICATIONRESULTCOLLECTION;");
+            return Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector.ImportDataExt(ALinesToImport, ALimitToOption, ADoNotOverwrite, out AResultList);
         }
     }
 }
@@ -1554,11 +1598,12 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Mailing.WebConnectors
         /// generated method from connector
         public System.Boolean GetBestAddress(Int64 APartnerKey,
                                              out PLocationTable AAddress,
+                                             out PPartnerLocationTable APartnerLocation,
                                              out System.String ACountryNameLocal,
                                              out System.String AEmailAddress)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Mailing.WebConnectors.TAddressWebConnector), "GetBestAddress", ";LONG;PLOCATIONTABLE;STRING;STRING;");
-            return Ict.Petra.Server.MPartner.Mailing.WebConnectors.TAddressWebConnector.GetBestAddress(APartnerKey, out AAddress, out ACountryNameLocal, out AEmailAddress);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Mailing.WebConnectors.TAddressWebConnector), "GetBestAddress", ";LONG;PLOCATIONTABLE;PPARTNERLOCATIONTABLE;STRING;STRING;");
+            return Ict.Petra.Server.MPartner.Mailing.WebConnectors.TAddressWebConnector.GetBestAddress(APartnerKey, out AAddress, out APartnerLocation, out ACountryNameLocal, out AEmailAddress);
         }
 
         /// generated method from connector
@@ -2646,6 +2691,16 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
         }
 
         /// generated method from connector
+        public PartnerFindTDS FindPartners(System.String AFirstName,
+                                           System.String AFamilyNameOrOrganisation,
+                                           System.String ACity,
+                                           StringCollection APartnerClasses)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerFindWebConnector), "FindPartners", ";STRING;STRING;STRING;STRINGCOLLECTION;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerFindWebConnector.FindPartners(AFirstName, AFamilyNameOrOrganisation, ACity, APartnerClasses);
+        }
+
+        /// generated method from connector
         public System.Boolean AddContact(List<Int64>APartnerKeys,
                                          DateTime AContactDate,
                                          System.String AMethodOfContact,
@@ -2701,16 +2756,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerEditWebConnector), "SavePartner", ";PARTNEREDITTDS;TVERIFICATIONRESULTCOLLECTION;");
             return Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerEditWebConnector.SavePartner(AMainDS, out AVerificationResult);
-        }
-
-        /// generated method from connector
-        public PartnerFindTDS FindPartners(System.String AFirstName,
-                                           System.String AFamilyNameOrOrganisation,
-                                           System.String ACity,
-                                           StringCollection APartnerClasses)
-        {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerFindWebConnector), "FindPartners", ";STRING;STRING;STRING;STRINGCOLLECTION;");
-            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerFindWebConnector.FindPartners(AFirstName, AFamilyNameOrOrganisation, ACity, APartnerClasses);
         }
     }
 }

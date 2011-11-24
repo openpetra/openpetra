@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.Data;
 using Ict.Common;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared.Interfaces.MFinance.AP;
 using Ict.Petra.Shared.Interfaces.MFinance.AR;
 using Ict.Petra.Shared.Interfaces.MFinance.Budget;
@@ -66,7 +67,6 @@ using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.Interfaces.AsynchronousExecution;
 #endregion ManualCode
 using Ict.Petra.Shared.Interfaces.MFinance.Setup.WebConnectors;
 namespace Ict.Petra.Shared.Interfaces.MFinance
@@ -455,6 +455,11 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TAdjustmentWebConnector)</summary>
         System.Boolean GiftRevertAdjust(Hashtable requestParams,
                                         out TVerificationResultCollection AMessages);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TDonorsOfWorkerWebConnector)</summary>
+        NewDonorTDS GetDonorsOfWorker(Int64 AWorkerPartnerKey,
+                                      Int32 ALedgerNumber,
+                                      System.Boolean ADropForeignAddresses,
+                                      System.Boolean ADropPartnersWithNoMailing);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TGuiTools)</summary>
         Boolean GetMotivationGroupAndDetail(Int64 partnerKey,
                                             ref String motivationGroup,
@@ -489,7 +494,14 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors
         Boolean SubmitRecurringGiftBatch(Hashtable requestParams,
                                          out TVerificationResultCollection AMessages);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
-        GiftBatchTDS LoadAGiftBatch(Int32 ALedgerNumber);
+        DataTable GetAvailableGiftYears(Int32 ALedgerNumber,
+                                        out String ADisplayMember,
+                                        out String AValueMember);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
+        GiftBatchTDS LoadAGiftBatch(Int32 ALedgerNumber,
+                                    System.String ABatchStatus,
+                                    Int32 AYear,
+                                    Int32 APeriod);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
         RecurringGiftBatchTDS LoadARecurringGiftBatch(Int32 ALedgerNumber);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
@@ -508,14 +520,19 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors
         TSubmitChangesResult SaveRecurringGiftBatchTDS(ref RecurringGiftBatchTDS AInspectDS,
                                                        out TVerificationResultCollection AVerificationResult);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
+        System.Decimal CalculateAdminFee(GiftBatchTDS MainDS,
+                                         Int32 ALedgerNumber,
+                                         System.String AFeeCode,
+                                         System.Decimal AGiftAmount,
+                                         out TVerificationResultCollection AVerificationResult);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
         System.Boolean PostGiftBatch(Int32 ALedgerNumber,
                                      Int32 ABatchNumber,
                                      out TVerificationResultCollection AVerifications);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
-        System.Boolean ExportAllGiftBatchData(ref ArrayList batches,
-                                              Hashtable requestParams,
-                                              out String exportString,
-                                              out TVerificationResultCollection AMessages);
+        Int32 ExportAllGiftBatchData(Hashtable requestParams,
+                                     out String exportString,
+                                     out TVerificationResultCollection AMessages);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
         System.Boolean ImportGiftBatches(Hashtable requestParams,
                                          String importString,
@@ -567,6 +584,43 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors
     /// <summary>auto generated</summary>
     public interface IGLWebConnectorsNamespace : IInterface
     {
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TAccountingPeriodsWebConnector)</summary>
+        System.Boolean GetCurrentPeriodDates(Int32 ALedgerNumber,
+                                             out DateTime AStartDate,
+                                             out DateTime AEndDate);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TAccountingPeriodsWebConnector)</summary>
+        System.Boolean GetCurrentPostingRangeDates(Int32 ALedgerNumber,
+                                                   out DateTime AStartDateCurrentPeriod,
+                                                   out DateTime AEndDateLastForwardingPeriod);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TAccountingPeriodsWebConnector)</summary>
+        System.Boolean GetRealPeriod(System.Int32 ALedgerNumber,
+                                     System.Int32 ADiffPeriod,
+                                     System.Int32 AYear,
+                                     System.Int32 APeriod,
+                                     out System.Int32 ARealPeriod,
+                                     out System.Int32 ARealYear);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TAccountingPeriodsWebConnector)</summary>
+        System.DateTime GetPeriodStartDate(System.Int32 ALedgerNumber,
+                                           System.Int32 AYear,
+                                           System.Int32 ADiffPeriod,
+                                           System.Int32 APeriod);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TAccountingPeriodsWebConnector)</summary>
+        System.DateTime GetPeriodEndDate(Int32 ALedgerNumber,
+                                         System.Int32 AYear,
+                                         System.Int32 ADiffPeriod,
+                                         System.Int32 APeriod);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TAccountingPeriodsWebConnector)</summary>
+        System.Boolean GetPeriodDates(Int32 ALedgerNumber,
+                                      Int32 AYearNumber,
+                                      Int32 ADiffPeriod,
+                                      Int32 APeriodNumber,
+                                      out DateTime AStartDatePeriod,
+                                      out DateTime AEndDatePeriod);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TAccountingPeriodsWebConnector)</summary>
+        DataTable GetAvailableGLYears(Int32 ALedgerNumber,
+                                      System.Int32 ADiffPeriod,
+                                      out String ADisplayMember,
+                                      out String AValueMember);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodIntervallConnector)</summary>
         System.Boolean TPeriodMonthEnd(System.Int32 ALedgerNum,
                                        System.Boolean AIsInInfoMode,
@@ -581,21 +635,6 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors
                                  System.String[] AForeignCurrency,
                                  System.Decimal[] ANewExchangeRate,
                                  out TVerificationResultCollection AVerificationResult);
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector)</summary>
-        System.Boolean GetCurrentPeriodDates(Int32 ALedgerNumber,
-                                             out DateTime AStartDate,
-                                             out DateTime AEndDate);
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector)</summary>
-        System.Boolean GetCurrentPostingRangeDates(Int32 ALedgerNumber,
-                                                   out DateTime AStartDateCurrentPeriod,
-                                                   out DateTime AEndDateLastForwardingPeriod);
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector)</summary>
-        System.Boolean GetPeriodDates(Int32 ALedgerNumber,
-                                      Int32 AYearNumber,
-                                      Int32 ADiffPeriod,
-                                      Int32 APeriodNumber,
-                                      out DateTime AStartDatePeriod,
-                                      out DateTime AEndDatePeriod);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector)</summary>
         GLBatchTDS CreateABatch(Int32 ALedgerNumber);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector)</summary>
@@ -679,6 +718,16 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.ICH.UIConnectors
     /// <summary>auto generated</summary>
     public interface IICHUIConnectorsNamespace : IInterface
     {
+        /// <summary>auto generated from Connector constructor (Ict.Petra.Server.MFinance.ICH.UIConnectors.TStewardshipCalculationUIConnector)</summary>
+        IICHUIConnectorsStewardshipCalculation StewardshipCalculation(System.Int32 ALedgerNumber,
+                                                                      System.Int32 APeriodNumber);
+    }
+
+    /// <summary>auto generated</summary>
+    public interface IICHUIConnectorsStewardshipCalculation : IInterface
+    {
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.ICH.UIConnectors.TStewardshipCalculationUIConnector)</summary>
+        System.Boolean PerformStewardshipCalculation(out TVerificationResultCollection AVerificationResult);
     }
 
 }
@@ -733,29 +782,6 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Reporting.UIConnectors
     {
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Reporting.UIConnectors.Class)</summary>
         void SelectLedger(System.Int32 ALedgerNr);
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Reporting.UIConnectors.Class)</summary>
-        void GetRealPeriod(System.Int32 ADiffPeriod,
-                           System.Int32 AYear,
-                           System.Int32 APeriod,
-                           out System.Int32 ARealPeriod,
-                           out System.Int32 ARealYear);
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Reporting.UIConnectors.Class)</summary>
-        void GetLedgerPeriodDetails(out System.Int32 ANumberAccountingPeriods,
-                                    out System.Int32 ANumberForwardingPeriods,
-                                    out System.Int32 ACurrentPeriod,
-                                    out System.Int32 ACurrentYear);
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Reporting.UIConnectors.Class)</summary>
-        System.DateTime GetPeriodStartDate(System.Int32 AYear,
-                                           System.Int32 ADiffPeriod,
-                                           System.Int32 APeriod);
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Reporting.UIConnectors.Class)</summary>
-        System.DateTime GetPeriodEndDate(System.Int32 AYear,
-                                         System.Int32 ADiffPeriod,
-                                         System.Int32 APeriod);
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Reporting.UIConnectors.Class)</summary>
-        System.Data.DataTable GetAvailableFinancialYears(System.Int32 ADiffPeriod,
-                                                         out System.String ADisplayMember,
-                                                         out System.String AValueMember);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Reporting.UIConnectors.Class)</summary>
         System.Data.DataTable GetReceivingFields(out System.String ADisplayMember,
                                                  out System.String AValueMember);

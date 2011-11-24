@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -25,6 +25,7 @@ using System;
 using System.Data;
 using System.Collections.Specialized;
 using GNU.Gettext;
+using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -57,7 +58,7 @@ namespace Ict.Petra.Shared.MPartner
 
         /// <summary>
         /// Specifies how to format the String that is returned by Method
-        /// <see cref="DetermineLocationString(PLocationRow, TPartnerLocationFormatEnum)" />.
+        /// <see cref="M:Ict.Petra.Shared.MPartner.Calculations.DetermineLocationString(Ict.Petra.Shared.MPartner.Partner.Data.PLocationRow, Ict.Petra.Shared.MPartner.Calculations.TPartnerLocationFormatEnum)" />.
         /// </summary>
         public enum TPartnerLocationFormatEnum
         {
@@ -140,10 +141,13 @@ namespace Ict.Petra.Shared.MPartner
         }
 
         /// <summary>
-        /// find which address is the best, and mark it the column BestAddress
+        /// Determines which address is the 'Best Address' of a Partner, and marks it in the DataColumn 'BestAddress'.
         /// </summary>
-        /// <param name="APartnerLocationsDS">the dataset with the addresses</param>
-        /// <returns></returns>
+        /// <remarks>There are convenient overloaded server-side Methods, Ict.Petra.Server.MPartner.ServerCalculations.DetermineBestAddress,
+        /// which work by specifying the PartnerKey of a Partner in an Argument.</remarks>
+        /// <param name="APartnerLocationsDS">Dataset containing the addresses of a Partner.</param>
+        /// <returns>A <see cref="TLocationPK" /> which points to the 'Best Address'. If no 'Best Address' was found,
+        /// SiteKey and LocationKey of this instance will be both -1.</returns>
         public static TLocationPK DetermineBestAddress(DataSet APartnerLocationsDS)
         {
             DataTable ProcessDT;
@@ -162,10 +166,13 @@ namespace Ict.Petra.Shared.MPartner
         }
 
         /// <summary>
-        /// find which address is the best, and mark it the column BestAddress
+        /// Determines which address is the 'Best Address' of a Partner, and marks it in the DataColumn 'BestAddress'.
         /// </summary>
-        /// <param name="APartnerLocationsDT">the datatable with the addresses</param>
-        /// <returns></returns>
+        /// <remarks>There are convenient overloaded server-side Methods, Ict.Petra.Server.MPartner.ServerCalculations.DetermineBestAddress,
+        /// which work by specifying the PartnerKey of a Partner in an Argument.</remarks>
+        /// <param name="APartnerLocationsDT">DataTable containing the addresses of a Partner.</param>
+        /// <returns>A <see cref="TLocationPK" /> which points to the 'Best Address'. If no 'Best Address' was found,
+        /// SiteKey and LocationKey of this instance will be both -1.</returns>
         public static TLocationPK DetermineBestAddress(DataTable APartnerLocationsDT)
         {
             TLocationPK ReturnValue;
@@ -186,6 +193,11 @@ namespace Ict.Petra.Shared.MPartner
                 Console.WriteLine("Calculations.DetermineBestAddress: processing " + APartnerLocationsDT.Rows.Count.ToString() + " rows...");
             }
 #endif
+
+            if (APartnerLocationsDT == null)
+            {
+                throw new ArgumentException("Argument APartnerLocationsDT must not be null");
+            }
 
             if (!APartnerLocationsDT.Columns.Contains(PARTNERLOCATION_BESTADDR_COLUMN))
             {
@@ -388,20 +400,10 @@ namespace Ict.Petra.Shared.MPartner
         /// Builds a formatted String out of the data that is contained in a Location.
         /// </summary>
         /// <param name="ALocationDR">DataRow containing the Location data.</param>
-        /// <returns>Formatted String.</returns>
-        public static String DetermineLocationString(PLocationRow ALocationDR)
-        {
-            return DetermineLocationString(ALocationDR, TPartnerLocationFormatEnum.plfLineBreakSeparated);
-        }
-
-        /// <summary>
-        /// Builds a formatted String out of the data that is contained in a Location.
-        /// </summary>
-        /// <param name="ALocationDR">DataRow containing the Location data.</param>
         /// <param name="APartnerLocationStringFormat">Specifies how to format the String that is returned.</param>
         /// <returns>Formatted String.</returns>
         public static String DetermineLocationString(PLocationRow ALocationDR,
-            TPartnerLocationFormatEnum APartnerLocationStringFormat)
+            TPartnerLocationFormatEnum APartnerLocationStringFormat = TPartnerLocationFormatEnum.plfLineBreakSeparated)
         {
             return DetermineLocationString(ALocationDR.Building1,
                 ALocationDR.Building2,
@@ -663,6 +665,17 @@ namespace Ict.Petra.Shared.MPartner
         }
 
         /// <summary>
+        /// Count the relationships
+        /// </summary>
+        /// <param name="ATable">table with subscriptions</param>
+        /// <param name="ATotalRelationships">returns the total number of relationships</param>
+        public static void CalculateTabCountsPartnerRelationships(PPartnerRelationshipTable ATable, out Int32 ATotalRelationships)
+        {
+            // Inspect only CurrentRows (this excludes Deleted DataRows)
+            ATotalRelationships = new DataView(ATable, "", "", DataViewRowState.CurrentRows).Count;
+        }
+
+        /// <summary>
         /// convert shortname from Lastname, firstname, title to another shortname format
         /// TODO: use partner key to get to the full name, resolve issues with couples that have different family names etc
         /// </summary>
@@ -707,6 +720,10 @@ namespace Ict.Petra.Shared.MPartner
             {
                 return names[0];
             }
+            else if (AFormat == eShortNameFormat.eOnlyFirstname)
+            {
+                return names[1];
+            }
             else if (AFormat == eShortNameFormat.eReverseWithoutTitle)
             {
                 if (names.Count > 1)
@@ -744,6 +761,43 @@ namespace Ict.Petra.Shared.MPartner
             }
 
             return "";
+        }
+
+        /// <summary>
+        /// Formats a phone number in international format.
+        /// </summary>
+        /// <remarks>Example:  Phone number=01234 56789, Extension=77, Country=NL. Result=+31 (0)01234 56789-77.</remarks>
+        /// <param name="APhoneNumber">Phone Number.</param>
+        /// <param name="APhoneExtension">Phone Extension.</param>
+        /// <param name="ACountryCode">Country Code of the Country in which the phone number is registered/to be reached.</param>
+        /// <param name="ACacheRetriever">Delegate that returns the a DataTable from the data cache (client- or serverside).
+        /// Delegate Method needs to be for the MCommon Cache (that is, it needs to work with the <see cref="TCacheableCommonTablesEnum" /> Enum!</param>
+        /// <returns></returns>
+        public static string FormatIntlPhoneNumber(string APhoneNumber, string APhoneExtension, string ACountryCode,
+            TGetCacheableDataTableFromCache ACacheRetriever)
+        {
+            string IntlTelephoneCode = CommonCodeHelper.GetCountryIntlTelephoneCode(
+                ACacheRetriever, ACountryCode);
+
+            if (APhoneExtension != String.Empty)
+            {
+                APhoneNumber += "-" + APhoneExtension;
+            }
+
+            if (IntlTelephoneCode != String.Empty)
+            {
+                if ((APhoneNumber.StartsWith("0")
+                     && (APhoneNumber.Substring(1, 1) != "0")))
+                {
+                    APhoneNumber = "(0)" + APhoneNumber.Substring(1);
+                }
+
+                return "+" + IntlTelephoneCode + " " + APhoneNumber;
+            }
+            else
+            {
+                return APhoneNumber;
+            }
         }
 
         /// format a formal greeting for the given partner short name. this formal greeting can be used in a letter

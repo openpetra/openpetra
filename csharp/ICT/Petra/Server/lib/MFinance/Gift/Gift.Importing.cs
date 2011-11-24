@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       matthiash
+//       matthiash, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -286,6 +286,19 @@ namespace Ict.Petra.Server.MFinance.Gift
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// returns the most recently imported gift batch
+        /// </summary>
+        public Int32 GetLastGiftBatchNumber()
+        {
+            if ((FMainDS != null) && (FMainDS.AGiftBatch != null) && (FMainDS.AGiftBatch.Count > 0))
+            {
+                return FMainDS.AGiftBatch[FMainDS.AGiftBatch.Count - 1].BatchNumber;
+            }
+
+            return -1;
         }
 
         private String SpeakingExceptionMessage(Exception ex)

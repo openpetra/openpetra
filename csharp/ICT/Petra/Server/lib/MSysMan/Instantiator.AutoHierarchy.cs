@@ -44,7 +44,8 @@ using System.Threading;
 using System.Runtime.Remoting;
 using System.Security.Cryptography;
 using Ict.Common;
-using Ict.Common.Data;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
 using Ict.Petra.Server.App.Core.Security;
 
@@ -108,7 +109,6 @@ using Ict.Petra.Server.MSysMan.ImportExport.WebConnectors;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Shared.MSysMan;
-using Ict.Petra.Shared.RemotedExceptions;
 #endregion ManualCode
 namespace Ict.Petra.Server.MSysMan.Instantiator
 {

@@ -23,6 +23,7 @@
 //
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Odbc;
 using System.Data.Common;
@@ -31,6 +32,7 @@ using System.Threading;
 using System.IO;
 using System.Xml;
 using System.Web;
+using Ict.Common;
 using Ict.Common.DB.DBCaching;
 using Ict.Common.IO;
 
@@ -235,6 +237,10 @@ namespace Ict.Common.DB
         /// restart a sequence with the given value
         /// </summary>
         void RestartSequence(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase, IDbConnection AConnection, Int64 ARestartValue);
+
+        /// update a database when starting the OpenPetra server. otherwise throw an exception
+        void UpdateDatabase(TFileVersionInfo ADBVersion, TFileVersionInfo AExeVersion,
+            string AHostOrFile, string ADatabasePort, string ADatabaseName, string AUsername, string APassword);
     }
 
     /// <summary>
@@ -254,7 +260,7 @@ namespace Ict.Common.DB
     ///   executing SQL batch statements from which multiple DataTable objects would
     ///   be expected! TODO: this comment needs revising, with native drivers
     /// </summary>
-    public class TDataBase : MarshalByRefObject
+    public class TDataBase
     {
         /// <summary>References the DBConnection instance</summary>
         private TDBConnection FDBConnectionInstance;
@@ -492,6 +498,53 @@ namespace Ict.Common.DB
                     String.Format("Exception occured while establishing a connection to Database Server. DB Type: {0}", FDbType));
 
                 throw new EDBConnectionNotEstablishedException(CurrentConnectionInstance.GetConnectionString() + ' ' + exp.ToString());
+            }
+
+            CheckDatabaseVersion();
+        }
+
+        /// <summary>
+        /// Application and Database should have the same version, otherwise all sorts of things can go wrong.
+        /// this is specific to the OpenPetra database, for all other databases it will just ignore the database version check
+        /// </summary>
+        private void CheckDatabaseVersion()
+        {
+            if (TAppSettingsManager.GetValue("action", string.Empty, false) == "patchDatabase")
+            {
+                // we want to upgrade the database, so don't check for the database version
+                return;
+            }
+
+            string DBPatchVersion;
+            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+
+            try
+            {
+                // now check if the database is uptodate; otherwise run db patch against it
+                DBPatchVersion =
+                    Convert.ToString(DBAccess.GDBAccessObj.ExecuteScalar(
+                            "SELECT s_default_value_c FROM PUB_s_system_defaults WHERE s_default_code_c = 'CurrentDatabaseVersion'",
+                            transaction));
+            }
+            catch (Exception)
+            {
+                // this can happen when connecting to an old Petra 2.x database, or a completely different database
+                return;
+            }
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            TFileVersionInfo dbversion = new TFileVersionInfo(DBPatchVersion);
+            TFileVersionInfo serverExeInfo = new TFileVersionInfo(TFileVersionInfo.GetApplicationVersion());
+
+            if (dbversion.Compare(serverExeInfo) < 0)
+            {
+                // for a proper server, the patchtool should have already updated the database
+
+                // for standalone versions, we update the database on the fly when starting the server
+                FDataBaseRDBMS.UpdateDatabase(dbversion, serverExeInfo, FDsnOrServer, FDBPort, FDatabaseName, FUsername, FPassword);
             }
         }
 
@@ -2063,9 +2116,18 @@ namespace Ict.Common.DB
         /// <summary>
         /// read an sql statement from file and remove the comments
         /// </summary>
-        /// <param name="ASqlFilename"></param>
-        /// <returns></returns>
         public static string ReadSqlFile(string ASqlFilename)
+        {
+            return ReadSqlFile(ASqlFilename, null);
+        }
+
+        /// <summary>
+        /// read an sql statement from file and remove the comments
+        /// </summary>
+        /// <param name="ASqlFilename"></param>
+        /// <param name="ADefines">Defines to be set in the sql statement</param>
+        /// <returns></returns>
+        public static string ReadSqlFile(string ASqlFilename, List <string>ADefines)
         {
             ASqlFilename = TAppSettingsManager.GetValue("SqlFiles.Path", ".") +
                            Path.DirectorySeparatorChar +
@@ -2085,12 +2147,26 @@ namespace Ict.Common.DB
             {
                 if (!line.Trim().StartsWith("--"))
                 {
-                    stmt += line.Trim() + " ";
+                    stmt += line.Trim() + Environment.NewLine;
                 }
             }
 
             reader.Close();
-            return stmt;
+
+            if (ADefines != null)
+            {
+                ProcessTemplate template = new ProcessTemplate(null);
+                template.FTemplateCode = stmt;
+
+                foreach (string define in ADefines)
+                {
+                    template.SetCodelet(define, "enabled");
+                }
+
+                return template.FinishWriting(true).Replace(Environment.NewLine, " ");
+            }
+
+            return stmt.Replace(Environment.NewLine, " ");
         }
 
         private bool FConnectionReady = false;
@@ -2511,13 +2587,13 @@ namespace Ict.Common.DB
     /// <remarks>
     /// <em>IMPORTANT:</em> This Transaction Class does not have Commit or
     /// Rollback methods! This is so that the programmers are forced to use the
-    /// CommitTransaction and RollbackTransaction methods of the <see cref="DB.TDataBase" /> Class.
+    /// CommitTransaction and RollbackTransaction methods of the <see cref="TDataBase" /> Class.
     /// <para>
     /// The reasons for this:
     /// <list type="bullet">
-    /// <item><see cref="DB.TDataBase" /> can know whether a Transaction is
+    /// <item><see cref="TDataBase" /> can know whether a Transaction is
     /// running (unbelievably, there is no way to find this out through ADO.NET!)</item>
-    /// <item><see cref="DB.TDataBase" /> can log Commits and Rollbacks. Another benefit of using this
+    /// <item><see cref="TDataBase" /> can log Commits and Rollbacks. Another benefit of using this
     /// Class instead of a concrete implementation of ADO.NET Transaction Classes
     /// (eg. <see cref="OdbcTransaction" />) is that it is not tied to a specific ADO.NET
     /// provider, therefore making it easier to use a different ADO.NET provider than ODBC.</item>
@@ -2561,7 +2637,7 @@ namespace Ict.Common.DB
         /// The actual IDbTransaction.
         /// <para><em><b>WARNING:</b> do not do anything
         /// with this Object other than inspecting it; the correct
-        /// working of Transactions in the <see cref="DB.TDataBase" />
+        /// working of Transactions in the <see cref="TDataBase" />
         /// Object relies on the fact that it manages everything about
         /// a Transaction!!!</em>
         /// </para>

@@ -324,6 +324,16 @@ namespace Ict.Petra.Client.App.Core
                         AMotivationDetailTable.GetLedgerNumberDBName(), ALedgerNumber, out DataTableType);
                         break;
 
+                    case TCacheableFinanceTablesEnum.FeesPayableList:
+                        ReturnValue = GetBasedOnLedger(ACacheableTable,
+                        AFeesPayableTable.GetLedgerNumberDBName(), ALedgerNumber, out DataTableType);
+                        break;
+
+                    case TCacheableFinanceTablesEnum.FeesReceivableList:
+                        ReturnValue = GetBasedOnLedger(ACacheableTable,
+                        AFeesReceivableTable.GetLedgerNumberDBName(), ALedgerNumber, out DataTableType);
+                        break;
+
                     default:
 
                         // $IFDEF DEBUGMODE MessageBox.Show('GetCacheableFinanceTable: Cache Table ''' + Enum.GetName(typeof(
@@ -402,7 +412,7 @@ namespace Ict.Petra.Client.App.Core
                 catch (Exception ex)
                 {
                     // most probably a permission problem: System.Runtime.Remoting.RemotingException: Requested Service not found
-                    throw new Exception(Catalog.GetString("You do not have enough permissions to access the Finance module:\n") + ex);
+                    throw new Exception(Catalog.GetString("You do not have enough permissions to access the Finance module:") + "\n" + ex);
                 }
             }
         }
@@ -846,6 +856,25 @@ namespace Ict.Petra.Client.App.Core
             Type DataTableType;
 
             return GetCacheableDataTableFromCache(ACacheableTableName, "", null, out DataTableType);
+        }
+
+        /// <summary>
+        /// Returns the chosen DataTable from the Client-side Cache.
+        ///
+        /// If the DataTable is not available on the Client side, this procedure checks
+        /// whether it available from a file and whether this file contains up-to-date
+        /// data. If it isn't available from file or the file is out of date, the
+        /// DataTable is retrieved once from the Petra Server and persisted in a file
+        /// (as Binary Serialized DataTable) before giving it to the caller.
+        /// </summary>
+        /// <remarks>Can be used with the TGetCacheableDataTableFromCache delegate.</remarks>
+        /// <param name="ACacheableTableName">The cached DataTable that should be returned in the
+        /// DataTable</param>
+        /// <param name="AType"><see cref="System.Type" /> of the returned <see cref="DataTable" />.</param>
+        /// <returns>Chosen DataTable.</returns>
+        public static DataTable GetCacheableDataTableFromCache(String ACacheableTableName, out System.Type AType)
+        {
+            return GetCacheableDataTableFromCache(ACacheableTableName, "", null, out AType);
         }
 
         /// <summary>

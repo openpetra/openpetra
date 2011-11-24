@@ -23,10 +23,10 @@
 //
 using System;
 using System.Data;
+using Ict.Common;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.RemotedExceptions;
-using Ict.Common;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;

@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       wolfgangu
+//       wolfgangu, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -145,7 +145,7 @@ namespace Ict.Petra.Server.MFinance.GL
     {
         TLedgerInfo ledgerInfo;
         TAccountInfo accountInfo;
-        TCostCenterInfo costCenterInfo;
+        ACostCentreTable costCentres;
 
         TGlmpInfo glmpInfo;
         TGlmInfo glmInfo;
@@ -162,7 +162,7 @@ namespace Ict.Petra.Server.MFinance.GL
             ledgerInfo = ALedgerInfo;
         }
 
-        private void CaculateAccountList()
+        private void CalculateAccountList()
         {
             accountInfo = new TAccountInfo(ledgerInfo);
             bool blnIncomeFound = false;
@@ -228,7 +228,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 blnCriticalErrors = true;
             }
 
-            costCenterInfo = new TCostCenterInfo(ledgerInfo.LedgerNumber);
+            costCentres = ACostCentreAccess.LoadViaALedger(ledgerInfo.LedgerNumber, null);
         }
 
         /// <summary>
@@ -262,7 +262,7 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             if (accountList == null)
             {
-                CaculateAccountList();
+                CalculateAccountList();
             }
 
             if (DoExecuteableCode)
@@ -299,25 +299,25 @@ namespace Ict.Petra.Server.MFinance.GL
                     // Loop with all cost centres
                     glmInfo.Reset();
 
+                    ACostCentreRow currentCostCentre;
+                    costCentres.DefaultView.Sort = ACostCentreTable.GetCostCentreCodeDBName();
+
                     while (glmInfo.MoveNext())
                     {
-                        costCenterInfo.SetCostCenterRow(glmInfo.CostCentreCode);
+                        currentCostCentre = (ACostCentreRow)costCentres.DefaultView[costCentres.DefaultView.Find(glmInfo.CostCentreCode)].Row;
 
-                        if (costCenterInfo.IsValid)
+                        if (currentCostCentre.PostingCostCentreFlag)
                         {
-                            if (costCenterInfo.PostingCostCentreFlag)
+                            if (glmpInfo.SetToRow(
+                                    glmInfo.GlmSequence,
+                                    ledgerInfo.NumberOfAccountingPeriods))
                             {
-                                if (glmpInfo.SetToRow(
-                                        glmInfo.GlmSequence,
-                                        ledgerInfo.NumberOfAccountingPeriods))
+                                if (glmpInfo.ActualBase != 0)
                                 {
-                                    if (glmpInfo.ActualBase != 0)
+                                    if (glmInfo.YtdActualBase != 0)
                                     {
-                                        if (glmInfo.YtdActualBase != 0)
-                                        {
-                                            ReallocationLoop(strAccountCode,
-                                                glmInfo.CostCentreCode);
-                                        }
+                                        ReallocationLoop(strAccountCode,
+                                            glmInfo.CostCentreCode);
                                     }
                                 }
                             }

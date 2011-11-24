@@ -13,6 +13,16 @@ RootNode:
         Closed: {class=System.EventHandler, method=TPartnerFindScreen_Closed}
     Actions:
         actFileWorkWithLastPartner: {ActionClick=MniFile_Click}
+        actFileRecentPartner1: {ActionClick=MniFileRecentPartner_Click}
+        actFileRecentPartner2: {ActionClick=MniFileRecentPartner_Click}
+        actFileRecentPartner3: {ActionClick=MniFileRecentPartner_Click}
+        actFileRecentPartner4: {ActionClick=MniFileRecentPartner_Click}
+        actFileRecentPartner5: {ActionClick=MniFileRecentPartner_Click}
+        actFileRecentPartner6: {ActionClick=MniFileRecentPartner_Click}
+        actFileRecentPartner7: {ActionClick=MniFileRecentPartner_Click}
+        actFileRecentPartner8: {ActionClick=MniFileRecentPartner_Click}
+        actFileRecentPartner9: {ActionClick=MniFileRecentPartner_Click}
+        actFileRecentPartner10: {ActionClick=MniFileRecentPartner_Click}
         actFileNewPartner: {ActionClick=MniFile_Click, Image: NewPartner.ico}
         actFileEditPartner: {ActionClick=MniFile_Click, Image: EditPartner.ico}
         actFileMergePartners: {ActionClick=MniFile_Click, Image=MergePartner.ico}
@@ -124,7 +134,7 @@ RootNode:
             mniEditCopyEmailAddress: {Label=Copy Partner\'s E&mail Address}
             
         mniMaintain: 
-            label: Ma&intain
+            Label: Ma&intain
             mniMaintainAddresses:
             mniMaintainPartnerDetails:
             mniMaintainFoundationDetails:
@@ -139,7 +149,7 @@ RootNode:
             mniMaintainLocalPartnerData:
             mniMaintainWorkerField:
             mniSeparator:
-            mniMaintainPersonnelData:
+            mniMaintainPersonnelData: {Label=&Personnel/Individual Data...}
             mniSeparator:
             mniMaintainDonorHistory:
             mniMaintainRecipientHistory:
