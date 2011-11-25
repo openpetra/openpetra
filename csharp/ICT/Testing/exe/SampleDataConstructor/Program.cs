@@ -37,8 +37,9 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Verification;
 using Ict.Common;
+using SampleDataConstructor;
 
-namespace SampleDataConstructor
+namespace Ict.Testing.SampleDataConstructor
 {
 /// <summary>
 /// This class creates sample data (partners, organisations, gifts) and imports them into OpenPetra.
@@ -110,7 +111,6 @@ class TSampleDataConstructor
             TPetraServerConnector.Connect("../../etc/TestServer.config");
             //// WISHLIST: check that database is empty before attempting to fill
             // checkDatabaseEmpty();
-
 
             TLogging.Log("(1) Read raw data files into memory");
 

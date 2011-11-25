@@ -28,13 +28,8 @@ errorHandler severities: ignore, trace, debug, info, warn, error, fatal
 <include uri="default-location.ben.xml"/>
 <include uri="default-location-other-way.properties"/>
 
-<comment> Define number of created entries </comment>
-<property name="people_count" value="1000" />
-<property name="organisations_count" value="200" />
-<property name="addresses_count" value="1500" />
-
 <comment> Finally create data </comment>
-<include uri="create-data.ben.xml"/>
-		
+<include uri="create-data.local.ben.xml"/>
+
 </setup>
 

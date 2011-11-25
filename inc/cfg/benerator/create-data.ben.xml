@@ -27,8 +27,8 @@ US (UStates)  600 w / 1000 w   * #
 Recommended: (BR),DE,US
 </comment>
 
-<generate type="Person" count="{people_count}" 
-	consumer="new CSVEntityExporter(uri='../created-data/people.csv')">
+<generate type="Person" count="${people_count}" 
+	consumer="new CSVEntityExporter(uri='${dir.data.output}/people.csv')">
 				
 	<variable name="person" generator="PersonGenerator" />
 	<id name="identifier" type="long"  />		<attribute name="active" type="boolean" constant="true" />
@@ -40,9 +40,7 @@ Recommended: (BR),DE,US
 	<attribute name="FamilyName" script="person.familyName" />
 	<attribute name="DateOfBirth" script="person.birthDate" />
 	<attribute name="Email" script="person.email" />
-	<comment>
-	<attribute name="language" script="person.locale" /> <!-- e.g. "de" -->
-	</comment>
+	<!-- <attribute name="language" script="person.locale" /> --> <!-- e.g. "de" -->
 </generate>
 
 <echo>\n ### GENERATE ORGANISATIONS ### \n</echo>
@@ -50,7 +48,7 @@ Recommended: (BR),DE,US
 <!-- Organisation: okay -->
 <comment> company names can be generated for DE and US (according to benerator manual 0.6.5)</comment>	
 <comment> attributes in Capital letters also have that attribute name in Petra. The others are informational only for the time being.</comment>
-<generate type="Organisation" count="{organisations_count}" consumer="new CSVEntityExporter(uri='../created-data/organisations.csv')">
+<generate type="Organisation" count="${organisations_count}" consumer="new CSVEntityExporter(uri='${dir.data.output}/organisations.csv')">
 <!--
 	<variable name="organisation" generator="CompanyNameGenerator" dataset="DE" locale="de_DE" />	
 -->
@@ -69,7 +67,7 @@ Recommended: (BR),DE,US
 In Petra, addresses are stored as "partner locations" / "location" .
 partner -> partner-location -> location
 </comment>
-<generate type="Address" count="{addresses_count}" consumer="new CSVEntityExporter(uri='../created-data/addresses.csv')">
+<generate type="Address" count="${addresses_count}" consumer="new CSVEntityExporter(uri='${dir.data.output}/addresses.csv')">
 
 	<variable name="address" generator="AddressGenerator" />
 
