@@ -42,7 +42,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private TPartnerEditScreenLogic.TModuleTabGroupEnum FCurrentModuleTabGroup;
         private TPartnerEditTabPageEnum FInitiallySelectedTabPage;
         private TPartnerEditTabPageEnum FCurrentlySelectedTabPage;
-        private List<string> FInitialisedChildUCs = new List<string>(3);
+        private List <string>FInitialisedChildUCs = new List <string>(3);
 
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
@@ -190,101 +190,101 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 case TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner:
 
-            		if (!FInitialisedChildUCs.Contains(ucoPartnerTabSet.GetType().Name)) 
-            		{
-            			FInitialisedChildUCs.Add(ucoPartnerTabSet.GetType().Name);
-            			
-	            		this.ParentForm.Cursor = Cursors.WaitCursor;
-	            		
-	                    ucoPartnerTabSet.PetraUtilsObject = FPetraUtilsObject;
-	                    ucoPartnerTabSet.PartnerEditUIConnector = FPartnerEditUIConnector;
-						
-	                    if (!FInitialisedChildUCs.Contains(ucoPersonnelTabSet.GetType().Name)) 
-	                    {
-	                    	ucoPartnerTabSet.InitiallySelectedTabPage = FInitiallySelectedTabPage;
-	                    }
-	                    else
-	                    {
-	                    	ucoPartnerTabSet.InitiallySelectedTabPage = TPartnerEditTabPageEnum.petpDetails;
-	                    }							
-            		
-	                    ucoPartnerTabSet.MainDS = FMainDS;
-	                    ucoPartnerTabSet.SpecialInitUserControl();
-	                    ucoPartnerTabSet.HookupDataChange += new THookupDataChangeEventHandler(ucoPartnerTabSet_HookupDataChange);
-	                    ucoPartnerTabSet.HookupPartnerEditDataChange += new THookupPartnerEditDataChangeEventHandler(
-	                    ucoPartnerTabSet_HookupPartnerEditDataChange);
-	                    
-	                    this.ParentForm.Cursor = Cursors.Default;           			
-            		}
-            		
-					ucoPartnerTabSet.Visible = true;
-	                ucoPersonnelTabSet.Visible = false;
+                    if (!FInitialisedChildUCs.Contains(ucoPartnerTabSet.GetType().Name))
+                    {
+                        FInitialisedChildUCs.Add(ucoPartnerTabSet.GetType().Name);
+
+                        this.ParentForm.Cursor = Cursors.WaitCursor;
+
+                        ucoPartnerTabSet.PetraUtilsObject = FPetraUtilsObject;
+                        ucoPartnerTabSet.PartnerEditUIConnector = FPartnerEditUIConnector;
+
+                        if (!FInitialisedChildUCs.Contains(ucoPersonnelTabSet.GetType().Name))
+                        {
+                            ucoPartnerTabSet.InitiallySelectedTabPage = FInitiallySelectedTabPage;
+                        }
+                        else
+                        {
+                            ucoPartnerTabSet.InitiallySelectedTabPage = TPartnerEditTabPageEnum.petpDetails;
+                        }
+
+                        ucoPartnerTabSet.MainDS = FMainDS;
+                        ucoPartnerTabSet.SpecialInitUserControl();
+                        ucoPartnerTabSet.HookupDataChange += new THookupDataChangeEventHandler(ucoPartnerTabSet_HookupDataChange);
+                        ucoPartnerTabSet.HookupPartnerEditDataChange += new THookupPartnerEditDataChangeEventHandler(
+                            ucoPartnerTabSet_HookupPartnerEditDataChange);
+
+                        this.ParentForm.Cursor = Cursors.Default;
+                    }
+
+                    ucoPartnerTabSet.Visible = true;
+                    ucoPersonnelTabSet.Visible = false;
 
                     break;
 
                 case TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPersonnel:
 
-            		if (!FInitialisedChildUCs.Contains(ucoPersonnelTabSet.GetType().Name)) 
-            		{
-            			FInitialisedChildUCs.Add(ucoPersonnelTabSet.GetType().Name);     
-            			
-						this.ParentForm.Cursor = Cursors.WaitCursor;            		
-	
-	                    ucoPersonnelTabSet.PetraUtilsObject = FPetraUtilsObject;
-	                    ucoPersonnelTabSet.PartnerEditUIConnector = FPartnerEditUIConnector;
-	                    
-	                    if (!FInitialisedChildUCs.Contains(ucoPartnerTabSet.GetType().Name))
-	                    {
-	                    	ucoPersonnelTabSet.InitiallySelectedTabPage = FInitiallySelectedTabPage;
-	                    }
-	                    else
-	                    {
-	                    	ucoPersonnelTabSet.InitiallySelectedTabPage = TPartnerEditTabPageEnum.petpPersonnelIndividualData;
-	                    }							
+                    if (!FInitialisedChildUCs.Contains(ucoPersonnelTabSet.GetType().Name))
+                    {
+                        FInitialisedChildUCs.Add(ucoPersonnelTabSet.GetType().Name);
 
-	                    ucoPersonnelTabSet.MainDS = FMainDS;
-	                    ucoPersonnelTabSet.SpecialInitUserControl();
-	
-	                    this.ParentForm.Cursor = Cursors.Default;
-            		}
-            		
+                        this.ParentForm.Cursor = Cursors.WaitCursor;
+
+                        ucoPersonnelTabSet.PetraUtilsObject = FPetraUtilsObject;
+                        ucoPersonnelTabSet.PartnerEditUIConnector = FPartnerEditUIConnector;
+
+                        if (!FInitialisedChildUCs.Contains(ucoPartnerTabSet.GetType().Name))
+                        {
+                            ucoPersonnelTabSet.InitiallySelectedTabPage = FInitiallySelectedTabPage;
+                        }
+                        else
+                        {
+                            ucoPersonnelTabSet.InitiallySelectedTabPage = TPartnerEditTabPageEnum.petpPersonnelIndividualData;
+                        }
+
+                        ucoPersonnelTabSet.MainDS = FMainDS;
+                        ucoPersonnelTabSet.SpecialInitUserControl();
+
+                        this.ParentForm.Cursor = Cursors.Default;
+                    }
+
                     ucoPersonnelTabSet.Visible = true;
                     ucoPartnerTabSet.Visible = false;
-                    
+
                     break;
             }
 
             // TODO Other TabSets (Finance Data)
-            
+
             FCurrentModuleTabGroup = AModuleTabGroup;
         }
 
         /// <summary>
         /// Switches to the corresponding TabPage.
         /// </summary>
-        /// <remarks>If the TabPage is on a different TabGroup than the one that is currently 
+        /// <remarks>If the TabPage is on a different TabGroup than the one that is currently
         /// shown, the TabGroup is first switched to (and it is initialised, if needed).</remarks>
         /// <param name="ATabPage">TapPage to switch to.</param>
         public void SelectTabPage(TPartnerEditTabPageEnum ATabPage)
         {
-        	TPartnerEditScreenLogic.TModuleTabGroupEnum ModuleTabGroup = TPartnerEditScreenLogic.DetermineTabGroup(ATabPage);
-        	
-        	ShowChildUserControl(ModuleTabGroup);
-        	
+            TPartnerEditScreenLogic.TModuleTabGroupEnum ModuleTabGroup = TPartnerEditScreenLogic.DetermineTabGroup(ATabPage);
+
+            ShowChildUserControl(ModuleTabGroup);
+
             switch (ModuleTabGroup)
             {
-                case TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner:            		
-            		ucoPartnerTabSet.SelectTabPage(ATabPage);
-            		break;
-            
-        		case TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPersonnel:
-            		ucoPersonnelTabSet.SelectTabPage(ATabPage);
-            		break;
-            		
-				// TODO Other TabSets (Finance Data)            		
+                case TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner:
+                    ucoPartnerTabSet.SelectTabPage(ATabPage);
+                    break;
+
+                case TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPersonnel:
+                    ucoPersonnelTabSet.SelectTabPage(ATabPage);
+                    break;
+
+                    // TODO Other TabSets (Finance Data)
             }
         }
-        
+
         void ucoPartnerTabSet_HookupPartnerEditDataChange(object Sender, THookupPartnerEditDataChangeEventArgs e)
         {
             OnHookupPartnerEditDataChange(e);
