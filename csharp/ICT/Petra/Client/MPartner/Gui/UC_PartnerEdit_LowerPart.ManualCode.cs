@@ -177,6 +177,27 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        /// <summary>
+        /// Returns the PLocation DataRow of the currently selected Address.
+        /// </summary>
+        /// <remarks>Performs all necessary initialisations in case the Partner TabGroup and/or
+        /// the Address Tab haven't been initialised before.</remarks>
+        public PLocationRow LocationDataRowOfCurrentlySelectedAddress
+        {
+        	get
+        	{
+                if (!ucoPartnerTabSet.IsDynamicallyLoadableTabSetUp(TUC_PartnerEdit_PartnerTabSet.TDynamicLoadableUserControls.dlucAddresses))
+                {
+                	InitChildUserControl(TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner);
+                	
+                    // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);'
+                    ucoPartnerTabSet.SetUpPartnerAddress();
+	            }
+	
+	            return ucoPartnerTabSet.LocationDataRowOfCurrentlySelectedAddress;
+        	}
+        }        
+        
         #endregion
 
         #region Public Methods
@@ -184,7 +205,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// Initialises the UserControl that has the Tabs for the currently selected Tab.
         /// </summary>
-        public void ShowChildUserControl(TPartnerEditScreenLogic.TModuleTabGroupEnum AModuleTabGroup)
+        private void InitChildUserControl(TPartnerEditScreenLogic.TModuleTabGroupEnum AModuleTabGroup)
         {
             switch (AModuleTabGroup)
             {
@@ -217,9 +238,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                         this.ParentForm.Cursor = Cursors.Default;
                     }
 
-                    ucoPartnerTabSet.Visible = true;
-                    ucoPersonnelTabSet.Visible = false;
-
                     break;
 
                 case TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPersonnel:
@@ -248,9 +266,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                         this.ParentForm.Cursor = Cursors.Default;
                     }
 
-                    ucoPersonnelTabSet.Visible = true;
-                    ucoPartnerTabSet.Visible = false;
-
                     break;
             }
 
@@ -259,6 +274,32 @@ namespace Ict.Petra.Client.MPartner.Gui
             FCurrentModuleTabGroup = AModuleTabGroup;
         }
 
+        /// <summary>
+        /// Shows the UserControl that has the Tabs for the currently selected Tab. If needed, initialisation
+        /// of the UserContol is done.
+        /// </summary>
+        public void ShowChildUserControl(TPartnerEditScreenLogic.TModuleTabGroupEnum AModuleTabGroup)
+        {
+        	InitChildUserControl(AModuleTabGroup);
+            		
+            switch (AModuleTabGroup)
+            {
+                case TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner:            	
+            		
+                    ucoPartnerTabSet.Visible = true;
+                    ucoPersonnelTabSet.Visible = false;
+
+            		break;
+            		
+                case TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPersonnel:
+
+                    ucoPersonnelTabSet.Visible = true;
+                    ucoPartnerTabSet.Visible = false;  
+                    
+            		break;
+            }
+        }
+        
         /// <summary>
         /// Switches to the corresponding TabPage.
         /// </summary>

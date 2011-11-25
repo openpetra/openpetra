@@ -16,7 +16,7 @@ RootNode:
         Load: {class=System.EventHandler, method=TFrmPartnerEdit2_Load}    
 
     Actions:
-        actFileNewPartner: {Label=&New Partner..., ActionClick=FileNewPartner, Image: NewPartner.ico}
+        actNewPartner: {ActionClick=FileNewPartner, Image: NewPartner.ico}
         actFileNewPartnerWithShepherdPerson: {Label=Add &Person with Shepherd..., ActionClick=FileNewPartnerWithShepherdPerson}
         actFileNewPartnerWithShepherdFamily: {Label=Add &Family with Shepherd..., ActionClick=FileNewPartnerWithShepherdFamily}
         actFileNewPartnerWithShepherdChurch: {Label=Add &Church with Shepherd..., ActionClick=FileNewPartnerWithShepherdChurch}
@@ -78,7 +78,7 @@ RootNode:
             Dock: Fill            
     Menu:
         mniFile: 
-            mniFileNewPartner: {Action=actNewPartner, Order=AlwaysFirst}
+            mniFileNewPartner: {Label=&New Partner..., Action=actNewPartner, Order=AlwaysFirst}
             mniFileNewPartnerWithShepherd: {Label: N&ew Partner (Shepherd), Action=actFileNewPartnerWithShepherd, Order=AlwaysFirst, Image: NewPartner.ico}
                 mniFileNewPartnerWithShepherdPerson:
                 mniFileNewPartnerWithShepherdFamily:
