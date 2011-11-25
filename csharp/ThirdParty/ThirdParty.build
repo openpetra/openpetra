@@ -27,6 +27,8 @@
   <include name="Npgsql.dll"/>
   <include name="Mono.Security.dll" /> <!-- Needed for Npgsql.dll -->
   <include name="MySql.Data.dll"/>
+  <include name="Mono.Data.Sqlite.dll"/>
+  <include name="sqlite3.dll"/>
   <include name="ICSharpCode.SharpZipLib.dll"/>
   <include name="ExcelLibrary.dll"/>
   <include name="Jayrock.Json.dll"/>
