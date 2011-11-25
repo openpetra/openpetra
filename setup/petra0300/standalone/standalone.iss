@@ -29,7 +29,8 @@ Name: {app}/demo30
 
 [Files]
 Source: ..\..\..\delivery\bin\SourceGrid.dll; DestDir: {app}/bin30; Flags: ignoreversion
-Source: ..\..\..\delivery\bin\System.Data.SQLite.dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\delivery\bin\Mono.Data.Sqlite.dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\delivery\bin\sqlite3.dll; DestDir: {app}/bin30; Flags: ignoreversion
 Source: ..\..\..\delivery\bin\ICSharpCode.SharpZipLib.dll; DestDir: {app}/bin30; Flags: ignoreversion
 Source: ..\..\..\delivery\bin\GNU.Gettext.dll; DestDir: {app}/bin30; Flags: ignoreversion
 Source: ..\..\..\delivery\bin\Npgsql.dll; DestDir: {app}/bin30; Flags: ignoreversion

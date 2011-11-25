@@ -90,7 +90,8 @@ Section "Main Section" SecInstallFiles
   CreateDirectory "$INSTDIR\bin30"
   SetOutPath "$INSTDIR\bin30"
   File ..\..\..\csharp\ThirdParty\DevAge\SourceGrid.dll
-  File ..\..\..\csharp\ThirdParty\SQLite\System.Data.SQLite.dll
+  File ..\..\..\csharp\ThirdParty\SQLite\Mono.Data.Sqlite.dll
+  File ..\..\..\csharp\ThirdParty\SQLite\sqlite3.dll
   File ..\..\..\csharp\ThirdParty\ICSharpCode\ICSharpCode.SharpZipLib.dll
   File ..\..\..\csharp\ThirdParty\GNU\GNU.Gettext.dll
   File ..\..\..\csharp\ThirdParty\Npgsql\Npgsql.dll
