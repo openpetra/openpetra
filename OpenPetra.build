@@ -54,8 +54,8 @@ releases:
   buildRemoteInstallers -D:ReleaseID=0.0.2.0 -D:OrgName=&quot;Your Organisation&quot; -D:PublisherUrl=www.ProviderWebsite.com -D:HostedServer=app.Provider.com -D:HostedPort=9000 -D:WithLinuxClient=false
 
 demodata:
-  generateDemoData: create demo data
-  importDemoData: imports demo data into the database
+  generateDemodata: create demo data
+  importDemodata: imports demo data into the database
 
 list of commands, which works in the specific csharp directories:
   indent: beautify the code according to coding style guide

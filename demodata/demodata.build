@@ -22,6 +22,13 @@
             <variable name="PATH" value="${path::get-directory-name(external.Java)}"/>
         </environment>
     </exec>
-</target> 
+</target>
+
+<target name="importDemodata" depends="init">
+    <!-- requires a server to be started that we can connect to and upload our data -->
+    <ExecDotNet program="${dir.bin}/Ict.Testing.SampleDataConstructor.exe" 
+        commandline="-C:&quot;${dir.etc}/TestServer.config&quot; -dir.data.generated:&quot;${dir.root}/demodata/generated&quot;"
+        failonerror="true"/>
+</target>
 
 </project>
