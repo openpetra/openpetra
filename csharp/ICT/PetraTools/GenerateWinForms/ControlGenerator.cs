@@ -1761,7 +1761,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     ReturnValue = true;
                 }
 
-                if ((NumberFormat == "Decimal")
+                if (NumberFormat == "LongInteger")
+                {
+                    FControlMode = "LongInteger";
+
+                    ReturnValue = true;
+                }
+
+				if ((NumberFormat == "Decimal")
                     || (NumberFormat == "PercentDecimal")
                     || (NumberFormat.StartsWith("Decimal("))
                     || (NumberFormat.StartsWith("PercentDecimal(")))
@@ -1846,12 +1853,19 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
                 else
                 {
-                    return ctrl.controlName + ".NumberValueInt = null;";
+					if (FControlMode == "Integer")                	
+					{
+                    	return ctrl.controlName + ".NumberValueInt = null;";
+					}
+					else
+					{
+						return ctrl.controlName + ".NumberValueLongInt = null;";
+					}
                 }
             }
             else
             {
-                if (AFieldTypeDotNet.ToLower().Contains("int"))
+                if (AFieldTypeDotNet.ToLower() == "int32")
                 {
                     if (AFieldOrNull == null)
                     {
@@ -1860,6 +1874,15 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                     return ctrl.controlName + ".NumberValueInt = " + AFieldOrNull + ";";
                 }
+                else if (AFieldTypeDotNet.ToLower() == "int64")
+                {
+                    if (AFieldOrNull == null)
+                    {
+                        return ctrl.controlName + ".NumberValueLongInt = null;";
+                    }
+
+                    return ctrl.controlName + ".NumberValueLongInt = " + AFieldOrNull + ";";
+                }                
                 else if (AFieldTypeDotNet.ToLower().Contains("decimal"))
                 {
                     if (AFieldOrNull == null)
@@ -1899,15 +1922,22 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
                 else
                 {
-                    return ctrl.controlName + ".NumberValueInt == null";
+                	if (FControlMode == "Integer")
+                	{
+                		return ctrl.controlName + ".NumberValueInt == null";	
+                	}
+                    else
+                    {
+                    	return ctrl.controlName + ".NumberValueLongInt == null";	
+                    }
                 }
             }
 
-            if (AFieldTypeDotNet.ToLower().Contains("int64"))
+            if (AFieldTypeDotNet.ToLower() == "int64")
             {
-                return "Convert.ToInt64(" + ctrl.controlName + ".NumberValueInt)";
+                return "Convert.ToInt64(" + ctrl.controlName + ".NumberValueLongInt)";
             }
-            else if (AFieldTypeDotNet.ToLower().Contains("int"))
+            else if (AFieldTypeDotNet.ToLower() == "int32")
             {
                 return "Convert.ToInt32(" + ctrl.controlName + ".NumberValueInt)";
             }

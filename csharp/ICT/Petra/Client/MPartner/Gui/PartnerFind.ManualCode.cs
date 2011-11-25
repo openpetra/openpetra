@@ -406,7 +406,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 // Only need to work on the Maintain Menu, and not the ContextMenu
                 // (ContextMenu can't be activated when there are no Rows)
-                mniMaintainFamilyMembers.Text = Resourcestrings.StrFamilyMembersMenuItemText;
+                mniMaintainFamilyMembers.Text = Resourcestrings.StrFamilyMembersMenuItemText + "...";
             }
             else
             {
@@ -425,7 +425,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
                 }
 
-                mniMaintainPersonnelData.Text = Resourcestrings.StrPersonnelPersonMenuItemText;
+                mniMaintainPersonnelData.Text = Resourcestrings.StrPersonnelPersonMenuItemText + "...";
 
                 /*
                  * Set the Maintain Menu and ContextMenu MenuItems up - according to the
@@ -444,12 +444,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                         foreach (ToolStripItem IndividualMenuItem in MenuItemCollection)
                         {
-                            if ((IndividualMenuItem.Text == Resourcestrings.StrFamilyMenuItemText)
+                            if ((IndividualMenuItem.Text == Resourcestrings.StrFamilyMenuItemText + "...")
                                 || (IndividualMenuItem.Text == mniMaintainPersonnelData.Text))
                             {
-                                if (IndividualMenuItem.Text == Resourcestrings.StrFamilyMenuItemText)
+                                if (IndividualMenuItem.Text == Resourcestrings.StrFamilyMenuItemText + "...")
                                 {
-                                    IndividualMenuItem.Text = Resourcestrings.StrFamilyMembersMenuItemText;
+                                    IndividualMenuItem.Text = Resourcestrings.StrFamilyMembersMenuItemText + "...";
 
                                     // Exchange the 'Family' icon with the 'Family Members' icon!
                                     //
@@ -468,11 +468,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                     else
                     {
                         // Work on Maintain Menu
-                        mniMaintainFamilyMembers.Text = Resourcestrings.StrFamilyMembersMenuItemText;
+                        mniMaintainFamilyMembers.Text = Resourcestrings.StrFamilyMembersMenuItemText + "...";
 
                         // Exchange the 'Family' icon with the 'Family Members' icon!
 // TODO                   this.XPMenuItemExtender.SetMenuGlyph(this.mniMaintainFamilyMembers, imlMenuHelper.Images[1]);
-                        mniMaintainPersonnelData.Text = Resourcestrings.StrPersonnelPersonMenuItemText;
+                        mniMaintainPersonnelData.Text = Resourcestrings.StrPersonnelPersonMenuItemText + "...";
                         mniMaintainPersonnelData.Enabled = false;
                     }
                 }
@@ -487,9 +487,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                         foreach (ToolStripItem IndividualMenuItem in MenuItemCollection)
                         {
-                            if (IndividualMenuItem.Text == Resourcestrings.StrFamilyMembersMenuItemText)
+                            if (IndividualMenuItem.Text == Resourcestrings.StrFamilyMembersMenuItemText + "...")
                             {
-                                IndividualMenuItem.Text = Resourcestrings.StrFamilyMenuItemText;
+                                IndividualMenuItem.Text = Resourcestrings.StrFamilyMenuItemText + "...";
 
                                 // Exchange the 'Family Members' icon with the 'Family' icon!
 // TODO                           this.XPMenuItemExtender.SetMenuGlyph(mnuPartnerFindContext.MenuItems[Counter], imlMenuHelper.Images[0]);
@@ -508,7 +508,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     else
                     {
                         // Work on Maintain Menu
-                        mniMaintainFamilyMembers.Text = Resourcestrings.StrFamilyMenuItemText;
+                        mniMaintainFamilyMembers.Text = Resourcestrings.StrFamilyMenuItemText + "...";
 
                         // Exchange the 'Family Members' icon with the 'Family' icon!
 // TODO                   this.XPMenuItemExtender.SetMenuGlyph(this.mniMaintainFamilyMembers, imlMenuHelper.Images[0]);
@@ -528,8 +528,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                         // Work on Context Menu
                         foreach (ToolStripItem IndividualMenuItem in MenuItemCollection)
                         {
-                            if ((IndividualMenuItem.Text == Resourcestrings.StrFamilyMenuItemText)
-                                || (IndividualMenuItem.Text == Resourcestrings.StrFamilyMembersMenuItemText)
+                            if ((IndividualMenuItem.Text == Resourcestrings.StrFamilyMenuItemText + "...")
+                                || (IndividualMenuItem.Text == Resourcestrings.StrFamilyMembersMenuItemText + "...")
                                 || (IndividualMenuItem.Text == Resourcestrings.StrPersonnelPersonMenuItemText)
                                 || (IndividualMenuItem.Text == mniMaintainWorkerField.Text))
                             {
@@ -554,7 +554,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         // Work on Maintain Menu
                         mniMaintainFamilyMembers.Enabled = false;
                         mniMaintainWorkerField.Enabled = false;
-                        mniMaintainPersonnelData.Text = Resourcestrings.StrPersonnelUnitMenuItemText;
+                        mniMaintainPersonnelData.Text = Resourcestrings.StrPersonnelUnitMenuItemText + "...";
 
                         if (!UserHasPersonnelAccess())
                         {
@@ -571,14 +571,14 @@ namespace Ict.Petra.Client.MPartner.Gui
                         foreach (ToolStripItem IndividualMenuItem in MenuItemCollection)
                         {
                             // MessageBox.Show('FAMILY: SenderIsContextMenu: ' + SenderIsContextMenu.ToString);
-                            if ((IndividualMenuItem.Text == Resourcestrings.StrFamilyMenuItemText)
-                                || (IndividualMenuItem.Text == Resourcestrings.StrFamilyMembersMenuItemText)
+                            if ((IndividualMenuItem.Text == Resourcestrings.StrFamilyMenuItemText + "...")
+                                || (IndividualMenuItem.Text == Resourcestrings.StrFamilyMembersMenuItemText + "...")
                                 || (IndividualMenuItem.Text == mniMaintainPersonnelData.Text)
                                 || (IndividualMenuItem.Text == mniMaintainWorkerField.Text))
                             {
-                                if (IndividualMenuItem.Text == Resourcestrings.StrFamilyMenuItemText)
+                                if (IndividualMenuItem.Text == Resourcestrings.StrFamilyMenuItemText + "...")
                                 {
-                                    IndividualMenuItem.Text = Resourcestrings.StrFamilyMembersMenuItemText;
+                                    IndividualMenuItem.Text = Resourcestrings.StrFamilyMembersMenuItemText + "...";
                                     IndividualMenuItem.Enabled = false;
                                 }
                                 else
@@ -591,7 +591,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     else
                     {
                         // Work on Maintain Menu
-                        mniMaintainFamilyMembers.Text = Resourcestrings.StrFamilyMembersMenuItemText;
+                        mniMaintainFamilyMembers.Text = Resourcestrings.StrFamilyMembersMenuItemText + "...";
                         mniMaintainFamilyMembers.Enabled = false;
                         mniMaintainPersonnelData.Enabled = false;
                         mniMaintainWorkerField.Enabled = false;
@@ -630,6 +630,27 @@ namespace Ict.Petra.Client.MPartner.Gui
                     {
                         IndividualMenuItem.Enabled = false;
                     }
+                }
+            }
+
+            // Disable 'Local Partner Data' MenuItem if there are no DataLabels for the Partner's PartnerClass available
+            if (!Checks.HasPartnerClassLocalPartnerDataLabels(SharedTypes.PartnerClassStringToEnum(PartnerClass),
+                    TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.DataLabelsForPartnerClassesList)))
+            {
+                if (SenderIsContextMenu)
+                {
+                    /* Work on Context Menu */
+                    foreach (ToolStripItem IndividualMenuItem in MenuItemCollection)
+                    {
+                        if (IndividualMenuItem.Text == mniMaintainLocalPartnerData.Text)
+                        {
+                            IndividualMenuItem.Enabled = false;
+                        }
+                    }
+                }
+                else
+                {
+                    mniMaintainLocalPartnerData.Enabled = false;
                 }
             }
         }
