@@ -4,7 +4,6 @@
 <echo>operating system=${operating-system::to-string(environment::get-operating-system())}</echo>
 <echo>platform=${platform::get-name()}</echo>
 
-
 <include buildfile="inc/nant/OpenPetra.common.xml"/>
 
 <!-- nant -projecthelp does not show imported targets-->
@@ -53,6 +52,10 @@ releases:
   buildWindowsStandalone: uses InnoSetup, therefore only works on Windows
   buildLinuxSourceforgeRelease: will build the linux files that we upload to Sourceforge. creates tar files for local server and client
   buildRemoteInstallers -D:ReleaseID=0.0.2.0 -D:OrgName=&quot;Your Organisation&quot; -D:PublisherUrl=www.ProviderWebsite.com -D:HostedServer=app.Provider.com -D:HostedPort=9000 -D:WithLinuxClient=false
+
+demodata:
+  generateDemodata: create demo data
+  importDemodata: imports demo data into the database
 
 list of commands, which works in the specific csharp directories:
   indent: beautify the code according to coding style guide
@@ -201,6 +204,9 @@ useful parameters
 
 <!-- tasks for building releases -->
 <include buildfile="setup/setup.build"/>
+
+<!-- tasks for creating demodata -->
+<include buildfile="demodata/demodata.build"/>
 
 <target name="quickCompile">
   <!-- this is very different from the compile target. quickCompile does not generate any code. 

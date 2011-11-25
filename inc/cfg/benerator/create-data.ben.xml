@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<setup>
+
+<echo>\n ### GENERATE PEOPLE ### \n</echo>
+
+<!-- Person: okay -->
+<comment> 
+Selection of possible countries for people (there are more!)
+The ones marked with star * are also available for creating addresses,
+the ones marked with hash # are also available with company names. 
+Source: benerator manual 0.6.5
+
+numbers: most common given names (_u_nweighted|_w_eighted) / family names (u|a)
+AT (Austria)  120 w /   40 u
+BR (Brazil)   100 u /   29 u   *
+CA (Canada)    80 u /   20 u
+FI (Finland)  785 u /  448 u
+DE (Germany) 1998 w / 3421 w   * #
+IL (Israel)   264 u /   30 w
+IN (India)    155 u /   50 u
+JP (Japan)    109 u /   50 w ~ Kanji letters
+NO (Norway)   300 u /  100 w
+RU (Russia)    33 w /   20 w ~ Kyrillic letters
+TR (Turkey)  1077 u /   37 u
+US (UStates)  600 w / 1000 w   * #
+
+Recommended: (BR),DE,US
+</comment>
+
+<generate type="Person" count="${people_count}" 
+	consumer="new CSVEntityExporter(uri='${dir.data.output}/people.csv')">
+				
+	<variable name="person" generator="PersonGenerator" />
+	<id name="identifier" type="long"  />		<attribute name="active" type="boolean" constant="true" />
+	<attribute name="Title" script="person.salutation" />
+	<attribute name="NobilityTitle" script="person.nobilityTitle" /> <!-- e.g. "Duke" -->
+	<attribute name="Gender" script="person.gender" />
+	<attribute name="FirstName" script="person.givenName" />
+	<attribute name="MiddleName" script="person.secondGivenName" />
+	<attribute name="FamilyName" script="person.familyName" />
+	<attribute name="DateOfBirth" script="person.birthDate" />
+	<attribute name="Email" script="person.email" />
+	<!-- <attribute name="language" script="person.locale" /> --> <!-- e.g. "de" -->
+</generate>
+
+<echo>\n ### GENERATE ORGANISATIONS ### \n</echo>
+
+<!-- Organisation: okay -->
+<comment> company names can be generated for DE and US (according to benerator manual 0.6.5)</comment>	
+<comment> attributes in Capital letters also have that attribute name in Petra. The others are informational only for the time being.</comment>
+<generate type="Organisation" count="${organisations_count}" consumer="new CSVEntityExporter(uri='${dir.data.output}/organisations.csv')">
+<!--
+	<variable name="organisation" generator="CompanyNameGenerator" dataset="DE" locale="de_DE" />	
+-->
+	<variable name="organisation" generator="CompanyNameGenerator" />	
+	<attribute name="Name" script="organisation.fullName" /> 
+	<attribute name="short_name" script="organisation.shortName" /> 
+	<attribute name="sector" script="organisation.sector" /> 
+	<attribute name="location" script="organisation.location" /> 
+	<attribute name="legal_form" script="organisation.legalForm" /> 
+</generate>
+
+<echo>\n ### GENERATE ADDRESSES (LOCATIONS) ### \n</echo>	
+<!-- Address: okay -->
+<comment> address names can be generated for DE, US, BR (according to benerator manual 0.6.5)</comment>	
+<comment> 
+In Petra, addresses are stored as "partner locations" / "location" .
+partner -> partner-location -> location
+</comment>
+<generate type="Address" count="${addresses_count}" consumer="new CSVEntityExporter(uri='${dir.data.output}/addresses.csv')">
+
+	<variable name="address" generator="AddressGenerator" />
+
+<!-- class/table: PartnerLocation | ContactInformation-->
+  <!-- Phone -->
+	<!-- for now, just discard rest of address if phone is wanted excluded --> 
+	<attribute name="Phone" script="address.privatePhone" />
+	<attribute name="Alternate" script="address.officePhone" />
+	<attribute name="Mobile" script="address.mobilePhone" />
+	<attribute name="FaxExtension" script="address.fax" />
+	<!-- Email ... is also in PartnerLocation in OpenPetra -->
+	<!-- Website ... is also in PartnerLocation in OP -->
+	
+<!-- class/table: Location -->
+	<attribute name="Addr2" script="address.street + ' ' + address.houseNumber" />
+	<attribute name="PostCode" script="address.postalCode" />
+	
+	<!-- City - possibly redundant -->
+	<attribute name="City" script="address.city.name" />
+	<!-- <attribute name="city_area_code" script="address.city.areaCode" /> --><!-- don't need this! -->
+
+	<!-- Province - possibly redundant -->
+	<!-- province-id: internal -->
+	<!--
+	<attribute name="province_id" script="address.city.state.id" />
+	-->
+	<attribute name="Province" script="address.city.state.name" />
+
+	<!-- foreign key: Country-Code -->
+	<!-- read (by access to Country): CountryName -->
+		
+<!-- class/table: Country -->
+	<!-- Country - possibly redundant -->	
+	<attribute name="CountryCode" script="address.city.state.country.isoCode" />
+	<attribute name="CountryName" script="address.city.state.country.name" />
+	<attribute name="InternationalDialingCode" script="address.city.state.country.phoneCode" />
+</generate>
+
+<echo>\n ### GENERATE COMPLETE ### \n</echo>
+
+</setup>
