@@ -33,7 +33,7 @@ then
   export OPENPETRA_DBUSER=petraserver
   export OPENPETRA_DBNAME=openpetra
   export OPENPETRA_PORT=9000
-  export backupfile=$OpenPetraOrgPath/backup-`date +%Y%m%d`.sql.gz
+  export backupfile=$OpenPetraOrgPath/backup30/backup-`date +%Y%m%d`.sql.gz
 fi
 
 # Override defaults from /etc/sysconfig/openpetra if file is present

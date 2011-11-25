@@ -9,6 +9,13 @@ then
     exit
 fi
 
+if [ ! -f config.sh ]
+then
+  # the admin has run a config.sh file, but we cannot copy it to the destination because it does not exist in the right place
+  echo "Please copy the config.sh!"
+  exit
+fi
+
 mkdir -p $OpenPetraOrgPath
 cp -R * $OpenPetraOrgPath
 useradd --home /home/$userName $userName
@@ -20,12 +27,19 @@ chmod 600 /home/$userName/my.cnf
 chown $userName /home/$userName/my.cnf
 
 cd $OpenPetraOrgPath
+mkdir -p $OpenPetraOrgPath/backup30
 mkdir -p $OpenPetraOrgPath/log30
 touch $OpenPetraOrgPath/log30/Server.log
-cp $OpenPetraOrgPath/etc30/publickey-sample.xml $OpenPetraOrgPath/etc30/publickey.xml
-cp $OpenPetraOrgPath/etc30/privatekey-sample.xml $OpenPetraOrgPath/etc30/privatekey.xml
+if [ ! -f $OpenPetraOrgPath/etc30/publickey.xml ]
+  cp $OpenPetraOrgPath/etc30/publickey-sample.xml $OpenPetraOrgPath/etc30/publickey.xml
+fi
+if [ ! -f $OpenPetraOrgPath/etc30/privatekey.xml ]
+  cp $OpenPetraOrgPath/etc30/privatekey-sample.xml $OpenPetraOrgPath/etc30/privatekey.xml
+fi
 mkdir -p `dirname $OPENPETRA_LocationPublicKeyFile`
-ln -s $OpenPetraOrgPath/etc30/publickey.xml $OPENPETRA_LocationPublicKeyFile
+if [ ! -h $OPENPETRA_LocationPublicKeyFile ]
+  ln -s $OpenPetraOrgPath/etc30/publickey.xml $OPENPETRA_LocationPublicKeyFile
+fi
 mkdir -p /etc/openpetra
 ln -s $OpenPetraOrgPath/config.sh /etc/openpetra/openpetra`basename $OpenPetraOrgPath`
 ln -s $OpenPetraOrgPath/openpetraorg-server.sh /etc/init.d/openpetra`basename $OpenPetraOrgPath`
