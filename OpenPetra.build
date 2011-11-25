@@ -66,7 +66,6 @@ not supported
   generateWebforms: generates the User Interface using the Ext.js AJAX framework
   generateWebform: generate a single Webform. requires parameter: -D:file=SampleApplicationForm
   startWebServer: start a webservice with Mono XSP and Postgresl (does not work with sqlite at the moment)
-  createPatch: requires these parameters: -D:OldVersion=0.0.8-1 -D:NewVersion=0.0.10-0
 
 useful parameters
   -logfile:test.log

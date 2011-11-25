@@ -28,7 +28,6 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 using System.Threading;
-using System.Windows.Forms;
 using GNU.Gettext;
 using Ict.Common;
 
@@ -60,6 +59,7 @@ namespace Ict.Tools.PatchTool
                     PatchCreation.CreateDiff(TempPath,
                         TAppSettingsManager.GetValue("deliverypath"),
                         TAppSettingsManager.GetValue("appname"),
+                        TAppSettingsManager.GetValue("zipname"),
                         TAppSettingsManager.GetValue("oldversion"),
                         TAppSettingsManager.GetValue("newversion"));
                 }
