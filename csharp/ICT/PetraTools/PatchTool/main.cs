@@ -30,6 +30,7 @@ using System.Diagnostics;
 using System.Threading;
 using GNU.Gettext;
 using Ict.Common;
+using Ict.Common.IO;
 
 namespace Ict.Tools.PatchTool
 {
@@ -67,7 +68,9 @@ namespace Ict.Tools.PatchTool
                 {
                     // to be called before installing the patch;
                     // will only copy the files if there is a new patch available
-                    TPetraPatchTools patchTools = new TPetraPatchTools(TAppSettingsManager.GetValue("OpenPetra.Path"),
+                    TPetraPatchTools patchTools = new TPetraPatchTools(
+                        TAppSettingsManager.GetValue("OpenPetra.Path"),
+                        TAppSettingsManager.GetValue("OpenPetra.Path") + Path.DirectorySeparatorChar + "bin" + TPatchTools.OPENPETRA_VERSIONPREFIX,
                         TempPath,
                         "",
                         "",
@@ -95,6 +98,7 @@ namespace Ict.Tools.PatchTool
                     // and then run the patch from TmpPatchPath so that the files can be overwritten
                     // this will patch the application files
                     TPetraPatchTools patchTools = new TPetraPatchTools(TAppSettingsManager.GetValue("OpenPetra.Path"),
+                        TAppSettingsManager.GetValue("OpenPetra.Path") + Path.DirectorySeparatorChar + "bin" + TPatchTools.OPENPETRA_VERSIONPREFIX,
                         TempPath,
                         TAppSettingsManager.GetValue("OpenPetra.Path.Dat"),
                         "",
@@ -129,6 +133,7 @@ namespace Ict.Tools.PatchTool
                     // this should only be called after patchFiles;
                     // this will possibly change the database structure, and modify database content
                     TPetraPatchTools patchTools = new TPetraPatchTools(TAppSettingsManager.GetValue("OpenPetra.Path"),
+                        TAppSettingsManager.GetValue("OpenPetra.Path") + Path.DirectorySeparatorChar + "bin" + TPatchTools.OPENPETRA_VERSIONPREFIX,
                         TempPath,
                         "",
                         "",

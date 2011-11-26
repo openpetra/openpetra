@@ -197,6 +197,9 @@ namespace Ict.Common.IO
         /// <summary>identify our patch version</summary>
         public const String FORMAT_DESCR = "OPODIFF1";
 
+        /// <summary>we need that constants for finding the path for bin30 in the zip patch file</summary>
+        public const string OPENPETRA_VERSIONPREFIX = "30";
+
         /// <summary>todoComment</summary>
         protected SortedList FListOfNewPatches;
 
