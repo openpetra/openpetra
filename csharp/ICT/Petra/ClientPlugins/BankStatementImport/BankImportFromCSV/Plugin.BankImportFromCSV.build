@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<project name="Plugin.BankImportFromCSV-Build">
-
-<property name="Namespace" value="Plugin.BankImportFromCSV" />
-
-<include buildfile="../../../../../../inc/nant/OpenPetra.csharp.xml"/> 
-
- 
-</project>

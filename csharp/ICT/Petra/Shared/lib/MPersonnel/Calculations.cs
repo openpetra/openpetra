@@ -118,7 +118,14 @@ namespace Ict.Petra.Shared.MPersonnel
                 NationalitiesStr += Nationality + ", ";
             }
 
-            return NationalitiesStr.Substring(0, NationalitiesStr.Length - 2);  // remove last comma
+            if (NationalitiesStr.Length > 0)
+            {
+                return NationalitiesStr.Substring(0, NationalitiesStr.Length - 2);  // remove last comma
+            }
+            else
+            {
+                return String.Empty;
+            }
         }
 
         /// <summary>

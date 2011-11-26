@@ -43,7 +43,7 @@ namespace Ict.Petra.Server.MFinance.Common
     public class TGetAccountHierarchyDetailInfo
     {
         /// <summary>
-        /// A AChildLevel value which defines to serach the childs and all subchilds of a
+        /// A AChildLevel value which defines to search the children and all subchildren of a
         /// given parent.
         /// </summary>
         public const int GET_ALL_LEVELS = -1;
@@ -61,24 +61,37 @@ namespace Ict.Petra.Server.MFinance.Common
         public TGetAccountHierarchyDetailInfo(TLedgerInfo ALedgerInfo)
         {
             ledgerInfo = ALedgerInfo;
-            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
-            accountTable = AAccountHierarchyDetailAccess.LoadViaALedger(
-                ledgerInfo.LedgerNumber, transaction);
-            DBAccess.GDBAccessObj.CommitTransaction();
+
+            bool NewTransaction = false;
+
+            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+
+            try
+            {
+                accountTable = AAccountHierarchyDetailAccess.LoadViaALedger(
+                    ledgerInfo.LedgerNumber, transaction);
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+            }
         }
 
         /// <summary>
         /// The idea of this routine is given by x_clist.i
         /// of course the data are read only one time (Constructor) and the results are put
         /// into a list for a more specific use.
-        /// All childs and sub childs are listed ...
+        /// All children and sub children are listed ...
         /// </summary>
         /// <param name="AAccountCode"></param>
         /// <returns></returns>
-        public IList <String>ChildList(string AAccountCode)
+        public List <String>GetChildren(string AAccountCode)
         {
-            IList <String>help = new List <String>();
-            ChildListIntern(help, AAccountCode, GET_ALL_LEVELS);
+            List <String>help = new List <String>();
+            GetChildrenIntern(help, AAccountCode, GET_ALL_LEVELS);
             return help;
         }
 
@@ -89,14 +102,14 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="AAccountCode"></param>
         /// <param name="AChildLevel">Level counting starts with 1</param>
         /// <returns></returns>
-        public IList <String>ChildList(string AAccountCode, int AChildLevel)
+        public List <String>GetChildren(string AAccountCode, int AChildLevel)
         {
-            IList <String>help = new List <String>();
-            ChildListIntern(help, AAccountCode, --AChildLevel);
+            List <String>help = new List <String>();
+            GetChildrenIntern(help, AAccountCode, --AChildLevel);
             return help;
         }
 
-        private void ChildListIntern(IList <String>help, string AAccountCode, int AChildLevel)
+        private void GetChildrenIntern(IList <String>help, string AAccountCode, int AChildLevel)
         {
             if (accountTable.Rows.Count > 0)
             {
@@ -112,7 +125,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
                             if (AChildLevel != 0)
                             {
-                                ChildListIntern(help, accountRow.ReportingAccountCode, --AChildLevel);
+                                GetChildrenIntern(help, accountRow.ReportingAccountCode, --AChildLevel);
                             }
                         }
                     }
@@ -121,12 +134,12 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
         /// <summary>
-        /// If you only want to know, that the account code has no childs, you can avoid the
+        /// If you only want to know, that the account code has no children, you can avoid the
         /// handling of the list.
         /// </summary>
         /// <param name="AAccountCode"></param>
         /// <returns></returns>
-        public bool HasNoChilds(string AAccountCode)
+        public bool HasNoChildren(string AAccountCode)
         {
             if (accountTable.Rows.Count > 0)
             {

@@ -159,7 +159,7 @@ namespace Ict.Tools.DevelopersAssistant
 
                 if (pError >= 0)
                 {
-                    pError = _verboseOutput.IndexOf("BUILD FAILED", pError, StringComparison.InvariantCultureIgnoreCase);
+                    pError = _verboseOutput.IndexOf("error ", pError, StringComparison.InvariantCultureIgnoreCase);
                 }
 
                 if ((pWarning >= 0) && (pError >= 0))

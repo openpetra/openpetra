@@ -29,12 +29,11 @@ using System.Xml;
 using System.IO;
 using System.Text.RegularExpressions;
 using Ict.Common;
-using Ict.Common.IO;
 
-namespace Ict.Tools.CodeGeneration
+namespace Ict.Common.IO
 {
     /// <summary>
-    /// Description of ProcessTemplate.
+    /// this class helps with template scripts and other text files
     /// </summary>
     public class ProcessTemplate
     {
@@ -59,19 +58,16 @@ namespace Ict.Tools.CodeGeneration
         public SortedList FSnippets = new SortedList();
 
         /// <summary>
-        /// constructor
-        /// </summary>
-        public ProcessTemplate()
-        {
-            // need to set FTemplateCode manually
-        }
-
-        /// <summary>
         /// constructor, open template from file
         /// </summary>
         /// <param name="AFullPath"></param>
-        public ProcessTemplate(string AFullPath)
+        public ProcessTemplate(string AFullPath = null)
         {
+            if ((AFullPath == null) || (AFullPath.Length == 0))
+            {
+                return;
+            }
+
             if (!File.Exists(AFullPath))
             {
                 throw new Exception("Cannot find template file " + AFullPath + "; please adjust the TemplateDir parameter");

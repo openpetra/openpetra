@@ -325,6 +325,7 @@
   <property name="external.Uncrustify" value="${OP::GetFileInProgramDirectory('/uncrustify/uncrustify.exe')}" 
             overwrite="false"/>
   <property name="external.Java" value="${OP::GetFileInProgramDirectory('/Java/jre6/bin/java.exe')}" overwrite="false"/>
+  <property name="external.Benerator" value="${OP::GetFileInProgramDirectory('/databene-benerator-0.7.1/bin/benerator.bat')}" overwrite="false"/>
   <property name="external.Poedit.gettext" value="${OP::GetFileInProgramDirectory('/Poedit/bin/xgettext.exe')}" overwrite="false"/>
   <property name="external.Poedit.msgfmt" value="${OP::GetFileInProgramDirectory('/Poedit/bin/msgfmt.exe')}" overwrite="false"/>
   <property name="external.Poedit.msgcat" value="${OP::GetFileInProgramDirectory('/Poedit/bin/msgcat.exe')}" overwrite="false"/> 

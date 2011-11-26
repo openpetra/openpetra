@@ -214,9 +214,18 @@ namespace Ict.Tools.NAntTasks
             FProjectGUIDs = ReadProjectGUIDs(FGUIDMapFilename);
 
             string[] IDEs = FDevEnvironments.Split(new char[] { ',' });
+            List <string>IDEsDone = new List <string>();
 
             foreach (string ide in IDEs)
             {
+                if (IDEsDone.Contains(ide))
+                {
+                    // we force to run sharpdevelop4 (devenv-msbuild), but don't want to run it twice if it is part of the user's projectfiles.templates-list
+                    continue;
+                }
+
+                IDEsDone.Add(ide);
+
                 if (!Directory.Exists(FDirProjectFiles + Path.DirectorySeparatorChar + ide))
                 {
                     Directory.CreateDirectory(FDirProjectFiles + Path.DirectorySeparatorChar + ide);
@@ -284,6 +293,78 @@ namespace Ict.Tools.NAntTasks
             return new StringBuilder(FTemplateFiles[filename]);
         }
 
+        private string GetProjectWithoutDependancies(List <string>ARemainingProjects, Dictionary <string, TDetailsOfDll>AProjects)
+        {
+            string SecondChoice = null;
+
+            foreach (string project in ARemainingProjects)
+            {
+                TDetailsOfDll details = AProjects[project];
+
+                bool unmetDependancy = false;
+
+                foreach (string dependency in details.ReferencedDlls)
+                {
+                    if (ARemainingProjects.Contains(dependency))
+                    {
+                        unmetDependancy = true;
+                        break;
+                    }
+                }
+
+                if (!unmetDependancy)
+                {
+                    if (details.OutputType.ToLower() != "library")
+                    {
+                        // put executables last. as long as there is a library, put the library first
+                        SecondChoice = project;
+                    }
+                    else
+                    {
+                        return project;
+                    }
+                }
+            }
+
+            return SecondChoice;
+        }
+
+        /// <summary>
+        /// do a topological sorts of the projects by their dependencies.
+        /// </summary>
+        private List <string>SortProjectsByDependencies(Dictionary <string, TDetailsOfDll>AProjects)
+        {
+            List <string>Result = new List <string>();
+            List <string>ProjectNames = new List <string>(AProjects.Keys);
+
+            while (ProjectNames.Count > 0)
+            {
+                string next = GetProjectWithoutDependancies(ProjectNames, AProjects);
+
+                if (next == null)
+                {
+                    string problemFiles = string.Empty;
+
+                    foreach (string file in ProjectNames)
+                    {
+                        if (problemFiles.Length > 0)
+                        {
+                            problemFiles += " and ";
+                        }
+
+                        problemFiles += file;
+                    }
+
+                    throw new Exception("There is a cyclic dependancy for projects " + problemFiles);
+                }
+
+                Result.Add(next);
+                ProjectNames.Remove(next);
+            }
+
+            return Result;
+        }
+
         private void WriteSolutionFile(
             string ATemplateDir,
             string ADevName,
@@ -298,7 +379,9 @@ namespace Ict.Tools.NAntTasks
             string ProjectConfiguration = string.Empty;
             string SolutionFilename = FDirProjectFiles + Path.DirectorySeparatorChar + ADevName + Path.DirectorySeparatorChar + ASolutionFilename;
 
-            foreach (string projectName in FProjectDependencies.Keys)
+            List <string>sortedProjects = SortProjectsByDependencies(FProjectDependencies);
+
+            foreach (string projectName in sortedProjects)
             {
                 bool includeProject = false;
 
@@ -400,8 +483,8 @@ namespace Ict.Tools.NAntTasks
             swAssemblyInfo.WriteLine(temp.ToString());
             swAssemblyInfo.Close();
 
-            string relativeFilename = GetRelativePath(AssemblyInfoPath, FDirProjectFiles + "/dummy/").Replace('\\', '/');
-            string relativeFilenameBackslash = relativeFilename.Replace('/', '\\');
+            string relativeFilename = GetRelativePath(AssemblyInfoPath, FDirProjectFiles + "/dummy/").Replace('\\', Path.DirectorySeparatorChar);
+            string relativeFilenameBackslash = relativeFilename.Replace('/', Path.DirectorySeparatorChar);
 
             temp = GetTemplateFile(ATemplateDir + "template.csproj.compile");
             temp.Replace("${filename}", AssemblyInfoPath);
@@ -460,7 +543,7 @@ namespace Ict.Tools.NAntTasks
                     }
 
                     temp.Replace("${reference-name}", Path.GetFileNameWithoutExtension(referencedProject));
-                    temp.Replace("${reference-path}", referencedProject.Replace('/', '\\'));
+                    temp.Replace("${reference-path}", referencedProject.Replace('/', Path.DirectorySeparatorChar));
                     temp.Replace("${relative-reference-path}", referencedProject);
                     OtherReferences.Append(temp.ToString());
                 }
@@ -489,8 +572,8 @@ namespace Ict.Tools.NAntTasks
 
             foreach (string ContainedFile in ContainsFiles)
             {
-                string relativeFilename = GetRelativePath(ContainedFile, FDirProjectFiles + "/dummy/").Replace('\\', '/');
-                string relativeFilenameBackslash = relativeFilename.Replace('/', '\\');
+                string relativeFilename = GetRelativePath(ContainedFile, FDirProjectFiles + "/dummy/").Replace('\\', Path.DirectorySeparatorChar);
+                string relativeFilenameBackslash = relativeFilename.Replace('/', Path.DirectorySeparatorChar);
 
                 if ((ContainedFile.EndsWith(".ManualCode.cs") && File.Exists(ContainedFile.Replace(".ManualCode.cs", "-generated.cs")))
                     || (ContainedFile.EndsWith(".Designer.cs") && File.Exists(ContainedFile.Replace(".Designer.cs", ".cs"))))
@@ -547,8 +630,8 @@ namespace Ict.Tools.NAntTasks
             foreach (string ContainedFile in ContainsResources)
             {
                 string relativeFilename = GetRelativePath(ContainedFile, FDirProjectFiles + "/dummy/");
-                
-                string relativeFilenameBackslash = relativeFilename.Replace('/', '\\');
+
+                string relativeFilenameBackslash = relativeFilename.Replace('/', Path.DirectorySeparatorChar);
 
                 if (ContainsFiles.Contains(ContainedFile.Replace(".resx", ".cs")))
                 {
@@ -572,7 +655,7 @@ namespace Ict.Tools.NAntTasks
 
             template.Replace("${TemplateResource}", Resources.ToString());
 
-            template.Replace("${dir.3rdParty}", FCodeRootDir + "\\ThirdParty");
+            template.Replace("${dir.3rdParty}", FCodeRootDir + Path.DirectorySeparatorChar + "ThirdParty");
             template.Replace("${csharpStdLibs}", "");
 
             string completedFile = template.ToString();
