@@ -150,7 +150,6 @@ namespace Ict.Petra.Server.MFinance.ICH
 
             string IncomeAccounts;
             string ExpenseAccounts;
-            string PLAccounts;
 
             int ICHProcessing;
 
@@ -198,9 +197,9 @@ namespace Ict.Petra.Server.MFinance.ICH
                 AAccountHierarchyAccess.LoadViaALedger(MainDS, ALedgerNumber, DBTransaction);
                 AJournalAccess.LoadViaALedger(MainDS, ALedgerNumber, DBTransaction);
 
-                /***************************
-                *  Generate the transactions
-                ***************************/
+                // ***************************
+                //  Generate the transactions
+                // ***************************
 
                 AAccountRow AccountRow = (AAccountRow)MainDS.AAccount.Rows.Find(new object[] { ALedgerNumber, MFinanceConstants.INCOME_HEADING });
 
@@ -265,10 +264,10 @@ namespace Ict.Petra.Server.MFinance.ICH
                     throw new System.InvalidOperationException(ErrorMessage);
                 }
 
-                PLAccounts = BuildChildAccountList(ALedgerNumber,
-                    AccountRow,
-                    DBTransaction,
-                    ref AVerificationResult);
+                // string PLAccounts = BuildChildAccountList(ALedgerNumber,
+                //    AccountRow,
+                //    DBTransaction,
+                //    ref AVerificationResult);
 
                 //Increment the Last ICH No.
                 ALedgerRow LedgerRow = (ALedgerRow)MainDS.ALedger.Rows[0];
@@ -571,7 +570,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                           ATransactionTable.GetJournalNumberDBName() + ", " +
                           ATransactionTable.GetTransactionNumberDBName();
 
-                DataRow[] FoundTransRow = MainDS.ATransaction.Select(WhereClause, OrderBy);
+                // DataRow[] FoundTransRow = MainDS.ATransaction.Select(WhereClause, OrderBy);
 
                 //Post the batch
 
@@ -643,7 +642,6 @@ namespace Ict.Petra.Server.MFinance.ICH
                     TemplateRow.AccountCodeToReportTo = AAccountRowFirst.AccountCode;
 
                     StringCollection operators = StringHelper.InitStrArr(new string[] { "=", "=", "=" });
-                    StringCollection OrderList = new StringCollection();
 
                     AAccountHierarchyDetailTable AccountHierarchyDetailTable2 = AAccountHierarchyDetailAccess.LoadUsingTemplate(TemplateRow,
                         operators,
