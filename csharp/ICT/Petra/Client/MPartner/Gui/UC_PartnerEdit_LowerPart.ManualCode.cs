@@ -184,20 +184,20 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// the Address Tab haven't been initialised before.</remarks>
         public PLocationRow LocationDataRowOfCurrentlySelectedAddress
         {
-        	get
-        	{
+            get
+            {
                 if (!ucoPartnerTabSet.IsDynamicallyLoadableTabSetUp(TUC_PartnerEdit_PartnerTabSet.TDynamicLoadableUserControls.dlucAddresses))
                 {
-                	InitChildUserControl(TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner);
-                	
+                    InitChildUserControl(TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner);
+
                     // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);'
                     ucoPartnerTabSet.SetUpPartnerAddress();
-	            }
-	
-	            return ucoPartnerTabSet.LocationDataRowOfCurrentlySelectedAddress;
-        	}
-        }        
-        
+                }
+
+                return ucoPartnerTabSet.LocationDataRowOfCurrentlySelectedAddress;
+            }
+        }
+
         #endregion
 
         #region Public Methods
@@ -280,26 +280,26 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void ShowChildUserControl(TPartnerEditScreenLogic.TModuleTabGroupEnum AModuleTabGroup)
         {
-        	InitChildUserControl(AModuleTabGroup);
-            		
+            InitChildUserControl(AModuleTabGroup);
+
             switch (AModuleTabGroup)
             {
-                case TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner:            	
-            		
+                case TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner:
+
                     ucoPartnerTabSet.Visible = true;
                     ucoPersonnelTabSet.Visible = false;
 
-            		break;
-            		
+                    break;
+
                 case TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPersonnel:
 
                     ucoPersonnelTabSet.Visible = true;
-                    ucoPartnerTabSet.Visible = false;  
-                    
-            		break;
+                    ucoPartnerTabSet.Visible = false;
+
+                    break;
             }
         }
-        
+
         /// <summary>
         /// Switches to the corresponding TabPage.
         /// </summary>
