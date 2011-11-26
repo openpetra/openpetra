@@ -82,9 +82,9 @@ namespace Ict.Petra.Server.MFinance.ICH
             try
             {
                 if (GenerateAdminFeeBatch(ALedgerNumber, APeriodNumber, false, DBTransaction, ref AVerificationResult))
-                    //&& PostToLedger(ALedgerNumber, APeriodNumber, DBTransaction, ref AVerificationResult))
                 {
-                    
+                    //&& PostToLedger(ALedgerNumber, APeriodNumber, DBTransaction, ref AVerificationResult))
+
                     DBAccess.GDBAccessObj.CommitTransaction();
 
                     if (TLogging.DL >= 8)
@@ -168,7 +168,7 @@ namespace Ict.Petra.Server.MFinance.ICH
             string CurrentAccountCode;
             decimal AmountInBaseCurrency;
             decimal AmountInIntlCurrency;
-            
+
             int GLBatchNumber = 0;
             int GLJournalNumber = 0;
             int GLTransactionNumber = 0;
@@ -484,10 +484,12 @@ namespace Ict.Petra.Server.MFinance.ICH
                     GLBatchTDS AdminFeeDS = TGLPosting.CreateABatch(ALedgerNumber);
                     ABatchRow AdminFeeBatchRow = AdminFeeDS.ABatch[0];
                     GLBatchNumber = AdminFeeBatchRow.BatchNumber;
-                    
-                    AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, MainDS.ALedger[0].CurrentPeriod, DBTransaction);
+
+                    AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber,
+                        MainDS.ALedger[0].CurrentPeriod,
+                        DBTransaction);
                     AAccountingPeriodRow AccountingPeriodRow2 = (AAccountingPeriodRow)AccountingPeriodTable.Rows[0];
-            
+
                     PeriodEndDate = AccountingPeriodRow2.PeriodEndDate;
 
                     //GLBatchTDS AdminFeeDS2 = TGLPosting.CreateAJournal(ALedgerNumber, AdminFeeBatchRow);
@@ -508,7 +510,7 @@ namespace Ict.Petra.Server.MFinance.ICH
 
                     GLJournalNumber = JournalRow.JournalNumber;
                     GLTransactionNumber = JournalRow.LastTransactionNumber + 1;
-                    
+
                     ATransactionTable TransTable = ATransactionAccess.LoadByPrimaryKey(ALedgerNumber,
                         GLBatchNumber,
                         GLJournalNumber,
@@ -520,8 +522,8 @@ namespace Ict.Petra.Server.MFinance.ICH
 
                     /* can now create corresponding report row on stewardship table */
                     if ((IncomeAmount != 0)
-                         || (ExpenseAmount != 0)
-                           || (    XferAmount != 0))
+                        || (ExpenseAmount != 0)
+                        || (XferAmount != 0))
                     {
                         AIchStewardshipTable IchStewardshipTable = new AIchStewardshipTable();
                         AIchStewardshipRow IchStewardshipRow = IchStewardshipTable.NewRowTyped(true);
@@ -601,7 +603,6 @@ namespace Ict.Petra.Server.MFinance.ICH
             return IsSuccessful;
         }
 
-        
         /// <summary>
         /// To build a CSV list of accounts
         /// </summary>

@@ -389,21 +389,21 @@ namespace Ict.Petra.Shared.MFinance
         /// <summary>
         /// RecurringOnly = 2
         /// </summary>
-        moptRecurringOnly,
+            moptRecurringOnly,
 
         /// <summary>
         /// EntireBatchOnly = 3
         /// </summary>
-        moptEntireBatchOnly,
+            moptEntireBatchOnly,
 
         /// <summary>
         /// NeedBankingDetailKey = 4
         /// </summary>
-        moptNeedBankingDetailKey,
+            moptNeedBankingDetailKey,
 
         /// <summary>
         /// BankingTypesAllowed = 5
         /// </summary>
-        moptBankingTypesAllowed
+            moptBankingTypesAllowed
     }
 }

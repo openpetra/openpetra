@@ -1094,9 +1094,9 @@ namespace Ict.Petra.Server.MFinance.Common
         public static GLBatchTDS CreateABatch(Int32 ALedgerNumber)
         {
             bool NewTransactionStarted = false;
-           
+
             GLBatchTDS MainDS = null;
-            
+
             //Error handling
             string ErrorContext = "Create a Batch";
             string ErrorMessage = String.Empty;
@@ -1107,18 +1107,18 @@ namespace Ict.Petra.Server.MFinance.Common
             try
             {
                 MainDS = new GLBatchTDS();
-                
+
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransactionStarted);
-    
+
                 ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
-    
+
                 ABatchRow NewRow = MainDS.ABatch.NewRowTyped(true);
                 NewRow.LedgerNumber = ALedgerNumber;
                 MainDS.ALedger[0].LastBatchNumber++;
                 NewRow.BatchNumber = MainDS.ALedger[0].LastBatchNumber;
                 NewRow.BatchPeriod = MainDS.ALedger[0].CurrentPeriod;
                 MainDS.ABatch.Rows.Add(NewRow);
-                
+
                 if (GLBatchTDSAccess.SubmitChanges(MainDS, out VerificationResult) == TSubmitChangesResult.scrOK)
                 {
                     MainDS.AcceptChanges();
@@ -1137,15 +1137,11 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 if (NewTransactionStarted)
                 {
-                    DBAccess.GDBAccessObj.RollbackTransaction();    
+                    DBAccess.GDBAccessObj.RollbackTransaction();
                 }
             }
 
             return MainDS;
         }
-        
-        
-        
-
     }
 }
