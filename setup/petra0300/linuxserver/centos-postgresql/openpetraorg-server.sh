@@ -71,7 +71,7 @@ stop() {
 menu() {
     cd $OpenPetraOrgPath/bin30
     parameters="-Server.IPBasePort:$OPENPETRA_PORT -Server.ChannelEncryption.PublicKeyfile:$OPENPETRA_LocationPublicKeyFile"
-    su $userName -c "$mono --server PetraServerAdminConsole.exe -C:$OpenPetraOrgPath/etc30/PetraServerAdminConsole.config $parameters"
+    su $userName -c "$mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:$OpenPetraOrgPath/etc30/PetraServerAdminConsole.config $parameters"
 }
 
 # backup the postgresql database
