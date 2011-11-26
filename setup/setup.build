@@ -142,6 +142,21 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
     <!--  ***************  Build remote client installer ********************* -->
     <property name="SetupOriginal.File" value="${dir.root}/setup/petra${PetraRelease}/remoteclientWin/remote.nsi"/>
     <call target="setupTemplate"/>
+    
+    <!-- ************ build backup client tar.gz for future patches ********* -->
+    <property name="BuildArchive" value="client" overwrite="true"/>
+    <call target="prepareSetupDirForTarFile"/>
+    <!-- this does not keep the executable flag; need this to make the patch for windows clients -->
+    <tar destfile="${dir.delivery}/openpetraorg-client-backup-${OrgNameWithoutSpace}-${ReleaseID}.tar.gz" compression="GZip">
+      <fileset basedir="${setupDir}" prefix="openpetraorg-${ReleaseID}">
+        <include name="**/*" />
+      </fileset>
+    </tar>
+
+    <!-- ************ create a patch file that does not depend on an earlier patch. needs to be renamed though ********* -->
+    <property name="OldVersion" value="0.0.9-99"/>
+    <property name="NewVersion" value="${ReleaseVersion}"/>
+    <call target="createRemoteClientPatch"/>
 </target>
 
 <target name="setupTemplate">
@@ -203,16 +218,6 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
   <!-- build Remote Setup Windows installer -->
   <if test="${WithWindowsClient}">
     <call target="setupRemote"/>
-    
-    <!-- ************ build backup client tar.gz for future patches ********* -->
-    <property name="BuildArchive" value="client" overwrite="true"/>
-    <call target="prepareSetupDirForTarFile"/>
-    <!-- this does not keep the executable flag; need this to make the patch for windows clients -->
-    <tar destfile="${dir.delivery}/openpetraorg-client-backup-${OrgNameWithoutSpace}-${ReleaseID}.tar.gz" compression="GZip">
-      <fileset basedir="${setupDir}" prefix="openpetraorg-${ReleaseID}">
-        <include name="**/*" />
-      </fileset>
-    </tar>
   </if>
   
   <!-- ********* build Linux Server tar.gz ********* -->
@@ -242,11 +247,13 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
     <call target="buildLinuxClient"/>
   </if>
 
-  <!-- TODO: build patch against previous release -->
-
   <delete file="${tempdir}/publickey.xml"/>
   <delete file="${tempdir}/privatekey.xml"/>
   <delete dir="${setupDir}"/>
+</target>
+
+<target name="createRemoteClientPatch" depends="init">
+    <ExecDotNet program="${dir.bin}/Ict.Tools.PatchTool.exe" commandline="-action:create -OpenPetra.PathTemp:${tempdir} -deliverypath:${dir.delivery} -appname:openpetraorg -zipname:openpetraorg-client-backup-${OrgNameWithoutSpace} -oldversion:${OldVersion} -newversion:${NewVersion}"/>
 </target>
 
 <target name="compileMonoClient">

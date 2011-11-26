@@ -256,15 +256,15 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
 
             Nationalities = Ict.Petra.Shared.MPersonnel.Calculations.DeterminePersonsNationalities(
                 @CommonCacheable.GetCacheableTable, PassportDetailsDT);
-            
-            if (Nationalities != String.Empty) 
+
+            if (Nationalities != String.Empty)
             {
-            	SummaryDR.Nationalities = Nationalities;
+                SummaryDR.Nationalities = Nationalities;
             }
             else
             {
-            	SummaryDR.Nationalities = StrNotAvailable;
-            }            
+                SummaryDR.Nationalities = StrNotAvailable;
+            }
 
             #endregion
 

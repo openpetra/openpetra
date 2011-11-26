@@ -94,6 +94,17 @@ namespace Ict.Common.IO
         /// <summary>
         /// would this patch file apply to the current installed version
         /// </summary>
+        static public Boolean PatchApplies(TFileVersionInfo ACurrentVersion, string APatchZipFile)
+        {
+            StringCollection versions = GetVersionsFromDiffZipName(APatchZipFile);
+            TFileVersionInfo patchStartVersion = new TFileVersionInfo(versions[0]);
+
+            return patchStartVersion.Compare(ACurrentVersion) == 0;
+        }
+
+        /// <summary>
+        /// would this patch file apply to the current installed version
+        /// </summary>
         /// <param name="APatchZipFile"></param>
         /// <param name="AMaxVersion">maximum version to upgrade to, usually this is the version of the exe files</param>
         /// <returns></returns>
@@ -868,6 +879,7 @@ namespace Ict.Common.IO
         /// to be used to actually install patches
         /// </summary>
         public TPatchTools(String AInstallPath,
+            String ABinPath,
             String AVersionPostFix,
             String ATmpPath,
             String ADatPath,
@@ -877,7 +889,7 @@ namespace Ict.Common.IO
         {
             FInstallPath = Path.GetFullPath(AInstallPath);
             FVersionPostFix = AVersionPostFix;
-            FBinPath = FInstallPath + Path.DirectorySeparatorChar + "bin" + FVersionPostFix;
+            FBinPath = ABinPath;
 
             if (ATmpPath.Length > 0)
             {
@@ -1139,7 +1151,7 @@ namespace Ict.Common.IO
 
                 foreach (string patch in AOrderedListOfAllPatches.GetValueList())
                 {
-                    if (((TPatchFileVersionInfo)testPatchVersion).PatchApplies(patch))
+                    if (TPatchFileVersionInfo.PatchApplies(testPatchVersion, patch))
                     {
                         applyingPatches.Add(patch);
                     }
