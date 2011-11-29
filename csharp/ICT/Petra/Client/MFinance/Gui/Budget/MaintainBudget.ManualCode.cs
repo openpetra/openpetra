@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       timop, christophert
 //
 // Copyright 2004-2011 by OM International
 //
@@ -44,7 +44,6 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
-using Ict.Petra.Shared.Interfaces;
 using Ict.Petra.Shared.Interfaces.MFinance.Budget.WebConnectors;
 using Ict.Petra.Shared.MFinance;
 
@@ -235,7 +234,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             }
         }
 
-        private string CurrentBudgetType = string.Empty;
         private void NewBudgetType(System.Object sender, EventArgs e)
         {
             ClearBudgetPeriodTextboxes();
