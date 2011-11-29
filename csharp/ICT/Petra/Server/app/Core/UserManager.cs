@@ -424,21 +424,9 @@ namespace Ict.Petra.Server.App.Core.Security
                 PetraPrincipal.ProcessID = AProcessID;
                 AProcessID = 0;
             }
-            catch (Exception)
+            finally
             {
-                try
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-                catch (System.InvalidOperationException)
-                {
-                    // ignore this exception since the RollBack is just a safety net,
-                    // and if it fails it means there was no running transaction.
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
+                DBAccess.GDBAccessObj.RollbackTransaction();
             }
 
             return PetraPrincipal;

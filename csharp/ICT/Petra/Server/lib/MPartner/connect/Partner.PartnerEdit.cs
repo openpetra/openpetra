@@ -57,6 +57,7 @@ using Ict.Petra.Server.MPartner;
 using Ict.Petra.Server.MPartner.DataAggregates;
 using Ict.Petra.Server.MSysMan.Maintenance;
 using Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors;
+using Ict.Petra.Server.MFinance.Common;
 
 namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 {
@@ -405,9 +406,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             DateTime LastContactDate;
             String LastGiftInfo;
             TLocationPK LocationPK;
-            TOfficeSpecificDataLabelsUIConnector OfficeSpecificDataLabelsUIConnector;
-            OfficeSpecificDataLabelsTDS OfficeSpecificDataLabels;
-            Boolean OfficeSpecificDataLabelsAvailable;
+            Boolean OfficeSpecificDataLabelsAvailable = false;
             TRecentPartnersHandling RecentPartnersHandling;
             Int32 ItemsCountAddresses = 0;
             Int32 ItemsCountAddressesActive = 0;
@@ -744,15 +743,15 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                     #endregion
 
-                    /*
-                     * Office Specific Data
-                     */
-                    OfficeSpecificDataLabelsUIConnector = new TOfficeSpecificDataLabelsUIConnector(FPartnerKey,
-                        MCommonTypes.PartnerClassEnumToOfficeSpecificDataLabelUseEnum(FPartnerClass));
-                    OfficeSpecificDataLabels = OfficeSpecificDataLabelsUIConnector.GetData(ReadTransaction);
-                    OfficeSpecificDataLabelsAvailable =
-                        (OfficeSpecificDataLabelsUIConnector.CountLabelUse(SharedTypes.PartnerClassEnumToString(FPartnerClass), ReadTransaction) != 0);
-                    FPartnerEditScreenDS.Merge(OfficeSpecificDataLabels.PDataLabelValuePartner);
+                    // Office Specific Data
+                    if ((!ADelayedDataLoading) || (ATabPage == TPartnerEditTabPageEnum.petpOfficeSpecific))
+                    {
+                        FPartnerEditScreenDS.Merge(GetDataLocalPartnerDataValuesInternal(out OfficeSpecificDataLabelsAvailable, false));
+                    }
+                    else
+                    {
+                        FPartnerEditScreenDS.Merge(GetDataLocalPartnerDataValuesInternal(out OfficeSpecificDataLabelsAvailable, true));
+                    }
 
                     // Console.WriteLine('FPartnerEditScreenDS.PDataLabelValuePartner.Rows.Count: ' + FPartnerEditScreenDS.PDataLabelValuePartner.Rows.Count.ToString);
 
@@ -1066,10 +1065,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 switch (APartnerClass)
                 {
                     case TPartnerClass.PERSON:
-
                         // Load p_family record of the FAMILY that the PERSON will belong to
                         PersonFamilyDT = PFamilyAccess.LoadByPrimaryKey(AFamilyPartnerKey, ReadTransaction);
-                        PartnerRow.AddresseeTypeCode = SharedTypes.StdAddresseeTypeCodeEnumToString(TStdAddresseeTypeCode.satcFAMILY);
 
                         // Create DataRow for PPerson using the default values for all DataColumns
 #if DEBUGMODE
@@ -1112,7 +1109,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         break;
 
                     case TPartnerClass.FAMILY:
-                        PartnerRow.AddresseeTypeCode = SharedTypes.StdAddresseeTypeCodeEnumToString(TStdAddresseeTypeCode.satcFAMILY);
 #if DEBUGMODE
                         if (TLogging.DL >= 7)
                         {
@@ -1142,8 +1138,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         break;
 
                     case TPartnerClass.CHURCH:
-                        PartnerRow.AddresseeTypeCode = SharedTypes.StdAddresseeTypeCodeEnumToString(TStdAddresseeTypeCode.satcCHURCH);
-
                         // Create DataRow for PChurch using the default values for all DataColumns
                         ChurchRow = FPartnerEditScreenDS.PChurch.NewRowTyped(true);
                         ChurchRow.PartnerKey = FPartnerKey;
@@ -1171,8 +1165,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         break;
 
                     case TPartnerClass.ORGANISATION:
-                        PartnerRow.AddresseeTypeCode = SharedTypes.StdAddresseeTypeCodeEnumToString(TStdAddresseeTypeCode.satcORGANISA);
-
                         // Create DataRow for POrganisation using the default values for all DataColumns
                         OrganisationRow = FPartnerEditScreenDS.POrganisation.NewRowTyped(true);
                         OrganisationRow.PartnerKey = FPartnerKey;
@@ -1199,8 +1191,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         break;
 
                     case TPartnerClass.BANK:
-                        PartnerRow.AddresseeTypeCode = SharedTypes.StdAddresseeTypeCodeEnumToString(TStdAddresseeTypeCode.satcORGANISA);
-
                         // Create DataRow for PBank using the default values for all DataColumns
                         BankRow = FPartnerEditScreenDS.PBank.NewRowTyped(true);
                         BankRow.PartnerKey = FPartnerKey;
@@ -1223,8 +1213,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         break;
 
                     case TPartnerClass.UNIT:
-                        PartnerRow.AddresseeTypeCode = SharedTypes.StdAddresseeTypeCodeEnumToString(TStdAddresseeTypeCode.satcORGANISA);
-
                         // Create DataRow for PUnit using the default values for all DataColumns
                         UnitRow = FPartnerEditScreenDS.PUnit.NewRowTyped(true);
                         UnitRow.PartnerKey = FPartnerKey;
@@ -1247,8 +1235,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         break;
 
                     case TPartnerClass.VENUE:
-                        PartnerRow.AddresseeTypeCode = SharedTypes.StdAddresseeTypeCodeEnumToString(TStdAddresseeTypeCode.satcORGANISA);
-
                         // Create DataRow for PVenue using the default values for all DataColumns
                         VenueRow = FPartnerEditScreenDS.PVenue.NewRowTyped(true);
                         VenueRow.PartnerKey = FPartnerKey;
@@ -1274,6 +1260,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         break;
                 }
 
+                PartnerRow.AddresseeTypeCode = TSharedAddressHandling.GetDefaultAddresseeType(APartnerClass);
 #if DEBUGMODE
                 if (TLogging.DL >= 7)
                 {
@@ -1536,6 +1523,17 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             Int32 RelationshipsCount;
 
             return GetPartnerRelationshipsInternal(out RelationshipsCount, false);
+        }
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        /// <returns></returns>
+        public PDataLabelValuePartnerTable GetDataLocalPartnerDataValues()
+        {
+            Boolean LabelsAvailable;
+
+            return GetDataLocalPartnerDataValuesInternal(out LabelsAvailable, false);
         }
 
         /// <summary>
@@ -3223,6 +3221,53 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
             }
             return RelationshipDT;
+        }
+
+        private PDataLabelValuePartnerTable GetDataLocalPartnerDataValuesInternal(out Boolean ALabelsAvailable, Boolean ACountOnly)
+        {
+            TDBTransaction ReadTransaction;
+            Boolean NewTransaction = false;
+            TOfficeSpecificDataLabelsUIConnector OfficeSpecificDataLabelsUIConnector;
+            PDataLabelValuePartnerTable DataLabelValuePartnerDT;
+            OfficeSpecificDataLabelsTDS OfficeSpecificDataLabels;
+
+            ALabelsAvailable = false;
+
+            DataLabelValuePartnerDT = new PDataLabelValuePartnerTable();
+
+            try
+            {
+                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+                    TEnforceIsolationLevel.eilMinimum,
+                    out NewTransaction);
+
+
+                OfficeSpecificDataLabelsUIConnector = new TOfficeSpecificDataLabelsUIConnector(FPartnerKey,
+                    MCommonTypes.PartnerClassEnumToOfficeSpecificDataLabelUseEnum(FPartnerClass));
+                OfficeSpecificDataLabels = OfficeSpecificDataLabelsUIConnector.GetData();
+                ALabelsAvailable =
+                    (OfficeSpecificDataLabelsUIConnector.CountLabelUse(SharedTypes.PartnerClassEnumToString(FPartnerClass), ReadTransaction) != 0);
+
+                if (!ACountOnly)
+                {
+                    DataLabelValuePartnerDT.Merge(OfficeSpecificDataLabels.PDataLabelValuePartner);
+                }
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+#if DEBUGMODE
+                    if (TLogging.DL >= 7)
+                    {
+                        Console.WriteLine(this.GetType().FullName + ".GetDataLocalPartnerDataValuesInternal: committed own transaction.");
+                    }
+#endif
+                }
+            }
+
+            return DataLabelValuePartnerDT;
         }
 
         /// <summary>

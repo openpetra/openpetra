@@ -88,7 +88,10 @@ namespace Ict.Petra.Client.App.Core
         {
             IPrincipal LocalUserInfo;
 
-            ConnectToServer(AUserName, APassword, out AProcessID, out AWelcomeMessage, out ASystemEnabled, out AError, out LocalUserInfo);
+            if (!ConnectToServer(AUserName, APassword, out AProcessID, out AWelcomeMessage, out ASystemEnabled, out AError, out LocalUserInfo))
+            {
+                return false;
+            }
 
             Ict.Petra.Shared.UserInfo.GUserInfo = (TPetraPrincipal)LocalUserInfo;
 
@@ -138,14 +141,18 @@ namespace Ict.Petra.Client.App.Core
         {
             try
             {
-                base.ConnectClient(AUserName,
-                    APassword,
-                    AClientManager,
-                    out AProcessID,
-                    out AWelcomeMessage,
-                    out ASystemEnabled,
-                    out AError,
-                    out AUserInfo);
+                if (!base.ConnectClient(AUserName,
+                        APassword,
+                        AClientManager,
+                        out AProcessID,
+                        out AWelcomeMessage,
+                        out ASystemEnabled,
+                        out AError,
+                        out AUserInfo))
+                {
+                    return false;
+                }
+
                 Ict.Petra.Shared.UserInfo.GUserInfo = (TPetraPrincipal)AUserInfo;
 
                 if (FRemotingURLs.ContainsKey(SharedConstants.REMOTINGURL_IDENTIFIER_MSYSMAN))

@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Configuration;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -73,6 +74,8 @@ namespace Ict.Tools.DevelopersAssistant
             chkAutoStopServer.Checked = Properties.Settings.Default.AutoStopServer != 0;
             chkMinimizeServer.Checked = Properties.Settings.Default.MinimizeServerAtStartup != 0;
             txtFlashAfterSeconds.Text = Properties.Settings.Default.FlashAfterSeconds.ToString();
+            txtBazaarPath.Text = Properties.Settings.Default.BazaarPath;
+            ValidateBazaarPath();
             lblVersion.Text = "Version " + System.Diagnostics.FileVersionInfo.GetVersionInfo(Application.ExecutablePath).FileVersion;
 
             txtBranchLocation.Text = Properties.Settings.Default.BranchLocation;
@@ -629,6 +632,7 @@ namespace Ict.Tools.DevelopersAssistant
             Properties.Settings.Default.AutoStopServer = (chkAutoStopServer.Checked) ? 1 : 0;
             Properties.Settings.Default.MinimizeServerAtStartup = (chkMinimizeServer.Checked) ? 1 : 0;
             Properties.Settings.Default.FlashAfterSeconds = Convert.ToUInt32(txtFlashAfterSeconds.Text);
+            Properties.Settings.Default.BazaarPath = txtBazaarPath.Text;
             Properties.Settings.Default.Save();
         }
 
@@ -842,10 +846,18 @@ namespace Ict.Tools.DevelopersAssistant
                 FolderBrowserDialog dlg = new FolderBrowserDialog();
                 dlg.Description = "Select a folder to Uncrustify";
                 dlg.SelectedPath = txtBranchLocation.Text;
+                dlg.RootFolder = Environment.SpecialFolder.MyComputer;
                 dlg.ShowNewFolderButton = false;
 
                 if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
                 {
+                    return;
+                }
+
+                // check the selection is based on teh current branch
+                if (!dlg.SelectedPath.StartsWith(txtBranchLocation.Text, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    MessageBox.Show("You must choose a folder within the current branch.", Program.APP_TITLE);
                     return;
                 }
 
@@ -933,7 +945,7 @@ namespace Ict.Tools.DevelopersAssistant
 
             if (chkAutoStartServer.Checked)
             {
-                // This is a case where we need to auto-stop the server first
+                // This is a case where we need to auto-start the server first
                 GetServerState();
 
                 if (!_serverIsRunning)
@@ -970,8 +982,24 @@ namespace Ict.Tools.DevelopersAssistant
             OutputText.ResetOutput();
             int NumErrors = 0;
             int NumWarnings = 0;
-            // This is the one that is different from the rest
-            RunGenerateWinform(ref NumErrors, ref NumWarnings);
+
+            if (chkAutoStartServer.Checked && chkStartClientAfterGenerateWinform.Checked)
+            {
+                // This is a case where we need to auto-start the server first
+                GetServerState();
+
+                if (!_serverIsRunning)
+                {
+                    RunSimpleNantTarget(new NantTask(NantTask.TaskItem.startPetraServer), ref NumErrors, ref NumWarnings);
+                }
+            }
+
+            // Now we are ready to perform the original task
+            if (NumErrors == 0)
+            {
+                // This is the one that is different from the rest
+                RunGenerateWinform(ref NumErrors, ref NumWarnings);
+            }
 
             txtOutput.Text = (chkVerbose.Checked) ? OutputText.VerboseOutput : OutputText.ConciseOutput;
 
@@ -1189,6 +1217,96 @@ namespace Ict.Tools.DevelopersAssistant
             _currentWarning = -1;
             lblWarnings.Text = String.Format("{0} warnings/errors", _warnings.Count);
             SetWarningButtons();
+        }
+
+        private void btnBrowseBazaar_Click(object sender, EventArgs e)
+        {
+            string x86 = Environment.GetEnvironmentVariable("ProgramFiles(x86)", EnvironmentVariableTarget.Process);
+
+            if (x86 == null)
+            {
+                x86 = Environment.GetEnvironmentVariable("ProgramFiles", EnvironmentVariableTarget.Process);
+            }
+
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.Title = "Browse for the Bazaar Explorer Application";
+            dlg.FileName = "bzrw.exe";
+            dlg.Filter = "Applications|*.exe";
+            dlg.CheckFileExists = true;
+
+            if (x86 != null)
+            {
+                dlg.InitialDirectory = x86;
+            }
+
+            if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
+            {
+                return;
+            }
+
+            txtBazaarPath.Text = dlg.FileName;
+            linkLabelBazaar.Enabled = true;
+        }
+
+        private void linkLabelBazaar_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            // Launch Bazaar using <Path-to-Bazaar> explorer <branch-location>
+            System.Diagnostics.ProcessStartInfo si = new System.Diagnostics.ProcessStartInfo(txtBazaarPath.Text);
+            si.Arguments = String.Format("explorer \"{0}\"", txtBranchLocation.Text);
+            si.WorkingDirectory = txtBranchLocation.Text;
+
+            try
+            {
+                System.Diagnostics.Process.Start(si);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("The Assistant failed to launch the Bazaar Explorer.  The system error message was: " + ex.Message, Program.APP_TITLE);
+            }
+        }
+
+        private void ValidateBazaarPath()
+        {
+            if (txtBazaarPath.Text != String.Empty)
+            {
+                if (File.Exists(txtBazaarPath.Text))
+                {
+                    // All is good
+                    linkLabelBazaar.Enabled = true;
+                    return;
+                }
+                else
+                {
+                    // Did it get moved??
+                    txtBazaarPath.Text = String.Empty;
+                }
+            }
+
+            if (txtBazaarPath.Text == String.Empty)
+            {
+                // We will try and find it
+                string x86 = Environment.GetEnvironmentVariable("ProgramFiles(x86)", EnvironmentVariableTarget.Process);
+
+                if (x86 == null)
+                {
+                    x86 = Environment.GetEnvironmentVariable("ProgramFiles", EnvironmentVariableTarget.Process);
+                }
+
+                if (x86 == null)
+                {
+                    return;
+                }
+
+                string[] tryPath = Directory.GetFiles(x86, "bzrw.exe", SearchOption.AllDirectories);
+
+                if ((tryPath == null) || (tryPath.Length < 1))
+                {
+                    return;
+                }
+
+                txtBazaarPath.Text = tryPath[0];
+                linkLabelBazaar.Enabled = true;
+            }
         }
     }
 }

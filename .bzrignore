@@ -3,6 +3,7 @@
 *-generated.resx
 *-generated.Designer.cs
 csharp/ICT/Petra/Client/generatewinforms.log
+csharp/ICT/Petra/PetraClient/generatewinforms.log
 setup/petra0300/dbdoc
 setup/petra0300/i18n
 setup/petra0300/ndoc
@@ -12,6 +13,8 @@ setup/petra0300/*.db
 db/basedb_progress
 *.ico.gif
 *.local
+*.local.ben.xml
+demodata/generated
 OpenPetra.build.config
 *.exe.config
 /etc/*.config

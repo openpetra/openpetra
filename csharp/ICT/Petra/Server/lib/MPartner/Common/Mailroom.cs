@@ -35,7 +35,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Server.App.Core;
 
-namespace Ict.Petra.Server.MPartner
+namespace Ict.Petra.Server.MPartner.Common
 {
     /// <summary>
     /// Contains Partner Module Partner (Mailroom) -Subnamespace Business Logic.

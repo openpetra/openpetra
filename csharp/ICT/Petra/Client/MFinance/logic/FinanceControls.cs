@@ -24,6 +24,7 @@
 using System;
 using System.Collections.Specialized;
 using System.Data;
+using SourceGrid;
 
 using Ict.Common;
 using Ict.Common.Controls;
@@ -126,7 +127,8 @@ namespace Ict.Petra.Client.MFinance.Logic
             // GetCacheableFinanceTable returns a DataTable with a bank flag
             if (ABankAccountOnly)
             {
-                Filter += " AND " + GLSetupTDSAAccountTable.GetBankAccountFlagDBName() + " = true";
+                Filter += " AND (" + GLSetupTDSAAccountTable.GetBankAccountFlagDBName() + " = true OR " +
+                          GLSetupTDSAAccountTable.GetCashAccountFlagDBName() + " = true)";
             }
 
             // AForeignCurrencyName.Equals("") means use default or do nothing!
@@ -590,15 +592,136 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// </summary>
         /// <param name="AControl"></param>
         /// <param name="ALedgerNr"></param>
+        public static void InitialiseAvailableGiftYearsList(ref TCmbAutoPopulated AControl, System.Int32 ALedgerNr)
+        {
+            string DisplayMember;
+            string ValueMember;
+            DataTable Table = TRemote.MFinance.Gift.WebConnectors.GetAvailableGiftYears(ALedgerNr, out DisplayMember, out ValueMember);
+
+            Table.DefaultView.Sort = ValueMember + " DESC";
+
+            AControl.InitialiseUserControl(Table,
+                ValueMember,
+                DisplayMember,
+                null,
+                null);
+
+            AControl.SelectedIndex = 0;
+
+            AControl.AppearanceSetup(new int[] { -1 }, -1);
+        }
+
+        /// <summary>
+        /// This function fills the available financial years of a given ledger into a combobox
+        /// </summary>
+        /// <param name="AControl"></param>
+        /// <param name="ALedgerNr"></param>
         public static void InitialiseAvailableFinancialYearsList(ref TCmbAutoPopulated AControl, System.Int32 ALedgerNr)
         {
             string DisplayMember;
             string ValueMember;
-            DataTable Table = TRemote.MFinance.Reporting.UIConnectors.GetAvailableFinancialYears(0, out DisplayMember, out ValueMember);
+            DataTable Table = TRemote.MFinance.GL.WebConnectors.GetAvailableGLYears(ALedgerNr, 0, out DisplayMember, out ValueMember);
 
-            Table.DefaultView.Sort = "YearNumber Desc";
+            Table.DefaultView.Sort = ValueMember + " DESC";
 
             AControl.InitialiseUserControl(Table,
+                ValueMember,
+                DisplayMember,
+                null,
+                null);
+
+            AControl.SelectedIndex = 0;
+
+            AControl.AppearanceSetup(new int[] { -1 }, -1);
+        }
+
+        /// <summary>
+        /// This function fills the available financial periods of a given ledger and financial year into a combobox
+        /// </summary>
+        public static void InitialiseAvailableFinancialPeriodsList(
+            ref TCmbAutoPopulated AControl,
+            System.Int32 ALedgerNr,
+            System.Int32 AYear)
+        {
+            DataTable AccountingPeriods = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountingPeriodList, ALedgerNr);
+
+            AccountingPeriods.DefaultView.Sort = AAccountingPeriodTable.GetAccountingPeriodNumberDBName() + " ASC";
+
+            ALedgerRow Ledger =
+                ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, ALedgerNr))[0];
+
+            string DisplayMember = "display";
+            string ValueMember = "value";
+            DataTable periods = new DataTable();
+            periods.Columns.Add(new DataColumn(ValueMember, typeof(Int32)));
+            periods.Columns.Add(new DataColumn(DisplayMember, typeof(string)));
+
+            if (Ledger.CurrentFinancialYear == AYear)
+            {
+                DataRow period = periods.NewRow();
+                period[ValueMember] = 0;
+                period[DisplayMember] = Catalog.GetString("Current and forwarding periods");
+                periods.Rows.Add(period);
+
+                for (int periodCounter = 1; periodCounter <= Ledger.CurrentPeriod + Ledger.NumberFwdPostingPeriods; periodCounter++)
+                {
+                    period = periods.NewRow();
+                    period[ValueMember] = periodCounter;
+                    period[DisplayMember] = ((AAccountingPeriodRow)AccountingPeriods.DefaultView[periodCounter - 1].Row).AccountingPeriodDesc;
+                    periods.Rows.Add(period);
+                }
+            }
+            else
+            {
+                for (int periodCounter = 1; periodCounter <= Ledger.NumberOfAccountingPeriods; periodCounter++)
+                {
+                    DataRow period = periods.NewRow();
+                    period[ValueMember] = periodCounter;
+                    period[DisplayMember] = ((AAccountingPeriodRow)AccountingPeriods.DefaultView[periodCounter - 1].Row).AccountingPeriodDesc;
+                    periods.Rows.Add(period);
+                }
+            }
+
+            periods.DefaultView.Sort = ValueMember + " ASC";
+
+            AControl.InitialiseUserControl(periods,
+                ValueMember,
+                DisplayMember,
+                null,
+                null);
+
+            AControl.AppearanceSetup(new int[] { AControl.ComboBoxWidth }, -1);
+        }
+
+        /// <summary>
+        /// This function fills the open financial periods of a given ledger into a combobox
+        /// </summary>
+        public static void InitialiseOpenFinancialPeriodsList(
+            ref TCmbAutoPopulated AControl,
+            System.Int32 ALedgerNr)
+        {
+            DataTable AccountingPeriods = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountingPeriodList, ALedgerNr);
+
+            AccountingPeriods.DefaultView.Sort = AAccountingPeriodTable.GetAccountingPeriodNumberDBName() + " ASC";
+
+            ALedgerRow Ledger =
+                ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, ALedgerNr))[0];
+
+            string DisplayMember = "display";
+            string ValueMember = "value";
+            DataTable periods = new DataTable();
+            periods.Columns.Add(new DataColumn(ValueMember, typeof(Int32)));
+            periods.Columns.Add(new DataColumn(DisplayMember, typeof(string)));
+
+            for (int periodCounter = Ledger.CurrentPeriod; periodCounter <= Ledger.CurrentPeriod + Ledger.NumberFwdPostingPeriods; periodCounter++)
+            {
+                DataRow period = periods.NewRow();
+                period[ValueMember] = periodCounter;
+                period[DisplayMember] = ((AAccountingPeriodRow)AccountingPeriods.DefaultView[periodCounter - 1].Row).AccountingPeriodDesc;
+                periods.Rows.Add(period);
+            }
+
+            AControl.InitialiseUserControl(periods,
                 ValueMember,
                 DisplayMember,
                 null,

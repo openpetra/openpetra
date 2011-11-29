@@ -58,7 +58,8 @@ RootNode:
             Image: Notes.ico
             DynamicControlType: Ict.Petra.Client.MPartner.Gui.TUC_PartnerNotes
             
-        tpgOfficeSpecific:
-# TODO {LoadPageDynamically=true}        
+        tpgOfficeSpecific: {LoadPageDynamically=true}        
             Label: Local Data
             Image: OfficeSpecific.ico            
+            DynamicControlType: Ict.Petra.Client.MPartner.Gui.TUC_LocalPartnerData
+            

@@ -93,7 +93,7 @@ namespace Ict.Petra.Client.CommonControls
             //
             // timerGetKey
             //
-            this.timerGetKey.Interval = 2000;
+            this.timerGetKey.Interval = 100;
             this.timerGetKey.Tick += new System.EventHandler(this.TimerGetKey_Tick);
 
             //

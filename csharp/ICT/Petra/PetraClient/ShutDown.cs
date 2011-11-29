@@ -24,6 +24,7 @@
 using System;
 using System.Diagnostics;
 using System.Windows.Forms;
+using Ict.Common;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
 using SplashScreen;
@@ -71,17 +72,19 @@ public static class Shutdown
 #endif
 #if  TESTMODE
 #else
-#if DEBUGMODE
-                MessageBox.Show(CantDisconnectReason, "Error on Client Disconnection");
-#endif
+                if (TLogging.DebugLevel > 0)
+                {
+                    MessageBox.Show(CantDisconnectReason, "Error on Client Disconnection");
+                }
 #endif
             }
         }
         catch (Exception Exp)
         {
-#if DEBUGMODE
-            MessageBox.Show("DEBUGMODE Information: Unhandled exception while disconnecting from Servers: " + "\r\n" + Exp.ToString());
-#endif
+            if (TLogging.DebugLevel > 0)
+            {
+                MessageBox.Show("DEBUGMODE Information: Unhandled exception while disconnecting from Servers: " + "\r\n" + Exp.ToString());
+            }
         }
     }
 

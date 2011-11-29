@@ -33,7 +33,7 @@ using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.DataAggregates;
 
-namespace Ict.Petra.Server.MPartner
+namespace Ict.Petra.Server.MPartner.Common
 {
     /// <summary>
     /// Contains Partner Module Partner (Mailing) - Subnamespace Business Logic.

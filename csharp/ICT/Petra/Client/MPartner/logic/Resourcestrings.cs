@@ -219,16 +219,16 @@ namespace Ict.Petra.Client.MPartner
             "If this is ticked, all data is shown; untick to speed up searches (esp. on remote connections).";
 
         /// <summary>todoComment</summary>
-        public const String StrFamilyMembersMenuItemText = "Family &Members...";
+        public const String StrFamilyMembersMenuItemText = "Family &Members";
 
         /// <summary>todoComment</summary>
-        public const String StrFamilyMenuItemText = "Fa&mily...";
+        public const String StrFamilyMenuItemText = "Fa&mily";
 
         /// <summary>todoComment</summary>
-        public const String StrPersonnelPersonMenuItemText = "&Personnel/Individual Data...";
+        public const String StrPersonnelPersonMenuItemText = "&Personnel/Individual Data";
 
         /// <summary>todoComment</summary>
-        public const String StrPersonnelUnitMenuItemText = "&Personnel/Unit Maintenance...";
+        public const String StrPersonnelUnitMenuItemText = "&Personnel/Unit Maintenance";
 
         /// <summary>todoComment</summary>
         public const String StrTransferringDataForPageText = "Transferring data...    (for Page ";

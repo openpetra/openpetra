@@ -44,10 +44,12 @@ using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.Interfaces.MCommon.UIConnectors;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared.MSysMan;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MCommon;
+using Ict.Petra.Server.MCommon.UIConnectors;
 #endregion ManualCode
 using Ict.Petra.Server.App.Core;
 
@@ -94,6 +96,22 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
         }
 #endif
 
+#region ManualCode
+		/// <summary>
+		/// Overload of <see cref="M:GetCacheableTable(TCacheablePartnerTablesEnum, string, bool, out System.Type)" />. See description there.
+		/// </summary>
+		/// <remarks>Can be used with Delegate TGetCacheableDataTableFromCache.</remarks>
+		/// <param name="ACacheableTable">Tells what cacheable DataTable should be returned.</param>
+	    /// <param name="AType">The Type of the DataTable (useful in case it's a
+	    /// Typed DataTable)</param>
+		/// <returns>The specified Cacheable DataTable is returned if the string matches a Cacheable DataTable, 
+		/// otherwise <see cref="String.Empty" />.</returns>
+        public DataTable GetCacheableTable(string ACacheableTable, out System.Type AType)		
+		{
+        	return GetCacheableTable((TCacheablePartnerTablesEnum)Enum.Parse(typeof(TCacheablePartnerTablesEnum), ACacheableTable), 
+        	    String.Empty, false, out AType);
+		}
+#endregion ManualCode
         /// <summary>
         /// Returns a certain cachable DataTable that contains all columns and all
         /// rows of a specified table.
@@ -304,6 +322,12 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                         case TCacheablePartnerTablesEnum.CountryListFromExistingLocations:
                         {
                             DataTable TmpTable = GetCountryListFromExistingLocationsTable(ReadTransaction, TableName);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheablePartnerTablesEnum.DataLabelsForPartnerClassesList:
+                        {
+                            DataTable TmpTable = GetDataLabelsForPartnerClassesListTable(ReadTransaction, TableName);
                             FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
@@ -648,6 +672,82 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                 " AND c." + PCountryTable.GetCountryCodeDBName() + " = l." +
                 PLocationTable.GetCountryCodeDBName(), ATableName, AReadTransaction);
 #endregion ManualCode
+        }
+
+        private DataTable GetDataLabelsForPartnerClassesListTable(TDBTransaction AReadTransaction, string ATableName)
+        {
+#region ManualCode
+                const string PARTNERCLASSCOL = "PartnerClass";
+                const string DLAVAILCOL = "DataLabelsAvailable";
+
+                DataTable TmpTable;
+                DataRow NewDR;
+                TOfficeSpecificDataLabelsUIConnector OfficeSpecificDataLabelsUIConnector;
+
+                // Create our custom Cacheable DataTable on-the-fly
+                TmpTable = new DataTable(ATableName);
+                TmpTable.Columns.Add(new DataColumn(PARTNERCLASSCOL, System.Type.GetType("System.String")));
+                TmpTable.Columns.Add(new DataColumn(DLAVAILCOL, System.Type.GetType("System.Boolean")));
+
+
+                /*
+                 * Create an Instance of TOfficeSpecificDataLabelsUIConnector - PartnerKey and DataLabelUse are not important here
+                 * because we only call Method 'CountLabelUse', which doesn't rely on any of them.
+                 */
+                OfficeSpecificDataLabelsUIConnector = new TOfficeSpecificDataLabelsUIConnector(0,
+                    TOfficeSpecificDataLabelUseEnum.Family);
+
+                // DataLabels available for PERSONs?
+                NewDR = TmpTable.NewRow();
+                NewDR[PARTNERCLASSCOL] = SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON);
+                NewDR[DLAVAILCOL] =
+                    (OfficeSpecificDataLabelsUIConnector.CountLabelUse(NewDR[PARTNERCLASSCOL].ToString(), AReadTransaction) != 0);
+                TmpTable.Rows.Add(NewDR);
+
+                // DataLabels available for FAMILYs?
+                NewDR = TmpTable.NewRow();
+                NewDR[PARTNERCLASSCOL] = SharedTypes.PartnerClassEnumToString(TPartnerClass.FAMILY);
+                NewDR[DLAVAILCOL] =
+                    (OfficeSpecificDataLabelsUIConnector.CountLabelUse(NewDR[PARTNERCLASSCOL].ToString(), AReadTransaction) != 0);
+                TmpTable.Rows.Add(NewDR);
+
+                // DataLabels available for CHURCHes?
+                NewDR = TmpTable.NewRow();
+                NewDR[PARTNERCLASSCOL] = SharedTypes.PartnerClassEnumToString(TPartnerClass.CHURCH);
+                NewDR[DLAVAILCOL] =
+                    (OfficeSpecificDataLabelsUIConnector.CountLabelUse(NewDR[PARTNERCLASSCOL].ToString(), AReadTransaction) != 0);
+                TmpTable.Rows.Add(NewDR);
+
+                // DataLabels available for ORGANISATIONs?
+                NewDR = TmpTable.NewRow();
+                NewDR[PARTNERCLASSCOL] = SharedTypes.PartnerClassEnumToString(TPartnerClass.ORGANISATION);
+                NewDR[DLAVAILCOL] =
+                    (OfficeSpecificDataLabelsUIConnector.CountLabelUse(NewDR[PARTNERCLASSCOL].ToString(), AReadTransaction) != 0);
+                TmpTable.Rows.Add(NewDR);
+
+                // DataLabels available for UNITs?
+                NewDR = TmpTable.NewRow();
+                NewDR[PARTNERCLASSCOL] = SharedTypes.PartnerClassEnumToString(TPartnerClass.UNIT);
+                NewDR[DLAVAILCOL] =
+                    (OfficeSpecificDataLabelsUIConnector.CountLabelUse(NewDR[PARTNERCLASSCOL].ToString(), AReadTransaction) != 0);
+                TmpTable.Rows.Add(NewDR);
+
+                // DataLabels available for BANKs?
+                NewDR = TmpTable.NewRow();
+                NewDR[PARTNERCLASSCOL] = SharedTypes.PartnerClassEnumToString(TPartnerClass.BANK);
+                NewDR[DLAVAILCOL] =
+                    (OfficeSpecificDataLabelsUIConnector.CountLabelUse(NewDR[PARTNERCLASSCOL].ToString(), AReadTransaction) != 0);
+                TmpTable.Rows.Add(NewDR);
+
+                // DataLabels available for VENUEs?
+                NewDR = TmpTable.NewRow();
+                NewDR[PARTNERCLASSCOL] = SharedTypes.PartnerClassEnumToString(TPartnerClass.VENUE);
+                NewDR[DLAVAILCOL] =
+                    (OfficeSpecificDataLabelsUIConnector.CountLabelUse(NewDR[PARTNERCLASSCOL].ToString(), AReadTransaction) != 0);
+                TmpTable.Rows.Add(NewDR);
+
+                return TmpTable;
+#endregion ManualCode        	
         }
     }
 }

@@ -53,7 +53,9 @@ using Ict.Petra.Shared.Interfaces.MSysMan.Security.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MSysMan.Security.UserManager;
 #region ManualCode
 using System.Xml;
+using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MSysMan.Data;
+using Ict.Petra.Shared.MSysMan;
 #endregion ManualCode
 namespace Ict.Petra.Shared.Interfaces.MSysMan
 {
@@ -342,6 +344,9 @@ namespace Ict.Petra.Shared.Interfaces.MSysMan.ImportExport.WebConnectors
         System.String ExportAllTables();
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector)</summary>
         System.Boolean ResetDatabase(System.String AZippedNewDatabaseData);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector)</summary>
+        System.Boolean SaveTDS(SampleDataConstructorTDS dataTDS,
+                               out TVerificationResultCollection AVerificationResult);
     }
 
 }

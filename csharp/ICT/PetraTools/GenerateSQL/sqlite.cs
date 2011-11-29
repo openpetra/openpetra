@@ -24,7 +24,7 @@
 using System;
 using System.Collections.Specialized;
 using System.Data;
-using System.Data.SQLite;
+using Mono.Data.Sqlite;
 using System.IO;
 using Ict.Tools.DBXML;
 using Ict.Common;
@@ -32,13 +32,13 @@ using Ict.Common;
 namespace GenerateSQL
 {
 /// <summary>
-/// this class will create a Petra database with sqlite
+/// this class will create a Petra database with Sqlite
 /// and will allow to load data from CSV files that are in Postgresql COPY format
 /// </summary>
 public class TSQLiteWriter
 {
     /// <summary>
-    /// create an sqlite database and create all tables and sequences and indexes
+    /// create an Sqlite database and create all tables and sequences and indexes
     /// </summary>
     /// <param name="ADataDefinition"></param>
     /// <param name="ADBFilename"></param>
@@ -53,13 +53,18 @@ public class TSQLiteWriter
 
         System.Console.WriteLine("Writing file to {0}...", ADBFilename);
 
-        // see also tutorial http://sqlite.phxsoftware.com/forums/p/130/452.aspx#452
-        SQLiteConnection conn = new SQLiteConnection("Data Source=" + ADBFilename + (ADBPwd.Length > 0 ? ";Password=" + ADBPwd : ""));
+        // see also tutorial http://Sqlite.phxsoftware.com/forums/p/130/452.aspx#452
+
+        // sqlite on Windows does not support encryption with a password
+        // System.EntryPointNotFoundException: sqlite3_key
+        ADBPwd = string.Empty;
+
+        SqliteConnection conn = new SqliteConnection("Data Source=" + ADBFilename + (ADBPwd.Length > 0 ? ";Password=" + ADBPwd : ""));
         conn.Open();
 
         foreach (TTable table in ADataDefinition.GetTables())
         {
-            // see http://www.sqlite.org/lang_createtable.html
+            // see http://www.Sqlite.org/lang_createtable.html
             string createStmt = "CREATE TABLE " + table.strName + " (";
             bool firstField = true;
 
@@ -93,21 +98,23 @@ public class TSQLiteWriter
             // TODO: primary key
             // TODO: foreign key
 
-            SQLiteCommand cmd = new SQLiteCommand(createStmt, conn);
+            SqliteCommand cmd = new SqliteCommand(createStmt, conn);
             cmd.ExecuteNonQuery();
         }
 
         // sequence workaround
-        // see http://www.sqlite.org/faq.html#q1 AUTOINCREMENT
+        // see http://www.Sqlite.org/faq.html#q1 AUTOINCREMENT
         foreach (TSequence seq in ADataDefinition.GetSequences())
         {
             string createStmt = "CREATE TABLE " + seq.strName + " (sequence INTEGER PRIMARY KEY AUTOINCREMENT, dummy INTEGER);";
-            SQLiteCommand cmd = new SQLiteCommand(createStmt, conn);
+            SqliteCommand cmd = new SqliteCommand(createStmt, conn);
             cmd.ExecuteNonQuery();
             createStmt = "INSERT INTO " + seq.strName + " VALUES(NULL, -1);";
-            cmd = new SQLiteCommand(createStmt, conn);
+            cmd = new SqliteCommand(createStmt, conn);
             cmd.ExecuteNonQuery();
         }
+
+        conn.Close();
 
         return true;
     }
@@ -123,8 +130,13 @@ public class TSQLiteWriter
     /// <returns></returns>
     static public bool ExecuteLoadScript(TDataDefinitionStore ADataDefinition, string ADBFilename, string APath, string ASqlfile, string ADBPwd)
     {
-        // see tutorial for fast bulk loads: http://sqlite.phxsoftware.com/forums/t/134.aspx
-        SQLiteConnection conn = new SQLiteConnection("Data Source=" + ADBFilename +
+        // see tutorial for fast bulk loads: http://Sqlite.phxsoftware.com/forums/t/134.aspx
+
+        // sqlite on Windows does not support encryption with a password
+        // System.EntryPointNotFoundException: sqlite3_key
+        ADBPwd = string.Empty;
+
+        SqliteConnection conn = new SqliteConnection("Data Source=" + ADBFilename +
             (ADBPwd.Length > 0 ? ";Password=" + ADBPwd : ""));
 
         conn.Open();
@@ -153,14 +165,16 @@ public class TSQLiteWriter
             }
         }
 
+        conn.Close();
+
         return true;
     }
 
-    static private void RunCommand(SQLiteConnection conn, string deletestmt)
+    static private void RunCommand(SqliteConnection conn, string deletestmt)
     {
-        using (SQLiteTransaction dbTrans = conn.BeginTransaction())
+        using (SqliteTransaction dbTrans = conn.BeginTransaction())
         {
-            using (SQLiteCommand cmd = conn.CreateCommand())
+            using (SqliteCommand cmd = conn.CreateCommand())
             {
                 cmd.CommandText = deletestmt;
                 cmd.ExecuteNonQuery();
@@ -178,11 +192,11 @@ public class TSQLiteWriter
     /// <param name="APath"></param>
     /// <param name="ATablename"></param>
     /// <returns></returns>
-    static private bool LoadData(TDataDefinitionStore ADataDefinition, SQLiteConnection conn, string APath, string ATablename)
+    static private bool LoadData(TDataDefinitionStore ADataDefinition, SqliteConnection conn, string APath, string ATablename)
     {
-        using (SQLiteTransaction dbTrans = conn.BeginTransaction())
+        using (SqliteTransaction dbTrans = conn.BeginTransaction())
         {
-            using (SQLiteCommand cmd = conn.CreateCommand())
+            using (SqliteCommand cmd = conn.CreateCommand())
             {
                 // prepare the statement
                 string stmt = "INSERT INTO " + ATablename + " (";
@@ -200,7 +214,7 @@ public class TSQLiteWriter
 
                     stmt += field.strName;
 
-                    SQLiteParameter param = cmd.CreateParameter();
+                    SqliteParameter param = cmd.CreateParameter();
                     cmd.Parameters.Add(param);
                 }
 

@@ -44,6 +44,9 @@ using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.CommonControls.Logic;
 using Ict.Petra.Client.MConference.Gui;
 using Ict.Petra.Client.MPartner.Gui;
+using Ict.Petra.Client.MPersonnel.Gui;
+using Ict.Petra.Client.MFinance.Gui;
+using Ict.Petra.Client.MSysMan.Gui;
 using SplashScreen;
 using PetraClientShutdown;
 
@@ -242,7 +245,8 @@ namespace Ict.Petra.Client.App.PetraClient
 
             // check whether there is a patch available; if this is a remote version, try to download a patch from the server
             TPatchTools patchTools = new TPatchTools(Path.GetFullPath(TClientSettings.Petra_Path_Bin + Path.DirectorySeparatorChar + ".."),
-                "30",
+                TClientSettings.Petra_Path_Bin,
+                TPatchTools.OPENPETRA_VERSIONPREFIX,
                 TClientSettings.PathTemp,
                 "",
                 "",

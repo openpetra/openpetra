@@ -1,22 +1,6 @@
 <?xml version="1.0"?>
 <project name="ICT-Testing-Build">
 
-
-<target name="exe" depends="" >
-  <nant inheritall="false" target="${target}" 
-        buildfile="exe/ICT.Testing.exe.build" />
-</target>
-
-<target name="lib" depends="" >
-  <nant inheritall="false" target="${target}" 
-        buildfile="lib/ICT.Testing.lib.build" />
-</target>
-
-
-<target name="internal-subdirs" 
-        depends="exe,lib" />
-
-<!-- Include default implementation -->
-<include buildfile="../../../inc/nant/OpenPetra.subdirs.xml"/> 
+<include buildfile="../../../inc/nant/OpenPetra.csharp.xml"/> 
 
 </project>

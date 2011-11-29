@@ -42,7 +42,7 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared.MReporting;
-
+using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.Client.MReporting.Gui
 {

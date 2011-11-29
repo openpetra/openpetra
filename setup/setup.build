@@ -4,7 +4,7 @@
 <include buildfile="../inc/nant/OpenPetra.common.xml" />
 
 <property name="BuildClientArchive" value="false" overwrite="false" />
-<property name="LinuxTargetDistribution-list" value="centos-postgresql" overwrite="false" />
+<property name="LinuxTargetDistribution-list" value="debian-postgresql,centos-postgresql" overwrite="false" />
 <property name="WithLinuxClient" value="false" overwrite="false" />
 <property name="WithWindowsClient" value="true" overwrite="false" />
 <property name="PetraRelease" value="0300" overwrite="false" />
@@ -26,20 +26,20 @@ public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
     // need to manually code the medium version increases
     if (numbers[1] == "1" && numbers[2] == "0")
     {
-        return String.Format("Patch_{0}.{1}.{2}_{3}.{4}.{5}.sql",
+        return String.Format("patch_{0}.{1}.{2}_{3}.{4}.{5}.sql",
                         0, 0, 15,
                         numbers[0], numbers[1], numbers[2]);
     }
 
     if (numbers[1] == "2" && numbers[2] == "0")
     {
-        return String.Format("Patch_{0}.{1}.{2}_{3}.{4}.{5}.sql",
+        return String.Format("patch_{0}.{1}.{2}_{3}.{4}.{5}.sql",
                         0, 1, 0,
                         numbers[0], numbers[1], numbers[2]);
     }
 
     // this is for smaller patches
-    return String.Format("Patch_{0}.{1}.{2}_{3}.{4}.{5}.sql",
+    return String.Format("patch_{0}.{1}.{2}_{3}.{4}.{5}.sql",
                         numbers[0], numbers[1], Convert.ToInt16(numbers[2]) - 1,
                         numbers[0], numbers[1], numbers[2]);
 }
@@ -102,14 +102,12 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
   <property name="HostedPort" value="9000"/>
   <property name="PublisherUrl" value="www.solidcharity.com"/>
   <property name="RandomDBPassword" value="CHANGEME"/>
-  <call target="nanttasks"/>
   <call target="buildRemoteInstallers"/>
 </target>
 
 <!-- Windows -->
 <target name="buildWindowsStandalone" if="${platform::is-windows()}">
-  <delete file="${dir.bin}/dont_compile.txt"/>
-  <call target="compile"/>
+  <call target="generateSolution"/>
   <call target="createSQLiteDB" unless="${target::has-executed('createSQLiteDB')}"/>
   <call target="translationCompilePOFile" unless="${target::has-executed('translationCompilePOFile')}"/>
   <call target="setupStandalone"/>
@@ -144,6 +142,21 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
     <!--  ***************  Build remote client installer ********************* -->
     <property name="SetupOriginal.File" value="${dir.root}/setup/petra${PetraRelease}/remoteclientWin/remote.nsi"/>
     <call target="setupTemplate"/>
+    
+    <!-- ************ build backup client tar.gz for future patches ********* -->
+    <property name="BuildArchive" value="client" overwrite="true"/>
+    <call target="prepareSetupDirForTarFile"/>
+    <!-- this does not keep the executable flag; need this to make the patch for windows clients -->
+    <tar destfile="${dir.delivery}/openpetraorg-client-backup-${OrgNameWithoutSpace}-${ReleaseID}.tar.gz" compression="GZip">
+      <fileset basedir="${setupDir}" prefix="openpetraorg-${ReleaseID}">
+        <include name="**/*" />
+      </fileset>
+    </tar>
+
+    <!-- ************ create a patch file that does not depend on an earlier patch. needs to be renamed though ********* -->
+    <property name="OldVersion" value="0.0.9-99"/>
+    <property name="NewVersion" value="${ReleaseVersion}"/>
+    <call target="createRemoteClientPatch"/>
 </target>
 
 <target name="setupTemplate">
@@ -186,15 +199,9 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
     </if>
 </target>
 
-<target name="buildRemoteInstallers" help="build a tar.gz file for the server, the remote installer for the client, and a backup for future patches"
-    depends="init">
-  <if test="${WithWindowsClient}">
-    <delete file="${dir.bin}/dont_compile.txt"/>
-    <call target="compile"/>
-  </if>
-  <if test="${not WithWindowsClient}">
-    <call target="compileWithoutClient"/>
-  </if>
+<target name="buildRemoteInstallers" help="build a tar.gz file for the server, the remote installer for the client, and a backup for future patches">
+  <call target="nanttasks"/>
+  <call target="generateSolution"/>
 
   <if test="${string::contains(LinuxTargetDistribution-list, 'postgresql')}">
     <call target="createPostgreSQLDB" unless="${target::has-executed('createPostgreSQLDB')}"/>
@@ -211,16 +218,6 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
   <!-- build Remote Setup Windows installer -->
   <if test="${WithWindowsClient}">
     <call target="setupRemote"/>
-    
-    <!-- ************ build backup client tar.gz for future patches ********* -->
-    <property name="BuildArchive" value="client" overwrite="true"/>
-    <call target="prepareSetupDirForTarFile"/>
-    <!-- this does not keep the executable flag; need this to make the patch for windows clients -->
-    <tar destfile="${dir.delivery}/openpetraorg-client-backup-${OrgNameWithoutSpace}-${ReleaseID}.tar.gz" compression="GZip">
-      <fileset basedir="${setupDir}" prefix="openpetraorg-${ReleaseID}">
-        <include name="**/*" />
-      </fileset>
-    </tar>
   </if>
   
   <!-- ********* build Linux Server tar.gz ********* -->
@@ -250,21 +247,13 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
     <call target="buildLinuxClient"/>
   </if>
 
-  <!-- TODO: build patch against previous release -->
-
   <delete file="${tempdir}/publickey.xml"/>
   <delete file="${tempdir}/privatekey.xml"/>
   <delete dir="${setupDir}"/>
 </target>
 
-<target name="compileWithoutClient">
-  <delete file="${dir.bin}/dont_compile.txt"/>
-  
-  <nant inheritall="true" target="thirdParty" buildfile="${path::combine(dir.csharp, 'csharp.build')}" verbose="${verbose}"/>
-  <nant inheritall="true" target="compile" buildfile="${path::combine(dir.csharp, 'ICT/Common/ICT.Common.build')}" verbose="${verbose}"/>
-  <nant inheritall="true" target="compile" buildfile="${path::combine(dir.csharp, 'ICT/PetraTools/ICT.PetraTools.build')}" verbose="${verbose}"/>
-  <nant inheritall="true" target="compile" buildfile="${path::combine(dir.csharp, 'ICT/Petra/PetraWithoutClient.build')}" verbose="${verbose}"/>
-
+<target name="createRemoteClientPatch" depends="init">
+    <ExecDotNet program="${dir.bin}/Ict.Tools.PatchTool.exe" commandline="-action:create -OpenPetra.PathTemp:${tempdir} -deliverypath:${dir.delivery} -appname:openpetraorg -zipname:openpetraorg-client-backup-${OrgNameWithoutSpace} -oldversion:${OldVersion} -newversion:${NewVersion}"/>
 </target>
 
 <target name="compileMonoClient">
@@ -275,7 +264,9 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
   <property name="TargetPlatformGUI" value="mono" overwrite="true"/>
   <property name="GUILocalisation" value="en" overwrite="true"/>
   
-  <nant inheritall="true" target="compile" buildfile="${path::combine(dir.csharp, 'ICT/Petra/PetraOnlyClient.build')}" verbose="${verbose}"/>
+  <call target="generateWinforms"/>
+  <property name="solution" value="Client"/>
+  <call target="quickCompile"/>
 
   <property name="TargetPlatformGUI" value="${OrigTargetPlatformGUI}" overwrite="true"/>
   <property name="GUILocalisation" value="${OrigGUILocalisation}" overwrite="true"/>
