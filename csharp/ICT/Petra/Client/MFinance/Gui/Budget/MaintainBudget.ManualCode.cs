@@ -72,6 +72,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
                 // Do not include summary cost centres: we want to use one cost centre for each Motivation Details
                 TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, false, true);
+                
+	            TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbPeriodYear, FLedgerNumber);
+
+	            //Add next year.
+	            
+	            for (int i = 0; i < (cmbPeriodYear.Count - 2); i++)
+	            {
+	            	for (int j = (cmbPeriodYear.Count - 1); j <= (i + 1); j--)
+	            	{
+//	            		//Add a year and then remove duplicates
+//	            		if (cboCity.Items(i).ToString == cboCity.Items(j).ToString)
+//	            		{
+//	            			cboCity.Items.RemoveAt(j)
+//	            		}
+	            	}
+	            }
 
                 DataView myDataView = FMainDS.ABudget.DefaultView;
                 myDataView.AllowNew = false;

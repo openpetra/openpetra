@@ -47,6 +47,7 @@ RootNode:
             Controls:
                 Row0: [cmbDetailCostCentreCode]
                 Row1: [cmbDetailAccountCode]
+                Row2: [cmbPeriodYear]
         pnlBudgetTypeAdhoc:
             Dock: Fill
             Visible: false
@@ -96,6 +97,7 @@ RootNode:
                 Row4: [pnlBudgetTypeInflateBase]
         cmbDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList}
         cmbDetailAccountCode: {Label=Account, List=UserDefinedList}
+        cmbPeriodYear: {Label=Year, List=UserDefinedList}
         #Adhoc controls
         txtPeriod01Amount: {Label=Period 1, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
         txtPeriod02Amount: {Label=Period 2, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
