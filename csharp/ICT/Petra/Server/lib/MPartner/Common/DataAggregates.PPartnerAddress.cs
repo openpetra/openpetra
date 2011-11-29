@@ -2485,6 +2485,313 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         }
 
         /// <summary>
+        /// Check each Location DataRow before calling SubmitChanges
+        /// to enforce Business Rules:
+        /// - Added or changed Location: check for a similar Location record
+        /// - if no similar Location record exists, save this Location record
+        /// - if a similar Location record exists: allow choosing whether the
+        ///    existing one should be used, or this Location record should be saved
+        /// - Changed Location: don't save Location record if the data is actually
+        ///     the same than before
+        /// - Deleted Location: delete Location only if no other PartnerLocation
+        ///      is referencing it
+        /// - Deleted Location: remove references from any Extracts
+        /// </summary>
+        private static TSubmitChangesResult ProcessLocationChanges(
+            PLocationTable LocationTable,
+            ref PartnerAddressAggregateTDS AResponseDS,
+            TDBTransaction ASubmitChangesTransaction,
+            Int64 APartnerKey,
+            ref PartnerAddressAggregateTDSSimilarLocationParametersTable AExistingLocationParametersDT,
+            ref PPartnerLocationTable APartnerLocationTable,
+            ref TLocationPK[, ] ASimilarLocationReUseKeyMapping,
+            out Boolean AReUseSimilarLocation,
+            out ArrayList ANotToBeSubmittedLocationRows,
+            ref PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable AAddressAddedOrChangedPromotionParametersDT,
+            ref PartnerAddressAggregateTDSChangePromotionParametersTable AChangeLocationParametersDT,
+            ref PPartnerLocationTable APartnerLocationExtraSubmitTable,
+            ref PLocationTable ALocationExtraSubmitTable,
+            ref TVerificationResultCollection AVerificationResult)
+        {
+            ANotToBeSubmittedLocationRows = new ArrayList();
+            AReUseSimilarLocation = false;
+
+            for (Int16 LocationCounter = 0; LocationCounter <= LocationTable.Rows.Count - 1; LocationCounter += 1)
+            {
+                if ((LocationTable.Rows[LocationCounter].RowState == DataRowState.Added)
+                    || (LocationTable.Rows[LocationCounter].RowState == DataRowState.Modified))
+                {
+                    switch (LocationTable.Rows[LocationCounter].RowState)
+                    {
+                        case DataRowState.Added:
+
+                            if (LocationTable[LocationCounter].LocationKey != 0)
+                            {
+                                // Check for reuse of a similar location in the DB
+                                PLocationRow TmpRow = LocationTable[LocationCounter];
+                                TSubmitChangesResult PerformLocationReUseChecksResult = PerformSimilarLocationReUseChecks(
+                                    ref TmpRow,
+                                    ref AResponseDS,
+                                    ASubmitChangesTransaction,
+                                    APartnerKey,
+                                    ref AExistingLocationParametersDT,
+                                    ref APartnerLocationTable,
+                                    ref ASimilarLocationReUseKeyMapping,
+                                    out AReUseSimilarLocation,
+                                    ref AVerificationResult);
+#if DEBUGMODE
+                                if (TLogging.DL >= 8)
+                                {
+                                    TLogging.Log(
+                                        "SubmitChanges: TmpRow.LocationKey after PerformSimilarLocationReUseChecks (1): " +
+                                        TmpRow.LocationKey.ToString());
+                                }
+#endif
+
+                                if (PerformLocationReUseChecksResult != TSubmitChangesResult.scrOK)
+                                {
+                                    /*
+                                     * Stop processing here - we need a decision whether to re-use
+                                     * an existing Location or not (or the user tried to re-use a
+                                     * Location that is already used by this Partner, which is a
+                                     * user error)
+                                     */
+                                    return PerformLocationReUseChecksResult;
+                                }
+
+                                if (!AReUseSimilarLocation)
+                                {
+                                    // No similar Location exists, or an existing similar Location
+                                    // should not be reused.
+                                    // > we can just save that new Location
+                                }
+                            }
+                            else
+                            {
+                                // Location 0 must never be saved!
+
+                                /*
+                                 * Remember that the row should not be submitted lateron.
+                                 * NOTE: We can't simply call .AcceptChanges on the DataRow in order
+                                 * to remove it from the DataTable. This would cause this for-loop
+                                 * (with the LocationCounter) to iterate over too much DataRows!
+                                 */
+                                ANotToBeSubmittedLocationRows.Add(LocationTable.Rows[LocationCounter]);
+#if DEBUGMODE
+                                if (TLogging.DL >= 8)
+                                {
+                                    TLogging.Log("SubmitChanges: Location with LocationKey 0 was added and won''t be saved.");
+                                }
+#endif
+                            }
+
+                            // DataRowState.Added:
+                            break;
+
+                        case DataRowState.Modified:
+
+                            if ((CheckHasLocationChanged(LocationTable[LocationCounter])) && (LocationTable[LocationCounter].LocationKey != 0))
+                            {
+                                // Check for reuse of a similar location in the DB
+                                PLocationRow TmpRow = LocationTable[LocationCounter];
+                                TSubmitChangesResult PerformLocationReUseChecksResult = PerformSimilarLocationReUseChecks(ref TmpRow,
+                                    ref AResponseDS,
+                                    ASubmitChangesTransaction,
+                                    APartnerKey,
+                                    ref AExistingLocationParametersDT,
+                                    ref APartnerLocationTable,
+                                    ref ASimilarLocationReUseKeyMapping,
+                                    out AReUseSimilarLocation,
+                                    ref AVerificationResult);
+
+#if DEBUGMODE
+                                if (TLogging.DL >= 8)
+                                {
+                                    TLogging.Log(
+                                        "SubmitChanges: TmpRow.LocationKey after PerformSimilarLocationReUseChecks (2): " +
+                                        TmpRow.LocationKey.ToString());
+                                }
+#endif
+
+                                if (PerformLocationReUseChecksResult != TSubmitChangesResult.scrOK)
+                                {
+                                    /*
+                                     * Stop processing here - we need a decision whether to re-use
+                                     * an existing Location or not (or the user tried to re-use a
+                                     * Location that is already used by this Partner, which is an
+                                     * user error)
+                                     */
+                                    return PerformLocationReUseChecksResult;
+                                }
+
+                                if (!AReUseSimilarLocation)
+                                {
+                                    // No similar Location exists, or an existing similar Location
+                                    // should not be reused
+                                    if (CheckHasPartnerLocationOtherPartnerReferences(LocationTable[LocationCounter], APartnerKey,
+                                            ASubmitChangesTransaction))
+                                    {
+#if DEBUGMODE
+                                        if (TLogging.DL >= 9)
+                                        {
+                                            TLogging.Log(
+                                                "SubmitChanges: Location " + LocationTable[LocationCounter].LocationKey.ToString() +
+                                                ": is used by other Partners as well.");
+                                        }
+#endif
+
+                                        bool CreateLocationFlag;
+                                        TLocationPK OriginalLocationKey;
+
+                                        TSubmitChangesResult PerformLocationChangeChecksResult =
+                                            PerformLocationChangeChecks(LocationTable[LocationCounter],
+                                                APartnerKey,
+                                                ref AResponseDS,
+                                                ASubmitChangesTransaction,
+                                                ref AAddressAddedOrChangedPromotionParametersDT,
+                                                ref AChangeLocationParametersDT,
+                                                ref APartnerLocationTable,
+                                                ref APartnerLocationExtraSubmitTable,
+                                                ref AVerificationResult,
+                                                out CreateLocationFlag,
+                                                out OriginalLocationKey);
+
+                                        if (PerformLocationChangeChecksResult != TSubmitChangesResult.scrOK)
+                                        {
+                                            if (PerformLocationChangeChecksResult == TSubmitChangesResult.scrError)
+                                            {
+                                                return PerformLocationChangeChecksResult;
+                                            }
+                                        }
+
+                                        // if PerformLocationChangeChecksResult <> TSubmitChangesResult.scrOK
+                                        if (CreateLocationFlag)
+                                        {
+                                            ModifyExistingLocationParameters(LocationTable[LocationCounter],
+                                                OriginalLocationKey,
+                                                ref AExistingLocationParametersDT);
+
+                                            /*
+                                             * Remember that the row should not be submitted lateron.
+                                             * NOTE: We can't simply call .AcceptChanges on the DataRow in order
+                                             * to remove it from the DataTable. This would cause this for-loop
+                                             * (with the LocationCounter) to iterate over too much DataRows!
+                                             */
+                                            ANotToBeSubmittedLocationRows.Add(LocationTable.Rows[LocationCounter]);
+                                        }
+                                    }
+
+                                    // if CheckHasPartnerLocationOtherPartnerReferences ... then
+                                }
+                            }
+                            // if CheckHasLocationChanged ... then
+                            else
+                            {
+#if DEBUGMODE
+                                if (TLogging.DL >= 9)
+                                {
+                                    TLogging.Log(
+                                        "Location " + LocationTable[LocationCounter].LocationKey.ToString() +
+                                        ": data has NOT changed -> will not be saved.");
+                                }
+#endif
+
+                                // Prevent the DataRow from getting submitted lateron
+                                // LocationTable.Row[LocationCounter].AcceptChanges;
+
+                                /*
+                                 * Remember that the row should not be submitted lateron.
+                                 * NOTE: We can't simply call .AcceptChanges on the DataRow in order
+                                 * to remove it from the DataTable. This would cause this for-loop
+                                 * (with the LocationCounter) to iterate over too much DataRows!
+                                 */
+                                ANotToBeSubmittedLocationRows.Add(LocationTable.Rows[LocationCounter]);
+                            }
+
+                            // DataRowState.Modified:
+                            break;
+                    }
+
+                    // case LocationTable.Rows[LocationCounter].RowState of
+                }
+                // Added or Modified DataRow
+                else if (LocationTable.Rows[LocationCounter].RowState == DataRowState.Deleted)
+                {
+#if DEBUGMODE
+                    if (TLogging.DL >= 9)
+                    {
+                        TLogging.Log("SubmitChanges: Location " +
+                            LocationTable[LocationCounter][PLocationTable.GetLocationKeyDBName(),
+                                                           DataRowVersion.Original].ToString() + ": has been marked for deletion.");
+                    }
+#endif
+
+                    /*
+                     * Remember that the row should not be submitted lateron.
+                     * NOTE: We can't simply call .AcceptChanges on the DataRow in order
+                     * to remove it from the DataTable. This would cause this for-loop
+                     * (with the LocationCounter) to iterate over too much DataRows!
+                     */
+                    ANotToBeSubmittedLocationRows.Add(LocationTable.Rows[LocationCounter]);
+
+                    // Handle deletion of Location row: delete it only if no other PartnerLocation is referencing it
+                    if (CheckHasPartnerLocationOtherPartnerReferences(LocationTable[LocationCounter], APartnerKey, ASubmitChangesTransaction))
+                    {
+#if DEBUGMODE
+                        if (TLogging.DL >= 9)
+                        {
+                            TLogging.Log("SubmitChanges: Location " +
+                                LocationTable[LocationCounter][PLocationTable.GetLocationKeyDBName(),
+                                                               DataRowVersion.Original].ToString() +
+                                ": has been marked for deletion and is used by others, so it won''t get deleted.");
+                        }
+#endif
+                    }
+                    else
+                    {
+#if DEBUGMODE
+                        if (TLogging.DL >= 9)
+                        {
+                            TLogging.Log("SubmitChanges: Location " +
+                                LocationTable[LocationCounter][PLocationTable.GetLocationKeyDBName(),
+                                                               DataRowVersion.Original].ToString() +
+                                ": has been marked for deletion and will get deleted.");
+                        }
+#endif
+
+                        /*
+                         * Location needs to be deleted
+                         */
+                        if (ALocationExtraSubmitTable == null)
+                        {
+                            ALocationExtraSubmitTable = new PLocationTable();
+                        }
+
+                        ALocationExtraSubmitTable.ImportRow(LocationTable[LocationCounter]);
+
+                        /*
+                         * Any Extract in Petra that references this Location must no longer
+                         * reference this Location since it will get deleted
+                         */
+                        if (!RemoveLocationFromExtracts(LocationTable[LocationCounter], ASubmitChangesTransaction, ref AVerificationResult))
+                        {
+                            return TSubmitChangesResult.scrError;
+                        }
+                    }
+                }
+                // if LocationTable.Rows[LocationCounter].RowState = DataRowState.Deleted
+                else if (LocationTable.Rows[LocationCounter].RowState != DataRowState.Unchanged)
+                {
+                    throw new ArgumentException(
+                        "SubmitChanges can only deal with Locations of DataRowState Added, Modified or Deleted, but not with " +
+                        (Enum.GetName(typeof(DataRowState), LocationTable.Rows[LocationCounter].RowState)));
+                }
+            }
+
+            return TSubmitChangesResult.scrOK;
+        }
+
+        /// <summary>
         /// todoComment
         /// </summary>
         /// <param name="AInspectDS"></param>
@@ -2523,22 +2830,17 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             TLocationPK[, ] SimilarLocationReUseKeyMapping;
             Int16 Counter;
             Int16 Counter2;
-            Int16 LocationCounter;
             Int16 PartnerLocationCounter;
             Int16 LocationReUseCounter;
             Int16 NotToBeSubmittedCounter;
             Int16 Counter5;
             Int16 DeletedPartnerLocationsCounter;
-            TSubmitChangesResult PerformLocationChangeChecksResult;
             TSubmitChangesResult PerformPartnerLocationChangeChecksResult;
-            TSubmitChangesResult PerformLocationReUseChecksResult;
             TSubmitChangesResult PerformLocationFamilyMemberPropagationChecksResult;
-            Boolean CreateLocationFlag;
             PLocationRow ReUsedLocationDR;
             PPartnerLocationRow ReUsedPartnerLocationDR;
             Boolean ReUseSimilarLocation;
             Boolean PerformPropagation;
-            TLocationPK OriginalLocationKey;
 
             TSubmitChangesResult ReturnValue = TSubmitChangesResult.scrOK;
             AVerificationResult = null;
@@ -2589,308 +2891,35 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                     out ExistingLocationParametersDT,
                     out ChangeLocationParametersDT,
                     out AddressAddedOrChangedPromotionParametersDT);
-                #region Location
 
                 if (LocationTable != null)
                 {
-                    /*
-                     * Check each Location DataRow before calling SubmitChanges
-                     * to enforce Business Rules:
-                     * - Added or changed Location: check for a similar Location record
-                     * - if no similar Location record exists, save this Location record
-                     * - if a similar Location record exists: allow choosing whether the
-                     * existing one should be used, or this Location record should be
-                     * saved
-                     * - Changed Location: don't save Location record if the data is actually
-                     * the same than before
-                     * - Deleted Location: delete Location only if no other PartnerLocation
-                     * is referencing it
-                     * - Deleted Location: remove references from any Extracts
-                     */
-                    for (LocationCounter = 0; LocationCounter <= LocationTable.Rows.Count - 1; LocationCounter += 1)
-                    {
-                        if ((LocationTable.Rows[LocationCounter].RowState == DataRowState.Added)
-                            || (LocationTable.Rows[LocationCounter].RowState == DataRowState.Modified))
-                        {
-                            switch (LocationTable.Rows[LocationCounter].RowState)
-                            {
-                                case DataRowState.Added:
+                    TSubmitChangesResult result = ProcessLocationChanges(
+                        LocationTable,
+                        ref AResponseDS,
+                        ASubmitChangesTransaction,
+                        APartnerKey,
+                        ref ExistingLocationParametersDT,
+                        ref PartnerLocationTable,
+                        ref SimilarLocationReUseKeyMapping,
+                        out ReUseSimilarLocation,
+                        out NotToBeSubmittedLocationRows,
+                        ref AddressAddedOrChangedPromotionParametersDT,
+                        ref ChangeLocationParametersDT,
+                        ref PartnerLocationExtraSubmitTable,
+                        ref LocationExtraSubmitTable,
+                        ref AVerificationResult);
 
-                                    if (LocationTable[LocationCounter].LocationKey != 0)
-                                    {
-                                        // Check for reuse of a similar location in the DB
-                                        PLocationRow TmpRow = LocationTable[LocationCounter];
-                                        PerformLocationReUseChecksResult = PerformSimilarLocationReUseChecks(ref TmpRow,
-                                            ref AResponseDS,
-                                            ASubmitChangesTransaction,
-                                            APartnerKey,
-                                            ref ExistingLocationParametersDT,
-                                            ref PartnerLocationTable,
-                                            ref SimilarLocationReUseKeyMapping,
-                                            out ReUseSimilarLocation,
-                                            ref AVerificationResult);
-#if DEBUGMODE
-                                        if (TLogging.DL >= 8)
-                                        {
-                                            TLogging.Log(
-                                                "SubmitChanges: TmpRow.LocationKey after PerformSimilarLocationReUseChecks (1): " +
-                                                TmpRow.LocationKey.ToString());
-                                        }
-#endif
-
-                                        if (PerformLocationReUseChecksResult != TSubmitChangesResult.scrOK)
-                                        {
-                                            ReturnValue = PerformLocationReUseChecksResult;
-
-                                            /*
-                                             * Stop processing here - we need a decision whether to re-use
-                                             * an existing Location or not (or the user tried to re-use a
-                                             * Location that is already used by this Partner, which is a
-                                             * user error)
-                                             */
-                                            return ReturnValue;
-                                        }
-
-                                        if (!ReUseSimilarLocation)
-                                        {
-                                        }
-
-                                        // No similar Location exists, or an existing similar Location
-                                        // should not be reused.
-                                        // > we can just save that new Location
-                                    }
-                                    else
-                                    {
-                                        // Location 0 must never be saved!
-
-                                        /*
-                                         * Remember that the row should not be submitted lateron.
-                                         * NOTE: We can't simply call .AcceptChanges on the DataRow in order
-                                         * to remove it from the DataTable. This would cause this for-loop
-                                         * (with the LocationCounter) to iterate over too much DataRows!
-                                         */
-                                        NotToBeSubmittedLocationRows.Add(LocationTable.Rows[LocationCounter]);
-#if DEBUGMODE
-                                        if (TLogging.DL >= 8)
-                                        {
-                                            TLogging.Log("SubmitChanges: Location with LocationKey 0 was added and won''t be saved.");
-                                        }
-#endif
-                                    }
-
-                                    // DataRowState.Added:
-                                    break;
-
-                                case DataRowState.Modified:
-
-                                    if ((CheckHasLocationChanged(LocationTable[LocationCounter])) && (LocationTable[LocationCounter].LocationKey != 0))
-                                    {
-                                        // Check for reuse of a similar location in the DB
-                                        PLocationRow TmpRow = LocationTable[LocationCounter];
-                                        PerformLocationReUseChecksResult = PerformSimilarLocationReUseChecks(ref TmpRow,
-                                            ref AResponseDS,
-                                            ASubmitChangesTransaction,
-                                            APartnerKey,
-                                            ref ExistingLocationParametersDT,
-                                            ref PartnerLocationTable,
-                                            ref SimilarLocationReUseKeyMapping,
-                                            out ReUseSimilarLocation,
-                                            ref AVerificationResult);
-
-#if DEBUGMODE
-                                        if (TLogging.DL >= 8)
-                                        {
-                                            TLogging.Log(
-                                                "SubmitChanges: TmpRow.LocationKey after PerformSimilarLocationReUseChecks (2): " +
-                                                TmpRow.LocationKey.ToString());
-                                        }
-#endif
-
-                                        if (PerformLocationReUseChecksResult != TSubmitChangesResult.scrOK)
-                                        {
-                                            ReturnValue = PerformLocationReUseChecksResult;
-
-                                            /*
-                                             * Stop processing here - we need a decision whether to re-use
-                                             * an existing Location or not (or the user tried to re-use a
-                                             * Location that is already used by this Partner, which is an
-                                             * user error)
-                                             */
-                                            return ReturnValue;
-                                        }
-
-                                        if (!ReUseSimilarLocation)
-                                        {
-                                            // No similar Location exists, or an existing similar Location
-                                            // should not be reused
-                                            if (CheckHasPartnerLocationOtherPartnerReferences(LocationTable[LocationCounter], APartnerKey,
-                                                    ASubmitChangesTransaction))
-                                            {
-#if DEBUGMODE
-                                                if (TLogging.DL >= 9)
-                                                {
-                                                    TLogging.Log(
-                                                        "SubmitChanges: Location " + LocationTable[LocationCounter].LocationKey.ToString() +
-                                                        ": is used by other Partners as well.");
-                                                }
-#endif
-                                                PerformLocationChangeChecksResult = PerformLocationChangeChecks(LocationTable[LocationCounter],
-                                                    APartnerKey,
-                                                    ref AResponseDS,
-                                                    ASubmitChangesTransaction,
-                                                    ref AddressAddedOrChangedPromotionParametersDT,
-                                                    ref ChangeLocationParametersDT,
-                                                    ref PartnerLocationTable,
-                                                    ref PartnerLocationExtraSubmitTable,
-                                                    ref AVerificationResult,
-                                                    out CreateLocationFlag,
-                                                    out OriginalLocationKey);
-
-                                                if (PerformLocationChangeChecksResult != TSubmitChangesResult.scrOK)
-                                                {
-                                                    ReturnValue = PerformLocationChangeChecksResult;
-
-                                                    if (ReturnValue == TSubmitChangesResult.scrError)
-                                                    {
-                                                        return ReturnValue;
-                                                    }
-                                                }
-
-                                                // if PerformLocationChangeChecksResult <> TSubmitChangesResult.scrOK
-                                                if (CreateLocationFlag)
-                                                {
-                                                    ModifyExistingLocationParameters(LocationTable[LocationCounter],
-                                                        OriginalLocationKey,
-                                                        ref ExistingLocationParametersDT);
-
-                                                    /*
-                                                     * Remember that the row should not be submitted lateron.
-                                                     * NOTE: We can't simply call .AcceptChanges on the DataRow in order
-                                                     * to remove it from the DataTable. This would cause this for-loop
-                                                     * (with the LocationCounter) to iterate over too much DataRows!
-                                                     */
-                                                    NotToBeSubmittedLocationRows.Add(LocationTable.Rows[LocationCounter]);
-                                                }
-                                            }
-
-                                            // if CheckHasPartnerLocationOtherPartnerReferences ... then
-                                        }
-                                    }
-                                    // if CheckHasLocationChanged ... then
-                                    else
-                                    {
-#if DEBUGMODE
-                                        if (TLogging.DL >= 9)
-                                        {
-                                            TLogging.Log(
-                                                "Location " + LocationTable[LocationCounter].LocationKey.ToString() +
-                                                ": data has NOT changed -> will not be saved.");
-                                        }
-#endif
-
-                                        // Prevent the DataRow from getting submitted lateron
-                                        // LocationTable.Row[LocationCounter].AcceptChanges;
-
-                                        /*
-                                         * Remember that the row should not be submitted lateron.
-                                         * NOTE: We can't simply call .AcceptChanges on the DataRow in order
-                                         * to remove it from the DataTable. This would cause this for-loop
-                                         * (with the LocationCounter) to iterate over too much DataRows!
-                                         */
-                                        NotToBeSubmittedLocationRows.Add(LocationTable.Rows[LocationCounter]);
-                                    }
-
-                                    // DataRowState.Modified:
-                                    break;
-                            }
-
-                            // case LocationTable.Rows[LocationCounter].RowState of
-                        }
-                        // Added or Modified DataRow
-                        else if (LocationTable.Rows[LocationCounter].RowState == DataRowState.Deleted)
-                        {
-#if DEBUGMODE
-                            if (TLogging.DL >= 9)
-                            {
-                                TLogging.Log("SubmitChanges: Location " +
-                                    LocationTable[LocationCounter][PLocationTable.GetLocationKeyDBName(),
-                                                                   DataRowVersion.Original].ToString() + ": has been marked for deletion.");
-                            }
-#endif
-
-                            /*
-                             * Remember that the row should not be submitted lateron.
-                             * NOTE: We can't simply call .AcceptChanges on the DataRow in order
-                             * to remove it from the DataTable. This would cause this for-loop
-                             * (with the LocationCounter) to iterate over too much DataRows!
-                             */
-                            NotToBeSubmittedLocationRows.Add(LocationTable.Rows[LocationCounter]);
-
-                            // Handle deletion of Location row: delete it only if no other PartnerLocation is referencing it
-                            if (CheckHasPartnerLocationOtherPartnerReferences(LocationTable[LocationCounter], APartnerKey, ASubmitChangesTransaction))
-                            {
-#if DEBUGMODE
-                                if (TLogging.DL >= 9)
-                                {
-                                    TLogging.Log("SubmitChanges: Location " +
-                                        LocationTable[LocationCounter][PLocationTable.GetLocationKeyDBName(),
-                                                                       DataRowVersion.Original].ToString() +
-                                        ": has been marked for deletion and is used by others, so it won''t get deleted.");
-                                }
-#endif
-                            }
-                            else
-                            {
-#if DEBUGMODE
-                                if (TLogging.DL >= 9)
-                                {
-                                    TLogging.Log("SubmitChanges: Location " +
-                                        LocationTable[LocationCounter][PLocationTable.GetLocationKeyDBName(),
-                                                                       DataRowVersion.Original].ToString() +
-                                        ": has been marked for deletion and will get deleted.");
-                                }
-#endif
-
-                                /*
-                                 * Location needs to be deleted
-                                 */
-                                if (LocationExtraSubmitTable == null)
-                                {
-                                    LocationExtraSubmitTable = new PLocationTable();
-                                }
-
-                                LocationExtraSubmitTable.ImportRow(LocationTable[LocationCounter]);
-
-                                /*
-                                 * Any Extract in Petra that references this Location must no longer
-                                 * reference this Location since it will get deleted
-                                 */
-                                if (!RemoveLocationFromExtracts(LocationTable[LocationCounter], ASubmitChangesTransaction, ref AVerificationResult))
-                                {
-                                    AVerificationResult.AddCollection(SingleVerificationResultCollection);
-                                    ReturnValue = TSubmitChangesResult.scrError;
-                                    return ReturnValue;
-                                }
-                            }
-                        }
-                        // if LocationTable.Rows[LocationCounter].RowState = DataRowState.Deleted
-                        else if (LocationTable.Rows[LocationCounter].RowState != DataRowState.Unchanged)
-                        {
-                            throw new ArgumentException(
-                                "SubmitChanges can only deal with Locations of DataRowState Added, Modified or Deleted, but not with " +
-                                (Enum.GetName(typeof(DataRowState), LocationTable.Rows[LocationCounter].RowState)));
-                        }
-                    }
-
-                    // for LocationCounter := 0 to LocationTable.Rows.Count  1 do
-                    if (ReturnValue == TSubmitChangesResult.scrInfoNeeded)
+                    if (result != TSubmitChangesResult.scrOK)
                     {
                         // Stop processing here, we need more information!
-                        return ReturnValue;
+
+                        return result;
                     }
+
+                    ReturnValue = result;
                 }
 
-                #endregion
                 #region PartnerLocation
 
                 if (PartnerLocationTable != null)
