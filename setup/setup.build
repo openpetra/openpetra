@@ -4,7 +4,7 @@
 <include buildfile="../inc/nant/OpenPetra.common.xml" />
 
 <property name="BuildClientArchive" value="false" overwrite="false" />
-<property name="LinuxTargetDistribution-list" value="centos-postgresql" overwrite="false" />
+<property name="LinuxTargetDistribution-list" value="debian-postgresql,centos-postgresql" overwrite="false" />
 <property name="WithLinuxClient" value="false" overwrite="false" />
 <property name="WithWindowsClient" value="true" overwrite="false" />
 <property name="PetraRelease" value="0300" overwrite="false" />
