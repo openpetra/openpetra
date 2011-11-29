@@ -57,9 +57,18 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         {
             BudgetTDS MainDS = new BudgetTDS();
 
+            //TODO: need to filter on Year
             ABudgetAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
             ABudgetRevisionAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
-            // TODO ABudgetPeriodAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
+            //TODO: need to filter on ABudgetPeriod using LoadViaBudget or LoadViaUniqueKey
+            ABudgetPeriodAccess.LoadAll(MainDS, null);
+
+//            ABudgetPeriodTable BudgetPeriodTable = new ABudgetPeriodTable();
+//            ABudgetPeriodRow TemplateRow = (ABudgetPeriodRow)BudgetPeriodTable.NewRow(false);
+//
+//            TemplateRow.BudgetSequence;
+//            ABudgetPeriodAccess.LoadViaABudgetTemplate(MainDS, TemplateRow, null);
+
 
             // Accept row changes here so that the Client gets 'unmodified' rows
             MainDS.AcceptChanges();

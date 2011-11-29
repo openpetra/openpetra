@@ -33,7 +33,7 @@ RootNode:
             ControlsOrientation: horizontal
             Align: left
             NoLabel: true
-            #OnChange: BudgetTypeChanged
+            OnChange: NewBudgetType
         btnNew:
             Action: actNew
         btnDelete:
@@ -56,12 +56,12 @@ RootNode:
                 Row2: [txtPeriod03Amount, txtPeriod09Amount]
                 Row3: [txtPeriod04Amount, txtPeriod10Amount]
                 Row4: [txtPeriod05Amount, txtPeriod11Amount]
-                Row5: [txtPeriod06Amount, txtPeriod12Amount]
+                Row5: [txtPeriod06Amount, txtPeriod12Amount, lblAdhocTotalAmount]
         pnlBudgetTypeSame:
             Dock: Fill
             Visible: false
             Controls:
-                Row0: [txtAmount]
+                Row0: [txtAmount, lblSameTotalAmount]
         pnlBudgetTypeSplit:
             Dock: Fill
             Visible: false
@@ -75,7 +75,7 @@ RootNode:
             Controls:
                 Row0: [txtFirstPeriodAmount]
                 Row1: [txtInflateAfterPeriod]
-                Row2: [txtInflationRate]
+                Row2: [txtInflationRate, lblInflateNTotalAmount]
         pnlBudgetTypeInflateBase:
             Dock: Fill
             Visible: false
@@ -85,7 +85,7 @@ RootNode:
                 Row2: [txtPeriod03Index, txtPeriod09Index]
                 Row3: [txtPeriod04Index, txtPeriod10Index]
                 Row4: [txtPeriod05Index, txtPeriod11Index]
-                Row5: [txtPeriod06Index, txtPeriod12Index]
+                Row5: [txtPeriod06Index, txtPeriod12Index, lblInflateBaseTotalAmount]
         grpBudgetDetails: {ColSpan=5, Width:775, Height: 190}
             Align: top-left
             Controls: 
@@ -94,45 +94,48 @@ RootNode:
                 Row2: [pnlBudgetTypeSplit]
                 Row3: [pnlBudgetTypeInflateN]
                 Row4: [pnlBudgetTypeInflateBase]
-            #ColWidths: [0=Fixed:96, 1=Fixed:284, 2=Fixed:319]
         cmbDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList}
         cmbDetailAccountCode: {Label=Account, List=UserDefinedList}
         #Adhoc controls
-        txtPeriod01Amount: {Label=Period 1, Format=Currency}
-        txtPeriod02Amount: {Label=Period 2, Format=Currency}
-        txtPeriod03Amount: {Label=Period 3, Format=Currency}
-        txtPeriod04Amount: {Label=Period 4, Format=Currency}
-        txtPeriod05Amount: {Label=Period 5, Format=Currency}
-        txtPeriod06Amount: {Label=Period 6, Format=Currency}
-        txtPeriod07Amount: {Label=Period 7, Format=Currency}
-        txtPeriod08Amount: {Label=Period 8, Format=Currency}
-        txtPeriod09Amount: {Label=Period 9, Format=Currency}
-        txtPeriod10Amount: {Label=Period 10, Format=Currency}
-        txtPeriod11Amount: {Label=Period 11, Format=Currency}
-        txtPeriod12Amount: {Label=Period 12, Format=Currency}
+        txtPeriod01Amount: {Label=Period 1, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
+        txtPeriod02Amount: {Label=Period 2, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
+        txtPeriod03Amount: {Label=Period 3, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
+        txtPeriod04Amount: {Label=Period 4, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
+        txtPeriod05Amount: {Label=Period 5, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
+        txtPeriod06Amount: {Label=Period 6, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
+        txtPeriod07Amount: {Label=Period 7, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
+        txtPeriod08Amount: {Label=Period 8, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
+        txtPeriod09Amount: {Label=Period 9, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
+        txtPeriod10Amount: {Label=Period 10, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
+        txtPeriod11Amount: {Label=Period 11, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
+        txtPeriod12Amount: {Label=Period 12, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
+        lblAdhocTotalAmount: {Text=Total}
         #Same controls
-        txtAmount: {Label = Amount, Format=Currency}
+        txtAmount: {Label = Amount, Format=Currency, OnLeave=ProcessBudgetTypeSame}
+        lblSameTotalAmount: {Text=Total}
         #Split controls
-        txtTotalSplitAmount: {Label = Total Amount, Format=Currency, OnChange=TotalSplitAmountChanged}
-        txtPerPeriodAmount: {Label = Amounts for Period 1 to 11, Format=Currency, ReadOnly=true}
+        txtTotalSplitAmount: {Label = Total Amount, Format=Currency, OnLeave=ProcessBudgetTypeSplit}
+        txtPerPeriodAmount: {Label = Amount for periods 1 to 11, Format=Currency, ReadOnly=true}
         txtPeriod12AmountPlus: {Label = Amount for period 12, Format=Currency, ReadOnly=true}
         #Inflate N controls
-        txtFirstPeriodAmount: {Label = First Period Amount, Format=Currency}
-        txtInflateAfterPeriod: {Label = Inflate after period}
-        txtInflationRate: {Label = Inflation Rate, Format=PercentDecimal}
+        txtFirstPeriodAmount: {Label = First Period Amount, Format=Currency, OnLeave=ProcessBudgetTypeInflateN}
+        txtInflateAfterPeriod: {Label = Inflate after period, Format=Integer, OnLeave=ProcessBudgetTypeInflateN}
+        txtInflationRate: {Label = Inflation Rate, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateN}
+        lblInflateNTotalAmount: {Text=Total}
         #Inflate Base controls
-        txtPeriod1Amount: {Label=Period 1 Amount, Format=Currency}
-        txtPeriod02Index: {Label=Period 2 Index, Format=PercentDecimal}
-        txtPeriod03Index: {Label=Period 3 Index, Format=PercentDecimal}
-        txtPeriod04Index: {Label=Period 4 Index, Format=PercentDecimal}
-        txtPeriod05Index: {Label=Period 5 Index, Format=PercentDecimal}
-        txtPeriod06Index: {Label=Period 6 Index, Format=PercentDecimal}
-        txtPeriod07Index: {Label=Period 7 Index, Format=PercentDecimal}
-        txtPeriod08Index: {Label=Period 8 Index, Format=PercentDecimal}
-        txtPeriod09Index: {Label=Period 9 Index, Format=PercentDecimal}
-        txtPeriod10Index: {Label=Period 10 Index, Format=PercentDecimal}
-        txtPeriod11Index: {Label=Period 11 Index, Format=PercentDecimal}
-        txtPeriod12Index: {Label=Period 12 Index, Format=PercentDecimal}
+        txtPeriod1Amount: {Label=Period 1 Amount, Format=Currency, OnLeave=ProcessBudgetTypeInflateBase}
+        txtPeriod02Index: {Label=Period 2 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
+        txtPeriod03Index: {Label=Period 3 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
+        txtPeriod04Index: {Label=Period 4 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
+        txtPeriod05Index: {Label=Period 5 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
+        txtPeriod06Index: {Label=Period 6 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
+        txtPeriod07Index: {Label=Period 7 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
+        txtPeriod08Index: {Label=Period 8 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
+        txtPeriod09Index: {Label=Period 9 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
+        txtPeriod10Index: {Label=Period 10 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
+        txtPeriod11Index: {Label=Period 11 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
+        txtPeriod12Index: {Label=Period 12 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
+        lblInflateBaseTotalAmount: {Text=Total}
         #TODO: radio buttons for selection of budget type, display different user controls depending on selection, similar to bankimport screen
     Menu:
     Toolbar:
