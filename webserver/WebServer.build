@@ -20,6 +20,7 @@ list of available commands:
     packTranslation -D:country-id=de-DE,en-GB
   unpackTranslation: restore the files that you receive from the translators
     unpackTranslation -D:zipfile=sweden.zip
+  startWebServer: start the webserver using xsp4 from Mono
     </echo>
 </target>
 
@@ -174,11 +175,11 @@ list of available commands:
   <!-- TODO: run on linux as well? -->
   <exec program="cmd.exe" 
           workingdir="${dir.webserver}"
-          commandline="/C start xsp2.bat --verbose --root . --port 8081 --applications /:."
+          commandline="/C start xsp4.bat --verbose --root . --port 8081 --applications /:."
           spawn="true">
     <environment>
       <variable name="PATH" path="${environment::get-variable('PATH')};${MonoBinPath}"/>
-      <variable name="MONO_PATH" path="${MonoBinPath}\..\lib\mono\2.0"/>
+      <variable name="MONO_PATH" path="${MonoBinPath}\..\lib\mono\4.0"/>
       <variable name="MONO_OPTIONS" value="--debug"/>
     </environment>
   </exec>
