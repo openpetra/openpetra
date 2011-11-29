@@ -48,6 +48,7 @@ using Ict.Petra.Shared.Interfaces.MFinance.AP.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.AP.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.AR.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Budget.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MFinance.Budget.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.ImportExport.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Gift.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors;
@@ -301,6 +302,12 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Budget
             get;
         }
 
+        /// <summary>access to sub namespace</summary>
+        IBudgetWebConnectorsNamespace WebConnectors
+        {
+            get;
+        }
+
     }
 
 }
@@ -311,6 +318,21 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Budget.UIConnectors
     /// <summary>auto generated</summary>
     public interface IBudgetUIConnectorsNamespace : IInterface
     {
+    }
+
+}
+
+
+namespace Ict.Petra.Shared.Interfaces.MFinance.Budget.WebConnectors
+{
+    /// <summary>auto generated</summary>
+    public interface IBudgetWebConnectorsNamespace : IInterface
+    {
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector)</summary>
+        BudgetTDS LoadBudget(Int32 ALedgerNumber);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector)</summary>
+        TSubmitChangesResult SaveBudget(ref BudgetTDS AInspectDS,
+                                        out TVerificationResultCollection AVerificationResult);
     }
 
 }
