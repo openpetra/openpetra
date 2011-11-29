@@ -26,7 +26,6 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Collections.Generic;
-using System.Web;
 
 namespace Ict.Common.IO
 {
@@ -90,7 +89,7 @@ namespace Ict.Common.IO
                     urlWithParameters += "&";
                 }
 
-                urlWithParameters += parameterName + "=" + HttpUtility.UrlEncode(AParameters[parameterName]);
+                urlWithParameters += parameterName + "=" + Uri.EscapeUriString(AParameters[parameterName]);
             }
 
             return ReadWebsite(urlWithParameters);
