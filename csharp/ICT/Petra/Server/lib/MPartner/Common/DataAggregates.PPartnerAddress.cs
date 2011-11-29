@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
 // Copyright 2004-2011 by OM International
 //
@@ -46,6 +46,23 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
     /// </summary>
     public class TPPartnerAddressAggregate : object
     {
+        private static void DebugLoadedDataset(DataSet ADataSet)
+        {
+            TLogging.Log("Select done in TPPartnerAddressAggregate.GetData(). Result: ");
+
+            foreach (DataRow TheRow in ADataSet.Tables[PLocationTable.GetTableName()].Rows)
+            {
+                TLogging.Log(PLocationTable.GetTableName() + ": Processing rows...");
+                TLogging.Log(TheRow[0].ToString() + " | " + TheRow[1].ToString());
+            }
+
+            foreach (DataRow TheRow in ADataSet.Tables[PPartnerLocationTable.GetTableName()].Rows)
+            {
+                TLogging.Log(PPartnerLocationTable.GetTableName() + ": Processing rows...");
+                TLogging.Log(TheRow[0].ToString() + " | " + TheRow[1].ToString());
+            }
+        }
+
         /// <summary>
         /// Passes Partner Address data as a DataSet to the caller. Loads all available
         /// Addresses for the Partner.
@@ -70,24 +87,11 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             LocationDT = (PLocationTable)ADataSet.Tables[PLocationTable.GetTableName()];
             PartnerLocationDT = (PPartnerLocationTable)ADataSet.Tables[PPartnerLocationTable.GetTableName()];
             ApplySecurity(ref PartnerLocationDT, ref LocationDT);
-#if DEBUGMODE
+
             if (TLogging.DL >= 9)
             {
-                TLogging.Log("Select done in TPPartnerAddressAggregate.GetData(). Result: ");
-
-                foreach (DataRow TheRow in ADataSet.Tables[PLocationTable.GetTableName()].Rows)
-                {
-                    TLogging.Log(PLocationTable.GetTableName() + ": Processing rows...");
-                    TLogging.Log(TheRow[0].ToString() + " | " + TheRow[1].ToString());
-                }
-
-                foreach (DataRow TheRow in ADataSet.Tables[PPartnerLocationTable.GetTableName()].Rows)
-                {
-                    TLogging.Log(PPartnerLocationTable.GetTableName() + ": Processing rows...");
-                    TLogging.Log(TheRow[0].ToString() + " | " + TheRow[1].ToString());
-                }
+                DebugLoadedDataset(ADataSet);
             }
-#endif
         }
 
         /// <summary>
@@ -221,11 +225,6 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                     if (TLogging.DL >= 9)
                     {
                         TLogging.Log("PerformLocationChangeChecks: Merged ChangePromotionParametersDT into AResponseDS.");
-                    }
-#endif
-#if DEBUGMODE
-                    if (TLogging.DL >= 9)
-                    {
                         TLogging.Log(
                             "PerformLocationChangeChecks: AResponseDS.Tables[" + MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME +
                             "].Rows.Count: " + AResponseDS.Tables[MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME].Rows.Count.ToString());
@@ -1205,11 +1204,6 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                 TLogging.Log(
                     "CheckFamilyMemberPropagation for Location " + APartnerLocationRow.LocationKey.ToString() +
                     ": AAddressAddedOrChangedPromotionDT.Rows.Count: " + AAddressAddedOrChangedPromotionDT.Rows.Count.ToString());
-            }
-#endif
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
                 TLogging.Log("CheckFamilyMemberPropagation: ALocationPK.LocationKey: " + ALocationPK.LocationKey.ToString());
             }
 #endif
@@ -2414,6 +2408,82 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             }
         }
 
+        /// Debugging - what comes into the function in Location and PartnerLocation
+        private static void DebugLocationsBeforeSaving(DataSet AInspectDS)
+        {
+            string TmpDebugString = "";
+
+            if (AInspectDS.Tables.Contains(PLocationTable.GetTableName()))
+            {
+                for (Int16 TmpRowCounter = 0;
+                     TmpRowCounter <= AInspectDS.Tables[PLocationTable.GetTableName()].Rows.Count - 1;
+                     TmpRowCounter += 1)
+                {
+                    if (AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpRowCounter].RowState != DataRowState.Deleted)
+                    {
+                        TmpDebugString = TmpDebugString + PLocationTable.GetTableName() + ".Row[" + TmpRowCounter.ToString() +
+                                         "]: PLocationKey: " +
+                                         AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpRowCounter][PLocationTable.
+                                                                                                              GetLocationKeyDBName()].
+                                         ToString() +
+                                         "; PSiteKey: " +
+                                         AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpRowCounter][PLocationTable.GetSiteKeyDBName()
+                                         ].ToString() +
+                                         "; RowState: " +
+                                         (Enum.GetName(typeof(DataRowState),
+                                              AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpRowCounter].RowState)) + "\r\n";
+                    }
+                    else
+                    {
+                        TmpDebugString = TmpDebugString + PLocationTable.GetTableName() + ".Row[" + TmpRowCounter.ToString() +
+                                         "]: PLocationKey: " +
+                                         AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpRowCounter][1,
+                                                                                                              DataRowVersion.Original].
+                                         ToString() + "; RowState: DELETED" + "\r\n";
+                    }
+                }
+            }
+
+            if (AInspectDS.Tables.Contains(PPartnerLocationTable.GetTableName()))
+            {
+                TmpDebugString = TmpDebugString + Environment.NewLine;
+
+                for (Int16 TmpRowCounter = 0;
+                     TmpRowCounter <= AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows.Count - 1;
+                     TmpRowCounter += 1)
+                {
+                    if (AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter].RowState != DataRowState.Deleted)
+                    {
+                        TmpDebugString = TmpDebugString + PPartnerLocationTable.GetTableName() + ".Row[" + TmpRowCounter.ToString() +
+                                         "]: PLocationKey: " +
+                                         AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter][PPartnerLocationTable.
+                                                                                                                     GetLocationKeyDBName()
+                                         ].ToString() + "; PSiteKey: " +
+                                         AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter][PPartnerLocationTable.
+                                                                                                                     GetSiteKeyDBName()].
+                                         ToString() + "; PPartnerKey: " +
+                                         AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter][PPartnerLocationTable.
+                                                                                                                     GetPartnerKeyDBName()
+                                         ].ToString() + "; RowState: " +
+                                         (Enum.GetName(typeof(DataRowState),
+                                              AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter].RowState) + "\r\n");
+                    }
+                    else
+                    {
+                        TmpDebugString = TmpDebugString + PPartnerLocationTable.GetTableName() + ".Row[" + TmpRowCounter.ToString() +
+                                         "]: PLocationKey: " +
+                                         AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter][2,
+                                                                                                                     DataRowVersion.Original]
+                                         .ToString() + "; RowState: DELETED" + "\r\n";
+                    }
+                }
+
+                TLogging.Log(
+                    "SubmitChanges: PLocation / PPartnerLocation local contents: " + Environment.NewLine + TmpDebugString +
+                    Environment.NewLine);
+            }
+        }
+
         /// <summary>
         /// todoComment
         /// </summary>
@@ -2509,84 +2579,10 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                     PartnerLocationTable = (PPartnerLocationTable)AInspectDS.Tables[PPartnerLocationTable.GetTableName()];
                 }
 
-                #region Debugging - what comes into the function in Location and PartnerLocation
-#if DEBUGMODE
-                string TmpDebugString = "";
-
                 if (TLogging.DL >= 8)
                 {
-                    if (AInspectDS.Tables.Contains(PLocationTable.GetTableName()))
-                    {
-                        for (Int16 TmpRowCounter = 0;
-                             TmpRowCounter <= AInspectDS.Tables[PLocationTable.GetTableName()].Rows.Count - 1;
-                             TmpRowCounter += 1)
-                        {
-                            if (AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpRowCounter].RowState != DataRowState.Deleted)
-                            {
-                                TmpDebugString = TmpDebugString + PLocationTable.GetTableName() + ".Row[" + TmpRowCounter.ToString() +
-                                                 "]: PLocationKey: " +
-                                                 AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpRowCounter][PLocationTable.
-                                                                                                                      GetLocationKeyDBName()].
-                                                 ToString() +
-                                                 "; PSiteKey: " +
-                                                 AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpRowCounter][PLocationTable.GetSiteKeyDBName()
-                                                 ].ToString() +
-                                                 "; RowState: " +
-                                                 (Enum.GetName(typeof(DataRowState),
-                                                      AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpRowCounter].RowState)) + "\r\n";
-                            }
-                            else
-                            {
-                                TmpDebugString = TmpDebugString + PLocationTable.GetTableName() + ".Row[" + TmpRowCounter.ToString() +
-                                                 "]: PLocationKey: " +
-                                                 AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpRowCounter][1,
-                                                                                                                      DataRowVersion.Original].
-                                                 ToString() + "; RowState: DELETED" + "\r\n";
-                            }
-                        }
-                    }
-
-                    if (AInspectDS.Tables.Contains(PPartnerLocationTable.GetTableName()))
-                    {
-                        TmpDebugString = TmpDebugString + Environment.NewLine;
-
-                        for (Int16 TmpRowCounter = 0;
-                             TmpRowCounter <= AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows.Count - 1;
-                             TmpRowCounter += 1)
-                        {
-                            if (AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter].RowState != DataRowState.Deleted)
-                            {
-                                TmpDebugString = TmpDebugString + PPartnerLocationTable.GetTableName() + ".Row[" + TmpRowCounter.ToString() +
-                                                 "]: PLocationKey: " +
-                                                 AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter][PPartnerLocationTable.
-                                                                                                                             GetLocationKeyDBName()
-                                                 ].ToString() + "; PSiteKey: " +
-                                                 AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter][PPartnerLocationTable.
-                                                                                                                             GetSiteKeyDBName()].
-                                                 ToString() + "; PPartnerKey: " +
-                                                 AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter][PPartnerLocationTable.
-                                                                                                                             GetPartnerKeyDBName()
-                                                 ].ToString() + "; RowState: " +
-                                                 (Enum.GetName(typeof(DataRowState),
-                                                      AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter].RowState) + "\r\n");
-                            }
-                            else
-                            {
-                                TmpDebugString = TmpDebugString + PPartnerLocationTable.GetTableName() + ".Row[" + TmpRowCounter.ToString() +
-                                                 "]: PLocationKey: " +
-                                                 AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter][2,
-                                                                                                                             DataRowVersion.Original]
-                                                 .ToString() + "; RowState: DELETED" + "\r\n";
-                            }
-                        }
-
-                        TLogging.Log(
-                            "SubmitChanges: PLocation / PPartnerLocation local contents: " + Environment.NewLine + TmpDebugString +
-                            Environment.NewLine);
-                    }
+                    DebugLocationsBeforeSaving(AInspectDS);
                 }
-#endif
-                #endregion
 
                 // Check if Parameter Tables are passed in
                 CheckParameterTables(AResponseDS,
@@ -3227,11 +3223,6 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                             if (TLogging.DL >= 9)
                             {
                                 TLogging.Log("LocationReUseCounter: " + LocationReUseCounter.ToString());
-                            }
-#endif
-#if DEBUGMODE
-                            if (TLogging.DL >= 9)
-                            {
                                 TLogging.Log(
                                     "SubmitChanges: LocationReUseKeyMapping[" + LocationReUseCounter.ToString() +
                                     ", 0].LocationKey: " +
@@ -3399,7 +3390,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                             if (TLogging.DL >= 8)
                             {
                                 TLogging.Log("SubmitChanges: Assigning LocationKey: " + ((PLocationRow)(
-                                                                                                  NewLocationTableRowsDV[Counter2].Row)).LocationKey.
+                                                                                             NewLocationTableRowsDV[Counter2].Row)).LocationKey.
                                     ToString());
                             }
 #endif
@@ -3418,7 +3409,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                                 if (TLogging.DL >= 8)
                                 {
                                     TLogging.Log("SubmitChanges: Assigning LocationKey: " + ((PLocationRow)(
-                                                                                                      NewLocationTableRowsDV[Counter2].Row)).
+                                                                                                 NewLocationTableRowsDV[Counter2].Row)).
                                         LocationKey.ToString());
                                 }
 #endif
