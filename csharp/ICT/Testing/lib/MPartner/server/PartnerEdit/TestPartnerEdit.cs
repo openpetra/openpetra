@@ -121,5 +121,14 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "TPartnerEditUIConnector SubmitChanges return value");
         }
+
+        /// <summary>
+        /// create a new partner and save it with an existing location
+        /// </summary>
+        [Test]
+        public void TestSaveNewPartnerWithExistingLocation()
+        {
+            // TODO
+        }
     }
 }

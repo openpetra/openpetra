@@ -3078,11 +3078,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             ref PartnerAddressAggregateTDS AResponseDS,
             out TVerificationResultCollection AVerificationResult)
         {
-            Boolean AllSubmissionsOK;
-            TSubmitChangesResult SubmissionResult;
-            PLocationTable LocationTable;
             PLocationTable LocationExtraSubmitTable;
-            PPartnerLocationTable PartnerLocationTable;
             PPartnerLocationTable PartnerLocationExtraSubmitTable = null;
             PartnerAddressAggregateTDSSimilarLocationParametersTable ExistingLocationParametersDT;
             PartnerAddressAggregateTDSChangePromotionParametersTable ChangeLocationParametersDT;
@@ -3098,296 +3094,322 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 
             AVerificationResult = null;
 
-            if (AInspectDS != null)
+            if (AInspectDS == null)
             {
-                #region Initialisations
-                AllSubmissionsOK = true;
-                AVerificationResult = new TVerificationResultCollection();
-                NewLocationTableRowsDV = null;
-                LocationTable = null;
-                PartnerLocationTable = null;
-                NotToBeSubmittedLocationRows = new ArrayList();
-                NotToBeSubmittedPartnerLocationRows = new ArrayList();
-                SimilarLocationReUseKeyMapping = new TLocationPK[1, 2];
-                LocationExtraSubmitTable = null;
-                #endregion
-
-                if (AInspectDS.Tables.Contains(PLocationTable.GetTableName()))
-                {
 #if DEBUGMODE
-                    if (TLogging.DL >= 8)
-                    {
-                        TLogging.Log("SubmitChanges: PLocation Rows: " + AInspectDS.Tables["PLocation"].Rows.Count.ToString());
-                    }
-#endif
-                    LocationTable = (PLocationTable)AInspectDS.Tables[PLocationTable.GetTableName()];
-                }
-
-                if (AInspectDS.Tables.Contains(PPartnerLocationTable.GetTableName()))
-                {
-#if DEBUGMODE
-                    if (TLogging.DL >= 8)
-                    {
-                        TLogging.Log("SubmitChanges: PPartnerLocation Rows: " + AInspectDS.Tables["PPartnerLocation"].Rows.Count.ToString());
-                    }
-#endif
-                    PartnerLocationTable = (PPartnerLocationTable)AInspectDS.Tables[PPartnerLocationTable.GetTableName()];
-                }
-
                 if (TLogging.DL >= 8)
                 {
-                    DebugLocationsBeforeSaving(AInspectDS);
+                    TLogging.Log("SubmitChanges: AInspectDS = nil!");
                 }
+#endif
+                return TSubmitChangesResult.scrNothingToBeSaved;
+            }
 
-                // Check if Parameter Tables are passed in
-                CheckParameterTables(AResponseDS,
-                    out ExistingLocationParametersDT,
-                    out ChangeLocationParametersDT,
-                    out AddressAddedOrChangedPromotionParametersDT);
+            Boolean AllSubmissionsOK = true;
+            AVerificationResult = new TVerificationResultCollection();
+            NewLocationTableRowsDV = null;
+            PLocationTable LocationTable = null;
+            PPartnerLocationTable PartnerLocationTable = null;
+            NotToBeSubmittedLocationRows = new ArrayList();
+            NotToBeSubmittedPartnerLocationRows = new ArrayList();
+            SimilarLocationReUseKeyMapping = new TLocationPK[1, 2];
+            LocationExtraSubmitTable = null;
 
-                if (LocationTable != null)
+            if (AInspectDS.Tables.Contains(PLocationTable.GetTableName()))
+            {
+#if DEBUGMODE
+                if (TLogging.DL >= 8)
                 {
-                    TSubmitChangesResult result = ProcessLocationChanges(
-                        LocationTable,
-                        ref AResponseDS,
-                        ASubmitChangesTransaction,
-                        APartnerKey,
-                        ref ExistingLocationParametersDT,
-                        ref PartnerLocationTable,
-                        ref SimilarLocationReUseKeyMapping,
-                        out NotToBeSubmittedLocationRows,
-                        ref AddressAddedOrChangedPromotionParametersDT,
-                        ref ChangeLocationParametersDT,
-                        ref PartnerLocationExtraSubmitTable,
-                        ref LocationExtraSubmitTable,
-                        ref AVerificationResult);
+                    TLogging.Log("SubmitChanges: PLocation Rows: " + AInspectDS.Tables["PLocation"].Rows.Count.ToString());
+                }
+#endif
+                LocationTable = (PLocationTable)AInspectDS.Tables[PLocationTable.GetTableName()];
+            }
 
-                    if (result != TSubmitChangesResult.scrOK)
+            if (AInspectDS.Tables.Contains(PPartnerLocationTable.GetTableName()))
+            {
+#if DEBUGMODE
+                if (TLogging.DL >= 8)
+                {
+                    TLogging.Log("SubmitChanges: PPartnerLocation Rows: " + AInspectDS.Tables["PPartnerLocation"].Rows.Count.ToString());
+                }
+#endif
+                PartnerLocationTable = (PPartnerLocationTable)AInspectDS.Tables[PPartnerLocationTable.GetTableName()];
+            }
+
+            if (TLogging.DL >= 8)
+            {
+                DebugLocationsBeforeSaving(AInspectDS);
+            }
+
+            // Check if Parameter Tables are passed in
+            CheckParameterTables(AResponseDS,
+                out ExistingLocationParametersDT,
+                out ChangeLocationParametersDT,
+                out AddressAddedOrChangedPromotionParametersDT);
+
+            if (LocationTable != null)
+            {
+                TSubmitChangesResult result = ProcessLocationChanges(
+                    LocationTable,
+                    ref AResponseDS,
+                    ASubmitChangesTransaction,
+                    APartnerKey,
+                    ref ExistingLocationParametersDT,
+                    ref PartnerLocationTable,
+                    ref SimilarLocationReUseKeyMapping,
+                    out NotToBeSubmittedLocationRows,
+                    ref AddressAddedOrChangedPromotionParametersDT,
+                    ref ChangeLocationParametersDT,
+                    ref PartnerLocationExtraSubmitTable,
+                    ref LocationExtraSubmitTable,
+                    ref AVerificationResult);
+
+                if (result != TSubmitChangesResult.scrOK)
+                {
+                    // Stop processing here, we need more information!
+
+                    return result;
+                }
+            }
+
+            if (PartnerLocationTable != null)
+            {
+                TSubmitChangesResult result = ProcessPartnerLocationChanges(
+                    PartnerLocationTable,
+                    ref LocationTable,
+                    ref AResponseDS,
+                    ASubmitChangesTransaction,
+                    APartnerKey,
+                    APartnerClass,
+                    ref SimilarLocationReUseKeyMapping,
+                    ref ExistingLocationParametersDT,
+                    out NotToBeSubmittedPartnerLocationRows,
+                    ref AddressAddedOrChangedPromotionParametersDT,
+                    ref ChangeLocationParametersDT,
+                    ref PartnerLocationExtraSubmitTable,
+                    ref LocationExtraSubmitTable,
+                    ref AVerificationResult);
+
+                if (result != TSubmitChangesResult.scrOK)
+                {
+                    // Stop processing here, we need more information!
+
+                    return result;
+                }
+            }
+
+            /*
+             * Actual saving of data
+             */
+            if (LocationTable != null)
+            {
+#if DEBUGMODE
+                if (TLogging.DL >= 9)
+                {
+                    TLogging.Log("SubmitChanges: Length(SimilarLocationReUseKeyMapping): " +
+                        Convert.ToInt16(SimilarLocationReUseKeyMapping.GetLength(0)).ToString());
+                }
+#endif
+
+                if ((SimilarLocationReUseKeyMapping.GetLength(0) - 1) > 0)
+                {
+                    for (Int16 LocationReUseCounter = 1;
+                         LocationReUseCounter <= SimilarLocationReUseKeyMapping.GetLength(0) - 1;
+                         LocationReUseCounter += 1)
                     {
-                        // Stop processing here, we need more information!
+#if DEBUGMODE
+                        if (TLogging.DL >= 9)
+                        {
+                            TLogging.Log("LocationReUseCounter: " + LocationReUseCounter.ToString());
+                            TLogging.Log(
+                                "SubmitChanges: LocationReUseKeyMapping[" + LocationReUseCounter.ToString() +
+                                ", 0].LocationKey: " +
+                                SimilarLocationReUseKeyMapping[LocationReUseCounter, 0].LocationKey.ToString());
+                            TLogging.Log(
+                                "SubmitChanges: LocationReUseKeyMapping[" + LocationReUseCounter.ToString() +
+                                ", 1].LocationKey: " +
+                                SimilarLocationReUseKeyMapping[LocationReUseCounter, 1].LocationKey.ToString());
+                        }
+#endif
+                        PLocationRow ReUsedLocationDR =
+                            (PLocationRow)LocationTable.Rows.Find(
+                                new System.Object[] { SimilarLocationReUseKeyMapping[LocationReUseCounter, 0].SiteKey,
+                                                      SimilarLocationReUseKeyMapping[LocationReUseCounter, 0].LocationKey });
 
-                        return result;
+                        if (ReUsedLocationDR != null)
+                        {
+                            // Overwrite the originally submitted Key with the one that
+                            // replaces it. This is needed to have the correct Key on
+                            // the Client side!
+                            ReUsedLocationDR.SiteKey = SimilarLocationReUseKeyMapping[LocationReUseCounter, 1].SiteKey;
+                            ReUsedLocationDR.LocationKey = SimilarLocationReUseKeyMapping[LocationReUseCounter, 1].LocationKey;
+
+                            // Make the DataRow 'unchanged' so that it doesn't get saved in the
+                            // SubmitChanges call for PLocation!
+                            ReUsedLocationDR.AcceptChanges();
+
+                            // Remember that the row should not be submitted lateron
+                            // NotToBeSubmittedLocationRows.Add(ReUsedLocationDR);
+                        }
+                        else
+                        {
+                            throw new ApplicationException("ReUsedLocationDR for SiteKey " +
+                                SimilarLocationReUseKeyMapping[LocationReUseCounter,
+                                                               0].SiteKey.ToString() + " and LocationKey " +
+                                SimilarLocationReUseKeyMapping[LocationReUseCounter, 0].LocationKey.ToString() + " could not be found!");
+                        }
                     }
                 }
 
-                if (PartnerLocationTable != null)
+                if (NotToBeSubmittedLocationRows.Count > 0)
                 {
-                    TSubmitChangesResult result = ProcessPartnerLocationChanges(
-                        PartnerLocationTable,
-                        ref LocationTable,
-                        ref AResponseDS,
-                        ASubmitChangesTransaction,
-                        APartnerKey,
-                        APartnerClass,
-                        ref SimilarLocationReUseKeyMapping,
-                        ref ExistingLocationParametersDT,
-                        out NotToBeSubmittedPartnerLocationRows,
-                        ref AddressAddedOrChangedPromotionParametersDT,
-                        ref ChangeLocationParametersDT,
-                        ref PartnerLocationExtraSubmitTable,
-                        ref LocationExtraSubmitTable,
-                        ref AVerificationResult);
-
-                    if (result != TSubmitChangesResult.scrOK)
+                    for (Int16 NotToBeSubmittedCounter = 0;
+                         NotToBeSubmittedCounter <= NotToBeSubmittedLocationRows.Count - 1;
+                         NotToBeSubmittedCounter += 1)
                     {
-                        // Stop processing here, we need more information!
+                        // mark row as beeing unchanged, therefore it doesn't get removed later in the call to SubmitChanges
+                        ((DataRow)(NotToBeSubmittedLocationRows[NotToBeSubmittedCounter])).AcceptChanges();
+                    }
+                }
 
-                        return result;
+                NewLocationTableRowsDV = new DataView(LocationTable, "", "", DataViewRowState.Added);
+
+                if (NewLocationTableRowsDV.Count != 0)
+                {
+#if DEBUGMODE
+                    if (TLogging.DL >= 8)
+                    {
+                        TLogging.Log(NewLocationTableRowsDV.Count.ToString() + " new Rows in PLocation!");
+                    }
+#endif
+                    NewLocationTableRowsLocationKeys = new int[NewLocationTableRowsDV.Count];
+
+                    for (Int16 Counter = 0; Counter <= NewLocationTableRowsDV.Count - 1; Counter += 1)
+                    {
+                        NewLocationTableRowsLocationKeys[Counter] = (int)((PLocationRow)(NewLocationTableRowsDV[Counter].Row)).LocationKey;
+#if DEBUGMODE
+                        if (TLogging.DL >= 8)
+                        {
+                            TLogging.Log(
+                                "SubmitChanges: Row " + Counter.ToString() + ": LocationKey before saving: " +
+                                NewLocationTableRowsLocationKeys[Counter].ToString());
+                        }
+#endif
+                    }
+                }
+
+                if (!PLocationAccess.SubmitChanges(LocationTable, ASubmitChangesTransaction, out SingleVerificationResultCollection))
+                {
+                    AllSubmissionsOK = false;
+                    AVerificationResult.AddCollection(SingleVerificationResultCollection);
+#if DEBUGMODE
+                    if (TLogging.DL >= 9)
+                    {
+                        TLogging.Log(Messages.BuildMessageFromVerificationResult(
+                                "TPPartnerAddressAggregate.SubmitChanges VerificationResult: ", AVerificationResult));
+                    }
+#endif
+                }
+            }
+
+            if (PartnerLocationTable != null)
+            {
+#if DEBUGMODE
+                if (TLogging.DL >= 9)
+                {
+                    TLogging.Log("SubmitChanges: Length(SimilarLocationReUseKeyMapping): " +
+                        Convert.ToInt16(SimilarLocationReUseKeyMapping.GetLength(0)).ToString());
+                }
+#endif
+
+                if ((SimilarLocationReUseKeyMapping.GetLength(0) - 1) > 0)
+                {
+                    for (Int16 LocationReUseCounter = 1;
+                         LocationReUseCounter <= SimilarLocationReUseKeyMapping.GetLength(0) - 1;
+                         LocationReUseCounter += 1)
+                    {
+#if DEBUGMODE
+                        if (TLogging.DL >= 9)
+                        {
+                            TLogging.Log("LocationReUseCounter: " + LocationReUseCounter.ToString());
+                        }
+#endif
+#if DEBUGMODE
+                        if (TLogging.DL >= 9)
+                        {
+                            TLogging.Log(
+                                "SubmitChanges: LocationReUseKeyMapping[" + LocationReUseCounter.ToString() + ", 0].LocationKey: " +
+                                SimilarLocationReUseKeyMapping[LocationReUseCounter, 0].LocationKey.ToString());
+                        }
+#endif
+                        PPartnerLocationRow ReUsedPartnerLocationDR = (PPartnerLocationRow)PartnerLocationTable.Rows.Find(
+                            new System.Object[] { APartnerKey, SimilarLocationReUseKeyMapping[LocationReUseCounter, 0].SiteKey,
+                                                  SimilarLocationReUseKeyMapping[LocationReUseCounter, 0].LocationKey });
+
+                        if (ReUsedPartnerLocationDR != null)
+                        {
+                            // Overwrite the originally submitted Key with the one that
+                            // replaces it. This is needed to have the correct Key on
+                            // the Client side!
+                            ReUsedPartnerLocationDR.SiteKey = SimilarLocationReUseKeyMapping[LocationReUseCounter, 1].SiteKey;
+                            ReUsedPartnerLocationDR.LocationKey = SimilarLocationReUseKeyMapping[LocationReUseCounter, 1].LocationKey;
+                        }
+                        else
+                        {
+                            throw new ApplicationException("ReUsedPartnerLocationDR for SiteKey " +
+                                SimilarLocationReUseKeyMapping[LocationReUseCounter,
+                                                               0].SiteKey.ToString() + " and LocationKey " +
+                                SimilarLocationReUseKeyMapping[LocationReUseCounter, 0].LocationKey.ToString() + " could not be found!");
+                        }
                     }
                 }
 
                 /*
-                 * Actual saving of data
+                 * If there were added Rows in the Location Table: change the LocationKeys
+                 * of the corresponding PartnerLocation Row(s) to the LocationKeys that
+                 * were assigned by the DB while saving the added LocationTable Row(s)
+                 * (based on a Sequence).
                  */
-                if (LocationTable != null)
+                if (NewLocationTableRowsLocationKeys != null)
                 {
-#if DEBUGMODE
-                    if (TLogging.DL >= 9)
-                    {
-                        TLogging.Log("SubmitChanges: Length(SimilarLocationReUseKeyMapping): " +
-                            Convert.ToInt16(SimilarLocationReUseKeyMapping.GetLength(0)).ToString());
-                    }
-#endif
-
-                    if ((SimilarLocationReUseKeyMapping.GetLength(0) - 1) > 0)
-                    {
-                        for (Int16 LocationReUseCounter = 1;
-                             LocationReUseCounter <= SimilarLocationReUseKeyMapping.GetLength(0) - 1;
-                             LocationReUseCounter += 1)
-                        {
-#if DEBUGMODE
-                            if (TLogging.DL >= 9)
-                            {
-                                TLogging.Log("LocationReUseCounter: " + LocationReUseCounter.ToString());
-                                TLogging.Log(
-                                    "SubmitChanges: LocationReUseKeyMapping[" + LocationReUseCounter.ToString() +
-                                    ", 0].LocationKey: " +
-                                    SimilarLocationReUseKeyMapping[LocationReUseCounter, 0].LocationKey.ToString());
-                                TLogging.Log(
-                                    "SubmitChanges: LocationReUseKeyMapping[" + LocationReUseCounter.ToString() +
-                                    ", 1].LocationKey: " +
-                                    SimilarLocationReUseKeyMapping[LocationReUseCounter, 1].LocationKey.ToString());
-                            }
-#endif
-                            PLocationRow ReUsedLocationDR =
-                                (PLocationRow)LocationTable.Rows.Find(
-                                    new System.Object[] { SimilarLocationReUseKeyMapping[LocationReUseCounter, 0].SiteKey,
-                                                          SimilarLocationReUseKeyMapping[LocationReUseCounter, 0].LocationKey });
-
-                            if (ReUsedLocationDR != null)
-                            {
-                                // Overwrite the originally submitted Key with the one that
-                                // replaces it. This is needed to have the correct Key on
-                                // the Client side!
-                                ReUsedLocationDR.SiteKey = SimilarLocationReUseKeyMapping[LocationReUseCounter, 1].SiteKey;
-                                ReUsedLocationDR.LocationKey = SimilarLocationReUseKeyMapping[LocationReUseCounter, 1].LocationKey;
-
-                                // Make the DataRow 'unchanged' so that it doesn't get saved in the
-                                // SubmitChanges call for PLocation!
-                                ReUsedLocationDR.AcceptChanges();
-
-                                // Remember that the row should not be submitted lateron
-                                // NotToBeSubmittedLocationRows.Add(ReUsedLocationDR);
-                            }
-                            else
-                            {
-                                throw new ApplicationException("ReUsedLocationDR for SiteKey " +
-                                    SimilarLocationReUseKeyMapping[LocationReUseCounter,
-                                                                   0].SiteKey.ToString() + " and LocationKey " +
-                                    SimilarLocationReUseKeyMapping[LocationReUseCounter, 0].LocationKey.ToString() + " could not be found!");
-                            }
-                        }
-                    }
-
-                    if (NotToBeSubmittedLocationRows.Count > 0)
-                    {
-                        for (Int16 NotToBeSubmittedCounter = 0;
-                             NotToBeSubmittedCounter <= NotToBeSubmittedLocationRows.Count - 1;
-                             NotToBeSubmittedCounter += 1)
-                        {
-                            // mark row as beeing unchanged, therefore it doesn't get removed later in the call to SubmitChanges
-                            ((DataRow)(NotToBeSubmittedLocationRows[NotToBeSubmittedCounter])).AcceptChanges();
-                        }
-                    }
-
-                    NewLocationTableRowsDV = new DataView(LocationTable, "", "", DataViewRowState.Added);
-
-                    if (NewLocationTableRowsDV.Count != 0)
+                    for (Int16 Counter2 = 0; Counter2 <= NewLocationTableRowsLocationKeys.Length - 1; Counter2 += 1)
                     {
 #if DEBUGMODE
                         if (TLogging.DL >= 8)
                         {
-                            TLogging.Log(NewLocationTableRowsDV.Count.ToString() + " new Rows in PLocation!");
+                            TLogging.Log(
+                                "SubmitChanges: Finding Row again: " + PPartnerLocationTable.GetLocationKeyDBName() + " = " +
+                                NewLocationTableRowsLocationKeys[Counter2].ToString());
                         }
 #endif
-                        NewLocationTableRowsLocationKeys = new int[NewLocationTableRowsDV.Count];
-
-                        for (Int16 Counter = 0; Counter <= NewLocationTableRowsDV.Count - 1; Counter += 1)
-                        {
-                            NewLocationTableRowsLocationKeys[Counter] = (int)((PLocationRow)(NewLocationTableRowsDV[Counter].Row)).LocationKey;
+                        ChangeLocationKeyRows = PartnerLocationTable.Select(
+                            PPartnerLocationTable.GetLocationKeyDBName() + " = " + NewLocationTableRowsLocationKeys[Counter2].ToString());
 #if DEBUGMODE
-                            if (TLogging.DL >= 8)
-                            {
-                                TLogging.Log(
-                                    "SubmitChanges: Row " + Counter.ToString() + ": LocationKey before saving: " +
-                                    NewLocationTableRowsLocationKeys[Counter].ToString());
-                            }
-#endif
-                        }
-                    }
-
-                    if (!PLocationAccess.SubmitChanges(LocationTable, ASubmitChangesTransaction, out SingleVerificationResultCollection))
-                    {
-                        AllSubmissionsOK = false;
-                        AVerificationResult.AddCollection(SingleVerificationResultCollection);
-#if DEBUGMODE
-                        if (TLogging.DL >= 9)
+                        if (TLogging.DL >= 8)
                         {
-                            TLogging.Log(Messages.BuildMessageFromVerificationResult(
-                                    "TPPartnerAddressAggregate.SubmitChanges VerificationResult: ", AVerificationResult));
+                            TLogging.Log("SubmitChanges: Assigning LocationKey: " + ((PLocationRow)(
+                                                                                         NewLocationTableRowsDV[Counter2].Row)).LocationKey.
+                                ToString());
                         }
 #endif
-                    }
-                }
 
-                if (PartnerLocationTable != null)
-                {
-#if DEBUGMODE
-                    if (TLogging.DL >= 9)
-                    {
-                        TLogging.Log("SubmitChanges: Length(SimilarLocationReUseKeyMapping): " +
-                            Convert.ToInt16(SimilarLocationReUseKeyMapping.GetLength(0)).ToString());
-                    }
-#endif
-
-                    if ((SimilarLocationReUseKeyMapping.GetLength(0) - 1) > 0)
-                    {
-                        for (Int16 LocationReUseCounter = 1;
-                             LocationReUseCounter <= SimilarLocationReUseKeyMapping.GetLength(0) - 1;
-                             LocationReUseCounter += 1)
+                        for (Int16 Counter5 = 0; Counter5 <= ChangeLocationKeyRows.Length - 1; Counter5 += 1)
                         {
-#if DEBUGMODE
-                            if (TLogging.DL >= 9)
-                            {
-                                TLogging.Log("LocationReUseCounter: " + LocationReUseCounter.ToString());
-                            }
-#endif
-#if DEBUGMODE
-                            if (TLogging.DL >= 9)
-                            {
-                                TLogging.Log(
-                                    "SubmitChanges: LocationReUseKeyMapping[" + LocationReUseCounter.ToString() + ", 0].LocationKey: " +
-                                    SimilarLocationReUseKeyMapping[LocationReUseCounter, 0].LocationKey.ToString());
-                            }
-#endif
-                            PPartnerLocationRow ReUsedPartnerLocationDR = (PPartnerLocationRow)PartnerLocationTable.Rows.Find(
-                                new System.Object[] { APartnerKey, SimilarLocationReUseKeyMapping[LocationReUseCounter, 0].SiteKey,
-                                                      SimilarLocationReUseKeyMapping[LocationReUseCounter, 0].LocationKey });
-
-                            if (ReUsedPartnerLocationDR != null)
-                            {
-                                // Overwrite the originally submitted Key with the one that
-                                // replaces it. This is needed to have the correct Key on
-                                // the Client side!
-                                ReUsedPartnerLocationDR.SiteKey = SimilarLocationReUseKeyMapping[LocationReUseCounter, 1].SiteKey;
-                                ReUsedPartnerLocationDR.LocationKey = SimilarLocationReUseKeyMapping[LocationReUseCounter, 1].LocationKey;
-                            }
-                            else
-                            {
-                                throw new ApplicationException("ReUsedPartnerLocationDR for SiteKey " +
-                                    SimilarLocationReUseKeyMapping[LocationReUseCounter,
-                                                                   0].SiteKey.ToString() + " and LocationKey " +
-                                    SimilarLocationReUseKeyMapping[LocationReUseCounter, 0].LocationKey.ToString() + " could not be found!");
-                            }
+                            ((PPartnerLocationRow)ChangeLocationKeyRows[Counter5]).LocationKey =
+                                (int)((PLocationRow)(NewLocationTableRowsDV[Counter2].Row)).LocationKey;
                         }
-                    }
 
-                    /*
-                     * If there were added Rows in the Location Table: change the LocationKeys
-                     * of the corresponding PartnerLocation Row(s) to the LocationKeys that
-                     * were assigned by the DB while saving the added LocationTable Row(s)
-                     * (based on a Sequence).
-                     */
-                    if (NewLocationTableRowsLocationKeys != null)
-                    {
-                        for (Int16 Counter2 = 0; Counter2 <= NewLocationTableRowsLocationKeys.Length - 1; Counter2 += 1)
+                        if (PartnerLocationExtraSubmitTable != null)
                         {
-#if DEBUGMODE
-                            if (TLogging.DL >= 8)
-                            {
-                                TLogging.Log(
-                                    "SubmitChanges: Finding Row again: " + PPartnerLocationTable.GetLocationKeyDBName() + " = " +
-                                    NewLocationTableRowsLocationKeys[Counter2].ToString());
-                            }
-#endif
-                            ChangeLocationKeyRows = PartnerLocationTable.Select(
+                            ChangeLocationKeyRows = PartnerLocationExtraSubmitTable.Select(
                                 PPartnerLocationTable.GetLocationKeyDBName() + " = " + NewLocationTableRowsLocationKeys[Counter2].ToString());
 #if DEBUGMODE
                             if (TLogging.DL >= 8)
                             {
                                 TLogging.Log("SubmitChanges: Assigning LocationKey: " + ((PLocationRow)(
-                                                                                             NewLocationTableRowsDV[Counter2].Row)).LocationKey.
-                                    ToString());
+                                                                                             NewLocationTableRowsDV[Counter2].Row)).
+                                    LocationKey.ToString());
                             }
 #endif
 
@@ -3396,110 +3418,78 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                                 ((PPartnerLocationRow)ChangeLocationKeyRows[Counter5]).LocationKey =
                                     (int)((PLocationRow)(NewLocationTableRowsDV[Counter2].Row)).LocationKey;
                             }
-
-                            if (PartnerLocationExtraSubmitTable != null)
-                            {
-                                ChangeLocationKeyRows = PartnerLocationExtraSubmitTable.Select(
-                                    PPartnerLocationTable.GetLocationKeyDBName() + " = " + NewLocationTableRowsLocationKeys[Counter2].ToString());
-#if DEBUGMODE
-                                if (TLogging.DL >= 8)
-                                {
-                                    TLogging.Log("SubmitChanges: Assigning LocationKey: " + ((PLocationRow)(
-                                                                                                 NewLocationTableRowsDV[Counter2].Row)).
-                                        LocationKey.ToString());
-                                }
-#endif
-
-                                for (Int16 Counter5 = 0; Counter5 <= ChangeLocationKeyRows.Length - 1; Counter5 += 1)
-                                {
-                                    ((PPartnerLocationRow)ChangeLocationKeyRows[Counter5]).LocationKey =
-                                        (int)((PLocationRow)(NewLocationTableRowsDV[Counter2].Row)).LocationKey;
-                                }
-                            }
-
-#if DEBUGMODE
-                            if (TLogging.DL >= 8)
-                            {
-                                TLogging.Log(
-                                    "SubmitChanges: New LocationKey: " + ((PPartnerLocationRow)ChangeLocationKeyRows[0]).LocationKey.ToString());
-                            }
-#endif
                         }
-                    }
 
-                    if (NotToBeSubmittedPartnerLocationRows.Count > 0)
-                    {
-                        for (Int16 NotToBeSubmittedCounter = 0;
-                             NotToBeSubmittedCounter <= NotToBeSubmittedPartnerLocationRows.Count - 1;
-                             NotToBeSubmittedCounter += 1)
+#if DEBUGMODE
+                        if (TLogging.DL >= 8)
                         {
-                            // mark row as beeing unchanged, therefore it doesn't get removed later in the call to SubmitChanges
-                            ((DataRow)NotToBeSubmittedPartnerLocationRows[NotToBeSubmittedCounter]).AcceptChanges();
+                            TLogging.Log(
+                                "SubmitChanges: New LocationKey: " + ((PPartnerLocationRow)ChangeLocationKeyRows[0]).LocationKey.ToString());
                         }
+#endif
                     }
+                }
 
-                    if (!PPartnerLocationAccess.SubmitChanges(PartnerLocationTable, ASubmitChangesTransaction, out SingleVerificationResultCollection))
+                if (NotToBeSubmittedPartnerLocationRows.Count > 0)
+                {
+                    for (Int16 NotToBeSubmittedCounter = 0;
+                         NotToBeSubmittedCounter <= NotToBeSubmittedPartnerLocationRows.Count - 1;
+                         NotToBeSubmittedCounter += 1)
+                    {
+                        // mark row as beeing unchanged, therefore it doesn't get removed later in the call to SubmitChanges
+                        ((DataRow)NotToBeSubmittedPartnerLocationRows[NotToBeSubmittedCounter]).AcceptChanges();
+                    }
+                }
+
+                if (!PPartnerLocationAccess.SubmitChanges(PartnerLocationTable, ASubmitChangesTransaction, out SingleVerificationResultCollection))
+                {
+                    AllSubmissionsOK = false;
+                    AVerificationResult.AddCollection(SingleVerificationResultCollection);
+                }
+
+                if (PartnerLocationExtraSubmitTable != null)
+                {
+#if DEBUGMODE
+                    if (TLogging.DL >= 8)
+                    {
+                        TLogging.Log("SubmitChanges: Executing SubmitChanges on PartnerLocationExtraSubmitTable.");
+                    }
+#endif
+
+                    if (!PPartnerLocationAccess.SubmitChanges(PartnerLocationExtraSubmitTable, ASubmitChangesTransaction,
+                            out SingleVerificationResultCollection))
                     {
                         AllSubmissionsOK = false;
                         AVerificationResult.AddCollection(SingleVerificationResultCollection);
                     }
+                }
 
-                    if (PartnerLocationExtraSubmitTable != null)
-                    {
+                if (LocationExtraSubmitTable != null)
+                {
 #if DEBUGMODE
-                        if (TLogging.DL >= 8)
-                        {
-                            TLogging.Log("SubmitChanges: Executing SubmitChanges on PartnerLocationExtraSubmitTable.");
-                        }
+                    if (TLogging.DL >= 8)
+                    {
+                        TLogging.Log("SubmitChanges: Executing SubmitChanges on LocationExtraSubmitTable.");
+                    }
 #endif
 
-                        if (!PPartnerLocationAccess.SubmitChanges(PartnerLocationExtraSubmitTable, ASubmitChangesTransaction,
-                                out SingleVerificationResultCollection))
-                        {
-                            AllSubmissionsOK = false;
-                            AVerificationResult.AddCollection(SingleVerificationResultCollection);
-                        }
-                    }
-
-                    if (LocationExtraSubmitTable != null)
+                    if (!PLocationAccess.SubmitChanges(LocationExtraSubmitTable, ASubmitChangesTransaction,
+                            out SingleVerificationResultCollection))
                     {
-#if DEBUGMODE
-                        if (TLogging.DL >= 8)
-                        {
-                            TLogging.Log("SubmitChanges: Executing SubmitChanges on LocationExtraSubmitTable.");
-                        }
-#endif
-
-                        if (!PLocationAccess.SubmitChanges(LocationExtraSubmitTable, ASubmitChangesTransaction,
-                                out SingleVerificationResultCollection))
-                        {
-                            AllSubmissionsOK = false;
-                            AVerificationResult.AddCollection(SingleVerificationResultCollection);
-                        }
+                        AllSubmissionsOK = false;
+                        AVerificationResult.AddCollection(SingleVerificationResultCollection);
                     }
                 }
+            }
 
-                if (AllSubmissionsOK)
-                {
-                    SubmissionResult = TSubmitChangesResult.scrOK;
-                }
-                else
-                {
-                    SubmissionResult = TSubmitChangesResult.scrError;
-                }
+            if (AllSubmissionsOK)
+            {
+                return TSubmitChangesResult.scrOK;
             }
             else
             {
-#if DEBUGMODE
-                if (TLogging.DL >= 8)
-                {
-                    TLogging.Log("SubmitChanges: AInspectDS = nil!");
-                }
-#endif
-                SubmissionResult = TSubmitChangesResult.scrNothingToBeSaved;
+                return TSubmitChangesResult.scrError;
             }
-
-            return SubmissionResult;
         }
 
         /// <summary>
