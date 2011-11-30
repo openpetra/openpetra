@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       timop, christophert
 //
 // Copyright 2004-2011 by OM International
 //
@@ -44,7 +44,6 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
-using Ict.Petra.Shared.Interfaces;
 using Ict.Petra.Shared.Interfaces.MFinance.Budget.WebConnectors;
 using Ict.Petra.Shared.MFinance;
 
@@ -75,19 +74,29 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 
 	            TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbPeriodYear, FLedgerNumber);
 
-	            //Add next year.
-	            
-	            for (int i = 0; i < (cmbPeriodYear.Count - 2); i++)
-	            {
-	            	for (int j = (cmbPeriodYear.Count - 1); j <= (i + 1); j--)
-	            	{
+//	            //Add next year.
+//	            
+	            object [] rowArray = new object[1];
+	            rowArray[0] = 2012;
+	            //DataTable tb = cmbPeriodYear.Table;
+	            DataRow rw = cmbPeriodYear.Table.NewRow();
+	            //rw[0] = 2012;
+	            rw.ItemArray = rowArray;
+	            cmbPeriodYear.Table.Rows.Add(rw);
+	            cmbPeriodYear.Table.AcceptChanges();
+	            cmbPeriodYear.Refresh();
+//	            
+//	            for (int i = 0; i < (cmbPeriodYear.Count - 2); i++)
+//	            {
+//	            	for (int j = (cmbPeriodYear.Count - 1); j <= (i + 1); j--)
+//	            	{
 //	            		//Add a year and then remove duplicates
-//	            		if (cboCity.Items(i).ToString == cboCity.Items(j).ToString)
+//	            		if (cmbPeriodYear.Items(i).ToString == cmbPeriodYear.Items(j).ToString)
 //	            		{
-//	            			cboCity.Items.RemoveAt(j)
+//	            			cmbPeriodYear.Items.RemoveAt(j)
 //	            		}
-	            	}
-	            }
+//	            	}
+//	            }
 
                 DataView myDataView = FMainDS.ABudget.DefaultView;
                 myDataView.AllowNew = false;
@@ -251,7 +260,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             }
         }
 
-        private string CurrentBudgetType = string.Empty;
         private void NewBudgetType(System.Object sender, EventArgs e)
         {
             ClearBudgetPeriodTextboxes();

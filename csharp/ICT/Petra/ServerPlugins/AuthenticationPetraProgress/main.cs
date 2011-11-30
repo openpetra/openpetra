@@ -25,7 +25,6 @@ using System;
 using System.Data;
 using System.Data.Odbc;
 using System.Collections.Generic;
-using System.Web.Security;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Remoting.Server;
@@ -62,7 +61,7 @@ namespace Plugin.AuthenticationPetraProgress
             // . sqlexp.sh "update pub.s_user set s_password2_c = 'FE01CE2A7FBAC8FA' where s_user_id_c = 'TIMOP'"
             string password2 = UserDR["s_password2_c"].ToString();
 
-            if ((UserDR != null) && (FormsAuthentication.HashPasswordForStoringInConfigFile(APassword, "MD5").Substring(0, 16) != password2))
+            if ((UserDR != null) && (TUserManager.CreateHashOfPassword(APassword, "MD5").Substring(0, 16) != password2))
             {
                 // todo: increase failed logins
                 throw new EPasswordWrongException(Catalog.GetString("Invalid User ID/Password."));
@@ -83,7 +82,7 @@ namespace Plugin.AuthenticationPetraProgress
 
             if (UserDR != null)
             {
-                string NewPasswordHash = FormsAuthentication.HashPasswordForStoringInConfigFile(APassword, "MD5").Substring(0, 16);
+                string NewPasswordHash = TUserManager.CreateHashOfPassword(APassword, "MD5").Substring(0, 16);
 
                 TDBTransaction t = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
@@ -138,7 +137,7 @@ namespace Plugin.AuthenticationPetraProgress
                     return false;
                 }
 
-                string NewPasswordHash = FormsAuthentication.HashPasswordForStoringInConfigFile(APassword, "MD5").Substring(0, 16);
+                string NewPasswordHash = TUserManager.CreateHashOfPassword(APassword, "MD5").Substring(0, 16);
 
                 TDBTransaction t = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 

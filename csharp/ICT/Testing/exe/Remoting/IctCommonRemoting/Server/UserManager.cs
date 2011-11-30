@@ -25,7 +25,6 @@ using System;
 using System.Data;
 using System.Data.Odbc;
 using System.Threading;
-using System.Web.Security;
 using System.Security.Principal;
 using GNU.Gettext;
 using Ict.Common;
