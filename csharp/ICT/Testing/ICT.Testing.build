@@ -3,4 +3,24 @@
 
 <include buildfile="../../../inc/nant/OpenPetra.csharp.xml"/> 
 
+<target name="test-common">
+    <nunit2>
+        <formatter type="Plain" />
+        <test assemblyname="${dir.bin}/Ict.Testing.lib.Common.dll" />
+    </nunit2>
+    <nunit2>
+        <formatter type="Plain" />
+        <test>
+            <assemblies>
+<!--
+                <include name="${dir.bin}/Ict.Testing.lib.Common*dll" />
+                <exclude name="${dir.bin}/Ict.Testing.lib.Common.Controls.dll" />
+-->
+            </assemblies>
+        </test>
+    </nunit2>
+</target>
+
+<target name="test-all" depends="test-common"/>
+
 </project>
