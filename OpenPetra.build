@@ -270,7 +270,7 @@ useful parameters
 </target>
 
 <target name="test" depends="initConfigFiles">
-  <nant inheritall="false" target="test-all" buildfile="${path::combine(dir.csharp, 'ICT/Testing/Ict.Testing.build')}" verbose="${verbose}"/>
+  <nant inheritall="false" target="test-all" buildfile="${path::combine(dir.csharp, 'ICT/Testing/ICT.Testing.build')}" verbose="${verbose}"/>
 </target>
 
 </project>
