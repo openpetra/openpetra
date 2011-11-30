@@ -44,7 +44,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
     /// The TPPartnerAddressAggregate Class contains logic to create, edit and delete
     /// addresses, involving both p_location and p_partner_location tables.
     /// </summary>
-    public class TPPartnerAddressAggregate : object
+    public class TPPartnerAddressAggregate
     {
         private static void DebugLoadedDataset(DataSet ADataSet)
         {
@@ -95,20 +95,6 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         }
 
         /// <summary>
-        /// Returns the number of Addresses (p_partner_location records) a Partner has.
-        ///
-        /// </summary>
-        /// <param name="APartnerKey">PartnerKey of the Partner for which Address data is to be
-        /// loaded</param>
-        /// <param name="AReadTransaction">Transaction for the SELECT COUNT statement</param>
-        /// <returns>Number of Addresses
-        /// </returns>
-        public static Int32 Count(Int64 APartnerKey, TDBTransaction AReadTransaction)
-        {
-            return PPartnerLocationAccess.CountViaPPartner(APartnerKey, AReadTransaction);
-        }
-
-        /// <summary>
         /// check the location change; validate and take other required action
         /// eg. change the location of family members, promote address changes
         /// </summary>
@@ -123,7 +109,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <param name="ACreateLocation"></param>
         /// <param name="AOriginalLocationKey"></param>
         /// <returns></returns>
-        public static TSubmitChangesResult PerformLocationChangeChecks(PLocationRow ALocationRow,
+        private static TSubmitChangesResult PerformLocationChangeChecks(PLocationRow ALocationRow,
             Int64 APartnerKey,
             ref PartnerAddressAggregateTDS AResponseDS,
             TDBTransaction ASubmitChangesTransaction,
@@ -762,7 +748,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <param name="AUpdatePartnerLocationOtherPersons"></param>
         /// <param name="AChangePromotionParametersDT"></param>
         /// <returns></returns>
-        public static Boolean CheckPartnerLocationChange(PPartnerLocationRow APartnerLocationRow,
+        private static Boolean CheckPartnerLocationChange(PPartnerLocationRow APartnerLocationRow,
             Int64 APartnerKey,
             ref PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable AAddressAddedOrChangedPromotionDT,
             TDBTransaction AReadTransaction,
@@ -1181,7 +1167,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <param name="ALocationPK"></param>
         /// <param name="AReadTransaction"></param>
         /// <returns></returns>
-        public static Boolean CheckFamilyMemberPropagation(PPartnerLocationRow APartnerLocationRow,
+        private static Boolean CheckFamilyMemberPropagation(PPartnerLocationRow APartnerLocationRow,
             Int64 APartnerKey,
             String APartnerClass,
             ref PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable AAddressAddedOrChangedPromotionDT,
@@ -1308,7 +1294,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <param name="ACreateLocationOtherPartnerKeys"></param>
         /// <param name="AChangePromotionParametersDT"></param>
         /// <returns></returns>
-        public static Boolean CheckLocationChange(PLocationRow ALocationRow,
+        private static Boolean CheckLocationChange(PLocationRow ALocationRow,
             Int64 APartnerKey,
             ref PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable AAddressAddedOrChangedPromotionDT,
             TDBTransaction AReadTransaction,
@@ -1572,7 +1558,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// </summary>
         /// <param name="ALocationRow"></param>
         /// <returns></returns>
-        public static Boolean CheckHasLocationChanged(PLocationRow ALocationRow)
+        private static Boolean CheckHasLocationChanged(PLocationRow ALocationRow)
         {
             Boolean ReturnValue;
 
@@ -1742,7 +1728,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <param name="ADataRow"></param>
         /// <param name="AChangedDetails"></param>
         /// <returns></returns>
-        public static Boolean CheckHasPartnerLocationPromotionDetailChanged(PPartnerLocationRow ADataRow, out StringCollection AChangedDetails)
+        private static Boolean CheckHasPartnerLocationPromotionDetailChanged(PPartnerLocationRow ADataRow, out StringCollection AChangedDetails)
         {
             Boolean ReturnValue;
 
@@ -1903,7 +1889,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <param name="APartnerKey"></param>
         /// <param name="AReadTransaction"></param>
         /// <returns></returns>
-        public static Boolean CheckHasPartnerOtherPartnerLocations(Int32 ALocationKey, Int64 APartnerKey, TDBTransaction AReadTransaction)
+        private static Boolean CheckHasPartnerOtherPartnerLocations(Int32 ALocationKey, Int64 APartnerKey, TDBTransaction AReadTransaction)
         {
             Int32[] OtherPartnerLocationKeys = new Int32[1];
 
@@ -1918,7 +1904,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <param name="APartnerKey"></param>
         /// <param name="AReadTransaction"></param>
         /// <returns></returns>
-        public static Boolean CheckHasPartnerOtherPartnerLocations(Int32[] ALocationKeys, Int64 APartnerKey, TDBTransaction AReadTransaction)
+        private static Boolean CheckHasPartnerOtherPartnerLocations(Int32[] ALocationKeys, Int64 APartnerKey, TDBTransaction AReadTransaction)
         {
             OdbcParameter[] ParametersArray;
             int Counter;
@@ -1964,7 +1950,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <param name="AExistingLocationParametersDT"></param>
         /// <param name="AChangeLocationParametersDT"></param>
         /// <param name="AAddressAddedOrChangedPromotionParametersDT"></param>
-        public static void CheckParameterTables(PartnerAddressAggregateTDS AInspectDS,
+        private static void CheckParameterTables(PartnerAddressAggregateTDS AInspectDS,
             out PartnerAddressAggregateTDSSimilarLocationParametersTable AExistingLocationParametersDT,
             out PartnerAddressAggregateTDSChangePromotionParametersTable AChangeLocationParametersDT,
             out PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable AAddressAddedOrChangedPromotionParametersDT)
@@ -2101,7 +2087,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <param name="AExistingSiteKey"></param>
         /// <param name="AExistingLocationKey"></param>
         /// <returns></returns>
-        public static Boolean CheckReUseExistingLocation(PLocationRow ALocationRow,
+        private static Boolean CheckReUseExistingLocation(PLocationRow ALocationRow,
             Int64 APartnerKey,
             ref PartnerAddressAggregateTDSSimilarLocationParametersTable AExistingLocationParametersDT,
             TDBTransaction AReadTransaction,
@@ -2355,7 +2341,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <param name="ASiteKey"></param>
         /// <param name="APartnerLocationTable"></param>
         /// <param name="ATransaction"></param>
-        public static void MakeSureLocation0IsNotPresent(Int64 APartnerKey,
+        private static void MakeSureLocation0IsNotPresent(Int64 APartnerKey,
             Int64 ASiteKey,
             PPartnerLocationTable APartnerLocationTable,
             TDBTransaction ATransaction)
@@ -3343,7 +3329,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <param name="APartnerLocationRow"></param>
         /// <param name="APartnerKey"></param>
         /// <param name="ASubmitChangesTransaction"></param>
-        public static void MakeSureLocation0SavingIsAllowed(PPartnerLocationRow APartnerLocationRow,
+        private static void MakeSureLocation0SavingIsAllowed(PPartnerLocationRow APartnerLocationRow,
             Int64 APartnerKey,
             TDBTransaction ASubmitChangesTransaction)
         {
@@ -3407,7 +3393,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// </summary>
         /// <param name="APartnerLocationRow"></param>
         /// <param name="AAddressAddedPromotionDT"></param>
-        public static void ModifyAddressAddedOrChangedParameters(PPartnerLocationRow APartnerLocationRow,
+        private static void ModifyAddressAddedOrChangedParameters(PPartnerLocationRow APartnerLocationRow,
             ref PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable AAddressAddedPromotionDT)
         {
             DataView AddressAddedOrChangedParametersDV;
@@ -3474,7 +3460,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <param name="ALocationRow"></param>
         /// <param name="AOriginalLocationKey"></param>
         /// <param name="AExistingLocationParametersDT"></param>
-        public static void ModifyExistingLocationParameters(PLocationRow ALocationRow,
+        private static void ModifyExistingLocationParameters(PLocationRow ALocationRow,
             TLocationPK AOriginalLocationKey,
             ref PartnerAddressAggregateTDSSimilarLocationParametersTable AExistingLocationParametersDT)
         {
@@ -3656,7 +3642,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <param name="AFamilyPartnerKey"></param>
         /// <param name="AReadTransaction"></param>
         /// <returns></returns>
-        public static PPersonTable GetFamilyMemberPartnerKeys(Int64 AFamilyPartnerKey, TDBTransaction AReadTransaction)
+        private static PPersonTable GetFamilyMemberPartnerKeys(Int64 AFamilyPartnerKey, TDBTransaction AReadTransaction)
         {
             PPersonTable TemplateDT;
             PPersonRow TemplateRow;
@@ -3686,7 +3672,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <param name="ARow"></param>
         /// <param name="ALocationReUseKeyMapping"></param>
         /// <returns></returns>
-        public static TLocationPK DetermineReplacedLocationPK(DataRow ARow, TLocationPK[, ] ALocationReUseKeyMapping)
+        private static TLocationPK DetermineReplacedLocationPK(DataRow ARow, TLocationPK[, ] ALocationReUseKeyMapping)
         {
             TLocationPK ReturnValue;
             TLocationPK SubmittedLocationPK;
@@ -3771,7 +3757,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <param name="ARow"></param>
         /// <param name="AExistingLocationParametersDT"></param>
         /// <returns></returns>
-        public static TLocationPK DetermineReplacedLocationPK(DataRow ARow,
+        private static TLocationPK DetermineReplacedLocationPK(DataRow ARow,
             PartnerAddressAggregateTDSSimilarLocationParametersTable AExistingLocationParametersDT)
         {
             TLocationPK ReturnValue;
@@ -3864,7 +3850,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// function does no checks on that and will fail for other Partner Classes!
         /// </summary>
         /// <returns>void</returns>
-        public static TSubmitChangesResult PerformLocationFamilyMemberPropagationChecks(PPartnerLocationRow APartnerLocationRow,
+        private static TSubmitChangesResult PerformLocationFamilyMemberPropagationChecks(PPartnerLocationRow APartnerLocationRow,
             ref PartnerAddressAggregateTDS AResponseDS,
             TDBTransaction ASubmitChangesTransaction,
             Int64 APartnerKey,
@@ -3877,16 +3863,6 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             out Boolean APerformPropagation,
             ref TVerificationResultCollection AVerificationResult)
         {
-            TSubmitChangesResult ReturnValue;
-            TLocationPK SubmittedLocationPK;
-            DataView PropagateLocationParametersDV;
-            PPersonTable FamilyPersonsDT;
-            int Counter;
-            PPersonRow ProcessedPersonRow;
-            PPartnerLocationRow FamilyPartnerLocationRow;
-            PPartnerLocationRow AddPartnerLocationRow;
-            TLocationPK LocationPK;
-
 #if DEBUGMODE
             if (TLogging.DL >= 9)
             {
@@ -3896,14 +3872,14 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             }
 #endif
             APerformPropagation = false;
-            SubmittedLocationPK = DetermineReplacedLocationPK(APartnerLocationRow, ALocationReUseKeyMapping);
-            LocationPK = DetermineReplacedLocationPK(APartnerLocationRow, AExistingLocationParametersDT);
+            TLocationPK SubmittedLocationPK = DetermineReplacedLocationPK(APartnerLocationRow, ALocationReUseKeyMapping);
+            TLocationPK LocationPK = DetermineReplacedLocationPK(APartnerLocationRow, AExistingLocationParametersDT);
 
             if (CheckFamilyMemberPropagation(APartnerLocationRow, APartnerKey, APartnerClass, ref AAddressAddedPromotionDT, LocationPK,
                     ASubmitChangesTransaction))
             {
                 // Check if there is a Parameter Row for the LocationKey we are looking at
-                PropagateLocationParametersDV = new DataView(AAddressAddedPromotionDT,
+                DataView PropagateLocationParametersDV = new DataView(AAddressAddedPromotionDT,
                     PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable.GetSiteKeyDBName() + " = " + LocationPK.SiteKey.ToString() +
                     " AND " +
                     PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable.GetLocationKeyDBName() + " = " +
@@ -3964,8 +3940,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                             AResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].Rows.Count.ToString());
                     }
 #endif
-                    ReturnValue = TSubmitChangesResult.scrInfoNeeded;
-                    return ReturnValue;
+                    return TSubmitChangesResult.scrInfoNeeded;
                 }
                 else
                 {
@@ -3985,18 +3960,18 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                     APerformPropagation = true;
 
                     // Load all Persons of the Family
-                    FamilyPersonsDT = PPersonAccess.LoadViaPFamily(APartnerKey, ASubmitChangesTransaction);
+                    PPersonTable FamilyPersonsDT = PPersonAccess.LoadViaPFamily(APartnerKey, ASubmitChangesTransaction);
 
                     // Find PPartnerLocation row of the Family that we should process
-                    FamilyPartnerLocationRow = (PPartnerLocationRow)APartnerLocationTable.Rows.Find(
+                    PPartnerLocationRow FamilyPartnerLocationRow = (PPartnerLocationRow)APartnerLocationTable.Rows.Find(
                         new System.Object[] { APartnerKey, APartnerLocationRow.SiteKey,
                                               APartnerLocationRow.LocationKey });
 
                     if (FamilyPartnerLocationRow != null)
                     {
-                        for (Counter = 0; Counter <= FamilyPersonsDT.Rows.Count - 1; Counter += 1)
+                        for (int Counter = 0; Counter <= FamilyPersonsDT.Rows.Count - 1; Counter += 1)
                         {
-                            ProcessedPersonRow = FamilyPersonsDT[Counter];
+                            PPersonRow ProcessedPersonRow = FamilyPersonsDT[Counter];
 #if DEBUGMODE
                             if (TLogging.DL >= 9)
                             {
@@ -4020,7 +3995,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #endif
 
                                 // Add a copy of the PartnerLocation data to the Person
-                                AddPartnerLocationRow = APartnerLocationTable.NewRowTyped(false);
+                                PPartnerLocationRow AddPartnerLocationRow = APartnerLocationTable.NewRowTyped(false);
                                 AddPartnerLocationRow.ItemArray = DataUtilities.DestinationSaveItemArray(AddPartnerLocationRow,
                                     FamilyPartnerLocationRow);
                                 AddPartnerLocationRow.PartnerKey = ProcessedPersonRow.PartnerKey;
@@ -4105,7 +4080,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <param name="AReUseSimilarLocation"></param>
         /// <param name="AVerificationResult"></param>
         /// <returns></returns>
-        public static TSubmitChangesResult PerformSimilarLocationReUseChecks(ref PLocationRow ALocationRow,
+        private static TSubmitChangesResult PerformSimilarLocationReUseChecks(ref PLocationRow ALocationRow,
             ref PartnerAddressAggregateTDS AResponseDS,
             TDBTransaction ASubmitChangesTransaction,
             Int64 APartnerKey,
@@ -4393,7 +4368,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <param name="APartnerLocationTable"></param>
         /// <param name="AVerificationResult"></param>
         /// <returns></returns>
-        public static TSubmitChangesResult PerformPartnerLocationChangeChecks(PPartnerLocationRow APartnerLocationRow,
+        private static TSubmitChangesResult PerformPartnerLocationChangeChecks(PPartnerLocationRow APartnerLocationRow,
             Int64 APartnerKey,
             ref PartnerAddressAggregateTDS AResponseDS,
             TDBTransaction ASubmitChangesTransaction,
@@ -4685,7 +4660,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// with 1..n TVerificationResult objects (contains DB call exceptions)</param>
         /// <returns>true if processing was successful, otherwise false
         /// </returns>
-        public static Boolean PromoteToFamilyMembersDateGoodUntilChange(Int64 AFamilyPartnerKey,
+        private static Boolean PromoteToFamilyMembersDateGoodUntilChange(Int64 AFamilyPartnerKey,
             PPartnerLocationRow APartnerLocationDR,
             TDBTransaction ASubmitChangesTransaction,
             out TVerificationResultCollection AVerificationResult)
@@ -4807,7 +4782,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// with 1..n TVerificationResult objects (contains DB call exceptions)</param>
         /// <returns>true if processing was successful, otherwise false
         /// </returns>
-        public static Boolean RemoveLocationFromExtracts(PLocationRow ALocationRow,
+        private static Boolean RemoveLocationFromExtracts(PLocationRow ALocationRow,
             TDBTransaction ASubmitChangesTransaction,
             ref TVerificationResultCollection AVerificationResult)
         {
