@@ -3096,7 +3096,6 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             ArrayList NotToBeSubmittedPartnerLocationRows = null;
             TLocationPK[, ] SimilarLocationReUseKeyMapping;
 
-            TSubmitChangesResult ReturnValue = TSubmitChangesResult.scrOK;
             AVerificationResult = null;
 
             if (AInspectDS != null)
@@ -3169,8 +3168,6 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 
                         return result;
                     }
-
-                    ReturnValue = result;
                 }
 
                 if (PartnerLocationTable != null)
@@ -3197,8 +3194,6 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 
                         return result;
                     }
-
-                    ReturnValue = result;
                 }
 
                 /*
