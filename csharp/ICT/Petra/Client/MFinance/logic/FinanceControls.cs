@@ -755,6 +755,18 @@ namespace Ict.Petra.Client.MFinance.Logic
         }
 
         /// <summary>
+        /// return the ledger's current financial year
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        public static Int32 GetLedgerCurrentFinancialYear(Int32 ALedgerNumber)
+        {
+        	ALedgerRow row = ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, ALedgerNumber))[0];
+        	
+			return row.CurrentFinancialYear;
+        }
+
+        /// <summary>
         /// fill checkedlistbox values with fees payable list
         /// </summary>
         /// <param name="AControl"></param>

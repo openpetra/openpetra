@@ -19,7 +19,8 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: 
+                Row0: [grdDetails, pnlButtons]
         pnlButtons:
             Dock: Right
             Controls: [btnNew, btnDelete]
@@ -47,7 +48,7 @@ RootNode:
             Controls:
                 Row0: [cmbDetailCostCentreCode]
                 Row1: [cmbDetailAccountCode]
-                Row2: [cmbPeriodYear]
+                #Row2: [cmbDetailYear]
         pnlBudgetTypeAdhoc:
             Dock: Fill
             Visible: false
@@ -95,9 +96,9 @@ RootNode:
                 Row2: [pnlBudgetTypeSplit]
                 Row3: [pnlBudgetTypeInflateN]
                 Row4: [pnlBudgetTypeInflateBase]
+        #cmbDetailYear: {Label=Year, List=UserDefinedList, OnChange=BudgetYearChanged}
         cmbDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList}
         cmbDetailAccountCode: {Label=Account, List=UserDefinedList}
-        cmbPeriodYear: {Label=Year, List=UserDefinedList}
         #Adhoc controls
         txtPeriod01Amount: {Label=Period 1, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
         txtPeriod02Amount: {Label=Period 2, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
@@ -141,3 +142,4 @@ RootNode:
         #TODO: radio buttons for selection of budget type, display different user controls depending on selection, similar to bankimport screen
     Menu:
     Toolbar:
+        cmbSelectBudgetYear: {List=UserDefinedList, OnChange=SelectBudgetYear, Width=250}
