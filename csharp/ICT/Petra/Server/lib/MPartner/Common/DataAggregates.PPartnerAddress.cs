@@ -1304,15 +1304,8 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             out PartnerAddressAggregateTDSChangePromotionParametersTable AChangePromotionParametersDT)
         {
             Boolean ReturnValue;
-            DataView AddressAddedOrChangedPromotionDV;
-            PartnerAddressAggregateTDSAddressAddedOrChangedPromotionRow AddressAddedOrChangedRow;
 
-            string[] ChangeSomeArray;
-            OdbcParameter[] ParametersArray;
-            int Counter;
             PartnerAddressAggregateTDSChangePromotionParametersRow AddressAddedPromotionRow;
-            DataSet OtherPartnerLocationReferencesDS;
-            DataRow OtherPartnerLocationReferenceRow;
 
             ACreateLocation = false;
             AUpdateLocation = false;
@@ -1330,7 +1323,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #endif
 
             // Check if there is a Parameter Row for the LocationKey we are looking at
-            AddressAddedOrChangedPromotionDV = new DataView(AAddressAddedOrChangedPromotionDT,
+            DataView AddressAddedOrChangedPromotionDV = new DataView(AAddressAddedOrChangedPromotionDT,
                 PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable.GetSiteKeyDBName() + " = " + ALocationRow.SiteKey.ToString() +
                 " AND " +
                 PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable.GetLocationKeyDBName() + " = " + ALocationRow.LocationKey.ToString() +
@@ -1351,7 +1344,8 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #endif
                 AAddressAddedOrChangedPromotionDT = new PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable(
                     MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME);
-                AddressAddedOrChangedRow = AAddressAddedOrChangedPromotionDT.NewRowTyped(false);
+                PartnerAddressAggregateTDSAddressAddedOrChangedPromotionRow AddressAddedOrChangedRow =
+                    AAddressAddedOrChangedPromotionDT.NewRowTyped(false);
                 AddressAddedOrChangedRow.SiteKey = ALocationRow.SiteKey;
                 AddressAddedOrChangedRow.LocationKey = ALocationRow.LocationKey;
                 AddressAddedOrChangedRow.PartnerKey = APartnerKey;
@@ -1366,14 +1360,14 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                     MPartnerConstants.ADDRESSCHANGEPROMOTIONPARAMETERS_TABLENAME);
 
                 // Load data for all other Partners that reference the PartnerLocation
-                ParametersArray = new OdbcParameter[3];
+                OdbcParameter[] ParametersArray = new OdbcParameter[3];
                 ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
                 ParametersArray[0].Value = (System.Object)(APartnerKey);
                 ParametersArray[1] = new OdbcParameter("", OdbcType.Decimal, 10);
                 ParametersArray[1].Value = (System.Object)(ALocationRow.SiteKey);
                 ParametersArray[2] = new OdbcParameter("", OdbcType.Int);
                 ParametersArray[2].Value = (System.Object)(ALocationRow.LocationKey);
-                OtherPartnerLocationReferencesDS = DBAccess.GDBAccessObj.Select(
+                DataTable OtherPartnerLocationReferencesDT = DBAccess.GDBAccessObj.SelectDT(
                     "SELECT PUB_" + PPartnerLocationTable.GetTableDBName() + '.' + PPartnerLocationTable.GetPartnerKeyDBName() + ", " +
                     PPartnerTable.GetPartnerShortNameDBName() + ", " +
                     PPartnerTable.GetPartnerClassDBName() + ", " + PPartnerLocationTable.GetTelephoneNumberDBName() + ", " +
@@ -1383,7 +1377,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                     " = PUB_" + PPartnerLocationTable.GetTableDBName() + '.' + PPartnerLocationTable.GetPartnerKeyDBName() + ' ' + "WHERE    PUB_" +
                     PPartnerLocationTable.GetTableDBName() + '.' + PPartnerLocationTable.GetPartnerKeyDBName() + " <> ? " + "AND    " +
                     PPartnerLocationTable.GetSiteKeyDBName() + " = ? " + "AND    " + PPartnerLocationTable.GetLocationKeyDBName() + " = ?",
-                    "OtherPartnerLocationReferences", AReadTransaction, ParametersArray);
+                    "OtherPartnerLocationReferencesDT", AReadTransaction, ParametersArray);
 
                 // Don't need these columns for the moment, but it would be nice to have them later on
                 // PPartnerLocationTable.GetExtensionDBName + ', ' +
@@ -1397,9 +1391,9 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                 // PPartnerLocationTable.GetDateEffectiveDBName + ', ' +
                 // PPartnerLocationTable.GetDateGoodUntilDBName + ', ' +
                 // Insert data into the ChangePromotionParameters DataTable
-                for (Counter = 0; Counter <= OtherPartnerLocationReferencesDS.Tables[0].Rows.Count - 1; Counter += 1)
+                for (int Counter = 0; Counter <= OtherPartnerLocationReferencesDT.Rows.Count - 1; Counter += 1)
                 {
-                    OtherPartnerLocationReferenceRow = OtherPartnerLocationReferencesDS.Tables[0].Rows[Counter];
+                    DataRow OtherPartnerLocationReferenceRow = OtherPartnerLocationReferencesDT.Rows[Counter];
                     AddressAddedPromotionRow = AChangePromotionParametersDT.NewRowTyped(false);
                     AddressAddedPromotionRow.SiteKey = ALocationRow.SiteKey;
                     AddressAddedPromotionRow.LocationKey = (Int32)ALocationRow.LocationKey;
@@ -1458,7 +1452,8 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             else
             {
                 // AAddressAddedOrChangedPromotionDT was passed in, holding parameters for the LocationKey we are looking at
-                AddressAddedOrChangedRow = (PartnerAddressAggregateTDSAddressAddedOrChangedPromotionRow)AddressAddedOrChangedPromotionDV[0].Row;
+                PartnerAddressAggregateTDSAddressAddedOrChangedPromotionRow AddressAddedOrChangedRow =
+                    (PartnerAddressAggregateTDSAddressAddedOrChangedPromotionRow)AddressAddedOrChangedPromotionDV[0].Row;
 
                 if (AddressAddedOrChangedRow.UserAnswer == "CHANGE-NONE")
                 {
@@ -1489,14 +1484,14 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                     ACreateLocation = true;
 
                     // Parse the UserAnswer. It's format is 'CHANGESOME:PartnerKey1;PartnerKey2;PartnerKeyN'
-                    ChangeSomeArray = AddressAddedOrChangedRow.UserAnswer.Split(":;".ToCharArray());
+                    string[] ChangeSomeArray = AddressAddedOrChangedRow.UserAnswer.Split(":;".ToCharArray());
 
                     // Build the ACreateLocationOtherPartnerKeys array from it to
                     // signal to calling procedure that the created location should be
                     // assigned to all the Partners contained in the Array.
                     ACreateLocationOtherPartnerKeys = new Int64[ChangeSomeArray.Length - 1];
 
-                    for (Counter = 1; Counter <= ChangeSomeArray.Length - 1; Counter += 1)
+                    for (int Counter = 1; Counter <= ChangeSomeArray.Length - 1; Counter += 1)
                     {
                         ACreateLocationOtherPartnerKeys[Counter - 1] = Convert.ToInt64(ChangeSomeArray[Counter]);
                     }
@@ -2709,7 +2704,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                 }
             }
 
-            return TSubmitChangesResult.scrOK;
+            return Result;
         }
 
         /// <summary>

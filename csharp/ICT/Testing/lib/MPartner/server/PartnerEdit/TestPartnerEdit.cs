@@ -369,10 +369,12 @@ namespace Tests.MPartner.Server.PartnerEdit
             }
 
             // now change on partner location. should ask about everyone else
-            MainDS.PPartnerLocation[0].DateGoodUntil = new DateTime(2011, 01, 01);
+            // it seems, the change must be to PLocation. In Petra 2.3, changes to the PartnerLocation are not propagated
+            // MainDS.PPartnerLocation[0].DateGoodUntil = new DateTime(2011, 01, 01);
+
             Assert.AreEqual(1, MainDS.PLocation.Rows.Count, "there should be only one address for the whole family");
 
-            MainDS.PLocation[0].Locality = "different";
+            MainDS.PLocation[0].County = "different";
 
             ResponseDS = new PartnerEditTDS();
 
@@ -387,12 +389,11 @@ namespace Tests.MPartner.Server.PartnerEdit
             Assert.AreEqual(TSubmitChangesResult.scrInfoNeeded,
                 result,
                 "should ask if the partner locations of the other members of the family should be changed as well");
-
-            // TODO: replace the whole location
         }
 
         /// <summary>
-        /// modify a location that is used by several partners, but only modify the location for this partner
+        /// modify a location that is used by several partners, but only modify the location for this partner.
+        /// need to create a new location
         /// </summary>
         [Test]
         public void TestModifyLocationCreateNew()
