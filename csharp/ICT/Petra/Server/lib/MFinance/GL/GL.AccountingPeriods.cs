@@ -281,6 +281,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static DataTable GetAvailableGLYears(Int32 ALedgerNumber,
             System.Int32 ADiffPeriod,
+            bool AIncludeNextYear,
             out String ADisplayMember, out String AValueMember)
         {
             ADisplayMember = "YearDate";
@@ -288,6 +289,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             DataTable tab = new DataTable();
             tab.Columns.Add(AValueMember, typeof(System.Int32));
             tab.Columns.Add(ADisplayMember, typeof(String));
+            tab.PrimaryKey = new DataColumn[] {
+                tab.Columns[0]
+            };
 
             System.Type typeofTable = null;
             TCacheable CachePopulator = new TCacheable();
@@ -328,6 +332,24 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
+
+            // we should also check if the current year has been added, in case there are no batches yet
+            if (null == tab.Rows.Find(LedgerTable[0].CurrentFinancialYear))
+            {
+                DataRow resultRow = tab.NewRow();
+                resultRow[0] = LedgerTable[0].CurrentFinancialYear;
+                resultRow[1] = currentYearEnd.ToString("yyyy");
+                tab.Rows.Add(resultRow);
+            }
+
+            if (AIncludeNextYear && (null == tab.Rows.Find(LedgerTable[0].CurrentFinancialYear + 1)))
+            {
+                DataRow resultRow = tab.NewRow();
+                resultRow[0] = LedgerTable[0].CurrentFinancialYear + 1;
+                resultRow[1] = currentYearEnd.AddYears(1).ToString("yyyy");
+                tab.Rows.Add(resultRow);
+            }
+
             return tab;
         }
     }

@@ -2806,11 +2806,12 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
         /// generated method from connector
         public DataTable GetAvailableGLYears(Int32 ALedgerNumber,
                                              System.Int32 ADiffPeriod,
+                                             System.Boolean AIncludeNextYear,
                                              out String ADisplayMember,
                                              out String AValueMember)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TAccountingPeriodsWebConnector), "GetAvailableGLYears", ";INT;INT;STRING;STRING;", ALedgerNumber);
-            return Ict.Petra.Server.MFinance.GL.WebConnectors.TAccountingPeriodsWebConnector.GetAvailableGLYears(ALedgerNumber, ADiffPeriod, out ADisplayMember, out AValueMember);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TAccountingPeriodsWebConnector), "GetAvailableGLYears", ";INT;INT;BOOL;STRING;STRING;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TAccountingPeriodsWebConnector.GetAvailableGLYears(ALedgerNumber, ADiffPeriod, AIncludeNextYear, out ADisplayMember, out AValueMember);
         }
 
         /// generated method from connector
