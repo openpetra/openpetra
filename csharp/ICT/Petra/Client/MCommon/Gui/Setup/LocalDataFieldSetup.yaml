@@ -1,0 +1,70 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain Local Data Fields
+    Namespace: Ict.Petra.Client.MCommon.Gui.Setup
+    #DatasetType: Ict.Petra.Shared.MCommon.Data.OfficeSpecificDataLabelsTDS
+    DetailTable: PDataLabel
+    CacheableTable: DataLabelList
+    #CacheableTableSpecificFilter: Ledger
+    UsingNamespaces: [Ict.Petra.Shared.MCommon.Data, Ict.Petra.Shared.MPartner.Partner.Data]
+    FormType: edit
+    Template: windowMaintainCacheableTable
+    WindowWidth: 800
+    WindowHeight: 550
+    Actions:
+        actNew: {Label=New, ActionClick=NewRecord}
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew]
+        btnNew:
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailText, DetailGroup, DetailDataType, DetailDisplayed]
+            CustomColumns:
+                DetailText: {Label=Label}            
+                DetailGroup: {Label=Group Heading}            
+                DetailDisplayed: {Label=Displayed, Type=Boolean}            
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtDetailText, clbUsedBy]
+                Row1: [txtDetailGroup]
+                Row2: [cmbDetailDataType]
+                Row3: [pnlDataSubType]
+                Row4: [txtDetailDescription]
+                Row5: [chkDetailDisplayed]
+            RowHeights: [3=Fixed:30]
+        txtDetailText: {Label=Label}
+        clbUsedBy: {NoLabel=true}
+            RowSpan: 6
+            Width: 160
+            Height: 170
+        txtDetailGroup: {Label=Group heading (optional)}
+        txtDetailDescription: {Label=Help description, Multiline=true, Height=60, Width=390}
+        chkDetailDisplayed: {Label=Display}
+        cmbDetailDataType: {Label=Data type, OnChange=OnDataTypeChange}
+            OptionalValues: [=Text, Number, Currency, Yes/No, Date, Time, Option List, Partner Key]
+        pnlDataSubType:
+            Controls:
+                Row0: [txtDetailCharLength]
+                Row1: [txtDetailNumDecimalPlaces]
+                Row2: [cmbDetailCurrencyCode]
+                Row3: [cmbDetailLookupCategoryCode]
+            Margin: 0
+            Padding: 65,0,0,0
+            RowHeights: [0=Fixed:35]
+        txtDetailCharLength: {Label=Length, Width=70, Format=Integer}
+        txtDetailNumDecimalPlaces: {Label=Decimal places, Width=70, Format=Integer}
+        cmbDetailCurrencyCode: {Label=Currency Code, List=CurrencyCodeList, ComboBoxWidth=70, Width=360}
+        cmbDetailLookupCategoryCode: {Label=Option list name, List=DataLabelLookupCategoryList, ComboBoxWidth=160, Width=360}
+    Toolbar:
+        tbbNew:
+            Label: New Field

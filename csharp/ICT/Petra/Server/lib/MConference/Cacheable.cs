@@ -153,7 +153,7 @@ namespace Ict.Petra.Server.MConference.Cacheable
                         case TCacheableConferenceTablesEnum.ConferenceCostTypeList:
                         {
                             DataTable TmpTable = PcCostTypeAccess.LoadAll(ReadTransaction);
-                            DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
 

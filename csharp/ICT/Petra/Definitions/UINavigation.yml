@@ -85,9 +85,10 @@ OpenPetra:
                         LocationTypes: {Label=Setup Location Types, Description=Maintain Location Types, ActionOpenScreen=TFrmLocationTypeSetup}
                         InternationalPostalTypes: {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Label=Setup International Postal Types, Description=Maintain International Postal Types, ActionOpenScreen=TFrmInternationalPostalTypeSetup}
                     
-                    Data-related:
+                    LocalDataRelated: {Label=Local Data-related}
                         LocalDataOptionListNames: {Label=Setup Local Data Option List Names, Description=Maintain Local Data Option List names, ActionOpenScreen=TFrmLocalDataOptionListNameSetup}
                         LocalDataOptions: {Label=Setup Local Data Options, Description=Maintain Local Data Options, ActionOpenScreen=TFrmLocalDataOptionsSetup}
+                        LocalDataFields: {Label=Setup Local Partner Data Fields, Description=Maintain Local Partner Data Fields, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalPartnerDataFieldSetup}
 
                     Mailing-related:
                         Mailings: {Label=Setup Mailings, Description=Maintain Mailings, ActionOpenScreen=TFrmMailingSetup}					
@@ -235,6 +236,9 @@ OpenPetra:
                         ArrivalDeparturePoint: {Label=Setup Arrival and Departure Points, Description=Maintain Arrival and Departure Points, ActionOpenScreen=TFrmArrivalDeparturePointSetup}
                         Country_EventPreferenceLevel: {Label=Setup Country/Event Preference Levels, Description=Maintain Country/Event Preference Levels, ActionOpenScreen=TFrmCountry_EventLevelSetup}
                         EventRole: {Label=Setup Event Roles, Description=Maintain Event Roles, ActionOpenScreen=TFrmEventRoleSetup}
+                    LocalDataRelated: {Label=Local Data-related}
+                        LocalApplicationDataFields: {Label=Setup Local Application Data Fields, Description=Maintain Local Application Data Fields, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalApplicationDataFieldSetup}
+                        LocalPersonnelDataFields: {Label=Setup Local Personnel Data Fields, Description=Maintain Local Personnel Data Fields, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalPersonnelDataFieldSetup}
 
                     
             Reports:
