@@ -52,7 +52,9 @@ namespace Tests.MPartner.Server.PartnerEdit
         /// <summary>
         /// use automatic property to avoid compiler warning about unused variable FServerManager
         /// </summary>
-        private TServerManager FServerManager { get; set; }
+        private TServerManager FServerManager {
+            get; set;
+        }
 
         /// <summary>
         /// open database connection or prepare other things for this test
@@ -395,7 +397,7 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             // TODO: simulate the dialog where the user selects which people to propagate the address change for.
 
-            // TODO: what about replacing the whole address? 
+            // TODO: what about replacing the whole address?
             // TODO: adding a new location for all members of the family?
         }
 
