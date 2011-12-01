@@ -76,6 +76,9 @@ namespace Ict.Testing.NUnitPetraServer
                 FDomain.StopClientAppDomain();
             }
 
+            TClientManager ClientManager = new TClientManager();
+            DomainManager.UClientManagerCallForwarderRef = new TClientManagerCallForwarder(ClientManager);
+
             // do the same as in Ict.Petra.Server.App.Main.TRemoteLoader.LoadDomainManagerAssembly
             FDomain = new TClientDomainManager("0",
                 "-1",
