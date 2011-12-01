@@ -351,6 +351,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             DataTable tab = new DataTable();
             tab.Columns.Add(AValueMember, typeof(System.Int32));
             tab.Columns.Add(ADisplayMember, typeof(String));
+            tab.PrimaryKey = new DataColumn[] {
+                tab.Columns[0]
+            };
 
             System.Type typeofTable = null;
             TCacheable CachePopulator = new TCacheable();
@@ -396,6 +399,16 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
+
+            // we should also check if the current year has been added, in case there are no gift batches yet
+            if (null == tab.Rows.Find(LedgerTable[0].CurrentFinancialYear))
+            {
+                DataRow resultRow = tab.NewRow();
+                resultRow[0] = LedgerTable[0].CurrentFinancialYear;
+                resultRow[1] = currentYearEnd.ToString("yyyy");
+                tab.Rows.InsertAt(resultRow, 0);
+            }
+
             return tab;
         }
 
