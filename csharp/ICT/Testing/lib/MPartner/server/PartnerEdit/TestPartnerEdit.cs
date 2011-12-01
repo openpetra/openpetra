@@ -84,6 +84,8 @@ namespace Tests.MPartner.Server.PartnerEdit
                 PartnerRow.PartnerKey = newPartnerKey;
             } while (newPartnerKey == -1);
 
+            PartnerRow.StatusCode = MPartnerConstants.PARTNERSTATUS_ACTIVE;
+
             AMainDS.PPartner.Rows.Add(PartnerRow);
 
             TLogging.Log("Creating new partner: " + PartnerRow.PartnerKey.ToString());
@@ -172,6 +174,7 @@ namespace Tests.MPartner.Server.PartnerEdit
             LocationRow.StreetName = APartnerKey.ToString() + " Nowhere Lane";
             LocationRow.PostalCode = "LO2 2CX";
             LocationRow.City = "London";
+            LocationRow.CountryCode = "99";
             AMainDS.PLocation.Rows.Add(LocationRow);
 
             PPartnerLocationRow PartnerLocationRow = AMainDS.PPartnerLocation.NewRowTyped();
@@ -249,6 +252,23 @@ namespace Tests.MPartner.Server.PartnerEdit
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "Create a partner with location 0");
 
             CreateNewLocation(PartnerRow.PartnerKey, MainDS);
+
+            // remove location 0, same is done in csharp\ICT\Petra\Client\MCommon\logic\UC_PartnerAddresses.cs TUCPartnerAddressesLogic::AddRecord
+            // Check if record with PartnerLocation.LocationKey = 0 is around > delete it
+            DataRow PartnerLocationRecordZero =
+                MainDS.PPartnerLocation.Rows.Find(new object[] { PartnerRow.PartnerKey, DomainManager.GSiteKey, 0 });
+
+            if (PartnerLocationRecordZero != null)
+            {
+                DataRow LocationRecordZero = MainDS.PLocation.Rows.Find(new object[] { DomainManager.GSiteKey, 0 });
+
+                if (LocationRecordZero != null)
+                {
+                    LocationRecordZero.Delete();
+                }
+
+                PartnerLocationRecordZero.Delete();
+            }
 
             ResponseDS = new PartnerEditTDS();
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
@@ -350,6 +370,9 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             // now change on partner location. should ask about everyone else
             MainDS.PPartnerLocation[0].DateGoodUntil = new DateTime(2011, 01, 01);
+            Assert.AreEqual(1, MainDS.PLocation.Rows.Count, "there should be only one address for the whole family");
+
+            MainDS.PLocation[0].Locality = "different";
 
             ResponseDS = new PartnerEditTDS();
 
