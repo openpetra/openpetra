@@ -49,7 +49,10 @@ namespace Tests.MPartner.Server.PartnerEdit
     [TestFixture]
     public class TPartnerEditTest
     {
-        TServerManager FServerManager;
+        /// <summary>
+        /// use automatic property to avoid compiler warning about unused variable FServerManager
+        /// </summary>
+        private TServerManager FServerManager { get; set; }
 
         /// <summary>
         /// open database connection or prepare other things for this test
@@ -148,14 +151,14 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             CreateNewLocation(PartnerRow.PartnerKey, AMainDS);
 
-            PPersonRow PersonRow1 = CreateNewPerson(AMainDS,
+            CreateNewPerson(AMainDS,
                 AConnector,
                 PartnerRow.PartnerKey,
                 AMainDS.PLocation[0].LocationKey,
                 "Adam",
                 "Mr",
                 0);
-            PPersonRow PersonRow2 = CreateNewPerson(AMainDS,
+            CreateNewPerson(AMainDS,
                 AConnector,
                 PartnerRow.PartnerKey,
                 AMainDS.PLocation[0].LocationKey,
