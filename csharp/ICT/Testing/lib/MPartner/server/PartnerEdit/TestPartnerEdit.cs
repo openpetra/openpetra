@@ -389,6 +389,11 @@ namespace Tests.MPartner.Server.PartnerEdit
             Assert.AreEqual(TSubmitChangesResult.scrInfoNeeded,
                 result,
                 "should ask if the partner locations of the other members of the family should be changed as well");
+
+            // TODO: simulate the dialog where the user selects which people to propagate the address change for.
+
+            // TODO: what about replacing the whole address? 
+            // TODO: adding a new location for all members of the family?
         }
 
         /// <summary>
