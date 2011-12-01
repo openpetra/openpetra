@@ -1847,6 +1847,85 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             return GetInterestsInternal(out ACount, false);
         }
 
+        private void LogAfterSaving(PartnerEditTDS AInspectDS)
+        {
+            for (Int16 TmpCounter = 0; TmpCounter <= AInspectDS.Tables.Count - 1; TmpCounter += 1)
+            {
+                Console.WriteLine(
+                    "AInspectDS.Tables[" + TmpCounter.ToString() + "].TableName: " + AInspectDS.Tables[TmpCounter].TableName);
+            }
+
+            if (AInspectDS.Tables.Contains(PLocationTable.GetTableName()))
+            {
+                for (Int16 TmpCounter = 0; TmpCounter <= AInspectDS.Tables[PLocationTable.GetTableName()].Rows.Count - 1; TmpCounter += 1)
+                {
+                    if (AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpCounter].RowState != DataRowState.Deleted)
+                    {
+                        Console.WriteLine(
+                            PLocationTable.GetTableName() + "[" + TmpCounter.ToString() + "]: PLocationKey: " +
+                            AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpCounter][PLocationTable.GetLocationKeyDBName()].
+                            ToString() +
+                            "(); PSiteKey: " +
+                            AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpCounter][PLocationTable.GetSiteKeyDBName()].ToString(
+                                ) +
+                            Environment.NewLine);
+                    }
+                    else
+                    {
+                        Console.WriteLine(
+                            PLocationTable.GetTableName() + "[" + TmpCounter.ToString() + "]: DELETED ROW! PLocationKey: " +
+                            AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpCounter][PLocationTable.GetLocationKeyDBName(),
+                                                                                              DataRowVersion.Original].ToString() +
+                            "(); PSiteKey: " +
+                            AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpCounter][PLocationTable.GetSiteKeyDBName(),
+                                                                                              DataRowVersion.Original].ToString() +
+                            Environment.NewLine);
+                    }
+                }
+            }
+
+            if (AInspectDS.Tables.Contains(PPartnerLocationTable.GetTableName()))
+            {
+                Console.WriteLine("");
+
+                for (Int16 TmpCounter = 0;
+                     TmpCounter <= AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows.Count - 1;
+                     TmpCounter += 1)
+                {
+                    if (AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpCounter].RowState != DataRowState.Deleted)
+                    {
+                        Console.WriteLine(
+                            PPartnerLocationTable.GetTableName() + "[" + TmpCounter.ToString() + "]: PLocationKey: " +
+                            AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpCounter][PPartnerLocationTable.
+                                                                                                     GetLocationKeyDBName()].ToString() +
+                            "(); PSiteKey: " +
+                            AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpCounter][PPartnerLocationTable.
+                                                                                                     GetSiteKeyDBName()]
+                            .ToString() + "(); PPartnerKey: " +
+                            AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpCounter][PPartnerLocationTable.
+                                                                                                     GetPartnerKeyDBName(
+                                                                                                         )].ToString() +
+                            Environment.NewLine);
+                    }
+                    else
+                    {
+                        Console.WriteLine(
+                            PPartnerLocationTable.GetTableName() + "[" + TmpCounter.ToString() + "]: DELETED ROW! PLocationKey: " +
+                            AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpCounter][PPartnerLocationTable.
+                                                                                                     GetLocationKeyDBName(),
+                                                                                                     DataRowVersion.Original].ToString()
+                            +
+                            "(); PSiteKey: " +
+                            AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpCounter][PPartnerLocationTable.
+                                                                                                     GetSiteKeyDBName(),
+                                                                                                     DataRowVersion.Original].ToString()
+                            +
+                            Environment.NewLine);
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Saves data from the Partner Edit Screen (contained in a Typed DataSet).
         ///
@@ -1867,10 +1946,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             ref DataSet AResponseDS,
             out TVerificationResultCollection AVerificationResult)
         {
-            TDBTransaction SubmitChangesTransaction;
             TSubmitChangesResult SubmissionResult;
-            TSubmitChangesResult SubmitChangesAddressResult;
-            TVerificationResultCollection SingleVerificationResultCollection;
             PartnerAddressAggregateTDS TmpResponseDS = null;
             TRecentPartnersHandling RecentPartnersHandling;
 
@@ -1928,8 +2004,10 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                 #endregion
                 FSubmissionDS = AInspectDS;
+                TVerificationResultCollection SingleVerificationResultCollection;
                 AVerificationResult = new TVerificationResultCollection();
-                SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+                TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
                 try
                 {
                     if (SubmitChangesOther(ref FSubmissionDS, SubmitChangesTransaction, out SingleVerificationResultCollection))
@@ -1944,15 +2022,15 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                     if (SubmissionResult != TSubmitChangesResult.scrError)
                     {
-                        SubmitChangesAddressResult = SubmitChangesAddresses(ref FSubmissionDS,
+                        TSubmitChangesResult SubmitChangesAddressResult = SubmitChangesAddresses(ref FSubmissionDS,
                             SubmitChangesTransaction,
                             ref TmpResponseDS,
                             out SingleVerificationResultCollection);
 
                         if (SubmitChangesAddressResult == TSubmitChangesResult.scrOK)
                         {
+                            // don't need to do anything here; SubmissionResult is set already
                         }
-                        // don't need to do anything here; SubmissionResult is set already
                         else
                         {
                             SubmissionResult = SubmitChangesAddressResult;
@@ -2022,6 +2100,12 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         }
                     }
 
+                    // all tables in the dataset will be stored.
+                    // there are exceptions: for example cascading delete of foundations, change of unique key of family id
+                    // those tables need to have run AcceptChanges
+                    SubmissionResult = PartnerEditTDSAccess.SubmitChanges(AInspectDS, out SingleVerificationResultCollection);
+                    AVerificationResult.AddCollection(SingleVerificationResultCollection);
+
                     if (SubmissionResult == TSubmitChangesResult.scrOK)
                     {
 #if DEBUGMODE
@@ -2047,85 +2131,10 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 #endif
                         }
 
-#if DEBUGMODE
-                        Int16 TmpCounter;
-
-                        for (TmpCounter = 0; TmpCounter <= AInspectDS.Tables.Count - 1; TmpCounter += 1)
+                        if (TLogging.DebugLevel >= 4)
                         {
-                            Console.WriteLine(
-                                "AInspectDS.Tables[" + TmpCounter.ToString() + "].TableName: " + AInspectDS.Tables[TmpCounter].TableName);
+                            LogAfterSaving(AInspectDS);
                         }
-
-                        if (AInspectDS.Tables.Contains(PLocationTable.GetTableName()))
-                        {
-                            for (TmpCounter = 0; TmpCounter <= AInspectDS.Tables[PLocationTable.GetTableName()].Rows.Count - 1; TmpCounter += 1)
-                            {
-                                if (AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpCounter].RowState != DataRowState.Deleted)
-                                {
-                                    Console.WriteLine(
-                                        PLocationTable.GetTableName() + "[" + TmpCounter.ToString() + "]: PLocationKey: " +
-                                        AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpCounter][PLocationTable.GetLocationKeyDBName()].
-                                        ToString() +
-                                        "(); PSiteKey: " +
-                                        AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpCounter][PLocationTable.GetSiteKeyDBName()].ToString(
-                                            ) +
-                                        Environment.NewLine);
-                                }
-                                else
-                                {
-                                    Console.WriteLine(
-                                        PLocationTable.GetTableName() + "[" + TmpCounter.ToString() + "]: DELETED ROW! PLocationKey: " +
-                                        AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpCounter][PLocationTable.GetLocationKeyDBName(),
-                                                                                                          DataRowVersion.Original].ToString() +
-                                        "(); PSiteKey: " +
-                                        AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpCounter][PLocationTable.GetSiteKeyDBName(),
-                                                                                                          DataRowVersion.Original].ToString() +
-                                        Environment.NewLine);
-                                }
-                            }
-                        }
-
-                        if (AInspectDS.Tables.Contains(PPartnerLocationTable.GetTableName()))
-                        {
-                            Console.WriteLine("");
-
-                            for (TmpCounter = 0;
-                                 TmpCounter <= AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows.Count - 1;
-                                 TmpCounter += 1)
-                            {
-                                if (AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpCounter].RowState != DataRowState.Deleted)
-                                {
-                                    Console.WriteLine(
-                                        PPartnerLocationTable.GetTableName() + "[" + TmpCounter.ToString() + "]: PLocationKey: " +
-                                        AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpCounter][PPartnerLocationTable.
-                                                                                                                 GetLocationKeyDBName()].ToString() +
-                                        "(); PSiteKey: " +
-                                        AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpCounter][PPartnerLocationTable.
-                                                                                                                 GetSiteKeyDBName()]
-                                        .ToString() + "(); PPartnerKey: " +
-                                        AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpCounter][PPartnerLocationTable.
-                                                                                                                 GetPartnerKeyDBName(
-                                                                                                                     )].ToString() +
-                                        Environment.NewLine);
-                                }
-                                else
-                                {
-                                    Console.WriteLine(
-                                        PPartnerLocationTable.GetTableName() + "[" + TmpCounter.ToString() + "]: DELETED ROW! PLocationKey: " +
-                                        AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpCounter][PPartnerLocationTable.
-                                                                                                                 GetLocationKeyDBName(),
-                                                                                                                 DataRowVersion.Original].ToString()
-                                        +
-                                        "(); PSiteKey: " +
-                                        AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpCounter][PPartnerLocationTable.
-                                                                                                                 GetSiteKeyDBName(),
-                                                                                                                 DataRowVersion.Original].ToString()
-                                        +
-                                        Environment.NewLine);
-                                }
-                            }
-                        }
-#endif
 
                         // Must call AcceptChanges so that DataSet.Merge on Client side works
                         // properly if Primary Keys have been changed!
@@ -2183,8 +2192,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             out TVerificationResultCollection AVerificationResult)
         {
             TSubmitChangesResult SubmissionResult;
-            DataView AddedPartnerLocationsDV;
-            PPartnerTable PartnerDT;
 
             AVerificationResult = null;
 #if DEBUGMODE
@@ -2196,10 +2203,14 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
             if (AInspectDS != null)
             {
-                AVerificationResult = new TVerificationResultCollection();
                 SubmissionResult =
-                    TPPartnerAddressAggregate.SubmitChanges(AInspectDS, FPartnerKey, SharedTypes.PartnerClassEnumToString(
-                            FPartnerClass), ASubmitChangesTransaction, ref AResponseDS, out AVerificationResult);
+                    TPPartnerAddressAggregate.PrepareChanges(
+                        AInspectDS,
+                        FPartnerKey,
+                        SharedTypes.PartnerClassEnumToString(FPartnerClass),
+                        ASubmitChangesTransaction,
+                        ref AResponseDS,
+                        out AVerificationResult);
 
                 /*
                  * Business Rule: Ensure that the DateModified of the Partner record is
@@ -2209,7 +2220,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 {
                     if (AInspectDS.PPartnerLocation != null)
                     {
-                        AddedPartnerLocationsDV = new DataView(AInspectDS.PPartnerLocation, "", "", DataViewRowState.Added);
+                        DataView AddedPartnerLocationsDV = new DataView(AInspectDS.PPartnerLocation, "", "", DataViewRowState.Added);
 
                         if (AddedPartnerLocationsDV.Count > 0)
                         {
@@ -2246,12 +2257,11 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                                 // AInspectDS doesn't contain a PPartner DataRow: load that PPartner
                                 // record, change DateModified and save the PPartner record.
                                 // must use AddedPartnerLocationsDV because AInspectDS.PPartnerLocation[0] could be a deleted row; see bug 759
-                                PartnerDT = PPartnerAccess.LoadByPrimaryKey(((PPartnerLocationRow)(AddedPartnerLocationsDV[0].Row)).PartnerKey,
+                                PPartnerTable PartnerDT = PPartnerAccess.LoadByPrimaryKey(
+                                    ((PPartnerLocationRow)(AddedPartnerLocationsDV[0].Row)).PartnerKey,
                                     ASubmitChangesTransaction);
                                 PartnerDT[0].DateModified = DateTime.Today;
-                                PPartnerAccess.SubmitChanges(PartnerDT, ASubmitChangesTransaction, out AVerificationResult);
                                 AInspectDS.Merge(PartnerDT);
-                                AInspectDS.InitVars();
 #if DEBUGMODE
                                 if (TLogging.DL >= 7)
                                 {
@@ -2368,14 +2378,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             out TVerificationResultCollection AVerificationResult)
         {
             TVerificationResultCollection SingleVerificationResultCollection;
-            bool AllSubmissionsOK;
-            PPersonTable PersonTableSubmit;
-            PFamilyTable FamilyTableSubmit;
             TOfficeSpecificDataLabelsUIConnector OfficeSpecificDataLabelsUIConnector;
-            DataTable TempDataTable;
             PartnerEditTDSFamilyMembersTable FamilyMembersTableSubmit;
-            Int32 Counter;
-            DataView DeletedFoundationsDV;
 
             AVerificationResult = null;
 
@@ -2385,7 +2389,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 Console.WriteLine(this.GetType().FullName + ".SubmitChanges: Instance hash is " + this.GetHashCode().ToString());
             }
 #endif
-            AllSubmissionsOK = true;
+            bool AllSubmissionsOK = true;
 
             if (AInspectDS != null)
             {
@@ -2397,19 +2401,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 if (AInspectDS.Tables.Contains(PPartnerTable.GetTableName()))
                 {
                     SpecialPreSubmitProcessingPartner(AInspectDS.PPartner);
-
-                    if (!PPartnerAccess.SubmitChanges(AInspectDS.PPartner, ASubmitChangesTransaction, out SingleVerificationResultCollection))
-                    {
-                        AllSubmissionsOK = false;
-                        AVerificationResult.AddCollection(SingleVerificationResultCollection);
-#if DEBUGMODE
-                        if (TLogging.DL >= 9)
-                        {
-                            Console.WriteLine(Messages.BuildMessageFromVerificationResult(
-                                    "TPartnerEditUIConnector.SubmitChanges VerificationResult: ", AVerificationResult));
-                        }
-#endif
-                    }
 
                     // Business Rule: if the Partner's StatusCode changes, give the user the
                     // option to promote the change to all Family Members (if the Partner is
@@ -2431,12 +2422,13 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                             // the user indicated so)
                             if (AInspectDS.FamilyMembersInfoForStatusChange != null)
                             {
-                                if (!SpecialSubmitProcessingPartnerStatusChange(AInspectDS.PPartner[0].StatusCode,
-                                        AInspectDS.FamilyMembersInfoForStatusChange, ASubmitChangesTransaction,
-                                        out SingleVerificationResultCollection))
+                                if (!SpecialSubmitProcessingPartnerStatusChange(
+                                        AInspectDS,
+                                        AInspectDS.PPartner[0].StatusCode,
+                                        AInspectDS.FamilyMembersInfoForStatusChange,
+                                        ASubmitChangesTransaction))
                                 {
                                     AllSubmissionsOK = false;
-                                    AVerificationResult.AddCollection(SingleVerificationResultCollection);
                                 }
                             }
                         }
@@ -2449,14 +2441,30 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                 if (AInspectDS.Tables.Contains(PPartnerTypeTable.GetTableName()))
                 {
-                    if (!PPartnerTypeAccess.SubmitChanges(AInspectDS.PPartnerType, ASubmitChangesTransaction, out SingleVerificationResultCollection))
+                    if (!SpecialSubmitProcessingPartnerTypes(AInspectDS, ASubmitChangesTransaction))
                     {
                         AllSubmissionsOK = false;
-                        AVerificationResult.AddCollection(SingleVerificationResultCollection);
                     }
-                    else
+                }
+
+                #endregion
+
+                #region Partner Details according to PartnerClass
+
+                if (FPartnerClass == TPartnerClass.FAMILY)
+                {
+                    if (AInspectDS.Tables.Contains(PartnerEditTDSFamilyMembersTable.GetTableName()))
                     {
-                        if (!SpecialSubmitProcessingPartnerTypes(AInspectDS, ASubmitChangesTransaction, out SingleVerificationResultCollection))
+                        FamilyMembersTableSubmit = AInspectDS.FamilyMembers;
+#if DEBUGMODE
+                        if (TLogging.DL >= 7)
+                        {
+                            Console.WriteLine("FamilyMembersTableSubmit.Rows.Count: " + FamilyMembersTableSubmit.Rows.Count.ToString());
+                        }
+#endif
+
+                        if (!SpecialSubmitProcessingFamilyMembers(FamilyMembersTableSubmit, ASubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
                         {
                             AllSubmissionsOK = false;
                             AVerificationResult.AddCollection(SingleVerificationResultCollection);
@@ -2466,215 +2474,11 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                 #endregion
 
-                #region Subscriptions
-
-                if (AInspectDS.Tables.Contains(PSubscriptionTable.GetTableName()))
-                {
-                    if (!PSubscriptionAccess.SubmitChanges(AInspectDS.PSubscription, ASubmitChangesTransaction,
-                            out SingleVerificationResultCollection))
-                    {
-                        AllSubmissionsOK = false;
-                        AVerificationResult.AddCollection(SingleVerificationResultCollection);
-                    }
-                }
-
-                #endregion
-
-                #region Partner Details according to PartnerClass
-
-                switch (FPartnerClass)
-                {
-                    case TPartnerClass.PERSON:
-
-                        if (AInspectDS.Tables.Contains(PPersonTable.GetTableName()))
-                        {
-                            PersonTableSubmit = (PPersonTable)AInspectDS.PPerson.Copy();
-                            PersonTableSubmit.InitVars();
-
-                            // get rid of columns that are not in the DB, otherwise we get an exception from SubmitChanges
-                            PersonTableSubmit.RemoveColumnsNotInTableTemplate(new PPersonTable());
-
-                            /* $IFDEF DEBUGMODE if TLogging.DL >= 7 then Console.WriteLine(this.GetType().FullName +'.SubmitChanges: Before submit of PPerson: AInspectDS.PPerson[0].ModificationId ' + AInspectDS.PPerson[0].ModificationId); $ENDIF
-                            **/
-                            if (!PPersonAccess.SubmitChanges(PersonTableSubmit, ASubmitChangesTransaction, out SingleVerificationResultCollection))
-                            {
-                                AllSubmissionsOK = false;
-                                AVerificationResult.AddCollection(SingleVerificationResultCollection);
-                            }
-                            else
-                            {
-                                // Assign the possibly changed ModificationId values from the copied
-                                // table to the original table!
-                                for (Counter = 0; Counter <= PersonTableSubmit.Rows.Count - 1; Counter += 1)
-                                {
-                                    AInspectDS.PPerson[Counter].ModificationId = PersonTableSubmit[Counter].ModificationId;
-                                }
-
-                                /* $IFDEF DEBUGMODE if TLogging.DL >= 7 then Console.WriteLine(this.GetType().FullName +'.SubmitChanges: After submit of PPerson: AInspectDS.PPerson[0].ModificationId ' + AInspectDS.PPerson[0].ModificationId);
-                                 *$ENDIF */
-                            }
-                        }
-
-                        break;
-
-                    case TPartnerClass.FAMILY:
-
-                        if (AInspectDS.Tables.Contains(PFamilyTable.GetTableName()))
-                        {
-                            FamilyTableSubmit = (PFamilyTable)AInspectDS.PFamily.Copy();
-
-                            // without calling initVars, FamilyTableSubmit.ColumnModificationId.Ordinal would be 1
-                            FamilyTableSubmit.InitVars();
-
-                            // get rid of columns that are not in the DB, otherwise we get an exception from SubmitChanges
-                            FamilyTableSubmit.RemoveColumnsNotInTableTemplate(new PFamilyTable());
-
-                            // $IFDEF DEBUGMODE if TLogging.DL >= 7 then Console.WriteLine(this.GetType().FullName +'.SubmitChanges: After submit of PFamily: AInspectDS.PFamily[0].ModificationId ' + AInspectDS.PFamily[0].ModificationId); $ENDIF
-                            if (!PFamilyAccess.SubmitChanges(FamilyTableSubmit, ASubmitChangesTransaction, out SingleVerificationResultCollection))
-                            {
-                                AllSubmissionsOK = false;
-                                AVerificationResult.AddCollection(SingleVerificationResultCollection);
-                            }
-                            else
-                            {
-                                // Assign the possibly changed ModificationId values from the copied
-                                // table to the original table!
-                                for (Counter = 0; Counter <= FamilyTableSubmit.Rows.Count - 1; Counter += 1)
-                                {
-                                    AInspectDS.PFamily[Counter].ModificationId = FamilyTableSubmit[Counter].ModificationId;
-                                }
-
-                                /* $IFDEF DEBUGMODE if TLogging.DL >= 7 then Console.WriteLine(this.GetType().FullName +'.SubmitChanges: After submit of PFamily: AInspectDS.PFamily[0].ModificationId ' + AInspectDS.PFamily[0].ModificationId);
-                                 *$ENDIF */
-                            }
-                        }
-
-                        if (AInspectDS.Tables.Contains(PartnerEditTDSFamilyMembersTable.GetTableName()))
-                        {
-                            FamilyMembersTableSubmit = AInspectDS.FamilyMembers;
-#if DEBUGMODE
-                            if (TLogging.DL >= 7)
-                            {
-                                Console.WriteLine("FamilyMembersTableSubmit.Rows.Count: " + FamilyMembersTableSubmit.Rows.Count.ToString());
-                            }
-#endif
-
-                            if (!SpecialSubmitProcessingFamilyMembers(FamilyMembersTableSubmit, ASubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
-                            {
-                                AllSubmissionsOK = false;
-                                AVerificationResult.AddCollection(SingleVerificationResultCollection);
-                            }
-                        }
-
-                        break;
-
-                    case TPartnerClass.CHURCH:
-
-                        if (AInspectDS.Tables.Contains(PChurchTable.GetTableName()))
-                        {
-                            if (!PChurchAccess.SubmitChanges(AInspectDS.PChurch, ASubmitChangesTransaction, out SingleVerificationResultCollection))
-                            {
-                                AllSubmissionsOK = false;
-                                AVerificationResult.AddCollection(SingleVerificationResultCollection);
-                            }
-                        }
-
-                        break;
-
-                    case TPartnerClass.ORGANISATION:
-
-                        if (AInspectDS.Tables.Contains(POrganisationTable.GetTableName()))
-                        {
-                            if (!POrganisationAccess.SubmitChanges(AInspectDS.POrganisation, ASubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
-                            {
-                                AllSubmissionsOK = false;
-                                AVerificationResult.AddCollection(SingleVerificationResultCollection);
-                            }
-                        }
-
-                        break;
-
-                    case TPartnerClass.BANK:
-
-                        if (AInspectDS.Tables.Contains(PBankTable.GetTableName()))
-                        {
-                            if (!PBankAccess.SubmitChanges(AInspectDS.PBank, ASubmitChangesTransaction, out SingleVerificationResultCollection))
-                            {
-                                AllSubmissionsOK = false;
-                                AVerificationResult.AddCollection(SingleVerificationResultCollection);
-                            }
-                        }
-
-                        if (AInspectDS.Tables.Contains(PPartnerBankingDetailsTable.GetTableName()))
-                        {
-                            if (!PBankAccess.SubmitChanges(AInspectDS.PBank, ASubmitChangesTransaction, out SingleVerificationResultCollection))
-                            {
-                                AllSubmissionsOK = false;
-                                AVerificationResult.AddCollection(SingleVerificationResultCollection);
-                            }
-                        }
-
-                        if (AInspectDS.Tables.Contains(PBankingDetailsTable.GetTableName()))
-                        {
-                            if (!PBankAccess.SubmitChanges(AInspectDS.PBank, ASubmitChangesTransaction, out SingleVerificationResultCollection))
-                            {
-                                AllSubmissionsOK = false;
-                                AVerificationResult.AddCollection(SingleVerificationResultCollection);
-                            }
-                        }
-
-                        break;
-
-                    case TPartnerClass.UNIT:
-
-                        if (AInspectDS.Tables.Contains(PUnitTable.GetTableName()))
-                        {
-                            if (!PUnitAccess.SubmitChanges(AInspectDS.PUnit, ASubmitChangesTransaction, out SingleVerificationResultCollection))
-                            {
-                                AllSubmissionsOK = false;
-                                AVerificationResult.AddCollection(SingleVerificationResultCollection);
-                            }
-                        }
-
-                        break;
-
-                    case TPartnerClass.VENUE:
-
-                        if (AInspectDS.Tables.Contains(PVenueTable.GetTableName()))
-                        {
-                            if (!PVenueAccess.SubmitChanges(AInspectDS.PVenue, ASubmitChangesTransaction, out SingleVerificationResultCollection))
-                            {
-                                AllSubmissionsOK = false;
-                                AVerificationResult.AddCollection(SingleVerificationResultCollection);
-                            }
-                        }
-
-                        break;
-                }
-
-                #endregion
-
-                #region Relationships
-
-                if (AInspectDS.Tables.Contains(PPartnerRelationshipTable.GetTableName()))
-                {
-                    if (!PPartnerRelationshipAccess.SubmitChanges(AInspectDS.PPartnerRelationship, ASubmitChangesTransaction,
-                            out SingleVerificationResultCollection))
-                    {
-                        AllSubmissionsOK = false;
-                        AVerificationResult.AddCollection(SingleVerificationResultCollection);
-                    }
-                }
-
-                #endregion
-
                 #region Foundations
 
                 if (AInspectDS.Tables.Contains(PFoundationTable.GetTableName()))
                 {
-                    DeletedFoundationsDV = new DataView(AInspectDS.PFoundation, "", "", DataViewRowState.Deleted);
+                    DataView DeletedFoundationsDV = new DataView(AInspectDS.PFoundation, "", "", DataViewRowState.Deleted);
 
                     if (DeletedFoundationsDV.Count > 0)
                     {
@@ -2698,42 +2502,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         DeletedFoundationsDV[0].Row.Delete();
                         DeletedFoundationsDV[0].Row.AcceptChanges();
                     }
-
-                    if (!PFoundationAccess.SubmitChanges(AInspectDS.PFoundation, ASubmitChangesTransaction, out SingleVerificationResultCollection))
-                    {
-                        AllSubmissionsOK = false;
-                        AVerificationResult.AddCollection(SingleVerificationResultCollection);
-                    }
-                }
-
-                if (AInspectDS.Tables.Contains(PFoundationDeadlineTable.GetTableName()))
-                {
-                    if (!PFoundationDeadlineAccess.SubmitChanges(AInspectDS.PFoundationDeadline, ASubmitChangesTransaction,
-                            out SingleVerificationResultCollection))
-                    {
-                        AllSubmissionsOK = false;
-                        AVerificationResult.AddCollection(SingleVerificationResultCollection);
-                    }
-                }
-
-                if (AInspectDS.Tables.Contains(PFoundationProposalTable.GetTableName()))
-                {
-                    if (!PFoundationProposalAccess.SubmitChanges(AInspectDS.PFoundationProposal, ASubmitChangesTransaction,
-                            out SingleVerificationResultCollection))
-                    {
-                        AllSubmissionsOK = false;
-                        AVerificationResult.AddCollection(SingleVerificationResultCollection);
-                    }
-                }
-
-                if (AInspectDS.Tables.Contains(PFoundationProposalDetailTable.GetTableName()))
-                {
-                    if (!PFoundationProposalDetailAccess.SubmitChanges(AInspectDS.PFoundationProposalDetail, ASubmitChangesTransaction,
-                            out SingleVerificationResultCollection))
-                    {
-                        AllSubmissionsOK = false;
-                        AVerificationResult.AddCollection(SingleVerificationResultCollection);
-                    }
                 }
 
                 #endregion
@@ -2744,14 +2512,10 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 {
                     OfficeSpecificDataLabelsUIConnector = new TOfficeSpecificDataLabelsUIConnector(FPartnerKey,
                         MCommonTypes.PartnerClassEnumToOfficeSpecificDataLabelUseEnum(FPartnerClass));
-                    TempDataTable = AInspectDS.PDataLabelValuePartner;
 
-                    if (OfficeSpecificDataLabelsUIConnector.SubmitChangesServerSide(ref TempDataTable, ASubmitChangesTransaction,
-                            out SingleVerificationResultCollection) != TSubmitChangesResult.scrOK)
-                    {
-                        AllSubmissionsOK = false;
-                        AVerificationResult.AddCollection(SingleVerificationResultCollection);
-                    }
+                    OfficeSpecificDataLabelsUIConnector.PrepareChangesServerSide(
+                        AInspectDS.PDataLabelValuePartner,
+                        ASubmitChangesTransaction);
                 }
 
                 #endregion
@@ -2833,6 +2597,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         /// Performs Partner Status change promotion to Family Members.
         ///
         /// </summary>
+        /// <param name="AInspectDS">the dataset that will be saved later to the database</param>
         /// <param name="ANewPartnerStatusCode">The new Partner StatusCode</param>
         /// <param name="APartnerTypeChangeFamilyMembersDT">DataTable holding the PartnerKeys of
         /// Family Members (Note: These could be retrieved from the DB on-the-fly, but
@@ -2840,23 +2605,16 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         /// Members that we presented on the UI)</param>
         /// <param name="ASubmitChangesTransaction">Running transaction in which the DB commands
         /// will be enlisted</param>
-        /// <param name="ASingleVerificationResultCollection">Will be filled with any
-        /// VerificationResults if errors occur</param>
         /// <returns>true if processing was successful, otherwise false
         /// </returns>
-        private Boolean SpecialSubmitProcessingPartnerStatusChange(String ANewPartnerStatusCode,
+        private Boolean SpecialSubmitProcessingPartnerStatusChange(
+            PartnerEditTDS AInspectDS,
+            String ANewPartnerStatusCode,
             PartnerEditTDSFamilyMembersInfoForStatusChangeTable APartnerTypeChangeFamilyMembersDT,
-            TDBTransaction ASubmitChangesTransaction,
-            out TVerificationResultCollection ASingleVerificationResultCollection)
+            TDBTransaction ASubmitChangesTransaction)
         {
-            Boolean ReturnValue;
-            Int16 Counter;
-            PPartnerTable PartnerDT;
-            PPartnerTable PartnerSaveDT;
-            PartnerEditTDSFamilyMembersInfoForStatusChangeRow PartnerDR;
-            PPartnerRow PartnerSaveDR;
+            PPartnerTable PartnerSaveDT = new PPartnerTable();
 
-            PartnerSaveDT = new PPartnerTable();
 #if DEBUGMODE
             if (TLogging.DL >= 7)
             {
@@ -2867,17 +2625,17 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 #endif
 
             // Loop over all Family Members that were presented to the user
-            for (Counter = 0; Counter <= APartnerTypeChangeFamilyMembersDT.Rows.Count - 1; Counter += 1)
+            for (Int16 Counter = 0; Counter <= APartnerTypeChangeFamilyMembersDT.Rows.Count - 1; Counter += 1)
             {
-                PartnerDR = APartnerTypeChangeFamilyMembersDT[Counter];
+                PartnerEditTDSFamilyMembersInfoForStatusChangeRow PartnerDR = APartnerTypeChangeFamilyMembersDT[Counter];
 
                 // Load Family Member's Partner record
-                PartnerDT = PPartnerAccess.LoadByPrimaryKey(PartnerDR.PartnerKey, ASubmitChangesTransaction);
+                PPartnerTable PartnerDT = PPartnerAccess.LoadByPrimaryKey(PartnerDR.PartnerKey, ASubmitChangesTransaction);
 
                 if (PartnerDT[0].StatusCode != ANewPartnerStatusCode)
                 {
                     // StatusCode of the Partner is different to the new StatusCode > change it
-                    PartnerSaveDR = PartnerSaveDT.NewRowTyped(false);
+                    PPartnerRow PartnerSaveDR = PartnerSaveDT.NewRowTyped(false);
                     PartnerSaveDR.ItemArray = PartnerDT[0].ItemArray;
 
                     // Add Partner DataRow to DataTable that contains the Partners that will be saved
@@ -2892,17 +2650,9 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
             }
 
-            // Update changed Partner records ('Modified' DataRows generate an UPDATE SQL statement)
-            if (!PPartnerAccess.SubmitChanges(PartnerSaveDT, ASubmitChangesTransaction, out ASingleVerificationResultCollection))
-            {
-                ReturnValue = false;
-            }
-            else
-            {
-                ReturnValue = true;
-            }
+            AInspectDS.PPartner.Merge(PartnerSaveDT);
 
-            return ReturnValue;
+            return true;
         }
 
         /// <summary>
@@ -2912,23 +2662,17 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         /// <param name="AInspectDS">The Main DataSet of the UIConnector</param>
         /// <param name="ASubmitChangesTransaction">Running transaction in which the DB commands
         /// will be enlisted</param>
-        /// <param name="ASingleVerificationResultCollection">Will be filled with any
-        /// VerificationResults if errors occur</param>
         /// <returns>true if processing was successful, otherwise false
         /// </returns>
         private bool SpecialSubmitProcessingPartnerTypes(PartnerEditTDS AInspectDS,
-            TDBTransaction ASubmitChangesTransaction,
-            out TVerificationResultCollection ASingleVerificationResultCollection)
+            TDBTransaction ASubmitChangesTransaction)
         {
             bool ReturnValue = true;
-            int Counter;
             PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionTable FamilyChangePromotionTable;
             PPartnerTypeTable PPartnerTypeSubmitTable;
             PPartnerTypeRow PPartnerTypeSubmitRow;
             bool PartnerTypeDBExists;
             PPartnerTypeTable PartnerType;
-
-            ASingleVerificationResultCollection = null;
 
             if (AInspectDS.Tables.Contains(PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionTable.GetTableName()))
             {
@@ -2954,7 +2698,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 #endif
                     PPartnerTypeSubmitTable = new PPartnerTypeTable();
 
-                    for (Counter = 0; Counter <= FamilyChangePromotionTable.Rows.Count - 1; Counter += 1)
+                    for (int Counter = 0; Counter <= FamilyChangePromotionTable.Rows.Count - 1; Counter += 1)
                     {
                         PartnerTypeDBExists =
                             PPartnerTypeAccess.Exists(FamilyChangePromotionTable[Counter].PartnerKey,
@@ -3023,32 +2767,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         }
                     }
 
-                    if (PPartnerTypeSubmitTable.Rows.Count > 0)
-                    {
-#if DEBUGMODE
-                        if (TLogging.DL >= 7)
-                        {
-                            Console.WriteLine(
-                                "SpecialSubmitProcessingPartnerTypes: PPartnerTypeSubmitTable.Rows.Count: " +
-                                PPartnerTypeSubmitTable.Rows.Count.ToString());
-                        }
-#endif
-
-                        if (!PPartnerTypeAccess.SubmitChanges(PPartnerTypeSubmitTable, ASubmitChangesTransaction,
-                                out ASingleVerificationResultCollection))
-                        {
-                            ReturnValue = false;
-                        }
-                        else
-                        {
-                            ReturnValue = true;
-                        }
-                    }
-                    else
-                    {
-                        // there was nothing to be done in the DB
-                        ReturnValue = true;
-                    }
+                    ReturnValue = true;
                 }
             }
 
@@ -3347,33 +3066,28 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             return TNewPartnerKey.SubmitNewPartnerKey(AFieldPartnerKey, AOriginalDefaultKey, ref ANewPartnerKey);
         }
 
-        private bool SpecialSubmitProcessingFamilyMembers(PartnerEditTDSFamilyMembersTable AFamilyMembersTable,
+        private bool SpecialSubmitProcessingFamilyMembers(
+            PartnerEditTDSFamilyMembersTable AFamilyMembersTable,
             TDBTransaction ASubmitChangesTransaction,
-            out TVerificationResultCollection ASingleVerificationResultCollection)
+            out TVerificationResultCollection AVerificationResult)
         {
-            bool ReturnValue;
-            PPersonTable FamilyPersonsDT;
-            int Counter;
-            PPersonRow ChangePersonRow;
-            TVerificationResultCollection VerificationResult;
-            Int32 DummyCounter;
+            Int32 DummyCounter = 100;
 
-            ASingleVerificationResultCollection = null;
-            DummyCounter = 100;
+            AVerificationResult = null;
 
             /*
              * Load the Persons of a Family
              */
-            FamilyPersonsDT = PPersonAccess.LoadViaPFamily(FPartnerEditScreenDS.PFamily[0].PartnerKey, ASubmitChangesTransaction);
+            PPersonTable FamilyPersonsDT = PPersonAccess.LoadViaPFamily(FPartnerEditScreenDS.PFamily[0].PartnerKey, ASubmitChangesTransaction);
 
             /*
              * Now change the FamilyID of those rows that have been modified on the
              * Client side (first to a dummy value to prevent uniqueness constraint
              * violations)
              */
-            for (Counter = 0; Counter <= AFamilyMembersTable.Rows.Count - 1; Counter += 1)
+            for (int Counter = 0; Counter <= AFamilyMembersTable.Rows.Count - 1; Counter += 1)
             {
-                ChangePersonRow = (PPersonRow)FamilyPersonsDT.Rows.Find(new Object[] { AFamilyMembersTable[Counter].PartnerKey });
+                PPersonRow ChangePersonRow = (PPersonRow)FamilyPersonsDT.Rows.Find(new Object[] { AFamilyMembersTable[Counter].PartnerKey });
                 ChangePersonRow.FamilyId = DummyCounter;
 #if DEBUGMODE
                 if (TLogging.DL >= 7)
@@ -3385,17 +3099,17 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             }
 
             // Save the dummy values
-            if (!PPersonAccess.SubmitChanges(FamilyPersonsDT, ASubmitChangesTransaction, out VerificationResult))
+            if (!PPersonAccess.SubmitChanges(FamilyPersonsDT, ASubmitChangesTransaction, out AVerificationResult))
             {
-                ASingleVerificationResultCollection.AddCollection(VerificationResult);
+                return false;
             }
 
             FamilyPersonsDT.AcceptChanges();
 
             // Now change it to the real values
-            for (Counter = 0; Counter <= AFamilyMembersTable.Rows.Count - 1; Counter += 1)
+            for (int Counter = 0; Counter <= AFamilyMembersTable.Rows.Count - 1; Counter += 1)
             {
-                ChangePersonRow = (PPersonRow)FamilyPersonsDT.Rows.Find(new Object[] { AFamilyMembersTable[Counter].PartnerKey });
+                PPersonRow ChangePersonRow = (PPersonRow)FamilyPersonsDT.Rows.Find(new Object[] { AFamilyMembersTable[Counter].PartnerKey });
                 ChangePersonRow.FamilyId = AFamilyMembersTable[Counter].FamilyId;
 #if DEBUGMODE
                 if (TLogging.DL >= 7)
@@ -3407,17 +3121,14 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             }
 
             // Save the changes
-            if (!PPersonAccess.SubmitChanges(FamilyPersonsDT, ASubmitChangesTransaction, out VerificationResult))
+            if (!PPersonAccess.SubmitChanges(FamilyPersonsDT, ASubmitChangesTransaction, out AVerificationResult))
             {
-                ReturnValue = false;
-                ASingleVerificationResultCollection.AddCollection(VerificationResult);
+                return false;
             }
             else
             {
-                ReturnValue = true;
+                return true;
             }
-
-            return ReturnValue;
         }
 
         #endregion

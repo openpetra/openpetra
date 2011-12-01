@@ -36,6 +36,7 @@ using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.App.Core;
+using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.MPartner;
@@ -48,6 +49,8 @@ namespace Tests.MPartner.Server.PartnerEdit
     [TestFixture]
     public class TPartnerEditTest
     {
+        TServerManager FServerManager;
+
         /// <summary>
         /// open database connection or prepare other things for this test
         /// </summary>
@@ -55,7 +58,7 @@ namespace Tests.MPartner.Server.PartnerEdit
         public void Init()
         {
             new TLogging("../../log/TestServer.log");
-            TPetraServerConnector.Connect("../../etc/TestServer.config");
+            FServerManager = TPetraServerConnector.Connect("../../etc/TestServer.config");
         }
 
         /// <summary>
@@ -67,6 +70,118 @@ namespace Tests.MPartner.Server.PartnerEdit
             TPetraServerConnector.Disconnect();
         }
 
+        private PPartnerRow CreateNewPartner(PartnerEditTDS AMainDS, TPartnerEditUIConnector AConnector)
+        {
+            PPartnerRow PartnerRow = AMainDS.PPartner.NewRowTyped();
+
+            // get a new partner key
+            Int64 newPartnerKey = -1;
+
+            do
+            {
+                newPartnerKey = TNewPartnerKey.GetNewPartnerKey(DomainManager.GSiteKey);
+                TNewPartnerKey.SubmitNewPartnerKey(DomainManager.GSiteKey, newPartnerKey, ref newPartnerKey);
+                PartnerRow.PartnerKey = newPartnerKey;
+            } while (newPartnerKey == -1);
+
+            AMainDS.PPartner.Rows.Add(PartnerRow);
+
+            TLogging.Log("Creating new partner: " + PartnerRow.PartnerKey.ToString());
+
+            return PartnerRow;
+        }
+
+        private PPartnerRow CreateNewFamilyPartner(PartnerEditTDS AMainDS, TPartnerEditUIConnector AConnector)
+        {
+            PPartnerRow PartnerRow = CreateNewPartner(AMainDS, AConnector);
+
+            PartnerRow.PartnerClass = MPartnerConstants.PARTNERCLASS_FAMILY;
+            PartnerRow.PartnerShortName = PartnerRow.PartnerKey.ToString() + ", TestPartner, Mr";
+
+            PFamilyRow FamilyRow = AMainDS.PFamily.NewRowTyped();
+            FamilyRow.PartnerKey = PartnerRow.PartnerKey;
+            FamilyRow.FamilyName = PartnerRow.PartnerKey.ToString();
+            FamilyRow.FirstName = "TestPartner";
+            FamilyRow.Title = "Mr";
+            AMainDS.PFamily.Rows.Add(FamilyRow);
+
+            return PartnerRow;
+        }
+
+        private PPersonRow CreateNewPerson(PartnerEditTDS AMainDS,
+            TPartnerEditUIConnector AConnector,
+            Int64 AFamilyKey,
+            Int32 ALocationKey,
+            string AFirstName,
+            string ATitle,
+            int AFamilyID)
+        {
+            PPartnerRow PartnerRow = CreateNewPartner(AMainDS, AConnector);
+
+            PartnerRow.PartnerClass = MPartnerConstants.PARTNERCLASS_PERSON;
+            PartnerRow.PartnerShortName = AFamilyKey.ToString() + ", " + AFirstName + ", " + ATitle;
+
+            PPersonRow PersonRow = AMainDS.PPerson.NewRowTyped();
+            PersonRow.PartnerKey = PartnerRow.PartnerKey;
+            PersonRow.FamilyKey = AFamilyKey;
+            PersonRow.FamilyName = AFamilyKey.ToString();
+            PersonRow.FirstName = AFirstName;
+            PersonRow.FamilyId = AFamilyID;
+            PersonRow.Title = ATitle;
+            AMainDS.PPerson.Rows.Add(PersonRow);
+
+            PPartnerLocationRow PartnerLocationRow = AMainDS.PPartnerLocation.NewRowTyped();
+            PartnerLocationRow.SiteKey = DomainManager.GSiteKey;
+            PartnerLocationRow.PartnerKey = PartnerRow.PartnerKey;
+            PartnerLocationRow.LocationKey = ALocationKey;
+            PartnerLocationRow.TelephoneNumber = PersonRow.PartnerKey.ToString();
+            AMainDS.PPartnerLocation.Rows.Add(PartnerLocationRow);
+
+            return PersonRow;
+        }
+
+        private void CreateFamilyWithPersonRecords(PartnerEditTDS AMainDS, TPartnerEditUIConnector AConnector)
+        {
+            PPartnerRow PartnerRow = CreateNewFamilyPartner(AMainDS, AConnector);
+
+            CreateNewLocation(PartnerRow.PartnerKey, AMainDS);
+
+            PPersonRow PersonRow1 = CreateNewPerson(AMainDS,
+                AConnector,
+                PartnerRow.PartnerKey,
+                AMainDS.PLocation[0].LocationKey,
+                "Adam",
+                "Mr",
+                0);
+            PPersonRow PersonRow2 = CreateNewPerson(AMainDS,
+                AConnector,
+                PartnerRow.PartnerKey,
+                AMainDS.PLocation[0].LocationKey,
+                "Eve",
+                "Mrs",
+                1);
+        }
+
+        private void CreateNewLocation(Int64 APartnerKey, PartnerEditTDS AMainDS)
+        {
+            // avoid duplicate addresses: StreetName contains the partner key
+            PLocationRow LocationRow = AMainDS.PLocation.NewRowTyped();
+
+            LocationRow.SiteKey = DomainManager.GSiteKey;
+            LocationRow.LocationKey = -1;
+            LocationRow.StreetName = APartnerKey.ToString() + " Nowhere Lane";
+            LocationRow.PostalCode = "LO2 2CX";
+            LocationRow.City = "London";
+            AMainDS.PLocation.Rows.Add(LocationRow);
+
+            PPartnerLocationRow PartnerLocationRow = AMainDS.PPartnerLocation.NewRowTyped();
+            PartnerLocationRow.SiteKey = LocationRow.SiteKey;
+            PartnerLocationRow.PartnerKey = APartnerKey;
+            PartnerLocationRow.LocationKey = LocationRow.LocationKey;
+            PartnerLocationRow.TelephoneNumber = APartnerKey.ToString();
+            AMainDS.PPartnerLocation.Rows.Add(PartnerLocationRow);
+        }
+
         /// <summary>
         /// create a new partner and save it with a new location
         /// </summary>
@@ -74,37 +189,49 @@ namespace Tests.MPartner.Server.PartnerEdit
         public void TestSaveNewPartnerWithLocation()
         {
             TPartnerEditUIConnector connector = new TPartnerEditUIConnector();
+
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
-            // avoid duplicate addresses: last name and address3 contain the partner key
+            PPartnerRow PartnerRow = CreateNewFamilyPartner(MainDS, connector);
 
-            PPartnerRow PartnerRow = MainDS.PPartner.NewRowTyped();
+            CreateNewLocation(PartnerRow.PartnerKey, MainDS);
 
-            PartnerRow.PartnerKey = connector.GetPartnerKeyForNewPartner(DomainManager.GSiteKey);
-            PartnerRow.PartnerClass = MPartnerConstants.PARTNERCLASS_FAMILY;
-            PartnerRow.PartnerShortName = PartnerRow.PartnerKey.ToString() + ", TestPartner, Mr";
-            MainDS.PPartner.Rows.Add(PartnerRow);
+            DataSet ResponseDS = new PartnerEditTDS();
+            TVerificationResultCollection VerificationResult;
 
-            PFamilyRow FamilyRow = MainDS.PFamily.NewRowTyped();
-            FamilyRow.PartnerKey = PartnerRow.PartnerKey;
-            FamilyRow.FamilyName = PartnerRow.PartnerKey.ToString();
-            FamilyRow.FirstName = "TestPartner";
-            FamilyRow.Title = "Mr";
-            MainDS.PFamily.Rows.Add(FamilyRow);
+            TSubmitChangesResult result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
 
-            PLocationRow LocationRow = MainDS.PLocation.NewRowTyped();
-            LocationRow.SiteKey = DomainManager.GSiteKey;
-            LocationRow.LocationKey = -1;
-            LocationRow.StreetName = "3 Nowhere Lane";
-            LocationRow.Address3 = PartnerRow.PartnerKey.ToString();
-            LocationRow.PostalCode = "LO2 2CX";
-            LocationRow.City = "London";
-            MainDS.PLocation.Rows.Add(LocationRow);
+            if (VerificationResult.HasCriticalError())
+            {
+                TLogging.Log(VerificationResult.BuildVerificationResultString());
+                Assert.Fail("There was a critical error when saving. Please check the logs");
+            }
+
+            Assert.AreEqual(TSubmitChangesResult.scrOK, result, "TPartnerEditUIConnector SubmitChanges return value");
+
+            // check the location key for this partner. should not be negative
+            Assert.AreEqual(1, MainDS.PPartnerLocation.Rows.Count, "TPartnerEditUIConnector SubmitChanges returns one location");
+            Assert.Greater(MainDS.PPartnerLocation[0].LocationKey, 0, "TPartnerEditUIConnector SubmitChanges returns valid location key");
+        }
+
+        /// <summary>
+        /// new partner with location 0.
+        /// first save the partner with location 0, then add a new location, and save again
+        /// </summary>
+        [Test]
+        public void TestNewPartnerWithLocation0()
+        {
+            TPartnerEditUIConnector connector = new TPartnerEditUIConnector();
+
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+
+            PPartnerRow PartnerRow = CreateNewFamilyPartner(MainDS, connector);
 
             PPartnerLocationRow PartnerLocationRow = MainDS.PPartnerLocation.NewRowTyped();
-            PartnerLocationRow.SiteKey = LocationRow.SiteKey;
+
+            PartnerLocationRow.SiteKey = DomainManager.GSiteKey;
             PartnerLocationRow.PartnerKey = PartnerRow.PartnerKey;
-            PartnerLocationRow.LocationKey = LocationRow.LocationKey;
+            PartnerLocationRow.LocationKey = 0;
             PartnerLocationRow.TelephoneNumber = PartnerRow.PartnerKey.ToString();
             MainDS.PPartnerLocation.Rows.Add(PartnerLocationRow);
 
@@ -119,7 +246,27 @@ namespace Tests.MPartner.Server.PartnerEdit
                 Assert.Fail("There was a critical error when saving. Please check the logs");
             }
 
-            Assert.AreEqual(TSubmitChangesResult.scrOK, result, "TPartnerEditUIConnector SubmitChanges return value");
+            Assert.AreEqual(TSubmitChangesResult.scrOK, result, "Create a partner with location 0");
+
+            CreateNewLocation(PartnerRow.PartnerKey, MainDS);
+
+            ResponseDS = new PartnerEditTDS();
+            result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            if (VerificationResult.HasCriticalError())
+            {
+                TLogging.Log(VerificationResult.BuildVerificationResultString());
+                Assert.Fail("There was a critical error when saving. Please check the logs");
+            }
+
+            Assert.AreEqual(TSubmitChangesResult.scrOK, result, "Replace location 0 of partner");
+
+            Assert.AreEqual(1, MainDS.PPartnerLocation.Rows.Count, "the partner should only have one location in the dataset");
+
+            // get all addresses of the partner
+            PPartnerLocationTable testPartnerLocations = PPartnerLocationAccess.LoadViaPPartner(PartnerRow.PartnerKey, null);
+            Assert.AreEqual(1, testPartnerLocations.Rows.Count, "the partner should only have one location");
+            Assert.Greater(testPartnerLocations[0].LocationKey, 0, "TPartnerEditUIConnector SubmitChanges returns valid location key");
         }
 
         /// <summary>
@@ -127,6 +274,133 @@ namespace Tests.MPartner.Server.PartnerEdit
         /// </summary>
         [Test]
         public void TestSaveNewPartnerWithExistingLocation()
+        {
+            TPartnerEditUIConnector connector = new TPartnerEditUIConnector();
+
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+
+            PPartnerRow PartnerRow = CreateNewFamilyPartner(MainDS, connector);
+
+            CreateNewLocation(PartnerRow.PartnerKey, MainDS);
+
+            DataSet ResponseDS = new PartnerEditTDS();
+            TVerificationResultCollection VerificationResult;
+
+            TSubmitChangesResult result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            if (VerificationResult.HasCriticalError())
+            {
+                TLogging.Log(VerificationResult.BuildVerificationResultString());
+                Assert.Fail("There was a critical error when saving. Please check the logs");
+            }
+
+            Assert.AreEqual(TSubmitChangesResult.scrOK, result, "saving the first partner with a location");
+
+            Int32 LocationKey = MainDS.PLocation[0].LocationKey;
+
+            MainDS = new PartnerEditTDS();
+
+            PartnerRow = CreateNewFamilyPartner(MainDS, connector);
+
+            PPartnerLocationRow PartnerLocationRow = MainDS.PPartnerLocation.NewRowTyped();
+            PartnerLocationRow.SiteKey = DomainManager.GSiteKey;
+            PartnerLocationRow.PartnerKey = PartnerRow.PartnerKey;
+            PartnerLocationRow.LocationKey = LocationKey;
+            PartnerLocationRow.TelephoneNumber = PartnerRow.PartnerKey.ToString();
+            MainDS.PPartnerLocation.Rows.Add(PartnerLocationRow);
+
+            ResponseDS = new PartnerEditTDS();
+
+            result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            if (VerificationResult.HasCriticalError())
+            {
+                TLogging.Log(VerificationResult.BuildVerificationResultString());
+                Assert.Fail("There was a critical error when saving. Please check the logs");
+            }
+
+            PPartnerTable PartnerAtAddress = PPartnerAccess.LoadViaPLocation(
+                DomainManager.GSiteKey, LocationKey, null);
+
+            Assert.AreEqual(2, PartnerAtAddress.Rows.Count, "there should be two partners at this location");
+        }
+
+        /// <summary>
+        /// add a new location for a family, and propagate this to the members of the family
+        /// </summary>
+        [Test]
+        public void TestFamilyPropagateNewLocation()
+        {
+            TPartnerEditUIConnector connector = new TPartnerEditUIConnector();
+
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+
+            CreateFamilyWithPersonRecords(MainDS, connector);
+
+            DataSet ResponseDS = new PartnerEditTDS();
+            TVerificationResultCollection VerificationResult;
+
+            TSubmitChangesResult result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            if (VerificationResult.HasCriticalError())
+            {
+                TLogging.Log(VerificationResult.BuildVerificationResultString());
+                Assert.Fail("There was a critical error when saving. Please check the logs");
+            }
+
+            // now change on partner location. should ask about everyone else
+            MainDS.PPartnerLocation[0].DateGoodUntil = new DateTime(2011, 01, 01);
+
+            ResponseDS = new PartnerEditTDS();
+
+            result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            if (VerificationResult.HasCriticalError())
+            {
+                TLogging.Log(VerificationResult.BuildVerificationResultString());
+                Assert.Fail("There was a critical error when saving. Please check the logs");
+            }
+
+            Assert.AreEqual(TSubmitChangesResult.scrInfoNeeded,
+                result,
+                "should ask if the partner locations of the other members of the family should be changed as well");
+
+            // TODO: replace the whole location
+        }
+
+        /// <summary>
+        /// modify a location that is used by several partners, but only modify the location for this partner
+        /// </summary>
+        [Test]
+        public void TestModifyLocationCreateNew()
+        {
+            // TODO
+        }
+
+        /// <summary>
+        /// delete a location
+        /// </summary>
+        [Test]
+        public void TestRemoveLocationFromSeveralPartners()
+        {
+            // TODO
+        }
+
+        /// <summary>
+        /// when adding a new location to a family, all the partners involved should be updated p_partner.s_date_modified_d.
+        /// even if the partner is not part of the dataset yet.
+        /// </summary>
+        [Test]
+        public void TestChangeLocationUpdatesDateModifiedOfAllPartners()
+        {
+            // TODO
+        }
+
+        /// <summary>
+        /// check if changing the family will change the family id of all other members of the family as well
+        /// </summary>
+        [Test]
+        public void TestChangeFamilyID()
         {
             // TODO
         }
