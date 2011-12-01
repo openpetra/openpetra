@@ -51,13 +51,13 @@ namespace Ict.Testing.NUnitPetraServer
         /// Initialize the Petra server and connect to the database
         /// </summary>
         /// <param name="AConfigName">just provide the server config file, plus AutoLogin and AutoLoginPasswd</param>
-        public static void Connect(string AConfigName)
+        public static TServerManager Connect(string AConfigName)
         {
             new TAppSettingsManager(AConfigName);
             new TLogging(TAppSettingsManager.GetValue("Server.LogFile"));
 
             Catalog.Init();
-            new TServerManager();
+            TServerManager ServerManager = new TServerManager();
 
             DBAccess.GDBAccessObj = new TDataBase();
             DBAccess.GDBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
@@ -91,6 +91,8 @@ namespace Ict.Testing.NUnitPetraServer
 
             // we don't need to establish the database connection anymore
             // FDomain.EstablishDBConnection();
+
+            return ServerManager;
         }
 
         /// <summary>
