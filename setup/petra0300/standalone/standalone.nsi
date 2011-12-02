@@ -112,8 +112,6 @@ Section "Main Section" SecInstallFiles
   File ..\..\..\delivery\bin\da-DK\OpenPetra.resources.dll
   SetOutPath "$INSTDIR\reports30\Settings"
   File ..\..\..\XmlReports\Settings\*.xml
-  SetOutPath "$INSTDIR\etc30"
-  File ..\..\..\tmp\PetraClientRemote.config
   SetOutPath "$INSTDIR\manuals30"
   File ..\releasenotes\releasenotes*html
   SetOutPath "$INSTDIR\resources30"

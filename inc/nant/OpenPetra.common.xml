@@ -40,7 +40,7 @@
 
         if ((BuildNumber != null) && (BuildNumber.Length > 0))
         {
-            version = version.Substring(1, version.LastIndexOf(".")) + BuildNumber;
+            version = version.Substring(0, version.LastIndexOf(".") + 1) + BuildNumber;
         }
 
         return version;
