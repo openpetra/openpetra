@@ -339,7 +339,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 DataRow resultRow = tab.NewRow();
                 resultRow[0] = LedgerTable[0].CurrentFinancialYear;
                 resultRow[1] = currentYearEnd.ToString("yyyy");
-                tab.Rows.Add(resultRow);
+                tab.Rows.InsertAt(resultRow, 0);
             }
 
             if (AIncludeNextYear && (null == tab.Rows.Find(LedgerTable[0].CurrentFinancialYear + 1)))
