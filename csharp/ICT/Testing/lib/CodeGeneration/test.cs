@@ -131,10 +131,15 @@ namespace Tests.CodeGeneration
         public void TestDiffMergeStrings()
         {
             // see console output for readable diff
-            Assert.AreEqual(TestHelperStrings("1ac", "abc"), "- 1\r\n  a\r\n+ b\r\n  c\r\n", "diff of 1ac and abc");
-            Assert.AreEqual(TestHelperStrings("1ac", "abcd"), "- 1\r\n  a\r\n+ b\r\n  c\r\n+ d\r\n", "diff of 1ac and abcd");
+            Assert.AreEqual(TestHelperStrings("1ac", "abc"),
+                "- 1\r\n  a\r\n+ b\r\n  c\r\n".Replace("\r\n", Environment.NewLine),
+                "diff of 1ac and abc");
+            Assert.AreEqual(TestHelperStrings("1ac", "abcd"),
+                "- 1\r\n  a\r\n+ b\r\n  c\r\n+ d\r\n".Replace("\r\n", Environment.NewLine),
+                "diff of 1ac and abcd");
             Assert.AreEqual(TestHelperStrings("HelloWorld",
-                    "HelloWOrld"), "  H\r\n  e\r\n  l\r\n  l\r\n  o\r\n  W\r\n- o\r\n+ O\r\n  r\r\n  l\r\n  d\r\n",
+                    "HelloWOrld"),
+                "  H\r\n  e\r\n  l\r\n  l\r\n  o\r\n  W\r\n- o\r\n+ O\r\n  r\r\n  l\r\n  d\r\n".Replace("\r\n", Environment.NewLine),
                 "diff of HelloWorld and HelloWOrld");
         }
 
