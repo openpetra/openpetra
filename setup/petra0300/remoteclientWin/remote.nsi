@@ -179,15 +179,15 @@ FunctionEnd
 ; GetCORVersion always returns v2.0, but not the installed v3.5
 ; we don't want to install .Net directly, since the user might not have admin permissions
 Function CheckDotNETVersion
-    !insertmacro IfKeyExists "HKLM" "SOFTWARE\Microsoft\.NETFramework\AssemblyFolders" "v3.5"
+    !insertmacro IfKeyExists "HKLM" "SOFTWARE\Microsoft\.NETFramework\Policy" "v4.0"
     Pop $R0
     ;$R0 contains 0 (not present) or 1 (present)
 
   ${If} $R0 == 0
-    DetailPrint ".NET Framework v3.5 not installed."
+    DetailPrint ".NET Framework v4.0 not installed."
     DetailPrint "Please first install this .NET Framework version from www.microsoft.com!"
     MessageBox MB_OK|MB_ICONSTOP \
-    ".NET Framework v3.5 not installed.$\nPlease first install this .NET Framework version from www.microsoft.com!"
+    ".NET Framework v4.0 not installed.$\nPlease first install this .NET Framework version from www.microsoft.com!"
     Abort
   ${EndIf}
 FunctionEnd
