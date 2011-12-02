@@ -55,6 +55,11 @@ namespace Ict.Petra.Client.App.PetraClient
     /// </summary>
     public class TPetraClientMain
     {
+//        /// <summary>Email Address is invalid.</summary>
+//        [ErrCodeAttribute("Email Address is invalid.",
+//                          FullDescription = "The email address entered is not a valid date.")]
+//        public const String ERR_EMAILADDRESSINVALID = "GENC.00007V";
+
         private static TSplashScreenManager FSplashScreen;
 
         /// <summary>tells whether the Login was successful, or not</summary>
@@ -165,7 +170,7 @@ namespace Ict.Petra.Client.App.PetraClient
             // start the Petra server (e.g. c:\petra2\bin22\PetraServerConsole.exe C:C:\petra2\ServerStandalone.config RunWithoutMenu:true
             try
             {
-                FSplashScreen.ProgressText = "Starting PetraServer...";
+                FSplashScreen.ProgressText = Catalog.GetString("Starting OpenPetra Server...");
                 PetraServerProcess = new System.Diagnostics.Process();
                 PetraServerProcess.EnableRaisingEvents = false;
                 PetraServerProcess.StartInfo.FileName = TClientSettings.Petra_Path_Bin + "/PetraServerConsole.exe";
@@ -193,7 +198,7 @@ namespace Ict.Petra.Client.App.PetraClient
 #endif
 #if  TESTMODE
 #else
-                FSplashScreen.ShowMessageBox("Exception while starting PetraServer process: " + exp.ToString());
+                FSplashScreen.ShowMessageBox("Exception while starting OpenPetra Server process: " + exp.ToString());
 #endif
                 return false;
             }
@@ -260,7 +265,7 @@ namespace Ict.Petra.Client.App.PetraClient
                                 ".\r\nThe currently installed version is {1}" +
                                 ".\r\nThe patch will be installed to directory '{2}'.\r\nDo you want to install now?"),
                             patchTools.GetLatestPatchVersion(), patchTools.GetCurrentPatchVersion(), TClientSettings.Petra_Path_Bin),
-                        String.Format("Install new Petra patch"), MessageBoxButtons.YesNo, MessageBoxIcon.Question,
+                        String.Format(Catalog.GetString("Install new OpenPetra patch")), MessageBoxButtons.YesNo, MessageBoxIcon.Question,
                         MessageBoxDefaultButton.Button1) == DialogResult.Yes)
                 {
                     // reset the caches in IsolatedStorage. This can help if things have changed drastically in the database
@@ -309,6 +314,34 @@ namespace Ict.Petra.Client.App.PetraClient
 
             Catalog.Init();
 
+//            ErrorCodeInventory.BuildErrorCodeInventory(new Ict.Common.CommonErrorCodes().GetType());
+//            ErrorCodeInventory.BuildErrorCodeInventory(new Ict.Petra.Shared.PetraErrorCodes().GetType());
+//            ErrorCodeInventory.BuildErrorCodeInventory(new Ict.Common.Verification.TStringChecks().GetType());
+
+            ErrorCodeInventory.RegisteredTypes.Add(new Ict.Petra.Shared.PetraErrorCodes().GetType());
+
+//            System.Windows.Forms.MessageBox.Show(ErrorCodes.GetErrorInfo("GENC.00001V").ShortDescription + Environment.NewLine + Environment.NewLine +
+//                                                 ErrorCodes.GetErrorInfo("GENC.00001V").FullDescription + Environment.NewLine + Environment.NewLine +
+//                                                 ErrorCodes.GetErrorInfo("GENC.00001V").Category.ToString("G") + Environment.NewLine + Environment.NewLine +
+//                                                 ErrorCodes.GetErrorInfo("GENC.00001V").HelpID);
+//            System.Windows.Forms.MessageBox.Show(ErrorCodes.GetErrorInfo("GENC.00002V").ShortDescription + Environment.NewLine + Environment.NewLine +
+//                                                 ErrorCodes.GetErrorInfo("GENC.00002V").FullDescription + Environment.NewLine + Environment.NewLine +
+//                                                 ErrorCodes.GetErrorInfo("GENC.00002V").ErrorMessageText + Environment.NewLine + Environment.NewLine +
+//                                                 ErrorCodes.GetErrorInfo("GENC.00002V").ErrorMessageTitle + Environment.NewLine + Environment.NewLine +
+//                                                 ErrorCodes.GetErrorInfo("GENC.00002V").Category.ToString("G") + Environment.NewLine + Environment.NewLine +
+//                                                 ErrorCodes.GetErrorInfo("GENC.00002V").HelpID);
+//            System.Windows.Forms.MessageBox.Show(ErrorCodes.GetErrorInfo("GEN.00004E").ShortDescription + Environment.NewLine + Environment.NewLine +
+//                                                 ErrorCodes.GetErrorInfo("GEN.00004E").FullDescription + Environment.NewLine + Environment.NewLine +
+//                                                 ErrorCodes.GetErrorInfo("GEN.00004E").Category.ToString("G") + Environment.NewLine + Environment.NewLine +
+//                                                 ErrorCodes.GetErrorInfo("GEN.00004E").HelpID);
+//            System.Windows.Forms.MessageBox.Show(ErrorCodes.GetErrorInfo("PARTN.00005V").ShortDescription + Environment.NewLine + Environment.NewLine +
+//                                                 ErrorCodes.GetErrorInfo("PARTN.00005V").FullDescription + Environment.NewLine + Environment.NewLine +
+//                                                 ErrorCodes.GetErrorInfo("PARTN.00005V").Category.ToString("G") + Environment.NewLine + Environment.NewLine +
+//                                                 ErrorCodes.GetErrorInfo("PARTN.00005V").HelpID);
+
+
+//MessageBox.Show(ErrorCodes.GetErrorInfo(ERR_EMAILADDRESSINVALID).ShortDescription);
+
             // TODO another Catalog.Init("org", "./locale") for organisation specific words?
 
             /* Show Splash Screen.
@@ -331,7 +364,7 @@ namespace Ict.Petra.Client.App.PetraClient
             catch (Exception e)
             {
                 FSplashScreen.Close();
-                MessageBox.Show(e.Message);
+                MessageBox.Show(e.ToString());
                 Shutdown.StopPetraClient();
             }
 
@@ -363,7 +396,7 @@ namespace Ict.Petra.Client.App.PetraClient
 
             if (TClientSettings.RunAsStandalone == true)
             {
-                FSplashScreen.ProgressText = "Starting PetraServer Environment...";
+                FSplashScreen.ProgressText = "Starting OpenPetra Server Environment...";
 
                 if (!StartServer())
                 {

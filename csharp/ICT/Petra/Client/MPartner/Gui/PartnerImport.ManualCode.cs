@@ -119,7 +119,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FMainDS = TRemote.MPartner.ImportExport.WebConnectors.ImportFromPartnerExtract(FileContent, out VerificationResult);
                 }
 
-                if ((VerificationResult != null) && VerificationResult.HasCriticalError())
+                if ((VerificationResult != null) && VerificationResult.HasCriticalErrors)
                 {
                     string ErrorMessages = String.Empty;
 

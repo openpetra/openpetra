@@ -352,6 +352,8 @@ namespace Ict.Petra.Server.App.ClientDomain
             System.Int16 RemotingPortInt;
             Hashtable ChannelProperties;
 
+            TLanguageCulture.Init();
+
             // Console.WriteLine('TClientDomainManager.Create in AppDomain: ' + Thread.GetDomain().FriendlyName);
             DomainManager.GClientID = Convert.ToInt16(AClientID);
             DomainManager.GCacheableTablesManager = ACacheableTablesManagerRef;
@@ -659,8 +661,6 @@ namespace Ict.Petra.Server.App.ClientDomain
         public void EstablishDBConnection()
         {
             DomainManager.ULogger = new TLogging(TSrvSetting.ServerLogFile);
-
-            TLanguageCulture.Init();
 
 #if  TESTMODE_WITHOUT_ODBC
 #else

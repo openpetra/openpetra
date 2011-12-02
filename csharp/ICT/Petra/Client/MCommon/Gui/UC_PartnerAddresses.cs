@@ -58,51 +58,40 @@ namespace Ict.Petra.Client.MCommon.Gui
     /// </summary>
     public partial class TUCPartnerAddresses : System.Windows.Forms.UserControl, IPetraEditUserControl
     {
-        /// <summary>todoComment</summary>
-        public const String StrSimilarLocation1stLine = "A similar address already exists in the datab" + "ase:";
+        #region Resourcestrings
 
-        /// <summary>todoComment</summary>
-        public const String StrSimilarLocationUseQuestionPart1 = "Use the existing address record?";
+        private static readonly string StrSimilarLocation1stLine = Catalog.GetString("A similar address already exists in the database:");
 
-        /// <summary>todoComment</summary>
-        public const String StrSimilarLocationUseQuestionPart2 = "(Choose 'No' to create a new address record.)";
+        private static readonly string StrSimilarLocationUseQuestionPart1 = Catalog.GetString("Use the existing address record?");
 
-        /// <summary>todoComment</summary>
-        public const String StrSimilarLocationTitle = "Similar Address Exists";
+        private static readonly string StrSimilarLocationUseQuestionPart2 = Catalog.GetString("(Choose 'No' to create a new address record.)");
 
-        /// <summary>todoComment</summary>
-        public const String StrSimilarLocationUsedByN1 = "NOTE: this is used by ";
+        private static readonly string StrSimilarLocationTitle = Catalog.GetString("Similar Address Exists");
 
-        /// <summary>todoComment</summary>
-        public const String StrSimilarLocationUsedByN2plural = " other partners.";
+        private static readonly string StrSimilarLocationUsedByN1 = Catalog.GetString("NOTE: this is used by {0} ");
 
-        /// <summary>todoComment</summary>
-        public const String StrSimilarLocationUsedByN2singular = " other partner.";
+        private static readonly string StrAddressAddedFamilyPromotion1stLine = Catalog.GetString(
+            "You have added the following address to this family:");
 
-        /// <summary>todoComment</summary>
-        public const String StrAddressAddedFamilyPromotion1stLine = "You have added the following address " + "to this family:";
+        private static readonly string StrAddressAddedFamilyPromotionQuestion = Catalog.GetString(
+            "Do you want to add this address to all members\r\nof this family?");
 
-        /// <summary>todoComment</summary>
-        public const String StrAddressAddedFamilyPromotionQuestion = "Do you want to add this address to all members" + "\r\n" + "of this family?";
+        private static readonly string StrAddressAddedFamilyPromotionQuestionTitle = Catalog.GetString("Add Address to Family Members?");
 
-        /// <summary>todoComment</summary>
-        public const String StrAddressAddedFamilyPromotionQuestionTitle = "Add Address to Family Members?";
+        private static readonly string StrExpireAllCurrentAddressesTitle = Catalog.GetString("Expire All Current Addresses");
 
-        /// <summary>todoComment</summary>
-        public const String StrExpireAllCurrentAddressesTitle = "Expire All Current Addresses";
+        private static readonly string StrExpireAllCurrentAddressesNone = Catalog.GetString(
+            "There are no Current Addresses, therefore none need to be expired.");
 
-        /// <summary>todoComment</summary>
-        public const String StrExpireAllCurrentAddressesNone = "There are no Current Addresses, therefore none need to be expired.";
+        private static readonly string StrExpireAllCurrentAddressesNone2 = Catalog.GetString("There are no Current Addresses that can be expired.");
 
-        /// <summary>todoComment</summary>
-        public const String StrExpireAllCurrentAddressesNone2 = "There are no Current Addresses that can be expired.";
+        private static readonly string StrExpireAllCurrentAddressesDoneTitle = Catalog.GetString("All Addresses Expired");
 
-        /// <summary>todoComment</summary>
-        public const String StrExpireAllCurrentAddressesDoneTitle = "All Addresses Expired";
+        private static readonly string StrExpireAllCurrentAddressesDone = Catalog.GetString(
+            "The following {0} Address(es) was/were expired:\r\n{1}\r\n" +
+            "The Partner has no Current Addresses left.");
 
-        /// <summary>todoComment</summary>
-        public const String StrExpireAllCurrentAddressesDone = "The following {0} Address(es) was/were expired:" + "\r\n" + "{1}" + "\r\n" +
-                                                               "The Partner has no Current Addresses left.";
+        #endregion
 
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         protected IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
@@ -555,8 +544,8 @@ namespace Ict.Petra.Client.MCommon.Gui
             OnHookupDataChange(new System.EventArgs());
 
             // initial state of buttons. show edit and delete button
-            btnEditRecord.Text = "       " + CommonResourcestrings.StrBtnTextEdit;
-            btnDeleteRecord.Text = "     " + CommonResourcestrings.StrBtnTextDelete;
+            btnEditRecord.Text = "       " + MCommonResourcestrings.StrBtnTextEdit;
+            btnDeleteRecord.Text = "     " + MCommonResourcestrings.StrBtnTextDelete;
             btnEditRecord.ImageIndex = 1;
             btnDeleteRecord.ImageIndex = 2;
         }
@@ -668,16 +657,11 @@ namespace Ict.Petra.Client.MCommon.Gui
                 {
                     if (SimilarLocationParametersRow.UsedByNOtherPartners > 0)
                     {
-                        AlreadyUsedMessage = "\r\n\r\n" + StrSimilarLocationUsedByN1 + SimilarLocationParametersRow.UsedByNOtherPartners.ToString();
-
-                        if (SimilarLocationParametersRow.UsedByNOtherPartners > 1)
-                        {
-                            AlreadyUsedMessage = AlreadyUsedMessage + StrSimilarLocationUsedByN2plural;
-                        }
-                        else
-                        {
-                            AlreadyUsedMessage = AlreadyUsedMessage + StrSimilarLocationUsedByN2singular;
-                        }
+                        AlreadyUsedMessage = "\r\n\r\n" +
+                                             String.Format(StrSimilarLocationUsedByN1, SimilarLocationParametersRow.UsedByNOtherPartners) +
+                                             Catalog.GetPluralString(" other partner.",
+                            " other partners.",
+                            SimilarLocationParametersRow.UsedByNOtherPartners);
                     }
                     else
                     {
@@ -1035,9 +1019,9 @@ namespace Ict.Petra.Client.MCommon.Gui
                 FIsEditingRecord = true;
                 ucoDetails.SetMode(TDataModeEnum.dmEdit);
                 btnNewRecord.Enabled = false;
-                btnEditRecord.Text = "      " + CommonResourcestrings.StrBtnTextDone;
+                btnEditRecord.Text = "      " + MCommonResourcestrings.StrBtnTextDone;
                 btnEditRecord.ImageIndex = 3;
-                btnDeleteRecord.Text = "     " + CommonResourcestrings.StrBtnTextCancel;
+                btnDeleteRecord.Text = "     " + MCommonResourcestrings.StrBtnTextCancel;
                 btnDeleteRecord.ImageIndex = 4;
                 grdRecordList.Enabled = false;
             }
@@ -1046,8 +1030,8 @@ namespace Ict.Petra.Client.MCommon.Gui
                 FIsEditingRecord = false;
                 ucoDetails.SetMode(TDataModeEnum.dmBrowse);
                 btnNewRecord.Enabled = true;
-                btnEditRecord.Text = "       " + CommonResourcestrings.StrBtnTextEdit;
-                btnDeleteRecord.Text = "     " + CommonResourcestrings.StrBtnTextDelete;
+                btnEditRecord.Text = "       " + MCommonResourcestrings.StrBtnTextEdit;
+                btnDeleteRecord.Text = "     " + MCommonResourcestrings.StrBtnTextDelete;
                 btnEditRecord.ImageIndex = 1;
                 btnDeleteRecord.ImageIndex = 2;
                 grdRecordList.Enabled = true;
@@ -1276,13 +1260,8 @@ namespace Ict.Petra.Client.MCommon.Gui
                             out ErrorMessages,
                             out FirstErrorControl);
 
-                        // TODO 1 ochristiank cUI : Make a message library and call a method there to show verification errors.
-                        MessageBox.Show(
-                            "Cannot end editing because invalid data has not been corrected!" + Environment.NewLine + Environment.NewLine +
-                            ErrorMessages,
-                            "Record contains invalid data!",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Error);
+                        TMessages.MsgRecordChangeVerificationError(ErrorMessages, this.GetType());
+
                         FirstErrorControl.Focus();
                         return;
                     }

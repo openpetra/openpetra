@@ -34,11 +34,14 @@
 using System;
 using System.Data;
 using System.Collections;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Windows.Forms;
 
 namespace Ict.Common.Verification
 {
+    #region TResultSeverity
+
     /// <summary>
     /// a verification error can either be critical or non critical
     /// </summary>
@@ -52,9 +55,18 @@ namespace Ict.Common.Verification
         /// <summary>
         /// verification warning
         /// </summary>
-        Resv_Noncritical
+        Resv_Noncritical,
+
+        /// <summary>
+        /// purely information (without a warning connotation)
+        /// </summary>
+        Resv_Info
     };
 
+    #endregion
+
+
+    #region IResultInterface
 
     /// <summary>
     /// Properties that every 'Verification Result' needs to implement.
@@ -106,25 +118,30 @@ namespace Ict.Common.Verification
         }
     }
 
+    #endregion
+
+
+    #region TVerificationResult
+
     /// <summary>
     /// A TVerificationResult object stores information about failed data
     /// verification and is passed (serialised) from the Server to the Client.
     /// It is made to be stored in the TVerificationResultCollection.
     /// </summary>
     [Serializable]
-    public class TVerificationResult : object, IResultInterface
+    public class TVerificationResult : IResultInterface
     {
         /// <summary>DB Field or other context that describes where the data verification failed (use '[ODBC ...]' instead to signal a database error (such as a failed call to a stored procedure)</summary>
-        protected object FResultContext;
+        protected object FResultContext = String.Empty;
 
         /// <summary>Verification failure explanation</summary>
-        protected String FResultText;
+        protected String FResultText = String.Empty;
 
         /// <summary>Verification failure caption</summary>
-        protected String FResultTextCaption;
+        protected String FResultTextCaption = String.Empty;
 
         /// <summary>Error code if verification failure</summary>
-        protected String FResultCode;
+        protected String FResultCode = String.Empty;
 
         /// <summary>Signals whether the verification failure prevented saving of data (critical) or the verification result is only for information purposes (noncritical).</summary>
         protected TResultSeverity FResultSeverity;
@@ -140,12 +157,62 @@ namespace Ict.Common.Verification
         /// Constructor
         /// </summary>
         /// <param name="AResultContext">context where this verification happens (e.g. DB field name)</param>
+        /// <param name="AErrorCodeInfo">An <see cref="ErrCodeInfo" /> that contains data which is used for populating the Verification Result's Properites.</param>
+        public TVerificationResult(object AResultContext, ErrCodeInfo AErrorCodeInfo)
+        {
+            FResultContext = AResultContext;
+            FResultCode = AErrorCodeInfo.ErrorCode;
+
+            if (AErrorCodeInfo.ErrorMessageText == String.Empty)
+            {
+                FResultText = AErrorCodeInfo.ShortDescription;
+            }
+            else
+            {
+                FResultText = AErrorCodeInfo.ErrorMessageText;
+            }
+
+            if (AErrorCodeInfo.ErrorMessageTitle != String.Empty)
+            {
+                FResultTextCaption = AErrorCodeInfo.ErrorMessageTitle;
+            }
+
+            if ((AErrorCodeInfo.Category == ErrCodeCategory.Error)
+                || (AErrorCodeInfo.Category == ErrCodeCategory.Validation))
+            {
+                FResultSeverity = TResultSeverity.Resv_Critical;
+            }
+            else if (AErrorCodeInfo.Category == ErrCodeCategory.NonCriticalError)
+            {
+                FResultSeverity = TResultSeverity.Resv_Noncritical;
+            }
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="AResultContext">context where this verification happens (e.g. DB field name)</param>
         /// <param name="AResultText">Verification failure explanation</param>
         /// <param name="AResultSeverity">is this an error or just a warning</param>
-        public TVerificationResult(String AResultContext, String AResultText, TResultSeverity AResultSeverity)
+        public TVerificationResult(object AResultContext, String AResultText, TResultSeverity AResultSeverity)
         {
             FResultContext = AResultContext;
             FResultText = AResultText;
+            FResultSeverity = AResultSeverity;
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="AResultContext">context where this verification happens (e.g. DB field name)</param>
+        /// <param name="AResultText">Verification failure explanation</param>
+        /// <param name="AResultCode">a result code to identify error messages</param>
+        /// <param name="AResultSeverity">is this an error or just a warning</param>
+        public TVerificationResult(object AResultContext, String AResultText, String AResultCode, TResultSeverity AResultSeverity)
+        {
+            FResultContext = AResultContext;
+            FResultText = AResultText;
+            FResultCode = AResultCode;
             FResultSeverity = AResultSeverity;
         }
 
@@ -234,6 +301,10 @@ namespace Ict.Common.Verification
         }
     }
 
+    #endregion
+
+
+    #region TScreenVerificationResult
 
     /// <summary>
     /// A TScreenVerificationResult object stores information about failed data
@@ -258,6 +329,28 @@ namespace Ict.Common.Verification
         /// <param name="AResultContext">context of verification</param>
         /// <param name="AResultColumn">which column failed</param>
         /// <param name="AResultText">description and error message for the user</param>
+        /// <param name="AResultCode">error code to identify the error message</param>
+        /// <param name="AResultControl">which control is involved</param>
+        public TScreenVerificationResult(object AResultContext,
+            DataColumn AResultColumn,
+            String AResultText,
+            String AResultCode,
+            Control AResultControl)
+        {
+            FResultContext = AResultContext;
+            FResultColumn = AResultColumn;
+            FResultText = AResultText;
+            FResultSeverity = TResultSeverity.Resv_Critical;
+            FResultCode = AResultCode;
+            FResultControl = AResultControl;
+        }
+
+        /// <summary>
+        /// constructor
+        /// </summary>
+        /// <param name="AResultContext">context of verification</param>
+        /// <param name="AResultColumn">which column failed</param>
+        /// <param name="AResultText">description and error message for the user</param>
         /// <param name="AResultControl">which control is involved</param>
         /// <param name="AResultSeverity">is this serious, or just a warning</param>
         public TScreenVerificationResult(object AResultContext,
@@ -271,6 +364,30 @@ namespace Ict.Common.Verification
             FResultText = AResultText;
             FResultSeverity = AResultSeverity;
             FResultControl = AResultControl;
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="AResultContext">context of verification</param>
+        /// <param name="AResultColumn">which column failed</param>
+        /// <param name="AResultText">description and error message for the user</param>
+        /// <param name="AResultCode">error code to identify the error message</param>
+        /// <param name="AResultControl">which control is involved</param>
+        /// <param name="AResultSeverity">is this serious, or just a warning</param>
+        public TScreenVerificationResult(object AResultContext,
+            DataColumn AResultColumn,
+            String AResultText,
+            String AResultCode,
+            Control AResultControl,
+            TResultSeverity AResultSeverity)
+        {
+            FResultContext = AResultContext;
+            FResultColumn = AResultColumn;
+            FResultText = AResultText;
+            FResultCode = AResultCode;
+            FResultControl = AResultControl;
+            FResultSeverity = AResultSeverity;
         }
 
         /// <summary>
@@ -301,6 +418,26 @@ namespace Ict.Common.Verification
         }
 
         /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="AVerificationResult"><see cref="TVerificationResult" /> which
+        /// contains the basic data to which the <paramref name="AResultColumn" /> and
+        /// <paramref name="AResultControl" /> are getting added.</param>
+        /// <param name="AResultColumn">which column failed</param>
+        /// <param name="AResultControl">which control is involved</param>
+        public TScreenVerificationResult(TVerificationResult AVerificationResult,
+            DataColumn AResultColumn, Control AResultControl)
+        {
+            FResultContext = AVerificationResult.ResultContext;
+            FResultColumn = AResultColumn;
+            FResultText = AVerificationResult.ResultText;
+            FResultTextCaption = AVerificationResult.ResultTextCaption;
+            FResultCode = AVerificationResult.ResultCode;
+            FResultControl = AResultControl;
+            FResultSeverity = AVerificationResult.ResultSeverity;
+        }
+
+        /// <summary>
         /// the DataColumn of the verification failure
         /// </summary>
         /// <returns></returns>
@@ -325,23 +462,34 @@ namespace Ict.Common.Verification
         }
     }
 
+    #endregion
+
+
+    #region TVerificationResultCollection
 
     /// <summary>
-    /// A TVerificationResult object stores any number of TVerificationResult objects.
-    /// With this strongly-typed Collection it is for instance possible to perform
+    /// A TVerificationResultCollection object stores any number of TVerificationResult objects.
+    /// With this typed Collection it is for instance possible to perform
     /// several data verification steps on the Server and pass the results back to
     /// the Client in one object.
-    ///
+    /// </summary>
+    /// <remarks>
     /// NOTES on C# conversion:
     /// (1) The 'Item' method overloads have been renamed to 'FindBy' method
     /// overloads (couldn't do that as in Delphi.NET!);
     /// (2) The 'VerificationResultInfo' Indexed Property that we had in .NET has
     /// now become the Default Indexed Property of this Class because C# doesn't
     /// allow named Indexed Properties!
-    /// </summary>
+    /// </remarks>
     [Serializable]
     public class TVerificationResultCollection : CollectionBase
     {
+        #region Resourcestrings
+
+        private static readonly string StrMessageFooter = Catalog.GetString("  Context: {0}; Severity: {1}.\r\n    Problem: {2}\r\n    Code: {3}");
+
+        #endregion
+
         /// <summary>
         /// constructor
         /// </summary>
@@ -362,6 +510,52 @@ namespace Ict.Common.Verification
             set
             {
                 SetVerificationResult(index, value);
+            }
+        }
+
+        /// <summary>
+        /// Checks whether there are any <see cref="TVerificationResult" />s  in the collection that denote a
+        /// critical error.
+        /// </summary>
+        /// <remarks>Does not check/count any <see cref="TVerificationResult" /> whose
+        /// <see cref="TVerificationResult.ResultSeverity" /> </remarks> is <see cref="TResultSeverity.Resv_Noncritical" />
+        /// or <see cref="TResultSeverity.Resv_Info" />.
+        public bool HasCriticalErrors
+        {
+            get
+            {
+                foreach (TVerificationResult v in List)
+                {
+                    if (v.ResultSeverity == TResultSeverity.Resv_Critical)
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Checks whether there are any <see cref="TVerificationResult" />s in the collection that denote a
+        /// critical or non-critical error.
+        /// </summary>
+        /// <remarks>Does not check/count any <see cref="TVerificationResult" /> whose
+        /// <see cref="TVerificationResult.ResultSeverity" /> </remarks> is <see cref="TResultSeverity.Resv_Info" />.
+        public bool HasCriticalOrNonCriticalErrors
+        {
+            get
+            {
+                foreach (TVerificationResult v in List)
+                {
+                    if ((v.ResultSeverity == TResultSeverity.Resv_Critical)
+                        || (v.ResultSeverity == TResultSeverity.Resv_Noncritical))
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
             }
         }
 
@@ -388,23 +582,6 @@ namespace Ict.Common.Verification
         }
 
         /// <summary>
-        /// check if there is any verification that shows a critical error
-        /// </summary>
-        /// <returns></returns>
-        public bool HasCriticalError()
-        {
-            foreach (TVerificationResult v in List)
-            {
-                if (v.ResultSeverity == TResultSeverity.Resv_Critical)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        /// <summary>
         /// generate the text for a message box showing all verification errors
         /// </summary>
         /// <param name="AErrorMessages">will have the list of error messages</param>
@@ -421,7 +598,14 @@ namespace Ict.Common.Verification
             for (int Counter = 0; Counter <= Count - 1; Counter += 1)
             {
                 si = (TScreenVerificationResult)(List[Counter]);
-                AErrorMessages = AErrorMessages + si.ResultText + Environment.NewLine + Environment.NewLine;
+                AErrorMessages = AErrorMessages + si.ResultText;
+
+                if (si.ResultCode != String.Empty)
+                {
+                    AErrorMessages += "  [" + si.ResultCode + "]";
+                }
+
+                AErrorMessages += Environment.NewLine + Environment.NewLine;
 
                 if (AFirstErrorControl == null)
                 {
@@ -468,7 +652,6 @@ namespace Ict.Common.Verification
         /// <see cref="TVerificationResult" />s in the <see cref="TVerificationResultCollection" />.</returns>
         public string BuildVerificationResultString()
         {
-            const String fmt = "  Context: {0}; Severity: {1}.\r\n    Problem: {2}\r\n    Code: {3}";
             TVerificationResult si;
             string ReturnValue = String.Empty;
 
@@ -477,7 +660,7 @@ namespace Ict.Common.Verification
                 si = (TVerificationResult)(List[i]);
 
                 ReturnValue = ReturnValue +
-                              (String.Format(fmt,
+                              (String.Format(StrMessageFooter,
                                    new object[] { si.ResultContext, si.ResultSeverity, si.ResultText, si.ResultCode })) +
                               Environment.NewLine + Environment.NewLine;
             }
@@ -521,9 +704,9 @@ namespace Ict.Common.Verification
         }
 
         /// <summary>
-        /// check if there is an error for this data column already
+        /// Checks if there is an error for this data column already.
         /// </summary>
-        /// <param name="AResultColumn">the column to check for</param>
+        /// <param name="AResultColumn">The <see cref="System.Data.DataColumn" /> to check for.</param>
         /// <returns>true if such an error already is part of the list</returns>
         public bool Contains(DataColumn AResultColumn)
         {
@@ -542,6 +725,62 @@ namespace Ict.Common.Verification
             }
 
             return Found;
+        }
+
+        /// <summary>
+        /// Adds a <see cref="TVerificationResult" /> for a <see cref="System.Data.DataColumn" />
+        /// specified with <paramref name="AResultColumn" />, or removes a
+        /// <see cref="TVerificationResult" /> that is stored in the collection for the
+        /// <see cref="System.Data.DataColumn" /> specified with <paramref name="AResultColumn" />.
+        /// If <paramref name="AVerificationResult" /> isn't null, this Method will add it, if
+        /// <paramref name="AVerificationResult" /> is null, this Method will remove *all* entries in
+        /// the <see cref="TVerificationResultCollection" /> that are recorded for <paramref name="AResultColumn" />.
+        /// </summary>
+        /// <remarks>
+        /// When adding a <see cref="TVerificationResult" />, a check is done if a <see cref="TVerificationResult" />
+        /// with exactly the same Property values is already stored. If this is the case, the
+        /// <see cref="TVerificationResult" /> is not added a second time.
+        /// </remarks>
+        /// <param name="AVerificationResult">The <see cref="TVerificationResult" /> to add,
+        /// or null if a <see cref="TVerificationResult" /> that is stored in the collection for the
+        /// <see cref="System.Data.DataColumn" /> <paramref name="AResultColumn" /> should get removed.</param>
+        /// <param name="AResultColumn">The <see cref="System.Data.DataColumn" /> to check for.</param>
+        /// <returns>void</returns>
+        public void AddOrRemove(TVerificationResult AVerificationResult, DataColumn AResultColumn)
+        {
+            List <TScreenVerificationResult>si = FindAllBy(AResultColumn);
+            bool IdenticalVResultFound = false;
+
+            if (AVerificationResult != null)
+            {
+                if (si == null)
+                {
+                    this.Add(AVerificationResult);
+                }
+                else
+                {
+                    foreach (TScreenVerificationResult SingleEntry in si)
+                    {
+                        if (TVerificationHelper.AreVerificationResultsIdentical(SingleEntry, AVerificationResult))
+                        {
+                            IdenticalVResultFound = true;
+                            break;
+                        }
+                    }
+
+                    if (!IdenticalVResultFound)
+                    {
+                        this.Add(AVerificationResult);
+                    }
+                }
+            }
+            else if (si != null)
+            {
+                foreach (TScreenVerificationResult SingleEntry in si)
+                {
+                    this.Remove(SingleEntry);
+                }
+            }
         }
 
         /// <summary>
@@ -585,10 +824,10 @@ namespace Ict.Common.Verification
         }
 
         /// <summary>
-        /// find result by column
+        /// Find a <see cref="TScreenVerificationResult" /> by ResultColumn.
         /// </summary>
-        /// <param name="AResultColumn">column to look for</param>
-        /// <returns>the first result for that column</returns>
+        /// <param name="AResultColumn">ResultColumn to look for.</param>
+        /// <returns>The first result for that ResultColumn, or null if no result was found.</returns>
         public TScreenVerificationResult FindBy(DataColumn AResultColumn)
         {
             TScreenVerificationResult ReturnValue;
@@ -611,7 +850,38 @@ namespace Ict.Common.Verification
         }
 
         /// <summary>
-        /// find result by context
+        /// Finds all <see cref="TScreenVerificationResult" />s that are stored for a certain ResultColumn.
+        /// </summary>
+        /// <param name="AResultColumn">ResultColumn to look for.</param>
+        /// <returns>An List of <see cref="TScreenVerificationResult" /> that contains all the found
+        /// <see cref="TScreenVerificationResult" />s, or null if no result was found.</returns>
+        public List <TScreenVerificationResult>FindAllBy(DataColumn AResultColumn)
+        {
+            List <TScreenVerificationResult>ReturnValue = null;
+            TScreenVerificationResult si;
+
+            ReturnValue = null;
+
+            for (int Counter = 0; Counter <= Count - 1; Counter += 1)
+            {
+                si = (TScreenVerificationResult)(List[Counter]);
+
+                if (si.ResultColumn == AResultColumn)
+                {
+                    if (ReturnValue == null)
+                    {
+                        ReturnValue = new List <TScreenVerificationResult>();
+                    }
+
+                    ReturnValue.Add(si);
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Find a <see cref="TScreenVerificationResult" /> by ResultContext
         /// </summary>
         /// <param name="AResultContext">context to look for</param>
         /// <returns>the first result for that context</returns>
@@ -637,10 +907,10 @@ namespace Ict.Common.Verification
         }
 
         /// <summary>
-        /// find result by index
+        /// Returns the <see cref="TScreenVerificationResult" /> that is found at the index position.
         /// </summary>
-        /// <param name="index">index to identify the result</param>
-        /// <returns>the result</returns>
+        /// <param name="index">Tndex to identify the <see cref="TScreenVerificationResult" />.</param>
+        /// <returns>The <see cref="TScreenVerificationResult" /> at the index position.</returns>
         public IResultInterface FindBy(int index)
         {
             return (IResultInterface)(List[index]);
@@ -663,25 +933,6 @@ namespace Ict.Common.Verification
         private new void OnValidate(object value)
         {
             VerifyType(value);
-        }
-
-        /// <summary>
-        /// print the results in the collection to the System Console
-        /// </summary>
-        public void PrintItems()
-        {
-            const String fmt = "ResultField: {0}, ResultText: {1}, ResultSeverity: {2}";
-            TVerificationResult si;
-
-            for (int i = 0; i <= Count - 1; i += 1)
-            {
-                si = (TVerificationResult)(List[i]);
-                System.Console.WriteLine(String.Format(
-                        fmt,
-                        new object[] { si.ResultContext, si.ResultText,
-                                       si.ResultSeverity }
-                        ));
-            }
         }
 
         /// <summary>
@@ -780,26 +1031,122 @@ namespace Ict.Common.Verification
         }
     }
 
+    #endregion
+
+
+    #region TVerificationHelper
+
     /// <summary>
-    /// todoComment
+    /// Helper Methods for dealing with <see cref="TVerificationResult" />s.
     /// </summary>
-    public class Data
+    public static class TVerificationHelper
     {
         /// <summary>
-        /// todoComment
+        /// Checks whether two <see cref="TVerificationResult" />s are completely identical. The comparison
+        /// takes all the data they hold into consideration.
         /// </summary>
-        /// <param name="e"></param>
-        /// <param name="AVerificationResultEntry"></param>
-        /// <param name="AControlName"></param>
-        /// <param name="AResetValue"></param>
-        public static void SetColumnErrorText(DataColumnChangeEventArgs e,
+        /// <param name="AVerificationResult1">First <see cref="TVerificationResult" />.</param>
+        /// <param name="AVerificationResult2">Second <see cref="TVerificationResult" />.</param>
+        /// <returns>True if the two <see cref="TVerificationResult" />s are completely identical,
+        /// otherwise false.</returns>
+        public static bool AreVerificationResultsIdentical(TVerificationResult AVerificationResult1, TVerificationResult AVerificationResult2)
+        {
+            if ((AVerificationResult1 == null)
+                || (AVerificationResult2 == null))
+            {
+                if ((AVerificationResult1 == null)
+                    && (AVerificationResult2 == null))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                if (AVerificationResult1.ResultCode != AVerificationResult2.ResultCode)
+                {
+                    return false;
+                }
+
+                if (AVerificationResult1.ResultContext != AVerificationResult2.ResultContext)
+                {
+                    return false;
+                }
+
+                if (AVerificationResult1.ResultSeverity != AVerificationResult2.ResultSeverity)
+                {
+                    return false;
+                }
+
+                if (AVerificationResult1.ResultText != AVerificationResult2.ResultText)
+                {
+                    return false;
+                }
+
+                if (AVerificationResult1.ResultTextCaption != AVerificationResult2.ResultTextCaption)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Creates a string that contains the data of all the <see cref="TVerificationResult" />s in the Collection.
+        /// </summary>
+        /// <returns>
+        /// String that contains the data of all the <see cref="TVerificationResult" />s in the Collection. The
+        /// data of the <see cref="TVerificationResult" />s are separated by <see cref="System.Environment.NewLine" />s.
+        /// </returns>
+        public static string FormatVerificationCollectionItems(TVerificationResultCollection AVerifColl)
+        {
+            const String PRINTFORMAT = "ResultContext: {0}, ResultText: {1}, ResultTextCaption: {2}, ResultCode {3}, ResultSeverity: {4}.";
+            string ReturnValue = String.Empty;
+
+            TVerificationResult si;
+
+            for (int i = 0; i <= AVerifColl.Count - 1; i += 1)
+            {
+                si = (TVerificationResult)(AVerifColl[i]);
+
+                ReturnValue = ReturnValue + String.Format(PRINTFORMAT,
+                    si.ResultContext, si.ResultText, si.ResultTextCaption, si.ResultCode,
+                    si.ResultSeverity) + Environment.NewLine;
+            }
+
+            if (ReturnValue != String.Empty)
+            {
+                // Remove trailing Environment.NewLine
+                ReturnValue = ReturnValue.Substring(0, ReturnValue.Length - Environment.NewLine.Length);
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Calls the <see cref="DataRow.SetColumnError(DataColumn, String)" /> Method of a
+        /// DataRow's Column to the  <see cref="TVerificationResult.ResultText" /> Property
+        /// of the passed in <see cref="TVerificationResult" />.
+        /// </summary>
+        /// <param name="AEventArgs">An instance of DataColumnChangeEventArgs.</param>
+        /// <param name="AVerificationResultEntry"><see cref="TVerificationResult" /> which has
+        /// its <see cref="TVerificationResult.ResultText" /> Property set.</param>
+        /// <param name="AControlName">Name of the Control to which the <see cref="TVerificationResult" />
+        /// is related.</param>
+        /// <param name="AResetValue">Set this to true to retain the
+        /// <see cref="DataColumnChangeEventArgs.ProposedValue " />.</param>
+        public static void SetColumnErrorText(DataColumnChangeEventArgs AEventArgs,
             TVerificationResult AVerificationResultEntry,
             String AControlName,
             Boolean AResetValue)
         {
-            object PreviousProposedValue = e.ProposedValue;
+            object PreviousProposedValue = AEventArgs.ProposedValue;
 
-            e.Row.SetColumnError(e.Column,
+            AEventArgs.Row.SetColumnError(AEventArgs.Column,
                 AVerificationResultEntry.ResultText + "//[[" + AControlName + "]]");
 
             /*
@@ -808,10 +1155,12 @@ namespace Ict.Common.Verification
              */
             if (!AResetValue)
             {
-                MessageBox.Show("SetColumnErrorText: Before resetting the value: " + e.ProposedValue.ToString());
-                e.ProposedValue = PreviousProposedValue;
-                MessageBox.Show("SetColumnErrorText: After resetting the value: " + e.ProposedValue.ToString());
+                //            MessageBox.Show("SetColumnErrorText: Before resetting the value: " + AEventArgs.ProposedValue.ToString());
+                AEventArgs.ProposedValue = PreviousProposedValue;
+                //            MessageBox.Show("SetColumnErrorText: After resetting the value: " + AEventArgs.ProposedValue.ToString());
             }
         }
     }
+
+    #endregion
 }

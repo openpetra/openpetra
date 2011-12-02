@@ -1058,6 +1058,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 FTemplate.AddToCodelet("SETCONTROLS", "SetControlsManual(AParameters);" + Environment.NewLine);
             }
 
+            if (FCodeStorage.ManualFileExistsAndContains("ValidateDataManual"))
+            {
+                FTemplate.SetCodelet("VALIDATEDATAMANUAL", "true");
+            }
+
             InsertCodeIntoTemplate(AXAMLFilename);
         }
 

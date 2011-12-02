@@ -41,118 +41,358 @@ namespace Ict.Petra.Client.App.Gui
     /// </summary>
     public class TMessages
     {
-        /// <summary>todoComment</summary>
-        public const String StrMessageNumber = "Message Number: ";
+        #region Private Message Strings
 
-        /// <summary>todoComment</summary>
-        public const String StrContext = "Context: ";
+        #region General
 
-        /// <summary>todoComment</summary>
-        public const String StrRelease = "Release: ";
+        /// <summary>Message Number</summary>
+        private static readonly string StrMessageNumber = Catalog.GetString("Message Number: ");
 
-        /// <summary>todoComment</summary>
-        public const String StrDBConcurrencyTitle = "Unable to Save - Concurrent Activity Detected";
+        /// <summary>Context</summary>
+        private static readonly string StrContext = Catalog.GetString("Context: ");
 
-        /// <summary>Notice to translators: when translating the following resourcestrings, be very careful that the message that the user gets displayed does still make sense and is still correct!!!
-        /// (The strings are replaced in quite different ways depending
-        /// on the situation.)</summary>
-        public const String StrDBConcurrencyOtherUser = "Another user {0} has {1} the same record in Table '{2}' after you have" + "\r\n" +
-                                                        "{3} it.{4}" + "\r\n" + "\r\n" +
-                                                        "None of your changes can be saved, since the other user's changes could be overwritten." +
-                                                        "\r\n" + "\r\n";
+        /// <summary>Release</summary>
+        private static readonly string StrRelease = Catalog.GetString("Release: ");
 
-        /// <summary>todoComment</summary>
-        public const String StrDBConcurrencySelf = "You have tried to {1} the same record in Table '{2}' after you have" + "\r\n" + "{3}{4}." +
-                                                   "\r\n" + "\r\n" +
-                                                   "None of your current changes can be saved, since these changes could potentially" + "\r\n" +
-                                                   "conflict with each other." +
-                                                   "\r\n" + "\r\n";
+        /// <summary>Shown when the Form contains invalid data.</summary>
+        private static readonly string StrInvalidDataNeedsCorrectingTitle = Catalog.GetString("Form Contains Invalid Data!");
 
-        /// <summary>todoComment</summary>
-        public const String StrDBConcurrencyActionsRequired = "Actions required:" + "\r\n" +
-                                                              "  * If you were in a screen: please close the screen and re-open it again." + "\r\n" +
-                                                              "  * You will need to repeat your changes and save them again.";
+        /// <summary>Shown when invalid data was entered.</summary>
+        private static readonly string StrInvalidDataTitle = Catalog.GetString("Invalid Data");
 
-        /// <summary>todoComment</summary>
-        public const String StrDBConcurrencyWrittenSelfAction = "modified";
+        /// <summary>Shown when the Form contains invalid data at the poing of saving data.</summary>
+        private static readonly string StrFormSaveInvalidDataNeedsCorrecting = Catalog.GetString(
+            "Data cannot be saved because invalid data has not been corrected:");
 
-        /// <summary>todoComment</summary>
-        public const String StrDBConcurrencyWrittenOthersAction = "modified and saved";
+        /// <summary>Shown when the Form contains warnings at the poing of saving data.</summary>
+        private static readonly string StrFormSaveInvalidDataWarning = Catalog.GetString(
+            "There are warning messages associated with the data in form\r\n(data can be saved, though):");
 
-        /// <summary>todoComment</summary>
-        public const String StrDBConcurrencyWriteOthersAction = "modify and save";
+        /// <summary>Shown when a record contains warnings at the poing of changing to a different record.</summary>
+        private static readonly string StrRecordChangeInvalidDataWarning = Catalog.GetString(
+            "There are warning messages associated with the data in the currently edited record\r\n(you can move away from that record, though):");
 
-        /// <summary>todoComment</summary>
-        public const String StrDBConcurrencyDeletedSelfAction1 = "opened and before you deleted";
+        /// <summary>Shown when a record contains invalid data at the poing of changing to a different record.</summary>
+        private static readonly string StrRecordChangeInvalidDataNeedsCorrecting = Catalog.GetString(
+            "The currently edited record contains invalid data:");
 
-        /// <summary>todoComment</summary>
-        public const String StrDBConcurrencyDeletedSelfAction2 = "deleted it somewhere else";
+        /// <summary>Shown when the Form contains invalid data at the poing of saving data.</summary>
+        private static readonly string StrRecordChangeInvalidDataNeedsCorrectingTitle = Catalog.GetString("Record Contains Invalid Data!");
 
-        /// <summary>todoComment</summary>
-        public const String StrDBConcurrencyDeletedOthersAction = "deleted";
+        #endregion
 
-        /// <summary>todoComment</summary>
-        public const String StrDBConcurrencyDeleteOthersAction = "delete";
+        #region Database Concurrency
 
-        /// <summary>todoComment</summary>
-        public const String StrDBConcurrencyDateInfoOthersAction = " The other user has done this on {0}.";
+        // Notice to translators: when translating the following resourcestrings which are about database concurrency,
+        // be very careful that the message that the user gets displayed does still make sense and is still correct!!!
+        // (The strings are replaced in quite different ways depending on the situation.)
 
-        /// <summary>todoComment</summary>
-        public const String StrDBConcurrencyDateInfoSelfAction = " it in another place on {0}";
+        /// <summary>Database Concurrency Message Title.</summary>
+        private static readonly string StrDBConcurrencyTitle = Catalog.GetString("Unable to Save - Concurrent Activity Detected");
 
-        #region TMessages
+        /// <summary>Part of a Database Concurrency Message.</summary>
+        private static readonly string StrDBConcurrencyOtherUser = Catalog.GetString(
+            "Another user {0} has {1} the same record in Table '{2}' after you have" + "\r\n" +
+            "{3} it.{4}" + "\r\n" + "\r\n" +
+            "None of your changes can be saved, since the other user's changes could be overwritten." +
+            "\r\n" + "\r\n");
+
+        /// <summary>Part of a Database Concurrency Message.</summary>
+        private static readonly string StrDBConcurrencySelf = Catalog.GetString(
+            "You have tried to {1} the same record in Table '{2}' after you have" + "\r\n" + "{3}{4}." +
+            "\r\n" + "\r\n" +
+            "None of your current changes can be saved, since these changes could potentially" + "\r\n" +
+            "conflict with each other." +
+            "\r\n" + "\r\n");
+
+        /// <summary>Part of a Database Concurrency Message.</summary>
+        private static readonly string StrDBConcurrencyActionsRequired = Catalog.GetString("Actions required:" + "\r\n" +
+            "  * If you were in a screen: please close the screen and re-open it again." + "\r\n" +
+            "  * You will need to repeat your changes and save them again.");
+
+        /// <summary>Part of a Database Concurrency Message.</summary>
+        private static readonly string StrDBConcurrencyWrittenSelfAction = Catalog.GetString("modified");
+
+        /// <summary>Part of a Database Concurrency Message.</summary>
+        private static readonly string StrDBConcurrencyWrittenOthersAction = Catalog.GetString("modified and saved");
+
+        /// <summary>Part of a Database Concurrency Message.</summary>
+        private static readonly string StrDBConcurrencyWriteOthersAction = Catalog.GetString("modify and save");
+
+        /// <summary>Part of a Database Concurrency Message.</summary>
+        private static readonly string StrDBConcurrencyDeletedSelfAction1 = Catalog.GetString("opened and before you deleted");
+
+        /// <summary>Part of a Database Concurrency Message.</summary>
+        private static readonly string StrDBConcurrencyDeletedSelfAction2 = Catalog.GetString("deleted it somewhere else");
+
+        /// <summary>Part of a Database Concurrency Message.</summary>
+        private static readonly string StrDBConcurrencyDeletedOthersAction = Catalog.GetString("deleted");
+
+        /// <summary>Part of a Database Concurrency Message.</summary>
+        private static readonly string StrDBConcurrencyDeleteOthersAction = Catalog.GetString("delete");
+
+        /// <summary>Part of a Database Concurrency Message.</summary>
+        private static readonly string StrDBConcurrencyDateInfoOthersAction = Catalog.GetString(" The other user has done this on {0}.");
+
+        /// <summary>Part of a Database Concurrency Message.</summary>
+        private static readonly string StrDBConcurrencyDateInfoSelfAction = Catalog.GetString(" it in another place on {0}");
+        #endregion
+
+        #endregion
+
 
         /// <summary>
-        /// todoComment
+        /// Displays a general warning message in a MessageBox.
         /// </summary>
-        /// <param name="AMessageNumber"></param>
-        /// <param name="AContext"></param>
-        /// <returns></returns>
-        public static String BuildMessageFooter(String AMessageNumber, String AContext)
+        /// <param name="AErrorText">Error text to be displayed.</param>
+        /// <param name="ATitle">Title of the MessageBox.</param>
+        /// <param name="AMessageNumber">Message Number.</param>
+        /// <param name="ATypeWhichRaisesError">Instance of an object which raises the Error.</param>
+        public static void MsgGeneralWarning(String AErrorText, String ATitle, String AMessageNumber, System.Type ATypeWhichRaisesError)
         {
-            return Environment.NewLine + Environment.NewLine + StrMessageNumber + AMessageNumber + Environment.NewLine + StrContext + AContext +
-                   Environment.NewLine + StrRelease + System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString();
+            MsgGeneralError(AErrorText, ATitle, AMessageNumber, ATypeWhichRaisesError, MessageBoxIcon.Warning);
         }
 
         /// <summary>
-        /// todoComment
+        /// Displays a general error message in a MessageBox.
         /// </summary>
-        /// <param name="AErrorText"></param>
-        /// <param name="ATitle"></param>
-        /// <param name="AMessageNumber"></param>
-        /// <param name="ATypeWhichRaisesException"></param>
-        public static void MsgGeneralError(String AErrorText, String ATitle, String AMessageNumber, System.Type ATypeWhichRaisesException)
+        /// <param name="AVerificationResult">TVerificationResult which contains all the information.</param>
+        /// <param name="ATypeWhichRaisesError">Instance of an object which raises the Error.</param>
+        public static void MsgGeneralError(TVerificationResult AVerificationResult, System.Type ATypeWhichRaisesError)
         {
-            if (ATypeWhichRaisesException == null)
+            MessageBoxIcon MsgBoxIcon = GetMbxIconFromVerificationResult(AVerificationResult);
+
+            MsgGeneralError(AVerificationResult.ResultText,
+                AVerificationResult.ResultTextCaption,
+                AVerificationResult.ResultCode,
+                ATypeWhichRaisesError, MsgBoxIcon);
+        }
+
+        /// <summary>
+        /// Displays a general error message in a MessageBox.
+        /// </summary>
+        /// <param name="AErrorText">Error text to be displayed.</param>
+        /// <param name="ATitle">Title of the MessageBox.</param>
+        /// <param name="AMessageNumber">Message Number.</param>
+        /// <param name="ATypeWhichRaisesError">Instance of an object which raises the Error.</param>
+        public static void MsgGeneralError(String AErrorText, String ATitle, String AMessageNumber, System.Type ATypeWhichRaisesError)
+        {
+            MsgGeneralError(AErrorText, ATitle, AMessageNumber, ATypeWhichRaisesError, MessageBoxIcon.Error);
+        }
+
+        /// <summary>
+        /// Displays a general error message in a MessageBox.
+        /// </summary>
+        /// <param name="AErrorText">Error text to be displayed.</param>
+        /// <param name="ATitle">Title of the MessageBox.</param>
+        /// <param name="AMessageNumber">Message Number.</param>
+        /// <param name="ATypeWhichRaisesError">Instance of an object which raises the Error.</param>
+        /// <param name="AIcon">Icon to show in the MessageBox.</param>
+        public static void MsgGeneralError(String AErrorText, String ATitle, String AMessageNumber, System.Type ATypeWhichRaisesError,
+            MessageBoxIcon AIcon)
+        {
+            if (ATypeWhichRaisesError == null)
             {
-                ATypeWhichRaisesException = new StackTrace(false).GetFrame(3).GetMethod().DeclaringType;
+                ATypeWhichRaisesError = new StackTrace(false).GetFrame(2).GetMethod().DeclaringType;
+            }
+
+            // Remove possible trailing double Environment.NewLines
+            // (Double Environment.NewLines happen if several error messages are concatenated and they are each separated by double Environment.NewLines)
+            if (AErrorText.EndsWith(Environment.NewLine + Environment.NewLine))
+            {
+                AErrorText = AErrorText.Substring(0, AErrorText.Length - Environment.NewLine.Length);
             }
 
             MessageBox.Show(AErrorText + BuildMessageFooter(AMessageNumber,
-                    ATypeWhichRaisesException.GetType().ToString()), ATitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    ATypeWhichRaisesError.Name), ATitle, MessageBoxButtons.OK, AIcon);
         }
 
         /// <summary>
-        /// overload
+        /// Displays a verification error message in a MessageBox.
         /// </summary>
-        /// <param name="AErrorText"></param>
-        /// <param name="ATitle"></param>
-        /// <param name="AMessageNumber"></param>
-        public static void MsgGeneralError(String AErrorText, String ATitle, String AMessageNumber)
+        /// <param name="AVerificationResult">TVerificationResult which contains all the information.</param>
+        /// <param name="ATypeWhichRaisesError">Instance of an object which raises the Error.</param>
+        public static void MsgVerificationError(TVerificationResult AVerificationResult, System.Type ATypeWhichRaisesError)
         {
-            MsgGeneralError(AErrorText, ATitle, AMessageNumber, null);
+            MsgVerificationError(AVerificationResult.ResultText,
+                AVerificationResult.ResultTextCaption,
+                AVerificationResult.ResultCode,
+                ATypeWhichRaisesError);
+        }
+
+        /// <summary>
+        /// Displays a verification error message in a MessageBox.
+        /// </summary>
+        /// <param name="AVerificationError">Verification error to be displayed.</param>
+        /// <param name="AMessageNumber">Message Number.</param>
+        /// <param name="ATypeWhichRaisesError">Instance of an object which raises the Error.</param>
+        public static void MsgVerificationError(String AVerificationError, String AMessageNumber, System.Type ATypeWhichRaisesError)
+        {
+            MsgVerificationError(AVerificationError, String.Empty, AMessageNumber, ATypeWhichRaisesError);
+        }
+
+        /// <summary>
+        /// Displays a verification error message in a MessageBox.
+        /// </summary>
+        /// <param name="AVerificationError">Verification error to be displayed.</param>
+        /// <param name="ATitle">Title of the MessageBox.</param>
+        /// <param name="AMessageNumber">Message Number.</param>
+        /// <param name="ATypeWhichRaisesError">Instance of an object which raises the Error.</param>
+        public static void MsgVerificationError(String AVerificationError, String ATitle, String AMessageNumber, System.Type ATypeWhichRaisesError)
+        {
+            string Title = ATitle;
+
+            if (Title == String.Empty)
+            {
+                Title = StrInvalidDataTitle;
+            }
+
+            if (ATypeWhichRaisesError == null)
+            {
+                ATypeWhichRaisesError = new StackTrace(false).GetFrame(2).GetMethod().DeclaringType;
+            }
+
+            MsgGeneralError(AVerificationError, Title, AMessageNumber, ATypeWhichRaisesError);
+        }
+
+        /// <summary>
+        /// Displays a verification error message in a MessageBox. Use this for the data verification check before a record in a Grid is changed.
+        /// </summary>
+        /// <param name="AVerificationError">Verification error to be displayed.</param>
+        /// <param name="ATypeWhichRaisesError">Instance of an object which raises the Error.</param>
+        public static void MsgRecordChangeVerificationError(String AVerificationError, System.Type ATypeWhichRaisesError)
+        {
+            MsgRecordChangeVerificationError(AVerificationError, String.Empty, false, ATypeWhichRaisesError);
+        }
+
+        /// <summary>
+        /// Displays a verification error message in a MessageBox. Use this for the data verification check before a record in a Grid is changed.
+        /// </summary>
+        /// <param name="AVerificationError">Verification error to be displayed.</param>
+        /// <param name="AOnlyWarnings">Set this to true if the items in <paramref name="AVerificationError" />
+        /// are only warnings.</param>
+        /// <param name="ATypeWhichRaisesError">Instance of an object which raises the Error.</param>
+        public static void MsgRecordChangeVerificationError(String AVerificationError, bool AOnlyWarnings, System.Type ATypeWhichRaisesError)
+        {
+            MsgRecordChangeVerificationError(AVerificationError, String.Empty, AOnlyWarnings, ATypeWhichRaisesError);
+        }
+
+        /// <summary>
+        /// Displays a verification error message in a MessageBox. Use this for the data verification check before a record in a Grid is changed.
+        /// </summary>
+        /// <param name="AVerificationError">Verification error to be displayed.</param>
+        /// <param name="AMessageNumber">Message Number.</param>
+        /// <param name="AOnlyWarnings">Set this to true if the items in <paramref name="AVerificationError" />
+        /// are only warnings.</param>
+        /// <param name="ATypeWhichRaisesError">Instance of an object which raises the Error.</param>
+        public static void MsgRecordChangeVerificationError(String AVerificationError,
+            String AMessageNumber,
+            bool AOnlyWarnings,
+            System.Type ATypeWhichRaisesError)
+        {
+            string Heading;
+            MessageBoxIcon Icon;
+
+            if (AMessageNumber == String.Empty)
+            {
+                AMessageNumber = PetraErrorCodes.ERR_GENERAL_VERIFICATION_ERROR;
+            }
+
+            if (ATypeWhichRaisesError == null)
+            {
+                ATypeWhichRaisesError = new StackTrace(false).GetFrame(2).GetMethod().DeclaringType;
+            }
+
+            if (AOnlyWarnings)
+            {
+                Heading = StrRecordChangeInvalidDataWarning;
+                Icon = MessageBoxIcon.Warning;
+            }
+            else
+            {
+                Heading = StrRecordChangeInvalidDataNeedsCorrecting;
+                Icon = MessageBoxIcon.Error;
+            }
+
+            MsgGeneralError(Heading + Environment.NewLine + Environment.NewLine +
+                AVerificationError, Catalog.GetString(
+                    TMessages.StrRecordChangeInvalidDataNeedsCorrectingTitle), AMessageNumber, ATypeWhichRaisesError, Icon);
+        }
+
+        /// <summary>
+        /// Displays a verification error message in a MessageBox. Use this for the final data verification before a Form's data is saved.
+        /// </summary>
+        /// <param name="AVerificationError">Verification error to be displayed.</param>
+        /// <param name="ATypeWhichRaisesError">Instance of an object which raises the Error.</param>
+        public static void MsgFormSaveVerificationError(String AVerificationError, System.Type ATypeWhichRaisesError)
+        {
+            MsgFormSaveVerificationError(AVerificationError, String.Empty, false, ATypeWhichRaisesError);
+        }
+
+        /// <summary>
+        /// Displays a verification error message in a MessageBox. Use this for the final data verification before a Form's data is saved.
+        /// </summary>
+        /// <param name="AVerificationError">Verification error to be displayed.</param>
+        /// <param name="AOnlyWarnings">Set this to true if the items in <paramref name="AVerificationError" />
+        /// are only warnings.</param>
+        /// <param name="ATypeWhichRaisesError">Instance of an object which raises the Error.</param>
+        public static void MsgFormSaveVerificationError(String AVerificationError, bool AOnlyWarnings, System.Type ATypeWhichRaisesError)
+        {
+            MsgFormSaveVerificationError(AVerificationError, String.Empty, AOnlyWarnings, ATypeWhichRaisesError);
+        }
+
+        /// <summary>
+        /// Displays a verification error message in a MessageBox. Use this for the final data verification before a Form's data is saved.
+        /// </summary>
+        /// <param name="AVerificationError">Verification error to be displayed.</param>
+        /// <param name="AMessageNumber">Message Number.</param>
+        /// <param name="AOnlyWarnings">Set this to true if the items in <paramref name="AVerificationError" />
+        /// are only warnings.</param>
+        /// <param name="ATypeWhichRaisesError">Instance of an object which raises the Error.</param>
+        public static void MsgFormSaveVerificationError(String AVerificationError,
+            String AMessageNumber,
+            bool AOnlyWarnings,
+            System.Type ATypeWhichRaisesError)
+        {
+            string Heading;
+            MessageBoxIcon Icon;
+
+            if (AMessageNumber == String.Empty)
+            {
+                AMessageNumber = PetraErrorCodes.ERR_GENERAL_VERIFICATION_ERROR;
+            }
+
+            if (ATypeWhichRaisesError == null)
+            {
+                ATypeWhichRaisesError = new StackTrace(false).GetFrame(2).GetMethod().DeclaringType;
+            }
+
+            if (AOnlyWarnings)
+            {
+                Heading = StrFormSaveInvalidDataWarning;
+                Icon = MessageBoxIcon.Warning;
+            }
+            else
+            {
+                Heading = StrFormSaveInvalidDataNeedsCorrecting;
+                Icon = MessageBoxIcon.Error;
+            }
+
+            MsgGeneralError(Heading + Environment.NewLine + Environment.NewLine +
+                AVerificationError, Catalog.GetString(TMessages.StrInvalidDataNeedsCorrectingTitle), AMessageNumber,
+                ATypeWhichRaisesError, Icon);
         }
 
         /// <summary>
         /// todoComment
         /// </summary>
         /// <param name="AException"></param>
-        /// <param name="ATypeWhichRaisesException"></param>
-        public static void MsgSecurityException(ESecurityGroupAccessDeniedException AException, System.Type ATypeWhichRaisesException)
+        /// <param name="ATypeWhichRaisesError"></param>
+        public static void MsgSecurityException(ESecurityGroupAccessDeniedException AException, System.Type ATypeWhichRaisesError)
         {
             MessageBox.Show(AException.Message +
-                BuildMessageFooter(ErrorCodes.PETRAERRORCODE_NOPERMISSIONTOACCESSGROUP,
-                    ATypeWhichRaisesException.GetType().ToString()), Catalog.GetString("Security Violation"), MessageBoxButtons.OK,
+                BuildMessageFooter(PetraErrorCodes.ERR_NOPERMISSIONTOACCESSGROUP,
+                    ATypeWhichRaisesError.Name), Catalog.GetString("Security Violation"), MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
         }
 
@@ -160,12 +400,12 @@ namespace Ict.Petra.Client.App.Gui
         /// todoComment
         /// </summary>
         /// <param name="AException"></param>
-        /// <param name="ATypeWhichRaisesException"></param>
-        public static void MsgSecurityException(ESecurityAccessDeniedException AException, System.Type ATypeWhichRaisesException)
+        /// <param name="ATypeWhichRaisesError"></param>
+        public static void MsgSecurityException(ESecurityAccessDeniedException AException, System.Type ATypeWhichRaisesError)
         {
             MessageBox.Show(AException.Message +
-                BuildMessageFooter(ErrorCodes.PETRAERRORCODE_NOPERMISSIONTOACCESSMODULE,
-                    ATypeWhichRaisesException.GetType().ToString()), Catalog.GetString("Security Violation"), MessageBoxButtons.OK,
+                BuildMessageFooter(PetraErrorCodes.ERR_NOPERMISSIONTOACCESSMODULE,
+                    ATypeWhichRaisesError.Name), Catalog.GetString("Security Violation"), MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
         }
 
@@ -173,14 +413,14 @@ namespace Ict.Petra.Client.App.Gui
         /// todoComment
         /// </summary>
         /// <param name="AException"></param>
-        /// <param name="ATypeWhichRaisesException"></param>
-        public static void MsgSecurityException(ESecurityDBTableAccessDeniedException AException, System.Type ATypeWhichRaisesException)
+        /// <param name="ATypeWhichRaisesError"></param>
+        public static void MsgSecurityException(ESecurityDBTableAccessDeniedException AException, System.Type ATypeWhichRaisesError)
         {
             String TableLabelName = StringHelper.UpperCamelCase(AException.DBTable);
 
             MessageBox.Show(String.Format(Catalog.GetString("You do not have permission to {0} {1} records."), AException.AccessRight,
-                    TableLabelName) + BuildMessageFooter(ErrorCodes.PETRAERRORCODE_NOPERMISSIONTOACCESSTABLE,
-                    ATypeWhichRaisesException.GetType().ToString()), Catalog.GetString("Security Violation"), MessageBoxButtons.OK,
+                    TableLabelName) + BuildMessageFooter(PetraErrorCodes.ERR_NOPERMISSIONTOACCESSTABLE,
+                    ATypeWhichRaisesError.Name), Catalog.GetString("Security Violation"), MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
         }
 
@@ -188,10 +428,9 @@ namespace Ict.Petra.Client.App.Gui
         /// todoComment
         /// </summary>
         /// <param name="AException"></param>
-        /// <param name="ATypeWhichRaisesException"></param>
-        public static void MsgSecurityException(ESecurityPartnerAccessDeniedException AException, System.Type ATypeWhichRaisesException)
+        public static void MsgSecurityException(ESecurityPartnerAccessDeniedException AException)
         {
-            MessageBox.Show(MsgSecurityExceptionString(AException, ATypeWhichRaisesException), Catalog.GetString(
+            MessageBox.Show(MsgSecurityExceptionString(AException), Catalog.GetString(
                     "Security Violation"), MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
         }
@@ -199,9 +438,9 @@ namespace Ict.Petra.Client.App.Gui
         /// <summary>
         /// todoComment
         /// </summary>
-        public static string MsgSecurityExceptionString(ESecurityPartnerAccessDeniedException AException, System.Type ATypeWhichRaisesException)
+        public static string MsgSecurityExceptionString(ESecurityPartnerAccessDeniedException AException)
         {
-            const string MESSAGE_ACCESS_DENIED = "Access to Partner {0}denied.";
+            string StrMessageAccessDenied = Catalog.GetString("Access to Partner {0}denied.");
             string SpecificMessageText;
             TPartnerAccessLevelEnum AccessLevel;
 
@@ -209,7 +448,7 @@ namespace Ict.Petra.Client.App.Gui
                 typeof(TPartnerAccessLevelEnum),
                 Enum.GetName(typeof(TPartnerAccessLevelEnum), AException.AccessLevel));
 
-            SpecificMessageText = String.Format(MESSAGE_ACCESS_DENIED,
+            SpecificMessageText = String.Format(StrMessageAccessDenied,
                 Environment.NewLine + "    " + AException.PartnerShortName +
                 " [" + AException.PartnerKey.ToString() + "]" + Environment.NewLine);
 
@@ -218,12 +457,12 @@ namespace Ict.Petra.Client.App.Gui
                 case TPartnerAccessLevelEnum.palRestrictedToUser:
                 case TPartnerAccessLevelEnum.palRestrictedToGroup:
                     SpecificMessageText = SpecificMessageText + Environment.NewLine + Environment.NewLine +
-                                          "Reason: Partner is a Private Partner of another user.";
+                                          Catalog.GetString("Reason: Partner is a Private Partner of another user.");
                     break;
 
                 case TPartnerAccessLevelEnum.palRestrictedByFoundationOwnership:
                     SpecificMessageText = SpecificMessageText + Environment.NewLine + Environment.NewLine +
-                                          "Reason: You must be the owner of a foundation in order to edit it.";
+                                          Catalog.GetString("Reason: You must be the owner of a foundation in order to edit it.");
                     break;
             }
 
@@ -234,8 +473,8 @@ namespace Ict.Petra.Client.App.Gui
         /// todoComment
         /// </summary>
         /// <param name="AException"></param>
-        /// <param name="ATypeWhichRaisesException"></param>
-        public static void MsgDBConcurrencyException(EDBConcurrencyException AException, System.Type ATypeWhichRaisesException)
+        /// <param name="ATypeWhichRaisesError"></param>
+        public static void MsgDBConcurrencyException(EDBConcurrencyException AException, System.Type ATypeWhichRaisesError)
         {
             String TableLabelName;
             String UsersAction;
@@ -333,30 +572,121 @@ namespace Ict.Petra.Client.App.Gui
 
             MessageBox.Show(String.Format(MessageString,
                     ReplacePlaceholdersArray) + StrDBConcurrencyActionsRequired +
-                BuildMessageFooter(ErrorCodes.PETRAERRORCODE_CONCURRENTCHANGES,
-                    ATypeWhichRaisesException.GetType().ToString()), StrDBConcurrencyTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                BuildMessageFooter(PetraErrorCodes.ERR_CONCURRENTCHANGES,
+                    ATypeWhichRaisesError.Name), StrDBConcurrencyTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
         /// <summary>
-        /// overload
+        /// Displays a MessageBox that shows a question and returns the users' choice.
         /// </summary>
-        /// <param name="AVerificationResult"></param>
-        /// <param name="ATypeWhichRaisesException"></param>
-        public static void MsgGeneralError(TVerificationResult AVerificationResult, System.Type ATypeWhichRaisesException)
+        /// <param name="AErrCodeInfo">ErrCodeInfo which contains all the information.</param>
+        /// <param name="ATypeWhichRaisesError">Instance of an object which raises the Error.</param>
+        /// <param name="ADefaultToAnswerYes">Makes 'Yes' the button which is selected by default if true,
+        /// otherwise 'No' is selected by default.</param>
+        /// <returns>Users' choice.</returns>
+        public static DialogResult MsgQuestion(ErrCodeInfo AErrCodeInfo, System.Type ATypeWhichRaisesError, bool ADefaultToAnswerYes)
         {
-            MsgGeneralError(AVerificationResult.ResultText,
+            return MsgQuestion(new TVerificationResult(ATypeWhichRaisesError, AErrCodeInfo), ATypeWhichRaisesError, ADefaultToAnswerYes);
+        }
+
+        /// <summary>
+        /// Displays a MessageBox that shows a question and returns the users' choice.
+        /// </summary>
+        /// <param name="AVerificationResult">TVerificationResult which contains all the information.</param>
+        /// <param name="ATypeWhichRaisesError">Instance of an object which raises the Error.</param>
+        /// <param name="ADefaultToAnswerYes">Makes 'Yes' the button which is selected by default if true,
+        /// otherwise 'No' is selected by default.</param>
+        /// <returns>Users' choice.</returns>
+        public static DialogResult MsgQuestion(TVerificationResult AVerificationResult, System.Type ATypeWhichRaisesError, bool ADefaultToAnswerYes)
+        {
+            MessageBoxIcon MsgBoxIcon = GetMbxIconFromVerificationResult(AVerificationResult);
+
+            return MsgQuestion(AVerificationResult.ResultText,
                 AVerificationResult.ResultTextCaption,
                 AVerificationResult.ResultCode,
-                ATypeWhichRaisesException);
+                ATypeWhichRaisesError, MsgBoxIcon, ADefaultToAnswerYes);
         }
 
         /// <summary>
-        /// overload
+        /// Displays a MessageBox that shows a question and returns the users' choice.
         /// </summary>
-        /// <param name="AVerificationResult"></param>
-        public static void MsgGeneralError(TVerificationResult AVerificationResult)
+        /// <param name="AErrorText">Error text to be displayed.</param>
+        /// <param name="ATitle">Title of the MessageBox.</param>
+        /// <param name="AMessageNumber">Message Number.</param>
+        /// <param name="ATypeWhichRaisesError">Instance of an object which raises the Error.</param>
+        /// <param name="ADefaultToAnswerYes">Makes 'Yes' the button which is selected by default if true,
+        /// otherwise 'No' is selected by default.</param>
+        /// <returns>Users' choice.</returns>
+        public static DialogResult MsgQuestion(String AErrorText, String ATitle, String AMessageNumber, System.Type ATypeWhichRaisesError,
+            bool ADefaultToAnswerYes)
         {
-            MsgGeneralError(AVerificationResult, null);
+            return MsgQuestion(AErrorText, ATitle, AMessageNumber, ATypeWhichRaisesError, MessageBoxIcon.Question, ADefaultToAnswerYes);
+        }
+
+        /// <summary>
+        /// Displays a MessageBox that shows a question and returns the users' choice.
+        /// </summary>
+        /// <param name="AErrorText">Error text to be displayed.</param>
+        /// <param name="ATitle">Title of the MessageBox.</param>
+        /// <param name="AMessageNumber">Message Number.</param>
+        /// <param name="ATypeWhichRaisesError">Instance of an object which raises the Error.</param>
+        /// <param name="AIcon">Icon to show in the MessageBox.</param>
+        /// <param name="ADefaultToAnswerYes">Makes 'Yes' the button which is selected by default if true,
+        /// otherwise 'No' is selected by default.</param>
+        /// <returns>Users' choice.</returns>
+        public static DialogResult MsgQuestion(String AErrorText, String ATitle, String AMessageNumber, System.Type ATypeWhichRaisesError,
+            MessageBoxIcon AIcon, bool ADefaultToAnswerYes)
+        {
+            MessageBoxDefaultButton DefaultButton = MessageBoxDefaultButton.Button2;
+
+            if (ATypeWhichRaisesError == null)
+            {
+                ATypeWhichRaisesError = new StackTrace(false).GetFrame(2).GetMethod().DeclaringType;
+            }
+
+            if (ADefaultToAnswerYes)
+            {
+                DefaultButton = MessageBoxDefaultButton.Button1;
+            }
+
+            return MessageBox.Show(AErrorText + BuildMessageFooter(AMessageNumber,
+                    ATypeWhichRaisesError.Name), ATitle, MessageBoxButtons.YesNo, AIcon, DefaultButton);
+        }
+
+        #region Helper Methods
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        /// <param name="AMessageNumber"></param>
+        /// <param name="AContext"></param>
+        /// <returns></returns>
+        private static String BuildMessageFooter(String AMessageNumber, String AContext)
+        {
+            return Environment.NewLine + Environment.NewLine + StrMessageNumber + AMessageNumber + "     " + StrContext + AContext +
+                   Environment.NewLine + StrRelease + System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString();
+        }
+
+        /// <summary>
+        /// Returns the matching <see cref="MessageBoxIcon" /> for a <see cref="TVerificationResult" />.
+        /// </summary>
+        /// <param name="AVerificationResult"><see cref="TVerificationResult" /> to inspect.</param>
+        /// <returns><see cref="MessageBoxIcon" /> for the <see cref="TVerificationResult" /> passed in in Argument
+        /// <paramref name="AVerificationResult" />.</returns>
+        private static MessageBoxIcon GetMbxIconFromVerificationResult(TVerificationResult AVerificationResult)
+        {
+            if (AVerificationResult.ResultSeverity == TResultSeverity.Resv_Critical)
+            {
+                return MessageBoxIcon.Error;
+            }
+            else if (AVerificationResult.ResultSeverity == TResultSeverity.Resv_Info)
+            {
+                return MessageBoxIcon.Information;
+            }
+            else
+            {
+                return MessageBoxIcon.Warning;
+            }
         }
 
         #endregion

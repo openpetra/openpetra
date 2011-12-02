@@ -328,7 +328,7 @@ namespace Ict.Petra.Client.MCommon.Gui
         {
             TVerificationResult VerificationResultReturned;
             TScreenVerificationResult VerificationResultEntry;
-            Control BoundControl;
+            Control BoundControl = null;
 
             // MessageBox.Show('Column ''' + e.Column.ToString + ''' is changing...');
             try
@@ -336,21 +336,14 @@ namespace Ict.Petra.Client.MCommon.Gui
                 if (TPartnerAddressVerification.VerifyPartnerLocationData(e, FPetraUtilsObject.VerificationResultCollection,
                         out VerificationResultReturned) == false)
                 {
-                    if (VerificationResultReturned.ResultCode != ErrorCodes.PETRAERRORCODE_VALUEUNASSIGNABLE)
+                    if (VerificationResultReturned.ResultCode != PetraErrorCodes.ERR_VALUEUNASSIGNABLE)
                     {
-                        // TODO 1 ochristiank cUI : Make a message library and call a method there to show verification errors.
-                        MessageBox.Show(
-                            VerificationResultReturned.ResultText + Environment.NewLine + Environment.NewLine + "Message Number: " +
-                            VerificationResultReturned.ResultCode + Environment.NewLine + "Context: " + this.GetType().ToString() +
-                            Environment.NewLine +
-                            "Release: ",
-                            VerificationResultReturned.ResultTextCaption,
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Error);
-                        BoundControl = TDataBinding.GetBoundControlForColumn(BindingContext[FPartnerLocationDV], e.Column);
+                        TMessages.MsgVerificationError(VerificationResultReturned, this.GetType());
+
+// TODO                        BoundControl = TDataBinding.GetBoundControlForColumn(BindingContext[FPartnerLocationDV], e.Column);
 
                         // MessageBox.Show('Bound control: ' + BoundControl.ToString);
-                        BoundControl.Focus();
+// TODO                        BoundControl.Focus();
 
                         if (FPetraUtilsObject.VerificationResultCollection.Contains(e.Column))
                         {
@@ -377,10 +370,10 @@ namespace Ict.Petra.Client.MCommon.Gui
 
                         // need to assign this to make the change actually visible...
                         cmbLocationType.SelectedItem = e.ProposedValue.ToString();
-                        BoundControl = TDataBinding.GetBoundControlForColumn(BindingContext[FPartnerLocationDV], e.Column);
+// TODO                        BoundControl = TDataBinding.GetBoundControlForColumn(BindingContext[FPartnerLocationDV], e.Column);
 
                         // MessageBox.Show('Bound control: ' + BoundControl.ToString);
-                        BoundControl.Focus();
+// TODO                        BoundControl.Focus();
                     }
                 }
                 else

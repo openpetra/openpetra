@@ -372,7 +372,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 }
             }
 
-            return !AVerifications.HasCriticalError();
+            return !AVerifications.HasCriticalErrors;
         }
 
         /// <summary>
@@ -483,7 +483,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 }
             }
 
-            return !AVerifications.HasCriticalError();
+            return !AVerifications.HasCriticalErrors;
         }
 
         /// Helper class for storing the amounts of a batch at posting level for account/costcentre combinations
@@ -961,15 +961,15 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 ABatchAccess.SubmitChanges(AMainDS.ABatch, Transaction, out AVerifications);
 
-                if (!AVerifications.HasCriticalError())
+                if (!AVerifications.HasCriticalErrors)
                 {
                     AJournalAccess.SubmitChanges(AMainDS.AJournal, Transaction, out AVerifications);
 
-                    if (!AVerifications.HasCriticalError())
+                    if (!AVerifications.HasCriticalErrors)
                     {
                         ATransactionAccess.SubmitChanges(AMainDS.ATransaction, Transaction, out AVerifications);
 
-                        if (!AVerifications.HasCriticalError())
+                        if (!AVerifications.HasCriticalErrors)
                         {
                             // write glm master and periods
                             foreach (AGeneralLedgerMasterRow glmMaster in AMainDS.AGeneralLedgerMaster.Rows)
@@ -989,7 +989,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                         out AVerifications,
                                         Transaction);
 
-                                    if (AVerifications.HasCriticalError())
+                                    if (AVerifications.HasCriticalErrors)
                                     {
                                         DBAccess.GDBAccessObj.RollbackTransaction();
                                         return false;
@@ -1013,7 +1013,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
                                 AGeneralLedgerMasterAccess.SubmitChanges(DBMasterTable, Transaction, out AVerifications);
 
-                                if (AVerifications.HasCriticalError())
+                                if (AVerifications.HasCriticalErrors)
                                 {
                                     DBAccess.GDBAccessObj.RollbackTransaction();
                                     return false;
@@ -1041,7 +1041,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
                                     AGeneralLedgerMasterPeriodAccess.SubmitChanges(DBPeriodTable, Transaction, out AVerifications);
 
-                                    if (AVerifications.HasCriticalError())
+                                    if (AVerifications.HasCriticalErrors)
                                     {
                                         DBAccess.GDBAccessObj.RollbackTransaction();
                                         return false;
@@ -1064,7 +1064,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 TLogging.Log(e.StackTrace);
             }
 
-            if (AVerifications.HasCriticalError())
+            if (AVerifications.HasCriticalErrors)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
                 return false;
