@@ -60,5 +60,22 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         {
             CreateNewPInternationalPostalType();
         }
+
+        private void ValidateDataManual(PInternationalPostalTypeRow ARow)
+        {
+            DataColumn ValidationColumn;
+
+            // 'Description' must have a value
+            ValidationColumn = ARow.Table.Columns[PInternationalPostalTypeTable.ColumnDescriptionId];
+            FPetraUtilsObject.VerificationResultCollection.AddOrRemove(
+                TStringChecks.StringMustNotBeEmpty(ARow.Description,
+                    lblDetailDescription.Text,
+                    this, ValidationColumn, txtDetailDescription), ValidationColumn);
+
+//            ValidationColumn = ARow.Table.Columns[PInternationalPostalTypeTable.ColumnInternatPostalTypeCodeId];
+//            FPetraUtilsObject.VerificationResultCollection.AddOrRemove(
+//                new TScreenVerificationResult("TestContext", ValidationColumn, "test warning", txtDetailInternatPostalTypeCode, TResultSeverity.Resv_Noncritical),
+//               ValidationColumn);
+        }
     }
 }

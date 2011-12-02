@@ -22,10 +22,13 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Data;
 
 using Ict.Common;
+using Ict.Common.Verification;
 using Ict.Common.Data;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Shared.MFinance.Gift.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
@@ -159,6 +162,46 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 SelectTab(eGiftTabs.Transactions);
             }
+        }
+
+        private void ValidateDataManual()
+        {
+            AGiftBatchRow InspectRow;
+            AGiftDetailRow InspectRow2;
+
+            for (int Counter = 0; Counter < FMainDS.AGiftBatch.Rows.Count; Counter++)
+            {
+                InspectRow = (AGiftBatchRow)FMainDS.AGiftBatch.Rows[Counter];
+
+                DataColumn ValidationColumn;
+//TLogging.Log("ValidateDataManual: AnalysisTypeCode = " + ARow.AnalysisTypeCode.ToString() + "; AnalysisTypeDescription = " + ARow.AnalysisTypeDescription.ToString() );
+                // 'International Telephone Code' must be positive or 0
+                ValidationColumn = InspectRow.Table.Columns[AGiftBatchTable.ColumnBatchDescriptionId];
+
+                FPetraUtilsObject.VerificationResultCollection.AddOrRemove(
+                    TStringChecks.StringMustNotBeEmpty(InspectRow.BatchDescription,
+                        "Batch Description for Batch Number " + InspectRow.BatchNumber.ToString(),
+                        this, ValidationColumn, ucoBatches), ValidationColumn);
+            }
+
+            for (int Counter = 0; Counter < FMainDS.AGiftDetail.Rows.Count; Counter++)
+            {
+                InspectRow2 = (AGiftDetailRow)FMainDS.AGiftDetail.Rows[Counter];
+
+                DataColumn ValidationColumn;
+//TLogging.Log("ValidateDataManual: AnalysisTypeCode = " + ARow.AnalysisTypeCode.ToString() + "; AnalysisTypeDescription = " + ARow.AnalysisTypeDescription.ToString() );
+                // 'International Telephone Code' must be positive or 0
+                ValidationColumn = InspectRow2.Table.Columns[AGiftDetailTable.ColumnGiftCommentOneId];
+
+                FPetraUtilsObject.VerificationResultCollection.AddOrRemove(
+                    TStringChecks.StringMustNotBeEmpty(InspectRow2.GiftCommentOne,
+                        "Gift Comment One for Batch Number " + InspectRow2.BatchNumber.ToString(),
+                        this, ValidationColumn, ucoTransactions), ValidationColumn);
+            }
+
+            FPetraUtilsObject.VerificationResultCollection.Add(new TScreenVerificationResult("TestContext",
+                    FMainDS.AGiftBatch.Columns[AGiftBatchTable.ColumnBatchDescriptionId], "test warning", ucoBatches,
+                    TResultSeverity.Resv_Noncritical));
         }
     }
 }

@@ -53,22 +53,24 @@ namespace Ict.Petra.Client.MPartner.Gui
     /// </summary>
     public partial class TUC_PartnerEdit_CollapsiblePart : TGrpCollapsible
     {
-        /// <summary>todoComment</summary>
-        public const String StrUnrecognisedPartnerClass = "Unrecognised Partner Class '";
+        #region Resoucestrings
 
-        /// <summary>todoComment</summary>
-        public const String StrStatusCodeFamilyMembersPromotion1 = "Partner Status change from '{0}' to '{1}':" + "\r\n" +
-                                                                   "Should Petra apply this change to all Family Members of this Family?";
+        private static readonly string StrUnrecognisedPartnerClass = Catalog.GetString("Unrecognised Partner Class '{0}'!");
 
-        /// <summary>todoComment</summary>
-        public const String StrStatusCodeFamilyMembersPromotion2 = "The Family has the following Family Members:";
+        private static readonly string StrStatusCodeFamilyMembersPromotion1 = Catalog.GetString(
+            "Partner Status change from '{0}' to '{1}':\r\n" +
+            "Should openPETRA apply this change to all Family Members of this Family?");
 
-        /// <summary>todoComment</summary>
-        public const String StrStatusCodeFamilyMembersPromotion3 = "(Choose 'Cancel' to cancel the change of the Partner Status" + "\r\n" +
-                                                                   "for this Partner).";
+        private static readonly string StrStatusCodeFamilyMembersPromotion2 = Catalog.GetString(
+            "The Family has the following Family Members:");
 
-        /// <summary>todoComment</summary>
-        public const String StrStatusCodeFamilyMembersPromotionTitle = "Promote Partner Status Change to All Family Members?";
+        private static readonly string StrStatusCodeFamilyMembersPromotion3 = Catalog.GetString(
+            "(Choose 'Cancel' to cancel the change of the Partner Status\r\nfor this Partner).");
+
+        private static readonly string StrStatusCodeFamilyMembersPromotionTitle = Catalog.GetString(
+            "Promote Partner Status Change to All Family Members?");
+
+        #endregion
 
         private PartnerEditTDS FMainDS;
 
@@ -406,7 +408,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     break;
 
                 default:
-                    MessageBox.Show(StrUnrecognisedPartnerClass + FPartnerClass + "'!");
+                    MessageBox.Show(String.Format(StrUnrecognisedPartnerClass, FPartnerClass));
                     break;
             }
         }
@@ -828,28 +830,21 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             TVerificationResult VerificationResultReturned;
             TScreenVerificationResult VerificationResultEntry;
-            Control BoundControl;
+            Control BoundControl = null;
 
             // MessageBox.Show('Column ''' + e.Column.ToString + ''' is changing...');
             try
             {
                 if (TPartnerVerification.VerifyPartnerData(e, out VerificationResultReturned) == false)
                 {
-                    if (VerificationResultReturned.ResultCode != ErrorCodes.PETRAERRORCODE_PARTNERSTATUSMERGEDCHANGEUNDONE)
+                    if (VerificationResultReturned.ResultCode != PetraErrorCodes.ERR_PARTNERSTATUSMERGEDCHANGEUNDONE)
                     {
-                        // TODO 1 ochristiank cUI : Make a message library and call a method there to show verification errors.
-                        MessageBox.Show(
-                            VerificationResultReturned.ResultText + Environment.NewLine + Environment.NewLine + "Message Number: " +
-                            VerificationResultReturned.ResultCode + Environment.NewLine + "Context: " + this.GetType().ToString() +
-                            Environment.NewLine +
-                            "Release: ",
-                            VerificationResultReturned.ResultTextCaption,
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Error);
-                        BoundControl = TDataBinding.GetBoundControlForColumn(BindingContext[FMainDS.PPartner], e.Column);
+                        TMessages.MsgVerificationError(VerificationResultReturned, this.GetType());
+
+// TODO                        BoundControl = TDataBinding.GetBoundControlForColumn(BindingContext[FMainDS.PPartner], e.Column);
 
                         // MessageBox.Show('Bound control: ' + BoundControl.ToString);
-                        BoundControl.Focus();
+// TODO                        BoundControl.Focus();
                         VerificationResultEntry = new TScreenVerificationResult(this,
                             e.Column,
                             VerificationResultReturned.ResultText,
@@ -869,19 +864,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                         // need to assign this to make the change actually visible...
                         cmbPartnerStatus.SelectedItem = e.ProposedValue.ToString();
 
-                        // TODO 1 ochristiank cUI : Make a message library and call a method there to show verification errors.
-                        MessageBox.Show(
-                            VerificationResultReturned.ResultText + Environment.NewLine + Environment.NewLine + "Message Number: " +
-                            VerificationResultReturned.ResultCode + Environment.NewLine + "Context: " + this.GetType().ToString() +
-                            Environment.NewLine +
-                            "Release: ",
-                            VerificationResultReturned.ResultTextCaption,
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Error);
-                        BoundControl = TDataBinding.GetBoundControlForColumn(BindingContext[FPartnerDefaultView], e.Column);
+                        TMessages.MsgVerificationError(VerificationResultReturned, this.GetType());
+
+// TODO                        BoundControl = TDataBinding.GetBoundControlForColumn(BindingContext[FPartnerDefaultView], e.Column);
 
                         // MessageBox.Show('Bound control: ' + BoundControl.ToString);
-                        BoundControl.Focus();
+// TODO                        BoundControl.Focus();
                     }
                 }
                 else
@@ -924,28 +912,21 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             TVerificationResult VerificationResultReturned;
             TScreenVerificationResult VerificationResultEntry;
-            Control BoundControl;
+            Control BoundControl = null;
 
             // MessageBox.Show('Column ''' + e.Column.ToString + ''' is changing...');
             try
             {
                 if (TPartnerVerification.VerifyUnitData(e, FMainDS, out VerificationResultReturned) == false)
                 {
-                    if (VerificationResultReturned.ResultCode != ErrorCodes.PETRAERRORCODE_UNITNAMECHANGEUNDONE)
+                    if (VerificationResultReturned.ResultCode != PetraErrorCodes.ERR_UNITNAMECHANGEUNDONE)
                     {
-                        // TODO 1 ochristiank cUI : Make a message library and call a method there to show verification errors.
-                        MessageBox.Show(
-                            VerificationResultReturned.ResultText + Environment.NewLine + Environment.NewLine + "Message Number: " +
-                            VerificationResultReturned.ResultCode + Environment.NewLine + "Context: " + this.GetType().ToString() +
-                            Environment.NewLine +
-                            "Release: ",
-                            VerificationResultReturned.ResultTextCaption,
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Error);
-                        BoundControl = TDataBinding.GetBoundControlForColumn(BindingContext[FMainDS.PUnit], e.Column);
+                        TMessages.MsgVerificationError(VerificationResultReturned, this.GetType());
+
+// TODO                        BoundControl = TDataBinding.GetBoundControlForColumn(BindingContext[FMainDS.PUnit], e.Column);
 
                         // MessageBox.Show('Bound control: ' + BoundControl.ToString);
-                        BoundControl.Focus();
+// TODO                        BoundControl.Focus();
                         VerificationResultEntry = new TScreenVerificationResult(this,
                             e.Column,
                             VerificationResultReturned.ResultText,
@@ -964,10 +945,10 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                         // need to assign this to make the change actually visible...
                         txtOtherName.Text = e.ProposedValue.ToString();
-                        BoundControl = TDataBinding.GetBoundControlForColumn(BindingContext[FMainDS.PUnit], e.Column);
+// TODO                        BoundControl = TDataBinding.GetBoundControlForColumn(BindingContext[FMainDS.PUnit], e.Column);
 
                         // MessageBox.Show('Bound control: ' + BoundControl.ToString);
-                        BoundControl.Focus();
+// TODO                        BoundControl.Focus();
                     }
                 }
                 else

@@ -39,29 +39,27 @@ namespace Ict.Petra.Client.MPartner.Verification
     /// </summary>
     public class TPartnerDetailsBankVerification
     {
-        /// <summary>todoComment</summary>
-        public const String StrBICSwiftCodeInvalid = "The BIC / Swift code you entered for this bank is invalid!" + "\r\n" + "\r\n" +
-                                                     "  Here is the format of a valid BIC: 'BANKCCLL' or 'BANKCCLLBBB'." + "\r\n" +
-                                                     "    BANK = Bank Code. This code identifies the bank world wide." + "\r\n" +
-                                                     "    CC   = Country Code. This is the ISO country code of the country the bank is in." +
-                                                     "\r\n" +
-                                                     "    LL   = Location Code. This code gives the town where the bank is located." + "\r\n" +
-                                                     "    BBB  = Branch Code. This code denotes the branch of the bank." + "\r\n" +
-                                                     "  BICs have either 8 or 11 characters." + "\r\n";
+        /// <summary>BIC/SWIFT Code entered.</summary>
+        [ErrCodeAttribute("BIC/SWIFT Code entered.")]
+        public const String ERR_BRANCHCODELIKEBIC = "PARTN.00005V";
 
         /// <summary>todoComment</summary>
-        public const String StrBranchCodeLikeBIC1 = "The ";
+        private static readonly string StrBICSwiftCodeInvalid = Catalog.GetString(
+            "The BIC / Swift code you entered for this bank is invalid!" + "\r\n" + "\r\n" +
+            "  Here is the format of a valid BIC: 'BANKCCLL' or 'BANKCCLLBBB'." + "\r\n" +
+            "    BANK = Bank Code. This code identifies the bank world wide." + "\r\n" +
+            "    CC   = Country Code. This is the ISO country code of the country the bank is in.\r\n" +
+            "    LL   = Location Code. This code gives the town where the bank is located." + "\r\n" +
+            "    BBB  = Branch Code. This code denotes the branch of the bank." + "\r\n" +
+            "  BICs have either 8 or 11 characters." + "\r\n");
 
         /// <summary>todoComment</summary>
-        public const String StrBranchCodeLikeBIC2 = " you entered seems to be a BIC/SWIFT Code!" + "\r\n" + "\r\n" +
-                                                    "Make sure that you have entered the BIC/SWIFT Code in the BIC/SWIFT Code field" + "\r\n" +
-                                                    "and that the information you entered in the ";
+        private static readonly string StrBranchCodeLikeBIC = "The {0} you entered seems to be a BIC/SWIFT Code!\r\n\r\n" +
+                                                              "Make sure that you have entered the BIC/SWIFT Code in the BIC/SWIFT Code field\r\n" +
+                                                              "and that the information you entered in the {1} field is actually\r\nthe {2}";
 
         /// <summary>todoComment</summary>
-        public const String StrBranchCodeLikeBIC3 = " field is actually" + "\r\n" + "the ";
-
-        /// <summary>todoComment</summary>
-        public const String StrBranchCodeLikeBICTitle = " seems to be a BIC/SWIFT Code";
+        private static readonly string StrBranchCodeLikeBICTitle = " seems to be a BIC/SWIFT Code";
 
         #region TPartnerDetailsBankVerification
 
@@ -112,10 +110,7 @@ namespace Ict.Petra.Client.MPartner.Verification
             if (CommonRoutines.CheckBIC(e.ProposedValue.ToString()) == false)
             {
                 AVerificationResult = new TVerificationResult("",
-                    StrBICSwiftCodeInvalid,
-                    Catalog.GetString("Invalid Data"),
-                    ErrorCodes.PETRAERRORCODE_BANKBICSWIFTCODEINVALID,
-                    TResultSeverity.Resv_Critical);
+                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_BANKBICSWIFTCODEINVALID, StrBICSwiftCodeInvalid));
             }
             else
             {
@@ -133,14 +128,15 @@ namespace Ict.Petra.Client.MPartner.Verification
             String Dummy2;
             String BranchCodeLocal;
 
-            if (CommonRoutines.CheckBIC(e.ProposedValue.ToString()) == true)
+            if (e.ProposedValue.ToString() != String.Empty)
             {
-                LocalisedStrings.GetLocStrBankBranchCode(out Dummy, out Dummy2, out BranchCodeLocal);
-                MessageBox.Show(
-                    StrBranchCodeLikeBIC1 + BranchCodeLocal + StrBranchCodeLikeBIC2 + BranchCodeLocal + StrBranchCodeLikeBIC3 + BranchCodeLocal + '!',
-                    BranchCodeLocal + StrBranchCodeLikeBICTitle,
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
+                if (CommonRoutines.CheckBIC(e.ProposedValue.ToString()) == true)
+                {
+                    LocalisedStrings.GetLocStrBankBranchCode(out Dummy, out Dummy2, out BranchCodeLocal);
+
+                    TMessages.MsgGeneralWarning(String.Format(StrBranchCodeLikeBIC, BranchCodeLocal, BranchCodeLocal, BranchCodeLocal) + "!",
+                        BranchCodeLocal + StrBranchCodeLikeBICTitle, ERR_BRANCHCODELIKEBIC, null);
+                }
             }
         }
 

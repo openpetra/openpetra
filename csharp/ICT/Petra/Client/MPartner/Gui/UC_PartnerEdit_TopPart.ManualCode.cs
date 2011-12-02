@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Data;
 using System.Windows.Forms;
 
 using Ict.Common.Controls;
@@ -30,7 +31,9 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonControls;
+using Ict.Petra.Client.MPartner.Verification;
 using GNU.Gettext;
 using Ict.Common;
 
@@ -45,8 +48,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private String FPartnerClass;
 
-        /// <summary>Used for keeping track of data verification errors</summary>
-        private TVerificationResultCollection FVerificationResultCollection;
+        private DataView FPartnerDefaultView;
 
         /// <summary>
         /// Delegate for telling the Partner Edit screen that the 'Worker Field...' button has been clicked.
@@ -86,12 +88,12 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             get
             {
-                return FVerificationResultCollection;
+                return FPetraUtilsObject.VerificationResultCollection;
             }
 
             set
             {
-                FVerificationResultCollection = value;
+                FPetraUtilsObject.VerificationResultCollection = value;
             }
         }
 
@@ -103,6 +105,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// arrange the panels and controls according to the partner class
         public void InitialiseUserControl()
         {
+            FPartnerDefaultView = FMainDS.PPartner.DefaultView;
+
+            FMainDS.PPartner.ColumnChanging += new DataColumnChangeEventHandler(OnPartnerDataColumnChanging);
+
             #region Show fields according to Partner Class
 
             switch (SharedTypes.PartnerClassStringToEnum(FPartnerClass))
@@ -166,7 +172,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     pnlOther.Visible = true;
 
                     txtUnitName.TextChanged += new EventHandler(OnAnyDataColumnChanging);
-//                    FMainDS.PUnit.ColumnChanging += new DataColumnChangeEventHandler(this.OnUnitDataColumnChanging);
+                    FMainDS.PUnit.ColumnChanging += new DataColumnChangeEventHandler(OnUnitDataColumnChanging);
 
                     break;
 
@@ -453,6 +459,109 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        private Boolean PartnerStatusCodeChangePromotion(DataColumnChangeEventArgs e)
+        {
+            Boolean ReturnValue;
+            String FamilyMembersText;
+            PartnerEditTDSFamilyMembersTable FamilyMembersDT;
+            Int32 Counter;
+            Int32 Counter2;
+            PartnerEditTDSFamilyMembersRow FamilyMembersDR;
+            PartnerEditTDSFamilyMembersInfoForStatusChangeRow FamilyMembersInfoDR;
+            DialogResult FamilyMembersResult;
+            DataView FamilyMembersDV;
+
+            ReturnValue = true;
+            FamilyMembersText = "";
+
+            /* Retrieve Family Members from the PetraServer */
+            FamilyMembersDT = FPartnerEditUIConnector.GetDataFamilyMembers(FMainDS.PPartner[0].PartnerKey, "");
+            FamilyMembersDV = new DataView(FamilyMembersDT, "", PPersonTable.GetFamilyIdDBName() + " ASC", DataViewRowState.CurrentRows);
+
+            /* Build a formatted String of Family Members' PartnerKeys and ShortNames */
+            for (Counter = 0; Counter <= FamilyMembersDV.Count - 1; Counter += 1)
+            {
+                FamilyMembersDR = (PartnerEditTDSFamilyMembersRow)FamilyMembersDV[Counter].Row;
+                FamilyMembersText = FamilyMembersText + "   " + StringHelper.FormatStrToPartnerKeyString(FamilyMembersDR.PartnerKey.ToString()) +
+                                    "   " + FamilyMembersDR.PartnerShortName + Environment.NewLine;
+            }
+
+            /* If there are Family Members, ... */
+            if (FamilyMembersText != "")
+            {
+                /* show MessageBox with Family Members to the user, asking whether to promote. */
+                FamilyMembersResult =
+                    MessageBox.Show(
+                        String.Format(
+                            Catalog.GetString("Partner Status change from '{0}' to '{1}': \r\n" +
+                                "Should openPETRA apply this change to all Family Members of this Family?"),
+                            ((PPartnerRow)e.Row).StatusCode,
+                            e.ProposedValue) + Environment.NewLine + Environment.NewLine +
+                        Catalog.GetString("The Family has the following Family Members:") + Environment.NewLine +
+                        FamilyMembersText + Environment.NewLine +
+                        Catalog.GetString("(Choose 'Cancel' to cancel the change of the Partner Status\r\n" +
+                            "for this Partner)."),
+                        Catalog.GetString("Promote Partner Status Change to All Family Members?"),
+                        MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+
+                /* Check User's response */
+                switch (FamilyMembersResult)
+                {
+                    case System.Windows.Forms.DialogResult.Yes:
+
+                        /*
+                         * User wants to promote the Partner StatusCode change to Family
+                         * Members: add new DataTable for that purpose if it doesn't exist yet.
+                         */
+                        if (FMainDS.FamilyMembersInfoForStatusChange == null)
+                        {
+                            FMainDS.Tables.Add(new PartnerEditTDSFamilyMembersInfoForStatusChangeTable());
+                            FMainDS.InitVars();
+                        }
+
+                        /*
+                         * Remove any existing DataRows so we start from a 'clean slate'
+                         * (the user could change the Partner StatusCode more than once...)
+                         */
+                        FMainDS.FamilyMembersInfoForStatusChange.Rows.Clear();
+
+                        /*
+                         * Add the PartnerKeys of the Family Members that we have just displayed
+                         * to the user to the DataTable.
+                         *
+                         * Note: This DataTable will be sent to the PetraServer when the user
+                         * saves the Partner. The UIConnector will pick it up and process it.
+                         */
+                        for (Counter2 = 0; Counter2 <= FamilyMembersDV.Count - 1; Counter2 += 1)
+                        {
+                            FamilyMembersDR = (PartnerEditTDSFamilyMembersRow)FamilyMembersDV[Counter2].Row;
+                            FamilyMembersInfoDR = FMainDS.FamilyMembersInfoForStatusChange.NewRowTyped(false);
+                            FamilyMembersInfoDR.PartnerKey = FamilyMembersDR.PartnerKey;
+                            FMainDS.FamilyMembersInfoForStatusChange.Rows.Add(FamilyMembersInfoDR);
+                        }
+
+                        break;
+
+                    case System.Windows.Forms.DialogResult.No:
+
+                        /* no promotion wanted > nothing to do */
+                        /* (StatusCode will be changed only for the Family) */
+                        break;
+
+                    case System.Windows.Forms.DialogResult.Cancel:
+                        ReturnValue = false;
+                        break;
+                }
+            }
+            else
+            {
+            }
+
+            /* no promotion needed since there are no Family Members */
+            /* (StatusCode will be changed only for the Family) */
+            return ReturnValue;
+        }
+
         #endregion
 
 
@@ -533,6 +642,145 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FMainDS.PPartner[0].PartnerShortName = Calculations.DeterminePartnerShortName(txtVenueName.Text);
                     OnPartnerClassMainDataChanged(EventFireArgs);
                 }
+            }
+        }
+
+        private void OnPartnerDataColumnChanging(System.Object sender, DataColumnChangeEventArgs e)
+        {
+            TVerificationResult VerificationResultReturned;
+            TScreenVerificationResult VerificationResultEntry;
+            Control BoundControl = null;
+
+            // MessageBox.Show('Column ''' + e.Column.ToString + ''' is changing...');
+            try
+            {
+                if (TPartnerVerification.VerifyPartnerData(e, out VerificationResultReturned) == false)
+                {
+                    if (VerificationResultReturned.ResultCode != PetraErrorCodes.ERR_PARTNERSTATUSMERGEDCHANGEUNDONE)
+                    {
+                        TMessages.MsgVerificationError(VerificationResultReturned, this.GetType());
+
+// TODO                        BoundControl = TDataBinding.GetBoundControlForColumn(BindingContext[FMainDS.PPartner], e.Column);
+
+                        // MessageBox.Show('Bound control: ' + BoundControl.ToString);
+// TODO                        BoundControl.Focus();
+                        VerificationResultEntry = new TScreenVerificationResult(this,
+                            e.Column,
+                            VerificationResultReturned.ResultText,
+                            VerificationResultReturned.ResultTextCaption,
+                            VerificationResultReturned.ResultCode,
+                            BoundControl,
+                            VerificationResultReturned.ResultSeverity);
+                        FPetraUtilsObject.VerificationResultCollection.Add(VerificationResultEntry);
+
+                        // MessageBox.Show('After setting the error: ' + e.ProposedValue.ToString);
+                    }
+                    else
+                    {
+                        // undo the change in the DataColumn
+                        e.ProposedValue = e.Row[e.Column.ColumnName];
+
+                        // need to assign this to make the change actually visible...
+                        cmbPartnerStatus.SelectedItem = e.ProposedValue.ToString();
+
+                        TMessages.MsgVerificationError(VerificationResultReturned, this.GetType());
+
+// TODO                        BoundControl = TDataBinding.GetBoundControlForColumn(BindingContext[FPartnerDefaultView], e.Column);
+
+                        // MessageBox.Show('Bound control: ' + BoundControl.ToString);
+// TODO                        BoundControl.Focus();
+                    }
+                }
+                else
+                {
+                    if (FPetraUtilsObject.VerificationResultCollection.Contains(e.Column))
+                    {
+                        FPetraUtilsObject.VerificationResultCollection.Remove(e.Column);
+                    }
+
+                    // Business Rule: if the Partner's StatusCode changes, give the user the
+                    // option to promote the change to all Family Members (if the Partner is
+                    // a FAMILY and has Family Members).
+                    if (e.Column.ColumnName == PPartnerTable.GetStatusCodeDBName())
+                    {
+                        if (PartnerStatusCodeChangePromotion(e))
+                        {
+                            // Set the StatusChange date (this would be done on the server side
+                            // automatically, but we want to display it now for immediate user feedback)
+                            FMainDS.PPartner[0].StatusChange = DateTime.Today;
+                        }
+                        else
+                        {
+                            // User wants to cancel the change of the Partner StatusCode
+                            // Undo the change in the DataColumn
+                            e.ProposedValue = e.Row[e.Column.ColumnName];
+
+                            // Need to assign this to make the change actually visible...
+                            cmbPartnerStatus.SelectedItem = e.ProposedValue.ToString();
+                        }
+                    }
+                }
+            }
+            catch (Exception Exp)
+            {
+                MessageBox.Show(Exp.ToString());
+            }
+        }
+
+        private void OnUnitDataColumnChanging(System.Object sender, DataColumnChangeEventArgs e)
+        {
+            TVerificationResult VerificationResultReturned;
+            TScreenVerificationResult VerificationResultEntry;
+            Control BoundControl;
+
+            // MessageBox.Show('Column ''' + e.Column.ToString + ''' is changing...');
+            try
+            {
+                if (TPartnerVerification.VerifyUnitData(e, FMainDS, out VerificationResultReturned) == false)
+                {
+                    if (VerificationResultReturned.ResultCode != PetraErrorCodes.ERR_UNITNAMECHANGEUNDONE)
+                    {
+                        TMessages.MsgVerificationError(VerificationResultReturned, this.GetType());
+
+                        BoundControl = TDataBinding.GetBoundControlForColumn(BindingContext[FMainDS.PUnit], e.Column);
+
+                        // MessageBox.Show('Bound control: ' + BoundControl.ToString);
+// TODO                        BoundControl.Focus();
+                        VerificationResultEntry = new TScreenVerificationResult(this,
+                            e.Column,
+                            VerificationResultReturned.ResultText,
+                            VerificationResultReturned.ResultTextCaption,
+                            VerificationResultReturned.ResultCode,
+                            BoundControl,
+                            VerificationResultReturned.ResultSeverity);
+                        FPetraUtilsObject.VerificationResultCollection.Add(VerificationResultEntry);
+
+                        // MessageBox.Show('After setting the error: ' + e.ProposedValue.ToString);
+                    }
+                    else
+                    {
+                        // undo the change in the DataColumn
+                        e.ProposedValue = e.Row[e.Column.ColumnName, DataRowVersion.Original];
+
+                        // need to assign this to make the change actually visible...
+                        txtUnitName.Text = e.ProposedValue.ToString();
+// TODO                        BoundControl = TDataBinding.GetBoundControlForColumn(BindingContext[FMainDS.PUnit], e.Column);
+
+                        // MessageBox.Show('Bound control: ' + BoundControl.ToString);
+// TODO                        BoundControl.Focus();
+                    }
+                }
+                else
+                {
+                    if (FPetraUtilsObject.VerificationResultCollection.Contains(e.Column))
+                    {
+                        FPetraUtilsObject.VerificationResultCollection.Remove(e.Column);
+                    }
+                }
+            }
+            catch (Exception Exp)
+            {
+                MessageBox.Show(Exp.ToString());
             }
         }
 
