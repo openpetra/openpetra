@@ -264,14 +264,16 @@ namespace Ict.Petra.Server.MCommon.Cacheable
                 }
                 catch (Exception e)
                 {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+
                     TLogging.Log(
                         "TCacheable.SaveChangedStandardCacheableTable: after SubmitChanges call for Cacheabled DataTable '" +
                         CacheableDTName +
                         "':  Exception " + e.ToString());
 
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-
-                    throw new Exception(e.ToString() + " " + e.Message);
+                    TLogging.Log(e.StackTrace);
+                    
+                    throw new Exception(e.ToString());
                 }
             }
 

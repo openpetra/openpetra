@@ -25,7 +25,7 @@ RootNode:
         grpMisc: {Label=Miscellaneous, Dock=Top}
             Controls: 
                 Row1: [txtBranchCode]
-                Row2: [txtBIC]
+                Row2: [txtBic]
                 Row3: [txtEPFormatFile]
                 Row4: [cmbLanguageCode]
                 Row5: [cmbAcquisitionCode]
@@ -35,7 +35,7 @@ RootNode:
             Label: Bank/Branch Code      
             Stretch: horizontally            
             
-        txtBIC:
+        txtBic:
             Label: BIC/SWIFT Code
             
         txtEPFormatFile:
