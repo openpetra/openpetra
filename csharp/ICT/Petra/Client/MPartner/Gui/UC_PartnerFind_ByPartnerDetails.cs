@@ -226,10 +226,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FPetraUtilsObject = value;
 
 // todo: no resourcestrings
-                FPetraUtilsObject.SetStatusBarText(btnSearch, Resourcestrings.StrSearchButtonHelpText);
-                FPetraUtilsObject.SetStatusBarText(btnClearCriteria, Resourcestrings.StrClearCriteriaButtonHelpText);
-                FPetraUtilsObject.SetStatusBarText(grdResult, Resourcestrings.StrResultGridHelpText + Resourcestrings.StrPartnerFindSearchTargetText);
-                FPetraUtilsObject.SetStatusBarText(chkDetailedResults, Resourcestrings.StrDetailedResultsHelpText);
+                FPetraUtilsObject.SetStatusBarText(btnSearch, MPartnerResourcestrings.StrSearchButtonHelpText);
+                FPetraUtilsObject.SetStatusBarText(btnClearCriteria, MPartnerResourcestrings.StrClearCriteriaButtonHelpText);
+                FPetraUtilsObject.SetStatusBarText(grdResult,
+                    MPartnerResourcestrings.StrResultGridHelpText + MPartnerResourcestrings.StrPartnerFindSearchTargetText);
+                FPetraUtilsObject.SetStatusBarText(chkDetailedResults, MPartnerResourcestrings.StrDetailedResultsHelpText);
             }
         }
 
@@ -398,8 +399,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (e.DataPage > 0)
             {
                 this.Cursor = Cursors.WaitCursor;
-                FPetraUtilsObject.WriteToStatusBar(Resourcestrings.StrTransferringDataForPageText + e.DataPage.ToString() + ')');
-                FPetraUtilsObject.SetStatusBarText(grdResult, Resourcestrings.StrTransferringDataForPageText + e.DataPage.ToString() + ')');
+                FPetraUtilsObject.WriteToStatusBar(MPartnerResourcestrings.StrTransferringDataForPageText + e.DataPage.ToString() + ')');
+                FPetraUtilsObject.SetStatusBarText(grdResult, MPartnerResourcestrings.StrTransferringDataForPageText + e.DataPage.ToString() + ')');
             }
         }
 
@@ -409,8 +410,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (e.DataPage > 0)
             {
                 this.Cursor = Cursors.Default;
-                FPetraUtilsObject.WriteToStatusBar(Resourcestrings.StrResultGridHelpText + Resourcestrings.StrPartnerFindSearchTargetText);
-                FPetraUtilsObject.SetStatusBarText(grdResult, Resourcestrings.StrResultGridHelpText + Resourcestrings.StrPartnerFindSearchTargetText);
+                FPetraUtilsObject.WriteToStatusBar(
+                    MPartnerResourcestrings.StrResultGridHelpText + MPartnerResourcestrings.StrPartnerFindSearchTargetText);
+                FPetraUtilsObject.SetStatusBarText(grdResult,
+                    MPartnerResourcestrings.StrResultGridHelpText + MPartnerResourcestrings.StrPartnerFindSearchTargetText);
             }
         }
 
@@ -611,8 +614,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 TMenuFunctions.OpenPartnerContacts();
             }
-            else if ((ClickedMenuItemText == Resourcestrings.StrFamilyMembersMenuItemText)
-                     || (ClickedMenuItemText == Resourcestrings.StrFamilyMenuItemText))
+            else if ((ClickedMenuItemText == MPartnerResourcestrings.StrFamilyMembersMenuItemText)
+                     || (ClickedMenuItemText == MPartnerResourcestrings.StrFamilyMenuItemText))
             {
                 OpenPartnerEditScreen(TPartnerEditTabPageEnum.petpFamilyMembers);
             }
@@ -641,8 +644,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 TMenuFunctions.OpenWorkerField();
             }
-            else if ((ClickedMenuItemText == Resourcestrings.StrPersonnelPersonMenuItemText)
-                     || (ClickedMenuItemText == Resourcestrings.StrPersonnelUnitMenuItemText))
+            else if ((ClickedMenuItemText == MPartnerResourcestrings.StrPersonnelPersonMenuItemText)
+                     || (ClickedMenuItemText == MPartnerResourcestrings.StrPersonnelUnitMenuItemText))
             {
                 TMenuFunctions.OpenPersonnelIndivData();
             }
@@ -1021,7 +1024,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 if (!ucoPartnerFindCriteria.HasSearchCriteria())
                 {
-                    MessageBox.Show(Resourcestrings.StrNoCriteriaSpecified);
+                    MessageBox.Show(MPartnerResourcestrings.StrNoCriteriaSpecified);
                     return;
                 }
 
@@ -1032,10 +1035,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // used to destory server object here
                 // Update UI
                 grdResult.SendToBack();
-                grpResult.Text = Resourcestrings.StrSearchResult;
+                grpResult.Text = MPartnerResourcestrings.StrSearchResult;
                 ucoPartnerInfo.ClearControls();
-                lblSearchInfo.Text = Resourcestrings.StrSearching;
-                FPetraUtilsObject.SetStatusBarText(btnSearch, Resourcestrings.StrSearching);
+                lblSearchInfo.Text = MPartnerResourcestrings.StrSearching;
+                FPetraUtilsObject.SetStatusBarText(btnSearch, MPartnerResourcestrings.StrSearching);
 
                 //                stbMain.Panels[stbMain.Panels.IndexOf(stpInfo)].Text = Resourcestrings.StrSearching;
 
@@ -1076,9 +1079,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 // Asynchronous search operation is being interrupted
                 btnSearch.Enabled = false;
-                lblSearchInfo.Text = Resourcestrings.StrStoppingSearch;
-                FPetraUtilsObject.WriteToStatusBar(Resourcestrings.StrStoppingSearch);
-                FPetraUtilsObject.SetStatusBarText(btnSearch, Resourcestrings.StrStoppingSearch);
+                lblSearchInfo.Text = MPartnerResourcestrings.StrStoppingSearch;
+                FPetraUtilsObject.WriteToStatusBar(MPartnerResourcestrings.StrStoppingSearch);
+                FPetraUtilsObject.SetStatusBarText(btnSearch, MPartnerResourcestrings.StrStoppingSearch);
 
                 Application.DoEvents();
 
@@ -1092,7 +1095,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             ucoPartnerFindCriteria.ResetSearchCriteriaValuesToDefault();
             ucoPartnerInfo.ClearControls();
             lblSearchInfo.Text = "";
-            grpResult.Text = Resourcestrings.StrSearchResult;
+            grpResult.Text = MPartnerResourcestrings.StrSearchResult;
             grdResult.SendToBack();
 
             OnPartnerAvailable(false);
@@ -1135,7 +1138,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             finally
             {
                 this.Cursor = Cursors.Default;
-                FPetraUtilsObject.SetStatusBarText(grdResult, Resourcestrings.StrResultGridHelpText + Resourcestrings.StrPartnerFindSearchTargetText);
+                FPetraUtilsObject.SetStatusBarText(grdResult,
+                    MPartnerResourcestrings.StrResultGridHelpText + MPartnerResourcestrings.StrPartnerFindSearchTargetText);
             }
         }
 
@@ -1430,15 +1434,16 @@ namespace Ict.Petra.Client.MPartner.Gui
                             // Display the number of found Partners/Locations
                             if (grdResult.TotalRecords > 1)
                             {
-                                SearchTarget = Resourcestrings.StrPartnerFindSearchTargetPluralText;
+                                SearchTarget = MPartnerResourcestrings.StrPartnerFindSearchTargetPluralText;
                             }
                             else
                             {
-                                SearchTarget = Resourcestrings.StrPartnerFindSearchTargetText;
+                                SearchTarget = MPartnerResourcestrings.StrPartnerFindSearchTargetText;
                             }
 
-                            grpResult.Text = Resourcestrings.StrSearchResult + ": " + grdResult.TotalRecords.ToString() + ' ' + SearchTarget + ' ' +
-                                             Resourcestrings.StrFoundText;
+                            grpResult.Text = MPartnerResourcestrings.StrSearchResult + ": " + grdResult.TotalRecords.ToString() + ' ' +
+                                             SearchTarget + ' ' +
+                                             MPartnerResourcestrings.StrFoundText;
                         }
                         else
                         {
@@ -1471,15 +1476,16 @@ namespace Ict.Petra.Client.MPartner.Gui
                             if (UpdateUI)
                             {
                                 this.Cursor = Cursors.Default;
-                                grpResult.Text = Resourcestrings.StrSearchResult;
-                                lblSearchInfo.Text = Resourcestrings.StrNoRecordsFound1Text + ' ' + Resourcestrings.StrPartnerFindSearchTarget2Text +
-                                                     Resourcestrings.StrNoRecordsFound2Text;
+                                grpResult.Text = MPartnerResourcestrings.StrSearchResult;
+                                lblSearchInfo.Text = MPartnerResourcestrings.StrNoRecordsFound1Text + ' ' +
+                                                     MPartnerResourcestrings.StrPartnerFindSearchTarget2Text +
+                                                     MPartnerResourcestrings.StrNoRecordsFound2Text;
 
                                 OnPartnerAvailable(false);
 
                                 // StatusBar update
-                                FPetraUtilsObject.WriteToStatusBar(CommonResourcestrings.StrGenericReady);
-                                FPetraUtilsObject.SetStatusBarText(btnSearch, Resourcestrings.StrSearchButtonHelpText);
+                                FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrGenericReady);
+                                FPetraUtilsObject.SetStatusBarText(btnSearch, MPartnerResourcestrings.StrSearchButtonHelpText);
 
                                 FCurrentGridRow = -1;
                             }
@@ -1500,8 +1506,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                         // Search operation interrupted by user
                         // used to release server System.Object here
                         this.Cursor = Cursors.Default;
-                        grpResult.Text = Resourcestrings.StrSearchResult;
-                        lblSearchInfo.Text = Resourcestrings.StrSearchStopped;
+                        grpResult.Text = MPartnerResourcestrings.StrSearchResult;
+                        lblSearchInfo.Text = MPartnerResourcestrings.StrSearchStopped;
 
                         OnPartnerAvailable(false);
                         btnSearch.Enabled = true;
@@ -1509,7 +1515,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         // StatusBar update
 
                         //                        WriteToStatusBar(CommonResourcestrings.StrGenericReady);
-                        FPetraUtilsObject.SetStatusBarText(btnSearch, Resourcestrings.StrSearchButtonHelpText);
+                        FPetraUtilsObject.SetStatusBarText(btnSearch, MPartnerResourcestrings.StrSearchButtonHelpText);
 
                         FCurrentGridRow = -1;
                     }
@@ -1523,12 +1529,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // Set search button text
                 if (Convert.ToBoolean(AEnable))
                 {
-                    btnSearch.Text = Resourcestrings.StrSearchButtonText;
+                    btnSearch.Text = MPartnerResourcestrings.StrSearchButtonText;
                     OnSearchOperationStateChange(false);
                 }
                 else
                 {
-                    btnSearch.Text = Resourcestrings.StrSearchButtonStopText;
+                    btnSearch.Text = MPartnerResourcestrings.StrSearchButtonStopText;
                     OnSearchOperationStateChange(true);
                 }
 

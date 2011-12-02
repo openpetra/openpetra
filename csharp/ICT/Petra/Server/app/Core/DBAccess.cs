@@ -49,8 +49,9 @@ namespace Ict.Petra.Server.App.Core.Security
     public class TDataBasePetra : TDataBase
     {
         /// <summary>
+        /// Log entry - do not translate!
         /// </summary>
-        public const String StrAccessDeniedLogPrefix = "DB ACCESS DENIED: ";
+        private static readonly string StrAccessDeniedLogPrefix = "DB ACCESS DENIED: ";
 
         /// <summary>set by EstablishDBConnection; used for access security</summary>
         private String FUsername;
@@ -344,7 +345,7 @@ namespace Ict.Petra.Server.App.Core.Security
                     MessageLine1 = AErrorMessage;
                 }
 
-                AddErrorLogEntryCallback(ErrorCodes.PETRAERRORCODE_NOPERMISSIONTOACCESSTABLE,
+                AddErrorLogEntryCallback(PetraErrorCodes.ERR_NOPERMISSIONTOACCESSTABLE,
                     "", MessageLine1, MessageLine2, "");
             }
         }

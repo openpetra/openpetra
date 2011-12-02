@@ -71,40 +71,29 @@ namespace Ict.Petra.Client.MPartner.Gui
 
     public partial class TUC_PartnerEdit_PartnerTabSet
     {
-        #region TODO ResourceStrings
+        #region Resourcestrings
 
-        /// <summary>todoComment</summary>
-        public const String StrAddressesTabHeader = "Addresses";
+        private static readonly string StrAddressesTabHeader = Catalog.GetString("Addresses");
 
-        /// <summary>todoComment</summary>
-        public const String StrSubscriptionsTabHeader = "Subscriptions";
+        private static readonly string StrSubscriptionsTabHeader = Catalog.GetString("Subscriptions");
 
-        /// <summary>todoComment</summary>
-        public const String StrSpecialTypesTabHeader = "Special Types";
+        private static readonly string StrSpecialTypesTabHeader = Catalog.GetString("Special Types");
 
-        /// <summary>todoComment</summary>
-        public const String StrFamilyMembersTabHeader = "Family Members";
+        private static readonly string StrFamilyMembersTabHeader = Catalog.GetString("Family Members");
 
-        /// <summary>todoComment</summary>
-        public const String StrFamilyTabHeader = "Family";
+        private static readonly string StrFamilyTabHeader = Catalog.GetString("Family");
 
-        /// <summary>todoComment</summary>
-        public const String StrInterestsTabHeader = "Interests";
+        private static readonly string StrInterestsTabHeader = Catalog.GetString("Interests");
 
-        /// <summary>todoComment</summary>
-        public const String StrNotesTabHeader = "Notes";
+        private static readonly string StrNotesTabHeader = Catalog.GetString("Notes");
 
-        /// <summary>todoComment</summary>
-        public const String StrAddressesSingular = "Address";
+        private static readonly string StrAddressesSingular = Catalog.GetString("Address");
 
-        /// <summary>todoComment</summary>
-        public const String StrSubscriptionsSingular = "Subscription";
+        private static readonly string StrSubscriptionsSingular = Catalog.GetString("Subscription");
 
-        /// <summary>todoComment</summary>
-        public const String StrTabHeaderCounterTipSingular = "{0} {2}, of which {1} is ";
+        private static readonly string StrTabHeaderCounterTipSingular = Catalog.GetString("{0} {2}, of which {1} is ");
 
-        /// <summary>todoComment</summary>
-        public const String StrTabHeaderCounterTipPlural = "{0} {2}, of which {1} are ";
+        private static readonly string StrTabHeaderCounterTipPlural = Catalog.GetString("{0} {2}, of which {1} are ");
 
         #endregion
 

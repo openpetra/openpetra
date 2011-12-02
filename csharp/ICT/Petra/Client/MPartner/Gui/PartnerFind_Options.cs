@@ -28,6 +28,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using System.Data;
 using System.Resources;
+using Ict.Common;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.App.Gui;
@@ -57,8 +58,12 @@ namespace Ict.Petra.Client.MPartner.Gui
         public const String PARTNER_FINDOPTIONS_CRITERIAFIELDSRIGHT_DEFAULT =
             "PartnerClass;PartnerKey;OMSSKey;PartnerStatus";
 #if TODO
-        public const String StrMoreOptions = "&More >>";
-        public const String StrLessOptions = "<< &Less";
+        #region Resourcestrings
+
+        private static readonly string StrMoreOptions = Catalog.GetString("&More >>");
+        private static readonly string StrLessOptions = Catalog.GetString("<< &Less");
+
+        #endregion
 
         /// <summary>Private Declarations</summary>
         private bool FSaveChangedOptions;
@@ -330,8 +335,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             DialogResult ResetQuestionResult;
 
-            ResetQuestionResult = MessageBox.Show("Do you want to reset the Find Criteria to the Petra default?",
-                "Reset Find Criteria", MessageBoxButtons.YesNo, MessageBoxIcon.Question,
+            ResetQuestionResult = MessageBox.Show(Catalog.GetString("Do you want to reset the Find Criteria to the OpenPetra default?"),
+                Catalog.GetString("Reset Find Criteria"), MessageBoxButtons.YesNo, MessageBoxIcon.Question,
                 MessageBoxDefaultButton.Button2);
 
             if (ResetQuestionResult == DialogResult.Yes)

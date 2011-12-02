@@ -150,7 +150,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             //
             // mniHelpAboutPetra
             //
-            this.mniHelpAboutPetra.Text = "&About Petra...";
+            this.mniHelpAboutPetra.Text = "&About OpenPetra...";
             this.mniHelpAboutPetra.Click += new System.EventHandler(this.MniHelpAboutPetra_Click);
             this.mniHelpAboutPetra.AutoSize = true;
             this.mniHelpAboutPetra.Name = "mniHelpAboutPetra";

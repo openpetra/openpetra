@@ -719,8 +719,8 @@ namespace Ict.Petra.Server.App.Main
 
             result = Ict.Common.EMailing.SMTPEmail.SendEmail(
                 ARecipients, ARecipients, ARecipients,
-                "Test Email from PetraServer",
-                "PetraServer Test Email, as requested on " + DateTime.Now.ToString() + ".");
+                "Test Email from OpenPetra Server",
+                "OpenPetra Server Test Email, as requested on " + DateTime.Now.ToString() + ".");
 
             ReturnValue = "Email sending result: ";
 

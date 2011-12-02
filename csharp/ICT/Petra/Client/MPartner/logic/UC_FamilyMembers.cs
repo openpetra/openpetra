@@ -51,17 +51,18 @@ namespace Ict.Petra.Client.MPartner
     /// </summary>
     public class TUCFamilyMembersLogic : System.Object
     {
-        /// <summary>todoComment</summary>
-        public const String StrFamilyIDChangeDone1stLine = "The Family ID of";
+        #region Resourcetexts
 
         /// <summary>todoComment</summary>
-        public const String StrFamilyIDChangeDoneWasChangedFrom = " was changed from ";
+        private static readonly string StrFamilyIDChangeDone = Catalog.GetString(
+            "The Family ID of\r\n" +
+            "    {0} was changed from {1} to {2}\r\n" +
+            "    {3} was changed from {4} to {5}");
 
         /// <summary>todoComment</summary>
-        public const String StrFamilyIDChangeDoneTo = " to ";
+        private static readonly string StrFamilyIDChangeDoneTitle = Catalog.GetString("Family ID Change Done");
 
-        /// <summary>todoComment</summary>
-        public const String StrFamilyIDChangeDoneTitle = "Family ID Change Done";
+        #endregion
 
         private PartnerEditTDS FMainDS;
         private PartnerEditTDSFamilyMembersTable FFamilyMembersDT;
@@ -458,11 +459,10 @@ namespace Ict.Petra.Client.MPartner
                 }
 
                 // button := MessageBoxButtons.OK;
-                MessageBox.Show((StrFamilyIDChangeDone1stLine + "\r\n" + "    " + PersonName1.ToString() + StrFamilyIDChangeDoneWasChangedFrom +
-                                 FamilyID.ToString() + StrFamilyIDChangeDoneTo +
-                                 Convert.ToString(FamilyIDint +
-                                     1) + "\r\n" + "    " + PersonName2.ToString() + StrFamilyIDChangeDoneWasChangedFrom + NextFamilyID.ToString() +
-                                 StrFamilyIDChangeDoneTo + FamilyID.ToString()), StrFamilyIDChangeDoneTitle);
+
+                MessageBox.Show(String.Format(StrFamilyIDChangeDone, PersonName1, FamilyID, (FamilyIDint + 1),
+                        PersonName2, NextFamilyID, FamilyID),
+                    StrFamilyIDChangeDoneTitle);
             }
             else
             {
@@ -826,11 +826,9 @@ namespace Ict.Petra.Client.MPartner
                     }
                 }
 
-                MessageBox.Show((StrFamilyIDChangeDone1stLine + "\r\n" + "    " + PersonName1.ToString() + StrFamilyIDChangeDoneWasChangedFrom +
-                                 FamilyID.ToString() + StrFamilyIDChangeDoneTo + PreviousFamilyID.ToString() + "\r\n" + "    " +
-                                 PersonName2.ToString() +
-                                 StrFamilyIDChangeDoneWasChangedFrom + PreviousFamilyID.ToString() + StrFamilyIDChangeDoneTo +
-                                 Convert.ToString(Convert.ToInt32(PreviousFamilyID) + 1)), "Family ID Change Done");
+                MessageBox.Show(String.Format(StrFamilyIDChangeDone, PersonName1, FamilyID, PreviousFamilyID,
+                        PersonName2, PreviousFamilyID, (Convert.ToInt32(PreviousFamilyID) + 1)),
+                    StrFamilyIDChangeDoneTitle);
                 PreviousPartnerMemory = PersonName1;
             }
             else

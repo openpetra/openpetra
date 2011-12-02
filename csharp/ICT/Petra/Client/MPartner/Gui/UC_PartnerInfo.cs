@@ -59,6 +59,18 @@ namespace Ict.Petra.Client.MPartner.Gui
     /// </remarks>
     public partial class TUC_PartnerInfo : TPetraUserControl, IPartnerInfoMethods
     {
+        #region Resourcestrings
+
+        private static readonly string StrPartnerOrLocationNotExistantText =
+            Catalog.GetString("This Partner (or this Partner+Location combination) doesn't exist anymore in OpenPetra.");
+
+        private static readonly string StrPartnerOrLocationNotExistantTextReRunSearchText =
+            Catalog.GetString("Please re-run the Partner Find query by pressing 'Search' to get up-to-date Find Results.");
+
+        private static readonly string StrPartnerOrLocationNotExistantTitle = Catalog.GetString("Partner Information Cannot be Shown for Partner {0}");
+
+        #endregion
+
         delegate void TDataFetcher (object ADummy);
         delegate void TMyUpdateDelegate();
 
@@ -546,7 +558,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
                 catch (ESecurityPartnerAccessDeniedException Exp)
                 {
-                    FServerCallError = TMessages.MsgSecurityExceptionString(Exp, this.GetType());
+                    FServerCallError = TMessages.MsgSecurityExceptionString(Exp);
                 }
                 catch (Exception)
                 {
@@ -967,11 +979,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 else
                 {
                     lblNoPartner.Text = String.Format(
-                        Resourcestrings.StrPartnerOrLocationNotExistantTitle, APartnerNotFound) +
-                                        "." + Environment.NewLine +
-                                        Resourcestrings.StrPartnerOrLocationNotExistantText +
-                                        Environment.NewLine + Environment.NewLine +
-                                        Resourcestrings.StrPartnerOrLocationNotExistantTextReRunSearchText;
+                        StrPartnerOrLocationNotExistantTitle, APartnerNotFound) + "." + Environment.NewLine +
+                                        StrPartnerOrLocationNotExistantText + Environment.NewLine + Environment.NewLine +
+                                        StrPartnerOrLocationNotExistantTextReRunSearchText;
                 }
             }
             else

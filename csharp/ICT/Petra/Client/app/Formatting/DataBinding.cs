@@ -39,17 +39,18 @@ namespace Ict.Petra.Client.App.Formatting
     /// </summary>
     public class DataBinding
     {
-        /// <summary>todoComment</summary>
-        public const String StrMonthDayExchangedInfo = "The entered Date is not valid - the month is greater than 12." + "\r\n" +
-                                                       "It seems you have inadvertedly exchanged month" +
-                                                       " and day. Petra will exchange month and day for you to make a valid date " +
-                                                       "- please check that the corrected date is the date you intended to enter!";
+        #region Resourcestrings
 
-        /// <summary>todoComment</summary>
-        public const String StrMonthDayExchangedInfoTitle = "Invalid date - Petra tries correcting";
+        private static readonly string StrMonthDayExchangedInfo = Catalog.GetString(
+            "The entered Date is not valid - the month is greater than 12.\r\n" +
+            "It seems you have inadvertedly exchanged month" +
+            " and day. OpenPetra will exchange month and day for you to make a valid date " +
+            "- please check that the corrected date is the date you intended to enter!");
 
-        /// <summary>todoComment</summary>
-        public const String StrInvalidDateEntered = "Invalid Date entered!";
+        private static readonly string StrMonthDayExchangedInfoTitle = Catalog.GetString("Invalid date - OpenPetra tries correcting");
+
+
+        #endregion
 
         /// <summary>
         /// todoComment

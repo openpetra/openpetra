@@ -40,6 +40,14 @@ namespace Ict.Petra.Shared.MPartner
     /// </summary>
     public class Calculations
     {
+        #region Resourcestrings
+
+        /// <summary>
+        /// message for when no information is available
+        /// </summary>
+        private static readonly string StrNoNameInfoAvailable = Catalog.GetString("  No name information available");
+
+        #endregion
         /// <summary>
         /// column name for best address
         /// </summary>
@@ -49,11 +57,6 @@ namespace Ict.Petra.Shared.MPartner
         /// column name for the location icon
         /// </summary>
         public const String PARTNERLOCATION_ICON_COLUMN = "Icon";
-
-        /// <summary>
-        /// message for when no information is available
-        /// </summary>
-        public const String StrNoNameInfoAvailable = "  No name information available";
 
         /// <summary>
         /// Specifies how to format the String that is returned by Method

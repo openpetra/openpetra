@@ -112,7 +112,7 @@ namespace Ict.Petra.Server.MSysMan.Application.ServerLookups
             if (SystemDefaultsDT.Rows.Count < 1)
             {
                 throw new ApplicationException(
-                    "TSysManServerLookups.GetDBVersion: s_system_defaults DB Table is empty; this is unexpected and can lead to sever malfunction of Petra. Contact Petra-Support");
+                    "TSysManServerLookups.GetDBVersion: s_system_defaults DB Table is empty; this is unexpected and can lead to sever malfunction of OpenPetra. Contact your Support Team.");
             }
 
             SSystemDefaultsRow sysrow = SystemDefaultsDT.Rows[0] as SSystemDefaultsRow;
@@ -120,7 +120,7 @@ namespace Ict.Petra.Server.MSysMan.Application.ServerLookups
             if (sysrow == null)
             {
                 throw new ApplicationException(
-                    "TSysManServerLookups.GetDBVersion: s_system_defaults DB Table is empty; this is unexpected and can lead to sever malfunction of Petra. Contact Petra-Support");
+                    "TSysManServerLookups.GetDBVersion: s_system_defaults DB Table is empty; this is unexpected and can lead to sever malfunction of OpenPetra. Contact your Support Team.");
             }
 
             APetraDBVersion = sysrow.DefaultValue;

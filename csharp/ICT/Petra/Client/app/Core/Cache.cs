@@ -891,7 +891,7 @@ namespace Ict.Petra.Client.App.Core
                     // being not uptodate, so we need to reload it from the
                     // PetraServer!
 #if DEBUGMODE
-                    TLogging.Log("Cacheable DataTable '" + ACacheableTableName + "': needs reloading from PetraServer!");
+                    TLogging.Log("Cacheable DataTable '" + ACacheableTableName + "': needs reloading from OpenPetra Server!");
 #endif
                     CacheableDataTableReloadNecessary = true;
                 }
@@ -977,7 +977,7 @@ namespace Ict.Petra.Client.App.Core
                         // had a more uptodate cacheable DataTable, or that the Client
                         // didn't have the DataTable at all (HashCode = '').
 #if DEBUGMODE
-                        TLogging.Log("Cacheable DataTable '" + ACacheableTableName + "': got returned from PetraServer.");
+                        TLogging.Log("Cacheable DataTable '" + ACacheableTableName + "': got returned from OpenPetra Server.");
 #endif
 
                         if (AFilterCriteriaString != "")
@@ -1020,7 +1020,7 @@ namespace Ict.Petra.Client.App.Core
                          */
 #if DEBUGMODE
                         TLogging.Log(
-                            "Cacheable DataTable '" + ACacheableTableName + "': PetraServer tells that the Client-side DataTable is up-to-date.");
+                            "Cacheable DataTable '" + ACacheableTableName + "': OpenPetra Server tells that the Client-side DataTable is up-to-date.");
 #endif
 
                         if (!(ADataTableType == typeof(System.Data.DataTable)))
@@ -1186,7 +1186,7 @@ namespace Ict.Petra.Client.App.Core
             }
             else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableFinanceTablesEnum)), ACacheableTableName) != -1)
             {
-                // MPartner.Subscriptions Namespace
+                // MFinance Namespace
                 CacheableMFinanceTable = (TCacheableFinanceTablesEnum)Enum.Parse(typeof(TCacheableFinanceTablesEnum),
                     ACacheableTableName);
 

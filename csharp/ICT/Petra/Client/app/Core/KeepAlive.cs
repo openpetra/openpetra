@@ -47,23 +47,6 @@ namespace Ict.Petra.Client.App.Core
     /// </summary>
     public class TEnsureKeepAlive
     {
-        /// <summary>todoComment</summary>
-        public const String StrConnectionBroken =
-            "The connection to the Petra Server has broken.\r\n\r\n==> Unfortunately you will need to close Petra and log in again. <==";
-
-        /// <summary>todoComment</summary>
-        public const String StrConnectionBrokenTitle = "SERVER CONNECTION BROKEN!";
-
-        /// <summary>todoComment</summary>
-        public const String StrConnectionClosed =
-            "The connection to the Petra Server has been closed by the Petra Server.\r\n\r\n==> Unfortunately you will need to close Petra and log in again. <==";
-
-        /// <summary>todoComment</summary>
-        public const String StrConnectionClosedTitle = "SERVER CONNECTION CLOSED BY PETRA SERVER!";
-
-        /// <summary>todoComment</summary>
-        public const String StrConnectionUnavailableCause = "\r\n\r\nDEBUG INFORMATION: Actual cause for the problem: \r\n";
-
         /// <summary>Keeps the Registered Objects</summary>
         private static SortedList UKeepAliveObjects;
 
@@ -311,7 +294,7 @@ namespace Ict.Petra.Client.App.Core
                                 {
 #if DEBUGMODE
                                     TLogging.Log(
-                                        "KeepAliveThread: " + ObjectEnum.Key.ToString() + " Could not contact PetraServer!\r\n" + Exp.ToString(),
+                                        "KeepAliveThread: " + ObjectEnum.Key.ToString() + " Could not contact OpenPetra Server!\r\n" + Exp.ToString(),
                                         TLoggingType.ToLogfile);
 #endif
                                 }
@@ -329,8 +312,8 @@ namespace Ict.Petra.Client.App.Core
                     DebugInfo = StrConnectionUnavailableCause + Exp.ToString();
 #endif
 
-                    // MessageBox.Show(StrConnectionBroken + DebugInfo, StrConnectionBrokenTitle,
-                    // MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    // MessageBox.Show(AppCoreResourcestrings.StrConnectionBroken + DebugInfo, AppCoreResourcestrings.StrConnectionBrokenTitle,
+                    //  MessageBoxButtons.OK, MessageBoxIcon.Error);
                     TLogging.Log("RemotingException in TEnsureKeepAlive.KeepAliveThread: " + Exp.ToString(), TLoggingType.ToLogfile);
                 }
                 catch (System.Net.Sockets.SocketException Exp)
@@ -340,8 +323,8 @@ namespace Ict.Petra.Client.App.Core
                                 "\r\n\r\nSocketException.ErrorCode: " + Exp.ErrorCode.ToString();
 #endif
 
-                    // MessageBox.Show(StrConnectionClosed + DebugInfo, StrConnectionClosedTitle,
-                    // MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    // MessageBox.Show(AppCoreResourcestrings.StrConnectionClosed + DebugInfo, AppCoreResourcestrings.StrConnectionClosedTitle,
+                    //          MessageBoxButtons.OK, MessageBoxIcon.Error);
                     TLogging.Log("SocketException in TEnsureKeepAlive.KeepAliveThread: " + Exp.ToString(), TLoggingType.ToLogfile);
                 }
                 catch (Exception Exp)

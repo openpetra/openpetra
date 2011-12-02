@@ -94,7 +94,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.mniHelp.Text = Catalog.GetString("&Help");
             this.mniHelpPetraHelp.Text = Catalog.GetString("&Petra Help");
             this.mniHelpBugReport.Text = Catalog.GetString("Bug &Report");
-            this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra...");
+            this.mniHelpAboutPetra.Text = Catalog.GetString("&About OpenPetra...");
             this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
             this.stbMain.Text = Catalog.GetString("Status Bar");
             this.stpInfo.Text = Catalog.GetString("Ready");

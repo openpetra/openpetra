@@ -587,7 +587,7 @@ namespace Ict.Petra.Client.App.Core
             if (FServerIPAddr == "")
             {
                 throw new ServerIPAddressNotFoundInConfigurationFileException(
-                    "The IP Address of the PetraServer could " + "not be extracted from the .NET (Remoting) Configuration File (used '" +
+                    "The IP Address of the OpenPetra Server could " + "not be extracted from the .NET (Remoting) Configuration File (used '" +
                     CLIENTMANAGERENTRY + "' entry " + "to look for the IP Address)!");
             }
 

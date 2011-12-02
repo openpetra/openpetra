@@ -48,23 +48,22 @@ namespace Ict.Petra.Server.App.Core.Security
         private const int RELOADCACHEDUSERINFORETRIES = 5;
         private static int FReloadCachedUserInfoRetryCount = 0;
 
-        /// <summary>string constant </summary>
-        public const String StrSystemDisabled1 = "Petra is currently disabled due to {0}.";
+        #region Resourcestrings
 
-        /// <summary>string constant </summary>
-        public const String StrSystemDisabled2 = "It will be available on {0} at {1}.";
+        private static readonly string StrSystemDisabled1 = Catalog.GetString("OpenPetra is currently disabled due to {0}.");
 
-        /// <summary>string constant </summary>
-        public const String StrSystemDisabled2Admin = "Proceed with caution.";
+        private static readonly string StrSystemDisabled2 = Catalog.GetString("It will be available on {0} at {1}.");
 
-        /// <summary>string constant </summary>
-        public const String StrUserIsRetired = "User is retired.";
+        private static readonly string StrSystemDisabled2Admin = Catalog.GetString("Proceed with caution.");
 
-        /// <summary>string constant </summary>
-        public const String StrInvalidUserIDPassword = "Invalid User ID/Password.";
+        private static readonly string StrUserIsRetired = Catalog.GetString("User is retired.");
 
-        /// <summary>string constant </summary>
-        public const String StrUserRecordIsLocked = "Your user record is locked by another process!r\nPlease try to login again later.";
+        private static readonly string StrInvalidUserIDPassword = Catalog.GetString("Invalid User ID/Password.");
+
+        private static readonly string StrUserRecordIsLocked = Catalog.GetString(
+            "Your user record is locked by another process!r\nPlease try to login again later.");
+
+        #endregion
 
         /// <summary>
         /// load details of user

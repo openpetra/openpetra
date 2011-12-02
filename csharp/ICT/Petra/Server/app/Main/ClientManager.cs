@@ -133,16 +133,15 @@ namespace Ict.Petra.Server.App.Main
     /// </summary>
     public class TClientManager : MarshalByRefObject, IClientManagerInterface
     {
-        /// <summary>
-        /// static error message
-        /// </summary>
-        public const String StrClientServerExeProgramVersionMismatchMessage = "The Program Version of " +
-                                                                              "your Petra Client ({0}) does not match the Program Version of the Petra "
-                                                                              +
-                                                                              "Server ({1}).\r\nA Petra Client cannot connect to a Petra " +
-                                                                              "Server unless the Program Versions match. You need to install a Petra "
-                                                                              +
-                                                                              "Client with the correct Program Version.";
+        #region Resourcestrings
+
+        private static readonly string StrClientServerExeProgramVersionMismatchMessage = Catalog.GetString(
+            "The Program Version of your OpenPetra Client ({0}) does not match the Program Version of the OpenPetra " +
+            "Server ({1}).\r\nAn OpenPetra Client cannot connect to an OpenPetra " +
+            "Server unless the Program Versions match. You need to install an OpenPetra " +
+            "Client with the correct Program Version.");
+
+        #endregion
 
         /// <summary>Holds reference to an instance of TClientManager (for calls inside a static function)</summary>
         private static TClientManager UClientManagerObj;

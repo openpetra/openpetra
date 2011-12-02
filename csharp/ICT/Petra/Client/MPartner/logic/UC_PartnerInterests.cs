@@ -47,14 +47,15 @@ namespace Ict.Petra.Client.MPartner
     /// </summary>
     public class TUCPartnerInterestsLogic
     {
-        /// <summary>todoComment</summary>
-        public const String StrDeleteQuestionLine1 = "Are you sure you want to remove this Interest";
+        #region Resourcestrings
 
         /// <summary>todoComment</summary>
-        public const String StrDeleteQuestionNotShared = "from the database?";
+        private static readonly string StrDeleteQuestion = Catalog.GetString("Are you sure you want to remove the Interest {0} from the database?");
 
         /// <summary>todoComment</summary>
-        public const String StrDeleteQuestionTitle = "Delete Interest?";
+        private static readonly string StrDeleteQuestionTitle = Catalog.GetString("Delete Interest?");
+
+        #endregion
 
         private PartnerEditTDS FMultiTableDS;
 
@@ -464,7 +465,6 @@ namespace Ict.Petra.Client.MPartner
             Boolean ReturnValue;
             DataRow InterestRow = null;
             DialogResult Chosen;
-            String DeleteQuestion;
 
             try
             {
@@ -473,8 +473,8 @@ namespace Ict.Petra.Client.MPartner
             catch (Exception)
             {
             }
-            DeleteQuestion = StrDeleteQuestionLine1 + "\r\n" + StrDeleteQuestionNotShared;
-            Chosen = MessageBox.Show(DeleteQuestion,
+
+            Chosen = MessageBox.Show(StrDeleteQuestion,
                 StrDeleteQuestionTitle,
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Question,

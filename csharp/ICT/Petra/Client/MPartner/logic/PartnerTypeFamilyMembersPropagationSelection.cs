@@ -49,29 +49,25 @@ namespace Ict.Petra.Client.MPartner
     /// </summary>
     public class TPartnerTypeFamilyMembersPropagationSelectionLogic
     {
-        /// <summary>todoComment</summary>
-        public const String StrWarningOnColumnChangingAdd = "It is not possible to add this Special Type " + "to this person because" + "\r\n" +
-                                                            "this person already has got this " + "Special Type assigned!";
+        #region Resourcestrings
 
-        /// <summary>todoComment</summary>
-        public const String StrWarningOnColumnChangingRemove = "It is not possible to remove this " + "Special Type from this person" + "\r\n" +
-                                                               "because this person doesn't " + "have this Special Type assigned!";
+        private static readonly string StrWarningOnColumnChangingAdd = Catalog.GetString(
+            "It is not possible to add this Special Type to this person because\r\n" +
+            "this person already has got this Special Type assigned!");
 
-        /// <summary>todoComment</summary>
-        public const String StrMessageBoxTitleWarning = "Action Not Possible";
+        private static readonly string StrWarningOnColumnChangingRemove = Catalog.GetString(
+            "It is not possible to remove this Special Type from this person\r\n" +
+            "because this person doesn't have this Special Type assigned!");
 
-        /// <summary>todoComment</summary>
-        public const String StrTypeCodeCostCentre = "COSTCENTRE";
+        private static readonly string StrMessageBoxTitleWarning = Catalog.GetString("Action Not Possible");
 
-        /// <summary>todoComment</summary>
-        public const String StrPartnerHasCostCentreLink1 = "This partner is linked to a Cost Centre (";
+        private static readonly string StrPartnerHasCostCentreLink = Catalog.GetString(
+            "This partner is linked to a Cost Centre ({0}) in the\r\n" +
+            "Finance Module.  Remove the link before deleting\r\nthis Special Type.");
 
-        /// <summary>todoComment</summary>
-        public const String StrPartnerHasCostCentreLink2 = ") in the" + "\r\n" + "Finance Module.  Remove the link before deleting" + "\r\n" +
-                                                           "this special type.";
+        private static readonly string StrPartnerHasCostCentreLinkTitle = Catalog.GetString("Cannot remove Special Type");
 
-        /// <summary>todoComment</summary>
-        public const String StrPartnerHasCostCentreLinkTitle = "Cannot remove Special Type";
+        #endregion
 
         private ControllerBase FSpecialCellController = null;
         private PartnerEditTDSFamilyMembersTable FFamilyMembersDT;
@@ -366,7 +362,7 @@ namespace Ict.Petra.Client.MPartner
                 // begin
                 // TLogging.Log('TypeCode: ' + Typecode, [TLoggingType.ToLogfile]);
                 // perform check: If COSTCENTRE is to be removed then check whether Partner has a link to costcentre set up
-                // if TypeCode = StrTypeCodeCostCentre then
+                // if TypeCode = "COSTCENTRE" then
                 // begin
                 // mHasCostCentreLink := FPartnerEditUIConnector.HasPartnerCostCentreLink(APartnerKey, CostCentreLink);
                 // TLogging.Log('Boolean: ' + mHasCostCentreLink.ToString + '; A CostCentreLink: ' + CostCentreLink, [TLoggingType.ToLogfile]);
@@ -468,7 +464,7 @@ namespace Ict.Petra.Client.MPartner
                     // TLogging.Log('CheckedStateForRowChanging.This case is REMOVE / TypeCodePresent = true. In this case we have to apply the changes. ', [TLoggingType.ToLogfile]);
                     // TLogging.Log('CheckedStateForRowChanging.TypeCode: ' + Typecode, [TLoggingType.ToLogfile]);
                     // perform check: If COSTCENTRE is to be removed then check whether Partner has a link to costcentre set up
-                    if (TypeCode == StrTypeCodeCostCentre)
+                    if (TypeCode == "COSTCENTRE")
                     {
                         mHasCostCentreLink = FPartnerEditUIConnector.HasPartnerCostCentreLink(mPartnerKey, out CostCentreLink);
 
@@ -478,7 +474,7 @@ namespace Ict.Petra.Client.MPartner
                             // In this case we are not allowed to make any changes and the check needs to be removed!!!
                             // TLogging.Log(StrPartnerHasCostCentreLink1, [TLoggingType.ToLogfile]);
                             e.ProposedValue = mTypeCodeModify;
-                            MessageBox.Show(StrPartnerHasCostCentreLink1 + CostCentreLink + StrPartnerHasCostCentreLink2,
+                            MessageBox.Show(String.Format(StrPartnerHasCostCentreLink, CostCentreLink),
                                 StrPartnerHasCostCentreLinkTitle);
                         }
                         else
@@ -628,8 +624,8 @@ namespace Ict.Petra.Client.MPartner
                 // messagebox.show('At least one Row exists!!! Number of Rows: ' + mNumRows.ToString);
                 if (mNumRows > 1)
                 {
-                    MessageBox.Show(
-                        "Please Contact Petra Support. Forward this message: TPartnerTypeFamilyMembersPropagationSelectionLogic.RemoveRowFromFamilyMembersPromotionTable");
+                    MessageBox.Show(Catalog.GetString(
+                            "Please contact your OpenPetra Support team. Forward this message: TPartnerTypeFamilyMembersPropagationSelectionLogic.RemoveRowFromFamilyMembersPromotionTable"));
                 }
                 else
                 {
