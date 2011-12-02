@@ -256,7 +256,7 @@
 <property name="SelectedLanguage" value="en" overwrite="false" />
 
 <!-- database -->
-<property name="DBMS.Type" value="sqlite"
+<property name="DBMS.Type" value="postgresql"
           overwrite="false" />
 <property name="DBMS.DBName" value="openpetra"
           overwrite="false"/>

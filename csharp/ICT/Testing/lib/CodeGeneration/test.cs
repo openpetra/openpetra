@@ -106,7 +106,7 @@ namespace Tests.CodeGeneration
         /// <returns></returns>
         private bool TestHelperMerge(string AOrigFilename, string ARewriteFilename, string AResultFilename)
         {
-            const string path = "../../CodeGeneration/SampleData/";
+            const string path = "../../csharp/ICT/Testing/lib/CodeGeneration/SampleData/";
 
             TFileDiffMerge.Merge2Files(path + AOrigFilename, path + ARewriteFilename, path + AResultFilename + ".new");
 
