@@ -35,6 +35,14 @@
         StreamReader sr = new StreamReader(APath + Path.DirectorySeparatorChar + "db" + Path.DirectorySeparatorChar + "patches" + Path.DirectorySeparatorChar + "version.txt");
         string version = sr.ReadLine().Replace("-", ".");
         sr.Close();
+
+        string BuildNumber = Environment.GetEnvironmentVariable("BUILD_NUMBER");
+
+        if ((BuildNumber != null) && (BuildNumber.Length > 0))
+        {
+            version = version.Substring(1, version.LastIndexOf(".")) + BuildNumber;
+        }
+
         return version;
     }
        
