@@ -106,8 +106,8 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
 </target>
 
 <!-- Windows -->
-<target name="buildWindowsStandalone" if="${platform::is-windows()}">
-  <call target="generateSolution"/>
+<target name="buildWindowsStandalone">
+  <call target="generateSolution" unless="${target::has-executed('generateSolution')}"/>
   <call target="createSQLiteDB" unless="${target::has-executed('createSQLiteDB')}"/>
   <call target="translationCompilePOFile" unless="${target::has-executed('translationCompilePOFile')}"/>
   <call target="setupStandalone"/>
@@ -119,7 +119,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
         <echo message="${DBUpdate.file}"/>
         <fail message="We are missing the db upgrade file for sqlite standalone databases." />
     </if>
-    <property name="SetupOriginal.File" value="${dir.root}/setup/petra${PetraRelease}/standalone/standalone.iss"/>
+    <property name="SetupOriginal.File" value="${dir.root}/setup/petra${PetraRelease}/standalone/standalone.nsi"/>
     <call target="setupTemplate"/>
 </target>
 

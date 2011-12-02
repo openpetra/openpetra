@@ -24,6 +24,7 @@ list of available commands:
   startPetraClient: run the Petra Client
   deleteBakFiles: delete all backup files
   initConfigFiles: write and overwrite the config files for client, server and testing, and the version.txt
+  test: will run the NUnit tests
 
 compat:
   createSQLStatements: generates the sql create table statements etc from the petra.xml
@@ -266,6 +267,14 @@ useful parameters
 
 <target name="generateWinform">
   <nant inheritall="true" target="generateWinform" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Client/Ict.Petra.Client.build')}" verbose="${verbose}"/>
+</target>
+
+<target name="test" depends="initConfigFiles">
+  <nant inheritall="false" target="test-all" buildfile="${path::combine(dir.csharp, 'ICT/Testing/ICT.Testing.build')}" verbose="${verbose}"/>
+</target>
+
+<target name="test-without-display" depends="initConfigFiles">
+  <nant inheritall="false" target="test-without-display" buildfile="${path::combine(dir.csharp, 'ICT/Testing/ICT.Testing.build')}" verbose="${verbose}"/>
 </target>
 
 </project>

@@ -60,6 +60,9 @@ namespace Ict.Testing.NUnitPetraClient
             new TAppSettingsManager(AConfigName);
 
             Catalog.Init();
+            TClientTasksQueue.ClientTasksInstanceType = typeof(TClientTaskInstance);
+            TConnectionManagementBase.ConnectorType = typeof(TConnector);
+            TConnectionManagementBase.GConnectionManagement = new TConnectionManagement();
 
             new TClientSettings();
             TClientInfo.InitializeUnit();

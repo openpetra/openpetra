@@ -108,7 +108,12 @@ namespace Ict.Common.IO
 
             foreach (string attrName in AllAttributes)
             {
-                headerLine = StringHelper.AddCSV(headerLine, "#" + attrName, separator);
+                if (headerLine.Length > 0)
+                {
+                    headerLine += separator;
+                }
+
+                headerLine += "\"" + attrName + "\"";
             }
 
             string result = headerLine + Environment.NewLine;

@@ -84,9 +84,9 @@ namespace Tests.Common.Controls
             r[1] = "Test 3";
             t.Rows.Add(r);
 
-            cmb.DataSource = t.DefaultView;
             cmb.DisplayMember = "display";
             cmb.ValueMember = "value";
+            cmb.DataSource = t.DefaultView;
             cmb.EndUpdate();
             cmb.Invalidate();
 
