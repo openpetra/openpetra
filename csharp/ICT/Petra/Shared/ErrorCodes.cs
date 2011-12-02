@@ -31,7 +31,7 @@ namespace Ict.Petra.Shared
 {
     /// <summary>
     /// <para>
-    /// Central Inventory of openPETRA Error Codes.
+    /// Central Inventory of OpenPetra Error Codes.
     /// </para>
     /// <para>
     /// The data that goes alongside an error code in this inventory can be programmatically
@@ -39,7 +39,7 @@ namespace Ict.Petra.Shared
     /// </para>
     /// </summary>
     /// <remarks>
-    /// Error codes are used in openPETRA because the message text and message title may be
+    /// Error codes are used in OpenPetra because the message text and message title may be
     /// translated into any language and its meaning will be unclear to support staff who
     /// don't speak the language the message is shown in. The only way they can identify the
     /// error message in such a case is by looking up the error code.
@@ -57,7 +57,7 @@ namespace Ict.Petra.Shared
         // explanation for the user very easy!
 
         // An error code string consists of four sections:
-        //  * the abbreviated name of the openPETRA Module in which the error occurs, or 'GEN'
+        //  * the abbreviated name of the OpenPetra Module in which the error occurs, or 'GEN'
         //    if it is not related to any Module;
         //  * a full stop ('.');
         //  * a running five-digit number with leading zeroes which is *unique*;
@@ -71,7 +71,7 @@ namespace Ict.Petra.Shared
 
         /// <summary>General data verification error.</summary>
         [ErrCodeAttribute("General data verification error.",
-             FullDescription = "This unspecific error is shown when a check on the validity of data in openPETRA failed.",
+             FullDescription = "This unspecific error is shown when a check on the validity of data in OpenPetra failed.",
              HelpID = "V.12345")]
         public const String ERR_GENERAL_VERIFICATION_ERROR = "GEN.00001V";
 
@@ -85,10 +85,10 @@ namespace Ict.Petra.Shared
         [ErrCodeAttribute("You don't have permission to access the specified database table.")]
         public const String ERR_NOPERMISSIONTOACCESSTABLE = "GEN.00003E";
 
-        /// <summary>No permission to access openPETRA Module.</summary>
+        /// <summary>No permission to access OpenPetra Module.</summary>
         public const String ERR_NOPERMISSIONTOACCESSMODULE = "GEN.00004E";
 
-        /// <summary>No permission to access openPETRA Group.</summary>
+        /// <summary>No permission to access OpenPetra Group.</summary>
         public const String ERR_NOPERMISSIONTOACCESSGROUP = "GEN.00005E";
 
         /// <summary>Concurrent changes to data happened.</summary>

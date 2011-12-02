@@ -494,7 +494,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     MessageBox.Show(
                         String.Format(
                             Catalog.GetString("Partner Status change from '{0}' to '{1}': \r\n" +
-                                "Should openPETRA apply this change to all Family Members of this Family?"),
+                                "Should OpenPetra apply this change to all Family Members of this Family?"),
                             ((PPartnerRow)e.Row).StatusCode,
                             e.ProposedValue) + Environment.NewLine + Environment.NewLine +
                         Catalog.GetString("The Family has the following Family Members:") + Environment.NewLine +

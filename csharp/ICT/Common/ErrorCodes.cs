@@ -54,7 +54,7 @@ namespace Ict.Common
 
         // An error code string consists of four sections:
         //  * 'GENC' - hard-coded value for General Error Codes which are not related to a specific
-        //    application (e.g. openPETRA);
+        //    application (e.g. OpenPetra);
         //  * a full stop ('.');
         //  * a running five-digit number with leading zeroes which is *unique*;
         //  * a single character. 'V' denotes a data verification error, 'N' denotes a non-critical error,

@@ -161,7 +161,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private static readonly string StrVideoTutorialTitle = Catalog.GetString("Video Tutorial for Partner Edit Screen");
         private static readonly string StrVideoTutorialNotFound = Catalog.GetString(
             "The Video Tutorial for Partner Edit Screen cannot be found on your system.\r\n" +
-            "(openPETRA is looking in '{0}' for a file named '{1}').\r\n\r\n" +
+            "(OpenPetra is looking in '{0}' for a file named '{1}').\r\n\r\n" +
             "The video can also be download from the Internet. Choose 'Yes' to download it and view it,\r\n" +
             "or choose 'No' to not download the video.");
         private static readonly string StrVideoTutorialLaunchFailed = Catalog.GetString(
@@ -1017,10 +1017,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                         FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataException);
                         this.Cursor = Cursors.Default;
                         TLogging.Log(
-                            "An error occured while trying to connect to the PETRA Server!" + Environment.NewLine + exp.ToString(),
+                            "An error occured while trying to connect to the OpenPetra Server!" + Environment.NewLine + exp.ToString(),
                             TLoggingType.ToLogfile);
                         MessageBox.Show(
-                            "An error occured while trying to connect to the PETRA Server!" + Environment.NewLine +
+                            "An error occured while trying to connect to the OpenPetra Server!" + Environment.NewLine +
                             "For details see the log file: " + TLogging.GetLogFileName(),
                             "Server connection error",
                             MessageBoxButtons.OK,

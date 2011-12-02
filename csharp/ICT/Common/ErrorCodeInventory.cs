@@ -31,11 +31,11 @@ using Ict.Common;
 namespace Ict.Common
 {
     /// <summary>
-    /// Inventory functions for the openPETRA Error Codes.
+    /// Inventory functions for the OpenPetra Error Codes.
     /// </summary>
     public static class ErrorCodeInventory
     {
-        /// <summary>Catalogue of all openPETRA Error Codes.</summary>
+        /// <summary>Catalogue of all OpenPetra Error Codes.</summary>
         /// <description>Automatically created from all the public Constants of the
         /// <see cref="Ict.Common.CommonErrorCodes" /> Class and the
         /// 'Ict.Petra.Shared.PetraErrorCodes' Class when Method
