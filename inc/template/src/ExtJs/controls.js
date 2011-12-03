@@ -184,13 +184,13 @@
                 fieldLabel: this.{#LABEL}+' *',
                 allowBlank: false,
                 width: 300,
-                html: '<img id="photoPreview" src="../../img/default_blank.gif" style="width:120px; height:160px; border-style: dotted; border-width: 1px; align: right"></div>',
+                html: '<div><img id="photoPreview" src="../../img/default_blank.gif" style="width:120px; height:160px; border-style: dotted; border-width: 1px; align: right"></img><div id="uploadDiv" style="position:relative;top:-160px;left:125px;"/></div>',
                 name: '{#ITEMNAME}',
                 id: '{#ITEMNAME}',
                 anchor: '97.5%'
     }]
 }
-
+    
 {##CHECKBOXDEFINITION}
 {
     xtype: '{#XTYPE}',

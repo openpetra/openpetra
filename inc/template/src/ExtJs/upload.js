@@ -22,23 +22,25 @@ TUploadForm = Ext.extend(Ext.FormPanel, {
                 msgTarget: 'side'
             },
             items: [{
-                xtype: 'fileuploadfield',
+                xtype: 'filefield',
                 id: 'form-file',
                 emptyText: 'Select an image',
                 hideLabel: true,
                 buttonOnly: true,
-                fieldLabel: 'TODO',
                 name: 'photo-path',
+                width: 20,
+                fieldStyle : 'visibility:hidden;width:0px;height:0px;margin:0px',
 {#IFDEF UPLOADBUTTONLABEL}
                 buttonText: MainForm.{#UPLOADBUTTONLABEL},
 {#ENDIF UPLOADBUTTONLABEL}
 {#IFNDEF UPLOADBUTTONLABEL}                
-                buttonCfg: {
+                buttonText: '',
+                buttonConfig: {
                     iconCls: 'upload-icon'
                 },
 {#ENDIFN UPLOADBUTTONLABEL}
                 listeners: {
-                            'fileselected': function(fb, v){
+                            'change': function(field, value, eOpts){
                                 if(UploadForm.getForm().isValid()){
                                     UploadForm.getForm().submit({
                                         url: 'upload.aspx',
@@ -46,8 +48,8 @@ TUploadForm = Ext.extend(Ext.FormPanel, {
                                         success: function(fp, o){
                                             var imgPhoto = Ext.get('photoPreview');
                                             imgPhoto.dom.src = 'upload.aspx?image-id=' + o.result.file;
-                                            var imgID = Ext.get('hidImageID');
-                                            imgID.set({value: o.result.file});
+                                            var imgID = Ext.getCmp('hidImageID');
+                                            imgID.setValue(o.result.file);
                                         },
                                         failure: function(fp, o){
                                                 Ext.Msg.show({
@@ -70,7 +72,7 @@ TUploadForm = Ext.extend(Ext.FormPanel, {
 });
 
 {##VALIDUPLOADCHECK}
-else if ({#FORMNAME}.getForm().findField('hidImageID').getValue().length == 0)
+else if (Ext.getCmp('hidImageID').getValue().length == 0)
 {
   Ext.Msg.show({
       title: 'Please upload photo',
@@ -90,7 +92,7 @@ myDivToMove.moveTo(myDivDestination.getX() + myDivDestination.getWidth() + 10, m
 
 {##ASSISTANTPAGEWITHUPLOADVALID}
 // use the little trick of setting the z-index so that the message box does not get displayed when the form is shown the first time
-if (Ext.get('hidImageID').getValue().length == 0 && Ext.get('hidImageID').getStyle('z-index') != 'auto')
+if (Ext.getCmp('hidImageID').getValue().length == 0 && Ext.getCmp('hidImageID').getStyle('z-index') != 'auto')
 {
     Ext.Msg.show({
         title: MainForm.{#MISSINGUPLOADTITLE},
@@ -103,7 +105,7 @@ if (Ext.get('hidImageID').getValue().length == 0 && Ext.get('hidImageID').getSty
 }
 Ext.get('hidImageID').setStyle('z-index', '20000');
 
-return (Ext.get('hidImageID').getValue().length != 0);
+return (Ext.getCmp('hidImageID').getValue().length != 0);
 
 {##ASSISTANTPAGEWITHUPLOADHIDE}
 var myDivToMove = Ext.get('uploadDiv');
