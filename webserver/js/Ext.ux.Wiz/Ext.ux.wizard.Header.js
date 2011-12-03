@@ -1,5 +1,3 @@
-Ext.namespace('Ext.ux.Wiz');
-
 /**
  * Licensed under GNU LESSER GENERAL PUBLIC LICENSE Version 3
  *
@@ -21,7 +19,8 @@ Ext.namespace('Ext.ux.Wiz');
  * @constructor
  * @param {Object} config The config object
  */
-Ext.ux.Wiz.Header = Ext.extend(Ext.BoxComponent, {
+Ext.define('Ext.ux.wizard.Header', {
+	extend: 'Ext.layout.container.Box',
 
     /**
      * @cfg {Number} height The height of this component. Defaults to "55".
@@ -148,13 +147,14 @@ Ext.ux.Wiz.Header = Ext.extend(Ext.BoxComponent, {
      */
     onRender : function(ct, position)
     {
-        Ext.ux.Wiz.Header.superclass.onRender.call(this, ct, position);
+//    	Ext.ux.wizard.Header.prototype.callParent(this, ct, position);
+//        Ext.ux.wizard.Header.superclass.onRender.call(this, ct, position);
 
         this.indicators   = [];
         this.stepTemplate = new Ext.Template(this.stepText);
         this.stepTemplate.compile();
 
-        var el = this.el.dom.firstChild;
+/*        var el = this.el.dom.firstChild;
         var ns = el.nextSibling;
 
         this.titleEl        = new Ext.Element(el);
@@ -162,7 +162,7 @@ Ext.ux.Wiz.Header = Ext.extend(Ext.BoxComponent, {
         this.imageContainer = new Ext.Element(ns.lastChild);
 
         this.titleEl.update(this.title);
-
+*/
         var image = null;
         for (var i = 0, len = this.steps; i < len; i++) {
             image = document.createElement('div');

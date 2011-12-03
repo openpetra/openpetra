@@ -1,68 +1,12 @@
-Ext.namespace('Ext.ux');
-
-/**
- * Licensed under GNU LESSER GENERAL PUBLIC LICENSE Version 3
- *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
- * @url http://www.siteartwork.de/wizardcomponent
- */
-
-/**
- * @class Ext.ux.Wiz
- * @extends Ext.Window
- *
- * A specific {@link Ext.Window} that models a wizard component.
- * A wizard is basically a dialog that guides a user through various steps
- * where he has to fill out form-data.
- * A {@link Ext.ux.Wiz}-component consists typically of a {@link Ext.ux.Wiz.Header}
- * and window-buttons ({@link Ext.Button}) which are linked to the {@link Ext.ux.Wiz.Card}s
- * which themself represent the forms the user has to fill out.
- *
- * In order to switch between the cards in the wizard, you need the {@link Ext.ux.layout.CardLayout},
- * which will check if an active-item can be hidden, before the requested new item will be set to
- * 'active', i.e. shown. This is needed since the wizard may not allow a card to be hidden, if
- * the input entered by the user was not valid. You can get this custom layout at
- * {@link http://www.siteartwork.de/cardlayout}.
- *
- * Note:
- * When data has been collected and teh "onFinish" listener triggers an AJAX-request,
- * you should call the "switchDialogState" method so that the the dialog shows a loadmask.
- * Once the requests finishes, call "switchDialogState" again, specially before any call
- * to the "close" method of this component, otherwise the "closable" property of this
- * instance might prevent a "close" operation for this dialog.
- *
- *
- * @constructor
- * @param {Object} config The config object
- */
-Ext.ux.Wiz = Ext.extend(Ext.Window, {
-
-    /**
-     * @cfg {Object} An object containing the messages for the {@link Ext.LoadMask}
-     * covering the card-panel on request, whereas the property identifies the
-     * msg-text to show, and the value is the message text itself. Defaults to
-     <pre><code>
-{
-    default : 'Saving...'
-}
-     </code></pre>
-     *
-     * Depending on the contexts the loadMask has to be shown in (using the method
-     * showLoadMask of this class), the object can be configure to hold
-     * various messages.
-<pre><code>
-this.loadMaskConfig = {
-    default    : 'Saving...',
-    validating : 'Please wait, validating input...',
-};
-// loadMask will be shown, displaying the message 'Please wait, validating input...'
-this.showLoadMask(true, 'validating');
-     </code></pre>
-     */
+Ext.define('Ext.ux.Wizard', {
+	extend: 'Ext.window.Window',
+	layout: 'Ext.ux.wizard.CardLayout',
     loadMaskConfig : {
-        'default' : 'Saving...'
+        'default' : '',
+		'saving'  : 'Saving...',
+		'checking': 'Checking...'
     },
-
+	autoRender: true,
     /**
      * @cfg {Number} height The height of the dialog. Defaults to "400".
      */
@@ -99,7 +43,7 @@ this.showLoadMask(true, 'validating');
      * in the wizard (i.e. card at index 0 gets displayed in the first step, card at index 1 gets
      * displayed in the second step and so on).
      */
-    cards : null,
+    cards : [],
 
     /**
      * @cfg {String} previousButtonText The text to render the previous-button with.
@@ -234,7 +178,7 @@ this.showLoadMask(true, 'validating');
             'finish'
         );
 
-        Ext.ux.Wiz.superclass.initComponent.call(this);
+        this.callParent();
     },
 
 // -------- helper
@@ -332,7 +276,7 @@ this.showLoadMask(true, 'validating');
      */
     initEvents : function()
     {
-        Ext.ux.Wiz.superclass.initEvents.call(this);
+        this.callParent();
 
         this.on('beforeclose', this.onBeforeClose, this);
     },
@@ -349,13 +293,13 @@ this.showLoadMask(true, 'validating');
         var cardPanelConfig = this.cardPanelConfig;
 
         Ext.apply(this.headerConfig, {
-            steps : cards.length
+            steps : this.cardCount
         });
 
-        this.headPanel = new Ext.ux.Wiz.Header(this.headerConfig);
+        this.headPanel = new Ext.ux.wizard.Header(this.headerConfig);
 
         Ext.apply(cardPanelConfig, {
-            layout : new Ext.ux.layout.CardLayout(),
+            layout : new Ext.ux.wizard.CardLayout(),
             items  : cards
         });
 
@@ -546,3 +490,114 @@ this.showLoadMask(true, 'validating');
         }
     }
 });
+Ext.onReady(function () { 
+
+            Ext.QuickTips.init(); 
+
+            var wizard = new Ext.ux.Wizard({ 
+
+                title: 'A simple example for a wizard', 
+
+                headerConfig: { 
+                    title: 'Simple Wizard Example' 
+                }, 
+
+                cardPanelConfig: { 
+                    defaults: { 
+                        baseCls: 'x-small-editor', 
+                        bodyStyle: 'padding:40px 15px 5px 120px;background-color:#F6F6F6;', 
+                        border: false 
+                    } 
+                }, 
+
+                cards: [ 
+
+                // first card with welcome message 
+            new Ext.ux.wizard.Card({ 
+                title: 'Welcome', 
+                items: [{ 
+                    border: false, 
+                    bodyStyle: 'background:none;', 
+                    html: 'Welcome to the example for <strong>Ext.ux.Wiz</string>, ' + 
+                                'a Ext JS user extension for creating wizards.<br/><br/>' + 
+                                'Please click the "next"-button and fill out all form values.' 
+                }] 
+            }), 
+
+                // second card with input fields last/firstname 
+            new Ext.ux.wizard.Card({ 
+                title: 'Your name', 
+                monitorValid: true, 
+                defaults: { 
+                    labelStyle: 'font-size:11px' 
+                }, 
+                items: [{ 
+                    border: false, 
+                    bodyStyle: 'background:none;padding-bottom:30px;', 
+                    html: 'Please enter your first- and your lastname. Only letters, underscores and hyphens are allowed.' 
+                }, 
+                    new Ext.form.TextField({ 
+                        name: 'firstname', 
+                        fieldLabel: 'Firstname', 
+                        allowBlank: false, 
+                        validator: function (v) { 
+                            var t = /^[a-zA-Z_\- ]+$/; 
+                            return t.test(v); 
+                        } 
+                    }), 
+                    new Ext.form.TextField({ 
+                        name: 'lastname', 
+                        fieldLabel: 'Lastname', 
+                        allowBlank: false, 
+                        validator: function (v) { 
+                            var t = /^[a-zA-Z_\- ]+$/; 
+                            return t.test(v); 
+                        } 
+                    }) 
+
+                ] 
+            }), 
+
+                // third card with input field email-address 
+            new Ext.ux.wizard.Card({ 
+                title: 'Your email-address', 
+                monitorValid: true, 
+                defaults: { 
+                    labelStyle: 'font-size:11px' 
+                }, 
+                items: [{ 
+                    border: false, 
+                    bodyStyle: 'background:none;padding-bottom:30px;', 
+                    html: ' Please enter your email-address.' 
+                }, 
+                    new Ext.form.TextField({ 
+                        name: 'email', 
+                        fieldLabel: 'Email-Address', 
+                        allowBlank: false, 
+                        vtype: 'email' 
+                    }) 
+                ] 
+            }), 
+
+                // fourth card with finish-message 
+            new Ext.ux.wizard.Card({ 
+                title: 'Finished!', 
+                monitorValid: true, 
+                items: [{ 
+                    border: false, 
+                    bodyStyle: 'background:none;', 
+                    html: 'Thank you for testing this wizard. Your data has been collected ' + 
+                                'and can be accessed via a call to <pre><code>this.getWizardData</code></pre>' + 
+                                'When you click on the "finish"-button, the "finish"-event will be fired.<br/>' + 
+                                'If no attached listener for this event returns "false", this dialog will be ' + 
+                                'closed. <br />' 
+                }] 
+            }) 
+
+
+        ] 
+            }); 
+
+            // show the wizard 
+            wizard.show(); 
+        });  

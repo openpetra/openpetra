@@ -1,5 +1,3 @@
-Ext.namespace('Ext.ux.Wiz');
-
 /**
  * Licensed under GNU LESSER GENERAL PUBLIC LICENSE Version 3
  *
@@ -18,7 +16,8 @@ Ext.namespace('Ext.ux.Wiz');
  * @constructor
  * @param {Object} config The config object
  */
-Ext.ux.Wiz.Card = Ext.extend(Ext.FormPanel, {
+Ext.define('Ext.ux.wizard.Card', {
+	extend: 'Ext.form.Panel',
 
     /**
      * @cfg {Boolean} header "True" to create the header element. Defaults to
@@ -53,7 +52,7 @@ Ext.ux.Wiz.Card = Ext.extend(Ext.FormPanel, {
         );
 
 
-        Ext.ux.Wiz.Card.superclass.initComponent.call(this);
+        this.callParent();
 
     },
 
@@ -84,7 +83,7 @@ Ext.ux.Wiz.Card = Ext.extend(Ext.FormPanel, {
             }
         });
 
-        Ext.ux.Wiz.Card.superclass.bindHandler.call(this);
+        this.callParent();
     },
 
     /**
@@ -96,7 +95,7 @@ Ext.ux.Wiz.Card = Ext.extend(Ext.FormPanel, {
     {
         var old = this.monitorValid;
         this.monitorValid = false;
-        Ext.ux.Wiz.Card.superclass.initEvents.call(this);
+        this.callParent();
         this.monitorValid = old;
 
         this.on('beforehide',     this.bubbleBeforeHideEvent, this);

@@ -1,5 +1,3 @@
-Ext.namespace('Ext.ux.layout');
-
 /**
  * Licensed under GNU LESSER GENERAL PUBLIC LICENSE Version 3
  *
@@ -20,7 +18,9 @@ Ext.namespace('Ext.ux.layout');
  * @constructor
  * @param {Object} config The config object
  */
-Ext.ux.layout.CardLayout = Ext.extend(Ext.layout.CardLayout, {
+Ext.define('Ext.ux.wizard.CardLayout', {
+	
+	extend: 'Ext.layout.container.Card',
 
     /**
      * Sets the active (visible) item in the layout.
