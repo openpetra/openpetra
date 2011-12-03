@@ -14,7 +14,7 @@
 !define VERSION "{#RELEASEVERSION}"
 !define PRODUCT_WEB_SITE "http://www.openpetra.org"
 
-!define MUI_PRODUCT "OpenPetra.org"
+!define MUI_PRODUCT "OpenPetra Standalone"
 
   ;Name and file
   Name "${MUI_PRODUCT}"
@@ -110,8 +110,10 @@ Section "Main Section" SecInstallFiles
   File ..\..\..\delivery\bin\es-ES\OpenPetra.resources.dll
   SetOutPath "$INSTDIR\bin30\da-DK"
   File ..\..\..\delivery\bin\da-DK\OpenPetra.resources.dll
-  SetOutPath "$INSTDIR\reports30\Settings"
-  File ..\..\..\XmlReports\Settings\*.xml
+  SetOutPath "$INSTDIR\reports30"
+  File ..\..\..\XmlReports\*.xml
+  SetOutPath "$INSTDIR\reports30"
+  File ..\..\..\XmlReports\reports.dtd
   SetOutPath "$INSTDIR\manuals30"
   File ..\releasenotes\releasenotes*html
   SetOutPath "$INSTDIR\resources30"
@@ -129,10 +131,9 @@ Section "Main Section" SecInstallFiles
   File ..\..\..\demodata\*.*
   SetOutPath "$INSTDIR\db30"
   ; actual db will be copied to the user's userappdata directory
-  File ..\petra.db
+  File ..\demo.db
   File ..\..\..\db\patches\*.sql
-  File ..\..\..\XmlReports\reports.dtd
-  File ..\..\..\XmlReports\*.xml
+  SetOutPath "$INSTDIR\sql30"
   File ..\..\..\csharp\ICT\Petra\Server\sql\*.sql
   File ..\..\..\csharp\ICT\Petra\Server\sql\*.yml
 
@@ -143,11 +144,13 @@ Section "Main Section" SecInstallFiles
   ; Now create shortcuts
   CreateDirectory "$SMPROGRAMS\${MUI_PRODUCT}"
   SetOutPath "$INSTDIR\bin30"
-  CreateShortCut "$SMPROGRAMS\${MUI_PRODUCT}\OpenPetra.org Client.lnk" "$INSTDIR\bin30\PetraClient.exe" '-C:"$INSTDIR\etc30\PetraClientRemote.config"' $INSTDIR\petraico-big.ico 0 SW_SHOWNORMAL
-  ; avoid problems with empty hotkey. so no comment for the moment for the shortcut: "Start OpenPetra.org (connecting to your OpenPetra server)"
+  CreateShortCut "$SMPROGRAMS\${MUI_PRODUCT}\OpenPetra Standalone Client.lnk" "$INSTDIR\bin30\PetraClient.exe" '-C:"$INSTDIR\PetraClient-3.0.config"' $INSTDIR\petraico-big.ico 0 SW_SHOWNORMAL
+  ; avoid problems with empty hotkey. so no comment for the moment for the shortcut: "Start OpenPetra (connecting to your OpenPetra server)"
   CreateShortCut "$SMPROGRAMS\${MUI_PRODUCT}\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
   
-  ExecWait '"cmd.exe" /C netsh firewall set allowedprogram program = "$INSTDIR\bin30\PetraClient.exe" name = PetraClient mode = DISABLE'
+  ;ExecWait '"cmd.exe" /C netsh firewall set allowedprogram program = "$INSTDIR\bin30\PetraClient.exe" name = PetraClient mode = DISABLE'
+  ;ExecWait '"cmd.exe" /C netsh firewall set allowedprogram program = "$INSTDIR\bin30\PetraServerConsole.exe" name = PetraServerConsole mode = DISABLE'
+  ;ExecWait '"cmd.exe" /C netsh firewall set allowedprogram program = "$INSTDIR\bin30\PetraServerAdminConsole.exe" name = PetraServerAdminConsole mode = DISABLE'
   
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
@@ -220,11 +223,18 @@ Section "Uninstall"
   Delete "$INSTDIR\bin30\*.yml"
   Delete "$INSTDIR\bin30\version.txt"
   Delete "$INSTDIR\etc30\*.config"
-  Delete "$INSTDIR\reports30\Settings\*.xml"
+  Delete "$INSTDIR\db30\*.sql"
+  Delete "$INSTDIR\db30\demo.db"
+  Delete "$INSTDIR\reports30\*.xml"
+  Delete "$INSTDIR\reports30\*.dtd"
+  Delete "$INSTDIR\demo30\*.*"
   Delete "$INSTDIR\manuals30\*.html"
   Delete "$INSTDIR\resources30\*.png"
   Delete "$INSTDIR\resources30\*.ico"
+  Delete "$INSTDIR\sql30\*.sql"
+  Delete "$INSTDIR\sql30\*.yml"
   Delete "$INSTDIR\*.ico"
+  Delete "$INSTDIR\*.config"
   Delete "$INSTDIR\LICENSE"
   
   RMDir "$INSTDIR\bin30\de-DE"
@@ -233,8 +243,11 @@ Section "Uninstall"
   RMDir "$INSTDIR\bin30"
   RMDir "$INSTDIR\reports30\Settings"  
   RMDir "$INSTDIR\reports30"
+  RMDir "$INSTDIR\demo30"
   RMDir "$INSTDIR\resources30"
   RMDir "$INSTDIR\etc30"
+  RMDir "$INSTDIR\db30"
+  RMDir "$INSTDIR\sql30"
   RMDir "$INSTDIR\manuals30"
   RMDir "$INSTDIR\tmp30"
   RMDir "$INSTDIR\patches30"
@@ -244,9 +257,9 @@ Section "Uninstall"
   RMDir "$INSTDIR"
   
   ;Delete Start Menu Shortcuts
-  Delete "$DESKTOP\${MUI_PRODUCT}.lnk"
+  ;Delete "$DESKTOP\${MUI_PRODUCT}.lnk"
   Delete "$SMPROGRAMS\${MUI_PRODUCT}\*.*"
-  RmDir  "$SMPROGRAMS\${MUI_PRODUCT}"  
+  RmDir  "$SMPROGRAMS\${MUI_PRODUCT}"
 
   DeleteRegKey /ifempty HKCU "Software\OpenPetra"
 

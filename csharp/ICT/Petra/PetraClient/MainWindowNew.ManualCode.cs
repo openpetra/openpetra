@@ -47,9 +47,17 @@ namespace Ict.Petra.Client.App.PetraClient
         {
             LoadNavigationUI();
 
-            // leave out 'Revision' and 'Build'
-            this.Text = "OpenPetra.org " +
-                        (new Version(TClientInfo.ClientAssemblyVersion)).ToString(3);
+            Version version = new Version(TClientInfo.ClientAssemblyVersion);
+
+            if (version.Revision > 20)
+            {
+                this.Text = "OpenPetra.org " + version.ToString(4);
+            }
+            else
+            {
+                // leave out 'Revision'
+                this.Text = "OpenPetra.org " + version.ToString(3);
+            }
         }
 
         private void RunOnceOnActivationManual()
