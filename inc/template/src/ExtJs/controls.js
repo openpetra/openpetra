@@ -1,5 +1,6 @@
 {##ROWDEFINITION}
 {
+    xtype: 'container',
     layout:'column',
     border:false,
     items: [{#ITEMS}]
@@ -11,7 +12,7 @@
 {#IFDEF LABELWIDTH}
     labelWidth: {#LABELWIDTH},
 {#ENDIF LABELWIDTH}
-    layout: 'form',
+    layout: 'anchor',
     border:false,
     items: [{#ITEM}]
 }
@@ -21,6 +22,10 @@
     xtype: 'fieldset',
     columnWidth: 1.0,
     border:false,
+    defaults: {
+        anchor: '100%',
+        hideEmptyLabel: false
+    },
     items: [{#ITEMS}]
 }
 
@@ -172,7 +177,7 @@
 },
 {
     columnWidth:1,
-    layout: 'form',
+    layout: 'anchor',
     border:false,
     items: [{
                 xtype: 'displayfield',

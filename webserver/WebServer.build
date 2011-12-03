@@ -132,9 +132,8 @@ list of available commands:
     </copy>
   </if>
 
-  <unzip zipfile="${dir.root}/csharp/ThirdParty/extjs/ext-images-default.zip" todir="${dir.webserver}/images"/>
   <unzip zipfile="${dir.root}/csharp/ThirdParty/extjs/ext-lang.zip" todir="${dir.webserver}/js"/>
-  <unzip zipfile="${dir.root}/csharp/ThirdParty/extjs/ext-css.zip" todir="${dir.webserver}"/>
+  <unzip zipfile="${dir.root}/csharp/ThirdParty/extjs/ext-resources.zip" todir="${dir.webserver}"/>
   <unzip zipfile="${dir.root}/csharp/ThirdParty/extjs/ext-js.zip" todir="${dir.webserver}/js"/>
 
   <copy file="${dir.root}/csharp/ICT/Petra/Server/app/WebService/server.asmx"
