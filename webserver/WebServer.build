@@ -143,6 +143,7 @@ list of available commands:
     <fileset basedir="${dir.bin}">
       <include name="*.dll" />
       <include name="PetraServerConsole.exe" />
+      <exclude name="sqlite.dll" />
       <exclude name="Tests-*"/>
       <exclude name="Ict.Petra.Client.*"/>
       <exclude name="Ict.Tools.*"/>
@@ -155,6 +156,8 @@ list of available commands:
       <include name="*.dll" />
     </fileset>
   </copy>
+
+  <mkdir dir="${dir.log}" />
 
   <!-- Create config files, if missing -->
   <property name="templateFile" value="${dir.incdir.template.etc}/web-${DBMS.Type}.config"/>

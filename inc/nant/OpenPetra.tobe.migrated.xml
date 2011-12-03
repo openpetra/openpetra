@@ -137,7 +137,7 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
   <property name="makensis.exe" value="${OP::GetFileInProgramDirectory('/NSIS/makensis.exe')}" overwrite="false"/>
 
   <!-- Is this really needed?? Yes, needed for the XSP webserver which is used for testing on Windows -->
-  <property name="MonoBinPath" value="${OP::GetDirInProgramDirectory('\Mono-2.10.5\bin')}" overwrite="false"/>     
+  <property name="MonoBinPath" value="${OP::GetDirInProgramDirectory('\Mono-2.10.6\bin')}" overwrite="false"/>     
 </if>
 <if test="${'win32'!=platform::get-name()}">
   <if test="${'unix'==platform::get-name()}">
