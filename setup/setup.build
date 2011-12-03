@@ -58,7 +58,7 @@ public static string InsertRecursiveAllFilesFromSubdirectories(string PathToSear
             AllFilesFromSubdirectories += "  File \"..\\..\\..\\" + PathToSearch + path.Substring(Path.GetFullPath(PathToSearch).Length) + "\"" + Environment.NewLine;
         }
     }
-    return AllFilesFromSubdirectories;
+    return AllFilesFromSubdirectories.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar);
 }
 
 [Function("InsertRecursiveAllFilesFromSubdirectoriesForDeletion")]
@@ -92,7 +92,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
         AllFilesFromSubdirectories += "  RMDir \"$INSTDIR\\" + DestinationPath + DeleteDirectories[key] + "\"" + Environment.NewLine;
     }
 
-    return AllFilesFromSubdirectories;
+    return AllFilesFromSubdirectories.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar);
 }
 ]]>
     </code>
@@ -182,9 +182,9 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
 
     <property name="dummy" value="${script::ReplaceInFile(Current.File, '  File ..\..\..\XmlReports\Settings\*.xml', script::InsertRecursiveAllFilesFromSubdirectories('XmlReports/Settings/', '*.xml', 'reports30\Settings'))}"/>
     <property name="dummy" value="${script::ReplaceInFile(Current.File, '  Delete &quot;$INSTDIR\reports30\Settings\*.xml&quot;', script::InsertRecursiveAllFilesFromSubdirectoriesForDeletion('XmlReports/Settings/', '*.xml', 'reports30\Settings\'))}"/>
-    <property name="dummy" value="${script::ReplaceInFile(Current.File, '  File ..\..\..\XmlReports\*.xml', script::InsertRecursiveAllFilesFromSubdirectories('XmlReports\', '*.xml', 'reports30'))}"/>
+    <property name="dummy" value="${script::ReplaceInFile(Current.File, '  File ..\..\..\XmlReports\*.xml', script::InsertRecursiveAllFilesFromSubdirectories('XmlReports/', '*.xml', 'reports30'))}"/>
     <property name="dummy" value="${script::ReplaceInFile(Current.File, '  Delete &quot;$INSTDIR\reports30\*.xml&quot;', script::InsertRecursiveAllFilesFromSubdirectoriesForDeletion('XmlReports/', '*.xml', 'reports30\'))}"/>
-    <property name="dummy" value="${script::ReplaceInFile(Current.File, '  File ..\..\..\demodata\*.*', script::InsertRecursiveAllFilesFromSubdirectories('demodata\', '*.*', 'demo30'))}"/>
+    <property name="dummy" value="${script::ReplaceInFile(Current.File, '  File ..\..\..\demodata\*.*', script::InsertRecursiveAllFilesFromSubdirectories('demodata/', '*.*', 'demo30'))}"/>
     <property name="dummy" value="${script::ReplaceInFile(Current.File, '  Delete &quot;$INSTDIR\demo30\*.*&quot;', script::InsertRecursiveAllFilesFromSubdirectoriesForDeletion('demodata/', '*.*', 'demo30\'))}"/>
 
     <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#RELEASEVERSION}', ReleaseVersion)}"/>
