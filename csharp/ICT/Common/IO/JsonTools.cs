@@ -125,7 +125,7 @@ namespace Ict.Common.IO
 
             foreach (string key in ARoot.Names)
             {
-                if (key.ToString().StartsWith("ext-comp"))
+                if (key.ToString().StartsWith("ext-comp") || key.ToString().StartsWith("card-"))
                 {
                     string content = parseJSonValues((JsonObject)ARoot[key], ref ACulture);
 
