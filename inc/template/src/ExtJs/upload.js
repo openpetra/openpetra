@@ -84,15 +84,14 @@ else if (Ext.getCmp('hidImageID').getValue().length == 0)
 }
 
 {##ASSISTANTPAGEWITHUPLOADSHOW}
-var myDivDestination = Ext.get('photoPreview');
-var myDivToMove = Ext.get('uploadDiv');
-myDivToMove.setStyle('z-index', '20000');
+var myDivDestination = Ext.get('uploadDiv');
+var myDivToMove = Ext.get('tmpUploadDiv');
 myDivToMove.setStyle('visibility', 'visible');
-myDivToMove.moveTo(myDivDestination.getX() + myDivDestination.getWidth() + 10, myDivDestination.getY());
+myDivDestination.insertFirst(myDivToMove);
 
 {##ASSISTANTPAGEWITHUPLOADVALID}
 // use the little trick of setting the z-index so that the message box does not get displayed when the form is shown the first time
-if (Ext.getCmp('hidImageID').getValue().length == 0 && Ext.getCmp('hidImageID').getStyle('z-index') != 'auto')
+if (Ext.getCmp('hidImageID').getValue().length == 0 && Ext.get('hidImageID').getStyle('z-index') != 'auto')
 {
     Ext.Msg.show({
         title: MainForm.{#MISSINGUPLOADTITLE},

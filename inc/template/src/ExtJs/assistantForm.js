@@ -4,73 +4,140 @@ var {#FORMNAME} = null;
 {#INCLUDE controls.js}
 {#INCLUDE upload.js}
 
-{#FORMTYPE} = Ext.extend(Ext.ux.Wiz, {
+Ext.define('{#FORMTYPE}', {
+    extend: 'Ext.Panel',
+    id:'card-assistant-panel',
+    layout:'card',
+    activeItem: 0,
+    bodyStyle: 'padding:15px',
+    defaults: {border:false},
     {#RESOURCESTRINGS}
     strEmpty:'',
-    initComponent : function(config) {
-        Ext.apply(this, {    
-            frame: {#FORMFRAME},
-            header: {#FORMHEADER},
-            closable: false,
-            // monitorValid:true,
-            fileUpload: false,
-            title: ' ',
-            bodyStyle: 'padding:5px',
-            width: {#FORMWIDTH},
-            height: {#FORMHEIGHT},
-            labelWidth: {#LABELWIDTH},
-                    
-            headerConfig : {
-                title : this.{#FORMCAPTION}
-            },
-            
-            cardPanelConfig : {
-                defaults : {
-                    baseCls    : 'x-small-editor',
-                    bodyStyle  : 'padding:40px 15px 5px 120px;background-color:#F6F6F6;',
-                    border     : false    
-                }
-            },
+    
+    /// get the data as a structured object
+    getAssistantData: function () 
+    {
+        var layout = this.getLayout();
+        var formValues = {};
+        var cards = layout.getLayoutItems();
 
-            {#BUTTONS}
+        for (var i = 0, len = cards.length; i < len; i++) 
+        {
+            var f = cards[i].getForm();
+            if (f) 
+            {
+                formValues[cards[i].id] = f.getValues(false);
+            }
+            else
+            {
+                formValues[cards[i].id] = {};
+            }
+        }
 
-            cards : [{#FORMITEMSDEFINITION}]
+        return formValues;
+    },
+
+    {#BUTTONS}
+
+    /// navigate across the pages
+    cardNav: function(incr){
+        var layout = this.getLayout();
+        var i = layout.activeItem.id.split('card-')[1];
+        var next = parseInt(i, 10) + incr;
+        
+        f = layout.activeItem.getForm();
+        if (f.isValid()) {
+            layout.setActiveItem(next);
+            Ext.getCmp('card-prev').setDisabled(!layout.getPrev());
+            Ext.getCmp('card-next').setDisabled(!layout.getNext());
+            if (!layout.getNext())
+            {
+                Ext.getCmp('card-finish').show();
+                Ext.getCmp('card-next').hide();
+            }
+            else
+            {
+                Ext.getCmp('card-finish').hide();
+                Ext.getCmp('card-next').show();
+            }
+        }
+    },
+
+    /// constructor creates the pages
+    /// this is necessary for the localisation to work with the class variables
+    constructor: function(owner, config) {
+        var me = this;
+
+        me.callParent();
+
+        me.title = this.{#FORMCAPTION};
+        
+        {#FORMITEMSDEFINITION};
+        
+        var toolbar = Ext.create('Ext.toolbar.Toolbar',
+            {
+                xtype: 'toolbar',
+                dock: 'bottom',
+                valign: 'right',
+            });
+        toolbar.add('->');
+        toolbar.add({
+            id: 'card-prev',
+            text: '&laquo; Previous',
+            handler: Ext.Function.bind(this.cardNav, this, [-1]),
+            disabled: true
         });
-        {#FORMTYPE}.superclass.initComponent.apply(this, arguments);
-    }
+        toolbar.add({
+            id: 'card-next',
+            text: 'Next &raquo;',
+            handler: Ext.Function.bind(this.cardNav, this, [1])
+        });
+        toolbar.add({
+            id: 'card-finish',
+            text: 'Finish',
+            hidden: true,
+            handler: Ext.Function.bind(this.cardFinish, this)
+        });
+
+        me.dockedItems.add(toolbar);
+    },
+    
+    // items will be added in the constructor, otherwise the localisation would not work
+    items: []
 });
 
 {#UPLOADFORM}
 
 {##ASSISTANTPAGEDEFINITION}
-new Ext.ux.Wiz.Card({
-    title : this.{#LABEL},
-    monitorValid : true,
-    onShow: function() {
-        Ext.ux.Wiz.Card.superclass.onShow.call(this);
+me.items.add(Ext.create('Ext.FormPanel',
+    {
+        id: 'card-{#PAGENUMBER}',
+        border: false,
+        onShow: function() {
+             Ext.form.Panel.superclass.onShow.call(this);
 {#IFDEF ONSHOW}
         {#ONSHOW}
 {#ENDIF ONSHOW}
         window.scrollTo(0,0);
-    },
+        },
 {#IFDEF ISVALID}
-    isValid: function() {
-        {#ISVALID}
-    },
+        isValid: function() {
+            {#ISVALID}
+        },
 {#ENDIF ISVALID}
 {#IFDEF ONHIDE}
-    onHide: function() {
-        Ext.ux.Wiz.Card.superclass.onHide.call(this);
-        {#ONHIDE}
-    },
+        onHide: function() {
+            Ext.form.Panel.superclass.onHide.call(this);
+            {#ONHIDE}
+        },
 {#ENDIF ONHIDE}
-    {#CUSTOMFUNCTIONS}
-    labelWidth: {#LABELWIDTH},
-    defaults     : {
-        labelStyle : 'font-size:11px'
-    },
-    items : [{#ITEMS}]
-})
+        {#CUSTOMFUNCTIONS}
+        labelWidth: {#LABELWIDTH},
+        defaults     : {
+            labelStyle : 'font-size:11px'
+        },
+        items : [{#ITEMS}]
+    }));
 
 {##SUBMITBUTTONDEFINITION}
 onCancelClick: function() {
@@ -88,14 +155,21 @@ onCancelClick: function() {
     });
 },
 
-onFinish: function() {
+cardFinish: function() {
+    var layout = this.getLayout();
+    f = layout.activeItem.getForm();
+    if (!f.isValid())
+    {
+        return;
+    }
+
     Ext.MessageBox.wait(this.{#SENDINGDATAMESSAGE}, this.{#SENDINGDATATITLE});
 
     Ext.Ajax.request({
         url: '/server.asmx/{#REQUESTURL}',
         params:{
             {#REQUESTPARAMETERS}
-            AJSONFormData: Ext.encode(this.getWizardData())
+            AJSONFormData: Ext.encode(this.getAssistantData())
         },
         success: function (response) {
             jsonData = XmlExtractJSONResponse(response);
