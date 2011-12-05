@@ -221,7 +221,8 @@
 }
 
 {##COMBOBOXDEFINITION}
-new Ext.form.ComboBox({
+Ext.create('Ext.form.field.ComboBox',
+  {
     hiddenName:'{#ITEMNAME}',
     store: new Ext.data.ArrayStore({
         fields: ['value', 'display'],
@@ -246,7 +247,8 @@ new Ext.form.ComboBox({
     allowBlank: false,
 {#ENDIFN ALLOWBLANK}
     selectOnFocus:true,
-    width: {#WIDTH}
+    labelWidth: {#LABELWIDTH},
+    width: {#WIDTH} + {#LABELWIDTH}
 })
 
 {##GRIDDEFINITION}
