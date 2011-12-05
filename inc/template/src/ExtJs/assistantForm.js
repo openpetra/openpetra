@@ -60,6 +60,11 @@ Ext.define('{#FORMTYPE}', {
                 Ext.getCmp('card-finish').hide();
                 Ext.getCmp('card-next').show();
             }
+
+            Ext.getCmp('card-assistant-panel').setTitle(this.{#FORMCAPTION} + 
+                ': ' + 
+                this.{#FORMCAPTION}Page + ' ' + (next + 1) + ' ' +
+                this.{#FORMCAPTION}Of + ' ' + layout.getLayoutItems().length + ': ' + layout.activeItem.title);
         }
     },
 
@@ -113,12 +118,14 @@ me.items.add(Ext.create('Ext.FormPanel',
     {
         id: 'card-{#PAGENUMBER}',
         border: false,
+        title: this.{#LABEL},
+        preventHeader: true,
         onShow: function() {
-             Ext.form.Panel.superclass.onShow.call(this);
+            Ext.form.Panel.superclass.onShow.call(this);
 {#IFDEF ONSHOW}
-        {#ONSHOW}
+            {#ONSHOW}
 {#ENDIF ONSHOW}
-        window.scrollTo(0,0);
+            window.scrollTo(0,0);
         },
 {#IFDEF ISVALID}
         isValid: function() {
@@ -140,21 +147,6 @@ me.items.add(Ext.create('Ext.FormPanel',
     }));
 
 {##SUBMITBUTTONDEFINITION}
-onCancelClick: function() {
-    Ext.Msg.show({
-        title: {#FORMNAME}.{#CANCELQUESTIONTITLE},
-        msg: {#FORMNAME}.{#CANCELQUESTIONMESSAGE},
-        modal: true,
-        icon: Ext.Msg.QUESTION,
-        buttons: Ext.Msg.YESNO,
-        fn: function(btn, text){
-          if(btn === 'yes'){ 
-            location.href={#FORMNAME}.{#REDIRECTURLONCANCEL};
-          }
-        }
-    });
-},
-
 cardFinish: function() {
     var layout = this.getLayout();
     f = layout.activeItem.getForm();
