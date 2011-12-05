@@ -58,7 +58,7 @@ public static string InsertRecursiveAllFilesFromSubdirectories(string PathToSear
             AllFilesFromSubdirectories += "  File \"..\\..\\..\\" + PathToSearch + path.Substring(Path.GetFullPath(PathToSearch).Length) + "\"" + Environment.NewLine;
         }
     }
-    return AllFilesFromSubdirectories.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar);
+    return AllFilesFromSubdirectories.Replace('/', '\\');
 }
 
 [Function("InsertRecursiveAllFilesFromSubdirectoriesForDeletion")]
@@ -92,7 +92,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
         AllFilesFromSubdirectories += "  RMDir \"$INSTDIR\\" + DestinationPath + DeleteDirectories[key] + "\"" + Environment.NewLine;
     }
 
-    return AllFilesFromSubdirectories.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar);
+    return AllFilesFromSubdirectories.Replace('/', '\\');
 }
 ]]>
     </code>
