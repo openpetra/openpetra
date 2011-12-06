@@ -81,7 +81,7 @@ namespace Ict.Common.DB
 
             if (AConnectionString == "")
             {
-                AConnectionString = "URI=file:" + AServer;
+                AConnectionString = "Data Source=" + Path.GetFullPath(AServer);
 
                 // sqlite on Windows does not support encryption with a password
                 // System.EntryPointNotFoundException: sqlite3_key
