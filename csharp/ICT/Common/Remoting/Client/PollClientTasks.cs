@@ -22,10 +22,12 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Net.Sockets;
 using System.Data;
-using System.Threading;
+using System.Net.Sockets;
 using System.Runtime.Remoting;
+using System.Threading;
+using System.Windows.Forms;
+
 using Ict.Common;
 using Ict.Common.Remoting.Shared;
 
@@ -52,23 +54,6 @@ namespace Ict.Common.Remoting.Client
 
         /// <summary>Reference to Serverside Object</summary>
         private IPollClientTasksInterface FRemotePollClientTasks;
-
-        /// <summary>todoComment</summary>
-        public const String StrConnectionBroken =
-            "The connection to the Petra Server has broken.\r\n\r\n==> Unfortunately you will need to close Petra and log in again. <==";
-
-        /// <summary>todoComment</summary>
-        public const String StrConnectionBrokenTitle = "SERVER CONNECTION BROKEN!";
-
-        /// <summary>todoComment</summary>
-        public const String StrConnectionClosed =
-            "The connection to the Petra Server has been closed by the Petra Server.\r\n\r\n==> Unfortunately you will need to close Petra and log in again. <==";
-
-        /// <summary>todoComment</summary>
-        public const String StrConnectionClosedTitle = "SERVER CONNECTION CLOSED BY PETRA SERVER!";
-
-        /// <summary>todoComment</summary>
-        public const String StrConnectionUnavailableCause = "\r\n\r\nDEBUG INFORMATION: Actual cause for the problem: \r\n";
 
         #region TPollClientTasks
 
@@ -153,15 +138,15 @@ namespace Ict.Common.Remoting.Client
                 catch (System.Runtime.Remoting.RemotingException Exp)
                 {
                     // string DebugInfo = StrConnectionUnavailableCause + Exp.ToString();
-                    // MessageBox.Show(StrConnectionBroken + DebugInfo, StrConnectionBrokenTitle,
-                    // MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    // MessageBox.Show(AppCoreResourcestrings.StrConnectionBroken + DebugInfo, AppCoreResourcestrings.StrConnectionBrokenTitle,
+                    //     MessageBoxButtons.OK, MessageBoxIcon.Error);
                     TLogging.Log("RemotingException in TPollClientTasks.PollClientTasksThread: " + Exp.ToString(), TLoggingType.ToLogfile);
                 }
                 catch (System.Net.Sockets.SocketException Exp)
                 {
                     // string DebugInfo = StrConnectionUnavailableCause + Exp.ToString() + "\r\n\r\nSocketException.ErrorCode: " + Exp.ErrorCode.ToString();
-                    // MessageBox.Show(StrConnectionClosed + DebugInfo, StrConnectionClosedTitle,
-                    // MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    // MessageBox.Show(AppCoreResourcestrings.StrConnectionClosed + DebugInfo, AppCoreResourcestrings.StrConnectionClosedTitle,
+                    //     MessageBoxButtons.OK, MessageBoxIcon.Error);
                     TLogging.Log("SocketException in TPollClientTasks.PollClientTasksThread: " + Exp.ToString(), TLoggingType.ToLogfile);
                 }
                 catch (Exception Exp)

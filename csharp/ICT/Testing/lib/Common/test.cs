@@ -41,11 +41,14 @@ namespace Ict.Common.Testing
         [SetUp]
         public void Init()
         {
+            Catalog.Init();
             new TLogging("test.log");
         }
 
+        #region Helper Methods for Test Cases of this Unit Test
+
         /// find matching quote in a string. considers nested quotes
-        public static int FindMatchingQuote(String s)
+        private static int FindMatchingQuote(String s)
         {
             string localstr;
 
@@ -60,9 +63,10 @@ namespace Ict.Common.Testing
         }
 
         static Int16 tstNr;
-
+        
         /// create a name for a test
-        public static string FormatTestName(string s)
+        private static string FormatTestName(string s)
+
         {
             string ReturnValue;
 
@@ -70,6 +74,91 @@ namespace Ict.Common.Testing
             tstNr++;
             return ReturnValue;
         }
+
+        private string EvaluateErrCodeInfoResults(ErrCodeInfo AExpectedResult, ErrCodeInfo ATestResult)
+        {
+            StringCollection ErrCodeDifferences = new StringCollection();
+            string ReturnValue = String.Empty;
+
+            if (AExpectedResult.Category != ATestResult.Category)
+            {
+                ErrCodeDifferences.Add(String.Format(
+                        "AExpectedResult.Category != ATestResult.Category ('{0}' vs. '{1}')",
+                        AExpectedResult.Category, ATestResult.Category));
+            }
+
+            if (AExpectedResult.ErrorCode != ATestResult.ErrorCode)
+            {
+                ErrCodeDifferences.Add(String.Format(
+                        "AExpectedResult.ErrorCode != ATestResult.ErrorCode ('{0}' vs. '{1}')",
+                        AExpectedResult.ErrorCode, ATestResult.ErrorCode));
+            }
+
+            if (AExpectedResult.ErrorCodeConstantClass != ATestResult.ErrorCodeConstantClass)
+            {
+                ErrCodeDifferences.Add(String.Format(
+                        "AExpectedResult.ErrorCodeConstantClass != ATestResult.ErrorCodeConstantClass ('{0}' vs. '{1}')",
+                        AExpectedResult.ErrorCodeConstantClass, ATestResult.ErrorCodeConstantClass));
+            }
+
+            if (AExpectedResult.ErrorCodeConstantName != ATestResult.ErrorCodeConstantName)
+            {
+                ErrCodeDifferences.Add(String.Format(
+                        "AExpectedResult.ErrorCodeConstantName != ATestResult.ErrorCodeConstantName ('{0}' vs. '{1}')",
+                        AExpectedResult.ErrorCodeConstantName, ATestResult.ErrorCodeConstantName));
+            }
+
+            if (AExpectedResult.ErrorMessageText != ATestResult.ErrorMessageText)
+            {
+                ErrCodeDifferences.Add(String.Format(
+                        "AExpectedResult.ErrorMessageText != ATestResult.ErrorMessageText ('{0}' vs. '{1}')",
+                        AExpectedResult.ErrorMessageText, ATestResult.ErrorMessageText));
+            }
+
+            if (AExpectedResult.ErrorMessageTitle != ATestResult.ErrorMessageTitle)
+            {
+                ErrCodeDifferences.Add(String.Format(
+                        "AExpectedResult.ErrorMessageTitle != ATestResult.ErrorMessageTitle ('{0}' vs. '{1}')",
+                        AExpectedResult.ErrorMessageTitle, ATestResult.ErrorMessageTitle));
+            }
+
+            if (AExpectedResult.ShortDescription != ATestResult.ShortDescription)
+            {
+                ErrCodeDifferences.Add(String.Format(
+                        "AExpectedResult.ShortDescription != ATestResult.ShortDescription ('{0}' vs. '{1}')",
+                        AExpectedResult.ShortDescription, ATestResult.ShortDescription));
+            }
+
+            if (AExpectedResult.FullDescription != ATestResult.FullDescription)
+            {
+                ErrCodeDifferences.Add(String.Format(
+                        "AExpectedResult.FullDescription != ATestResult.FullDescription ('{0}' vs. '{1}')",
+                        AExpectedResult.FullDescription, ATestResult.FullDescription));
+            }
+
+            if (AExpectedResult.HelpID != ATestResult.HelpID)
+            {
+                ErrCodeDifferences.Add(String.Format(
+                        "AExpectedResult.HelpID != ATestResult.HelpID ('{0}' vs. '{1}')",
+                        AExpectedResult.HelpID, ATestResult.HelpID));
+            }
+
+            if (ErrCodeDifferences.Count > 0)
+            {
+                foreach (string ErrCodeDiff in ErrCodeDifferences)
+                {
+                    ReturnValue = ReturnValue + ErrCodeDiff + "; ";
+                }
+
+                // Strip off trailing "; " characters
+                ReturnValue = ReturnValue.Substring(0, ReturnValue.Length - 2);
+            }
+
+            return ReturnValue;
+        }
+
+        #endregion
+
 
         /// test dates
         [Test]
@@ -658,6 +747,211 @@ namespace Ict.Common.Testing
             Assert.AreEqual("Null Euro Ein Cent", NumberToWords.AmountToWords(0.01M, "Euro", "Cent"));
 
             Thread.CurrentThread.CurrentCulture = oldCulture;
+        }
+
+        /// <summary>Test-only Error Code for TestErrorCodes Method.</summary>
+        [ErrCodeAttribute("Invalid date.",
+             ErrorMessageText = "Invalid date entered.",
+             FullDescription = "The date entered is not a valid date.")]
+        public const String ERR_TESTONLY1 = "TEST.99999V";
+
+        /// <summary>Test-only Error Code for TestErrorCodes Method.</summary>
+        [ErrCodeAttribute("Date may not be empty.",
+             FullDescription = "The date may not be empty.")]
+        public const String ERR_TESTONLY2 = "TEST.99998V";
+
+        /// <summary>Test-only Error Code for TestErrorCodes Method.</summary>
+        [ErrCodeAttribute("Value is no longer assignable.",
+             ErrorMessageText = "The code '{0}' is no longer active.\r\nDo you still want to use it?",
+             ErrorMessageTitle = "Invalid Data Entered")]
+        public const String ERR_TESTONLY3 = "TEST.99997V";
+
+        /// <summary>Test-only Error Code for TestErrorCodes Method.</summary>
+        public const String ERR_TESTONLY4 = "TEST.99996N";     // this results in an ErrCodeInfo with ErrCodeCategory.NonCriticalError
+
+        /// <summary>Test-only Error Code for TestErrorCodes Method.</summary>
+        public const String ERR_TESTONLY5 = "TEST.99995x";     // this results in an ErrCodeInfo with ErrCodeCategory.Error
+
+        /// <summary>Test-only Error Code for TestErrorCodes Method.</summary>
+        public const String ERR_TESTONLY6 = "TEST.99995x";     // Duplicate of ERR_TESTONLY5!!!
+
+
+        /// <summary>
+        /// Tests for Error Codes.
+        /// </summary>
+        [Test]
+        public void TestErrorCodes()
+        {
+            ErrCodeInfo ExpectedResult = null;
+            ErrCodeInfo TestResult = null;
+            string Testname;
+            string VerificationProblemListing;
+
+            #region GetErrorInfo
+            TLogging.Log("Before checking for EDuplicateErrorCodeException...");
+            EDuplicateErrorCodeException TestException1 = Assert.Throws <EDuplicateErrorCodeException>(
+                delegate { ErrorCodes.GetErrorInfo("TEST.99995x", new string[] { }); });
+            Assert.That(TestException1.Message, Is.EqualTo("An attempt to add Error Code with value 'TEST.99995x' through constant " +
+                    "'Ict.Common.Testing.TTestCommon.ERR_TESTONLY6' failed, as there is already an Error Code with that value: it is defined through constant "
+                    +
+                    "'Ict.Common.Testing.TTestCommon.ERR_TESTONLY5'."));
+            TLogging.Log("After checking for EDuplicateErrorCodeException.");
+            ArgumentException TestException2 = Assert.Throws <ArgumentException>(
+                delegate {  ErrorCodes.GetErrorInfo("TEST.99999V", null, new string[] { }); });
+            Assert.That(TestException2.Message, Is.EqualTo("Argument 'AErrorMessageText' must not be null"));
+
+            ArgumentException TestException3 = Assert.Throws <ArgumentException>(
+                delegate { ErrorCodes.GetErrorInfo("TEST.99998V", String.Empty, new string[] { "asdf" }); });
+            Assert.That(TestException3.Message,
+                Is.EqualTo("Argument 'AErrorMessageText' must not be an empty string if the error code's ErrorMessageText is an empty string, too"));
+
+            EErrorCodeNotRegisteredException TestException4 = Assert.Throws <EErrorCodeNotRegisteredException>(
+                delegate { ErrorCodes.GetErrorInfo("TEST.99996V"); });
+            Assert.That(TestException4.Message, Is.StringStarting("Error Code 'TEST.99996V' could not be found in any of the registered Types!"));
+
+            ArgumentException TestException5 = Assert.Throws <ArgumentException>(
+                delegate { ErrorCodes.GetErrorInfo("TEST.99996N", new string[] { }); });
+            Assert.That(TestException5.Message,
+                Is.EqualTo("The error code's ErrorMessageText is an empty string, therefore this overload can't be used. " +
+                    "Use the overload that has the Argument 'AErrorMessageText' instead, or define the error code's ErrorMessageText"));
+
+
+            Testname = "Replacing ErrorMessageText placeholder with APlaceholderTexts Array content";
+            TestResult = ErrorCodes.GetErrorInfo("TEST.99998V", new string[] { "test only" });
+            ExpectedResult = new ErrCodeInfo("TEST.99998V", "Ict.Common.Testing.TTestCommon", "ERR_TESTONLY2",
+                "Date may not be empty.", "The date may not be empty.", "test only",
+                String.Empty, ErrCodeCategory.Validation, String.Empty);
+            VerificationProblemListing = EvaluateErrCodeInfoResults(ExpectedResult, TestResult);
+            Assert.IsEmpty(VerificationProblemListing, "GetErrorInfo: " + Testname);
+
+
+            Testname = "Empty AErrorMessageText and empty APlaceholderTexts Array";
+            TestResult = ErrorCodes.GetErrorInfo("TEST.99997V", String.Empty, new string[] { });
+            ExpectedResult = new ErrCodeInfo("TEST.99997V", "Ict.Common.Testing.TTestCommon", "ERR_TESTONLY3",
+                "Value is no longer assignable.", String.Empty,
+                "The code '' is no longer active.\r\nDo you still want to use it?",
+                "Invalid Data Entered", ErrCodeCategory.Validation, String.Empty);
+            VerificationProblemListing = EvaluateErrCodeInfoResults(ExpectedResult, TestResult);
+            Assert.IsEmpty(VerificationProblemListing, "GetErrorInfo: " + Testname);
+
+
+            Testname = "Empty AErrorMessageText and APlaceholderTexts Array with one value";
+            TestResult = ErrorCodes.GetErrorInfo("TEST.99997V", String.Empty, new string[] { "test only" });
+            ExpectedResult = new ErrCodeInfo("TEST.99997V", "Ict.Common.Testing.TTestCommon", "ERR_TESTONLY3",
+                "Value is no longer assignable.", String.Empty,
+                "The code 'test only' is no longer active.\r\nDo you still want to use it?",
+                "Invalid Data Entered", ErrCodeCategory.Validation, String.Empty);
+            VerificationProblemListing = EvaluateErrCodeInfoResults(ExpectedResult, TestResult);
+            Assert.IsEmpty(VerificationProblemListing, "GetErrorInfo: " + Testname);
+
+
+            Testname = "Empty APlaceholderText Array";
+            TestResult = ErrorCodes.GetErrorInfo("TEST.99999V");
+            ExpectedResult = ErrorCodes.GetErrorInfo("TEST.99999V");
+            VerificationProblemListing = EvaluateErrCodeInfoResults(ExpectedResult, TestResult);
+            Assert.IsEmpty(VerificationProblemListing, "GetErrorInfo: " + Testname);
+
+
+            Testname = "Empty APlaceholderText Array";
+            TestResult = ErrorCodes.GetErrorInfo("TEST.99999V", Testname, new string[] { });
+            ExpectedResult = ErrorCodes.GetErrorInfo("TEST.99999V", new string[] { Testname });
+            VerificationProblemListing = EvaluateErrCodeInfoResults(ExpectedResult, TestResult);
+            Assert.IsEmpty(VerificationProblemListing, "GetErrorInfo: " + Testname);
+
+
+            Testname = "ErrorCode without Attributes (ErrCodeCategory.NonCriticalError)";
+            TestResult = ErrorCodes.GetErrorInfo("TEST.99996N", new string[] { "test only" });
+            ExpectedResult = new ErrCodeInfo("TEST.99996N", "Ict.Common.Testing.TTestCommon", "ERR_TESTONLY4",
+                String.Empty, String.Empty,
+                "test only", String.Empty, ErrCodeCategory.NonCriticalError, String.Empty);
+            VerificationProblemListing = EvaluateErrCodeInfoResults(ExpectedResult, TestResult);
+            Assert.IsEmpty(VerificationProblemListing, "GetErrorInfo: " + Testname);
+
+            Testname = "ErrorCode without Attributes (ErrCodeCategory.Error)";
+            TestResult = ErrorCodes.GetErrorInfo("TEST.99995x", new string[] { "test only" });
+            ExpectedResult = new ErrCodeInfo("TEST.99995x", "Ict.Common.Testing.TTestCommon", "ERR_TESTONLY5",
+                String.Empty, String.Empty,
+                "test only", String.Empty, ErrCodeCategory.Error, String.Empty);
+            VerificationProblemListing = EvaluateErrCodeInfoResults(ExpectedResult, TestResult);
+            Assert.IsEmpty(VerificationProblemListing, "GetErrorInfo: " + Testname);
+
+            ErrorCodeInventory.RegisteredTypes.Add(new TErrorCodesTest().GetType());
+            ErrorCodes.GetErrorInfo("TEST.88888V");
+
+            // The following test is needed to test-cover the if-branch in Method ErrorCodes.GetErrorInfo that performs a recursive Method call!
+            TErrorCodesTest2.TestAddingOnTheFlyInUnregisteredClass();
+
+            #endregion
+
+
+            #region This Test Case's Private Methods ('self-test')
+
+            Testname = "EvaluateErrCodeInfoResults (identical values)";
+            TestResult = new ErrCodeInfo("TEST.99995x", "Ict.Common.Testing.TTestCommon", "ERR_TESTONLY5",
+                "ShortDesc1", "FullDesc1",
+                "ErrorMessageText1", "ErrorMessageTitleText1", ErrCodeCategory.Error, "HelpID1");
+            ExpectedResult = new ErrCodeInfo("TEST.99995x", "Ict.Common.Testing.TTestCommon", "ERR_TESTONLY5",
+                "ShortDesc1", "FullDesc1",
+                "ErrorMessageText1", "ErrorMessageTitleText1", ErrCodeCategory.Error, "HelpID1");
+            VerificationProblemListing = EvaluateErrCodeInfoResults(ExpectedResult, TestResult);
+            Assert.IsEmpty(VerificationProblemListing, "EvaluateErrCodeInfoResults: " + Testname);
+
+            Testname = "EvaluateErrCodeInfoResults (non-identical values)";
+            TestResult = new ErrCodeInfo("TEST.99995x", "Ict.Common.Testing.TTestCommon", "ERR_TESTONLY5",
+                "ShortDesc1", "FullDesc1",
+                "ErrorMessageText1", "ErrorMessageTitleText1", ErrCodeCategory.Error, "HelpID1");
+            ExpectedResult = new ErrCodeInfo("TEST.99995x2", "Ict.Common.Testing.TTestCommon2", "ERR_TESTONLY52",
+                "ShortDesc2", "FullDesc2",
+                "ErrorMessageText2", "ErrorMessageTitleText2", ErrCodeCategory.NonCriticalError, "HelpID2");
+            VerificationProblemListing = EvaluateErrCodeInfoResults(ExpectedResult, TestResult);
+
+            Assert.IsTrue(String.Compare(
+                    VerificationProblemListing,
+                    "AExpectedResult.Category != ATestResult.Category ('NonCriticalError' vs. 'Error'); " +
+                    "AExpectedResult.ErrorCode != ATestResult.ErrorCode ('TEST.99995x2' vs. 'TEST.99995x'); " +
+                    "AExpectedResult.ErrorCodeConstantClass != ATestResult.ErrorCodeConstantClass ('Ict.Common.Testing.TTestCommon2' vs. 'Ict.Common.Testing.TTestCommon'); "
+                    +
+                    "AExpectedResult.ErrorCodeConstantName != ATestResult.ErrorCodeConstantName ('ERR_TESTONLY52' vs. 'ERR_TESTONLY5'); " +
+                    "AExpectedResult.ErrorMessageText != ATestResult.ErrorMessageText ('ErrorMessageText2' vs. 'ErrorMessageText1'); " +
+                    "AExpectedResult.ErrorMessageTitle != ATestResult.ErrorMessageTitle ('ErrorMessageTitleText2' vs. 'ErrorMessageTitleText1'); " +
+                    "AExpectedResult.ShortDescription != ATestResult.ShortDescription ('ShortDesc2' vs. 'ShortDesc1'); " +
+                    "AExpectedResult.FullDescription != ATestResult.FullDescription ('FullDesc2' vs. 'FullDesc1'); " +
+                    "AExpectedResult.HelpID != ATestResult.HelpID ('HelpID2' vs. 'HelpID1')") == 0,
+                "EvaluateErrCodeInfoResults: " + Testname);
+
+            #endregion
+        }
+    }
+
+    /// <summary>
+    /// Needed for testing error codes.
+    /// </summary>
+    public class TErrorCodesTest
+    {
+        /// <summary>Test-only Error Code for TestErrorCodes Method.</summary>
+        [ErrCodeAttribute("Invalid date.",
+             ErrorMessageText = "Invalid date entered.",
+             FullDescription = "The date entered is not a valid date.")]
+        public const String ERR_TESTONLY_OTHERCLASS1 = "TEST.88888V";
+    }
+
+    /// <summary>
+    /// Needed for testing error codes.
+    /// </summary>
+    public class TErrorCodesTest2
+    {
+        /// <summary>Test-only Error Code for TestErrorCodes Method.</summary>
+        [ErrCodeAttribute("Invalid date.",
+             ErrorMessageText = "Invalid date entered.",
+             FullDescription = "The date entered is not a valid date.")]
+        public const String ERR_TESTONLY_OTHERCLASS1 = "TEST.77777V";
+
+        /// <summary>
+        /// Test for adding on the fly in Unregistered Class.
+        /// </summary>
+        public static void TestAddingOnTheFlyInUnregisteredClass()
+        {
+            ErrorCodes.GetErrorInfo("TEST.77777V");
         }
     }
 }

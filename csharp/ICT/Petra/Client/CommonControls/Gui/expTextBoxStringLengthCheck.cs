@@ -82,33 +82,29 @@ namespace Ict.Petra.Client.CommonControls
     /// </summary>
     public partial class TexpTextBoxStringLengthCheck : System.ComponentModel.Component, IExtenderProvider
     {
-        /// <summary>todoComment</summary>
-        public const String strFoundControlKey = "Key";
+        #region Resourcetexts - DON'T TRANSLATE AS THEY ARE FOR LOGGING/DEBUGGING PUPROSES
+
+//        private static readonly string strUnknownControl = "Unkown control! Databinding System.Object could not be retreived!";
+
+        #endregion
 
         /// <summary>todoComment</summary>
-        public const String strFoundControlTextBox = "TextBox";
+        private const String strFoundControlKey = "Key";
 
         /// <summary>todoComment</summary>
-        public const String strFoundControlMaxLength = "MaxLength";
+        private const String strFoundControlTextBox = "TextBox";
 
         /// <summary>todoComment</summary>
-        public const String strFoundControlTableName = "TableName";
+        private const String strFoundControlMaxLength = "MaxLength";
 
         /// <summary>todoComment</summary>
-        public const String strFoundControlColumnName = "ColumnName";
+        private const String strFoundControlTableName = "TableName";
 
         /// <summary>todoComment</summary>
-        public const String strFoundControlDataSource = "DataSource";
+        private const String strFoundControlColumnName = "ColumnName";
 
         /// <summary>todoComment</summary>
-        public const String strExceptionRegisterHost = "The host of the extender provider is not registered to the provider." + "\n" +
-                                                       "Please implement the event >RegisterHostToExtender< in the control where you use the TexpTextBoxStringLengthCheck!!!";
-
-        /// <summary>todoComment</summary>
-        public const String strExceptionInitialisation = "Initialisation Failure";
-
-        /// <summary>todoComment</summary>
-        public const String strUnknownControl = "Unkown control! Databinding System.Object could not be retreived!";
+        private const String strFoundControlDataSource = "DataSource";
 
         private System.Windows.Forms.UserControl UExtenderHost;
         private System.Windows.Forms.Control.ControlCollection UExtenderControlCollection;

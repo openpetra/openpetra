@@ -81,5 +81,35 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
                 txtDetailTimeZoneMaximum.NumberValueDouble = txtDetailTimeZoneMinimum.NumberValueDouble;
             }
         }
+
+        private void ValidateDataManual(PCountryRow ARow)
+        {
+            DataColumn ValidationColumn;
+
+//TLogging.Log("ValidateDataManual:  CountryCode = " + ARow[PCountryTable.ColumnCountryCodeId].ToString() +
+//                         "; InternatTelephoneCode = " + ARow.InternatTelephoneCode.ToString());
+            // 'International Telephone Code' must be positive or 0
+            ValidationColumn = ARow.Table.Columns[PCountryTable.ColumnInternatTelephoneCodeId];
+
+            FPetraUtilsObject.VerificationResultCollection.AddOrRemove(
+                TNumericalChecks.IsPositiveOrZeroInteger(ARow.InternatTelephoneCode,
+                    lblDetailInternatTelephoneCode.Text,
+                    this, ValidationColumn, txtDetailInternatTelephoneCode), ValidationColumn);
+
+//            FPetraUtilsObject.VerificationResultCollection.AddOrRemove(
+//                TNumericalChecks.IsPositiveOrZeroInteger(txtDetailInternatTelephoneCode.NumberValueInt,
+//                    lblDetailInternatTelephoneCode.Text,
+//                    this, ValidationColumn, txtDetailInternatTelephoneCode), ValidationColumn);
+
+            // 'Time Zone From' must be <= 'Time Zone To'
+            ValidationColumn = ARow.Table.Columns[PCountryTable.ColumnTimeZoneMinimumId];
+            FPetraUtilsObject.VerificationResultCollection.AddOrRemove(
+                TNumericalChecks.FirstLesserOrEqualThanSecondDecimal(
+                    ARow.TimeZoneMinimum, ARow.TimeZoneMaximum,
+                    lblDetailTimeZoneMinimum.Text, lblDetailTimeZoneMaximum.Text,
+                    this, ValidationColumn, txtDetailTimeZoneMinimum), ValidationColumn);
+
+//            FPetraUtilsObject.VerificationResultCollection.Add(new TScreenVerificationResult( "TestContext", ValidationColumn, "test warning", txtDetailTimeZoneMinimum, TResultSeverity.Resv_Noncritical));
+        }
     }
 }

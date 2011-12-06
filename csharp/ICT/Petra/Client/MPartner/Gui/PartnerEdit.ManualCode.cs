@@ -76,9 +76,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>used for sending information back from the PetraServer while saving</summary>
         private DataSet FResponseDS;
 
-        /// <summary>controls whether the SaveChanges function saves the changes or just submits parameters</summary>
-        private Boolean FSubmitChangesContinue;
-
         /// <summary>holds the PartnerKey for which the screen is opened</summary>
         private System.Int64 FPartnerKey;
 
@@ -120,45 +117,47 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         // TODO 2 Replace with String.Format(Catalog.GetString("Hello {0}"), myname);
 
-        private const String StrScreenCaption = "Partner Edit";
-        private const String StrQueryUnitParent = "All 'Units' MUST be assigned a 'Parent'." + "\r\n" + "Do you wish to assign one now?";
-        private const String StrQueryUnitParentTitle = "Assign Parent in Unit Hierarchy?";
-        private const String StrQueryOverwriteAddress = "Are you sure you want to replace the current " + "address with the address" + "\r\n" +
-                                                        "that you are about to find?" + "\r\n" + "\r\n" + "WARNING:" + "\r\n" +
-                                                        "If you choose 'Yes', history for the currently " +
-                                                        "displayed address will be lost!" + "\r\n" + "If the displayed address " +
-                                                        "was valid, you should instead add a new address" + "\r\n" +
-                                                        "and then enter an end (to) date for the old address.";
-        private const String StrQueryOverwriteAddressTitle = "Replace Current Address?";
-        private const String StrCannotDeletePartner = "Cannot delete Partner that has unsaved changes." + "\r\n" + "\r\n" +
-                                                      "Either save the changes that you have made, or close this Partner Edit sc" +
-                                                      "reen without saving the data and then delete the Partner from the Partner" + " Module screen.";
-        private const String StrCannotDeletePartnerTitle = "Cannot Delete Partner That Has Unsaved Chan" + "ges";
-        private const String StrDownloadVideoTutorialTitle = "Download Video Tutorial";
-        private const String StrDownloadVideoTutoriaManuallTitle = "Manual Download of Video Tutorial";
-        private const String StrVideoTutorialTitle = "Video Tutorial for Partner Edit Screen";
-        private const String StrVideoTutorialNotFound = "The Video Tutorial for Partner Edit Screen cannot be found on your system." + "\r\n" +
-                                                        "(Petra is looking in '{0}' for a file named '{1}')." + "\r\n" + "\r\n" +
-                                                        "The video can also be download from the Internet. Choose 'Yes' to download it and view it, "
-                                                        +
-                                                        "\r\n" +
-                                                        "or choose 'No' to not download the video.";
-        private const String StrVideoTutorialLaunchFailed =
-            "There was a problem launching the Video Tutorial application. (Details can be found in the log file.)";
-        private const String StrVideoTutorialWebBRowserLaunched = "The web bRowser should have been launched and offer the download of the file.";
-        private const String StrVideoTutorialWebBRowserLaunchFailed =
-            "There was a problem launching Internet Explorer. (Details can be found in the log file.)" + "\r\n" + "\r\n" +
-            "To download the Video Tutorial, launch your web bRowser and enter the following address:" + "\r\n" + "   ";
-        private const String StrVideoTutorialDownloadInstructions = "Please save the file in the following folder:" + "\r\n" + "   {0}" + "\r\n" +
-                                                                    "\r\n" +
-                                                                    "After the download is finished: choose 'Yes' to start the Video Tutorial from that folder,"
-                                                                    +
-                                                                    "\r\n" +
-                                                                    "or choose 'No' to return to the Partner Edit screen.";
-        private const String StrDeactivatePartnerTitle = "Deactivate Partner";
-        private const String StrDeactivatePartnerActionCancelled = "Deactivate Partner procedure cancel" + "led - no data was changed.";
-        private const String StrDeactivatePartnerSuccess = "Deactivate Partner procedure finished suces" + "sfully.";
-        private const String StrDeactivatePartnerStatusNotChanged = "Partner Status wasn't changed - it " + "was already set to '{0}'.";
+        private static readonly string StrScreenCaption = Catalog.GetString("Partner Edit");
+        private static readonly string StrQueryUnitParent = Catalog.GetString(
+            "All 'Units' MUST be assigned a 'Parent'.\r\nDo you wish to assign one now?");
+        private static readonly string StrQueryUnitParentTitle = Catalog.GetString("Assign Parent in Unit Hierarchy?");
+        private static readonly string StrQueryOverwriteAddress = Catalog.GetString(
+            "Are you sure you want to replace the current address with the address\r\n" +
+            "that you are about to find?\r\n\r\nWARNING:\r\n" +
+            "If you choose 'Yes', history for the currently displayed address will be lost!\r\n" +
+            "If the displayed address was valid, you should instead add a new address\r\n" +
+            "and then enter an end (to) date for the old address.");
+        private static readonly string StrQueryOverwriteAddressTitle = Catalog.GetString("Replace Current Address?");
+        private static readonly string StrCannotDeletePartner = Catalog.GetString(
+            "Cannot delete Partner that has unsaved changes.\r\n\r\n" +
+            "Either save the changes that you have made, or close this Partner Edit screen without saving the data " +
+            "and then delete the Partner from the Partner Module screen.");
+        private static readonly string StrCannotDeletePartnerTitle = Catalog.GetString("Cannot Delete Partner That Has Unsaved Changes");
+        private static readonly string StrDownloadVideoTutorialTitle = Catalog.GetString("Download Video Tutorial");
+        private static readonly string StrDownloadVideoTutoriaManuallTitle = Catalog.GetString("Manual Download of Video Tutorial");
+        private static readonly string StrVideoTutorialTitle = Catalog.GetString("Video Tutorial for Partner Edit Screen");
+        private static readonly string StrVideoTutorialNotFound = Catalog.GetString(
+            "The Video Tutorial for Partner Edit Screen cannot be found on your system.\r\n" +
+            "(OpenPetra is looking in '{0}' for a file named '{1}').\r\n\r\n" +
+            "The video can also be download from the Internet. Choose 'Yes' to download it and view it,\r\n" +
+            "or choose 'No' to not download the video.");
+        private static readonly string StrVideoTutorialLaunchFailed = Catalog.GetString(
+            "There was a problem launching the Video Tutorial application. (Details can be found in the log file.)");
+        private static readonly string StrVideoTutorialWebBRowserLaunched = Catalog.GetString(
+            "The web browser should have been launched and offer the download of the file.");
+        private static readonly string StrVideoTutorialWebBRowserLaunchFailed = Catalog.GetString(
+            "There was a problem launching Internet Explorer. (Details can be found in the log file.)\r\n\r\n" +
+            "To download the Video Tutorial, launch your web browser and enter the following address:\r\n" + "   ");
+        private static readonly string StrVideoTutorialDownloadInstructions = Catalog.GetString(
+            "Please save the file in the following folder:\r\n   {0}\r\n\r\n" +
+            "After the download is finished: choose 'Yes' to start the Video Tutorial from that folder,\r\n" +
+            "or choose 'No' to return to the Partner Edit screen.");
+        private static readonly string StrDeactivatePartnerTitle = Catalog.GetString("Deactivate Partner");
+        private static readonly string StrDeactivatePartnerActionCancelled = Catalog.GetString(
+            "Deactivate Partner procedure cancelled - no data was changed.");
+        private static readonly string StrDeactivatePartnerSuccess = Catalog.GetString("Deactivate Partner procedure finished sucessfully.");
+        private static readonly string StrDeactivatePartnerStatusNotChanged = Catalog.GetString(
+            "Partner Status wasn't changed - it was already set to '{0}'.");
 
         #endregion
 
@@ -800,15 +799,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             PartnerEditTDS SubmitDS;
             TSubmitChangesResult SubmissionResult;
 
-            String ErrorMessages;
             TVerificationResultCollection VerificationResult;
             TVerificationResult VerificationResultItem;
 
             System.Windows.Forms.DialogResult UnitParentAssignment;
             int RowIndex;
             int NumRows;
-            Control FirstErrorControl;
-            System.Object FirstErrorContext;
             Int32 MaxColumn;
             bool AddressesOrRelationsChanged = false;
             System.Int32 ChangedColumns;
@@ -816,11 +812,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             System.Int32 Counter;
             String DebugMessage;
 #endif
-
-
             // TmpRowCounter: Int16;
             // TmpDebugString: String;
             // Counter: Integer;
+
             FPetraUtilsObject.OnDataSavingStart(this, new System.EventArgs());
 
             // Don't allow saving if user is still editing a Detail of a List
@@ -836,9 +831,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             ucoUpperPart.GetDataFromControls();
             ucoLowerPart.GetDataFromControls();
 
-            ReturnValue = false;
+            ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
+                this.GetType());
 
-            if (FPetraUtilsObject.VerificationResultCollection.Count == 0)
+            if (ReturnValue)
             {
                 foreach (DataTable InspectDT in AInspectDS.Tables)
                 {
@@ -850,7 +846,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 if (FPetraUtilsObject.HasChanges)
                 {
-                    FPetraUtilsObject.WriteToStatusBar("Saving data...");
+                    FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataInProgress);
                     this.Cursor = Cursors.WaitCursor;
 
                     /* $IFDEF SHOWCHANGES MessageBox.Show('SaveChanges: AInspectDS.PLocation.Rows[0].HasVersion(DataRowVersion.Original): ' + AInspectDS.PLocation.Rows[0].HasVersion(DataRowVersion.Original).ToString + '; LocationKey: ' +
@@ -858,7 +854,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     /* $IFDEF SHOWCHANGES MessageBox.Show('SaveChanges: AInspectDS.PLocation.Rows[1].HasVersion(DataRowVersion.Original): ' + AInspectDS.PLocation.Rows[1].HasVersion(DataRowVersion.Original).ToString + '; LocationKey: ' +
                      *AInspectDS.PLocation.Row[1].LocationKey.ToString); $ENDIF */
-                    if (!FSubmitChangesContinue)
+                    if (!FPetraUtilsObject.SubmitChangesContinue)
                     {
                         foreach (DataTable InspectDT in AInspectDS.Tables)
                         {
@@ -977,7 +973,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     // Submit changes to the PETRAServer
                     try
                     {
-                        if (!FSubmitChangesContinue)
+                        if (!FPetraUtilsObject.SubmitChangesContinue)
                         {
                             FResponseDS = null;
                             SubmissionResult = FPartnerEditUIConnector.SubmitChanges(ref SubmitDS, ref FResponseDS, out VerificationResult);
@@ -987,51 +983,42 @@ namespace Ict.Petra.Client.MPartner.Gui
                             SubmissionResult = FPartnerEditUIConnector.SubmitChangesContinue(out SubmitDS, ref FResponseDS, out VerificationResult);
                         }
                     }
-                    catch (System.Net.Sockets.SocketException)
-                    {
-                        FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
-                        this.Cursor = Cursors.Default;
-                        MessageBox.Show(Catalog.GetString("The PETRA Server cannot be reached! Data cannot be saved!"),
-                            Catalog.GetString("No Server response"),
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Stop);
-                        ReturnValue = false;
-                        OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-                        return ReturnValue;
-                    }
                     catch (ESecurityDBTableAccessDeniedException Exp)
                     {
-                        FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
+                        FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataException);
                         this.Cursor = Cursors.Default;
                         TMessages.MsgSecurityException(Exp, this.GetType());
+
                         ReturnValue = false;
-                        OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+                        FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                         return ReturnValue;
                     }
                     catch (EDBConcurrencyException Exp)
                     {
-                        FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
+                        FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataException);
                         this.Cursor = Cursors.Default;
                         TMessages.MsgDBConcurrencyException(Exp, this.GetType());
+
                         ReturnValue = false;
-                        OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+                        FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                         return ReturnValue;
                     }
                     catch (Exception exp)
                     {
-                        FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
+                        FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataException);
                         this.Cursor = Cursors.Default;
                         TLogging.Log(
-                            "An error occured while trying to connect to the PETRA Server!" + Environment.NewLine + exp.ToString(),
+                            "An error occured while trying to connect to the OpenPetra Server!" + Environment.NewLine + exp.ToString(),
                             TLoggingType.ToLogfile);
                         MessageBox.Show(
-                            "An error occured while trying to connect to the PETRA Server!" + Environment.NewLine +
+                            "An error occured while trying to connect to the OpenPetra Server!" + Environment.NewLine +
                             "For details see the log file: " + TLogging.GetLogFileName(),
                             "Server connection error",
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Stop);
+
                         ReturnValue = false;
-                        OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+                        FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                         return ReturnValue;
                     }
 
@@ -1170,9 +1157,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                             // TLogging.Log('After calling AcceptChanges on the Client DataSet: ' + AInspectDS.GetXml);
                             // Update UI
-                            FPetraUtilsObject.WriteToStatusBar("Data successfully saved.");
+                            FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataSuccessful);
                             this.Cursor = Cursors.Default;
-                            EnableSave(false);
 
                             // If Screen Title was for a NEW Partner, remove the 'NEW' indicator
                             if (this.Text.StartsWith(TFrmPetraEditUtils.StrFormCaptionPrefixNew))
@@ -1182,12 +1168,13 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                             // We don't have unsaved changes anymore
                             FPetraUtilsObject.DisableSaveButton();
-                            FSubmitChangesContinue = false;
+                            FPetraUtilsObject.SubmitChangesContinue = false;
 
                             // Assign PartnerKey. This is needed in case this was a new Partner before saving!
                             FPartnerKey = AInspectDS.PPartner[0].PartnerKey;
+
                             ReturnValue = true;
-                            OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+                            FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                             break;
 
                         case TSubmitChangesResult.scrError:
@@ -1195,14 +1182,13 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                             if (!(VerificationResult.Contains((System.Object) "Location Change Promotion: Information")))
                             {
-                                FPetraUtilsObject.WriteToStatusBar(CommonResourcestrings.StrSavingDataErrorOccured);
+                                FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataErrorOccured);
 
-                                MessageBox.Show(
-                                    Messages.BuildMessageFromVerificationResult(null, VerificationResult));
+                                MessageBox.Show(Messages.BuildMessageFromVerificationResult(null, VerificationResult));
                             }
                             else
                             {
-                                FPetraUtilsObject.WriteToStatusBar(CommonResourcestrings.StrSavingDataCancelled);
+                                FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataCancelled);
 
                                 VerificationResultItem = (TVerificationResult)VerificationResult.FindBy(
                                     (object)"Location Change Promotion: Information");
@@ -1212,22 +1198,22 @@ namespace Ict.Petra.Client.MPartner.Gui
                                     MessageBoxIcon.Information);
                             }
 
-                            FSubmitChangesContinue = false;
+                            FPetraUtilsObject.SubmitChangesContinue = false;
+
                             ReturnValue = false;
-                            OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+                            FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                             break;
 
                         case TSubmitChangesResult.scrNothingToBeSaved:
-
-                            // Update UI
-                            FPetraUtilsObject.WriteToStatusBar(CommonResourcestrings.StrSavingDataNothingToSave);
                             this.Cursor = Cursors.Default;
-                            EnableSave(false);
+                            FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataNothingToSave);
 
                             // We don't have unsaved changes anymore
+                            EnableSave(false);
                             FPetraUtilsObject.HasChanges = false;
+
                             ReturnValue = true;
-                            OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+                            FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                             break;
 
                         case TSubmitChangesResult.scrInfoNeeded:
@@ -1285,7 +1271,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                             // end;
                             // recursive call!
-                            FSubmitChangesContinue = true;
+                            FPetraUtilsObject.SubmitChangesContinue = true;
                             ReturnValue = SaveChanges(ref AInspectDS);
                             return ReturnValue;
                     }
@@ -1293,37 +1279,20 @@ namespace Ict.Petra.Client.MPartner.Gui
                 else
                 {
                     // Update UI
-                    FPetraUtilsObject.WriteToStatusBar(CommonResourcestrings.StrSavingDataNothingToSave);
+                    FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataNothingToSave);
                     this.Cursor = Cursors.Default;
                     EnableSave(false);
 
                     // We don't have unsaved changes anymore
                     FPetraUtilsObject.HasChanges = false;
+
                     ReturnValue = true;
-                    OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+                    FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                 }
             }
             else
             {
-                // User needs to fix data validation errors before he can save data
-                // TDataBinding.IterateErrorsInData(AInspectDataSet, ErrorMessages, FirstErrorControlName);
-                // MessageBox.Show('FPetraUtilsObject.VerificationResultCollection.Count: ' +
-                // FPetraUtilsObject.VerificationResultCollection.Count.ToString);
-                FPetraUtilsObject.VerificationResultCollection.BuildScreenVerificationResultList(out ErrorMessages,
-                    out FirstErrorControl,
-                    out FirstErrorContext);
-
-                // TODO 1 ochristiank cUI : Make a message library and call a method there to show verification errors.
-                MessageBox.Show(
-                    "Cannot save data because invalid data has not been corrected!" + Environment.NewLine + Environment.NewLine + ErrorMessages,
-                    "Form contains invalid data!",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-
-                // TFocusing.SetFocusOnControlInFormOrUserControl(this, FirstErrorControl.Name);
-                FirstErrorControl.Focus();
-                ReturnValue = false;
-                OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+                FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(false));
             }
 
             return ReturnValue;
@@ -1494,7 +1463,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 mniMaintainLocalPartnerData.Enabled = false;
             }
 
-            FSubmitChangesContinue = false;
+            FPetraUtilsObject.SubmitChangesContinue = false;
             ApplySecurity();
 
             // Need to do this manually  we disabled the automatic hookup in the Base Form because
@@ -1586,16 +1555,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     mniMaintainFoundationDetails.Enabled = false;
                 }
             }
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        /// <param name="o"></param>
-        /// <param name="args"></param>
-        public void OnDataSaved(Object o, TDataSavedEventArgs args)
-        {
-            // TODO event OnDataSaved
         }
 
         #endregion
@@ -1763,8 +1722,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
-                MessageBox.Show(CommonResourcestrings.StrErrorOnlyForFamilyOrPerson,
-                    CommonResourcestrings.StrGenericFunctionalityNotAvailable);
+                MessageBox.Show(MCommonResourcestrings.StrErrorOnlyForFamilyOrPerson,
+                    MCommonResourcestrings.StrGenericFunctionalityNotAvailable);
             }
         }
 
@@ -1974,9 +1933,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                     if (!GetPartnerEditUIConnector(TUIConnectorType.uictNewPartner))
                     {
                         MessageBox.Show(
-                            String.Format(CommonResourcestrings.StrOpeningCancelledByUser,
+                            String.Format(MCommonResourcestrings.StrOpeningCancelledByUser,
                                 StrScreenCaption),
-                            CommonResourcestrings.StrOpeningCancelledByUserTitle,
+                            MCommonResourcestrings.StrOpeningCancelledByUserTitle,
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                         // to prevent strange error message, that would stop the form from closing
@@ -2118,9 +2077,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                         if (!GetPartnerEditUIConnector(TUIConnectorType.uictPartnerKey))
                         {
                             MessageBox.Show(
-                                String.Format(CommonResourcestrings.StrOpeningCancelledByUser,
+                                String.Format(MCommonResourcestrings.StrOpeningCancelledByUser,
                                     StrScreenCaption),
-                                CommonResourcestrings.StrOpeningCancelledByUserTitle,
+                                MCommonResourcestrings.StrOpeningCancelledByUserTitle,
                                 MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                             // to prevent strange error message, that would stop the form from closing
@@ -2136,9 +2095,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                         if (!GetPartnerEditUIConnector(TUIConnectorType.uictLocationKey))
                         {
                             MessageBox.Show(
-                                String.Format(CommonResourcestrings.StrOpeningCancelledByUser,
+                                String.Format(MCommonResourcestrings.StrOpeningCancelledByUser,
                                     StrScreenCaption),
-                                CommonResourcestrings.StrOpeningCancelledByUserTitle,
+                                MCommonResourcestrings.StrOpeningCancelledByUserTitle,
                                 MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                             // to prevent strange error message, that would stop the form from closing
@@ -2242,7 +2201,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 catch (ESecurityPartnerAccessDeniedException Exp)
                 {
                     this.Cursor = Cursors.Default;
-                    TMessages.MsgSecurityException(Exp, this.GetType());
+                    TMessages.MsgSecurityException(Exp);
 
                     // for the modal dialog (called from Progress)
                     DialogResult = System.Windows.Forms.DialogResult.Cancel;
@@ -2430,7 +2389,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     mniMaintainFamilyMembers.Enabled = IsEnabled;
                     mniMaintainWorkerField.Enabled = IsEnabled;
-                    mniMaintainFamilyMembers.Text = Resourcestrings.StrFamilyMenuItemText;
+                    mniMaintainFamilyMembers.Text = MPartnerResourcestrings.StrFamilyMenuItemText;
 
                     // TODO
 //                    // Exchange the 'Family Members' icon with the 'Family' icon!
@@ -2443,7 +2402,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     mniMaintainFamilyMembers.Enabled = IsEnabled;
                     mniMaintainWorkerField.Enabled = IsEnabled;
-                    mniMaintainFamilyMembers.Text = Resourcestrings.StrFamilyMembersMenuItemText;
+                    mniMaintainFamilyMembers.Text = MPartnerResourcestrings.StrFamilyMembersMenuItemText;
                 }
                 else
                 {
@@ -2519,7 +2478,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         mniMaintainPersonnelData.Enabled = false;
                     }
 
-                    mniMaintainPersonnelData.Text = Resourcestrings.StrPersonnelPersonMenuItemText;
+                    mniMaintainPersonnelData.Text = MPartnerResourcestrings.StrPersonnelPersonMenuItemText;
                 }
                 else if (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.UNIT))
                 {
@@ -2527,7 +2486,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     tbbViewPersonnelData.Enabled = false;
                     mniViewPersonnelData.Enabled = false;
 
-                    mniMaintainPersonnelData.Text = Resourcestrings.StrPersonnelUnitMenuItemText;
+                    mniMaintainPersonnelData.Text = MPartnerResourcestrings.StrPersonnelUnitMenuItemText;
                 }
                 else
                 {
@@ -2679,8 +2638,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 catch (EDBTransactionBusyException)
                 {
                     ServerBusyDialogResult =
-                        MessageBox.Show(String.Format(CommonResourcestrings.StrPetraServerTooBusy, "open the " + StrScreenCaption + " screen"),
-                            CommonResourcestrings.StrPetraServerTooBusyTitle,
+                        MessageBox.Show(String.Format(MCommonResourcestrings.StrPetraServerTooBusy, "open the " + StrScreenCaption + " screen"),
+                            MCommonResourcestrings.StrPetraServerTooBusyTitle,
                             MessageBoxButtons.RetryCancel,
                             MessageBoxIcon.Warning,
                             MessageBoxDefaultButton.Button1);
@@ -2938,19 +2897,14 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void EnableSave(bool Enable)
         {
-// TODO enablesave
-#if TODO
             if ((Enable) && (ucoUpperPart.Enabled))
             {
-                mniFileSave.Enabled = true;
-                tbbSave.Enabled = true;
+                FPetraUtilsObject.SetChangedFlag();
             }
             else
             {
-                mniFileSave.Enabled = false;
-                tbbSave.Enabled = false;
+                FPetraUtilsObject.DisableSaveButton();
             }
-#endif
         }
 
         private void EnableDisableUpperPart(bool AEnable)

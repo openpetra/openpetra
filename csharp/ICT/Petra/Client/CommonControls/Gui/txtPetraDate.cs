@@ -417,7 +417,7 @@ namespace Ict.Petra.Client.CommonControls
                         if (AShowVerificationError)
                         {
                             // Show appropriate Error Message to the user
-                            TMessages.MsgGeneralError(DateVerificationResult2);
+                            TMessages.MsgGeneralError(DateVerificationResult2, this.FindForm().GetType());
                         }
 
                         // Reset the Date to what it was before!
@@ -438,7 +438,7 @@ namespace Ict.Petra.Client.CommonControls
                         if (AShowVerificationError)
                         {
                             // Show appropriate Error Message to the user
-                            TMessages.MsgGeneralError(DateVerificationResult2);
+                            TMessages.MsgGeneralError(DateVerificationResult2, this.FindForm().GetType());
                         }
 
                         // Reset the Date to what it was before!
@@ -452,14 +452,14 @@ namespace Ict.Petra.Client.CommonControls
 
                 if (!FAllowEmpty)
                 {
-                    DateVerificationResult2 = TDateChecks.IsUndefinedDateTime(Text2Date, FDateDescription);
+                    DateVerificationResult2 = TDateChecks.IsNotUndefinedDateTime(Text2Date, FDateDescription);
 
                     if (DateVerificationResult2 != null)
                     {
                         if (AShowVerificationError)
                         {
                             // Show appropriate Error Message to the user
-                            TMessages.MsgGeneralError(DateVerificationResult2);
+                            TMessages.MsgGeneralError(DateVerificationResult2, this.FindForm().GetType());
                         }
 
                         // Reset the Date to what it was before!

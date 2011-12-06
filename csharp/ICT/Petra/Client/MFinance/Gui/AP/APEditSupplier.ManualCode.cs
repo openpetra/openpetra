@@ -31,8 +31,10 @@ using Ict.Petra.Shared;
 using System.Resources;
 using System.Collections.Specialized;
 using GNU.Gettext;
+
 using Ict.Common;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Client.App.Core;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
@@ -40,6 +42,7 @@ using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.Interfaces.MFinance.AP.UIConnectors;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MPartner.Gui;
 using Ict.Petra.Client.MFinance.Logic;
 
@@ -145,12 +148,15 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// <returns></returns>
         public bool SaveChanges()
         {
+            Boolean ReturnValue;
+
             FPetraUtilsObject.OnDataSavingStart(this, new System.EventArgs());
 
             // Don't allow saving if user is still editing a Detail of a List
             if (FPetraUtilsObject.InDetailEditMode())
             {
-                return false;
+                ReturnValue = false;
+                return ReturnValue;
             }
 
             FMainDS.AApSupplier.Rows[0].BeginEdit();
@@ -161,10 +167,15 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 MessageBox.Show(Catalog.GetString("Please select an AP account (eg. 9100)"));
                 FMainDS.AApSupplier.Rows[0].EndEdit();
-                return false;
+
+                ReturnValue = false;
+                return ReturnValue;
             }
 
-            if (FPetraUtilsObject.VerificationResultCollection.Count == 0)
+            ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
+                this.GetType());
+
+            if (ReturnValue)
             {
                 foreach (DataTable InspectDT in FMainDS.Tables)
                 {
@@ -176,7 +187,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                 if (FPetraUtilsObject.HasChanges)
                 {
-                    FPetraUtilsObject.WriteToStatusBar("Saving data...");
+                    FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataInProgress);
                     this.Cursor = Cursors.WaitCursor;
 
                     AccountsPayableTDS SubmitDS = FMainDS.GetChangesTyped(true);
@@ -189,57 +200,42 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     {
                         SubmissionResult = FUIConnector.SubmitChanges(ref SubmitDS, out VerificationResult);
                     }
-                    catch (System.Net.Sockets.SocketException)
+                    catch (ESecurityDBTableAccessDeniedException Exp)
                     {
-                        FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
+                        FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataException);
                         this.Cursor = Cursors.Default;
-                        MessageBox.Show("The PETRA Server cannot be reached! Data cannot be saved!",
-                            "No Server response",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Stop);
-                        bool ReturnValue = false;
+                        TMessages.MsgSecurityException(Exp, this.GetType());
 
-                        // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+                        ReturnValue = false;
+                        FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                         return ReturnValue;
                     }
-/* TODO ESecurityDBTableAccessDeniedException
- *                  catch (ESecurityDBTableAccessDeniedException Exp)
- *                  {
- *                      FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
- *                      this.Cursor = Cursors.Default;
- *                      // TODO TMessages.MsgSecurityException(Exp, this.GetType());
- *                      bool ReturnValue = false;
- *                      // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
- *                      return ReturnValue;
- *                  }
- */
-                    catch (EDBConcurrencyException)
+                    catch (EDBConcurrencyException Exp)
                     {
-                        FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
+                        FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataException);
                         this.Cursor = Cursors.Default;
+                        TMessages.MsgDBConcurrencyException(Exp, this.GetType());
 
-                        // TODO TMessages.MsgDBConcurrencyException(Exp, this.GetType());
-                        bool ReturnValue = false;
-
-                        // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+                        ReturnValue = false;
+                        FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                         return ReturnValue;
                     }
                     catch (Exception exp)
                     {
-                        FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
+                        FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataException);
                         this.Cursor = Cursors.Default;
                         TLogging.Log(
-                            "An error occured while trying to connect to the PETRA Server!" + Environment.NewLine + exp.ToString(),
+                            "An error occured while trying to connect to the OpenPetra Server!" + Environment.NewLine + exp.ToString(),
                             TLoggingType.ToLogfile);
                         MessageBox.Show(
-                            "An error occured while trying to connect to the PETRA Server!" + Environment.NewLine +
+                            "An error occured while trying to connect to the OpenPetra Server!" + Environment.NewLine +
                             "For details see the log file: " + TLogging.GetLogFileName(),
                             "Server connection error",
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Stop);
-                        bool ReturnValue = false;
 
-                        // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+                        ReturnValue = false;
+                        FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                         return ReturnValue;
                     }
 
@@ -257,36 +253,66 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                             FMainDS.AcceptChanges();
 
                             // Update UI
-                            FPetraUtilsObject.WriteToStatusBar("Data successfully saved.");
+                            FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataSuccessful);
                             this.Cursor = Cursors.Default;
-
-                            // TODO EnableSave(false);
 
                             // We don't have unsaved changes anymore
                             FPetraUtilsObject.DisableSaveButton();
 
-                            // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-                            return true;
+                            ReturnValue = true;
+                            FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+                            break;
 
                         case TSubmitChangesResult.scrError:
+                            this.Cursor = Cursors.Default;
+                            FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataErrorOccured);
 
-                            // TODO scrError
+                            MessageBox.Show(Messages.BuildMessageFromVerificationResult(null, VerificationResult));
+
+                            FPetraUtilsObject.SubmitChangesContinue = false;
+
+                            ReturnValue = false;
+                            FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                             break;
 
                         case TSubmitChangesResult.scrNothingToBeSaved:
+                            this.Cursor = Cursors.Default;
+                            FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataNothingToSave);
 
-                            // TODO scrNothingToBeSaved
+                            // We don't have unsaved changes anymore
+                            FPetraUtilsObject.DisableSaveButton();
+
+                            ReturnValue = true;
+                            FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                             break;
 
                         case TSubmitChangesResult.scrInfoNeeded:
 
                             // TODO scrInfoNeeded
+                            this.Cursor = Cursors.Default;
                             break;
                     }
                 }
+                else
+                {
+                    // Update UI
+                    FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataNothingToSave);
+                    this.Cursor = Cursors.Default;
+                    FPetraUtilsObject.DisableSaveButton();
+
+                    // We don't have unsaved changes anymore
+                    FPetraUtilsObject.HasChanges = false;
+
+                    ReturnValue = true;
+                    FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+                }
+            }
+            else
+            {
+                FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(false));
             }
 
-            return false;
+            return ReturnValue;
         }
     }
 }

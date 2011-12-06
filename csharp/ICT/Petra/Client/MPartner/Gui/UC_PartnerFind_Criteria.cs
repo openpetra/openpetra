@@ -50,16 +50,34 @@ namespace Ict.Petra.Client.MPartner.Gui
     /// </summary>
     public partial class TUC_PartnerFindCriteria : System.Windows.Forms.UserControl, IPetraUserControl
     {
+        #region Resourcestrings
+
+        private static readonly string StrPartnerNameFindHelptext = Catalog.GetString(
+            "Enter [last name, first name, title] or church / organisation / bank / unit / venue name.");
+        private static readonly string StrPersonalNameFindHelpText = Catalog.GetString(
+            "Enter a Personal name when searching for specific people");
+        private static readonly string StrPartnerKeyFindHelpText = Catalog.GetString(
+            "Enter a Partner Key as 4+6=10 digit Unit/Partner number");
+        private static readonly string StrActivePartnersFindHelpText = Catalog.GetString(
+            "Restricts search to Partners with Status ACTIVE");
+        private static readonly string StrAllPartnersFindHelpText = Catalog.GetString(
+            "Search for Partners with any Status");
+        private static readonly string StrPartnerClassFindHelpText = Catalog.GetString(
+            "Restricts search to Partners of specified Partner Class (* = all Classes)");
+        private static readonly string StrWorkerFamilyOnlyFindHelpText = Catalog.GetString(
+            "Filters the search to Worker Families");
+        private static readonly string StrPreviousNameFindHelpText = Catalog.GetString(
+            "Enter a Previous Name (eg. Maiden Name, old name of an Organisation or Church)");
+        private static readonly string StrPartnerKeyNonExactInfoTest = Catalog.GetString(
+            "Trailing zero(es) in the Partner Key are used as wilcard characters.\n\r" +
+            "Example: Entering Partner Key '0029000000' will return all Partners whose Partner Key was generated\n\r" +
+            "for Unit 0029000000.\n\r" +
+            "This is because the 'Exact Partner Key Match' Option is turned off in the Partner Find Options.");
+
+        #endregion
+
         private const String StrSpacer = "Spacer";
         private const String StrBeginGroup = "BeginGroup";
-        private const String StrPartnerClassFindHelpText = "Restricts search to Partners of specified Partner Class (* = all Classes)";
-        private const String StrWorkerFamilyOnlyFindHelpText = "Filters the search to Worker Families";
-        private const String StrPreviousNameFindHelpText = "Enter a Previous Name (eg. Maiden Name, old name of an Organisation or Church)";
-        private const String StrPartnerKeyNonExactInfoTest = "Trailing zero(es) in the Partner Key are used as wilcard characters.\n\r" +
-                                                             "Example: Entering Partner Key '0029000000' will return all Partners whose Partner Key was generated\n\r"
-                                                             +
-                                                             "for Unit 0029000000 (Netherlands).\n\r" +
-                                                             "This is because the 'Exact Partner Key Match' Option is turned off in the Partner Find Options.";
 
         /// <summary>Private Declarations</summary>
         private ArrayList FCriteriaFieldsLeft;
@@ -1330,7 +1348,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Use Localised String for County Label
             LocalisedStrings.GetLocStrCounty(out LocalisedCountyLabel, out Dummy);
 
-            if (LocalisedCountyLabel == Ict.Petra.Client.App.Gui.LocalisedStrings.COUNTY_DEFAULT_LABEL)
+            if (LocalisedCountyLabel == Ict.Petra.Client.App.Gui.LocalisedStrings.StrCountyDefaultLabel)
             {
                 /*
                  * / The default label text of the County Label has a shortcut character
@@ -1482,26 +1500,27 @@ namespace Ict.Petra.Client.MPartner.Gui
             FFindCriteriaDataTable.ColumnChanging += new DataColumnChangeEventHandler(this.OnCriteriaChanging);
 
             // Set status bar texts
-            FPetraUtilsObject.SetStatusBarText(txtPartnerName, Resourcestrings.StrPartnerNameFindHelptext);
-            FPetraUtilsObject.SetStatusBarText(txtPersonalName, Resourcestrings.StrPersonalNameFindHelpText);
+            FPetraUtilsObject.SetStatusBarText(txtPartnerName, StrPartnerNameFindHelptext);
+            FPetraUtilsObject.SetStatusBarText(txtPersonalName, StrPersonalNameFindHelpText);
             FPetraUtilsObject.SetStatusBarText(txtPreviousName, StrPreviousNameFindHelpText);
-            FPetraUtilsObject.SetStatusBarText(txtEmail, Resourcestrings.StrEmailAddressHelpText);
-            FPetraUtilsObject.SetStatusBarText(txtAddress1, Resourcestrings.StrAddress1Helptext);
-            FPetraUtilsObject.SetStatusBarText(txtAddress2, Resourcestrings.StrAddress2Helptext);
-            FPetraUtilsObject.SetStatusBarText(txtAddress3, Resourcestrings.StrAddress3Helptext);
-            FPetraUtilsObject.SetStatusBarText(txtCity, Resourcestrings.StrCityHelptext);
-            FPetraUtilsObject.SetStatusBarText(txtPostCode, Resourcestrings.StrPostCodeHelpText);
-            FPetraUtilsObject.SetStatusBarText(txtCounty, Resourcestrings.StrCountyHelpText);
+            FPetraUtilsObject.SetStatusBarText(txtEmail, MPartnerResourcestrings.StrEmailAddressHelpText);
+            FPetraUtilsObject.SetStatusBarText(txtAddress1, MPartnerResourcestrings.StrAddress1Helptext);
+            FPetraUtilsObject.SetStatusBarText(txtAddress2, MPartnerResourcestrings.StrAddress2Helptext);
+            FPetraUtilsObject.SetStatusBarText(txtAddress3, MPartnerResourcestrings.StrAddress3Helptext);
+            FPetraUtilsObject.SetStatusBarText(txtCity, MPartnerResourcestrings.StrCityHelptext);
+            FPetraUtilsObject.SetStatusBarText(txtPostCode, MPartnerResourcestrings.StrPostCodeHelpText);
+            FPetraUtilsObject.SetStatusBarText(txtCounty, MPartnerResourcestrings.StrCountyHelpText);
             FPetraUtilsObject.SetStatusBarText(cmbPartnerClass, StrPartnerClassFindHelpText);
-            FPetraUtilsObject.SetStatusBarText(txtLocationKey, Resourcestrings.StrLocationKeyHelpText + Resourcestrings.StrLocationKeyExtraHelpText);
-            FPetraUtilsObject.SetStatusBarText(btnLocationKey, Resourcestrings.StrLocationKeyButtonFindHelpText);
+            FPetraUtilsObject.SetStatusBarText(txtLocationKey,
+                MPartnerResourcestrings.StrLocationKeyHelpText + MPartnerResourcestrings.StrLocationKeyExtraHelpText);
+            FPetraUtilsObject.SetStatusBarText(btnLocationKey, MPartnerResourcestrings.StrLocationKeyButtonFindHelpText);
             FPetraUtilsObject.SetStatusBarText(chkWorkerFamOnly, StrWorkerFamilyOnlyFindHelpText);
-            FPetraUtilsObject.SetStatusBarText(rbtStatusActive, Resourcestrings.StrActivePartnersFindHelpText);
-            FPetraUtilsObject.SetStatusBarText(rbtStatusAll, Resourcestrings.StrAllPartnersFindHelpText);
-            FPetraUtilsObject.SetStatusBarText(chkMailingAddressOnly, Resourcestrings.StrMailingOnlyFindHelpText);
-            FPetraUtilsObject.SetStatusBarText(txtPhoneNumber, Resourcestrings.StrPhoneNumberFindHelpText);
-            FPetraUtilsObject.SetStatusBarText(txtPartnerKey, Resourcestrings.StrPartnerKeyFindHelpText);
-            FPetraUtilsObject.SetStatusBarText(ucoCountryComboBox, Resourcestrings.StrCountryHelpText);
+            FPetraUtilsObject.SetStatusBarText(rbtStatusActive, StrActivePartnersFindHelpText);
+            FPetraUtilsObject.SetStatusBarText(rbtStatusAll, StrAllPartnersFindHelpText);
+            FPetraUtilsObject.SetStatusBarText(chkMailingAddressOnly, MPartnerResourcestrings.StrMailingOnlyFindHelpText);
+            FPetraUtilsObject.SetStatusBarText(txtPhoneNumber, MPartnerResourcestrings.StrPhoneNumberFindHelpText);
+            FPetraUtilsObject.SetStatusBarText(txtPartnerKey, StrPartnerKeyFindHelpText);
+            FPetraUtilsObject.SetStatusBarText(ucoCountryComboBox, MPartnerResourcestrings.StrCountryHelpText);
         }
 
         /// <summary>

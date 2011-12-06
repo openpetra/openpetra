@@ -51,19 +51,23 @@ namespace Ict.Petra.Client.MPartner
     /// </summary>
     public class TUCPartnerTypesLogic
     {
+        #region Resourcestrings
+
+        private static readonly string StrPartnerHasCostCentreLink = Catalog.GetString(
+            "This Partner is linked to a Cost Centre ({0}) in the\r\nFinance Module.  Remove the link before deleting\r\n" +
+            "this Special Type.");
+        private static readonly string StrPartnerHasCostCentreLinkTitle = Catalog.GetString("Cannot remove Partner Type");
+        private static readonly string StrTheCodeIsNoLongerActive = Catalog.GetString(
+            "The code '{0}' is no longer active.\r\nDo you still want to use it?");
+        private static readonly string StrSecurityPreventsRemoval = Catalog.GetString(
+            "You are not allowed to remove this Partner Type from the Partner\r\n" +
+            "because of the security warning you have just received.");
+        private static readonly string StrSecurityPreventsRemovalTitle = Catalog.GetString("Partner Type Removal Denied");
+
+        #endregion
+
         private delegate void CheckChangedArgs (int ChangedRow);
         private event CheckChangedArgs ChangedRowEvent;
-
-        private const String StrPartnerHasCostCentreLink1 = "This partner is linked to a Cost Centre (";
-        private const String StrPartnerHasCostCentreLink2 = ") in the" + "\r\n" + "Finance Module.  Remove the link before deleting" + "\r\n" +
-                                                            "this special type.";
-        private const String StrPartnerHasCostCentreLinkTitle = "Cannot remove Partner Type";
-        private const String StrTheCodeIsNoLongerActive1 = "The code";
-        private const String StrTheCodeIsNoLongerActive2 = "is no longer active.";
-        private const String StrTheCodeIsNoLongerActive3 = "Do you still want to use it?";
-        private const String StrSecurityPreventsRemoval = "You are not allowed to remove this Partner Type from the Partner" + "\r\n" +
-                                                          "because of the security warning you have just received.";
-        private const String StrSecurityPreventsRemovalTitle = "Partner Type Removal Denied";
 
         private PartnerEditTDS FMainDS;
         private TFrmPetraEditUtils FPetraUtilsObject;
@@ -325,15 +329,9 @@ namespace Ict.Petra.Client.MPartner
 
                         if (!CheckTypeRow.ValidType)
                         {
-                            // TODO 2 oChristianK cMessages : Use a common Message Library instead
-                            CheckTypeRowsAnswer = MessageBox.Show(
-                                StrTheCodeIsNoLongerActive1 + " '" + TypeCode + "' " + StrTheCodeIsNoLongerActive2 + "\r\n" +
-                                StrTheCodeIsNoLongerActive3 + "\r\n" + "\r\n" + "Message Number: X_0035" + "\r\n" + "File Name: " +
-                                this.GetType().FullName,
-                                "Invalid Data Entered",
-                                MessageBoxButtons.YesNo,
-                                MessageBoxIcon.Error,
-                                MessageBoxDefaultButton.Button2);
+                            CheckTypeRowsAnswer = TMessages.MsgQuestion(
+                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE, TypeCode),
+                                this.GetType(), false);
 
                             if (CheckTypeRowsAnswer == DialogResult.No)
                             {
@@ -385,8 +383,8 @@ namespace Ict.Petra.Client.MPartner
                         {
                             if (FPartnerEditUIConnector.HasPartnerCostCentreLink(out CostCentreLink))
                             {
-                                MessageBox.Show(StrPartnerHasCostCentreLink1 + CostCentreLink + StrPartnerHasCostCentreLink2,
-                                    StrPartnerHasCostCentreLinkTitle);
+                                MessageBox.Show(String.Format(StrPartnerHasCostCentreLink, CostCentreLink,
+                                        StrPartnerHasCostCentreLinkTitle));
 
                                 // reset to checked
                                 AChangingPartnerTypeRow.CancelEdit();
@@ -519,7 +517,7 @@ namespace Ict.Petra.Client.MPartner
                     // If this Type is inactive, show it.
                     if (!Convert.ToBoolean(FDataCache_PartnerTypeListDV[TypeDescriptionInCachePosition][PTypeTable.GetValidTypeDBName()]))
                     {
-                        TypeDescription = TypeDescription + CommonResourcestrings.StrGenericInactiveCode;
+                        TypeDescription = TypeDescription + MCommonResourcestrings.StrGenericInactiveCode;
                     }
                 }
                 else
@@ -547,7 +545,7 @@ namespace Ict.Petra.Client.MPartner
                     // If this Type is inactive, show it.
                     if (!Convert.ToBoolean(PartnerTypesRow[PTypeTable.GetValidTypeDBName()]))
                     {
-                        TypeDescription = TypeDescription + CommonResourcestrings.StrGenericInactiveCode;
+                        TypeDescription = TypeDescription + MCommonResourcestrings.StrGenericInactiveCode;
                     }
 
                     #endregion

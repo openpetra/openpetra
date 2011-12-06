@@ -26,6 +26,7 @@ using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonControls.Logic;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -78,6 +79,9 @@ namespace Ict.Petra.Client.CommonControls
         /// <summary>Caption text</summary>
         public String RCaption;
 
+        /// <summary>Error Code</summary>
+        public string RErrorCode;
+
         /// <summary>False if we have an error message</summary>
         public bool RVerified;
     }
@@ -101,6 +105,15 @@ namespace Ict.Petra.Client.CommonControls
     /// </summary>
     public partial class TtxtAutoPopulatedButtonLabel : System.Windows.Forms.UserControl
     {
+        /// <summary>Error message</summary>
+        private static readonly string UNIT_NO_DATA_MESSAGE = Catalog.GetString("NOT A VALID VALUE!");
+
+        /// <summary>Error message</summary>
+        private static readonly string UNIT_NO_VALID_OCCUPATIONCODE = Catalog.GetString("NOT A VALID OCCUPATION CODE!");
+
+        /// <summary>Error message</summary>
+        private static readonly string UNIT_NO_VALID_PARTNERKEY = Catalog.GetString("NOT A VALID PARTNERKEY!");
+
         /// <summary>
         /// Available Types for TtxtAutoPopulatedButtonLabel
         /// </summary>
@@ -124,15 +137,6 @@ namespace Ict.Petra.Client.CommonControls
 
         /// <summary></summary>
         public const Int32 UNIT_DEFAULT_HEIGHT = 23;
-
-        /// <summary>Error message</summary>
-        public const String UNIT_NO_DATA_MESSAGE = "NOT A VALID VALUE!";
-
-        /// <summary>Error message</summary>
-        public const String UNIT_NO_VALID_OCCUPATIONCODE = "NOT A VALID OCCUPATION CODE!";
-
-        /// <summary>Error message</summary>
-        public const String UNIT_NO_VALID_PARTNERKEY = "NOT A VALID PARTNERKEY!";
 
         /// <summary>Error message</summary>
         public const String UNIT_DELIMITERS_PARTNERCLASS = ",";
@@ -633,7 +637,7 @@ namespace Ict.Petra.Client.CommonControls
                     #region TListTableEnum.OccupationList
 
                     // Settings for the button
-                    this.FDefaultButtonText = "&Occupation...";
+                    this.FDefaultButtonText = Catalog.GetString("&Occupation...");
                     this.FDefaultButtonTextAlign = System.Drawing.ContentAlignment.MiddleCenter;
                     this.FDefaultButtonWidth = 108;
 
@@ -651,7 +655,7 @@ namespace Ict.Petra.Client.CommonControls
                     #region TListTableEnum.PartnerKey
 
                     // Settings for the button
-                    this.FDefaultButtonText = "&PartnerKey";
+                    this.FDefaultButtonText = String.Format(Catalog.GetString("&{0}"), ApplWideResourcestrings.StrPartnerKey);
                     this.FDefaultButtonTextAlign = System.Drawing.ContentAlignment.MiddleCenter;
                     this.FDefaultButtonWidth = 108;
                     this.FDefaultTextBoxWidth = 80;
@@ -675,7 +679,7 @@ namespace Ict.Petra.Client.CommonControls
                     #region TListTableEnum.Extract
 
                     // Settings for the button
-                    this.FDefaultButtonText = "&Extract";
+                    this.FDefaultButtonText = Catalog.GetString("&Extract");
                     this.FDefaultButtonTextAlign = System.Drawing.ContentAlignment.MiddleCenter;
                     this.FDefaultButtonWidth = 108;
                     this.FDefaultTextBoxWidth = 80;
@@ -699,7 +703,7 @@ namespace Ict.Petra.Client.CommonControls
                     #region TListTableEnum.Conference
 
                     /* Settings for the button */
-                    this.FDefaultButtonText = "&Conference";
+                    this.FDefaultButtonText = Catalog.GetString("&Conference");
                     this.FDefaultButtonTextAlign = System.Drawing.ContentAlignment.MiddleCenter;
                     this.FDefaultButtonWidth = 108;
                     this.FDefaultTextBoxWidth = 80;
@@ -1022,9 +1026,9 @@ namespace Ict.Petra.Client.CommonControls
                         this.FDisplayLabelString = UNIT_NO_VALID_OCCUPATIONCODE;
 
                         // this.FErrorData.RErrorMessage := 'The specified occupation code "' + e.ProposedValue.ToString + '" is invalid!' + "\n" + 'Please check spelling!';
-                        this.FErrorData.RErrorMessage = "The specified occupation code \"" + e.ProposedValue.ToString() + "\" is invalid!" + "\n" +
-                                                        "Please check spelling!";
-                        this.FErrorData.RCaption = "Invalid Occupation Code";
+                        this.FErrorData.RErrorMessage = String.Format(Catalog.GetString("The specified Occupation Code '{0}' is invalid!\r\n" +
+                                "Please check spelling!"), e.ProposedValue);
+                        this.FErrorData.RCaption = Catalog.GetString("Invalid Occupation Code");
 
                         //mErrorName = "OccupationCode Error";
                         mResultSev = TResultSeverity.Resv_Noncritical;
@@ -1130,8 +1134,11 @@ namespace Ict.Petra.Client.CommonControls
                         this.FErrorData.RVerified = false;
                         this.FVerifiedString = UNIT_NO_DATA_MESSAGE;
                         this.txtAutoPopulated.lblLabel.Text = UNIT_NO_DATA_MESSAGE;
-                        this.FErrorData.RErrorMessage = "The specified PartnerKey \"" + e.ProposedValue.ToString() + "\" is invalid!";
-                        this.FErrorData.RCaption = "Invalid PartnerKey";
+                        this.FErrorData.RErrorMessage = String.Format(Catalog.GetString("The specified {0} '{1}' is invalid!"),
+                            ApplWideResourcestrings.StrPartnerKey, e.ProposedValue);
+                        this.FErrorData.RCaption = String.Format(Catalog.GetString("Invalid "), ApplWideResourcestrings.StrPartnerKey);
+                        this.FErrorData.RErrorCode = PetraErrorCodes.ERR_PARTNERKEY_INVALID;
+
 
                         //mErrorName = "PartnerKey Error";
                         mResultSev = TResultSeverity.Resv_Critical;
@@ -1150,8 +1157,8 @@ namespace Ict.Petra.Client.CommonControls
                     if (e.ProposedValue.ToString() == "")
                     {
                         this.FErrorData.RVerified = false;
-                        this.FErrorData.RCaption = "Error";
-                        this.FErrorData.RErrorMessage = "No valid Etract selected";
+                        this.FErrorData.RErrorMessage = Catalog.GetString("No valid Extract selected");
+                        this.FErrorData.RCaption = Catalog.GetString("Error");
                         return;
                     }
 
@@ -1226,8 +1233,10 @@ namespace Ict.Petra.Client.CommonControls
                         this.FErrorData.RVerified = false;
                         this.FVerifiedString = UNIT_NO_DATA_MESSAGE;
                         this.txtAutoPopulated.lblLabel.Text = UNIT_NO_DATA_MESSAGE;
-                        this.FErrorData.RErrorMessage = "The specified PartnerKey \"" + e.ProposedValue.ToString() + "\" is invalid!";
-                        this.FErrorData.RCaption = "Invalid PartnerKey";
+                        this.FErrorData.RErrorMessage = String.Format(Catalog.GetString("The specified {0} '{1}' is invalid!"),
+                            ApplWideResourcestrings.StrPartnerKey, e.ProposedValue);
+                        this.FErrorData.RCaption = String.Format(Catalog.GetString("Invalid "), ApplWideResourcestrings.StrPartnerKey);
+                        this.FErrorData.RErrorCode = PetraErrorCodes.ERR_PARTNERKEY_INVALID;
 
                         mResultSev = TResultSeverity.Resv_Critical;
                     }
@@ -1245,16 +1254,16 @@ namespace Ict.Petra.Client.CommonControls
             // TLogging.Log('Right ColumnName: ' + this.FValueMember);
             if (this.FErrorData.RVerified == false)
             {
-                // Show error message
-                MessageBox.Show(this.FErrorData.RErrorMessage, this.FErrorData.RCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                // Build a TVerificationResult
-                mVerificationResult = new TScreenVerificationResult(this.Parent, e.Column, this.FErrorData.RErrorMessage, this, mResultSev);
+                // Creata and show error message
+                mVerificationResult = new TScreenVerificationResult(this.Parent, e.Column,
+                    this.FErrorData.RErrorMessage, this.FErrorData.RCaption, FErrorData.RErrorCode, this, mResultSev);
 
                 if (FVerificationResultCollection != null)
                 {
                     FVerificationResultCollection.Add(mVerificationResult);
                 }
+
+                TMessages.MsgGeneralError(mVerificationResult, this.ParentForm.GetType());
             }
             else
             {
@@ -1557,7 +1566,8 @@ namespace Ict.Petra.Client.CommonControls
 
         private void TxtAutoPopulated_SetLabel(string ALookUpText, ref string ALabelText)
         {
-            string OldLabelText = ALabelText;
+            string OldLabelText = ALabelText;        	
+            string StrShortnameNotRetrieved = Catalog.GetString("### ShortName not retrieved ###");
 
             ALabelText = "";
 
@@ -1575,7 +1585,7 @@ namespace Ict.Petra.Client.CommonControls
 
             // TLogging.Log('Start txtAutoPopulated_SetLabel', [TLoggingType.ToLogfile]);
             // Initialisation
-            mPartnerShortName = "### ShortName not retrieved ###";
+            mPartnerShortName = StrShortnameNotRetrieved;
 
             // Get the label text depending on mode
             switch (this.FListTable)
@@ -1605,7 +1615,7 @@ namespace Ict.Petra.Client.CommonControls
 
                         if (ServerResult == false)
                         {
-                            mPartnerShortName = "### ShortName not retrieved ###";
+                            mPartnerShortName = StrShortnameNotRetrieved;
                         }
                         else
                         {
@@ -1642,7 +1652,7 @@ namespace Ict.Petra.Client.CommonControls
 
                         if (ServerResult == false)
                         {
-                            ExtractDescription = "### Extract description not retrieved ###";
+                            ExtractDescription = Catalog.GetString("### Extract description not retrieved ###");
                         }
                     }
                     else
@@ -1670,11 +1680,12 @@ namespace Ict.Petra.Client.CommonControls
 
                         if (ServerResult == false)
                         {
-                            mPartnerShortName = "### ShortName not retrieved ###";
+                            mPartnerShortName = StrShortnameNotRetrieved;
                         }
                         else if (mPartnerClass != TPartnerClass.UNIT)
                         {
-                            mPartnerShortName = "### PartnerKey is not a Conference ###";
+                            mPartnerShortName = String.Format(Catalog.GetString(
+                                    "### {0} is not a Conference ###"), ApplWideResourcestrings.StrPartnerKey);
                         }
                         else
                         {

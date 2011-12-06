@@ -925,7 +925,7 @@ namespace Ict.Petra.Client.App.Core
                     // PetraServer!
                     if (TLogging.DebugLevel >= DEBUGLEVEL_CACHEMESSAGES)
                     {
-                        TLogging.Log("Cacheable DataTable '" + ACacheableTableName + "': needs reloading from PetraServer!");
+                        TLogging.Log("Cacheable DataTable '" + ACacheableTableName + "': needs reloading from OpenPetra Server!");
                     }
 
                     CacheableDataTableReloadNecessary = true;
@@ -1016,7 +1016,7 @@ namespace Ict.Petra.Client.App.Core
                     // didn't have the DataTable at all (HashCode = '').
                     if (TLogging.DebugLevel >= DEBUGLEVEL_CACHEMESSAGES)
                     {
-                        TLogging.Log("Cacheable DataTable '" + ACacheableTableName + "': got returned from PetraServer.");
+                        TLogging.Log("Cacheable DataTable '" + ACacheableTableName + "': got returned from OpenPetra Server.");
                     }
 
                     if (AFilterCriteriaString != "")
@@ -1060,7 +1060,7 @@ namespace Ict.Petra.Client.App.Core
                     if (TLogging.DebugLevel >= DEBUGLEVEL_CACHEMESSAGES)
                     {
                         TLogging.Log(
-                            "Cacheable DataTable '" + ACacheableTableName + "': PetraServer tells that the Client-side DataTable is up-to-date.");
+                            "Cacheable DataTable '" + ACacheableTableName + "': OpenPetra Server tells that the Client-side DataTable is up-to-date.");
                     }
 
                     if (!(ADataTableType == typeof(System.Data.DataTable)))
@@ -1227,7 +1227,7 @@ namespace Ict.Petra.Client.App.Core
             }
             else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableFinanceTablesEnum)), ACacheableTableName) != -1)
             {
-                // MPartner.Subscriptions Namespace
+                // MFinance Namespace
                 CacheableMFinanceTable = (TCacheableFinanceTablesEnum)Enum.Parse(typeof(TCacheableFinanceTablesEnum),
                     ACacheableTableName);
 

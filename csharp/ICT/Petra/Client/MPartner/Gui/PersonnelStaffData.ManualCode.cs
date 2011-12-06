@@ -255,7 +255,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
 
-            return !AVerifications.HasCriticalError();
+            return !AVerifications.HasCriticalErrors;
         }
 
         private void GetDetailDataFromControlsManual(PmStaffDataRow ARow)

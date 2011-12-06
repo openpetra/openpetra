@@ -317,7 +317,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                 }
                             }
 
-                            if (AMessages.HasCriticalError())
+                            if (AMessages.HasCriticalErrors)
                             {
                                 return false;
                             }

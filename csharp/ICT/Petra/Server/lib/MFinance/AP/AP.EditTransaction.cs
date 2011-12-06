@@ -531,7 +531,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         {
             AccountsPayableTDS MainDS = LoadDocumentsAndCheck(ALedgerNumber, AAPDocumentNumbers, APostingDate, out AVerifications);
 
-            if (AVerifications.HasCriticalError())
+            if (AVerifications.HasCriticalErrors)
             {
                 return false;
             }

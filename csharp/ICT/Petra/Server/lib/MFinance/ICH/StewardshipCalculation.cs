@@ -1010,7 +1010,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                         IsSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, AdminFeeBatch.BatchNumber, out Verification);
                     }
 
-                    if ((Verification == null) || Verification.HasCriticalError())
+                    if ((Verification == null) || Verification.HasCriticalErrors)
                     {
                         //Petra error: GL0067
                         ErrorContext = "Posting Admin Fee Batch";

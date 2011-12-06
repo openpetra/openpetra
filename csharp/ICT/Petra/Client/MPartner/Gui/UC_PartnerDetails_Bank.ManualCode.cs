@@ -22,6 +22,14 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Data;
+using System.Windows.Forms;
+
+using Ict.Common.Verification;
+using Ict.Petra.Shared;
+using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Client.MPartner.Verification;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -46,6 +54,83 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void AdjustAfterResizing()
         {
+        }
+
+        #endregion
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        public void InitializeManualCode()
+        {
+            txtContactPartnerKey.PerformDataBinding(FMainDS.PBank.DefaultView, PBankTable.GetContactPartnerKeyDBName());
+
+            #region Verification
+            FMainDS.PBank.ColumnChanging += new DataColumnChangeEventHandler(this.OnPBankColumnChanging);
+            txtContactPartnerKey.VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+            #endregion
+        }
+
+        #region Custom Events
+        private void OnPBankColumnChanging(System.Object sender, DataColumnChangeEventArgs e)
+        {
+            TVerificationResult VerificationResultReturned;
+            TScreenVerificationResult VerificationResultEntry;
+            Control BoundControl = null;
+
+//            MessageBox.Show("Column '" + e.Column.ToString() + "' is changing...");
+            try
+            {
+                if (TPartnerDetailsBankVerification.VerifyBankDetailsData(e, out VerificationResultReturned) == false)
+                {
+                    if (VerificationResultReturned.ResultCode != PetraErrorCodes.ERR_BANKBICSWIFTCODEINVALID)
+                    {
+                        TMessages.MsgVerificationError(VerificationResultReturned, this.GetType());
+
+// TODO                        BoundControl = TDataBinding.GetBoundControlForColumn(BindingContext[FMainDS.PBank], e.Column);
+// TODO                        BoundControl.Focus();
+
+                        VerificationResultEntry = new TScreenVerificationResult(this,
+                            e.Column,
+                            VerificationResultReturned.ResultText,
+                            VerificationResultReturned.ResultTextCaption,
+                            VerificationResultReturned.ResultCode,
+                            BoundControl,
+                            VerificationResultReturned.ResultSeverity);
+                        FPetraUtilsObject.VerificationResultCollection.Add(VerificationResultEntry);
+
+                        /* MessageBox.Show('After setting the error: ' + e.ProposedValue.ToString); */
+                    }
+                    else
+                    {
+                        /* undo the change in the DataColumn */
+                        e.ProposedValue = e.Row[e.Column.ColumnName];
+
+                        /* need to assign this to make the change actually visible... */
+                        this.txtBic.Text = e.ProposedValue.ToString();
+
+                        TMessages.MsgVerificationError(VerificationResultReturned, this.GetType());
+
+                        txtBic.Focus();
+                    }
+                }
+                else
+                {
+                    if (FPetraUtilsObject.VerificationResultCollection.Contains(e.Column))
+                    {
+                        FPetraUtilsObject.VerificationResultCollection.Remove(e.Column);
+                    }
+
+                    if (e.Column.ColumnName == PPartnerTable.GetStatusCodeDBName())
+                    {
+                        FMainDS.PPartner[0].StatusChange = DateTime.Today;
+                    }
+                }
+            }
+            catch (Exception E)
+            {
+                MessageBox.Show(E.ToString());
+            }
         }
 
         #endregion

@@ -308,7 +308,7 @@ namespace Ict.Common.Remoting.Client
             }
         }
 
-        /// <summary>Email address of the openPETRA support team of an organisation</summary>
+        /// <summary>Email address of the OpenPetra support team of an organisation</summary>
         public static string PetraSupportTeamEmail
         {
             get

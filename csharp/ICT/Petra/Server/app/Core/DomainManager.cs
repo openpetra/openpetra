@@ -117,6 +117,8 @@ namespace Ict.Petra.Server.App.Core
             TCacheableTablesManager.GCacheableTablesManager = ACacheableTablesManagerRef;
             TSystemDefaultsCache.GSystemDefaultsCache = ASystemDefaultsCacheRef;
 
+            TLanguageCulture.Init();
+            
             UserInfo.GUserInfo = (TPetraPrincipal)AUserInfo;
             DomainManager.GSiteKey = TSystemDefaultsCache.GSystemDefaultsCache.GetInt64Default(SharedConstants.SYSDEFAULT_SITEKEY);
 
@@ -152,8 +154,6 @@ namespace Ict.Petra.Server.App.Core
         public void EstablishDBConnection()
         {
             new TLogging(TSrvSetting.ServerLogFile);
-
-            TLanguageCulture.Init();
 
 #if DEBUGMODE
             if (TLogging.DL >= 9)

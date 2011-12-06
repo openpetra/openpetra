@@ -35,14 +35,17 @@ namespace Ict.Common.Conversion
     /// </summary>
     public class TDate
     {
-        /// <summary> error message </summary>
-        public const String StrMonthDayExchangedInfo = "The entered Date is not valid - the month is greater than 12." + "\r\n" +
-                                                       "It seems you have inadvertedly exchanged month" +
-                                                       " and day. Petra will exchange month and day for you to make a valid date " +
-                                                       "- please check that the corrected date is the date you intended to enter!";
+        #region Resourcestrings
 
-        /// <summary> title of error message box </summary>
-        public const String StrMonthDayExchangedInfoTitle = "Invalid date - Petra tries correcting";
+        private static readonly string StrMonthDayExchangedInfo = Catalog.GetString(
+            "The entered Date is not valid - the month is greater than 12.\r\n" +
+            "It seems you have inadvertedly exchanged month" +
+            " and day. OpenPetra will exchange month and day for you to make a valid date " +
+            "- please check that the corrected date is the date you intended to enter!");
+
+        private static readonly string StrMonthDayExchangedInfoTitle = Catalog.GetString("Invalid date - OpenPetra tries correcting");
+
+        #endregion
 
         /// <summary>
         /// Converts a string to a formatted date string

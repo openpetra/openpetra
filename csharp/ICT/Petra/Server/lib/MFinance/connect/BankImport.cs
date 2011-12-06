@@ -166,7 +166,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             TVerificationResultCollection VerificationResult;
             BankImportTDSAccess.SubmitChanges(MainDS, out VerificationResult);
 
-            return !VerificationResult.HasCriticalError();
+            return !VerificationResult.HasCriticalErrors;
         }
 
         /// <summary>
@@ -502,7 +502,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 }
             }
 
-            if (AVerificationResult.HasCriticalError())
+            if (AVerificationResult.HasCriticalErrors)
             {
                 return -1;
             }

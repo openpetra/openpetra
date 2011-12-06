@@ -38,25 +38,26 @@ namespace Ict.Petra.Client.MPartner.Verification
     /// </summary>
     public class TPartnerVerification : System.Object
     {
-        /// <summary>todoComment</summary>
-        public const String StrPartnerStatusNotMerged = "The Partner Status cannot be set to 'MERGED'" + " by the user -" + "\r\n" +
-                                                        "this Partner Status is set only by the " + "Partner Merge function" + "\r\n" +
-                                                        "for Partners that have been merged " +
-                                                        "into another Partner!";
+        #region Resourcetexts
 
-        /// <summary>todoComment</summary>
-        public const String StrFundnameChange = "This partner is a ledger." + "\r\n" +
-                                                "Fund names can be changed only with the approval from the IFC." + "\r\n" + "\r\n" +
-                                                "Do you have the approval to change the fund name?";
+        private static readonly string StrPartnerStatusNotMerged = Catalog.GetString(
+            "The Partner Status cannot be set to 'MERGED' by the user -\r\n" +
+            "this Partner Status is set only by the Partner Merge function\r\n" +
+            "for Partners that have been merged into another Partner!");
 
-        /// <summary>todoComment</summary>
-        public const String StrFundNameChangeTitle = "Fund Name Change Authorisation";
+        private static readonly string StrFundnameChange = Catalog.GetString(
+            "This partner is a ledger.\r\n" +
+            "Fund names can be changed only with the approval from the IFC.\r\n\r\n" +
+            "Do you have the approval to change the fund name?");
 
-        /// <summary>todoComment</summary>
-        public const String StrFundNameChangeUndone = "Fund Name change has been undone.";
+        private static readonly string StrFundNameChangeTitle = Catalog.GetString("Fund Name Change Authorisation");
 
-        /// <summary>todoComment</summary>
-        public const String StrFundNameChangeUndoneTitle = "Missing Approval";
+        private static readonly string StrFundNameChangeUndone = Catalog.GetString("Fund Name change has been undone.");
+
+        /// <summary>Resourcetext: 'Missing Approval'</summary>
+        public static readonly string StrFundNameChangeUndoneTitle = Catalog.GetString("Missing Approval");
+
+        #endregion
 
         #region TPartnerVerification
 
@@ -135,6 +136,7 @@ namespace Ict.Petra.Client.MPartner.Verification
         {
             AVerificationResult = null;
             System.Windows.Forms.DialogResult ApprovalFromIFC;
+
             try
             {
                 /*
@@ -157,8 +159,8 @@ namespace Ict.Petra.Client.MPartner.Verification
                             AVerificationResult = new TVerificationResult("",
                                 StrFundNameChangeUndone,
                                 StrFundNameChangeUndoneTitle,
-                                ErrorCodes.PETRAERRORCODE_UNITNAMECHANGEUNDONE,
-                                TResultSeverity.Resv_Critical);
+                                PetraErrorCodes.ERR_UNITNAMECHANGEUNDONE,
+                                TResultSeverity.Resv_Noncritical);
                         }
                     }
                 }
@@ -181,7 +183,7 @@ namespace Ict.Petra.Client.MPartner.Verification
                 AVerificationResult = new TVerificationResult("",
                     StrPartnerStatusNotMerged,
                     Catalog.GetString("Invalid Data"),
-                    ErrorCodes.PETRAERRORCODE_PARTNERSTATUSMERGEDCHANGEUNDONE,
+                    PetraErrorCodes.ERR_PARTNERSTATUSMERGEDCHANGEUNDONE,
                     TResultSeverity.Resv_Critical);
             }
             else

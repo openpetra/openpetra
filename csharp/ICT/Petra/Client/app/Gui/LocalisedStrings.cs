@@ -22,9 +22,11 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Windows.Forms;
+
+using Ict.Common;
 using Ict.Petra.Shared;
 using Ict.Petra.Client.App.Core;
-using System.Windows.Forms;
 
 namespace Ict.Petra.Client.App.Gui
 {
@@ -33,8 +35,12 @@ namespace Ict.Petra.Client.App.Gui
     /// </summary>
     public class LocalisedStrings
     {
-        /// <summary>todoComment</summary>
-        public const String COUNTY_DEFAULT_LABEL = "County/St&ate:";
+        #region Resourcestrings
+
+        /// <summary>This resourcestring needs to be public as it is referenced from outside this Class as well.</summary>
+        public static readonly string StrCountyDefaultLabel = Catalog.GetString("County/St&ate:");
+
+        #endregion
 
         /// <summary>
         /// todoComment
@@ -58,7 +64,7 @@ namespace Ict.Petra.Client.App.Gui
             }
             else
             {
-                ALabelText = COUNTY_DEFAULT_LABEL;
+                ALabelText = StrCountyDefaultLabel;
             }
 
             // Remove & and : from the LabelText to get the 'Name' of the field

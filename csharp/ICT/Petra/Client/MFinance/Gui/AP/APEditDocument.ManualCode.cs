@@ -72,6 +72,36 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             FMainDS.AApDocument[0].DocumentStatus = MFinanceConstants.AP_DOCUMENT_APPROVED;
         }
 
+        private void ValidateDataManual(AApDocumentDetailRow ARow)
+        {
+            DataColumn ValidationColumn;
+
+//TLogging.Log("ValidateDataManual:  CountryCode = " + ARow[PCountryTable.ColumnCountryCodeId].ToString() +
+//                         "; InternatTelephoneCode = " + ARow.InternatTelephoneCode.ToString());
+            // 'International Telephone Code' must be positive or 0
+            ValidationColumn = ARow.Table.Columns[AApDocumentDetailTable.ColumnAmountId];
+
+            FPetraUtilsObject.VerificationResultCollection.AddOrRemove(
+                TNumericalChecks.IsPositiveOrZeroDecimal(ARow.Amount,
+                    lblDetailAmount.Text,
+                    this, ValidationColumn, txtDetailAmount), ValidationColumn);
+
+//            FPetraUtilsObject.VerificationResultCollection.AddOrRemove(
+//                TNumericalChecks.IsPositiveOrZeroInteger(txtDetailInternatTelephoneCode.NumberValueInt,
+//                    lblDetailInternatTelephoneCode.Text,
+//                    this, ValidationColumn, txtDetailInternatTelephoneCode), ValidationColumn);
+
+//            // 'Time Zone From' must be <= 'Time Zone To'
+//            ValidationColumn = ARow.Table.Columns[PCountryTable.ColumnTimeZoneMinimumId];
+//            FPetraUtilsObject.VerificationResultCollection.AddOrRemove(
+//                TNumericalChecks.FirstLesserOrEqualThanSecondDecimal(
+//                    ARow.TimeZoneMinimum, ARow.TimeZoneMaximum,
+//                    lblDetailTimeZoneMinimum.Text, lblDetailTimeZoneMaximum.Text,
+//                    this, ValidationColumn, txtDetailTimeZoneMinimum), ValidationColumn);
+
+//            FPetraUtilsObject.VerificationResultCollection.Add(new TScreenVerificationResult( "TestContext", ValidationColumn, "test warning", txtDetailTimeZoneMinimum, TResultSeverity.Resv_Noncritical));
+        }
+
         private void UpdateCreditTerms(object sender, TPetraDateChangedEventArgs e)
         {
             if (sender == dtpDateDue)

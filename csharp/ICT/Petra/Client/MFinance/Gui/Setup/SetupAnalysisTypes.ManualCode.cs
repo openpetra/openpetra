@@ -199,5 +199,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             txtDetailAnalysisTypeCode.Enabled = false;
             return txtDetailAnalysisTypeCode.Text;
         }
+
+        private void ValidateDataManual(AAnalysisTypeRow ARow)
+        {
+            DataColumn ValidationColumn;
+
+//TLogging.Log("ValidateDataManual: AnalysisTypeCode = " + ARow.AnalysisTypeCode.ToString() + "; AnalysisTypeDescription = " + ARow.AnalysisTypeDescription.ToString() );
+            // 'International Telephone Code' must be positive or 0
+            ValidationColumn = ARow.Table.Columns[AAnalysisTypeTable.ColumnAnalysisTypeDescriptionId];
+
+            FPetraUtilsObject.VerificationResultCollection.AddOrRemove(
+                TStringChecks.StringMustNotBeEmpty(ARow.AnalysisTypeDescription,
+                    lblDetailAnalysisTypeDescription.Text,
+                    this, ValidationColumn, txtDetailAnalysisTypeDescription), ValidationColumn);
+
+//            FPetraUtilsObject.VerificationResultCollection.Add(new TScreenVerificationResult( "TestContext", ValidationColumn, "test warning", txtDetailTimeZoneMinimum, TResultSeverity.Resv_Noncritical));
+        }
     }
 }
