@@ -20,7 +20,8 @@
   Name "${MUI_PRODUCT}"
   OutFile "{#DELIVERY.DIR}/OpenPetraSetup-${VERSION}.exe"
   BrandingText "by developers of OpenPetra.org"
-
+  var MUI_TEMP
+  Var STARTMENU_FOLDER
 
   ;Default installation folder
   InstallDir "$APPDATA\OpenPetra"
@@ -44,12 +45,17 @@
   !define MUI_LANGDLL_REGISTRY_KEY "Software\OpenPetra" 
   !define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
   
-;--------------------------------
+  ;Start Menu Folder Page Configuration
+  !define MUI_STARTMENUPAGE_REGISTRY_ROOT "HKCU" 
+  !define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\OpenPetra" 
+  !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "Start Menu Folder"
+  
 ;Pages
 
   !define MUI_WELCOMEPAGE_TITLE_3LINES
   !insertmacro MUI_PAGE_WELCOME
   !insertmacro MUI_PAGE_LICENSE "..\..\..\LICENSE"
+  !insertmacro MUI_PAGE_STARTMENU Application $STARTMENU_FOLDER
   !insertmacro MUI_PAGE_DIRECTORY
   !insertmacro MUI_PAGE_INSTFILES
   !insertmacro MUI_PAGE_FINISH
@@ -142,12 +148,14 @@ Section "Main Section" SecInstallFiles
   WriteRegStr HKCU "Software\OpenPetra" "" $INSTDIR
 
   ; Now create shortcuts
-  CreateDirectory "$SMPROGRAMS\${MUI_PRODUCT}"
-  SetOutPath "$INSTDIR\bin30"
-  CreateShortCut "$SMPROGRAMS\${MUI_PRODUCT}\OpenPetra Standalone Client.lnk" "$INSTDIR\bin30\PetraClient.exe" '-C:"$INSTDIR\PetraClient-3.0.config"' $INSTDIR\petraico-big.ico 0 SW_SHOWNORMAL
-  ; avoid problems with empty hotkey. so no comment for the moment for the shortcut: "Start OpenPetra (connecting to your OpenPetra server)"
-  CreateShortCut "$SMPROGRAMS\${MUI_PRODUCT}\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
-  
+  !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+    SetOutPath "$INSTDIR\bin30"
+    CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER"  
+    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\OpenPetra Standalone Client.lnk" "$INSTDIR\bin30\PetraClient.exe" '-C:"$INSTDIR\PetraClient-3.0.config"' $INSTDIR\petraico-big.ico 0 SW_SHOWNORMAL
+    ; avoid problems with empty hotkey. so no comment for the moment for the shortcut: "Start OpenPetra (connecting to your OpenPetra server)"
+    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
+  !insertmacro MUI_STARTMENU_WRITE_END
+
   ;ExecWait '"cmd.exe" /C netsh firewall set allowedprogram program = "$INSTDIR\bin30\PetraClient.exe" name = PetraClient mode = DISABLE'
   ;ExecWait '"cmd.exe" /C netsh firewall set allowedprogram program = "$INSTDIR\bin30\PetraServerConsole.exe" name = PetraServerConsole mode = DISABLE'
   ;ExecWait '"cmd.exe" /C netsh firewall set allowedprogram program = "$INSTDIR\bin30\PetraServerAdminConsole.exe" name = PetraServerAdminConsole mode = DISABLE'
@@ -258,8 +266,22 @@ Section "Uninstall"
   
   ;Delete Start Menu Shortcuts
   ;Delete "$DESKTOP\${MUI_PRODUCT}.lnk"
-  Delete "$SMPROGRAMS\${MUI_PRODUCT}\*.*"
-  RmDir  "$SMPROGRAMS\${MUI_PRODUCT}"
+
+  !insertmacro MUI_STARTMENU_GETFOLDER Application $MUI_TEMP
+ 
+  Delete "$SMPROGRAMS\$MUI_TEMP\*.*"
+ 
+  ;Delete empty start menu parent diretories
+  StrCpy $MUI_TEMP "$SMPROGRAMS\$MUI_TEMP"
+ 
+  startMenuDeleteLoop:
+    RMDir $MUI_TEMP
+    GetFullPathName $MUI_TEMP "$MUI_TEMP\.."
+ 
+    IfErrors startMenuDeleteLoopDone
+ 
+    StrCmp $MUI_TEMP $SMPROGRAMS startMenuDeleteLoopDone startMenuDeleteLoop
+  startMenuDeleteLoopDone:
 
   DeleteRegKey /ifempty HKCU "Software\OpenPetra"
 
