@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyProduct("OpenPetra")]
 [assembly: AssemblyCopyright("(c) OM International 2004-2011")]
 [assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
+[assembly: AssemblyCulture("en")]
 [assembly: ComVisible(false)]
 [assembly: AssemblyVersion("${projectversion}")]
 
