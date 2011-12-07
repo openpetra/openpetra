@@ -1,4 +1,4 @@
-﻿//
+//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -84,5 +84,37 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
             DBAccess.GDBAccessObj.RollbackTransaction();
             return MainDS;
         }
+        
+        /// <summary>
+        /// retrieves information if person has a current commitment (staff data) record
+        /// </summary>
+        /// <param name="APartnerKey"></param>
+        /// <returns>true if person has current commitment (staff data) record(s)</returns>
+        [RequireModulePermission("PERSONNEL")]
+        public static bool HasCurrentCommitmentRecord(Int64 APartnerKey)
+        {
+            PmStaffDataTable StaffDataDT;
+            bool Result = false;
+            
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            StaffDataDT = PmStaffDataAccess.LoadByPrimaryKey(0, APartnerKey, Transaction);
+
+            foreach (PmStaffDataRow row in StaffDataDT.Rows)
+            {
+                if (   (   row.IsEndOfCommitmentNull()
+                        || row.EndOfCommitment >= DateTime.Today)
+                    && (   row.IsStartOfCommitmentNull()
+                        || row.StartOfCommitment <= DateTime.Today))
+                {
+                    Result = true;
+                }
+            }
+            
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            
+            return Result;
+        }
+
     }
 }

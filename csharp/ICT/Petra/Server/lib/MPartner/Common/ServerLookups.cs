@@ -839,5 +839,54 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
 
             return true;
         }
+        
+        
+        /// <summary>
+        /// Gets the family partner key of a person record.
+        /// This function should only be called for partners of type person.
+        /// </summary>
+        /// <param name="APersonKey">Partner key of the person to retrieve the family key for
+        /// Partner must be a person.</param>
+        /// <returns>Family partner key of the person. A Person must always have a family that it is related to.
+        /// False, if there is no partner with the partner key or the partner is not an organisation</returns>
+        /// <exception>ApplicationException if we don't find a partner or if the partner is not an organisation</exception>
+        public static Int64 GetFamilyKeyForPerson(Int64 APersonKey)
+        {
+            TDBTransaction ReadTransaction;
+            Boolean NewTransaction;
+            Int64 ReturnValue = 0;
+
+            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+            
+            PPersonTable PersonDT = new PPersonTable();
+
+            try
+            {
+	            PersonDT = PPersonAccess.LoadByPrimaryKey(APersonKey, ReadTransaction);
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+            }
+
+            if (PersonDT.Rows.Count == 1)
+            {
+            	ReturnValue = ((PPersonRow)PersonDT.Rows[0]).FamilyKey;
+            }
+            else
+            {
+	            // we don't have a valid partner key
+	            throw new ApplicationException(
+	                "TPartnerServerLookups.GetFamilyKeyForPerson: The partner key is not valid!");
+            }
+
+            return ReturnValue;
+            
+        }
     }
 }

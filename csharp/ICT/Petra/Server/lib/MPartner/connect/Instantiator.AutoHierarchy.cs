@@ -2415,6 +2415,14 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.ServerLookups
             return TPartnerServerLookups.GetRecentlyUsedPartners(AMaxPartnersCount, APartnerClasses, out ARecentlyUsedPartners);
             #endregion ManualCode
         }
+
+        /// generated method from interface
+        public Int64 GetFamilyKeyForPerson(Int64 APersonKey)
+        {
+            #region ManualCode
+            return TPartnerServerLookups.GetFamilyKeyForPerson(APersonKey);
+            #endregion ManualCode
+        }
     }
 }
 
@@ -2721,6 +2729,17 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TContactsWebConnector), "DeleteContacts", ";PPARTNERCONTACTTABLE;TVERIFICATIONRESULTCOLLECTION;");
             return Ict.Petra.Server.MPartner.Partner.WebConnectors.TContactsWebConnector.DeleteContacts(APartnerContacts, out AVerificationResults);
+        }
+
+        /// generated method from connector
+        public System.Boolean ChangeFamily(Int64 APersonKey,
+                                           Int64 AOldFamilyKey,
+                                           Int64 ANewFamilyKey,
+                                           out String AProblemMessage,
+                                           out TVerificationResultCollection AVerificationResult)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerWebConnector), "ChangeFamily", ";LONG;LONG;LONG;STRING;TVERIFICATIONRESULTCOLLECTION;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerWebConnector.ChangeFamily(APersonKey, AOldFamilyKey, ANewFamilyKey, out AProblemMessage, out AVerificationResult);
         }
 
         /// generated method from connector

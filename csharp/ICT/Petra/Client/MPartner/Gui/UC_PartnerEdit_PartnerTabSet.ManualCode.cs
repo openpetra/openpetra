@@ -113,6 +113,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private Boolean FUserControlInitialised;
 
+        private TDelegateIsNewPartner FDelegateIsNewPartner;
+        
         #endregion
 
         #region Public Events
@@ -175,6 +177,20 @@ namespace Ict.Petra.Client.MPartner.Gui
         #endregion
 
         #region Public Methods
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public PLocationRow Get_LocationRowOfCurrentlySelectedAddress()
+        {
+            if (!FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucAddresses))
+            {
+                // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);'
+                SetupUserControlAddresses();
+            }
+
+            return FUcoAddresses.LocationDataRowOfCurrentlySelectedRecord;
+        }
 
         /// <summary>
         /// Initialization of Manual Code logic.
@@ -185,6 +201,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 FTabPageEvent += this.TabPageEventHandler;
             }
+        }
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        /// <param name="ADelegateFunction"></param>
+        public void InitialiseDelegateIsNewPartner(TDelegateIsNewPartner ADelegateFunction)
+        {
+            // set the delegate function from the calling System.Object
+            FDelegateIsNewPartner = ADelegateFunction;
         }
 
         /// <summary>
@@ -603,6 +629,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     FUcoFamilyMembers.PartnerEditUIConnector = FPartnerEditUIConnector;
                     FUcoFamilyMembers.HookupDataChange += new THookupPartnerEditDataChangeEventHandler(Uco_HookupPartnerEditDataChange);
+                    FUcoFamilyMembers.InitialiseDelegateIsNewPartner(FDelegateIsNewPartner);
+                    FUcoFamilyMembers.InitialiseDelegateGetLocationRowOfCurrentlySelectedAddress(
+                    	Get_LocationRowOfCurrentlySelectedAddress);
 
                     FUcoFamilyMembers.SpecialInitUserControl();
 

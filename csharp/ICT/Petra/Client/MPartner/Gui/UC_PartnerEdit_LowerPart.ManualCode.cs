@@ -231,7 +231,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void InitialiseDelegateIsNewPartner(TDelegateIsNewPartner ADelegateFunction)
         {
             // set the delegate function from the calling System.Object
-            // TODO FDelegateIsNewPartner = ADelegateFunction;
+            ucoPartnerTabSet.InitialiseDelegateIsNewPartner(ADelegateFunction);
         }
 
         /// <summary>

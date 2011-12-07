@@ -9,66 +9,79 @@ RootNode:
     Actions:
         actEditFamily: {Label=Edit Family, ActionClick=EditFamily}
         actChangeFamily: {Label=Change Family, ActionClick=ChangeFamily}
-        actMoveUp: {Label=Move Up, ActionClick=MoveUp}
-        actMoveDown: {Label=Move Down, ActionClick=MoveDown}
-        actManualEdit: {Label=Manual Edit, ActionClick=ManualEdit}
+        actFamilyMemberPromote: {ActionClick=FamilyMemberPromote, Image: MoveDownArrow.ico}
+        actFamilyMemberDemote: {ActionClick=FamilyMemberDemote, Image: MoveUpArrow.ico}
+        actEditFamilyID: {Label=Manual Edit, ActionClick=EditFamilyID}
         actEditPerson: {Label=Edit Selected Person, ActionClick=EditPerson}
         actMovePersonToOtherFamily: {Label=Move selected Person to other Family, ActionClick=MovePersonToOtherFamily}
-        actMovePersonToThisFamily: {Label=Move existing Person to this Family, ActionClick=MovePersonToThisFamily}
-        actCreateNewPersonForThisFamily: {Label=Create new Person for this Family, ActionClick=CreateNewPersonForThisFamily}
-        actRefreshGrid: {Label=Refresh List, ActionClick=RefreshFamilyMembersList}
+        actAddExistingPersonToThisFamily: {Label=Move existing Person to this Family, ActionClick=MovePersonToThisFamily}
+        actAddNewPersonToThisFamily: {Label=Create new Person for this Family, ActionClick=AddNewPersonToThisFamily}
+        actRefreshGrid: {ActionClick=RefreshFamilyMembersList, Image: Refresh.ico}
+        actFamilyIDHelp: {ActionClick=FamilyIDHelp, Image: Help2.ico}
     Controls:
         pnlDetails:
             Dock: Fill
             Controls: [grpFamily, grpFamilyMembers]
         grpFamily: {Label=Family, Stretch=horizontally, ControlsOrientation = horizontal}
             Dock: Top
-            Controls: [txtFamilyKey, txtFamilyShortName, btnEditFamily, btnChangeFamily]
+            Controls: [txtFamilyPartnerKey, btnEditFamily, btnChangeFamily]
         grpFamilyMembers: {Label=Family Members, Stretch=horizontally}
             Dock: Fill
             Controls: [pnlGrid, pnlButtons]
             
         pnlGrid: {ControlsOrientation = horizontal}
-            Controls: [grdFamilyMembers, pnlGridActions]
+            Controls: [grdFamilyMembers, pnlGridActions, btnFamilyIDHelp]
             
         pnlGridActions:
             #Dock: Right
-            Controls: [grpFamilyId, btnRefreshGrid]
+            Controls: [grpChangeFamilyID, btnRefreshGrid]
             
         grdFamilyMembers:
             Dock: Fill
-        grpFamilyId: {Label=Change Family ID}
-            Controls: [btnMoveUp, btnMoveDown, btnManualEdit]
+        grpChangeFamilyID: {Label=Change Family ID}
+            Controls: [btnFamilyMemberDemote, btnFamilyMemberPromote, btnEditFamilyID, lblJustToExtendWidth]
+        btnFamilyIDHelp: {NoLabel=true}
+            Action: actFamilyIDHelp
+            Help: Family ID explained
+        lblJustToExtendWidth: {NoLabel=true}
+            Width: 130
+            Height: 2
 
-        txtFamilyKey: {NoLabel=true}
-        txtFamilyShortName: {NoLabel=true, Stretch=horizontally}
+        txtFamilyPartnerKey: {NoLabel=true, ReadOnly=true, Type=PartnerKey}
         btnEditFamily:
             Action: actEditFamily
         btnChangeFamily:
             Action: actChangeFamily
             
-        btnMoveUp:
-            Action: actMoveUp
-        btnMoveDown:
-            Action: actMoveDown
-        btnManualEdit:
-            Action: actManualEdit
-        btnRefreshGrid:
+        btnFamilyMemberDemote: {NoLabel=true}
+            Align: center
+            Action: actFamilyMemberDemote
+            Help: Demote Family ID
+        btnFamilyMemberPromote: {NoLabel=true}
+            Align: center
+            Action: actFamilyMemberPromote
+            Help: Promote Family ID
+        btnEditFamilyID:
+            Align: center
+            Action: actEditFamilyID
+        btnRefreshGrid: {NoLabel=true}
             Action: actRefreshGrid
+            Help: Refresh Family Members List (e.g. after moving Persons from/to Family)
 
         pnlButtons:
-            Controls: [btnEditPerson, grpMoveFamilyMembers]
+            Controls: [btnEditPerson, grpFamilyMembersModify]
         
         btnEditPerson:
             Action: actEditPerson
 
-        grpMoveFamilyMembers: {Label=Move or Create Family Members}
-            Controls: [btnMovePersonToOtherFamily, btnMovePersonToThisFamily, btnCreateNewPersonForThisFamily]
-            
+        grpFamilyMembersModify: {Label=Move or Create Family Members}
+            Controls: [btnMovePersonToOtherFamily, btnAddExistingPersonToThisFamily, btnAddNewPersonToThisFamily]
+            ControlsOrientation: Horizontal
+
         btnMovePersonToOtherFamily: {Stretch=horizontally}
             Action: actMovePersonToOtherFamily
-        btnMovePersonToThisFamily: {Stretch=horizontally}
-            Action: actMovePersonToThisFamily
-        btnCreateNewPersonForThisFamily: {Stretch=horizontally}
-            Action: actCreateNewPersonForThisFamily
+        btnAddExistingPersonToThisFamily: {Stretch=horizontally}
+            Action: actAddExistingPersonToThisFamily
+        btnAddNewPersonToThisFamily: {Stretch=horizontally}
+            Action: actAddNewPersonToThisFamily
 		
