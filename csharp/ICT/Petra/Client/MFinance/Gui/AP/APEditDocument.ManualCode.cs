@@ -32,6 +32,7 @@ using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MFinance.Gui.GL;
+using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MFinance;
 
@@ -45,8 +46,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
     	
     	private void RunOnceOnActivationManual()
     	{
-    		grdDetails.Columns[0].Width = 10;
-    		grdDetails.Columns[3].Width = 10;
     	}
     		
     	private void EnableControls()
@@ -68,7 +67,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
     			txtDiscountPercentage.Enabled = false;
 				txtTotalAmount.Enabled = false;
 				txtExchangeRateToBase.Enabled = false;
+				pnlDetails.Enabled =false;
 				
+/*				
 				btnAddDetail.Enabled = false;
 				btnRemoveDetail.Enabled = false;
 				btnAnalysisAttributes.Enabled = false;
@@ -80,6 +81,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 				btnUseTaxAccount.Enabled = false;
 				txtDetailBaseAmount.Enabled = false;
 				cmbDetailAccountCode.Enabled = false;
+*/
     		}
     		else
     		{
@@ -87,11 +89,108 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
     		}
     		
     	}
+    	
+    	private bool DetailLineAttributesRequired (ref bool AllPresent, AApDocumentDetailRow DetailRow)
+    	{
+    		FMainDS.AAnalysisAttribute.DefaultView.RowFilter = 
+    			String.Format("{0}={1}", AAnalysisAttributeTable.GetAccountCodeDBName(), DetailRow.AccountCode); // Do I need Cost Centre in here too?
+    		
+    		if (FMainDS.AAnalysisAttribute.DefaultView.Count > 0)
+    		{
+    			btnAnalysisAttributes.Enabled = true;
+    			bool IhaveAllMyAttributes = true;
+    			
+	    		foreach (DataRowView rv in FMainDS.AAnalysisAttribute.DefaultView)
+	    		{
+	    			AAnalysisAttributeRow AttrRow = (AAnalysisAttributeRow)rv.Row;
+	    			
+	    			FMainDS.AApAnalAttrib.DefaultView.RowFilter = 
+	    				String.Format("{0}={1} AND {2}={3}",
+	    				              AApAnalAttribTable.GetDetailNumberDBName(), DetailRow.DetailNumber,
+	    				              AApAnalAttribTable.GetAccountCodeDBName(),AttrRow.AccountCode);
+	    			if (FMainDS.AApAnalAttrib.DefaultView.Count == 0)
+	    			{
+	    				IhaveAllMyAttributes = false;
+	    				break;
+	    			}
+	    		}
+	    		
+	    		if (IhaveAllMyAttributes)
+	    		{
+	    		    AllPresent = true; // This detail line is fully specified
+	    		}
+	    		else
+	    		{
+	    		    AllPresent = false; // This detail line requires attributes
+	    		}
+    			return true; 
+    		}
+    		else
+    		{
+                AllPresent = true; // This detail line is fully specified
+       			return false; // No attributes are required
+    		}
+    	}
+    	    
+    	/// <summary>
+    	/// When an account is selected for a detail line,
+    	/// I need to determine whether analysis attributes are required for this account
+    	/// and if they are, whether I already have all the attributes required.
+    	/// </summary>
+    	/// <param name="sender"></param>
+    	/// <param name="e"></param>
+    	
+    	private void CheckAccountRequiredAttr(Object sender, EventArgs e)
+    	{
+    		string AccountCode = cmbDetailAccountCode.GetSelectedString();
+    		
+    		if (AccountCode.Length == 0)
+    		{
+    			return;
+    		}
+    		
+    		FPreviouslySelectedDetailRow.AccountCode = AccountCode;
+    		
+    		bool AllPresent = true;
+    		if (DetailLineAttributesRequired (ref AllPresent, FPreviouslySelectedDetailRow))
+    		{
+	    		if (AllPresent)
+	    		{
+	    			btnAnalysisAttributes.ForeColor = System.Drawing.Color.Green; // This detail line is fully specified
+	    		}
+	    		else
+	    		{
+	    			btnAnalysisAttributes.ForeColor = System.Drawing.Color.Red; // This detail line requires attributes
+	    		}
+    		}
+    		else
+    		{
+    			btnAnalysisAttributes.Enabled = false; // No attributes are required
+    		}
+    	}
     		
     	private void ShowDataManual()
     	{
     		txtTotalAmount.CurrencySymbol = FMainDS.AApSupplier[0].CurrencyCode;
     		txtDetailAmount.CurrencySymbol = FMainDS.AApSupplier[0].CurrencyCode;
+    		
+            // Create Text description of Anal Attribs for each DetailRow..
+            
+            foreach (AccountsPayableTDSAApDocumentDetailRow DetailRow in FMainDS.AApDocumentDetail.Rows)
+            {
+            	string strAnalAttr = "";
+            	FMainDS.AApAnalAttrib.DefaultView.RowFilter = 
+            		String.Format("{0}={1}", AApAnalAttribTable.GetDetailNumberDBName(), DetailRow.DetailNumber);
+            	foreach (DataRowView rv in FMainDS.AApAnalAttrib.DefaultView)
+            	{
+            		AApAnalAttribRow Row = (AApAnalAttribRow)rv.Row;
+            		if (strAnalAttr.Length > 0)
+            			strAnalAttr += ", ";
+            		strAnalAttr += (Row.AnalysisTypeCode + "=" + Row.AnalysisAttributeValue);
+            	}
+            	DetailRow.AnalAttr = strAnalAttr;
+            }
+            
     		EnableControls();
     	}
     	
@@ -141,7 +240,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         	
 		    GetDataFromControls(FMainDS.AApDocument[0]);
             int rowIndex = grdDetails.Selection.GetSelectionRegion().GetRowsIndex()[0];
-            MessageBox.Show("Deleting "+ Row.Narrative, "Remove Row");
+//          MessageBox.Show("Deleting "+ Row.Narrative, "Remove Row");
             
 		    Row.Delete();  // This row is not removed, but marked for deletion.
 		    
@@ -155,10 +254,22 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
     		EnableControls();
         }
         
+        /// <summary>
+        /// Display the Analysis Attributes form for this selected detail
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Analyse (Object sender, EventArgs e)
         	
         {
-        	
+            TFrmAPAnalysisAttributes AnalAttrForm = new TFrmAPAnalysisAttributes(this);
+            GetDetailsFromControls(FPreviouslySelectedDetailRow);
+            
+            AnalAttrForm.Initialise (ref FMainDS, FPreviouslySelectedDetailRow);
+            AnalAttrForm.ShowDialog();
+            ShowData(FMainDS.AApDocument[0]);
+//          CheckAccountRequiredAttr(null, null);
+	        FPetraUtilsObject.SetChangedFlag();
         }
         
         private void UseTaxAccount(Object sender, EventArgs e)
@@ -202,8 +313,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// initialise some comboboxes
         private void BeforeShowDetailsManual(AApDocumentDetailRow ARow)
         {
-    		grdDetails.Columns[0].Width = 10;
-    		grdDetails.Columns[3].Width = 10;
+    		grdDetails.Columns[1].Width = grdDetails.Width - 380;  // It doesn't really work having these here -
+    		grdDetails.Columns[0].Width = 90;                      // there's something else that overrides these settings.
+    		grdDetails.Columns[2].Width = 200;
+    		grdDetails.Columns[3].Width = 90;
 
     		// if this form is readonly, then we need all account and cost centre codes, because old codes might have been used
             bool ActiveOnly = this.Enabled;
@@ -244,6 +357,25 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         	}
         }
 
+        private bool AllLinesHaveAttributes()
+        {
+        	foreach (AApDocumentDetailRow Row in FMainDS.AApDocumentDetail.Rows)
+        	{
+        	    bool AllPresent = true;
+        	    if (DetailLineAttributesRequired (ref AllPresent, Row))
+        	    {
+        	        if (!AllPresent)
+        	        {
+        	            System.Windows.Forms.MessageBox.Show(
+        	                String.Format(Catalog.GetString("Analysis Attributes are required for account {0}."), Row.AccountCode), 
+        	                Catalog.GetString("Analysis Attributes"));
+        	         	return false;
+        	        }
+        	    }
+        	}
+    		return true;
+        }
+        
         /// <summary>
         /// Post document as a GL Batch
         /// see very similar function in TFrmAPSupplierTransactions
@@ -259,12 +391,22 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 return;
             }
 
+            GetDataFromControls(FMainDS.AApDocument[0]);
+            
             // TODO: make sure that there are uptodate exchange rates
             
-            // If the batch will not balance, I'll stop right here..
+            // If the batch will not balance, or required attributes are missing, I'll stop right here..
+            bool CantPost = false;
+            
             if (!BatchBalancesOK())
-            	return;
+            	CantPost = true;
 
+            if (!AllLinesHaveAttributes())
+            	CantPost = true;
+
+            if (CantPost)
+                return;
+            
             TVerificationResultCollection Verifications;
 
             TDlgGLEnterDateEffective dateEffectiveDialog = new TDlgGLEnterDateEffective(

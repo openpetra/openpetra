@@ -52,6 +52,20 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
     ///</summary>
     public class TTransactionWebConnector
     {
+        private static void LoadAnalysisAttributes (AccountsPayableTDS AMainDS, Int32 ALedgerNumber, TDBTransaction ATransaction)
+        
+        {
+            {   // Load via template...
+            	AAnalysisAttributeRow TemplateRow = AMainDS.AAnalysisAttribute.NewRowTyped(false);
+            	TemplateRow.LedgerNumber = ALedgerNumber;
+            	TemplateRow.Active = true;
+            	AAnalysisAttributeAccess.LoadUsingTemplate(AMainDS, TemplateRow, ATransaction);
+            }
+        	
+            AFreeformAnalysisAccess.LoadViaALedger(AMainDS, ALedgerNumber, ATransaction);
+        }
+        
+        
         /// <summary>
         /// Passes data as a Typed DataSet to the Transaction Edit Screen
         /// </summary>
@@ -61,14 +75,31 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             // create the DataSet that will later be passed to the Client
             AccountsPayableTDS MainDS = new AccountsPayableTDS();
 
-            AApDocumentAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, AAPNumber, null);
-            AApDocumentDetailAccess.LoadViaAApDocument(MainDS, ALedgerNumber, AAPNumber, null);
-            AApSupplierAccess.LoadByPrimaryKey(MainDS, MainDS.AApDocument[0].PartnerKey, null);
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            AApDocumentAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, AAPNumber, Transaction);
+            AApDocumentDetailAccess.LoadViaAApDocument(MainDS, ALedgerNumber, AAPNumber, Transaction);
+            AApSupplierAccess.LoadByPrimaryKey(MainDS, MainDS.AApDocument[0].PartnerKey, Transaction);
+            
+            // Load via template...
+            {
+	            AApAnalAttribRow TemplateRow = MainDS.AApAnalAttrib.NewRowTyped(false);
+	            TemplateRow.LedgerNumber = ALedgerNumber;
+	            TemplateRow.ApNumber = AAPNumber;
+	            AApAnalAttribAccess.LoadUsingTemplate(MainDS, TemplateRow, Transaction);
+            }
 
             // Accept row changes here so that the Client gets 'unmodified' rows
             MainDS.AcceptChanges();
+            
+            // I also need a full list of analysis attributes that could apply to this document
+            // (although if it's already been posted I don't need to get this...)
+            
+            LoadAnalysisAttributes (MainDS, ALedgerNumber, Transaction);
 
-            // Remove all Tables that were not filled with data before remoting them.
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            
+			// Remove all Tables that were not filled with data before remoting them.
             MainDS.RemoveEmptyTables();
 
             return MainDS;
@@ -96,9 +127,11 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             NewDocumentRow.DocumentStatus = MFinanceConstants.AP_DOCUMENT_OPEN;
             NewDocumentRow.LastDetailNumber = -1;
 
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            
             // get the supplier defaults
             AApSupplierTable tempTable;
-            tempTable = AApSupplierAccess.LoadByPrimaryKey(APartnerKey, null);
+            tempTable = AApSupplierAccess.LoadByPrimaryKey(APartnerKey, Transaction);
 
             if (tempTable.Rows.Count == 1)
             {
@@ -128,6 +161,12 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             }
 
             MainDS.AApDocument.Rows.Add(NewDocumentRow);
+
+            // I also need a full list of analysis attributes that could apply to this document
+            
+            LoadAnalysisAttributes (MainDS, ALedgerNumber, Transaction);
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
 
             // Remove all Tables that were not filled with data before remoting them.
             MainDS.RemoveEmptyTables();
@@ -191,11 +230,20 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     if ((AInspectDS.AApDocument == null) || AApDocumentAccess.SubmitChanges(AInspectDS.AApDocument, SubmitChangesTransaction,
                             out AVerificationResult))
                     {
-                        if ((AInspectDS.AApDocumentDetail == null)
+                        if ((AInspectDS.AApDocumentDetail == null) // Document detail lines
                             || AApDocumentDetailAccess.SubmitChanges(AInspectDS.AApDocumentDetail, SubmitChangesTransaction,
                                 out AVerificationResult))
                         {
-                            SubmissionResult = TSubmitChangesResult.scrOK;
+                            if ((AInspectDS.AApAnalAttrib == null)  // Analysis attributes
+                                || AApAnalAttribAccess.SubmitChanges(AInspectDS.AApAnalAttrib, SubmitChangesTransaction,
+                                    out AVerificationResult))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            else
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrError;
+                            }
                         }
                         else
                         {

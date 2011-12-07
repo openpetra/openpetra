@@ -391,17 +391,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            String v = (String)sio;
-            AFreeformAnalysisRow afaRow =
-                (AFreeformAnalysisRow)FCacheDS.AFreeformAnalysis.Rows.Find(new Object[] { FLedgerNumber, txtReadonlyAnalysisTypeCode.Text,
-                                                                                          v });
-
-            if (afaRow == null)
+          	AFreeformAnalysisRow afaRow = null;
+          	String v = sio.ToString();
+            bool AccessOk = false;
+            try
             {
-                // this should never happen
+            	Object[]PrimaryKey = new Object[] { txtReadonlyAnalysisTypeCode.Text, v, FLedgerNumber };
+            	afaRow = (AFreeformAnalysisRow)FCacheDS.AFreeformAnalysis.Rows.Find(PrimaryKey);
+                AccessOk = true;
+            }
+            catch(Exception exc)
+            {
+            	Type ExcType = exc.GetType();
                 cmbDetailAnalysisAttributeValue.ForeColor = System.Drawing.Color.Red;
             }
-            else
+            
+            if (AccessOk)
             {
                 if (afaRow.Active)
                 {

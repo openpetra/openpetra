@@ -79,9 +79,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             string newName = Catalog.GetString("NEWVALUE");
             Int32 countNewDetail = 0;
 
-            if (FMainDS.AFreeformAnalysis.Rows.Find(new object[] { FLedgerNumber, FTypeCode, newName }) != null)
+            if (FMainDS.AFreeformAnalysis.Rows.Find(new object[] { FTypeCode, newName, FLedgerNumber }) != null)
             {
-                while (FMainDS.AFreeformAnalysis.Rows.Find(new object[] { FLedgerNumber, FTypeCode, newName + countNewDetail.ToString() }) != null)
+                while (FMainDS.AFreeformAnalysis.Rows.Find(new object[] { FTypeCode, newName + countNewDetail.ToString(), FLedgerNumber }) != null)
                 {
                     countNewDetail++;
                 }
