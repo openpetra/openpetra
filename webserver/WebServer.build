@@ -276,24 +276,31 @@ list of available commands:
     [Function("MoveFileByPattern")]
     public static bool MoveFileByPattern(string srcPath, string filenamePattern, string destPath, string newExtension)
     {
-      string[] filePaths = Directory.GetFiles(srcPath, filenamePattern);
-      foreach (string filename in filePaths)
+      try
       {
-        string newFilename = destPath + Path.DirectorySeparatorChar + Path.GetFileNameWithoutExtension(filename) + newExtension;
-        
-        if (newExtension.Length == 0)
-        {
-          newFilename += Path.GetExtension(filename);
-        }
-
-        if (File.Exists(newFilename))
-        {
-          File.Delete(newFilename);
-        }
-
-        File.Move(filename, newFilename);
+          string[] filePaths = Directory.GetFiles(srcPath, filenamePattern);
+          foreach (string filename in filePaths)
+          {
+            string newFilename = destPath + Path.DirectorySeparatorChar + Path.GetFileNameWithoutExtension(filename) + newExtension;
+            
+            if (newExtension.Length == 0)
+            {
+              newFilename += Path.GetExtension(filename);
+            }
+    
+            if (File.Exists(newFilename))
+            {
+              File.Delete(newFilename);
+            }
+    
+            File.Move(filename, newFilename);
+          }
       }
-      
+      catch (Exception e)
+      {
+          Console.WriteLine(filenamePattern);
+          Console.WriteLine(e.Message);
+      }
       return true;
     }    
 ]]>
@@ -302,7 +309,7 @@ list of available commands:
 
 <target name="unpackTranslation">
   <property name="zipfile" value="${dir.delivery}/ForHomeOfficeTranslators.zip" overwrite="false"/>
-  <property name="country-id" value="de-DE" overwrite="false"/>
+  <property name="country-id" value="" overwrite="true"/>
   
   <unzip zipfile="${zipfile}" todir="${dir.delivery}/translationPack"/> 
 
