@@ -114,7 +114,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private Boolean FUserControlInitialised;
 
         private TDelegateIsNewPartner FDelegateIsNewPartner;
-        
+
         #endregion
 
         #region Public Events
@@ -196,7 +196,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         #region Public Methods
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <returns></returns>
         public PLocationRow Get_LocationRowOfCurrentlySelectedAddress()
@@ -649,7 +649,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FUcoFamilyMembers.HookupDataChange += new THookupPartnerEditDataChangeEventHandler(Uco_HookupPartnerEditDataChange);
                     FUcoFamilyMembers.InitialiseDelegateIsNewPartner(FDelegateIsNewPartner);
                     FUcoFamilyMembers.InitialiseDelegateGetLocationRowOfCurrentlySelectedAddress(
-                    	Get_LocationRowOfCurrentlySelectedAddress);
+                        Get_LocationRowOfCurrentlySelectedAddress);
 
                     FUcoFamilyMembers.SpecialInitUserControl();
 

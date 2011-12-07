@@ -49,17 +49,17 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <param name="AVerificationResult"></param>
         /// <returns>true if change of family completed successfully</returns>
         [RequireModulePermission("PTNRUSER")]
-        public static bool ChangeFamily(Int64 APersonKey, Int64 AOldFamilyKey, Int64 ANewFamilyKey, 
-			out String AProblemMessage, out TVerificationResultCollection AVerificationResult)
+        public static bool ChangeFamily(Int64 APersonKey, Int64 AOldFamilyKey, Int64 ANewFamilyKey,
+            out String AProblemMessage, out TVerificationResultCollection AVerificationResult)
         {
             Boolean ResultValue = false;
 
-            ResultValue = Server.MPartner.Partner.TFamilyHandling.ChangeFamily(APersonKey, 
-                                                                               AOldFamilyKey, 
-                                                                               ANewFamilyKey,
-                                                                               out AProblemMessage,
-                                                                               out AVerificationResult);
-            
+            ResultValue = Server.MPartner.Partner.TFamilyHandling.ChangeFamily(APersonKey,
+                AOldFamilyKey,
+                ANewFamilyKey,
+                out AProblemMessage,
+                out AVerificationResult);
+
             return ResultValue;
         }
     }

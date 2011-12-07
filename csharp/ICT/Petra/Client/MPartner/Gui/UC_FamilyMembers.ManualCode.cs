@@ -70,10 +70,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         private TDelegateIsNewPartner FDelegateIsNewPartner;
         private TDelegateGetLocationRowOfCurrentlySelectedAddress FDelegateGetLocationRowOfCurrentlySelectedAddress;
         private TEnableDisableScreenPartsEventHandler FEnableDisableOtherScreenParts;
-        
+
         private Boolean FFamilyMembersExist;
-        
-        /// <summary>Keeps track whether the SourceGrid-based Grid was already AutoSized or not.</summary>        
+
+        /// <summary>Keeps track whether the SourceGrid-based Grid was already AutoSized or not.</summary>
         private Boolean FDataGridAutoSized = false;
 
         /// <summary>isEdited: Boolean;</summary>
@@ -81,7 +81,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private object PreviousPartnerMemory;
 
         private Boolean FDeadlineEditMode;
-        
+
         #region Public Methods
 
 //        /// <summary>
@@ -146,7 +146,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FGridEdited = value;
             }
         }
-        
+
         /// <summary>todoComment</summary>
         public event TRecalculateScreenPartsEventHandler RecalculateScreenParts;
 
@@ -174,7 +174,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FEnableDisableOtherScreenParts(this, e);
             }
         }
-        
+
         /// <summary>
         ///
         /// </summary>
@@ -310,10 +310,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             // react to actions on grid
             grdFamilyMembers.DoubleClickCell += new TDoubleClickCellEventHandler(GrdFamilyMembers_DoubleClickCell);
             grdFamilyMembers.KeyDown += new System.Windows.Forms.KeyEventHandler(this.GrdFamilyMembers_KeyDown);
-            
+
             // Hook up DataSavingStarted Event to be able to run code before SaveChanges is doing anything
             FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(this.DataSavingStarted);
-            
+
             /* Check if data needs to be retrieved from the PetraServer */
             if (FMainDS.FamilyMembers == null)
             {
@@ -358,7 +358,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             ApplySecurity();
-    
         }
 
         /// <summary>
@@ -380,7 +379,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             /* set the delegate function from the calling System.Object */
             FDelegateGetLocationRowOfCurrentlySelectedAddress = ADelegateFunction;
         }
-        
+
         /// <summary>
         /// This Method is needed for UserControls who get dynamicly loaded on TabPages.
         /// Since we don't have controls on this UserControl that need adjusting after resizing
@@ -417,7 +416,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="e"></param>
         private void EditFamily(System.Object sender, EventArgs e)
         {
-
             if (FMainDS.PPerson[0].FamilyKey == 0)
             {
                 return;
@@ -445,7 +443,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="e"></param>
         private void ChangeFamily(System.Object sender, EventArgs e)
         {
-        	ChangeFamily(FMainDS.PPerson[0].PartnerKey, GetFamilyKey(), false);
+            ChangeFamily(FMainDS.PPerson[0].PartnerKey, GetFamilyKey(), false);
         }
 
         /// <summary>
@@ -516,30 +514,30 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="e"></param>
         private void FamilyIDHelp(System.Object sender, EventArgs e)
         {
-			String StrFamilyIDExplained;
-			
-			StrFamilyIDExplained = Catalog.GetString(
-				"Family Identification Number (Family ID) " + "\r\n" +
-				"------------------------------------------------ " + "\r\n" +
-				" This number is used to identify the family members within a Family. " +
-				"\r\n" + " * Family ID's 0 and 1 are used for parents; " + "\r\n" +
-				"    FamilyID's 2, 3, 4 ... 9 are used for children. " + "\r\n" +
-				" * All gifts to this Family will be assigned to the to the Field in the Commitment" +
-				"\r\n" +
-				"    Record of the family member with the the lowest FamilyID of those who have a" +
-				"\r\n" +
-				"    current Commitment Record." + 
-				"\r\n" +
-				"\r\n" +
-				" This system needs to be consistently applied to all Families." +
-				"\r\n" +
-				" This ensures that gifts go to the correct Field, and that family members are" +
-				"\r\n" +
-				" always listed in the same order on screen as well as on reports! ");
-        	
-			MessageBox.Show(StrFamilyIDExplained, Catalog.GetString("Family ID Explained"));
+            String StrFamilyIDExplained;
+
+            StrFamilyIDExplained = Catalog.GetString(
+                "Family Identification Number (Family ID) " + "\r\n" +
+                "------------------------------------------------ " + "\r\n" +
+                " This number is used to identify the family members within a Family. " +
+                "\r\n" + " * Family ID's 0 and 1 are used for parents; " + "\r\n" +
+                "    FamilyID's 2, 3, 4 ... 9 are used for children. " + "\r\n" +
+                " * All gifts to this Family will be assigned to the to the Field in the Commitment" +
+                "\r\n" +
+                "    Record of the family member with the the lowest FamilyID of those who have a" +
+                "\r\n" +
+                "    current Commitment Record." +
+                "\r\n" +
+                "\r\n" +
+                " This system needs to be consistently applied to all Families." +
+                "\r\n" +
+                " This ensures that gifts go to the correct Field, and that family members are" +
+                "\r\n" +
+                " always listed in the same order on screen as well as on reports! ");
+
+            MessageBox.Show(StrFamilyIDExplained, Catalog.GetString("Family ID Explained"));
         }
-        
+
         /// <summary>
         ///
         /// </summary>
@@ -556,19 +554,19 @@ namespace Ict.Petra.Client.MPartner.Gui
                 if (FMainDS.PPartner[0].PartnerKey == GetPartnerKeySelected())
                 {
                     MessageBox.Show(Catalog.GetString("Partner is already open in this Partner Edit screen."),
-                            Catalog.GetString("Partner is already open"),
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Information,
-                            MessageBoxDefaultButton.Button1);
+                        Catalog.GetString("Partner is already open"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information,
+                        MessageBoxDefaultButton.Button1);
                 }
                 else
                 {
                     this.Cursor = Cursors.WaitCursor;
-        
+
                     try
                     {
                         TFrmPartnerEdit frm = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
-        
+
                         frm.SetParameters(TScreenMode.smEdit, GetPartnerKeySelected(), TPartnerEditTabPageEnum.petpFamilyMembers);
                         frm.Show();
                     }
@@ -583,7 +581,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// when double clicked datagrid, opens selected FamilyID for editing
         /// </summary>
-        /// <returns>void</returns>        
+        /// <returns>void</returns>
         private void GrdFamilyMembers_DoubleClickCell(object Sender, CellContextEventArgs e)
         {
             if (!FDeadlineEditMode)
@@ -628,7 +626,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     break;
             }
         }
-        
+
         /// <summary>
         ///
         /// </summary>
@@ -642,7 +640,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
-            	ChangeFamily(GetPartnerKeySelected(), GetFamilyKey(), false);
+                ChangeFamily(GetPartnerKeySelected(), GetFamilyKey(), false);
             }
         }
 
@@ -655,6 +653,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             String mResultStringLbl = "";
             TLocationPK mResultLocationPK;
+
             System.Int64 NewPersonKey = 0;
             System.Int64 OtherFamilyKey = 0;
             String ProblemMessage;
@@ -667,111 +666,110 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
-	            if (FDelegateIsNewPartner != null)
-	            {
-	                if (FDelegateIsNewPartner(FMainDS))
-	                {
-	                    MessageBox.Show(Resourcestrings.StrErrorNeedToSavePartner1 +
-	                        Resourcestrings.StrErrorChangeFamily2,
-	                        Resourcestrings.StrErrorNeedToSavePartnerTitle);
-	                    return;
-	                }
-	
-                	// If the delegate is defined, the host form will launch a Modal Partner Find screen for us
-	                if (TCommonScreensForwarding.OpenPartnerFindScreen != null)
-	                {
-	                    // delegate IS defined
-	                    try
-	                    {
-	                        TCommonScreensForwarding.OpenPartnerFindScreen.Invoke
-	                        	(SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON),
-	                             out NewPersonKey,
-	                             out mResultStringLbl,
-	                             out mResultLocationPK,
-	                             this.ParentForm);
+                if (FDelegateIsNewPartner != null)
+                {
+                    if (FDelegateIsNewPartner(FMainDS))
+                    {
+                        MessageBox.Show(Resourcestrings.StrErrorNeedToSavePartner1 +
+                            Resourcestrings.StrErrorChangeFamily2,
+                            Resourcestrings.StrErrorNeedToSavePartnerTitle);
+                        return;
+                    }
 
-	                        if (NewPersonKey != -1)
+                    // If the delegate is defined, the host form will launch a Modal Partner Find screen for us
+                    if (TCommonScreensForwarding.OpenPartnerFindScreen != null)
+                    {
+                        // delegate IS defined
+                        try
+                        {
+                            TCommonScreensForwarding.OpenPartnerFindScreen.Invoke
+                                (SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON),
+                                out NewPersonKey,
+                                out mResultStringLbl,
+                                out mResultLocationPK,
+                                this.ParentForm);
+
+                            if (NewPersonKey != -1)
                             {
-	                        	OtherFamilyKey = TRemote.MPartner.Partner.ServerLookups.GetFamilyKeyForPerson(NewPersonKey);
+                                OtherFamilyKey = TRemote.MPartner.Partner.ServerLookups.GetFamilyKeyForPerson(NewPersonKey);
 
-								if (OtherFamilyKey == GetFamilyKey())
-								{
-									MessageBox.Show(Catalog.GetString("You are trying to move the Person to their existing Family!\r\n"
-									                                  +"This is not allowed. Select a different Person in the Find Screen."),
-                    								Catalog.GetString("Moving to Same Family is Not Allowed"));
-                    					
-									return;
-								}
-	                        	
-	                            if (!PersonnelChecks.WarnAboutFamilyChange(NewPersonKey,
-				                                                           RetrievePartnerShortName(NewPersonKey),
-				                                                           OtherFamilyKey,
-				                                                           RetrievePartnerShortName(OtherFamilyKey),
-				                                                           0,
-				                                                           "",
-				                                                           TRemote.MPersonnel.WebConnectors.HasCurrentCommitmentRecord(NewPersonKey),
-				                                                           @ShowFamilyChangeWarning))
-		                        {
-									// user chose not to continue
-									return;
-								}
-									
-								// call the server to perform the actual family database change
-								if (TRemote.MPartner.Partner.WebConnectors.ChangeFamily(NewPersonKey,
-								                                                        OtherFamilyKey,
-								                                                        GetFamilyKey(),
-								                                                        out ProblemMessage,
-								                                                        out VerificationResult))
-								{
-									// even in case of success there might still be a warning message that needs display
-									if (ProblemMessage != "")
-									{
-										MessageBox.Show(ProblemMessage, Catalog.GetString("Change Family"));
-									}
-								}
-								else
-								{
-									// can't continue after error
-			                        MessageBox.Show(Messages.BuildMessageFromVerificationResult("Change of family failed!" + Environment.NewLine +
-			                                "Reasons:", VerificationResult));
-									MessageBox.Show(ProblemMessage, Catalog.GetString("Change Family"));
-									return;
+                                if (OtherFamilyKey == GetFamilyKey())
+                                {
+                                    MessageBox.Show(Catalog.GetString("You are trying to move the Person to their existing Family!\r\n" +
+                                            "This is not allowed. Select a different Person in the Find Screen."),
+                                        Catalog.GetString("Moving to Same Family is Not Allowed"));
 
-								}
+                                    return;
+                                }
 
-				                if (MessageBox.Show(Catalog.GetString("The Family Change is done.\r\n\r\n" +
-				                                                      "Do you want to see the updated list of Family Members of the Family" +
-				                                                      "from where the Person record was moved from?"),
-				                                    Catalog.GetString("Family ID Change"),
-				                                    MessageBoxButtons.YesNo) == DialogResult.Yes)
-				                {
-				                    this.Cursor = Cursors.WaitCursor;
-				        
-				                    try
-				                    {
-				                        TFrmPartnerEdit frm = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
-				        
-				                        frm.SetParameters(TScreenMode.smEdit, OtherFamilyKey, TPartnerEditTabPageEnum.petpFamilyMembers);
-				                        frm.Show();
-				                    }
-				                    finally
-				                    {
-				                        this.Cursor = Cursors.Default;
-				                    }
-				                }
-			                    
-			                    /* Refresh DataGrid to show the changed Family Members */
-			                    RefreshFamilyMembersList(this, null);
-		                    }
-	                    }
-	                    catch (Exception exp)
-	                    {
-	                        throw new ApplicationException("Exception occured while calling PartnerFindScreen Delegate!",
-	                            exp);
-	                    }
-	                    // end try
-	                }
-	            }
+                                if (!PersonnelChecks.WarnAboutFamilyChange(NewPersonKey,
+                                        RetrievePartnerShortName(NewPersonKey),
+                                        OtherFamilyKey,
+                                        RetrievePartnerShortName(OtherFamilyKey),
+                                        0,
+                                        "",
+                                        TRemote.MPersonnel.WebConnectors.HasCurrentCommitmentRecord(NewPersonKey),
+                                        @ShowFamilyChangeWarning))
+                                {
+                                    // user chose not to continue
+                                    return;
+                                }
+
+                                // call the server to perform the actual family database change
+                                if (TRemote.MPartner.Partner.WebConnectors.ChangeFamily(NewPersonKey,
+                                        OtherFamilyKey,
+                                        GetFamilyKey(),
+                                        out ProblemMessage,
+                                        out VerificationResult))
+                                {
+                                    // even in case of success there might still be a warning message that needs display
+                                    if (ProblemMessage != "")
+                                    {
+                                        MessageBox.Show(ProblemMessage, Catalog.GetString("Change Family"));
+                                    }
+                                }
+                                else
+                                {
+                                    // can't continue after error
+                                    MessageBox.Show(Messages.BuildMessageFromVerificationResult("Change of family failed!" + Environment.NewLine +
+                                            "Reasons:", VerificationResult));
+                                    MessageBox.Show(ProblemMessage, Catalog.GetString("Change Family"));
+                                    return;
+                                }
+
+                                if (MessageBox.Show(Catalog.GetString("The Family Change is done.\r\n\r\n" +
+                                            "Do you want to see the updated list of Family Members of the Family" +
+                                            "from where the Person record was moved from?"),
+                                        Catalog.GetString("Family ID Change"),
+                                        MessageBoxButtons.YesNo) == DialogResult.Yes)
+                                {
+                                    this.Cursor = Cursors.WaitCursor;
+
+                                    try
+                                    {
+                                        TFrmPartnerEdit frm = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
+
+                                        frm.SetParameters(TScreenMode.smEdit, OtherFamilyKey, TPartnerEditTabPageEnum.petpFamilyMembers);
+                                        frm.Show();
+                                    }
+                                    finally
+                                    {
+                                        this.Cursor = Cursors.Default;
+                                    }
+                                }
+
+                                /* Refresh DataGrid to show the changed Family Members */
+                                RefreshFamilyMembersList(this, null);
+                            }
+                        }
+                        catch (Exception exp)
+                        {
+                            throw new ApplicationException("Exception occured while calling PartnerFindScreen Delegate!",
+                                exp);
+                        }
+                        // end try
+                    }
+                }
             }
         }
 
@@ -808,11 +806,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                     throw new ApplicationException("Delegate FGetLocationKeyOfCurrentlySelectedAddress is not set up");
                 }
 
-				TFrmPartnerEdit frm = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
+                TFrmPartnerEdit frm = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
 
-            	frm.SetParameters(TScreenMode.smNew, "PERSON", -1, -1, "","", false,
-				                  FMainDS.PFamily[0].PartnerKey, FamilysCurrentLocationKey, FamilysCurrentSiteKey);
-            	frm.Show();
+                frm.SetParameters(TScreenMode.smNew, "PERSON", -1, -1, "", "", false,
+                    FMainDS.PFamily[0].PartnerKey, FamilysCurrentLocationKey, FamilysCurrentSiteKey);
+                frm.Show();
             }
         }
 
@@ -827,7 +825,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // reset counter in tab header
             RecalculateTabHeaderCounter();
-            
         }
 
         /// <summary>
@@ -877,7 +874,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // to do if no lines.
         }
-        
+
         /// <summary>
         /// Disables the editing mode of FamilyID column
         /// </summary>
@@ -983,16 +980,16 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>void</returns>
         private Int32 GetFamilyID()
         {
-        	if (GetNumberOfRows() > 0)
-        	{
-	            return Convert.ToInt32(((DataRowView)grdFamilyMembers.SelectedDataRows[0]).Row[PartnerEditTDSFamilyMembersTable.GetFamilyIdDBName()]);
-        	}
-        	else
-        	{
-        		return 0;
-        	}
+            if (GetNumberOfRows() > 0)
+            {
+                return Convert.ToInt32(((DataRowView)grdFamilyMembers.SelectedDataRows[0]).Row[PartnerEditTDSFamilyMembersTable.GetFamilyIdDBName()]);
+            }
+            else
+            {
+                return 0;
+            }
         }
-        
+
         /// <summary>
         /// Returns the number of rows in datagrid (number of Family members)
         /// </summary>
@@ -1002,7 +999,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             return grdFamilyMembers.DataSource.Count;
         }
 
-        
         /// <summary>
         /// todoComment
         /// </summary>
@@ -1016,11 +1012,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (FMainDS.PPartner[0].PartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.FAMILY))
             {
-            	return FMainDS.PPartner[0].PartnerKey;
+                return FMainDS.PPartner[0].PartnerKey;
             }
             else
             {
-            	return FMainDS.PPerson[0].FamilyKey;
+                return FMainDS.PPerson[0].FamilyKey;
             }
         }
 
@@ -1029,7 +1025,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             /* MessageBox.Show('TUC_FamilyMembers.GetPartnerShortName got called'); */
             return FPartnerEditUIConnector.GetPartnerShortName(APartnerKey, out APartnerShortName, out APartnerClass);
         }
-        
+
         private String RetrievePartnerShortName(Int64 APartnerKey)
         {
             String ReturnValue;
@@ -1045,14 +1041,16 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FDelegateGetPartnerShortName(APartnerKey, out PartnerShortName, out PartnerClass);
                     ReturnValue = PartnerShortName;
                 }
-                finally { }
+                finally
+                {
+                }
 
                 /* raise EVerificationMissing.Create('this.FDelegateGetPartnerShortName could not be called!'); */
             }
 
             return ReturnValue;
         }
- 
+
         /// <summary>
         /// Sets up the DataBinding of the Grid.
         ///
@@ -1070,7 +1068,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.grdFamilyMembers.DataSource = new DevAge.ComponentModel.BoundDataView(FFamilyMembersDV);
             this.grdFamilyMembers.Selection.SelectRow(1, true);
         }
- 
+
         /// <summary>
         /// returns true, if DataGrid is created
         /// </summary>
@@ -1096,15 +1094,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             return ReturnValue;
         }
-        
+
         /// <summary>
         /// Sets up the visual appearance of the Grid.
         /// </summary>
         /// <returns>void</returns>
         private void SetupDataGridVisualAppearance()
         {
-            /* 
-             * AutoSize the columns. 
+            /*
+             * AutoSize the columns.
              * This must be done only once, because when running on non-standard Display settings
              * (eg. "Large Fonts (120DPI)"), the SourceGrid gets messed up badly if AutoSizeCells is called
              * again after the initial display!!!
@@ -1122,7 +1120,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             // It is necessary to reassign the width because the columns don't take up the maximum width
             grdFamilyMembers.Width = pnlGridActions.Left - grdFamilyMembers.Left - 8;
         }
-        
+
         /// <summary>
         /// Prepares the arRow buttons, when the FamilyMembers screen is opened first time
         ///
@@ -1151,7 +1149,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
         }
-        
+
         /// <summary>
         /// Sets the ArRowbuttons (Demote,Promote). Disables or enables them. depending
         /// of selected FamilyID.
@@ -1182,7 +1180,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             ApplySecurity();
         }
- 
+
         /// <summary>
         /// Checks if the selected FamilyID is maximum.
         /// </summary>
@@ -1238,9 +1236,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             return ReturnValue;
         }
-        
+
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void RefreshGrid()
         {
@@ -1261,7 +1259,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                             /* DataBinding */
                             DataBindGrid();
-                            
+
                             /* Setup the DataGrid's visual appearance */
                             FDataGridAutoSized = false;  // ensure Columns are Auto-Sized again (needed if there wasn't a Person in the list before)
                             SetupDataGridVisualAppearance();
@@ -1315,7 +1313,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
         }
-        
+
         /// <summary>
         /// procedure grdFamilyMembers_ClickCell(Sender: System.Object; e: SourceGrid.CellContextEventArgs); Sets the ArRowbuttons (Demote,Promote). Disables or enables them. depending of selected FamilyID
         /// </summary>
@@ -1324,12 +1322,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             this.SetArrowButtons();
         }
- 
+
         private void ChangeFamily(Int64 APersonKey, Int64 AOldFamilyKey, Boolean AChangeToThisFamily)
         {
             String LabelStringOut = "";
             String TextBoxStringOut = "";
             String mResultStringLbl = "";
+
             System.Int64 NewFamilyKey = 0;
             String ProblemMessage;
             TVerificationResultCollection VerificationResult;
@@ -1345,114 +1344,111 @@ namespace Ict.Petra.Client.MPartner.Gui
                     return;
                 }
 
-				if (PersonnelChecks.WarnAboutFamilyChange(APersonKey,
-                                                          RetrievePartnerShortName(APersonKey),
-                                                          AOldFamilyKey,
-                                                          RetrievePartnerShortName(AOldFamilyKey),
-                                                          0,
-                                                          "",
-                                                          TRemote.MPersonnel.WebConnectors.HasCurrentCommitmentRecord(APersonKey),
-                                                          @ShowFamilyChangeWarning))
+                if (PersonnelChecks.WarnAboutFamilyChange(APersonKey,
+                        RetrievePartnerShortName(APersonKey),
+                        AOldFamilyKey,
+                        RetrievePartnerShortName(AOldFamilyKey),
+                        0,
+                        "",
+                        TRemote.MPersonnel.WebConnectors.HasCurrentCommitmentRecord(APersonKey),
+                        @ShowFamilyChangeWarning))
                 {
-                	// If the delegate is defined, the host form will launch a Modal Partner Find screen for us
-	                if (TCommonScreensForwarding.OpenPartnerFindScreen != null)
-	                {
-	                    // delegate IS defined
-	                    try
-	                    {
-	                        TCommonScreensForwarding.OpenPartnerFindScreen.Invoke
-	                        	(SharedTypes.PartnerClassEnumToString(TPartnerClass.FAMILY),
-	                             out NewFamilyKey,
-	                             out mResultStringLbl,
-	                             out mResultLocationPK,
-	                             this.ParentForm);
+                    // If the delegate is defined, the host form will launch a Modal Partner Find screen for us
+                    if (TCommonScreensForwarding.OpenPartnerFindScreen != null)
+                    {
+                        // delegate IS defined
+                        try
+                        {
+                            TCommonScreensForwarding.OpenPartnerFindScreen.Invoke
+                                (SharedTypes.PartnerClassEnumToString(TPartnerClass.FAMILY),
+                                out NewFamilyKey,
+                                out mResultStringLbl,
+                                out mResultLocationPK,
+                                this.ParentForm);
 
-	                        
-	                        if (NewFamilyKey != -1)
-	                        {
-	                            TextBoxStringOut = StringHelper.PartnerKeyToStr(NewFamilyKey);
-	                            LabelStringOut = mResultStringLbl;
+                            if (NewFamilyKey != -1)
+                            {
+                                TextBoxStringOut = StringHelper.PartnerKeyToStr(NewFamilyKey);
+                                LabelStringOut = mResultStringLbl;
 
-								if (AOldFamilyKey == NewFamilyKey)
-								{
-									MessageBox.Show(Catalog.GetString("You are trying to move the Person to their existing Family!\r\n"
-									                                  +"This is not allowed. Select a different Family in the Find Screen."),
-                    								Catalog.GetString("Moving to Same Family is Not Allowed"));
-                    					
-									return;
-								}
-								
-								// call the server to perform the actual family database change
-								if (TRemote.MPartner.Partner.WebConnectors.ChangeFamily(APersonKey,
-								                                                         AOldFamilyKey,
-								                                                         NewFamilyKey,
-								                                                         out ProblemMessage,
-								                                                         out VerificationResult))
-								{
-									// even in case of success there might still be a warning message that needs display
-									if (ProblemMessage != "")
-									{
-										MessageBox.Show(ProblemMessage, Catalog.GetString("Change Family"));
-									}
-								}
-								else
-								{
-									// can't continue after error
-			                        MessageBox.Show(Messages.BuildMessageFromVerificationResult("Change of family failed!" + Environment.NewLine +
-			                                "Reasons:", VerificationResult));
-									MessageBox.Show(ProblemMessage, Catalog.GetString("Change Family"));
-									return;
+                                if (AOldFamilyKey == NewFamilyKey)
+                                {
+                                    MessageBox.Show(Catalog.GetString("You are trying to move the Person to their existing Family!\r\n" +
+                                            "This is not allowed. Select a different Family in the Find Screen."),
+                                        Catalog.GetString("Moving to Same Family is Not Allowed"));
 
-								}
+                                    return;
+                                }
 
-								// update family key on display								
-			                    if (FMainDS.PPartner[0].PartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
-			                    {
-			                        FMainDS.PPerson[0].FamilyKey = NewFamilyKey;
-			
-			                        /* Update Family GroupBox */
-			                        txtFamilyPartnerKey.Text = String.Format("{0:0000000000}", NewFamilyKey);
-			                    }
+                                // call the server to perform the actual family database change
+                                if (TRemote.MPartner.Partner.WebConnectors.ChangeFamily(APersonKey,
+                                        AOldFamilyKey,
+                                        NewFamilyKey,
+                                        out ProblemMessage,
+                                        out VerificationResult))
+                                {
+                                    // even in case of success there might still be a warning message that needs display
+                                    if (ProblemMessage != "")
+                                    {
+                                        MessageBox.Show(ProblemMessage, Catalog.GetString("Change Family"));
+                                    }
+                                }
+                                else
+                                {
+                                    // can't continue after error
+                                    MessageBox.Show(Messages.BuildMessageFromVerificationResult("Change of family failed!" + Environment.NewLine +
+                                            "Reasons:", VerificationResult));
+                                    MessageBox.Show(ProblemMessage, Catalog.GetString("Change Family"));
+                                    return;
+                                }
 
-			                    
-				                if (MessageBox.Show(Catalog.GetString("The Family Change is done.\r\n\r\n" +
-				                                                      "Do you want to see the updated list of Family Members of the Family" +
-				                                                      "to which the Partner was moved to?"),
-				                                    Catalog.GetString("Family ID Change"),
-				                                    MessageBoxButtons.YesNo) == DialogResult.Yes)
-				                {
-				                    this.Cursor = Cursors.WaitCursor;
-				        
-				                    try
-				                    {
-				                        TFrmPartnerEdit frm = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
-				        
-				                        frm.SetParameters(TScreenMode.smEdit, NewFamilyKey, TPartnerEditTabPageEnum.petpFamilyMembers);
-				                        frm.Show();
-				                    }
-				                    finally
-				                    {
-				                        this.Cursor = Cursors.Default;
-				                    }
-				                }
-			                    
-			                    /* Refresh DataGrid to show the changed Family Members */
-			                    RefreshFamilyMembersList(this, null);
-	                        }
-	                    }
-	                    catch (Exception exp)
-	                    {
-	                        TextBoxStringOut = "";
-	                        LabelStringOut = "";
-	                        throw new ApplicationException("Exception occured while calling PartnerFindScreen Delegate!",
-	                            exp);
-	                    }
-	                    // end try
-	                }
+                                // update family key on display
+                                if (FMainDS.PPartner[0].PartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
+                                {
+                                    FMainDS.PPerson[0].FamilyKey = NewFamilyKey;
+
+                                    /* Update Family GroupBox */
+                                    txtFamilyPartnerKey.Text = String.Format("{0:0000000000}", NewFamilyKey);
+                                }
+
+                                if (MessageBox.Show(Catalog.GetString("The Family Change is done.\r\n\r\n" +
+                                            "Do you want to see the updated list of Family Members of the Family" +
+                                            "to which the Partner was moved to?"),
+                                        Catalog.GetString("Family ID Change"),
+                                        MessageBoxButtons.YesNo) == DialogResult.Yes)
+                                {
+                                    this.Cursor = Cursors.WaitCursor;
+
+                                    try
+                                    {
+                                        TFrmPartnerEdit frm = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
+
+                                        frm.SetParameters(TScreenMode.smEdit, NewFamilyKey, TPartnerEditTabPageEnum.petpFamilyMembers);
+                                        frm.Show();
+                                    }
+                                    finally
+                                    {
+                                        this.Cursor = Cursors.Default;
+                                    }
+                                }
+
+                                /* Refresh DataGrid to show the changed Family Members */
+                                RefreshFamilyMembersList(this, null);
+                            }
+                        }
+                        catch (Exception exp)
+                        {
+                            TextBoxStringOut = "";
+                            LabelStringOut = "";
+                            throw new ApplicationException("Exception occured while calling PartnerFindScreen Delegate!",
+                                exp);
+                        }
+                        // end try
+                    }
                 }
             }
         }
- 
+
         /// <summary>
         /// returns true if Family has members (in the datagrid)
         /// </summary>
@@ -1479,7 +1475,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             return ReturnValue;
         }
- 
+
         /// <summary>
         /// enables the screenparts, if false, disables.
         /// </summary>
@@ -1494,7 +1490,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.btnAddNewPersonToThisFamily.Enabled = Value;
             ApplySecurity();
         }
- 
+
         /// <summary>
         /// enables the FamilyID edit combobox. This causes no errors, but uses the default list for FamilyID:s (1,2,3,4,5,6,7,8,9,0)
         /// </summary>
@@ -1508,7 +1504,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             FFamilyIDEditor.EditableMode = EditableMode.Focus;
             grdFamilyMembers.Selection.Focus(new Position(RowNumber, grdFamilyMembers.Columns.Count - 1), true);
         }
-        
+
         /// <summary>
         /// Returns the PartnerKey that's selected
         /// </summary>
@@ -1520,7 +1516,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.GetRowSelected(out ARowNumber, out ASiteKey);
             return ARowNumber;
         }
-        
+
         /// <summary>
         /// Finds out the number of row, and it's Partnerkey in datagrid that's selected.
         /// </summary>
@@ -1531,7 +1527,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             DataView AGridDataView;
             AGridDataView = ((DevAge.ComponentModel.BoundDataView)grdFamilyMembers.DataSource).DataView;
             ARowNumber = 0;
-            ASiteKey = Convert.ToInt64(((DataRowView)grdFamilyMembers.SelectedDataRows[0]).Row[PartnerEditTDSFamilyMembersTable.GetPartnerKeyDBName()]);
+            ASiteKey = Convert.ToInt64(
+                ((DataRowView)grdFamilyMembers.SelectedDataRows[0]).Row[PartnerEditTDSFamilyMembersTable.GetPartnerKeyDBName()]);
 
             // goes throuhg the FamilyID:s in datagrid, break when comes to selected.
             for (CurrentRow = 0; CurrentRow <= AGridDataView.Count - 1; CurrentRow += 1)
@@ -1544,7 +1541,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
         }
- 
+
         /// <summary>
         /// Promotes selected ID (and demotes the FamilyID next (up) to selected FamilyID
         /// </summary>
@@ -1594,7 +1591,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 // if pressed No to question below, does nothing.
                 if (MessageBox.Show(Catalog.GetString("Parents should be Family ID 0 or 1 \r\nAre you sure you want to change this Family ID?"),
-                                                      Catalog.GetString("Family ID Change"),
+                        Catalog.GetString("Family ID Change"),
                         Button) == DialogResult.No)
                 {
                     buttonvalue = 1;
@@ -1676,7 +1673,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             System.Object PersonName2 = "";
             Boolean MemberFind;
             MessageBoxButtons Button;
-            
+
             // Get the PartnerKey of the selected Row
             PartnerKey = ((DataRowView)grdFamilyMembers.SelectedDataRows[0]).Row[PartnerEditTDSFamilyMembersTable.GetPartnerKeyDBName()];
             NumberOfRows = GetNumberOfRows();
@@ -1763,7 +1760,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 // now select this person record again to make it easier to move it further in the list
                 SelectPersonInGrid(Convert.ToInt64(PartnerKey));
-                
+
                 MessageBox.Show((StrFamilyIDChangeDone1stLine + "\r\n" + "    " + PersonName1.ToString() + StrFamilyIDChangeDoneWasChangedFrom +
                                  FamilyID.ToString() + StrFamilyIDChangeDoneTo + PreviousFamilyID.ToString() + "\r\n" + "    " +
                                  PersonName2.ToString() +
@@ -1775,7 +1772,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
             }
         }
-        
+
         private void ApplySecurity()
         {
             if (!UserInfo.GUserInfo.IsTableAccessOK(TTableAccessPermission.tapMODIFY, PPersonTable.GetTableDBName()))
@@ -1786,32 +1783,31 @@ namespace Ict.Petra.Client.MPartner.Gui
                 CustomEnablingDisabling.DisableControlGroup(grpFamilyMembersModify);
             }
         }
-        
+
         private bool ShowFamilyChangeWarning(String AMessage)
         {
-        	return (MessageBox.Show(AMessage, Catalog.GetString("Change Family"), MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes);
+            return MessageBox.Show(AMessage, Catalog.GetString("Change Family"), MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes;
         }
- 
+
         /// <summary>
         /// select person row with given partner key
         /// </summary>
         /// <param name="APartnerKey"></param>
         private void SelectPersonInGrid(Int64 APartnerKey)
         {
-        	int NumberOfRows = grdFamilyMembers.Rows.Count;
-        	
+            int NumberOfRows = grdFamilyMembers.Rows.Count;
+
             // loop to set the selected FamilyID to the PreviousFamilyID
             for (int Counter = 1; Counter <= (NumberOfRows); Counter += 1)
             {
-                if (FFamilyMembersDV[Counter-1].Row[PartnerEditTDSFamilyMembersTable.GetPartnerKeyDBName()].ToString() == APartnerKey.ToString())
+                if (FFamilyMembersDV[Counter - 1].Row[PartnerEditTDSFamilyMembersTable.GetPartnerKeyDBName()].ToString() == APartnerKey.ToString())
                 {
-	                grdFamilyMembers.SelectRowInGrid(Counter);
+                    grdFamilyMembers.SelectRowInGrid(Counter);
                     return;
                 }
             }
         }
-        
+
         #endregion
     }
-
 }

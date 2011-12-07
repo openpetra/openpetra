@@ -413,8 +413,8 @@ namespace Ict.Petra.Server.MPartner.Partner
         /// <param name="AProblemMessage">error text if function was not successful</param>
         /// <returns>returns TFamilyIDSuccessEnum value to show if function was successful
         /// </returns>
-        public TFamilyIDSuccessEnum GetNewFamilyID(Int64 AFamilyPartnerKey, 
-			Int32 APreferredFamilyID, out Int32 ANewFamilyID, out String AProblemMessage)
+        public TFamilyIDSuccessEnum GetNewFamilyID(Int64 AFamilyPartnerKey,
+            Int32 APreferredFamilyID, out Int32 ANewFamilyID, out String AProblemMessage)
         {
             TFamilyIDSuccessEnum ReturnValue;
             TDBTransaction ReadTransaction;
@@ -489,7 +489,7 @@ namespace Ict.Petra.Server.MPartner.Partner
             }
             return ReturnValue;
         }
-        
+
         /// <summary>
         /// Get a family ID for a new person in the family
         /// Simply a shortcut for calling the GetAvailableFamilyID function when just
@@ -502,10 +502,10 @@ namespace Ict.Petra.Server.MPartner.Partner
         /// <param name="AProblemMessage">error text if function was not successful</param>
         /// <returns>returns TFamilyIDSuccessEnum value to show if function was successful
         /// </returns>
-        public TFamilyIDSuccessEnum GetNewFamilyID_FamilyChange(Int64 AFamilyPartnerKey, 
-			Int32 APreferredFamilyID,
-			out Int32 ANewFamilyID, 
-			out String AProblemMessage)
+        public TFamilyIDSuccessEnum GetNewFamilyID_FamilyChange(Int64 AFamilyPartnerKey,
+            Int32 APreferredFamilyID,
+            out Int32 ANewFamilyID,
+            out String AProblemMessage)
         {
             TFamilyIDSuccessEnum ReturnValue;
 
@@ -513,21 +513,21 @@ namespace Ict.Petra.Server.MPartner.Partner
 
             if (ReturnValue == TFamilyIDSuccessEnum.fiWarning)
             {
-            	AProblemMessage = String.Format(
-            		Catalog.GetString("The Family ID that the Person had in the former Family could not be \r\n"
-                    + "preserved in the Family that the Person has now joined. \r\n"
-                    + "The reason is: \r\n"
-                    + "    {0} \r\n"
-                    + "Former Family ID: {1} \r\n"
-                    + "New Family ID:    {2}"),
-            		AProblemMessage,
-            		APreferredFamilyID,
-            		ANewFamilyID);
+                AProblemMessage = String.Format(
+                    Catalog.GetString("The Family ID that the Person had in the former Family could not be \r\n" +
+                        "preserved in the Family that the Person has now joined. \r\n" +
+                        "The reason is: \r\n" +
+                        "    {0} \r\n" +
+                        "Former Family ID: {1} \r\n" +
+                        "New Family ID:    {2}"),
+                    AProblemMessage,
+                    APreferredFamilyID,
+                    ANewFamilyID);
             }
+
             return ReturnValue;
         }
-        
-        
+
         /// <summary>
         /// Returns an available FamilyID for a given Family according to certain rules
         /// and specified preferences
@@ -858,14 +858,14 @@ namespace Ict.Petra.Server.MPartner.Partner
 
         #endregion
     }
-    
+
     /// <summary>
     /// class TFamilyHandling
     /// </summary>
     public class TFamilyHandling : object
     {
         #region TFamilyHandling
- 
+
         /// <summary>
         /// performs database changes to move person from current (old) family to new family record
         /// </summary>
@@ -875,8 +875,8 @@ namespace Ict.Petra.Server.MPartner.Partner
         /// <param name="AProblemMessage"></param>
         /// <param name="AVerificationResult"></param>
         /// <returns>true if change of family completed successfully</returns>
-        public static bool ChangeFamily(Int64 APersonKey, Int64 AOldFamilyKey, Int64 ANewFamilyKey, 
-        	out String AProblemMessage, out TVerificationResultCollection AVerificationResult)
+        public static bool ChangeFamily(Int64 APersonKey, Int64 AOldFamilyKey, Int64 ANewFamilyKey,
+            out String AProblemMessage, out TVerificationResultCollection AVerificationResult)
         {
             bool Result = true;
             PFamilyTable OldFamilyDT;
@@ -885,86 +885,87 @@ namespace Ict.Petra.Server.MPartner.Partner
             PPartnerRelationshipTable RelationshipDT;
             PPartnerRelationshipRow RelationshipRow;
             TPartnerFamilyIDHandling FamilyIDHandling;
-			Int32 NewFamilyID;
-			bool SubmissionOK;
-            
-			AVerificationResult = null;
-			
+            Int32 NewFamilyID;
+            bool SubmissionOK;
+
+            AVerificationResult = null;
+
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
             PersonDT = PPersonAccess.LoadByPrimaryKey(APersonKey, Transaction);
 
             FamilyIDHandling = new TPartnerFamilyIDHandling();
-            if (FamilyIDHandling.GetNewFamilyID_FamilyChange(ANewFamilyKey, PersonDT[0].FamilyId, out NewFamilyID, out AProblemMessage) == TFamilyIDSuccessEnum.fiError)
-	        {
-	            // this should not really happen  but we cannot continue if it does
-	            Result = false;
-	        }
+
+            if (FamilyIDHandling.GetNewFamilyID_FamilyChange(ANewFamilyKey, PersonDT[0].FamilyId, out NewFamilyID,
+                    out AProblemMessage) == TFamilyIDSuccessEnum.fiError)
+            {
+                // this should not really happen  but we cannot continue if it does
+                Result = false;
+            }
 
             if (Result)
             {
-	            // reset family id and family key for person
-	            PersonDT[0].FamilyId = NewFamilyID;
-	            PersonDT[0].FamilyKey = ANewFamilyKey; 
-	            SubmissionOK = PPersonAccess.SubmitChanges(PersonDT, Transaction, out AVerificationResult);
-	            
-	            if (!SubmissionOK)
-	            {
-	            	Result = false;
-	            }
+                // reset family id and family key for person
+                PersonDT[0].FamilyId = NewFamilyID;
+                PersonDT[0].FamilyKey = ANewFamilyKey;
+                SubmissionOK = PPersonAccess.SubmitChanges(PersonDT, Transaction, out AVerificationResult);
 
-            	// reset family members flag in old family if this person was the last family member
-	            if (   Result 
-            	    && (PPersonAccess.CountViaPFamily(AOldFamilyKey, Transaction) == 0))
-	            {
-	            	OldFamilyDT = PFamilyAccess.LoadByPrimaryKey(AOldFamilyKey, Transaction);
-	            	OldFamilyDT[0].FamilyMembers = false;
-	                SubmissionOK = PFamilyAccess.SubmitChanges(OldFamilyDT, Transaction, out AVerificationResult);;
+                if (!SubmissionOK)
+                {
+                    Result = false;
+                }
 
-		            if (!SubmissionOK)
-		            {
-		            	Result = false;
-		            }
-	            }
+                // reset family members flag in old family if this person was the last family member
+                if (Result
+                    && (PPersonAccess.CountViaPFamily(AOldFamilyKey, Transaction) == 0))
+                {
+                    OldFamilyDT = PFamilyAccess.LoadByPrimaryKey(AOldFamilyKey, Transaction);
+                    OldFamilyDT[0].FamilyMembers = false;
+                    SubmissionOK = PFamilyAccess.SubmitChanges(OldFamilyDT, Transaction, out AVerificationResult);;
 
-	            if (Result)
-	            {
-		        	// remove relationships between person and old family
-		        	PPartnerRelationshipAccess.DeleteByPrimaryKey(AOldFamilyKey, "FAMILY", APersonKey, Transaction);
-	            
-		        	// set family members flag for new family as there is now at least one member
-		        	NewFamilyDT = PFamilyAccess.LoadByPrimaryKey(ANewFamilyKey, Transaction);
-		        	NewFamilyDT[0].FamilyMembers = true;
-	                SubmissionOK = PFamilyAccess.SubmitChanges(NewFamilyDT, Transaction, out AVerificationResult);;
+                    if (!SubmissionOK)
+                    {
+                        Result = false;
+                    }
+                }
 
-		            if (!SubmissionOK)
-		            {
-		            	Result = false;
-		            }
-	            }
+                if (Result)
+                {
+                    // remove relationships between person and old family
+                    PPartnerRelationshipAccess.DeleteByPrimaryKey(AOldFamilyKey, "FAMILY", APersonKey, Transaction);
 
-                
-	        	// create relationship between person and new family
-	        	if (   Result
-	        	    && (!PPartnerRelationshipAccess.Exists(ANewFamilyKey, "FAMILY", APersonKey, Transaction)))
-	        	{
-	        		RelationshipDT = new PPartnerRelationshipTable();
-		        	RelationshipRow = RelationshipDT.NewRowTyped(true);
-		        	RelationshipRow.PartnerKey   = ANewFamilyKey;
-		        	RelationshipRow.RelationKey  = APersonKey;
-		        	RelationshipRow.RelationName = "FAMILY";
-		        	RelationshipRow.Comment      = "System Generated";
+                    // set family members flag for new family as there is now at least one member
+                    NewFamilyDT = PFamilyAccess.LoadByPrimaryKey(ANewFamilyKey, Transaction);
+                    NewFamilyDT[0].FamilyMembers = true;
+                    SubmissionOK = PFamilyAccess.SubmitChanges(NewFamilyDT, Transaction, out AVerificationResult);;
+
+                    if (!SubmissionOK)
+                    {
+                        Result = false;
+                    }
+                }
+
+                // create relationship between person and new family
+                if (Result
+                    && (!PPartnerRelationshipAccess.Exists(ANewFamilyKey, "FAMILY", APersonKey, Transaction)))
+                {
+                    RelationshipDT = new PPartnerRelationshipTable();
+                    RelationshipRow = RelationshipDT.NewRowTyped(true);
+                    RelationshipRow.PartnerKey = ANewFamilyKey;
+                    RelationshipRow.RelationKey = APersonKey;
+                    RelationshipRow.RelationName = "FAMILY";
+                    RelationshipRow.Comment = "System Generated";
 
                     RelationshipDT.Rows.Add(RelationshipRow);
-	                SubmissionOK = PPartnerRelationshipAccess.SubmitChanges(RelationshipDT, Transaction, out AVerificationResult);
+                    SubmissionOK = PPartnerRelationshipAccess.SubmitChanges(RelationshipDT, Transaction, out AVerificationResult);
 
-		            if (!SubmissionOK)
-		            {
-		            	Result = false;
-		            }
-	        	}
+                    if (!SubmissionOK)
+                    {
+                        Result = false;
+                    }
+                }
             }
-            
+
             if (Result)
             {
                 DBAccess.GDBAccessObj.CommitTransaction();
@@ -976,8 +977,7 @@ namespace Ict.Petra.Server.MPartner.Partner
 
             return Result;
         }
- 
+
         #endregion
     }
-    
 }

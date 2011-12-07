@@ -839,8 +839,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
 
             return true;
         }
-        
-        
+
         /// <summary>
         /// Gets the family partner key of a person record.
         /// This function should only be called for partners of type person.
@@ -859,12 +858,12 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
             ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
-            
+
             PPersonTable PersonDT = new PPersonTable();
 
             try
             {
-	            PersonDT = PPersonAccess.LoadByPrimaryKey(APersonKey, ReadTransaction);
+                PersonDT = PPersonAccess.LoadByPrimaryKey(APersonKey, ReadTransaction);
             }
             finally
             {
@@ -876,17 +875,16 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
 
             if (PersonDT.Rows.Count == 1)
             {
-            	ReturnValue = ((PPersonRow)PersonDT.Rows[0]).FamilyKey;
+                ReturnValue = ((PPersonRow)PersonDT.Rows[0]).FamilyKey;
             }
             else
             {
-	            // we don't have a valid partner key
-	            throw new ApplicationException(
-	                "TPartnerServerLookups.GetFamilyKeyForPerson: The partner key is not valid!");
+                // we don't have a valid partner key
+                throw new ApplicationException(
+                    "TPartnerServerLookups.GetFamilyKeyForPerson: The partner key is not valid!");
             }
 
             return ReturnValue;
-            
         }
     }
 }

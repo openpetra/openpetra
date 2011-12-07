@@ -165,15 +165,15 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.Template.AddToCodelet("INITUSERCONTROLS", "this.AcceptButton = " + ctrl.controlName + ";" + Environment.NewLine);
             }
 
-			if (ctrl.HasAttribute("NoLabel") && (ctrl.GetAttribute("NoLabel").ToLower() == "true"))
+            if (ctrl.HasAttribute("NoLabel") && (ctrl.GetAttribute("NoLabel").ToLower() == "true"))
             {
-				writer.SetControlProperty(ctrl, "Text", "\"\"");
-			}
-			else
-			{
-				writer.SetControlProperty(ctrl, "Text", "\"" + ctrl.Label + "\"");
-			}
-            
+                writer.SetControlProperty(ctrl, "Text", "\"\"");
+            }
+            else
+            {
+                writer.SetControlProperty(ctrl, "Text", "\"" + ctrl.Label + "\"");
+            }
+
             return writer.FTemplate;
         }
     }
