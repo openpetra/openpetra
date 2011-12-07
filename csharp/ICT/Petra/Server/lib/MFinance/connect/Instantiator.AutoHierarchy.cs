@@ -1478,6 +1478,17 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Budget.WebConnectors
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector), "SaveBudget", ";BUDGETTDS;TVERIFICATIONRESULTCOLLECTION;");
             return Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector.SaveBudget(ref AInspectDS, out AVerificationResult);
         }
+
+        /// generated method from connector
+        public System.Boolean ImportBudgets(Int32 ALedgerNumber,
+                                            System.String ACSVFileName,
+                                            System.String[] AFdlgSeparator,
+                                            ref BudgetTDS AImportDS,
+                                            out TVerificationResultCollection AVerificationResult)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector), "ImportBudgets", ";INT;STRING;STRING.ARRAY;BUDGETTDS;TVERIFICATIONRESULTCOLLECTION;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector.ImportBudgets(ALedgerNumber, ACSVFileName, AFdlgSeparator, ref AImportDS, out AVerificationResult);
+        }
     }
 }
 

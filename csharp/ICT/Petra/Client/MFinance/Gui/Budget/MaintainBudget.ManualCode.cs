@@ -25,6 +25,7 @@ using System;
 using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
+using System.IO;
 using System.Windows.Forms;
 using System.Data;
 using System.Threading;
@@ -34,6 +35,7 @@ using System.Collections.Specialized;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Data;
+using Ict.Common.IO;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Client;
 using Ict.Common.Remoting.Shared;
@@ -56,6 +58,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         
         private Int32 CurrentBudgetYear;
         private bool LoadCompleted = false;
+        private TDlgSelectCSVSeparator FdlgSeparator;
 
         /// <summary>
         /// AP is opened in this ledger
@@ -260,6 +263,75 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             }
         }
 
+        private void ImportBudget(System.Object sender, EventArgs e)
+        {
+            bool ok = false;
+
+            if (FPetraUtilsObject.HasChanges)
+            {
+                // saving failed, therefore do not try to post
+                MessageBox.Show(Catalog.GetString("Please save before calling this function!"), Catalog.GetString(
+                        "Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
+            OpenFileDialog dialog = new OpenFileDialog();
+
+            dialog.FileName = TUserDefaults.GetStringDefault("Imp Filename",
+                TClientSettings.GetExportPath() + Path.DirectorySeparatorChar + "import.csv");
+
+            dialog.Title = Catalog.GetString("Import budget(s) from csv file");
+            dialog.Filter = Catalog.GetString("Budget files (*.csv)|*.csv");
+            String impOptions = TUserDefaults.GetStringDefault("Imp Options", ";American");
+
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                FdlgSeparator = new TDlgSelectCSVSeparator(false);
+                FdlgSeparator.CSVFileName = dialog.FileName;
+
+                FdlgSeparator.DateFormat = dateFormatString;
+
+                if (impOptions.Length > 1)
+                {
+                    FdlgSeparator.NumberFormatIndex = impOptions.Substring(1) == "American" ? 0 : 1;
+                }
+
+                FdlgSeparator.SelectedSeparator = impOptions.Substring(0, 1);
+
+                if (FdlgSeparator.ShowDialog() == DialogResult.OK)
+                {
+                    String importString;
+                    TVerificationResultCollection AMessages;
+
+                    importString = File.ReadAllText(dialog.FileName);
+
+                    string[] FdlgSeparatorVal = new string[] {FdlgSeparator.SelectedSeparator, FdlgSeparator.DateFormat, FdlgSeparator.NumberFormatIndex.ToString()};
+                    
+	                MessageBox.Show(importString);
+                    ok = TRemote.MFinance.Budget.WebConnectors.ImportBudgets(FLedgerNumber, dialog.FileName, FdlgSeparatorVal, ref FMainDS, out AMessages);
+                    //ShowMessages(AMessages);
+                }
+
+                
+                if (ok)
+                {
+                    MessageBox.Show(Catalog.GetString("Your data was imported successfully!"),
+	                    Catalog.GetString("Success"),
+	                    MessageBoxButtons.OK,
+	                    MessageBoxIcon.Information);
+				        grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABudget.DefaultView);
+				        grdDetails.Refresh();
+				        //SelectDetailRowByDataTableIndex(FMainDS.ABudget.Rows.Count - 1);
+                    //SaveUserDefaults(dialog, impOptions);
+                    //FLoadedData = TFinanceBatchFilterEnum.fbfNone;
+                    //LoadBatches(FLedgerNumber);
+                    FPetraUtilsObject.SetChangedFlag();
+                }
+            }
+            
+        }
+        
         private void DeleteBudgetPeriodData(int ABudgetSequence)
         {
             ABudgetPeriodRow BudgetPeriodRow = null;
