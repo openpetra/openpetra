@@ -101,7 +101,7 @@ namespace Ict.Common.Controls
         /// <summary>
         /// which columns to search
         /// </summary>
-        protected StringCollection FColumnsToSearch;
+        protected StringCollection FColumnsToSearch = null;
 
         /// <summary>
         /// This property determines which column should be sorted. This may be esential
@@ -458,7 +458,18 @@ namespace Ict.Common.Controls
         /// <returns>void</returns>
         protected override void OnDataSourceChanged(System.EventArgs e)
         {
-            this.CheckColumnStringCollection();
+            if ((DisplayMember == null) || (DisplayMember.Length == 0))
+            {
+                throw new Exception(
+                    "cmbAutoComplete: need to first initialise the DisplayMember and the ValueMember before assigning the DataSource!");
+            }
+
+            // If the FColumnsToString collection has not yet initialized it must be done now.
+            if ((this.FColumnsToSearch == null) || (this.FColumnsToSearch.Count < 1))
+            {
+                this.ColumnsToSearch = FColumnsToSearchDesignTime;
+            }
+
             base.OnDataSourceChanged(e);
         }
 
@@ -777,51 +788,6 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
-        /// This function check the string collection of Columns to search against the
-        /// datasource given to the combobox.
-        ///
-        /// </summary>
-        /// <returns>void</returns>
-        private void CheckColumnStringCollection()
-        {
-            // Get the DataColumns of the DataSource
-            DataColumnCollection mColumns = ((System.Data.DataView)DataSource).Table.Columns;
-
-            // If the FColumnsToString collection has not yet initialized it must be done now.
-            if ((this.FColumnsToSearch == null) || (this.FColumnsToSearch.Count < 1))
-            {
-                this.ColumnsToSearch = "";
-            }
-
-            StringCollection mStringCollection = this.FColumnsToSearch;
-
-            // Put the Columnnames of the DataSource into a StringCollection
-            StringCollection mColumnNamesCollection = new System.Collections.Specialized.StringCollection();
-
-            foreach (DataColumn mColumn in mColumns)
-            {
-                if (!(mColumnNamesCollection.Contains(mColumn.ColumnName)))
-                {
-                    mColumnNamesCollection.Add(mColumn.ColumnName);
-                }
-            }
-
-            mColumnNamesCollection.Add(StrValueMember);
-            mColumnNamesCollection.Add(StrDisplayMember);
-
-            // Remove fishy columns
-            foreach (string mString in mStringCollection)
-            {
-                if (!(mColumnNamesCollection.Contains(mString)))
-                {
-                    mStringCollection.Remove(mString);
-                }
-            }
-
-            this.FColumnsToSearch = mStringCollection;
-        }
-
-        /// <summary>
         /// This function returns the index of the combobox items with the following
         /// characteristics:
         /// - item is exactly the searched String and in the given column (value column)
@@ -1008,7 +974,8 @@ namespace Ict.Common.Controls
 
                 for (System.Int32 ColumnIndex = 0; ColumnIndex <= TmpRowView.DataView.Table.Columns.Count - 1; ColumnIndex += 1)
                 {
-                    if (TmpRowView[ColumnIndex].GetType() == typeof(String))
+                    if (this.FColumnsToSearch.Contains(TmpRowView.DataView.Table.Columns[ColumnIndex].ColumnName)
+                        && (TmpRowView[ColumnIndex].GetType() == typeof(String)))
                     {
                         string ItemString = TmpRowView[ColumnIndex].ToString().ToUpper();
 
@@ -1030,8 +997,6 @@ namespace Ict.Common.Controls
 
             return BestMatch;
         }
-
-        // End of function
 
         /// <summary>
         /// This function searches the ObjectCollection of a given ComboBox for a
@@ -1367,7 +1332,15 @@ namespace Ict.Common.Controls
         public bool SetSelectedString(String AStr, Int32 ADefaultIndex)
         {
             Int32 PreviousSelectedIndex = SelectedIndex;
+
+            // FindStringExact looks for the displayed value only
             Int32 NewSelectedIndex = this.FindStringExact(AStr);
+
+            if ((NewSelectedIndex == -1) && (Items.Count > 0))
+            {
+                // now search the value members as well
+                NewSelectedIndex = FindStringInComboBox(AStr);
+            }
 
             if ((NewSelectedIndex == -1) && (Items.Count > 0))
             {

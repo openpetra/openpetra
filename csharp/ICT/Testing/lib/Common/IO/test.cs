@@ -121,6 +121,8 @@ namespace Ict.Common.IO.Testing
         [Test]
         public void TestCSVWriter()
         {
+            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+
             XmlDocument doc = CreateTestDoc();
             // now test the csv file
             string filename = PathToTestData + "test.csv";
