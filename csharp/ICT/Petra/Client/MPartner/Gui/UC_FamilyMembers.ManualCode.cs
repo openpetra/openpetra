@@ -69,7 +69,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         private TDelegateGetPartnerShortName FDelegateGetPartnerShortName;
         private TDelegateIsNewPartner FDelegateIsNewPartner;
         private TDelegateGetLocationRowOfCurrentlySelectedAddress FDelegateGetLocationRowOfCurrentlySelectedAddress;
-        private TEnableDisableScreenPartsEventHandler FEnableDisableOtherScreenParts;
 
         private Boolean FFamilyMembersExist;
 
@@ -161,18 +160,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void RethrowRecalculateScreenParts(System.Object sender, TRecalculateScreenPartsEventArgs e)
         {
             OnRecalculateScreenParts(e);
-        }
-
-        /// <summary>
-        /// calls FEnableDisableOtherScreenParts, if assigned
-        /// </summary>
-        /// <returns>void</returns>
-        protected void OnEnableDisableOtherScreenParts(TEnableDisableEventArgs e)
-        {
-            if (FEnableDisableOtherScreenParts != null)
-            {
-                FEnableDisableOtherScreenParts(this, e);
-            }
         }
 
         /// <summary>
@@ -485,7 +472,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (FDeadlineEditMode)
             {
                 this.EnableScreenParts(!FDeadlineEditMode);
-                OnEnableDisableOtherScreenParts(new TEnableDisableEventArgs(!FDeadlineEditMode));
                 btnEditFamilyID.Focus();
 
                 /* looks stupid, but is necessary when the keyboard is used! */
@@ -501,7 +487,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 /* looks stupid, but is necessary when the keyboard is used! */
                 btnEditFamilyID.Text = Catalog.GetString("Manual Edit");
                 this.EnableScreenParts(!FDeadlineEditMode);
-                OnEnableDisableOtherScreenParts(new TEnableDisableEventArgs(!FDeadlineEditMode));
                 DisableEditing();
                 this.PrepareArrowButtons();
             }
@@ -1325,8 +1310,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void ChangeFamily(Int64 APersonKey, Int64 AOldFamilyKey, Boolean AChangeToThisFamily)
         {
-            String LabelStringOut = "";
-            String TextBoxStringOut = "";
             String mResultStringLbl = "";
 
             System.Int64 NewFamilyKey = 0;
@@ -1368,9 +1351,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                             if (NewFamilyKey != -1)
                             {
-                                TextBoxStringOut = StringHelper.PartnerKeyToStr(NewFamilyKey);
-                                LabelStringOut = mResultStringLbl;
-
                                 if (AOldFamilyKey == NewFamilyKey)
                                 {
                                     MessageBox.Show(Catalog.GetString("You are trying to move the Person to their existing Family!\r\n" +
@@ -1438,8 +1418,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                         }
                         catch (Exception exp)
                         {
-                            TextBoxStringOut = "";
-                            LabelStringOut = "";
                             throw new ApplicationException("Exception occured while calling PartnerFindScreen Delegate!",
                                 exp);
                         }
