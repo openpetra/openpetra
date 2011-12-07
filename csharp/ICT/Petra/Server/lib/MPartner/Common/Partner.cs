@@ -136,7 +136,7 @@ namespace Ict.Petra.Server.MPartner.Partner
 
             if (FamilyDT.Rows.Count != 0)
             {
-                if (AListAvailableIDs)
+                if (!AListAvailableIDs)
                 {
                     // "Basic checks"  these need no upanddown traversal of already used FamilyID's (included only for speedup here)
                     NumRecords = PPersonAccess.CountViaPFamily(AFamilyPartnerKey, AReadTransaction);
