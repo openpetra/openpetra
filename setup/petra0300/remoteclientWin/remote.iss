@@ -31,7 +31,8 @@ Name: {userappdata}/OpenPetra{#ORGNAME}/tmp30/export; permissions: users-full
 
 [Files]
 Source: ..\..\..\csharp\ThirdParty\DevAge\SourceGrid.dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
-Source: ..\..\..\csharp\ThirdParty\SQLite\System.Data.SQLite.dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ThirdParty\SQLite\Mono.Data.Sqlite.dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ThirdParty\SQLite\sqlite3.dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
 Source: ..\..\..\csharp\ThirdParty\ICSharpCode\ICSharpCode.SharpZipLib.dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
 Source: ..\..\..\csharp\ThirdParty\GNU\GNU.Gettext.dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
 Source: ..\..\..\csharp\ThirdParty\Npgsql\Npgsql.dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion

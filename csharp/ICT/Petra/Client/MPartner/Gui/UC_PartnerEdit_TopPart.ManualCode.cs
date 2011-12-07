@@ -47,11 +47,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>todoComment</summary>
         public String PartnerClass;
     }
-   
+
     /// <summary>Event handler declaration</summary>
     public delegate void TPartnerClassMainDataChangedHandler(System.Object Sender, TPartnerClassMainDataChangedEventArgs e);
-	
-	
+
+
     public partial class TUC_PartnerEdit_TopPart
     {
         #region Fields
@@ -69,7 +69,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         // </summary>
         // <remarks>The Partner Edit screen acts on that Delegate and opens the corresponding screen.</remarks>
         private TDelegateMaintainWorkerField FDelegateMaintainWorkerField;
-        
+
         #endregion
 
         #region Events
@@ -283,11 +283,11 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void ShowDataManual(PPartnerRow ARow)
         {
-        	// Ensure that the PartnerKey, which is the PrimaryKey of the p_partner Table, is always read-only
-        	// (Read-Only gets set to false in ShowData() for a NEW Partner because it is the PrimaryKey).
-        	txtPartnerKey.ReadOnly = true;
+            // Ensure that the PartnerKey, which is the PrimaryKey of the p_partner Table, is always read-only
+            // (Read-Only gets set to false in ShowData() for a NEW Partner because it is the PrimaryKey).
+            txtPartnerKey.ReadOnly = true;
         }
-        
+
         private void GetDataFromControlsExtra(PPartnerRow ARow)
         {
             /*
@@ -606,14 +606,14 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void MaintainWorkerField(System.Object sender, System.EventArgs e)
         {
-			if (this.FDelegateMaintainWorkerField != null)
-			{
-			      this.FDelegateMaintainWorkerField();
-			}
-			else
-			{
-			    throw new EVerificationMissing(Catalog.GetString("FDelegateMaintainWorkerField"));
-			}
+            if (this.FDelegateMaintainWorkerField != null)
+            {
+                this.FDelegateMaintainWorkerField();
+            }
+            else
+            {
+                throw new EVerificationMissing(Catalog.GetString("FDelegateMaintainWorkerField"));
+            }
         }
 
         #endregion

@@ -48,8 +48,8 @@ public partial class MainForm : Form
 //            MessageBox.Show("BEFORE initialising Control values");
         this.txtDecimal.NumberValueDouble = 1234.21;
         this.txtCurrency.NumberValueDouble = 77.86;
-        this.txtInteger.NumberValueInt = 2147483647;			// highest allowed value
-        this.txtLongInteger.NumberValueLongInt = 9223372036854775807;	// highest allowed value
+        this.txtInteger.NumberValueInt = 2147483647;                    // highest allowed value
+        this.txtLongInteger.NumberValueLongInt = 9223372036854775807;   // highest allowed value
 //            MessageBox.Show("AFTER initialising Control values");
     }
 
@@ -116,7 +116,7 @@ public partial class MainForm : Form
         {
             txtInteger.NumberValueInt = 81;
         }
-        
+
         if (txtLongInteger.NumberValueLongInt != null)
         {
             txtLongInteger.NumberValueLongInt = txtLongInteger.NumberValueLongInt + 8;
@@ -124,7 +124,7 @@ public partial class MainForm : Form
         else
         {
             txtLongInteger.NumberValueInt = 101;
-        }        
+        }
     }
 
     private void button4_Click(object sender, EventArgs e)

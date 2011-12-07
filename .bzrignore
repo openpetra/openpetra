@@ -13,6 +13,8 @@ setup/petra0300/*.db
 db/basedb_progress
 *.ico.gif
 *.local
+*.local.ben.xml
+demodata/generated
 OpenPetra.build.config
 *.exe.config
 /etc/*.config

@@ -1768,7 +1768,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     ReturnValue = true;
                 }
 
-				if ((NumberFormat == "Decimal")
+                if ((NumberFormat == "Decimal")
                     || (NumberFormat == "PercentDecimal")
                     || (NumberFormat.StartsWith("Decimal("))
                     || (NumberFormat.StartsWith("PercentDecimal(")))
@@ -1853,14 +1853,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
                 else
                 {
-					if (FControlMode == "Integer")                	
-					{
-                    	return ctrl.controlName + ".NumberValueInt = null;";
-					}
-					else
-					{
-						return ctrl.controlName + ".NumberValueLongInt = null;";
-					}
+                    if (FControlMode == "Integer")
+                    {
+                        return ctrl.controlName + ".NumberValueInt = null;";
+                    }
+                    else
+                    {
+                        return ctrl.controlName + ".NumberValueLongInt = null;";
+                    }
                 }
             }
             else
@@ -1882,7 +1882,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     }
 
                     return ctrl.controlName + ".NumberValueLongInt = " + AFieldOrNull + ";";
-                }                
+                }
                 else if (AFieldTypeDotNet.ToLower().Contains("decimal"))
                 {
                     if (AFieldOrNull == null)
@@ -1922,13 +1922,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
                 else
                 {
-                	if (FControlMode == "Integer")
-                	{
-                		return ctrl.controlName + ".NumberValueInt == null";	
-                	}
+                    if (FControlMode == "Integer")
+                    {
+                        return ctrl.controlName + ".NumberValueInt == null";
+                    }
                     else
                     {
-                    	return ctrl.controlName + ".NumberValueLongInt == null";	
+                        return ctrl.controlName + ".NumberValueLongInt == null";
                     }
                 }
             }

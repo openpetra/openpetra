@@ -146,9 +146,9 @@ namespace Ict.Tools.DevelopersAssistant
             this.groupBox3.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
-            // 
+            //
             // tabControl
-            // 
+            //
             this.tabControl.Controls.Add(this.TaskPage);
             this.tabControl.Controls.Add(this.DatabasePage);
             this.tabControl.Controls.Add(this.OutputPage);
@@ -158,9 +158,9 @@ namespace Ict.Tools.DevelopersAssistant
             this.tabControl.SelectedIndex = 0;
             this.tabControl.Size = new System.Drawing.Size(741, 482);
             this.tabControl.TabIndex = 0;
-            // 
+            //
             // TaskPage
-            // 
+            //
             this.TaskPage.Controls.Add(this.linkLabelBazaar);
             this.TaskPage.Controls.Add(this.linkLabelBranchLocation);
             this.TaskPage.Controls.Add(this.txtBranchLocation);
@@ -174,9 +174,9 @@ namespace Ict.Tools.DevelopersAssistant
             this.TaskPage.TabIndex = 0;
             this.TaskPage.Text = "Tasks";
             this.TaskPage.UseVisualStyleBackColor = true;
-            // 
+            //
             // linkLabelBazaar
-            // 
+            //
             this.linkLabelBazaar.AutoSize = true;
             this.linkLabelBazaar.Enabled = false;
             this.linkLabelBazaar.Location = new System.Drawing.Point(574, 34);
@@ -186,9 +186,9 @@ namespace Ict.Tools.DevelopersAssistant
             this.linkLabelBazaar.TabStop = true;
             this.linkLabelBazaar.Text = "Open Bazaar Explorer here";
             this.linkLabelBazaar.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelBazaar_LinkClicked);
-            // 
+            //
             // linkLabelBranchLocation
-            // 
+            //
             this.linkLabelBranchLocation.AutoSize = true;
             this.linkLabelBranchLocation.Location = new System.Drawing.Point(90, 34);
             this.linkLabelBranchLocation.Name = "linkLabelBranchLocation";
@@ -196,31 +196,34 @@ namespace Ict.Tools.DevelopersAssistant
             this.linkLabelBranchLocation.TabIndex = 2;
             this.linkLabelBranchLocation.TabStop = true;
             this.linkLabelBranchLocation.Text = "Change the branch location";
-            this.linkLabelBranchLocation.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelBranchLocation_LinkClicked);
-            // 
+            this.linkLabelBranchLocation.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(
+                this.linkLabelBranchLocation_LinkClicked);
+            //
             // txtBranchLocation
-            // 
-            this.txtBranchLocation.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            //
+            this.txtBranchLocation.Anchor =
+                ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) |
+                                                      System.Windows.Forms.AnchorStyles.Right)));
             this.txtBranchLocation.Location = new System.Drawing.Point(93, 11);
             this.txtBranchLocation.Name = "txtBranchLocation";
             this.txtBranchLocation.ReadOnly = true;
             this.txtBranchLocation.Size = new System.Drawing.Size(615, 20);
             this.txtBranchLocation.TabIndex = 1;
-            // 
+            //
             // label1
-            // 
+            //
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(6, 14);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(81, 13);
             this.label1.TabIndex = 0;
             this.label1.Text = "Branch location";
-            // 
+            //
             // grpMultiple
-            // 
-            this.grpMultiple.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            //
+            this.grpMultiple.Anchor =
+                ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) |
+                                                      System.Windows.Forms.AnchorStyles.Right)));
             this.grpMultiple.AutoSize = true;
             this.grpMultiple.Controls.Add(this.btnRunAltSequence);
             this.grpMultiple.Controls.Add(this.linkModifyAltSequence);
@@ -236,9 +239,9 @@ namespace Ict.Tools.DevelopersAssistant
             this.grpMultiple.TabIndex = 4;
             this.grpMultiple.TabStop = false;
             this.grpMultiple.Text = "Multiple Tasks";
-            // 
+            //
             // btnRunAltSequence
-            // 
+            //
             this.btnRunAltSequence.Location = new System.Drawing.Point(203, 349);
             this.btnRunAltSequence.Name = "btnRunAltSequence";
             this.btnRunAltSequence.Size = new System.Drawing.Size(100, 23);
@@ -246,9 +249,9 @@ namespace Ict.Tools.DevelopersAssistant
             this.btnRunAltSequence.Text = "Run Sequence";
             this.btnRunAltSequence.UseVisualStyleBackColor = true;
             this.btnRunAltSequence.Click += new System.EventHandler(this.btnRunAltSequence_Click);
-            // 
+            //
             // linkModifyAltSequence
-            // 
+            //
             this.linkModifyAltSequence.AutoSize = true;
             this.linkModifyAltSequence.Location = new System.Drawing.Point(32, 354);
             this.linkModifyAltSequence.Name = "linkModifyAltSequence";
@@ -256,10 +259,11 @@ namespace Ict.Tools.DevelopersAssistant
             this.linkModifyAltSequence.TabIndex = 6;
             this.linkModifyAltSequence.TabStop = true;
             this.linkModifyAltSequence.Text = "Modify sequence";
-            this.linkModifyAltSequence.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkModifyAltSequence_LinkClicked);
-            // 
+            this.linkModifyAltSequence.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(
+                this.linkModifyAltSequence_LinkClicked);
+            //
             // txtAltSequence
-            // 
+            //
             this.txtAltSequence.Location = new System.Drawing.Point(17, 228);
             this.txtAltSequence.Multiline = true;
             this.txtAltSequence.Name = "txtAltSequence";
@@ -267,18 +271,18 @@ namespace Ict.Tools.DevelopersAssistant
             this.txtAltSequence.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtAltSequence.Size = new System.Drawing.Size(286, 115);
             this.txtAltSequence.TabIndex = 5;
-            // 
+            //
             // label10
-            // 
+            //
             this.label10.AutoSize = true;
             this.label10.Location = new System.Drawing.Point(14, 212);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(140, 13);
             this.label10.TabIndex = 4;
             this.label10.Text = "Alternate Sequence (Alt+F5)";
-            // 
+            //
             // btnRunSequence
-            // 
+            //
             this.btnRunSequence.Location = new System.Drawing.Point(203, 160);
             this.btnRunSequence.Name = "btnRunSequence";
             this.btnRunSequence.Size = new System.Drawing.Size(100, 23);
@@ -286,9 +290,9 @@ namespace Ict.Tools.DevelopersAssistant
             this.btnRunSequence.Text = "Run Sequence";
             this.btnRunSequence.UseVisualStyleBackColor = true;
             this.btnRunSequence.Click += new System.EventHandler(this.btnRunSequence_Click);
-            // 
+            //
             // linkModifySequence
-            // 
+            //
             this.linkModifySequence.AutoSize = true;
             this.linkModifySequence.Location = new System.Drawing.Point(32, 165);
             this.linkModifySequence.Name = "linkModifySequence";
@@ -297,9 +301,9 @@ namespace Ict.Tools.DevelopersAssistant
             this.linkModifySequence.TabStop = true;
             this.linkModifySequence.Text = "Modify sequence";
             this.linkModifySequence.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkModifySequence_LinkClicked);
-            // 
+            //
             // txtSequence
-            // 
+            //
             this.txtSequence.Location = new System.Drawing.Point(17, 39);
             this.txtSequence.Multiline = true;
             this.txtSequence.Name = "txtSequence";
@@ -307,20 +311,21 @@ namespace Ict.Tools.DevelopersAssistant
             this.txtSequence.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtSequence.Size = new System.Drawing.Size(286, 115);
             this.txtSequence.TabIndex = 1;
-            // 
+            //
             // label9
-            // 
+            //
             this.label9.AutoSize = true;
             this.label9.Location = new System.Drawing.Point(14, 23);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(121, 13);
             this.label9.TabIndex = 0;
             this.label9.Text = "Standard sequence (F5)";
-            // 
+            //
             // grpSingle
-            // 
-            this.grpSingle.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)));
+            //
+            this.grpSingle.Anchor =
+                ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) |
+                                                      System.Windows.Forms.AnchorStyles.Left)));
             this.grpSingle.AutoSize = true;
             this.grpSingle.Controls.Add(this.chkStartClientAfterGenerateWinform);
             this.grpSingle.Controls.Add(this.chkCompileWinform);
@@ -343,16 +348,20 @@ namespace Ict.Tools.DevelopersAssistant
             this.grpSingle.Controls.Add(this.btnGenerateWinform);
             this.grpSingle.Controls.Add(this.txtYAMLPath);
             this.grpSingle.Controls.Add(this.label2);
-            this.grpSingle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.grpSingle.Font = new System.Drawing.Font("Microsoft Sans Serif",
+                8.25F,
+                System.Drawing.FontStyle.Regular,
+                System.Drawing.GraphicsUnit.Point,
+                ((byte)(0)));
             this.grpSingle.Location = new System.Drawing.Point(6, 52);
             this.grpSingle.Name = "grpSingle";
             this.grpSingle.Size = new System.Drawing.Size(390, 391);
             this.grpSingle.TabIndex = 3;
             this.grpSingle.TabStop = false;
             this.grpSingle.Text = "Individual Tasks";
-            // 
+            //
             // chkStartClientAfterGenerateWinform
-            // 
+            //
             this.chkStartClientAfterGenerateWinform.AutoSize = true;
             this.chkStartClientAfterGenerateWinform.Checked = true;
             this.chkStartClientAfterGenerateWinform.CheckState = System.Windows.Forms.CheckState.Checked;
@@ -362,9 +371,9 @@ namespace Ict.Tools.DevelopersAssistant
             this.chkStartClientAfterGenerateWinform.TabIndex = 8;
             this.chkStartClientAfterGenerateWinform.Text = "Start client after compilation";
             this.chkStartClientAfterGenerateWinform.UseVisualStyleBackColor = true;
-            // 
+            //
             // chkCompileWinform
-            // 
+            //
             this.chkCompileWinform.AutoSize = true;
             this.chkCompileWinform.Checked = true;
             this.chkCompileWinform.CheckState = System.Windows.Forms.CheckState.Checked;
@@ -375,9 +384,9 @@ namespace Ict.Tools.DevelopersAssistant
             this.chkCompileWinform.Text = "Compile after generating the form";
             this.chkCompileWinform.UseVisualStyleBackColor = true;
             this.chkCompileWinform.CheckedChanged += new System.EventHandler(this.chkCompileWinform_CheckedChanged);
-            // 
+            //
             // btnCompilation
-            // 
+            //
             this.btnCompilation.Location = new System.Drawing.Point(352, 249);
             this.btnCompilation.Name = "btnCompilation";
             this.btnCompilation.Size = new System.Drawing.Size(32, 23);
@@ -385,9 +394,9 @@ namespace Ict.Tools.DevelopersAssistant
             this.btnCompilation.Text = "Go";
             this.btnCompilation.UseVisualStyleBackColor = true;
             this.btnCompilation.Click += new System.EventHandler(this.btnCompilation_Click);
-            // 
+            //
             // btnCodeGeneration
-            // 
+            //
             this.btnCodeGeneration.Location = new System.Drawing.Point(352, 199);
             this.btnCodeGeneration.Name = "btnCodeGeneration";
             this.btnCodeGeneration.Size = new System.Drawing.Size(32, 23);
@@ -395,45 +404,45 @@ namespace Ict.Tools.DevelopersAssistant
             this.btnCodeGeneration.Text = "Go";
             this.btnCodeGeneration.UseVisualStyleBackColor = true;
             this.btnCodeGeneration.Click += new System.EventHandler(this.btnCodeGeneration_Click);
-            // 
+            //
             // cboCompilation
-            // 
+            //
             this.cboCompilation.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboCompilation.FormattingEnabled = true;
             this.cboCompilation.Location = new System.Drawing.Point(97, 250);
             this.cboCompilation.Name = "cboCompilation";
             this.cboCompilation.Size = new System.Drawing.Size(249, 21);
             this.cboCompilation.TabIndex = 14;
-            // 
+            //
             // cboCodeGeneration
-            // 
+            //
             this.cboCodeGeneration.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboCodeGeneration.FormattingEnabled = true;
             this.cboCodeGeneration.Location = new System.Drawing.Point(97, 200);
             this.cboCodeGeneration.Name = "cboCodeGeneration";
             this.cboCodeGeneration.Size = new System.Drawing.Size(249, 21);
             this.cboCodeGeneration.TabIndex = 11;
-            // 
+            //
             // label8
-            // 
+            //
             this.label8.AutoSize = true;
             this.label8.Location = new System.Drawing.Point(6, 253);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(61, 13);
             this.label8.TabIndex = 13;
             this.label8.Text = "Compilation";
-            // 
+            //
             // label5
-            // 
+            //
             this.label5.AutoSize = true;
             this.label5.Location = new System.Drawing.Point(6, 203);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(85, 13);
             this.label5.TabIndex = 10;
             this.label5.Text = "Code generation";
-            // 
+            //
             // linkLabelRestartServer
-            // 
+            //
             this.linkLabelRestartServer.AutoSize = true;
             this.linkLabelRestartServer.Location = new System.Drawing.Point(246, 48);
             this.linkLabelRestartServer.Name = "linkLabelRestartServer";
@@ -441,10 +450,11 @@ namespace Ict.Tools.DevelopersAssistant
             this.linkLabelRestartServer.TabIndex = 3;
             this.linkLabelRestartServer.TabStop = true;
             this.linkLabelRestartServer.Text = "Re-start server";
-            this.linkLabelRestartServer.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelRestartServer_LinkClicked);
-            // 
+            this.linkLabelRestartServer.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(
+                this.linkLabelRestartServer_LinkClicked);
+            //
             // linkLabelStopServer
-            // 
+            //
             this.linkLabelStopServer.AutoSize = true;
             this.linkLabelStopServer.Location = new System.Drawing.Point(139, 48);
             this.linkLabelStopServer.Name = "linkLabelStopServer";
@@ -453,9 +463,9 @@ namespace Ict.Tools.DevelopersAssistant
             this.linkLabelStopServer.TabStop = true;
             this.linkLabelStopServer.Text = "Stop server";
             this.linkLabelStopServer.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelStopServer_LinkClicked);
-            // 
+            //
             // linkLabelStartServer
-            // 
+            //
             this.linkLabelStartServer.AutoSize = true;
             this.linkLabelStartServer.Location = new System.Drawing.Point(38, 48);
             this.linkLabelStartServer.Name = "linkLabelStartServer";
@@ -464,9 +474,9 @@ namespace Ict.Tools.DevelopersAssistant
             this.linkLabelStartServer.TabStop = true;
             this.linkLabelStartServer.Text = "Start server";
             this.linkLabelStartServer.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelStartServer_LinkClicked);
-            // 
+            //
             // linkLabelYamlFile
-            // 
+            //
             this.linkLabelYamlFile.AutoSize = true;
             this.linkLabelYamlFile.Location = new System.Drawing.Point(6, 122);
             this.linkLabelYamlFile.Name = "linkLabelYamlFile";
@@ -475,10 +485,11 @@ namespace Ict.Tools.DevelopersAssistant
             this.linkLabelYamlFile.TabStop = true;
             this.linkLabelYamlFile.Text = "Change the filename";
             this.linkLabelYamlFile.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelYamlFile_LinkClicked);
-            // 
+            //
             // btnMiscellaneous
-            // 
-            this.btnMiscellaneous.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            //
+            this.btnMiscellaneous.Anchor =
+                ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnMiscellaneous.Location = new System.Drawing.Point(352, 299);
             this.btnMiscellaneous.Name = "btnMiscellaneous";
             this.btnMiscellaneous.Size = new System.Drawing.Size(32, 23);
@@ -486,30 +497,32 @@ namespace Ict.Tools.DevelopersAssistant
             this.btnMiscellaneous.Text = "Go";
             this.btnMiscellaneous.UseVisualStyleBackColor = true;
             this.btnMiscellaneous.Click += new System.EventHandler(this.btnMiscellaneous_Click);
-            // 
+            //
             // cboMiscellaneous
-            // 
-            this.cboMiscellaneous.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            //
+            this.cboMiscellaneous.Anchor =
+                ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) |
+                                                      System.Windows.Forms.AnchorStyles.Right)));
             this.cboMiscellaneous.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboMiscellaneous.FormattingEnabled = true;
             this.cboMiscellaneous.Location = new System.Drawing.Point(97, 300);
             this.cboMiscellaneous.Name = "cboMiscellaneous";
             this.cboMiscellaneous.Size = new System.Drawing.Size(249, 21);
             this.cboMiscellaneous.TabIndex = 17;
-            // 
+            //
             // label6
-            // 
+            //
             this.label6.AutoSize = true;
             this.label6.Location = new System.Drawing.Point(6, 303);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(74, 13);
             this.label6.TabIndex = 16;
             this.label6.Text = "Miscellaneous";
-            // 
+            //
             // btnStartClient
-            // 
-            this.btnStartClient.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            //
+            this.btnStartClient.Anchor =
+                ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnStartClient.Location = new System.Drawing.Point(352, 349);
             this.btnStartClient.Name = "btnStartClient";
             this.btnStartClient.Size = new System.Drawing.Size(32, 23);
@@ -517,30 +530,35 @@ namespace Ict.Tools.DevelopersAssistant
             this.btnStartClient.Text = "Go";
             this.btnStartClient.UseVisualStyleBackColor = true;
             this.btnStartClient.Click += new System.EventHandler(this.btnStartClient_Click);
-            // 
+            //
             // label4
-            // 
+            //
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(94, 354);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(86, 13);
             this.label4.TabIndex = 19;
             this.label4.Text = "Start Petra Client";
-            // 
+            //
             // label3
-            // 
+            //
             this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif",
+                8.25F,
+                System.Drawing.FontStyle.Regular,
+                System.Drawing.GraphicsUnit.Point,
+                ((byte)(0)));
             this.label3.ForeColor = System.Drawing.SystemColors.ControlText;
             this.label3.Location = new System.Drawing.Point(6, 25);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(66, 13);
             this.label3.TabIndex = 0;
             this.label3.Text = "Petra Server";
-            // 
+            //
             // btnGenerateWinform
-            // 
-            this.btnGenerateWinform.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            //
+            this.btnGenerateWinform.Anchor =
+                ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnGenerateWinform.Location = new System.Drawing.Point(352, 142);
             this.btnGenerateWinform.Name = "btnGenerateWinform";
             this.btnGenerateWinform.Size = new System.Drawing.Size(32, 23);
@@ -548,28 +566,29 @@ namespace Ict.Tools.DevelopersAssistant
             this.btnGenerateWinform.Text = "Go";
             this.btnGenerateWinform.UseVisualStyleBackColor = true;
             this.btnGenerateWinform.Click += new System.EventHandler(this.btnGenerateWinform_Click);
-            // 
+            //
             // txtYAMLPath
-            // 
-            this.txtYAMLPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            //
+            this.txtYAMLPath.Anchor =
+                ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) |
+                                                      System.Windows.Forms.AnchorStyles.Right)));
             this.txtYAMLPath.Location = new System.Drawing.Point(9, 99);
             this.txtYAMLPath.Name = "txtYAMLPath";
             this.txtYAMLPath.ReadOnly = true;
             this.txtYAMLPath.Size = new System.Drawing.Size(375, 20);
             this.txtYAMLPath.TabIndex = 5;
-            // 
+            //
             // label2
-            // 
+            //
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(6, 83);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(188, 13);
             this.label2.TabIndex = 4;
             this.label2.Text = "Generate a Windows Form from YAML";
-            // 
+            //
             // DatabasePage
-            // 
+            //
             this.DatabasePage.Controls.Add(this.lblBranchLocation);
             this.DatabasePage.Controls.Add(this.label16);
             this.DatabasePage.Controls.Add(this.groupBox2);
@@ -582,27 +601,27 @@ namespace Ict.Tools.DevelopersAssistant
             this.DatabasePage.TabIndex = 3;
             this.DatabasePage.Text = "Database";
             this.DatabasePage.UseVisualStyleBackColor = true;
-            // 
+            //
             // lblBranchLocation
-            // 
+            //
             this.lblBranchLocation.AutoSize = true;
             this.lblBranchLocation.Location = new System.Drawing.Point(129, 20);
             this.lblBranchLocation.Name = "lblBranchLocation";
             this.lblBranchLocation.Size = new System.Drawing.Size(41, 13);
             this.lblBranchLocation.TabIndex = 1;
             this.lblBranchLocation.Text = "label13";
-            // 
+            //
             // label16
-            // 
+            //
             this.label16.AutoSize = true;
             this.label16.Location = new System.Drawing.Point(29, 20);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(94, 13);
             this.label16.TabIndex = 0;
             this.label16.Text = "Branch Location:  ";
-            // 
+            //
             // groupBox2
-            // 
+            //
             this.groupBox2.Controls.Add(this.btnEditDbBuildConfig);
             this.groupBox2.Controls.Add(this.label12);
             this.groupBox2.Controls.Add(this.btnRemoveDbBuildConfig);
@@ -617,9 +636,9 @@ namespace Ict.Tools.DevelopersAssistant
             this.groupBox2.TabIndex = 2;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Build Configuration";
-            // 
+            //
             // btnEditDbBuildConfig
-            // 
+            //
             this.btnEditDbBuildConfig.Location = new System.Drawing.Point(87, 200);
             this.btnEditDbBuildConfig.Name = "btnEditDbBuildConfig";
             this.btnEditDbBuildConfig.Size = new System.Drawing.Size(75, 23);
@@ -627,18 +646,18 @@ namespace Ict.Tools.DevelopersAssistant
             this.btnEditDbBuildConfig.Text = "Edit";
             this.btnEditDbBuildConfig.UseVisualStyleBackColor = true;
             this.btnEditDbBuildConfig.Click += new System.EventHandler(this.btnEditDbBuildConfig_Click);
-            // 
+            //
             // label12
-            // 
+            //
             this.label12.AutoSize = true;
             this.label12.Location = new System.Drawing.Point(6, 83);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(159, 13);
             this.label12.TabIndex = 2;
             this.label12.Text = "My favourite build configurations";
-            // 
+            //
             // btnRemoveDbBuildConfig
-            // 
+            //
             this.btnRemoveDbBuildConfig.Location = new System.Drawing.Point(168, 200);
             this.btnRemoveDbBuildConfig.Name = "btnRemoveDbBuildConfig";
             this.btnRemoveDbBuildConfig.Size = new System.Drawing.Size(75, 23);
@@ -646,9 +665,9 @@ namespace Ict.Tools.DevelopersAssistant
             this.btnRemoveDbBuildConfig.Text = "Remove";
             this.btnRemoveDbBuildConfig.UseVisualStyleBackColor = true;
             this.btnRemoveDbBuildConfig.Click += new System.EventHandler(this.btnRemoveDbBuildConfig_Click);
-            // 
+            //
             // btnAddDbBuildConfig
-            // 
+            //
             this.btnAddDbBuildConfig.Location = new System.Drawing.Point(6, 200);
             this.btnAddDbBuildConfig.Name = "btnAddDbBuildConfig";
             this.btnAddDbBuildConfig.Size = new System.Drawing.Size(75, 23);
@@ -656,35 +675,35 @@ namespace Ict.Tools.DevelopersAssistant
             this.btnAddDbBuildConfig.Text = "Add";
             this.btnAddDbBuildConfig.UseVisualStyleBackColor = true;
             this.btnAddDbBuildConfig.Click += new System.EventHandler(this.btnAddDbBuildConfig_Click);
-            // 
+            //
             // lblDbBuildConfig
-            // 
+            //
             this.lblDbBuildConfig.Location = new System.Drawing.Point(140, 27);
             this.lblDbBuildConfig.Name = "lblDbBuildConfig";
             this.lblDbBuildConfig.Size = new System.Drawing.Size(581, 36);
             this.lblDbBuildConfig.TabIndex = 1;
             this.lblDbBuildConfig.Text = "label12";
-            // 
+            //
             // label11
-            // 
+            //
             this.label11.AutoSize = true;
             this.label11.Location = new System.Drawing.Point(26, 27);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(108, 13);
             this.label11.TabIndex = 0;
             this.label11.Text = "Current configuration:";
-            // 
+            //
             // listDbBuildConfig
-            // 
+            //
             this.listDbBuildConfig.FormattingEnabled = true;
             this.listDbBuildConfig.Location = new System.Drawing.Point(6, 99);
             this.listDbBuildConfig.Name = "listDbBuildConfig";
             this.listDbBuildConfig.Size = new System.Drawing.Size(715, 95);
             this.listDbBuildConfig.TabIndex = 3;
             this.listDbBuildConfig.DoubleClick += new System.EventHandler(this.listDbBuildConfig_DoubleClick);
-            // 
+            //
             // btnSaveDbBuildConfig
-            // 
+            //
             this.btnSaveDbBuildConfig.Location = new System.Drawing.Point(506, 200);
             this.btnSaveDbBuildConfig.Name = "btnSaveDbBuildConfig";
             this.btnSaveDbBuildConfig.Size = new System.Drawing.Size(215, 23);
@@ -692,10 +711,11 @@ namespace Ict.Tools.DevelopersAssistant
             this.btnSaveDbBuildConfig.Text = "Save As Current Build Configuration";
             this.btnSaveDbBuildConfig.UseVisualStyleBackColor = true;
             this.btnSaveDbBuildConfig.Click += new System.EventHandler(this.btnSaveDbBuildConfig_Click);
-            // 
+            //
             // btnDatabase
-            // 
-            this.btnDatabase.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            //
+            this.btnDatabase.Anchor =
+                ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnDatabase.Location = new System.Drawing.Point(523, 311);
             this.btnDatabase.Name = "btnDatabase";
             this.btnDatabase.Size = new System.Drawing.Size(32, 23);
@@ -703,27 +723,27 @@ namespace Ict.Tools.DevelopersAssistant
             this.btnDatabase.Text = "Go";
             this.btnDatabase.UseVisualStyleBackColor = true;
             this.btnDatabase.Click += new System.EventHandler(this.btnDatabase_Click);
-            // 
+            //
             // cboDatabase
-            // 
+            //
             this.cboDatabase.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboDatabase.FormattingEnabled = true;
             this.cboDatabase.Location = new System.Drawing.Point(268, 313);
             this.cboDatabase.Name = "cboDatabase";
             this.cboDatabase.Size = new System.Drawing.Size(249, 21);
             this.cboDatabase.TabIndex = 4;
-            // 
+            //
             // label7
-            // 
+            //
             this.label7.AutoSize = true;
             this.label7.Location = new System.Drawing.Point(168, 316);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(85, 13);
             this.label7.TabIndex = 3;
             this.label7.Text = "Database Tasks";
-            // 
+            //
             // OutputPage
-            // 
+            //
             this.OutputPage.Controls.Add(this.btnNextWarning);
             this.OutputPage.Controls.Add(this.btnPrevWarning);
             this.OutputPage.Controls.Add(this.lblWarnings);
@@ -736,9 +756,9 @@ namespace Ict.Tools.DevelopersAssistant
             this.OutputPage.TabIndex = 1;
             this.OutputPage.Text = "Output";
             this.OutputPage.UseVisualStyleBackColor = true;
-            // 
+            //
             // btnNextWarning
-            // 
+            //
             this.btnNextWarning.Enabled = false;
             this.btnNextWarning.Location = new System.Drawing.Point(677, 9);
             this.btnNextWarning.Name = "btnNextWarning";
@@ -747,9 +767,9 @@ namespace Ict.Tools.DevelopersAssistant
             this.btnNextWarning.Text = "Next";
             this.btnNextWarning.UseVisualStyleBackColor = true;
             this.btnNextWarning.Click += new System.EventHandler(this.btnNextWarning_Click);
-            // 
+            //
             // btnPrevWarning
-            // 
+            //
             this.btnPrevWarning.Enabled = false;
             this.btnPrevWarning.Location = new System.Drawing.Point(621, 9);
             this.btnPrevWarning.Name = "btnPrevWarning";
@@ -758,18 +778,18 @@ namespace Ict.Tools.DevelopersAssistant
             this.btnPrevWarning.Text = "Prev";
             this.btnPrevWarning.UseVisualStyleBackColor = true;
             this.btnPrevWarning.Click += new System.EventHandler(this.btnPrevWarning_Click);
-            // 
+            //
             // lblWarnings
-            // 
+            //
             this.lblWarnings.Location = new System.Drawing.Point(418, 14);
             this.lblWarnings.Name = "lblWarnings";
             this.lblWarnings.Size = new System.Drawing.Size(197, 16);
             this.lblWarnings.TabIndex = 1;
             this.lblWarnings.Text = "Warnings/Errors";
             this.lblWarnings.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            // 
+            //
             // chkVerbose
-            // 
+            //
             this.chkVerbose.AutoSize = true;
             this.chkVerbose.Location = new System.Drawing.Point(3, 13);
             this.chkVerbose.Name = "chkVerbose";
@@ -778,21 +798,22 @@ namespace Ict.Tools.DevelopersAssistant
             this.chkVerbose.Text = "Show verbose output";
             this.chkVerbose.UseVisualStyleBackColor = true;
             this.chkVerbose.CheckedChanged += new System.EventHandler(this.chkVerbose_CheckedChanged);
-            // 
+            //
             // txtOutput
-            // 
-            this.txtOutput.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            //
+            this.txtOutput.Anchor =
+                ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) |
+                                                       System.Windows.Forms.AnchorStyles.Left) |
+                                                      System.Windows.Forms.AnchorStyles.Right)));
             this.txtOutput.Location = new System.Drawing.Point(6, 36);
             this.txtOutput.Multiline = true;
             this.txtOutput.Name = "txtOutput";
             this.txtOutput.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtOutput.Size = new System.Drawing.Size(721, 414);
             this.txtOutput.TabIndex = 4;
-            // 
+            //
             // OptionsPage
-            // 
+            //
             this.OptionsPage.Controls.Add(this.groupBox4);
             this.OptionsPage.Controls.Add(this.groupBox3);
             this.OptionsPage.Controls.Add(this.lblVersion);
@@ -803,9 +824,9 @@ namespace Ict.Tools.DevelopersAssistant
             this.OptionsPage.TabIndex = 2;
             this.OptionsPage.Text = "Options";
             this.OptionsPage.UseVisualStyleBackColor = true;
-            // 
+            //
             // groupBox4
-            // 
+            //
             this.groupBox4.Controls.Add(this.btnBrowseBazaar);
             this.groupBox4.Controls.Add(this.txtBazaarPath);
             this.groupBox4.Controls.Add(this.label17);
@@ -818,9 +839,9 @@ namespace Ict.Tools.DevelopersAssistant
             this.groupBox4.TabIndex = 2;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Miscellaneous Options";
-            // 
+            //
             // btnBrowseBazaar
-            // 
+            //
             this.btnBrowseBazaar.Location = new System.Drawing.Point(659, 54);
             this.btnBrowseBazaar.Name = "btnBrowseBazaar";
             this.btnBrowseBazaar.Size = new System.Drawing.Size(26, 23);
@@ -828,53 +849,53 @@ namespace Ict.Tools.DevelopersAssistant
             this.btnBrowseBazaar.Text = "...";
             this.btnBrowseBazaar.UseVisualStyleBackColor = true;
             this.btnBrowseBazaar.Click += new System.EventHandler(this.btnBrowseBazaar_Click);
-            // 
+            //
             // txtBazaarPath
-            // 
+            //
             this.txtBazaarPath.Enabled = false;
             this.txtBazaarPath.Location = new System.Drawing.Point(135, 56);
             this.txtBazaarPath.Name = "txtBazaarPath";
             this.txtBazaarPath.Size = new System.Drawing.Size(518, 20);
             this.txtBazaarPath.TabIndex = 4;
-            // 
+            //
             // label17
-            // 
+            //
             this.label17.AutoSize = true;
             this.label17.Location = new System.Drawing.Point(26, 59);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(103, 13);
             this.label17.TabIndex = 3;
             this.label17.Text = "Bazaar is installed at";
-            // 
+            //
             // label14
-            // 
+            //
             this.label14.AutoSize = true;
             this.label14.Location = new System.Drawing.Point(299, 29);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(297, 13);
             this.label14.TabIndex = 2;
             this.label14.Text = "seconds and I am working on a different Windows application";
-            // 
+            //
             // txtFlashAfterSeconds
-            // 
+            //
             this.txtFlashAfterSeconds.Location = new System.Drawing.Point(264, 26);
             this.txtFlashAfterSeconds.Name = "txtFlashAfterSeconds";
             this.txtFlashAfterSeconds.Size = new System.Drawing.Size(29, 20);
             this.txtFlashAfterSeconds.TabIndex = 1;
             this.txtFlashAfterSeconds.Text = "15";
             this.txtFlashAfterSeconds.Validating += new System.ComponentModel.CancelEventHandler(this.txtFlashAfterSeconds_Validating);
-            // 
+            //
             // label13
-            // 
+            //
             this.label13.AutoSize = true;
             this.label13.Location = new System.Drawing.Point(26, 29);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(232, 13);
             this.label13.TabIndex = 0;
             this.label13.Text = "Alert me if a task or sequence takes longer than";
-            // 
+            //
             // groupBox3
-            // 
+            //
             this.groupBox3.Controls.Add(this.btnResetClientConfig);
             this.groupBox3.Controls.Add(this.chkUseAutoLogon);
             this.groupBox3.Controls.Add(this.btnUpdateMyClientConfig);
@@ -890,9 +911,9 @@ namespace Ict.Tools.DevelopersAssistant
             this.groupBox3.TabIndex = 1;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Options that apply to the startup of the client";
-            // 
+            //
             // btnResetClientConfig
-            // 
+            //
             this.btnResetClientConfig.Location = new System.Drawing.Point(610, 17);
             this.btnResetClientConfig.Name = "btnResetClientConfig";
             this.btnResetClientConfig.Size = new System.Drawing.Size(75, 23);
@@ -900,9 +921,9 @@ namespace Ict.Tools.DevelopersAssistant
             this.btnResetClientConfig.Text = "Reset";
             this.btnResetClientConfig.UseVisualStyleBackColor = true;
             this.btnResetClientConfig.Click += new System.EventHandler(this.btnResetClientConfig_Click);
-            // 
+            //
             // chkUseAutoLogon
-            // 
+            //
             this.chkUseAutoLogon.AutoSize = true;
             this.chkUseAutoLogon.Location = new System.Drawing.Point(41, 20);
             this.chkUseAutoLogon.Name = "chkUseAutoLogon";
@@ -911,9 +932,9 @@ namespace Ict.Tools.DevelopersAssistant
             this.chkUseAutoLogon.Text = "Use the auto-logon capability  (Over-ride at run-time with ALT)";
             this.chkUseAutoLogon.UseVisualStyleBackColor = true;
             this.chkUseAutoLogon.CheckedChanged += new System.EventHandler(this.chkUseAutoLogon_CheckedChanged);
-            // 
+            //
             // btnUpdateMyClientConfig
-            // 
+            //
             this.btnUpdateMyClientConfig.Location = new System.Drawing.Point(610, 136);
             this.btnUpdateMyClientConfig.Name = "btnUpdateMyClientConfig";
             this.btnUpdateMyClientConfig.Size = new System.Drawing.Size(75, 23);
@@ -921,36 +942,36 @@ namespace Ict.Tools.DevelopersAssistant
             this.btnUpdateMyClientConfig.Text = "Update";
             this.btnUpdateMyClientConfig.UseVisualStyleBackColor = true;
             this.btnUpdateMyClientConfig.Click += new System.EventHandler(this.btnUpdateMyClientConfig_Click);
-            // 
+            //
             // txtAutoLogonAction
-            // 
+            //
             this.txtAutoLogonAction.Location = new System.Drawing.Point(9, 99);
             this.txtAutoLogonAction.Multiline = true;
             this.txtAutoLogonAction.Name = "txtAutoLogonAction";
             this.txtAutoLogonAction.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtAutoLogonAction.Size = new System.Drawing.Size(583, 60);
             this.txtAutoLogonAction.TabIndex = 6;
-            // 
+            //
             // label15
-            // 
+            //
             this.label15.AutoSize = true;
             this.label15.Location = new System.Drawing.Point(6, 83);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(530, 13);
             this.label15.TabIndex = 5;
             this.label15.Text = "Test action (Put one property=value on each line and do not include commas.  Over" +
-                "-ride at run-time with CTRL)";
-            // 
+                                "-ride at run-time with CTRL)";
+            //
             // txtAutoLogonPW
-            // 
+            //
             this.txtAutoLogonPW.Enabled = false;
             this.txtAutoLogonPW.Location = new System.Drawing.Point(475, 43);
             this.txtAutoLogonPW.Name = "txtAutoLogonPW";
             this.txtAutoLogonPW.Size = new System.Drawing.Size(117, 20);
             this.txtAutoLogonPW.TabIndex = 4;
-            // 
+            //
             // lblAutoLogonPW
-            // 
+            //
             this.lblAutoLogonPW.AutoSize = true;
             this.lblAutoLogonPW.Enabled = false;
             this.lblAutoLogonPW.Location = new System.Drawing.Point(363, 46);
@@ -958,17 +979,17 @@ namespace Ict.Tools.DevelopersAssistant
             this.lblAutoLogonPW.Size = new System.Drawing.Size(106, 13);
             this.lblAutoLogonPW.TabIndex = 3;
             this.lblAutoLogonPW.Text = "Auto-logon password";
-            // 
+            //
             // txtAutoLogonUser
-            // 
+            //
             this.txtAutoLogonUser.Enabled = false;
             this.txtAutoLogonUser.Location = new System.Drawing.Point(164, 43);
             this.txtAutoLogonUser.Name = "txtAutoLogonUser";
             this.txtAutoLogonUser.Size = new System.Drawing.Size(149, 20);
             this.txtAutoLogonUser.TabIndex = 2;
-            // 
+            //
             // lblAutoLogonUser
-            // 
+            //
             this.lblAutoLogonUser.AutoSize = true;
             this.lblAutoLogonUser.Enabled = false;
             this.lblAutoLogonUser.Location = new System.Drawing.Point(77, 46);
@@ -976,18 +997,18 @@ namespace Ict.Tools.DevelopersAssistant
             this.lblAutoLogonUser.Size = new System.Drawing.Size(81, 13);
             this.lblAutoLogonUser.TabIndex = 1;
             this.lblAutoLogonUser.Text = "Auto-logon user";
-            // 
+            //
             // lblVersion
-            // 
+            //
             this.lblVersion.AutoSize = true;
             this.lblVersion.Location = new System.Drawing.Point(18, 432);
             this.lblVersion.Name = "lblVersion";
             this.lblVersion.Size = new System.Drawing.Size(42, 13);
             this.lblVersion.TabIndex = 3;
             this.lblVersion.Text = "Version";
-            // 
+            //
             // groupBox1
-            // 
+            //
             this.groupBox1.Controls.Add(this.chkMinimizeServer);
             this.groupBox1.Controls.Add(this.chkAutoStopServer);
             this.groupBox1.Controls.Add(this.chkAutoStartServer);
@@ -997,9 +1018,9 @@ namespace Ict.Tools.DevelopersAssistant
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Options that apply to individual tasks";
-            // 
+            //
             // chkMinimizeServer
-            // 
+            //
             this.chkMinimizeServer.AutoSize = true;
             this.chkMinimizeServer.Location = new System.Drawing.Point(41, 70);
             this.chkMinimizeServer.Name = "chkMinimizeServer";
@@ -1007,31 +1028,31 @@ namespace Ict.Tools.DevelopersAssistant
             this.chkMinimizeServer.TabIndex = 2;
             this.chkMinimizeServer.Text = "Minimize the server window as soon as the server starts up";
             this.chkMinimizeServer.UseVisualStyleBackColor = true;
-            // 
+            //
             // chkAutoStopServer
-            // 
+            //
             this.chkAutoStopServer.AutoSize = true;
             this.chkAutoStopServer.Location = new System.Drawing.Point(41, 47);
             this.chkAutoStopServer.Name = "chkAutoStopServer";
             this.chkAutoStopServer.Size = new System.Drawing.Size(419, 17);
             this.chkAutoStopServer.TabIndex = 1;
             this.chkAutoStopServer.Text = "Automatically stop the server before any task that compiles it, if the server is " +
-                "running";
+                                          "running";
             this.chkAutoStopServer.UseVisualStyleBackColor = true;
-            // 
+            //
             // chkAutoStartServer
-            // 
+            //
             this.chkAutoStartServer.AutoSize = true;
             this.chkAutoStartServer.Location = new System.Drawing.Point(41, 24);
             this.chkAutoStartServer.Name = "chkAutoStartServer";
             this.chkAutoStartServer.Size = new System.Drawing.Size(428, 17);
             this.chkAutoStartServer.TabIndex = 0;
             this.chkAutoStartServer.Text = "Automatically start the server when the client starts, if the server is not alrea" +
-                "dy running";
+                                           "dy running";
             this.chkAutoStartServer.UseVisualStyleBackColor = true;
-            // 
+            //
             // MainForm
-            // 
+            //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(765, 506);
@@ -1064,7 +1085,6 @@ namespace Ict.Tools.DevelopersAssistant
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
-
         }
 
         #endregion

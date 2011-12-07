@@ -121,6 +121,7 @@ namespace Ict.Petra.Server.MFinance.Reporting
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TAccountingPeriodsWebConnector.GetAvailableGLYears(
                 FLedgerNr,
                 ADiffPeriod,
+                false,
                 out ADisplayMember,
                 out AValueMember);
         }

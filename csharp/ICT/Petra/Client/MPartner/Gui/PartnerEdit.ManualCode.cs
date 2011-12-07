@@ -1607,7 +1607,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void FileNewPartner(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            Ict.Petra.Client.MPartner.Gui.TFrmPartnerEdit PartnerEditForm = new Ict.Petra.Client.MPartner.Gui.TFrmPartnerEdit(this);
+
+            PartnerEditForm.SetParameters(TScreenMode.smNew,
+                FPartnerClass, -1, -1, ucoLowerPart.LocationDataRowOfCurrentlySelectedAddress.CountryCode);
+
+            PartnerEditForm.Show();
         }
 
         private void FileNewPartnerWithShepherdPerson(System.Object sender, System.EventArgs e)

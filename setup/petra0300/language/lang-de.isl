@@ -3,11 +3,11 @@ WelcomeLabel1=Willkommen zur Installation von [name]
 FinishedHeadingLabel=Fertigstellung der Installation von [name]
 
 [CustomMessages]
-cmMissingDotNet=Das Microsoft .Net Framework 2.0 fehlt
-cmRequiresDotNet=OpenPetra.org benötigt das Microsoft .Net Framework 2.0
-cmDotNetMustBeInstalled=Bevor die Installation fortgesetzt werden kann, muss Microsoft .NET Framework Version 2.0 installiert werden.
-cmDotNetPleaseDownload=Bitte laden Sie das Installationsprogramm für .Net 2.0 hier herunter:
-cmDotNetUrlAndSize=http://www.microsoft.com/downloads/details.aspx?displaylang=de&FamilyID=0856eacb-4362-4b0d-8edd-aab15c5e04f5 (ungefähr 22 MB)
+cmMissingDotNet=Das Microsoft .Net Framework 4.0 fehlt
+cmRequiresDotNet=OpenPetra.org benötigt das Microsoft .Net Framework 4.0
+cmDotNetMustBeInstalled=Bevor die Installation fortgesetzt werden kann, muss Microsoft .NET Framework Version 4.0 installiert werden.
+cmDotNetPleaseDownload=Bitte laden Sie das Installationsprogramm für .Net 4.0 hier herunter:
+cmDotNetUrlAndSize=http://www.microsoft.com/download/en/details.aspx?id=17718 (ungefähr 48 MB)
 cmDotNetInstallFirst=und installieren Sie es!
 cmIconTask=Ein Icon auf dem Desktop anlegen
 cmIconStandaloneLabel=OpenPetra.org

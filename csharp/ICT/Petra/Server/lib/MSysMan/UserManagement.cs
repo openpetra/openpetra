@@ -25,7 +25,6 @@ using System;
 using System.Data;
 using System.Collections.Generic;
 using System.Security.Cryptography;
-using System.Web.Security;
 using System.Text.RegularExpressions;
 using Ict.Common;
 using Ict.Common.DB;
@@ -83,7 +82,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                 SUserRow UserDR = TUserManager.LoadUser(AUsername.ToUpper(), out tempPrincipal);
                 SUserTable UserTable = (SUserTable)UserDR.Table;
 
-                UserDR.PasswordHash = FormsAuthentication.HashPasswordForStoringInConfigFile(String.Concat(APassword,
+                UserDR.PasswordHash = TUserManager.CreateHashOfPassword(String.Concat(APassword,
                         UserDR.PasswordSalt), "SHA1");
 
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
@@ -151,16 +150,16 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                 TPetraPrincipal tempPrincipal;
                 SUserRow UserDR = TUserManager.LoadUser(AUsername.ToUpper(), out tempPrincipal);
 
-                if (FormsAuthentication.HashPasswordForStoringInConfigFile(String.Concat(AOldPassword,
-                            UserDR.PasswordSalt), "SHA1") != UserDR.PasswordHash)
+                if (TUserManager.CreateHashOfPassword(String.Concat(AOldPassword,
+                            UserDR.PasswordSalt)) != UserDR.PasswordHash)
                 {
                     return false;
                 }
 
                 SUserTable UserTable = (SUserTable)UserDR.Table;
 
-                UserDR.PasswordHash = FormsAuthentication.HashPasswordForStoringInConfigFile(String.Concat(APassword,
-                        UserDR.PasswordSalt), "SHA1");
+                UserDR.PasswordHash = TUserManager.CreateHashOfPassword(String.Concat(APassword,
+                        UserDR.PasswordSalt));
 
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
                 TVerificationResultCollection VerificationResult;
@@ -202,8 +201,8 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                 RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
                 rng.GetNonZeroBytes(saltBytes);
                 newUser.PasswordSalt = Convert.ToBase64String(saltBytes);
-                newUser.PasswordHash = FormsAuthentication.HashPasswordForStoringInConfigFile(String.Concat(APassword,
-                        newUser.PasswordSalt), "SHA1");
+                newUser.PasswordHash = TUserManager.CreateHashOfPassword(String.Concat(APassword,
+                        newUser.PasswordSalt));
             }
             else
             {

@@ -185,13 +185,23 @@ namespace Ict.Petra.Client.CommonControls
         private String FNotSetValue;
         private String FNotSetDisplay;
 
-        /// this allows to set the table manually,
-        /// when it cannot come from a cache because it depends on too many other parameters on the screen
+        /// <summary>
+        /// Exposes the DataTable that defines the items that are shown as drop-down items.
+        /// <para>
+        /// Use this Property only to access the underlying DataTable of the items that
+        /// are displayed in the ComboBox in a <em>read-only</em> manner!
+        /// </para>
+        /// </summary>
+        /// <remarks>Do not modifiy the DataTable that is returned to achieve an update of
+        /// the ComboBox's drop-down items, as this will not reliably be reflected in the
+        /// CombBox's drop-down items! To achieve that, initialise the ComboBox again by
+        /// calling one of the InitialiseUserControl Methods.
+        /// </remarks>
         public DataTable Table
         {
-            set
+            get
             {
-                FDataCache_ListTable = value;
+                return FDataCache_ListTable;
             }
         }
 

@@ -25,8 +25,9 @@ using System;
 using System.Data;
 using System.Data.Odbc;
 using System.Threading;
-using System.Web.Security;
+using System.Text;
 using System.Security.Principal;
+using System.Security.Cryptography;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.DB;
@@ -230,6 +231,27 @@ namespace Ict.Petra.Server.App.Core.Security
         }
 
         /// <summary>
+        /// create SHA1 hash of password and the salt.
+        /// replacement for FormsAuthentication.HashPasswordForStoringInConfigFile
+        /// which is part of System.Web.dll and not available in the client profile of .net v4.0
+        /// </summary>
+        /// <returns></returns>
+        public static string CreateHashOfPassword(string APasswordAndSalt, string AHashType = "SHA1")
+        {
+            if (AHashType.ToUpper() == "MD5")
+            {
+                return BitConverter.ToString(
+                    MD5.Create().
+                    ComputeHash(Encoding.UTF8.GetBytes(APasswordAndSalt))).Replace("-", "");
+            }
+
+            // default to SHA1
+            return BitConverter.ToString(
+                SHA1.Create().
+                ComputeHash(Encoding.UTF8.GetBytes(APasswordAndSalt))).Replace("-", "");
+        }
+
+        /// <summary>
         /// make sure the user can login with the correct password
         /// </summary>
         /// <param name="AUserID"></param>
@@ -346,8 +368,8 @@ namespace Ict.Petra.Server.App.Core.Security
                 {
                     // TODO 1 oChristianK cSecurity : Perform user authentication by verifying password hash in the DB
                     // see also ICTPetraWiki: Todo_Petra.NET#Implement_Security_.7B2.7D_.5BChristian.5D
-                    if (FormsAuthentication.HashPasswordForStoringInConfigFile(String.Concat(APassword,
-                                UserDR.PasswordSalt), "SHA1") != UserDR.PasswordHash)
+                    if (CreateHashOfPassword(String.Concat(APassword,
+                                UserDR.PasswordSalt)) != UserDR.PasswordHash)
                     {
                         // increase failed logins
                         UserDR.FailedLogins++;
@@ -424,21 +446,9 @@ namespace Ict.Petra.Server.App.Core.Security
                 PetraPrincipal.ProcessID = AProcessID;
                 AProcessID = 0;
             }
-            catch (Exception)
+            finally
             {
-                try
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-                catch (System.InvalidOperationException)
-                {
-                    // ignore this exception since the RollBack is just a safety net,
-                    // and if it fails it means there was no running transaction.
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
+                DBAccess.GDBAccessObj.RollbackTransaction();
             }
 
             return PetraPrincipal;

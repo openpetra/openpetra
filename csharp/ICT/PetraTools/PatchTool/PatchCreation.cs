@@ -210,23 +210,32 @@ namespace Ict.Tools.PatchTool
         /// <summary>
         /// create a patch file containing all differences between two versions of the software
         /// </summary>
-        public static void CreateDiff(String ATmpDirectory, String ADeliveryDirectory, String AAppName, String oldPatch, String newPatch)
+        public static void CreateDiff(String ATmpDirectory, String ADeliveryDirectory,
+            String AAppName,
+            String AZipName,
+            String oldPatch, String newPatch)
         {
             if (!System.IO.Directory.Exists(ATmpDirectory + Path.DirectorySeparatorChar + oldPatch))
             {
-                UnzipTarFile(ATmpDirectory + Path.DirectorySeparatorChar + oldPatch,
-                    ADeliveryDirectory + Path.DirectorySeparatorChar + AAppName + "-" + oldPatch + ".tar.gz",
-                    AAppName.Substring(0, AAppName.IndexOf("-")));
+                string OldTarFile = ADeliveryDirectory + Path.DirectorySeparatorChar +
+                                    AZipName + "-" + oldPatch + ".tar.gz";
+
+                if (File.Exists(OldTarFile))
+                {
+                    UnzipTarFile(ATmpDirectory + Path.DirectorySeparatorChar + oldPatch,
+                        OldTarFile,
+                        AAppName);
+                }
             }
 
             if (!System.IO.Directory.Exists(ATmpDirectory + Path.DirectorySeparatorChar + newPatch))
             {
                 UnzipTarFile(ATmpDirectory + Path.DirectorySeparatorChar + newPatch,
-                    ADeliveryDirectory + Path.DirectorySeparatorChar + AAppName + "-" + newPatch + ".tar.gz",
-                    AAppName.Substring(0, AAppName.IndexOf("-")));
+                    ADeliveryDirectory + Path.DirectorySeparatorChar + AZipName + "-" + newPatch + ".tar.gz",
+                    AAppName);
             }
 
-            string DiffDirectory = ATmpDirectory + '/' + "Patch" + AAppName.Substring(AAppName.IndexOf("-")) + "_" + oldPatch + '_' + newPatch;
+            string DiffDirectory = ATmpDirectory + '/' + "Patch-win" + "_" + oldPatch + '_' + newPatch;
 
             // clear the diff directory
             PreparePatchTmpDirectory(DiffDirectory);

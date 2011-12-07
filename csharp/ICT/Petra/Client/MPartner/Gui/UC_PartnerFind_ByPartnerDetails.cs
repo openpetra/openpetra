@@ -650,10 +650,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else if (ClickedMenuItemName == "mniMaintainWorkerField")
             {
-	            TFrmPersonnelStaffData staffDataForm = new TFrmPersonnelStaffData(FPetraUtilsObject.GetForm());
-	
-	            staffDataForm.PartnerKey = FLogic.PartnerKey;
-	            staffDataForm.Show();
+                TFrmPersonnelStaffData staffDataForm = new TFrmPersonnelStaffData(FPetraUtilsObject.GetForm());
+
+                staffDataForm.PartnerKey = FLogic.PartnerKey;
+                staffDataForm.Show();
             }
             else if (AToolStripItem.Name == "mniMaintainPersonnelData")
             {

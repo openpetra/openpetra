@@ -1093,25 +1093,52 @@ namespace Ict.Petra.Server.MFinance.Common
         /// </summary>
         public static GLBatchTDS CreateABatch(Int32 ALedgerNumber)
         {
-            GLBatchTDS MainDS = new GLBatchTDS();
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            bool NewTransactionStarted = false;
 
-            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+            GLBatchTDS MainDS = null;
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            //Error handling
+            string ErrorContext = "Create a Batch";
+            string ErrorMessage = String.Empty;
+            //Set default type as non-critical
+            TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
+            TVerificationResultCollection VerificationResult = null;
 
-            ABatchRow NewRow = MainDS.ABatch.NewRowTyped(true);
-            NewRow.LedgerNumber = ALedgerNumber;
-            MainDS.ALedger[0].LastBatchNumber++;
-            NewRow.BatchNumber = MainDS.ALedger[0].LastBatchNumber;
-            NewRow.BatchPeriod = MainDS.ALedger[0].CurrentPeriod;
-            MainDS.ABatch.Rows.Add(NewRow);
-
-            TVerificationResultCollection VerificationResult;
-
-            if (GLBatchTDSAccess.SubmitChanges(MainDS, out VerificationResult) == TSubmitChangesResult.scrOK)
+            try
             {
-                MainDS.AcceptChanges();
+                MainDS = new GLBatchTDS();
+
+                TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransactionStarted);
+
+                ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+
+                ABatchRow NewRow = MainDS.ABatch.NewRowTyped(true);
+                NewRow.LedgerNumber = ALedgerNumber;
+                MainDS.ALedger[0].LastBatchNumber++;
+                NewRow.BatchNumber = MainDS.ALedger[0].LastBatchNumber;
+                NewRow.BatchPeriod = MainDS.ALedger[0].CurrentPeriod;
+                MainDS.ABatch.Rows.Add(NewRow);
+
+                if (GLBatchTDSAccess.SubmitChanges(MainDS, out VerificationResult) == TSubmitChangesResult.scrOK)
+                {
+                    MainDS.AcceptChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage =
+                    String.Format(Catalog.GetString("Unknown error while creating a batch for Ledger: {0}." +
+                            Environment.NewLine + Environment.NewLine + ex.ToString()),
+                        ALedgerNumber);
+                ErrorType = TResultSeverity.Resv_Critical;
+                VerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
+            }
+            finally
+            {
+                if (NewTransactionStarted)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
             }
 
             return MainDS;

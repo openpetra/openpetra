@@ -2691,16 +2691,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
         }
 
         /// generated method from connector
-        public PartnerFindTDS FindPartners(System.String AFirstName,
-                                           System.String AFamilyNameOrOrganisation,
-                                           System.String ACity,
-                                           StringCollection APartnerClasses)
-        {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerFindWebConnector), "FindPartners", ";STRING;STRING;STRING;STRINGCOLLECTION;");
-            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerFindWebConnector.FindPartners(AFirstName, AFamilyNameOrOrganisation, ACity, APartnerClasses);
-        }
-
-        /// generated method from connector
         public System.Boolean AddContact(List<Int64>APartnerKeys,
                                          DateTime AContactDate,
                                          System.String AMethodOfContact,
@@ -2756,6 +2746,16 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerEditWebConnector), "SavePartner", ";PARTNEREDITTDS;TVERIFICATIONRESULTCOLLECTION;");
             return Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerEditWebConnector.SavePartner(AMainDS, out AVerificationResult);
+        }
+
+        /// generated method from connector
+        public PartnerFindTDS FindPartners(System.String AFirstName,
+                                           System.String AFamilyNameOrOrganisation,
+                                           System.String ACity,
+                                           StringCollection APartnerClasses)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerFindWebConnector), "FindPartners", ";STRING;STRING;STRING;STRINGCOLLECTION;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerFindWebConnector.FindPartners(AFirstName, AFamilyNameOrOrganisation, ACity, APartnerClasses);
         }
     }
 }

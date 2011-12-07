@@ -31,7 +31,7 @@ namespace Ict.Petra.Client.MPartner.Logic
     /// Contains logic for the Partner Edit Screen.
     /// </summary>
     public class TPartnerEditScreenLogic
-    {	
+    {
         #region Enums
 
         /// <summary>
@@ -52,27 +52,27 @@ namespace Ict.Petra.Client.MPartner.Logic
             /// <summary>Finance Module</summary>
             mtgFinance
         }
-        
+
         #endregion
-    	
+
         /// <summary>
         /// Determines the TabGroup that a particular TabPage is part of.
         /// </summary>
         /// <param name="ATabPage">Tab.</param>
         /// <returns>TabGroup that the TabPage specified with <paramref name="ATabPage" /> is part of.</returns>
-    	public static TModuleTabGroupEnum DetermineTabGroup(TPartnerEditTabPageEnum ATabPage)
-    	{
+        public static TModuleTabGroupEnum DetermineTabGroup(TPartnerEditTabPageEnum ATabPage)
+        {
             switch (ATabPage)
             {
                 case TPartnerEditTabPageEnum.petpDefault:
-            	case TPartnerEditTabPageEnum.petpAddresses:
+                case TPartnerEditTabPageEnum.petpAddresses:
                 case TPartnerEditTabPageEnum.petpDetails:
                 case TPartnerEditTabPageEnum.petpSubscriptions:
                 case TPartnerEditTabPageEnum.petpPartnerTypes:
-            	case TPartnerEditTabPageEnum.petpFamilyMembers:
+                case TPartnerEditTabPageEnum.petpFamilyMembers:
                 case TPartnerEditTabPageEnum.petpPartnerRelationships:
-                case TPartnerEditTabPageEnum.petpNotes:            		
-            	case TPartnerEditTabPageEnum.petpOfficeSpecific:      
+                case TPartnerEditTabPageEnum.petpNotes:
+                case TPartnerEditTabPageEnum.petpOfficeSpecific:
                 case TPartnerEditTabPageEnum.petpFoundationDetails:
                 case TPartnerEditTabPageEnum.petpContacts:
                 case TPartnerEditTabPageEnum.petpReminders:
@@ -82,11 +82,11 @@ namespace Ict.Petra.Client.MPartner.Logic
                 case TPartnerEditTabPageEnum.petpPersonnelIndividualData:
                 case TPartnerEditTabPageEnum.petpPersonnelApplications:
                     return TModuleTabGroupEnum.mtgPersonnel;
-                    
+
                 default:
                     // Fallback
                     return TModuleTabGroupEnum.mtgPartner;
             }
-    	}
+        }
     }
 }
