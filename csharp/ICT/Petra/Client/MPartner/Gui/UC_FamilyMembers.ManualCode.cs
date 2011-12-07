@@ -280,8 +280,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>void</returns>
         private void DataSavingStarted(System.Object sender, System.EventArgs e)
         {
-        // TODO???
-//            GetDetailsFromControls(GetSelectedDetailRow());
         }
 
         /// <summary>
@@ -308,9 +306,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // initialize variables
             FDeadlineEditMode = false;
-
-            /* Hook up RecalculateScreenParts Event that is fired by FLogic */
-            RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(this.RethrowRecalculateScreenParts);
 
             // react to actions on grid
             grdFamilyMembers.DoubleClickCell += new TDoubleClickCellEventHandler(GrdFamilyMembers_DoubleClickCell);
@@ -777,31 +772,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 	                    // end try
 	                }
 	            }
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                //TPartnerFindScreenManager.OpenModalForm("PERSON",
-                //    out PartnerKey, out ShortName, out LocationPK);
-
-                //if (PartnerKey != -1)
-                //{
-                //    ChangeFamily(PartnerKey, true);
-                //}
-                //else
-                //{
-                //    MessageBox.Show("Moving of an existing Person to this Family has been cancelled.", "Action Cancelled",
-                //        MessageBoxButtons.OK, MessageBoxIcon.Information);
-                //}
             }
         }
 
@@ -856,7 +826,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.RefreshGrid();
 
             // reset counter in tab header
-            //RecalculateTabHeaderCounter();
+            RecalculateTabHeaderCounter();
             
         }
 
@@ -1402,22 +1372,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 	                        {
 	                            TextBoxStringOut = StringHelper.PartnerKeyToStr(NewFamilyKey);
 	                            LabelStringOut = mResultStringLbl;
-	
-	                            //TODO: implement ma1012.p, look at all the logic there and code it in here!!!!!!
-	                            // two questions: 1) do you really want to change the family
-	                            // 2) do you want to open the new family record?
-	                            // check how it works in Petra 2.3
-	                            
-	//                                        if (PartnerFound != null)
-	//                                        {
-	//                                            PartnerFound(mResultIntTxt, mResultLocationPK.LocationKey);
-	//                                        }
-	
-	//                                        if ((ValueChanged != null) && (mTextBoxStringOld != TextBoxStringOut))
-	//                                        {
-	//                                            bool ValidResult = true;
-	//                                            ValueChanged(mResultIntTxt, mResultStringLbl, ValidResult);
-	//                                        }
 
 								if (AOldFamilyKey == NewFamilyKey)
 								{
