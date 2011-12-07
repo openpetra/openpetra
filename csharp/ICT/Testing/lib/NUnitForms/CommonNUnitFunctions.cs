@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       wolfgangu
+//       wolfgangu, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -33,9 +33,12 @@ using NUnit.Framework.Constraints;
 
 using Ict.Common;
 using Ict.Common.IO;
+using Ict.Common.Remoting.Server;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Client.MFinance.Gui;
 using Ict.Petra.Client.MFinance.Gui.GL;
 using Ict.Petra.Client.MFinance.Gui.Setup;
+using Ict.Petra.Server.App.Core;
 using Ict.Testing.NUnitForms;
 using Ict.Testing.NUnitPetraClient;
 

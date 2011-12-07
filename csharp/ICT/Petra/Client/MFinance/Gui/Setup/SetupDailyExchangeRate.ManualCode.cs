@@ -86,9 +86,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 this.btnInvertExchangeRate.Click +=
                     new System.EventHandler(this.InvertExchangeRate);
 
-                this.btnUseDateToFilter.Click +=
-                    new System.EventHandler(this.UseDateToFilter);
-
                 FMainDS.ADailyExchangeRate.DefaultView.Sort = ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " DESC, " +
                                                               ADailyExchangeRateTable.GetTimeEffectiveFromDBName() + " DESC";
                 FMainDS.ADailyExchangeRate.DefaultView.RowFilter = "";
@@ -215,7 +212,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             blnUseDateTimeDefault = true;
             btnClose.Visible = true;
             btnCancel.Visible = true;
-            btnUseDateToFilter.Visible = false;
             mniImport.Enabled = false;
             tbbImport.Enabled = false;
 
@@ -483,14 +479,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 string dateString = dateLimit.ToString("d", dateTimeFormat);
                 FMainDS.ADailyExchangeRate.DefaultView.RowFilter =
                     ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " < '" + dateString + "'";
-                String strBtnUseDateToFilter2 = Catalog.GetString("Unuse Filter");
-                btnUseDateToFilter.Text = strBtnUseDateToFilter2;
             }
             else
             {
                 FMainDS.ADailyExchangeRate.DefaultView.RowFilter = "";
-                String strBtnUseDateToFilter1 = Catalog.GetString("Use Date To Filter");
-                btnUseDateToFilter.Text = strBtnUseDateToFilter1;
             }
 
             cmbDetailToCurrencyCode.Enabled = false;

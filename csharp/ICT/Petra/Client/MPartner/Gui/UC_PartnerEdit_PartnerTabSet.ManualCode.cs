@@ -174,6 +174,24 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        /// <summary>
+        /// Returns the PLocation DataRow of the currently selected Address.
+        /// </summary>
+        /// <remarks>Performs all necessary initialisations in case the Address Tab
+        /// hasn't been initialised before.</remarks>
+        public PLocationRow LocationDataRowOfCurrentlySelectedAddress
+        {
+            get
+            {
+                if (!FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucAddresses))
+                {
+                    SetupUserControlAddresses();
+                }
+
+                return FUcoAddresses.LocationDataRowOfCurrentlySelectedRecord;
+            }
+        }
+
         #endregion
 
         #region Public Methods
@@ -641,7 +659,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpNotes;
 
-                    // TODO
+                    // Hook up RecalculateScreenParts Event
+                    FUcoNotes.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
                 }
                 else if (ATabPageEventArgs.Tab == tpgOfficeSpecific)
                 {

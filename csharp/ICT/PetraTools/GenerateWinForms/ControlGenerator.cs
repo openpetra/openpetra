@@ -165,8 +165,15 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.Template.AddToCodelet("INITUSERCONTROLS", "this.AcceptButton = " + ctrl.controlName + ";" + Environment.NewLine);
             }
 
-            writer.SetControlProperty(ctrl, "Text", "\"" + ctrl.Label + "\"");
-
+			if (ctrl.HasAttribute("NoLabel") && (ctrl.GetAttribute("NoLabel").ToLower() == "true"))
+            {
+				writer.SetControlProperty(ctrl, "Text", "\"\"");
+			}
+			else
+			{
+				writer.SetControlProperty(ctrl, "Text", "\"" + ctrl.Label + "\"");
+			}
+            
             return writer.FTemplate;
         }
     }
@@ -1761,6 +1768,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     ReturnValue = true;
                 }
 
+                if (NumberFormat == "LongInteger")
+                {
+                    FControlMode = "LongInteger";
+
+                    ReturnValue = true;
+                }
+
                 if ((NumberFormat == "Decimal")
                     || (NumberFormat == "PercentDecimal")
                     || (NumberFormat.StartsWith("Decimal("))
@@ -1846,12 +1860,19 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
                 else
                 {
-                    return ctrl.controlName + ".NumberValueInt = null;";
+                    if (FControlMode == "Integer")
+                    {
+                        return ctrl.controlName + ".NumberValueInt = null;";
+                    }
+                    else
+                    {
+                        return ctrl.controlName + ".NumberValueLongInt = null;";
+                    }
                 }
             }
             else
             {
-                if (AFieldTypeDotNet.ToLower().Contains("int"))
+                if (AFieldTypeDotNet.ToLower() == "int32")
                 {
                     if (AFieldOrNull == null)
                     {
@@ -1859,6 +1880,15 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     }
 
                     return ctrl.controlName + ".NumberValueInt = " + AFieldOrNull + ";";
+                }
+                else if (AFieldTypeDotNet.ToLower() == "int64")
+                {
+                    if (AFieldOrNull == null)
+                    {
+                        return ctrl.controlName + ".NumberValueLongInt = null;";
+                    }
+
+                    return ctrl.controlName + ".NumberValueLongInt = " + AFieldOrNull + ";";
                 }
                 else if (AFieldTypeDotNet.ToLower().Contains("decimal"))
                 {
@@ -1899,15 +1929,22 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
                 else
                 {
-                    return ctrl.controlName + ".NumberValueInt == null";
+                    if (FControlMode == "Integer")
+                    {
+                        return ctrl.controlName + ".NumberValueInt == null";
+                    }
+                    else
+                    {
+                        return ctrl.controlName + ".NumberValueLongInt == null";
+                    }
                 }
             }
 
-            if (AFieldTypeDotNet.ToLower().Contains("int64"))
+            if (AFieldTypeDotNet.ToLower() == "int64")
             {
-                return "Convert.ToInt64(" + ctrl.controlName + ".NumberValueInt)";
+                return "Convert.ToInt64(" + ctrl.controlName + ".NumberValueLongInt)";
             }
-            else if (AFieldTypeDotNet.ToLower().Contains("int"))
+            else if (AFieldTypeDotNet.ToLower() == "int32")
             {
                 return "Convert.ToInt32(" + ctrl.controlName + ".NumberValueInt)";
             }

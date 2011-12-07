@@ -60,6 +60,8 @@ partial class MainForm
         this.textBox3 = new System.Windows.Forms.TextBox();
         this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
         this.groupBox1 = new System.Windows.Forms.GroupBox();
+        this.label9 = new System.Windows.Forms.Label();
+        this.txtLongInteger = new Ict.Common.Controls.TTxtNumericTextBox();
         this.label5 = new System.Windows.Forms.Label();
         this.label4 = new System.Windows.Forms.Label();
         this.label3 = new System.Windows.Forms.Label();
@@ -98,7 +100,7 @@ partial class MainForm
         //
         // textBox3
         //
-        this.textBox3.Location = new System.Drawing.Point(114, 182);
+        this.textBox3.Location = new System.Drawing.Point(114, 200);
         this.textBox3.Name = "textBox3";
         this.textBox3.Size = new System.Drawing.Size(175, 20);
         this.textBox3.TabIndex = 4;
@@ -120,6 +122,8 @@ partial class MainForm
         //
         // groupBox1
         //
+        this.groupBox1.Controls.Add(this.label9);
+        this.groupBox1.Controls.Add(this.txtLongInteger);
         this.groupBox1.Controls.Add(this.label5);
         this.groupBox1.Controls.Add(this.label4);
         this.groupBox1.Controls.Add(this.label3);
@@ -130,18 +134,46 @@ partial class MainForm
         this.groupBox1.Controls.Add(this.txtInteger);
         this.groupBox1.Location = new System.Drawing.Point(12, 40);
         this.groupBox1.Name = "groupBox1";
-        this.groupBox1.Size = new System.Drawing.Size(295, 133);
+        this.groupBox1.Size = new System.Drawing.Size(295, 154);
         this.groupBox1.TabIndex = 2;
         this.groupBox1.TabStop = false;
         this.groupBox1.Text = "TTxtNumericTextBoxes";
         //
+        // label9
+        //
+        this.label9.AutoSize = true;
+        this.label9.Location = new System.Drawing.Point(6, 101);
+        this.label9.Name = "label9";
+        this.label9.Size = new System.Drawing.Size(70, 13);
+        this.label9.TabIndex = 6;
+        this.label9.Text = "&Long Integer:";
+        //
+        // txtLongInteger
+        //
+        this.txtLongInteger.ControlMode = Ict.Common.Controls.TTxtNumericTextBox.TNumericTextBoxMode.LongInteger;
+        this.txtLongInteger.DecimalPlaces = 0;
+        this.txtLongInteger.Font =
+            new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        this.txtLongInteger.Location = new System.Drawing.Point(102, 98);
+        this.txtLongInteger.Name = "txtLongInteger";
+        this.txtLongInteger.NumberValueDecimal = new decimal(new int[] {
+                0,
+                0,
+                0,
+                0
+            });
+        this.txtLongInteger.Size = new System.Drawing.Size(175, 21);
+        this.txtLongInteger.TabIndex = 7;
+        this.txtLongInteger.Text = "0";
+        this.txtLongInteger.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+        //
         // label5
         //
         this.label5.AutoSize = true;
-        this.label5.Location = new System.Drawing.Point(6, 102);
+        this.label5.Location = new System.Drawing.Point(6, 126);
         this.label5.Name = "label5";
         this.label5.Size = new System.Drawing.Size(64, 13);
-        this.label5.TabIndex = 6;
+        this.label5.TabIndex = 8;
         this.label5.Text = "N&ormalText:";
         //
         // label4
@@ -167,7 +199,7 @@ partial class MainForm
         this.txtNormal.ControlMode = Ict.Common.Controls.TTxtNumericTextBox.TNumericTextBoxMode.NormalTextBox;
         this.txtNormal.DecimalPlaces = 0;
         this.txtNormal.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-        this.txtNormal.Location = new System.Drawing.Point(102, 99);
+        this.txtNormal.Location = new System.Drawing.Point(102, 123);
         this.txtNormal.Name = "txtNormal";
         this.txtNormal.NumberValueDecimal = new decimal(new int[] {
                 0,
@@ -176,7 +208,7 @@ partial class MainForm
                 0
             });
         this.txtNormal.Size = new System.Drawing.Size(175, 21);
-        this.txtNormal.TabIndex = 7;
+        this.txtNormal.TabIndex = 9;
         this.txtNormal.Text = "asdf";
         this.txtNormal.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
         //
@@ -256,7 +288,7 @@ partial class MainForm
         this.groupBox2.Controls.Add(this.numericUpDown1);
         this.groupBox2.Location = new System.Drawing.Point(313, 40);
         this.groupBox2.Name = "groupBox2";
-        this.groupBox2.Size = new System.Drawing.Size(218, 162);
+        this.groupBox2.Size = new System.Drawing.Size(218, 176);
         this.groupBox2.TabIndex = 5;
         this.groupBox2.TabStop = false;
         this.groupBox2.Text = "Dashboard";
@@ -376,7 +408,7 @@ partial class MainForm
         // label7
         //
         this.label7.AutoSize = true;
-        this.label7.Location = new System.Drawing.Point(12, 185);
+        this.label7.Location = new System.Drawing.Point(12, 203);
         this.label7.Name = "label7";
         this.label7.Size = new System.Drawing.Size(94, 13);
         this.label7.TabIndex = 3;
@@ -386,7 +418,7 @@ partial class MainForm
         //
         this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        this.ClientSize = new System.Drawing.Size(544, 213);
+        this.ClientSize = new System.Drawing.Size(544, 227);
         this.Controls.Add(this.groupBox2);
         this.Controls.Add(this.groupBox1);
         this.Controls.Add(this.label7);
@@ -404,6 +436,9 @@ partial class MainForm
         this.ResumeLayout(false);
         this.PerformLayout();
     }
+
+    private Ict.Common.Controls.TTxtNumericTextBox txtLongInteger;
+    private System.Windows.Forms.Label label9;
 
     private System.Windows.Forms.Label label8;
     private System.Windows.Forms.RadioButton rbtCurSymbRight;

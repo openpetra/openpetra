@@ -23,6 +23,7 @@
 //
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Odbc;
 using System.Data.Common;
@@ -30,7 +31,6 @@ using System.Text;
 using System.Threading;
 using System.IO;
 using System.Xml;
-using System.Web;
 using Ict.Common;
 using Ict.Common.DB.DBCaching;
 using Ict.Common.IO;
@@ -73,7 +73,7 @@ namespace Ict.Common.DB
         public const Int32 DB_DEBUGLEVEL_TRACE = 10;
 
         /// <summary>
-        /// this is the object that is used in the non ASP environment
+        /// store the current object for access to the database
         /// </summary>
         private static TDataBase MGDBAccessObj = null;
 
@@ -83,31 +83,17 @@ namespace Ict.Common.DB
         {
             set
             {
-                if (HttpContext.Current == null)
-                {
-                    MGDBAccessObj = value;
-                }
-                else
-                {
-                    HttpContext.Current.Session["DBACCESSOBJ"] = value;
-                }
+                MGDBAccessObj = value;
             }
             get
             {
-                if (HttpContext.Current == null)
-                {
-                    return MGDBAccessObj;
-                }
-                else
-                {
-                    return (TDataBase)HttpContext.Current.Session["DBACCESSOBJ"];
-                }
+                return MGDBAccessObj;
             }
         }
     }
 
     /// <summary>
-    /// every database system that works for OpenPetra has to implement this functions
+    /// every database system that works for OpenPetra has to implement these functions
     /// </summary>
     public interface IDataBaseRDBMS
     {
@@ -2115,9 +2101,18 @@ namespace Ict.Common.DB
         /// <summary>
         /// read an sql statement from file and remove the comments
         /// </summary>
-        /// <param name="ASqlFilename"></param>
-        /// <returns></returns>
         public static string ReadSqlFile(string ASqlFilename)
+        {
+            return ReadSqlFile(ASqlFilename, null);
+        }
+
+        /// <summary>
+        /// read an sql statement from file and remove the comments
+        /// </summary>
+        /// <param name="ASqlFilename"></param>
+        /// <param name="ADefines">Defines to be set in the sql statement</param>
+        /// <returns></returns>
+        public static string ReadSqlFile(string ASqlFilename, List <string>ADefines)
         {
             ASqlFilename = TAppSettingsManager.GetValue("SqlFiles.Path", ".") +
                            Path.DirectorySeparatorChar +
@@ -2137,12 +2132,26 @@ namespace Ict.Common.DB
             {
                 if (!line.Trim().StartsWith("--"))
                 {
-                    stmt += line.Trim() + " ";
+                    stmt += line.Trim() + Environment.NewLine;
                 }
             }
 
             reader.Close();
-            return stmt;
+
+            if (ADefines != null)
+            {
+                ProcessTemplate template = new ProcessTemplate(null);
+                template.FTemplateCode = stmt;
+
+                foreach (string define in ADefines)
+                {
+                    template.SetCodelet(define, "enabled");
+                }
+
+                return template.FinishWriting(true).Replace(Environment.NewLine, " ");
+            }
+
+            return stmt.Replace(Environment.NewLine, " ");
         }
 
         private bool FConnectionReady = false;

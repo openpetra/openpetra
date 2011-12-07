@@ -245,7 +245,8 @@ namespace Ict.Petra.Client.App.PetraClient
 
             // check whether there is a patch available; if this is a remote version, try to download a patch from the server
             TPatchTools patchTools = new TPatchTools(Path.GetFullPath(TClientSettings.Petra_Path_Bin + Path.DirectorySeparatorChar + ".."),
-                "30",
+                TClientSettings.Petra_Path_Bin,
+                TPatchTools.OPENPETRA_VERSIONPREFIX,
                 TClientSettings.PathTemp,
                 "",
                 "",

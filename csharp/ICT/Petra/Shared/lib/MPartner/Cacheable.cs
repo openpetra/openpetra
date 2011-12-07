@@ -161,7 +161,12 @@ namespace Ict.Petra.Shared.MPartner
         /// <summary>
         /// list of countries that are actually used in the database (smaller than the full country list)
         /// </summary>
-        CountryListFromExistingLocations
+        CountryListFromExistingLocations,
+
+        /// <summary>
+        /// list of available DataLabels for PartnerClasses
+        /// </summary>
+        DataLabelsForPartnerClassesList
     };
     /// <summary>
     /// Enums holding the possible cacheable tables for the Petra Partner Module, specifically Mailing submodule

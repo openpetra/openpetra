@@ -9,6 +9,13 @@ then
     exit
 fi
 
+if [ ! -f config.sh ]
+then
+  # the admin has run a config.sh file, but we cannot copy it to the destination because it does not exist in the right place
+  echo "Please copy the config.sh!"
+  exit
+fi
+
 mkdir -p $OpenPetraOrgPath
 cp -R * $OpenPetraOrgPath
 useradd $userName
@@ -19,21 +26,31 @@ chown $userName /home/$userName/.pgpass
 
 cd $OpenPetraOrgPath
 mkdir -p $OpenPetraOrgPath/log30
+mkdir -p $OpenPetraOrgPath/backup30
 touch $OpenPetraOrgPath/log30/Server.log
-cp $OpenPetraOrgPath/etc30/publickey-sample.xml $OpenPetraOrgPath/etc30/publickey.xml
-cp $OpenPetraOrgPath/etc30/privatekey-sample.xml $OpenPetraOrgPath/etc30/privatekey.xml
+if [ ! -f $OpenPetraOrgPath/etc30/publickey.xml ]
+  cp $OpenPetraOrgPath/etc30/publickey-sample.xml $OpenPetraOrgPath/etc30/publickey.xml
+fi
+if [ ! -f $OpenPetraOrgPath/etc30/privatekey.xml ]
+  cp $OpenPetraOrgPath/etc30/privatekey-sample.xml $OpenPetraOrgPath/etc30/privatekey.xml
+fi
 mkdir -p `dirname $OPENPETRA_LocationPublicKeyFile`
-ln -s $OpenPetraOrgPath/etc30/publickey.xml $OPENPETRA_LocationPublicKeyFile
+if [ ! -h $OPENPETRA_LocationPublicKeyFile ]
+  ln -s $OpenPetraOrgPath/etc30/publickey.xml $OPENPETRA_LocationPublicKeyFile
+fi
 mkdir -p /etc/sysconfig/openpetra
 ln -s $OpenPetraOrgPath/config.sh /etc/sysconfig/openpetra/openpetra`basename $OpenPetraOrgPath`
 ln -s $OpenPetraOrgPath/openpetraorg-server.sh /etc/init.d/openpetra`basename $OpenPetraOrgPath`
 chmod a+x /etc/init.d/openpetra`basename $OpenPetraOrgPath`
-cat /var/lib/pgsql/9.1/data/pg_hba.conf | grep md5 > /var/lib/pgsql/9.1/data/pg_hba.conf.new
+
+# make sure that our lines are first in the file
+echo "local  $OPENPETRA_DBNAME $OPENPETRA_DBUSER   md5" > /var/lib/pgsql/9.1/data/pg_hba.conf.new
+echo "host  $OPENPETRA_DBNAME $OPENPETRA_DBUSER  127.0.0.1/32   md5" >> /var/lib/pgsql/9.1/data/pg_hba.conf.new
+# for postgres user we need the following line (for creating new databases):
+#commented since it should be there by default
+#echo "local   postgres         postgres        ident">> /var/lib/pgsql/9.1/data/pg_hba.conf
+cat /var/lib/pgsql/9.1/data/pg_hba.conf > /var/lib/pgsql/9.1/data/pg_hba.conf.new
 mv /var/lib/pgsql/9.1/data/pg_hba.conf.new /var/lib/pgsql/9.1/data/pg_hba.conf
-echo "local  $OPENPETRA_DBNAME $OPENPETRA_DBUSER   md5" >> /var/lib/pgsql/9.1/data/pg_hba.conf
-echo "host  $OPENPETRA_DBNAME $OPENPETRA_DBUSER  127.0.0.1/32   md5" >> /var/lib/pgsql/9.1/data/pg_hba.conf
-# for postgres user we need the following line:
-echo "local   postgres         postgres        ident">> /var/lib/pgsql/9.1/data/pg_hba.conf
 /etc/init.d/postgresql-9.1 restart
 
 chown -R $userName $OpenPetraOrgPath

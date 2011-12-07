@@ -40,7 +40,8 @@ static public TSubmitChangesResult SubmitChanges({#DATASETNAME} AInspectDS, out 
     }
 
     TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
-    TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+    bool NewTransaction;
+    TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
     try
     {
@@ -50,20 +51,26 @@ static public TSubmitChangesResult SubmitChanges({#DATASETNAME} AInspectDS, out 
         {#SUBMITCHANGESINSERT}
         {#SUBMITCHANGESUPDATE}
         
-        if (SubmissionResult == TSubmitChangesResult.scrOK)
+        if (NewTransaction)
         {
-            DBAccess.GDBAccessObj.CommitTransaction();
-        }
-        else
-        {
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            if (SubmissionResult == TSubmitChangesResult.scrOK)
+            {
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            else
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
         }
     }
     catch (Exception e)
     {
         TLogging.Log("exception during saving dataset {#DATASETNAME}:" + e.Message);
 
-        DBAccess.GDBAccessObj.RollbackTransaction();
+        if (NewTransaction)
+        {
+            DBAccess.GDBAccessObj.RollbackTransaction();
+        }
 
         throw new Exception(e.ToString() + " " + e.Message);
     }

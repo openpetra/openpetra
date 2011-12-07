@@ -1,8 +1,6 @@
 <?xml version="1.0"?>
 <project name="WebServer-Build">
 
-<property name="Namespace" value="Ict.Petra.WebServer" />
-
 <!-- to avoid missing quickClean from cleanPetra task in OpenPetra.tobe.migrated.xml -->
 <target name="quickClean"/>
 

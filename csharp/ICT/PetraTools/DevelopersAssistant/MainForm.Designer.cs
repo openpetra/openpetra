@@ -55,6 +55,7 @@ namespace Ict.Tools.DevelopersAssistant
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.tabControl = new System.Windows.Forms.TabControl();
             this.TaskPage = new System.Windows.Forms.TabPage();
+            this.linkLabelBazaar = new System.Windows.Forms.LinkLabel();
             this.linkLabelBranchLocation = new System.Windows.Forms.LinkLabel();
             this.txtBranchLocation = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -112,6 +113,9 @@ namespace Ict.Tools.DevelopersAssistant
             this.txtOutput = new System.Windows.Forms.TextBox();
             this.OptionsPage = new System.Windows.Forms.TabPage();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.btnBrowseBazaar = new System.Windows.Forms.Button();
+            this.txtBazaarPath = new System.Windows.Forms.TextBox();
+            this.label17 = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
             this.txtFlashAfterSeconds = new System.Windows.Forms.TextBox();
             this.label13 = new System.Windows.Forms.Label();
@@ -157,6 +161,7 @@ namespace Ict.Tools.DevelopersAssistant
             //
             // TaskPage
             //
+            this.TaskPage.Controls.Add(this.linkLabelBazaar);
             this.TaskPage.Controls.Add(this.linkLabelBranchLocation);
             this.TaskPage.Controls.Add(this.txtBranchLocation);
             this.TaskPage.Controls.Add(this.label1);
@@ -169,6 +174,18 @@ namespace Ict.Tools.DevelopersAssistant
             this.TaskPage.TabIndex = 0;
             this.TaskPage.Text = "Tasks";
             this.TaskPage.UseVisualStyleBackColor = true;
+            //
+            // linkLabelBazaar
+            //
+            this.linkLabelBazaar.AutoSize = true;
+            this.linkLabelBazaar.Enabled = false;
+            this.linkLabelBazaar.Location = new System.Drawing.Point(574, 34);
+            this.linkLabelBazaar.Name = "linkLabelBazaar";
+            this.linkLabelBazaar.Size = new System.Drawing.Size(134, 13);
+            this.linkLabelBazaar.TabIndex = 5;
+            this.linkLabelBazaar.TabStop = true;
+            this.linkLabelBazaar.Text = "Open Bazaar Explorer here";
+            this.linkLabelBazaar.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelBazaar_LinkClicked);
             //
             // linkLabelBranchLocation
             //
@@ -810,15 +827,45 @@ namespace Ict.Tools.DevelopersAssistant
             //
             // groupBox4
             //
+            this.groupBox4.Controls.Add(this.btnBrowseBazaar);
+            this.groupBox4.Controls.Add(this.txtBazaarPath);
+            this.groupBox4.Controls.Add(this.label17);
             this.groupBox4.Controls.Add(this.label14);
             this.groupBox4.Controls.Add(this.txtFlashAfterSeconds);
             this.groupBox4.Controls.Add(this.label13);
-            this.groupBox4.Location = new System.Drawing.Point(21, 341);
+            this.groupBox4.Location = new System.Drawing.Point(21, 296);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(691, 66);
+            this.groupBox4.Size = new System.Drawing.Size(691, 108);
             this.groupBox4.TabIndex = 2;
             this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "Options that apply to all tasks";
+            this.groupBox4.Text = "Miscellaneous Options";
+            //
+            // btnBrowseBazaar
+            //
+            this.btnBrowseBazaar.Location = new System.Drawing.Point(659, 54);
+            this.btnBrowseBazaar.Name = "btnBrowseBazaar";
+            this.btnBrowseBazaar.Size = new System.Drawing.Size(26, 23);
+            this.btnBrowseBazaar.TabIndex = 5;
+            this.btnBrowseBazaar.Text = "...";
+            this.btnBrowseBazaar.UseVisualStyleBackColor = true;
+            this.btnBrowseBazaar.Click += new System.EventHandler(this.btnBrowseBazaar_Click);
+            //
+            // txtBazaarPath
+            //
+            this.txtBazaarPath.Enabled = false;
+            this.txtBazaarPath.Location = new System.Drawing.Point(135, 56);
+            this.txtBazaarPath.Name = "txtBazaarPath";
+            this.txtBazaarPath.Size = new System.Drawing.Size(518, 20);
+            this.txtBazaarPath.TabIndex = 4;
+            //
+            // label17
+            //
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(26, 59);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(103, 13);
+            this.label17.TabIndex = 3;
+            this.label17.Text = "Bazaar is installed at";
             //
             // label14
             //
@@ -858,7 +905,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.groupBox3.Controls.Add(this.lblAutoLogonPW);
             this.groupBox3.Controls.Add(this.txtAutoLogonUser);
             this.groupBox3.Controls.Add(this.lblAutoLogonUser);
-            this.groupBox3.Location = new System.Drawing.Point(21, 161);
+            this.groupBox3.Location = new System.Drawing.Point(21, 119);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(691, 171);
             this.groupBox3.TabIndex = 1;
@@ -967,7 +1014,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.groupBox1.Controls.Add(this.chkAutoStartServer);
             this.groupBox1.Location = new System.Drawing.Point(21, 16);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(691, 136);
+            this.groupBox1.Size = new System.Drawing.Size(691, 97);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Options that apply to individual tasks";
@@ -975,7 +1022,7 @@ namespace Ict.Tools.DevelopersAssistant
             // chkMinimizeServer
             //
             this.chkMinimizeServer.AutoSize = true;
-            this.chkMinimizeServer.Location = new System.Drawing.Point(41, 101);
+            this.chkMinimizeServer.Location = new System.Drawing.Point(41, 70);
             this.chkMinimizeServer.Name = "chkMinimizeServer";
             this.chkMinimizeServer.Size = new System.Drawing.Size(302, 17);
             this.chkMinimizeServer.TabIndex = 2;
@@ -985,7 +1032,7 @@ namespace Ict.Tools.DevelopersAssistant
             // chkAutoStopServer
             //
             this.chkAutoStopServer.AutoSize = true;
-            this.chkAutoStopServer.Location = new System.Drawing.Point(41, 68);
+            this.chkAutoStopServer.Location = new System.Drawing.Point(41, 47);
             this.chkAutoStopServer.Name = "chkAutoStopServer";
             this.chkAutoStopServer.Size = new System.Drawing.Size(419, 17);
             this.chkAutoStopServer.TabIndex = 1;
@@ -996,7 +1043,7 @@ namespace Ict.Tools.DevelopersAssistant
             // chkAutoStartServer
             //
             this.chkAutoStartServer.AutoSize = true;
-            this.chkAutoStartServer.Location = new System.Drawing.Point(41, 35);
+            this.chkAutoStartServer.Location = new System.Drawing.Point(41, 24);
             this.chkAutoStartServer.Name = "chkAutoStartServer";
             this.chkAutoStartServer.Size = new System.Drawing.Size(428, 17);
             this.chkAutoStartServer.TabIndex = 0;
@@ -1119,5 +1166,9 @@ namespace Ict.Tools.DevelopersAssistant
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.TextBox txtFlashAfterSeconds;
         private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.LinkLabel linkLabelBazaar;
+        private System.Windows.Forms.Button btnBrowseBazaar;
+        private System.Windows.Forms.TextBox txtBazaarPath;
+        private System.Windows.Forms.Label label17;
     }
 }

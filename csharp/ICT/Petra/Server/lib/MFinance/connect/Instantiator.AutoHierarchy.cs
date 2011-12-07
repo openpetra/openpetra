@@ -65,6 +65,7 @@ using Ict.Petra.Shared.Interfaces.MFinance.AP.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.AP.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.AR.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Budget.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MFinance.Budget.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.ImportExport.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Gift.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors;
@@ -90,6 +91,7 @@ using Ict.Petra.Server.MFinance.Instantiator.AP.UIConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.AP.WebConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.AR.WebConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.Budget.UIConnectors;
+using Ict.Petra.Server.MFinance.Instantiator.Budget.WebConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.ImportExport.WebConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.Gift.UIConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors;
@@ -115,6 +117,7 @@ using Ict.Petra.Server.MFinance.AP.UIConnectors;
 using Ict.Petra.Server.MFinance.AP.WebConnectors;
 //using Ict.Petra.Server.MFinance.AR.WebConnectors;
 //using Ict.Petra.Server.MFinance.Budget.UIConnectors;
+using Ict.Petra.Server.MFinance.Budget.WebConnectors;
 using Ict.Petra.Server.MFinance.ImportExport.WebConnectors;
 //using Ict.Petra.Server.MFinance.Gift.UIConnectors;
 using Ict.Petra.Server.MFinance.Gift.WebConnectors;
@@ -1196,6 +1199,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Budget
         private DateTime FStartTime;
 #endif
         private TBudgetUIConnectorsNamespace FBudgetUIConnectorsSubNamespace;
+        private TBudgetWebConnectorsNamespace FBudgetWebConnectorsSubNamespace;
 
         /// <summary>Constructor</summary>
         public TBudgetNamespace()
@@ -1287,6 +1291,35 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Budget
             }
 
         }
+
+        /// <summary>The 'BudgetWebConnectors' subnamespace contains further subnamespaces.</summary>
+        public IBudgetWebConnectorsNamespace WebConnectors
+        {
+            get
+            {
+                //
+                // Creates or passes a reference to an instantiator of sub-namespaces that
+                // reside in the 'Budget.WebConnectors' sub-namespace.
+                // A call to this function is done everytime a Client uses an object of this
+                // sub-namespace - this is fully transparent to the Client.
+                //
+                // @return A reference to an instantiator of sub-namespaces that reside in
+                //         the 'Budget.WebConnectors' sub-namespace
+                //
+
+                // accessing TWebConnectorsNamespace the first time? > instantiate the object
+                if (FBudgetWebConnectorsSubNamespace == null)
+                {
+                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
+                    //      * for the Generator: the name of this Type ('TBudgetWebConnectorsNamespace') needs to come out of the XML definition,
+                    //      * The Namespace where it resides in ('Ict.Petra.Server.Budget.Instantiator.WebConnectors') should be automatically contructable.
+                    FBudgetWebConnectorsSubNamespace = new TBudgetWebConnectorsNamespace();
+                }
+
+                return FBudgetWebConnectorsSubNamespace;
+            }
+
+        }
     }
 }
 
@@ -1359,6 +1392,92 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Budget.UIConnectors
             return null; // make sure that the TBudgetUIConnectorsNamespace object exists until this AppDomain is unloaded!
         }
 
+    }
+}
+
+namespace Ict.Petra.Server.MFinance.Instantiator.Budget.WebConnectors
+{
+    /// <summary>auto generated class </summary>
+    public class TBudgetWebConnectorsNamespace : MarshalByRefObject, IBudgetWebConnectorsNamespace
+    {
+#if DEBUGMODE
+        private DateTime FStartTime;
+#endif
+
+        /// <summary>Constructor</summary>
+        public TBudgetWebConnectorsNamespace()
+        {
+#if DEBUGMODE
+            if (TLogging.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
+            }
+
+            FStartTime = DateTime.Now;
+#endif
+        }
+
+        // NOTE AutoGeneration: This destructor is only needed for debugging...
+#if DEBUGMODE
+        /// <summary>Destructor</summary>
+        ~TBudgetWebConnectorsNamespace()
+        {
+#if DEBUGMODELONGRUNNINGFINALIZERS
+            const Int32 MAX_ITERATIONS = 100000;
+            System.Int32 LoopCounter;
+            object MyObject;
+            object MyObject2;
+#endif
+            if (TLogging.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
+                                                                                                DateTime.Now.Ticks -
+                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
+            }
+
+#if DEBUGMODELONGRUNNINGFINALIZERS
+            MyObject = new object();
+            if (TLogging.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
+            }
+
+            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
+            {
+                MyObject2 = new object();
+                GC.KeepAlive(MyObject);
+            }
+
+            if (TLogging.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
+            }
+
+#endif
+        }
+
+#endif
+
+        /// NOTE AutoGeneration: This function is all-important!!!
+        public override object InitializeLifetimeService()
+        {
+            return null; // make sure that the TBudgetWebConnectorsNamespace object exists until this AppDomain is unloaded!
+        }
+
+        /// generated method from connector
+        public BudgetTDS LoadBudget(Int32 ALedgerNumber)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector), "LoadBudget", ";INT;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector.LoadBudget(ALedgerNumber);
+        }
+
+        /// generated method from connector
+        public TSubmitChangesResult SaveBudget(ref BudgetTDS AInspectDS,
+                                               out TVerificationResultCollection AVerificationResult)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector), "SaveBudget", ";BUDGETTDS;TVERIFICATIONRESULTCOLLECTION;");
+            return Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector.SaveBudget(ref AInspectDS, out AVerificationResult);
+        }
     }
 }
 
@@ -2228,10 +2347,22 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
         }
 
         /// generated method from connector
-        public GiftBatchTDS LoadAGiftBatch(Int32 ALedgerNumber)
+        public DataTable GetAvailableGiftYears(Int32 ALedgerNumber,
+                                               out String ADisplayMember,
+                                               out String AValueMember)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "LoadAGiftBatch", ";INT;", ALedgerNumber);
-            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.LoadAGiftBatch(ALedgerNumber);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "GetAvailableGiftYears", ";INT;STRING;STRING;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.GetAvailableGiftYears(ALedgerNumber, out ADisplayMember, out AValueMember);
+        }
+
+        /// generated method from connector
+        public GiftBatchTDS LoadAGiftBatch(Int32 ALedgerNumber,
+                                           System.String ABatchStatus,
+                                           Int32 AYear,
+                                           Int32 APeriod)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "LoadAGiftBatch", ";INT;STRING;INT;INT;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.LoadAGiftBatch(ALedgerNumber, ABatchStatus, AYear, APeriod);
         }
 
         /// generated method from connector
@@ -2302,13 +2433,12 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
         }
 
         /// generated method from connector
-        public System.Boolean ExportAllGiftBatchData(ref ArrayList batches,
-                                                     Hashtable requestParams,
-                                                     out String exportString,
-                                                     out TVerificationResultCollection AMessages)
+        public Int32 ExportAllGiftBatchData(Hashtable requestParams,
+                                            out String exportString,
+                                            out TVerificationResultCollection AMessages)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "ExportAllGiftBatchData", ";ARRAYLIST;HASHTABLE;STRING;TVERIFICATIONRESULTCOLLECTION;");
-            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.ExportAllGiftBatchData(ref batches, requestParams, out exportString, out AMessages);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "ExportAllGiftBatchData", ";HASHTABLE;STRING;TVERIFICATIONRESULTCOLLECTION;");
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.ExportAllGiftBatchData(requestParams, out exportString, out AMessages);
         }
 
         /// generated method from connector
@@ -2612,6 +2742,79 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
         }
 
         /// generated method from connector
+        public System.Boolean GetCurrentPeriodDates(Int32 ALedgerNumber,
+                                                    out DateTime AStartDate,
+                                                    out DateTime AEndDate)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TAccountingPeriodsWebConnector), "GetCurrentPeriodDates", ";INT;DATETIME;DATETIME;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TAccountingPeriodsWebConnector.GetCurrentPeriodDates(ALedgerNumber, out AStartDate, out AEndDate);
+        }
+
+        /// generated method from connector
+        public System.Boolean GetCurrentPostingRangeDates(Int32 ALedgerNumber,
+                                                          out DateTime AStartDateCurrentPeriod,
+                                                          out DateTime AEndDateLastForwardingPeriod)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TAccountingPeriodsWebConnector), "GetCurrentPostingRangeDates", ";INT;DATETIME;DATETIME;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TAccountingPeriodsWebConnector.GetCurrentPostingRangeDates(ALedgerNumber, out AStartDateCurrentPeriod, out AEndDateLastForwardingPeriod);
+        }
+
+        /// generated method from connector
+        public System.Boolean GetRealPeriod(System.Int32 ALedgerNumber,
+                                            System.Int32 ADiffPeriod,
+                                            System.Int32 AYear,
+                                            System.Int32 APeriod,
+                                            out System.Int32 ARealPeriod,
+                                            out System.Int32 ARealYear)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TAccountingPeriodsWebConnector), "GetRealPeriod", ";INT;INT;INT;INT;INT;INT;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TAccountingPeriodsWebConnector.GetRealPeriod(ALedgerNumber, ADiffPeriod, AYear, APeriod, out ARealPeriod, out ARealYear);
+        }
+
+        /// generated method from connector
+        public System.DateTime GetPeriodStartDate(System.Int32 ALedgerNumber,
+                                                  System.Int32 AYear,
+                                                  System.Int32 ADiffPeriod,
+                                                  System.Int32 APeriod)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TAccountingPeriodsWebConnector), "GetPeriodStartDate", ";INT;INT;INT;INT;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TAccountingPeriodsWebConnector.GetPeriodStartDate(ALedgerNumber, AYear, ADiffPeriod, APeriod);
+        }
+
+        /// generated method from connector
+        public System.DateTime GetPeriodEndDate(Int32 ALedgerNumber,
+                                                System.Int32 AYear,
+                                                System.Int32 ADiffPeriod,
+                                                System.Int32 APeriod)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TAccountingPeriodsWebConnector), "GetPeriodEndDate", ";INT;INT;INT;INT;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TAccountingPeriodsWebConnector.GetPeriodEndDate(ALedgerNumber, AYear, ADiffPeriod, APeriod);
+        }
+
+        /// generated method from connector
+        public System.Boolean GetPeriodDates(Int32 ALedgerNumber,
+                                             Int32 AYearNumber,
+                                             Int32 ADiffPeriod,
+                                             Int32 APeriodNumber,
+                                             out DateTime AStartDatePeriod,
+                                             out DateTime AEndDatePeriod)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TAccountingPeriodsWebConnector), "GetPeriodDates", ";INT;INT;INT;INT;DATETIME;DATETIME;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TAccountingPeriodsWebConnector.GetPeriodDates(ALedgerNumber, AYearNumber, ADiffPeriod, APeriodNumber, out AStartDatePeriod, out AEndDatePeriod);
+        }
+
+        /// generated method from connector
+        public DataTable GetAvailableGLYears(Int32 ALedgerNumber,
+                                             System.Int32 ADiffPeriod,
+                                             System.Boolean AIncludeNextYear,
+                                             out String ADisplayMember,
+                                             out String AValueMember)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TAccountingPeriodsWebConnector), "GetAvailableGLYears", ";INT;INT;BOOL;STRING;STRING;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TAccountingPeriodsWebConnector.GetAvailableGLYears(ALedgerNumber, ADiffPeriod, AIncludeNextYear, out ADisplayMember, out AValueMember);
+        }
+
+        /// generated method from connector
         public System.Boolean TPeriodMonthEnd(System.Int32 ALedgerNum,
                                               System.Boolean AIsInInfoMode,
                                               out TVerificationResultCollection AVerificationResult)
@@ -2638,36 +2841,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TRevaluationWebConnector), "Revaluate", ";INT;INT;STRING.ARRAY;DECIMAL.ARRAY;TVERIFICATIONRESULTCOLLECTION;");
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TRevaluationWebConnector.Revaluate(ALedgerNum, AAccoutingPeriod, AForeignCurrency, ANewExchangeRate, out AVerificationResult);
-        }
-
-        /// generated method from connector
-        public System.Boolean GetCurrentPeriodDates(Int32 ALedgerNumber,
-                                                    out DateTime AStartDate,
-                                                    out DateTime AEndDate)
-        {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "GetCurrentPeriodDates", ";INT;DATETIME;DATETIME;", ALedgerNumber);
-            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetCurrentPeriodDates(ALedgerNumber, out AStartDate, out AEndDate);
-        }
-
-        /// generated method from connector
-        public System.Boolean GetCurrentPostingRangeDates(Int32 ALedgerNumber,
-                                                          out DateTime AStartDateCurrentPeriod,
-                                                          out DateTime AEndDateLastForwardingPeriod)
-        {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "GetCurrentPostingRangeDates", ";INT;DATETIME;DATETIME;", ALedgerNumber);
-            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetCurrentPostingRangeDates(ALedgerNumber, out AStartDateCurrentPeriod, out AEndDateLastForwardingPeriod);
-        }
-
-        /// generated method from connector
-        public System.Boolean GetPeriodDates(Int32 ALedgerNumber,
-                                             Int32 AYearNumber,
-                                             Int32 ADiffPeriod,
-                                             Int32 APeriodNumber,
-                                             out DateTime AStartDatePeriod,
-                                             out DateTime AEndDatePeriod)
-        {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "GetPeriodDates", ";INT;INT;INT;INT;DATETIME;DATETIME;", ALedgerNumber);
-            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetPeriodDates(ALedgerNumber, AYearNumber, ADiffPeriod, APeriodNumber, out AStartDatePeriod, out AEndDatePeriod);
         }
 
         /// generated method from connector
@@ -3350,62 +3523,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Reporting.UIConnectors
         {
             #region ManualCode
             FFinanceReportingUIConnector.SelectLedger(ALedgerNr);
-            #endregion ManualCode
-        }
-
-        /// generated method from interface
-        public void GetRealPeriod(System.Int32 ADiffPeriod,
-                                  System.Int32 AYear,
-                                  System.Int32 APeriod,
-                                  out System.Int32 ARealPeriod,
-                                  out System.Int32 ARealYear)
-        {
-            #region ManualCode
-            FFinanceReportingUIConnector.GetRealPeriod(ADiffPeriod, AYear, APeriod, out ARealPeriod, out ARealYear);
-            #endregion ManualCode
-        }
-
-        /// generated method from interface
-        public void GetLedgerPeriodDetails(out System.Int32 ANumberAccountingPeriods,
-                                           out System.Int32 ANumberForwardingPeriods,
-                                           out System.Int32 ACurrentPeriod,
-                                           out System.Int32 ACurrentYear)
-        {
-            #region ManualCode
-            FFinanceReportingUIConnector.GetLedgerPeriodDetails(out ANumberAccountingPeriods,
-                out ANumberForwardingPeriods,
-                out ACurrentPeriod,
-                out ACurrentYear);
-            #endregion ManualCode
-        }
-
-        /// generated method from interface
-        public System.DateTime GetPeriodStartDate(System.Int32 AYear,
-                                                  System.Int32 ADiffPeriod,
-                                                  System.Int32 APeriod)
-        {
-            #region ManualCode
-            return FFinanceReportingUIConnector.GetPeriodStartDate(AYear, ADiffPeriod, APeriod);
-            #endregion ManualCode
-        }
-
-        /// generated method from interface
-        public System.DateTime GetPeriodEndDate(System.Int32 AYear,
-                                                System.Int32 ADiffPeriod,
-                                                System.Int32 APeriod)
-        {
-            #region ManualCode
-            return FFinanceReportingUIConnector.GetPeriodEndDate(AYear, ADiffPeriod, APeriod);
-            #endregion ManualCode
-        }
-
-        /// generated method from interface
-        public System.Data.DataTable GetAvailableFinancialYears(System.Int32 ADiffPeriod,
-                                                                out System.String ADisplayMember,
-                                                                out System.String AValueMember)
-        {
-            #region ManualCode
-            return FFinanceReportingUIConnector.GetAvailableFinancialYears(ADiffPeriod, out ADisplayMember, out AValueMember);
             #endregion ManualCode
         }
 

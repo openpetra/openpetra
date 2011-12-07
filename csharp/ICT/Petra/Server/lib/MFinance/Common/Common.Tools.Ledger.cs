@@ -60,17 +60,24 @@ namespace Ict.Petra.Server.MFinance.Common
 
         private void LoadInfoLine()
         {
+            bool NewTransaction = false;
+
             try
             {
-                TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+                TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
                 ledger = ALedgerAccess.LoadByPrimaryKey(ledgerNumber, transaction);
-                DBAccess.GDBAccessObj.CommitTransaction();
                 row = (ALedgerRow)ledger[0];
             }
             catch (Exception exception)
             {
-                DBAccess.GDBAccessObj.RollbackTransaction();
                 throw exception;
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
             }
         }
 

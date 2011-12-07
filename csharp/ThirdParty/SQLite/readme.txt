@@ -1,8 +1,13 @@
-from http://system.data.sqlite.org/index.html/doc/trunk/www/downloads.wiki
+sqlite3.dll has been downloaded from sqlite.org
 
-Precompiled Binaries for 32-bit Windows (.NET Framework 4.0) 
-sqlite-netFx40-binary-bundle-Win32-2010-1.0.76.0.zip
-This binary package features the mixed-mode assembly and contains all the binaries for the x86 version of the System.Data.SQLite 1.0.76.0 (3.7.8) package. 
-The Visual C++ 2010 SP1 runtime for x86 and the .NET Framework 4.0 are required.
+Mono.Data.Sqlite is from C:\Program Files (x86)\Mono-2.10.6\lib\mono\2.0
+Version for .net 4.0 would not work on Windows. see also http://bugzilla.xamarin.com/show_bug.cgi?id=2148
+Unhandled Exception: System.TypeLoadException: Inheritance security rules
+violated by type: 'Mono.Data.Sqlite.SqliteConnectionHandle'. Derived types must
+either match the security accessibility of the base type or be less accessible.
 
-The managed version System.Data.SQLite.ManagedOnly.dll has been built from the source, System.Data.SQLite.2008, Release, Mixed Platforms.
+other problem: cannot open on Windows?
+http://bugzilla.xamarin.com/show_bug.cgi?id=152
+
+see also http://system.data.sqlite.org/index.html/doc/trunk/www/downloads.wiki
+The problem is that those dlls do not seem to work on Linux, I can't get them to work (November 2011).

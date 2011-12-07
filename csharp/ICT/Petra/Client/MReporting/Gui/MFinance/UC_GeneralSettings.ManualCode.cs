@@ -30,10 +30,13 @@ using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Common.Controls;
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Shared.MReporting;
+using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance;
 using SourceGrid.Selection;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
@@ -44,10 +47,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
     public partial class TFrmUC_GeneralSettings
     {
         private int FLedgerNumber = -1;
-        private int FNumberAccountingPeriods;
-        private int FNumberForwardingPeriods;
-        private int FCurrentPeriod;
-        private int FCurrentYear;
+        private ALedgerRow FLedgerRow = null;
 
         /// <summary>
         /// Initialisation
@@ -69,10 +69,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         public void InitialiseLedger(int ALedgerNumber)
         {
             FLedgerNumber = ALedgerNumber;
+            FLedgerRow =
+                ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
 
             TRemote.MFinance.Reporting.UIConnectors.SelectLedger(FLedgerNumber);
-            TRemote.MFinance.Reporting.UIConnectors.GetLedgerPeriodDetails(out FNumberAccountingPeriods, out FNumberForwardingPeriods,
-                out FCurrentPeriod, out FCurrentYear);
 
             txtLedger.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
 
@@ -147,8 +147,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     CheckQuarter(Year, Quarter);
                 }
 
-                dtpStartDate.Date = TRemote.MFinance.Reporting.UIConnectors.GetPeriodStartDate(Year, DiffPeriod, (Quarter * 3 - 2));
-                dtpEndDate.Date = TRemote.MFinance.Reporting.UIConnectors.GetPeriodEndDate(Year, DiffPeriod, Quarter * 3);
+                dtpStartDate.Date = TRemote.MFinance.GL.WebConnectors.GetPeriodStartDate(FLedgerNumber, Year, DiffPeriod, (Quarter * 3 - 2));
+                dtpEndDate.Date = TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(FLedgerNumber, Year, DiffPeriod, Quarter * 3);
             }
             else if (rbtPeriod.Checked)
             {
@@ -173,8 +173,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     }
                 }
 
-                dtpStartDate.Date = TRemote.MFinance.Reporting.UIConnectors.GetPeriodStartDate(Year, DiffPeriod, StartPeriod);
-                dtpEndDate.Date = TRemote.MFinance.Reporting.UIConnectors.GetPeriodEndDate(Year, DiffPeriod, EndPeriod);
+                dtpStartDate.Date = TRemote.MFinance.GL.WebConnectors.GetPeriodStartDate(FLedgerNumber, Year, DiffPeriod, StartPeriod);
+                dtpEndDate.Date = TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(FLedgerNumber, Year, DiffPeriod, EndPeriod);
             }
             else if (rbtDate.Checked)
             {
@@ -233,17 +233,17 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             {
                 if (txtStartPeriod.Text.Length == 0)
                 {
-                    txtStartPeriod.Text = FCurrentPeriod.ToString();
+                    txtStartPeriod.Text = FLedgerRow.CurrentPeriod.ToString();
                 }
 
                 if (txtEndPeriod.Text.Length == 0)
                 {
-                    txtEndPeriod.Text = FCurrentPeriod.ToString();
+                    txtEndPeriod.Text = FLedgerRow.CurrentPeriod.ToString();
                 }
 
                 if (cmbPeriodYear.SelectedIndex == -1)
                 {
-                    cmbPeriodYear.SetSelectedInt32(FCurrentYear);
+                    cmbPeriodYear.SetSelectedInt32(FLedgerRow.CurrentFinancialYear);
                 }
             }
 
@@ -329,20 +329,20 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             System.Int32 RealPeriod;
             System.Int32 RealYear;
 
-            TRemote.MFinance.Reporting.UIConnectors.GetRealPeriod(0, AYear, APeriodNr, out RealPeriod, out RealYear);
+            TRemote.MFinance.GL.WebConnectors.GetRealPeriod(FLedgerNumber, 0, AYear, APeriodNr, out RealPeriod, out RealYear);
 
-            if (RealYear == FCurrentYear)
+            if (RealYear == FLedgerRow.CurrentFinancialYear)
             {
-                ValidRange = Catalog.GetString("1 and ") + Convert.ToString(FCurrentPeriod + FNumberForwardingPeriods);
+                ValidRange = Catalog.GetString("1 and ") + Convert.ToString(FLedgerRow.CurrentPeriod + FLedgerRow.NumberFwdPostingPeriods);
             }
             else
             {
-                ValidRange = Catalog.GetString("1 and ") + FNumberAccountingPeriods.ToString();
+                ValidRange = Catalog.GetString("1 and ") + FLedgerRow.NumberOfAccountingPeriods.ToString();
             }
 
             if ((APeriodNr <= 0)
-                || ((RealYear == FCurrentYear) && (RealPeriod > FCurrentPeriod + FNumberForwardingPeriods))
-                || ((RealYear < FCurrentYear) && (APeriodNr > FNumberAccountingPeriods)))
+                || ((RealYear == FLedgerRow.CurrentFinancialYear) && (RealPeriod > FLedgerRow.CurrentPeriod + FLedgerRow.NumberFwdPostingPeriods))
+                || ((RealYear < FLedgerRow.CurrentFinancialYear) && (APeriodNr > FLedgerRow.NumberFwdPostingPeriods)))
             {
                 FPetraUtilsObject.AddVerificationResult(new TVerificationResult("",
                         Catalog.GetString("Invalid Period entered.") + Environment.NewLine + Catalog.GetString("Period must be between ") +
@@ -366,20 +366,21 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             System.Int32 RealPeriod;
             System.Int32 RealYear;
 
-            TRemote.MFinance.Reporting.UIConnectors.GetRealPeriod(0, AYear, AQuarter * 3 - 2, out RealPeriod, out RealYear);
+            TRemote.MFinance.GL.WebConnectors.GetRealPeriod(FLedgerNumber, 0, AYear, AQuarter * 3 - 2, out RealPeriod, out RealYear);
 
-            if (RealYear == FCurrentYear)
+            if (RealYear == FLedgerRow.CurrentFinancialYear)
             {
-                ValidRange = Catalog.GetString("1 and ") + Convert.ToString(((FCurrentPeriod + FNumberForwardingPeriods) - 1) / 3 + 1);
+                ValidRange = Catalog.GetString("1 and ") + Convert.ToString(
+                    ((FLedgerRow.CurrentPeriod + FLedgerRow.NumberFwdPostingPeriods) - 1) / 3 + 1);
             }
             else
             {
-                ValidRange = Catalog.GetString("1 and ") + Convert.ToString((FNumberAccountingPeriods - 1) / 3 + 1);
+                ValidRange = Catalog.GetString("1 and ") + Convert.ToString((FLedgerRow.NumberOfAccountingPeriods - 1) / 3 + 1);
             }
 
             if ((AQuarter <= 0)
-                || ((RealYear == FCurrentYear) && (RealPeriod > FCurrentPeriod + FNumberForwardingPeriods))
-                || ((RealYear < FCurrentYear) && (AQuarter > 4)))
+                || ((RealYear == FLedgerRow.CurrentFinancialYear) && (RealPeriod > FLedgerRow.CurrentPeriod + FLedgerRow.NumberFwdPostingPeriods))
+                || ((RealYear < FLedgerRow.CurrentFinancialYear) && (AQuarter > 4)))
             {
                 FPetraUtilsObject.AddVerificationResult(new TVerificationResult("",
                         Catalog.GetString("Invalid Quarter entered.") + Environment.NewLine + Catalog.GetString("Quarter must be between ") +

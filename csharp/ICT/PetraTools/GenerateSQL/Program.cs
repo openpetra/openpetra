@@ -109,7 +109,7 @@ namespace Ict.Tools.GenerateSQL
             }
             catch (Exception e)
             {
-                System.Console.WriteLine("Error: " + e.Message);
+                System.Console.WriteLine("Error " + e.GetType().ToString() + ": " + e.Message);
                 System.Console.WriteLine(e.StackTrace);
                 System.Console.WriteLine();
                 System.Console.WriteLine("generate the SQL files to create the database in SQL");

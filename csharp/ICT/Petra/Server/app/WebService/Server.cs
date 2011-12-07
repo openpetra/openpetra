@@ -44,6 +44,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Jayrock.Json;
 using Ict.Petra.Server.MPartner.Import;
+using Ict.Petra.Shared;
 
 namespace PetraWebService
 {
@@ -108,6 +109,8 @@ public class TOpenPetraOrg : WebService
             TheServerManager.EstablishDBConnection();
         }
 
+        Session["DBACCESSOBJ"] = DBAccess.GDBAccessObj;
+
         return true;
     }
 
@@ -124,6 +127,7 @@ public class TOpenPetraOrg : WebService
             TClientManager.PerformLoginChecks(
                 username.ToUpper(), password.Trim(), "WEB", "127.0.0.1", out ProcessID, out ASystemEnabled);
             Session["LoggedIn"] = true;
+            Session["USERINFO"] = UserInfo.GUserInfo;
 
             DBAccess.GDBAccessObj.UserID = username.ToUpper();
 
@@ -156,6 +160,9 @@ public class TOpenPetraOrg : WebService
     public bool IsUserLoggedIn()
     {
         object loggedIn = Session["LoggedIn"];
+
+        DBAccess.GDBAccessObj = (TDataBase)Session["DBACCESSOBJ"];
+        UserInfo.GUserInfo = (TPetraPrincipal)Session["USERINFO"];
 
         if (null != loggedIn)
         {
