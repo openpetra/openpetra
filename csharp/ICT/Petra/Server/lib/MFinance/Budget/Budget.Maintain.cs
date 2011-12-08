@@ -154,11 +154,16 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             string CostCentre = string.Empty;
             string Account = string.Empty;
             string BudgetType = string.Empty;
-            int Year = 0;
+            int YearFromCSV = 0;
 			decimal[] BudgetPeriods = new decimal[12];
+			int YearForBudgetRevision = 0;
+            int NewBudgetRevision = 0;
+			bool RunOnce = false;
 
-        	int newSequence = -1;
+        	
+			int newSequence = -1;
 
+			//Find the next budget sequence
             if (AImportDS.ABudget.Rows.Find(new object[] { newSequence }) != null)
             {
                 while (AImportDS.ABudget.Rows.Find(new object[] { newSequence }) != null)
@@ -167,11 +172,13 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                 }
             }
 
-            Int32 rowNumber = 0;
+            int rowNumber = 0;
             	
             while (!DataFile.EndOfStream)
             {
-                decimal totalBudgetRowAmount = 0;
+            	if(RunOnce) newSequence--;
+
+            	decimal totalBudgetRowAmount = 0;
             	
             	try
                 {
@@ -217,30 +224,42 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 	                    && BudgetType != MFinanceConstants.BUDGET_INFLATE_BASE
 	                   )
 	                {
-	                	throw new InvalidOperationException("Budget Type: " + BudgetType + " does not exist.");
+	                	throw new InvalidOperationException("Budget Type: " + BudgetType + " in row: " + rowNumber.ToString() + " does not exist.");
 	                }
 	                
-					//TODO: Change this formula
-	                Year = Convert.ToInt32(StringHelper.GetNextCSV(ref Line, Separator, false));
+	                //Calculate the budget Year
+	                YearFromCSV = Convert.ToInt32(StringHelper.GetNextCSV(ref Line, Separator, false));
 
-	                ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber);
+	                ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, null);
 	                ALedgerRow LedgerRow = (ALedgerRow)LedgerTable.Rows[0];
 
-	                //TAccountingPeriodsWebConnector.GetPeriodEndDate();
-	                //Int32  YearForBudgetRevision = LedgerRow.
-	                
-	                /*
-					DateTime currentYearEnd = GetPeriodEndDate(ALedgerNumber,
-																LedgerTable[0].CurrentFinancialYear,
-																0,
-																LedgerTable[0].NumberOfAccountingPeriods);
-					currentYearEnd.AddYears(-1 * (LedgerTable[0].CurrentFinancialYear - Convert.ToInt32(row[0]))).ToString("yyyy")
-					yearforbudgetrevision=currentYearEnd.Year - YearFromCSV + ledger.currentfinancialyear
-					using namespace Ict.Petra.Server.MFinance.GL.WebConnectors
-					TAccountingPeriodsWebConnector.GetPeriodEndDate 
-					 */
+	                DateTime CurrentYearEnd = TAccountingPeriodsWebConnector.GetPeriodEndDate(ALedgerNumber, LedgerRow.CurrentFinancialYear, 0, LedgerRow.NumberOfAccountingPeriods);
+
+	               	YearForBudgetRevision = YearFromCSV - CurrentYearEnd.Year + LedgerRow.CurrentFinancialYear;
 					
-					//Read the budgetperiod values to check if valid according to type
+		            //Add the budget revision sequence. Only need to do once
+					if (!RunOnce)
+					{
+			            RunOnce = true;
+			            
+						if (AImportDS.ABudgetRevision.Rows.Find(new object[] { ALedgerNumber, YearForBudgetRevision, NewBudgetRevision }) != null)
+			            {
+			                while (AImportDS.ABudgetRevision.Rows.Find(new object[] { ALedgerNumber, YearForBudgetRevision, NewBudgetRevision }) != null)
+			                {
+			                    NewBudgetRevision++;
+			                }
+			            }
+			
+			            ABudgetRevisionRow BudgetRevisionRow = (ABudgetRevisionRow)AImportDS.ABudgetRevision.NewRowTyped();
+			            BudgetRevisionRow.LedgerNumber = ALedgerNumber;
+			            BudgetRevisionRow.Year = YearForBudgetRevision;
+			            BudgetRevisionRow.Revision = NewBudgetRevision;
+			            BudgetRevisionRow.Description = "Budget Import from: " + ACSVFileName;
+			            AImportDS.ABudgetRevision.Rows.Add(BudgetRevisionRow);
+					}
+
+		            //Read the budgetperiod values to check if valid according to type
+	                Array.Clear(BudgetPeriods, 0, 12);
 										
 	                for (int i = 0; i < 12; i++)
 	                {
@@ -253,19 +272,23 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 	                switch (BudgetType)
 	                {
 	                	case MFinanceConstants.BUDGET_SAME:
-	                		if (!CheckBudgetTypeSame(BudgetPeriods)) ErrorInPeriodValues = true;
+	                		if (Array.TrueForAll(BudgetPeriods, IsZero)
+	                		    || !ValidateBudgetTypeSame(BudgetPeriods)) ErrorInPeriodValues = true;
 	                		break;
 	                	case MFinanceConstants.BUDGET_SPLIT:
-	                		if (!CheckBudgetTypeSplit(BudgetPeriods)) ErrorInPeriodValues = true;
+	                		if (Array.TrueForAll(BudgetPeriods, IsZero)
+	                		    || !ValidateBudgetTypeSplit(BudgetPeriods)) ErrorInPeriodValues = true;
 	                		break;
 	                	case MFinanceConstants.BUDGET_INFLATE_BASE:
-	                		if (!CheckBudgetTypeInflateBase(BudgetPeriods)) ErrorInPeriodValues = true;
+	                		if (Array.TrueForAll(BudgetPeriods, IsZero)
+	                		    || !ValidateBudgetTypeInflateBase(BudgetPeriods)) ErrorInPeriodValues = true;
 	                		break;
 	                	case MFinanceConstants.BUDGET_INFLATE_N:
-	                		if (!CheckBudgetTypeInflateN(BudgetPeriods)) ErrorInPeriodValues = true;
+	                		if (Array.TrueForAll(BudgetPeriods, IsZero)
+	                		    || !ValidateBudgetTypeInflateN(BudgetPeriods)) ErrorInPeriodValues = true;
 	                		break;
 	                	default: //MFinanceConstants.BUDGET_ADHOC
-	                		//Nothing to do
+	                		if (Array.TrueForAll(BudgetPeriods, IsZero)) ErrorInPeriodValues = true;
 	                		break;
 	                }
 
@@ -275,34 +298,32 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                     	throw new InvalidOperationException(String.Format("The budget in row {0} for Ledger: {1}, Year: {2}, Cost Centre: {3} and Account: {4}, does not have values consistent with Budget Type: {5}.",
 		                			                                            rowNumber,
 		                			                                            ALedgerNumber,
-		                			                                           	Year,
+		                			                                           	YearFromCSV,
 		                			                                          	CostCentre,
 		                			                                         	Account,
 		                			                                         	BudgetType));
                     }
 	                
+                    //Add the new budget row
                     ABudgetRow BudgetRow = (ABudgetRow)AImportDS.ABudget.NewRowTyped();
 		            BudgetRow.BudgetSequence = newSequence;
 		            BudgetRow.LedgerNumber = ALedgerNumber;
-		            BudgetRow.Year = Year;
+		            BudgetRow.Year = YearForBudgetRevision;
+		            BudgetRow.Revision = NewBudgetRevision;
 		            BudgetRow.CostCentreCode = CostCentre;
 		            BudgetRow.AccountCode = Account;
 		            BudgetRow.BudgetTypeCode = BudgetType;
 	                AImportDS.ABudget.Rows.Add(BudgetRow);
 
 	                //Add the budget periods
-	                Array.Clear(BudgetPeriods, 0, 12);
-
 	                for (int i = 0; i < 12; i++)
 	                {
 		               	ABudgetPeriodRow BudgetPeriodRow = (ABudgetPeriodRow)AImportDS.ABudgetPeriod.NewRowTyped();
 		               	BudgetPeriodRow.BudgetSequence = newSequence;
-	                	BudgetPeriodRow.PeriodNumber = i;
+	                	BudgetPeriodRow.PeriodNumber = i + 1;
 	                	BudgetPeriodRow.BudgetBase = BudgetPeriods[i];
 		                AImportDS.ABudgetPeriod.Rows.Add(BudgetPeriodRow);
 	                }
-
-	                newSequence--;
                 }
                 catch (Exception)
                 {
@@ -322,14 +343,24 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 //                    ExchangeRateDT.Rows.Add(ExchangeRow);
 //                }
             }
-
+		            
             DataFile.Close();
             
             return true;
         }
 		
+//        private static bool ExportBudgetToCSV(Int32 ALedgerNumber, string ACSVFileName, string[] AFdlgSeparator, ref BudgetTDS AImportDS,
+//            out TVerificationResultCollection AVerificationResult)
+//        {
+//        	
+//        }
         
-        private static bool CheckBudgetTypeSame(decimal[] APeriodValues)
+        private static bool IsZero(decimal d)
+        {
+        	return (d == 0);
+        }
+        
+        private static bool ValidateBudgetTypeSame(decimal[] APeriodValues)
         {
 			bool PeriodValuesOK = true;
 
@@ -347,7 +378,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 			return PeriodValuesOK;			
         }
         
-        private static bool CheckBudgetTypeSplit(decimal[] APeriodValues)
+        private static bool ValidateBudgetTypeSplit(decimal[] APeriodValues)
         {
 			bool PeriodValuesOK = true;
 
@@ -374,7 +405,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 			return PeriodValuesOK;			
         }
 
-        private static bool CheckBudgetTypeInflateBase(decimal[] APeriodValues)
+        private static bool ValidateBudgetTypeInflateBase(decimal[] APeriodValues)
         {
 			bool PeriodValuesOK = true;
 
@@ -386,7 +417,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 			return PeriodValuesOK;			
         }
 
-        private static bool CheckBudgetTypeInflateN(decimal[] APeriodValues)
+        private static bool ValidateBudgetTypeInflateN(decimal[] APeriodValues)
         {
 			bool PeriodValuesOK = true;
 			bool PeriodAmountHasChanged = false;

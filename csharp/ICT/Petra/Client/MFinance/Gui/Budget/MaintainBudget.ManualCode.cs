@@ -126,6 +126,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             //ARow.Revision = Math.Abs(newSequence);
             ARow.Year = CurrentBudgetYear;
 
+            //Add the budget revision entry
+           	int newRevision = 0;
+
+            if (FMainDS.ABudgetRevision.Rows.Find(new object[] { FLedgerNumber, CurrentBudgetYear, newRevision }) != null)
+            {
+                while (FMainDS.ABudgetRevision.Rows.Find(new object[] { FLedgerNumber, CurrentBudgetYear, newRevision }) != null)
+                {
+                    newRevision++;
+                }
+            }
+
+            ABudgetRevisionRow BudgetRevisionRow = (ABudgetRevisionRow)FMainDS.ABudgetRevision.NewRowTyped();
+            BudgetRevisionRow.LedgerNumber = FLedgerNumber;
+            BudgetRevisionRow.Year = CurrentBudgetYear;
+            BudgetRevisionRow.Revision = newRevision;
+            BudgetRevisionRow.Description = "New Budget Entry";
+            FMainDS.ABudgetRevision.Rows.Add(BudgetRevisionRow);
+
             //Add the budget period values
             ABudgetPeriodRow BudgetPeriodRow;
 
@@ -173,7 +191,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 	        		FMainDS.ABudget.DefaultView.RowFilter = String.Format("{0} = {1}", ABudgetTable.GetYearDBName(), CurrentBudgetYear);
 	        		grdDetails.Refresh();
 	        		SelectByIndex(0);
-	        		FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+	        		//FPreviouslySelectedDetailRow = GetSelectedDetailRow();
 	        		if (FMainDS.ABudget.DefaultView.Count == 0)
 	        		{
 	        			EnableBudgetEntry(false);
@@ -330,6 +348,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 }
             }
             
+        }
+        
+        private void ExportBudget(System.Object sender, EventArgs e)
+        {
+            if (FPetraUtilsObject.HasChanges)
+            {
+                // without save the server does not have the current changes, so forbid it.
+                MessageBox.Show(Catalog.GetString("Please save changed Data before the Export!"),
+                    Catalog.GetString("Export Error"));
+                return;
+            }
+
+            //exportForm = new TFrmGiftBatchExport(FPetraUtilsObject.GetForm());
+            //exportForm.LedgerNumber = FLedgerNumber;
+            //exportForm.Show();
+
         }
         
         private void DeleteBudgetPeriodData(int ABudgetSequence)
