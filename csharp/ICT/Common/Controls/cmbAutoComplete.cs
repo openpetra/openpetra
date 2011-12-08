@@ -1344,16 +1344,21 @@ namespace Ict.Common.Controls
 
             if ((NewSelectedIndex == -1) && (Items.Count > 0))
             {
-                if (PreviousSelectedIndex != -1)
+                if ((PreviousSelectedIndex != -1) && (AStr.Length > 0))
                 {
                     SelectedIndex = PreviousSelectedIndex;
+                    return false;
                 }
                 else
                 {
-                    SelectedIndex = 0;
+                    // The following statement has to be called twice. For whatever reason if ADefaultIndex
+                    // is -1 then the first statement sets the SelectedIndex value to 0 and only the second
+                    // statement sets it to -1. Not sure why that is the case but just for your information.
+                    // THEREFORE: DON'T REMOVE SECOND STATEMENT FOR NOW!
+                    SelectedIndex = ADefaultIndex;
+                    SelectedIndex = ADefaultIndex;
+                    return true;
                 }
-
-                return false;
             }
 
             SelectedIndex = NewSelectedIndex;

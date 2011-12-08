@@ -886,11 +886,15 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FUcoPartnerRelationships.AdjustAfterResizing();
                 }
 
-                // TODO
-//                if (FUcoFamilyMembers != null)
-//                {
-//                    FUcoFamilyMembers.AdjustAfterResizing();
-//                }
+                if (FUcoFamilyMembers != null)
+                {
+                    FUcoFamilyMembers.AdjustAfterResizing();
+                }
+
+                if (FUcoOfficeSpecific != null)
+                {
+                    FUcoOfficeSpecific.AdjustAfterResizing();
+                }
             }
         }
 
@@ -1028,10 +1032,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     case TPartnerEditTabPageEnum.petpReminders:
                         tabPartners.SelectedTab = tpgReminders;
-                        break;
-
-                    case TPartnerEditTabPageEnum.petpRelationships:
-                        tabPartners.SelectedTab = tpgRelationships;
                         break;
 
                     case TPartnerEditTabPageEnum.petpContacts:
