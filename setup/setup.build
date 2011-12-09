@@ -125,7 +125,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
         <echo message="${DBUpdate.file}"/>
         <fail message="We are missing the db upgrade file for sqlite standalone databases." />
     </if>
-    <property name="SetupOriginal.File" value="${dir.root}/setup/petra${PetraRelease}/standalone/standalone.nsi"/>
+    <property name="SetupOriginal.File" value="${dir.root}/setup/petra${PetraRelease}/standalone/standalone.iss"/>
     <call target="setupTemplate"/>
 </target>
 
