@@ -28,13 +28,13 @@
     <nunit2>
         <formatter type="Plain" />
         <test assemblyname="${dir.bin}/Ict.Testing.lib.MPartner.server.PartnerEdit.dll" />
+        <test assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.GL.dll" />
 
         <!-- TODO https://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=578 
         <test assemblyname="${dir.bin}/Ict.Testing.lib.MPartner.server.PartnerExports.dll" />
         -->
         
         <!-- 
-        <test assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.GL.dll" />
         <test assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.Gift.dll" />
         -->
     </nunit2>
