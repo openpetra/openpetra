@@ -67,9 +67,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
     			txtDiscountPercentage.Enabled = false;
 				txtTotalAmount.Enabled = false;
 				txtExchangeRateToBase.Enabled = false;
-				pnlDetails.Enabled =false;
 				
-/*				
 				btnAddDetail.Enabled = false;
 				btnRemoveDetail.Enabled = false;
 				btnAnalysisAttributes.Enabled = false;
@@ -81,7 +79,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 				btnUseTaxAccount.Enabled = false;
 				txtDetailBaseAmount.Enabled = false;
 				cmbDetailAccountCode.Enabled = false;
-*/
     		}
     		else
     		{
@@ -396,15 +393,15 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             // TODO: make sure that there are uptodate exchange rates
             
             // If the batch will not balance, or required attributes are missing, I'll stop right here..
-            bool CantPost = false;
+            bool CanPost = true;
             
             if (!BatchBalancesOK())
-            	CantPost = true;
+            	CanPost = false;
 
             if (!AllLinesHaveAttributes())
-            	CantPost = true;
+            	CanPost = false;
 
-            if (CantPost)
+            if (!CanPost)
                 return;
             
             TVerificationResultCollection Verifications;
@@ -447,8 +444,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                 // TODO: show posting register of GL Batch?
 
-                // TODO: refresh the screen, to reflect that the transactions have been posted
-
+                EnableControls();
                 Form Opener = FPetraUtilsObject.GetCallerForm();
                 if (Opener.GetType() == typeof(TFrmAPSupplierTransactions))
                 {

@@ -339,25 +339,82 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             return MainDS;
         }
 
-        private static bool BatchBalanceOK(AccountsPayableTDS AMainDS)
+        private static bool DocumentBalanceOK(AccountsPayableTDS AMainDS, Int32 ALedgerNumber, int AApNumber, TDBTransaction ATransaction)
         {
-        	decimal DocumentBalance = AMainDS.AApDocument[0].TotalAmount;
+            AApDocumentAccess.LoadByPrimaryKey(AMainDS, ALedgerNumber, AApNumber, ATransaction);
+            AApDocumentRow DocumentRow = AMainDS.AApDocument[0];
+        	decimal DocumentBalance = DocumentRow.TotalAmount;
         	
-        	foreach (AApDocumentDetailRow Row in AMainDS.AApDocumentDetail.Rows)
+        	AMainDS.AApDocumentDetail.DefaultView.RowFilter 
+        	    = String.Format("{0}={1} AND {2}={3}",
+        	       AApDocumentTable.GetLedgerNumberDBName(), ALedgerNumber,
+        	       AApDocumentTable.GetApNumberDBName(),AApNumber);
+        	foreach (DataRowView rv in AMainDS.AApDocumentDetail.DefaultView)
         	{
+        	    AApDocumentDetailRow Row = (AApDocumentDetailRow)rv.Row;
         		DocumentBalance -= Row.Amount;
         	}
         	return (DocumentBalance == 0.0m);
         }
         
         /// <summary>
-        /// load the AP documents and see if they are ready to be posted
+        /// Load the Analysis Attributes for this document
+        /// </summary>
+        /// <param name="AMainDS"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AApNumber"></param>
+        /// <param name="ATransaction"></param>
+        /// <returns>true if all required attributes are present</returns>
+        private static bool AttributesAllOK(AccountsPayableTDS AMainDS, Int32 ALedgerNumber, int AApNumber, TDBTransaction ATransaction)
+        {
+            AMainDS.AApDocumentDetail.DefaultView.RowFilter = 
+                String.Format("{0}={1}", AApDocumentDetailTable.GetApNumberDBName(),AApNumber);
+            
+            LoadAnalysisAttributes(AMainDS, ALedgerNumber, ATransaction);
+            
+    		// Load the Analysis Attributes defined for this document, using a template...
+            {
+	            AApAnalAttribRow TemplateRow = AMainDS.AApAnalAttrib.NewRowTyped(false);
+	            TemplateRow.LedgerNumber = ALedgerNumber;
+	            TemplateRow.ApNumber = AApNumber;
+	            AApAnalAttribAccess.LoadUsingTemplate(AMainDS, TemplateRow, ATransaction);
+            }
+            
+            foreach (DataRowView rv in AMainDS.AApDocumentDetail.DefaultView)
+            {
+                AApDocumentDetailRow DetailRow = (AApDocumentDetailRow)rv.Row;
+        		AMainDS.AAnalysisAttribute.DefaultView.RowFilter = 
+        			String.Format("{0}={1}", AAnalysisAttributeTable.GetAccountCodeDBName(), DetailRow.AccountCode); // Do I need Cost Centre in here too?
+        		
+        		if (AMainDS.AAnalysisAttribute.DefaultView.Count > 0)
+        		{
+    	    		foreach (DataRowView aa_rv in AMainDS.AAnalysisAttribute.DefaultView)
+    	    		{
+    	    			AAnalysisAttributeRow AttrRow = (AAnalysisAttributeRow)aa_rv.Row;
+    	    			
+    	    			AMainDS.AApAnalAttrib.DefaultView.RowFilter = 
+    	    				String.Format("{0}={1} AND {2}={3}",
+    	    				              AApAnalAttribTable.GetDetailNumberDBName(), DetailRow.DetailNumber,
+    	    				              AApAnalAttribTable.GetAccountCodeDBName(), AttrRow.AccountCode);
+    	    			if (AMainDS.AApAnalAttrib.DefaultView.Count == 0)
+    	    			{
+    	    				return false;
+    	    			}
+    	    		}
+        		}
+            }
+
+            return true;
+        }
+        
+        /// <summary>
+        /// Load the AP documents and see if they are ready to be posted
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="AAPDocumentNumbers"></param>
         /// <param name="APostingDate"></param>
         /// <param name="AVerifications"></param>
-        /// <returns></returns>
+        /// <returns> The TDS for posting</returns>
         private static AccountsPayableTDS LoadDocumentsAndCheck(Int32 ALedgerNumber,
             List <Int32>AAPDocumentNumbers,
             DateTime APostingDate,
@@ -366,12 +423,13 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             AccountsPayableTDS MainDS = new AccountsPayableTDS();
 
             AVerifications = new TVerificationResultCollection();
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
             // collect the AP documents from the database
             foreach (Int32 APDocumentNumber in AAPDocumentNumbers)
             {
-                AApDocumentAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, APDocumentNumber, null);
-                AApDocumentDetailAccess.LoadViaAApDocument(MainDS, ALedgerNumber, APDocumentNumber, null);
+                AApDocumentAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, APDocumentNumber, Transaction);
+                AApDocumentDetailAccess.LoadViaAApDocument(MainDS, ALedgerNumber, APDocumentNumber, Transaction);
             }
 
             // do some checks on state of AP documents
@@ -388,11 +446,28 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 // TODO: also check if details are filled, and they each have a costcentre and account?
 
                 // TODO: check for document.apaccount, if not set, get the default apaccount from the supplier, and save the ap document
+                
+                // Check that the amount of the document equals the totals of details
+                if (!DocumentBalanceOK(MainDS, ALedgerNumber, row.ApNumber, Transaction))
+                {
+                	AVerifications.Add(new TVerificationResult(
+                            String.Format(Catalog.GetString("Cannot post the AP document {0} in Ledger {1}"), row.ApNumber, ALedgerNumber),
+                            String.Format(Catalog.GetString("The value does not match the sum of the details.")),
+                            TResultSeverity.Resv_Critical));
+                }
+                // Load Analysis Attributes and check they're all present.
+                if (!AttributesAllOK(MainDS, ALedgerNumber, row.ApNumber, Transaction))
+                {
+                	AVerifications.Add(new TVerificationResult(
+                            String.Format(Catalog.GetString("Cannot post the AP document {0} in Ledger {1}"), row.ApNumber, ALedgerNumber),
+                            String.Format(Catalog.GetString("Analysis Attributes are required.")),
+                            TResultSeverity.Resv_Critical));
+                }
+
             }
 
             // is APostingDate inside the valid posting periods?
             Int32 DateEffectivePeriodNumber, DateEffectiveYearNumber;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
             if (!TFinancialYear.IsValidPostingPeriod(ALedgerNumber, APostingDate, out DateEffectivePeriodNumber, out DateEffectiveYearNumber,
                     Transaction))
@@ -406,15 +481,6 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
             DBAccess.GDBAccessObj.RollbackTransaction();
             
-            // Check that the amount of the document equals the totals of details
-            if (!BatchBalanceOK(MainDS))
-            {
-            	AVerifications.Add(new TVerificationResult(
-                        String.Format(Catalog.GetString("Cannot post the AP documents in Ledger {0}"), ALedgerNumber),
-                        String.Format(Catalog.GetString("The value does not match the sum of the details.")),
-                        TResultSeverity.Resv_Critical));
-            }
-
             return MainDS;
         }
 
@@ -498,7 +564,6 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     {
                         AApDocumentDetailRow documentDetail = (AApDocumentDetailRow)rowview.Row;
 
-                        // TODO: analysis attributes
 
                         transaction = GLDataset.ATransaction.NewRowTyped();
                         transaction.LedgerNumber = journal.LedgerNumber;
@@ -506,6 +571,29 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         transaction.JournalNumber = journal.JournalNumber;
                         transaction.TransactionNumber = TransactionCounter++;
                         transaction.TransactionAmount = documentDetail.Amount;
+
+                        // Analysis Attributes - Any attributes linked to this row,
+                        // I need to create equivalents in the Transaction DS.
+                        
+                        APDataset.AApAnalAttrib.DefaultView.RowFilter = String.Format("{0}={1}",
+                                      AApAnalAttribTable.GetDetailNumberDBName(), documentDetail.DetailNumber);
+                        foreach (DataRowView rv in APDataset.AApAnalAttrib.DefaultView)
+                        {
+                            AApAnalAttribRow RowSource = (AApAnalAttribRow) rv.Row;
+                            ATransAnalAttribRow RowDest = GLDataset.ATransAnalAttrib.NewRowTyped();
+                            
+                            RowDest.LedgerNumber = RowSource.LedgerNumber;
+                            RowDest.BatchNumber = journal.BatchNumber;
+                            RowDest.JournalNumber = journal.JournalNumber;
+                            RowDest.TransactionNumber = transaction.TransactionNumber;
+                            RowDest.AccountCode = RowSource.AccountCode;
+                            RowDest.CostCentreCode = documentDetail.CostCentreCode;
+                            RowDest.AnalysisTypeCode = RowSource.AnalysisTypeCode;
+                            RowDest.AnalysisAttributeValue = RowSource.AnalysisAttributeValue;
+                            
+                            GLDataset.ATransAnalAttrib.Rows.Add(RowDest);
+                        }
+                        
 
                         if (document.CreditNoteFlag)
                         {
