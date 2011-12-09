@@ -113,6 +113,7 @@ OpenPetra:
                 Budgets: {Namespace=Ict.Petra.Client.MFinance.Gui.Budget}
                     General:
                         MaintainBudget: {ActionOpenScreen=TFrmMaintainBudget}
+                        AutoGenerateBudget: {ActionOpenScreen=TFrmAutoGenerateBudget}
                 GeneralLedger: {Namespace=Ict.Petra.Client.MFinance.Gui.GL}
                     SearchBoxes: [Transaction, Batch]
                     General:

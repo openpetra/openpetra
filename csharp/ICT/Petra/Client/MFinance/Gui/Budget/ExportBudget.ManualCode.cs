@@ -138,7 +138,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         /// this supports the batch export files from Petra 2.x.
         /// Each line starts with a type specifier, B for batch, J for journal, T for transaction
         /// </summary>
-        private void ExportBatches(object sender, EventArgs e)
+        private void ExportBudget(object sender, EventArgs e)
         {
             String fileName = txtFilename.Text;
 
@@ -156,26 +156,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             requestParams.Add("ALedgerNumber", FLedgerNumber);
             requestParams.Add("Delimiter", ConvertDelimiter(cmbDelimiter.GetSelectedString(), false));
             requestParams.Add("DateFormatString", cmbDateFormat.GetSelectedString());
-            requestParams.Add("Summary", rbtSummary.Checked);
-            requestParams.Add("IncludeUnposted", chkIncludeUnposted.Checked);
-            requestParams.Add("bUseBaseCurrency", rbtBaseCurrency.Checked);
-            requestParams.Add("TransactionsOnly", chkTransactionsOnly.Checked);
-            requestParams.Add("RecipientNumber", Convert.ToInt64(txtDetailRecipientKey.Text));
-            requestParams.Add("FieldNumber", Convert.ToInt64(txtDetailFieldKey.Text));
-            requestParams.Add("DateForSummary", dtpDateSummary.Date);
             requestParams.Add("NumberFormat", ConvertNumberFormat(cmbNumberFormat));
-            requestParams.Add("ExtraColumns", chkExtraColumns.Checked);
-
-            if (rbtBatchNumberSelection.Checked)
-            {
-                requestParams.Add("BatchNumberStart", txtBatchNumberStart.NumberValueInt);
-                requestParams.Add("BatchNumberEnd", txtBatchNumberEnd.NumberValueInt);
-            }
-            else
-            {
-                requestParams.Add("BatchDateFrom", dtpDateFrom.Date);
-                requestParams.Add("BatchDateTo", dtpDateTo.Date);
-            }
 
             String exportString;
             TVerificationResultCollection AMessages;
@@ -206,7 +187,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
             if (BatchCount == 0)
             {
-                MessageBox.Show(Catalog.GetString("There are no batches matching your criteria"),
+                MessageBox.Show(Catalog.GetString("There are no Budget matching your criteria"),
                     Catalog.GetString("Error"),
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
