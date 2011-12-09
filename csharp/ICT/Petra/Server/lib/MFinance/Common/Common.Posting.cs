@@ -761,7 +761,14 @@ namespace Ict.Petra.Server.MFinance.Common
 
                                     if (AccountTreeElement.Foreign)
                                     {
-                                        GlmPeriodRow.ActualForeign += SignTransAmount;
+                                        if (GlmPeriodRow.IsActualForeignNull())
+                                        {
+                                            GlmPeriodRow.ActualForeign = SignTransAmount;
+                                        }
+                                        else
+                                        {
+                                            GlmPeriodRow.ActualForeign += SignTransAmount;
+                                        }
                                     }
                                 }
                             }
@@ -1007,13 +1014,15 @@ namespace Ict.Petra.Server.MFinance.Common
 
                 SummarizeData(ref AMainDS, ref PostingLevel, ref AccountTree, ref CostCentreTree);
             }
+            else
+            {
+                SummarizeDataSimple(ALedgerNumber, ref AMainDS, ref PostingLevel);
+            }
 
             if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
             {
                 TLogging.Log("Posting: SummarizeDataSimple...");
             }
-
-            SummarizeDataSimple(ALedgerNumber, ref AMainDS, ref PostingLevel);
 
             return true;
         }

@@ -183,7 +183,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         /// <summary>
         /// TestFixtureSetUp
         /// </summary>
-        [SetUp]
+        [TestFixtureSetUp]
         public void Init()
         {
             InitServerConnection();

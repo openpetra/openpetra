@@ -58,10 +58,10 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         public void Test_01_BaseCurrencyAccounting()
         {
             // <summary>
-            // 9800 is definde as credit Account and so an accouting in "credit direction" is
-            // added as a postive value to GLM.
-            // 9800 is definde as debit Account and so an accouting in "debit direction" is
-            // added as a postive value to GLM.
+            // 6000 is defined as debit Account and so an accounting in "debit direction" is
+            // added as a positive value to GLM.
+            // 9800 is defined as credit Account and so an accounting in "credit direction" is
+            // added as a positive value to GLM.
             // </summary>
 
             string strAccountStart = "6000";
@@ -91,10 +91,10 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             // strAccountStart is a debit account -> in this case "+"
             Assert.AreEqual(getGLM_InfoBeforeStart.YtdActual + 10, getGLM_InfoAfterStart.YtdActual,
-                "Check if 10 has been accounted");
+                "Check if 10 has been accounted to " + strAccountStart);
             // strAccountEnd is a credit acount -> in this case "+" too!
             Assert.AreEqual(getGLM_InfoBeforeEnd.YtdActual + 10, getGLM_InfoAfterEnd.YtdActual,
-                "Check if 10 has been accounted");
+                "Check if 10 has been accounted to " + strAccountEnd);
 
             commonAccountingTool =
                 new TCommonAccountingTool(LedgerNumber, "NUNIT");
@@ -162,29 +162,34 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             TCommonAccountingTool commonAccountingTool =
                 new TCommonAccountingTool(LedgerNumber, "NUNIT");
 
-            commonAccountingTool.AddForeignCurrencyJournal("GBP", 0.3m);
+            decimal ExchangeRateEurToGBP = 0.85m;
+            decimal AmountInGBP = 100.0m;
+            decimal AmountInEUR = (1.0m / ExchangeRateEurToGBP) * AmountInGBP;
+            commonAccountingTool.AddForeignCurrencyJournal("GBP", ExchangeRateEurToGBP);
 
             commonAccountingTool.AddForeignCurrencyTransaction(
                 strAccountStart, strCostCentre, "Debit GBP 100", "NUNIT",
-                MFinanceConstants.IS_DEBIT, 100, 333.33m);
+                MFinanceConstants.IS_DEBIT, AmountInEUR, AmountInGBP);
             commonAccountingTool.AddForeignCurrencyTransaction(
                 strAccountEnd, strCostCentre, "Credit GBP 100", "NUNIT",
-                MFinanceConstants.IS_CREDIT, 100, 333.33m);
+                MFinanceConstants.IS_CREDIT, AmountInEUR, AmountInGBP);
 
             commonAccountingTool.CloseSaveAndPost(); // returns intBatchNumber
 
             TGet_GLM_Info getGLM_InfoAfterStart = new TGet_GLM_Info(LedgerNumber, strAccountStart, strCostCentre);
             TGet_GLM_Info getGLM_InfoAfterEnd = new TGet_GLM_Info(LedgerNumber, strAccountEnd, strCostCentre);
+            TLogging.Log("before " + getGLM_InfoBeforeStart.YtdActual + " " + AmountInEUR);
+            TLogging.Log("diff " + (getGLM_InfoAfterStart.YtdActual - getGLM_InfoBeforeStart.YtdActual));
+            TLogging.Log(Math.Round(getGLM_InfoBeforeStart.YtdActual + AmountInEUR).ToString());
+            Assert.AreEqual(Math.Round(getGLM_InfoBeforeStart.YtdActual + AmountInEUR), Math.Round(getGLM_InfoAfterStart.YtdActual),
+                "Check if base currency has been accounted to " + strAccountStart);
+            Assert.AreEqual(Math.Round(getGLM_InfoBeforeEnd.YtdActual + AmountInEUR), Math.Round(getGLM_InfoAfterEnd.YtdActual),
+                "Check if base currency has been accounted to " + strAccountEnd);
 
-            Assert.AreEqual(getGLM_InfoBeforeStart.YtdActual + 100, getGLM_InfoAfterStart.YtdActual,
-                "Check if 100 has been accounted");
-            Assert.AreEqual(getGLM_InfoBeforeEnd.YtdActual + 100, getGLM_InfoAfterEnd.YtdActual,
-                "Check if 100 has been accounted");
-
-            Assert.AreEqual(getGLM_InfoBeforeStart.YtdForeign +  + 333.33m, getGLM_InfoAfterStart.YtdForeign,
-                "Check if 333.33 has been accounted");
+            Assert.AreEqual(getGLM_InfoBeforeStart.YtdForeign + AmountInGBP, getGLM_InfoAfterStart.YtdForeign,
+                "Check if foreign currency has been accounted");
             Assert.AreEqual(getGLM_InfoBeforeEnd.YtdForeign, getGLM_InfoAfterEnd.YtdForeign,
-                "Check if nothing has been accounted");
+                "Check if nothing foreign has been accounted on the non foreign currency account");
         }
 
         /// <summary>
@@ -230,7 +235,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         public void Init()
         {
             InitServerConnection();
-            ResetDatabase();
+            // ResetDatabase();
             System.Diagnostics.Debug.WriteLine("Init: " + this.ToString());
         }
 

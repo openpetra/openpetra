@@ -80,7 +80,7 @@ namespace Ict.Testing.NUnitForms
         /// <summary>
         /// Actually this setting shall be done manually.
         /// </summary>
-        private string pathAndFileNameToNantExe = "\"C:\\Program Files (x86)\\nant-0.91-alpha2\\bin\\nant.exe\"";
+        private string pathAndFileNameToNantExe = "nant";
 
         /// <summary>
         /// The delegate to handle the message box is installed.
@@ -188,7 +188,7 @@ namespace Ict.Testing.NUnitForms
 
             NantProcess.EnableRaisingEvents = false;
             NantProcess.StartInfo.FileName = "cmd";
-            NantProcess.StartInfo.Arguments = "/c " + pathAndFileNameToNantExe + " " + argument;
+            NantProcess.StartInfo.Arguments = "/c " + pathAndFileNameToNantExe + " " + argument + " -logfile:nant.txt";
             NantProcess.StartInfo.WorkingDirectory = rootPath;
             NantProcess.StartInfo.UseShellExecute = true;
             NantProcess.EnableRaisingEvents = true;
@@ -203,6 +203,11 @@ namespace Ict.Testing.NUnitForms
                 NantProcess.WaitForExit(60000);
                 Debug.Print("OS says nant process is finished");
             }
+
+            StreamReader sr = new StreamReader(rootPath + Path.DirectorySeparatorChar + "nant.txt");
+            Debug.Print(sr.ReadToEnd());
+            sr.Close();
+            File.Delete(rootPath + Path.DirectorySeparatorChar + "nant.txt");
         }
     }
 
