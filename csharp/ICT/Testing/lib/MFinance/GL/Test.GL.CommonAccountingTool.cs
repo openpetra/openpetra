@@ -178,12 +178,10 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             TGet_GLM_Info getGLM_InfoAfterStart = new TGet_GLM_Info(LedgerNumber, strAccountStart, strCostCentre);
             TGet_GLM_Info getGLM_InfoAfterEnd = new TGet_GLM_Info(LedgerNumber, strAccountEnd, strCostCentre);
-            TLogging.Log("before " + getGLM_InfoBeforeStart.YtdActual + " " + AmountInEUR);
-            TLogging.Log("diff " + (getGLM_InfoAfterStart.YtdActual - getGLM_InfoBeforeStart.YtdActual));
-            TLogging.Log(Math.Round(getGLM_InfoBeforeStart.YtdActual + AmountInEUR).ToString());
-            Assert.AreEqual(Math.Round(getGLM_InfoBeforeStart.YtdActual + AmountInEUR), Math.Round(getGLM_InfoAfterStart.YtdActual),
+
+            Assert.AreEqual(Math.Round(getGLM_InfoBeforeStart.YtdActual + AmountInEUR, 2), Math.Round(getGLM_InfoAfterStart.YtdActual, 2),
                 "Check if base currency has been accounted to " + strAccountStart);
-            Assert.AreEqual(Math.Round(getGLM_InfoBeforeEnd.YtdActual + AmountInEUR), Math.Round(getGLM_InfoAfterEnd.YtdActual),
+            Assert.AreEqual(Math.Round(getGLM_InfoBeforeEnd.YtdActual + AmountInEUR, 2), Math.Round(getGLM_InfoAfterEnd.YtdActual, 2),
                 "Check if base currency has been accounted to " + strAccountEnd);
 
             Assert.AreEqual(getGLM_InfoBeforeStart.YtdForeign + AmountInGBP, getGLM_InfoAfterStart.YtdForeign,
@@ -231,7 +229,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         /// <summary>
         /// TestFixtureSetUp
         /// </summary>
-        [SetUp]
+        [TestFixtureSetUp]
         public void Init()
         {
             InitServerConnection();
