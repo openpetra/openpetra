@@ -50,6 +50,17 @@ private void CalculatePreferredLanguage()
     }
 }
 
+private string WithValidation()
+{
+  string NoValidation = HttpContext.Current.Request.Params["validate"];
+  if ((NoValidation != null) && (NoValidation == "false"))
+  {
+    return "false";
+  }
+  
+  return "true";
+}
+
 </script>
 
 <%CalculatePreferredLanguage();%>
@@ -78,13 +89,13 @@ private void CalculatePreferredLanguage()
     </style>
 
 <script type="text/javascript">
-    <!-- 
     Ext.BLANK_IMAGE_URL = '../../img/default_blank.gif';
     Ext.onReady(function() {
         Ext.QuickTips.init();
         Ext.form.Field.prototype.msgTarget = 'side';
 
         MainForm = Ext.create('TMainForm');
+        MainForm.validate = <%Response.Write(WithValidation());%>;
         MainForm.render('mainFormDiv');
         // this is required for smaller screens, otherwise the scrollbars don't work properly
         MainForm.setPosition(0,0);
@@ -93,7 +104,6 @@ private void CalculatePreferredLanguage()
         UploadForm.render('tmpUploadDiv');
         
         });
-    -->
 </script>    
 </head>
 

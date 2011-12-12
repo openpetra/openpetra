@@ -11,6 +11,7 @@ Ext.define('{#FORMTYPE}', {
     activeItem: 0,
     bodyStyle: 'padding:15px',
     defaults: {border:false},
+    validate: true,
     {#RESOURCESTRINGS}
     strEmpty:'',
     
@@ -46,7 +47,10 @@ Ext.define('{#FORMTYPE}', {
         var next = parseInt(i, 10) + incr;
         
         f = layout.activeItem.getForm();
-        if (f.isValid()) {
+
+        // for testing and making screenshots, do not validate
+        if (({#FORMNAME}.validate == false) || f.isValid()) 
+        {
             layout.setActiveItem(next);
             Ext.getCmp('card-prev').setDisabled(!layout.getPrev());
             Ext.getCmp('card-next').setDisabled(!layout.getNext());
