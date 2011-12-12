@@ -17,7 +17,7 @@ list of available commands:
   packTranslation: pack the language specific file for one or several languages
     packTranslation -D:country-id=de-DE,en-GB
   unpackTranslation: restore the files that you receive from the translators
-    unpackTranslation -D:zipfile=sweden.zip
+    unpackTranslation -D:file=sweden.zip -D:country-id=sv-SE
   startWebServer: start the webserver using xsp4 from Mono
     </echo>
 </target>
@@ -212,6 +212,187 @@ list of available commands:
   <delete file="${tempdir}/web-sample.config"/>
 </target>
 
+<script language="C#" prefix="OP" >
+  <imports>
+    <import namespace="System.IO" />
+  </imports>
+  <code>
+    <![CDATA[
+    [Function("AttachToMediaWikiFile")]
+    public static bool AttachToMediaWikiFile(string srcPath, string mediaWikiFile)
+    {
+      try
+      {
+          StreamWriter sw = new StreamWriter(mediaWikiFile, true, Encoding.UTF8);
+          StreamReader sr = new StreamReader(srcPath);
+          
+          sw.WriteLine(String.Format("== {0} ==", Path.GetFileNameWithoutExtension(srcPath)));
+          sw.WriteLine("<pre>");
+          sw.WriteLine(sr.ReadToEnd());
+          sw.WriteLine("</pre>");
+          sr.Close();
+          sw.Close();
+      }
+      catch (Exception e)
+      {
+          Console.WriteLine(e.Message);
+      }
+      return true;
+    }
+
+    /// <summary>
+    /// check if the two text files have the same content
+    /// </summary>
+    private static bool SameContent(String filename1, String filename2)
+    {
+        StreamReader sr1;
+        StreamReader sr2;
+        String line;
+        String line2;
+
+        if (((!System.IO.File.Exists(filename1))) || ((!System.IO.File.Exists(filename2))))
+        {
+            if (((!System.IO.File.Exists(filename1))) && ((!System.IO.File.Exists(filename2))))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        sr1 = new StreamReader(filename1);
+        sr2 = new StreamReader(filename2);
+
+        while (true)
+        {
+            line = sr1.ReadLine();
+            line2 = sr2.ReadLine();
+
+            if (line.CompareTo(line2) != 0)
+            {
+                sr1.Close();
+                sr2.Close();
+                return false;
+            }
+
+            // test for end of file
+            if (sr1.EndOfStream || sr2.EndOfStream)
+            {
+                if (sr1.EndOfStream == sr2.EndOfStream)
+                {
+                    sr1.Close();
+                    sr2.Close();
+                    return true;
+                }
+                else
+                {
+                    sr1.Close();
+                    sr2.Close();
+                    return false;
+                }
+            }
+        }
+    }
+    
+    private static void OverwriteIfDifferent(string AFilename)
+    {
+        if (!SameContent(AFilename, AFilename + ".temp"))
+        {
+            Console.WriteLine("Writing " + AFilename);
+            if (File.Exists(AFilename))
+            {
+                File.Delete(AFilename);
+            }
+            File.Move(AFilename + ".temp", AFilename);
+        }
+        else
+        {
+            File.Delete(AFilename + ".temp");
+        }
+    }
+    
+    [Function("ExtractFromMediaWikiFile")]
+    public static bool ExtractFromMediaWikiFile(string mediaWikiFile, string AApplicationsPath, string AFormlettersPath, string AOnlineRegDocPath)
+    {
+      try
+      {
+          StreamReader sr = new StreamReader(mediaWikiFile);
+          StreamWriter sw = null;
+          string filename = string.Empty;
+          bool ThereWasAnEmptyLine = false;
+          
+          while (!sr.EndOfStream)
+          {
+              string line = sr.ReadLine();
+            
+              if (line.StartsWith("==") && line.EndsWith("=="))
+              {
+                  if (sw != null)
+                  {
+                    sw.Close();
+                    OverwriteIfDifferent(filename);
+                  }
+              
+                  filename = line.Substring(2, line.Length - 4).Trim();
+
+                  if (filename.StartsWith("success."))
+                  {
+                    filename = AApplicationsPath + Path.DirectorySeparatorChar + filename + ".aspx";
+                  }
+                  else if (filename.EndsWith("-lang"))
+                  {
+                    filename = AApplicationsPath + Path.DirectorySeparatorChar + filename + ".js";
+                  }
+                  else if (filename.StartsWith("main"))
+                  {
+                    filename = AApplicationsPath + Path.DirectorySeparatorChar + filename + ".yaml";
+                  }
+                  else if (filename.StartsWith("Application"))
+                  {
+                    filename = AFormlettersPath + Path.DirectorySeparatorChar + filename + ".html";
+                  }
+                  else
+                  {
+                    filename = AOnlineRegDocPath + Path.DirectorySeparatorChar + filename + ".html";
+                  }
+
+                  sw = new StreamWriter(filename + ".temp", false, Encoding.UTF8);
+                  ThereWasAnEmptyLine = false;
+              }
+              else if (line.Trim().Length == 0)
+              {
+                ThereWasAnEmptyLine = true;
+              }
+              else if ((line.Trim() != "<pre>") && (line.Trim() != "</pre>"))
+              {
+                if (ThereWasAnEmptyLine)
+                {
+                  sw.WriteLine();
+                  ThereWasAnEmptyLine = false;
+                }
+
+                sw.WriteLine(line);
+              }
+          }
+          
+          if (sw != null)
+          {
+            sw.Close();
+            OverwriteIfDifferent(filename);
+          }
+
+          sr.Close();
+      }
+      catch (Exception e)
+      {
+          Console.WriteLine(e.Message);
+      }
+      return true;
+    }
+]]>
+    </code>
+</script>
+
 <target name="packTranslation">
   <property name="country-id" value="de-DE,en-GB,nl-BE,nl-NL,fo-FO" overwrite="false"/>
 
@@ -244,6 +425,8 @@ list of available commands:
       </fileset>
     </copy>
 
+    <property name="mediawiki.file" value="${dir.delivery}/mediawiki-${country}.txt"/>
+    <delete file="${mediawiki.file}" failonerror="false"/>
     <!-- rename to text file -->
     <foreach item="File" property="OldName">
       <in>
@@ -255,7 +438,9 @@ list of available commands:
         </items>
       </in>
       <do>
-        <move file="${OldName}" tofile="${dir.delivery}/translationPack/${country}/${path::get-file-name-without-extension(OldName)}.txt"/>
+        <property name="textfile" value="${dir.delivery}/translationPack/${country}/${path::get-file-name-without-extension(OldName)}.txt"/>
+        <move file="${OldName}" tofile="${textfile}"/>
+        <property name="dummy" value="${OP::AttachToMediaWikiFile(textfile, mediawiki.file)}"/>
       </do>
     </foreach>
   </foreach>
@@ -308,31 +493,37 @@ list of available commands:
 </script>
 
 <target name="unpackTranslation">
-  <property name="zipfile" value="${dir.delivery}/ForHomeOfficeTranslators.zip" overwrite="false"/>
-  <property name="country-id" value="" overwrite="true"/>
-  
-  <unzip zipfile="${zipfile}" todir="${dir.delivery}/translationPack"/> 
+  <property name="file" value="${dir.delivery}/ForHomeOfficeTranslators.zip" overwrite="false"/>
+  <property name="country-id" value="" overwrite="false"/>
 
   <property name="source" value="${dir.delivery}/translationPack/${country-id}"/>
   <property name="destination" value="${dir.webforms.source}"/>
   <property name="formletterspath" value="${dir.webserver.Formletters}"/>
-  <property name="temp" value="${OP::MoveFileByPattern(source, 'success.' + country-id + '*.txt', destination, '.aspx')}"/>
-  <property name="temp" value="${OP::MoveFileByPattern(source, 'main.' + country-id + '-lang.txt', destination, '.js')}"/>
-  <property name="temp" value="${OP::MoveFileByPattern(source, 'main.' + country-id + '*.txt', destination, '.yaml')}"/>
-  <property name="temp" value="${OP::MoveFileByPattern(source, 'Application*.' + country-id + '*.txt', formletterspath, '.html')}"/>
-  <property name="temp" value="${OP::MoveFileByPattern(source, '*.' + country-id + '*.txt', dir.webserver.OnlineReg.doc, '.html')}"/>
-  <property name="temp" value="${OP::MoveFileByPattern(source, '*' + country-id + '*', formletterspath, '')}"/>
 
-  <foreach item="File" property="filename">
-      <in>
-        <items basedir="${source}">
-          <include name="*.*"/>
-        </items>
-      </in>
-      <do>
-        <echo message="what about ${filename}"/>
-      </do>
-  </foreach>
+  <if test="${path::get-extension(file) == '.zip'}">
+      <unzip zipfile="${zipfile}" todir="${dir.delivery}/translationPack"/> 
+
+      <property name="temp" value="${OP::MoveFileByPattern(source, 'success.' + country-id + '*.txt', destination, '.aspx')}"/>
+      <property name="temp" value="${OP::MoveFileByPattern(source, 'main.' + country-id + '-lang.txt', destination, '.js')}"/>
+      <property name="temp" value="${OP::MoveFileByPattern(source, 'main.' + country-id + '*.txt', destination, '.yaml')}"/>
+      <property name="temp" value="${OP::MoveFileByPattern(source, 'Application*.' + country-id + '*.txt', formletterspath, '.html')}"/>
+      <property name="temp" value="${OP::MoveFileByPattern(source, '*.' + country-id + '*.txt', dir.webserver.OnlineReg.doc, '.html')}"/>
+      <property name="temp" value="${OP::MoveFileByPattern(source, '*' + country-id + '*', formletterspath, '')}"/>
+
+      <foreach item="File" property="filename">
+          <in>
+            <items basedir="${source}">
+              <include name="*.*"/>
+            </items>
+          </in>
+          <do>
+            <echo message="what about ${filename}"/>
+          </do>
+      </foreach>
+  </if>
+  <if test="${path::get-extension(file) == '.txt'}">
+    <property name="dummy" value="${OP::ExtractFromMediaWikiFile(file, destination, formletterspath, dir.webserver.OnlineReg.doc)}"/>
+  </if>
 </target>
 
 <target name="splitFormsIntoSubdirs">
