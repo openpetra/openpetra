@@ -13,6 +13,11 @@ Ext.define('{#FORMTYPE}', {
     defaults: {border:false},
     validate: true,
     {#RESOURCESTRINGS}
+    nextButtonText:'Next',
+    previousButtonText:'Previous',
+    cancelButtonText:'Cancel',
+    finishButtonText:'Finish',
+    stepText:'page {0} of {1}',
     strEmpty:'',
     
     /// get the data as a structured object
@@ -52,23 +57,23 @@ Ext.define('{#FORMTYPE}', {
         if (({#FORMNAME}.validate == false) || f.isValid()) 
         {
             layout.setActiveItem(next);
-            Ext.getCmp('card-prev').setDisabled(!layout.getPrev());
-            Ext.getCmp('card-next').setDisabled(!layout.getNext());
+            Ext.getCmp('btn-prev').setDisabled(!layout.getPrev());
+            Ext.getCmp('btn-next').setDisabled(!layout.getNext());
             if (!layout.getNext())
             {
-                Ext.getCmp('card-finish').show();
-                Ext.getCmp('card-next').hide();
+                Ext.getCmp('btn-finish').show();
+                Ext.getCmp('btn-next').hide();
             }
             else
             {
-                Ext.getCmp('card-finish').hide();
-                Ext.getCmp('card-next').show();
+                Ext.getCmp('btn-finish').hide();
+                Ext.getCmp('btn-next').show();
             }
 
             Ext.getCmp('card-assistant-panel').setTitle(this.{#FORMCAPTION} + 
                 ': ' + 
-                this.{#FORMCAPTION}Page + ' ' + (next + 1) + ' ' +
-                this.{#FORMCAPTION}Of + ' ' + layout.getLayoutItems().length + ': ' + layout.activeItem.title);
+                this.stepText.replace('{0}', (next + 1)).replace('{1}', layout.getLayoutItems().length) + 
+                ': ' + layout.activeItem.title);
         }
     },
 
@@ -91,19 +96,25 @@ Ext.define('{#FORMTYPE}', {
             });
         toolbar.add('->');
         toolbar.add({
-            id: 'card-prev',
-            text: '&laquo; Previous',
+            id: 'btn-cancel',
+            text: this.cancelButtonText,
+            handler: Ext.Function.bind(this.cardCancel, this),
+            disabled: false
+        });
+        toolbar.add({
+            id: 'btn-prev',
+            text: '&laquo; ' + this.previousButtonText,
             handler: Ext.Function.bind(this.cardNav, this, [-1]),
             disabled: true
         });
         toolbar.add({
-            id: 'card-next',
-            text: 'Next &raquo;',
+            id: 'btn-next',
+            text: this.nextButtonText + ' &raquo;',
             handler: Ext.Function.bind(this.cardNav, this, [1])
         });
         toolbar.add({
-            id: 'card-finish',
-            text: 'Finish',
+            id: 'btn-finish',
+            text: this.finishButtonText,
             hidden: true,
             handler: Ext.Function.bind(this.cardFinish, this)
         });
@@ -151,6 +162,21 @@ me.items.add(Ext.create('Ext.FormPanel',
     }));
 
 {##SUBMITBUTTONDEFINITION}
+cardCancel: function() {
+    Ext.Msg.show({
+        title: {#FORMNAME}.{#CANCELQUESTIONTITLE},
+        msg: {#FORMNAME}.{#CANCELQUESTIONMESSAGE},
+        modal: true,
+        icon: Ext.Msg.QUESTION,
+        buttons: Ext.Msg.YESNO,
+        fn: function(btn, text){
+          if(btn === 'yes'){ 
+            location.href={#FORMNAME}.{#REDIRECTURLONCANCEL};
+          }
+        }
+    });
+},
+
 cardFinish: function() {
     var layout = this.getLayout();
     f = layout.activeItem.getForm();
