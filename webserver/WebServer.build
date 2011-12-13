@@ -173,18 +173,32 @@ list of available commands:
 <target name="startWebServer" depends="prepareWebServer"
       description="only supports postgresql and mysql server at the moment, not sqlite; would need microsoft xsp">
 
-  <!-- TODO: run on linux as well? -->
-  <exec program="cmd.exe" 
-          workingdir="${dir.webserver}"
-          commandline="/C start xsp4.bat --verbose --root . --port 8081 --applications /:."
-          spawn="true">
-    <environment>
-      <variable name="PATH" path="${environment::get-variable('PATH')};${MonoBinPath}"/>
-      <variable name="MONO_PATH" path="${MonoBinPath}\..\lib\mono\4.0"/>
-      <variable name="MONO_OPTIONS" value="--debug"/>
-    </environment>
-  </exec>
-  <echo message="in your browser, go to http://localhost:8081/"/>
+  <if test="${'win32'==platform::get-name()}" >
+      <exec program="cmd.exe" 
+              workingdir="${dir.webserver}"
+              commandline="/C start xsp4.bat --verbose --root . --port 8081 --applications /:."
+              spawn="true">
+        <environment>
+          <variable name="PATH" path="${environment::get-variable('PATH')};${MonoBinPath}"/>
+          <variable name="MONO_PATH" path="${MonoBinPath}\..\lib\mono\4.0"/>
+          <variable name="MONO_OPTIONS" value="--debug"/>
+        </environment>
+      </exec>
+      <echo message="in your browser, go to http://localhost:8081/"/>
+  </if>
+  <if test="${'unix'==platform::get-name()}" >
+      <echo message="in your browser, go to http://localhost:8081/"/>
+      <exec program="xsp4" 
+              workingdir="${dir.webserver}"
+              commandline="--verbose --root . --port 8081 --applications /:."
+              spawn="false">
+        <environment>
+          <variable name="PATH" path="${environment::get-variable('PATH')};${MonoBinPath}"/>
+          <variable name="MONO_PATH" path="${MonoBinPath}\..\lib\mono\4.0"/>
+          <variable name="MONO_OPTIONS" value="--debug"/>
+        </environment>
+      </exec>
+  </if>
 </target>
 
 <target name="packWebApp" depends="clean, prepareWebServer, generateWebforms">
