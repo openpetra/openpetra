@@ -131,6 +131,8 @@ namespace Ict.Tools.CodeGeneration
             return LoadRecursively(AYamlFilename, ASelectedLocalisation, false, 0);
         }
 
+        static private SortedList <string, XmlDocument>CachedYamlFiles = new SortedList <string, XmlDocument>();
+
         /// <summary>
         /// this loads the contents of the yaml file.
         /// it supports inheritance, base elements are overwritten
@@ -182,19 +184,35 @@ namespace Ict.Tools.CodeGeneration
                     depth - 1);
             }
 
-            Console.WriteLine("Loading " + localisedFile + "...");
-
             if ((depth == 0) && (FCodeStorage.FXmlNodes != null))
             {
                 // apply the tag, so that we know which things have been changed by the last yml file
                 TYml2Xml.Tag((XmlNode)FCodeStorage.FXmlNodes[TParseYAMLFormsDefinition.ROOTNODEYML]);
             }
 
-            TYml2Xml yml2xml = new TYml2Xml(localisedFile);
-            yml2xml.ParseYML2XML(FCodeStorage.FXmlDocument, depth);
+            XmlDocument newDoc = null;
 
-            // for debugging:
-            FCodeStorage.FXmlDocument.Save(localisedFile + ".xml");
+            localisedFile = Path.GetFullPath(localisedFile);
+
+            if (CachedYamlFiles.ContainsKey(localisedFile))
+            {
+                newDoc = CachedYamlFiles[localisedFile];
+            }
+            else
+            {
+                Console.WriteLine("Loading " + localisedFile + "...");
+                TYml2Xml yml2xml = new TYml2Xml(localisedFile);
+                newDoc = yml2xml.ParseYML2XML();
+                CachedYamlFiles.Add(localisedFile, newDoc);
+            }
+
+            TYml2Xml.Merge(ref FCodeStorage.FXmlDocument, newDoc, depth);
+
+            if (TLogging.DebugLevel > 0)
+            {
+                // for debugging:
+                FCodeStorage.FXmlDocument.Save(localisedFile + ".xml");
+            }
 
             FCodeStorage.FXmlNodes = TYml2Xml.ReferenceNodes(FCodeStorage.FXmlDocument);
             FCodeStorage.FRootNode = (XmlNode)FCodeStorage.FXmlNodes[TParseYAMLFormsDefinition.ROOTNODEYML];
