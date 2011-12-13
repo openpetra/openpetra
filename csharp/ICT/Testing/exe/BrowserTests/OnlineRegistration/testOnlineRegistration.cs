@@ -33,7 +33,7 @@ namespace Ict.Testing.BrowserTests.OnlineRegistration
 {
     class TestOnlineRegistration
     {
-        static private void ScreenshotsOfOnlineRegistration(IWebDriver ADriver, string ABaseURL, string ACountryID, string ARole)
+        static private void ScreenshotsOfOnlineRegistration(IWebDriver ADriver, string ABaseURL, string ACountryID, string ARole, string AOutPath)
         {
             ADriver.Navigate().GoToUrl(
                 String.Format(ABaseURL + "/Apps/OnlineRegistration/index.aspx?country-id={0}&role-id={1}&validate=false",
@@ -43,7 +43,7 @@ namespace Ict.Testing.BrowserTests.OnlineRegistration
 
             while (true)
             {
-                string pngfile = string.Format("test-{0}-{1}-{2}.png", ACountryID, ARole, step++);
+                string pngfile = AOutPath + Path.DirectorySeparatorChar + string.Format("test-{0}-{1}-{2}.png", ACountryID, ARole, step++);
 
                 ((FirefoxDriver)ADriver).GetScreenshot().SaveAsFile(
                     pngfile, ImageFormat.Png);
@@ -51,7 +51,6 @@ namespace Ict.Testing.BrowserTests.OnlineRegistration
                 Console.WriteLine("writing " + pngfile);
 
                 IWebElement btnNext = ADriver.FindElement(By.Id("btn-next-btnEl"));
-                Console.WriteLine(btnNext.Displayed.ToString());
 
                 if ((btnNext != null) && btnNext.Displayed)
                 {
@@ -84,6 +83,7 @@ namespace Ict.Testing.BrowserTests.OnlineRegistration
             string countryID = TAppSettingsManager.GetValue("country-id", "*");
             string roleID = TAppSettingsManager.GetValue("role-id", "*");
             string pathGen = TAppSettingsManager.GetValue("path-generated");
+            string pathOutput = TAppSettingsManager.GetValue("path-out");
 
             try
             {
@@ -99,7 +99,7 @@ namespace Ict.Testing.BrowserTests.OnlineRegistration
                         if (((countryID == "*") || (match.Groups[1].Value == countryID))
                             && ((roleID == "*") || (match.Groups[2].Value == roleID)))
                         {
-                            ScreenshotsOfOnlineRegistration(driver, baseURL, match.Groups[1].Value, match.Groups[2].Value);
+                            ScreenshotsOfOnlineRegistration(driver, baseURL, match.Groups[1].Value, match.Groups[2].Value, pathOutput);
                         }
                     }
                 }
@@ -107,7 +107,6 @@ namespace Ict.Testing.BrowserTests.OnlineRegistration
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
-                Console.ReadLine();
             }
             finally
             {

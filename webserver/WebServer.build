@@ -570,7 +570,7 @@ list of available commands:
 <target name="test" depends="init">
     <property name="country-id" value="*" overwrite="false"/>
     <property name="role-id" value="*" overwrite="false"/>
-    <ExecDotNet program="${dir.bin}/Ict.Testing.BrowserTests.OnlineRegistration.exe" commandline="-path-generated:${dir.delivery}/webserver/Apps/OnlineRegistration/gen -country-id:${country-id} -role-id:${role-id}"/>
+    <ExecDotNet program="${dir.bin}/Ict.Testing.BrowserTests.OnlineRegistration.exe" commandline="-path-generated:${dir.delivery}/webserver/Apps/OnlineRegistration/gen -country-id:${country-id} -role-id:${role-id} -path-out:${dir.delivery}"/>
 </target>
 
 <include buildfile="../inc/nant/OpenPetra.csharp.xml"/> 
