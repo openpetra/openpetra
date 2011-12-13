@@ -12,7 +12,8 @@ list of available commands:
   generateWebform: generates a single webform
     generateWebform -D:file=
   splitFormsIntoSubdirs: split all child/serve/etc files into subdirectories for easier work
-  restoreFormsFromSubdirs: restore the files again into the ApplicationForms direcotory
+  restoreFormsFromSubdirs: restore the files again into the ApplicationForms directory
+  test -D:country-id=sv-SE: make screenshots of online registration
   packWebApp: builds a zip file in the delivery directory
   packTranslation: pack the language specific file for one or several languages
     packTranslation -D:country-id=de-DE,en-GB
@@ -564,6 +565,12 @@ list of available commands:
         </if>
       </do>
   </foreach>
+</target>
+
+<target name="test" depends="init">
+    <property name="country-id" value="*" overwrite="false"/>
+    <property name="role-id" value="*" overwrite="false"/>
+    <ExecDotNet program="${dir.bin}/Ict.Testing.BrowserTests.OnlineRegistration.exe" commandline="-path-generated:${dir.delivery}/webserver/Apps/OnlineRegistration/gen -country-id:${country-id} -role-id:${role-id}"/>
 </target>
 
 <include buildfile="../inc/nant/OpenPetra.csharp.xml"/> 
