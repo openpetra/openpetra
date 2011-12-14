@@ -191,20 +191,29 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             AGiftBatchRow InspectRow;
             AGiftDetailRow InspectRow2;
+            object ValidationContext;
 
             for (int Counter = 0; Counter < FMainDS.AGiftBatch.Rows.Count; Counter++)
             {
                 InspectRow = (AGiftBatchRow)FMainDS.AGiftBatch.Rows[Counter];
 
                 DataColumn ValidationColumn;
-//TLogging.Log("ValidateDataManual: AnalysisTypeCode = " + ARow.AnalysisTypeCode.ToString() + "; AnalysisTypeDescription = " + ARow.AnalysisTypeDescription.ToString() );
-                // 'International Telephone Code' must be positive or 0
-                ValidationColumn = InspectRow.Table.Columns[AGiftBatchTable.ColumnBatchDescriptionId];
 
+                // 'Batch Description' must not be empty
+                ValidationColumn = InspectRow.Table.Columns[AGiftBatchTable.ColumnBatchDescriptionId];
+				ValidationContext = InspectRow.BatchNumber;
                 FPetraUtilsObject.VerificationResultCollection.AddOrRemove(
                     TStringChecks.StringMustNotBeEmpty(InspectRow.BatchDescription,
-                        "Batch Description for Batch Number " + InspectRow.BatchNumber.ToString(),
-                        this, ValidationColumn, ucoBatches), ValidationColumn);
+                        "Batch Description for Batch Number " + ValidationContext.ToString(),
+                        ValidationContext, ValidationColumn, ucoBatches), ValidationColumn, ValidationContext, true);
+                
+				// 'Exchange Rate' must be greater than 0
+                ValidationColumn = InspectRow.Table.Columns[AGiftBatchTable.ColumnExchangeRateToBaseId];
+				ValidationContext = InspectRow.BatchNumber;
+                FPetraUtilsObject.VerificationResultCollection.AddOrRemove(
+                    TNumericalChecks.IsPositiveDecimal(InspectRow.ExchangeRateToBase,
+                        "Exchange Rate for Batch Number " + ValidationContext.ToString(),
+                        ValidationContext, ValidationColumn, ucoBatches), ValidationColumn, ValidationContext, true);
             }
 
             for (int Counter = 0; Counter < FMainDS.AGiftDetail.Rows.Count; Counter++)
@@ -212,19 +221,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 InspectRow2 = (AGiftDetailRow)FMainDS.AGiftDetail.Rows[Counter];
 
                 DataColumn ValidationColumn;
-//TLogging.Log("ValidateDataManual: AnalysisTypeCode = " + ARow.AnalysisTypeCode.ToString() + "; AnalysisTypeDescription = " + ARow.AnalysisTypeDescription.ToString() );
-                // 'International Telephone Code' must be positive or 0
-                ValidationColumn = InspectRow2.Table.Columns[AGiftDetailTable.ColumnGiftCommentOneId];
 
+                ValidationColumn = InspectRow2.Table.Columns[AGiftDetailTable.ColumnGiftCommentOneId];
+				ValidationContext = InspectRow2.BatchNumber.ToString() + ";" + InspectRow2.GiftTransactionNumber.ToString();
+                // 'Gift Comment One' must not be empty
                 FPetraUtilsObject.VerificationResultCollection.AddOrRemove(
                     TStringChecks.StringMustNotBeEmpty(InspectRow2.GiftCommentOne,
-                        "Gift Comment One for Batch Number " + InspectRow2.BatchNumber.ToString(),
-                        this, ValidationColumn, ucoTransactions), ValidationColumn);
+                        String.Format("Gift Comment One for Batch Number {0}, Gift Transaction Number {1}",
+                	                  InspectRow2.BatchNumber, InspectRow2.GiftTransactionNumber),
+                        ValidationContext, ValidationColumn, ucoTransactions), ValidationColumn, ValidationContext, true);
             }
-
-            FPetraUtilsObject.VerificationResultCollection.Add(new TScreenVerificationResult("TestContext",
-                    FMainDS.AGiftBatch.Columns[AGiftBatchTable.ColumnBatchDescriptionId], "test warning", ucoBatches,
-                    TResultSeverity.Resv_Noncritical));
         }
     }
 }
