@@ -256,6 +256,9 @@ namespace Ict.Common.Verification
         /// <summary>
         /// Text of the Verification Result.
         /// </summary>
+        /// <remarks>This Property cannot be written to in order to avoid accidental overwriting. However,
+        /// by calling the Method <see cref="OverrideResultText" /> the <see cref="ResultText" />
+        /// <em>can</em> be modified.</remarks>
         public String ResultText
         {
             get
@@ -268,6 +271,9 @@ namespace Ict.Common.Verification
         /// <summary>
         /// Caption of the Verification Result (e.g. for use in MessageBox Titles).
         /// </summary>
+        /// <remarks>This Property cannot be written to in order to avoid accidental overwriting. However,
+        /// by calling the Method <see cref="OverrideResultTextCaption" /> the <see cref="ResultTextCaption" /> 
+        /// <em>can</em> be modified.</remarks>
         public String ResultTextCaption
         {
             get
@@ -304,6 +310,26 @@ namespace Ict.Common.Verification
                 return FResultSeverity;
             }
         }
+        
+        /// <summary>
+        /// Overrides the ResultText that the <see cref="TVerificationResult" /> was 
+        /// originally populated with.
+        /// </summary>
+        /// <param name="ANewResultText">New ResultText.</param>
+        public void OverrideResultText(string ANewResultText)
+        {
+        	FResultText = ANewResultText;
+        }
+        
+        /// <summary>
+        /// Overrides the ResultTextCaption that the <see cref="TVerificationResult" /> was 
+        /// originally populated with.
+        /// </summary>
+        /// <param name="ANewResultTextCaption">New ResultTextCaption.</param>
+        public void OverrideResultTextCaption(string ANewResultTextCaption)
+        {
+        	FResultTextCaption = ANewResultTextCaption;
+        }        
     }
 
     #endregion
@@ -565,15 +591,32 @@ namespace Ict.Common.Verification
         }
 
         /// <summary>
-        /// add a new verification object
+        /// Adds a new verification object.
         /// </summary>
-        /// <param name="value">the verification object to be added</param>
+        /// <param name="value">the verification object to be added (must not be null)</param>
         /// <returns></returns>
         public int Add(IResultInterface value)
         {
             return List.Add(value);
         }
 
+        /// <summary>
+        /// Adds a new verification object. Should the verification object be null,
+        /// nothing happens.
+        /// </summary>
+        /// <param name="value">the verification object to be added (can be null)</param>
+        /// <returns></returns>
+        public int AddAndIgnoreNullValue(IResultInterface value)
+        {
+        	int ReturnValue = -1;
+        	
+        	if (value != null) 
+        	{
+        		ReturnValue = List.Add(value);	
+        	}     
+
+			return ReturnValue;        	
+        }        
         /// <summary>
         /// merge another verification collection into the current collection
         /// </summary>
@@ -753,8 +796,15 @@ namespace Ict.Common.Verification
         /// or null if a <see cref="TVerificationResult" /> that is stored in the collection for the
         /// <see cref="System.Data.DataColumn" /> <paramref name="AResultColumn" /> should get removed.</param>
         /// <param name="AResultColumn">The <see cref="System.Data.DataColumn" /> to check for.</param>
+        /// <param name="AResultContext">Considered only when <paramref name="AVerificationResult"></paramref> is null: 
+        /// removal from collection will only happen if <paramref name="AResultContext"></paramref>.ToString() matches an 
+        /// <see cref="TVerificationResult" />'s ResultContext.ToString() that is stored in the collection for the
+        /// <see cref="System.Data.DataColumn" />.  (Default: null.)</param>
+        /// <param name="ACompareResultContextsAsStrings">Set to true to compare the ResultContexts not as objects, but
+        /// compare what a call of the .ToString() Method on the two object yields. (Default: false.)</param>
         /// <returns>void</returns>
-        public void AddOrRemove(TVerificationResult AVerificationResult, DataColumn AResultColumn)
+        public void AddOrRemove(TVerificationResult AVerificationResult, DataColumn AResultColumn, object AResultContext = null,
+            bool ACompareResultContextsAsStrings = false)
         {
             List <TScreenVerificationResult>si = FindAllBy(AResultColumn);
             bool IdenticalVResultFound = false;
@@ -769,7 +819,7 @@ namespace Ict.Common.Verification
                 {
                     foreach (TScreenVerificationResult SingleEntry in si)
                     {
-                        if (TVerificationHelper.AreVerificationResultsIdentical(SingleEntry, AVerificationResult))
+                        if (TVerificationHelper.AreVerificationResultsIdentical(SingleEntry, AVerificationResult, ACompareResultContextsAsStrings))
                         {
                             IdenticalVResultFound = true;
                             break;
@@ -786,7 +836,17 @@ namespace Ict.Common.Verification
             {
                 foreach (TScreenVerificationResult SingleEntry in si)
                 {
-                    this.Remove(SingleEntry);
+                	if (AResultContext != null) 
+                	{
+                		if (SingleEntry.ResultContext.ToString() == AResultContext.ToString())
+	                    {               	
+	                    	this.Remove(SingleEntry);
+	                    }                		
+                	}
+                	else
+                	{
+                		this.Remove(SingleEntry);
+                	}
                 }
             }
         }
@@ -1055,9 +1115,11 @@ namespace Ict.Common.Verification
         /// </summary>
         /// <param name="AVerificationResult1">First <see cref="TVerificationResult" />.</param>
         /// <param name="AVerificationResult2">Second <see cref="TVerificationResult" />.</param>
-        /// <returns>True if the two <see cref="TVerificationResult" />s are completely identical,
+        /// <param name="ACompareResultContextsAsStrings">Set to true to compare the ResultContexts not as objects, but
+        /// compare what a call of the .ToString() Method on the two object yields. (Default: false.)</param>        /// <returns>True if the two <see cref="TVerificationResult" />s are completely identical,
         /// otherwise false.</returns>
-        public static bool AreVerificationResultsIdentical(TVerificationResult AVerificationResult1, TVerificationResult AVerificationResult2)
+        public static bool AreVerificationResultsIdentical(TVerificationResult AVerificationResult1, TVerificationResult AVerificationResult2,
+            bool ACompareResultContextsAsStrings = false)
         {
             if ((AVerificationResult1 == null)
                 || (AVerificationResult2 == null))
@@ -1079,9 +1141,19 @@ namespace Ict.Common.Verification
                     return false;
                 }
 
-                if (AVerificationResult1.ResultContext != AVerificationResult2.ResultContext)
+                if (!ACompareResultContextsAsStrings) 
                 {
-                    return false;
+	                if (AVerificationResult1.ResultContext != AVerificationResult2.ResultContext)
+	                {
+	                    return false;
+	                }                	
+                }
+                else
+                {
+                	if (AVerificationResult1.ResultContext.ToString() != AVerificationResult2.ResultContext.ToString())
+	                {
+	                    return false;
+	                }                	                	
                 }
 
                 if (AVerificationResult1.ResultSeverity != AVerificationResult2.ResultSeverity)

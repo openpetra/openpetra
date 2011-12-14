@@ -55,7 +55,7 @@ namespace Ict.Common.Verification
         private static readonly string StrEmailAddOrPartNotValid = Catalog.GetString(
             "The e-mail address '{0}' (or a part of it, '{1}') is not valid.");
 
-        private static readonly string StrInvalidStringOrder = Catalog.GetString("Invalid Order.\r\n'{0}' cannot be greater than '{1}'.");
+        private static readonly string StrInvalidStringOrder = Catalog.GetString("Invalid Order.\r\n{0} cannot be greater than {1}.");
 
         private static readonly string StrStringMustNotBeEmpty = Catalog.GetString("A value must be entered for {0}.");
 
@@ -70,20 +70,6 @@ namespace Ict.Common.Verification
         /// <param name="AValue">The string to check.</param>
         /// <param name="ADescription">Description what the value is about (for the
         /// error message).</param>
-        /// <returns>Null if <paramref name="AValue" /> is not null and not <see cref="String.Empty" />,
-        /// otherwise a <see cref="TVerificationResult" /> is returned that
-        /// contains details about the problem, with a message that uses <paramref name="ADescription" />.</returns>
-        public static TVerificationResult StringMustNotBeEmpty(string AValue, string ADescription)
-        {
-            return StringMustNotBeEmpty(AValue, ADescription, null, null, null);
-        }
-
-        /// <summary>
-        /// Checks whether a strings is null or <see cref="String.Empty" />.  Null values are accepted.
-        /// </summary>
-        /// <param name="AValue">The string to check.</param>
-        /// <param name="ADescription">Description what the value is about (for the
-        /// error message).</param>
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
         /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null).</param>
@@ -91,7 +77,7 @@ namespace Ict.Common.Verification
         /// otherwise a <see cref="TVerificationResult" /> is returned that
         /// contains details about the problem, with a message that uses <paramref name="ADescription" />.</returns>
         public static TVerificationResult StringMustNotBeEmpty(string AValue, string ADescription,
-            object AResultContext, System.Data.DataColumn AResultColumn, System.Windows.Forms.Control AResultControl)
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
         {
             TVerificationResult ReturnValue = null;
             String Description = THelper.NiceValueDescription(ADescription);
@@ -100,7 +86,7 @@ namespace Ict.Common.Verification
             if ((AValue == null)
                 || (AValue == String.Empty))
             {
-                ReturnValue = new TVerificationResult(String.Empty,
+                ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_NOEMPTYSTRING, CommonResourcestrings.StrInvalidStringEntered + Environment.NewLine +
                         StrStringMustNotBeEmpty, Description));
 
@@ -126,26 +112,6 @@ namespace Ict.Common.Verification
         /// error message).</param>
         /// <param name="ASecondDescription">Description what the value is about (for the
         /// error message).</param>
-        /// <returns>Null if <paramref name="ATxt1" /> is lesser or equal than
-        /// <paramref name="ATxt2" />, otherwise a <see cref="TVerificationResult" /> is returned that
-        /// contains details about the problem, with a message that uses <paramref name="AFirstDescription" />
-        /// and <paramref name="ASecondDescription" />.</returns>
-        public static TVerificationResult FirstLesserOrEqualThanSecondString(String ATxt1, String ATxt2,
-            String AFirstDescription, String ASecondDescription)
-        {
-            return FirstLesserOrEqualThanSecondString(ATxt1, ATxt2, AFirstDescription, ASecondDescription,
-                null, null, null);
-        }
-
-        /// <summary>
-        /// Checks whether two strings are in correct order (lexical comparison).  Null values are accepted.
-        /// </summary>
-        /// <param name="ATxt1">The first string; it is supposed to be lesser or equal than ATxt2.</param>
-        /// <param name="ATxt2">The second string; it is supposed to be greater or equal than ATxt1.</param>
-        /// <param name="AFirstDescription">Description what the value is about (for the
-        /// error message).</param>
-        /// <param name="ASecondDescription">Description what the value is about (for the
-        /// error message).</param>
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
         /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null).</param>
@@ -155,10 +121,13 @@ namespace Ict.Common.Verification
         /// and <paramref name="ASecondDescription" />.</returns>
         public static TVerificationResult FirstLesserOrEqualThanSecondString(String ATxt1, String ATxt2,
             String AFirstDescription, String ASecondDescription,
-            object AResultContext, System.Data.DataColumn AResultColumn, System.Windows.Forms.Control AResultControl)
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
         {
             TVerificationResult ReturnValue;
 
+            string FirstDescription = THelper.NiceValueDescription(AFirstDescription);
+            string SecondDescription = THelper.NiceValueDescription(ASecondDescription);
+            
             // Check
             if (System.String.Compare(ATxt1, ATxt2, false) <= 0)
             {
@@ -167,9 +136,9 @@ namespace Ict.Common.Verification
             }
             else
             {
-                ReturnValue = new TVerificationResult(String.Empty,
+                ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INCONGRUOUSSTRINGS,
-                        StrInvalidStringOrder, AFirstDescription, ASecondDescription));
+                        StrInvalidStringOrder, FirstDescription, SecondDescription));
 
                 if (AResultColumn != null)
                 {
@@ -199,7 +168,7 @@ namespace Ict.Common.Verification
         {
             return ValidateEmail(AEmailAddress, false);
         }
-
+        
         /// <summary>
         /// Checks whether an e-mail address is valid (logical only, no lookup is done).
         /// Does not allow more than one email address in the <paramref name="AEmailAddress" />
@@ -230,27 +199,6 @@ namespace Ict.Common.Verification
         /// Address can be contained in AEmailAddress. If this is set to true, all
         /// contained e-mail Addresses will be validated. Recognized separators are
         /// comma and semicolon (',' and ';').</param>
-        /// <returns>Null if <paramref name="AEmailAddress" /> contains a valid email address,
-        /// otherwise a <see cref="TVerificationResult" /> is returned that contains details about
-        /// the problem (also in the case where <paramref name="AAllowMoreThanOneEMailAddress" />
-        /// is set to false and more than one e-mail Address is contained in
-        /// <paramref name="AEmailAddress" /> - even if the e-mail Addresses are correct!).
-        /// </returns>
-        public static TVerificationResult ValidateEmail(String AEmailAddress, Boolean AAllowMoreThanOneEMailAddress)
-        {
-            return ValidateEmail(AEmailAddress, AAllowMoreThanOneEMailAddress, null, null, null);
-        }
-
-        /// <summary>
-        /// Checks whether an e-mail address is valid (logical only, no lookup is done). Multiple email addresses
-        /// may be contained in Argument <paramref name="AEmailAddress" /> if Argument
-        /// <paramref name="AAllowMoreThanOneEMailAddress" /> is set to true.
-        /// </summary>
-        /// <param name="AEmailAddress">E-mail address that should be verified.</param>
-        /// <param name="AAllowMoreThanOneEMailAddress">Set this to true if more than one e-mail
-        /// Address can be contained in AEmailAddress. If this is set to true, all
-        /// contained e-mail Addresses will be validated. Recognized separators are
-        /// comma and semicolon (',' and ';').</param>
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
         /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null).</param>
@@ -261,7 +209,7 @@ namespace Ict.Common.Verification
         /// <paramref name="AEmailAddress" /> - even if the e-mail Addresses are correct!).
         /// </returns>
         public static TVerificationResult ValidateEmail(String AEmailAddress, Boolean AAllowMoreThanOneEMailAddress,
-            object AResultContext, System.Data.DataColumn AResultColumn, System.Windows.Forms.Control AResultControl)
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
         {
             TVerificationResult ReturnValue = null;
 
@@ -299,7 +247,7 @@ namespace Ict.Common.Verification
                         SeparatorWarning = Environment.NewLine +
                                            StrEmailAddrContainsEmailSeparatorNotAllowed;
 
-                        ReturnValue = new TVerificationResult(String.Empty,
+                        ReturnValue = new TVerificationResult(AResultContext,
                             ErrorCodes.GetErrorInfo(ERR_EMAILADDRESSINVALID, StrEmailAddNotValid + SeparatorWarning,
                                 AEmailAddress));
                     }
@@ -325,13 +273,13 @@ namespace Ict.Common.Verification
 
                                 if (EmailAddressPartInfo != String.Empty)
                                 {
-                                    ReturnValue = new TVerificationResult(String.Empty,
+                                    ReturnValue = new TVerificationResult(AResultContext,
                                         ErrorCodes.GetErrorInfo(ERR_EMAILADDRESSINVALID, StrEmailAddOrPartNotValid +
                                             SeparatorWarning, AEmailAddress, EmailAddressPartInfo));
                                 }
                                 else
                                 {
-                                    ReturnValue = new TVerificationResult(String.Empty,
+                                    ReturnValue = new TVerificationResult(AResultContext,
                                         ErrorCodes.GetErrorInfo(ERR_EMAILADDRESSINVALID, StrEmailAddNotValid +
                                             SeparatorWarning, AEmailAddress));
                                 }
@@ -349,7 +297,7 @@ namespace Ict.Common.Verification
                     }
                     else
                     {
-                        ReturnValue = new TVerificationResult(String.Empty,
+                        ReturnValue = new TVerificationResult(AResultContext,
                             ErrorCodes.GetErrorInfo(ERR_EMAILADDRESSINVALID, StrEmailAddNotValid, AEmailAddress));
                     }
                 }

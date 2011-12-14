@@ -39,13 +39,13 @@ namespace Ict.Common.Verification
     {
         #region Resourcestrings
 
-        private static readonly string StrDateMayNotBeEmpty = Catalog.GetString("'{0}' may not be empty.");
-        private static readonly string StrDateMayNotBePastDate = Catalog.GetString("'{0}' may not be a past date.");
-        private static readonly string StrDateMayNotBeFutureDate = Catalog.GetString("'{0}' may not be a future date.");
-        private static readonly string StrDateCannotBeLater = Catalog.GetString("'{0}' cannot be later then '{1}'.");
-        private static readonly string StrDateCannotBeLaterOrEqual = Catalog.GetString("'{0}' cannot be later than or equal to '{1}'.");
-        private static readonly string StrDateCannotBeEarlier = Catalog.GetString("'{0}' cannot be earlier than '{1}'.");
-        private static readonly string StrDateCannotBeEarlierOrEqual = Catalog.GetString("'{0}' cannot be earlier than or equal to '{1}'.");
+        private static readonly string StrDateMayNotBeEmpty = Catalog.GetString("{0} may not be empty.");
+        private static readonly string StrDateMayNotBePastDate = Catalog.GetString("{0} may not be a past date.");
+        private static readonly string StrDateMayNotBeFutureDate = Catalog.GetString("{0} may not be a future date.");
+        private static readonly string StrDateCannotBeLater = Catalog.GetString("{0} cannot be later then {1}.");
+        private static readonly string StrDateCannotBeLaterOrEqual = Catalog.GetString("{0} cannot be later than or equal to {1}.");
+        private static readonly string StrDateCannotBeEarlier = Catalog.GetString("{0} cannot be earlier than {1}.");
+        private static readonly string StrDateCannotBeEarlierOrEqual = Catalog.GetString("{0} cannot be earlier than or equal to {1}.");
         private static readonly string StrMustBeDate = Catalog.GetString("{0} must be a date.");
 
         #endregion
@@ -54,37 +54,43 @@ namespace Ict.Common.Verification
 
         /// <summary>
         /// Checks whether the date is not undefined. DateTime.MinValue is seen as undefined by this Method.
-        /// Null values are accepted.
+        /// Null values are accepted. They are treated as valid, unless <paramref name="ATreatNullAsInvalid" /> is
+        /// set to true.
         /// </summary>
         /// <param name="ADate">The date to check.</param>
         /// <param name="ADescription">The name of the date value.</param>
-        /// <returns>Null if validation succeeded, otherwise a <see cref="TVerificationResult" /> is
-        /// returned that contains details about the problem.</returns>
-        public static TVerificationResult IsNotUndefinedDateTime(DateTime? ADate, String ADescription)
-        {
-            return IsNotUndefinedDateTime(ADate, ADescription, null, null, null);
-        }
-
-        /// <summary>
-        /// Checks whether the date is not undefined. DateTime.MinValue is seen as undefined by this Method.
-        /// Null values are accepted.
-        /// </summary>
-        /// <param name="ADate">The date to check.</param>
-        /// <param name="ADescription">The name of the date value.</param>
+        /// <param name="ATreatNullAsInvalid">Set this to true to treated null value in <paramref name="ADate" /> as invalid.</param>
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
         /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null).</param>
         /// <returns>Null if validation succeeded, otherwise a <see cref="TVerificationResult" /> is
         /// returned that contains details about the problem.</returns>
         public static TVerificationResult IsNotUndefinedDateTime(DateTime? ADate, String ADescription,
-            object AResultContext, System.Data.DataColumn AResultColumn, System.Windows.Forms.Control AResultControl)
+            bool ATreatNullAsInvalid = false, object AResultContext = null, System.Data.DataColumn AResultColumn = null, 
+            System.Windows.Forms.Control AResultControl = null)
         {
             TVerificationResult ReturnValue;
             DateTime TheDate = TSaveConvert.ObjectToDate(ADate);
+            String Description = THelper.NiceValueDescription(ADescription);
 
             if (!ADate.HasValue)
             {
-                return null;
+            	if (!ATreatNullAsInvalid) 
+            	{
+            		return null;	
+            	}
+                else
+                {
+	                ReturnValue = new TVerificationResult(AResultContext,
+	                    ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_NOUNDEFINEDDATE,
+	                        CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
+	                        StrDateMayNotBeEmpty, Description));
+	
+	                if (AResultColumn != null)
+	                {
+	                    ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+	                }                	
+                }
             }
 
             // Check
@@ -95,10 +101,10 @@ namespace Ict.Common.Verification
             }
             else
             {
-                ReturnValue = new TVerificationResult(String.Empty,
+                ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_NOUNDEFINEDDATE,
                         CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
-                        StrDateMayNotBeEmpty, ADescription));
+                        StrDateMayNotBeEmpty, Description));
 
                 if (AResultColumn != null)
                 {
@@ -119,19 +125,6 @@ namespace Ict.Common.Verification
         /// </summary>
         /// <param name="AString">The date to check.</param>
         /// <param name="ADescription">The name of the date value.</param>
-        /// <returns>Null if <paramref name="AString" /> contains a valid DateTime, otherwise a
-        /// <see cref="TVerificationResult" /> with a message which uses
-        /// <paramref name="ADescription" /> is returned.</returns>
-        public static TVerificationResult IsValidDateTime(String AString, String ADescription)
-        {
-            return IsValidDateTime(AString, ADescription, null, null, null);
-        }
-
-        /// <summary>
-        /// Checks whether the string <paramref name="AString" /> contains a valid DateTime.
-        /// </summary>
-        /// <param name="AString">The date to check.</param>
-        /// <param name="ADescription">The name of the date value.</param>
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
         /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null).</param>
@@ -139,9 +132,10 @@ namespace Ict.Common.Verification
         /// <see cref="TVerificationResult" /> with a message which uses
         /// <paramref name="ADescription" /> is returned.</returns>
         public static TVerificationResult IsValidDateTime(String AString, String ADescription,
-            object AResultContext, System.Data.DataColumn AResultColumn, System.Windows.Forms.Control AResultControl)
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
         {
             TVerificationResult ReturnValue = null;
+            String Description = THelper.NiceValueDescription(ADescription);
 
             try
             {
@@ -149,7 +143,7 @@ namespace Ict.Common.Verification
             }
             catch (System.Exception)
             {
-                ReturnValue = GetInvalidDateVerificationResult(ADescription);
+                ReturnValue = GetInvalidDateVerificationResult(Description, AResultContext);
 
                 if (AResultColumn != null)
                 {
@@ -172,19 +166,6 @@ namespace Ict.Common.Verification
         /// </summary>
         /// <param name="ADate">Date to check.</param>
         /// <param name="ADescription">Name of the date value.</param>
-        /// <returns>Null if the date <paramref name="ADate" /> is today or in the future,
-        /// otherwise a verification result with a message that uses <paramref name="ADescription" />.
-        /// </returns>
-        public static TVerificationResult IsCurrentOrFutureDate(DateTime? ADate, String ADescription)
-        {
-            return IsCurrentOrFutureDate(ADate, ADescription, null, null, null);
-        }
-
-        /// <summary>
-        /// Checks whether the date is today or in the future. Null values are accepted.
-        /// </summary>
-        /// <param name="ADate">Date to check.</param>
-        /// <param name="ADescription">Name of the date value.</param>
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
         /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null).</param>
@@ -192,10 +173,11 @@ namespace Ict.Common.Verification
         /// otherwise a verification result with a message that uses <paramref name="ADescription" />.
         /// </returns>
         public static TVerificationResult IsCurrentOrFutureDate(DateTime? ADate, String ADescription,
-            object AResultContext, System.Data.DataColumn AResultColumn, System.Windows.Forms.Control AResultControl)
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
         {
             TVerificationResult ReturnValue;
             DateTime TheDate = TSaveConvert.ObjectToDate(ADate);
+            String Description = THelper.NiceValueDescription(ADescription);
 
             if (!ADate.HasValue)
             {
@@ -212,9 +194,9 @@ namespace Ict.Common.Verification
             {
                 if (TheDate != DateTime.MinValue)
                 {
-                    ReturnValue = new TVerificationResult(String.Empty,
+                    ReturnValue = new TVerificationResult(AResultContext,
                         ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_NOPASTDATE, CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
-                            StrDateMayNotBePastDate, ADescription));
+                            StrDateMayNotBePastDate, Description));
 
                     if (AResultColumn != null)
                     {
@@ -240,19 +222,6 @@ namespace Ict.Common.Verification
         /// </summary>
         /// <param name="ADate">The date to check.</param>
         /// <param name="ADescription">The name of the date value.</param>
-        /// <returns>Null if the date <paramref name="ADate" /> is today or in the past,
-        /// otherwise a verification result with a message that uses <paramref name="ADescription" />.
-        /// </returns>
-        public static TVerificationResult IsCurrentOrPastDate(DateTime? ADate, String ADescription)
-        {
-            return IsCurrentOrPastDate(ADate, ADescription, null, null, null);
-        }
-
-        /// <summary>
-        /// Checks whether the date is today or in the past. Null values are accepted.
-        /// </summary>
-        /// <param name="ADate">The date to check.</param>
-        /// <param name="ADescription">The name of the date value.</param>
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
         /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null).</param>
@@ -260,9 +229,10 @@ namespace Ict.Common.Verification
         /// otherwise a verification result with a message that uses <paramref name="ADescription" />.
         /// </returns>
         public static TVerificationResult IsCurrentOrPastDate(DateTime? ADate, String ADescription,
-            object AResultContext, System.Data.DataColumn AResultColumn, System.Windows.Forms.Control AResultControl)
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
         {
             TVerificationResult ReturnValue;
+            String Description = THelper.NiceValueDescription(ADescription);
 
             if (!ADate.HasValue)
             {
@@ -277,9 +247,9 @@ namespace Ict.Common.Verification
             }
             else
             {
-                ReturnValue = new TVerificationResult(String.Empty,
+                ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_NOFUTUREDATE, CommonResourcestrings.StrInvalidDateEntered +
-                        Environment.NewLine + StrDateMayNotBeFutureDate, ADescription));
+                        Environment.NewLine + StrDateMayNotBeFutureDate, Description));
 
                 if (AResultColumn != null)
                 {
@@ -307,26 +277,6 @@ namespace Ict.Common.Verification
         /// error message).</param>
         /// <param name="ASecondDateDescription">Description what the second date is about (for
         /// the error message).</param>
-        /// <returns>Null if validation succeeded, otherwise a <see cref="TVerificationResult" /> is
-        /// returned that contains details about the problem, with a message that uses
-        /// <paramref name="AFirstDateDescription" /> and <paramref name="ASecondDateDescription" />.</returns>
-        public static TVerificationResult FirstLesserOrEqualThanSecondDate(DateTime? ADate1,
-            DateTime? ADate2, string AFirstDateDescription, string ASecondDateDescription)
-        {
-            return FirstLesserOrEqualThanSecondDate(ADate1, ADate2, AFirstDateDescription, ASecondDateDescription,
-                null, null, null);
-        }
-
-        /// <summary>
-        /// Checks whether the first submitted date is earlier or equal than the second
-        /// submitted date. Null dates are accepted.
-        /// </summary>
-        /// <param name="ADate1">First date.</param>
-        /// <param name="ADate2">Second date.</param>
-        /// <param name="AFirstDateDescription">Description what the first date is about (for the
-        /// error message).</param>
-        /// <param name="ASecondDateDescription">Description what the second date is about (for
-        /// the error message).</param>
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
         /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null).</param>
@@ -335,9 +285,11 @@ namespace Ict.Common.Verification
         /// <paramref name="AFirstDateDescription" /> and <paramref name="ASecondDateDescription" />.</returns>
         public static TVerificationResult FirstLesserOrEqualThanSecondDate(DateTime? ADate1,
             DateTime? ADate2, string AFirstDateDescription, string ASecondDateDescription,
-            object AResultContext, System.Data.DataColumn AResultColumn, System.Windows.Forms.Control AResultControl)
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
         {
             TVerificationResult ReturnValue;
+            String FirstDateDescription = THelper.NiceValueDescription(AFirstDateDescription);
+            String SecondDateDescription = THelper.NiceValueDescription(ASecondDateDescription);
 
             if ((!ADate1.HasValue) || (!ADate2.HasValue))
             {
@@ -354,9 +306,9 @@ namespace Ict.Common.Verification
             {
                 if (ADate2 != DateTime.MinValue)
                 {
-                    ReturnValue = new TVerificationResult(String.Empty,
+                    ReturnValue = new TVerificationResult(AResultContext,
                         ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDDATE, CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
-                            StrDateCannotBeLater, AFirstDateDescription, ASecondDateDescription));
+                            StrDateCannotBeLater, FirstDateDescription, SecondDateDescription));
 
                     if (AResultColumn != null)
                     {
@@ -382,26 +334,6 @@ namespace Ict.Common.Verification
         /// error message).</param>
         /// <param name="ASecondDateDescription">Description what the second date is about (for
         /// the error message).</param>
-        /// <returns>Null if validation succeeded, otherwise a <see cref="TVerificationResult" /> is
-        /// returned that contains details about the problem, with a message that uses
-        /// <paramref name="AFirstDateDescription" /> and <paramref name="ASecondDateDescription" />.</returns>
-        public static TVerificationResult FirstLesserThanSecondDate(DateTime? ADate1,
-            DateTime? ADate2, string AFirstDateDescription, string ASecondDateDescription)
-        {
-            return FirstLesserThanSecondDate(ADate1, ADate2, AFirstDateDescription, ASecondDateDescription,
-                null, null, null);
-        }
-
-        /// <summary>
-        /// Checks whether the first submitted date is earlier than the second submitted
-        /// date. Null dates are accepted.
-        /// </summary>
-        /// <param name="ADate1">First date.</param>
-        /// <param name="ADate2">Second date</param>
-        /// <param name="AFirstDateDescription">Description what the first date is about (for the
-        /// error message).</param>
-        /// <param name="ASecondDateDescription">Description what the second date is about (for
-        /// the error message).</param>
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
         /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null).</param>
@@ -410,9 +342,12 @@ namespace Ict.Common.Verification
         /// <paramref name="AFirstDateDescription" /> and <paramref name="ASecondDateDescription" />.</returns>
         public static TVerificationResult FirstLesserThanSecondDate(DateTime? ADate1,
             DateTime? ADate2, string AFirstDateDescription, string ASecondDateDescription,
-            object AResultContext, System.Data.DataColumn AResultColumn, System.Windows.Forms.Control AResultControl)
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
         {
             TVerificationResult ReturnValue;
+            String FirstDateDescription = THelper.NiceValueDescription(AFirstDateDescription);
+            String SecondDateDescription = THelper.NiceValueDescription(ASecondDateDescription);
+            
 
             if ((!ADate1.HasValue) || (!ADate2.HasValue))
             {
@@ -429,9 +364,9 @@ namespace Ict.Common.Verification
             {
                 if (ADate2 != DateTime.MinValue)
                 {
-                    ReturnValue = new TVerificationResult(String.Empty,
+                    ReturnValue = new TVerificationResult(AResultContext,
                         ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDDATE, CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
-                            StrDateCannotBeLaterOrEqual, AFirstDateDescription, ASecondDateDescription));
+                            StrDateCannotBeLaterOrEqual, FirstDateDescription, SecondDateDescription));
 
                     if (AResultColumn != null)
                     {
@@ -464,28 +399,6 @@ namespace Ict.Common.Verification
         /// error message).</param>
         /// <param name="ASecondDateDescription">Description what the second date is about (for
         /// the error message).</param>
-        /// <returns>Null if validation succeeded, otherwise a <see cref="TVerificationResult" /> is
-        /// returned that contains details about the problem, with a message that uses
-        /// <paramref name="AFirstDateDescription" /> and <paramref name="ASecondDateDescription" />.</returns>
-        public static TVerificationResult FirstGreaterOrEqualThanSecondDate(DateTime? ADate1,
-            DateTime? ADate2,
-            String AFirstDateDescription,
-            String ASecondDateDescription)
-        {
-            return FirstGreaterOrEqualThanSecondDate(ADate1, ADate2, AFirstDateDescription, ASecondDateDescription,
-                null, null, null);
-        }
-
-        /// <summary>
-        /// Checks whether the first submitted date is later or equal than the second
-        /// submitted date. Null dates are accepted.
-        /// </summary>
-        /// <param name="ADate1">First date.</param>
-        /// <param name="ADate2">Second date.</param>
-        /// <param name="AFirstDateDescription">Description what the first date is about (for the
-        /// error message).</param>
-        /// <param name="ASecondDateDescription">Description what the second date is about (for
-        /// the error message).</param>
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
         /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null).</param>
@@ -494,9 +407,12 @@ namespace Ict.Common.Verification
         /// <paramref name="AFirstDateDescription" /> and <paramref name="ASecondDateDescription" />.</returns>
         public static TVerificationResult FirstGreaterOrEqualThanSecondDate(DateTime? ADate1,
             DateTime? ADate2, string AFirstDateDescription, string ASecondDateDescription,
-            object AResultContext, System.Data.DataColumn AResultColumn, System.Windows.Forms.Control AResultControl)
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
         {
             TVerificationResult ReturnValue;
+			String FirstDateDescription = THelper.NiceValueDescription(AFirstDateDescription);
+            String SecondDateDescription = THelper.NiceValueDescription(ASecondDateDescription);
+
 
             if ((!ADate1.HasValue) || (!ADate2.HasValue))
             {
@@ -513,9 +429,9 @@ namespace Ict.Common.Verification
             {
                 if (ADate1 != DateTime.MinValue)
                 {
-                    ReturnValue = new TVerificationResult(String.Empty,
+                    ReturnValue = new TVerificationResult(AResultContext,
                         ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDDATE, CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
-                            StrDateCannotBeEarlier, AFirstDateDescription, ASecondDateDescription));
+                            StrDateCannotBeEarlier, FirstDateDescription, SecondDateDescription));
 
                     if (AResultColumn != null)
                     {
@@ -545,26 +461,6 @@ namespace Ict.Common.Verification
         /// error message).</param>
         /// <param name="ASecondDateDescription">Description what the second date is about (for
         /// the error message).</param>
-        /// <returns>Null if validation succeeded, otherwise a <see cref="TVerificationResult" /> is
-        /// returned that contains details about the problem, with a message that uses
-        /// <paramref name="AFirstDateDescription" /> and <paramref name="ASecondDateDescription" />.</returns>
-        public static TVerificationResult FirstGreaterThanSecondDate(DateTime? ADate1,
-            DateTime? ADate2, string AFirstDateDescription, string ASecondDateDescription)
-        {
-            return FirstGreaterThanSecondDate(ADate1, ADate2, AFirstDateDescription, ASecondDateDescription,
-                null, null, null);
-        }
-
-        /// <summary>
-        /// Checks whether the first submitted date is later than the second submitted
-        /// date. Null dates are accepted.
-        /// </summary>
-        /// <param name="ADate1">First date.</param>
-        /// <param name="ADate2">Second date.</param>
-        /// <param name="AFirstDateDescription">Description what the first date is about (for the
-        /// error message).</param>
-        /// <param name="ASecondDateDescription">Description what the second date is about (for
-        /// the error message).</param>
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
         /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null).</param>
@@ -573,9 +469,11 @@ namespace Ict.Common.Verification
         /// <paramref name="AFirstDateDescription" /> and <paramref name="ASecondDateDescription" />.</returns>
         public static TVerificationResult FirstGreaterThanSecondDate(DateTime? ADate1,
             DateTime? ADate2, string AFirstDateDescription, string ASecondDateDescription,
-            object AResultContext, System.Data.DataColumn AResultColumn, System.Windows.Forms.Control AResultControl)
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
         {
             TVerificationResult ReturnValue;
+			String FirstDateDescription = THelper.NiceValueDescription(AFirstDateDescription);
+            String SecondDateDescription = THelper.NiceValueDescription(ASecondDateDescription);
 
             if ((!ADate1.HasValue) || (!ADate2.HasValue))
             {
@@ -592,9 +490,9 @@ namespace Ict.Common.Verification
             {
                 if (ADate1 != new DateTime(0001, 1, 1))
                 {
-                    ReturnValue = new TVerificationResult(String.Empty,
+                    ReturnValue = new TVerificationResult(AResultContext,
                         ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDDATE, CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
-                            StrDateCannotBeEarlierOrEqual, AFirstDateDescription, ASecondDateDescription));
+                            StrDateCannotBeEarlierOrEqual, FirstDateDescription, SecondDateDescription));
 
                     if (AResultColumn != null)
                     {
@@ -622,12 +520,13 @@ namespace Ict.Common.Verification
         /// <see cref="TVerificationResult" />.
         /// </summary>
         /// <param name="ADescription">Either a name for the date value or an empty string.</param>
+        /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <returns>A Verification Result with the error message.</returns>
-        public static TVerificationResult GetInvalidDateVerificationResult(String ADescription)
+        public static TVerificationResult GetInvalidDateVerificationResult(String ADescription, object AResultContext = null)
         {
             String Description = THelper.NiceValueDescription(ADescription);
 
-            return new TVerificationResult(String.Empty,
+            return new TVerificationResult(AResultContext,
                 ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDDATE, CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
                     StrMustBeDate, Description));
         }

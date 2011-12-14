@@ -40,10 +40,22 @@ namespace Ict.Common.Verification
 
         private static readonly string StrNumberMustBeInteger = Catalog.GetString("{0} must be an integer (= a number without a fraction).");
         private static readonly string StrNumberMustBeDecimal = Catalog.GetString("{0} must be a decimal number (= a number that has a fraction).");
+        private static readonly string StrNumberMustBePositiveInteger = Catalog.GetString(
+            "{0} must be a positive integer (= a number without a fraction).");
+        private static readonly string StrNumberMustBePositiveDecimal = Catalog.GetString(
+            "{0} must be a positive decimal number (= a number that has a fraction).");
         private static readonly string StrNumberMustBePositiveIntegerOr0 = Catalog.GetString(
             "{0} must be a positive integer (= a number without a fraction), or 0.");
         private static readonly string StrNumberMustBePositiveDecimalOr0 = Catalog.GetString(
             "{0} must be a positive decimal number (= a number that has a fraction), or 0.");
+        private static readonly string StrNumberMustBeNegativeInteger = Catalog.GetString(
+            "{0} must be a negative integer (= a number without a fraction).");
+        private static readonly string StrNumberMustBeNegativeDecimal = Catalog.GetString(
+            "{0} must be a negative decimal number (= a number that has a fraction).");
+        private static readonly string StrNumberMustBeNegativeIntegerOr0 = Catalog.GetString(
+            "{0} must be a negative integer (= a number without a fraction), or 0.");
+        private static readonly string StrNumberMustBeNegativeDecimalOr0 = Catalog.GetString(
+            "{0} must be a negative decimal number (= a number that has a fraction), or 0.");
         private static readonly string StrNumberCannotBeGreaterThan = Catalog.GetString("{0} cannot be greater than {1}.");
         private static readonly string StrNumberCannotBeGreaterOrEqualTo = Catalog.GetString("{0} cannot be greater or equal to {1}.");
 
@@ -51,21 +63,6 @@ namespace Ict.Common.Verification
 
 
         #region IsValid...
-
-        /// <summary>
-        /// Checks whether a string represents a valid integer. A null value is accepted.
-        /// </summary>
-        /// <param name="AValue">String that should be checked.</param>
-        /// <param name="ADescription">Description what the integer number is about (for the error
-        /// message).</param>
-        /// <returns>Null if <paramref name="AValue" /> contains a valid integer number or
-        /// is null, otherwise a <see cref="TVerificationResult" /> is returned that contains
-        /// details about the problem, with a message that uses <paramref name="ADescription" />.
-        /// </returns>
-        public static TVerificationResult IsValidInteger(String AValue, String ADescription)
-        {
-            return IsValidInteger(AValue, ADescription, null, null, null);
-        }
 
         /// <summary>
         /// Checks whether a string represents a valid integer. A null value is accepted.
@@ -81,7 +78,7 @@ namespace Ict.Common.Verification
         /// details about the problem, with a message that uses <paramref name="ADescription" />.
         /// </returns>
         public static TVerificationResult IsValidInteger(String AValue, String ADescription,
-            object AResultContext, System.Data.DataColumn AResultColumn, System.Windows.Forms.Control AResultControl)
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
         {
             TVerificationResult ReturnValue = null;
             String Description = THelper.NiceValueDescription(ADescription);
@@ -93,7 +90,7 @@ namespace Ict.Common.Verification
             }
             catch (System.Exception)
             {
-                ReturnValue = new TVerificationResult(String.Empty, ErrorCodes.GetErrorInfo(
+                ReturnValue = new TVerificationResult(AResultContext, ErrorCodes.GetErrorInfo(
                         CommonErrorCodes.ERR_INVALIDNUMBER,
                         CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
                         StrNumberMustBeInteger, Description));
@@ -113,21 +110,6 @@ namespace Ict.Common.Verification
         /// <param name="AValue">String that should be checked.</param>
         /// <param name="ADescription">Description what the double or single number is about (for the error
         /// message).</param>
-        /// <returns>Null if <paramref name="AValue" /> contains a valid double or single number or
-        /// is null, otherwise a <see cref="TVerificationResult" /> is returned that contains details
-        /// about the problem, with a message that uses <paramref name="ADescription" />.
-        /// </returns>
-        public static TVerificationResult IsValidDouble(String AValue, String ADescription)
-        {
-            return IsValidDouble(AValue, ADescription, null, null, null);
-        }
-
-        /// <summary>
-        /// Checks whether a string represents a valid double or single number. A null value is accepted.
-        /// </summary>
-        /// <param name="AValue">String that should be checked.</param>
-        /// <param name="ADescription">Description what the double or single number is about (for the error
-        /// message).</param>
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
         /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null).</param>
@@ -136,7 +118,7 @@ namespace Ict.Common.Verification
         /// about the problem, with a message that uses <paramref name="ADescription" />.
         /// </returns>
         public static TVerificationResult IsValidDouble(String AValue, String ADescription,
-            object AResultContext, System.Data.DataColumn AResultColumn, System.Windows.Forms.Control AResultControl)
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
         {
             TVerificationResult ReturnValue = null;
             String Description = THelper.NiceValueDescription(ADescription);
@@ -148,7 +130,7 @@ namespace Ict.Common.Verification
             }
             catch (System.Exception)
             {
-                ReturnValue = new TVerificationResult(String.Empty, ErrorCodes.GetErrorInfo(
+                ReturnValue = new TVerificationResult(AResultContext, ErrorCodes.GetErrorInfo(
                         CommonErrorCodes.ERR_INVALIDNUMBER,
                         CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
                         StrNumberMustBeDecimal, Description));
@@ -160,21 +142,6 @@ namespace Ict.Common.Verification
             }
 
             return ReturnValue;
-        }
-
-        /// <summary>
-        /// Checks whether a string represents a valid decimal number. A null value is accepted.
-        /// </summary>
-        /// <param name="AValue">String that should be checked.</param>
-        /// <param name="ADescription">Description what the decimal number is about (for the error
-        /// message).</param>
-        /// <returns>Null if <paramref name="AValue" /> contains a valid decimal number or
-        /// is null, otherwise a <see cref="TVerificationResult" /> is returned that contains
-        /// details about the problem, with a message that uses <paramref name="ADescription" />.</returns>
-        /// <paramref name="ADescription" />.
-        public static TVerificationResult IsValidDecimal(String AValue, String ADescription)
-        {
-            return IsValidDecimal(AValue, ADescription, null, null, null);
         }
 
         /// <summary>
@@ -191,7 +158,7 @@ namespace Ict.Common.Verification
         /// details about the problem, with a message that uses <paramref name="ADescription" />.</returns>
         /// <paramref name="ADescription" />.
         public static TVerificationResult IsValidDecimal(String AValue, String ADescription,
-            object AResultContext, System.Data.DataColumn AResultColumn, System.Windows.Forms.Control AResultControl)
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
         {
             TVerificationResult ReturnValue = null;
             String Description = THelper.NiceValueDescription(ADescription);
@@ -203,7 +170,7 @@ namespace Ict.Common.Verification
             }
             catch (System.Exception)
             {
-                ReturnValue = new TVerificationResult(String.Empty, ErrorCodes.GetErrorInfo(
+                ReturnValue = new TVerificationResult(AResultContext, ErrorCodes.GetErrorInfo(
                         CommonErrorCodes.ERR_INVALIDNUMBER,
                         CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
                         StrNumberMustBeDecimal, Description));
@@ -220,21 +187,129 @@ namespace Ict.Common.Verification
         #endregion
 
 
-        #region IsPositiveOrZero...
+        #region IsPositive...
 
         /// <summary>
-        /// Checks whether an integer is greater or equal to zero. A null value is accepted.
+        /// Checks whether an integer is greater than zero. A null value is accepted.
         /// </summary>
         /// <param name="AValue">Integer number.</param>
         /// <param name="ADescription">Description what the integer number is about (for the error
         /// message).</param>
+        /// <param name="AResultContext">Context of verification (can be null).</param>
+        /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
+        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null).</param>
         /// <returns>Null if <paramref name="AValue" /> contains a valid integer number or is null,
         /// otherwise a <see cref="TVerificationResult" /> is returned that contains details about the problem,
         /// with a message that uses <paramref name="ADescription" />.</returns>
-        public static TVerificationResult IsPositiveOrZeroInteger(Int64? AValue, String ADescription)
+        public static TVerificationResult IsPositiveInteger(Int64? AValue, String ADescription,
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
         {
-            return IsPositiveOrZeroInteger(AValue, ADescription, null, null, null);
+            TVerificationResult ReturnValue = null;
+            String Description = THelper.NiceValueDescription(ADescription);
+
+            if (!AValue.HasValue)
+            {
+                return null;
+            }
+
+            // Check
+            if (AValue.Value <= 0)
+            {
+                ReturnValue = new TVerificationResult(AResultContext,
+                    ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDNUMBER, CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
+                        StrNumberMustBePositiveInteger, Description));
+
+                if (AResultColumn != null)
+                {
+                    ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                }
+            }
+
+            return ReturnValue;
         }
+
+        /// <summary>
+        /// Checks whether a double or single number is greater than zero. A null value is accepted.
+        /// </summary>
+        /// <param name="AValue">Double or single number.</param>
+        /// <param name="ADescription">Description what the double or single number is about (for the error
+        /// message).</param>
+        /// <param name="AResultContext">Context of verification (can be null).</param>
+        /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
+        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null).</param>
+        /// <returns>Null if <paramref name="AValue" /> contains a valid double or single number or is null,
+        /// otherwise a <see cref="TVerificationResult" /> is returned that contains details about the problem,
+        /// with a message that uses <paramref name="ADescription" />.</returns>
+        public static TVerificationResult IsPositiveDouble(double? AValue, String ADescription,
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
+        {
+            TVerificationResult ReturnValue = null;
+            String Description = THelper.NiceValueDescription(ADescription);
+
+            if (!AValue.HasValue)
+            {
+                return null;
+            }
+
+            // Check
+            if (AValue.Value <= 0)
+            {
+                ReturnValue = new TVerificationResult(AResultContext,
+                    ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDNUMBER, CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
+                        StrNumberMustBePositiveDecimal, Description));
+
+                if (AResultColumn != null)
+                {
+                    ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Checks whether a decimal number is greater than zero. A null value is accepted.
+        /// </summary>
+        /// <param name="AValue">Decimal number.</param>
+        /// <param name="ADescription">Description what the decimal number is about (for the error
+        /// message).</param>
+        /// <param name="AResultContext">Context of verification (can be null).</param>
+        /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
+        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null).</param>
+        /// <returns>Null if <paramref name="AValue" /> contains a valid decimal number or is null,
+        /// otherwise a <see cref="TVerificationResult" /> is returned that contains details about the problem,
+        /// with a message that uses <paramref name="ADescription" />.</returns>
+        public static TVerificationResult IsPositiveDecimal(decimal? AValue, String ADescription,
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
+        {
+            TVerificationResult ReturnValue = null;
+            String Description = THelper.NiceValueDescription(ADescription);
+
+            if (!AValue.HasValue)
+            {
+                return null;
+            }
+
+            // Check
+            if (AValue.Value <= 0)
+            {
+                ReturnValue = new TVerificationResult(AResultContext,
+                    ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDNUMBER, CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
+                        StrNumberMustBePositiveDecimal, Description));
+
+                if (AResultColumn != null)
+                {
+                    ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        #endregion
+
+        
+        #region IsPositiveOrZero...
 
         /// <summary>
         /// Checks whether an integer is greater or equal to zero. A null value is accepted.
@@ -249,7 +324,7 @@ namespace Ict.Common.Verification
         /// otherwise a <see cref="TVerificationResult" /> is returned that contains details about the problem,
         /// with a message that uses <paramref name="ADescription" />.</returns>
         public static TVerificationResult IsPositiveOrZeroInteger(Int64? AValue, String ADescription,
-            object AResultContext, System.Data.DataColumn AResultColumn, System.Windows.Forms.Control AResultControl)
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
         {
             TVerificationResult ReturnValue = null;
             String Description = THelper.NiceValueDescription(ADescription);
@@ -262,7 +337,7 @@ namespace Ict.Common.Verification
             // Check
             if (AValue.Value < 0)
             {
-                ReturnValue = new TVerificationResult(String.Empty,
+                ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDNUMBER, CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
                         StrNumberMustBePositiveIntegerOr0, Description));
 
@@ -281,20 +356,6 @@ namespace Ict.Common.Verification
         /// <param name="AValue">Double or single number.</param>
         /// <param name="ADescription">Description what the double or single number is about (for the error
         /// message).</param>
-        /// <returns>Null if <paramref name="AValue" /> contains a valid double or single number or is null,
-        /// otherwise a <see cref="TVerificationResult" /> is returned that contains details about the problem,
-        /// with a message that uses <paramref name="ADescription" />.</returns>
-        public static TVerificationResult IsPositiveOrZeroDouble(double? AValue, String ADescription)
-        {
-            return IsPositiveOrZeroDouble(AValue, ADescription, null, null, null);
-        }
-
-        /// <summary>
-        /// Checks whether a double or single number is greater or equal to zero. A null value is accepted.
-        /// </summary>
-        /// <param name="AValue">Double or single number.</param>
-        /// <param name="ADescription">Description what the double or single number is about (for the error
-        /// message).</param>
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
         /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null).</param>
@@ -302,7 +363,7 @@ namespace Ict.Common.Verification
         /// otherwise a <see cref="TVerificationResult" /> is returned that contains details about the problem,
         /// with a message that uses <paramref name="ADescription" />.</returns>
         public static TVerificationResult IsPositiveOrZeroDouble(double? AValue, String ADescription,
-            object AResultContext, System.Data.DataColumn AResultColumn, System.Windows.Forms.Control AResultControl)
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
         {
             TVerificationResult ReturnValue = null;
             String Description = THelper.NiceValueDescription(ADescription);
@@ -315,7 +376,7 @@ namespace Ict.Common.Verification
             // Check
             if (AValue.Value < 0)
             {
-                ReturnValue = new TVerificationResult(String.Empty,
+                ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDNUMBER, CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
                         StrNumberMustBePositiveDecimalOr0, Description));
 
@@ -326,20 +387,6 @@ namespace Ict.Common.Verification
             }
 
             return ReturnValue;
-        }
-
-        /// <summary>
-        /// Checks whether a decimal number is greater or equal to zero. A null value is accepted.
-        /// </summary>
-        /// <param name="AValue">Decimal number.</param>
-        /// <param name="ADescription">Description what the decimal number is about (for the error
-        /// message).</param>
-        /// <returns>Null if <paramref name="AValue" /> contains a valid decimal number or is null,
-        /// otherwise a <see cref="TVerificationResult" /> is returned that contains details about the problem,
-        /// with a message that uses <paramref name="ADescription" />.</returns>
-        public static TVerificationResult IsPositiveOrZeroDecimal(decimal? AValue, String ADescription)
-        {
-            return IsPositiveOrZeroDecimal(AValue, ADescription, null, null, null);
         }
 
         /// <summary>
@@ -355,7 +402,7 @@ namespace Ict.Common.Verification
         /// otherwise a <see cref="TVerificationResult" /> is returned that contains details about the problem,
         /// with a message that uses <paramref name="ADescription" />.</returns>
         public static TVerificationResult IsPositiveOrZeroDecimal(decimal? AValue, String ADescription,
-            object AResultContext, System.Data.DataColumn AResultColumn, System.Windows.Forms.Control AResultControl)
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
         {
             TVerificationResult ReturnValue = null;
             String Description = THelper.NiceValueDescription(ADescription);
@@ -368,7 +415,7 @@ namespace Ict.Common.Verification
             // Check
             if (AValue.Value < 0)
             {
-                ReturnValue = new TVerificationResult(String.Empty,
+                ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDNUMBER, CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
                         StrNumberMustBePositiveDecimalOr0, Description));
 
@@ -384,6 +431,253 @@ namespace Ict.Common.Verification
         #endregion
 
 
+        #region IsNegative...
+
+        /// <summary>
+        /// Checks whether an integer is less than zero. A null value is accepted.
+        /// </summary>
+        /// <param name="AValue">Integer number.</param>
+        /// <param name="ADescription">Description what the integer number is about (for the error
+        /// message).</param>
+        /// <param name="AResultContext">Context of verification (can be null).</param>
+        /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
+        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null).</param>
+        /// <returns>Null if <paramref name="AValue" /> contains a valid integer number or is null,
+        /// otherwise a <see cref="TVerificationResult" /> is returned that contains details about the problem,
+        /// with a message that uses <paramref name="ADescription" />.</returns>
+        public static TVerificationResult IsNegativeInteger(Int64? AValue, String ADescription,
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
+        {
+            TVerificationResult ReturnValue = null;
+            String Description = THelper.NiceValueDescription(ADescription);
+
+            if (!AValue.HasValue)
+            {
+                return null;
+            }
+
+            // Check
+            if (!(AValue.Value < 0))
+            {
+                ReturnValue = new TVerificationResult(AResultContext,
+                    ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDNUMBER, CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
+                        StrNumberMustBeNegativeInteger, Description));
+
+                if (AResultColumn != null)
+                {
+                    ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Checks whether a double or single number is less than zero. A null value is accepted.
+        /// </summary>
+        /// <param name="AValue">Double or single number.</param>
+        /// <param name="ADescription">Description what the double or single number is about (for the error
+        /// message).</param>
+        /// <param name="AResultContext">Context of verification (can be null).</param>
+        /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
+        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null).</param>
+        /// <returns>Null if <paramref name="AValue" /> contains a valid double or single number or is null,
+        /// otherwise a <see cref="TVerificationResult" /> is returned that contains details about the problem,
+        /// with a message that uses <paramref name="ADescription" />.</returns>
+        public static TVerificationResult IsNegativeDouble(double? AValue, String ADescription,
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
+        {
+            TVerificationResult ReturnValue = null;
+            String Description = THelper.NiceValueDescription(ADescription);
+
+            if (!AValue.HasValue)
+            {
+                return null;
+            }
+
+            // Check
+            if (!(AValue.Value < 0))
+            {
+                ReturnValue = new TVerificationResult(AResultContext,
+                    ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDNUMBER, CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
+                        StrNumberMustBeNegativeDecimal, Description));
+
+                if (AResultColumn != null)
+                {
+                    ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Checks whether a decimal number is less than zero. A null value is accepted.
+        /// </summary>
+        /// <param name="AValue">Decimal number.</param>
+        /// <param name="ADescription">Description what the decimal number is about (for the error
+        /// message).</param>
+        /// <param name="AResultContext">Context of verification (can be null).</param>
+        /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
+        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null).</param>
+        /// <returns>Null if <paramref name="AValue" /> contains a valid decimal number or is null,
+        /// otherwise a <see cref="TVerificationResult" /> is returned that contains details about the problem,
+        /// with a message that uses <paramref name="ADescription" />.</returns>
+        public static TVerificationResult IsNegativeDecimal(decimal? AValue, String ADescription,
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
+        {
+            TVerificationResult ReturnValue = null;
+            String Description = THelper.NiceValueDescription(ADescription);
+
+            if (!AValue.HasValue)
+            {
+                return null;
+            }
+
+            // Check
+            if (!(AValue.Value < 0))
+            {
+                ReturnValue = new TVerificationResult(AResultContext,
+                    ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDNUMBER, CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
+                        StrNumberMustBeNegativeDecimal, Description));
+
+                if (AResultColumn != null)
+                {
+                    ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        #endregion
+
+        
+        #region IsNegativeOrZero...
+
+        /// <summary>
+        /// Checks whether an integer is lesser or equal to zero. A null value is accepted.
+        /// </summary>
+        /// <param name="AValue">Integer number.</param>
+        /// <param name="ADescription">Description what the integer number is about (for the error
+        /// message).</param>
+        /// <param name="AResultContext">Context of verification (can be null).</param>
+        /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
+        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null).</param>
+        /// <returns>Null if <paramref name="AValue" /> contains a valid integer number or is null,
+        /// otherwise a <see cref="TVerificationResult" /> is returned that contains details about the problem,
+        /// with a message that uses <paramref name="ADescription" />.</returns>
+        public static TVerificationResult IsNegativeOrZeroInteger(Int64? AValue, String ADescription,
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
+        {
+            TVerificationResult ReturnValue = null;
+            String Description = THelper.NiceValueDescription(ADescription);
+
+            if (!AValue.HasValue)
+            {
+                return null;
+            }
+
+            // Check
+            if ((AValue.Value != 0)
+                && !(AValue.Value < 0))
+            {
+                ReturnValue = new TVerificationResult(AResultContext,
+                    ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDNUMBER, CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
+                        StrNumberMustBeNegativeIntegerOr0, Description));
+
+                if (AResultColumn != null)
+                {
+                    ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Checks whether a double or single number is lesser or equal to zero. A null value is accepted.
+        /// </summary>
+        /// <param name="AValue">Double or single number.</param>
+        /// <param name="ADescription">Description what the double or single number is about (for the error
+        /// message).</param>
+        /// <param name="AResultContext">Context of verification (can be null).</param>
+        /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
+        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null).</param>
+        /// <returns>Null if <paramref name="AValue" /> contains a valid double or single number or is null,
+        /// otherwise a <see cref="TVerificationResult" /> is returned that contains details about the problem,
+        /// with a message that uses <paramref name="ADescription" />.</returns>
+        public static TVerificationResult IsNegativeOrZeroDouble(double? AValue, String ADescription,
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
+        {
+            TVerificationResult ReturnValue = null;
+            String Description = THelper.NiceValueDescription(ADescription);
+
+            if (!AValue.HasValue)
+            {
+                return null;
+            }
+
+            // Check
+            if ((AValue.Value != 0)
+                && !(AValue.Value < 0))
+            {
+                ReturnValue = new TVerificationResult(AResultContext,
+                    ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDNUMBER, CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
+                        StrNumberMustBeNegativeDecimalOr0, Description));
+
+                if (AResultColumn != null)
+                {
+                    ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Checks whether a decimal number is lesser or equal to zero. A null value is accepted.
+        /// </summary>
+        /// <param name="AValue">Decimal number.</param>
+        /// <param name="ADescription">Description what the decimal number is about (for the error
+        /// message).</param>
+        /// <param name="AResultContext">Context of verification (can be null).</param>
+        /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
+        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null).</param>
+        /// <returns>Null if <paramref name="AValue" /> contains a valid decimal number or is null,
+        /// otherwise a <see cref="TVerificationResult" /> is returned that contains details about the problem,
+        /// with a message that uses <paramref name="ADescription" />.</returns>
+        public static TVerificationResult IsNegativeOrZeroDecimal(decimal? AValue, String ADescription,
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
+        {
+            TVerificationResult ReturnValue = null;
+            String Description = THelper.NiceValueDescription(ADescription);
+
+            if (!AValue.HasValue)
+            {
+                return null;
+            }
+
+            // Check
+            if ((AValue.Value != 0)
+                && !(AValue.Value < 0))
+            {
+                ReturnValue = new TVerificationResult(AResultContext,
+                    ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDNUMBER, CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
+                        StrNumberMustBeNegativeDecimalOr0, Description));
+
+                if (AResultColumn != null)
+                {
+                    ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        #endregion
+
+        
         #region FirstLesserThanSecond...
 
         /// <summary>
@@ -396,26 +690,6 @@ namespace Ict.Common.Verification
         /// error message).</param>
         /// <param name="ASecondNumberDescription">Description what the number is about (for
         /// the error message).</param>
-        /// <returns>Null if validation succeeded, otherwise a <see cref="TVerificationResult" /> is
-        /// returned that contains details about the problem, with a message that uses
-        /// <paramref name="AFirstNumberDescription" /> and <paramref name="ASecondNumberDescription" />.</returns>
-        public static TVerificationResult FirstLesserThanSecondInteger(Int64? AValue1, Int64? AValue2,
-            string AFirstNumberDescription, string ASecondNumberDescription)
-        {
-            return FirstLesserThanSecondInteger(AValue1, AValue2, AFirstNumberDescription, ASecondNumberDescription,
-                null, null, null);
-        }
-
-        /// <summary>
-        /// Checks whether the first submitted integer number is smaller than the second submitted
-        /// integer number. Null values are accepted.
-        /// </summary>
-        /// <param name="AValue1">First integer number.</param>
-        /// <param name="AValue2">Second integer number.</param>
-        /// <param name="AFirstNumberDescription">Description what the number is about (for the
-        /// error message).</param>
-        /// <param name="ASecondNumberDescription">Description what the number is about (for
-        /// the error message).</param>
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
         /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null).</param>
@@ -424,7 +698,7 @@ namespace Ict.Common.Verification
         /// <paramref name="AFirstNumberDescription" /> and <paramref name="ASecondNumberDescription" />.</returns>
         public static TVerificationResult FirstLesserThanSecondInteger(Int64? AValue1, Int64? AValue2,
             string AFirstNumberDescription, string ASecondNumberDescription,
-            object AResultContext, System.Data.DataColumn AResultColumn, System.Windows.Forms.Control AResultControl)
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
         {
             TVerificationResult ReturnValue = null;
 
@@ -433,16 +707,16 @@ namespace Ict.Common.Verification
                 return null;
             }
 
-            AFirstNumberDescription = THelper.NiceValueDescription(AFirstNumberDescription);
-            ASecondNumberDescription = THelper.NiceValueDescription(ASecondNumberDescription);
+            string FirstNumberDescription = THelper.NiceValueDescription(AFirstNumberDescription);
+            string SecondNumberDescription = THelper.NiceValueDescription(ASecondNumberDescription);
 
             // Check
             if (AValue1 >= AValue2)
             {
-                ReturnValue = new TVerificationResult(String.Empty,
+                ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INCONGRUOUSNUMBERS,
                         CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
-                        StrNumberCannotBeGreaterOrEqualTo, AFirstNumberDescription, ASecondNumberDescription));
+                        StrNumberCannotBeGreaterOrEqualTo, FirstNumberDescription, SecondNumberDescription));
 
                 if (AResultColumn != null)
                 {
@@ -463,26 +737,6 @@ namespace Ict.Common.Verification
         /// error message).</param>
         /// <param name="ASecondNumberDescription">Description what the number is about (for
         /// the error message).</param>
-        /// <returns>Null if validation succeeded, otherwise a <see cref="TVerificationResult" /> is
-        /// returned that contains details about the problem, with a message that uses
-        /// <paramref name="AFirstNumberDescription" /> and <paramref name="ASecondNumberDescription" />.</returns>
-        public static TVerificationResult FirstLesserThanSecondDouble(double? AValue1, double? AValue2,
-            string AFirstNumberDescription, string ASecondNumberDescription)
-        {
-            return FirstLesserThanSecondDouble(AValue1, AValue2, AFirstNumberDescription, ASecondNumberDescription,
-                null, null, null);
-        }
-
-        /// <summary>
-        /// Checks whether the first submitted double or single number is smaller than the second submitted
-        /// double or single number. Null values are accepted.
-        /// </summary>
-        /// <param name="AValue1">Double or single number.</param>
-        /// <param name="AValue2">Double or single number.</param>
-        /// <param name="AFirstNumberDescription">Description what the number is about (for the
-        /// error message).</param>
-        /// <param name="ASecondNumberDescription">Description what the number is about (for
-        /// the error message).</param>
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
         /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null).</param>
@@ -491,7 +745,7 @@ namespace Ict.Common.Verification
         /// <paramref name="AFirstNumberDescription" /> and <paramref name="ASecondNumberDescription" />.</returns>
         public static TVerificationResult FirstLesserThanSecondDouble(double? AValue1, double? AValue2,
             string AFirstNumberDescription, string ASecondNumberDescription,
-            object AResultContext, System.Data.DataColumn AResultColumn, System.Windows.Forms.Control AResultControl)
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
         {
             TVerificationResult ReturnValue = null;
 
@@ -500,16 +754,16 @@ namespace Ict.Common.Verification
                 return null;
             }
 
-            AFirstNumberDescription = THelper.NiceValueDescription(AFirstNumberDescription);
-            ASecondNumberDescription = THelper.NiceValueDescription(ASecondNumberDescription);
+            string FirstNumberDescription = THelper.NiceValueDescription(AFirstNumberDescription);
+            string SecondNumberDescription = THelper.NiceValueDescription(ASecondNumberDescription);
 
             // Check
             if (AValue1 >= AValue2)
             {
-                ReturnValue = new TVerificationResult(String.Empty,
+                ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INCONGRUOUSNUMBERS,
                         CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
-                        StrNumberCannotBeGreaterOrEqualTo, AFirstNumberDescription, ASecondNumberDescription));
+                        StrNumberCannotBeGreaterOrEqualTo, FirstNumberDescription, SecondNumberDescription));
 
                 if (AResultColumn != null)
                 {
@@ -530,26 +784,6 @@ namespace Ict.Common.Verification
         /// error message).</param>
         /// <param name="ASecondNumberDescription">Description what the number is about (for
         /// the error message).</param>
-        /// <returns>Null if validation succeeded, otherwise a <see cref="TVerificationResult" /> is
-        /// returned that contains details about the problem, with a message that uses
-        /// <paramref name="AFirstNumberDescription" /> and <paramref name="ASecondNumberDescription" />.</returns>
-        public static TVerificationResult FirstLesserThanSecondDecimal(decimal? AValue1, decimal? AValue2,
-            string AFirstNumberDescription, string ASecondNumberDescription)
-        {
-            return FirstLesserThanSecondDecimal(AValue1, AValue2, AFirstNumberDescription, ASecondNumberDescription,
-                null, null, null);
-        }
-
-        /// <summary>
-        /// Checks whether the first submitted decimal number is smaller than the second submitted
-        /// decimal number. Null values are accepted.
-        /// </summary>
-        /// <param name="AValue1">Decimal number.</param>
-        /// <param name="AValue2">Decimal number.</param>
-        /// <param name="AFirstNumberDescription">Description what the number is about (for the
-        /// error message).</param>
-        /// <param name="ASecondNumberDescription">Description what the number is about (for
-        /// the error message).</param>
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
         /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null).</param>
@@ -558,7 +792,7 @@ namespace Ict.Common.Verification
         /// <paramref name="AFirstNumberDescription" /> and <paramref name="ASecondNumberDescription" />.</returns>
         public static TVerificationResult FirstLesserThanSecondDecimal(decimal? AValue1, decimal? AValue2,
             string AFirstNumberDescription, string ASecondNumberDescription,
-            object AResultContext, System.Data.DataColumn AResultColumn, System.Windows.Forms.Control AResultControl)
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
         {
             TVerificationResult ReturnValue = null;
 
@@ -567,16 +801,16 @@ namespace Ict.Common.Verification
                 return null;
             }
 
-            AFirstNumberDescription = THelper.NiceValueDescription(AFirstNumberDescription);
-            ASecondNumberDescription = THelper.NiceValueDescription(ASecondNumberDescription);
+            string FirstNumberDescription = THelper.NiceValueDescription(AFirstNumberDescription);
+            string SecondNumberDescription = THelper.NiceValueDescription(ASecondNumberDescription);
 
             // Check
             if (AValue1 >= AValue2)
             {
-                ReturnValue = new TVerificationResult(String.Empty,
+                ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INCONGRUOUSNUMBERS,
                         CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
-                        StrNumberCannotBeGreaterOrEqualTo, AFirstNumberDescription, ASecondNumberDescription));
+                        StrNumberCannotBeGreaterOrEqualTo, FirstNumberDescription, SecondNumberDescription));
 
                 if (AResultColumn != null)
                 {
@@ -602,26 +836,6 @@ namespace Ict.Common.Verification
         /// error message).</param>
         /// <param name="ASecondNumberDescription">Description what the number is about (for
         /// the error message).</param>
-        /// <returns>Null if validation succeeded, otherwise a <see cref="TVerificationResult" /> is
-        /// returned that contains details about the problem, with a message that uses
-        /// <paramref name="AFirstNumberDescription" /> and <paramref name="ASecondNumberDescription" />.</returns>
-        public static TVerificationResult FirstLesserOrEqualThanSecondInteger(Int64? AValue1, Int64? AValue2,
-            string AFirstNumberDescription, string ASecondNumberDescription)
-        {
-            return FirstLesserOrEqualThanSecondInteger(AValue1, AValue2, AFirstNumberDescription, ASecondNumberDescription,
-                null, null, null);
-        }
-
-        /// <summary>
-        /// Checks whether the first submitted integer number is smaller than or equal to the second submitted
-        /// integer number. Null values are accepted.
-        /// </summary>
-        /// <param name="AValue1">Integer number.</param>
-        /// <param name="AValue2">Integer number.</param>
-        /// <param name="AFirstNumberDescription">Description what the number is about (for the
-        /// error message).</param>
-        /// <param name="ASecondNumberDescription">Description what the number is about (for
-        /// the error message).</param>
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
         /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null).</param>
@@ -630,7 +844,7 @@ namespace Ict.Common.Verification
         /// <paramref name="AFirstNumberDescription" /> and <paramref name="ASecondNumberDescription" />.</returns>
         public static TVerificationResult FirstLesserOrEqualThanSecondInteger(Int64? AValue1, Int64? AValue2,
             string AFirstNumberDescription, string ASecondNumberDescription,
-            object AResultContext, System.Data.DataColumn AResultColumn, System.Windows.Forms.Control AResultControl)
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
         {
             TVerificationResult ReturnValue = null;
 
@@ -639,16 +853,16 @@ namespace Ict.Common.Verification
                 return null;
             }
 
-            AFirstNumberDescription = THelper.NiceValueDescription(AFirstNumberDescription);
-            ASecondNumberDescription = THelper.NiceValueDescription(ASecondNumberDescription);
+            string FirstNumberDescription = THelper.NiceValueDescription(AFirstNumberDescription);
+            string SecondNumberDescription = THelper.NiceValueDescription(ASecondNumberDescription);
 
             // Check
             if (AValue1 > AValue2)
             {
-                ReturnValue = new TVerificationResult(String.Empty,
+                ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INCONGRUOUSNUMBERS,
                         CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
-                        StrNumberCannotBeGreaterThan, AFirstNumberDescription, ASecondNumberDescription));
+                        StrNumberCannotBeGreaterThan, FirstNumberDescription, SecondNumberDescription));
 
                 if (AResultColumn != null)
                 {
@@ -669,26 +883,6 @@ namespace Ict.Common.Verification
         /// error message).</param>
         /// <param name="ASecondNumberDescription">Description what the number is about (for
         /// the error message).</param>
-        /// <returns>Null if validation succeeded, otherwise a <see cref="TVerificationResult" /> is
-        /// returned that contains details about the problem, with a message that uses
-        /// <paramref name="AFirstNumberDescription" /> and <paramref name="ASecondNumberDescription" />.</returns>
-        public static TVerificationResult FirstLesserOrEqualThanSecondDouble(double? AValue1, double? AValue2,
-            string AFirstNumberDescription, string ASecondNumberDescription)
-        {
-            return FirstLesserOrEqualThanSecondDouble(AValue1, AValue2, AFirstNumberDescription, ASecondNumberDescription,
-                null, null, null);
-        }
-
-        /// <summary>
-        /// Checks whether the first submitted double or single number is smaller than or equal to the second submitted
-        /// double or single number. Null values are accepted.
-        /// </summary>
-        /// <param name="AValue1">Double or single number.</param>
-        /// <param name="AValue2">Double or single number.</param>
-        /// <param name="AFirstNumberDescription">Description what the number is about (for the
-        /// error message).</param>
-        /// <param name="ASecondNumberDescription">Description what the number is about (for
-        /// the error message).</param>
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
         /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null).</param>
@@ -697,7 +891,7 @@ namespace Ict.Common.Verification
         /// <paramref name="AFirstNumberDescription" /> and <paramref name="ASecondNumberDescription" />.</returns>
         public static TVerificationResult FirstLesserOrEqualThanSecondDouble(double? AValue1, double? AValue2,
             string AFirstNumberDescription, string ASecondNumberDescription,
-            object AResultContext, System.Data.DataColumn AResultColumn, System.Windows.Forms.Control AResultControl)
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
         {
             TVerificationResult ReturnValue = null;
 
@@ -706,16 +900,16 @@ namespace Ict.Common.Verification
                 return null;
             }
 
-            AFirstNumberDescription = THelper.NiceValueDescription(AFirstNumberDescription);
-            ASecondNumberDescription = THelper.NiceValueDescription(ASecondNumberDescription);
+            string FirstNumberDescription = THelper.NiceValueDescription(AFirstNumberDescription);
+            string SecondNumberDescription = THelper.NiceValueDescription(ASecondNumberDescription);
 
             // Check
             if (AValue1 > AValue2)
             {
-                ReturnValue = new TVerificationResult(String.Empty,
+                ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INCONGRUOUSNUMBERS,
                         CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
-                        StrNumberCannotBeGreaterThan, AFirstNumberDescription, ASecondNumberDescription));
+                        StrNumberCannotBeGreaterThan, FirstNumberDescription, SecondNumberDescription));
 
                 if (AResultColumn != null)
                 {
@@ -736,26 +930,6 @@ namespace Ict.Common.Verification
         /// error message).</param>
         /// <param name="ASecondNumberDescription">Description what the number is about (for
         /// the error message).</param>
-        /// <returns>Null if validation succeeded, otherwise a <see cref="TVerificationResult" /> is
-        /// returned that contains details about the problem, with a message that uses
-        /// <paramref name="AFirstNumberDescription" /> and <paramref name="ASecondNumberDescription" />.</returns>
-        public static TVerificationResult FirstLesserOrEqualThanSecondDecimal(decimal? AValue1, decimal? AValue2,
-            string AFirstNumberDescription, string ASecondNumberDescription)
-        {
-            return FirstLesserOrEqualThanSecondDecimal(AValue1, AValue2, AFirstNumberDescription, ASecondNumberDescription,
-                null, null, null);
-        }
-
-        /// <summary>
-        /// Checks whether the first submitted decimal number is smaller than or equal to the second submitted
-        /// decimal number. Null values are accepted.
-        /// </summary>
-        /// <param name="AValue1">Decimal number.</param>
-        /// <param name="AValue2">Decimal number.</param>
-        /// <param name="AFirstNumberDescription">Description what the number is about (for the
-        /// error message).</param>
-        /// <param name="ASecondNumberDescription">Description what the number is about (for
-        /// the error message).</param>
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
         /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null).</param>
@@ -764,7 +938,7 @@ namespace Ict.Common.Verification
         /// <paramref name="AFirstNumberDescription" /> and <paramref name="ASecondNumberDescription" />.</returns>
         public static TVerificationResult FirstLesserOrEqualThanSecondDecimal(decimal? AValue1, decimal? AValue2,
             string AFirstNumberDescription, string ASecondNumberDescription,
-            object AResultContext, System.Data.DataColumn AResultColumn, System.Windows.Forms.Control AResultControl)
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
         {
             TVerificationResult ReturnValue = null;
 
@@ -773,16 +947,16 @@ namespace Ict.Common.Verification
                 return null;
             }
 
-            AFirstNumberDescription = THelper.NiceValueDescription(AFirstNumberDescription);
-            ASecondNumberDescription = THelper.NiceValueDescription(ASecondNumberDescription);
+            string FirstNumberDescription = THelper.NiceValueDescription(AFirstNumberDescription);
+            string SecondNumberDescription = THelper.NiceValueDescription(ASecondNumberDescription);
 
             // Check
             if (AValue1 > AValue2)
             {
-                ReturnValue = new TVerificationResult(String.Empty,
+                ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INCONGRUOUSNUMBERS,
                         CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
-                        StrNumberCannotBeGreaterThan, AFirstNumberDescription, ASecondNumberDescription));
+                        StrNumberCannotBeGreaterThan, FirstNumberDescription, SecondNumberDescription));
 
                 if (AResultColumn != null)
                 {

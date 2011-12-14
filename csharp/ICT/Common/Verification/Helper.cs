@@ -44,22 +44,31 @@ namespace Ict.Common.Verification
         /// </returns>
         public static string NiceValueDescription(string AValueDescription)
         {
+        	string ReturnValue;
+        	
             if (AValueDescription != String.Empty)
             {
                 if (AValueDescription.EndsWith(":"))
                 {
                     // Remove trailing colon (':') which would come from a Control's Label .Text Property
-                    return "'" + AValueDescription.Substring(0, AValueDescription.Length - 1) + "'";
+                    ReturnValue = "'" + AValueDescription.Substring(0, AValueDescription.Length - 1) + "'";
                 }
                 else
                 {
-                    return "'" + AValueDescription + "'";
+                    ReturnValue = "'" + AValueDescription + "'";
                 }
+                
+                // Remove any ampersands ('&', signalling the keyboard shortcut in a Control's Label .Text Property) 
+                // and any double-occurance of a single-quote (which could happen after we prepended and appended 
+                // single quotes)
+                ReturnValue = ReturnValue.Replace("&", String.Empty).Replace("''", "'");;
             }
             else
             {
-                return Catalog.GetString("Value");
+                ReturnValue = Catalog.GetString("Value");
             }
+            
+            return ReturnValue;
         }
     }
 }
