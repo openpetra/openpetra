@@ -82,7 +82,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             }
         }
 
-        private void ValidateDataManual(PCountryRow ARow)
+        private void ValidateDataDetailsManual(PCountryRow ARow)
         {
             DataColumn ValidationColumn;
 
