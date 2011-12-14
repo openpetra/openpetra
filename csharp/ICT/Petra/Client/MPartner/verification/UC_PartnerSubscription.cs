@@ -133,6 +133,7 @@ namespace Ict.Petra.Client.MPartner.Verification
             DataColumn TmpDC;
             DataColumn NilDataColumn;
             String mVerifiedString;
+            bool mPartnerExists;
             bool mPartnerIsMerged;
             TPartnerClass mPartnerClass;
 
@@ -254,6 +255,7 @@ namespace Ict.Petra.Client.MPartner.Verification
                     mPartnerClassSet = new TPartnerClass[0];
                     FtmpPartnerKeyValid = TServerLookup.TMPartner.VerifyPartner(Row.GiftFromKey,
                         mPartnerClassSet,
+                        out mPartnerExists,
                         out mVerifiedString,
                         out mPartnerClass,
                         out mPartnerIsMerged);

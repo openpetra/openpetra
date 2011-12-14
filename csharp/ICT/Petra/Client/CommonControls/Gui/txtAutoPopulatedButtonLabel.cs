@@ -947,6 +947,7 @@ namespace Ict.Petra.Client.CommonControls
             String mColumnName;
             TResultSeverity mResultSev;
             TScreenVerificationResult mVerificationResult;
+            bool mPartnerExists;
             String mVerifiedString;
 
             System.Int64 mPartnerKey;
@@ -1115,6 +1116,7 @@ namespace Ict.Petra.Client.CommonControls
 
                         mDelegateVerified = TServerLookup.TMPartner.VerifyPartner(mPartnerKey,
                             temp,
+                            out mPartnerExists,
                             out mVerifiedString,
                             out mPartnerClass,
                             out mPartnerIsMerged);
@@ -1214,6 +1216,7 @@ namespace Ict.Petra.Client.CommonControls
 
                         mDelegateVerified = TServerLookup.TMPartner.VerifyPartner(mPartnerKey,
                             temp,
+                            out mPartnerExists,
                             out mVerifiedString,
                             out mPartnerClass,
                             out mPartnerIsMerged);

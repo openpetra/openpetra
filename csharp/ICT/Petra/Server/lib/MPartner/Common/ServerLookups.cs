@@ -134,20 +134,22 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
         ///
         /// </summary>
         /// <param name="APartnerKey">PartnerKey of Partner to find the short name for</param>
-        /// <param name="AValidPartnerClasses">Pass in a Set of valid PartnerClasses that the
-        /// Partner is allowed to have (eg. [PERSON, FAMILY], or an empty Set ( [] ).</param>
+        /// <param name="AValidPartnerClasses">Pass in a array of valid PartnerClasses that the
+        /// Partner is allowed to have (eg. [PERSON, FAMILY], or an empty array ( [] ).</param>
+        /// <param name="APartnerExists">True if the Partner exists in the database or if PartnerKey is 0.</param>
         /// <param name="APartnerShortName">ShortName for the found Partner ('' if Partner
         /// doesn't exist or PartnerKey is 0)</param>
         /// <param name="APartnerClass">Partner Class of the found Partner (FAMILY if Partner
         /// doesn't exist or PartnerKey is 0)</param>
         /// <param name="AIsMergedPartner">true if the Partner' Partner Status is MERGED,
         /// otherwise false</param>
-        /// <returns>true if Partner was found in DB (except if AValidPartnerClasses ism't
-        /// an empty Set and the found Partner isn't of a PartnerClass that is in the
+        /// <returns>true if Partner was found in DB (except if AValidPartnerClasses isn't
+        /// an empty array and the found Partner isn't of a PartnerClass that is in the
         /// Set) or PartnerKey is 0, otherwise false
         /// </returns>
         public static Boolean VerifyPartner(Int64 APartnerKey,
             TPartnerClass[] AValidPartnerClasses,
+            out bool APartnerExists,
             out String APartnerShortName,
             out TPartnerClass APartnerClass,
             out Boolean AIsMergedPartner)
@@ -155,7 +157,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
             Boolean ReturnValue;
             TStdPartnerStatusCode PartnerStatus;
 
-            ReturnValue = MCommonMain.RetrievePartnerShortName(APartnerKey, out APartnerShortName, out APartnerClass, out PartnerStatus);
+            ReturnValue = APartnerExists = MCommonMain.RetrievePartnerShortName(APartnerKey, out APartnerShortName, out APartnerClass, out PartnerStatus);
 #if DEBUGMODE
             if (TLogging.DL >= 7)
             {

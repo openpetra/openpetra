@@ -464,6 +464,7 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Partner.ServerLookups
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Partner.ServerLookups.Class)</summary>
         Boolean VerifyPartner(Int64 APartnerKey,
                               TPartnerClass[] AValidPartnerClasses,
+                              out bool APartnerExists,
                               out String APartnerShortName,
                               out TPartnerClass APartnerClass,
                               out Boolean AIsMergedPartner);
