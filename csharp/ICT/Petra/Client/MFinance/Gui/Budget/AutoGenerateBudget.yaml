@@ -13,6 +13,7 @@ RootNode:
         actGenerate: {Label=&Generate, ActionClick=GenerateBudget}
         actClose: {Label=&Close, ActionClick=CloseForm} 
         actUnselectAllBudgets: {ActionClick=UnselectAllBudgets}
+        actSelectAllBudgets: {ActionClick=SelectAllBudgets}
     Controls:
         pnlContent:
             Controls: [pnlSettings]
@@ -30,8 +31,13 @@ RootNode:
         pnlGrid:
             Dock: Fill
             Controls: 
-                Row0: [clbCostCentreAccountCodes, btnUnselectAllBudgets]
+                Row0: [clbCostCentreAccountCodes, pnlGridSelection]
                 Row1: [pnlButtons]
+        pnlGridSelection:
+            #Dock: Fill
+            Controls: 
+                Row0: [btnSelectAllBudgets]
+                Row1: [btnUnselectAllBudgets]
         clbCostCentreAccountCodes: 
             List: UserDefinedList
             NoLabel:true
@@ -41,6 +47,11 @@ RootNode:
         btnUnselectAllBudgets: 
             Label: &Unselect All
             Action: actUnselectAllBudgets
+            Width: 83
+        btnSelectAllBudgets: 
+            Label: Select &All
+            Action: actSelectAllBudgets
+            Width: 83
         pnlButtons:
             Dock: Bottom
             Controls: 
@@ -70,4 +81,4 @@ RootNode:
             Text: 6
     Menu:
     Toolbar:
-        #cmbSelectBudgetYear: {List=UserDefinedList, OnChange=SelectBudgetYear, Width=250}
+        

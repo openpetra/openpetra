@@ -64,7 +64,10 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             ABudgetRevisionAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
             //TODO: need to filter on ABudgetPeriod using LoadViaBudget or LoadViaUniqueKey
             ABudgetPeriodAccess.LoadAll(MainDS, null);
+            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, null);
 
+			
+            
 //            ABudgetPeriodTable BudgetPeriodTable = new ABudgetPeriodTable();
 //            ABudgetPeriodRow TemplateRow = (ABudgetPeriodRow)BudgetPeriodTable.NewRow(false);
 //
@@ -450,5 +453,90 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 			return PeriodValuesOK;
         }
 
+                 /// <summary>
+        /// import budgets
+        /// </summary>
+        /// <param name="ACSVFileName"></param>
+        /// <param name="AImportDS"></param>
+        /// <param name="AVerificationResult"></param>
+        /// <returns></returns>
+        private static bool ConsolidateBudgets(Int32 ALedgerNumber, bool AConsolidateAll, ref BudgetTDS ABudgetTDS,
+            ref TVerificationResultCollection AVerificationResult)
+        {
+        	//TODO Complete this code.
+			bool retVal = false;
+
+			int lv_year_i;
+			int lv_period_i;
+			decimal lv_temp_amounts_this_year_n; // AS DECIMAL EXTENT {&MAX-PERIODS} NO-UNDO. Max-Periods = 20
+			decimal lv_temp_amounts_next_year_n; // AS DECIMAL EXTENT {&MAX-PERIODS} NO-UNDO. Max-Periods = 20
+			bool lv_answer_l = false;
+			int lv_glm_sequence_this_year_i;
+			int lv_glm_sequence_next_year_i;
+			string lv_prev_account_c = string.Empty;
+
+			ABudgetTable BudgetTable = ABudgetTDS.ABudget;
+			ABudgetRow BudgetRow = null;
+			
+			ALedgerTable LedgerTable = ABudgetTDS.ALedger;
+			ALedgerRow LedgerRow = (ALedgerRow)LedgerTable.Rows[0];
+			
+			if (AConsolidateAll)
+			{
+				lv_answer_l = true;
+				
+				for (int i = 0; i < BudgetTable.Count; i++)
+				{
+					BudgetRow = (ABudgetRow)BudgetTable.Rows[i];
+                    BudgetRow.BeginEdit();
+                    BudgetRow.BudgetStatus = false;
+                    BudgetRow.EndEdit();
+				}				
+
+				for (int i = 0; i <= 1; i++)
+				{
+					lv_year_i = LedgerRow.CurrentFinancialYear + i;
+
+				    AGeneralLedgerMasterTable GenLedgerMasterTable = new AGeneralLedgerMasterTable();
+		            AGeneralLedgerMasterRow TemplateRow = (AGeneralLedgerMasterRow)GenLedgerMasterTable.NewRowTyped(false);
+		
+		            TemplateRow.LedgerNumber = ALedgerNumber;
+		            TemplateRow.Year = lv_year_i;
+		
+		            StringCollection operators = StringHelper.InitStrArr(new string[] { "=", "=" });
+					StringCollection OrderList = new StringCollection();
+					
+		            OrderList.Add("ORDER BY");
+                    OrderList.Add(AGeneralLedgerMasterTable.GetLedgerNumberDBName() + " ASC");
+                    OrderList.Add(AGeneralLedgerMasterTable.GetYearDBName() + " ASC");
+
+					AGeneralLedgerMasterTable GeneralLedgerMasterTable = AGeneralLedgerMasterAccess.LoadUsingTemplate(TemplateRow, operators, null, null, OrderList, 0, 0);
+					AGeneralLedgerMasterRow GeneralLedgerMasterRow = null;
+					
+					for (int j = 0; j < GeneralLedgerMasterTable.Count; j++)
+					{
+						GeneralLedgerMasterRow = (AGeneralLedgerMasterRow)GeneralLedgerMasterTable.Rows[j];
+						
+						if (lv_prev_account_c != GeneralLedgerMasterRow.AccountCode)
+						{
+							
+						}
+						
+						for (lv_period_i = 1; lv_period_i <= LedgerRow.NumberOfAccountingPeriods; lv_period_i++)
+						{
+							//Clear all budget values
+							
+						}
+						
+					}
+					
+					
+				}
+			}
+
+			return retVal;
+			
+        }
+        
     }
 }
