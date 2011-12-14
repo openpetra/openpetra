@@ -80,6 +80,8 @@ namespace Ict.Tools.GenerateWinForms
                     new TLogging("generatewinforms.log");
                 }
 
+                TLogging.DebugLevel = TAppSettingsManager.GetInt16("DebugLevel", 10);
+
                 if (!TAppSettingsManager.HasValue("op"))
                 {
                     Console.WriteLine("call: GenerateWinForms -op:generate -ymlfile:c:\\test.yaml -petraxml:petra.xml -localisation:en");
@@ -197,7 +199,7 @@ namespace Ict.Tools.GenerateWinForms
                 }
 
                 // do not print a stacktrace for custom generated exception, eg. by the YML parser
-                if (e.GetType() != typeof(System.Exception))
+                if ((e.GetType() != typeof(System.Exception)) || (TLogging.DebugLevel > 0))
                 {
                     Console.WriteLine(e.StackTrace);
                 }

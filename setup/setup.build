@@ -52,10 +52,13 @@ public static string InsertRecursiveAllFilesFromSubdirectories(string PathToSear
     string AllFilesFromSubdirectories = string.Empty;
     foreach (string path in filePaths)
     {
-        AllFilesFromSubdirectories += "  SetOutPath \"$INSTDIR\\" + DestinationPath + "\\" + Path.GetDirectoryName(path).Substring(Path.GetFullPath(PathToSearch).Length) + "\"" + Environment.NewLine;
-        AllFilesFromSubdirectories += "  File \"..\\..\\..\\" + PathToSearch + path.Substring(Path.GetFullPath(PathToSearch).Length) + "\"" + Environment.NewLine;
+        if (Path.GetExtension(path) != ".build")
+        {
+            AllFilesFromSubdirectories += "  SetOutPath \"$INSTDIR\\" + DestinationPath + "\\" + Path.GetDirectoryName(path.Substring(Path.GetFullPath(PathToSearch).Length)) + "\"" + Environment.NewLine;
+            AllFilesFromSubdirectories += "  File \"..\\..\\..\\" + PathToSearch + path.Substring(Path.GetFullPath(PathToSearch).Length) + "\"" + Environment.NewLine;
+        }
     }
-    return AllFilesFromSubdirectories;
+    return AllFilesFromSubdirectories.Replace('/', '\\');
 }
 
 [Function("InsertRecursiveAllFilesFromSubdirectoriesForDeletion")]
@@ -65,7 +68,10 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
     string AllFilesFromSubdirectories = string.Empty;
     foreach (string path in filePaths)
     {
-        AllFilesFromSubdirectories += "  Delete \"$INSTDIR\\" + DestinationPath + path.Substring(Path.GetFullPath(PathToSearch).Length) + "\"" + Environment.NewLine;
+        if (Path.GetExtension(path) != ".build")
+        {
+            AllFilesFromSubdirectories += "  Delete \"$INSTDIR\\" + DestinationPath + path.Substring(Path.GetFullPath(PathToSearch).Length) + "\"" + Environment.NewLine;
+        }
     }
     
     SortedList<string, string> DeleteDirectories = new SortedList<string, string>();
@@ -86,7 +92,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
         AllFilesFromSubdirectories += "  RMDir \"$INSTDIR\\" + DestinationPath + DeleteDirectories[key] + "\"" + Environment.NewLine;
     }
 
-    return AllFilesFromSubdirectories;
+    return AllFilesFromSubdirectories.Replace('/', '\\');
 }
 ]]>
     </code>
@@ -106,8 +112,8 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
 </target>
 
 <!-- Windows -->
-<target name="buildWindowsStandalone" if="${platform::is-windows()}">
-  <call target="generateSolution"/>
+<target name="buildWindowsStandalone">
+  <call target="generateSolution" unless="${target::has-executed('quickCompile')}"/>
   <call target="createSQLiteDB" unless="${target::has-executed('createSQLiteDB')}"/>
   <call target="translationCompilePOFile" unless="${target::has-executed('translationCompilePOFile')}"/>
   <call target="setupStandalone"/>
@@ -174,20 +180,24 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
         <copy file="${UINavigation.file}" tofile="${tempdir}/UINavigation.yml" overwrite="true"/>
     </if>
 
-    <echo message="${script::ReplaceInFile(Current.File, '  File ..\..\..\XmlReports\Settings\*.xml', script::InsertRecursiveAllFilesFromSubdirectories('XmlReports/Settings/', '*.xml', 'reports30\Settings'))}"/>
-    <echo message="${script::ReplaceInFile(Current.File, '  Delete &quot;$INSTDIR\reports30\Settings\*.xml&quot;', script::InsertRecursiveAllFilesFromSubdirectoriesForDeletion('XmlReports/Settings/', '*.xml', 'reports30\Settings\'))}"/>
+    <property name="dummy" value="${script::ReplaceInFile(Current.File, '  File ..\..\..\XmlReports\Settings\*.xml', script::InsertRecursiveAllFilesFromSubdirectories('XmlReports/Settings/', '*.xml', 'reports30\Settings'))}"/>
+    <property name="dummy" value="${script::ReplaceInFile(Current.File, '  Delete &quot;$INSTDIR\reports30\Settings\*.xml&quot;', script::InsertRecursiveAllFilesFromSubdirectoriesForDeletion('XmlReports/Settings/', '*.xml', 'reports30\Settings\'))}"/>
+    <property name="dummy" value="${script::ReplaceInFile(Current.File, '  File ..\..\..\XmlReports\*.xml', script::InsertRecursiveAllFilesFromSubdirectories('XmlReports/', '*.xml', 'reports30'))}"/>
+    <property name="dummy" value="${script::ReplaceInFile(Current.File, '  Delete &quot;$INSTDIR\reports30\*.xml&quot;', script::InsertRecursiveAllFilesFromSubdirectoriesForDeletion('XmlReports/', '*.xml', 'reports30\'))}"/>
+    <property name="dummy" value="${script::ReplaceInFile(Current.File, '  File ..\..\..\demodata\*.*', script::InsertRecursiveAllFilesFromSubdirectories('demodata/', '*.*', 'demo30'))}"/>
+    <property name="dummy" value="${script::ReplaceInFile(Current.File, '  Delete &quot;$INSTDIR\demo30\*.*&quot;', script::InsertRecursiveAllFilesFromSubdirectoriesForDeletion('demodata/', '*.*', 'demo30\'))}"/>
 
-    <echo message="${script::ReplaceInFile(Current.File, '{#RELEASEVERSION}', ReleaseVersion)}"/>
-    <echo message="${script::ReplaceInFile(Current.File, '{#RELEASEID}', ReleaseID)}"/>
-    <echo message="${script::ReplaceInFile(Current.File, '{#PATCHVERSION}', ReleaseID)}"/>
-    <echo message="${script::ReplaceInFile(Current.File, '{#DELIVERY.DIR}', dir.delivery)}"/>
+    <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#RELEASEVERSION}', ReleaseVersion)}"/>
+    <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#RELEASEID}', ReleaseID)}"/>
+    <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#PATCHVERSION}', ReleaseID)}"/>
+    <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#DELIVERY.DIR}', dir.delivery)}"/>
     
     <!-- for remote installer -->
     <if test="${property::exists('HostedServer')}">
-        <echo message="${script::ReplaceInFile(Current.File, '{#ORGNAME}', OrgName)}"/>
-        <echo message="${script::ReplaceInFile(Current.File, '{#PUBLISHERURL}', PublisherUrl)}"/>
-        <echo message="${script::ReplaceInFile(Current.File, '{#SERVERHOST}', HostedServer)}"/>
-        <echo message="${script::ReplaceInFile(Current.File, '{#SERVERPORT}', HostedPort)}"/>
+        <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#ORGNAME}', OrgName)}"/>
+        <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#PUBLISHERURL}', PublisherUrl)}"/>
+        <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#SERVERHOST}', HostedServer)}"/>
+        <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#SERVERPORT}', HostedPort)}"/>
     </if>
     <if test="${string::ends-with(SetupOriginal.File, '.nsi')}">
         <exec program="${makensis.exe}" commandline=" &quot;${Current.File}&quot;"

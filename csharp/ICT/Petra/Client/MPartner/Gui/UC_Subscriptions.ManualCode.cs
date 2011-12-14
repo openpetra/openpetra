@@ -222,6 +222,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void AdjustAfterResizing()
         {
+            ucoDetails.AdjustAfterResizing();
         }
 
         #endregion

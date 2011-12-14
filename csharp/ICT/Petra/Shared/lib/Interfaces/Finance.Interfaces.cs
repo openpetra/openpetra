@@ -641,6 +641,7 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TAccountingPeriodsWebConnector)</summary>
         DataTable GetAvailableGLYears(Int32 ALedgerNumber,
                                       System.Int32 ADiffPeriod,
+                                      System.Boolean AIncludeNextYear,
                                       out String ADisplayMember,
                                       out String AValueMember);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodIntervallConnector)</summary>

@@ -114,6 +114,11 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             }
         }
 
+        private void CreateInvalidCurrency()
+        {
+            new TCurrencyInfo("JPN");
+        }
+
         /// <summary>
         /// Test of the internal routine TCurrencyInfo
         /// </summary>
@@ -121,45 +126,19 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         public void Test_05_TCurrencyInfo()
         {
             Assert.AreEqual(2, new TCurrencyInfo("EUR").digits, "Number of digits: 2");
+
+            Assert.Throws <TVerificationException>(CreateInvalidCurrency, "No InternalException thrown");
             try
             {
-                new TCurrencyInfo("JPN");
-                Assert.Fail("No InternalException thrown");
+                CreateInvalidCurrency();
             }
             catch (TVerificationException internalException)
             {
                 Assert.AreEqual("TCurrencyInfo02", internalException.ErrorCode, "Wrong Error Code");
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                Assert.Fail("Other than InternalException thrown");
-            }
-
-            try
-            {
-                new TCurrencyInfo("DMG");
-                Assert.Fail("No InternalException thrown");
-            }
-            catch (TVerificationException internalException)
-            {
-                if (internalException.ErrorCode.Equals("TCurrencyInfo01"))
-                {
-                    Assert.Fail("Test Data are not loaded correctly");
-                }
-                else if (internalException.ErrorCode.Equals("TCurrencyInfo02"))
-                {
-                    Assert.Pass("DMG-Test ok");
-                }
-                else
-                {
-                    Assert.AreEqual("TCurrencyInfo03",
-                        internalException.ErrorCode,
-                        "Wrong Error Code");
-                }
-            }
-            catch (Exception)
-            {
-                Assert.Fail("Other than InternalException thrown");
+                Assert.Fail("Other than InternalException thrown: " + e.GetType().ToString());
             }
         }
 
@@ -261,7 +240,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         /// <summary>
         /// TestFixtureSetUp
         /// </summary>
-        [SetUp]
+        [TestFixtureSetUp]
         public void Init()
         {
             InitServerConnection();

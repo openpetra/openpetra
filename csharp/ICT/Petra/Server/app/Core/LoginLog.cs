@@ -102,6 +102,13 @@ namespace Ict.Petra.Server.App.Core.Security
 
             // Save DataRow
             WriteTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+            // especially in the unit tests, we need to allow several logins per minute, without unique key violation
+            while (SLoginAccess.Exists(NewLoginRow.UserId, NewLoginRow.LoginDate, NewLoginRow.LoginTime, WriteTransaction))
+            {
+                NewLoginRow.LoginTime++;
+            }
+
             SubmissionOK = SLoginAccess.SubmitChanges(LoginTable, WriteTransaction, out AVerificationResult);
 
             if (SubmissionOK)

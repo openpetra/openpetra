@@ -386,9 +386,12 @@ namespace Ict.Common.Verification
         /// <param name="value">collection to be merged</param>
         public void AddCollection(TVerificationResultCollection value)
         {
-            for (int Counter = 0; Counter <= value.Count - 1; Counter += 1)
+            if (value != null)
             {
-                List.Add(value.GetVerificationResult(Counter));
+                for (int Counter = 0; Counter <= value.Count - 1; Counter += 1)
+                {
+                    List.Add(value.GetVerificationResult(Counter));
+                }
             }
         }
 

@@ -40,12 +40,12 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         /// Normally I plan to move out this routine to CommonNUnitFunctions but this is not coorect
         /// for all types of test. So I need a set of CommonNUnitFunctions
         /// </summary>
-        [SetUp]
+        [TestFixtureSetUp]
         public void Init()
         {
             InitServerConnection();
             System.Diagnostics.Debug.WriteLine("Init: " + this.ToString());
-            ResetDatabase();
+            //ResetDatabase();
             LoadTestTata();
         }
 
@@ -60,7 +60,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         }
 
         /// <summary>
-        /// Load specifi test data
+        /// Load specific test data
         /// </summary>
         public void LoadTestTata()
         {

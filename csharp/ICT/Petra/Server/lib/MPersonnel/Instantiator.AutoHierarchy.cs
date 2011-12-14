@@ -472,6 +472,13 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.WebConnectors
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPersonnel.WebConnectors.TPersonnelWebConnector), "LoadPersonellStaffData", ";LONG;");
             return Ict.Petra.Server.MPersonnel.WebConnectors.TPersonnelWebConnector.LoadPersonellStaffData(APartnerKey);
         }
+
+        /// generated method from connector
+        public System.Boolean HasCurrentCommitmentRecord(Int64 APartnerKey)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPersonnel.WebConnectors.TPersonnelWebConnector), "HasCurrentCommitmentRecord", ";LONG;");
+            return Ict.Petra.Server.MPersonnel.WebConnectors.TPersonnelWebConnector.HasCurrentCommitmentRecord(APartnerKey);
+        }
     }
 }
 
