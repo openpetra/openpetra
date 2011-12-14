@@ -1133,6 +1133,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 FTemplate.SetCodelet("VALIDATEDATAMANUAL", "true");
             }
 
+            if (FCodeStorage.ManualFileExistsAndContains("ValidateDataDetailsManual"))
+            {
+                FTemplate.SetCodelet("VALIDATEDATADETAILSMANUAL", "true");
+            }
+
             InsertCodeIntoTemplate(AXAMLFilename);
         }
 

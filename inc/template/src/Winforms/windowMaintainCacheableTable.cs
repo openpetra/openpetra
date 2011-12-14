@@ -277,9 +277,9 @@ namespace {#NAMESPACE}
             GetDetailsFromControls(CurrentRow);
             
             // TODO Generate automatic validation of data, based on the DB Table specifications (e.g. 'not null' checks)
-{#IFDEF VALIDATEDATAMANUAL}
-            ValidateDataManual(CurrentRow);
-{#ENDIF VALIDATEDATAMANUAL}
+{#IFDEF VALIDATEDATADETAILSMANUAL}
+            ValidateDataDetailsManual(CurrentRow);
+{#ENDIF VALIDATEDATADETAILSMANUAL}
 
             ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
                 this.GetType());
