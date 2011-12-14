@@ -97,18 +97,25 @@ namespace Ict.Petra.Shared
         #endregion
 
         #region Partner Module-specific error codes
-
+        
         /// <summary>Partner Key is invalid.</summary>
+        [ErrCodeAttribute("Invalid Partner.",
+             ErrorMessageText = "Invalid Partner entered: The Partner specified with PartnerKey {0} is not valid.")]
         public const String ERR_PARTNERKEY_INVALID = "PARTN.00001V";
 
+        /// <summary>Partner Key is invalid (must be non-zero).</summary>
+        [ErrCodeAttribute("Invalid Partner.",
+             ErrorMessageText = "Invalid Partner entered: PartnerKey 0 is not a valid value.")]
+        public const String ERR_PARTNERKEY_INVALID_NOZERO = "PARTN.00002V";        
+
         /// <summary>Partner Status MERGED change undone.</summary>
-        public const String ERR_PARTNERSTATUSMERGEDCHANGEUNDONE = "PARTN.00002N";
+        public const String ERR_PARTNERSTATUSMERGEDCHANGEUNDONE = "PARTN.00003N";
 
         /// <summary>UnitName change undone.</summary>
-        public const String ERR_UNITNAMECHANGEUNDONE = "PARTN.00003N";
+        public const String ERR_UNITNAMECHANGEUNDONE = "PARTN.00004N";
 
         /// <summary>Bank Bic/Swift Code is invalid.</summary>
-        public const String ERR_BANKBICSWIFTCODEINVALID = "PARTN.00004V";
+        public const String ERR_BANKBICSWIFTCODEINVALID = "PARTN.00005V";
 
         #endregion
     }
