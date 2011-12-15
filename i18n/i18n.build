@@ -30,6 +30,19 @@ ENDLOCAL
   </echo>
 </target>
 
+<target name="downloadTranslations">
+  <exec program="bzr" commandline="checkout lp:~jomammele/openpetraorg/translationfiles" workingdir="${tempdir}"/>
+  <move todir="${dir.root}/i18n/">
+    <fileset basedir="${tempdir}/translationfiles/template1">
+      <include name="*.po" />
+    </fileset>
+  </move>
+  <delete dir="${tempdir}/translationfiles"/>
+  <move file="${dir.root}/i18n/de.po" tofile="${dir.root}/i18n/de-DE.po"/>
+  <move file="${dir.root}/i18n/da.po" tofile="${dir.root}/i18n/da-DK.po"/>
+  <move file="${dir.root}/i18n/es.po" tofile="${dir.root}/i18n/es-ES.po"/>
+</target>
+
 <target name="compile" depends="translationCompilePOFile" 
         description="compile the language file(s) for delivery"/>
 
