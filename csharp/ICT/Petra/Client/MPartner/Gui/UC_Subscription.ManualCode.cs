@@ -116,13 +116,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             ShowData(ARow);
 
             // for every record initially disable issue group box, but enable button in the same group box
-            CustomEnablingDisabling.DisableControlGroup(grpIssues);
-
             if (FAllowEditIssues)
             {
                 this.btnEditIssues.Visible = true;
                 this.btnEditIssues.Enabled = true;
             }
+
+            EnableDisableIssuesGroupBox(false);
 
             txtPublicationCost.ReadOnly = true;
 
@@ -299,10 +299,17 @@ namespace Ict.Petra.Client.MPartner.Gui
                     MessageBoxButtons.OKCancel,
                     MessageBoxIcon.Question) == DialogResult.OK)
             {
-                CustomEnablingDisabling.EnableControlGroup(grpIssues);
+                EnableDisableIssuesGroupBox(true);
                 this.btnEditIssues.Visible = false;
                 this.txtPSubscriptionNumberIssuesReceived.Focus();
             }
+        }
+
+        private void EnableDisableIssuesGroupBox(Boolean AEnable)
+        {
+            this.txtPSubscriptionNumberIssuesReceived.Enabled = AEnable;
+            this.dtpPSubscriptionFirstIssue.Enabled = AEnable;
+            this.dtpPSubscriptionLastIssue.Enabled = AEnable;
         }
 
         /// <summary>

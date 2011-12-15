@@ -502,6 +502,8 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Partner.ServerLookups
         Boolean GetRecentlyUsedPartners(System.Int32 AMaxPartnersCount,
                                         ArrayList APartnerClasses,
                                         out Dictionary<System.Int64, System.String>ARecentlyUsedPartners);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Partner.ServerLookups.Class)</summary>
+        Int64 GetFamilyKeyForPerson(Int64 APersonKey);
     }
 
 }
@@ -684,6 +686,12 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Partner.WebConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TContactsWebConnector)</summary>
         System.Boolean DeleteContacts(PPartnerContactTable APartnerContacts,
                                       out TVerificationResultCollection AVerificationResults);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerWebConnector)</summary>
+        System.Boolean ChangeFamily(Int64 APersonKey,
+                                    Int64 AOldFamilyKey,
+                                    Int64 ANewFamilyKey,
+                                    out String AProblemMessage,
+                                    out TVerificationResultCollection AVerificationResult);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerEditWebConnector)</summary>
         Int64 NewPartnerKey(Int64 AFieldPartnerKey);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerEditWebConnector)</summary>

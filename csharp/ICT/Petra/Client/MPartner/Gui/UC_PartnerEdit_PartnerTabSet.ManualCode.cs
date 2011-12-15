@@ -58,13 +58,6 @@ namespace Ict.Petra.Client.MPartner.Gui
     {
     }
 
-    /// <summary>
-    /// temporary class until FamilyMembers are implemented properly
-    /// </summary>
-    public class TUC_FamilyMembers
-    {
-    }
-
     public partial class TUC_PartnerEdit_PartnerTabSet
     {
         #region Resourcestrings
@@ -107,6 +100,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         private String FPartnerClass;
 
         private Boolean FUserControlInitialised;
+
+        private TDelegateIsNewPartner FDelegateIsNewPartner;
 
         #endregion
 
@@ -188,6 +183,20 @@ namespace Ict.Petra.Client.MPartner.Gui
         #endregion
 
         #region Public Methods
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
+        public PLocationRow Get_LocationRowOfCurrentlySelectedAddress()
+        {
+            if (!FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucAddresses))
+            {
+                // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);'
+                SetupUserControlAddresses();
+            }
+
+            return FUcoAddresses.LocationDataRowOfCurrentlySelectedRecord;
+        }
 
         /// <summary>
         /// Initialization of Manual Code logic.
@@ -198,6 +207,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 FTabPageEvent += this.TabPageEventHandler;
             }
+        }
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        /// <param name="ADelegateFunction"></param>
+        public void InitialiseDelegateIsNewPartner(TDelegateIsNewPartner ADelegateFunction)
+        {
+            // set the delegate function from the calling System.Object
+            FDelegateIsNewPartner = ADelegateFunction;
         }
 
         /// <summary>
@@ -611,7 +630,16 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpFamilyMembers;
 
-                    // TODO
+                    // Hook up RecalculateScreenParts Event
+                    FUcoFamilyMembers.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
+
+                    FUcoFamilyMembers.PartnerEditUIConnector = FPartnerEditUIConnector;
+                    FUcoFamilyMembers.HookupDataChange += new THookupPartnerEditDataChangeEventHandler(Uco_HookupPartnerEditDataChange);
+                    FUcoFamilyMembers.InitialiseDelegateIsNewPartner(FDelegateIsNewPartner);
+                    FUcoFamilyMembers.InitialiseDelegateGetLocationRowOfCurrentlySelectedAddress(
+                        Get_LocationRowOfCurrentlySelectedAddress);
+
+                    FUcoFamilyMembers.SpecialInitUserControl();
 
                     CorrectDataGridWidthsAfterDataChange();
                 }
@@ -846,11 +874,15 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FUcoPartnerRelationships.AdjustAfterResizing();
                 }
 
-                // TODO
-//                if (FUcoFamilyMembers != null)
-//                {
-//                    FUcoFamilyMembers.AdjustAfterResizing();
-//                }
+                if (FUcoFamilyMembers != null)
+                {
+                    FUcoFamilyMembers.AdjustAfterResizing();
+                }
+
+                if (FUcoOfficeSpecific != null)
+                {
+                    FUcoOfficeSpecific.AdjustAfterResizing();
+                }
             }
         }
 
@@ -988,10 +1020,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     case TPartnerEditTabPageEnum.petpReminders:
                         tabPartners.SelectedTab = tpgReminders;
-                        break;
-
-                    case TPartnerEditTabPageEnum.petpRelationships:
-                        tabPartners.SelectedTab = tpgRelationships;
                         break;
 
                     case TPartnerEditTabPageEnum.petpContacts:

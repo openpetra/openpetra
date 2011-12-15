@@ -103,7 +103,7 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 TVerificationException terminate = new TVerificationException(
                     Catalog.GetString("The table a_currency is empty!"));
-                terminate.Context = "Common Accountig";
+                terminate.Context = "Common Accounting";
                 terminate.ErrorCode = "TCurrencyInfo01";
                 throw terminate;
             }
@@ -126,8 +126,8 @@ namespace Ict.Petra.Server.MFinance.Common
 
             TVerificationException terminate = new TVerificationException(
                 Catalog.GetString(String.Format(
-                        "No Data for curency {0} found", ACurrencyCode)));
-            terminate.Context = "Common Accountig";
+                        "No Data for currency {0} found", ACurrencyCode)));
+            terminate.Context = "Common Accounting";
             terminate.ErrorCode = "TCurrencyInfo02";
             throw terminate;
         }
