@@ -180,6 +180,36 @@ cardCancel: function() {
 cardFinish: function() {
     var layout = this.getLayout();
     f = layout.activeItem.getForm();
+
+    if ({#FORMNAME}.validate == false)
+    {
+        // need to validate all pages now
+        var cards = layout.getLayoutItems();
+
+        var invalid = false;
+        for (var i = 0, len = cards.length; i < len; i++) 
+        {
+            var f = cards[i].getForm();
+            if (!f.isValid())
+            {
+                invalid = true;
+            }
+        }
+
+        if (invalid)
+        {
+            Ext.Msg.show({
+              title: "DEBUGMODE: Missing some data",
+              msg: "You are using this form with the checkbox set for quickly clicking through the forms.<br/>Please enter all data, otherwise you cannot submit the application",
+              modal: true,
+              icon: Ext.Msg.ERROR,
+              buttons: Ext.Msg.OK
+            });
+
+            return;
+        }
+    }
+
     if (!f.isValid())
     {
         return;
