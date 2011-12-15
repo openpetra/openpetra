@@ -143,8 +143,11 @@ list of available commands:
     <fileset basedir="${dir.bin}">
       <include name="*.dll" />
       <include name="PetraServerConsole.exe" />
-      <exclude name="sqlite.dll" />
-      <exclude name="Tests-*"/>
+      <exclude name="sqlite3.dll" />
+      <exclude name="log4net.dll" />
+      <exclude name="WebDriver.dll" />
+      <exclude name="Ionic.Zip.dll" />
+      <exclude name="Ict.Testing.*"/>
       <exclude name="Ict.Petra.Client.*"/>
       <exclude name="Ict.Tools.*"/>
       <!-- some unmanaged dlls cause problems for mono xsp -->
@@ -182,6 +185,8 @@ list of available commands:
           <variable name="PATH" path="${environment::get-variable('PATH')};${MonoBinPath}"/>
           <variable name="MONO_PATH" path="${MonoBinPath}\..\lib\mono\4.0"/>
           <variable name="MONO_OPTIONS" value="--debug"/>
+          <!-- see http://www.mono-project.com/IOMap -->
+          <!-- <variable name="MONO_IOMAP" value="all"/> -->
         </environment>
       </exec>
       <echo message="in your browser, go to http://localhost:8081/"/>
