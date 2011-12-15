@@ -67,6 +67,7 @@ list of available commands:
   <copy todir="${dir.webserver}/Apps/OnlineRegistration" overwrite="true">
     <fileset basedir="${dir.webforms.source}">
       <include name="*-lang.js" />
+      <include name="*.aspx" />
     </fileset>
   </copy>
 
