@@ -85,6 +85,11 @@ useful parameters
         buildfile="i18n/i18n.build" />
 </target>
 
+<target name="downloadTranslations" description="download the latest translations from Launchpad" >
+  <nant inheritall="false" target="downloadTranslations" 
+        buildfile="i18n/i18n.build" />
+</target>
+
 <target name="custclean" description="Cleans the solution and project files">
   <foreach item="String" property="devenv-name" delim="," in="${projectfiles.templates-list}" >
     <delete>
