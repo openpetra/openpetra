@@ -54,8 +54,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 {
     public partial class TFrmExportBudget
     {
-        
-    	        /// <summary>
+        /// <summary>
         /// Initialize values
         /// </summary>
         public void InitializeManualCode()
@@ -250,6 +249,5 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         {
             // TODO
         }
-    	
     }
 }

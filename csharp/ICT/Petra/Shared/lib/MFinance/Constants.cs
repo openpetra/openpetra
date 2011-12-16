@@ -253,13 +253,12 @@ namespace Ict.Petra.Shared.MFinance
 
         /// Budget Types
         public const string BUDGET_INFLATE_N = "Inf. n";
-        
+
         /// Budget Forecast Types
         public const string FORECAST_TYPE_BUDGET = "Budget";
 
         /// Budget Forecast Types
         public const string FORECAST_TYPE_ACTUALS = "Actuals";
-
     }
 
     /// <summary>

@@ -761,9 +761,10 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <returns></returns>
         public static Int32 GetLedgerCurrentFinancialYear(Int32 ALedgerNumber)
         {
-        	ALedgerRow row = ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, ALedgerNumber))[0];
-        	
-			return row.CurrentFinancialYear;
+            ALedgerRow row =
+                ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, ALedgerNumber))[0];
+
+            return row.CurrentFinancialYear;
         }
 
         /// <summary>
