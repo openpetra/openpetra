@@ -126,7 +126,272 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             return false;
         }
 
-                /// <summary>
+        
+        /// <summary>
+        /// GetGLMSequence
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AAccountCode"></param>
+        /// <param name="ACostCentreCode"></param>
+        /// <param name="AYear"></param>
+        /// <returns>GLM Sequence no</returns>
+        [RequireModulePermission("FINANCE-3")]
+		public static int GetGLMSequenceForBudget(int ALedgerNumber, string AAccountCode, string ACostCentreCode, int AYear)
+        {
+        	int retVal;
+        	
+        	TDBTransaction dbtrans = DBAccess.GDBAccessObj.BeginTransaction();
+        	
+			try
+			{
+	        	AGeneralLedgerMasterTable GeneralLedgerMasterTable = AGeneralLedgerMasterAccess.LoadByUniqueKey(ALedgerNumber, AYear, AAccountCode, ACostCentreCode, dbtrans);
+	        	
+	        	if (GeneralLedgerMasterTable.Count > 0)
+	        	{
+	        		retVal = (int)GeneralLedgerMasterTable.Rows[0].ItemArray[0];
+	        	}
+	        	else
+	        	{
+	        		retVal = -1;
+	        	}
+			}
+			catch (Exception)
+			{
+				throw;
+			}        	
+			finally
+			{
+				DBAccess.GDBAccessObj.RollbackTransaction();	
+			}
+        	
+        	return retVal;
+        }
+
+        /*------------------------------------------------------------------------------
+		  Description: GetActual retrieves the actuals value of the given period, no matter if it is in a forwarding period.
+		    GetActual is similar to GetBudget. The main difference is, that forwarding periods are saved in the current year.
+		    You still need the sequence_next_year, because this_year can be older than current_financial_year of the ledger.
+		    So you need to give number_accounting_periods and current_financial_year of the ledger.
+		    You also need to give the number of the year from which you want the data.
+		    Currency_select is either "B" for base or "I" for international currency or "T" for transaction currency
+		    You want e.g. the actual data of period 13 in year 2, the current financial year is 3.
+		    The call would look like: GetActual(sequence_year_2, sequence_year_3, 13, 12, 3, 2, false, "B");
+		    That means, the function has to return the difference between year 3 period 1 and the start balance of year 3.
+		------------------------------------------------------------------------------*/
+        [RequireModulePermission("FINANCE-3")]
+        public static decimal GetActual(int ALedgerNumber, int AGLMSeqThisYear, int AGLMSeqNextYear, int APeriodNumber, int ANumberAccountingPeriods, int ACurrentFinancialYear, int AThisYear, bool AYTD, string ACurrencySelect)
+        {
+        	decimal retVal = 0;
+        	
+			retVal = GetActualInternal(ALedgerNumber, AGLMSeqThisYear, AGLMSeqNextYear, APeriodNumber, ANumberAccountingPeriods, ACurrentFinancialYear, AThisYear, AYTD, false, ACurrencySelect);
+        	
+        	return retVal;
+        	
+        }
+        
+        private static decimal GetActualInternal(int ALedgerNumber, int AGLMSeqThisYear, int AGLMSeqNextYear, int APeriodNumber, int ANumberAccountingPeriods, int ACurrentFinancialYear, int AThisYear, bool AYTD, bool ABalSheetForwardPeriods, string ACurrencySelect)
+        {
+        	decimal retVal = 0;
+        	
+			decimal CurrencyAmount = 0;
+			bool IncExpAccountFwdPeriod = false;
+		    //DEFINE BUFFER a_glm_period FOR a_general_ledger_master_period.
+		    //DEFINE BUFFER a_glm FOR a_general_ledger_master.
+		    //DEFINE BUFFER buf_account FOR a_account.
+
+		    if (AGLMSeqThisYear == -1)
+		    {
+		    	return retVal;
+		    }
+
+		    TDBTransaction DBTransaction = DBAccess.GDBAccessObj.BeginTransaction();
+		    
+		    AGeneralLedgerMasterTable GeneralLedgerMasterTable = null;
+		    AGeneralLedgerMasterRow GeneralLedgerMasterRow = null;
+		    
+	    	AGeneralLedgerMasterPeriodTable GeneralLedgerMasterPeriodTable = null;
+	    	AGeneralLedgerMasterPeriodRow GeneralLedgerMasterPeriodRow = null;
+	    	
+	    	AAccountTable AccountTable = null;
+	    	AAccountRow AccountRow = null;
+		    
+		    
+		    if (APeriodNumber == 0) /* start balance */
+		    {
+		    	GeneralLedgerMasterTable = AGeneralLedgerMasterAccess.LoadByPrimaryKey(AGLMSeqThisYear, DBTransaction);
+		    	GeneralLedgerMasterRow = (AGeneralLedgerMasterRow)GeneralLedgerMasterTable.Rows[0];
+		    	
+				switch (ACurrencySelect)
+				{
+					case MFinanceConstants.CURRENCY_BASE:
+			    		CurrencyAmount = GeneralLedgerMasterRow.StartBalanceBase;
+						break;
+					case MFinanceConstants.CURRENCY_INTERNATIONAL:
+			    		CurrencyAmount = GeneralLedgerMasterRow.StartBalanceIntl;
+						break;
+					default:
+			    		CurrencyAmount = GeneralLedgerMasterRow.StartBalanceForeign;
+						break;
+				}
+
+		    }
+		    else if (APeriodNumber > ANumberAccountingPeriods) /* forwarding periods only exist for the current financial year */
+		    {
+		    	if (ACurrentFinancialYear == AThisYear)
+		    	{
+			    	GeneralLedgerMasterPeriodTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(AGLMSeqThisYear, APeriodNumber, DBTransaction);
+			    	GeneralLedgerMasterPeriodRow = (AGeneralLedgerMasterPeriodRow)GeneralLedgerMasterPeriodTable.Rows[0];
+		    	}
+		    	else
+		    	{
+		    		GeneralLedgerMasterPeriodTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(AGLMSeqNextYear, (APeriodNumber - ANumberAccountingPeriods), DBTransaction);
+			    	GeneralLedgerMasterPeriodRow = (AGeneralLedgerMasterPeriodRow)GeneralLedgerMasterPeriodTable.Rows[0];
+		    	}
+		    	
+		    }
+		    else /* normal period */
+		    {
+	    		GeneralLedgerMasterPeriodTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(AGLMSeqThisYear, APeriodNumber, DBTransaction);
+		    	GeneralLedgerMasterPeriodRow = (AGeneralLedgerMasterPeriodRow)GeneralLedgerMasterPeriodTable.Rows[0];
+		    }
+		    
+		    
+			if (GeneralLedgerMasterPeriodRow != null)
+			{
+				switch (ACurrencySelect)
+				{
+					case MFinanceConstants.CURRENCY_BASE:
+						CurrencyAmount = GeneralLedgerMasterPeriodRow.ActualBase;
+						break;
+					case MFinanceConstants.CURRENCY_INTERNATIONAL:
+						CurrencyAmount = GeneralLedgerMasterPeriodRow.ActualIntl;						
+						break;
+					default:
+						CurrencyAmount = GeneralLedgerMasterPeriodRow.ActualForeign;						
+						break;
+				}
+			}					    
+		    
+			if (APeriodNumber > ANumberAccountingPeriods && ACurrentFinancialYear == AThisYear)
+			{
+		    	GeneralLedgerMasterTable = AGeneralLedgerMasterAccess.LoadByPrimaryKey(AGLMSeqThisYear, DBTransaction);
+		    	GeneralLedgerMasterRow = (AGeneralLedgerMasterRow)GeneralLedgerMasterTable.Rows[0];
+
+		    	AccountTable = AAccountAccess.LoadByPrimaryKey(ALedgerNumber, GeneralLedgerMasterRow.AccountCode, DBTransaction);
+		    	AccountRow = (AAccountRow)AccountTable.Rows[0];
+		    	
+		    	if (AccountRow.AccountCode.ToUpper() == MFinanceConstants.ACCOUNT_TYPE_INCOME.ToUpper()
+		    	   || AccountRow.AccountCode.ToUpper() == MFinanceConstants.ACCOUNT_TYPE_EXPENSE.ToUpper()
+		    	   && !ABalSheetForwardPeriods)
+		    	{
+		    		IncExpAccountFwdPeriod = true;
+		    		CurrencyAmount -= GetActualInternal(ALedgerNumber, AGLMSeqThisYear, AGLMSeqNextYear, ANumberAccountingPeriods, ANumberAccountingPeriods, ACurrentFinancialYear, AThisYear, true, ABalSheetForwardPeriods, ACurrencySelect);
+		    	}
+			}			
+
+			if (!AYTD)
+			{
+				if (!(APeriodNumber == (ANumberAccountingPeriods + 1) && IncExpAccountFwdPeriod)  
+				    && !(APeriodNumber == (ANumberAccountingPeriods + 1) && ACurrentFinancialYear > AThisYear))
+				{
+		            /* if it is an income expense acount, and we are in a forward period, nothing needs to be subtracted,
+		               because that was done in correcting the amount in the block above;
+		               if we are in a previous year, in a forward period, don't worry about subtracting.
+		            */
+		           CurrencyAmount -= GetActualInternal(ALedgerNumber, AGLMSeqThisYear, AGLMSeqNextYear, (APeriodNumber - 1), ANumberAccountingPeriods, ACurrentFinancialYear, AThisYear, true, ABalSheetForwardPeriods, ACurrencySelect);
+				}
+				
+			}
+
+			retVal = CurrencyAmount;
+			
+			DBAccess.GDBAccessObj.RollbackTransaction();
+			
+        	return retVal;
+        }
+        
+        [RequireModulePermission("FINANCE-3")]
+        public static decimal GetBudget(int AGLMSeqThisYear, int AGLMSeqNextYear, int APeriodNumber, int ANumberAccountingPeriods, bool AYTD, string ACurrencySelect)
+        {
+        	decimal retVal = 0;
+        	
+        	if (APeriodNumber > ANumberAccountingPeriods)
+        	{
+        		retVal = CalculateBudget(AGLMSeqNextYear, 1, (APeriodNumber - ANumberAccountingPeriods), AYTD, ACurrencySelect);
+        	}
+        	else
+        	{
+        		retVal = CalculateBudget(AGLMSeqThisYear, 1, APeriodNumber, AYTD, ACurrencySelect);
+        	}
+        	
+        	return retVal;
+        }
+
+
+        /// <summary>
+        ///Description: CalculateBudget is only used internally as a helper function for GetBudget.        
+        ///Returns the budget for the given period of time,
+		///  if ytd is set, this period is from start_period to end_period,
+		///  otherwise it is only the value of the end_period.
+		///  currency_select is either "B" for base or "I" for international currency
+        /// </summary>
+        /// <param name="AGLMSeq"></param>
+        /// <param name="AStartPeriod"></param>
+        /// <param name="AEndPeriod"></param>
+        /// <param name="AYTD"></param>
+        /// <param name="ACurrencySelect"></param>
+        /// <returns></returns>
+        private static decimal CalculateBudget(int AGLMSeq, int AStartPeriod, int AEndPeriod, bool AYTD, string ACurrencySelect)
+        {
+        	decimal retVal = 0;
+        	
+			decimal lv_currency_amount_n = 0;
+			int lv_ytd_period_i;
+	    	
+			TDBTransaction DBTransaction = DBAccess.GDBAccessObj.BeginTransaction();
+			
+			AGeneralLedgerMasterPeriodTable GeneralLedgerMasterPeriodTable = null;
+	    	AGeneralLedgerMasterPeriodRow GeneralLedgerMasterPeriodRow = null;
+
+			if (AGLMSeq == -1)
+			{
+				return retVal;
+			}        	
+
+			if (!AYTD)
+			{
+				AStartPeriod = AEndPeriod;
+			}
+			
+			for (lv_ytd_period_i = AStartPeriod; lv_ytd_period_i <= AEndPeriod; lv_ytd_period_i++)
+			{
+				GeneralLedgerMasterPeriodTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(AGLMSeq, lv_ytd_period_i, DBTransaction);
+				GeneralLedgerMasterPeriodRow = (AGeneralLedgerMasterPeriodRow)GeneralLedgerMasterPeriodTable.Rows[0];
+				
+				if (GeneralLedgerMasterPeriodRow != null)
+				{
+					if (ACurrencySelect == MFinanceConstants.CURRENCY_BASE)
+					{
+						lv_currency_amount_n += GeneralLedgerMasterPeriodRow.BudgetBase;	
+					}
+					else if (ACurrencySelect == MFinanceConstants.CURRENCY_INTERNATIONAL)
+					{
+						lv_currency_amount_n += GeneralLedgerMasterPeriodRow.BudgetIntl;
+					}
+				}
+			}
+			
+			retVal = lv_currency_amount_n;
+			
+			DBAccess.GDBAccessObj.RollbackTransaction();
+			
+        	return retVal;
+        }
+
+
+		
+		
+		/// <summary>
         /// import budgets
         /// </summary>
         /// <param name="ACSVFileName"></param>
@@ -460,7 +725,8 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         /// <param name="AImportDS"></param>
         /// <param name="AVerificationResult"></param>
         /// <returns></returns>
-        private static bool ConsolidateBudgets(Int32 ALedgerNumber, bool AConsolidateAll, ref BudgetTDS ABudgetTDS,
+        [RequireModulePermission("FINANCE-3")]
+        public static bool ConsolidateBudgets(Int32 ALedgerNumber, bool AConsolidateAll, ref BudgetTDS ABudgetTDS,
             ref TVerificationResultCollection AVerificationResult)
         {
         	//TODO Complete this code.
@@ -537,6 +803,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 			return retVal;
 			
         }
+        
         
     }
 }

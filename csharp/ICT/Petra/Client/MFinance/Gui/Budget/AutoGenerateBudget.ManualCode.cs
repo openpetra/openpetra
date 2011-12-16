@@ -50,6 +50,7 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.Interfaces.MFinance.Budget.WebConnectors;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
+//using Ict.Petra.Server.MFinance.Budget.WebConnectors;
 
 //using Ict.Petra.Server.MFinance.Account.Data.Access;
 
@@ -176,6 +177,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
        		string CheckItemsList = clbCostCentreAccountCodes.GetCheckedStringList();
        		string[] CheckedItems = CheckItemsList.Split(',');
 
+       		string ForecastType;
+       		
+       		if (rbtThisYearsBudgets.Checked)
+       		{
+       			ForecastType = "BUDGET";	
+       		}
+       		else
+       		{
+				ForecastType = "ACTUALS";
+       		}
+       		
        		if (rbtSelectedBudgets.Checked && CheckItemsList.Length > 0)
         	{
         		lv_counter_i = 1;
@@ -183,8 +195,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         		{
 		            /* Generate report. Parameters are recid of the budget and the forecast type.
 		            RUN gb4000.p (RECID(a_budget), rad_forecast_type_c:SCREEN-VALUE).*/
-		            int BudgetItemNo = Convert.ToInt32(BudgetItem)
-		            GenBudgetForNextYear(BudgetItemNo);
+		            int BudgetItemNo = Convert.ToInt32(BudgetItem);
+		            GenBudgetForNextYear(BudgetItemNo, ForecastType);
         		}
         	}
 			else
@@ -195,22 +207,123 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         }
 
         
-        private void GenBudgetForNextYear(int ABudgetSeq)
+        private void GenBudgetForNextYear(int ABudgetSeq, string AForecastType)
         {
         	int lv_glm_sequence_this_year_i = 0;
 			int lv_glm_sequence_last_year_i = 0;
-
 			
+			ABudgetTable BudgetTable = FMainDS.ABudget;
+			ABudgetRow BudgetRow = (ABudgetRow)BudgetTable.Rows.Find(new object[] {ABudgetSeq});
+			
+			ALedgerTable LedgerTable = FMainDS.ALedger;
+			ALedgerRow LedgerRow = (ALedgerRow)LedgerTable.Rows[0];
+			
+			string AccountCode = BudgetRow.AccountCode;
+			string CostCentreCode = BudgetRow.CostCentreCode;
+			int Year = LedgerRow.CurrentFinancialYear;
+			int CurrentPeriod = LedgerRow.CurrentPeriod;
+			int NumAccPeriods = LedgerRow.NumberOfAccountingPeriods;
+			
+			lv_glm_sequence_this_year_i = TRemote.MFinance.Budget.WebConnectors.GetGLMSequenceForBudget(FLedgerNumber,
+			                                                                                 AccountCode,
+			                                                                                CostCentreCode,
+			                                                                               Year);
+			
+			lv_glm_sequence_last_year_i = TRemote.MFinance.Budget.WebConnectors.GetGLMSequenceForBudget(FLedgerNumber,
+			                                                                                 AccountCode,
+			                                                                                CostCentreCode,
+			                                                                                (Year - 1));
+			try
+			{
+				//Update the budget status
+				BudgetRow.BeginEdit();
+				BudgetRow.BudgetStatus = false;
+				BudgetRow.EndEdit();
+				
+				string BudgetType = BudgetRow.BudgetTypeCode;
+				
+				bool ValidBudgetType = true;
+				switch (BudgetType)
+				{
+					case "Adhoc":
+					case "Inf.Base":
+						for (int i = 1; i < CurrentPeriod; i++)
+						{
+							//Set budget period
+							decimal ActualAmount = TRemote.MFinance.Budget.WebConnectors.GetActual(FLedgerNumber, lv_glm_sequence_last_year_i, lv_glm_sequence_this_year_i, i, NumAccPeriods, Year, (Year - 1), false, MFinanceConstants.CURRENCY_BASE);
+							SetBudgetPeriod(ABudgetSeq, i, ActualAmount);
+						}	
+						
+						for (int j = CurrentPeriod; j <= MFinanceConstants.MAX_PERIODS; j++)
+						{
+							if (AForecastType == MFinanceConstants.FORECAST_TYPE_BUDGET)
+							{
+								decimal BudgetAmount = Math.Round(TRemote.MFinance.Budget.WebConnectors.GetBudget(lv_glm_sequence_this_year_i, -1, j, NumAccPeriods, false, MFinanceConstants.CURRENCY_BASE));
+								SetBudgetPeriod(ABudgetSeq, j, BudgetAmount);
+							}
+						}
+						
+						break;
+	
+					case "Same":  //because this case has no code it will fall through to the next case until it finds code.
+					case "Split":
+						
+						break;
+	
+					case "Inf. n":
+						
+						break;
+	
+					default:
+						ValidBudgetType = false;						
+						break;
+				}
+				
+				if (!ValidBudgetType)
+				{
+					throw new InvalidOperationException(String.Format("Invalid budget type of: {0} for Budget Seq.: {1}",
+					                                   					BudgetRow.BudgetTypeCode,
+					                                   					BudgetRow.BudgetSequence));
+				}
+			}
+			catch (Exception)
+			{
+				
+				throw;
+			}
+			
+			MessageBox.Show("lv_glm_sequence_this_year_i: " + lv_glm_sequence_this_year_i.ToString());
+			MessageBox.Show("lv_glm_sequence_last_year_i: " + lv_glm_sequence_last_year_i.ToString());
         }
         
-        private int GetGLMSequence(int ALedgerNumber, string AAccountCode, string CostCentreCode, int Year)
+        /// <summary>
+        /// Description: set the budget of a period.
+        /// </summary>
+        /// <param name="ABudgetSequence"></param>
+        /// <param name="AFieldName"></param>
+        /// <param name="APeriodNumber"></param>
+        /// <param name="ABudgetAmount"></param>
+        /// <returns></returns>
+        private decimal SetBudgetPeriod(int ABudgetSequence, int APeriodNumber, decimal ABudgetAmount)
         {
+        	decimal retVal = 0;
         	
+        	ABudgetPeriodTable BudgetPeriodTable = FMainDS.ABudgetPeriod;
+        	ABudgetPeriodRow BudgetPeriodRow = (ABudgetPeriodRow)BudgetPeriodTable.Rows.Find(new object[] {ABudgetSequence, APeriodNumber});
+        	
+        	if (BudgetPeriodRow != null)
+        	{
+        		BudgetPeriodRow.BudgetBase = ABudgetAmount;
+        		
+        		retVal = ABudgetAmount;
+        	}
+        		
+        	return retVal;
         }
+
         
-        
-        
-		//This flag is needed to stop the event occuring twice for each
+
+        //This flag is needed to stop the event occuring twice for each
 		//change of the option
         private bool AllBudgetsWasLastSelected = false;
         private void NewBudgetScope(Object sender, EventArgs e)
