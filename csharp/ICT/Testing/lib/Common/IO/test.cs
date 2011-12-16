@@ -46,6 +46,7 @@ namespace Ict.Common.IO.Testing
         {
             new TLogging("test.log");
             new TAppSettingsManager("../../etc/TestClient.config");
+            TLogging.DebugLevel = TAppSettingsManager.GetInt16("Client.DebugLevel", 0);
 
             PathToTestData = "../../csharp/ICT/Testing/lib/Common/IO/TestData/".Replace("/", System.IO.Path.DirectorySeparatorChar.ToString());
         }
