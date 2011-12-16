@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-15 22:46+0100\n"
+"POT-Creation-Date: 2011-12-16 07:49+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -6464,16 +6464,13 @@ msgid ""
 "Please select at least one special type, to avoid listing the whole database!"
 msgstr ""
 
-msgid "Contactor::"
-msgstr ""
-
 msgid "Contact:"
 msgstr ""
 
-msgid "Date From::"
+msgid "Date From:"
 msgstr ""
 
-msgid "Date To::"
+msgid "Date To:"
 msgstr ""
 
 msgid "Report Range"
@@ -6684,7 +6681,7 @@ msgstr ""
 msgid "Use Expiry Dates"
 msgstr ""
 
-msgid "Expires between::"
+msgid "Expires between:"
 msgstr ""
 
 msgid "and:"
@@ -6879,10 +6876,10 @@ msgstr ""
 msgid "Destination file"
 msgstr ""
 
-msgid "Content of Column::"
+msgid "Content of Column:"
 msgstr ""
 
-msgid "Width of Column::"
+msgid "Width of Column:"
 msgstr ""
 
 msgid "cm:"

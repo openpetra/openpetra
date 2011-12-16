@@ -48,7 +48,7 @@ RootNode:
             OnChange: UseDatesChanged
             Width: 300
         dtpFromDate:
-            Label: Expires between:
+            Label: Expires between
         dtpToDate:
             Label: and
     ReportParameters:{ColumnFunction=TPartnerColumnFunction}
