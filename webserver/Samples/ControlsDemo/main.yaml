@@ -28,7 +28,7 @@ RootNode:
             Buttons: [btnConfirm]
         txtEmail: {vtype=email}
         txtMyText: {Multiline=true}
-        txtMyTextDigitsOnly: {regex="[0-9]+"}
+        txtMyTextDigitsOnly: {regex="^[0-9]+$"}
         rgrGender:
             OptionalValues: [male, female]
         rgrCountry:
