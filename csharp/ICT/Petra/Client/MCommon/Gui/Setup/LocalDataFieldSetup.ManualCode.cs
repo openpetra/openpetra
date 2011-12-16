@@ -30,6 +30,7 @@ using GNU.Gettext;
 using Ict.Common.Verification;
 using Ict.Common;
 using Ict.Common.IO;
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
@@ -101,6 +102,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
 	
     public partial class TFrmLocalDataFieldSetup
     {
+    	// This is the extra dataset that we need that gives us the UsedBy information
 	    private class FExtraDS
 	    {
 	        public static PDataLabelUseTable PDataLabelUse;
@@ -113,23 +115,27 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
     		Application,
     		Personnel
     	}
-    	
     	private Context CurrentContext;
     	
+    	private int UsedByColumnID = -1;
+    	
     	/// <summary>
-    	/// Data table used by the list box
+    	/// This is the simple two column data table used by the list box.
+    	/// The row content (and column headings) depend on our launch context
     	/// </summary>
     	public DataTable DTUsedBy = new DataTable();
         
+    	// This is the main area where we set up to use the additional information from the extra table
     	private void InitializeManualCode()
         {
+    		// Get our screenClassName and initialise the list box column headings
     		string ScreenName = this.GetType().Name;
         	string Col1 = "Used By";
         	string Col2 = String.Empty;
         	if (String.Compare(ScreenName, "TFrmLocalPartnerDataFieldSetup", true) == 0)
         	{
         		CurrentContext = Context.Partner;
-	        	Col2 = "Partner Class";
+	        	Col2 = "PartnerClass";
         	}
         	else if (String.Compare(ScreenName, "TFrmLocalApplicationDataFieldSetup", true) == 0)
         	{
@@ -142,57 +148,103 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
 	        	Col2 = "Personnel";
 	        	clbUsedBy.Visible = false;
         	}
+        	
+        	// Now we can initialise our little data table that backs the list view
         	DTUsedBy.Columns.Add(Col1).DataType = Type.GetType("System.Boolean");
         	DTUsedBy.Columns.Add(Col2).DataType = Type.GetType("System.String");
         	
+        	// Add a 'Used By' column to our main dataset
+        	FMainDS.PDataLabel.Columns.Add("UsedByInit", typeof(String));
+        	FMainDS.PDataLabel.Columns.Add("UsedBy", typeof(String));
+        	UsedByColumnID = FMainDS.PDataLabel.Columns.Count - 1;
+			
+			// Load the Extra Data from DataLabelUse table
+			Type DataTableType;
+			FExtraDS.PDataLabelUse = new PDataLabelUseTable();
+			DataTable CacheDT = TDataCache.GetCacheableDataTableFromCache("DataLabelUseList", String.Empty, null, out DataTableType);
+			FExtraDS.PDataLabelUse.Merge(CacheDT);
+        	
+			// Take each row of our main dataset and populate the new column with relevant data
+			//   from the DataLabelUse table
+			foreach (PDataLabelRow labelRow in FMainDS.PDataLabel.Rows)
+			{
+				string usedBy = String.Empty;
+				int key = labelRow.Key;
+				DataRow[] rows = FExtraDS.PDataLabelUse.Select("p_data_label_key_i=" + key.ToString());
+				foreach(PDataLabelUseRow useRow in rows)
+				{
+					if (usedBy != String.Empty) usedBy += ",";
+					usedBy += useRow.Use;
+				}
+				
+				// Make 2 new colums:  Initially they hold the same values, but if we make a change we modify the second one.
+				labelRow[UsedByColumnID - 1] = usedBy;	// since we added this column manually, it does not have a handy property
+				labelRow[UsedByColumnID] = usedBy;	// since we added this column manually, it does not have a handy property
+			}
+			// So now our main data set has everything we need
+			// But the grid doesn't know about our new column yet
+			
         	// Set the form title and list box content depending on our context
-        	DataView grdDataView = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView;
         	if (CurrentContext == Context.Partner)
         	{
         		this.Text = "Maintain Local Partner Data Fields";
-	        	AddRowToUsedByList(DTUsedBy, "Person");
-	        	AddRowToUsedByList(DTUsedBy, "Family");
-	        	AddRowToUsedByList(DTUsedBy, "Church");
-	        	AddRowToUsedByList(DTUsedBy, "Organisation");
-	        	AddRowToUsedByList(DTUsedBy, "Bank");
-	        	AddRowToUsedByList(DTUsedBy, "Unit");
-	        	AddRowToUsedByList(DTUsedBy, "Venue");
+	        	AddRowToUsedByList("Person");
+	        	AddRowToUsedByList("Family");
+	        	AddRowToUsedByList("Church");
+	        	AddRowToUsedByList("Organisation");
+	        	AddRowToUsedByList("Bank");
+	        	AddRowToUsedByList("Unit");
+	        	AddRowToUsedByList("Venue");
         	}
         	else if (CurrentContext == Context.Application)
         	{
         		this.Text = "Maintain Local Application Data Fields";
-	        	AddRowToUsedByList(DTUsedBy, "Long Term");
-	        	AddRowToUsedByList(DTUsedBy, "Short Term");
+	        	AddRowToUsedByList("Long Term");
+	        	AddRowToUsedByList("Short Term");
         	}
         	else if (CurrentContext == Context.Personnel)
         	{
         		this.Text = "Maintain Local Personnel Data Fields";
-	        	AddRowToUsedByList(DTUsedBy, "Personnel");
-	        	grdDataView.RowFilter = "";
+	        	AddRowToUsedByList("Personnel");
         	}
         	
-        	clbUsedBy.AddCheckBoxColumn(Col1, DTUsedBy.Columns[0]);
-        	clbUsedBy.AddTextColumn(Col2, DTUsedBy.Columns[1]);
+        	clbUsedBy.AddCheckBoxColumn(Col1, DTUsedBy.Columns[0], 60, false);
+        	clbUsedBy.AddTextColumn(Col2, DTUsedBy.Columns[1], 90);
         	clbUsedBy.DataBindGrid(DTUsedBy, Col2, Col1, Col2, Col2, false, false, false);
-        	clbUsedBy.Columns[0].Width = 60;
-        	clbUsedBy.Columns[1].Width = 90;
         	
-        	tableLayoutPanel3.SetRow(txtDetailNumDecimalPlaces, 0);
-        	tableLayoutPanel3.SetRow(cmbDetailCurrencyCode, 0);
-        	tableLayoutPanel3.SetRow(cmbDetailLookupCategoryCode, 0);
-        	
+			// Set up the label control that we will use to indicate the current sub-type of data
+			// We need to right align the text so it looks nice when we change it
+        	lblDataSubType.AutoSize = false;
+			lblDataSubType.Left = 0;
+			lblDataSubType.Width = 115;		// 5 less than the column width
+			lblDataSubType.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			
+        	// Now we have to deal with the form controls that depend on the selction of DataType
+        	// and we only want one visible at a time - so hide these three
+        	pnlCurrencyCode.Visible = false;
+        	pnlCategoryCode.Visible = false;
         	txtDetailNumDecimalPlaces.Visible = false;
-        	cmbDetailCurrencyCode.Visible = false;
-        	cmbDetailLookupCategoryCode.Visible = false;
-        }
+        	
+        	// We need to capture the starting to save event
+        	FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(FPetraUtilsObject_DataSavingStarted);
+    	}
         
-        private void AddRowToUsedByList(DataTable t, string item)
+    	// Simple helper that adds a string item as a row in our UsedBy list
+        private void AddRowToUsedByList(string item)
         {
-        	DataRow dr = t.NewRow();
+        	DataRow dr = DTUsedBy.NewRow();
         	dr[0] = false;
         	dr[1] = item;
-        	t.Rows.Add(dr);
+        	DTUsedBy.Rows.Add(dr);
         }
+        
+        private void RunOnceOnActivationManual()
+        {
+        	// This is the point at which we can add our additional column to the details grid
+        	grdDetails.AddTextColumn("Used By", FMainDS.PDataLabel.Columns["UsedBy"]);
+			DataView myDataView = FMainDS.PDataLabel.DefaultView;
+			myDataView.AllowNew = false;
+			grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);		}
 
         private void NewRowManual(ref PDataLabelRow ARow)
         {
@@ -208,6 +260,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             ARow.CharLength = 24;
             ARow.NumDecimalPlaces = 0;
             ARow.CurrencyCode = (cmbDetailCurrencyCode.SelectedIndex <= 1) ? "USD" : cmbDetailCurrencyCode.Text;
+            ARow[UsedByColumnID] = "";
         }
 
         private void NewRecord(Object sender, EventArgs e)
@@ -252,6 +305,12 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         		// Use char
         		cmbDetailDataType.SelectedIndex = 0;
         	}
+        	
+        	// Set the checkboxes in the UsedBy list
+			DTUsedBy.DefaultView.AllowEdit = true;
+        	// We don't have a nice typed property for our manually added column - but we know it will be the last one
+			string stringList = ARow[UsedByColumnID].ToString();
+        	clbUsedBy.SetCheckedStringList(stringList);
         }
 
     	private void GetDetailDataFromControlsManual(PDataLabelRow ARow)
@@ -283,6 +342,128 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
     				ARow.DataType = "char";
     				break;
     		}
+    		
+    		string stringList = clbUsedBy.GetCheckedStringList();
+			ARow[UsedByColumnID] = stringList;
+    	}
+
+    	void FPetraUtilsObject_DataSavingStarted(object Sender, EventArgs e)
+    	{
+    		// Ensure we get the current row's information
+    		if (FPreviouslySelectedDetailRow != null)
+    		{
+	    		string stringList = clbUsedBy.GetCheckedStringList();
+	    		FPreviouslySelectedDetailRow[UsedByColumnID] = stringList;
+    		}
+    		
+    		// Now we need to save the PDataLabelUse table info using our data from our UsedBy column
+    		// Go round all the rows, seeing which rows have a new UsedBy value
+    		foreach(PDataLabelRow labelRow in FMainDS.PDataLabel.Rows)
+    		{
+    			if (labelRow[UsedByColumnID].ToString() != labelRow[UsedByColumnID - 1].ToString())
+    			{
+    				// This row's UsedBy column has been edited
+    				// Delete the old rows that applied to this key
+					int key = labelRow.Key;
+		    		DataRow[] Userows = FExtraDS.PDataLabelUse.Select("p_data_label_key_i=" + key.ToString());
+		    		foreach(DataRow r in Userows)
+		    		{
+		    			r.Delete();
+		    		}
+		    		
+		    		// Create new rows and add them
+		    		string usedByList = labelRow[UsedByColumnID].ToString();
+		    		string[] uses = usedByList.Split(',');
+		    		int nIndex = 1;
+		    		foreach(string use in uses)
+		    		{
+			    		PDataLabelUseRow newRow = FExtraDS.PDataLabelUse.NewRowTyped();
+			    		newRow.DataLabelKey = key;
+			    		newRow.Use = use;
+			    		newRow.Idx1 = nIndex++;
+			    		FExtraDS.PDataLabelUse.Rows.Add(newRow);
+		    		}
+    			}
+    		}
+    		Ict.Common.Data.TTypedDataTable SubmitDT = FExtraDS.PDataLabelUse.GetChangesTyped();
+            if (SubmitDT == null) return;		// nothing to save
+            
+            // Submit changes to the PETRAServer for the DataLabelUse table
+            // This code is basically lifted from a typical auto-generated equivalent
+            // TODO: If the standard code changes because TODO's get done, we will need to change this manual code
+            TSubmitChangesResult SubmissionResult;
+            TVerificationResultCollection VerificationResult;
+            try
+            {
+                SubmissionResult = TDataCache.SaveChangedCacheableDataTableToPetraServer("DataLabelUseList", ref SubmitDT, out VerificationResult);
+            }
+            catch (System.Net.Sockets.SocketException)
+            {
+                MessageBox.Show("The PETRA Server cannot be reached! Data cannot be saved!",
+                    "No Server response",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Stop);
+                return;
+            }
+            catch (EDBConcurrencyException)
+            {
+                MessageBox.Show("The 'UsedBy' part of the data could not be saved! There has been a conflict with another user's data entry.",
+                    "Cached Table Data Conflict",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Stop);
+                return;
+            }
+            catch (Exception exp)
+            {
+                TLogging.Log(
+                    "An error occured while trying to connect to the PETRA Server!" + Environment.NewLine + exp.ToString(),
+                    TLoggingType.ToLogfile);
+                MessageBox.Show(
+                    "An error occured while trying to connect to the PETRA Server!" + Environment.NewLine +
+                    "For details see the log file: " + TLogging.GetLogFileName(),
+                    "Server connection error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Stop);
+
+                return;
+            }
+
+            switch (SubmissionResult)
+            {
+                case TSubmitChangesResult.scrOK:
+
+                    // Call AcceptChanges to get rid now of any deleted columns before we Merge with the result from the Server
+                    FExtraDS.PDataLabelUse.AcceptChanges();
+
+                    // Merge back with data from the Server (eg. for getting Sequence values)
+                    FExtraDS.PDataLabelUse.Merge(SubmitDT, false);
+
+                    // need to accept the new modification ID
+                    FExtraDS.PDataLabelUse.AcceptChanges();
+
+                    return;
+
+                case TSubmitChangesResult.scrNothingToBeSaved:
+
+                    return;
+
+                case TSubmitChangesResult.scrError:
+
+	                MessageBox.Show("The 'UsedBy' part of the data could not be saved! There has been an error while making changes to the table.",
+	                    "Submit Changes to Table Error",
+	                    MessageBoxButtons.OK,
+	                    MessageBoxIcon.Stop);
+                    break;
+
+                case TSubmitChangesResult.scrInfoNeeded:
+
+	                MessageBox.Show("The 'UsedBy' part of the data could not be saved! Insufficient information was provided when making changes to the table.",
+	                    "Submit Changes to Table Error",
+	                    MessageBoxButtons.OK,
+	                    MessageBoxIcon.Stop);
+                    break;
+            }
+
     	}
     	
         /// <summary>
@@ -294,37 +475,36 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         {
         	if (cmbDetailDataType.SelectedIndex < 0 || cmbDetailDataType.SelectedIndex > 7) return;
         	
-			txtDetailCharLength.Visible = false;
+        	// Start by hiding everything
+        	txtDetailCharLength.Visible = false;
 			txtDetailNumDecimalPlaces.Visible = false;
-			cmbDetailCurrencyCode.Visible = false;
-			cmbDetailLookupCategoryCode.Visible = false;
+			pnlCurrencyCode.Visible = false;
+			pnlCategoryCode.Visible = false;
 			
-			// We cannot hide the labels because this changes the layout positions if everything is hidden!
-			// So we alter the text of the Charlength label instead
-			Label lblExtraInfo = lblDetailCharLength;
+			// Show the relevant panel or text box and modify the label text
 	       	switch (cmbDetailDataType.SelectedIndex)
         	{
         		case 0:		// Text
         			txtDetailCharLength.Visible = true;
-        			lblExtraInfo.Text = "Length:";
+        			lblDataSubType.Text = "Maximum length:";
         			break;
         		case 1:		// Numeric
         			txtDetailNumDecimalPlaces.Visible = true;
-        			lblExtraInfo.Text = "Decimal places:";
+        			lblDataSubType.Text = "Decimal places:";
         			break;
         		case 2:		// Currency
-        			cmbDetailCurrencyCode.Visible = true;
-        			lblExtraInfo.Text = "Currency code:";
+        			pnlCurrencyCode.Visible = true;
+        			lblDataSubType.Text = "Currency code:";
         			break;
         		case 3:		// Yes/No
         		case 4:		// Date
         		case 5:		// Time
         		case 7:		// PartnerKey
-        			lblExtraInfo.Text = String.Empty;
+        			lblDataSubType.Text = String.Empty;
         			break;
         		case 6:		// OptionList
-        			cmbDetailLookupCategoryCode.Visible = true;
-        			lblExtraInfo.Text = "Option list name:";
+					pnlCategoryCode.Visible = true;
+        			lblDataSubType.Text = "Option list name:";
         			break;
         	}
         }
