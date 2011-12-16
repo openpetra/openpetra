@@ -47,19 +47,10 @@ using Ict.Testing.NUnitPetraServer;
 namespace Ict.Testing.NUnitForms
 {
     /// <summary>
-    /// The idea of CommonNUnitFunctions is that you can replace the test inheritace of
-    /// NUnitFormTest by NUnitFormTest. So you will get a set of small helpfull routines
-    /// to make testing something easier.
+    /// This gives you a set of small helpfull routines to make testing easier.
     /// </summary>
-    public class CommonNUnitFunctions : NUnitFormTest
+    public class CommonNUnitFormFunctions : NUnitFormTest
     {
-        /// <summary>
-        /// Empty Constructor ...
-        /// </summary>
-        public CommonNUnitFunctions()
-        {
-        }
-
         /// <summary>
         /// This "string" can be used as an public property to read in the
         /// Title of the last Message box.
@@ -71,16 +62,6 @@ namespace Ict.Testing.NUnitForms
         /// Message of the last Message box.
         /// </summary>
         public String lastMessageText;
-
-        /// <summary>
-        /// This is the central path of the complete tree
-        /// </summary>
-        public string rootPath;
-
-        /// <summary>
-        /// Actually this setting shall be done manually.
-        /// </summary>
-        private string pathAndFileNameToNantExe = "nant";
 
         /// <summary>
         /// The delegate to handle the message box is installed.
@@ -105,6 +86,22 @@ namespace Ict.Testing.NUnitForms
                 tester.SendCommand(cmd);
             };
         }
+    }
+
+    /// <summary>
+    /// This gives you a set of small helpfull routines to make testing easier.
+    /// </summary>
+    public class CommonNUnitFunctions
+    {
+        /// <summary>
+        /// This is the central path of the complete tree
+        /// </summary>
+        public string rootPath;
+
+        /// <summary>
+        /// Actually this setting shall be done manually.
+        /// </summary>
+        private string pathAndFileNameToNantExe = "nant";
 
         /// <summary>
         /// Routine to initialize the connection to TestServer.config and TestServer.log
@@ -216,7 +213,6 @@ namespace Ict.Testing.NUnitForms
     /// Actually the common date format looks like "dd-MMM-yyyy" and so we are dealing
     /// with strings like "This Date is valid from 17-JAN-2009 to 21-FEB-2010".
     /// </summary>
-
     public class DateConverter
     {
         MatchCollection matchCollection;
