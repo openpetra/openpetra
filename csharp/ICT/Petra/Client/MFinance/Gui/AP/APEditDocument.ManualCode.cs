@@ -173,19 +173,22 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
     		
             // Create Text description of Anal Attribs for each DetailRow..
             
-            foreach (AccountsPayableTDSAApDocumentDetailRow DetailRow in FMainDS.AApDocumentDetail.Rows)
+            if (FMainDS.AApDocumentDetail != null) // When the form is new, this can be null.
             {
-            	string strAnalAttr = "";
-            	FMainDS.AApAnalAttrib.DefaultView.RowFilter = 
-            		String.Format("{0}={1}", AApAnalAttribTable.GetDetailNumberDBName(), DetailRow.DetailNumber);
-            	foreach (DataRowView rv in FMainDS.AApAnalAttrib.DefaultView)
-            	{
-            		AApAnalAttribRow Row = (AApAnalAttribRow)rv.Row;
-            		if (strAnalAttr.Length > 0)
-            			strAnalAttr += ", ";
-            		strAnalAttr += (Row.AnalysisTypeCode + "=" + Row.AnalysisAttributeValue);
-            	}
-            	DetailRow.AnalAttr = strAnalAttr;
+                foreach (AccountsPayableTDSAApDocumentDetailRow DetailRow in FMainDS.AApDocumentDetail.Rows)
+                {
+                	string strAnalAttr = "";
+                	FMainDS.AApAnalAttrib.DefaultView.RowFilter = 
+                		String.Format("{0}={1}", AApAnalAttribTable.GetDetailNumberDBName(), DetailRow.DetailNumber);
+                	foreach (DataRowView rv in FMainDS.AApAnalAttrib.DefaultView)
+                	{
+                		AApAnalAttribRow Row = (AApAnalAttribRow)rv.Row;
+                		if (strAnalAttr.Length > 0)
+                			strAnalAttr += ", ";
+                		strAnalAttr += (Row.AnalysisTypeCode + "=" + Row.AnalysisAttributeValue);
+                	}
+                	DetailRow.AnalAttr = strAnalAttr;
+                }
             }
             
     		EnableControls();
@@ -310,7 +313,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// initialise some comboboxes
         private void BeforeShowDetailsManual(AApDocumentDetailRow ARow)
         {
-    		grdDetails.Columns[1].Width = grdDetails.Width - 380;  // It doesn't really work having these here -
+    		grdDetails.Columns[1].Width = pnlDetailGrid.Width - 380;  // It doesn't really work having these here -
     		grdDetails.Columns[0].Width = 90;                      // there's something else that overrides these settings.
     		grdDetails.Columns[2].Width = 200;
     		grdDetails.Columns[3].Width = 90;

@@ -478,7 +478,8 @@ namespace Ict.Common.Data
                                 // find the same row in the other dataset
                                 foreach (DataRow UpdatedRow in AUpdatedTable.Rows)
                                 {
-                                    if (Convert.ToInt64(UpdatedRow[col.ColumnName, DataRowVersion.Original]) ==
+                                    if (UpdatedRow.RowState == DataRowState.Modified &&
+                                        Convert.ToInt64(UpdatedRow[col.ColumnName, DataRowVersion.Original]) ==
                                         Convert.ToInt64(row[col]))
                                     {
                                         // update the sequence value
