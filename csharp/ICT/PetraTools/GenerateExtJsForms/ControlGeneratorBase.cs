@@ -187,6 +187,11 @@ namespace Ict.Tools.CodeGeneration.ExtJs
                 snippetControl.SetCodelet("MINLENGTH", ACtrl.GetAttribute("minLength"));
             }
 
+            if (ACtrl.HasAttribute("regex"))
+            {
+                snippetControl.SetCodelet("REGEX", ACtrl.GetAttribute("regex"));
+            }
+
             ((TExtJsFormsWriter)writer).AddResourceString(snippetControl, "LABEL", ACtrl, ACtrl.Label);
             ((TExtJsFormsWriter)writer).AddResourceString(snippetControl, "HELP", ACtrl, ACtrl.GetAttribute("Help"));
 

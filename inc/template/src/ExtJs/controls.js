@@ -56,6 +56,9 @@
 {#IFDEF INPUTTYPE}
     inputType: '{#INPUTTYPE}',
 {#ENDIF INPUTTYPE}
+{#IFDEF REGEX}
+    regex: new RegExp("{#REGEX}"),
+{#ENDIF REGEX}
 {#IFDEF HIDELABEL}
     hideLabel: {#HIDELABEL},
 {#ENDIF HIDELABEL}
