@@ -226,7 +226,7 @@
 {##COMBOBOXDEFINITION}
 Ext.create('Ext.form.field.ComboBox',
   {
-    hiddenName:'{#ITEMNAME}',
+    name:'{#ITEMNAME}',
     store: new Ext.data.ArrayStore({
         fields: ['value', 'display'],
         data : {#OPTIONALVALUESARRAY}
