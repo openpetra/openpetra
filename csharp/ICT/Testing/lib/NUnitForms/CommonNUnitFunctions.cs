@@ -195,8 +195,8 @@ namespace Ict.Testing.NUnitForms
             }
             else
             {
-                NantProcess.StartInfo.FileName = pathAndFileNameToNantExe;
-                NantProcess.StartInfo.Arguments = argument + " -logfile:nant.txt";
+                NantProcess.StartInfo.FileName = "sh";
+                NantProcess.StartInfo.Arguments = "-c " + pathAndFileNameToNantExe + " " + argument + " -logfile:nant.txt";
             }
 
             NantProcess.StartInfo.WorkingDirectory = rootPath;
