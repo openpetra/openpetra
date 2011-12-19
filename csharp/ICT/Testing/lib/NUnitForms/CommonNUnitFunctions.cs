@@ -186,6 +186,8 @@ namespace Ict.Testing.NUnitForms
         {
             Process NantProcess = new Process();
 
+            pathAndFileNameToNantExe = TAppSettingsManager.GetValue("NAnt
+            
             NantProcess.EnableRaisingEvents = false;
 
             if (Ict.Common.Utilities.DetermineExecutingOS() == TExecutingOSEnum.eosLinux)
@@ -195,7 +197,7 @@ namespace Ict.Testing.NUnitForms
             }
             else
             {
-                NantProcess.StartInfo.FileName = "sh";
+                NantProcess.StartInfo.FileName = "/bin/sh";
                 NantProcess.StartInfo.Arguments = "-c " + pathAndFileNameToNantExe + " " + argument + " -logfile:nant.txt";
             }
 
