@@ -52,7 +52,15 @@ namespace {#NAMESPACE}
       
       FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentForm, this, stbMain);
 
+{#IFDEF CALCULATEFROMMETHOD}
+      FPetraUtilsObject.FCalculateFromMethod = "{#CALCULATEFROMMETHOD}";
+{#ENDIF CALCULATEFROMMETHOD}
+{#IFDEF ISOLATIONLEVEL}
+      FPetraUtilsObject.FIsolationLevel = "{#ISOLATIONLEVEL}";
+{#ENDIF ISOLATIONLEVEL}
+{#IFDEF XMLFILES}
       FPetraUtilsObject.FXMLFiles = "{#XMLFILES}";
+{#ENDIF XMLFILES}
       FPetraUtilsObject.FReportName = "{#REPORTNAME}";
       FPetraUtilsObject.FCurrentReport = "{#CURRENTREPORT}";
       FPetraUtilsObject.FSettingsDirectory = "{#REPORTSETTINGSDIRECTORY}";

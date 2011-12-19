@@ -68,7 +68,13 @@ namespace Ict.Petra.Client.MReporting.Gui
         protected string FCurrentSettingsName;
 
         /// <summary>the CSV list of file names of xml files needed for this report</summary>
-        public string FXMLFiles;
+        public string FXMLFiles = string.Empty;
+
+        /// <summary>the namespace, class name and method of the method that calculates the report. This is an alternative to the XMLFiles</summary>
+        public string FCalculateFromMethod = string.Empty;
+
+        /// <summary>you can specify the isolation level for the database transaction for the report. eg. serializable for extracts, repeatableread for finance, etc</summary>
+        public string FIsolationLevel = string.Empty;
 
         /// <summary>the name of the report, as it is used in the xml file</summary>
         public string FCurrentReport;
@@ -793,7 +799,22 @@ namespace Ict.Petra.Client.MReporting.Gui
         public virtual void ReadControls(TReportActionEnum AReportAction)
         {
             FCalculator.ResetParameters();
-            FCalculator.AddParameter("xmlfiles", FXMLFiles);
+
+            if (FXMLFiles.Length > 0)
+            {
+                FCalculator.AddParameter("xmlfiles", FXMLFiles);
+            }
+
+            if (FCalculateFromMethod.Length > 0)
+            {
+                FCalculator.AddParameter("calculateFromMethod", FCalculateFromMethod);
+            }
+
+            if (FIsolationLevel.Length > 0)
+            {
+                FCalculator.AddParameter("IsolationLevel", FIsolationLevel);
+            }
+
             FCalculator.AddParameter("currentReport", FCurrentReport);
 
             ((IFrmReporting) this.FTheForm).ReadControls(FCalculator, AReportAction);
