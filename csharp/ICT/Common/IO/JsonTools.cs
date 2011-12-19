@@ -105,10 +105,10 @@ namespace Ict.Common.IO
 
             JsonObject list = (JsonObject)JsonConvert.Import(AJsonData);
 
-            foreach (DictionaryEntry entry in list)
+            foreach (JsonMember entry in list)
             {
                 string text = entry.Value.ToString().Replace("<", "&lt;").Replace(">", "&gt;");
-                ATemplate = ATemplate.Replace("#" + entry.Key.ToString().ToUpper(), text);
+                ATemplate = ATemplate.Replace("#" + entry.Name.ToString().ToUpper(), text);
             }
 
             return ATemplate;
