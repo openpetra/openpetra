@@ -186,8 +186,6 @@ namespace Ict.Testing.NUnitForms
         {
             Process NantProcess = new Process();
 
-            pathAndFileNameToNantExe = TAppSettingsManager.GetValue("NAnt
-            
             NantProcess.EnableRaisingEvents = false;
 
             if (Ict.Common.Utilities.DetermineExecutingOS() == TExecutingOSEnum.eosLinux)
