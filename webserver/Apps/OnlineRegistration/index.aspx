@@ -76,7 +76,7 @@ private string WithValidation()
     
     <script type="text/javascript" src="../../js/ext-all-debug.js"></script>
 
-    <script type="text/javascript" src="../../js/lang/ext-lang-<%Response.Write(FSelectedLanguage);%>.js"></script>
+    <script type="text/javascript" src="../../js/locale/ext-lang-<%Response.Write(FSelectedLanguage);%>.js"></script>
 
     <script type="text/javascript" src="gen/main.<%Response.Write(FSelectedCountry + "." + FSelectedRole);%>.js"></script>
     <script type="text/javascript" src="main.<%Response.Write(FSelectedCountry);%>-lang.js"></script>
