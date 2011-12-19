@@ -217,7 +217,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             }
             catch (TVerificationException)
             {
-                Assert.Pass("Exception was thrown");
+                // Exception was thrown, which is expected
+                // Assert.Pass will throw an exception NUnit.Framework.SuccessException and fail the test???
             }
             catch (Exception exception)
             {

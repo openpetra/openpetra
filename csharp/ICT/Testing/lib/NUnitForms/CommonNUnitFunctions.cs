@@ -187,8 +187,18 @@ namespace Ict.Testing.NUnitForms
             Process NantProcess = new Process();
 
             NantProcess.EnableRaisingEvents = false;
-            NantProcess.StartInfo.FileName = "cmd";
-            NantProcess.StartInfo.Arguments = "/c " + pathAndFileNameToNantExe + " " + argument + " -logfile:nant.txt";
+
+            if (Ict.Common.Utilities.DetermineExecutingOS() == TExecutingOSEnum.eosLinux)
+            {
+                NantProcess.StartInfo.FileName = "cmd";
+                NantProcess.StartInfo.Arguments = "/c " + pathAndFileNameToNantExe + " " + argument + " -logfile:nant.txt";
+            }
+            else
+            {
+                NantProcess.StartInfo.FileName = pathAndFileNameToNantExe;
+                NantProcess.StartInfo.Arguments = argument + " -logfile:nant.txt";
+            }
+
             NantProcess.StartInfo.WorkingDirectory = rootPath;
             NantProcess.StartInfo.UseShellExecute = true;
             NantProcess.EnableRaisingEvents = true;
