@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       matthiash
+//       matthiash, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -79,9 +79,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             string newName = Catalog.GetString("NEWVALUE");
             Int32 countNewDetail = 0;
 
-            if (FMainDS.AFreeformAnalysis.Rows.Find(new object[] { FTypeCode, newName, FLedgerNumber }) != null)
+            if (FMainDS.AFreeformAnalysis.Rows.Find(new object[] { FLedgerNumber, FTypeCode, newName }) != null)
             {
-                while (FMainDS.AFreeformAnalysis.Rows.Find(new object[] { FTypeCode, newName + countNewDetail.ToString(), FLedgerNumber }) != null)
+                while (FMainDS.AFreeformAnalysis.Rows.Find(new object[] { FLedgerNumber, FTypeCode, newName + countNewDetail.ToString() }) != null)
                 {
                     countNewDetail++;
                 }
