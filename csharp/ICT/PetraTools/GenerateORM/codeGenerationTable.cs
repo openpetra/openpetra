@@ -86,6 +86,33 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 TConstraint primKey = currentTable.GetPrimaryKey();
                 bool first = true;
                 string primaryKeyColumns = "";
+                int prevIndex = -1;
+
+                // the fields in the primary key should be used in the same order as in the table.
+                // otherwise this is causing confusion. eg. a_processed_fee
+                foreach (TTableField column in currentTable.grpTableField.List)
+                {
+                    int newIndex = -1;
+
+                    if (primKey.strThisFields.Contains(column.strName))
+                    {
+                        newIndex = primKey.strThisFields.IndexOf(column.strName);
+                    }
+                    else if (primKey.strThisFields.Contains(TTable.NiceFieldName(column)))
+                    {
+                        newIndex = primKey.strThisFields.IndexOf(TTable.NiceFieldName(column));
+                    }
+
+                    if (newIndex != -1)
+                    {
+                        if (newIndex < prevIndex)
+                        {
+                            throw new Exception("Please fix the order of the fields in the primary key of table " + currentTable.strName);
+                        }
+
+                        prevIndex = newIndex;
+                    }
+                }
 
                 // the fields in the primary key should be used in the same order as in the table.
                 // otherwise this is causing confusion. eg. a_processed_fee

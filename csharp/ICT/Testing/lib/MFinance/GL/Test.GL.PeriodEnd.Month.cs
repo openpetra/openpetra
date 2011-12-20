@@ -24,7 +24,8 @@
 using System;
 using System.Data.Odbc;
 using NUnit.Framework;
-using Ict.Testing.NUnitForms;
+using Ict.Testing.NUnitTools;
+using Ict.Testing.NUnitPetraServer;
 using Ict.Petra.Server.MFinance.GL;
 using Ict.Petra.Server.MFinance.Common;
 using Ict.Common.Verification;
@@ -52,7 +53,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
     /// </summary>
     [TestFixture]
     [Ignore("still fails and needs a review")]
-    public class TestGLPeriodicEndMonth : CommonNUnitFunctions
+    public class TestGLPeriodicEndMonth
     {
         private const int intLedgerNumber = 43;
 
@@ -131,7 +132,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_PEMM_04_UnpostedGifts()
         {
-            LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
+            CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
                 "test-sql\\gl-test-gift-batch-data.sql");
 
             TVerificationResultCollection verificationResult;
@@ -187,7 +188,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_SwitchToNextMonth()
         {
-            ResetDatabase();
+            CommonNUnitFunctions.ResetDatabase();
             TLedgerInfo ledgerInfo1;
             TLedgerInfo ledgerInfo2;
             int counter = 0;
@@ -226,8 +227,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [TestFixtureSetUp]
         public void Init()
         {
-            InitServerConnection();
-            ResetDatabase();
+            TPetraServerConnector.Connect();
+            CommonNUnitFunctions.ResetDatabase();
             System.Diagnostics.Debug.WriteLine("Init: " + this.ToString());
         }
 
@@ -237,7 +238,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [TestFixtureTearDown]
         public void TearDownTest()
         {
-            DisconnectServerConnection();
+            TPetraServerConnector.Disconnect();
             System.Diagnostics.Debug.WriteLine("TearDown: " + this.ToString());
         }
 
@@ -254,7 +255,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             if (batches.Rows.Count == 0)
             {
-                LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
+                CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
                     "test-sql\\gl-test-batch-data.sql");
             }
         }

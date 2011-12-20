@@ -26,6 +26,9 @@ using NUnit.Framework;
 using Ict.Testing.NUnitForms;
 using Ict.Common.DB;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Server;
+using Ict.Common.Remoting.Shared;
+using Ict.Petra.Server.App.Core;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.GL;
@@ -33,6 +36,8 @@ using Ict.Petra.Server.MFinance.Common;
 using Ict.Petra.Shared.MFinance;
 using Ict.Common;
 using NUnit.Extensions.Forms;
+using Ict.Testing.NUnitTools;
+using Ict.Testing.NUnitPetraServer;
 
 namespace Ict.Testing.Petra.Server.MFinance.GL
 {
@@ -40,7 +45,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
     /// TestCommonAccountingTool
     /// </summary>
     [TestFixture]
-    public class TestCommonAccountingTool : CommonNUnitFunctions
+    public class TestCommonAccountingTool
     {
         int LedgerNumber = 43;
 
@@ -131,13 +136,13 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             if (!AccountTestCasesAvailable)
             {
-                LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
+                CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
                     "test-sql\\gl-test-account-data.sql");
             }
 
             if (!CostCentreTestCasesAvailable)
             {
-                LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
+                CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
                     "test-sql\\gl-test-costcentre-data.sql");
             }
         }
@@ -178,12 +183,10 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             TGet_GLM_Info getGLM_InfoAfterStart = new TGet_GLM_Info(LedgerNumber, strAccountStart, strCostCentre);
             TGet_GLM_Info getGLM_InfoAfterEnd = new TGet_GLM_Info(LedgerNumber, strAccountEnd, strCostCentre);
-            TLogging.Log("before " + getGLM_InfoBeforeStart.YtdActual + " " + AmountInEUR);
-            TLogging.Log("diff " + (getGLM_InfoAfterStart.YtdActual - getGLM_InfoBeforeStart.YtdActual));
-            TLogging.Log(Math.Round(getGLM_InfoBeforeStart.YtdActual + AmountInEUR).ToString());
-            Assert.AreEqual(Math.Round(getGLM_InfoBeforeStart.YtdActual + AmountInEUR), Math.Round(getGLM_InfoAfterStart.YtdActual),
+
+            Assert.AreEqual(Math.Round(getGLM_InfoBeforeStart.YtdActual + AmountInEUR, 2), Math.Round(getGLM_InfoAfterStart.YtdActual, 2),
                 "Check if base currency has been accounted to " + strAccountStart);
-            Assert.AreEqual(Math.Round(getGLM_InfoBeforeEnd.YtdActual + AmountInEUR), Math.Round(getGLM_InfoAfterEnd.YtdActual),
+            Assert.AreEqual(Math.Round(getGLM_InfoBeforeEnd.YtdActual + AmountInEUR, 2), Math.Round(getGLM_InfoAfterEnd.YtdActual, 2),
                 "Check if base currency has been accounted to " + strAccountEnd);
 
             Assert.AreEqual(getGLM_InfoBeforeStart.YtdForeign + AmountInGBP, getGLM_InfoAfterStart.YtdForeign,
@@ -219,7 +222,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             }
             catch (TVerificationException)
             {
-                Assert.Pass("Exception was thrown");
+                // Exception was thrown, which is expected
+                // Assert.Pass will throw an exception NUnit.Framework.SuccessException and fail the test???
             }
             catch (Exception exception)
             {
@@ -231,12 +235,11 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         /// <summary>
         /// TestFixtureSetUp
         /// </summary>
-        [SetUp]
+        [TestFixtureSetUp]
         public void Init()
         {
-            InitServerConnection();
+            TPetraServerConnector.Connect();
             // ResetDatabase();
-            System.Diagnostics.Debug.WriteLine("Init: " + this.ToString());
         }
 
         /// <summary>
@@ -245,8 +248,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [TestFixtureTearDown]
         public void TearDownTest()
         {
-            DisconnectServerConnection();
-            System.Diagnostics.Debug.WriteLine("TearDownTest: " + this.ToString());
+            TPetraServerConnector.Disconnect();
         }
     }
 }
