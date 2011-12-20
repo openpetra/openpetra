@@ -296,8 +296,8 @@ namespace Ict.Petra.Server.MFinance.GL
                                     DataRow afrow = SetupDS.AFreeformAnalysis.Rows.Find(new Object[] { NewTransaction.LedgerNumber, type, val });
                                     DataRow anrow =
                                         SetupDS.AAnalysisAttribute.Rows.Find(new Object[] { NewTransaction.LedgerNumber,
-                                                                                            NewTransaction.AccountCode,
-                                                                                            type });
+                                                                                            type,
+                                                                                            NewTransaction.AccountCode });
 
                                     if ((atrow != null) && (afrow != null) && (anrow != null))
                                     {

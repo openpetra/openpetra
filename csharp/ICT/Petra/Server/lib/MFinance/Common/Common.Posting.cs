@@ -390,7 +390,7 @@ namespace Ict.Petra.Server.MFinance.Common
                                 else
                                 {
                                     AFreeformAnalysisRow afaRow = (AFreeformAnalysisRow)analysisDS.AFreeformAnalysis.Rows.Find(
-                                        new Object[] { attributeRow.AnalysisTypeCode, v, ALedgerNumber });
+                                        new Object[] { ALedgerNumber, attributeRow.AnalysisTypeCode, v });
 
                                     if (afaRow == null)
                                     {

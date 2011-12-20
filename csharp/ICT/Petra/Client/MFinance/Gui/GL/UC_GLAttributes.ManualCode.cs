@@ -306,8 +306,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     && (checkRow.LedgerNumber == FLedgerNumber))
                 {
                     AAnalysisAttributeRow attRow =
-                        (AAnalysisAttributeRow)FCacheDS.AAnalysisAttribute.Rows.Find(new Object[] { checkRow.LedgerNumber, AAccount,
-                                                                                                    checkRow.AnalysisTypeCode });
+                        (AAnalysisAttributeRow)FCacheDS.AAnalysisAttribute.Rows.Find(new Object[] { checkRow.LedgerNumber, checkRow.AnalysisTypeCode,
+                                                                                                    AAccount });
 
                     if (!checkRow.AccountCode.Equals(AAccount) || (attRow == null))
                     {
@@ -408,7 +408,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             try
             {
                 Object[] PrimaryKey = new Object[] {
-                    txtReadonlyAnalysisTypeCode.Text, v, FLedgerNumber
+                    FLedgerNumber, txtReadonlyAnalysisTypeCode.Text, v
                 };
                 afaRow = (AFreeformAnalysisRow)FCacheDS.AFreeformAnalysis.Rows.Find(PrimaryKey);
                 AccessOk = true;
