@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openpetraorg\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2011-04-29 13:27+0200\n"
-"PO-Revision-Date: 2011-05-24 20:25+0000\n"
+"POT-Creation-Date: 2011-06-06 13:26+0200\n"
+"PO-Revision-Date: 2011-06-14 22:07+0000\n"
 "Last-Translator: Joergenr <Unknown>\n"
 "Language-Team: Danish <da@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-28 07:21+0000\n"
-"X-Generator: Launchpad (build 13117)\n"
+"X-Launchpad-Export-Date: 2011-11-24 05:14+0000\n"
+"X-Generator: Launchpad (build 14336)\n"
 
 msgid "Caption"
 msgstr ""
@@ -168,11 +168,14 @@ msgid ""
 "Any data that has not been saved will be lost. We are sorry for any "
 "inconvenience caused."
 msgstr ""
+"Alle data, der ikke er blevet gemt vil gå tabt. Vi beklager ulejligheden."
 
 msgid ""
 "You may be able to continue working with OpenPetra, but we recommend closing "
 "OpenPetra and starting over again. We are sorry for any inconvenience caused."
 msgstr ""
+"Det kan være du er i stand til at fortsætte arbejdet med OpenPetra, men vi "
+"anbefaler at du lukker OpenPetra og starter forfra. Vi beklager ulejligheden."
 
 msgid "Choose 'OK' to close this error information. "
 msgstr "Vælg 'OK' for at lukke denne fejlinformation. "
@@ -235,9 +238,6 @@ msgstr "&Luk OpenPetra"
 
 msgid "&Report Error"
 msgstr "&Rapporter fejl"
-
-msgid "OpenPetra x.x.x.x Application Error"
-msgstr "OpenPetra x.x.x.x Applikationsfejl"
 
 msgid "Application Error"
 msgstr "Applikationsfejl"
@@ -331,8 +331,14 @@ msgstr "Database:"
 msgid "Remember the username"
 msgstr "Husk brugernavnet"
 
-msgid "Petra Login"
-msgstr "Petra Login"
+msgid "Initial Login: demo/demo or sysadmin/CHANGEME"
+msgstr ""
+
+msgid "Please change the passwords immediately!"
+msgstr "Skift venligst adgangskode med det samme!"
+
+msgid "OpenPetra Login"
+msgstr "OpenPetra login"
 
 msgid " O P E N P E T R A "
 msgstr " O P E N P E T R A "
@@ -536,7 +542,7 @@ msgid "Indicates if the language is an 'official' Congress Language."
 msgstr "Indikerer om sproget er et 'officielt' kongressprog."
 
 msgid "&New"
-msgstr ""
+msgstr "&Ny"
 
 msgid "&Delete"
 msgstr "&Slet"
@@ -602,7 +608,7 @@ msgid "Vali&d From:"
 msgstr "&Gyldig fra:"
 
 msgid "&Phone:"
-msgstr "&Telefon:"
+msgstr "Tele&fon:"
 
 msgid "&Location Type:"
 msgstr "&Stedtype:"
@@ -614,7 +620,7 @@ msgid "Co&untry:"
 msgstr "L&and"
 
 msgid "Po&st Code:"
-msgstr ""
+msgstr "Postn&ummer:"
 
 msgid "Cit&y/Town:"
 msgstr "B&y:"
@@ -623,7 +629,7 @@ msgid "Addr&3:"
 msgstr "Adresse&3:"
 
 msgid "Street-&2:"
-msgstr ""
+msgstr "Gade-&2:"
 
 msgid "Addr&1:"
 msgstr "Adresse&1:"
@@ -653,7 +659,7 @@ msgid "Locality"
 msgstr ""
 
 msgid "Fa&x:"
-msgstr "&Fax:"
+msgstr "Fa&x:"
 
 msgid "Fax No"
 msgstr "Fax nr."
@@ -668,13 +674,13 @@ msgid "Email"
 msgstr "Mail"
 
 msgid "Websi&te:"
-msgstr "Webs&ted:"
+msgstr "&Websted:"
 
 msgid "Web URL"
 msgstr "URL"
 
 msgid "Alte&rnate:"
-msgstr ""
+msgstr "Al&ternativ:"
 
 msgid "Alternate Phone No"
 msgstr ""
@@ -707,7 +713,7 @@ msgid "       Edi&t"
 msgstr "       Redi&ger"
 
 msgid "       &New"
-msgstr ""
+msgstr "       &Ny"
 
 msgid "List expand button"
 msgstr ""
@@ -989,7 +995,7 @@ msgid "Default C&ost Centre:"
 msgstr ""
 
 msgid "Default &Expense Account:"
-msgstr ""
+msgstr "Standard &udgiftskonto:"
 
 msgid "Account Information"
 msgstr "Kontooplysninger"
@@ -1041,13 +1047,13 @@ msgid "S&earch Supplier:"
 msgstr "S&øg efter leverandør:"
 
 msgid "Due &Today"
-msgstr "&Forfalder i dag"
+msgstr "Fo&rfalder i dag"
 
 msgid "&Overdue"
 msgstr "F&orfaldne"
 
 msgid "Due &Within Future"
-msgstr ""
+msgstr "Forfalder indenfor"
 
 msgid "Days"
 msgstr "Dage"
@@ -1104,7 +1110,7 @@ msgid "&New Supplier"
 msgstr "N&y leverandør"
 
 msgid "Create &Invoice"
-msgstr "Opret &faktura"
+msgstr "O&pret faktura"
 
 msgid "Create C&redit Note"
 msgstr "Opret &kreditnota"
@@ -1248,7 +1254,7 @@ msgid "Reprint &Cheque"
 msgstr "Genudskriv check"
 
 msgid "&New..."
-msgstr ""
+msgstr "&Ny..."
 
 msgid "&Action"
 msgstr "&Handling"
@@ -1423,10 +1429,10 @@ msgid "Detail or Summary"
 msgstr "Detalje eller resumé"
 
 msgid "Base Currency"
-msgstr ""
+msgstr "Basisvaluta"
 
 msgid "Original Transaction Currency"
-msgstr ""
+msgstr "Oprindelig transaktionsvaluta"
 
 msgid "Currency"
 msgstr "Valuta"
@@ -1532,7 +1538,7 @@ msgid "There was a problem creating the adjustment batch"
 msgstr ""
 
 msgid "Publication Code:"
-msgstr ""
+msgstr "Udgivelseskode:"
 
 msgid "Total Number Pages"
 msgstr "Samlet antal sider"
@@ -1595,7 +1601,7 @@ msgstr "Vælg skabelonen til gavekvitteringen"
 msgid "There are no posted gifts in the date range"
 msgstr ""
 
-msgid "Recurring Gift Batches"
+msgid "Select Batch to Add Reversal/Adjustment into?:"
 msgstr ""
 
 msgid "Valid Date Range:"
@@ -1604,23 +1610,62 @@ msgstr "Gyldig datointerval"
 msgid "Enter the Gift Batch Date to use:"
 msgstr ""
 
-msgid "From:"
-msgstr "Fra:"
+msgid "Comment 1 for Reversal:"
+msgstr ""
+
+msgid "for:"
+msgstr "til:"
+
+msgid "Comment 2 for Reversal:"
+msgstr ""
+
+msgid "Comment 3 for Reversal:"
+msgstr ""
 
 msgid "&OK"
 msgstr "&OK"
 
-msgid "&Cancel"
-msgstr "&Annuller"
+msgid "Close"
+msgstr "Luk"
 
-msgid "Submit recurring Batch"
+msgid "Revert or adjust Gift"
 msgstr ""
 
 #, csharp-format
 msgid "Valid between {0} and {1}"
 msgstr "Gyldig mellem {0} og {1}"
 
+msgid "Please select a Batch!."
+msgstr ""
+
+msgid "A Gift can only be reverted once!"
+msgstr ""
+
 msgid "Your Date was outside the allowed posting period."
+msgstr "Din dato var udenfor den tilladte posteringsperiode."
+
+msgid "Your batch has been sucessfully reverted"
+msgstr ""
+
+msgid "Your gift detail has been sucessfully reverted"
+msgstr ""
+
+msgid "Your gift has been sucessfully reverted"
+msgstr ""
+
+msgid "Your gift has been sucessfully adjusted"
+msgstr ""
+
+msgid "Recurring Gift Batches"
+msgstr ""
+
+msgid "From:"
+msgstr "Fra:"
+
+msgid "&Cancel"
+msgstr "&Annuller"
+
+msgid "Submit recurring Batch"
 msgstr ""
 
 msgid "There are no gifts in this batch that are active or "
@@ -1648,7 +1693,7 @@ msgid "Editing"
 msgstr "Redigering"
 
 msgid "All"
-msgstr ""
+msgstr "Alle"
 
 msgid "Show batches"
 msgstr ""
@@ -1684,6 +1729,9 @@ msgid "&Export Batches"
 msgstr ""
 
 msgid "&Import Batches"
+msgstr ""
+
+msgid "&Reverse Gift Batch"
 msgstr ""
 
 msgid "&Batch"
@@ -1780,7 +1828,7 @@ msgid "Letter Code:"
 msgstr ""
 
 msgid "Gift Date:"
-msgstr ""
+msgstr "Dato for gave:"
 
 msgid "Total:"
 msgstr "I alt:"
@@ -1806,14 +1854,23 @@ msgstr ""
 msgid "Comment 1:"
 msgstr "Kommentar 1:"
 
-msgid "for:"
-msgstr "til:"
-
 msgid "Comment 2:"
-msgstr "Kommentar 2"
+msgstr "Kommentar 2:"
 
 msgid "Comment 3:"
-msgstr "Kommentar 3"
+msgstr "Kommentar 3:"
+
+msgid "&Adjust Gift"
+msgstr ""
+
+msgid "&Reverse Gift"
+msgstr ""
+
+msgid "&Reverse Gift Detail"
+msgstr ""
+
+msgid "&Gift Transaction"
+msgstr ""
 
 msgid "Enter Your Currency Amount"
 msgstr ""
@@ -1844,6 +1901,19 @@ msgstr ""
 
 msgid "Enter a comment"
 msgstr "Indtast en kommentar"
+
+msgid "Please select a Gift Batch."
+msgstr ""
+
+msgid ""
+"This function is only possible when the selected batch is already posted."
+msgstr ""
+
+msgid "Please select a Gift to Reverse."
+msgstr ""
+
+msgid "Please save first and than try again!"
+msgstr "Gem først og prøv så igen!"
 
 msgid "Enter method of giving"
 msgstr ""
@@ -1929,6 +1999,9 @@ msgstr ""
 msgid "Invalid date"
 msgstr "Ugyldig dato"
 
+msgid "Done"
+msgstr "Udført"
+
 msgid "Select cost center:"
 msgstr ""
 
@@ -1964,9 +2037,6 @@ msgstr "Revurdering"
 
 msgid "No Revaluation"
 msgstr "Ingen revurdering"
-
-msgid "Done"
-msgstr "Udført"
 
 msgid "Batch:"
 msgstr ""
@@ -2152,7 +2222,7 @@ msgstr ""
 
 #, csharp-format
 msgid "{0} (Base Currency)"
-msgstr ""
+msgstr "{0} (Basisvaluta)"
 
 #, csharp-format
 msgid "{0} (Transaction Currency)"
@@ -2338,7 +2408,7 @@ msgid "Ledger Name:"
 msgstr "Hovedbogsnavn:"
 
 msgid "Base Currency:"
-msgstr ""
+msgstr "Basisvaluta:"
 
 msgid "Intl Currency:"
 msgstr ""
@@ -2410,11 +2480,8 @@ msgstr ""
 "\n"
 "Vil du virkelig slette den?"
 
-msgid "Close"
-msgstr "Luk"
-
 msgid "&From Currency Code:"
-msgstr "&Fra valutakode:"
+msgstr "Fra &valutakode:"
 
 msgid "&To Currency Code:"
 msgstr "&Til valutakode:"
@@ -2725,7 +2792,7 @@ msgid "New Contact Method"
 msgstr "Ny kontaktmetode"
 
 msgid "Maintain Contact Methods"
-msgstr ""
+msgstr "Vedligehold kontaktmetode"
 
 msgid "Enter a method of contact code"
 msgstr ""
@@ -2901,7 +2968,7 @@ msgid "Select if deletable"
 msgstr ""
 
 msgid "Publication Description:"
-msgstr ""
+msgstr "Udgivelsesbeskrivelse:"
 
 msgid "Publication Label Code:"
 msgstr ""
@@ -2916,16 +2983,16 @@ msgid "Valid Publication:"
 msgstr ""
 
 msgid "New Publication Code"
-msgstr ""
+msgstr "Ny udgivelseskode"
 
 msgid "Maintain Publications"
 msgstr "Vedligehold udgivelser"
 
 msgid "Enter a publication code"
-msgstr ""
+msgstr "Indtast en udgivelseskode"
 
 msgid "Enter a short code (max. 3 characters) for the publication."
-msgstr ""
+msgstr "Indtast en kort kode (maks. 3 tegn) til udgivelsen."
 
 msgid "Enter the number of issues per subscription"
 msgstr ""
@@ -2934,7 +3001,7 @@ msgid "Enter the number of issues and reminders to send out"
 msgstr ""
 
 msgid "Select how often this publication will be produced"
-msgstr ""
+msgstr "Vælg hvor ofte denne udgivelse vil blive produceret"
 
 msgid "Select if publication can be selected by users"
 msgstr ""
@@ -2976,10 +3043,10 @@ msgid "Unassignable:"
 msgstr "Kan ikke tildeles:"
 
 msgid "New Relationship Category"
-msgstr ""
+msgstr "Ny forbindelseskategori"
 
 msgid "Maintain Relationship Categories"
-msgstr ""
+msgstr "Vedligehold forbindelseskategorier"
 
 msgid "This code indicates the category of a relation."
 msgstr ""
@@ -3070,10 +3137,10 @@ msgid "Send E&mail to Partner"
 msgstr "Send &mail til partner"
 
 msgid "P&rint Section..."
-msgstr "&Udskriv sektion…"
+msgstr "Uds&kriv sektion…"
 
 msgid "E&xport Partner"
-msgstr "E&ksporter partner"
+msgstr "&Eksporter partner"
 
 msgid "&Addresses"
 msgstr "&Adresser"
@@ -3085,7 +3152,7 @@ msgid "Foundation Details"
 msgstr ""
 
 msgid "&Subscriptions"
-msgstr ""
+msgstr "Ab&onnementer"
 
 msgid "Special &Types"
 msgstr ""
@@ -3094,10 +3161,10 @@ msgid "&Contacts"
 msgstr "&Kontakter"
 
 msgid "Fa&mily Members"
-msgstr "Fam&iliemedlemmer"
+msgstr "Fa&miliemedlemmer"
 
 msgid "&Relationships"
-msgstr ""
+msgstr "&Forbindelser"
 
 msgid "&Interests"
 msgstr "&Interesser"
@@ -3133,7 +3200,7 @@ msgid "&Finance Details"
 msgstr "&Finansdetaljer"
 
 msgid "Ma&intain"
-msgstr ""
+msgstr "Vedlige&hold"
 
 msgid "&Expanded"
 msgstr "&Udvid"
@@ -3175,7 +3242,7 @@ msgid "Partner Info"
 msgstr "Partnerinfo"
 
 msgid "&Work with Last Partner..."
-msgstr ""
+msgstr "&Arbejd med seneste partner…"
 
 msgid "&Recent Partners"
 msgstr "&Seneste partnere"
@@ -3211,10 +3278,10 @@ msgid "&Generate Extract From Found Partners..."
 msgstr ""
 
 msgid "&Duplicate  Address Check..."
-msgstr ""
+msgstr "Se efter &dobbelte adresser…"
 
 msgid "&Merge  Addresses..."
-msgstr ""
+msgstr "&Flet adresser…"
 
 msgid "Find Partners at &Location..."
 msgstr ""
@@ -3274,7 +3341,7 @@ msgid "&Address Find Criteria:"
 msgstr ""
 
 msgid "O&ther Find Criteria:"
-msgstr ""
+msgstr "&Andre søgekriterier:"
 
 msgid "Sho&w 'Matching Pattern' buttons"
 msgstr ""
@@ -3338,7 +3405,7 @@ msgid "Import of partners failed!"
 msgstr "Import af partnere mislykkedes!"
 
 msgid "Please select a text file containing the partners first"
-msgstr "Vælg først en text-fil indeholdende partnere"
+msgstr "Vælg først en tekstfil indeholdende partnere"
 
 msgid "Need a file to import"
 msgstr "Behøver en fil at importere"
@@ -3358,7 +3425,7 @@ msgid "Name"
 msgstr "Navn"
 
 msgid "&Find && Maintain..."
-msgstr ""
+msgstr "&Find && vedligehold…"
 
 msgid "Work with &Last Partner..."
 msgstr ""
@@ -3409,13 +3476,13 @@ msgid "&New Partner (assistant)"
 msgstr ""
 
 msgid "&Merge Partners"
-msgstr ""
+msgstr "&Flet partnere"
 
 msgid "D&elete Partner"
 msgstr "&Slet partner"
 
 msgid "&Duplicate Address Check"
-msgstr ""
+msgstr "Se efter &dobbelte adresser"
 
 msgid "Mer&ge Addresses"
 msgstr ""
@@ -3454,13 +3521,13 @@ msgid "Save Partners into File"
 msgstr ""
 
 msgid "S&ites Available:"
-msgstr ""
+msgstr "&Tilgængelige steder:"
 
 msgid "Partner &Key:"
 msgstr "Partner&nøgle:"
 
 msgid "Partner C&lass:"
-msgstr ""
+msgstr "Partner&klasse:"
 
 msgid "&Acquisition Code:"
 msgstr ""
@@ -3498,6 +3565,107 @@ msgstr ""
 msgid "Please select a Family that the Person should belong to"
 msgstr "Vælg en familie som personen skulle høre til"
 
+msgid "Name:"
+msgstr "Navn:"
+
+msgid "Status:"
+msgstr "Status:"
+
+msgid "Receiving Field:"
+msgstr ""
+
+msgid "&Start of Commitment:"
+msgstr ""
+
+msgid "&End of Commitment:"
+msgstr ""
+
+msgid "Home Office:"
+msgstr ""
+
+msgid "Recruiting Office:"
+msgstr ""
+
+msgid "Comments:"
+msgstr ""
+
+msgid "Job Title:"
+msgstr ""
+
+msgid "New Commitment"
+msgstr ""
+
+msgid "Enter Staff Data"
+msgstr ""
+
+msgid "Select the partner's preferred language"
+msgstr "Vælg partnerens foretrukne sprog"
+
+msgid "The person's is serving for that field."
+msgstr ""
+
+msgid "Enter the date the commitment starts."
+msgstr ""
+
+msgid "Enter the date the commitment ends (leave blank if indefinite)."
+msgstr ""
+
+msgid "Select the correct status indicator."
+msgstr ""
+
+msgid "The home office of the person."
+msgstr ""
+
+msgid "The office that recruited the partner"
+msgstr ""
+
+msgid "Comments on commitment record"
+msgstr ""
+
+msgid "An unofficial job title for the person."
+msgstr ""
+
+msgid "Please fix the errors"
+msgstr ""
+
+#, csharp-format
+msgid ""
+"You have choosen to delete this entry with start of commitment date "
+"({0:d}).\n"
+"\n"
+"Do you really want to delete it?"
+msgstr ""
+
+msgid "Receiving Field"
+msgstr ""
+
+msgid "You need to select the office that the person will join"
+msgstr ""
+
+msgid "Start of Commitment"
+msgstr ""
+
+msgid "Please enter a valid start date"
+msgstr ""
+
+msgid "End of Commitment"
+msgstr ""
+
+msgid "Please enter a valid end date"
+msgstr ""
+
+msgid "Home office"
+msgstr ""
+
+msgid "You need to select the office that is sending the person"
+msgstr ""
+
+msgid "Recruiting Office"
+msgstr ""
+
+msgid "You need to select the office that has recruited the person"
+msgstr ""
+
 msgid "Previous Name:"
 msgstr "Forrige navn:"
 
@@ -3532,9 +3700,6 @@ msgid ""
 "The bank code/branch code/sort code (synonymous country-specific terms) for "
 "identifying a bank branch with a number/code."
 msgstr ""
-
-msgid "Select the partner's preferred language"
-msgstr "Vælg partnerens foretrukne sprog"
 
 msgid "Select a method-of-acquisition code"
 msgstr ""
@@ -3652,14 +3817,14 @@ msgstr ""
 msgid "Unit Type Code:"
 msgstr ""
 
-msgid "Xyz Tbd Code:"
+msgid "Outreach Code:"
 msgstr ""
 
-msgid "Xyz Tbd Cost:"
+msgid "Outreach Cost:"
 msgstr ""
 
-msgid "Campaign Information"
-msgstr "Kampagneinformation"
+msgid "Outreach Information"
+msgstr ""
 
 msgid "Country in which this Unit is found"
 msgstr ""
@@ -3670,10 +3835,10 @@ msgstr ""
 msgid "todo"
 msgstr "todo"
 
-msgid "Enter the cost of this xyz_tbd"
+msgid "Enter the cost of this outreach"
 msgstr ""
 
-msgid "Currency used for the xyz_tbd cost"
+msgid "Currency used for the outreach cost"
 msgstr ""
 
 msgid "Venue Code:"
@@ -3689,7 +3854,7 @@ msgid "&Gender:"
 msgstr "K&øn:"
 
 msgid "Title/Na&me:"
-msgstr "Titel/Na&vn:"
+msgstr "&Titel/Navn:"
 
 msgid "Partner &Status:"
 msgstr "Partner&status:"
@@ -3804,9 +3969,6 @@ msgstr "Vælg en partnerstatus"
 msgid "Unrecognised Partner Class '{0}'!"
 msgstr "Ikke genkendt partnerklasse '{0}'!"
 
-msgid "this.FDelegateGetPartnerShortName could not be called!"
-msgstr ""
-
 msgid " &Search"
 msgstr " &Søg"
 
@@ -3817,13 +3979,13 @@ msgid "Clea&r"
 msgstr "R&yd"
 
 msgid "Find Criteria"
-msgstr ""
+msgstr "Søgekriterier"
 
 msgid "Custom Criteria Demo"
 msgstr ""
 
 msgid "Fin&d Result"
-msgstr ""
+msgstr "S&øgeresultat"
 
 msgid "Searching..."
 msgstr "Søger..."
@@ -3842,9 +4004,6 @@ msgstr "Private"
 
 msgid "Acti&ve"
 msgstr "Akti&ve"
-
-msgid "Status:"
-msgstr "Status:"
 
 msgid "Phone Number:"
 msgstr "Telefonnummer:"
@@ -3893,9 +4052,6 @@ msgstr "S&prog:"
 
 msgid "Acquired:"
 msgstr ""
-
-msgid "Name:"
-msgstr "Navn:"
 
 msgid "Details of the selected Address"
 msgstr "Detaljer om den valgte adresse"
@@ -4160,19 +4316,19 @@ msgid "Date from which this contact cannot be listed."
 msgstr ""
 
 msgid "Leaving Code:"
-msgstr ""
+msgstr "Afrejsekode:"
 
 msgid "New Leaving Code"
 msgstr "Ny afrejsekode"
 
 msgid "Maintain Leaving Codes"
-msgstr ""
+msgstr "Vedligehold afrejsekoder"
 
 msgid "Enter the appropriate one letter code."
 msgstr "Indtast den relevante bogstavkode."
 
 msgid "Enter the appropriate description of the leaving code."
-msgstr ""
+msgstr "Indtast en passende beskrivelse af afrejsekoden."
 
 msgid "Check box if qualification level is no longer assignable."
 msgstr "Afkryds felt hvis kvalifikationsniveau ikke længere kan tildeles."
@@ -4202,7 +4358,7 @@ msgid "New Position"
 msgstr "Ny stilling"
 
 msgid "Maintain Positions"
-msgstr ""
+msgstr "Vedligehold stillinger"
 
 msgid "Enter a name for this position, e.g. Team Leader, Book keeper."
 msgstr "Indtast et navn til denne stilling, fx. Gruppeleder, Bogholder."
@@ -4354,7 +4510,7 @@ msgstr ""
 msgid "Previous Experience Report"
 msgstr ""
 
-msgid "Campaign Options"
+msgid "Outreach Options"
 msgstr ""
 
 msgid "Unit Hierarchy"
@@ -4382,7 +4538,7 @@ msgid "&Generate"
 msgstr "&Generér"
 
 msgid "&Save Settings"
-msgstr "&Gem indstillinger"
+msgstr "G&em indstillinger"
 
 msgid "Save Settings &As..."
 msgstr "Ge&m indstillinger som…"
@@ -4456,16 +4612,16 @@ msgid "Age Summary Report"
 msgstr ""
 
 msgid "Arrival Group"
-msgstr ""
+msgstr "Ankomstgruppe"
 
 msgid "Departure Group"
-msgstr ""
+msgstr "Afrejsegruppe"
 
 msgid "Select Group"
 msgstr "Vælg gruppe"
 
 msgid "Include people that are not assigned to a group"
-msgstr ""
+msgstr "Inkluder personer som ikke er tilknyttet en gruppe"
 
 msgid "Other Settings"
 msgstr "Andre indstillinger"
@@ -4508,9 +4664,6 @@ msgstr "Datoer skal være gyldige datoer"
 
 msgid "Attendee Report"
 msgstr ""
-
-msgid "Campaign Report"
-msgstr "Kampagnerapport"
 
 msgid "Charged Field Report"
 msgstr ""
@@ -4602,8 +4755,8 @@ msgstr ""
 msgid "Additional Settings"
 msgstr "Yderligere indstillinger"
 
-msgid "Campaign Code"
-msgstr "Kampagnekode"
+msgid "Outreach Code"
+msgstr ""
 
 msgid "Unit Key"
 msgstr ""
@@ -4652,6 +4805,9 @@ msgstr "Grupperapporter"
 msgid "Nationality Summary Report"
 msgstr ""
 
+msgid "Outreach Report"
+msgstr ""
+
 msgid "Receiving Field Report"
 msgstr ""
 
@@ -4667,7 +4823,7 @@ msgstr "Vælg en eller flere muligheder fra listen."
 msgid "Events"
 msgstr "Begivenheder"
 
-msgid "Select Campaign Option"
+msgid "Select Outreach Option"
 msgstr ""
 
 msgid "Sending Field Report"
@@ -4680,7 +4836,7 @@ msgid "List Departures"
 msgstr "List afgange"
 
 msgid "Arrival Departure"
-msgstr ""
+msgstr "Ankomst Afrejse"
 
 msgid "Only list people arriving on this day"
 msgstr "List kun personer der ankommer på denne dag"
@@ -4692,7 +4848,7 @@ msgid "Only list people with incomplete arrival details"
 msgstr "List kun personer med ufuldstændige ankomstdetaljer"
 
 msgid "Listing"
-msgstr ""
+msgstr "Liste"
 
 msgid "Travel Selection"
 msgstr ""
@@ -4716,7 +4872,7 @@ msgid "Only list people with incomplete departure details"
 msgstr "List kun personer med ufuldstændige afrejsedetaljer"
 
 msgid "All Conferences"
-msgstr "Alle konferenver"
+msgstr "Alle konferencer"
 
 msgid "Select Conference"
 msgstr "Vælg konference"
@@ -4728,7 +4884,7 @@ msgid "From Extract"
 msgstr ""
 
 msgid "One Attendee"
-msgstr "En deltager"
+msgstr "Én deltager"
 
 msgid "SelectAttendees"
 msgstr "Vælg deltagere"
@@ -4752,11 +4908,11 @@ msgid "No conference was selected!"
 msgstr "Ingen konference var valgt!"
 
 msgid ""
-"You must chose at least one campaign option from the \"Select Campaign "
+"You must chose at least one outreach option from the \"Select Outreach "
 "Option\" Dialog."
 msgstr ""
 
-msgid "No campaign option was selected!"
+msgid "No outreach option was selected!"
 msgstr ""
 
 msgid "Sort by Account"
@@ -4793,7 +4949,7 @@ msgid "Column Settings"
 msgstr "Kolonneindstillinger"
 
 msgid "Complete"
-msgstr ""
+msgstr "Fuldstændige"
 
 msgid "Without decimals"
 msgstr "Uden decimaler"
@@ -4919,7 +5075,7 @@ msgid "Donor Gift to Fields Report"
 msgstr ""
 
 msgid "Selection"
-msgstr ""
+msgstr "Vælg"
 
 msgid "For last years (1-4):"
 msgstr "For seneste år (1-4):"
@@ -5183,7 +5339,7 @@ msgid "Quarter must be between "
 msgstr "Kvartal skal være mellem "
 
 msgid "All Partner"
-msgstr ""
+msgstr "Alle partnere"
 
 msgid "Select Partner"
 msgstr "Vælg partner"
@@ -5252,13 +5408,13 @@ msgid "Gifts over Minimum Amount"
 msgstr "Gaver over minimumbeløb"
 
 msgid "Order by Account"
-msgstr ""
+msgstr "Sorter efter konto"
 
 msgid "Order by Motivation"
 msgstr ""
 
 msgid "Order By"
-msgstr ""
+msgstr "Sorter efter"
 
 msgid "Local Income Split"
 msgstr ""
@@ -5273,7 +5429,7 @@ msgid "Ignore if other gifts between:"
 msgstr ""
 
 msgid "All Partners"
-msgstr "Alle partnere"
+msgstr ""
 
 msgid "Extract"
 msgstr ""
@@ -5318,13 +5474,13 @@ msgid "'Gift given in year' must be less than 'No gifts in year'"
 msgstr ""
 
 msgid "Top"
-msgstr "Øverst"
+msgstr "Øverste"
 
 msgid "Middle"
-msgstr "Midten"
+msgstr "Midterste"
 
 msgid "Bottom"
-msgstr "Nederst"
+msgstr "Nederste"
 
 msgid "%:"
 msgstr "%:"
@@ -5443,8 +5599,8 @@ msgstr ""
 msgid "Valid Bank Account Report"
 msgstr ""
 
-msgid "Campaigns Only"
-msgstr "Kun kampagner"
+msgid "Outreachs Only"
+msgstr ""
 
 msgid "Conferences Only"
 msgstr "Kun konferencer"
@@ -5524,21 +5680,6 @@ msgstr "Inkluder kun personer fra valgte typer"
 msgid "Birthday List Report"
 msgstr ""
 
-msgid "Campaign Code:"
-msgstr "Kampagnekode:"
-
-msgid "Insert Year and / or Campaign Code,"
-msgstr "Indtast år og / eller kampagnekode."
-
-msgid "or leave empty to consider all campaign options."
-msgstr ""
-
-msgid "Choose Options"
-msgstr ""
-
-msgid "Campaign Options Report"
-msgstr ""
-
 msgid "Show Family Members"
 msgstr "Vis familiemedlemmer"
 
@@ -5579,6 +5720,18 @@ msgid "End of Commitment Report"
 msgstr ""
 
 msgid "Job Assignment Report"
+msgstr ""
+
+msgid "Insert Year and / or Outreach Code,"
+msgstr ""
+
+msgid "or leave empty to consider all campaign options."
+msgstr ""
+
+msgid "Choose Options"
+msgstr ""
+
+msgid "Outreach Options Report"
 msgstr ""
 
 msgid "Show Personal Info"
@@ -5633,7 +5786,7 @@ msgid "Personal Documents Expiry Report"
 msgstr ""
 
 msgid "Filter List by Relation Category:"
-msgstr ""
+msgstr "Filtrer liste efter forbindelseskategori:"
 
 msgid "Use Relationship"
 msgstr ""
@@ -5645,7 +5798,7 @@ msgid "(Select from list below):"
 msgstr "(Vælg fra listen nedenunder):"
 
 msgid "Select Relationship"
-msgstr ""
+msgstr "Vælg forbindelse"
 
 msgid "Active Partners"
 msgstr "Aktive partnere"
@@ -5669,7 +5822,7 @@ msgid "No Relationship Type selected!"
 msgstr ""
 
 msgid "Relationship"
-msgstr ""
+msgstr "Forbindelse"
 
 msgid "Commitment starts:"
 msgstr ""
@@ -5692,7 +5845,7 @@ msgstr ""
 msgid "Start of Commitment Report"
 msgstr ""
 
-msgid "Include Conferences and Campaigns:"
+msgid "Include Conferences and Outreachs:"
 msgstr ""
 
 msgid "Base Unit"
@@ -5830,10 +5983,10 @@ msgid "cm:"
 msgstr "cm:"
 
 msgid "Staff at"
-msgstr ""
+msgstr "Personale den"
 
 msgid "All Staff"
-msgstr ""
+msgstr "Alt personale"
 
 msgid "Enter a valid date."
 msgstr "Indtast en gyldig dato"
@@ -6176,6 +6329,113 @@ msgstr ""
 msgid "Accounts Payable Payment Batch"
 msgstr ""
 
+msgid "You cannot account foreign currencies in a base journal!"
+msgstr ""
+
+msgid "You have to add a journal before you can add a transaction!"
+msgstr "Du skal tilføje en kladde inden du kan tilføje en transaktion!"
+
+#, csharp-format
+msgid ""
+"The ledger is defined in {0}, the account {1} is defined in {2} and you want "
+"to account something in {3}?"
+msgstr ""
+"Hovedbogen er defineret i {0}, kontoen {1} er defineret i {2} og du ønsker "
+"at bogføre noget i {3}?"
+
+msgid "Peridic end routine hint"
+msgstr ""
+
+#, csharp-format
+msgid "There is nothing to do for the module: [{0}]"
+msgstr ""
+
+#, csharp-format
+msgid "Problem occurs in module [{0}]"
+msgstr ""
+
+#, csharp-format
+msgid "The operation has heft {0} elements which are not transformed!"
+msgstr ""
+
+#, csharp-format
+msgid "Cannot post Batch {0} in Ledger {1}"
+msgstr ""
+
+msgid "The batch does not exist at all."
+msgstr ""
+
+#, csharp-format
+msgid "It has status {0}"
+msgstr ""
+
+#, csharp-format
+msgid "It does not balance: Debit is {0}, Credit is {1}"
+msgstr ""
+
+#, csharp-format
+msgid "The control total {0} does not fit the Credit/Debit Total {1}."
+msgstr ""
+
+#, csharp-format
+msgid "The journal {0} does not balance: Debit is {1}, Credit is {2}"
+msgstr "Kladden {0} balancerer ikke: Debit er {1}, Kredit er {2}"
+
+#, csharp-format
+msgid ""
+"Transaction {0} in Journal {1} with currency {2} does not fit the foreign "
+"currency {3} of account {4}."
+msgstr ""
+"Transaktion {0} i kladde {1} med valuta {2} passer ikke til den udenlandske "
+"valuta {3} for konto {4}."
+
+#, csharp-format
+msgid ""
+"Transaction {0} in Journal {1} has invalid base transaction amount of 0."
+msgstr ""
+
+#, csharp-format
+msgid ""
+"Missing attributes record for journal #{0} transaction #{1}  and TypeCode {2}"
+msgstr ""
+
+#, csharp-format
+msgid "Missing values at journal #{0} transaction #{1}  and TypeCode {2}"
+msgstr ""
+
+#, csharp-format
+msgid "Invalid values at journal #{0} transaction #{1}  and TypeCode {2}"
+msgstr ""
+
+#, csharp-format
+msgid ""
+"Value {0} not active at journal #{1} transaction #{2}  and TypeCode {3}"
+msgstr ""
+
+#, csharp-format
+msgid "Cannot cancel Batch {0} in Ledger {1}"
+msgstr ""
+
+#, csharp-format
+msgid "It was already cancelled."
+msgstr ""
+
+msgid "Free Again"
+msgstr ""
+
+msgid "Exception has been thrown"
+msgstr ""
+
+msgid "Inner Exception"
+msgstr ""
+
+msgid "The table a_currency is empty!"
+msgstr "Tabellen a_currency er tom!"
+
+#, csharp-format
+msgid "The regular expression {0} does not fit for a match in {1}"
+msgstr ""
+
 #, csharp-format
 msgid ""
 "Cannot create a gift batch for date {0} since it is not in an open period of "
@@ -6208,6 +6468,23 @@ msgid "posted on {0}"
 msgstr ""
 
 msgid "Gift Adjustment (Field Change)"
+msgstr ""
+
+msgid "Gift Adjustment"
+msgstr ""
+
+msgid "Reverse Gift"
+msgstr ""
+
+#, csharp-format
+msgid "Cannot revert or adjust Gift{0} with Detail {1} in Batch {2}"
+msgstr ""
+
+#, csharp-format
+msgid "It was already adjusted or reverted."
+msgstr ""
+
+msgid "Gift Revert/Adjust failed."
 msgstr ""
 
 msgid "** confidential **"
@@ -6389,33 +6666,6 @@ msgstr ""
 msgid "Gift Batch "
 msgstr ""
 
-msgid "You cannot account foreign currencies in a base journal!"
-msgstr ""
-
-msgid "You have to add a journal before you can add a transaction!"
-msgstr "Du skal tilføje en kladde inden du kan tilføje en transaktion!"
-
-#, csharp-format
-msgid ""
-"The ledger is defined in {0}, the account {1} is defined in {2} and you want "
-"to account something in {3}?"
-msgstr ""
-"Hovedbogen er defineret i {0}, kontoen {1} er defineret i {2} og du ønsker "
-"at bogføre noget i {3}?"
-
-msgid "Exception has been thrown"
-msgstr ""
-
-msgid "Inner Exception"
-msgstr ""
-
-msgid "The table a_currency is empty!"
-msgstr "Tabellen a_currency er tom!"
-
-#, csharp-format
-msgid "The regular expression {0} does not fit for a match in {1}"
-msgstr ""
-
 msgid "batch hash value"
 msgstr ""
 
@@ -6503,17 +6753,16 @@ msgstr ""
 msgid "Invalid transaction currency"
 msgstr "Ugyldig transaktionsvaluta"
 
+msgid "Next Month is expected ..."
+msgstr ""
+
+msgid "In this situation you cannot run a year end routine"
+msgstr ""
+
 msgid "A Revaluation shall be done first"
 msgstr ""
 
 msgid "Please run a revalution for Ledger first."
-msgstr ""
-
-msgid "Peridic Year End Processing shall be done first"
-msgstr ""
-
-#, csharp-format
-msgid "Please run the year end processing for Ledger {0} first."
 msgstr ""
 
 msgid "Unposted Batches found"
@@ -6541,66 +6790,47 @@ msgstr ""
 msgid "Non Zero Suspense Account found ..."
 msgstr ""
 
-#, csharp-format
-msgid "Cannot post Batch {0} in Ledger {1}"
+msgid "Year End is expected ..."
 msgstr ""
 
-msgid "The batch does not exist at all."
+msgid "Reallocation of all income and expense accounts"
 msgstr ""
 
-#, csharp-format
-msgid "It has status {0}"
+msgid "Initialize the glm-entries of the next year"
 msgstr ""
 
-#, csharp-format
-msgid "It does not balance: Debit is {0}, Credit is {1}"
+msgid "Set the account period values to the New Year"
 msgstr ""
 
-#, csharp-format
-msgid "The control total {0} does not fit the Credit/Debit Total {1}."
+msgid "No Income Account found"
 msgstr ""
 
-#, csharp-format
-msgid "The journal {0} does not balance: Debit is {1}, Credit is {2}"
-msgstr "Kladden {0} balancerer ikke: Debit er {1}, Kredit er {2}"
-
-#, csharp-format
-msgid ""
-"Transaction {0} in Journal {1} with currency {2} does not fit the foreign "
-"currency {3} of account {4}."
-msgstr ""
-"Transaktion {0} i kladde {1} med valuta {2} passer ikke til den udenlandske "
-"valuta {3} for konto {4}."
-
-#, csharp-format
-msgid ""
-"Transaction {0} in Journal {1} has invalid base transaction amount of 0."
+msgid "You shall have at least one income"
 msgstr ""
 
-#, csharp-format
-msgid ""
-"Missing attributes record for journal #{0} transaction #{1}  and TypeCode {2}"
+msgid "No Expense Account found"
 msgstr ""
 
-#, csharp-format
-msgid "Missing values at journal #{0} transaction #{1}  and TypeCode {2}"
+msgid "You shall have at least one expense"
+msgstr ""
+
+msgid "No ICH_ACCT Account defined"
+msgstr ""
+
+msgid "You need to define this account"
+msgstr ""
+
+msgid "Financial year end processing"
+msgstr ""
+
+msgid "Period end revaluations"
+msgstr ""
+
+msgid "YEAR-END"
 msgstr ""
 
 #, csharp-format
-msgid "Invalid values at journal #{0} transaction #{1}  and TypeCode {2}"
-msgstr ""
-
-#, csharp-format
-msgid ""
-"Value {0} not active at journal #{1} transaction #{2}  and TypeCode {3}"
-msgstr ""
-
-#, csharp-format
-msgid "Cannot cancel Batch {0} in Ledger {1}"
-msgstr ""
-
-#, csharp-format
-msgid "It was already cancelled."
+msgid "Year end re-allocation to {0}:{1}"
 msgstr ""
 
 msgid "No Entries in GeneralLedgerMasterTable"
@@ -6636,9 +6866,6 @@ msgstr ""
 
 #, csharp-format
 msgid "Loss on foreign account {0}, cost centre {1}"
-msgstr ""
-
-msgid "Period end revaluations"
 msgstr ""
 
 msgid "There was a problem with the syntax of the file."
@@ -6720,13 +6947,6 @@ msgstr "single"
 
 msgid "divorced"
 msgstr "fraskilt"
-
-#, csharp-format
-msgid "Importing Unit {0}"
-msgstr "importere enhed {0}"
-
-msgid "You need to provide a partner key for the unit"
-msgstr ""
 
 msgid "Imported Data"
 msgstr ""
@@ -6839,7 +7059,7 @@ msgid "Enter any additional comments (if full, use notebook)"
 msgstr ""
 
 msgid "Main"
-msgstr ""
+msgstr "Overordnet"
 
 msgid "Partners"
 msgstr "Partnere"
@@ -6873,6 +7093,12 @@ msgstr "Importer og eksporter"
 
 msgid "Export Partners"
 msgstr "Eksporter partnere"
+
+msgid "Export to YAML file for importing into other OpenPetra database"
+msgstr ""
+
+msgid "Import Partners from file or satellite database"
+msgstr ""
 
 msgid "Reports"
 msgstr "Rapporter"
@@ -6923,7 +7149,7 @@ msgid "Setup Marital Statuses"
 msgstr "Opsæt civilstandstatusser"
 
 msgid "Setup Relationship Categories"
-msgstr ""
+msgstr "Opsæt forbindelseskategorier"
 
 msgid "Setup Contact Methods"
 msgstr "Opsæt kontaktmetoder"
@@ -6938,7 +7164,7 @@ msgid "Subscription-related"
 msgstr "Abonnement-relateret"
 
 msgid "Setup Publications"
-msgstr ""
+msgstr "Opsæt udgivelser"
 
 msgid "Setup Reason Subscription Given List"
 msgstr ""
@@ -6958,6 +7184,9 @@ msgstr "Opsæt stedtyper"
 msgid "Setup International Postal Types"
 msgstr ""
 
+msgid "Maintain International Postal Types"
+msgstr ""
+
 #, csharp-format
 msgid "Ledger {0} {1}"
 msgstr "Hovedbog {0} {1}"
@@ -6974,16 +7203,32 @@ msgstr ""
 msgid "Import Gifts From Bank Statement"
 msgstr "Importer gaver fra kontoudtog"
 
+msgid "Matching donors and recipients"
+msgstr ""
+
+msgid "Manually enter and post Gift batches"
+msgstr ""
+
+msgid "Manually enter Recurring Gift batches"
+msgstr ""
+
 msgid "Gift Receipting"
 msgstr ""
 
 msgid "Print Annual Receipts"
 msgstr "Udskriv årlige kvitteringer"
 
+msgid "Print the annual gift receipts"
+msgstr ""
+
 msgid "Form Letters"
 msgstr "Standardbreve"
 
 msgid "Print New Donor Subscription Letters"
+msgstr ""
+
+msgid ""
+"Send a letter to new donors that will get subscribed to our publication"
 msgstr ""
 
 msgid "Aged Supplier List"
@@ -6998,13 +7243,31 @@ msgstr "Generelt"
 msgid "ImportGL Transactions From Bank Statement"
 msgstr ""
 
+msgid "Matching regular payments etc"
+msgstr ""
+
+msgid "Enter and post General Ledger batches"
+msgstr ""
+
 msgid "GL Revaluation"
+msgstr ""
+
+msgid "Runs a Revaluation"
 msgstr ""
 
 msgid "Period End"
 msgstr ""
 
 msgid "Month End"
+msgstr ""
+
+msgid "Close a month"
+msgstr ""
+
+msgid "Year End"
+msgstr ""
+
+msgid "Close a year"
 msgstr ""
 
 msgid "Account Detail Report"
@@ -7052,13 +7315,22 @@ msgstr "Opsæt analysetyper"
 msgid "Manage Accounts"
 msgstr "Håndter konti"
 
+msgid "Add accounts and modify the hierarchy"
+msgstr ""
+
 msgid "Manage Cost Centres"
+msgstr ""
+
+msgid "Add and maintain cost centres"
 msgstr ""
 
 msgid "Gift Setup"
 msgstr ""
 
 msgid "Setup Motivation Details"
+msgstr ""
+
+msgid "Maintain motivation details towards which donations can be assigned"
 msgstr ""
 
 msgid "Personnel"
@@ -7073,11 +7345,14 @@ msgstr ""
 msgid "Setup Driver Status"
 msgstr ""
 
+msgid "Maintain Driver Status"
+msgstr ""
+
 msgid "Setup Document Type Categories"
 msgstr ""
 
 msgid "Setup Leaving Codes"
-msgstr ""
+msgstr "Opsæt afrejsekoder"
 
 msgid "Setup Language Levels"
 msgstr "Opsæt sprogniveau"
@@ -7086,7 +7361,7 @@ msgid "Setup Passport Types"
 msgstr "Opsæt pastyper"
 
 msgid "Setup Positions"
-msgstr ""
+msgstr "Opsæt stillinger"
 
 msgid "Setup Professional Areas"
 msgstr ""
@@ -7176,11 +7451,17 @@ msgstr ""
 msgid "Safety"
 msgstr "Sikkerhed"
 
+msgid "Please change your own password regularly"
+msgstr ""
+
 msgid "Language"
 msgstr "Sprog"
 
 msgid "Set Language Settings"
 msgstr "Angiv sprogindstillinger"
+
+msgid "Switch to another language or culture settings"
+msgstr ""
 
 msgid "System Manager"
 msgstr "Systemhåndtering"
@@ -7193,6 +7474,9 @@ msgstr "Brugere"
 
 msgid "Maintenance"
 msgstr "Vedligeholdelse"
+
+msgid "Add new users and manage permissions"
+msgstr ""
 
 msgid "Activity"
 msgstr "Aktivitet"

@@ -76,9 +76,9 @@ RootNode:
             Controls:
                 Row0: [btnCancel, btnApply]
         cmbCalculation: {OnChange=CmbContentChanged}
-            Label: Content of Column:
+            Label: Content of Column
         txtColumnWidth:
-            Label: Width of Column:
+            Label: Width of Column
         lblCm:
             Label: cm
         btnCancel:

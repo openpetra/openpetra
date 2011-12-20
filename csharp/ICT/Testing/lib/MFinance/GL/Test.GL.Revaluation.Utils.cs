@@ -23,7 +23,8 @@
 
 using System;
 using NUnit.Framework;
-using Ict.Testing.NUnitForms;
+using Ict.Testing.NUnitTools;
+using Ict.Testing.NUnitPetraServer;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Data;
@@ -34,7 +35,7 @@ using Ict.Petra.Server.MCommon.Data.Access;
 namespace Ict.Testing.Petra.Server.MFinance.GL
 {
     [TestFixture]
-    public partial class TestGLRevaluation : CommonNUnitFunctions
+    public partial class TestGLRevaluation
     {
         /// <summary>
         /// Normally I plan to move out this routine to CommonNUnitFunctions but this is not coorect
@@ -43,7 +44,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [TestFixtureSetUp]
         public void Init()
         {
-            InitServerConnection();
+            TPetraServerConnector.Connect();
             System.Diagnostics.Debug.WriteLine("Init: " + this.ToString());
             //ResetDatabase();
             LoadTestTata();
@@ -55,7 +56,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [TestFixtureTearDown]
         public void TearDownTest()
         {
-            DisconnectServerConnection();
+            TPetraServerConnector.Disconnect();
             System.Diagnostics.Debug.WriteLine("TearDown: " + this.ToString());
         }
 
@@ -68,7 +69,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             if (currencyTable.Rows.Count == 0)
             {
-                LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
+                CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
                     "test-sql\\gl-test-currency-data.sql");
             }
         }
