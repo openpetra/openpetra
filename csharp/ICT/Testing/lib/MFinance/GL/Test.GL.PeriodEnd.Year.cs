@@ -24,7 +24,8 @@
 using System;
 using System.Data.Odbc;
 using NUnit.Framework;
-using Ict.Testing.NUnitForms;
+using Ict.Testing.NUnitTools;
+using Ict.Testing.NUnitPetraServer;
 using Ict.Petra.Server.MFinance.GL;
 using Ict.Petra.Server.MFinance.Common;
 using Ict.Common;
@@ -52,7 +53,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
     /// Test of the GL.PeriodEnd.Year routines ...
     /// </summary>
     [TestFixture]
-    public class TestGLPeriodicEndYear : CommonNUnitFunctions
+    public class TestGLPeriodicEndYear
     {
         private const int intLedgerNumber = 43;
 
@@ -63,9 +64,9 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Ignore("still fails and needs a review")]
         public void Test_YearEnd()
         {
-            ResetDatabase();
-            LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\test-sql\\gl-test-year-end.sql");
-            LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\test-sql\\gl-test-year-end-account-property.sql");
+            CommonNUnitFunctions.ResetDatabase();
+            CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\test-sql\\gl-test-year-end.sql");
+            CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\test-sql\\gl-test-year-end-account-property.sql");
 
             TCommonAccountingTool commonAccountingTool =
                 new TCommonAccountingTool(intLedgerNumber, "NUNIT");
@@ -239,7 +240,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_TAccountPeriodToNewYear()
         {
-            ResetDatabase();
+            CommonNUnitFunctions.ResetDatabase();
 
             TVerificationResultCollection verificationResult = new TVerificationResultCollection();
 
@@ -282,7 +283,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [TestFixtureSetUp]
         public void Init()
         {
-            InitServerConnection();
+            TPetraServerConnector.Connect();
             //ResetDatabase();
             System.Diagnostics.Debug.WriteLine("Init: " + this.ToString());
         }
@@ -293,7 +294,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [TestFixtureTearDown]
         public void TearDownTest()
         {
-            DisconnectServerConnection();
+            TPetraServerConnector.Disconnect();
             System.Diagnostics.Debug.WriteLine("TearDown: " + this.ToString());
         }
 
@@ -310,7 +311,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             if (batches.Rows.Count == 0)
             {
-                LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
+                CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
                     "test-sql\\gl-test-batch-data.sql");
             }
         }

@@ -32,7 +32,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
     /// TestGLRevaluation - math part
     /// </summary>
     [TestFixture]
-    public partial class TestGLRevaluation : CommonNUnitFunctions
+    public partial class TestGLRevaluation
     {
         /// <summary>
         /// Test_05_AccountDelta

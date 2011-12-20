@@ -30,6 +30,7 @@ using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Remoting.Server;
 using Ict.Common.Remoting.Shared;
+using Ict.Testing.NUnitTools;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Server.App.Core;
@@ -46,6 +47,19 @@ namespace Ict.Testing.NUnitPetraServer
     public class TPetraServerConnector
     {
         private static TClientDomainManager FDomain = null;
+
+        /// <summary>
+        /// Initialize the Petra server and connect to the database.
+        /// this overload looks for the config file itself
+        /// </summary>
+        public static TServerManager Connect()
+        {
+            CommonNUnitFunctions.InitRootPath();
+
+            string strNameConfig = CommonNUnitFunctions.rootPath + "etc/TestServer.config";
+
+            return Connect(strNameConfig);
+        }
 
         /// <summary>
         /// Initialize the Petra server and connect to the database

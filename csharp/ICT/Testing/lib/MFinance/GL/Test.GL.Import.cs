@@ -26,7 +26,8 @@ using System.Collections;
 using System.IO;
 using System.Data.Odbc;
 using NUnit.Framework;
-using Ict.Testing.NUnitForms;
+using Ict.Testing.NUnitTools;
+using Ict.Testing.NUnitPetraServer;
 using Ict.Petra.Server.MFinance.GL;
 using Ict.Common;
 using Ict.Common.Verification;
@@ -53,7 +54,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
     /// TestGLImport
     /// </summary>
     [TestFixture]
-    public class TestGLImport : CommonNUnitFunctions
+    public class TestGLImport
     {
         private const int intLedgerNumber = 43;
 
@@ -72,7 +73,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             requestParams.Add("NumberFormat", "European");
             requestParams.Add("NewLine", Environment.NewLine);
 
-            string strContent = LoadCSVFileToString("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
+            string strContent = CommonNUnitFunctions.LoadCSVFileToString("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
                 "test-csv\\glbatch-import.csv");
 
             // Console.WriteLine(strContent);
@@ -94,7 +95,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [TestFixtureSetUp]
         public void Init()
         {
-            InitServerConnection();
+            TPetraServerConnector.Connect();
             PrepareTestCaseData();
         }
 
@@ -109,7 +110,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             if (!CostCentreTestCasesAvailable)
             {
-                LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
+                CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
                     "test-sql\\gl-test-costcentre-data.sql");
             }
         }
@@ -120,7 +121,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [TestFixtureTearDown]
         public void TearDownTest()
         {
-            DisconnectServerConnection();
+            TPetraServerConnector.Disconnect();
         }
     }
 }

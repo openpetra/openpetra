@@ -26,6 +26,9 @@ using NUnit.Framework;
 using Ict.Testing.NUnitForms;
 using Ict.Common.DB;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Server;
+using Ict.Common.Remoting.Shared;
+using Ict.Petra.Server.App.Core;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.GL;
@@ -33,6 +36,8 @@ using Ict.Petra.Server.MFinance.Common;
 using Ict.Petra.Shared.MFinance;
 using Ict.Common;
 using NUnit.Extensions.Forms;
+using Ict.Testing.NUnitTools;
+using Ict.Testing.NUnitPetraServer;
 
 namespace Ict.Testing.Petra.Server.MFinance.GL
 {
@@ -40,7 +45,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
     /// TestCommonAccountingTool
     /// </summary>
     [TestFixture]
-    public class TestCommonAccountingTool : CommonNUnitFunctions
+    public class TestCommonAccountingTool
     {
         int LedgerNumber = 43;
 
@@ -131,13 +136,13 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             if (!AccountTestCasesAvailable)
             {
-                LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
+                CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
                     "test-sql\\gl-test-account-data.sql");
             }
 
             if (!CostCentreTestCasesAvailable)
             {
-                LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
+                CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
                     "test-sql\\gl-test-costcentre-data.sql");
             }
         }
@@ -233,9 +238,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [TestFixtureSetUp]
         public void Init()
         {
-            InitServerConnection();
+            TPetraServerConnector.Connect();
             // ResetDatabase();
-            System.Diagnostics.Debug.WriteLine("Init: " + this.ToString());
         }
 
         /// <summary>
@@ -244,8 +248,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [TestFixtureTearDown]
         public void TearDownTest()
         {
-            DisconnectServerConnection();
-            System.Diagnostics.Debug.WriteLine("TearDownTest: " + this.ToString());
+            TPetraServerConnector.Disconnect();
         }
     }
 }
