@@ -179,3 +179,18 @@ msgstr "do not translate"
 
 msgid "99"
 msgstr "do not translate"
+
+msgid "Info 1 Text"
+msgstr "do not translate"
+
+msgid "Title Text"
+msgstr "do not translate"
+
+msgid "Info 2 Text"
+msgstr "do not translate"
+
+msgid "Info 3 Text"
+msgstr "do not translate"
+
+msgid "NEWCODE"
+msgstr "do not translate"
