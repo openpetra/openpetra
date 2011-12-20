@@ -192,6 +192,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void ShowDetailsManual(ATransAnalAttribRow ARow)
         {
             cmbDetailAnalysisAttributeValue.Items.Clear();
+
             if (ARow == null)
             {
                 return;
@@ -219,11 +220,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 cmbDetailAnalysisAttributeValue.SelectedIndex = -1;
             }
-            
+
             // If the batch has been posted, the Combobox can't be changed.
             Boolean changeable = GetBatchRow() != null
                                  && (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
-            
+
             cmbDetailAnalysisAttributeValue.Enabled = changeable;
         }
 
@@ -401,21 +402,23 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-          	AFreeformAnalysisRow afaRow = null;
-          	String v = sio.ToString();
+            AFreeformAnalysisRow afaRow = null;
+            String v = sio.ToString();
             bool AccessOk = false;
             try
             {
-            	Object[]PrimaryKey = new Object[] { txtReadonlyAnalysisTypeCode.Text, v, FLedgerNumber };
-            	afaRow = (AFreeformAnalysisRow)FCacheDS.AFreeformAnalysis.Rows.Find(PrimaryKey);
+                Object[] PrimaryKey = new Object[] {
+                    txtReadonlyAnalysisTypeCode.Text, v, FLedgerNumber
+                };
+                afaRow = (AFreeformAnalysisRow)FCacheDS.AFreeformAnalysis.Rows.Find(PrimaryKey);
                 AccessOk = true;
             }
-            catch(Exception exc)
+            catch (Exception exc)
             {
-            	Type ExcType = exc.GetType();
+                Type ExcType = exc.GetType();
                 cmbDetailAnalysisAttributeValue.ForeColor = System.Drawing.Color.Red;
             }
-            
+
             if (AccessOk)
             {
                 if (afaRow.Active)

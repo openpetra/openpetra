@@ -201,7 +201,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             // Create Text description of Anal Attribs for each transaction..
-            
+
             foreach (GLBatchTDSATransactionRow TransactionRow in FMainDS.ATransaction.Rows)
             {
                 ((TFrmGLBatch)ParentForm).LoadAttributes(
@@ -213,24 +213,28 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
 
                 string strAnalAttr = "";
-            	FMainDS.ATransAnalAttrib.DefaultView.RowFilter = 
-            		String.Format("{0}={1} AND {2}={3} AND {4}={5} AND {6}={7}",
-            	                  ATransAnalAttribTable.GetLedgerNumberDBName(), TransactionRow.LedgerNumber,
-            	                  ATransAnalAttribTable.GetBatchNumberDBName(), TransactionRow.BatchNumber,
-            	                  ATransAnalAttribTable.GetJournalNumberDBName(), TransactionRow.JournalNumber,
-            	                  ATransAnalAttribTable.GetTransactionNumberDBName(), TransactionRow.TransactionNumber);
-            	foreach (DataRowView rv in FMainDS.ATransAnalAttrib.DefaultView)
-            	{
-            		ATransAnalAttribRow Row = (ATransAnalAttribRow)rv.Row;
-            		if (strAnalAttr.Length > 0)
-            			strAnalAttr += ", ";
-            		strAnalAttr += (Row.AnalysisTypeCode + "=" + Row.AnalysisAttributeValue);
-            	}
-            	TransactionRow.AnalysisAttributes = strAnalAttr;
+                FMainDS.ATransAnalAttrib.DefaultView.RowFilter =
+                    String.Format("{0}={1} AND {2}={3} AND {4}={5} AND {6}={7}",
+                        ATransAnalAttribTable.GetLedgerNumberDBName(), TransactionRow.LedgerNumber,
+                        ATransAnalAttribTable.GetBatchNumberDBName(), TransactionRow.BatchNumber,
+                        ATransAnalAttribTable.GetJournalNumberDBName(), TransactionRow.JournalNumber,
+                        ATransAnalAttribTable.GetTransactionNumberDBName(), TransactionRow.TransactionNumber);
+
+                foreach (DataRowView rv in FMainDS.ATransAnalAttrib.DefaultView)
+                {
+                    ATransAnalAttribRow Row = (ATransAnalAttribRow)rv.Row;
+
+                    if (strAnalAttr.Length > 0)
+                    {
+                        strAnalAttr += ", ";
+                    }
+
+                    strAnalAttr += (Row.AnalysisTypeCode + "=" + Row.AnalysisAttributeValue);
+                }
+
+                TransactionRow.AnalysisAttributes = strAnalAttr;
             }
-            
-            
-            
+
             UpdateChangeableStatus();
         }
 

@@ -159,7 +159,6 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                 WhereClause = WhereClause.Substring(4);
             }
 
-
             Hashtable ColumnNameMapping = new Hashtable();
             FPagedDataSetObject.FindParameters = new TPagedDataSet.TAsyncFindParameters(
                 FieldList,
@@ -308,7 +307,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                 }
             }
 
-            if (!FSearchSupplierOrInvoice) // I'm looking for a list of outstanding invoices 
+            if (!FSearchSupplierOrInvoice) // I'm looking for a list of outstanding invoices
             {
                 WhereClause += String.Format(" AND {0}=?", AApDocumentTable.GetLedgerNumberDBName());
                 OdbcParameter Param = TTypedDataTable.CreateOdbcParameter(AApDocumentTable.TableId, AApDocumentTable.ColumnLedgerNumberId);
@@ -317,6 +316,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
 
                 WhereClause += String.Format(" AND {0} <> 'CANCELLED' AND {0} <> 'PAID'", AApDocumentTable.GetDocumentStatusDBName());
                 decimal DaysPlus = (decimal)ACriteriaRow["DaysPlus"];
+
                 if (DaysPlus >= 0)
                 {
                     DateTime Deadline = DateTime.Now.AddDays((double)DaysPlus);
@@ -344,17 +344,16 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             {
                 String DocTbl = "PUB_" + AApDocumentTable.GetTableDBName() + ".";
                 // TODO: FSearchSupplierOrInvoice: select invoices
-                return
-                    DocTbl + AApDocumentTable.GetApNumberDBName() + "," +
-                    DocTbl + AApDocumentTable.GetDocumentCodeDBName() + "," +
-                    "PUB_" + PPartnerTable.GetTableDBName()    + "." + PPartnerTable.GetPartnerShortNameDBName() + "," +
-                    "PUB_" + AApSupplierTable.GetTableDBName() + "." + AApSupplierTable.GetCurrencyCodeDBName() + "," +
-                    DocTbl + AApDocumentTable.GetTotalAmountDBName() + "," +
-                    DocTbl + AApDocumentTable.GetDocumentStatusDBName() + "," +
-                    DocTbl + AApDocumentTable.GetDateIssuedDBName() + "," +
-                    DocTbl + AApDocumentTable.GetDateIssuedDBName() + "+" + DocTbl + AApDocumentTable.GetCreditTermsDBName() + "," +
-                    DocTbl + AApDocumentTable.GetDiscountPercentageDBName() + "," +
-                    DocTbl + AApDocumentTable.GetDateIssuedDBName() + "+" + DocTbl + AApDocumentTable.GetDiscountDaysDBName();
+                return DocTbl + AApDocumentTable.GetApNumberDBName() + "," +
+                       DocTbl + AApDocumentTable.GetDocumentCodeDBName() + "," +
+                       "PUB_" + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerShortNameDBName() + "," +
+                       "PUB_" + AApSupplierTable.GetTableDBName() + "." + AApSupplierTable.GetCurrencyCodeDBName() + "," +
+                       DocTbl + AApDocumentTable.GetTotalAmountDBName() + "," +
+                       DocTbl + AApDocumentTable.GetDocumentStatusDBName() + "," +
+                       DocTbl + AApDocumentTable.GetDateIssuedDBName() + "," +
+                       DocTbl + AApDocumentTable.GetDateIssuedDBName() + "+" + DocTbl + AApDocumentTable.GetCreditTermsDBName() + "," +
+                       DocTbl + AApDocumentTable.GetDiscountPercentageDBName() + "," +
+                       DocTbl + AApDocumentTable.GetDateIssuedDBName() + "+" + DocTbl + AApDocumentTable.GetDiscountDaysDBName();
             }
             else    // Find Suppliers
             {
@@ -364,7 +363,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                        "PUB_" + AApSupplierTable.GetTableDBName() + "." + AApSupplierTable.GetCurrencyCodeDBName() + "," +
                        "PUB_" + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetStatusCodeDBName();
             }
-       }
+        }
 
         /// <summary>
         /// build the orderby clause
@@ -391,11 +390,11 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
 
             if (!FSearchSupplierOrInvoice)
             {
-                AWhereClause += " AND " + "PUB_" + AApDocumentTable.GetTableDBName() + "." + AApDocumentTable.GetPartnerKeyDBName() + " = " + "PUB_" +
+                AWhereClause += " AND " + "PUB_" + AApDocumentTable.GetTableDBName() + "." + AApDocumentTable.GetPartnerKeyDBName() + " = " +
+                                "PUB_" +
                                 PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerKeyDBName();
                 FromClause += (", PUB_" + AApDocumentTable.GetTableDBName());
             }
-
 
             return FromClause;
         }

@@ -52,20 +52,18 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
     ///</summary>
     public class TTransactionWebConnector
     {
-        private static void LoadAnalysisAttributes (AccountsPayableTDS AMainDS, Int32 ALedgerNumber, TDBTransaction ATransaction)
-        
+        private static void LoadAnalysisAttributes(AccountsPayableTDS AMainDS, Int32 ALedgerNumber, TDBTransaction ATransaction)
         {
             {   // Load via template...
-            	AAnalysisAttributeRow TemplateRow = AMainDS.AAnalysisAttribute.NewRowTyped(false);
-            	TemplateRow.LedgerNumber = ALedgerNumber;
-            	TemplateRow.Active = true;
-            	AAnalysisAttributeAccess.LoadUsingTemplate(AMainDS, TemplateRow, ATransaction);
+                AAnalysisAttributeRow TemplateRow = AMainDS.AAnalysisAttribute.NewRowTyped(false);
+                TemplateRow.LedgerNumber = ALedgerNumber;
+                TemplateRow.Active = true;
+                AAnalysisAttributeAccess.LoadUsingTemplate(AMainDS, TemplateRow, ATransaction);
             }
-        	
+
             AFreeformAnalysisAccess.LoadViaALedger(AMainDS, ALedgerNumber, ATransaction);
         }
-        
-        
+
         /// <summary>
         /// Passes data as a Typed DataSet to the Transaction Edit Screen
         /// </summary>
@@ -80,26 +78,26 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             AApDocumentAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, AAPNumber, Transaction);
             AApDocumentDetailAccess.LoadViaAApDocument(MainDS, ALedgerNumber, AAPNumber, Transaction);
             AApSupplierAccess.LoadByPrimaryKey(MainDS, MainDS.AApDocument[0].PartnerKey, Transaction);
-            
+
             // Load via template...
             {
-	            AApAnalAttribRow TemplateRow = MainDS.AApAnalAttrib.NewRowTyped(false);
-	            TemplateRow.LedgerNumber = ALedgerNumber;
-	            TemplateRow.ApNumber = AAPNumber;
-	            AApAnalAttribAccess.LoadUsingTemplate(MainDS, TemplateRow, Transaction);
+                AApAnalAttribRow TemplateRow = MainDS.AApAnalAttrib.NewRowTyped(false);
+                TemplateRow.LedgerNumber = ALedgerNumber;
+                TemplateRow.ApNumber = AAPNumber;
+                AApAnalAttribAccess.LoadUsingTemplate(MainDS, TemplateRow, Transaction);
             }
 
             // Accept row changes here so that the Client gets 'unmodified' rows
             MainDS.AcceptChanges();
-            
+
             // I also need a full list of analysis attributes that could apply to this document
             // (although if it's already been posted I don't need to get this...)
-            
-            LoadAnalysisAttributes (MainDS, ALedgerNumber, Transaction);
+
+            LoadAnalysisAttributes(MainDS, ALedgerNumber, Transaction);
 
             DBAccess.GDBAccessObj.RollbackTransaction();
-            
-			// Remove all Tables that were not filled with data before remoting them.
+
+            // Remove all Tables that were not filled with data before remoting them.
             MainDS.RemoveEmptyTables();
 
             return MainDS;
@@ -128,7 +126,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             NewDocumentRow.LastDetailNumber = -1;
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-            
+
             // get the supplier defaults
             AApSupplierTable tempTable;
             tempTable = AApSupplierAccess.LoadByPrimaryKey(APartnerKey, Transaction);
@@ -163,8 +161,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             MainDS.AApDocument.Rows.Add(NewDocumentRow);
 
             // I also need a full list of analysis attributes that could apply to this document
-            
-            LoadAnalysisAttributes (MainDS, ALedgerNumber, Transaction);
+
+            LoadAnalysisAttributes(MainDS, ALedgerNumber, Transaction);
 
             DBAccess.GDBAccessObj.RollbackTransaction();
 
@@ -343,20 +341,22 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         {
             AApDocumentAccess.LoadByPrimaryKey(AMainDS, ALedgerNumber, AApNumber, ATransaction);
             AApDocumentRow DocumentRow = AMainDS.AApDocument[0];
-        	decimal DocumentBalance = DocumentRow.TotalAmount;
-        	
-        	AMainDS.AApDocumentDetail.DefaultView.RowFilter 
-        	    = String.Format("{0}={1} AND {2}={3}",
-        	       AApDocumentTable.GetLedgerNumberDBName(), ALedgerNumber,
-        	       AApDocumentTable.GetApNumberDBName(),AApNumber);
-        	foreach (DataRowView rv in AMainDS.AApDocumentDetail.DefaultView)
-        	{
-        	    AApDocumentDetailRow Row = (AApDocumentDetailRow)rv.Row;
-        		DocumentBalance -= Row.Amount;
-        	}
-        	return (DocumentBalance == 0.0m);
+            decimal DocumentBalance = DocumentRow.TotalAmount;
+
+            AMainDS.AApDocumentDetail.DefaultView.RowFilter
+                = String.Format("{0}={1} AND {2}={3}",
+                AApDocumentTable.GetLedgerNumberDBName(), ALedgerNumber,
+                AApDocumentTable.GetApNumberDBName(), AApNumber);
+
+            foreach (DataRowView rv in AMainDS.AApDocumentDetail.DefaultView)
+            {
+                AApDocumentDetailRow Row = (AApDocumentDetailRow)rv.Row;
+                DocumentBalance -= Row.Amount;
+            }
+
+            return DocumentBalance == 0.0m;
         }
-        
+
         /// <summary>
         /// Load the Analysis Attributes for this document
         /// </summary>
@@ -367,46 +367,47 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         /// <returns>true if all required attributes are present</returns>
         private static bool AttributesAllOK(AccountsPayableTDS AMainDS, Int32 ALedgerNumber, int AApNumber, TDBTransaction ATransaction)
         {
-            AMainDS.AApDocumentDetail.DefaultView.RowFilter = 
-                String.Format("{0}={1}", AApDocumentDetailTable.GetApNumberDBName(),AApNumber);
-            
+            AMainDS.AApDocumentDetail.DefaultView.RowFilter =
+                String.Format("{0}={1}", AApDocumentDetailTable.GetApNumberDBName(), AApNumber);
+
             LoadAnalysisAttributes(AMainDS, ALedgerNumber, ATransaction);
-            
-    		// Load the Analysis Attributes defined for this document, using a template...
+
+            // Load the Analysis Attributes defined for this document, using a template...
             {
-	            AApAnalAttribRow TemplateRow = AMainDS.AApAnalAttrib.NewRowTyped(false);
-	            TemplateRow.LedgerNumber = ALedgerNumber;
-	            TemplateRow.ApNumber = AApNumber;
-	            AApAnalAttribAccess.LoadUsingTemplate(AMainDS, TemplateRow, ATransaction);
+                AApAnalAttribRow TemplateRow = AMainDS.AApAnalAttrib.NewRowTyped(false);
+                TemplateRow.LedgerNumber = ALedgerNumber;
+                TemplateRow.ApNumber = AApNumber;
+                AApAnalAttribAccess.LoadUsingTemplate(AMainDS, TemplateRow, ATransaction);
             }
-            
+
             foreach (DataRowView rv in AMainDS.AApDocumentDetail.DefaultView)
             {
                 AApDocumentDetailRow DetailRow = (AApDocumentDetailRow)rv.Row;
-        		AMainDS.AAnalysisAttribute.DefaultView.RowFilter = 
-        			String.Format("{0}={1}", AAnalysisAttributeTable.GetAccountCodeDBName(), DetailRow.AccountCode); // Do I need Cost Centre in here too?
-        		
-        		if (AMainDS.AAnalysisAttribute.DefaultView.Count > 0)
-        		{
-    	    		foreach (DataRowView aa_rv in AMainDS.AAnalysisAttribute.DefaultView)
-    	    		{
-    	    			AAnalysisAttributeRow AttrRow = (AAnalysisAttributeRow)aa_rv.Row;
-    	    			
-    	    			AMainDS.AApAnalAttrib.DefaultView.RowFilter = 
-    	    				String.Format("{0}={1} AND {2}={3}",
-    	    				              AApAnalAttribTable.GetDetailNumberDBName(), DetailRow.DetailNumber,
-    	    				              AApAnalAttribTable.GetAccountCodeDBName(), AttrRow.AccountCode);
-    	    			if (AMainDS.AApAnalAttrib.DefaultView.Count == 0)
-    	    			{
-    	    				return false;
-    	    			}
-    	    		}
-        		}
+                AMainDS.AAnalysisAttribute.DefaultView.RowFilter =
+                    String.Format("{0}={1}", AAnalysisAttributeTable.GetAccountCodeDBName(), DetailRow.AccountCode);             // Do I need Cost Centre in here too?
+
+                if (AMainDS.AAnalysisAttribute.DefaultView.Count > 0)
+                {
+                    foreach (DataRowView aa_rv in AMainDS.AAnalysisAttribute.DefaultView)
+                    {
+                        AAnalysisAttributeRow AttrRow = (AAnalysisAttributeRow)aa_rv.Row;
+
+                        AMainDS.AApAnalAttrib.DefaultView.RowFilter =
+                            String.Format("{0}={1} AND {2}={3}",
+                                AApAnalAttribTable.GetDetailNumberDBName(), DetailRow.DetailNumber,
+                                AApAnalAttribTable.GetAccountCodeDBName(), AttrRow.AccountCode);
+
+                        if (AMainDS.AApAnalAttrib.DefaultView.Count == 0)
+                        {
+                            return false;
+                        }
+                    }
+                }
             }
 
             return true;
         }
-        
+
         /// <summary>
         /// Load the AP documents and see if they are ready to be posted
         /// </summary>
@@ -446,24 +447,24 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 // TODO: also check if details are filled, and they each have a costcentre and account?
 
                 // TODO: check for document.apaccount, if not set, get the default apaccount from the supplier, and save the ap document
-                
+
                 // Check that the amount of the document equals the totals of details
                 if (!DocumentBalanceOK(MainDS, ALedgerNumber, row.ApNumber, Transaction))
                 {
-                	AVerifications.Add(new TVerificationResult(
+                    AVerifications.Add(new TVerificationResult(
                             String.Format(Catalog.GetString("Cannot post the AP document {0} in Ledger {1}"), row.ApNumber, ALedgerNumber),
                             String.Format(Catalog.GetString("The value does not match the sum of the details.")),
                             TResultSeverity.Resv_Critical));
                 }
+
                 // Load Analysis Attributes and check they're all present.
                 if (!AttributesAllOK(MainDS, ALedgerNumber, row.ApNumber, Transaction))
                 {
-                	AVerifications.Add(new TVerificationResult(
+                    AVerifications.Add(new TVerificationResult(
                             String.Format(Catalog.GetString("Cannot post the AP document {0} in Ledger {1}"), row.ApNumber, ALedgerNumber),
                             String.Format(Catalog.GetString("Analysis Attributes are required.")),
                             TResultSeverity.Resv_Critical));
                 }
-
             }
 
             // is APostingDate inside the valid posting periods?
@@ -480,7 +481,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             }
 
             DBAccess.GDBAccessObj.RollbackTransaction();
-            
+
             return MainDS;
         }
 
@@ -574,14 +575,15 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
                         // Analysis Attributes - Any attributes linked to this row,
                         // I need to create equivalents in the Transaction DS.
-                        
+
                         APDataset.AApAnalAttrib.DefaultView.RowFilter = String.Format("{0}={1}",
-                                      AApAnalAttribTable.GetDetailNumberDBName(), documentDetail.DetailNumber);
+                            AApAnalAttribTable.GetDetailNumberDBName(), documentDetail.DetailNumber);
+
                         foreach (DataRowView rv in APDataset.AApAnalAttrib.DefaultView)
                         {
-                            AApAnalAttribRow RowSource = (AApAnalAttribRow) rv.Row;
+                            AApAnalAttribRow RowSource = (AApAnalAttribRow)rv.Row;
                             ATransAnalAttribRow RowDest = GLDataset.ATransAnalAttrib.NewRowTyped();
-                            
+
                             RowDest.LedgerNumber = RowSource.LedgerNumber;
                             RowDest.BatchNumber = journal.BatchNumber;
                             RowDest.JournalNumber = journal.JournalNumber;
@@ -590,10 +592,9 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                             RowDest.CostCentreCode = documentDetail.CostCentreCode;
                             RowDest.AnalysisTypeCode = RowSource.AnalysisTypeCode;
                             RowDest.AnalysisAttributeValue = RowSource.AnalysisAttributeValue;
-                            
+
                             GLDataset.ATransAnalAttrib.Rows.Add(RowDest);
                         }
-                        
 
                         if (document.CreditNoteFlag)
                         {

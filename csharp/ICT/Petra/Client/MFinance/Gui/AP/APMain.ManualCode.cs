@@ -79,6 +79,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 // don't run several searches at the same time
                 return;
             }
+
             FSearchForSuppliers = tpgSuppliers.Visible;
 
             FSupplierFindObject = TRemote.MFinance.AP.UIConnectors.Find();
@@ -87,25 +88,25 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             CriteriaTable.Columns.Add("SupplierId", typeof(string));
 
             decimal DaysPlus = -1;
+
             if (chkDueFuture.Checked)  // Calculate the future date to send to the server
             {
                 DaysPlus = nudNumberTimeUnits.Value;
+
                 if (cmbTimeUnit.SelectedText == "Months")
                 {
                     DaysPlus *= 31;
                 }
-                else
-                if (cmbTimeUnit.SelectedText == "Weeks")
+                else if (cmbTimeUnit.SelectedText == "Weeks")
                 {
                     DaysPlus *= 7;
                 }
             }
-            else
-            if (chkDueToday.Checked)
+            else if (chkDueToday.Checked)
             {
                 DaysPlus = 0;
             }
- 
+
             CriteriaTable.Columns.Add("DaysPlus", typeof(decimal));
             DataRow row = CriteriaTable.NewRow();
             row["DaysPlus"] = DaysPlus;
@@ -113,7 +114,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             row["LedgerNumber"] = FLedgerNumber;
             CriteriaTable.Rows.Add(row);
 
-                // Start the asynchronous search operation on the PetraServer
+            // Start the asynchronous search operation on the PetraServer
             if (FSearchForSuppliers)
             {
                 FSupplierFindObject.FindSupplier(CriteriaTable);
@@ -182,10 +183,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 grdSupplierResult.AddTextColumn("Supplier Key", FPagedDataTable.Columns[0]);
                 grdSupplierResult.AddTextColumn("Supplier Name", FPagedDataTable.Columns[1]);
                 grdSupplierResult.AddTextColumn("Currency", FPagedDataTable.Columns[2]);
-                
-        		grdSupplierResult.Columns[0].Width = 90;
-        		grdSupplierResult.Columns[1].Width = 250;
-        		grdSupplierResult.Columns[2].Width = 85;
+
+                grdSupplierResult.Columns[0].Width = 90;
+                grdSupplierResult.Columns[1].Width = 250;
+                grdSupplierResult.Columns[2].Width = 85;
             }
             else
             {
@@ -210,7 +211,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 grdInvoiceResult.Columns[7].Width = 90;
                 grdInvoiceResult.Columns[8].Width = 150;
             }
-            
         }
 
         private void FinishThread()
@@ -226,7 +226,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 {
                     FPagedDataTable = grdInvoiceResult.LoadFirstDataPage(@GetDataPagedResult);
                 }
-
             }
             catch (Exception E)
             {
@@ -251,6 +250,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     // Make the Grid respond on updown keys
                     grdSupplierResult.Focus();
                 }
+
                 ActionEnabledEvent(null, new ActionEventArgs("cndSelectedSupplier", grdSupplierResult.TotalPages > 0));
             }
             else
@@ -268,16 +268,16 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     // Make the Grid respond on updown keys
                     grdInvoiceResult.Focus();
                 }
+
 //              ActionEnabledEvent(null, new ActionEventArgs("cndSelectedDocument", grdInvoiceResult.TotalPages > 0));
             }
-
         }
 
-    	private void InitializeManualCode()
+        private void InitializeManualCode()
         {
             this.cmbSupplierCurrency.cmbCombobox.TextChanged += new System.EventHandler(this.SetSupplierFilters);
         }
-    
+
         private void EnableDisableUI(bool AEnable)
         {
             // TODO: autogenerate?
@@ -299,19 +299,24 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             if (FSupplierFindObject != null)
             {
                 DataTable tble = FSupplierFindObject.GetDataPagedResult(ANeededPage, APageSize, out ATotalRecords, out ATotalPages);
+
                 if (!FSearchForSuppliers)
                 {
                     tble.Columns.Add("DiscountMsg");
+
                     foreach (DataRow Row in tble.Rows)
                     {
                         Row["DiscountMsg"] = "None";
+
                         if (Row[9].GetType() == typeof(DateTime))
                         {
                             Decimal DiscountPercent = (Decimal)Row[8];
                             DateTime DiscountUntil = (DateTime)Row[9];
+
                             if (DiscountUntil > DateTime.Now)
                             {
-                                Row["DiscountMsg"] = String.Format("{0:n0}% until {1}", DiscountPercent, TDate.DateTimeToLongDateString2(DiscountUntil));
+                                Row["DiscountMsg"] =
+                                    String.Format("{0:n0}% until {1}", DiscountPercent, TDate.DateTimeToLongDateString2(DiscountUntil));
                             }
                             else
                             {
@@ -442,47 +447,48 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private void SetDueFilters(object sender, EventArgs e)
         {
-            bool CanShow =                 
-                   (chkDueToday.CheckState == CheckState.Checked)
-                || (chkOverdue.CheckState == CheckState.Checked) 
+            bool CanShow =
+                (chkDueToday.CheckState == CheckState.Checked)
+                || (chkOverdue.CheckState == CheckState.Checked)
                 || (chkDueFuture.CheckState == CheckState.Checked);
-            
+
             if (!CanShow)
             {
-                chkShowOutstandingAmounts.CheckState= CheckState.Unchecked;
+                chkShowOutstandingAmounts.CheckState = CheckState.Unchecked;
             }
+
             chkShowOutstandingAmounts.Enabled = CanShow;
-            
         }
-        
+
         private void SetSupplierFilters(object sender, EventArgs e)
         {
-            
             if (FPagedDataTable != null)
             {
                 String CurrencyRowFilter = "";
                 String ActiveRowFilter = "";
-                
+
                 String CurrencyCode = cmbSupplierCurrency.cmbCombobox.Text;
+
                 if (CurrencyCode != "")
                 {
-                    CurrencyRowFilter = String.Format("{0}='{1}'", AApSupplierTable.GetCurrencyCodeDBName(),  CurrencyCode);
+                    CurrencyRowFilter = String.Format("{0}='{1}'", AApSupplierTable.GetCurrencyCodeDBName(), CurrencyCode);
                 }
-                
+
                 if (chkHideInactiveSuppliers.CheckState == CheckState.Checked)
                 {
                     ActiveRowFilter = String.Format("{0}='ACTIVE'", PPartnerTable.GetStatusCodeDBName());
                 }
-                
+
                 String RowFilter = CurrencyRowFilter;
+
                 if ((CurrencyRowFilter != "") && (ActiveRowFilter != ""))
                 {
                     RowFilter += " AND ";
                 }
+
                 RowFilter += ActiveRowFilter;
                 FPagedDataTable.DefaultView.RowFilter = RowFilter;
             }
         }
-        
     }
 }
