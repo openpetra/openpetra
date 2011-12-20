@@ -937,16 +937,9 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             systemInterfaceRow.SetUpComplete = true;
             MainDS.ASystemInterface.Rows.Add(systemInterfaceRow);
 
+            ATransactionTypeRow transactionTypeRow;
+
             // TODO: this might be different for other account or costcentre names
-            ATransactionTypeRow transactionTypeRow = MainDS.ATransactionType.NewRowTyped();
-            transactionTypeRow.LedgerNumber = ANewLedgerNumber;
-            transactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.AP.ToString();
-            transactionTypeRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.INV.ToString();
-            transactionTypeRow.DebitAccountCode = "BAL SHT";
-            transactionTypeRow.CreditAccountCode = "CRS CTRL";
-            transactionTypeRow.TransactionTypeDescription = "Input Creditor's Invoice";
-            transactionTypeRow.SpecialTransactionType = true;
-            MainDS.ATransactionType.Rows.Add(transactionTypeRow);
             transactionTypeRow = MainDS.ATransactionType.NewRowTyped();
             transactionTypeRow.LedgerNumber = ANewLedgerNumber;
             transactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
