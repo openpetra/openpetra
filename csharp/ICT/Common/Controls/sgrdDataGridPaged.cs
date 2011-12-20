@@ -509,9 +509,9 @@ namespace Ict.Common.Controls
         #region Helper functions
 
         /// <summary>
-        /// Determines the PageSize, that is the amount of rows that would fit into the
-        /// Grid at its current horizontal size.
-        /// Takes the height of a possible visible HScrollBar and the heigh of a possible
+        /// Determines the PageSize, that is the number of rows that would fit into the
+        /// Grid at its current vertical size.
+        /// Takes the height of a possible visible HScrollBar and the height of a possible
         /// visible DataRowHeader into consideration.
         /// </summary>
         /// <returns>void</returns>
