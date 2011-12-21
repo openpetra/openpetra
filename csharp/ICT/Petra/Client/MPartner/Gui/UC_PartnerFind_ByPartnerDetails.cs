@@ -198,6 +198,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.btnClearCriteria.Text = Catalog.GetString("Clea&r");
             this.grpCriteria.Text = Catalog.GetString("Find Criteria");
             this.btnCustomCriteriaDemo.Text = Catalog.GetString("Custom Criteria Demo");
+            this.ucoPartnerInfo.Text = Catalog.GetString("Partner Info");
             this.grpResult.Text = Catalog.GetString("Fin&d Result");
             this.lblSearchInfo.Text = Catalog.GetString("Searching...");
             #endregion

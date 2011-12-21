@@ -209,6 +209,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ucoPartnerInfo.Location = new System.Drawing.Point(0, 8);
             this.ucoPartnerInfo.Name = "ucoPartnerInfo";
+            this.ucoPartnerInfo.Text = "Partner Info";
             this.ucoPartnerInfo.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
             this.ucoPartnerInfo.Size = new System.Drawing.Size(515, 110);
             this.ucoPartnerInfo.TabIndex = 0;
