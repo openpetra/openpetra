@@ -83,14 +83,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
                 txtForecast.Text = ForecastEndPeriod.ToString();
 
-                //TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbSelectBudgetYear, FLedgerNumber, true);
-
-                //TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber, true, false, false, false);
-
-                // Do not include summary cost centres: we want to use one cost centre for each Motivation Details
-                //TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, false, true);
-
-
                 this.Text = this.Text + "   [Ledger = " + FLedgerNumber.ToString() + "]";
             }
         }
@@ -113,60 +105,45 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             ABudgetRow BudgetRow;
             int CostCentreCodeLength = 0;
 
-            for (int i = 0; i < ABdgTable.Count; i++)
+            if (ABdgTable != null)
             {
-                BudgetRow = (ABudgetRow)ABdgTable.Rows[i];
-                CostCentreCodeLength = BudgetRow.CostCentreCode.Length;
+	            for (int i = 0; i < ABdgTable.Count; i++)
+	            {
+	                BudgetRow = (ABudgetRow)ABdgTable.Rows[i];
+	                CostCentreCodeLength = BudgetRow.CostCentreCode.Length;
+	
+	                if (CostCentreCodeLength > CostCentrePadding)
+	                {
+	                    CostCentrePadding = CostCentreCodeLength;
+	                }
+	            }
 
-                if (CostCentreCodeLength > CostCentrePadding)
-                {
-                    CostCentrePadding = CostCentreCodeLength;
-                }
+	            BudgetRow = null;
+	
+	            // add empty row so that SetSelectedString for invalid string will not result in undefined behaviour (selecting the first cost centre etc)
+	            ABudgetRow emptyRow = (ABudgetRow)ABdgTable.NewRow();
+	
+	            DataView view = new DataView(ABdgTable);
+	            DataTable ABdgTable2 = view.ToTable(true, new string[] { BudgetSeqDBN, AccountDBN, CostCentreDBN });
+	            ABdgTable2.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
+	
+	            ABdgTable2.Columns.Add(new DataColumn(BudgetSeqKey, typeof(string), BudgetSeqDBN));
+	            ABdgTable2.Columns.Add(new DataColumn(CCAccDesc, typeof(string),
+	                    CostCentreDBN.PadRight(CostCentrePadding + 2, ' ') + " + '-' + " + AccountDBN));
+	
+	            clbCostCentreAccountCodes.Columns.Clear();
+	            clbCostCentreAccountCodes.AddCheckBoxColumn("", ABdgTable2.Columns[CheckedMember], 17, false);
+	            clbCostCentreAccountCodes.AddTextColumn("Key", ABdgTable2.Columns[BudgetSeqKey], 0);
+	            clbCostCentreAccountCodes.AddTextColumn("Cost Centre-Account", ABdgTable2.Columns[CCAccDesc], 200);
+	            clbCostCentreAccountCodes.DataBindGrid(ABdgTable2, BudgetSeqKey, CheckedMember, BudgetSeqKey, CCAccDesc, false, true, false);
+	
+	            clbCostCentreAccountCodes.SetCheckedStringList("");
             }
 
-            BudgetRow = null;
-
-            // add empty row so that SetSelectedString for invalid string will not result in undefined behaviour (selecting the first cost centre etc)
-            ABudgetRow emptyRow = (ABudgetRow)ABdgTable.NewRow();
-
-//            emptyRow[ABudgetTable.ColumnBudgetSequenceId] = -1000;
-//            emptyRow[ABudgetTable.ColumnYearId] = 2010;
-//            emptyRow[ABudgetTable.ColumnLedgerNumberId] = FLedgerNumber;
-//            emptyRow[ABudgetTable.ColumnCostCentreCodeId] = string.Empty;
-//            emptyRow[ABudgetTable.ColumnAccountCodeId] = string.Empty; //Catalog.GetString("Select a valid cost centre/account combination");
-//            ABdgTable.Rows.Add(emptyRow);
-
-            DataView view = new DataView(ABdgTable);
-            DataTable ABdgTable2 = view.ToTable(true, new string[] { BudgetSeqDBN, AccountDBN, CostCentreDBN });
-            ABdgTable2.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
-
-            /*ABdgTable2.Columns.Add(new DataColumn(CCAccKey, typeof(string), CostCentreDBN + " + '-' + " + AccountDBN));*/
-            ABdgTable2.Columns.Add(new DataColumn(BudgetSeqKey, typeof(string), BudgetSeqDBN));
-            ABdgTable2.Columns.Add(new DataColumn(CCAccDesc, typeof(string),
-                    CostCentreDBN.PadRight(CostCentrePadding + 2, ' ') + " + '-' + " + AccountDBN));
-
-            clbCostCentreAccountCodes.Columns.Clear();
-            clbCostCentreAccountCodes.AddCheckBoxColumn("", ABdgTable2.Columns[CheckedMember], 17, false);
-            clbCostCentreAccountCodes.AddTextColumn("Key", ABdgTable2.Columns[BudgetSeqKey], 0);
-            clbCostCentreAccountCodes.AddTextColumn("Cost Centre-Account", ABdgTable2.Columns[CCAccDesc], 200);
-            clbCostCentreAccountCodes.DataBindGrid(ABdgTable2, BudgetSeqKey, CheckedMember, BudgetSeqKey, CCAccDesc, false, true, false);
-
-            /*clbCostCentreAccountCodes.Columns.Clear();
-             * clbCostCentreAccountCodes.AddCheckBoxColumn("", ABdgTable2.Columns[CheckedMember], 17, false);
-             * clbCostCentreAccountCodes.AddTextColumn("Key", ABdgTable2.Columns[CCAccKey], 0);
-             * clbCostCentreAccountCodes.AddTextColumn("Cost Centre-Account", ABdgTable2.Columns[CCAccDesc], 200);
-             * clbCostCentreAccountCodes.DataBindGrid(ABdgTable2, CCAccKey, CheckedMember, CCAccKey, CCAccDesc, false, true, false);*/
-            //clbCostCentreAccountCodes.AddTextColumn(Catalog.GetString("Cost Centre/Account"), ABdgTable2.Columns[CostCentreDBN], 150);
-            //clbCostCentreAccountCodes.AddTextColumn(Catalog.GetString("Account"), ABdgTable2.Columns[AccountDBN], 100);
-            //clbCostCentreAccountCodes.DataBindGrid(ABdgTable2, CCAccKey, CheckedMember, CCAccKey, AccountDBN, false, true, false);
-
-            clbCostCentreAccountCodes.SetCheckedStringList("");
         }
 
         private void GenerateBudget(Object sender, EventArgs e)
         {
-            int lv_counter_i = 0;
-
             string msg = string.Empty;
 
             msg = "You can either consolidate all of your budgets";
@@ -187,38 +164,60 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
             if (rbtThisYearsBudgets.Checked)
             {
-                ForecastType = "BUDGET";
+                ForecastType = "Budget";
             }
             else
             {
-                ForecastType = "ACTUALS";
+                ForecastType = "Actuals";
             }
 
-            if (rbtSelectedBudgets.Checked && (CheckItemsList.Length > 0))
+            try
             {
-                lv_counter_i = 1;
-
-                foreach (string BudgetItem in CheckedItems)
-                {
-                    /* Generate report. Parameters are recid of the budget and the forecast type.
-                     * RUN gb4000.p (RECID(a_budget), rad_forecast_type_c:SCREEN-VALUE).*/
-                    int BudgetItemNo = Convert.ToInt32(BudgetItem);
-                    GenBudgetForNextYear(BudgetItemNo, ForecastType);
-                }
+	            if (rbtSelectedBudgets.Checked && (CheckItemsList.Length > 0)
+	               || rbtAllBudgets.Checked == true)
+	            {
+            		Cursor.Current = Cursors.WaitCursor;
+            		
+	            	foreach (string BudgetItem in CheckedItems)
+	                {
+	                    /* Generate report. Parameters are recid of the budget and the forecast type.
+	                     * RUN gb4000.p (RECID(a_budget), rad_forecast_type_c:SCREEN-VALUE).*/
+	                    int BudgetItemNo = Convert.ToInt32(BudgetItem);
+	                    GenBudgetForNextYear(BudgetItemNo, ForecastType);
+	                }
+	
+	            	Cursor.Current = Cursors.Default;
+	            	
+	            	MessageBox.Show("Budget Auto-Generate Complete.");
+	            	
+	            }
+	            else
+	            {
+	            	throw new InvalidOperationException("There are no budgets selected!");
+	            }
             }
-            else
+            catch(InvalidOperationException ex)
             {
+            	MessageBox.Show(ex.Message);
+            }
+            catch (Exception)
+            {
+            	throw;
+            }
+            finally
+            {
+            	Cursor.Current = Cursors.Default;
             }
         }
 
         private void GenBudgetForNextYear(int ABudgetSeq, string AForecastType)
         {
-            decimal lv_sum_n;
-            int lv_period_of_change_i = 0;
-            decimal lv_prior_amount_n = 0;
-            decimal lv_after_amount_n = 0;
-            int lv_glm_sequence_this_year_i = 0;
-            int lv_glm_sequence_last_year_i = 0;
+            decimal BudgetSum;
+            decimal PriorAmount = 0;
+            decimal AfterAmount = 0;
+            int PeriodOfChange = 0;
+            int GLMSequenceThisYear = 0;
+            int GLMSequenceLastYear = 0;
 
             ABudgetTable BudgetTable = FMainDS.ABudget;
             ABudgetRow BudgetRow = (ABudgetRow)BudgetTable.Rows.Find(new object[] { ABudgetSeq });
@@ -232,12 +231,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             int CurrentPeriod = LedgerRow.CurrentPeriod;
             int NumAccPeriods = LedgerRow.NumberOfAccountingPeriods;
 
-            lv_glm_sequence_this_year_i = TRemote.MFinance.Budget.WebConnectors.GetGLMSequenceForBudget(FLedgerNumber,
+            GLMSequenceThisYear = TRemote.MFinance.Budget.WebConnectors.GetGLMSequenceForBudget(FLedgerNumber,
                 AccountCode,
                 CostCentreCode,
                 CurrentFinancialYear);
 
-            lv_glm_sequence_last_year_i = TRemote.MFinance.Budget.WebConnectors.GetGLMSequenceForBudget(FLedgerNumber,
+            GLMSequenceLastYear = TRemote.MFinance.Budget.WebConnectors.GetGLMSequenceForBudget(FLedgerNumber,
                 AccountCode,
                 CostCentreCode,
                 (CurrentFinancialYear - 1));
@@ -264,8 +263,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                         {
                             //Set budget period
                             ActualAmount = TRemote.MFinance.Budget.WebConnectors.GetActual(FLedgerNumber,
-                                lv_glm_sequence_last_year_i,
-                                lv_glm_sequence_this_year_i,
+                                GLMSequenceLastYear,
+                                GLMSequenceThisYear,
                                 i,
                                 NumAccPeriods,
                                 CurrentFinancialYear,
@@ -280,7 +279,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                             if (AForecastType == MFinanceConstants.FORECAST_TYPE_BUDGET)
                             {
                                 BudgetAmount =
-                                    Math.Round(TRemote.MFinance.Budget.WebConnectors.GetBudget(lv_glm_sequence_this_year_i, -1, j, NumAccPeriods,
+                                    Math.Round(TRemote.MFinance.Budget.WebConnectors.GetBudget(GLMSequenceThisYear, -1, j, NumAccPeriods,
                                             false,
                                             MFinanceConstants.CURRENCY_BASE));
                                 SetBudgetPeriod(ABudgetSeq, j, BudgetAmount);
@@ -288,8 +287,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                             else
                             {
                                 ActualAmount = TRemote.MFinance.Budget.WebConnectors.GetActual(FLedgerNumber,
-                                    lv_glm_sequence_last_year_i,
-                                    lv_glm_sequence_this_year_i,
+                                    GLMSequenceLastYear,
+                                    GLMSequenceThisYear,
                                     j,
                                     NumAccPeriods,
                                     CurrentFinancialYear,
@@ -307,9 +306,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
                         if ((CurrentPeriod - 1) != 0)
                         {
-                            lv_sum_n =
+                            BudgetSum =
                                 TRemote.MFinance.Budget.WebConnectors.GetActual(FLedgerNumber,
-                                    lv_glm_sequence_this_year_i,
+                                    GLMSequenceThisYear,
                                     -1,
                                     (CurrentPeriod - 1),
                                     NumAccPeriods,
@@ -320,14 +319,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                         }
                         else
                         {
-                            lv_sum_n = 0;
+                            BudgetSum = 0;
                         }
 
                         if (AForecastType == MFinanceConstants.FORECAST_TYPE_BUDGET)
                         {
                             for (int i = CurrentPeriod; i <= NumAccPeriods; i++)
                             {
-                                lv_sum_n += TRemote.MFinance.Budget.WebConnectors.GetBudget(lv_glm_sequence_this_year_i,
+                                BudgetSum += TRemote.MFinance.Budget.WebConnectors.GetBudget(GLMSequenceThisYear,
                                     -1,
                                     i,
                                     NumAccPeriods,
@@ -339,9 +338,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                         {
                             if (CurrentPeriod > 1)
                             {
-                                lv_sum_n += TRemote.MFinance.Budget.WebConnectors.GetActual(FLedgerNumber,
-                                    lv_glm_sequence_last_year_i,
-                                    lv_glm_sequence_this_year_i,
+                                BudgetSum += TRemote.MFinance.Budget.WebConnectors.GetActual(FLedgerNumber,
+                                    GLMSequenceLastYear,
+                                    GLMSequenceThisYear,
                                     NumAccPeriods,
                                     NumAccPeriods,
                                     CurrentFinancialYear,
@@ -349,8 +348,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                                     true,
                                     MFinanceConstants.CURRENCY_BASE) -
                                             TRemote.MFinance.Budget.WebConnectors.GetActual(FLedgerNumber,
-                                    lv_glm_sequence_last_year_i,
-                                    lv_glm_sequence_this_year_i,
+                                    GLMSequenceLastYear,
+                                    GLMSequenceThisYear,
                                     (CurrentPeriod - 1),
                                     NumAccPeriods,
                                     CurrentFinancialYear,
@@ -360,9 +359,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                             }
                             else
                             {
-                                lv_sum_n += TRemote.MFinance.Budget.WebConnectors.GetActual(FLedgerNumber,
-                                    lv_glm_sequence_last_year_i,
-                                    lv_glm_sequence_this_year_i,
+                                BudgetSum += TRemote.MFinance.Budget.WebConnectors.GetActual(FLedgerNumber,
+                                    GLMSequenceLastYear,
+                                    GLMSequenceThisYear,
                                     NumAccPeriods,
                                     NumAccPeriods,
                                     CurrentFinancialYear,
@@ -372,11 +371,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                             }
                         }
 
-                        lv_sum_n = lv_sum_n / NumAccPeriods;
+                        BudgetSum = BudgetSum / NumAccPeriods;
 
                         for (int i = 1; i <= NumAccPeriods; i++)
                         {
-                            SetBudgetPeriod(ABudgetSeq, i, Math.Round(lv_sum_n));
+                            SetBudgetPeriod(ABudgetSeq, i, Math.Round(BudgetSum));
                         }
 
                         break;
@@ -387,27 +386,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                         {
                             if (GetBudgetPeriod(ABudgetSeq, i) != GetBudgetPeriod(ABudgetSeq, 1))
                             {
-                                lv_period_of_change_i = i - 1;
+                                PeriodOfChange = i - 1;
                                 break;
                             }
                         }
 
                         /* Calculate average prior to change and after change. */
-                        if (lv_period_of_change_i < (CurrentPeriod - 1))
+                        if (PeriodOfChange < (CurrentPeriod - 1))
                         {
-                            lv_prior_amount_n = TRemote.MFinance.Budget.WebConnectors.GetActual(FLedgerNumber,
-                                lv_glm_sequence_this_year_i,
+                            PriorAmount = TRemote.MFinance.Budget.WebConnectors.GetActual(FLedgerNumber,
+                                GLMSequenceThisYear,
                                 -1,
-                                lv_period_of_change_i,
+                                PeriodOfChange,
                                 NumAccPeriods,
                                 CurrentFinancialYear,
                                 CurrentFinancialYear,
                                 true,
                                 MFinanceConstants.CURRENCY_BASE);
 
-                            lv_after_amount_n =
+                            AfterAmount =
                                 TRemote.MFinance.Budget.WebConnectors.GetActual(FLedgerNumber,
-                                    lv_glm_sequence_this_year_i,
+                                    GLMSequenceThisYear,
                                     -1,
                                     (CurrentPeriod - 1),
                                     NumAccPeriods,
@@ -416,9 +415,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                                     true,
                                     MFinanceConstants.CURRENCY_BASE) -
                                 TRemote.MFinance.Budget.WebConnectors.GetActual(FLedgerNumber,
-                                    lv_glm_sequence_this_year_i,
+                                    GLMSequenceThisYear,
                                     -1,
-                                    lv_period_of_change_i + 1,
+                                    PeriodOfChange + 1,
                                     NumAccPeriods,
                                     CurrentFinancialYear,
                                     CurrentFinancialYear,
@@ -429,7 +428,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                             {
                                 for (int i = CurrentPeriod; i <= NumAccPeriods; i++)
                                 {
-                                    lv_after_amount_n += TRemote.MFinance.Budget.WebConnectors.GetBudget(lv_glm_sequence_this_year_i,
+                                    AfterAmount += TRemote.MFinance.Budget.WebConnectors.GetBudget(GLMSequenceThisYear,
                                         -1,
                                         i,
                                         NumAccPeriods,
@@ -439,9 +438,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                             }
                             else
                             {
-                                lv_after_amount_n += TRemote.MFinance.Budget.WebConnectors.GetActual(FLedgerNumber,
-                                    lv_glm_sequence_last_year_i,
-                                    lv_glm_sequence_this_year_i,
+                                AfterAmount += TRemote.MFinance.Budget.WebConnectors.GetActual(FLedgerNumber,
+                                    GLMSequenceLastYear,
+                                    GLMSequenceThisYear,
                                     NumAccPeriods,
                                     NumAccPeriods,
                                     CurrentFinancialYear,
@@ -449,8 +448,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                                     true,
                                     MFinanceConstants.CURRENCY_BASE) -
                                                      TRemote.MFinance.Budget.WebConnectors.GetActual(FLedgerNumber,
-                                    lv_glm_sequence_last_year_i,
-                                    lv_glm_sequence_this_year_i,
+                                    GLMSequenceLastYear,
+                                    GLMSequenceThisYear,
                                     CurrentPeriod,
                                     NumAccPeriods,
                                     CurrentFinancialYear,
@@ -463,9 +462,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                         {
                             if ((CurrentPeriod - 1) != 0)
                             {
-                                lv_prior_amount_n =
+                                PriorAmount =
                                     TRemote.MFinance.Budget.WebConnectors.GetActual(FLedgerNumber,
-                                        lv_glm_sequence_this_year_i,
+                                        GLMSequenceThisYear,
                                         -1,
                                         (CurrentPeriod - 1),
                                         NumAccPeriods,
@@ -476,14 +475,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                             }
                             else
                             {
-                                lv_prior_amount_n = 0;
+                                PriorAmount = 0;
                             }
 
                             if (AForecastType == MFinanceConstants.FORECAST_TYPE_BUDGET)
                             {
-                                for (int i = CurrentPeriod; i <= lv_period_of_change_i; i++)
+                                for (int i = CurrentPeriod; i <= PeriodOfChange; i++)
                                 {
-                                    lv_prior_amount_n += TRemote.MFinance.Budget.WebConnectors.GetBudget(lv_glm_sequence_this_year_i,
+                                    PriorAmount += TRemote.MFinance.Budget.WebConnectors.GetBudget(GLMSequenceThisYear,
                                         -1,
                                         i,
                                         NumAccPeriods,
@@ -493,18 +492,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                             }
                             else
                             {
-                                lv_prior_amount_n = TRemote.MFinance.Budget.WebConnectors.GetActual(FLedgerNumber,
-                                    lv_glm_sequence_last_year_i,
-                                    lv_glm_sequence_this_year_i,
-                                    lv_period_of_change_i,
+                                PriorAmount = TRemote.MFinance.Budget.WebConnectors.GetActual(FLedgerNumber,
+                                    GLMSequenceLastYear,
+                                    GLMSequenceThisYear,
+                                    PeriodOfChange,
                                     NumAccPeriods,
                                     CurrentFinancialYear,
                                     (CurrentFinancialYear - 1),
                                     true,
                                     MFinanceConstants.CURRENCY_BASE) -
                                                     TRemote.MFinance.Budget.WebConnectors.GetActual(FLedgerNumber,
-                                    lv_glm_sequence_last_year_i,
-                                    lv_glm_sequence_this_year_i,
+                                    GLMSequenceLastYear,
+                                    GLMSequenceThisYear,
                                     CurrentPeriod,
                                     NumAccPeriods,
                                     CurrentFinancialYear,
@@ -515,9 +514,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
                             if (AForecastType == MFinanceConstants.FORECAST_TYPE_BUDGET)
                             {
-                                for (int i = (lv_period_of_change_i + 1); i <= NumAccPeriods; i++)
+                                for (int i = (PeriodOfChange + 1); i <= NumAccPeriods; i++)
                                 {
-                                    lv_after_amount_n += TRemote.MFinance.Budget.WebConnectors.GetBudget(lv_glm_sequence_this_year_i,
+                                    AfterAmount += TRemote.MFinance.Budget.WebConnectors.GetBudget(GLMSequenceThisYear,
                                         -1,
                                         i,
                                         NumAccPeriods,
@@ -527,9 +526,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                             }
                             else
                             {
-                                lv_after_amount_n = TRemote.MFinance.Budget.WebConnectors.GetActual(FLedgerNumber,
-                                    lv_glm_sequence_last_year_i,
-                                    lv_glm_sequence_this_year_i,
+                                AfterAmount = TRemote.MFinance.Budget.WebConnectors.GetActual(FLedgerNumber,
+                                    GLMSequenceLastYear,
+                                    GLMSequenceThisYear,
                                     NumAccPeriods,
                                     NumAccPeriods,
                                     CurrentFinancialYear,
@@ -537,9 +536,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                                     true,
                                     MFinanceConstants.CURRENCY_BASE) -
                                                     TRemote.MFinance.Budget.WebConnectors.GetActual(FLedgerNumber,
-                                    lv_glm_sequence_last_year_i,
-                                    lv_glm_sequence_this_year_i,
-                                    (lv_period_of_change_i + 1),
+                                    GLMSequenceLastYear,
+                                    GLMSequenceThisYear,
+                                    (PeriodOfChange + 1),
                                     NumAccPeriods,
                                     CurrentFinancialYear,
                                     (CurrentFinancialYear - 1),
@@ -548,17 +547,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                             }
 
                             /* Dividing after sum by prior sum gives rate of inflation. */
-                            lv_prior_amount_n /= lv_period_of_change_i;
-                            lv_after_amount_n /= (NumAccPeriods - lv_period_of_change_i);
+                            PriorAmount = PriorAmount / PeriodOfChange;
+                            AfterAmount = AfterAmount / (NumAccPeriods - PeriodOfChange);
 
-                            for (int i = 1; i <= lv_period_of_change_i; i++)
+                            for (int i = 1; i <= PeriodOfChange; i++)
                             {
-                                SetBudgetPeriod(ABudgetSeq, i, Math.Round(lv_prior_amount_n, 0));
+                                SetBudgetPeriod(ABudgetSeq, i, Math.Round(PriorAmount, 0));
                             }
 
-                            for (int i = (lv_period_of_change_i + 1); i <= NumAccPeriods; i++)
+                            for (int i = (PeriodOfChange + 1); i <= NumAccPeriods; i++)
                             {
-                                SetBudgetPeriod(ABudgetSeq, i, Math.Round(lv_after_amount_n, 0));
+                                SetBudgetPeriod(ABudgetSeq, i, Math.Round(AfterAmount, 0));
                             }
                         }
 
@@ -581,8 +580,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 throw;
             }
 
-            MessageBox.Show("lv_glm_sequence_this_year_i: " + lv_glm_sequence_this_year_i.ToString());
-            MessageBox.Show("lv_glm_sequence_last_year_i: " + lv_glm_sequence_last_year_i.ToString());
         }
 
         /// <summary>

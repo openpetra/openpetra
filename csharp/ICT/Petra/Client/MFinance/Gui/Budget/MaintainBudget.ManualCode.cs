@@ -123,33 +123,30 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             ARow.BudgetSequence = newSequence;
             ARow.LedgerNumber = FLedgerNumber;
             //TODO replace line below
-            //ARow.Revision = Math.Abs(newSequence);
+            ARow.Revision = 0; //Math.Abs(newSequence);
             ARow.Year = CurrentBudgetYear;
 
-            //Add the budget revision entry
-            int newRevision = 0;
+            //Add the budget revision entry. Not implementing versioning at this point;
+            int BdgRevision = 0;
 
-            if (FMainDS.ABudgetRevision.Rows.Find(new object[] { FLedgerNumber, CurrentBudgetYear, newRevision }) != null)
+            //Find if Revision row already exists
+            ABudgetRevisionRow BudgetRevisionRow = (ABudgetRevisionRow)FMainDS.ABudgetRevision.Rows.Find(new object[] { FLedgerNumber, CurrentBudgetYear, BdgRevision });
+            
+            if (BudgetRevisionRow == null)
             {
-                while (FMainDS.ABudgetRevision.Rows.Find(new object[] { FLedgerNumber, CurrentBudgetYear, newRevision }) != null)
-                {
-                    newRevision++;
-                }
+	            //Add a new row
+	            BudgetRevisionRow = (ABudgetRevisionRow)FMainDS.ABudgetRevision.NewRowTyped();
+	            BudgetRevisionRow.LedgerNumber = FLedgerNumber;
+	            BudgetRevisionRow.Year = CurrentBudgetYear;
+	            BudgetRevisionRow.Revision = BdgRevision; 
+	            BudgetRevisionRow.Description = "New Budget Entry";
+	            FMainDS.ABudgetRevision.Rows.Add(BudgetRevisionRow);
             }
 
-            ABudgetRevisionRow BudgetRevisionRow = (ABudgetRevisionRow)FMainDS.ABudgetRevision.NewRowTyped();
-            BudgetRevisionRow.LedgerNumber = FLedgerNumber;
-            BudgetRevisionRow.Year = CurrentBudgetYear;
-            BudgetRevisionRow.Revision = newRevision;
-            BudgetRevisionRow.Description = "New Budget Entry";
-            FMainDS.ABudgetRevision.Rows.Add(BudgetRevisionRow);
-
             //Add the budget period values
-            ABudgetPeriodRow BudgetPeriodRow;
-
             for (int i = 1; i <= 12; i++)
             {
-                BudgetPeriodRow = FMainDS.ABudgetPeriod.NewRowTyped();
+                ABudgetPeriodRow BudgetPeriodRow = FMainDS.ABudgetPeriod.NewRowTyped();
                 BudgetPeriodRow.BudgetSequence = ARow.BudgetSequence;
                 BudgetPeriodRow.PeriodNumber = i;
                 BudgetPeriodRow.BudgetBase = 0;
