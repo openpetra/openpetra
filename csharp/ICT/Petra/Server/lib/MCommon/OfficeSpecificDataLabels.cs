@@ -441,91 +441,6 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
         }
 
         /// <summary>
-        /// Saves data from the Office Specific Data Label Edit Screen (contained in a DataSet).
-        ///
-        /// All DataTables contained in the DataSet are inspected for added, changed or
-        /// deleted rows by submitting them to the Business Objects that relate to them.
-        /// The Business Objects check the DataRow(s) that belong to them for validity
-        /// before saving the data by calling Stored Procedures for inserting, updating
-        /// or deleting data are called.
-        ///
-        /// </summary>
-        /// <param name="AInspectDS">DataSet that needs to contain known DataTables</param>
-        /// <param name="AVerificationResult">Nil if all verifications are OK and all DB calls
-        /// succeded, otherwise filled with 1..n TVerificationResult objects
-        /// (can also contain DB call exceptions)</param>
-        /// <returns>true if all verifications are OK and all DB calls succeeded, false if
-        /// any verification or DB call failed
-        /// </returns>
-        public TSubmitChangesResult SubmitChanges(ref OfficeSpecificDataLabelsTDS AInspectDS, out TVerificationResultCollection AVerificationResult)
-        {
-            TSubmitChangesResult SubmissionResult;
-            TDBTransaction SubmitChangesTransaction;
-            DataTable ValueTable;
-
-            AVerificationResult = null;
-            SubmissionResult = TSubmitChangesResult.scrNothingToBeSaved;
-            SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-            try
-            {
-                // Submit can only be done either for partner of application values
-                if (AInspectDS.Tables.Contains(PDataLabelValuePartnerTable.GetTableName()))
-                {
-                    ValueTable = (DataTable)AInspectDS.PDataLabelValuePartner;
-                    SubmissionResult = SubmitChangesServerSide(ref ValueTable, SubmitChangesTransaction, out AVerificationResult);
-                }
-                else if (AInspectDS.Tables.Contains(PDataLabelValueApplicationTable.GetTableName()))
-                {
-                    ValueTable = (DataTable)AInspectDS.PDataLabelValueApplication;
-                    SubmissionResult = SubmitChangesServerSide(ref ValueTable, SubmitChangesTransaction, out AVerificationResult);
-                }
-            }
-#if DEBUGMODE
-            catch (Exception Exp)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-
-                if (TLogging.DL >= 8)
-                {
-                    Console.WriteLine(
-                        this.GetType().FullName + ".SubmitChanges: Exception occured, Transaction ROLLED BACK. Exception: " + Exp.ToString());
-                }
-
-                throw;
-            }
-#else
-            catch (Exception)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                throw;
-            }
-#endif
-
-            if (SubmissionResult == TSubmitChangesResult.scrOK)
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                if (TLogging.DL >= 8)
-                {
-                    Console.WriteLine(this.GetType().FullName + ".SubmitChanges: Transaction committed!");
-                }
-#endif
-            }
-            else
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-#if DEBUGMODE
-                if (TLogging.DL >= 8)
-                {
-                    Console.WriteLine(this.GetType().FullName + ".SubmitChanges: Transaction ROLLED BACK!");
-                }
-#endif
-            }
-
-            return SubmissionResult;
-        }
-
-        /// <summary>
         /// Saves data from the Office Specific Data Label Edit Screen (contained in a DataTable).
         ///
         /// The DataTable is inspected for added, changed or
@@ -536,45 +451,31 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
         ///
         /// </summary>
         /// <param name="AInspectDT">DataTable that needs to be submitted</param>
-        /// <param name="ASubmitChangesTransaction">Current Transaction</param>
-        /// <param name="AVerificationResult">Nil if all verifications are OK and all DB calls
-        /// succeded, otherwise filled with 1..n TVerificationResult objects
-        /// (can also contain DB call exceptions)</param>
+        /// <param name="AReadTransaction">Current Transaction</param>
         /// <returns>true if all verifications are OK and all DB calls succeeded, false if
         /// any verification or DB call failed
         /// </returns>
         [NoRemoting]
-        public TSubmitChangesResult SubmitChangesServerSide(ref DataTable AInspectDT,
-            TDBTransaction ASubmitChangesTransaction,
-            out TVerificationResultCollection AVerificationResult)
+        public TSubmitChangesResult PrepareChangesServerSide(
+            DataTable AInspectDT,
+            TDBTransaction AReadTransaction)
         {
-            TSubmitChangesResult SubmissionResult;
-            TVerificationResultCollection SingleVerificationResultCollection;
-            PDataLabelValuePartnerTable DataLabelValuePartnerTableSubmit;
-            PDataLabelValueApplicationTable DataLabelValueApplicationTableSubmit;
-            PDataLabelTable DataLabelDT;
-            DataRow InspectedDataRow;
-            int RowIndex;
-            int NumRows;
+            TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrOK;
 
             // TODO: once we have centrally cached data tables on the server then get the data
             // from there. Until then just load it on the spot here!
-            DataLabelDT = PDataLabelAccess.LoadAll(ASubmitChangesTransaction);
-
-            AVerificationResult = new TVerificationResultCollection();
+            PDataLabelTable DataLabelDT = PDataLabelAccess.LoadAll(AReadTransaction);
 
             if (AInspectDT != null)
             {
-                SubmissionResult = TSubmitChangesResult.scrError;
-
                 // Run through all rows of the value table and see if the significant column is empty/null. If so
                 // then delete the row from the table (these rows are not needed any longer in order to save space
                 // in the database)
-                NumRows = AInspectDT.Rows.Count;
+                int NumRows = AInspectDT.Rows.Count;
 
-                for (RowIndex = NumRows - 1; RowIndex >= 0; RowIndex -= 1)
+                for (int RowIndex = NumRows - 1; RowIndex >= 0; RowIndex -= 1)
                 {
-                    InspectedDataRow = AInspectDT.Rows[RowIndex];
+                    DataRow InspectedDataRow = AInspectDT.Rows[RowIndex];
 
                     // only check modified or added rows because the deleted ones are deleted anyway
                     if ((InspectedDataRow.RowState == DataRowState.Modified) || (InspectedDataRow.RowState == DataRowState.Added))
@@ -585,58 +486,13 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
                         }
                     }
                 }
-
-                if (AInspectDT.TableName == PDataLabelValuePartnerTable.GetTableName())
-                {
-                    DataLabelValuePartnerTableSubmit = (PDataLabelValuePartnerTable)AInspectDT;
-
-                    if (PDataLabelValuePartnerAccess.SubmitChanges(DataLabelValuePartnerTableSubmit, ASubmitChangesTransaction,
-                            out SingleVerificationResultCollection))
-                    {
-                        SubmissionResult = TSubmitChangesResult.scrOK;
-                    }
-                    else
-                    {
-                        SubmissionResult = TSubmitChangesResult.scrError;
-                        AVerificationResult.AddCollection(SingleVerificationResultCollection);
-#if DEBUGMODE
-                        if (TLogging.DL >= 9)
-                        {
-                            Console.WriteLine(Messages.BuildMessageFromVerificationResult(
-                                    "TOfficeSpecificDataLabelsUIConnector.SubmitChanges VerificationResult: ", AVerificationResult));
-                        }
-#endif
-                    }
-                }
-                else if (AInspectDT.TableName == PDataLabelValueApplicationTable.GetTableName())
-                {
-                    DataLabelValueApplicationTableSubmit = (PDataLabelValueApplicationTable)AInspectDT;
-
-                    if (PDataLabelValueApplicationAccess.SubmitChanges(DataLabelValueApplicationTableSubmit, ASubmitChangesTransaction,
-                            out SingleVerificationResultCollection))
-                    {
-                        SubmissionResult = TSubmitChangesResult.scrOK;
-                    }
-                    else
-                    {
-                        SubmissionResult = TSubmitChangesResult.scrError;
-                        AVerificationResult.AddCollection(SingleVerificationResultCollection);
-#if DEBUGMODE
-                        if (TLogging.DL >= 9)
-                        {
-                            Console.WriteLine(Messages.BuildMessageFromVerificationResult(
-                                    "TOfficeSpecificDataLabelsUIConnector.SubmitChanges VerificationResult: ", AVerificationResult));
-                        }
-#endif
-                    }
-                }
             }
             else
             {
 #if DEBUGMODE
                 if (TLogging.DL >= 8)
                 {
-                    Console.WriteLine("AInspectDS = nil!");
+                    Console.WriteLine("AInspectDS = null!");
                 }
 #endif
                 SubmissionResult = TSubmitChangesResult.scrNothingToBeSaved;

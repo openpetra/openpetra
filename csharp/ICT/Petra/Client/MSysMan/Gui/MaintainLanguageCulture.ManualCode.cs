@@ -60,9 +60,9 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
             CultureTable.DefaultView.Sort = "Display";
 
-            cmbCulture.DataSource = CultureTable.DefaultView;
             cmbCulture.DisplayMember = "Display";
             cmbCulture.ValueMember = "Value";
+            cmbCulture.DataSource = CultureTable.DefaultView;
 
             // TODO: load languages from names of language sub directories
             cmbLanguage.SetDataSourceStringList("en-GB,es-ES,da-DK,de-DE");

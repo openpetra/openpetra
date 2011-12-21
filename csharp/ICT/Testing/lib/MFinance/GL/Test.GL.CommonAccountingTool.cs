@@ -26,6 +26,9 @@ using NUnit.Framework;
 using Ict.Testing.NUnitForms;
 using Ict.Common.DB;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Server;
+using Ict.Common.Remoting.Shared;
+using Ict.Petra.Server.App.Core;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.GL;
@@ -33,6 +36,8 @@ using Ict.Petra.Server.MFinance.Common;
 using Ict.Petra.Shared.MFinance;
 using Ict.Common;
 using NUnit.Extensions.Forms;
+using Ict.Testing.NUnitTools;
+using Ict.Testing.NUnitPetraServer;
 
 namespace Ict.Testing.Petra.Server.MFinance.GL
 {
@@ -40,7 +45,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
     /// TestCommonAccountingTool
     /// </summary>
     [TestFixture]
-    public class TestCommonAccountingTool : CommonNUnitFunctions
+    public class TestCommonAccountingTool
     {
         int LedgerNumber = 43;
 
@@ -58,10 +63,10 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         public void Test_01_BaseCurrencyAccounting()
         {
             // <summary>
-            // 9800 is definde as credit Account and so an accouting in "credit direction" is
-            // added as a postive value to GLM.
-            // 9800 is definde as debit Account and so an accouting in "debit direction" is
-            // added as a postive value to GLM.
+            // 6000 is defined as debit Account and so an accounting in "debit direction" is
+            // added as a positive value to GLM.
+            // 9800 is defined as credit Account and so an accounting in "credit direction" is
+            // added as a positive value to GLM.
             // </summary>
 
             string strAccountStart = "6000";
@@ -91,10 +96,10 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             // strAccountStart is a debit account -> in this case "+"
             Assert.AreEqual(getGLM_InfoBeforeStart.YtdActual + 10, getGLM_InfoAfterStart.YtdActual,
-                "Check if 10 has been accounted");
+                "Check if 10 has been accounted to " + strAccountStart);
             // strAccountEnd is a credit acount -> in this case "+" too!
             Assert.AreEqual(getGLM_InfoBeforeEnd.YtdActual + 10, getGLM_InfoAfterEnd.YtdActual,
-                "Check if 10 has been accounted");
+                "Check if 10 has been accounted to " + strAccountEnd);
 
             commonAccountingTool =
                 new TCommonAccountingTool(LedgerNumber, "NUNIT");
@@ -131,13 +136,13 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             if (!AccountTestCasesAvailable)
             {
-                LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
+                CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
                     "test-sql\\gl-test-account-data.sql");
             }
 
             if (!CostCentreTestCasesAvailable)
             {
-                LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
+                CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
                     "test-sql\\gl-test-costcentre-data.sql");
             }
         }
@@ -162,29 +167,32 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             TCommonAccountingTool commonAccountingTool =
                 new TCommonAccountingTool(LedgerNumber, "NUNIT");
 
-            commonAccountingTool.AddForeignCurrencyJournal("GBP", 0.3m);
+            decimal ExchangeRateEurToGBP = 0.85m;
+            decimal AmountInGBP = 100.0m;
+            decimal AmountInEUR = (1.0m / ExchangeRateEurToGBP) * AmountInGBP;
+            commonAccountingTool.AddForeignCurrencyJournal("GBP", ExchangeRateEurToGBP);
 
             commonAccountingTool.AddForeignCurrencyTransaction(
                 strAccountStart, strCostCentre, "Debit GBP 100", "NUNIT",
-                MFinanceConstants.IS_DEBIT, 100, 333.33m);
+                MFinanceConstants.IS_DEBIT, AmountInEUR, AmountInGBP);
             commonAccountingTool.AddForeignCurrencyTransaction(
                 strAccountEnd, strCostCentre, "Credit GBP 100", "NUNIT",
-                MFinanceConstants.IS_CREDIT, 100, 333.33m);
+                MFinanceConstants.IS_CREDIT, AmountInEUR, AmountInGBP);
 
             commonAccountingTool.CloseSaveAndPost(); // returns intBatchNumber
 
             TGet_GLM_Info getGLM_InfoAfterStart = new TGet_GLM_Info(LedgerNumber, strAccountStart, strCostCentre);
             TGet_GLM_Info getGLM_InfoAfterEnd = new TGet_GLM_Info(LedgerNumber, strAccountEnd, strCostCentre);
 
-            Assert.AreEqual(getGLM_InfoBeforeStart.YtdActual + 100, getGLM_InfoAfterStart.YtdActual,
-                "Check if 100 has been accounted");
-            Assert.AreEqual(getGLM_InfoBeforeEnd.YtdActual + 100, getGLM_InfoAfterEnd.YtdActual,
-                "Check if 100 has been accounted");
+            Assert.AreEqual(Math.Round(getGLM_InfoBeforeStart.YtdActual + AmountInEUR, 2), Math.Round(getGLM_InfoAfterStart.YtdActual, 2),
+                "Check if base currency has been accounted to " + strAccountStart);
+            Assert.AreEqual(Math.Round(getGLM_InfoBeforeEnd.YtdActual + AmountInEUR, 2), Math.Round(getGLM_InfoAfterEnd.YtdActual, 2),
+                "Check if base currency has been accounted to " + strAccountEnd);
 
-            Assert.AreEqual(getGLM_InfoBeforeStart.YtdForeign +  + 333.33m, getGLM_InfoAfterStart.YtdForeign,
-                "Check if 333.33 has been accounted");
+            Assert.AreEqual(getGLM_InfoBeforeStart.YtdForeign + AmountInGBP, getGLM_InfoAfterStart.YtdForeign,
+                "Check if foreign currency has been accounted");
             Assert.AreEqual(getGLM_InfoBeforeEnd.YtdForeign, getGLM_InfoAfterEnd.YtdForeign,
-                "Check if nothing has been accounted");
+                "Check if nothing foreign has been accounted on the non foreign currency account");
         }
 
         /// <summary>
@@ -214,7 +222,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             }
             catch (TVerificationException)
             {
-                Assert.Pass("Exception was thrown");
+                // Exception was thrown, which is expected
+                // Assert.Pass will throw an exception NUnit.Framework.SuccessException and fail the test???
             }
             catch (Exception exception)
             {
@@ -226,12 +235,11 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         /// <summary>
         /// TestFixtureSetUp
         /// </summary>
-        [SetUp]
+        [TestFixtureSetUp]
         public void Init()
         {
-            InitServerConnection();
-            ResetDatabase();
-            System.Diagnostics.Debug.WriteLine("Init: " + this.ToString());
+            TPetraServerConnector.Connect();
+            // ResetDatabase();
         }
 
         /// <summary>
@@ -240,8 +248,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [TestFixtureTearDown]
         public void TearDownTest()
         {
-            DisconnectServerConnection();
-            System.Diagnostics.Debug.WriteLine("TearDownTest: " + this.ToString());
+            TPetraServerConnector.Disconnect();
         }
     }
 }

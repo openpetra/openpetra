@@ -99,6 +99,8 @@ namespace Ict.Petra.Shared.Interfaces.MPersonnel.WebConnectors
                                               out TVerificationResultCollection AVerificationResult);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPersonnel.WebConnectors.TPersonnelWebConnector)</summary>
         PersonnelTDS LoadPersonellStaffData(Int64 APartnerKey);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPersonnel.WebConnectors.TPersonnelWebConnector)</summary>
+        System.Boolean HasCurrentCommitmentRecord(Int64 APartnerKey);
     }
 
 }

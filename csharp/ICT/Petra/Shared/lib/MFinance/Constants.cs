@@ -224,6 +224,15 @@ namespace Ict.Petra.Shared.MFinance
         /// admin fee accounts.
         public const string FUND_TRANSFER_EXPENSE_ACCT = "4800";
 
+        /// standard root account
+        public const string ACCOUNT_BAL_SHT = "BAL SHT";
+
+        /// standard gift account
+        public const string ACCOUNT_GIFT = "GIFT";
+
+        /// standard creditors account
+        public const string ACCOUNT_CREDITORS = "CRS CTRL";
+
         /// standard account
         public const string CASH_ACCT = "CASH";
 

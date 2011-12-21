@@ -43,10 +43,10 @@ RootNode:
             Image: Types.ico
             DynamicControlType: Ict.Petra.Client.MPartner.Gui.TUCPartnerTypes
             
-        tpgFamilyMembers:
-# TODO {LoadPageDynamically=true}
+        tpgFamilyMembers: {LoadPageDynamically=true}
             Label: Family Members
             Image: FamilyMembers.ico
+            DynamicControlType: Ict.Petra.Client.MPartner.Gui.TUC_FamilyMembers
 
         tpgPartnerRelationships: {LoadPageDynamically=true}
             Label: Relationships ({0})

@@ -30,6 +30,7 @@ using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Remoting.Server;
 using Ict.Common.Remoting.Shared;
+using Ict.Testing.NUnitTools;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Server.App.Core;
@@ -48,16 +49,29 @@ namespace Ict.Testing.NUnitPetraServer
         private static TClientDomainManager FDomain = null;
 
         /// <summary>
+        /// Initialize the Petra server and connect to the database.
+        /// this overload looks for the config file itself
+        /// </summary>
+        public static TServerManager Connect()
+        {
+            CommonNUnitFunctions.InitRootPath();
+
+            string strNameConfig = CommonNUnitFunctions.rootPath + "etc/TestServer.config";
+
+            return Connect(strNameConfig);
+        }
+
+        /// <summary>
         /// Initialize the Petra server and connect to the database
         /// </summary>
         /// <param name="AConfigName">just provide the server config file, plus AutoLogin and AutoLoginPasswd</param>
-        public static void Connect(string AConfigName)
+        public static TServerManager Connect(string AConfigName)
         {
             new TAppSettingsManager(AConfigName);
             new TLogging(TAppSettingsManager.GetValue("Server.LogFile"));
 
             Catalog.Init();
-            new TServerManager();
+            TServerManager ServerManager = new TServerManager();
 
             DBAccess.GDBAccessObj = new TDataBase();
             DBAccess.GDBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
@@ -76,6 +90,9 @@ namespace Ict.Testing.NUnitPetraServer
                 FDomain.StopClientAppDomain();
             }
 
+            TClientManager ClientManager = new TClientManager();
+            DomainManager.UClientManagerCallForwarderRef = new TClientManagerCallForwarder(ClientManager);
+
             // do the same as in Ict.Petra.Server.App.Main.TRemoteLoader.LoadDomainManagerAssembly
             FDomain = new TClientDomainManager("0",
                 "-1",
@@ -88,6 +105,8 @@ namespace Ict.Testing.NUnitPetraServer
 
             // we don't need to establish the database connection anymore
             // FDomain.EstablishDBConnection();
+
+            return ServerManager;
         }
 
         /// <summary>
