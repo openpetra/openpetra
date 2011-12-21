@@ -81,6 +81,7 @@
         </CustomTable>
     </DataSet>
     <DataSet name="BudgetTDS">
+        <Table sqltable="a_ledger"/>
         <Table sqltable="a_budget_revision"/>
         <Table sqltable="a_budget"/>
         <Table sqltable="a_budget_period"/>
