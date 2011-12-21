@@ -107,39 +107,38 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
             if (ABdgTable != null)
             {
-	            for (int i = 0; i < ABdgTable.Count; i++)
-	            {
-	                BudgetRow = (ABudgetRow)ABdgTable.Rows[i];
-	                CostCentreCodeLength = BudgetRow.CostCentreCode.Length;
-	
-	                if (CostCentreCodeLength > CostCentrePadding)
-	                {
-	                    CostCentrePadding = CostCentreCodeLength;
-	                }
-	            }
+                for (int i = 0; i < ABdgTable.Count; i++)
+                {
+                    BudgetRow = (ABudgetRow)ABdgTable.Rows[i];
+                    CostCentreCodeLength = BudgetRow.CostCentreCode.Length;
 
-	            BudgetRow = null;
-	
-	            // add empty row so that SetSelectedString for invalid string will not result in undefined behaviour (selecting the first cost centre etc)
-	            ABudgetRow emptyRow = (ABudgetRow)ABdgTable.NewRow();
-	
-	            DataView view = new DataView(ABdgTable);
-	            DataTable ABdgTable2 = view.ToTable(true, new string[] { BudgetSeqDBN, AccountDBN, CostCentreDBN });
-	            ABdgTable2.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
-	
-	            ABdgTable2.Columns.Add(new DataColumn(BudgetSeqKey, typeof(string), BudgetSeqDBN));
-	            ABdgTable2.Columns.Add(new DataColumn(CCAccDesc, typeof(string),
-	                    CostCentreDBN.PadRight(CostCentrePadding + 2, ' ') + " + '-' + " + AccountDBN));
-	
-	            clbCostCentreAccountCodes.Columns.Clear();
-	            clbCostCentreAccountCodes.AddCheckBoxColumn("", ABdgTable2.Columns[CheckedMember], 17, false);
-	            clbCostCentreAccountCodes.AddTextColumn("Key", ABdgTable2.Columns[BudgetSeqKey], 0);
-	            clbCostCentreAccountCodes.AddTextColumn("Cost Centre-Account", ABdgTable2.Columns[CCAccDesc], 200);
-	            clbCostCentreAccountCodes.DataBindGrid(ABdgTable2, BudgetSeqKey, CheckedMember, BudgetSeqKey, CCAccDesc, false, true, false);
-	
-	            clbCostCentreAccountCodes.SetCheckedStringList("");
+                    if (CostCentreCodeLength > CostCentrePadding)
+                    {
+                        CostCentrePadding = CostCentreCodeLength;
+                    }
+                }
+
+                BudgetRow = null;
+
+                // add empty row so that SetSelectedString for invalid string will not result in undefined behaviour (selecting the first cost centre etc)
+                ABudgetRow emptyRow = (ABudgetRow)ABdgTable.NewRow();
+
+                DataView view = new DataView(ABdgTable);
+                DataTable ABdgTable2 = view.ToTable(true, new string[] { BudgetSeqDBN, AccountDBN, CostCentreDBN });
+                ABdgTable2.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
+
+                ABdgTable2.Columns.Add(new DataColumn(BudgetSeqKey, typeof(string), BudgetSeqDBN));
+                ABdgTable2.Columns.Add(new DataColumn(CCAccDesc, typeof(string),
+                        CostCentreDBN.PadRight(CostCentrePadding + 2, ' ') + " + '-' + " + AccountDBN));
+
+                clbCostCentreAccountCodes.Columns.Clear();
+                clbCostCentreAccountCodes.AddCheckBoxColumn("", ABdgTable2.Columns[CheckedMember], 17, false);
+                clbCostCentreAccountCodes.AddTextColumn("Key", ABdgTable2.Columns[BudgetSeqKey], 0);
+                clbCostCentreAccountCodes.AddTextColumn("Cost Centre-Account", ABdgTable2.Columns[CCAccDesc], 200);
+                clbCostCentreAccountCodes.DataBindGrid(ABdgTable2, BudgetSeqKey, CheckedMember, BudgetSeqKey, CCAccDesc, false, true, false);
+
+                clbCostCentreAccountCodes.SetCheckedStringList("");
             }
-
         }
 
         private void GenerateBudget(Object sender, EventArgs e)
@@ -173,40 +172,39 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
             try
             {
-	            if (rbtSelectedBudgets.Checked && (CheckItemsList.Length > 0)
-	               || rbtAllBudgets.Checked == true)
-	            {
-            		Cursor.Current = Cursors.WaitCursor;
-            		
-	            	foreach (string BudgetItem in CheckedItems)
-	                {
-	                    /* Generate report. Parameters are recid of the budget and the forecast type.
-	                     * RUN gb4000.p (RECID(a_budget), rad_forecast_type_c:SCREEN-VALUE).*/
-	                    int BudgetItemNo = Convert.ToInt32(BudgetItem);
-	                    GenBudgetForNextYear(BudgetItemNo, ForecastType);
-	                }
-	
-	            	Cursor.Current = Cursors.Default;
-	            	
-	            	MessageBox.Show("Budget Auto-Generate Complete.");
-	            	
-	            }
-	            else
-	            {
-	            	throw new InvalidOperationException("There are no budgets selected!");
-	            }
+                if (rbtSelectedBudgets.Checked && (CheckItemsList.Length > 0)
+                    || (rbtAllBudgets.Checked == true))
+                {
+                    Cursor.Current = Cursors.WaitCursor;
+
+                    foreach (string BudgetItem in CheckedItems)
+                    {
+                        /* Generate report. Parameters are recid of the budget and the forecast type.
+                         * RUN gb4000.p (RECID(a_budget), rad_forecast_type_c:SCREEN-VALUE).*/
+                        int BudgetItemNo = Convert.ToInt32(BudgetItem);
+                        GenBudgetForNextYear(BudgetItemNo, ForecastType);
+                    }
+
+                    Cursor.Current = Cursors.Default;
+
+                    MessageBox.Show("Budget Auto-Generate Complete.");
+                }
+                else
+                {
+                    throw new InvalidOperationException("There are no budgets selected!");
+                }
             }
-            catch(InvalidOperationException ex)
+            catch (InvalidOperationException ex)
             {
-            	MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.Message);
             }
             catch (Exception)
             {
-            	throw;
+                throw;
             }
             finally
             {
-            	Cursor.Current = Cursors.Default;
+                Cursor.Current = Cursors.Default;
             }
         }
 
@@ -347,7 +345,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                                     (CurrentFinancialYear - 1),
                                     true,
                                     MFinanceConstants.CURRENCY_BASE) -
-                                            TRemote.MFinance.Budget.WebConnectors.GetActual(FLedgerNumber,
+                                             TRemote.MFinance.Budget.WebConnectors.GetActual(FLedgerNumber,
                                     GLMSequenceLastYear,
                                     GLMSequenceThisYear,
                                     (CurrentPeriod - 1),
@@ -447,7 +445,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                                     (CurrentFinancialYear - 1),
                                     true,
                                     MFinanceConstants.CURRENCY_BASE) -
-                                                     TRemote.MFinance.Budget.WebConnectors.GetActual(FLedgerNumber,
+                                               TRemote.MFinance.Budget.WebConnectors.GetActual(FLedgerNumber,
                                     GLMSequenceLastYear,
                                     GLMSequenceThisYear,
                                     CurrentPeriod,
@@ -501,7 +499,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                                     (CurrentFinancialYear - 1),
                                     true,
                                     MFinanceConstants.CURRENCY_BASE) -
-                                                    TRemote.MFinance.Budget.WebConnectors.GetActual(FLedgerNumber,
+                                              TRemote.MFinance.Budget.WebConnectors.GetActual(FLedgerNumber,
                                     GLMSequenceLastYear,
                                     GLMSequenceThisYear,
                                     CurrentPeriod,
@@ -535,7 +533,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                                     (CurrentFinancialYear - 1),
                                     true,
                                     MFinanceConstants.CURRENCY_BASE) -
-                                                    TRemote.MFinance.Budget.WebConnectors.GetActual(FLedgerNumber,
+                                              TRemote.MFinance.Budget.WebConnectors.GetActual(FLedgerNumber,
                                     GLMSequenceLastYear,
                                     GLMSequenceThisYear,
                                     (PeriodOfChange + 1),
@@ -579,7 +577,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             {
                 throw;
             }
-
         }
 
         /// <summary>

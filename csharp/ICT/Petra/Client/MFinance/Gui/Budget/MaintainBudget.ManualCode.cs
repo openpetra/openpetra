@@ -130,17 +130,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             int BdgRevision = 0;
 
             //Find if Revision row already exists
-            ABudgetRevisionRow BudgetRevisionRow = (ABudgetRevisionRow)FMainDS.ABudgetRevision.Rows.Find(new object[] { FLedgerNumber, CurrentBudgetYear, BdgRevision });
-            
+            ABudgetRevisionRow BudgetRevisionRow =
+                (ABudgetRevisionRow)FMainDS.ABudgetRevision.Rows.Find(new object[] { FLedgerNumber, CurrentBudgetYear,
+                                                                                     BdgRevision });
+
             if (BudgetRevisionRow == null)
             {
-	            //Add a new row
-	            BudgetRevisionRow = (ABudgetRevisionRow)FMainDS.ABudgetRevision.NewRowTyped();
-	            BudgetRevisionRow.LedgerNumber = FLedgerNumber;
-	            BudgetRevisionRow.Year = CurrentBudgetYear;
-	            BudgetRevisionRow.Revision = BdgRevision; 
-	            BudgetRevisionRow.Description = "New Budget Entry";
-	            FMainDS.ABudgetRevision.Rows.Add(BudgetRevisionRow);
+                //Add a new row
+                BudgetRevisionRow = (ABudgetRevisionRow)FMainDS.ABudgetRevision.NewRowTyped();
+                BudgetRevisionRow.LedgerNumber = FLedgerNumber;
+                BudgetRevisionRow.Year = CurrentBudgetYear;
+                BudgetRevisionRow.Revision = BdgRevision;
+                BudgetRevisionRow.Description = "New Budget Entry";
+                FMainDS.ABudgetRevision.Rows.Add(BudgetRevisionRow);
             }
 
             //Add the budget period values
