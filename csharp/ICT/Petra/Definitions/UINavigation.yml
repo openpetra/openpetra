@@ -45,6 +45,7 @@ OpenPetra:
                     PartnerReports:
                         PartnerByCity: {ActionOpenScreen=TFrmPartnerByCity}
                         PartnerBySpecialType: {ActionOpenScreen=TFrmPartnerBySpecialType}
+                        PartnerBySubscription: {ActionOpenScreen=TFrmPartnerBySubscription}
                         PartnerAddress: {Label=Brief Address Report, ActionOpenScreen=TFrmBriefAddressReport}
                         BriefFoundation: {Label=Brief Foundation Report, ActionOpenScreen=TFrmBriefFoundationReport}
                         SupportingChurches: {Label=Supporting Churches Report, ActionOpenScreen=TFrmSupportingChurchesReport}
