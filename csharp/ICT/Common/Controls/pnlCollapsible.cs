@@ -136,11 +136,11 @@ namespace Ict.Common.Controls
 
             set
             {
-                string NewToolTipText;
+                string NewToolTipText = value;
 
                 // Set Title Text
+                FToolTipText = value;
                 lblDetailHeading.Text = value;
-                NewToolTipText = String.Format(FToolTipText, value);
 
                 // Update ToolTips
                 this.tipCollapseExpandHints.SetToolTip(this.lblDetailHeading, NewToolTipText);
