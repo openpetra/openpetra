@@ -106,7 +106,6 @@ useful parameters
     </fileset>
   </delete>
   <property name="target" value="clean" />
-  <call target="translationCompilePOFile" />
 </target>
 
 <target name="quickClean" description="cleans all generated files and the delivery directory">
