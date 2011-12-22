@@ -43,7 +43,7 @@ ENDLOCAL
   <move file="${dir.root}/i18n/es.po" tofile="${dir.root}/i18n/es-ES.po"/>
 </target>
 
-<target name="compile" depends="translationCompilePOFile" 
+<target name="compile" depends="translation" 
         description="compile the language file(s) for delivery"/>
 
 <target name="translation" description="compile the language file(s) for delivery"

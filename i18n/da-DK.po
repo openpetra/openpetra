@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openpetraorg\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2011-06-06 13:26+0200\n"
+"POT-Creation-Date: 2011-12-16 07:49+0100\n"
 "PO-Revision-Date: 2011-06-14 22:07+0000\n"
 "Last-Translator: Joergenr <Unknown>\n"
 "Language-Team: Danish <da@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-11-24 05:14+0000\n"
-"X-Generator: Launchpad (build 14336)\n"
+"X-Launchpad-Export-Date: 2011-12-17 05:31+0000\n"
+"X-Generator: Launchpad (build 14525)\n"
 
 msgid "Caption"
 msgstr ""
@@ -26,8 +26,20 @@ msgstr "Opgave"
 msgid "Description"
 msgstr "Beskrivelse"
 
+msgid "Sorry, you don't have enough permissions to do this"
+msgstr ""
+
 msgid "Collapsible Panel"
 msgstr "Sammenfoldeligt panel"
+
+msgid "Value Out of Range"
+msgstr ""
+
+msgid "The number entered has an invalid number format!"
+msgstr ""
+
+msgid "Invalid Number Format"
+msgstr ""
 
 msgid "Cannot open CSV file, because it is missing the header line."
 msgstr ""
@@ -38,9 +50,9 @@ msgid ""
 msgstr ""
 
 msgid ""
-"Text file (*.yml)|*.yml|XML file (*.xml)|*.xml|Spreadsheet file (*.csv)|*.csv"
+"Text file (*.yml)|*.yml|XML file (*.xml)|*.xml|Petra export "
+"(*.ext)|*.ext|Spreadsheet file (*.csv)|*.csv"
 msgstr ""
-"Tekst-fil (*.yml)|*.yml|XML-fil (*.xml)|*.xml|Regnearksfil (*.csv)|*.csv"
 
 msgid "Zipped Text file (*.yml.gz)|*.yml.gz"
 msgstr "Zipped tekst-fil (*.yml.gz)|*.yml.gz"
@@ -82,6 +94,50 @@ msgstr "Talformat:"
 msgid "Select CSV Separator"
 msgstr "Vælg CSV-skilletegn"
 
+msgid ""
+"  ID | Client          | Status           | Computer    | IP Address      | "
+"Type"
+msgstr "  ID | Klient | Status | Computer | IP-adresse | Type"
+
+msgid ""
+"     | Connected since | Last activity    | Server Port |                 |"
+msgstr "     | Tilsluttet siden | Seneste aktivitet | Serverport | |"
+
+msgid " * no connected Clients *"
+msgstr " * ingen tilsluttede klienter *"
+
+msgid " * no disconnected Clients *"
+msgstr " * ingen frakoblede klienter *"
+
+#, csharp-format
+msgid ""
+"  (Currently connected Clients: {0}; client connections since Server start: "
+"{1})"
+msgstr ""
+
+#, csharp-format
+msgid "PETRAServer {0} Build {1}  (OS: {2})"
+msgstr "PETRAServer {0} Build {1}  (OS: {2})"
+
+#, csharp-format
+msgid "PETRAServer is running and listening @ {0}:{1}"
+msgstr "PETRAServer kører og lytter @ {0}:{1}"
+
+msgid "SERVER STOPPED!"
+msgstr "SERVER STOPPEDE!"
+
+msgid "SHUTDOWN PROCEDURE INITIATED"
+msgstr "NEDLUKNINGSPROCEDURE PÅBEGYNDT"
+
+msgid "SHUTDOWN: Executing step 1 of 2..."
+msgstr "NEDLUKNING: Udfører trin 1 af 2 ..."
+
+msgid "SHUTDOWN: Executing step 2 of 2..."
+msgstr "NEDLUKNING: Udfører trin 2 af 2 ..."
+
+msgid "SHUTDOWN PROCEDURE FINISHED"
+msgstr "NEDLUKNINGSPROCEDURE AFSLUTTET"
+
 msgid "Invalid date entered."
 msgstr "Ugyldig dato indtastet"
 
@@ -120,6 +176,12 @@ msgstr "'{0}' kan ikke være tidligere end '{1}'."
 msgid "'{0}' cannot be earlier or equal than '{1}'."
 msgstr "'{0}' kan ikke være tidligere end eller lig '{1}'."
 
+msgid "Exception has been thrown"
+msgstr ""
+
+msgid "Inner Exception"
+msgstr ""
+
 msgid "Invalid number entered."
 msgstr "Ugyldigt tal indtastet"
 
@@ -134,9 +196,8 @@ msgid "You do not have enough permissions to access the Finance module"
 msgstr ""
 "Du har ikke tilstrækkelig tilladelse til at få adgang til finansmodulet"
 
-msgid "You do not have enough permissions to access the Finance module:\n"
+msgid "You do not have enough permissions to access the Finance module:"
 msgstr ""
-"Du har ikke tilstrækkelig tilladelse til at få adgang til finansmodulet:\n"
 
 msgid "This functionality is not yet implemented in OpenPetra."
 msgstr "Denne funktion er endnu ikke implementeret i OpenPetra."
@@ -146,6 +207,12 @@ msgstr ""
 
 msgid "Not Implemented"
 msgstr "Ikke implementeret"
+
+msgid "Copy To Clipboard"
+msgstr ""
+
+msgid "Error Details - OpenPetra"
+msgstr ""
 
 msgid "OpenPetra Client Has Encountered An Error And Needs To Close"
 msgstr "OpenPetra klient stødte på en fejl og afsluttes"
@@ -183,13 +250,6 @@ msgstr "Vælg 'OK' for at lukke denne fejlinformation. "
 msgid "Choose 'Close OpenPetra' to close the OpenPetra application. "
 msgstr "Vælg 'Luk OpenPetra' for at lukke applikationen OpenPetra. "
 
-msgid ""
-"Choose 'Report Error' to send an error report in an e-mail to your OpenPetra "
-"Support Team."
-msgstr ""
-"Vælg 'Rapporter fejl' for at sende en fejlrapport i en mail til dit "
-"OpenPetra Support Team."
-
 msgid "Choose 'Error Details...' to see detailed information. "
 msgstr "Vælg 'Fejldetaljer…' for at se detaljeret information. "
 
@@ -218,18 +278,6 @@ msgstr ""
 msgid "OpenPetra Client Has Lost Its Connection To The OpenPetra Server"
 msgstr "Klienten OpenPetra har mistet forbindelsen til OpenPetra-serveren."
 
-msgid "Info 1 Text"
-msgstr ""
-
-msgid "Title Text"
-msgstr ""
-
-msgid "Info 3 Text"
-msgstr ""
-
-msgid "Info 2 Text"
-msgstr ""
-
 msgid "Error &Details..."
 msgstr "Fejl&detaljer…"
 
@@ -250,11 +298,11 @@ msgid "You do not have permission to {0} {1} records."
 msgstr "Du har ikke tilladelse til {0} {1} dataposter."
 
 #, csharp-format
-msgid "This date has overruned the limit: {0}"
-msgstr "Denne dato har overskredet grænsen: {0}"
+msgid "This date has exceeded the limit: {0}"
+msgstr ""
 
-msgid "Date overrun ..."
-msgstr "Datooverskridelse…"
+msgid "Date exceeded ..."
+msgstr ""
 
 #, csharp-format
 msgid "This date has underruned the limit: {0}"
@@ -339,6 +387,33 @@ msgstr "Skift venligst adgangskode med det samme!"
 
 msgid "OpenPetra Login"
 msgstr "OpenPetra login"
+
+msgid ""
+"The PetraServer is too busy to accept the Login request.\r\n"
+"\r\n"
+"Please try again after a short time!"
+msgstr ""
+
+msgid "Server busy"
+msgstr ""
+
+msgid "Too many users are logged in."
+msgstr ""
+
+msgid "Too many users"
+msgstr ""
+
+msgid "An error occured while trying to connect to the PETRA Server!"
+msgstr ""
+
+msgid "Server connection error"
+msgstr ""
+
+msgid "The PetraServer cannot be reached!"
+msgstr ""
+
+msgid "No Server response"
+msgstr ""
 
 msgid " O P E N P E T R A "
 msgstr " O P E N P E T R A "
@@ -475,9 +550,6 @@ msgstr ""
 msgid "There is nothing to be saved."
 msgstr "Der er intet at gemme."
 
-msgid "NEWCODE"
-msgstr "NYKODE"
-
 msgid "Frequency Code:"
 msgstr "Frekvenskode:"
 
@@ -597,9 +669,6 @@ msgstr "Nulstil søgning"
 
 msgid "&Search"
 msgstr "&Søg"
-
-msgid "Office Specific Data Labels"
-msgstr ""
 
 msgid "Valid To:"
 msgstr "Gyldig til:"
@@ -1265,6 +1334,154 @@ msgstr "Leverandørtransaktioner"
 msgid "The AP documents have been posted successfully!"
 msgstr ""
 
+msgid "Cost Centre:"
+msgstr ""
+
+msgid "Account:"
+msgstr "Konto:"
+
+msgid "Split"
+msgstr ""
+
+msgid "Ad hoc"
+msgstr ""
+
+msgid "Same"
+msgstr ""
+
+msgid "Inflate Base"
+msgstr ""
+
+msgid "Inflate n"
+msgstr ""
+
+msgid "Period 1:"
+msgstr ""
+
+msgid "Period 7:"
+msgstr ""
+
+msgid "Period 2:"
+msgstr ""
+
+msgid "Period 8:"
+msgstr ""
+
+msgid "Period 3:"
+msgstr ""
+
+msgid "Period 9:"
+msgstr ""
+
+msgid "Period 4:"
+msgstr ""
+
+msgid "Period 10:"
+msgstr ""
+
+msgid "Period 5:"
+msgstr ""
+
+msgid "Period 11:"
+msgstr ""
+
+msgid "Period 6:"
+msgstr ""
+
+msgid "Period 12:"
+msgstr ""
+
+msgid "Total"
+msgstr ""
+
+msgid "Amount:"
+msgstr "Beløb:"
+
+msgid "Total Amount:"
+msgstr ""
+
+msgid "Amount for periods 1 to 11:"
+msgstr ""
+
+msgid "Amount for period 12:"
+msgstr ""
+
+msgid "First Period Amount:"
+msgstr ""
+
+msgid "Inflate after period:"
+msgstr ""
+
+msgid "Inflation Rate:"
+msgstr ""
+
+msgid "Period 1 Amount:"
+msgstr ""
+
+msgid "Period 7 Index:"
+msgstr ""
+
+msgid "Period 2 Index:"
+msgstr ""
+
+msgid "Period 8 Index:"
+msgstr ""
+
+msgid "Period 3 Index:"
+msgstr ""
+
+msgid "Period 9 Index:"
+msgstr ""
+
+msgid "Period 4 Index:"
+msgstr ""
+
+msgid "Period 10 Index:"
+msgstr ""
+
+msgid "Period 5 Index:"
+msgstr ""
+
+msgid "Period 11 Index:"
+msgstr ""
+
+msgid "Period 6 Index:"
+msgstr ""
+
+msgid "Period 12 Index:"
+msgstr ""
+
+msgid "Budget Details"
+msgstr ""
+
+msgid "Maintain Budget"
+msgstr ""
+
+msgid "Enter a cost centre code"
+msgstr ""
+
+msgid "Enter an account code"
+msgstr "Indtast en kontokode"
+
+msgid "This budget is already referenced and cannot be deleted."
+msgstr ""
+
+msgid ""
+"Budget figures exist for last year and this year. The budget cannot be "
+"deleted. Do you wish to cancel the budget figures for next year?"
+msgstr ""
+
+#, csharp-format
+msgid ""
+"You have chosen to delete this budget (Cost Centre: {0}, Account: {1}, Type: "
+"{2}, Revision: {3}).\n"
+"\n"
+"Do you really want to delete it?"
+msgstr ""
+
+msgid "Confirm Delete"
+msgstr "Bekræft sletning"
+
 msgid "Select Bank Account:"
 msgstr "Vælg bankkonto:"
 
@@ -1282,9 +1499,6 @@ msgstr ""
 
 msgid "ListIgnored"
 msgstr ""
-
-msgid "Select Transaction"
-msgstr "Vælg transaktion"
 
 msgid "Credit Sum:"
 msgstr "Kreditsum:"
@@ -1304,22 +1518,10 @@ msgstr "GL"
 msgid "Ignored"
 msgstr "Ignoreret"
 
-msgid "Transaction Category"
-msgstr "Transaktionskategori"
-
 msgid "&Add"
 msgstr "&Tilføj"
 
-msgid "Amount:"
-msgstr "Beløb:"
-
 msgid "Motivation Detail:"
-msgstr ""
-
-msgid "Account:"
-msgstr "Konto:"
-
-msgid "Cost Centre:"
 msgstr ""
 
 msgid "Narrative:"
@@ -1396,6 +1598,12 @@ msgid ""
 "check the log file on the server."
 msgstr ""
 
+msgid "Please select a bank account first!"
+msgstr ""
+
+msgid "No gift batch has been created"
+msgstr ""
+
 #, csharp-format
 msgid "Please check Gift Batch {0}"
 msgstr ""
@@ -1413,10 +1621,58 @@ msgstr ""
 msgid "Select a ledger"
 msgstr "Vælg en hovedbog"
 
+msgid "Ledger:"
+msgstr "Hovedbog:"
+
+msgid "Donor:"
+msgstr "Donor:"
+
+msgid "Recipient:"
+msgstr "Modtager:"
+
+msgid "Date from:"
+msgstr "Dato fra:"
+
+msgid "Motivation Group:"
+msgstr ""
+
+msgid "Detail:"
+msgstr "Detalje:"
+
+msgid "Browse"
+msgstr ""
+
+msgid "Total:"
+msgstr "I alt:"
+
+msgid "Number of Gifts:"
+msgstr ""
+
+msgid "View"
+msgstr "Vis"
+
+msgid "Close"
+msgstr "Luk"
+
+msgid "Donor Recipient History"
+msgstr ""
+
+msgid "You have to restrict via donor or via recipient"
+msgstr ""
+
+msgid "Error calling Donor/Recipient history"
+msgstr ""
+
+msgid "No current partner selected"
+msgstr ""
+
 msgid "Batches"
 msgstr ""
 
 msgid "Gift Batches"
+msgstr ""
+
+msgid "Failure saving"
 msgstr ""
 
 msgid "Detail"
@@ -1437,14 +1693,8 @@ msgstr "Oprindelig transaktionsvaluta"
 msgid "Currency"
 msgstr "Valuta"
 
-msgid "Recipient:"
-msgstr "Modtager:"
-
 msgid "Field:"
 msgstr "Felt:"
-
-msgid "Date from:"
-msgstr "Dato fra:"
 
 msgid "Batch Number from:"
 msgstr ""
@@ -1482,17 +1732,72 @@ msgstr "&Start"
 msgid "Export Gift Batches"
 msgstr ""
 
-msgid "There are no batches matching your criteria"
+msgid "Please select an existing directory for this file!"
 msgstr ""
 
-msgid "Warning"
-msgstr "Advarsel"
+msgid "Warnings"
+msgstr ""
+
+msgid "There are no batches matching your criteria"
+msgstr ""
 
 msgid "Your data was exported successfully!"
 msgstr "Dine data blev eksporteret uden problemer!"
 
 msgid "Success"
 msgstr "Lykkedes"
+
+msgid "Worker Partner Key:"
+msgstr ""
+
+msgid "Total Number Pages"
+msgstr "Samlet antal sider"
+
+msgid "Prev Page"
+msgstr "Forrige side"
+
+msgid "Next Page"
+msgstr "Næste side"
+
+msgid "Print Current Page"
+msgstr "Udskriv pågældende side"
+
+msgid "Print"
+msgstr "Udskriv"
+
+msgid "&Generate Letters"
+msgstr "&Generer breve"
+
+msgid "Add Contact History"
+msgstr "Tilføj kontakthistorik"
+
+msgid "Send a letter to the donors of one Worker"
+msgstr ""
+
+#, csharp-format
+msgid "of {0}"
+msgstr "af {0}"
+
+msgid "There are no letters with valid addresses for your current parameters"
+msgstr ""
+
+msgid "Nothing to print"
+msgstr "Intat at udskrive"
+
+msgid "HTML file (*.html)|*.html;*.htm"
+msgstr "HTML-fil (*.html)|*.html;*.htm"
+
+msgid "Select the template for the letter to the new donors"
+msgstr "Vælg skabelonen til brevet til de nye donorer"
+
+msgid "Letter for donors of worker"
+msgstr ""
+
+msgid "There was a problem setting the contact for the partners"
+msgstr ""
+
+msgid "The partner contacts have been updated successfully!"
+msgstr ""
 
 msgid "Start Date:"
 msgstr "Startdato:"
@@ -1540,53 +1845,10 @@ msgstr ""
 msgid "Publication Code:"
 msgstr "Udgivelseskode:"
 
-msgid "Total Number Pages"
-msgstr "Samlet antal sider"
-
-msgid "Prev Page"
-msgstr "Forrige side"
-
-msgid "Next Page"
-msgstr "Næste side"
-
-msgid "Print Current Page"
-msgstr "Udskriv pågældende side"
-
-msgid "Print"
-msgstr "Udskriv"
-
-msgid "&Generate Letters"
-msgstr "&Generer breve"
-
-msgid "Add Contact History"
-msgstr "Tilføj kontakthistorik"
-
 msgid "Subscriptions for new Donors"
 msgstr ""
 
-#, csharp-format
-msgid "of {0}"
-msgstr "af {0}"
-
-msgid "There are no letters with valid addresses for your current parameters"
-msgstr ""
-
-msgid "Nothing to print"
-msgstr "Intat at udskrive"
-
-msgid "HTML file (*.html)|*.html;*.htm"
-msgstr "HTML-fil (*.html)|*.html;*.htm"
-
-msgid "Select the template for the letter to the new donors"
-msgstr "Vælg skabelonen til brevet til de nye donorer"
-
 msgid "Letter for new donors announcing subscription to magazine"
-msgstr ""
-
-msgid "There was a problem setting the contact for the partners"
-msgstr ""
-
-msgid "The partner contacts have been updated successfully!"
 msgstr ""
 
 msgid "Print Annual Gift Receipts"
@@ -1625,9 +1887,6 @@ msgstr ""
 msgid "&OK"
 msgstr "&OK"
 
-msgid "Close"
-msgstr "Luk"
-
 msgid "Revert or adjust Gift"
 msgstr ""
 
@@ -1656,6 +1915,9 @@ msgstr ""
 msgid "Your gift has been sucessfully adjusted"
 msgstr ""
 
+msgid "Warning"
+msgstr "Advarsel"
+
 msgid "Recurring Gift Batches"
 msgstr ""
 
@@ -1683,9 +1945,6 @@ msgstr ""
 msgid "Reasons:"
 msgstr "Årsager:"
 
-msgid "Ledger:"
-msgstr "Hovedbog:"
-
 msgid "Posted"
 msgstr ""
 
@@ -1697,6 +1956,12 @@ msgstr "Alle"
 
 msgid "Show batches"
 msgstr ""
+
+msgid "Year:"
+msgstr "År:"
+
+msgid "Period:"
+msgstr "Periode:"
 
 msgid "&Post Batch"
 msgstr ""
@@ -1738,9 +2003,6 @@ msgid "&Batch"
 msgstr ""
 
 msgid "Enter a description for the gift batch."
-msgstr ""
-
-msgid "Enter a cost centre code"
 msgstr ""
 
 msgid "Enter the bank account which this batch is for."
@@ -1818,9 +2080,6 @@ msgstr "Tilf&øj detalje"
 msgid "&Delete Detail"
 msgstr "&Slet detalje"
 
-msgid "Donor:"
-msgstr "Donor:"
-
 msgid "Method of Giving:"
 msgstr ""
 
@@ -1829,9 +2088,6 @@ msgstr ""
 
 msgid "Gift Date:"
 msgstr "Dato for gave:"
-
-msgid "Total:"
-msgstr "I alt:"
 
 msgid "Confidential?:"
 msgstr "Fortroligt?:"
@@ -1847,9 +2103,6 @@ msgstr ""
 
 msgid "Tax deductable?:"
 msgstr "Trækkes fra i skat?"
-
-msgid "Motivation Group:"
-msgstr ""
 
 msgid "Comment 1:"
 msgstr "Kommentar 1:"
@@ -2059,6 +2312,9 @@ msgstr ""
 msgid "Show batches available for"
 msgstr ""
 
+msgid "&Test Batch"
+msgstr ""
+
 msgid "Batch Hash Total:"
 msgstr ""
 
@@ -2077,12 +2333,15 @@ msgstr ""
 msgid "Enter the date for which this batch is to take effect."
 msgstr ""
 
+msgid "Import batches from csv file"
+msgstr ""
+
 msgid "GL Batches files (*.csv)|*.csv"
 msgstr ""
 
 #, csharp-format
 msgid ""
-"You have choosen to cancel this batch ({0}).\n"
+"You have chosen to cancel this batch ({0}).\n"
 "\n"
 "Do you really want to cancel it?"
 msgstr ""
@@ -2102,6 +2361,17 @@ msgstr ""
 
 msgid "Question"
 msgstr "Spørgmål"
+
+#, csharp-format
+msgid "{0}/{1} ({2}/{3}) is: {4} and would be: {5}"
+msgstr ""
+
+msgid "Result of Test Posting"
+msgstr ""
+
+#, csharp-format
+msgid "Please see file {0} for the result of the test posting"
+msgstr ""
 
 msgid "Import transactions from spreadsheet file"
 msgstr "Importer transaktioner fra regnearksfil"
@@ -2163,13 +2433,10 @@ msgstr ""
 
 #, csharp-format
 msgid ""
-"You have choosen to cancel this journal ({0}).\n"
+"You have chosen to cancel this journal ({0}).\n"
 "\n"
 "Do you really want to cancel it?"
 msgstr ""
-"Du har valgt at annullere denne kladde ({0}).\n"
-"\n"
-"Vil du virkelig annullere den?"
 
 msgid "&Remove"
 msgstr "&Fjern"
@@ -2220,6 +2487,12 @@ msgid ""
 "Key ministry to which this transaction applies (just for fund transfers)"
 msgstr ""
 
+msgid "Debit"
+msgstr ""
+
+msgid "Credit"
+msgstr ""
+
 #, csharp-format
 msgid "{0} (Base Currency)"
 msgstr "{0} (Basisvaluta)"
@@ -2230,22 +2503,25 @@ msgstr "{0} (Transaktionsvaluta)"
 
 #, csharp-format
 msgid ""
-"You have choosen to delete this transaction ({0}).\n"
+"You have chosen to delete this transaction ({0}).\n"
 "\n"
 "Do you really want to delete it?"
 msgstr ""
-"Du har valgt at slette denne transaktion ({0})\n"
-"\n"
-"Vil du virkelig slette den?"
 
-msgid "Confirm Delete"
-msgstr "Bekræft sletning"
+msgid "&Apply"
+msgstr ""
+
+msgid "Report Period:"
+msgstr ""
+
+msgid "Email Report:"
+msgstr ""
+
+msgid "Select Period for the Report"
+msgstr ""
 
 msgid "Group:"
 msgstr "Gruppe:"
-
-msgid "Detail:"
-msgstr "Detalje:"
 
 msgid "Active:"
 msgstr "Aktiv:"
@@ -2253,14 +2529,17 @@ msgstr "Aktiv:"
 msgid "Print Receipt:"
 msgstr "Udskriv kvittering:"
 
+msgid "Fees Payable:"
+msgstr ""
+
+msgid "Fees Receivable:"
+msgstr ""
+
 msgid "New Motivation Detail"
 msgstr ""
 
 msgid "Maintain Gift Motivations"
 msgstr ""
-
-msgid "Enter an account code"
-msgstr "Indtast en kontokode"
 
 msgid "Is this motivation code still in use?"
 msgstr ""
@@ -2422,9 +2701,6 @@ msgstr "Antal perioder:"
 msgid "Number Of Fwd Posting Periods:"
 msgstr ""
 
-msgid "&Create Ledger"
-msgstr "&Opret hovedbog"
-
 msgid "Create Ledger"
 msgstr "Opret hovedbog"
 
@@ -2438,6 +2714,57 @@ msgstr "Problem: Ingen hovedbog er oprettet"
 msgid ""
 "The ledger {0} ({1}) has been created successfully. Please assign "
 "permissions to the users in System Manager."
+msgstr ""
+
+msgid "Fee Code:"
+msgstr ""
+
+msgid "Charge Option:"
+msgstr ""
+
+msgid "Charge Percentage:"
+msgstr ""
+
+msgid "Charge Amount:"
+msgstr ""
+
+msgid "To Be Debited:"
+msgstr ""
+
+msgid "To Be Credited:"
+msgstr ""
+
+msgid "Receiving Fund"
+msgstr ""
+
+msgid "Assignment"
+msgstr ""
+
+msgid "New Payable Admin. Grant"
+msgstr ""
+
+msgid "Maintain Payable Administration Grants"
+msgstr ""
+
+msgid "Enter a code for this fee"
+msgstr ""
+
+msgid "Enter a description for this fee."
+msgstr ""
+
+msgid "Selecct an expense account code to debit for this fee."
+msgstr ""
+
+msgid "Foreign Receiving Fund"
+msgstr ""
+
+msgid "New Receivable Admin. Grant"
+msgstr ""
+
+msgid "Maintain Receivable Administration Grants"
+msgstr ""
+
+msgid "Enter a description of what this fee is for."
 msgstr ""
 
 msgid "&Analysis Type Code:"
@@ -2472,13 +2799,10 @@ msgstr ""
 
 #, csharp-format
 msgid ""
-"You have choosen to delete thistype ({0}).\n"
+"You have chosen to delete thistype ({0}).\n"
 "\n"
 "Do you really want to delete it?"
 msgstr ""
-"Du har valgt at slette denne type ({0}).\n"
-"\n"
-"Vil du virkelig slette den?"
 
 msgid "&From Currency Code:"
 msgstr "Fra &valutakode:"
@@ -2488,9 +2812,6 @@ msgstr "&Til valutakode:"
 
 msgid "D&ate:"
 msgstr "D&ato:"
-
-msgid "Use Date To Filter"
-msgstr ""
 
 msgid "&Rate of exchange:"
 msgstr ""
@@ -2510,7 +2831,7 @@ msgstr "Importer"
 msgid "Exchange Rates"
 msgstr "Valutakurser"
 
-msgid "Daily Exchange Rate List"
+msgid "Maintain Corporate Exchange Rates"
 msgstr ""
 
 msgid "Enter the date which the rate becomes effective"
@@ -2519,19 +2840,52 @@ msgstr ""
 msgid "Enter the rate of exchange"
 msgstr ""
 
-#, csharp-format
-msgid "For {0} {1} you will get {2} {3}"
-msgstr "For {0} {1} vil du få {2} {3}"
+msgid "New Cost Centre Type"
+msgstr ""
 
-msgid "Unuse Filter"
-msgstr "Ubrugt filter"
+msgid "Maintain Cost Centre Types"
+msgstr ""
 
-msgid "Import exchange rates from spreadsheet file"
-msgstr "Importer vekselkurser fra regnearksfil"
+msgid "Enter the type of cost centre."
+msgstr ""
 
-msgid ""
-"Cannot import exchange rates, please name the file after the currencies "
-"involved, eg. KES_EUR.csv"
+msgid "Enter the description of the cost centre type"
+msgstr ""
+
+msgid "Can this cost centre type be deleted by the user?"
+msgstr ""
+
+msgid "Maintain Daily Exchange Rates"
+msgstr ""
+
+msgid "Used by Recurring Gifts:"
+msgstr ""
+
+msgid "Involves a Tax Rebate:"
+msgstr ""
+
+msgid "Involves a Trust:"
+msgstr ""
+
+msgid "New Method of Giving"
+msgstr ""
+
+msgid "Maintain Methods of Giving"
+msgstr ""
+
+msgid "Enter \"\"YES\"\" or \"\"NO\"\""
+msgstr ""
+
+msgid "Select if this method can be used"
+msgstr ""
+
+msgid "Special Method of Payment:"
+msgstr ""
+
+msgid "New Method of Payment"
+msgstr ""
+
+msgid "Maintain Methods of Payment"
 msgstr ""
 
 msgid "Analysis Type Code:"
@@ -2551,13 +2905,10 @@ msgstr ""
 
 #, csharp-format
 msgid ""
-"You have choosen to delete this value ({0}).\n"
+"You have chosen to delete this value ({0}).\n"
 "\n"
 "Do you really want to delete it?"
 msgstr ""
-"Du har valgt at slette denne værdi ({0}).\n"
-"\n"
-"Vil du virkelig slette den?"
 
 msgid "Values for this Type and Ledger Number:"
 msgstr ""
@@ -2718,6 +3069,40 @@ msgstr ""
 
 msgid "Account Description"
 msgstr "Kontobeskrivelse"
+
+msgid "Select a valid cost centre"
+msgstr ""
+
+msgid "Select a valid account"
+msgstr ""
+
+msgid "Current and forwarding periods"
+msgstr ""
+
+msgid "Import exchange rates from spreadsheet file"
+msgstr "Importer vekselkurser fra regnearksfil"
+
+msgid "Data description files (*.yaml,*.yml)|*.yaml;*.yml"
+msgstr ""
+
+msgid ""
+"Failed to import the CSV currency file:\r\n"
+"\r\n"
+"   "
+msgstr ""
+
+msgid ""
+"Failed to import the CSV currency file:\r\n"
+"\r\n"
+"    "
+msgstr ""
+
+msgid " Amount:"
+msgstr ""
+
+#, csharp-format
+msgid "For {0} {1} one will get {2} {3}."
+msgstr ""
 
 msgid "Acquisition Code:"
 msgstr ""
@@ -3142,6 +3527,9 @@ msgstr "Uds&kriv sektion…"
 msgid "E&xport Partner"
 msgstr "&Eksporter partner"
 
+msgid "Find New Address..."
+msgstr ""
+
 msgid "&Addresses"
 msgstr "&Adresser"
 
@@ -3220,6 +3608,22 @@ msgstr ""
 msgid "Partner Edit"
 msgstr ""
 
+msgid "The PETRA Server cannot be reached! Data cannot be saved!"
+msgstr ""
+
+msgid "Save Partners into File"
+msgstr ""
+
+msgid ""
+"You do not have access rights to the Personnel System of OpenPetra.\r\n"
+"\r\n"
+"For that reason the Pesonnel Data Tabs cannot be switched to on the\r\n"
+"Partner Edit screen. Showing the Partner Data Tabs instead."
+msgstr ""
+
+msgid "Access Denied"
+msgstr ""
+
 msgid "Find by Partner Details"
 msgstr ""
 
@@ -3247,20 +3651,26 @@ msgstr "&Arbejd med seneste partner…"
 msgid "&Recent Partners"
 msgstr "&Seneste partnere"
 
-msgid "&Edit Partner"
-msgstr "&Rediger partner"
+msgid "&Edit Partner..."
+msgstr ""
 
 msgid "Mer&ge Partners..."
 msgstr ""
 
-msgid "&Delete Partner"
-msgstr "S&let partner"
+msgid "&Delete Partner..."
+msgstr ""
 
-msgid "&Print Partner"
-msgstr "&Udskriv partner"
+msgid "Send E&mail to Partner..."
+msgstr ""
 
-msgid "&Import Partner"
-msgstr "&Importer partner"
+msgid "&Print Partner..."
+msgstr ""
+
+msgid "E&xport Partner..."
+msgstr ""
+
+msgid "&Import Partner..."
+msgstr ""
 
 msgid "Copy Partner's Partner &Key"
 msgstr "Kopier partners partner&nøgle"
@@ -3271,8 +3681,65 @@ msgstr "Kopier partners &adresse"
 msgid "Copy Partner's E&mail Address"
 msgstr "Kopier partners &mailadresse"
 
-msgid "Maintain"
-msgstr "Vedligehold"
+msgid "&Addresses..."
+msgstr ""
+
+msgid "Partner &Details..."
+msgstr ""
+
+msgid "Foundation Details..."
+msgstr ""
+
+msgid "&Subscriptions..."
+msgstr ""
+
+msgid "Special &Types..."
+msgstr ""
+
+msgid "&Contacts..."
+msgstr ""
+
+msgid "Fa&mily Members..."
+msgstr ""
+
+msgid "&Relationships..."
+msgstr ""
+
+msgid "&Interests..."
+msgstr ""
+
+msgid "&Reminders..."
+msgstr ""
+
+msgid "&Notes..."
+msgstr ""
+
+msgid "&Local Partner Data..."
+msgstr ""
+
+msgid "&Worker Field..."
+msgstr ""
+
+msgid "&Personnel/Individual Data..."
+msgstr ""
+
+msgid "Donor &History..."
+msgstr ""
+
+msgid "Recipient Histor&y..."
+msgstr ""
+
+msgid "Finance Report&s..."
+msgstr ""
+
+msgid "Ban&k Accounts..."
+msgstr ""
+
+msgid "&Gift Receipting..."
+msgstr ""
+
+msgid "&Finance Details..."
+msgstr ""
 
 msgid "&Generate Extract From Found Partners..."
 msgstr ""
@@ -3358,25 +3825,31 @@ msgstr "Søgeindstillinger"
 msgid "Select File"
 msgstr "Vælg fil"
 
-msgid "Semi Automatic Import:"
-msgstr "Halvautomatisk import:"
-
-msgid "Current Import File Record Status:"
+msgid "Import Status:"
 msgstr ""
-
-msgid "Partner Info:"
-msgstr "Pertnerinfo:"
-
-msgid "Explanation:"
-msgstr "Forklaring:"
 
 msgid "Take Action:"
 msgstr "Udfør handling:"
 
-msgid "Skip Record"
-msgstr "Spring datapost over"
+msgid "Skip Partner"
+msgstr ""
 
-msgid "Create new Partner Record"
+msgid "Update Partner"
+msgstr ""
+
+msgid "Create Partner"
+msgstr ""
+
+msgid "Re-use address"
+msgstr ""
+
+msgid "Add to Family"
+msgstr ""
+
+msgid "Automatic Import"
+msgstr ""
+
+msgid "Hint:"
 msgstr ""
 
 msgid "Start Import"
@@ -3411,18 +3884,21 @@ msgid "Need a file to import"
 msgstr "Behøver en fil at importere"
 
 #, csharp-format
-msgid "{0} Records processed - Import finished"
-msgstr "{0} dataposter behandlet - Import færdig"
+msgid "{0} Records processed - Import finished.\r\n"
+msgstr ""
 
 #, csharp-format
-msgid "Processing record {0} of {1}"
-msgstr "Behandler datapost {0} af {1}"
+msgid "Processing record {0} of {1}:\r\n"
+msgstr ""
 
 msgid "Class"
 msgstr "Klasse"
 
 msgid "Name"
 msgstr "Navn"
+
+msgid "Post Code"
+msgstr ""
 
 msgid "&Find && Maintain..."
 msgstr "&Find && vedligehold…"
@@ -3515,9 +3991,6 @@ msgid "Mailin&g"
 msgstr ""
 
 msgid "Partner Module OpenPetra.org"
-msgstr ""
-
-msgid "Save Partners into File"
 msgstr ""
 
 msgid "S&ites Available:"
@@ -3630,8 +4103,7 @@ msgstr ""
 
 #, csharp-format
 msgid ""
-"You have choosen to delete this entry with start of commitment date "
-"({0:d}).\n"
+"You have chosen to delete this entry with start of commitment date ({0:d}).\n"
 "\n"
 "Do you really want to delete it?"
 msgstr ""
@@ -3664,6 +4136,333 @@ msgid "Recruiting Office"
 msgstr ""
 
 msgid "You need to select the office that has recruited the person"
+msgstr ""
+
+msgid "This Dialog allows cancelling of all active Subscriptions in one go."
+msgstr ""
+
+msgid ""
+"Select the 'Reason ended' and enter the 'Date ended'. On clicking OK these "
+"will be applied to all active Subscriptions. The Partner will be left with "
+"no active Subscriptions!"
+msgstr ""
+
+msgid "Reason Ended:"
+msgstr ""
+
+msgid "Date E&nded:"
+msgstr ""
+
+msgid "Cancel All Subscriptions"
+msgstr ""
+
+msgid "Todo:"
+msgstr ""
+
+msgid "Edit Family"
+msgstr ""
+
+msgid "Change Family"
+msgstr ""
+
+msgid "Family"
+msgstr "Familie"
+
+msgid "Manual Edit"
+msgstr ""
+
+msgid "Just To Extend Width:"
+msgstr ""
+
+msgid "Change Family ID"
+msgstr ""
+
+msgid "Edit Selected Person"
+msgstr ""
+
+msgid "Move selected Person to other Family"
+msgstr ""
+
+msgid "Move existing Person to this Family"
+msgstr ""
+
+msgid "Create new Person for this Family"
+msgstr ""
+
+msgid "Move or Create Family Members"
+msgstr ""
+
+msgid "Family Members"
+msgstr "Familiemedlemmer"
+
+msgid "The Family ID of"
+msgstr ""
+
+msgid " was changed from "
+msgstr ""
+
+msgid " to "
+msgstr ""
+
+msgid "Family ID Change Done"
+msgstr ""
+
+msgid ""
+"Family Identification Number (Family ID) \r\n"
+"------------------------------------------------ \r\n"
+" This number is used to identify the family members within a Family. \r\n"
+" * Family ID's 0 and 1 are used for parents; \r\n"
+"    FamilyID's 2, 3, 4 ... 9 are used for children. \r\n"
+" * All gifts to this Family will be assigned to the to the Field in the "
+"Commitment\r\n"
+"    Record of the family member with the the lowest FamilyID of those who "
+"have a\r\n"
+"    current Commitment Record.\r\n"
+"\r\n"
+" This system needs to be consistently applied to all Families.\r\n"
+" This ensures that gifts go to the correct Field, and that family members "
+"are\r\n"
+" always listed in the same order on screen as well as on reports! "
+msgstr ""
+
+msgid "Family ID Explained"
+msgstr ""
+
+msgid "Partner is already open in this Partner Edit screen."
+msgstr ""
+
+msgid "Partner is already open"
+msgstr ""
+
+msgid ""
+"You are trying to move the Person to their existing Family!\r\n"
+"This is not allowed. Select a different Person in the Find Screen."
+msgstr ""
+
+msgid "Moving to Same Family is Not Allowed"
+msgstr ""
+
+msgid ""
+"The Family Change is done.\r\n"
+"\r\n"
+"Do you want to see the updated list of Family Members of the Familyfrom "
+"where the Person record was moved from?"
+msgstr ""
+
+msgid "Family ID Change"
+msgstr ""
+
+msgid ""
+"You are trying to move the Person to their existing Family!\r\n"
+"This is not allowed. Select a different Family in the Find Screen."
+msgstr ""
+
+msgid ""
+"The Family Change is done.\r\n"
+"\r\n"
+"Do you want to see the updated list of Family Members of the Familyto which "
+"the Partner was moved to?"
+msgstr ""
+
+msgid ""
+"Parents should be Family ID 0 or 1 \r\n"
+"Are you sure you want to change this Family ID?"
+msgstr ""
+
+msgid "[&v] Overview"
+msgstr ""
+
+msgid "[&c] Personal Data"
+msgstr ""
+
+msgid "[&d] Emergency Data"
+msgstr ""
+
+#, csharp-format
+msgid "[&e] Passport Details ({0})"
+msgstr ""
+
+#, csharp-format
+msgid "[&f] Personal Documents ({0})"
+msgstr ""
+
+msgid "[&g] Special Needs"
+msgstr ""
+
+msgid "[&i] Local Personnel Data"
+msgstr ""
+
+#, csharp-format
+msgid "[&j] Professional Areas ({0})"
+msgstr ""
+
+#, csharp-format
+msgid "[&k] Languages ({0})"
+msgstr ""
+
+#, csharp-format
+msgid "[&l] Abilities ({0})"
+msgstr ""
+
+#, csharp-format
+msgid "[&m] Previous Experience ({0})"
+msgstr ""
+
+#, csharp-format
+msgid "[&o] Commitment Periods ({0})"
+msgstr ""
+
+#, csharp-format
+msgid "[&p] Job Assignments ({0})"
+msgstr ""
+
+#, csharp-format
+msgid "[&q] Progress Reports ({0})"
+msgstr ""
+
+msgid "Basic Data Shepherd..."
+msgstr ""
+
+msgid "Intranet Registration Shepherd..."
+msgstr ""
+
+msgid "Emergency Contacts..."
+msgstr ""
+
+msgid "Language:"
+msgstr "Sprog:"
+
+msgid "Years Of Experience:"
+msgstr ""
+
+msgid "as of Date:"
+msgstr ""
+
+msgid "Level:"
+msgstr ""
+
+msgid "&Explanation..."
+msgstr ""
+
+msgid "Comment:"
+msgstr ""
+
+msgid "Name of the language(s) spoken, e.g. English."
+msgstr ""
+
+msgid "Enter the number of years experience."
+msgstr ""
+
+msgid "The date the years of experience were up to date."
+msgstr ""
+
+msgid "Numeric representation of level of language."
+msgstr "Numerisk repræsentation af sprogniveau."
+
+#, csharp-format
+msgid ""
+"You have choosen to delete this value ({0}).\n"
+"\n"
+"Do you really want to delete it?"
+msgstr ""
+"Du har valgt at slette denne værdi ({0}).\n"
+"\n"
+"Vil du virkelig slette den?"
+
+msgid "Language Level Explanation"
+msgstr ""
+
+#, csharp-format
+msgid "There is no explanation available for Language Level {0}."
+msgstr ""
+
+msgid "Medical Needs:"
+msgstr ""
+
+msgid "Dietary Needs:"
+msgstr ""
+
+msgid "Vegetarian:"
+msgstr ""
+
+msgid "Other Needs:"
+msgstr ""
+
+msgid "Enter the pertinent medical information."
+msgstr ""
+
+msgid "Enter the pertinent dietary information."
+msgstr ""
+
+msgid "Check box if applicable."
+msgstr ""
+
+msgid "Enter any other special need that exists."
+msgstr ""
+
+msgid "Birth date:"
+msgstr ""
+
+msgid "Gender:"
+msgstr ""
+
+msgid "Nationalities:"
+msgstr ""
+
+msgid "Marital Status:"
+msgstr "Civilstand:"
+
+msgid "Phone:"
+msgstr ""
+
+msgid "Email:"
+msgstr "Mail:"
+
+msgid "Person Info"
+msgstr ""
+
+msgid "Church Address:"
+msgstr ""
+
+msgid "Church Phone:"
+msgstr ""
+
+msgid "Pastor:"
+msgstr ""
+
+msgid "Pastor's Phone:"
+msgstr ""
+
+msgid "Church Info"
+msgstr ""
+
+msgid "Job(s)/Commitment(s)"
+msgstr ""
+
+msgid "Enter the date the person was born"
+msgstr "Indtast den dato personen blev født"
+
+msgid "Select the gender of the Person"
+msgstr "Vælg personens køn"
+
+msgid "Select marital status"
+msgstr "Vælg civilstand"
+
+msgid "Enter a Telephone number for this address (if available)"
+msgstr "Indtast et telefonnummer til denne adresse (hvis tilgængelig)"
+
+msgid "Enter an Email address (if available)"
+msgstr "Indtast en mailadressse (hvis tilgængeligt)"
+
+msgid "Note: "
+msgstr ""
+
+#, csharp-format
+msgid "The Person has {0} supporting churches, only one is shown here."
+msgstr ""
+
+#, csharp-format
+msgid "The shown church has {0} pastors, only one is shown here."
 msgstr ""
 
 msgid "Previous Name:"
@@ -3751,17 +4550,11 @@ msgstr ""
 msgid "Select type of accomodation"
 msgstr ""
 
-msgid "Marital Status:"
-msgstr "Civilstand:"
-
 msgid "Marital Status Since:"
 msgstr ""
 
 msgid "Marital Status Comment:"
 msgstr ""
-
-msgid "Select marital status"
-msgstr "Vælg civilstand"
 
 msgid "Date from which the marital status is valid"
 msgstr ""
@@ -3802,9 +4595,6 @@ msgstr "Beskæftigelse:"
 msgid "Enter the name this person is commonly known by"
 msgstr ""
 
-msgid "Enter the date the person was born"
-msgstr "Indtast den dato personen blev født"
-
 msgid "ie. Nobel Peace Prize, Olympic Gold Medal, ?, etc."
 msgstr "fx. Nobels Freds Pris, Olympiske guldmedaljer, ? o.s.v."
 
@@ -3832,9 +4622,6 @@ msgstr ""
 msgid "Enter the unit type"
 msgstr ""
 
-msgid "todo"
-msgstr "todo"
-
 msgid "Enter the cost of this outreach"
 msgstr ""
 
@@ -3846,45 +4633,6 @@ msgstr ""
 
 msgid "Currency used for the venue"
 msgstr ""
-
-msgid "Status Updated:"
-msgstr "Status opdateret:"
-
-msgid "&Gender:"
-msgstr "K&øn:"
-
-msgid "Title/Na&me:"
-msgstr "&Titel/Navn:"
-
-msgid "Partner &Status:"
-msgstr "Partner&status:"
-
-msgid "Addressee Type:"
-msgstr "Adressetype:"
-
-msgid "No Solicitations"
-msgstr ""
-
-msgid "Class:"
-msgstr "Klasse:"
-
-msgid "Key:"
-msgstr "Nøgle:"
-
-msgid "Na&me:"
-msgstr "&Navn:"
-
-msgid "     &Field..."
-msgstr "     &Felt…"
-
-msgid "Currency + Amount, Given To"
-msgstr ""
-
-msgid "Last Gift:"
-msgstr "Seneste gave:"
-
-msgid "Last Contact:"
-msgstr "Seneste kontakt:"
 
 #, csharp-format
 msgid "Addresses ({0})"
@@ -3901,8 +4649,9 @@ msgstr "Abonnementer ({0})"
 msgid "Special Types ({0})"
 msgstr ""
 
-msgid "Family Members"
-msgstr "Familiemedlemmer"
+#, csharp-format
+msgid "Relationships ({0})"
+msgstr ""
 
 #, csharp-format
 msgid "Notes ({0})"
@@ -3911,11 +4660,45 @@ msgstr "Noter ({0})"
 msgid "Local Data"
 msgstr ""
 
+msgid "Individual Data"
+msgstr ""
+
+#, csharp-format
+msgid "Applications ({0})"
+msgstr ""
+
+msgid "Key:"
+msgstr "Nøgle:"
+
+msgid "Class:"
+msgstr "Klasse:"
+
+msgid "Title/Na&me:"
+msgstr "&Titel/Navn:"
+
 msgid "&Addressee Type:"
 msgstr ""
 
-msgid "&Worker Field..."
+msgid "No Solicitations"
 msgstr ""
+
+msgid "&Gender:"
+msgstr "K&øn:"
+
+msgid "Na&me:"
+msgstr "&Navn:"
+
+msgid "Last Gift:"
+msgstr "Seneste gave:"
+
+msgid "Partner &Status:"
+msgstr "Partner&status:"
+
+msgid "Status Updated:"
+msgstr "Status opdateret:"
+
+msgid "Last Contact:"
+msgstr "Seneste kontakt:"
 
 msgid "Key Partner Data"
 msgstr "Nøgle partner data"
@@ -3944,9 +4727,6 @@ msgstr "fx. Hr., Fru., Mr., Mrs."
 msgid "Enter the person's full middle name or initial"
 msgstr "Indtast personens fulde mellemnavn eller initial"
 
-msgid "Select the gender of the Person"
-msgstr "Vælg personens køn"
-
 msgid "Enter the name of the church"
 msgstr ""
 
@@ -3968,6 +4748,9 @@ msgstr "Vælg en partnerstatus"
 #, csharp-format
 msgid "Unrecognised Partner Class '{0}'!"
 msgstr "Ikke genkendt partnerklasse '{0}'!"
+
+msgid "FDelegateMaintainWorkerField"
+msgstr ""
 
 msgid " &Search"
 msgstr " &Søg"
@@ -4068,9 +4851,6 @@ msgstr ""
 msgid "Mobile:"
 msgstr "Mobil:"
 
-msgid "Email:"
-msgstr "Mail:"
-
 msgid "Location Type:"
 msgstr "Stedtype:"
 
@@ -4136,6 +4916,153 @@ msgstr "Vent venligst."
 
 msgid "Notes"
 msgstr "Noter"
+
+msgid "&Edit Other Partner"
+msgstr ""
+
+msgid "Partner:"
+msgstr ""
+
+msgid "Relation:"
+msgstr ""
+
+msgid "Another Partner:"
+msgstr ""
+
+msgid "Select the Relation Name/type"
+msgstr ""
+
+msgid "Enter any additional specific relationship comments"
+msgstr ""
+
+msgid "Pub&lication Code:"
+msgstr ""
+
+msgid "PERMANENT"
+msgstr ""
+
+msgid "S&ubscription Status:"
+msgstr ""
+
+msgid "Free Subscri&ption:"
+msgstr ""
+
+msgid "Subscription"
+msgstr "Abonnement"
+
+msgid "Publication Cost:"
+msgstr ""
+
+msgid "Complimentar&y:"
+msgstr ""
+
+msgid "&Copies:"
+msgstr ""
+
+msgid "Reason &Given:"
+msgstr ""
+
+msgid "Gift Given By:"
+msgstr ""
+
+msgid "S&tart Date:"
+msgstr ""
+
+msgid "E&xpiry Date:"
+msgstr ""
+
+msgid "Date Rene&wed:"
+msgstr ""
+
+msgid "Not&ice Sent:"
+msgstr ""
+
+msgid "Dates"
+msgstr "Datoer"
+
+msgid "Issues Received:"
+msgstr ""
+
+msgid "Fi&rst Issue Sent:"
+msgstr ""
+
+msgid "L&ast Issue Sent:"
+msgstr ""
+
+msgid "Edit Issues"
+msgstr ""
+
+msgid "Issues"
+msgstr ""
+
+msgid "Select the current status of the subscription"
+msgstr ""
+
+msgid "Select if this a free subscription (no dates updated)"
+msgstr ""
+
+msgid "Enter the number of Complimentary issues to be given"
+msgstr ""
+
+msgid "Enter the number of subscription issues"
+msgstr ""
+
+msgid "Enter a reason subscription was given"
+msgstr ""
+
+msgid "Enter a reason subscription was cancelled"
+msgstr ""
+
+msgid "Who gave this subscription as a gift"
+msgstr ""
+
+msgid "Enter the subscription start date"
+msgstr ""
+
+msgid "Enter the date this subscription discontinues (if necessary)"
+msgstr ""
+
+msgid "Enter the projected renewal date (if necessary)"
+msgstr ""
+
+msgid "Enter the date a notice was sent (if necessary)"
+msgstr ""
+
+msgid "Enter the date subscription was cancelled (if necessary)"
+msgstr ""
+
+msgid "Enter the number of Issues Received"
+msgstr ""
+
+msgid "Date the first issue was sent to the Partner"
+msgstr ""
+
+msgid "Date the most recent issue was sent to this Partner"
+msgstr ""
+
+msgid ""
+"Issues data is usually automatically maintained by Petra. Are you sure you "
+"want to manually change it?"
+msgstr ""
+
+msgid "&Cancel All Subscriptions"
+msgstr ""
+
+#, csharp-format
+msgid ""
+"The following {0} Subscription(s) was/were cancelled:\r\n"
+"{1}\r\n"
+"The Partner has no active Subscriptions left."
+msgstr ""
+
+msgid "All Subscriptions Cancelled"
+msgstr ""
+
+msgid "No Subscriptions were cancelled."
+msgstr ""
+
+msgid "There are no Subscriptions to cancel."
+msgstr ""
 
 msgid "No e-mail address for this Partner in the selected address record."
 msgstr "Ingen mailadresse for denne partner i det valgte adresse datapost."
@@ -4219,9 +5146,6 @@ msgstr ""
 msgid "Form Type"
 msgstr ""
 
-msgid "Form Type:"
-msgstr ""
-
 msgid "New Application Type"
 msgstr "Ny ansøgertype"
 
@@ -4299,9 +5223,6 @@ msgstr "Nyt sprogniveau"
 
 msgid "Maintain Language Levels"
 msgstr "Vedligehold sprogniveau"
-
-msgid "Numeric representation of level of language."
-msgstr "Numerisk repræsentation af sprogniveau."
 
 msgid "Enter a description for this level of language fluency."
 msgstr ""
@@ -4770,8 +5691,8 @@ msgstr ""
 msgid "No Field for the report selected"
 msgstr ""
 
-msgid "All Groups"
-msgstr "Alle grupper"
+msgid "Participant Name - all group allocations"
+msgstr ""
 
 msgid "Work Groups"
 msgstr "Arbejdsgrupper"
@@ -4782,15 +5703,18 @@ msgstr ""
 msgid "Discovery Groups"
 msgstr ""
 
+msgid "Sort by Group Type"
+msgstr ""
+
 msgid "List all attendees"
 msgstr "List alle deltagere"
 
-msgid "List only attendees whose role is a participant"
+msgid "List only attendees whose role is as a normal participant"
 msgstr ""
 
 msgid ""
-"List only attendees whose role is a participant and who have a group "
-"assigned to it"
+"List only attendees whose role is as a normal participant and who are "
+"assigned to a group"
 msgstr ""
 
 msgid "Select Participants"
@@ -5203,6 +6127,12 @@ msgstr "Fra liste"
 msgid "Select Account Codes"
 msgstr "Vælg kontokoder"
 
+msgid "Summary Cost Centres:"
+msgstr ""
+
+msgid "Tick all reporting cost centres"
+msgstr ""
+
 msgid "Select Cost Centre Codes"
 msgstr ""
 
@@ -5299,9 +6229,6 @@ msgstr "Hovedbogsdetaljer"
 msgid "Period"
 msgstr "Periode"
 
-msgid "Year:"
-msgstr "År:"
-
 msgid "Quarter"
 msgstr "Kvartal"
 
@@ -5368,14 +6295,8 @@ msgstr "Indtast venligst en gyldig dato."
 msgid "Donors Report - Short"
 msgstr ""
 
-msgid "Recipient"
-msgstr "Modtager"
-
 msgid "Donors per Recipient"
 msgstr ""
-
-msgid "Period:"
-msgstr "Periode:"
 
 msgid "Quarter:"
 msgstr "Kvartal:"
@@ -5503,7 +6424,7 @@ msgstr ""
 msgid "Get best address for partner"
 msgstr ""
 
-msgid "Get all addresses for partner"
+msgid "Get all addresses for partner (including expired addresses)"
 msgstr ""
 
 msgid "Address Details"
@@ -5517,9 +6438,6 @@ msgstr ""
 
 msgid "Copies"
 msgstr "Kopier"
-
-msgid "Subscription"
-msgstr "Abonnement"
 
 msgid "Bulk Address Report"
 msgstr ""
@@ -5553,17 +6471,14 @@ msgid ""
 msgstr ""
 "Vælg venligst mindst en speciel type, for at undgå et liste hele databasen!"
 
-msgid "Contactor::"
-msgstr ""
-
 msgid "Contact:"
 msgstr "Kontakt:"
 
-msgid "Date From::"
-msgstr "Dato fra::"
+msgid "Date From:"
+msgstr ""
 
-msgid "Date To::"
-msgstr "Dato til::"
+msgid "Date To:"
+msgstr ""
 
 msgid "Report Range"
 msgstr "Rapportinterval"
@@ -5668,8 +6583,8 @@ msgstr "Afvist:"
 msgid "Application Status"
 msgstr ""
 
-msgid "Use date"
-msgstr "Brug dato"
+msgid "Use date range"
+msgstr ""
 
 msgid "Include families"
 msgstr "Inkluder familier"
@@ -5773,14 +6688,11 @@ msgstr "Vælg dokumenter"
 msgid "Use Expiry Dates"
 msgstr "Brug udløbsdatoer"
 
-msgid "Expires between::"
-msgstr "Udløber mellem::"
+msgid "Expires between:"
+msgstr ""
 
 msgid "and:"
 msgstr "og:"
-
-msgid "Dates"
-msgstr "Datoer"
 
 msgid "Personal Documents Expiry Report"
 msgstr ""
@@ -5824,11 +6736,8 @@ msgstr ""
 msgid "Relationship"
 msgstr "Forbindelse"
 
-msgid "Commitment starts:"
+msgid "Commitment starts between:"
 msgstr ""
-
-msgid "and::"
-msgstr "og::"
 
 msgid "Commitment Dates"
 msgstr ""
@@ -5911,6 +6820,10 @@ msgid ""
 "Generates a chart in Excel (only available yet for few reports at the moment)"
 msgstr ""
 
+#, csharp-format
+msgid "It took {0} to calculate the report"
+msgstr ""
+
 msgid "Existing stored Settings:"
 msgstr "Eksisterende gemte indstillinger:"
 
@@ -5973,11 +6886,11 @@ msgstr "Gem kun som CSV, udskriv ikke rapport"
 msgid "Destination file"
 msgstr "Destinationsfil"
 
-msgid "Content of Column::"
-msgstr "Kolonneindhold::"
+msgid "Content of Column:"
+msgstr ""
 
-msgid "Width of Column::"
-msgstr "Kolonnebredde::"
+msgid "Width of Column:"
+msgstr ""
 
 msgid "cm:"
 msgstr "cm:"
@@ -5985,8 +6898,11 @@ msgstr "cm:"
 msgid "Staff at"
 msgstr "Personale den"
 
-msgid "All Staff"
-msgstr "Alt personale"
+msgid "(have commitment at this date)"
+msgstr ""
+
+msgid "Staff with a commitment today"
+msgstr ""
 
 msgid "Enter a valid date."
 msgstr "Indtast en gyldig dato"
@@ -6009,14 +6925,8 @@ msgstr "Sorter dernæst efter"
 msgid "Sort Last By:"
 msgstr "Sorter endeligt efter:"
 
-msgid "Language:"
-msgstr "Sprog:"
-
 msgid "Culture:"
 msgstr "Kultur:"
-
-msgid "Ok"
-msgstr "OK"
 
 msgid "Maintain Language and Culture"
 msgstr "Vedligehold sprog og kultur"
@@ -6139,6 +7049,10 @@ msgstr "Indtast den gamle adgangskode:"
 msgid "Please enter the new password once more:"
 msgstr "Indtast den nye adgangskode en gang til:"
 
+#, csharp-format
+msgid "There was a problem setting the password for user {0}."
+msgstr ""
+
 msgid "bank statement (*.csv)|*.csv"
 msgstr "kontoudtog (*.csv)|*.csv"
 
@@ -6156,9 +7070,6 @@ msgstr "Vi understøtter ikke flere kontoudtog pr. fil i øjeblikket"
 
 msgid "New Navigation"
 msgstr ""
-
-msgid "View"
-msgstr "Vis"
 
 msgid "Hospitality"
 msgstr ""
@@ -6221,6 +7132,10 @@ msgstr ""
 msgid "SERVER>"
 msgstr "SERVER>"
 
+msgid ""
+"Reading parameters for server remote configuration from config file..."
+msgstr ""
+
 msgid "Reading server remote configuration from config file..."
 msgstr ""
 
@@ -6253,59 +7168,11 @@ msgid ""
 "{2}"
 msgstr ""
 
-msgid "Invalid User ID/Password."
-msgstr "Ugyldig bruger-ID/Adgangskode"
-
-msgid ""
-"  ID | Client          | Status           | Computer    | IP Address      | "
-"Type"
-msgstr "  ID | Klient | Status | Computer | IP-adresse | Type"
-
-msgid ""
-"     | Connected since | Last activity    | Server Port |                 |"
-msgstr "     | Tilsluttet siden | Seneste aktivitet | Serverport | |"
-
-msgid " * no connected Clients *"
-msgstr " * ingen tilsluttede klienter *"
-
-msgid " * no disconnected Clients *"
-msgstr " * ingen frakoblede klienter *"
-
-#, csharp-format
-msgid ""
-"  (Currently connected Clients: {0}; client connections since Server start: "
-"{1})"
-msgstr ""
-
-#, csharp-format
-msgid "PETRAServer {0} Build {1}  (OS: {2})"
-msgstr "PETRAServer {0} Build {1}  (OS: {2})"
-
-#, csharp-format
-msgid "PETRAServer is running and listening @ {0}:{1}"
-msgstr "PETRAServer kører og lytter @ {0}:{1}"
-
-msgid "SERVER STOPPED!"
-msgstr "SERVER STOPPEDE!"
-
-msgid "SHUTDOWN PROCEDURE INITIATED"
-msgstr "NEDLUKNINGSPROCEDURE PÅBEGYNDT"
-
-msgid "SHUTDOWN: Executing step 1 of 2..."
-msgstr "NEDLUKNING: Udfører trin 1 af 2 ..."
-
-msgid "SHUTDOWN: Executing step 2 of 2..."
-msgstr "NEDLUKNING: Udfører trin 2 af 2 ..."
-
-msgid "SHUTDOWN PROCEDURE FINISHED"
-msgstr "NEDLUKNINGSPROCEDURE AFSLUTTET"
-
 msgid "Connected to Database."
 msgstr "Forbundet til database."
 
-#, csharp-format
-msgid "Exception occured during manual load of Client AppDomain: {0}"
-msgstr "Exception occured during manual load of Client AppDomain: {0}"
+msgid "Invalid User ID/Password."
+msgstr "Ugyldig bruger-ID/Adgangskode"
 
 msgid "error during posting of AP document"
 msgstr ""
@@ -6420,13 +7287,8 @@ msgstr ""
 msgid "It was already cancelled."
 msgstr ""
 
-msgid "Free Again"
-msgstr ""
-
-msgid "Exception has been thrown"
-msgstr ""
-
-msgid "Inner Exception"
+#, csharp-format
+msgid "Unknown error while creating a batch for Ledger: {0}."
 msgstr ""
 
 msgid "The table a_currency is empty!"
@@ -6434,6 +7296,9 @@ msgstr "Tabellen a_currency er tom!"
 
 #, csharp-format
 msgid "The regular expression {0} does not fit for a match in {1}"
+msgstr ""
+
+msgid "Free Again"
 msgstr ""
 
 #, csharp-format
@@ -6452,6 +7317,16 @@ msgstr ""
 
 #, csharp-format
 msgid "bank import for date {0}"
+msgstr ""
+
+#, csharp-format
+msgid "creating gift for match {0}"
+msgstr ""
+
+msgid "Invalid or inactive cost centre"
+msgstr ""
+
+msgid "Invalid or inactive account code"
 msgstr ""
 
 #, csharp-format
@@ -6666,6 +7541,21 @@ msgstr ""
 msgid "Gift Batch "
 msgstr ""
 
+#, csharp-format
+msgid "The Ledger no.: {0} or Fee Code: {1} does not exist."
+msgstr ""
+
+#, csharp-format
+msgid ""
+"Unexpected Fee Payable/Receivable Charge Option in Ledger: {0} and Fee Code: "
+"'{1}'."
+msgstr ""
+
+#, csharp-format
+msgid ""
+"Unknown error while calculating admin fee for Ledger: {0} and Fee Code: {1}"
+msgstr ""
+
 msgid "batch hash value"
 msgstr ""
 
@@ -6708,7 +7598,26 @@ msgstr "transaktion"
 msgid "cost centre"
 msgstr ""
 
+msgid "Importing Transaction"
+msgstr ""
+
+#, csharp-format
+msgid "Invalid cost centre {0} in line {1}"
+msgstr ""
+
+#, csharp-format
+msgid "Inactive cost centre {0} in line {1}"
+msgstr ""
+
 msgid "account code"
+msgstr ""
+
+#, csharp-format
+msgid "Invalid account code {0} in line {1}"
+msgstr ""
+
+#, csharp-format
+msgid "Inactive account {0} in line {1}"
 msgstr ""
 
 msgid "narrative"
@@ -6868,6 +7777,72 @@ msgstr ""
 msgid "Loss on foreign account {0}, cost centre {1}"
 msgstr ""
 
+msgid "Cannot save transaction"
+msgstr ""
+
+#, csharp-format
+msgid "Invalid account code {0} in batch {1}, journal {2}, transaction {3}"
+msgstr ""
+
+#, csharp-format
+msgid ""
+"Invalid cost centre code {0} in batch {1}, journal {2}, transaction {3}"
+msgstr ""
+
+msgid "Saving Batch"
+msgstr ""
+
+#, csharp-format
+msgid "Cannot modify Batch {0} because it is {1}"
+msgstr ""
+
+#, csharp-format
+msgid ""
+"Income Account header: '{1}' does not appear in the accounts table for "
+"Ledger: {0}."
+msgstr ""
+
+#, csharp-format
+msgid ""
+"Expense Account header: '{1}' does not appear in the accounts table for "
+"Ledger: {0}."
+msgstr ""
+
+#, csharp-format
+msgid ""
+"Profit & Loss Account header: '{1}' does not appear in the accounts table "
+"for Ledger: {0}."
+msgstr ""
+
+#, csharp-format
+msgid ""
+"Unknown error while Generating the ICH batch for Ledger: {0} and Period: {1}"
+msgstr ""
+
+#, csharp-format
+msgid ""
+"Unknown error while building list of Child Accounts for Ledger: {0} and "
+"Account code: {1}"
+msgstr ""
+
+#, csharp-format
+msgid "Cannot progress as Ledger {0} is at the provisional year-end point"
+msgstr ""
+
+#, csharp-format
+msgid ""
+"Unable to access information for Fee Code '{1}' in either the Fees Payable & "
+"Receivable Tables for Ledger {0}"
+msgstr ""
+
+#, csharp-format
+msgid "The posting of the admin fee batch failed."
+msgstr ""
+
+#, csharp-format
+msgid "Unknown error while generating admin fee batch for Ledger: {0}"
+msgstr ""
+
 msgid "There was a problem with the syntax of the file."
 msgstr "Der var et problem med denne fils syntaks."
 
@@ -6882,9 +7857,8 @@ msgstr "Opretter hovedbog"
 
 #, csharp-format
 msgid ""
-"Invalid number {0} for a ledger. Please choose a number between 1 and 9999."
+"Invalid number {0} for a ledger. Please choose a number between 2 and 9999."
 msgstr ""
-"Ugyldigt nummer {0} til en hovedbog. Vælg venligst et tal mellem 1 og 9999."
 
 msgid "No valid address on file"
 msgstr ""
@@ -6901,12 +7875,19 @@ msgstr ""
 msgid "** restricted **"
 msgstr ""
 
-msgid "99"
-msgstr "99"
-
 #, csharp-format
 msgid "We were not able to send the email to {0}"
 msgstr "Vi var ikke i stand til at sende mailen til {0}"
+
+#, csharp-format
+msgid ""
+"The Family ID that the Person had in the former Family could not be \r\n"
+"preserved in the Family that the Person has now joined. \r\n"
+"The reason is: \r\n"
+"    {0} \r\n"
+"Former Family ID: {1} \r\n"
+"New Family ID:    {2}"
+msgstr ""
 
 msgid ""
 "You do not have access to Partners of Partner Class 'ORGANISATION' that are "
@@ -6933,8 +7914,8 @@ msgstr "Mand"
 msgid "Mr"
 msgstr "Hr"
 
-msgid "Mrs"
-msgstr "Fru"
+msgid "Ms"
+msgstr ""
 
 msgid "married"
 msgstr "gift"
@@ -6949,6 +7930,12 @@ msgid "divorced"
 msgstr "fraskilt"
 
 msgid "Imported Data"
+msgstr ""
+
+msgid "Not Available"
+msgstr ""
+
+msgid "(Mobile)"
 msgstr ""
 
 #, csharp-format
@@ -6973,17 +7960,14 @@ msgstr ""
 "Bedes du logge ind på forummet igen, du skal løse en captcha for at "
 "bekræfte, at du er dig. Du kan også nulstille din adgangskode der."
 
-msgid "Family"
-msgstr "Familie"
+msgid "Mrs"
+msgstr "Fru"
 
 msgid "Dear {0} {1}{#PLURAL}"
 msgstr "Kære {0} {1}{#PLURAL}"
 
 msgid "Dear {0} {1}{#MALE}"
 msgstr "Kære {0} {1}{#MALE}"
-
-msgid "Ms"
-msgstr ""
 
 msgid "Miss"
 msgstr "Frk."
@@ -6996,6 +7980,24 @@ msgstr ""
 
 msgid "Dear {0}{1}{#NOGENDER}"
 msgstr "Kære {0}{1}{#NOGENDER}"
+
+msgid "exp."
+msgstr ""
+
+#, csharp-format
+msgid ""
+"WARNING: This change will affect the information visible to person \"{0}\" "
+"({1}) in Caleb.\r\n"
+"\r\n"
+"\"{2}\" will no longer be able to see any personal support that previously "
+"came in for family \"{3}\" ({4}) but will only be able to see new support "
+"that comes in for his/her new family.\r\n"
+"\r\n"
+"Other persons of family \"{5}\" will continue to be able to see in Caleb all "
+"previously received support and any future donations to their family.\r\n"
+"\r\n"
+"Do you want to continue?"
+msgstr ""
 
 msgid "The part of the address preceding the street, eg business name"
 msgstr ""
@@ -7024,9 +8026,6 @@ msgstr "Vælg adressens stedtype"
 msgid "Can or should, postal mail be sent to this address?"
 msgstr ""
 
-msgid "Enter a Telephone number for this address (if available)"
-msgstr "Indtast et telefonnummer til denne adresse (hvis tilgængelig)"
-
 msgid "Enter a Fax number for this address location (if available)"
 msgstr "Indtast et faxnummer til denne adresse (hvis tilgængelig)"
 
@@ -7036,9 +8035,6 @@ msgstr ""
 
 msgid "Enter a Mobile phone number for this address (if available)"
 msgstr "Indtast et mobilnummer til denne adresse (hvis tilgængeligt)"
-
-msgid "Enter an Email address (if available)"
-msgstr "Indtast en mailadressse (hvis tilgængeligt)"
 
 msgid "URL for this Partner's Web Home Page"
 msgstr ""
@@ -7067,8 +8063,8 @@ msgstr "Partnere"
 msgid "Search Boxes"
 msgstr "Søgebokse"
 
-msgid "Element"
-msgstr "Element"
+msgid "Xml Element"
+msgstr ""
 
 msgid "Add New Family"
 msgstr "Tilføj ny familie"
@@ -7231,14 +8227,23 @@ msgid ""
 "Send a letter to new donors that will get subscribed to our publication"
 msgstr ""
 
+msgid "Print Donors Of Workers Letters"
+msgstr ""
+
+msgid "Send a letter to all donors of a specific worker"
+msgstr ""
+
 msgid "Aged Supplier List"
 msgstr ""
 
-msgid "General Ledger"
-msgstr "Generel hovedbog"
+msgid "Budgets"
+msgstr ""
 
 msgid "General"
 msgstr "Generelt"
+
+msgid "General Ledger"
+msgstr "Generel hovedbog"
 
 msgid "ImportGL Transactions From Bank Statement"
 msgstr ""
@@ -7300,28 +8305,31 @@ msgstr ""
 msgid "Total Gifts Through Field"
 msgstr ""
 
-msgid "GL Setup"
+msgid "ICH Processing"
 msgstr ""
 
-msgid "Setup Currencies"
-msgstr "Opsæt valutaer"
+msgid "ICH Stewardship Calculation"
+msgstr ""
 
-msgid "Setup Daily Exchange Rate"
-msgstr "Opsæt daglig vekselkurs"
-
-msgid "Setup Analysis Types"
-msgstr "Opsæt analysetyper"
+msgid "General Ledger Setup"
+msgstr ""
 
 msgid "Manage Accounts"
 msgstr "Håndter konti"
 
-msgid "Add accounts and modify the hierarchy"
+msgid "Maintain Accounts and modify their hierarchy"
 msgstr ""
 
 msgid "Manage Cost Centres"
 msgstr ""
 
-msgid "Add and maintain cost centres"
+msgid "Maintain Cost Centres and modify their hierarchy"
+msgstr ""
+
+msgid "Setup Cost Centre Types"
+msgstr ""
+
+msgid "Maintain types of Cost Centres"
 msgstr ""
 
 msgid "Gift Setup"
@@ -7331,6 +8339,57 @@ msgid "Setup Motivation Details"
 msgstr ""
 
 msgid "Maintain motivation details towards which donations can be assigned"
+msgstr ""
+
+msgid "Setup Admin Grants Payable"
+msgstr ""
+
+msgid "Maintain payable Administration Grants"
+msgstr ""
+
+msgid "Setup Admin Grants Receivable"
+msgstr ""
+
+msgid "Maintain receivable Administration Grants"
+msgstr ""
+
+msgid "Finance Setup"
+msgstr ""
+
+msgid "Ledger"
+msgstr ""
+
+msgid "Create a new Ledger"
+msgstr ""
+
+msgid "Finance Setup (Cross-Ledger)"
+msgstr ""
+
+msgid "Setup Currencies"
+msgstr "Opsæt valutaer"
+
+msgid "Maintain Currencies"
+msgstr ""
+
+msgid "Setup Methods Of Giving"
+msgstr ""
+
+msgid "Setup Methods Of Payment"
+msgstr ""
+
+msgid "Setup Analysis Types"
+msgstr "Opsæt analysetyper"
+
+msgid "Maintain Analysis Types"
+msgstr ""
+
+msgid "Exchange Rates (Cross-Ledger)"
+msgstr ""
+
+msgid "Setup Corporate Exchange Rates"
+msgstr ""
+
+msgid "Setup Daily Exchange Rates"
 msgstr ""
 
 msgid "Personnel"
@@ -7407,9 +8466,6 @@ msgstr ""
 
 msgid "Language Report"
 msgstr "Sprograpport"
-
-msgid "Pressent Attenddee Report"
-msgstr ""
 
 msgid "Field Reports"
 msgstr "Feltrapporter"
