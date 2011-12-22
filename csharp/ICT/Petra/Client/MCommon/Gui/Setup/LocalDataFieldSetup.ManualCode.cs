@@ -100,6 +100,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
 		}
 	}
 	
+	// This is the base class from which the other three are derived
     public partial class TFrmLocalDataFieldSetup
     {
     	// This is the extra dataset that we need that gives us the UsedBy information
@@ -111,13 +112,29 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
     	// These are the possible contexts in which we could have been launched
     	enum Context
     	{
-    		Partner,
+    		Partner = 1,
     		Application,
     		Personnel
     	}
     	private Context CurrentContext;
     	
-    	private int UsedByColumnID = -1;
+    	// These are some constants or semi-constants used by the class
+    	// ColumnIndex of our new columns in the extended dataset
+    	private int UsedByColumnOrdinal = -1;
+    	private int ContextColumnOrdinal = -1;
+    	// These are the database values for the DataLabelUse table
+    	// We default to using in all screens - this is better than defaulting to none (which is not allowed)
+    	private const string DefaultPartnerUsedBy = "Bank,Church,Family,Organisation,Person,Unit,Venue";
+    	private const string DefaultPersonnelUsedBy = "Personnel";
+    	private const string DefaultApplicationUsedBy = "LongTermApp,ShortTermApp";
+    	
+    	// UsedBy column title for DB and GUI
+    	private const string DBUsedBy = "UsedBy";
+    	private string GUIUsedBy = Catalog.GetString("Used By");
+    	
+    	private const int DefaultCharLength = 24;
+    	private const int DefaultNumDecimalPlaces = 0;
+    	private const string DefaultCurrencyCode = "USD";
     	
     	/// <summary>
     	/// This is the simple two column data table used by the list box.
@@ -128,35 +145,44 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
     	// This is the main area where we set up to use the additional information from the extra table
     	private void InitializeManualCode()
         {
-    		// Get our screenClassName and initialise the list box column headings
+    		// Get our screenClassName
     		string ScreenName = this.GetType().Name;
-        	string Col1 = "Used By";
-        	string Col2 = String.Empty;
+    		
+    		// Initialise the list box column headings in the working DataTable and the GUI
+        	string DBCol1 = DBUsedBy;
+        	string DBCol2 = String.Empty;
+        	string GUICol2 = String.Empty;
+        	string DBCol3 = "Label";
         	if (String.Compare(ScreenName, "TFrmLocalPartnerDataFieldSetup", true) == 0)
         	{
         		CurrentContext = Context.Partner;
-	        	Col2 = "PartnerClass";
+	        	DBCol2 = "PartnerClass";
+	        	GUICol2 = Catalog.GetString("Partner Class");
         	}
         	else if (String.Compare(ScreenName, "TFrmLocalApplicationDataFieldSetup", true) == 0)
         	{
         		CurrentContext = Context.Application;
-	        	Col2 = "Application";
+	        	DBCol2 = "Application";
+	        	GUICol2 = Catalog.GetString("Application");
         	}
         	else if (String.Compare(ScreenName, "TFrmLocalPersonnelDataFieldSetup", true) == 0)
         	{
         		CurrentContext = Context.Personnel;
-	        	Col2 = "Personnel";
-	        	clbUsedBy.Visible = false;
+	        	DBCol2 = "Personnel";
+	        	GUICol2 = Catalog.GetString("Personnel");
         	}
         	
-        	// Now we can initialise our little data table that backs the list view
-        	DTUsedBy.Columns.Add(Col1).DataType = Type.GetType("System.Boolean");
-        	DTUsedBy.Columns.Add(Col2).DataType = Type.GetType("System.String");
+        	// Now we can initialise our little data table that backs the checkbox list view
+        	DTUsedBy.Columns.Add(DBCol1).DataType = typeof(Boolean);
+        	DTUsedBy.Columns.Add(DBCol2).DataType = typeof(String);
+        	DTUsedBy.Columns.Add(DBCol3).DataType = typeof(String);
         	
-        	// Add a 'Used By' column to our main dataset
+        	// Add a 'Context' column so we can filter the data
+        	ContextColumnOrdinal = FMainDS.PDataLabel.Columns.Add("Context", typeof(int)).Ordinal;
+        	
+        	// Add a 'Used By' column to our main dataset (Do it twice so we track changes)
         	FMainDS.PDataLabel.Columns.Add("UsedByInit", typeof(String));
-        	FMainDS.PDataLabel.Columns.Add("UsedBy", typeof(String));
-        	UsedByColumnID = FMainDS.PDataLabel.Columns.Count - 1;
+        	UsedByColumnOrdinal = FMainDS.PDataLabel.Columns.Add(DBUsedBy, typeof(String)).Ordinal;
 			
 			// Load the Extra Data from DataLabelUse table
 			Type DataTableType;
@@ -177,90 +203,191 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
 					usedBy += useRow.Use;
 				}
 				
-				// Make 2 new colums:  Initially they hold the same values, but if we make a change we modify the second one.
-				labelRow[UsedByColumnID - 1] = usedBy;	// since we added this column manually, it does not have a handy property
-				labelRow[UsedByColumnID] = usedBy;	// since we added this column manually, it does not have a handy property
+				// Initially our two new columns hold the same values, but if we make a change we modify the second one.
+				labelRow[UsedByColumnOrdinal - 1] = usedBy;	// since we added this column manually, it does not have a handy property
+				labelRow[UsedByColumnOrdinal] = usedBy;		// since we added this column manually, it does not have a handy property
+				
+				if (usedBy.IndexOf("personnel", StringComparison.InvariantCultureIgnoreCase) >= 0)
+				{
+					labelRow[ContextColumnOrdinal] = (int)Context.Personnel;
+				}
+				else if (usedBy.IndexOf("termapp", StringComparison.InvariantCultureIgnoreCase) >= 0)
+				{
+					labelRow[ContextColumnOrdinal] = (int)Context.Application;
+				}
+				else
+				{
+					labelRow[ContextColumnOrdinal] = (int)Context.Partner;
+				}
 			}
 			// So now our main data set has everything we need
 			// But the grid doesn't know about our new column yet
+			// We do that in 'RunOnceOnActivationManual()'
 			
         	// Set the form title and list box content depending on our context
         	if (CurrentContext == Context.Partner)
         	{
         		this.Text = "Maintain Local Partner Data Fields";
-	        	AddRowToUsedByList("Person");
-	        	AddRowToUsedByList("Family");
-	        	AddRowToUsedByList("Church");
-	        	AddRowToUsedByList("Organisation");
-	        	AddRowToUsedByList("Bank");
-	        	AddRowToUsedByList("Unit");
-	        	AddRowToUsedByList("Venue");
+        		AddRowToUsedByList("Person", Catalog.GetString("Person"));
+        		AddRowToUsedByList("Family", Catalog.GetString("Family"));
+        		AddRowToUsedByList("Church", Catalog.GetString("Church"));
+        		AddRowToUsedByList("Organisation", Catalog.GetString("Organisation"));
+        		AddRowToUsedByList("Bank", Catalog.GetString("Bank"));
+        		AddRowToUsedByList("Unit", Catalog.GetString("Unit"));
+        		AddRowToUsedByList("Venue", Catalog.GetString("Venue"));
         	}
         	else if (CurrentContext == Context.Application)
         	{
         		this.Text = "Maintain Local Application Data Fields";
-	        	AddRowToUsedByList("Long Term");
-	        	AddRowToUsedByList("Short Term");
+        		AddRowToUsedByList("LongTermApp", Catalog.GetString("Long Term"));
+        		AddRowToUsedByList("ShortTermApp", Catalog.GetString("Short Term"));
         	}
         	else if (CurrentContext == Context.Personnel)
         	{
         		this.Text = "Maintain Local Personnel Data Fields";
-	        	AddRowToUsedByList("Personnel");
+        		AddRowToUsedByList("Personnel", Catalog.GetString("Personnel"));
+	        	clbUsedBy.Visible = false;
         	}
         	
-        	clbUsedBy.AddCheckBoxColumn(Col1, DTUsedBy.Columns[0], 60, false);
-        	clbUsedBy.AddTextColumn(Col2, DTUsedBy.Columns[1], 90);
-        	clbUsedBy.DataBindGrid(DTUsedBy, Col2, Col1, Col2, Col2, false, false, false);
+        	//Set up our checked list box columns and bind to our DTUsedBy table
+        	clbUsedBy.AddCheckBoxColumn(GUIUsedBy, DTUsedBy.Columns[0], 70, false);
+        	clbUsedBy.AddTextColumn(GUICol2, DTUsedBy.Columns[2], 125);
+        	clbUsedBy.DataBindGrid(DTUsedBy, DBCol3, DBCol1, DBCol2, DBCol2, false, false, false);
+        	FPetraUtilsObject.SetStatusBarText(clbUsedBy, Catalog.GetString("Choose the screens when this label will be used"));
         	
 			// Set up the label control that we will use to indicate the current sub-type of data
 			// We need to right align the text so it looks nice when we change it
         	lblDataSubType.AutoSize = false;
 			lblDataSubType.Left = 0;
-			lblDataSubType.Width = 115;		// 5 less than the column width
+			lblDataSubType.Width = 170;		// 5 less than the column width in the YAML file
 			lblDataSubType.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			
-        	// Now we have to deal with the form controls that depend on the selction of DataType
+        	// Now we have to deal with the form controls that depend on the selection of DataType
         	// and we only want one visible at a time - so hide these three
         	pnlCurrencyCode.Visible = false;
         	pnlCategoryCode.Visible = false;
         	txtDetailNumDecimalPlaces.Visible = false;
         	
-        	// We need to capture the starting to save event
+        	// We need to capture the 'starting to save' event, so we can save our Extra DataSet
         	FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(FPetraUtilsObject_DataSavingStarted);
     	}
         
     	// Simple helper that adds a string item as a row in our UsedBy list
-        private void AddRowToUsedByList(string item)
+        private void AddRowToUsedByList(string DBItem, string GUIListItem)
         {
         	DataRow dr = DTUsedBy.NewRow();
         	dr[0] = false;
-        	dr[1] = item;
+        	dr[1] = DBItem;
+        	dr[2] = GUIListItem;
         	DTUsedBy.Rows.Add(dr);
         }
         
         private void RunOnceOnActivationManual()
         {
         	// This is the point at which we can add our additional column to the details grid
-        	grdDetails.AddTextColumn("Used By", FMainDS.PDataLabel.Columns["UsedBy"]);
-			DataView myDataView = FMainDS.PDataLabel.DefaultView;
+        	grdDetails.AddTextColumn(GUIUsedBy, FMainDS.PDataLabel.Columns[DBUsedBy]);
+        	
+        	// And now we can set up our default view and override the original binding to the grid
+        	// that the generated code did earlier
+        	DataView myDataView = FMainDS.PDataLabel.DefaultView;
+        	myDataView.RowFilter = "Context=" + ((int)CurrentContext).ToString();
 			myDataView.AllowNew = false;
-			grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);		}
+			grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+			
+			// The details panel will likely be showing data from the wrong context now that we have applied a rowfilter
+			// So on an empty grid we have to call ShowDetails(null) again
+			if (grdDetails.Rows.Count <= 1)
+			{
+				ShowDetails(null);
+			}
+        }
 
         private void NewRowManual(ref PDataLabelRow ARow)
         {
+        	// Get the first available key, which is our unique primary key field
+        	// Note that this field is not displayed - it is internal to the DB
             Int32 labelKey = 1;
-
             while (FMainDS.PDataLabel.Rows.Find(new object[] { labelKey }) != null)
             {
                 labelKey++;
             }
             ARow.Key = labelKey;
-            ARow.Text = "NewLabel";
-            ARow.DataType = "char";
-            ARow.CharLength = 24;
-            ARow.NumDecimalPlaces = 0;
-            ARow.CurrencyCode = (cmbDetailCurrencyCode.SelectedIndex <= 1) ? "USD" : cmbDetailCurrencyCode.Text;
-            ARow[UsedByColumnID] = "";
+            
+            // Initialise the other values
+            ARow.Text = Catalog.GetString("NewLabel");
+            ARow[ContextColumnOrdinal] = (int)CurrentContext;
+        	ARow[UsedByColumnOrdinal - 1] = "";
+            
+            if (grdDetails.Rows.Count <= 1 || FPreviouslySelectedDetailRow == null)
+            {
+            	//  This is the first row of an empty grid
+            	// Default to a char type
+	            ARow.DataType = "char";
+	            ARow.CharLength = DefaultCharLength;
+	            ARow.Group = String.Empty;
+        		txtDetailNumDecimalPlaces.NumberValueInt = DefaultNumDecimalPlaces;
+        		cmbDetailCurrencyCode.SetSelectedString(DefaultCurrencyCode);
+        		cmbDetailLookupCategoryCode.SelectedIndex = (cmbDetailLookupCategoryCode.Count > 0) ? 0 : -1;
+
+		        switch (CurrentContext)
+		        {
+		        	case Context.Partner:
+		        		ARow[UsedByColumnOrdinal] = DefaultPartnerUsedBy;
+		        		break;
+		        	case Context.Application:
+		        		ARow[UsedByColumnOrdinal] = DefaultApplicationUsedBy;
+		        		break;
+		        	case Context.Personnel:
+		        		ARow[UsedByColumnOrdinal] = DefaultPersonnelUsedBy;
+		        		break;
+		        }
+		        // Check all the boxes
+				clbUsedBy.SetCheckedStringList(clbUsedBy.GetAllStringList());
+            }
+            else
+            {
+            	// New row in a grid that has existing rows, so default to values from the current row
+            	ARow.Group = FPreviouslySelectedDetailRow.Group;
+            	ARow.DataType = FPreviouslySelectedDetailRow.DataType;
+            	if (String.Compare(ARow.DataType, "char", true) == 0)
+            	{
+            		ARow.CharLength = FPreviouslySelectedDetailRow.CharLength;
+            		txtDetailNumDecimalPlaces.NumberValueInt = DefaultNumDecimalPlaces;
+            		cmbDetailCurrencyCode.SetSelectedString(DefaultCurrencyCode);
+            		cmbDetailLookupCategoryCode.SelectedIndex = (cmbDetailLookupCategoryCode.Count > 0) ? 0 : -1;
+            	}
+            	else if (String.Compare(ARow.DataType, "float", true) == 0)
+            	{
+            		txtDetailCharLength.NumberValueInt = DefaultCharLength;
+            		ARow.NumDecimalPlaces = FPreviouslySelectedDetailRow.NumDecimalPlaces;
+            		cmbDetailCurrencyCode.SetSelectedString(DefaultCurrencyCode);
+            		cmbDetailLookupCategoryCode.SelectedIndex = (cmbDetailLookupCategoryCode.Count > 0) ? 0 : -1;
+            	}
+            	else if (String.Compare(ARow.DataType, "currency", true) == 0)
+            	{
+            		txtDetailCharLength.NumberValueInt = DefaultCharLength;
+            		txtDetailNumDecimalPlaces.NumberValueInt = DefaultNumDecimalPlaces;
+            		ARow.CurrencyCode = FPreviouslySelectedDetailRow.CurrencyCode;
+            		cmbDetailLookupCategoryCode.SelectedIndex = (cmbDetailLookupCategoryCode.Count > 0) ? 0 : -1;
+            	}
+            	else if (String.Compare(ARow.DataType, "lookup", true) == 0)
+            	{
+            		txtDetailCharLength.NumberValueInt = DefaultCharLength;
+            		txtDetailNumDecimalPlaces.NumberValueInt = DefaultNumDecimalPlaces;
+            		cmbDetailCurrencyCode.SetSelectedString(DefaultCurrencyCode);
+            		ARow.LookupCategoryCode = FPreviouslySelectedDetailRow.LookupCategoryCode;
+            	}
+            	else
+            	{
+            		txtDetailCharLength.NumberValueInt = DefaultCharLength;
+            		txtDetailNumDecimalPlaces.NumberValueInt = DefaultNumDecimalPlaces;
+            		cmbDetailCurrencyCode.SetSelectedString(DefaultCurrencyCode);
+            		cmbDetailLookupCategoryCode.SelectedIndex = (cmbDetailLookupCategoryCode.Count > 0) ? 0 : -1;
+            	}
+            	ARow[UsedByColumnOrdinal] = clbUsedBy.GetCheckedStringList();
+            }
+        	
+			DTUsedBy.DefaultView.AllowEdit = true;
         }
 
         private void NewRecord(Object sender, EventArgs e)
@@ -272,6 +399,23 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         
         private void ShowDetailsManual(PDataLabelRow ARow)
         {
+        	// In this special case we have to handle an empty grid differently from normal
+        	// Because we applied a rowFilter to the dataset during activation, the panel may contain initial information
+        	// about a row that has now been filtered out.
+        	if (ARow == null)
+        	{
+        		txtDetailText.Text = String.Empty;
+        		txtDetailGroup.Text = String.Empty;
+        		cmbDetailDataType.SelectedIndex = 0;
+        		txtDetailCharLength.NumberValueInt = DefaultCharLength;
+        		txtDetailDescription.Text = String.Empty;
+        		pnlDetails.Enabled = false;
+        		return;
+        	}
+        	
+        	int defaultCategoryCode = (cmbDetailLookupCategoryCode.Count > 0) ? 0 : -1;
+        	
+        	// Now 'translate' the database values like 'float' to comboBox values like 'Number'
         	if (String.Compare(ARow.DataType, "float", true) == 0)
         	{
         		cmbDetailDataType.SelectedIndex = 1;
@@ -306,22 +450,34 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         		cmbDetailDataType.SelectedIndex = 0;
         	}
         	
+        	// Initialise the hidden controls to something sensible, in case they get shown
+        	if (cmbDetailDataType.SelectedIndex != 0) txtDetailCharLength.NumberValueInt = DefaultCharLength;
+        	if (cmbDetailDataType.SelectedIndex != 1) txtDetailNumDecimalPlaces.NumberValueInt = DefaultNumDecimalPlaces;
+        	if (cmbDetailDataType.SelectedIndex != 2) cmbDetailCurrencyCode.SetSelectedString(DefaultCurrencyCode);
+    		if (cmbDetailDataType.SelectedIndex != 6) cmbDetailLookupCategoryCode.SelectedIndex = defaultCategoryCode;
+        	
         	// Set the checkboxes in the UsedBy list
 			DTUsedBy.DefaultView.AllowEdit = true;
-        	// We don't have a nice typed property for our manually added column - but we know it will be the last one
-			string stringList = ARow[UsedByColumnID].ToString();
-        	clbUsedBy.SetCheckedStringList(stringList);
+        	clbUsedBy.SetCheckedStringList(ARow[UsedByColumnOrdinal].ToString());
         }
 
     	private void GetDetailDataFromControlsManual(PDataLabelRow ARow)
     	{
+    		// Translate comboBox items like 'Number' back to database entries like 'float'
+    		// and make sure that unused fields in the database are set to null (where controls are currently hidden)
     		switch (cmbDetailDataType.SelectedIndex)
     		{
     			case 1:
     				ARow.DataType = "float";
+    				ARow.SetCharLengthNull();
+    				ARow.SetCurrencyCodeNull();
+    				ARow.SetLookupCategoryCodeNull();
     				break;
     			case 2:
     				ARow.DataType = "currency";
+    				ARow.SetCharLengthNull();
+    				ARow.SetNumDecimalPlacesNull();
+    				ARow.SetLookupCategoryCodeNull();
     				break;
     			case 3:
     				ARow.DataType = "boolean";
@@ -334,17 +490,31 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
     				break;
     			case 6:
     				ARow.DataType = "lookup";
+    				ARow.SetCharLengthNull();
+    				ARow.SetNumDecimalPlacesNull();
+    				ARow.SetCurrencyCodeNull();
     				break;
     			case 7:
     				ARow.DataType = "partnerkey";
     				break;
     			default:
     				ARow.DataType = "char";
+    				ARow.SetNumDecimalPlacesNull();
+    				ARow.SetCurrencyCodeNull();
+    				ARow.SetLookupCategoryCodeNull();
     				break;
     		}
+    		if ((cmbDetailDataType.SelectedIndex >= 3 && cmbDetailDataType.SelectedIndex <= 5) ||
+    		    cmbDetailDataType.SelectedIndex == 7)
+    		{
+    			ARow.SetCharLengthNull();
+				ARow.SetNumDecimalPlacesNull();
+				ARow.SetCurrencyCodeNull();
+				ARow.SetLookupCategoryCodeNull();
+    		}
     		
-    		string stringList = clbUsedBy.GetCheckedStringList();
-			ARow[UsedByColumnID] = stringList;
+    		// Get the checked items from the UsedBy ListBox and update our UsedBy column
+			ARow[UsedByColumnOrdinal] = clbUsedBy.GetCheckedStringList();
     	}
 
     	void FPetraUtilsObject_DataSavingStarted(object Sender, EventArgs e)
@@ -353,14 +523,14 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
     		if (FPreviouslySelectedDetailRow != null)
     		{
 	    		string stringList = clbUsedBy.GetCheckedStringList();
-	    		FPreviouslySelectedDetailRow[UsedByColumnID] = stringList;
+	    		FPreviouslySelectedDetailRow[UsedByColumnOrdinal] = stringList;
     		}
     		
     		// Now we need to save the PDataLabelUse table info using our data from our UsedBy column
     		// Go round all the rows, seeing which rows have a new UsedBy value
     		foreach(PDataLabelRow labelRow in FMainDS.PDataLabel.Rows)
     		{
-    			if (labelRow[UsedByColumnID].ToString() != labelRow[UsedByColumnID - 1].ToString())
+    			if (labelRow[UsedByColumnOrdinal].ToString() != labelRow[UsedByColumnOrdinal - 1].ToString())
     			{
     				// This row's UsedBy column has been edited
     				// Delete the old rows that applied to this key
@@ -372,7 +542,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
 		    		}
 		    		
 		    		// Create new rows and add them
-		    		string usedByList = labelRow[UsedByColumnID].ToString();
+		    		string usedByList = labelRow[UsedByColumnOrdinal].ToString();
 		    		string[] uses = usedByList.Split(',');
 		    		int nIndex = 1;
 		    		foreach(string use in uses)
@@ -399,18 +569,18 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             }
             catch (System.Net.Sockets.SocketException)
             {
-                MessageBox.Show("The PETRA Server cannot be reached! Data cannot be saved!",
-                    "No Server response",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Stop);
+            	MessageBox.Show(Catalog.GetString("The PETRA Server cannot be reached! Data cannot be saved!"),
+            	                Catalog.GetString("No Server response"),
+			                    MessageBoxButtons.OK,
+			                    MessageBoxIcon.Stop);
                 return;
             }
             catch (EDBConcurrencyException)
             {
-                MessageBox.Show("The 'UsedBy' part of the data could not be saved! There has been a conflict with another user's data entry.",
-                    "Cached Table Data Conflict",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Stop);
+            	MessageBox.Show(Catalog.GetString("The 'UsedBy' part of the data could not be saved! There has been a conflict with another user's data entry."),
+            	                Catalog.GetString("Cached Table Data Conflict"),
+			                    MessageBoxButtons.OK,
+			                    MessageBoxIcon.Stop);
                 return;
             }
             catch (Exception exp)
@@ -449,18 +619,18 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
 
                 case TSubmitChangesResult.scrError:
 
-	                MessageBox.Show("The 'UsedBy' part of the data could not be saved! There has been an error while making changes to the table.",
-	                    "Submit Changes to Table Error",
-	                    MessageBoxButtons.OK,
-	                    MessageBoxIcon.Stop);
+                    MessageBox.Show(Catalog.GetString("The 'UsedBy' part of the data could not be saved! There has been an error while making changes to the table."),
+                                    Catalog.GetString("Submit Changes to Table Error"),
+				                    MessageBoxButtons.OK,
+				                    MessageBoxIcon.Stop);
                     break;
 
                 case TSubmitChangesResult.scrInfoNeeded:
 
-	                MessageBox.Show("The 'UsedBy' part of the data could not be saved! Insufficient information was provided when making changes to the table.",
-	                    "Submit Changes to Table Error",
-	                    MessageBoxButtons.OK,
-	                    MessageBoxIcon.Stop);
+                    MessageBox.Show(Catalog.GetString("The 'UsedBy' part of the data could not be saved! Insufficient information was provided when making changes to the table."),
+                                    Catalog.GetString("Submit Changes to Table Error"),
+				                    MessageBoxButtons.OK,
+				                    MessageBoxIcon.Stop);
                     break;
             }
 
@@ -486,15 +656,15 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         	{
         		case 0:		// Text
         			txtDetailCharLength.Visible = true;
-        			lblDataSubType.Text = "Maximum length:";
+        			lblDataSubType.Text = Catalog.GetString("Maximum length:");
         			break;
         		case 1:		// Numeric
         			txtDetailNumDecimalPlaces.Visible = true;
-        			lblDataSubType.Text = "Decimal places:";
+        			lblDataSubType.Text = Catalog.GetString("Decimal places:");
         			break;
         		case 2:		// Currency
         			pnlCurrencyCode.Visible = true;
-        			lblDataSubType.Text = "Currency code:";
+        			lblDataSubType.Text = Catalog.GetString("Currency code:");
         			break;
         		case 3:		// Yes/No
         		case 4:		// Date
@@ -504,7 +674,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         			break;
         		case 6:		// OptionList
 					pnlCategoryCode.Visible = true;
-        			lblDataSubType.Text = "Option list name:";
+					lblDataSubType.Text = Catalog.GetString("Option list name:");
         			break;
         	}
         }

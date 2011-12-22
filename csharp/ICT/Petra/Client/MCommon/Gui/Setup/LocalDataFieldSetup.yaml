@@ -45,10 +45,10 @@ RootNode:
         txtDetailText: {Label=Label}
         clbUsedBy: {NoLabel=true}
             RowSpan: 6
-            Width: 160
+            Width: 190
             Height: 170
         txtDetailGroup: {Label=Group heading (optional)}
-        txtDetailDescription: {Label=Help description, Multiline=true, Height=60, Width=390}
+        txtDetailDescription: {Label=Help description, Multiline=true, Height=60, Width=360}
         chkDetailDisplayed: {Label=Display}
         cmbDetailDataType: {Label=Data type, OnChange=OnDataTypeChange}
             OptionalValues: [=Text, Number, Currency, Yes/No, Date, Time, Option List, Partner Key]
@@ -56,8 +56,8 @@ RootNode:
             Controls:
                 Row0: [pnlDataSubTypeLabel, txtDetailCharLength, txtDetailNumDecimalPlaces, pnlCurrencyCode, pnlCategoryCode]
             Margin: 0
-            ColWidths: [0=Fixed:120]
-            Padding: 65,0,0,0
+            Padding: 0,0,0,0
+            ColWidths: [0=Fixed:175]
         pnlDataSubTypeLabel:
             Controls:
                 Row0: [lblDataSubType]
@@ -76,8 +76,8 @@ RootNode:
         lblDataSubType: {Label=Maximum length, Align=right}
         txtDetailCharLength: {NoLabel=true, Width=70, Format=Integer}
         txtDetailNumDecimalPlaces: {NoLabel=true, Width=70, Format=Integer}
-        cmbDetailCurrencyCode: {NoLabel=true, List=CurrencyCodeList, ComboBoxWidth=70, Width=360}
-        cmbDetailLookupCategoryCode: {NoLabel=true, List=DataLabelLookupCategoryList, ComboBoxWidth=160, Width=360}
+        cmbDetailCurrencyCode: {NoLabel=true, List=CurrencyCodeList, ComboBoxWidth=70, Width=330}
+        cmbDetailLookupCategoryCode: {NoLabel=true, List=DataLabelLookupCategoryList, ComboBoxWidth=160, Width=330}
     Toolbar:
         tbbNew:
             Label: New Field
