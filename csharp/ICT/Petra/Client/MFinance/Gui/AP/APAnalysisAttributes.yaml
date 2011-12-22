@@ -1,7 +1,7 @@
 RootNode:
     BaseYaml: ../../../CommonForms/PetraFormDialog.yaml
     Template: window
-    FormTitle: AP Analysis Atributes
+    FormTitle: AP Analysis Attributes
     Namespace: Ict.Petra.Client.MFinance.Gui.AP
     MasterTable: AApAnalAttrib
     DetailTable: AApDocumentDetail
