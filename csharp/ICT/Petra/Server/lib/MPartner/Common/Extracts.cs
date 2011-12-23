@@ -97,6 +97,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
                     MExtractMasterRow TemplateRow = (MExtractMasterRow)NewExtractMasterDT.NewRowTyped(true);
                     TemplateRow.ExtractName = AExtractName;
                     TemplateRow.ExtractDesc = AExtractDescription;
+                    TemplateRow.ExtractId   = -1; // initialize id negative so sequence can be used
 
                     NewExtractMasterDT.Rows.Add(TemplateRow);
 

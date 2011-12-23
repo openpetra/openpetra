@@ -49,6 +49,7 @@ namespace Ict.Petra.Server.MPartner.queries
             // get the partner keys from the database
             try
             {
+	            Boolean ReturnValue = false;
                 Boolean NewTransaction;
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
@@ -83,13 +84,24 @@ namespace Ict.Petra.Server.MPartner.queries
                 int NewExtractID;
 
                 // create an extract with the given name in the parameters
-                return TExtractsHandling.CreateExtractFromListOfPartnerKeys(
+                ReturnValue = TExtractsHandling.CreateExtractFromListOfPartnerKeys(
                     AParameters.Get("nameOfExtract").ToString(),
                     AParameters.Get("descriptionOfExtract").ToString(),
                     out NewExtractID,
                     out VerificationResult,
                     partnerkeys,
                     0);
+                
+	            if (ReturnValue)
+	            {
+	                DBAccess.GDBAccessObj.CommitTransaction();
+	            }
+	            else
+	            {
+	                DBAccess.GDBAccessObj.RollbackTransaction();
+	            }
+
+				return ReturnValue;
             }
             catch (Exception e)
             {
