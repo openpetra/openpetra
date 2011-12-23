@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       wolfgangu
+//       wolfgangu, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,7 +23,8 @@
 
 using System;
 using NUnit.Framework;
-using Ict.Testing.NUnitForms;
+using Ict.Testing.NUnitTools;
+using Ict.Testing.NUnitPetraServer;
 using Ict.Common.Verification;
 using Ict.Petra.Server.MFinance.Common;
 
@@ -99,7 +100,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
     /// Test of the GL.PeriodEnd.Year routines ...
     /// </summary>
     [TestFixture]
-    public partial class TestGLPeriodicEnd : CommonNUnitFunctions
+    public partial class TestGLPeriodicEnd
     {
         private const int intLedgerNumber = 43;
 
@@ -122,7 +123,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_TCarryForward()
         {
-            ResetDatabase();
+            CommonNUnitFunctions.ResetDatabase();
             TCarryForward carryForward;
 
             for (int i = 1; i < 13; ++i)  // 12 Months
@@ -148,7 +149,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_TCarryForwardYear()
         {
-            ResetDatabase();
+            CommonNUnitFunctions.ResetDatabase();
             TCarryForward carryForward = null;
             TVerificationResultCollection tvr = new TVerificationResultCollection();
 
@@ -186,7 +187,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [TestFixtureSetUp]
         public void Init()
         {
-            InitServerConnection();
+            TPetraServerConnector.Connect();
             //ResetDatabase();
             System.Diagnostics.Debug.WriteLine("Init: " + this.ToString());
         }
@@ -197,7 +198,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [TestFixtureTearDown]
         public void TearDownTest()
         {
-            DisconnectServerConnection();
+            TPetraServerConnector.Disconnect();
             System.Diagnostics.Debug.WriteLine("TearDown: " + this.ToString());
         }
     }

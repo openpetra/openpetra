@@ -25,6 +25,7 @@ using System;
 using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
+using System.IO;
 using System.Windows.Forms;
 using System.Data;
 using System.Threading;
@@ -34,6 +35,7 @@ using System.Collections.Specialized;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Data;
+using Ict.Common.IO;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Client;
 using Ict.Common.Remoting.Shared;
@@ -46,12 +48,17 @@ using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.Interfaces.MFinance.Budget.WebConnectors;
 using Ict.Petra.Shared.MFinance;
+//using Ict.Petra.Server.MFinance.Account.Data.Access;
 
 namespace Ict.Petra.Client.MFinance.Gui.Budget
 {
     public partial class TFrmMaintainBudget
     {
         private Int32 FLedgerNumber;
+
+        private Int32 CurrentBudgetYear;
+        private bool LoadCompleted = false;
+        private TDlgSelectCSVSeparator FdlgSeparator;
 
         /// <summary>
         /// AP is opened in this ledger
@@ -67,24 +74,42 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 // to get an empty ABudgetFee table, instead of null reference
                 FMainDS.Merge(new BudgetTDS());
 
+                TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbSelectBudgetYear, FLedgerNumber, true);
+
                 TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber, true, false, false, false);
 
                 // Do not include summary cost centres: we want to use one cost centre for each Motivation Details
                 TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, false, true);
 
+                if (!int.TryParse(cmbSelectBudgetYear.GetSelectedString(), out CurrentBudgetYear))
+                {
+                    CurrentBudgetYear = TFinanceControls.GetLedgerCurrentFinancialYear(FLedgerNumber);
+                }
+
                 DataView myDataView = FMainDS.ABudget.DefaultView;
                 myDataView.AllowNew = false;
+                myDataView.RowFilter = String.Format("{0} = {1}", ABudgetTable.GetYearDBName(), CurrentBudgetYear);
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
                 grdDetails.AutoSizeCells();
 
                 this.Text = this.Text + "   [Ledger = " + FLedgerNumber.ToString() + "]";
 
                 ClearBudgetTextboxCurrencyFormat();
+
+                if (grdDetails.Rows.Count == 0)
+                {
+                    EnableBudgetEntry(false);
+                }
             }
         }
 
         private void NewRowManual(ref ABudgetRow ARow)
         {
+            if (!cmbDetailAccountCode.Enabled)
+            {
+                EnableBudgetEntry(true);
+            }
+
             int newSequence = -1;
 
             if (FMainDS.ABudget.Rows.Find(new object[] { newSequence }) != null)
@@ -98,20 +123,92 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             ARow.BudgetSequence = newSequence;
             ARow.LedgerNumber = FLedgerNumber;
             //TODO replace line below
-            ARow.Revision = Math.Abs(newSequence);
-            //ARow.Year = 2010
+            ARow.Revision = 0; //Math.Abs(newSequence);
+            ARow.Year = CurrentBudgetYear;
+
+            //Add the budget revision entry. Not implementing versioning at this point;
+            int BdgRevision = 0;
+
+            //Find if Revision row already exists
+            ABudgetRevisionRow BudgetRevisionRow =
+                (ABudgetRevisionRow)FMainDS.ABudgetRevision.Rows.Find(new object[] { FLedgerNumber, CurrentBudgetYear,
+                                                                                     BdgRevision });
+
+            if (BudgetRevisionRow == null)
+            {
+                //Add a new row
+                BudgetRevisionRow = (ABudgetRevisionRow)FMainDS.ABudgetRevision.NewRowTyped();
+                BudgetRevisionRow.LedgerNumber = FLedgerNumber;
+                BudgetRevisionRow.Year = CurrentBudgetYear;
+                BudgetRevisionRow.Revision = BdgRevision;
+                BudgetRevisionRow.Description = "New Budget Entry";
+                FMainDS.ABudgetRevision.Rows.Add(BudgetRevisionRow);
+            }
 
             //Add the budget period values
-            ABudgetPeriodRow BudgetPeriodRow;
-
             for (int i = 1; i <= 12; i++)
             {
-                BudgetPeriodRow = FMainDS.ABudgetPeriod.NewRowTyped();
+                ABudgetPeriodRow BudgetPeriodRow = FMainDS.ABudgetPeriod.NewRowTyped();
                 BudgetPeriodRow.BudgetSequence = ARow.BudgetSequence;
                 BudgetPeriodRow.PeriodNumber = i;
                 BudgetPeriodRow.BudgetBase = 0;
                 FMainDS.ABudgetPeriod.Rows.Add(BudgetPeriodRow);
                 BudgetPeriodRow = null;
+            }
+        }
+
+        private void EnableBudgetEntry(bool AAllowEntry)
+        {
+            rgrSelectBudgetType.Enabled = AAllowEntry;
+            cmbDetailCostCentreCode.Enabled = AAllowEntry;
+            cmbDetailAccountCode.Enabled = AAllowEntry;
+
+            if (!AAllowEntry)
+            {
+                pnlBudgetTypeAdhoc.Visible = false;
+                pnlBudgetTypeSame.Visible = false;
+                pnlBudgetTypeSplit.Visible = false;
+                pnlBudgetTypeInflateN.Visible = false;
+                pnlBudgetTypeInflateBase.Visible = false;
+            }
+            else
+            {
+                pnlBudgetTypeAdhoc.Visible = rbtAdHoc.Checked;
+                pnlBudgetTypeSame.Visible = rbtSame.Checked;
+                pnlBudgetTypeSplit.Visible = rbtSplit.Checked;
+                pnlBudgetTypeInflateN.Visible = rbtInflateN.Checked;
+                pnlBudgetTypeInflateBase.Visible = rbtInflateBase.Checked;
+            }
+        }
+
+        private void SelectBudgetYear(Object sender, EventArgs e)
+        {
+            if (LoadCompleted)
+            {
+                if (int.TryParse(cmbSelectBudgetYear.GetSelectedString(), out CurrentBudgetYear))
+                {
+                    FMainDS.ABudget.DefaultView.RowFilter = String.Format("{0} = {1}", ABudgetTable.GetYearDBName(), CurrentBudgetYear);
+                    grdDetails.Refresh();
+                    SelectByIndex(0);
+
+                    //FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+                    if (FMainDS.ABudget.DefaultView.Count == 0)
+                    {
+                        EnableBudgetEntry(false);
+                    }
+                    else
+                    {
+                        EnableBudgetEntry(true);
+
+                        // display the details of the currently selected row
+                        if (FPreviouslySelectedDetailRow != null)
+                        {
+                            ShowDetails(FPreviouslySelectedDetailRow);
+                        }
+
+                        pnlDetails.Enabled = true;
+                    }
+                }
             }
         }
 
@@ -131,6 +228,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         {
             if (FPreviouslySelectedDetailRow == null)
             {
+                EnableBudgetEntry(false);
                 return;
             }
 
@@ -146,14 +244,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             bool isBudgetUsed = false;
             int BudgetSequence = FPreviouslySelectedDetailRow.BudgetSequence;
 
-            for (int i = 0; i < 13; i++)
-            {
-                if (FMainDS.ABudgetPeriod.Rows.Find(new object[] { BudgetSequence, i }) != null)
-                {
-                    isBudgetUsed = true;
-                    break;
-                }
-            }
+//            for (int i = 0; i < 13; i++)
+//            {
+//                if (FMainDS.ABudgetPeriod.Rows.Find(new object[] { BudgetSequence, i }) != null)
+//                {
+//                    isBudgetUsed = true;
+//                    break;
+//                }
+//            }
 
             if (isBudgetUsed)
             {
@@ -177,6 +275,100 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 FPetraUtilsObject.SetChangedFlag();
                 SelectByIndex(rowIndex);
             }
+
+            //Disable the controls if no records found
+            if (FPreviouslySelectedDetailRow == null)
+            {
+                EnableBudgetEntry(false);
+            }
+        }
+
+        private void ImportBudget(System.Object sender, EventArgs e)
+        {
+            bool ok = false;
+
+            if (FPetraUtilsObject.HasChanges)
+            {
+                // saving failed, therefore do not try to post
+                MessageBox.Show(Catalog.GetString("Please save before calling this function!"), Catalog.GetString(
+                        "Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
+            OpenFileDialog dialog = new OpenFileDialog();
+
+            dialog.FileName = TUserDefaults.GetStringDefault("Imp Filename",
+                TClientSettings.GetExportPath() + Path.DirectorySeparatorChar + "import.csv");
+
+            dialog.Title = Catalog.GetString("Import budget(s) from csv file");
+            dialog.Filter = Catalog.GetString("Budget files (*.csv)|*.csv");
+            String impOptions = TUserDefaults.GetStringDefault("Imp Options", ";American");
+
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                FdlgSeparator = new TDlgSelectCSVSeparator(false);
+                FdlgSeparator.CSVFileName = dialog.FileName;
+
+                FdlgSeparator.DateFormat = dateFormatString;
+
+                if (impOptions.Length > 1)
+                {
+                    FdlgSeparator.NumberFormatIndex = impOptions.Substring(1) == "American" ? 0 : 1;
+                }
+
+                FdlgSeparator.SelectedSeparator = impOptions.Substring(0, 1);
+
+                if (FdlgSeparator.ShowDialog() == DialogResult.OK)
+                {
+                    String importString;
+                    TVerificationResultCollection AMessages;
+
+                    importString = File.ReadAllText(dialog.FileName);
+
+                    string[] FdlgSeparatorVal = new string[] {
+                        FdlgSeparator.SelectedSeparator, FdlgSeparator.DateFormat, FdlgSeparator.NumberFormatIndex.ToString()
+                    };
+
+                    MessageBox.Show(importString);
+                    ok = TRemote.MFinance.Budget.WebConnectors.ImportBudgets(FLedgerNumber,
+                        dialog.FileName,
+                        FdlgSeparatorVal,
+                        ref FMainDS,
+                        out AMessages);
+                    //ShowMessages(AMessages);
+                }
+
+                if (ok)
+                {
+                    MessageBox.Show(Catalog.GetString("Your data was imported successfully!"),
+                        Catalog.GetString("Success"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                    grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABudget.DefaultView);
+                    grdDetails.Refresh();
+                    //SelectDetailRowByDataTableIndex(FMainDS.ABudget.Rows.Count - 1);
+                    //SaveUserDefaults(dialog, impOptions);
+                    //FLoadedData = TFinanceBatchFilterEnum.fbfNone;
+                    //LoadBatches(FLedgerNumber);
+                    FPetraUtilsObject.SetChangedFlag();
+                }
+            }
+        }
+
+        private void ExportBudget(System.Object sender, EventArgs e)
+        {
+            if (FPetraUtilsObject.HasChanges)
+            {
+                // without save the server does not have the current changes, so forbid it.
+                MessageBox.Show(Catalog.GetString("Please save changed Data before the Export!"),
+                    Catalog.GetString("Export Error"));
+                return;
+            }
+
+            //exportForm = new TFrmGiftBatchExport(FPetraUtilsObject.GetForm());
+            //exportForm.LedgerNumber = FLedgerNumber;
+            //exportForm.Show();
         }
 
         private void DeleteBudgetPeriodData(int ABudgetSequence)
@@ -748,6 +940,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             pnlBudgetTypeSplit.Visible = rbtSplit.Checked;
             pnlBudgetTypeInflateN.Visible = rbtInflateN.Checked;
             pnlBudgetTypeInflateBase.Visible = rbtInflateBase.Checked;
+
+            LoadCompleted = true;
         }
 
         private bool GetDetailDataFromControlsManual(ABudgetRow ARow)
@@ -778,7 +972,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 }
 
                 //TODO switch to using Ledger financial year
-                ARow.Year = 2012;
+                ARow.Year = Convert.ToInt16(cmbSelectBudgetYear.GetSelectedString());
                 ARow.Revision = CreateBudgetRevisionRow(FLedgerNumber, ARow.Year);
                 ARow.EndEdit();
             }

@@ -30,6 +30,15 @@ namespace Ict.Petra.Shared.MFinance
     /// </summary>
     public class MFinanceConstants
     {
+        /// <summary>Maximum no. of periods in the system</summary>
+        public const int MAX_PERIODS = 20;
+
+        /// <summary>Currency select: Base</summary>
+        public const string CURRENCY_BASE = "B";
+
+        /// <summary>Currency select: International</summary>
+        public const string CURRENCY_INTERNATIONAL = "I";
+
         /// <summary>GL Batch</summary>
         public const String BATCH_UNPOSTED = "Unposted";
 
@@ -215,6 +224,15 @@ namespace Ict.Petra.Shared.MFinance
         /// admin fee accounts.
         public const string FUND_TRANSFER_EXPENSE_ACCT = "4800";
 
+        /// standard root account
+        public const string ACCOUNT_BAL_SHT = "BAL SHT";
+
+        /// standard gift account
+        public const string ACCOUNT_GIFT = "GIFT";
+
+        /// standard creditors account
+        public const string ACCOUNT_CREDITORS = "CRS CTRL";
+
         /// standard account
         public const string CASH_ACCT = "CASH";
 
@@ -244,6 +262,12 @@ namespace Ict.Petra.Shared.MFinance
 
         /// Budget Types
         public const string BUDGET_INFLATE_N = "Inf. n";
+
+        /// Budget Forecast Types
+        public const string FORECAST_TYPE_BUDGET = "Budget";
+
+        /// Budget Forecast Types
+        public const string FORECAST_TYPE_ACTUALS = "Actuals";
     }
 
     /// <summary>

@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       wolfgangu
+//       wolfgangu, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -32,7 +32,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
     /// TestGLRevaluation - math part
     /// </summary>
     [TestFixture]
-    public partial class TestGLRevaluation : CommonNUnitFunctions
+    public partial class TestGLRevaluation
     {
         /// <summary>
         /// Test_05_AccountDelta
@@ -42,9 +42,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         /// <param name="AExchangeRate"></param>
         /// <param name="ACurrencyDigits"></param>
         /// <param name="AExpectedResult"></param>
-        [Test]
-        [TestCase(10, 100, 2, 2, -40)]
         // "-40" means: 40 Currency Units are missing for the correct ratio
+        [TestCase(10, 100, 2, 2, -40)]
         [TestCase(200, 100, 2, 2, 150)]
         [TestCase(50, 100, 2, 2, 0)]
         [TestCase(50, 100, 1.123456789, 2, -39.01)]

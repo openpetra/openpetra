@@ -115,8 +115,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
 <target name="buildWindowsStandalone">
   <call target="generateSolution" unless="${target::has-executed('quickCompile')}"/>
   <call target="createSQLiteDB" unless="${target::has-executed('createSQLiteDB')}"/>
-  <call target="downloadTranslations" unless="${target::has-executed('downloadTranslations')}"/>
-  <call target="translationCompilePOFile" unless="${target::has-executed('translationCompilePOFile')}"/>
+  <call target="translation" unless="${target::has-executed('translation')}"/>
   <call target="setupStandalone"/>
 </target> 
   
@@ -221,7 +220,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
     <call target="createMySQLDB" unless="${target::has-executed('createMySQLDB')}"/>
   </if>
 
-  <call target="translationCompilePOFile" unless="${target::has-executed('translationCompilePOFile')}"/>
+  <call target="translation" unless="${target::has-executed('translation')}"/>
 
   <!-- create key pair for encrypted remoting -->
   <ExecDotNet program="${tool-generateEncryptionKey}" commandline="-PublicKeyFile:${tempdir}/publickey.xml -PrivateKeyFile:${tempdir}/privatekey.xml"/>
@@ -287,7 +286,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
 <target name="buildLinuxClient" help="build a Linux client compiled for mono">
   <call target="compileMonoClient"/>  
 
-  <call target="translationCompilePOFile" unless="${target::has-executed('translationCompilePOFile')}"/>
+  <call target="translation" unless="${target::has-executed('translation')}"/>
   <property name="BuildArchive" value="client" overwrite="true"/>
   <call target="prepareSetupDirForTarFile"/>
   copy startclient sh und remote config

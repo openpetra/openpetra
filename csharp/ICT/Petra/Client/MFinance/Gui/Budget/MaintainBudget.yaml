@@ -13,16 +13,19 @@ RootNode:
     Actions:
         actNew: {Label=New, ActionClick=NewRecord}
         actDelete: {Label=&Delete, ActionClick=DeleteRow}      
+        actImport: {Label=&Import, ActionClick=ImportBudget}      
+        actExport: {Label=E&xport, ActionClick=ExportBudget}      
     Controls:
         pnlContent:
             Controls: [pnlGrid, pnlFilter]
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: 
+                Row0: [grdDetails, pnlButtons]
         pnlButtons:
             Dock: Right
-            Controls: [btnNew, btnDelete]
+            Controls: [btnNew, btnDelete, btnImport, btnExport]
         pnlFilter:
             Dock: Bottom
             Controls:
@@ -38,6 +41,10 @@ RootNode:
             Action: actNew
         btnDelete:
             Action: actDelete
+        btnImport:
+            Action: actImport
+        btnExport:
+            Action: actExport
         grdDetails:
             Dock: Fill
             Columns: [DetailCostCentreCode, DetailAccountCode, DetailBudgetTypeCode]
@@ -47,6 +54,7 @@ RootNode:
             Controls:
                 Row0: [cmbDetailCostCentreCode]
                 Row1: [cmbDetailAccountCode]
+                #Row2: [cmbDetailYear]
         pnlBudgetTypeAdhoc:
             Dock: Fill
             Visible: false
@@ -94,6 +102,7 @@ RootNode:
                 Row2: [pnlBudgetTypeSplit]
                 Row3: [pnlBudgetTypeInflateN]
                 Row4: [pnlBudgetTypeInflateBase]
+        #cmbDetailYear: {Label=Year, List=UserDefinedList, OnChange=BudgetYearChanged}
         cmbDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList}
         cmbDetailAccountCode: {Label=Account, List=UserDefinedList}
         #Adhoc controls
@@ -139,3 +148,4 @@ RootNode:
         #TODO: radio buttons for selection of budget type, display different user controls depending on selection, similar to bankimport screen
     Menu:
     Toolbar:
+        cmbSelectBudgetYear: {List=UserDefinedList, OnChange=SelectBudgetYear, Width=250}

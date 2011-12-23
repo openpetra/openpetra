@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-16 07:49+0100\n"
+"POT-Creation-Date: 2011-12-22 08:57+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -866,6 +866,21 @@ msgstr ""
 msgid "Conference Module OpenPetra.org"
 msgstr ""
 
+msgid "&OK"
+msgstr ""
+
+msgid "&Cancel"
+msgstr ""
+
+msgid "&Apply"
+msgstr ""
+
+msgid "Attrib:"
+msgstr ""
+
+msgid "AP Analysis Attributes"
+msgstr ""
+
 msgid "Current Supplier:"
 msgstr ""
 
@@ -914,9 +929,6 @@ msgstr ""
 msgid "&Remove Detail"
 msgstr ""
 
-msgid "Analysis Attri&b."
-msgstr ""
-
 msgid "Narrati&ve:"
 msgstr ""
 
@@ -929,13 +941,16 @@ msgstr ""
 msgid "C&ost Centre:"
 msgstr ""
 
-msgid "Use Ta&x Acct+CC"
-msgstr ""
-
 msgid "Base:"
 msgstr ""
 
 msgid "Accou&nt:"
+msgstr ""
+
+msgid "Use Ta&x Acct"
+msgstr ""
+
+msgid "Anal Attri&b"
 msgstr ""
 
 msgid "Details"
@@ -999,6 +1014,19 @@ msgid "Reference to the cost centre to use for this detail."
 msgstr ""
 
 msgid "Reference to the account to use for this detail"
+msgstr ""
+
+msgid "The document Amount does not equal the sum of the detail lines."
+msgstr ""
+
+msgid "Balance Problem"
+msgstr ""
+
+#, csharp-format
+msgid "Analysis Attributes are required for account {0}."
+msgstr ""
+
+msgid "Analysis Attributes"
 msgstr ""
 
 msgid "Select posting date"
@@ -1116,13 +1144,10 @@ msgstr ""
 msgid "&Overdue"
 msgstr ""
 
-msgid "Due &Within Future"
+msgid "Due &Within"
 msgstr ""
 
 msgid "Days"
-msgstr ""
-
-msgid "&Reset Criteria"
 msgstr ""
 
 msgid "Show Outstanding &Amounts"
@@ -1331,6 +1356,81 @@ msgstr ""
 msgid "The AP documents have been posted successfully!"
 msgstr ""
 
+msgid "&Selected Budgets"
+msgstr ""
+
+msgid "&All Budgets"
+msgstr ""
+
+msgid "Budget Scope"
+msgstr ""
+
+msgid "Forecast is based on actuals of period 1 to:"
+msgstr ""
+
+msgid "&This Year's Budgets"
+msgstr ""
+
+msgid "&Last Year's Actuals"
+msgstr ""
+
+msgid "Remaining Periods"
+msgstr ""
+
+msgid "Select &All"
+msgstr ""
+
+msgid "&Unselect All"
+msgstr ""
+
+msgid "&Generate"
+msgstr ""
+
+msgid "Auto Generate Budget"
+msgstr ""
+
+msgid "Filename:"
+msgstr ""
+
+msgid "&Browse..."
+msgstr ""
+
+msgid "Delimiter:"
+msgstr ""
+
+msgid "Date Format:"
+msgstr ""
+
+msgid "Number Format:"
+msgstr ""
+
+msgid "&Start"
+msgstr ""
+
+msgid "Export Budget"
+msgstr ""
+
+msgid "Please select an existing directory for this file!"
+msgstr ""
+
+msgid "Error"
+msgstr ""
+
+msgid "Warnings"
+msgstr ""
+
+msgid "There are no Budget matching your criteria"
+msgstr ""
+
+msgid "Your data was exported successfully!"
+msgstr ""
+
+msgid "Success"
+msgstr ""
+
+msgid "E&xport"
+msgstr ""
+
 msgid "Cost Centre:"
 msgstr ""
 
@@ -1479,6 +1579,24 @@ msgstr ""
 msgid "Confirm Delete"
 msgstr ""
 
+msgid "Please save before calling this function!"
+msgstr ""
+
+msgid "Import budget(s) from csv file"
+msgstr ""
+
+msgid "Budget files (*.csv)|*.csv"
+msgstr ""
+
+msgid "Your data was imported successfully!"
+msgstr ""
+
+msgid "Please save changed Data before the Export!"
+msgstr ""
+
+msgid "Export Error"
+msgstr ""
+
 msgid "Select Bank Account:"
 msgstr ""
 
@@ -1579,9 +1697,6 @@ msgid "Please install a valid plugin for the import of bank statements!"
 msgstr ""
 
 msgid "Please create a bank account first, before importing bank statements!"
-msgstr ""
-
-msgid "Error"
 msgstr ""
 
 msgid "Please select a row before deleting a detail"
@@ -1708,40 +1823,13 @@ msgstr ""
 msgid "With extra columns:"
 msgstr ""
 
-msgid "Filename:"
-msgstr ""
-
 msgid "Browse Filename"
-msgstr ""
-
-msgid "Delimiter:"
-msgstr ""
-
-msgid "Date Format:"
-msgstr ""
-
-msgid "Number Format:"
-msgstr ""
-
-msgid "&Start"
 msgstr ""
 
 msgid "Export Gift Batches"
 msgstr ""
 
-msgid "Please select an existing directory for this file!"
-msgstr ""
-
-msgid "Warnings"
-msgstr ""
-
 msgid "There are no batches matching your criteria"
-msgstr ""
-
-msgid "Your data was exported successfully!"
-msgstr ""
-
-msgid "Success"
 msgstr ""
 
 msgid "Worker Partner Key:"
@@ -1881,9 +1969,6 @@ msgstr ""
 msgid "Comment 3 for Reversal:"
 msgstr ""
 
-msgid "&OK"
-msgstr ""
-
 msgid "Revert or adjust Gift"
 msgstr ""
 
@@ -1919,9 +2004,6 @@ msgid "Recurring Gift Batches"
 msgstr ""
 
 msgid "From:"
-msgstr ""
-
-msgid "&Cancel"
 msgstr ""
 
 msgid "Submit recurring Batch"
@@ -2023,16 +2105,10 @@ msgstr ""
 msgid "Enter the gift type (gift/gift in kind/etc.)"
 msgstr ""
 
-msgid "Please save before calling this function!"
-msgstr ""
-
 msgid "Import batches from spreadsheet file"
 msgstr ""
 
 msgid "Gift Batches files (*.csv)|*.csv"
-msgstr ""
-
-msgid "Your data was imported successfully!"
 msgstr ""
 
 msgid "Do you really want to cancel this gift batch?"
@@ -2054,12 +2130,6 @@ msgid "Confirm posting of Gift Batch"
 msgstr ""
 
 msgid "The batch has been posted successfully!"
-msgstr ""
-
-msgid "Please save changed Data before the Export!"
-msgstr ""
-
-msgid "Export Error"
 msgstr ""
 
 msgid "Batch Total:"
@@ -2502,9 +2572,6 @@ msgid ""
 "You have chosen to delete this transaction ({0}).\n"
 "\n"
 "Do you really want to delete it?"
-msgstr ""
-
-msgid "&Apply"
 msgstr ""
 
 msgid "Report Period:"
@@ -2950,9 +3017,6 @@ msgid "&Previous Periods"
 msgstr ""
 
 msgid "&Recurring"
-msgstr ""
-
-msgid "E&xport"
 msgstr ""
 
 msgid "G&L Batch"
@@ -5448,9 +5512,6 @@ msgstr ""
 msgid "Generate the report"
 msgstr ""
 
-msgid "&Generate"
-msgstr ""
-
 msgid "&Save Settings"
 msgstr ""
 
@@ -6464,6 +6525,28 @@ msgid ""
 "Please select at least one special type, to avoid listing the whole database!"
 msgstr ""
 
+msgid "Report on all partners that have one of these subscriptions:"
+msgstr ""
+
+msgid "Date Of Sending Copy:"
+msgstr ""
+
+msgid "Partner By Subscription"
+msgstr ""
+
+msgid "Publication Code"
+msgstr ""
+
+msgid "Publication Description"
+msgstr ""
+
+msgid "Select at least one subscription"
+msgstr ""
+
+msgid ""
+"Please select at least one subscription, to avoid listing the whole database!"
+msgstr ""
+
 msgid "Contact:"
 msgstr ""
 
@@ -7159,6 +7242,18 @@ msgstr ""
 
 #, csharp-format
 msgid "Document with Number {0} cannot be posted since the status is {1}."
+msgstr ""
+
+#, csharp-format
+msgid "Cannot post the AP document {0} in Ledger {1}"
+msgstr ""
+
+#, csharp-format
+msgid "The value does not match the sum of the details."
+msgstr ""
+
+#, csharp-format
+msgid "Analysis Attributes are required."
 msgstr ""
 
 #, csharp-format
@@ -8294,6 +8389,12 @@ msgstr ""
 msgid "Maintain types of Cost Centres"
 msgstr ""
 
+msgid "Setup Analysis Types"
+msgstr ""
+
+msgid "Maintain Analysis Types"
+msgstr ""
+
 msgid "Gift Setup"
 msgstr ""
 
@@ -8337,12 +8438,6 @@ msgid "Setup Methods Of Giving"
 msgstr ""
 
 msgid "Setup Methods Of Payment"
-msgstr ""
-
-msgid "Setup Analysis Types"
-msgstr ""
-
-msgid "Maintain Analysis Types"
 msgstr ""
 
 msgid "Exchange Rates (Cross-Ledger)"

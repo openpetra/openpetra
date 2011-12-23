@@ -46,8 +46,8 @@ compat:
        nant generateWinform -D:file=MFinance/Gui/GL/GLBatch.yaml -D:donotcompile=true
   cleanPetra: prepare for a clean build
   compilePetra: build all Petra C# code
-  translationCompilePOFile: create the dlls required to be delivered with a new release
-  translation: extracts string in winforms, creates and updates the .po files, and compiles the dll files for delivery
+  translation: download new language files, and create the dlls required to be delivered with a new release
+  buildTranslationTemplate: extracts string in winforms, creates and updates the .po files
 
 releases:
   buildWindowsStandalone: will build the standalone installer for Windows. Using NSIS
@@ -79,14 +79,15 @@ useful parameters
   </exec>  
 </target>
 
-<target name="translationCompilePOFile" description="create the dlls with the i18n messages" >
+<target name="translation" description="create the dlls with the i18n messages" >
   <property name="target" value="compile" overwrite="false" />
   <nant inheritall="false" target="${target}" 
         buildfile="i18n/i18n.build" />
 </target>
 
-<target name="downloadTranslations" description="download the latest translations from Launchpad" >
-  <nant inheritall="false" target="downloadTranslations" 
+<target name="buildTranslationTemplate" description="extracts string in winforms, creates and updates the .po files" >
+  <property name="target" value="compile" overwrite="false" />
+  <nant inheritall="false" target="extractMsgs" 
         buildfile="i18n/i18n.build" />
 </target>
 
@@ -105,7 +106,6 @@ useful parameters
     </fileset>
   </delete>
   <property name="target" value="clean" />
-  <call target="translationCompilePOFile" />
 </target>
 
 <target name="quickClean" description="cleans all generated files and the delivery directory">
