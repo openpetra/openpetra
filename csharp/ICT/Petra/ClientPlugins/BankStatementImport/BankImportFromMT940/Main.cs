@@ -37,7 +37,7 @@ using Ict.Plugins.Finance.SwiftParser;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using GNU.Gettext;
 
-namespace Plugin.BankImportFromMT940
+namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
 {
     /// <summary>
     /// import a bank statement from a MT940 Swift file

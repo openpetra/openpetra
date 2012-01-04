@@ -37,7 +37,7 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 using GNU.Gettext;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 
-namespace Plugin.BankImportFromCSV
+namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromCSV
 {
     /// <summary>
     /// import a bank statement from a CSV file
