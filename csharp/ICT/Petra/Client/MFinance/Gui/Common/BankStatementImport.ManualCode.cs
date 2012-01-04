@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,6 +23,7 @@
 //
 using System;
 using System.Data;
+using System.IO;
 using System.Windows.Forms;
 using GNU.Gettext;
 using Ict.Common;
@@ -167,7 +168,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             FMainDS.Merge(stmts);
 
             cmbSelectStatement.BeginUpdate();
-            cmbSelectStatement.DataSource = stmts.DefaultView;
             cmbSelectStatement.DisplayMember = AEpStatementTable.GetFilenameDBName();
             cmbSelectStatement.ValueMember = AEpStatementTable.GetStatementKeyDBName();
             cmbSelectStatement.DataSource = stmts.DefaultView;
@@ -177,15 +177,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             cmbSelectStatement.SelectedIndex = -1;
         }
 
+        private void SelectPlugin(System.Object sender, EventArgs e)
+        {
+            TFrmSelectBankImportPlugin SelectPluginForm = new TFrmSelectBankImportPlugin(this);
+
+            SelectPluginForm.ShowDialog();
+        }
+
         private void ImportNewStatement(System.Object sender, EventArgs e)
         {
             // look for available plugin for importing a bank statement.
             // the plugin will upload the data into the tables a_ep_statement and a_ep_transaction on the server/database
-            string BankStatementImportPlugin = TAppSettingsManager.GetValue("Plugin.BankStatementImport", "");
 
-            if (BankStatementImportPlugin.Length == 0)
+            string BankStatementImportPlugin = TFrmSelectBankImportPlugin.PluginNamespace + "." + TUserDefaults.GetStringDefault(
+                TUserDefaults.FINANCE_BANKIMPORT_PLUGIN);
+
+            if (!File.Exists(TAppSettingsManager.ApplicationDirectory + Path.DirectorySeparatorChar + BankStatementImportPlugin + ".dll"))
             {
-                MessageBox.Show(Catalog.GetString("Please install a valid plugin for the import of bank statements!"));
+                MessageBox.Show(Catalog.GetString("Please select a valid plugin for the import of bank statements!"));
                 return;
             }
 

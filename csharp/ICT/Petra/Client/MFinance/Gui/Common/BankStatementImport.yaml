@@ -24,6 +24,8 @@ RootNode:
             ActionClick: CreateGiftBatch
         actCreateGLBatch:
             ActionClick: CreateGLBatch
+        actSelectPlugin:
+            ActionClick: SelectPlugin
     Controls:
         pnlContent:
             Dock: Fill
@@ -103,6 +105,8 @@ RootNode:
     Menu:
         mniFile:
             mniImportNewStatement:
+        mniTools:
+            mniSelectPlugin:
     Toolbar:
         tbbImportNewStatement:
         tbbSeparator:
