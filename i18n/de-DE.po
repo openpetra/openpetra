@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-16 07:49+0100\n"
-"PO-Revision-Date: 2011-12-16 06:40+0000\n"
+"POT-Creation-Date: 2011-12-22 08:57+0100\n"
+"PO-Revision-Date: 2012-01-04 21:54+0000\n"
 "Last-Translator: Timotheus Pokorra <Unknown>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-12-17 05:31+0000\n"
-"X-Generator: Launchpad (build 14525)\n"
+"X-Launchpad-Export-Date: 2012-01-05 05:58+0000\n"
+"X-Generator: Launchpad (build 14625)\n"
 "Language: de\n"
 
 msgid "Caption"
@@ -882,6 +882,21 @@ msgstr "&OpenPetra"
 msgid "Conference Module OpenPetra.org"
 msgstr ""
 
+msgid "&OK"
+msgstr "&Ok"
+
+msgid "&Cancel"
+msgstr "Abbrechen"
+
+msgid "&Apply"
+msgstr ""
+
+msgid "Attrib:"
+msgstr ""
+
+msgid "AP Analysis Attributes"
+msgstr ""
+
 msgid "Current Supplier:"
 msgstr "Aktueller Lieferant:"
 
@@ -930,9 +945,6 @@ msgstr "Detail Hinzufügen"
 msgid "&Remove Detail"
 msgstr "Detail Entfernen"
 
-msgid "Analysis Attri&b."
-msgstr "Buchungsattribute"
-
 msgid "Narrati&ve:"
 msgstr "Beschreibung:"
 
@@ -945,14 +957,17 @@ msgstr "Betrag:"
 msgid "C&ost Centre:"
 msgstr "Kostenstelle:"
 
-msgid "Use Ta&x Acct+CC"
-msgstr "Verrechne als Steuern"
-
 msgid "Base:"
 msgstr "Lokale Währung:"
 
 msgid "Accou&nt:"
 msgstr "Kostenart:"
+
+msgid "Use Ta&x Acct"
+msgstr ""
+
+msgid "Anal Attri&b"
+msgstr ""
 
 msgid "Details"
 msgstr "Details"
@@ -1025,6 +1040,19 @@ msgstr "Welche Kostenstelle soll für dieses Detail belastet werden"
 
 msgid "Reference to the account to use for this detail"
 msgstr "Welche Kostenart ist von diesem Detail betroffen"
+
+msgid "The document Amount does not equal the sum of the detail lines."
+msgstr ""
+
+msgid "Balance Problem"
+msgstr ""
+
+#, csharp-format
+msgid "Analysis Attributes are required for account {0}."
+msgstr ""
+
+msgid "Analysis Attributes"
+msgstr ""
 
 msgid "Select posting date"
 msgstr "Buchungsdatum auswählen"
@@ -1147,14 +1175,11 @@ msgstr "Heute fällig"
 msgid "&Overdue"
 msgstr "Überfällig"
 
-msgid "Due &Within Future"
-msgstr "Zukünftig fällig"
+msgid "Due &Within"
+msgstr ""
 
 msgid "Days"
 msgstr "Tage"
-
-msgid "&Reset Criteria"
-msgstr "Zurücksetzen"
 
 msgid "Show Outstanding &Amounts"
 msgstr "Zeige ausstehende Beträge"
@@ -1360,6 +1385,81 @@ msgstr "Unterstützervorgänge"
 msgid "The AP documents have been posted successfully!"
 msgstr "Die Dokumente wurden korrekt verbucht!"
 
+msgid "&Selected Budgets"
+msgstr ""
+
+msgid "&All Budgets"
+msgstr ""
+
+msgid "Budget Scope"
+msgstr ""
+
+msgid "Forecast is based on actuals of period 1 to:"
+msgstr ""
+
+msgid "&This Year's Budgets"
+msgstr ""
+
+msgid "&Last Year's Actuals"
+msgstr ""
+
+msgid "Remaining Periods"
+msgstr ""
+
+msgid "Select &All"
+msgstr ""
+
+msgid "&Unselect All"
+msgstr ""
+
+msgid "&Generate"
+msgstr "&Erzeugen"
+
+msgid "Auto Generate Budget"
+msgstr ""
+
+msgid "Filename:"
+msgstr "Dateiname:"
+
+msgid "&Browse..."
+msgstr ""
+
+msgid "Delimiter:"
+msgstr "Feldtrenner:"
+
+msgid "Date Format:"
+msgstr ""
+
+msgid "Number Format:"
+msgstr ""
+
+msgid "&Start"
+msgstr ""
+
+msgid "Export Budget"
+msgstr ""
+
+msgid "Please select an existing directory for this file!"
+msgstr ""
+
+msgid "Error"
+msgstr "Fehler"
+
+msgid "Warnings"
+msgstr ""
+
+msgid "There are no Budget matching your criteria"
+msgstr ""
+
+msgid "Your data was exported successfully!"
+msgstr ""
+
+msgid "Success"
+msgstr ""
+
+msgid "E&xport"
+msgstr "Exportieren"
+
 msgid "Cost Centre:"
 msgstr "Kostenstelle:"
 
@@ -1508,6 +1608,24 @@ msgstr ""
 msgid "Confirm Delete"
 msgstr ""
 
+msgid "Please save before calling this function!"
+msgstr ""
+
+msgid "Import budget(s) from csv file"
+msgstr ""
+
+msgid "Budget files (*.csv)|*.csv"
+msgstr ""
+
+msgid "Your data was imported successfully!"
+msgstr ""
+
+msgid "Please save changed Data before the Export!"
+msgstr ""
+
+msgid "Export Error"
+msgstr ""
+
 msgid "Select Bank Account:"
 msgstr "Wählen Sie ein Bankkonto aus:"
 
@@ -1515,7 +1633,7 @@ msgid "ListAll"
 msgstr "Liste alle auf"
 
 msgid "ListUnmatched"
-msgstr "Liste die Nichtgetroffenen auf"
+msgstr "Liste die unerkannten Buchungen"
 
 msgid "ListGift"
 msgstr "Liste die Spenden auf"
@@ -1524,7 +1642,7 @@ msgid "ListGL"
 msgstr "Liste GL auf"
 
 msgid "ListIgnored"
-msgstr ""
+msgstr "Liste ignorierte"
 
 msgid "Credit Sum:"
 msgstr ""
@@ -1551,22 +1669,22 @@ msgid "Motivation Detail:"
 msgstr "Motivation im Detail:"
 
 msgid "Narrative:"
-msgstr "Erzählend:"
+msgstr "Beschreibung:"
 
 msgid "Reference:"
 msgstr "Referenz:"
 
 msgid "&Import new statement"
-msgstr "&Importiere das neue Statement"
+msgstr "&Importiere den neuen Auszug"
 
 msgid "Separator"
 msgstr "Trennzeichen"
 
 msgid "Delete Statement"
-msgstr "Lösche das Statement"
+msgstr "Lösche den Auszug"
 
 msgid "Save Matches"
-msgstr "Speichere die Treffer"
+msgstr "Zuordnungen speichern"
 
 msgid "Create Gift Batch"
 msgstr "Spendenbatch anlegen"
@@ -1611,9 +1729,8 @@ msgstr ""
 
 msgid "Please create a bank account first, before importing bank statements!"
 msgstr ""
-
-msgid "Error"
-msgstr "Fehler"
+"Bitte erst ein Bankkonto anlegen, sonst funktioniert das importieren von "
+"Bankauszügen nicht!"
 
 msgid "Please select a row before deleting a detail"
 msgstr "Zum Löschen einer Zusatzinformtion bitte erst eine Zeile markieren"
@@ -1739,40 +1856,13 @@ msgstr ""
 msgid "With extra columns:"
 msgstr ""
 
-msgid "Filename:"
-msgstr "Dateiname:"
-
 msgid "Browse Filename"
-msgstr ""
-
-msgid "Delimiter:"
-msgstr "Feldtrenner:"
-
-msgid "Date Format:"
-msgstr ""
-
-msgid "Number Format:"
-msgstr ""
-
-msgid "&Start"
 msgstr ""
 
 msgid "Export Gift Batches"
 msgstr ""
 
-msgid "Please select an existing directory for this file!"
-msgstr ""
-
-msgid "Warnings"
-msgstr ""
-
 msgid "There are no batches matching your criteria"
-msgstr ""
-
-msgid "Your data was exported successfully!"
-msgstr ""
-
-msgid "Success"
 msgstr ""
 
 msgid "Worker Partner Key:"
@@ -1912,9 +2002,6 @@ msgstr ""
 msgid "Comment 3 for Reversal:"
 msgstr ""
 
-msgid "&OK"
-msgstr "&Ok"
-
 msgid "Revert or adjust Gift"
 msgstr ""
 
@@ -1951,9 +2038,6 @@ msgstr "Regelmäßige Spendenstapel"
 
 msgid "From:"
 msgstr ""
-
-msgid "&Cancel"
-msgstr "Abbrechen"
 
 msgid "Submit recurring Batch"
 msgstr ""
@@ -2054,16 +2138,10 @@ msgstr ""
 msgid "Enter the gift type (gift/gift in kind/etc.)"
 msgstr ""
 
-msgid "Please save before calling this function!"
-msgstr ""
-
 msgid "Import batches from spreadsheet file"
 msgstr ""
 
 msgid "Gift Batches files (*.csv)|*.csv"
-msgstr ""
-
-msgid "Your data was imported successfully!"
 msgstr ""
 
 msgid "Do you really want to cancel this gift batch?"
@@ -2085,12 +2163,6 @@ msgid "Confirm posting of Gift Batch"
 msgstr ""
 
 msgid "The batch has been posted successfully!"
-msgstr ""
-
-msgid "Please save changed Data before the Export!"
-msgstr ""
-
-msgid "Export Error"
 msgstr ""
 
 msgid "Batch Total:"
@@ -2534,9 +2606,6 @@ msgid ""
 "You have chosen to delete this transaction ({0}).\n"
 "\n"
 "Do you really want to delete it?"
-msgstr ""
-
-msgid "&Apply"
 msgstr ""
 
 msgid "Report Period:"
@@ -2985,9 +3054,6 @@ msgstr "Vorhergehende Periode"
 msgid "&Recurring"
 msgstr "Regelmässige Stapel"
 
-msgid "E&xport"
-msgstr "Exportieren"
-
 msgid "G&L Batch"
 msgstr "G&L Stapel"
 
@@ -3001,7 +3067,7 @@ msgid "&Period End"
 msgstr "&Periodenende"
 
 msgid "Import &Bank statements"
-msgstr "Importiere &Bankenübersicht"
+msgstr "Importiere &Bankauszüge"
 
 msgid "&Gift Batch"
 msgstr "Spendenbatch"
@@ -3101,7 +3167,7 @@ msgid "Select a valid cost centre"
 msgstr ""
 
 msgid "Select a valid account"
-msgstr ""
+msgstr "Ein gültiges Konto wählen"
 
 msgid "Current and forwarding periods"
 msgstr ""
@@ -3615,7 +3681,7 @@ msgid "&Finance Details"
 msgstr "&Fibu Details"
 
 msgid "Ma&intain"
-msgstr "Be&inhalten"
+msgstr "Bearbe&iten"
 
 msgid "&Expanded"
 msgstr "&Ausgeklappt"
@@ -3627,7 +3693,7 @@ msgid "&Upper Screen Part"
 msgstr "Oberer Fensterteil"
 
 msgid "Vie&w"
-msgstr "Ansehen"
+msgstr "Ansicht"
 
 msgid "&Video Tutorial for Partner Edit Screen..."
 msgstr "&Videoanleitung für den Partner Ändern Dialog"
@@ -4805,7 +4871,7 @@ msgid "Custom Criteria Demo"
 msgstr "Demo Kundenkriterien"
 
 msgid "Fin&d Result"
-msgstr "Suche Ergebnis"
+msgstr "Ergebnis der Suche"
 
 msgid "Searching..."
 msgstr "Suche läuft …"
@@ -4838,7 +4904,7 @@ msgid "&Email:"
 msgstr "&Email:"
 
 msgid "Partner &Name:"
-msgstr "Partner&name:"
+msgstr "Nach&name/Name:"
 
 msgid "Personal &(First) Name:"
 msgstr "Vorname:"
@@ -5488,16 +5554,13 @@ msgid "General Settings"
 msgstr "Allgemeine Einstellungen"
 
 msgid "Sorting"
-msgstr "Sortieren läuft"
+msgstr "Sortierung"
 
 msgid "Columns"
 msgstr "Spalten"
 
 msgid "Generate the report"
 msgstr "Bericht erzeugen"
-
-msgid "&Generate"
-msgstr "&Erzeugen"
 
 msgid "&Save Settings"
 msgstr "&Einstellungen speichern"
@@ -5962,7 +6025,7 @@ msgid "Start of Payments:"
 msgstr ""
 
 msgid "Report parameters"
-msgstr "Parameterreport"
+msgstr "Parameter"
 
 msgid "Payments for Conference"
 msgstr ""
@@ -6511,6 +6574,28 @@ msgid ""
 "Please select at least one special type, to avoid listing the whole database!"
 msgstr ""
 
+msgid "Report on all partners that have one of these subscriptions:"
+msgstr ""
+
+msgid "Date Of Sending Copy:"
+msgstr ""
+
+msgid "Partner By Subscription"
+msgstr ""
+
+msgid "Publication Code"
+msgstr ""
+
+msgid "Publication Description"
+msgstr ""
+
+msgid "Select at least one subscription"
+msgstr ""
+
+msgid ""
+"Please select at least one subscription, to avoid listing the whole database!"
+msgstr ""
+
 msgid "Contact:"
 msgstr "Kontakt:"
 
@@ -6961,13 +7046,13 @@ msgid "No Partner Key entered!"
 msgstr ""
 
 msgid "Sort First By:"
-msgstr "Sortiere zuerst durch:"
+msgstr "Sortiere zuerst nach:"
 
 msgid "Sort Then By:"
-msgstr "Sortiere dann durch:"
+msgstr "Sortiere dann nach:"
 
 msgid "Sort Last By:"
-msgstr "Sortiere zuletzt durch:"
+msgstr "Sortiere zuletzt nach:"
 
 msgid "Culture:"
 msgstr ""
@@ -7094,10 +7179,10 @@ msgid "There was a problem setting the password for user {0}."
 msgstr ""
 
 msgid "bank statement (*.csv)|*.csv"
-msgstr ""
+msgstr "Bank Auszug (*.csv)|*.csv"
 
 msgid "Please select the bank statement to import"
-msgstr ""
+msgstr "Bitte den Bankauszug auswählen, der importiert werden soll"
 
 msgid "Missing setting in config file: BankImportCSV.FileStructure.Config"
 msgstr ""
@@ -7105,10 +7190,10 @@ msgstr ""
 "BankImportCSV.FileStructure.Config"
 
 msgid "bank statement MT940 (*.sta)|*.sta"
-msgstr ""
+msgstr "Bank Auszug MT940 (*.sta)|*.sta"
 
 msgid "We don't support several bank statements per file at the moment"
-msgstr ""
+msgstr "Wir können momentan nicht mehrere Bankauszüge pro Datei importieren"
 
 msgid "New Navigation"
 msgstr "Neues Menülayout"
@@ -7231,6 +7316,18 @@ msgid "Document with Number {0} cannot be posted since the status is {1}."
 msgstr ""
 "Dokument mit der Nummer {0} kann nicht verbucht werden, da es den Status {1} "
 "hat."
+
+#, csharp-format
+msgid "Cannot post the AP document {0} in Ledger {1}"
+msgstr ""
+
+#, csharp-format
+msgid "The value does not match the sum of the details."
+msgstr ""
+
+#, csharp-format
+msgid "Analysis Attributes are required."
+msgstr ""
 
 #, csharp-format
 msgid "Cannot post the AP documents in Ledger {0}"
@@ -7557,7 +7654,7 @@ msgid "Data could not be saved."
 msgstr ""
 
 msgid "Invalid account code"
-msgstr ""
+msgstr "Ungültiges Konto"
 
 msgid "Invalid cost centre"
 msgstr ""
@@ -7666,14 +7763,14 @@ msgstr ""
 
 #, csharp-format
 msgid "Invalid account code {0} in line {1}"
-msgstr ""
+msgstr "Ungültiges Konto {0} in Zeile {1}"
 
 #, csharp-format
 msgid "Inactive account {0} in line {1}"
 msgstr ""
 
 msgid "narrative"
-msgstr ""
+msgstr "Beschreibung"
 
 msgid "date"
 msgstr ""
@@ -7833,7 +7930,7 @@ msgstr ""
 
 #, csharp-format
 msgid "Invalid account code {0} in batch {1}, journal {2}, transaction {3}"
-msgstr ""
+msgstr "Ungültiges Konto {0} in Stapel {1}, Journal {2}, Transaktion {3}"
 
 #, csharp-format
 msgid ""
@@ -8227,7 +8324,7 @@ msgstr ""
 
 #, csharp-format
 msgid "Ledger {0} {1}"
-msgstr "Hauptbuch {0} {1}"
+msgstr ""
 
 msgid "Finance"
 msgstr ""
@@ -8239,7 +8336,7 @@ msgid "Gift Entry"
 msgstr "Spendeneingabe"
 
 msgid "Import Gifts From Bank Statement"
-msgstr ""
+msgstr "Spenden von Bankauszug importieren"
 
 msgid "Matching donors and recipients"
 msgstr ""
@@ -8374,6 +8471,12 @@ msgstr ""
 msgid "Maintain types of Cost Centres"
 msgstr ""
 
+msgid "Setup Analysis Types"
+msgstr ""
+
+msgid "Maintain Analysis Types"
+msgstr ""
+
 msgid "Gift Setup"
 msgstr ""
 
@@ -8399,7 +8502,7 @@ msgid "Finance Setup"
 msgstr "Finanzmodul Konfiguration"
 
 msgid "Ledger"
-msgstr "Hauptbuch"
+msgstr "Buchhaltung"
 
 msgid "Create a new Ledger"
 msgstr ""
@@ -8417,12 +8520,6 @@ msgid "Setup Methods Of Giving"
 msgstr ""
 
 msgid "Setup Methods Of Payment"
-msgstr ""
-
-msgid "Setup Analysis Types"
-msgstr ""
-
-msgid "Maintain Analysis Types"
 msgstr ""
 
 msgid "Exchange Rates (Cross-Ledger)"
@@ -8583,10 +8680,10 @@ msgid "Database"
 msgstr "Datenbank"
 
 msgid "Import Export"
-msgstr "Daten übernehmen/übergeben"
+msgstr "Daten exportieren/importieren"
 
 msgid "Export All Data"
-msgstr "Alle Daten übergeben"
+msgstr "Alle Daten exportieren"
 
 msgid "Reset Database"
 msgstr "Datenbank zurücksetzen"

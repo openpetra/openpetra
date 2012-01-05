@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-22 08:57+0100\n"
+"POT-Creation-Date: 2012-01-05 13:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1597,7 +1597,7 @@ msgstr ""
 msgid "Export Error"
 msgstr ""
 
-msgid "Select Bank Account:"
+msgid "Bank Statement:"
 msgstr ""
 
 msgid "ListAll"
@@ -1645,15 +1645,6 @@ msgstr ""
 msgid "Reference:"
 msgstr ""
 
-msgid "&Import new statement"
-msgstr ""
-
-msgid "Separator"
-msgstr ""
-
-msgid "Delete Statement"
-msgstr ""
-
 msgid "Save Matches"
 msgstr ""
 
@@ -1661,6 +1652,15 @@ msgid "Create Gift Batch"
 msgstr ""
 
 msgid "CreateGL Batch"
+msgstr ""
+
+msgid "Import New Statement"
+msgstr ""
+
+msgid "Select Plugin"
+msgstr ""
+
+msgid "Tools"
 msgstr ""
 
 msgid "Import Bank Statements"
@@ -1693,12 +1693,6 @@ msgstr ""
 msgid "Amount"
 msgstr ""
 
-msgid "Please install a valid plugin for the import of bank statements!"
-msgstr ""
-
-msgid "Please create a bank account first, before importing bank statements!"
-msgstr ""
-
 msgid "Please select a row before deleting a detail"
 msgstr ""
 
@@ -1708,12 +1702,6 @@ msgstr ""
 msgid ""
 "The matches could not be stored. Please ask your System Administrator to "
 "check the log file on the server."
-msgstr ""
-
-msgid "Please select a bank account first!"
-msgstr ""
-
-msgid "No gift batch has been created"
 msgstr ""
 
 #, csharp-format
@@ -1730,7 +1718,41 @@ msgstr ""
 msgid "Problem: No GL batch has been created"
 msgstr ""
 
+msgid "Select Bank Account:"
+msgstr ""
+
+msgid "Select Plugin:"
+msgstr ""
+
+msgid "Import a bank statement"
+msgstr ""
+
+msgid "Please create a bank account first, before importing bank statements!"
+msgstr ""
+
 msgid "Select a ledger"
+msgstr ""
+
+msgid "Select Statement:"
+msgstr ""
+
+msgid "Delete Statement"
+msgstr ""
+
+msgid "Load Statement"
+msgstr ""
+
+msgid "Select a bank statement"
+msgstr ""
+
+msgid "Please select a valid plugin for the import of bank statements!"
+msgstr ""
+
+#, csharp-format
+msgid "Do you really want to delete the bank statement {0}?"
+msgstr ""
+
+msgid "Confirmation"
 msgstr ""
 
 msgid "Ledger:"
@@ -2644,6 +2666,9 @@ msgid "Export Hierarchy"
 msgstr ""
 
 msgid "Import Hierarchy"
+msgstr ""
+
+msgid "Separator"
 msgstr ""
 
 msgid "Accounts"
