@@ -4,7 +4,7 @@
 // @Authors:
 //       alanP
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -268,8 +268,8 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         	pnlCategoryCode.Visible = false;
         	txtDetailNumDecimalPlaces.Visible = false;
         	
-        	// We need to capture the 'starting to save' event, so we can save our Extra DataSet
-        	FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(FPetraUtilsObject_DataSavingStarted);
+        	// We need to capture the 'DataSaved' event, so we can save our Extra DataSet
+        	FPetraUtilsObject.DataSaved += new TDataSavedHandler(FPetraUtilsObject_DataSaved);
     	}
         
     	// Simple helper that adds a string item as a row in our UsedBy list
@@ -285,20 +285,29 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         private void RunOnceOnActivationManual()
         {
         	// This is the point at which we can add our additional column to the details grid
-        	grdDetails.AddTextColumn(GUIUsedBy, FMainDS.PDataLabel.Columns[DBUsedBy]);
+        	if (CurrentContext != Context.Personnel)
+        	{
+        		grdDetails.AddTextColumn(GUIUsedBy, FMainDS.PDataLabel.Columns[DBUsedBy]);
+        	}
         	
-        	// And now we can set up our default view and override the original binding to the grid
+        	// And now we can set up our context-specific view and override the original binding to the grid
         	// that the generated code did earlier
-        	DataView myDataView = FMainDS.PDataLabel.DefaultView;
-        	myDataView.RowFilter = "Context=" + ((int)CurrentContext).ToString();
-			myDataView.AllowNew = false;
-			grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+        	// Note that we do not use the table.defaultView property but we create a new view specifically for our context
+        	DataView contextView = new DataView(FMainDS.PDataLabel, "Context=" + ((int)CurrentContext).ToString(), "", DataViewRowState.CurrentRows);
+			contextView.AllowNew = false;
+			grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(contextView);
+			grdDetails.Refresh();
 			
 			// The details panel will likely be showing data from the wrong context now that we have applied a rowfilter
-			// So on an empty grid we have to call ShowDetails(null) again
-			if (grdDetails.Rows.Count <= 1)
+			// So we have to make sure the panel is displaying data from the first row
+    		FPreviouslySelectedDetailRow = null;
+			if (GetSelectedDetailRow() == null)
 			{
 				ShowDetails(null);
+			}
+			else
+			{
+				FocusedRowChanged(this, new SourceGrid.RowEventArgs(0));
 			}
         }
 
@@ -313,14 +322,16 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             }
             ARow.Key = labelKey;
             
-            // Initialise the other values
+            // Initialise the other values that always apply to new records
             ARow.Text = Catalog.GetString("NewLabel");
             ARow[ContextColumnOrdinal] = (int)CurrentContext;
-        	ARow[UsedByColumnOrdinal - 1] = "";
+        	ARow[UsedByColumnOrdinal - 1] = String.Empty;
             
-            if (grdDetails.Rows.Count <= 1 || FPreviouslySelectedDetailRow == null)
+        	// Now initialise other values
+        	PDataLabelRow CurrentRow = GetSelectedDetailRow();
+        	if (CurrentRow == null)
             {
-            	//  This is the first row of an empty grid
+            	// This is the first row of an empty grid
             	// Default to a char type
 	            ARow.DataType = "char";
 	            ARow.CharLength = DefaultCharLength;
@@ -347,44 +358,38 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             else
             {
             	// New row in a grid that has existing rows, so default to values from the current row
-            	ARow.Group = FPreviouslySelectedDetailRow.Group;
-            	ARow.DataType = FPreviouslySelectedDetailRow.DataType;
+            	GetDetailsFromControls(CurrentRow);
+            	ARow.Group = CurrentRow.Group;
+            	ARow.DataType = CurrentRow.DataType;
+            	int VisibleIndex = -1;
             	if (String.Compare(ARow.DataType, "char", true) == 0)
             	{
-            		ARow.CharLength = FPreviouslySelectedDetailRow.CharLength;
-            		txtDetailNumDecimalPlaces.NumberValueInt = DefaultNumDecimalPlaces;
-            		cmbDetailCurrencyCode.SetSelectedString(DefaultCurrencyCode);
-            		cmbDetailLookupCategoryCode.SelectedIndex = (cmbDetailLookupCategoryCode.Count > 0) ? 0 : -1;
+            		ARow.CharLength = CurrentRow.CharLength;
+            		VisibleIndex = 0;
             	}
             	else if (String.Compare(ARow.DataType, "float", true) == 0)
             	{
-            		txtDetailCharLength.NumberValueInt = DefaultCharLength;
-            		ARow.NumDecimalPlaces = FPreviouslySelectedDetailRow.NumDecimalPlaces;
-            		cmbDetailCurrencyCode.SetSelectedString(DefaultCurrencyCode);
-            		cmbDetailLookupCategoryCode.SelectedIndex = (cmbDetailLookupCategoryCode.Count > 0) ? 0 : -1;
+            		ARow.NumDecimalPlaces = CurrentRow.NumDecimalPlaces;
+            		VisibleIndex = 1;
             	}
             	else if (String.Compare(ARow.DataType, "currency", true) == 0)
             	{
-            		txtDetailCharLength.NumberValueInt = DefaultCharLength;
-            		txtDetailNumDecimalPlaces.NumberValueInt = DefaultNumDecimalPlaces;
-            		ARow.CurrencyCode = FPreviouslySelectedDetailRow.CurrencyCode;
-            		cmbDetailLookupCategoryCode.SelectedIndex = (cmbDetailLookupCategoryCode.Count > 0) ? 0 : -1;
+            		ARow.CurrencyCode = CurrentRow.CurrencyCode;
+            		VisibleIndex = 2;
             	}
             	else if (String.Compare(ARow.DataType, "lookup", true) == 0)
             	{
-            		txtDetailCharLength.NumberValueInt = DefaultCharLength;
-            		txtDetailNumDecimalPlaces.NumberValueInt = DefaultNumDecimalPlaces;
-            		cmbDetailCurrencyCode.SetSelectedString(DefaultCurrencyCode);
-            		ARow.LookupCategoryCode = FPreviouslySelectedDetailRow.LookupCategoryCode;
+            		ARow.LookupCategoryCode = CurrentRow.LookupCategoryCode;
+            		VisibleIndex = 6;
             	}
-            	else
-            	{
-            		txtDetailCharLength.NumberValueInt = DefaultCharLength;
-            		txtDetailNumDecimalPlaces.NumberValueInt = DefaultNumDecimalPlaces;
-            		cmbDetailCurrencyCode.SetSelectedString(DefaultCurrencyCode);
-            		cmbDetailLookupCategoryCode.SelectedIndex = (cmbDetailLookupCategoryCode.Count > 0) ? 0 : -1;
-            	}
-            	ARow[UsedByColumnOrdinal] = clbUsedBy.GetCheckedStringList();
+            	
+            	// Now set the hidden fields to default values in case the user selects them
+            	if (VisibleIndex != 0) txtDetailCharLength.NumberValueInt = DefaultCharLength;
+            	if (VisibleIndex != 1) txtDetailNumDecimalPlaces.NumberValueInt = DefaultNumDecimalPlaces;
+            	if (VisibleIndex != 2) cmbDetailCurrencyCode.SetSelectedString(DefaultCurrencyCode);
+            	if (VisibleIndex != 6) cmbDetailLookupCategoryCode.SelectedIndex = (cmbDetailLookupCategoryCode.Count > 0) ? 0 : -1;
+
+        		ARow[UsedByColumnOrdinal] = clbUsedBy.GetCheckedStringList();
             }
         	
 			DTUsedBy.DefaultView.AllowEdit = true;
@@ -392,7 +397,22 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
 
         private void NewRecord(Object sender, EventArgs e)
         {
-            CreateNewPDataLabel();
+        	// We use non-standard code here because of our three contexts
+        	// We cannot call CreateNewPDataLabel() because it won't have the correct RowFilter
+        	// So we use a modified version of the auto-generated code
+	        PDataLabelRow NewRow = FMainDS.PDataLabel.NewRowTyped();
+	        NewRowManual(ref NewRow);
+	        FMainDS.PDataLabel.Rows.Add(NewRow);
+	
+	        FPetraUtilsObject.SetChangedFlag();
+	
+	        DataView contextView = new DataView(FMainDS.PDataLabel, "Context=" + ((int)CurrentContext).ToString(), "", DataViewRowState.CurrentRows);
+        	contextView.AllowNew = false;
+	        grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(contextView);
+	        grdDetails.Refresh();
+	        SelectDetailRowByDataTableIndex(FMainDS.PDataLabel.Rows.Count - 1);
+	
+            //CreateNewPDataLabel();
             txtDetailText.SelectAll();
             txtDetailText.Focus();
         }
@@ -469,15 +489,9 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
     		{
     			case 1:
     				ARow.DataType = "float";
-    				ARow.SetCharLengthNull();
-    				ARow.SetCurrencyCodeNull();
-    				ARow.SetLookupCategoryCodeNull();
     				break;
     			case 2:
     				ARow.DataType = "currency";
-    				ARow.SetCharLengthNull();
-    				ARow.SetNumDecimalPlacesNull();
-    				ARow.SetLookupCategoryCodeNull();
     				break;
     			case 3:
     				ARow.DataType = "boolean";
@@ -490,35 +504,56 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
     				break;
     			case 6:
     				ARow.DataType = "lookup";
-    				ARow.SetCharLengthNull();
-    				ARow.SetNumDecimalPlacesNull();
-    				ARow.SetCurrencyCodeNull();
     				break;
     			case 7:
     				ARow.DataType = "partnerkey";
     				break;
     			default:
     				ARow.DataType = "char";
-    				ARow.SetNumDecimalPlacesNull();
-    				ARow.SetCurrencyCodeNull();
-    				ARow.SetLookupCategoryCodeNull();
     				break;
     		}
-    		if ((cmbDetailDataType.SelectedIndex >= 3 && cmbDetailDataType.SelectedIndex <= 5) ||
-    		    cmbDetailDataType.SelectedIndex == 7)
+    		
+    		// Set all fields to null where the control is not visible, because the information is not required
+    		if (!txtDetailCharLength.Visible) ARow.SetCharLengthNull();
+    		if (!txtDetailNumDecimalPlaces.Visible) ARow.SetNumDecimalPlacesNull();
+    		if (!pnlCurrencyCode.Visible) ARow.SetCurrencyCodeNull();
+    		if (!pnlCategoryCode.Visible) ARow.SetLookupCategoryCodeNull();
+    		
+    		// Validate that there is a local data option category if 'lookup' was selected.
+    		// If not, use char for now until the user creates a new category
+    		if (cmbDetailDataType.SelectedIndex == 6 && ARow.LookupCategoryCode == String.Empty)
     		{
-    			ARow.SetCharLengthNull();
-				ARow.SetNumDecimalPlacesNull();
-				ARow.SetCurrencyCodeNull();
-				ARow.SetLookupCategoryCodeNull();
+    			// That's bad!  Must be no data in the Category Code table
+    			ARow.DataType = "char";
+    			ARow.CharLength = DefaultCharLength;
+    			ARow.SetLookupCategoryCodeNull();
+    			MessageBox.Show(Catalog.GetString("You cannot select the 'Lookup Option' because there are no options defined. The application will choose 'Text'.  Then go to the 'Local Data Options' menu item and define some options.  Then return to this menu and reconfigure this entry."),
+    			                Catalog.GetString("Error in Data Input"),
+    			                MessageBoxButtons.OK,
+    			                MessageBoxIcon.Exclamation);
     		}
     		
     		// Get the checked items from the UsedBy ListBox and update our UsedBy column
-			ARow[UsedByColumnOrdinal] = clbUsedBy.GetCheckedStringList();
+    		// Validate that at least one checkbox is chaecked
+    		string stringList = clbUsedBy.GetCheckedStringList();
+    		if (stringList == String.Empty)
+    		{
+    			if (CurrentContext == Context.Partner) stringList = "Church";
+    			else if (CurrentContext == Context.Application) stringList = "LongTermApp";
+    			MessageBox.Show(Catalog.GetString("You must check at least one box in the 'Used By' list. The system will check one box for you, but you should validate the entry yourself."),
+    			                Catalog.GetString("Error in Data Input"),
+    			                MessageBoxButtons.OK,
+    			                MessageBoxIcon.Exclamation);
+    		}
+    		
+			ARow[UsedByColumnOrdinal] = stringList;
     	}
 
-    	void FPetraUtilsObject_DataSavingStarted(object Sender, EventArgs e)
+    	void FPetraUtilsObject_DataSaved(object Sender, TDataSavedEventArgs e)
     	{
+    		// Do not save anything if the main table did not save correctly
+    		if (!e.Success) return;
+    		
     		// Ensure we get the current row's information
     		if (FPreviouslySelectedDetailRow != null)
     		{
@@ -586,12 +621,12 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             catch (Exception exp)
             {
                 TLogging.Log(
-                    "An error occured while trying to connect to the PETRA Server!" + Environment.NewLine + exp.ToString(),
+                    "An error occured while saving the 'used by' data" + Environment.NewLine + exp.ToString(),
                     TLoggingType.ToLogfile);
                 MessageBox.Show(
-                    "An error occured while trying to connect to the PETRA Server!" + Environment.NewLine +
-                    "For details see the log file: " + TLogging.GetLogFileName(),
-                    "Server connection error",
+            		Catalog.GetString("An error occured while saving the 'used by' data") + Environment.NewLine +
+            		Catalog.GetString("For details see the log file: ") + TLogging.GetLogFileName(),
+                    Catalog.GetString("Failed to Save 'Used By' Data"),
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Stop);
 
@@ -656,15 +691,15 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         	{
         		case 0:		// Text
         			txtDetailCharLength.Visible = true;
-        			lblDataSubType.Text = Catalog.GetString("Maximum length:");
+        			lblDataSubType.Text = Catalog.GetString("Maximum length") + ":";
         			break;
         		case 1:		// Numeric
         			txtDetailNumDecimalPlaces.Visible = true;
-        			lblDataSubType.Text = Catalog.GetString("Decimal places:");
+        			lblDataSubType.Text = Catalog.GetString("Decimal places") + ":";
         			break;
         		case 2:		// Currency
         			pnlCurrencyCode.Visible = true;
-        			lblDataSubType.Text = Catalog.GetString("Currency code:");
+        			lblDataSubType.Text = Catalog.GetString("Currency code") + ":";
         			break;
         		case 3:		// Yes/No
         		case 4:		// Date
@@ -674,7 +709,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         			break;
         		case 6:		// OptionList
 					pnlCategoryCode.Visible = true;
-					lblDataSubType.Text = Catalog.GetString("Option list name:");
+					lblDataSubType.Text = Catalog.GetString("Option list name") + ":";
         			break;
         	}
         }
