@@ -374,9 +374,11 @@ namespace {#NAMESPACE}
                         "Server connection error",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Stop);
+                    
+                    bool ReturnValue = false;
 
                     FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-                    return false;
+                    return ReturnValue;
                 }
 
                 switch (SubmissionResult)

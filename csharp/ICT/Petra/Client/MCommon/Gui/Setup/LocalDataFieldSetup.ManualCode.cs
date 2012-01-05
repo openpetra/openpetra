@@ -341,6 +341,8 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             // Now initialise other values
             PDataLabelRow CurrentRow = GetSelectedDetailRow();
 
+            DTUsedBy.DefaultView.AllowEdit = true;
+
             if (CurrentRow == null)
             {
                 // This is the first row of an empty grid
@@ -422,8 +424,6 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
 
                 ARow[UsedByColumnOrdinal] = clbUsedBy.GetCheckedStringList();
             }
-
-            DTUsedBy.DefaultView.AllowEdit = true;
         }
 
         private void NewRecord(Object sender, EventArgs e)
