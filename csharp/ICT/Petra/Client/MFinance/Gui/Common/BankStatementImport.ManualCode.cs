@@ -56,6 +56,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                 FLedgerNumber = value;
 
                 TFinanceControls.InitialiseAccountList(ref cmbSelectBankAccount, FLedgerNumber, true, false, true, true);
+                cmbSelectBankAccount.Enabled = false;
 
                 ALedgerRow Ledger =
                     ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
@@ -65,7 +66,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
 
                 // we can only load the statements when the ledger number is known
                 PopulateStatementCombobox();
-                cmbSelectStatement.SelectedIndex = cmbSelectStatement.Items.Count - 1;
+                // cmbSelectStatement.SelectedIndex = cmbSelectStatement.Items.Count - 1;
             }
         }
 
@@ -205,6 +206,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                 return;
             }
 
+            TFrmSelectBankAccount SelectBankAccount = new TFrmSelectBankAccount(this);
+            SelectBankAccount.LedgerNumber = FLedgerNumber;
+
+            if (SelectBankAccount.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
+
             // namespace of the class TBankStatementImport, eg. Plugin.BankImportFromCSV
             // the dll has to be in the normal application directory
             string Namespace = BankStatementImportPlugin;
@@ -219,7 +228,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
 
             Int32 StatementKey;
 
-            if (ImportBankStatement.ImportBankStatement(out StatementKey))
+            if (ImportBankStatement.ImportBankStatement(out StatementKey, SelectBankAccount.FAccountCode))
             {
                 PopulateStatementCombobox();
 
