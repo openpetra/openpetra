@@ -7,11 +7,6 @@ RootNode:
     WindowWidth: 754
     WindowHeight: 623
     Actions:
-        actImportNewStatement:
-            Label: &Import new statement
-            ActionClick: ImportNewStatement
-        actDeleteStatement:
-            ActionClick: DeleteStatement
         actAddGiftDetail:
             Label: &Add
             ActionClick: AddGiftDetail
@@ -24,14 +19,13 @@ RootNode:
             ActionClick: CreateGiftBatch
         actCreateGLBatch:
             ActionClick: CreateGLBatch
-        actSelectPlugin:
-            ActionClick: SelectPlugin
     Controls:
         pnlContent:
             Dock: Fill
-            Controls: [cmbSelectBankAccount, pnlFilter, sptTransactionDetails]
+            Controls: [cmbBankAccount, txtBankStatement, pnlFilter, sptTransactionDetails]
             # add to Controls: pnlStatementInfo
-        cmbSelectBankAccount: {List=UserDefinedList}
+        cmbBankAccount: {List=UserDefinedList}
+        txtBankStatement: {ReadOnly=true}
         pnlFilter:
             Dock: Top
             Controls:
@@ -108,11 +102,6 @@ RootNode:
         mniTools:
             mniSelectPlugin:
     Toolbar:
-        tbbImportNewStatement:
-        tbbSeparator:
-        cmbSelectStatement: {Width=250}
-        tbbDeleteStatement:
-        tbbSeparator:
         tbbSaveMatches:
         tbbCreateGiftBatch:
         tbbCreateGLBatch:

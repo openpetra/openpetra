@@ -43,8 +43,13 @@ using Ict.Petra.Client.MFinance.Logic;
 
 namespace Ict.Petra.Client.MFinance.Gui.Common
 {
-    public partial class TFrmSelectBankAccount
+    public partial class TFrmImportNewBankStatement
     {
+        /// <summary>
+        /// constant for the namespace of the bankimport plugin
+        /// </summary>
+        public static string PluginNamespace = "Ict.Petra.ClientPlugins.BankStatementImport";
+
         /// <summary>
         /// use this ledger
         /// </summary>
@@ -53,6 +58,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             set
             {
                 TFinanceControls.InitialiseAccountList(ref cmbSelectBankAccount, value, true, false, true, true);
+
+                if (cmbSelectBankAccount.Count == 0)
+                {
+                    MessageBox.Show(Catalog.GetString("Please create a bank account first, before importing bank statements!"),
+                        Catalog.GetString("Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                StringCollection list = new StringCollection();
+
+                string[] files = Directory.GetFiles(TAppSettingsManager.ApplicationDirectory, PluginNamespace + ".*.dll");
+
+                foreach (string file in files)
+                {
+                    list.Add(Path.GetFileNameWithoutExtension(file).Substring(PluginNamespace.Length + 1));
+                }
+
+                cmbSelectPlugin.SetDataSourceStringList(list);
+
+                cmbSelectPlugin.SetSelectedString(
+                    TUserDefaults.GetStringDefault(TUserDefaults.FINANCE_BANKIMPORT_PLUGIN, ""), -1);
             }
         }
 
@@ -67,6 +93,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
 
             if (FAccountCode.Length > 0)
             {
+                TUserDefaults.SetDefault(TUserDefaults.FINANCE_BANKIMPORT_PLUGIN,
+                    cmbSelectPlugin.GetSelectedString());
+
+                TUserDefaults.SaveChangedUserDefault(TUserDefaults.FINANCE_BANKIMPORT_PLUGIN);
+
                 this.DialogResult = System.Windows.Forms.DialogResult.OK;
                 this.Close();
             }
