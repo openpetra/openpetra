@@ -101,6 +101,9 @@ namespace Ict.Petra.Client.CommonControls
             DataLabelLookupList,
 
             /// <summary>todoComment</summary>
+            DataLabelLookupCategoryList,
+
+            /// <summary>todoComment</summary>
             DenominationList,
 
             /// <summary>todoComment</summary>
@@ -389,6 +392,24 @@ namespace Ict.Petra.Client.CommonControls
                     null);
                     break;
 
+                case TListTableEnum.DataLabelLookupList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.DataLabelLookupList),
+                    PDataLabelLookupTable.GetValueCodeDBName(),
+                    PDataLabelLookupTable.GetValueDescDBName(),
+                    null);
+                    break;
+
+                case TListTableEnum.DataLabelLookupCategoryList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.DataLabelLookupCategoryList),
+                    PDataLabelLookupCategoryTable.GetCategoryCodeDBName(),
+                    PDataLabelLookupCategoryTable.GetCategoryDescDBName(),
+                    null);
+                    break;
+
                 case TListTableEnum.DenominationList:
 
                     InitialiseUserControl(
@@ -616,15 +637,6 @@ namespace Ict.Petra.Client.CommonControls
                     UUnitTypeTable.GetUnitTypeNameDBName(),
                     null);
                     break;
-
-                case TListTableEnum.DataLabelLookupList:
-
-                    InitialiseUserControl(
-                    TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.DataLabelLookupList),
-                    PDataLabelLookupTable.GetValueCodeDBName(),
-                    PDataLabelLookupTable.GetValueDescDBName(),
-                    null);
-                    break;
             }
         }
 
@@ -834,6 +846,14 @@ namespace Ict.Petra.Client.CommonControls
                     this.ColumnWidthCol2 = 170;
                     break;
 
+                case TListTableEnum.DataLabelLookupList:
+                    this.ColumnWidthCol2 = 200;
+                    break;
+
+                case TListTableEnum.DataLabelLookupCategoryList:
+                    this.ColumnWidthCol2 = 200;
+                    break;
+
                 case TListTableEnum.DenominationList:
                     this.ColumnWidthCol2 = 330;
                     break;
@@ -935,9 +955,6 @@ namespace Ict.Petra.Client.CommonControls
                 case TListTableEnum.UnitTypeList:
                     this.ColumnWidthCol1 = 90;
                     this.ColumnWidthCol2 = 200;
-                    break;
-
-                case TListTableEnum.DataLabelLookupList:
                     this.ColumnWidthCol2 = 200;
                     break;
             }

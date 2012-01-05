@@ -36,34 +36,35 @@ using Ict.Petra.Shared.MPersonnel.Units.Data;
 
 namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 {
-    public partial class TFrmLeavingCodeSetup
+    public partial class TFrmJobAssignmentTypeSetup
     {
-        private void RunOnceOnActivationManual()
+        private void NewRowManual(ref PtAssignmentTypeRow ARow)
         {
-            chkDetailDeletableFlag.Enabled = false;
-        }
+            // Deal with primary key.  AssignmentTypeCode is unique and is a single character.
+            // Default suggestion is A..Z, 0..9
+            char code = 'A';
 
-        private void NewRowManual(ref PtLeavingCodeRow ARow)
-        {
-            string newName = Catalog.GetString("NEWCODE");
-            Int32 countNewDetail = 0;
-
-            if (FMainDS.PtLeavingCode.Rows.Find(new object[] { newName }) != null)
+            if (FMainDS.PtAssignmentType.Rows.Find(new object[] { code }) != null)
             {
-                while (FMainDS.PtLeavingCode.Rows.Find(new object[] { newName + countNewDetail.ToString() }) != null)
+                while (FMainDS.PtAssignmentType.Rows.Find(new object[] { code }) != null)
                 {
-                    countNewDetail++;
+                    if (code == 'Z')
+                    {
+                        code = '0';
+                    }
+                    else
+                    {
+                        code++;
+                    }
                 }
-
-                newName += countNewDetail.ToString();
             }
 
-            ARow.LeavingCodeInd = newName;
+            ARow.AssignmentTypeCode = code.ToString();
         }
 
         private void NewRecord(Object sender, EventArgs e)
         {
-            CreateNewPtLeavingCode();
+            CreateNewPtAssignmentType();
         }
 
         private void EnableDisableUnassignableDate(Object sender, EventArgs e)

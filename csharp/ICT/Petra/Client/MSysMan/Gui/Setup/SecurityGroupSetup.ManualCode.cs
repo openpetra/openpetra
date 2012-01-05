@@ -29,28 +29,24 @@ using System.Xml;
 using GNU.Gettext;
 using Ict.Common.Verification;
 using Ict.Common;
-using Ict.Common.IO;
 using Ict.Petra.Client.App.Core.RemoteObjects;
-using Ict.Petra.Shared.MPersonnel;
-using Ict.Petra.Shared.MPersonnel.Units.Data;
+using Ict.Petra.Shared.MSysMan;
+using Ict.Petra.Shared.MSysMan.Data;
+using Ict.Petra.Shared.Interfaces.MCommon;
 
-namespace Ict.Petra.Client.MPersonnel.Gui.Setup
+namespace Ict.Petra.Client.MSysMan.Gui.Setup
 {
-    public partial class TFrmLeavingCodeSetup
+    public partial class TFrmSecurityGroupSetup
     {
-        private void RunOnceOnActivationManual()
+        private void NewRowManual(ref SGroupRow ARow)
         {
-            chkDetailDeletableFlag.Enabled = false;
-        }
-
-        private void NewRowManual(ref PtLeavingCodeRow ARow)
-        {
+            // Deal with primary key.  GroupId is unique.  UnitKey is always 0
             string newName = Catalog.GetString("NEWCODE");
             Int32 countNewDetail = 0;
 
-            if (FMainDS.PtLeavingCode.Rows.Find(new object[] { newName }) != null)
+            if (FMainDS.SGroup.Rows.Find(new object[] { newName, 0 }) != null)
             {
-                while (FMainDS.PtLeavingCode.Rows.Find(new object[] { newName + countNewDetail.ToString() }) != null)
+                while (FMainDS.SGroup.Rows.Find(new object[] { newName + countNewDetail.ToString(), 0 }) != null)
                 {
                     countNewDetail++;
                 }
@@ -58,26 +54,12 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
                 newName += countNewDetail.ToString();
             }
 
-            ARow.LeavingCodeInd = newName;
+            ARow.GroupId = newName;
         }
 
         private void NewRecord(Object sender, EventArgs e)
         {
-            CreateNewPtLeavingCode();
-        }
-
-        private void EnableDisableUnassignableDate(Object sender, EventArgs e)
-        {
-            dtpDetailUnassignableDate.Enabled = chkDetailUnassignableFlag.Checked;
-
-            if (!chkDetailUnassignableFlag.Checked)
-            {
-                dtpDetailUnassignableDate.Date = null;
-            }
-            else
-            {
-                dtpDetailUnassignableDate.Date = DateTime.Now.Date;
-            }
+            CreateNewSGroup();
         }
     }
 }

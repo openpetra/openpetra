@@ -32,25 +32,21 @@ using Ict.Common;
 using Ict.Common.IO;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MPersonnel;
-using Ict.Petra.Shared.MPersonnel.Units.Data;
+using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 
 namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 {
-    public partial class TFrmLeavingCodeSetup
+    public partial class TFrmArrivalDeparturePointSetup
     {
-        private void RunOnceOnActivationManual()
+        private void NewRowManual(ref PtArrivalPointRow ARow)
         {
-            chkDetailDeletableFlag.Enabled = false;
-        }
-
-        private void NewRowManual(ref PtLeavingCodeRow ARow)
-        {
+            // Deal with primary key.  AssignmentTypeCode is unique and is 8 characters.
             string newName = Catalog.GetString("NEWCODE");
             Int32 countNewDetail = 0;
 
-            if (FMainDS.PtLeavingCode.Rows.Find(new object[] { newName }) != null)
+            if (FMainDS.PtArrivalPoint.Rows.Find(new object[] { newName }) != null)
             {
-                while (FMainDS.PtLeavingCode.Rows.Find(new object[] { newName + countNewDetail.ToString() }) != null)
+                while (FMainDS.PtArrivalPoint.Rows.Find(new object[] { newName + countNewDetail.ToString() }) != null)
                 {
                     countNewDetail++;
                 }
@@ -58,12 +54,12 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
                 newName += countNewDetail.ToString();
             }
 
-            ARow.LeavingCodeInd = newName;
+            ARow.Code = newName;
         }
 
         private void NewRecord(Object sender, EventArgs e)
         {
-            CreateNewPtLeavingCode();
+            CreateNewPtArrivalPoint();
         }
 
         private void EnableDisableUnassignableDate(Object sender, EventArgs e)

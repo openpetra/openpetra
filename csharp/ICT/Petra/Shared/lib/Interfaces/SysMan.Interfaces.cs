@@ -31,6 +31,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using Ict.Common;
+using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared.Interfaces.MSysMan.Application;
@@ -438,6 +439,10 @@ namespace Ict.Petra.Shared.Interfaces.MSysMan.Cacheable
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Cacheable.Class)</summary>
         void RefreshCacheableTable(Ict.Petra.Shared.MSysMan.TCacheableSysManTablesEnum ACacheableTable,
                                    out System.Data.DataTable ADataTable);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Cacheable.TApplicationCacheableNamespace)</summary>
+        TSubmitChangesResult SaveChangedStandardCacheableTable(Ict.Petra.Shared.MSysMan.TCacheableSysManTablesEnum ACacheableTable,
+                                                               ref TTypedDataTable ASubmitTable,
+                                                               out TVerificationResultCollection AVerificationResult);
     }
 
 }

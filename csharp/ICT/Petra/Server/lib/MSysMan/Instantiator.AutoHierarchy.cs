@@ -110,6 +110,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Shared.MSysMan;
+using Ict.Common.Data;
 #endregion ManualCode
 namespace Ict.Petra.Server.MSysMan.Instantiator
 {
@@ -2370,6 +2371,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Cacheable
             switch (ACacheableTable)
             {
                 case TCacheableSysManTablesEnum.UserList:
+                case TCacheableSysManTablesEnum.LanguageSpecificList:
                     ReturnValue = FCachePopulator.GetCacheableTable(
             			ACacheableTable, AHashCode, ARefreshFromDB, out AType);
             		
@@ -2431,6 +2433,16 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Cacheable
             System.Type TmpType;
             ADataTable = GetCacheableTableInternal(ACacheableTable, "", true, out TmpType);
             #endregion ManualCode
+        }
+
+        /// generated method from interface
+        public TSubmitChangesResult SaveChangedStandardCacheableTable(Ict.Petra.Shared.MSysMan.TCacheableSysManTablesEnum ACacheableTable,
+                                                                      ref TTypedDataTable ASubmitTable,
+                                                                      out TVerificationResultCollection AVerificationResult)
+        {
+            #region ManualCode
+            return FCachePopulator.SaveChangedStandardCacheableTable(ACacheableTable, ref ASubmitTable, out AVerificationResult);
+            #endregion ManualCode                                    
         }
     }
 }

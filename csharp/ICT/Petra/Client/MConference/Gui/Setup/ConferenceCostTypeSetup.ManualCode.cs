@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       christiank
 //
 // Copyright 2004-2010 by OM International
 //
@@ -30,40 +30,37 @@ using GNU.Gettext;
 using Ict.Common.Verification;
 using Ict.Common;
 using Ict.Common.IO;
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
-using Ict.Petra.Shared.MPersonnel;
-using Ict.Petra.Shared.MPersonnel.Units.Data;
+using Ict.Petra.Shared.MConference;
+using Ict.Petra.Shared.MConference.Data;
 
-namespace Ict.Petra.Client.MPersonnel.Gui.Setup
+namespace Ict.Petra.Client.MConference.Gui.Setup
 {
-    public partial class TFrmLeavingCodeSetup
+    public partial class TFrmConferenceCostTypeSetup
     {
-        private void RunOnceOnActivationManual()
+        private void NewRowManual(ref PcCostTypeRow ARow)
         {
-            chkDetailDeletableFlag.Enabled = false;
-        }
-
-        private void NewRowManual(ref PtLeavingCodeRow ARow)
-        {
-            string newName = Catalog.GetString("NEWCODE");
+            // Deal with primary key.  DocCode is a unique string
+            string newCode = Catalog.GetString("NEWCODE");
             Int32 countNewDetail = 0;
 
-            if (FMainDS.PtLeavingCode.Rows.Find(new object[] { newName }) != null)
+            if (FMainDS.PcCostType.Rows.Find(new object[] { newCode }) != null)
             {
-                while (FMainDS.PtLeavingCode.Rows.Find(new object[] { newName + countNewDetail.ToString() }) != null)
+                while (FMainDS.PcCostType.Rows.Find(new object[] { newCode + countNewDetail.ToString() }) != null)
                 {
                     countNewDetail++;
                 }
 
-                newName += countNewDetail.ToString();
+                newCode += countNewDetail.ToString();
             }
 
-            ARow.LeavingCodeInd = newName;
+            ARow.CostTypeCode = newCode;
         }
 
         private void NewRecord(Object sender, EventArgs e)
         {
-            CreateNewPtLeavingCode();
+            CreateNewPcCostType();
         }
 
         private void EnableDisableUnassignableDate(Object sender, EventArgs e)
