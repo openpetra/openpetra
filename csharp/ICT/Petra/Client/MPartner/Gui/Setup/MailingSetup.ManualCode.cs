@@ -55,8 +55,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
                 newName += countNewDetail.ToString();
             }
+
             ARow.MailingCode = newName;
-            
+
             // Initialise the date to today
             ARow.MailingDate = DateTime.Today;
         }

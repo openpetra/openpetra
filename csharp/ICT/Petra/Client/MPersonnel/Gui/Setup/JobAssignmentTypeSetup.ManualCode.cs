@@ -43,6 +43,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             // Deal with primary key.  AssignmentTypeCode is unique and is a single character.
             // Default suggestion is A..Z, 0..9
             char code = 'A';
+
             if (FMainDS.PtAssignmentType.Rows.Find(new object[] { code }) != null)
             {
                 while (FMainDS.PtAssignmentType.Rows.Find(new object[] { code }) != null)

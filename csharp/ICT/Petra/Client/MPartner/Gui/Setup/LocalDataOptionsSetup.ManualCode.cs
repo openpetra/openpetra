@@ -44,13 +44,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             // Deal with the primary key - we need a unique Category code and value code
             // We use the first category code from our category list
             Type DataTableType;
-            
+
             // Load Data
             PDataLabelLookupCategoryTable allCategories = new PDataLabelLookupCategoryTable();
             DataTable CacheDT = TDataCache.GetCacheableDataTableFromCache("DataLabelLookupCategoryList", String.Empty, null, out DataTableType);
+
             allCategories.Merge(CacheDT);
             ARow.CategoryCode = allCategories.Rows[0][0].ToString();
-            
+
             // We need a simple string for the value code
             string newName = Catalog.GetString("NEWVALUE");
             Int32 countNewDetail = 0;
@@ -64,6 +65,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
                 newName += countNewDetail.ToString();
             }
+
             ARow.ValueCode = newName;
         }
 
@@ -71,19 +73,21 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         {
             // Deal with the possibility that we have no categories set up for the primary key for this table
             Type DataTableType;
-            
+
             // Load Data
             PDataLabelLookupCategoryTable allCategories = new PDataLabelLookupCategoryTable();
             DataTable CacheDT = TDataCache.GetCacheableDataTableFromCache("DataLabelLookupCategoryList", String.Empty, null, out DataTableType);
+
             allCategories.Merge(CacheDT);
-            
+
             if (allCategories.Rows.Count == 0)
             {
-                string Msg = "Before you attempt to save a New Local Data Option you should return to the Partner Setup screen and create a new 'Local Data Option List Name'.";
+                string Msg =
+                    "Before you attempt to save a New Local Data Option you should return to the Partner Setup screen and create a new 'Local Data Option List Name'.";
                 MessageBox.Show(Msg, "Open Petra Client", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
-            
+
             CreateNewPDataLabelLookup();
         }
     }

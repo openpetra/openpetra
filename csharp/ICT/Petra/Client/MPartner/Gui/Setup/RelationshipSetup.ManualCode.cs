@@ -54,6 +54,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
                 newName += countNewDetail.ToString();
             }
+
             ARow.RelationName = newName;
         }
 
@@ -61,15 +62,17 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         {
             // Deal with the possibility that we have no relationship categories set up for the Non-Null field for this table
             Type DataTableType;
-            
+
             // Load Data
             PRelationCategoryTable allCategories = new PRelationCategoryTable();
             DataTable CacheDT = TDataCache.GetCacheableDataTableFromCache("RelationCategoryList", String.Empty, null, out DataTableType);
+
             allCategories.Merge(CacheDT);
-            
+
             if (allCategories.Rows.Count == 0)
             {
-                string Msg = "Before you attempt to save a New Relationship you should return to the Partner Setup screen and create a new 'Relationship Category'.";
+                string Msg =
+                    "Before you attempt to save a New Relationship you should return to the Partner Setup screen and create a new 'Relationship Category'.";
                 MessageBox.Show(Msg, "Open Petra Client", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }

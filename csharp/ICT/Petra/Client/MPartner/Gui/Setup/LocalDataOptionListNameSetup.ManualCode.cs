@@ -54,6 +54,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
                 newName += countNewDetail.ToString();
             }
+
             ARow.CategoryCode = newName;
         }
 

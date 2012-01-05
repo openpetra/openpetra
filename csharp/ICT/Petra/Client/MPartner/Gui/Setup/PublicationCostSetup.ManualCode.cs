@@ -44,31 +44,37 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             // Deal with primary key.  It is combination of a code and a effective date
             // Start by finding a code that does not have today's date
             Type DataTableType;
-            
+
             // Load Data
             PPublicationTable allPublications = new PPublicationTable();
             DataTable CacheDT = TDataCache.GetCacheableDataTableFromCache("PublicationList", String.Empty, null, out DataTableType);
+
             allPublications.Merge(CacheDT);
 
             bool bFound = false;
-            for (int i=0; i<allPublications.Rows.Count; i++)
+
+            for (int i = 0; i < allPublications.Rows.Count; i++)
             {
                 string tryCode = allPublications.Rows[i][0].ToString();
-                if (FMainDS.PPublicationCost.Rows.Find(new object[] { tryCode, DateTime.Today}) == null)
+
+                if (FMainDS.PPublicationCost.Rows.Find(new object[] { tryCode, DateTime.Today }) == null)
                 {
                     ARow.PublicationCode = tryCode;
                     bFound = true;
                     break;
                 }
             }
+
             if (!bFound)
             {
                 // use the first Publication and the first unused date
                 string tryCode = allPublications.Rows[0][0].ToString();
-                for (int i=1; ; i++)
+
+                for (int i = 1;; i++)
                 {
                     DateTime tryDate = DateTime.Today.AddDays(i);
-                    if (FMainDS.PPublicationCost.Rows.Find(new object[] { tryCode, tryDate} ) == null)
+
+                    if (FMainDS.PPublicationCost.Rows.Find(new object[] { tryCode, tryDate }) == null)
                     {
                         ARow.PublicationCode = tryCode;
                         ARow.DateEffective = tryDate;

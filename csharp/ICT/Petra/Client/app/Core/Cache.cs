@@ -137,7 +137,7 @@ namespace Ict.Petra.Client.App.Core
 
         #endregion
 
-        
+
         #region TDataCache.TMPartner
         /// <summary>
         /// todoComment

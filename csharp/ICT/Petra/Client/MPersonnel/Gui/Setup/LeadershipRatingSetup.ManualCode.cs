@@ -43,6 +43,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             // Deal with primary key.  Code is unique and is a single character.
             // Default suggestion is 0..9, A..Z
             char code = '0';
+
             if (FMainDS.PtLeadershipRating.Rows.Find(new object[] { code }) != null)
             {
                 while (FMainDS.PtLeadershipRating.Rows.Find(new object[] { code }) != null)

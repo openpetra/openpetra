@@ -62,19 +62,21 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
         {
             // Deal with the possibility that we have no categories set up for the comboBox
             Type DataTableType;
-            
+
             // Load Data
             PmDocumentCategoryTable allCategories = new PmDocumentCategoryTable();
             DataTable CacheDT = TDataCache.GetCacheableDataTableFromCache("DocumentTypeCategoryList", String.Empty, null, out DataTableType);
+
             allCategories.Merge(CacheDT);
-            
+
             if (allCategories.Rows.Count == 0)
             {
-                string Msg = "Before you attempt to create a New Document Type you should return to the Personnel Setup screen and create a new 'Document Type Category'.";
+                string Msg =
+                    "Before you attempt to create a New Document Type you should return to the Personnel Setup screen and create a new 'Document Type Category'.";
                 MessageBox.Show(Msg, "Open Petra Client", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
-            
+
             CreateNewPmDocumentType();
         }
 

@@ -55,7 +55,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             }
 
             ARow.FormName = newName;
-            
+
             ARow.AppUsedBy = "Both";
         }
 
