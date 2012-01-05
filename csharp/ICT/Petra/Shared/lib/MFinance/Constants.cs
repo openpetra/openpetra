@@ -30,6 +30,15 @@ namespace Ict.Petra.Shared.MFinance
     /// </summary>
     public class MFinanceConstants
     {
+        /// <summary>Maximum no. of periods in the system</summary>
+        public const int MAX_PERIODS = 20;
+
+        /// <summary>Currency select: Base</summary>
+        public const string CURRENCY_BASE = "B";
+
+        /// <summary>Currency select: International</summary>
+        public const string CURRENCY_INTERNATIONAL = "I";
+
         /// <summary>GL Batch</summary>
         public const String BATCH_UNPOSTED = "Unposted";
 
@@ -38,6 +47,21 @@ namespace Ict.Petra.Shared.MFinance
 
         /// <summary>GL Batch</summary>
         public const String BATCH_CANCELLED = "Cancelled";
+
+        /// <summary>Subsystem and Transaction Types</summary>
+        public const String GENERAL_LEDGER = "GL";
+
+        /// <summary>Subsystem and Transaction Types</summary>
+        public const String STANDARD_JOURNAL = "STD";
+
+        /// <summary>Subsystem and Transaction Types</summary>
+        public const String CASHBOOK_RECEIPTING = "CBR";
+
+        /// <summary>Subsystem and Transaction Types</summary>
+        public const String CASHBOOK_PAYMENT = "CBP";
+
+        /// <summary>Subsystem and Transaction Types</summary>
+        public const String GIFT_RECEIPTING = "GR";
 
         /// <summary>General Ledger</summary>
         public const String ACCOUNT_TYPE_ASSET = "Asset";
@@ -56,6 +80,9 @@ namespace Ict.Petra.Shared.MFinance
 
         /// <summary>General Ledger</summary>
         public const String ACCOUNT_HIERARCHY_STANDARD = "STANDARD";
+
+        /// <summary>General Ledger</summary>
+        public const String ACCOUNT_HIERARCHY_CODE = "STANDARD";
 
         /// <summary>Accounts Payable</summary>
         public const String AP_DOCUMENT_OPEN = "OPEN";
@@ -109,10 +136,10 @@ namespace Ict.Petra.Shared.MFinance
         public const String GROUP_DETAIL_KEY_MIN = "KEYMIN";
 
         /// <summary>Used in Admin Grants Payable and Receivable</summary>
-        public const int ADMIN_FEE_INCOME_ACCT = 3400;
+        public const string ADMIN_FEE_INCOME_ACCT = "3400";
 
         /// <summary>Used in Admin Grants Payable and Receivable</summary>
-        public const int ADMIN_FEE_EXPENSE_ACCT = 4900;
+        public const string ADMIN_FEE_EXPENSE_ACCT = "4900";
 
         /// <summary>Used in Admin Fee Charge Options</summary>
         public const string ADMIN_CHARGE_OPTION_MAX = "MAXIMUM";
@@ -132,26 +159,79 @@ namespace Ict.Petra.Shared.MFinance
         /// <summary>Sets the transaction to a credit transaction</summary>
         public const bool IS_CREDIT = false;
 
+        /// Logical values for debit and credit transactions.
+        public const bool POSTED = true;
+
         /// standard account for earnings bf
-        public const int EARNINGS_BF_ACCT = 9700;
+        public const string EARNINGS_BF_ACCT = "9700";
+
+
+        //System account/summary names //
+        /// standard account summary name
+        public const string GIFT_HEADING = "GIFT";
+
+        /// standard account summary name
+        public const string INTER_LEDGER_HEADING = "ILT";
+
+        /// standard account summary name
+        public const string BANK_HEADING = "CASH";
+
+        /// standard account summary name
+        public const string BALANCE_SHEET_HEADING = "BAL SHT";
+
+        /// standard account summary name
+        public const string PROFIT_AND_LOSS_HEADING = "PL";
+
+        /// standard account summary name
+        public const string INCOME_HEADING = "INC";
+
+        /// standard account summary name
+        public const string EXPENSE_HEADING = "EXP";
+
+        /// standard account summary name
+        public const string DEBTOR_HEADING = "DRS";
+
+        /// standard account summary name
+        public const string CREDITOR_HEADING = "CRS";
+
+        /// standard account summary name
+        public const string TOTAL_ASSET_HEADING = "ASSETS";
+
+        /// standard account summary name
+        public const string TOTAL_LIABILITY_HEADING = "LIABS";
+
+        /// standard account summary name
+        public const string EQUITY_HEADING = "RET EARN";
+
+        /// standard account summary name
+        public const string DIRECT_XFER_ACCT = "5501";
 
         /// standard account
-        public const int DIRECT_XFER_ACCT = 5501;
+        public const string ICH_SETTLEMENT_ACCT = "5601";
 
         /// standard account
-        public const int ICH_SETTLEMENT_ACCT = 5601;
+        public const string ICH_ACCT = "8500";
 
         /// standard account
-        public const int ICH_ACCT = 8500;
+        public const string INTERNAL_XFER_ACCT = "9800";
 
-        /// standard account
-        public const int INTERNAL_XFER_ACCT = 9800;
+        /// Cost Centres
+        public const string FOREIGN_CC_TYPE = "FOREIGN";
 
         /// admin fee accounts.
-        public const int FUND_TRANSFER_INCOME_ACC = 3300;
+        public const string FUND_TRANSFER_INCOME_ACC = "3300";
 
         /// admin fee accounts.
-        public const int FUND_TRANSFER_EXPENSE_ACCT = 4800;
+        public const string FUND_TRANSFER_EXPENSE_ACCT = "4800";
+
+        /// standard root account
+        public const string ACCOUNT_BAL_SHT = "BAL SHT";
+
+        /// standard gift account
+        public const string ACCOUNT_GIFT = "GIFT";
+
+        /// standard creditors account
+        public const string ACCOUNT_CREDITORS = "CRS CTRL";
 
         /// standard account
         public const string CASH_ACCT = "CASH";
@@ -167,6 +247,27 @@ namespace Ict.Petra.Shared.MFinance
 
         /// Finance User Levels
         public const string HIGH_FIN_USER_LEVEL = "FINANCE-3";
+
+        /// Budget Types
+        public const string BUDGET_SPLIT = "Split";
+
+        /// Budget Types
+        public const string BUDGET_ADHOC = "Adhoc";
+
+        /// Budget Types
+        public const string BUDGET_SAME = "Same";
+
+        /// Budget Types
+        public const string BUDGET_INFLATE_BASE = "Inf.Base";
+
+        /// Budget Types
+        public const string BUDGET_INFLATE_N = "Inf. n";
+
+        /// Budget Forecast Types
+        public const string FORECAST_TYPE_BUDGET = "Budget";
+
+        /// Budget Forecast Types
+        public const string FORECAST_TYPE_ACTUALS = "Actuals";
     }
 
     /// <summary>
@@ -311,7 +412,7 @@ namespace Ict.Petra.Shared.MFinance
         /// RevaluationRun = 14
         /// </summary>
             liaRevaluationRun
-    };
+    }
 
 
     /// <summary>
@@ -327,21 +428,21 @@ namespace Ict.Petra.Shared.MFinance
         /// <summary>
         /// RecurringOnly = 2
         /// </summary>
-        moptRecurringOnly,
+            moptRecurringOnly,
 
         /// <summary>
         /// EntireBatchOnly = 3
         /// </summary>
-        moptEntireBatchOnly,
+            moptEntireBatchOnly,
 
         /// <summary>
         /// NeedBankingDetailKey = 4
         /// </summary>
-        moptNeedBankingDetailKey,
+            moptNeedBankingDetailKey,
 
         /// <summary>
         /// BankingTypesAllowed = 5
         /// </summary>
-        moptBankingTypesAllowed
+            moptBankingTypesAllowed
     }
 }

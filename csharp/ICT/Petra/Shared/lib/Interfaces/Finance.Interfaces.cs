@@ -8,7 +8,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -48,6 +48,7 @@ using Ict.Petra.Shared.Interfaces.MFinance.AP.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.AP.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.AR.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Budget.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MFinance.Budget.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.ImportExport.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Gift.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors;
@@ -301,6 +302,12 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Budget
             get;
         }
 
+        /// <summary>access to sub namespace</summary>
+        IBudgetWebConnectorsNamespace WebConnectors
+        {
+            get;
+        }
+
     }
 
 }
@@ -311,6 +318,54 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Budget.UIConnectors
     /// <summary>auto generated</summary>
     public interface IBudgetUIConnectorsNamespace : IInterface
     {
+    }
+
+}
+
+
+namespace Ict.Petra.Shared.Interfaces.MFinance.Budget.WebConnectors
+{
+    /// <summary>auto generated</summary>
+    public interface IBudgetWebConnectorsNamespace : IInterface
+    {
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector)</summary>
+        BudgetTDS LoadBudget(Int32 ALedgerNumber);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector)</summary>
+        TSubmitChangesResult SaveBudget(ref BudgetTDS AInspectDS,
+                                        out TVerificationResultCollection AVerificationResult);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector)</summary>
+        System.Boolean ImportBudgets(Int32 ALedgerNumber,
+                                     System.String ACSVFileName,
+                                     System.String[] AFdlgSeparator,
+                                     ref BudgetTDS AImportDS,
+                                     out TVerificationResultCollection AVerificationResult);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector)</summary>
+        System.Int32 GetGLMSequenceForBudget(System.Int32 ALedgerNumber,
+                                             System.String AAccountCode,
+                                             System.String ACostCentreCode,
+                                             System.Int32 AYear);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector)</summary>
+        System.Decimal GetActual(System.Int32 ALedgerNumber,
+                                 System.Int32 AGLMSeqThisYear,
+                                 System.Int32 AGLMSeqNextYear,
+                                 System.Int32 APeriodNumber,
+                                 System.Int32 ANumberAccountingPeriods,
+                                 System.Int32 ACurrentFinancialYear,
+                                 System.Int32 AThisYear,
+                                 System.Boolean AYTD,
+                                 System.String ACurrencySelect);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector)</summary>
+        System.Decimal GetBudget(System.Int32 AGLMSeqThisYear,
+                                 System.Int32 AGLMSeqNextYear,
+                                 System.Int32 APeriodNumber,
+                                 System.Int32 ANumberAccountingPeriods,
+                                 System.Boolean AYTD,
+                                 System.String ACurrencySelect);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector)</summary>
+        System.Boolean ConsolidateBudgets(Int32 ALedgerNumber,
+                                          System.Boolean AConsolidateAll,
+                                          ref BudgetTDS ABudgetTDS,
+                                          ref TVerificationResultCollection AVerificationResult);
     }
 
 }
@@ -619,6 +674,7 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TAccountingPeriodsWebConnector)</summary>
         DataTable GetAvailableGLYears(Int32 ALedgerNumber,
                                       System.Int32 ADiffPeriod,
+                                      System.Boolean AIncludeNextYear,
                                       out String ADisplayMember,
                                       out String AValueMember);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodIntervallConnector)</summary>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<setup xmlns="http://databene.org/benerator/0.6.5"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://databene.org/benerator/0.6.5
+http://databene.org/benerator-0.6.5.xsd"
+
+defaultErrorHandler="fatal" 
+defaultEncoding="UTF-8"
+defaultLocale="de_DE" 
+defaultDataset="DE"
+>
+<comment>
+recommended countries: DE,US,(BR) -- see create-data.ben.xml why
+</comment>
+
+<comment>
+errorHandler severities: ignore, trace, debug, info, warn, error, fatal
+</comment>
+
+<import defaults="true" domains="person,address,net,finance,organization" />
+<import platforms="csv" />
+<!-- <import platforms="dbunit"/> -->
+<!-- OR -->
+<!-- <import platforms="xml" /> -->
+
+<comment> Set selected Country / Language </comment> 	
+<include uri="default-location.ben.xml"/>
+<include uri="default-location-other-way.properties"/>
+
+<comment> Finally create data </comment>
+<include uri="create-data.local.ben.xml"/>
+
+</setup>
+

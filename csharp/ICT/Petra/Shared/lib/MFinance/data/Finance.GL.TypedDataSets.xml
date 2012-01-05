@@ -80,5 +80,12 @@
             <PrimaryKey thisFields="CostCentreCode,AccountCode"/>
         </CustomTable>
     </DataSet>
-            
+    <DataSet name="BudgetTDS">
+        <Table sqltable="a_ledger"/>
+        <Table sqltable="a_budget_revision"/>
+        <Table sqltable="a_budget"/>
+        <Table sqltable="a_budget_period"/>
+        <Table sqltable="a_budget_type"/>
+        <Table sqltable="a_general_ledger_master_period"/>
+    </DataSet>
 </PetraDataSets>

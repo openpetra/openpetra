@@ -7,7 +7,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -107,6 +107,7 @@ using Ict.Petra.Server.MSysMan.ImportExport.WebConnectors;
 
 #region ManualCode
 using Ict.Common.Verification;
+using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Shared.MSysMan;
 using Ict.Common.Data;
@@ -1785,6 +1786,14 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.ImportExport.WebConnectors
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector), "ResetDatabase", ";STRING;");
             return Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector.ResetDatabase(AZippedNewDatabaseData);
+        }
+
+        /// generated method from connector
+        public System.Boolean SaveTDS(SampleDataConstructorTDS dataTDS,
+                                      out TVerificationResultCollection AVerificationResult)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector), "SaveTDS", ";SAMPLEDATACONSTRUCTORTDS;TVERIFICATIONRESULTCOLLECTION;");
+            return Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector.SaveTDS(dataTDS, out AVerificationResult);
         }
     }
 }

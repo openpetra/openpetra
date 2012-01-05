@@ -4,7 +4,7 @@
 <include buildfile="../inc/nant/OpenPetra.common.xml" />
 
 <property name="BuildClientArchive" value="false" overwrite="false" />
-<property name="LinuxTargetDistribution-list" value="centos-postgresql" overwrite="false" />
+<property name="LinuxTargetDistribution-list" value="debian-postgresql,centos-postgresql" overwrite="false" />
 <property name="WithLinuxClient" value="false" overwrite="false" />
 <property name="WithWindowsClient" value="true" overwrite="false" />
 <property name="PetraRelease" value="0300" overwrite="false" />
@@ -52,10 +52,13 @@ public static string InsertRecursiveAllFilesFromSubdirectories(string PathToSear
     string AllFilesFromSubdirectories = string.Empty;
     foreach (string path in filePaths)
     {
-        AllFilesFromSubdirectories += "  SetOutPath \"$INSTDIR\\" + DestinationPath + "\\" + Path.GetDirectoryName(path).Substring(Path.GetFullPath(PathToSearch).Length) + "\"" + Environment.NewLine;
-        AllFilesFromSubdirectories += "  File \"..\\..\\..\\" + PathToSearch + path.Substring(Path.GetFullPath(PathToSearch).Length) + "\"" + Environment.NewLine;
+        if (Path.GetExtension(path) != ".build")
+        {
+            AllFilesFromSubdirectories += "  SetOutPath \"$INSTDIR\\" + DestinationPath + "\\" + Path.GetDirectoryName(path.Substring(Path.GetFullPath(PathToSearch).Length)) + "\"" + Environment.NewLine;
+            AllFilesFromSubdirectories += "  File \"..\\..\\..\\" + PathToSearch + path.Substring(Path.GetFullPath(PathToSearch).Length) + "\"" + Environment.NewLine;
+        }
     }
-    return AllFilesFromSubdirectories;
+    return AllFilesFromSubdirectories.Replace('/', '\\');
 }
 
 [Function("InsertRecursiveAllFilesFromSubdirectoriesForDeletion")]
@@ -65,7 +68,10 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
     string AllFilesFromSubdirectories = string.Empty;
     foreach (string path in filePaths)
     {
-        AllFilesFromSubdirectories += "  Delete \"$INSTDIR\\" + DestinationPath + path.Substring(Path.GetFullPath(PathToSearch).Length) + "\"" + Environment.NewLine;
+        if (Path.GetExtension(path) != ".build")
+        {
+            AllFilesFromSubdirectories += "  Delete \"$INSTDIR\\" + DestinationPath + path.Substring(Path.GetFullPath(PathToSearch).Length) + "\"" + Environment.NewLine;
+        }
     }
     
     SortedList<string, string> DeleteDirectories = new SortedList<string, string>();
@@ -86,7 +92,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
         AllFilesFromSubdirectories += "  RMDir \"$INSTDIR\\" + DestinationPath + DeleteDirectories[key] + "\"" + Environment.NewLine;
     }
 
-    return AllFilesFromSubdirectories;
+    return AllFilesFromSubdirectories.Replace('/', '\\');
 }
 ]]>
     </code>
@@ -102,16 +108,14 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
   <property name="HostedPort" value="9000"/>
   <property name="PublisherUrl" value="www.solidcharity.com"/>
   <property name="RandomDBPassword" value="CHANGEME"/>
-  <call target="nanttasks"/>
   <call target="buildRemoteInstallers"/>
 </target>
 
 <!-- Windows -->
-<target name="buildWindowsStandalone" if="${platform::is-windows()}">
-  <delete file="${dir.bin}/dont_compile.txt"/>
-  <call target="compile"/>
+<target name="buildWindowsStandalone">
+  <call target="generateSolution" unless="${target::has-executed('quickCompile')}"/>
   <call target="createSQLiteDB" unless="${target::has-executed('createSQLiteDB')}"/>
-  <call target="translationCompilePOFile" unless="${target::has-executed('translationCompilePOFile')}"/>
+  <call target="translation" unless="${target::has-executed('translation')}"/>
   <call target="setupStandalone"/>
 </target> 
   
@@ -144,6 +148,21 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
     <!--  ***************  Build remote client installer ********************* -->
     <property name="SetupOriginal.File" value="${dir.root}/setup/petra${PetraRelease}/remoteclientWin/remote.nsi"/>
     <call target="setupTemplate"/>
+    
+    <!-- ************ build backup client tar.gz for future patches ********* -->
+    <property name="BuildArchive" value="client" overwrite="true"/>
+    <call target="prepareSetupDirForTarFile"/>
+    <!-- this does not keep the executable flag; need this to make the patch for windows clients -->
+    <tar destfile="${dir.delivery}/openpetraorg-client-backup-${OrgNameWithoutSpace}-${ReleaseID}.tar.gz" compression="GZip">
+      <fileset basedir="${setupDir}" prefix="openpetraorg-${ReleaseID}">
+        <include name="**/*" />
+      </fileset>
+    </tar>
+
+    <!-- ************ create a patch file that does not depend on an earlier patch. needs to be renamed though ********* -->
+    <property name="OldVersion" value="0.0.9-99"/>
+    <property name="NewVersion" value="${ReleaseVersion}"/>
+    <call target="createRemoteClientPatch"/>
 </target>
 
 <target name="setupTemplate">
@@ -161,20 +180,24 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
         <copy file="${UINavigation.file}" tofile="${tempdir}/UINavigation.yml" overwrite="true"/>
     </if>
 
-    <echo message="${script::ReplaceInFile(Current.File, '  File ..\..\..\XmlReports\Settings\*.xml', script::InsertRecursiveAllFilesFromSubdirectories('XmlReports/Settings/', '*.xml', 'reports30\Settings'))}"/>
-    <echo message="${script::ReplaceInFile(Current.File, '  Delete &quot;$INSTDIR\reports30\Settings\*.xml&quot;', script::InsertRecursiveAllFilesFromSubdirectoriesForDeletion('XmlReports/Settings/', '*.xml', 'reports30\Settings\'))}"/>
+    <property name="dummy" value="${script::ReplaceInFile(Current.File, '  File ..\..\..\XmlReports\Settings\*.xml', script::InsertRecursiveAllFilesFromSubdirectories('XmlReports/Settings/', '*.xml', 'reports30\Settings'))}"/>
+    <property name="dummy" value="${script::ReplaceInFile(Current.File, '  Delete &quot;$INSTDIR\reports30\Settings\*.xml&quot;', script::InsertRecursiveAllFilesFromSubdirectoriesForDeletion('XmlReports/Settings/', '*.xml', 'reports30\Settings\'))}"/>
+    <property name="dummy" value="${script::ReplaceInFile(Current.File, '  File ..\..\..\XmlReports\*.xml', script::InsertRecursiveAllFilesFromSubdirectories('XmlReports/', '*.xml', 'reports30'))}"/>
+    <property name="dummy" value="${script::ReplaceInFile(Current.File, '  Delete &quot;$INSTDIR\reports30\*.xml&quot;', script::InsertRecursiveAllFilesFromSubdirectoriesForDeletion('XmlReports/', '*.xml', 'reports30\'))}"/>
+    <property name="dummy" value="${script::ReplaceInFile(Current.File, '  File ..\..\..\demodata\*.*', script::InsertRecursiveAllFilesFromSubdirectories('demodata/', '*.*', 'demo30'))}"/>
+    <property name="dummy" value="${script::ReplaceInFile(Current.File, '  Delete &quot;$INSTDIR\demo30\*.*&quot;', script::InsertRecursiveAllFilesFromSubdirectoriesForDeletion('demodata/', '*.*', 'demo30\'))}"/>
 
-    <echo message="${script::ReplaceInFile(Current.File, '{#RELEASEVERSION}', ReleaseVersion)}"/>
-    <echo message="${script::ReplaceInFile(Current.File, '{#RELEASEID}', ReleaseID)}"/>
-    <echo message="${script::ReplaceInFile(Current.File, '{#PATCHVERSION}', ReleaseID)}"/>
-    <echo message="${script::ReplaceInFile(Current.File, '{#DELIVERY.DIR}', dir.delivery)}"/>
+    <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#RELEASEVERSION}', ReleaseVersion)}"/>
+    <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#RELEASEID}', ReleaseID)}"/>
+    <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#PATCHVERSION}', ReleaseID)}"/>
+    <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#DELIVERY.DIR}', dir.delivery)}"/>
     
     <!-- for remote installer -->
     <if test="${property::exists('HostedServer')}">
-        <echo message="${script::ReplaceInFile(Current.File, '{#ORGNAME}', OrgName)}"/>
-        <echo message="${script::ReplaceInFile(Current.File, '{#PUBLISHERURL}', PublisherUrl)}"/>
-        <echo message="${script::ReplaceInFile(Current.File, '{#SERVERHOST}', HostedServer)}"/>
-        <echo message="${script::ReplaceInFile(Current.File, '{#SERVERPORT}', HostedPort)}"/>
+        <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#ORGNAME}', OrgName)}"/>
+        <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#PUBLISHERURL}', PublisherUrl)}"/>
+        <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#SERVERHOST}', HostedServer)}"/>
+        <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#SERVERPORT}', HostedPort)}"/>
     </if>
     <if test="${string::ends-with(SetupOriginal.File, '.nsi')}">
         <exec program="${makensis.exe}" commandline=" &quot;${Current.File}&quot;"
@@ -186,15 +209,9 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
     </if>
 </target>
 
-<target name="buildRemoteInstallers" help="build a tar.gz file for the server, the remote installer for the client, and a backup for future patches"
-    depends="init">
-  <if test="${WithWindowsClient}">
-    <delete file="${dir.bin}/dont_compile.txt"/>
-    <call target="compile"/>
-  </if>
-  <if test="${not WithWindowsClient}">
-    <call target="compileWithoutClient"/>
-  </if>
+<target name="buildRemoteInstallers" help="build a tar.gz file for the server, the remote installer for the client, and a backup for future patches">
+  <call target="nanttasks"/>
+  <call target="generateSolution"/>
 
   <if test="${string::contains(LinuxTargetDistribution-list, 'postgresql')}">
     <call target="createPostgreSQLDB" unless="${target::has-executed('createPostgreSQLDB')}"/>
@@ -203,7 +220,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
     <call target="createMySQLDB" unless="${target::has-executed('createMySQLDB')}"/>
   </if>
 
-  <call target="translationCompilePOFile" unless="${target::has-executed('translationCompilePOFile')}"/>
+  <call target="translation" unless="${target::has-executed('translation')}"/>
 
   <!-- create key pair for encrypted remoting -->
   <ExecDotNet program="${tool-generateEncryptionKey}" commandline="-PublicKeyFile:${tempdir}/publickey.xml -PrivateKeyFile:${tempdir}/privatekey.xml"/>
@@ -211,16 +228,6 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
   <!-- build Remote Setup Windows installer -->
   <if test="${WithWindowsClient}">
     <call target="setupRemote"/>
-    
-    <!-- ************ build backup client tar.gz for future patches ********* -->
-    <property name="BuildArchive" value="client" overwrite="true"/>
-    <call target="prepareSetupDirForTarFile"/>
-    <!-- this does not keep the executable flag; need this to make the patch for windows clients -->
-    <tar destfile="${dir.delivery}/openpetraorg-client-backup-${OrgNameWithoutSpace}-${ReleaseID}.tar.gz" compression="GZip">
-      <fileset basedir="${setupDir}" prefix="openpetraorg-${ReleaseID}">
-        <include name="**/*" />
-      </fileset>
-    </tar>
   </if>
   
   <!-- ********* build Linux Server tar.gz ********* -->
@@ -250,21 +257,13 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
     <call target="buildLinuxClient"/>
   </if>
 
-  <!-- TODO: build patch against previous release -->
-
   <delete file="${tempdir}/publickey.xml"/>
   <delete file="${tempdir}/privatekey.xml"/>
   <delete dir="${setupDir}"/>
 </target>
 
-<target name="compileWithoutClient">
-  <delete file="${dir.bin}/dont_compile.txt"/>
-  
-  <nant inheritall="true" target="thirdParty" buildfile="${path::combine(dir.csharp, 'csharp.build')}" verbose="${verbose}"/>
-  <nant inheritall="true" target="compile" buildfile="${path::combine(dir.csharp, 'ICT/Common/ICT.Common.build')}" verbose="${verbose}"/>
-  <nant inheritall="true" target="compile" buildfile="${path::combine(dir.csharp, 'ICT/PetraTools/ICT.PetraTools.build')}" verbose="${verbose}"/>
-  <nant inheritall="true" target="compile" buildfile="${path::combine(dir.csharp, 'ICT/Petra/PetraWithoutClient.build')}" verbose="${verbose}"/>
-
+<target name="createRemoteClientPatch" depends="init">
+    <ExecDotNet program="${dir.bin}/Ict.Tools.PatchTool.exe" commandline="-action:create -OpenPetra.PathTemp:${tempdir} -deliverypath:${dir.delivery} -appname:openpetraorg -zipname:openpetraorg-client-backup-${OrgNameWithoutSpace} -oldversion:${OldVersion} -newversion:${NewVersion}"/>
 </target>
 
 <target name="compileMonoClient">
@@ -275,7 +274,9 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
   <property name="TargetPlatformGUI" value="mono" overwrite="true"/>
   <property name="GUILocalisation" value="en" overwrite="true"/>
   
-  <nant inheritall="true" target="compile" buildfile="${path::combine(dir.csharp, 'ICT/Petra/PetraOnlyClient.build')}" verbose="${verbose}"/>
+  <call target="generateWinforms"/>
+  <property name="solution" value="Client"/>
+  <call target="quickCompile"/>
 
   <property name="TargetPlatformGUI" value="${OrigTargetPlatformGUI}" overwrite="true"/>
   <property name="GUILocalisation" value="${OrigGUILocalisation}" overwrite="true"/>
@@ -285,7 +286,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
 <target name="buildLinuxClient" help="build a Linux client compiled for mono">
   <call target="compileMonoClient"/>  
 
-  <call target="translationCompilePOFile" unless="${target::has-executed('translationCompilePOFile')}"/>
+  <call target="translation" unless="${target::has-executed('translation')}"/>
   <property name="BuildArchive" value="client" overwrite="true"/>
   <call target="prepareSetupDirForTarFile"/>
   copy startclient sh und remote config
@@ -347,6 +348,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
       <include name="*.exe" />
       <exclude name="Tests*" />
       <exclude name="Ict.Tools.*" />
+      <exclude name="Mono.*" />
       <include name="*/*.dll" /> <!-- i18n DLLs-->
     </fileset>
   </copy>

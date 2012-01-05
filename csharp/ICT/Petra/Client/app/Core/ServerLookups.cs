@@ -259,6 +259,19 @@ namespace Ict.Petra.Client.App.Core
                 return TRemote.MPartner.Partner.ServerLookups.GetRecentlyUsedPartners(AMaxPartnersCount, APartnerClasses, out ARecentlyUsedPartners);
             }
 
+            /// <summary>
+            /// Gets the family partner key of a person record.
+            /// This function should only be called for partners of type person.
+            /// </summary>
+            /// <param name="APersonKey">Partner key of the person to retrieve the family key for
+            /// Partner must be a person.</param>
+            /// <returns>Family partner key of the person. A Person must always have a family that it is related to.
+            /// False, if there is no partner with the partner key or the partner is not an organisation</returns>
+            public static Int64 GetFamilyKeyForPerson(Int64 APersonKey)
+            {
+                return TRemote.MPartner.Partner.ServerLookups.GetFamilyKeyForPerson(APersonKey);
+            }
+
             #endregion
         }
 

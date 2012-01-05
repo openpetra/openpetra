@@ -614,13 +614,17 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <summary>
         /// This function fills the available financial years of a given ledger into a combobox
         /// </summary>
-        /// <param name="AControl"></param>
-        /// <param name="ALedgerNr"></param>
-        public static void InitialiseAvailableFinancialYearsList(ref TCmbAutoPopulated AControl, System.Int32 ALedgerNr)
+        public static void InitialiseAvailableFinancialYearsList(ref TCmbAutoPopulated AControl,
+            System.Int32 ALedgerNr,
+            bool AIncludeNextYear = false)
         {
             string DisplayMember;
             string ValueMember;
-            DataTable Table = TRemote.MFinance.GL.WebConnectors.GetAvailableGLYears(ALedgerNr, 0, out DisplayMember, out ValueMember);
+            DataTable Table = TRemote.MFinance.GL.WebConnectors.GetAvailableGLYears(ALedgerNr,
+                0,
+                AIncludeNextYear,
+                out DisplayMember,
+                out ValueMember);
 
             Table.DefaultView.Sort = ValueMember + " DESC";
 
@@ -748,6 +752,19 @@ namespace Ict.Petra.Client.MFinance.Logic
             }
 
             return "ledger " + ALedgerNumber.ToString();
+        }
+
+        /// <summary>
+        /// return the ledger's current financial year
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        public static Int32 GetLedgerCurrentFinancialYear(Int32 ALedgerNumber)
+        {
+            ALedgerRow row =
+                ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, ALedgerNumber))[0];
+
+            return row.CurrentFinancialYear;
         }
 
         /// <summary>

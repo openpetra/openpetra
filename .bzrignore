@@ -13,6 +13,8 @@ setup/petra0300/*.db
 db/basedb_progress
 *.ico.gif
 *.local
+*.local.ben.xml
+demodata/generated
 OpenPetra.build.config
 *.exe.config
 /etc/*.config
@@ -57,4 +59,3 @@ csharp/ICT/experimenting/treasurerEmails/obj
 csharp/ICT/Petra/Server/lib/data/*.cs
 csharp/ICT/Petra/Shared/lib/data/*.cs
 *lang-template.js
-i18n/template.pot

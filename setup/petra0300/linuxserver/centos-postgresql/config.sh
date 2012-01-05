@@ -10,5 +10,5 @@ export OPENPETRA_DBUSER=petraserver_${OrgNameWithoutSpace}
 export OPENPETRA_DBNAME=openpetra_${OrgNameWithoutSpace}
 export OPENPETRA_DBPORT=5432
 export OPENPETRA_PORT=${HostedPort}
-export backupfile=$OpenPetraOrgPath/backup-`date +%Y%m%d`.sql.gz
+export backupfile=$OpenPetraOrgPath/backup30/backup-`date +%Y%m%d`.sql.gz
 export mono=/opt/novell/mono/bin/mono

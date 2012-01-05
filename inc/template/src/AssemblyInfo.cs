@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("OM International")]
 [assembly: AssemblyProduct("OpenPetra")]
-[assembly: AssemblyCopyright("(c) OM International 2004-2011")]
+[assembly: AssemblyCopyright("(c) OM International 2004-2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]

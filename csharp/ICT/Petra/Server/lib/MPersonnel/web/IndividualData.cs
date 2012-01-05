@@ -197,6 +197,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
             TPartnerCacheable PartnerCacheable = new TPartnerCacheable();
             string MaritalStatusDescr;
             StringCollection PassportColumns;
+            string Nationalities;
             PPartnerRelationshipTable PartnerRelationshipDT;
             PPartnerTable PartnerDT;
             PPartnerRow PartnerDR = null;
@@ -253,8 +254,17 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
             PassportDetailsDT = PmPassportDetailsAccess.LoadViaPPerson(APartnerKey,
                 PassportColumns, AReadTransaction, null, 0, 0);
 
-            SummaryDR.Nationalities = Ict.Petra.Shared.MPersonnel.Calculations.DeterminePersonsNationalities(
+            Nationalities = Ict.Petra.Shared.MPersonnel.Calculations.DeterminePersonsNationalities(
                 @CommonCacheable.GetCacheableTable, PassportDetailsDT);
+
+            if (Nationalities != String.Empty)
+            {
+                SummaryDR.Nationalities = Nationalities;
+            }
+            else
+            {
+                SummaryDR.Nationalities = StrNotAvailable;
+            }
 
             #endregion
 

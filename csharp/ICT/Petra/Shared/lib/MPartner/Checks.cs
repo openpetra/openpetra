@@ -86,5 +86,31 @@ namespace Ict.Petra.Shared.MPartner
 
             return false;
         }
+
+        /// <summary>
+        /// Determines whether DataLabels exist for a specified Partner Class.
+        /// </summary>
+        /// <param name="APartnerClass">Partner Class that should be checked for.</param>
+        /// <param name="ACacheableDataLabelsForPartnerClassesList">Instance of the Cacheable DataTable 'DataLabelsForPartnerClassesList'
+        /// that has data in it (ie. the Cacheable DataTable must have been retrieved by the caller).</param>
+        /// <returns>True if at least one DataLabel exists for the Partner Class specified in <paramref name="APartnerClass"></paramref>,
+        /// otherwise false.</returns>
+        public static bool HasPartnerClassLocalPartnerDataLabels(TPartnerClass APartnerClass, DataTable ACacheableDataLabelsForPartnerClassesList)
+        {
+            bool ReturnValue = false;
+
+            DataRow[] PartnerClassDR =
+                ACacheableDataLabelsForPartnerClassesList.Select("PartnerClass = '" + SharedTypes.PartnerClassEnumToString(APartnerClass) + "'");
+
+            if (PartnerClassDR.Length > 0)
+            {
+                if (Convert.ToBoolean(PartnerClassDR[0]["DataLabelsAvailable"]) == true)
+                {
+                    ReturnValue = true;
+                }
+            }
+
+            return ReturnValue;
+        }
     }
 }

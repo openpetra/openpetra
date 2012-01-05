@@ -55,6 +55,7 @@ NamespaceHierarchy:
             WebConnectors: {Description="Connectors for Web Services (stateless, simple)"}
         Budget: {Description=Budget Sub-System}
             UIConnectors: {Description=User Interface Connectors}
+            WebConnectors: {Description="Connectors for Web Services (stateless, simple)"}
         Cacheable: {Description=Cacheable DataTables}
         ImportExport: {Description=ImportExport Sub-System}
             WebConnectors: {Description="Connectors for Web Services (stateless, simple)"}
