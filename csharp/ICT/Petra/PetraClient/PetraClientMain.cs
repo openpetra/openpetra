@@ -285,7 +285,7 @@ namespace Ict.Petra.Client.App.PetraClient
                     // need to stop petra client, start the patch in temppath, restart Petra client
                     Process PatchProcess = new System.Diagnostics.Process();
                     PatchProcess.EnableRaisingEvents = false;
-                    PatchProcess.StartInfo.FileName = TempPath + Path.DirectorySeparatorChar + "PatchTool.exe";
+                    PatchProcess.StartInfo.FileName = TempPath + Path.DirectorySeparatorChar + "Ict.Tools.PatchTool.exe";
                     PatchProcess.StartInfo.Arguments = "-action:patchRemote" + " -C:\"" + Path.GetFullPath(TClientSettings.ConfigurationFile) +
                                                        "\" -OpenPetra.Path:\"" + Path.GetFullPath(
                         TClientSettings.Petra_Path_Bin + Path.DirectorySeparatorChar + "..") +
