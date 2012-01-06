@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -167,6 +167,19 @@ namespace Ict.Common.Controls
         }
 
         static private SortedList <string, Assembly>FGUIAssemblies = new SortedList <string, Assembly>();
+        static private Form FLastOpenedScreen = null;
+
+        /// <summary>
+        /// the object of the last opened screen.
+        /// useful for testing
+        /// </summary>
+        static public Form LastOpenedScreen
+        {
+            get
+            {
+                return FLastOpenedScreen;
+            }
+        }
 
         /// <summary>
         /// execute action from the navigation tree
@@ -296,6 +309,7 @@ namespace Ict.Common.Controls
                 if (method != null)
                 {
                     method.Invoke(screen, null);
+                    FLastOpenedScreen = (Form)screen;
                 }
                 else
                 {
