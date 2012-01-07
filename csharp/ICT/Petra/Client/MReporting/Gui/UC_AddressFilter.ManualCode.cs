@@ -29,13 +29,12 @@ using Ict.Common.Controls;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Client.CommonForms;
 
-namespace Ict.Petra.Client.MReporting.Gui 
+namespace Ict.Petra.Client.MReporting.Gui
 {
     /// <summary>
     /// Description of TUC_AddressFilter
     /// </summary>
     public partial class TUC_AddressFilter
     {
-
     }
 }

@@ -290,7 +290,8 @@ namespace Ict.Petra.Client.MReporting.Gui
             if ((FGenerateExtractThread != null) && FGenerateExtractThread.IsAlive)
             {
                 ReturnValue = false;
-                answer = MessageBox.Show("An extract is being calculated at the moment. " + Environment.NewLine + "Do you want to cancel the extract?",
+                answer = MessageBox.Show(
+                    "An extract is being calculated at the moment. " + Environment.NewLine + "Do you want to cancel the extract?",
                     "Cancel Extract?",
                     MessageBoxButtons.YesNo,
                     MessageBoxIcon.Question,
@@ -302,7 +303,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                     ReturnValue = true;
                 }
             }
-            
+
             // has anything changed in the currently selected column?
             if (ColumnChanged(FSelectedColumn))
             {
@@ -410,7 +411,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                 FGenerateExtractThread.Start();
             }
         }
-        
+
         /// <summary>
         /// toggle the option to wrap a column in the report
         /// </summary>
@@ -485,17 +486,17 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <returns>void</returns>
         private void GenerateExtract()
         {
-        	// extracts are not calculated by using the default way but other method has to be declared,
-        	// so make this known to the calculator
+            // extracts are not calculated by using the default way but other method has to be declared,
+            // so make this known to the calculator
             if (FCalculateFromMethod.Length > 0)
             {
-            	FCalculator.AddParameter("calculateFromMethod", FCalculateFromMethod);
+                FCalculator.AddParameter("calculateFromMethod", FCalculateFromMethod);
             }
-        	
-        	// at the moment triggers same procedure as generating a report
-        	GenerateReport();
+
+            // at the moment triggers same procedure as generating a report
+            GenerateReport();
         }
-        
+
         private void ReportCalculationSuccess()
         {
             if (TClientSettings.DebugLevel >= TClientSettings.DEBUGLEVEL_REPORTINGDATA)

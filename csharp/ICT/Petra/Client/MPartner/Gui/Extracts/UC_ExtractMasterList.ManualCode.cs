@@ -41,7 +41,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 {
     public partial class TUC_ExtractMasterList
     {
-    	
         #region Public Methods
 
         /// <summary>
@@ -61,8 +60,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
         private void InitializeManualCode()
         {
-        	FMainDS = new ExtractTDS();
-        	LoadData();
+            FMainDS = new ExtractTDS();
+            LoadData();
         }
 
         /// <summary>
@@ -110,7 +109,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
             return ReturnValue;
         }
-        
+
         /// <summary>
         ///
         /// </summary>

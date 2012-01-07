@@ -49,7 +49,7 @@ namespace Ict.Petra.Server.MPartner.queries
             // get the partner keys from the database
             try
             {
-	            Boolean ReturnValue = false;
+                Boolean ReturnValue = false;
                 Boolean NewTransaction;
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
@@ -91,17 +91,17 @@ namespace Ict.Petra.Server.MPartner.queries
                     out VerificationResult,
                     partnerkeys,
                     0);
-                
-	            if (ReturnValue)
-	            {
-	                DBAccess.GDBAccessObj.CommitTransaction();
-	            }
-	            else
-	            {
-	                DBAccess.GDBAccessObj.RollbackTransaction();
-	            }
 
-				return ReturnValue;
+                if (ReturnValue)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+                else
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+
+                return ReturnValue;
             }
             catch (Exception e)
             {

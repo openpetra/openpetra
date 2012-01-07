@@ -75,7 +75,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         public void FileSave(System.Object sender, EventArgs e)
         {
         }
-        
+
         #endregion
 
         #region Private Methods

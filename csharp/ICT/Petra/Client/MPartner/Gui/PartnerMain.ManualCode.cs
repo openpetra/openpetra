@@ -112,7 +112,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             frm.SetParameters(false, -1);
             frm.Show();
         }
-        
+
         /// <summary>
         /// open screen to create Publication Extract
         /// </summary>

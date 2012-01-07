@@ -49,7 +49,7 @@ namespace Ict.Petra.Server.MPartner.queries
             // get the partner keys from the database
             try
             {
-	            Boolean ReturnValue = false;
+                Boolean ReturnValue = false;
                 Boolean NewTransaction;
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
@@ -59,7 +59,7 @@ namespace Ict.Petra.Server.MPartner.queries
 //+ " WHERE pub_p_subscription.p_publication_code_c IN ('INDEED','NB-WIM')"
 //+ " AND pub_p_partner.p_partner_key_n = pub_p_subscription.p_partner_key_n"
 //+ " ORDER BY pub_p_partner.p_partner_short_name_c";
-       	
+
                 OdbcParameter[] parameters = new OdbcParameter[1];
                 parameters[0] = new OdbcParameter("publication", OdbcType.VarChar);
                 parameters[0].Value = AParameters.Get("param_explicit_publication");
@@ -93,17 +93,17 @@ namespace Ict.Petra.Server.MPartner.queries
                     out VerificationResult,
                     partnerkeys,
                     0);
-                
-	            if (ReturnValue)
-	            {
-	                DBAccess.GDBAccessObj.CommitTransaction();
-	            }
-	            else
-	            {
-	                DBAccess.GDBAccessObj.RollbackTransaction();
-	            }
 
-				return ReturnValue;
+                if (ReturnValue)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+                else
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+
+                return ReturnValue;
             }
             catch (Exception e)
             {

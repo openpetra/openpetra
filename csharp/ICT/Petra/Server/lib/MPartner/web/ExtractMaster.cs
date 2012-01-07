@@ -46,7 +46,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <returns>returns table filled with all extract headers</returns>
         public static MExtractMasterTable GetAllExtractHeaders()
         {
-        	MExtractMasterTable ExtractMasterDT;
+            MExtractMasterTable ExtractMasterDT;
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
             ExtractMasterDT = MExtractMasterAccess.LoadAll(Transaction);
@@ -54,7 +54,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             DBAccess.GDBAccessObj.CommitTransaction();
 
             return ExtractMasterDT;
-            
         }
     }
 }

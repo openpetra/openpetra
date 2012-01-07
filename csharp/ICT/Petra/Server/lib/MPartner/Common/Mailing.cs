@@ -113,37 +113,37 @@ namespace Ict.Petra.Server.MPartner.Common
                             "     OR (? = true AND " + PPartnerLocationTable.GetDateEffectiveDBName() + " > ?)" +
                             "     OR (? = true AND " + PPartnerLocationTable.GetDateGoodUntilDBName() + " < ?))";
 
-		                List <OdbcParameter>parameters = new List <OdbcParameter>();
-		                param = new OdbcParameter("PartnerKey", OdbcType.Decimal, 10);
-		                param.Value = APartnerKey;
-		                parameters.Add(param);
-		                param = new OdbcParameter("MailingAddressOnly1", OdbcType.Bit);
-		                param.Value = AMailingAddressesOnly;
-		                parameters.Add(param);
-		                param = new OdbcParameter("MailingAddressOnly2", OdbcType.Bit);
-		                param.Value = AMailingAddressesOnly;
-		                parameters.Add(param);
-		                param = new OdbcParameter("IncludeCurrentAddresses", OdbcType.Bit);
-		                param.Value = AIncludeCurrentAddresses;
-		                parameters.Add(param);
-		                param = new OdbcParameter("TodaysDate1", OdbcType.Date);
-		                param.Value = DateTime.Now;
-		                parameters.Add(param);
-		                param = new OdbcParameter("TodaysDate2", OdbcType.Date);
-		                param.Value = DateTime.Now;
-		                parameters.Add(param);
-		                param = new OdbcParameter("IncludeFutureAddresses", OdbcType.Bit);
-		                param.Value = AIncludeFutureAddresses;
-		                parameters.Add(param);
-		                param = new OdbcParameter("TodaysDate3", OdbcType.Date);
-		                param.Value = DateTime.Now;
-		                parameters.Add(param);
-		                param = new OdbcParameter("IncludeExpiredAddresses", OdbcType.Bit);
-		                param.Value = AIncludeExpiredAddresses;
-		                parameters.Add(param);
-		                param = new OdbcParameter("TodaysDate4", OdbcType.Date);
-		                param.Value = DateTime.Now;
-		                parameters.Add(param);
+                        List <OdbcParameter>parameters = new List <OdbcParameter>();
+                        param = new OdbcParameter("PartnerKey", OdbcType.Decimal, 10);
+                        param.Value = APartnerKey;
+                        parameters.Add(param);
+                        param = new OdbcParameter("MailingAddressOnly1", OdbcType.Bit);
+                        param.Value = AMailingAddressesOnly;
+                        parameters.Add(param);
+                        param = new OdbcParameter("MailingAddressOnly2", OdbcType.Bit);
+                        param.Value = AMailingAddressesOnly;
+                        parameters.Add(param);
+                        param = new OdbcParameter("IncludeCurrentAddresses", OdbcType.Bit);
+                        param.Value = AIncludeCurrentAddresses;
+                        parameters.Add(param);
+                        param = new OdbcParameter("TodaysDate1", OdbcType.Date);
+                        param.Value = DateTime.Now;
+                        parameters.Add(param);
+                        param = new OdbcParameter("TodaysDate2", OdbcType.Date);
+                        param.Value = DateTime.Now;
+                        parameters.Add(param);
+                        param = new OdbcParameter("IncludeFutureAddresses", OdbcType.Bit);
+                        param.Value = AIncludeFutureAddresses;
+                        parameters.Add(param);
+                        param = new OdbcParameter("TodaysDate3", OdbcType.Date);
+                        param.Value = DateTime.Now;
+                        parameters.Add(param);
+                        param = new OdbcParameter("IncludeExpiredAddresses", OdbcType.Bit);
+                        param.Value = AIncludeExpiredAddresses;
+                        parameters.Add(param);
+                        param = new OdbcParameter("TodaysDate4", OdbcType.Date);
+                        param.Value = DateTime.Now;
+                        parameters.Add(param);
 
                         /*
                          * Our out Argument 'APartnerLocations' is a Typed DataTable, but SelectDT
