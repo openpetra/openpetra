@@ -348,6 +348,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
       <include name="*.exe" />
       <exclude name="Tests*" />
       <exclude name="Ict.Tools.*" />
+      <exclude name="Mono.*" />
       <include name="*/*.dll" /> <!-- i18n DLLs-->
     </fileset>
   </copy>

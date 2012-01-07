@@ -1,0 +1,50 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain Application Forms
+    Namespace: Ict.Petra.Client.MPersonnel.Gui.Setup
+    DetailTable: PtAppFormTypes
+    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data, Ict.Petra.Shared.Interfaces.MCommon]
+    FormType: edit
+    Template: windowMaintainTable
+    WindowWidth: 650
+    WindowHeight: 400
+    Actions:
+        actNew: {Label=New, ActionClick=NewRecord}
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew]
+        btnNew:
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailFormName, DetailFormSentIndicator, DetailFormReceivedIndicator, DetailAppUsedBy, DetailDeletableFlag]
+            CustomColumns:
+                DetailFormSentIndicator: {Label=For Sending, Type=Boolean}
+                DetailFormReceivedIndicator: {Label=For Receiving, Type=Boolean}
+                DetailAppUsedBy: {Label=Used By}
+                DetailDeletableFlag: {Label=Deletable, Type=Boolean}
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtDetailFormName, chkDetailFormSentIndicator, chkDetailFormReceivedIndicator]
+                Row1: [rgrDetailAppUsedBy]
+                Row2: [chkDetailDeletableFlag]                
+        rgrDetailAppUsedBy: {ColSpan=4}
+            OptionalValues: ["Short Form Applications", "Long Form Applications", "Both"]
+            Label: Used By
+            BorderVisible: false
+            ControlsOrientation: horizontal
+        txtDetailFormName: {Label=Application Form Name, CharacterCasing=Upper, Width=160}
+        chkDetailFormSentIndicator: {Label=For Sending}
+        chkDetailFormReceivedIndicator: {Label=For Receiving}
+        chkDetailDeletableFlag: {Label=Deletable}
+    Toolbar:
+        tbbNew:
+            Label: New Application Form

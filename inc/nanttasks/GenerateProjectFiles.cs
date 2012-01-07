@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -204,13 +204,14 @@ namespace Ict.Tools.NAntTasks
 
         private Dictionary <string, string>FProjectGUIDs;
         private Dictionary <string, TDetailsOfDll>FProjectDependencies;
+        private Dictionary <string, string>FMapOutputNameToPath;
 
         /// <summary>
         /// create project files
         /// </summary>
         protected override void ExecuteTask()
         {
-            ReadMap(FDependencyMapFilename, out FProjectDependencies);
+            ReadMap(FDependencyMapFilename, out FProjectDependencies, out FMapOutputNameToPath);
             FProjectGUIDs = ReadProjectGUIDs(FGUIDMapFilename);
 
             string[] IDEs = FDevEnvironments.Split(new char[] { ',' });
@@ -531,7 +532,14 @@ namespace Ict.Tools.NAntTasks
 
             foreach (string referencedProject in AProjectDependencies)
             {
-                if (!FProjectDependencies.ContainsKey(referencedProject))
+                string NameByPath = referencedProject;
+
+                if (FMapOutputNameToPath.ContainsKey(referencedProject))
+                {
+                    NameByPath = FMapOutputNameToPath[referencedProject];
+                }
+
+                if (!FProjectDependencies.ContainsKey(NameByPath))
                 {
                     if (referencedProject.Contains("${csharpStdLibs}"))
                     {
@@ -728,7 +736,7 @@ namespace Ict.Tools.NAntTasks
             sw.Close();
         }
 
-        private void ReadMap(string filename, out Dictionary <string, TDetailsOfDll>map)
+        private void ReadMap(string filename, out Dictionary <string, TDetailsOfDll>map, out Dictionary <string, string> mapOutputNameToPath)
         {
             if (!File.Exists(filename))
             {
@@ -738,6 +746,7 @@ namespace Ict.Tools.NAntTasks
             StreamReader sr = new StreamReader(filename);
 
             map = new Dictionary <string, TDetailsOfDll>();
+            mapOutputNameToPath = new Dictionary <string, string>();
             TDetailsOfDll currentDll = null;
 
             while (!sr.EndOfStream)
@@ -755,9 +764,14 @@ namespace Ict.Tools.NAntTasks
                     string[] LineDetails = line.Split(new char[] { ',' });
                     currentDll.OutputType = LineDetails[1];
 
-                    if (LineDetails.Length > 2)
+                    if (LineDetails.Length > 2 && LineDetails[2].Length > 0)
                     {
                         currentDll.OutputName = LineDetails[2];
+                        mapOutputNameToPath.Add(currentDll.OutputName, LineDetails[0]);
+                    }
+                    else
+                    {
+                        mapOutputNameToPath.Add(LineDetails[0], LineDetails[0]);
                     }
 
                     map.Add(LineDetails[0], currentDll);

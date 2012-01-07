@@ -120,8 +120,11 @@ namespace Ict.Petra.Client.App.PetraClient
 
                 // Need to show and hide Connect Dialog before closing the Splash Screen so that it can receive input focus!
                 AConnectDialog = new TLoginForm();
-                AConnectDialog.Show();
-                AConnectDialog.Visible = false;
+
+                // this causes a bug on Mono. see bug #590. inactive login screen
+                // and it is not needed because the splashscreen is disabled for the moment anyway
+                // AConnectDialog.Show();
+                // AConnectDialog.Visible = false;
 
                 // Close Splash Screen
                 FSplashScreen.Close();

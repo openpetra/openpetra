@@ -7,7 +7,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -37,6 +37,11 @@ namespace Ict.Petra.Shared.MConference
         /// <summary>
         /// Lists types of options that can be used for a conference
         /// </summary>
-        ConferenceOptionTypeList
+        ConferenceOptionTypeList,
+
+        /// <summary>
+        /// Cost types to be used for conference (extra) charges
+        /// </summary>
+        ConferenceCostTypeList
     };
 }

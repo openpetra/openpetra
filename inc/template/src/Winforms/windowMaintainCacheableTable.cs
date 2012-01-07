@@ -336,7 +336,7 @@ namespace {#NAMESPACE}
                         MessageBoxIcon.Stop);
                     bool ReturnValue = false;
 
-                    // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+                    FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                     return ReturnValue;
                 }
 /* TODO ESecurityDBTableAccessDeniedException
@@ -358,7 +358,7 @@ namespace {#NAMESPACE}
                     // TODO TMessages.MsgDBConcurrencyException(Exp, this.GetType());
                     bool ReturnValue = false;
 
-                    // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+                    FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                     return ReturnValue;
                 }
                 catch (Exception exp)
@@ -374,9 +374,11 @@ namespace {#NAMESPACE}
                         "Server connection error",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Stop);
+                    
+                    bool ReturnValue = false;
 
-                    // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-                    return false;
+                    FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+                    return ReturnValue;
                 }
 
                 switch (SubmissionResult)
@@ -403,13 +405,14 @@ namespace {#NAMESPACE}
 
                         SetPrimaryKeyReadOnly(true);
 
-                        // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+                        FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(true));
                         return true;
 
                     case TSubmitChangesResult.scrError:
 
                         // TODO scrError
                         this.Cursor = Cursors.Default;
+                        FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(false));
                         break;
 
                     case TSubmitChangesResult.scrNothingToBeSaved:
@@ -422,6 +425,7 @@ namespace {#NAMESPACE}
 
                         // TODO scrInfoNeeded
                         this.Cursor = Cursors.Default;
+                        FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(false));
                         break;
                 }
             }
