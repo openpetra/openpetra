@@ -143,6 +143,9 @@ namespace Ict.Petra.Client.CommonControls
             PartnerStatusList,
 
             /// <summary>todoComment</summary>
+            PostCodeRegionList,
+
+            /// <summary>todoComment</summary>
             FoundationOwnerList,
 
             /// <summary>todoComment</summary>
@@ -539,6 +542,15 @@ namespace Ict.Petra.Client.CommonControls
                     null);
                     break;
 
+                case TListTableEnum.PostCodeRegionList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPartner.GetCacheableMailingTable(TCacheableMailingTablesEnum.PostCodeRegionList),
+                    PPostcodeRegionTable.GetRegionDBName(),
+                    null,
+                    null);
+                    break;
+
                 case TListTableEnum.ProposalStatusList:
 
                     InitialiseUserControl(
@@ -918,6 +930,10 @@ namespace Ict.Petra.Client.CommonControls
 
                 case TListTableEnum.PartnerStatusList:
                     this.ColumnWidthCol1 = 95;
+                    break;
+
+                case TListTableEnum.PostCodeRegionList:
+                    this.ColumnWidthCol1 = 110;
                     break;
 
                 case TListTableEnum.ProposalSubmissionTypeList:

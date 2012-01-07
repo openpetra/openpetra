@@ -1,0 +1,31 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Extract Master List
+    Namespace: Ict.Petra.Client.MPartner.Gui.Extracts
+    DetailTable: MExtractMaster
+    DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.ExtractTDS
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data]
+    FormType: edit
+    Template: window
+    Actions:
+        actDelete: {Label=&Delete, ActionClick=DeleteRow}      
+    Controls:
+        pnlContent:
+            Controls: [pnlFilter, pnlExtractMasterList]
+            Dock: Fill
+        pnlFilter:
+            Dock: Top
+            Controls: [lblFilter]
+        pnlExtractMasterList:
+            Dock: Fill
+            Controls: [ucoExtractMasterList]
+               
+        lblFilter:
+        ucoExtractMasterList:
+            Type: Ict.Petra.Client.MPartner.Gui.Extracts.TUC_ExtractMasterList
+            Dock: Fill
+
+    Toolbar:
+        tbbNew:
+            Label: New Extract
+

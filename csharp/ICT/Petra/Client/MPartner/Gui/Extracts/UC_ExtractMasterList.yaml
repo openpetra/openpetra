@@ -1,0 +1,38 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MPartner.Gui.Extracts
+    DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.ExtractTDS
+    DetailTable: MExtractMaster
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.MPartner.Partner.Data]
+    FormType: edit
+    Template: controlMaintainTable
+    Actions:
+        actDelete: {Label=&Delete, ActionClick=DeleteRow}
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnDelete]
+        btnDelete:
+            Action: actDelete
+        grdDetails:
+            Dock: Fill
+            Columns: [MExtractMaster.ExtractName, MExtractMaster.CreatedBy, MExtractMaster.KeyCount, MExtractMaster.ExtractDesc, MExtractMaster.DateCreated, MExtractMaster.Deletable]
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtExtractName]
+                Row1: [txtKeyCount]
+                Row2: [txtExtractDesc]
+               
+        txtExtractName: {Label=Extract Name, ReadOnly=true}
+        txtKeyCount: {Label=Key Count, ReadOnly=true}
+        txtExtractDesc: {Label=Description, Multiline=true, ScrollBars=Vertical, Height=100, Width=500}
+
