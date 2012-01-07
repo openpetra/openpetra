@@ -110,6 +110,9 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <summary>This is the thread used to generate the report; that way, the status bar is always updated, and the window does never turn blank</summary>
         protected Thread FGenerateReportThread;
 
+        /// <summary>This is the thread used to generate the extract; that way, the status bar is always updated, and the window does never turn blank</summary>
+        protected Thread FGenerateExtractThread;
+
         /// <summary>the path where the application is started from.</summary>
         public static string FApplicationDirectory;
 
@@ -128,6 +131,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             FSelectedColumn = -1;
             FAvailableFunctions = null;
             FGenerateReportThread = null;
+            FGenerateExtractThread = null;
             FDontResizeForm = false;
         }
 
@@ -183,6 +187,10 @@ namespace Ict.Petra.Client.MReporting.Gui
                 {
                     case Keys.G:
                         MI_GenerateReport_Click(sender, e);
+                        break;
+
+                    case Keys.E:
+                        MI_GenerateExtract_Click(sender, e);
                         break;
 
                     case Keys.S:
@@ -279,6 +287,22 @@ namespace Ict.Petra.Client.MReporting.Gui
                 }
             }
 
+            if ((FGenerateExtractThread != null) && FGenerateExtractThread.IsAlive)
+            {
+                ReturnValue = false;
+                answer = MessageBox.Show("An extract is being calculated at the moment. " + Environment.NewLine + "Do you want to cancel the extract?",
+                    "Cancel Extract?",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question,
+                    MessageBoxDefaultButton.Button1);
+
+                if (answer == System.Windows.Forms.DialogResult.Yes)
+                {
+                    //TODO FCalculator.CancelExtractCalculation();
+                    ReturnValue = true;
+                }
+            }
+            
             // has anything changed in the currently selected column?
             if (ColumnChanged(FSelectedColumn))
             {
@@ -355,6 +379,38 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
         }
 
+        public void MI_GenerateExtract_Click(System.Object sender, System.EventArgs e)
+        {
+            if ((FGenerateExtractThread != null) && FGenerateExtractThread.IsAlive)
+            {
+                // cancel the extract
+                //TODO FCalculator.CancelExtractCalculation();
+                return;
+            }
+
+            // read the settings and parameters from the controls
+            if (!ReadControlsWithErrorHandling(TReportActionEnum.raGenerate))
+            {
+                return;
+            }
+
+            if (TClientSettings.DebugLevel >= TClientSettings.DEBUGLEVEL_REPORTINGDATA)
+            {
+                FCalculator.GetParameters().Save(TClientSettings.PathLog + Path.DirectorySeparatorChar + "debugParameter.xml", true);
+            }
+
+            this.FWinForm.Cursor = Cursors.WaitCursor;
+            TLogging.SetStatusBarProcedure(this.WriteToStatusBar);
+
+            if ((FGenerateExtractThread == null) || (!FGenerateExtractThread.IsAlive))
+            {
+                ((IFrmReporting) this.FTheForm).EnableBusy(true);
+                FGenerateExtractThread = new Thread(GenerateExtract);
+                FGenerateExtractThread.IsBackground = true;
+                FGenerateExtractThread.Start();
+            }
+        }
+        
         /// <summary>
         /// toggle the option to wrap a column in the report
         /// </summary>
@@ -423,6 +479,23 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
         }
 
+        /// <summary>
+        /// This procedure does the calculation of the extract, including fetching the parameters from the GUI, verifying them, and providing error messages This should be called in a different thread, by MI_GenerateExtract_Click
+        /// </summary>
+        /// <returns>void</returns>
+        private void GenerateExtract()
+        {
+        	// extracts are not calculated by using the default way but other method has to be declared,
+        	// so make this known to the calculator
+            if (FCalculateFromMethod.Length > 0)
+            {
+            	FCalculator.AddParameter("calculateFromMethod", FCalculateFromMethod);
+            }
+        	
+        	// at the moment triggers same procedure as generating a report
+        	GenerateReport();
+        }
+        
         private void ReportCalculationSuccess()
         {
             if (TClientSettings.DebugLevel >= TClientSettings.DEBUGLEVEL_REPORTINGDATA)
@@ -803,11 +876,6 @@ namespace Ict.Petra.Client.MReporting.Gui
             if (FXMLFiles.Length > 0)
             {
                 FCalculator.AddParameter("xmlfiles", FXMLFiles);
-            }
-
-            if (FCalculateFromMethod.Length > 0)
-            {
-                FCalculator.AddParameter("calculateFromMethod", FCalculateFromMethod);
             }
 
             if (FIsolationLevel.Length > 0)

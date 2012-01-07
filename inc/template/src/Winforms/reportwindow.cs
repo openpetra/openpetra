@@ -32,7 +32,8 @@ namespace {#NAMESPACE}
   public partial class {#CLASSNAME}: System.Windows.Forms.Form, {#INTERFACENAME}
   {
     private {#UTILOBJECTCLASS} FPetraUtilsObject;
-      
+    private Boolean FCalledFromExtracts = false;
+    
     /// <summary>
     /// constructor
     /// </summary>
@@ -85,6 +86,21 @@ namespace {#NAMESPACE}
     private void TFrmPetra_Closed(object sender, EventArgs e)
     {
     }
+
+    /// helper object for the whole screen
+    public Boolean CalledFromExtracts
+    {
+        get
+        {
+            return FCalledFromExtracts;
+        }
+
+        set
+        {
+            FCalledFromExtracts = value;
+        }
+    }
+    
 #region Parameter/Settings Handling
     /** 
        Reads the selected values from the controls, and stores them into the parameter system of FCalculator
@@ -136,6 +152,15 @@ namespace {#NAMESPACE}
     /// </summary>
     public void RunOnceOnActivation()
     {
+        if (CalledFromExtracts)
+        {
+            tbbGenerateReport.Visible = false;
+        }
+        else
+        {
+            tbbGenerateExtract.Visible = false;
+        }
+        
         {#RUNONCEONACTIVATIONMANUAL}
         {#RUNONCEINTERFACEIMPLEMENTATION}
     }

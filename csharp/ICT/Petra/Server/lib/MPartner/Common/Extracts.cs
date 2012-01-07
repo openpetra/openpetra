@@ -736,27 +736,33 @@ namespace Ict.Petra.Server.MPartner.Extracts
 
             if (ResultValue)
             {
-                MExtractTable ExtractTable = new MExtractTable();
-
-                foreach (DataRow partnerRow in APartnerKeysTable.Rows)
+                try
                 {
-                    // get bestaddresses for the partners
-                    Int64 partnerkey = Convert.ToInt64(partnerRow[APartnerKeyColumn]);
-                    TVerificationResultCollection LocalVerification;
-                    TLocationPK locationPK = TMailing.GetPartnersBestLocation(partnerkey, out LocalVerification);
+	                MExtractTable ExtractTable = new MExtractTable();
 
-                    MExtractRow NewRow = ExtractTable.NewRowTyped(false);
-                    NewRow.ExtractId = ANewExtractId;
-                    NewRow.PartnerKey = partnerkey;
-                    NewRow.SiteKey = locationPK.SiteKey;
-                    NewRow.LocationKey = locationPK.LocationKey;
-                    ExtractTable.Rows.Add(NewRow);
-                }
-
-                if (ExtractTable.Rows.Count > 0)
-                {
-                    try
-                    {
+	                Int32 testcounter = 0;
+	                
+	                foreach (DataRow partnerRow in APartnerKeysTable.Rows)
+	                {
+	                    // get bestaddresses for the partners
+	                    Int64 partnerkey = Convert.ToInt64(partnerRow[APartnerKeyColumn]);
+	                    
+	                	testcounter += 1;
+	                	TLogging.Log("Preparing Partner " + partnerkey.ToString() + " (Record Number " + testcounter.ToString() + ")");
+	                    
+	                    TVerificationResultCollection LocalVerification;
+	                    TLocationPK locationPK = TMailing.GetPartnersBestLocation(partnerkey, out LocalVerification);
+	
+	                    MExtractRow NewRow = ExtractTable.NewRowTyped(false);
+	                    NewRow.ExtractId = ANewExtractId;
+	                    NewRow.PartnerKey = partnerkey;
+	                    NewRow.SiteKey = locationPK.SiteKey;
+	                    NewRow.LocationKey = locationPK.LocationKey;
+	                    ExtractTable.Rows.Add(NewRow);
+	                }
+	
+	                if (ExtractTable.Rows.Count > 0)
+	                {
                         MExtractMasterTable ExtractMaster = MExtractMasterAccess.LoadByPrimaryKey(ANewExtractId, WriteTransaction);
                         ExtractMaster[0].KeyCount = ExtractTable.Rows.Count;
 
@@ -764,14 +770,15 @@ namespace Ict.Petra.Server.MPartner.Extracts
                         {
                             ResultValue = MExtractMasterAccess.SubmitChanges(ExtractMaster, WriteTransaction, out AVerificationResults);
                         }
-                    }
-                    catch (Exception)
-                    {
-                        ResultValue = false;
-                    }
-                }
+	                }
+	            }
+	            catch (Exception e)
+	            {
+	                TLogging.Log(e.ToString());
+	                ResultValue = false;
+	            }
             }
-
+	
             if (ResultValue && NewTransaction)
             {
                 DBAccess.GDBAccessObj.CommitTransaction();

@@ -41,8 +41,13 @@ OpenPetra:
                         ExportPartners: {ActionClick=TFrmPartnerMain.ExportPartners, Description="Export to YAML file for importing into other OpenPetra database"}
                         ImportPartners: {ActionOpenScreen=TFrmPartnerImport, Label=Import Partners, Description=Import Partners from file or satellite database}
                 Extracts: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts}
-                    PartnerExtracts:
-                        PartnerByCity: {ActionOpenScreen=TFrmPartnerByCityExtract}
+                    Administration:
+                        ExtractMasterList: {Label=Extract Master List, ActionOpenScreen=TFrmExtractMaster}
+                    GenerateExtracts: {Label=Generate Extract}
+                        PartnerByCity: {Namespace=Ict.Petra.Client.MPartner.Gui, Label=Partner by City, ActionClick=TFrmPartnerMain.PartnerByCityExtract}
+                        PublicationExtract: {Namespace=Ict.Petra.Client.MPartner.Gui, Label=Publication Extract, ActionClick=TFrmPartnerMain.PublicationExtract}
+                        #PublicationExtract: {Label=Publication Extract, ActionOpenScreen=TFrmExtractPublication}
+                        #PartnerTypeExtract: {Label=Partner Type Extract, ActionOpenScreen=TFrmExtractPartnerType}
                 Reports: {Icon=printer.ico, Namespace=Ict.Petra.Client.MReporting.Gui.MPartner}
                     PartnerReports:
                         PartnerByCity: {ActionOpenScreen=TFrmPartnerByCity}
