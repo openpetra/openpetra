@@ -1,5 +1,5 @@
 RootNode:
-    BaseYaml: ../Client/CommonForms/PetraModuleForm.yaml
+    BaseYaml: ../../CommonForms/PetraModuleForm.yaml
     FormType: navigation
     Namespace: Ict.Petra.Client.App.PetraClient    
     Actions:
