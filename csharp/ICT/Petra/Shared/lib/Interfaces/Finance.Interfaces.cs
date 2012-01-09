@@ -196,6 +196,8 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AP.UIConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.UIConnectors.TFindUIConnector)</summary>
         void FindInvoices(DataTable ACriteriaData);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.UIConnectors.TFindUIConnector)</summary>
+        ALedgerTable GetLedgerInfo(Int32 ALedgerNumber);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.UIConnectors.TFindUIConnector)</summary>
         void PerformSearch(DataTable ACriteriaData);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.UIConnectors.TFindUIConnector)</summary>
         void StopSearch(System.Object ASender,

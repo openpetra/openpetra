@@ -43,6 +43,7 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.Interfaces.MFinance.AP.UIConnectors;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MFinance.Account.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.AP
 {
@@ -51,6 +52,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private IAPUIConnectorsFind FSupplierFindObject = null;
         private bool FKeepUpSearchFinishedCheck = false;
         private bool FSearchForSuppliers = false;
+        private DataTable FInvoiceTable;
+        private ALedgerRow FLedgerInfo;
+
 
 
         /// <summary>DataTable that holds all Pages of data (also empty ones that are not retrieved yet!)</summary>
@@ -66,7 +70,15 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             set
             {
                 FLedgerNumber = value;
+                FSupplierFindObject = TRemote.MFinance.AP.UIConnectors.Find();
+                ALedgerTable Tbl = FSupplierFindObject.GetLedgerInfo(FLedgerNumber);
+                FLedgerInfo = Tbl[0];
             }
+        }
+
+        private String GetLedgerCurrency(Int32 ALedgerNumber)
+        {
+            return FLedgerInfo.BaseCurrency;
         }
 
         /// <summary>
@@ -82,7 +94,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             FSearchForSuppliers = tpgSuppliers.Visible;
 
-            FSupplierFindObject = TRemote.MFinance.AP.UIConnectors.Find();
             DataTable CriteriaTable = new DataTable();
             CriteriaTable.Columns.Add("LedgerNumber", typeof(Int32));
             CriteriaTable.Columns.Add("SupplierId", typeof(string));
@@ -180,37 +191,46 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             if (FSearchForSuppliers)
             {
                 grdSupplierResult.Columns.Clear();
-                grdSupplierResult.AddTextColumn("Supplier Key", FPagedDataTable.Columns[0]);
-                grdSupplierResult.AddTextColumn("Supplier Name", FPagedDataTable.Columns[1]);
-                grdSupplierResult.AddTextColumn("Currency", FPagedDataTable.Columns[2]);
-
-                grdSupplierResult.Columns[0].Width = 90;
-                grdSupplierResult.Columns[1].Width = 250;
-                grdSupplierResult.Columns[2].Width = 85;
+                grdSupplierResult.AddTextColumn("Supplier Key", FPagedDataTable.Columns[0], 90);
+                grdSupplierResult.AddTextColumn("Supplier Name", FPagedDataTable.Columns[1], 250);
+                grdSupplierResult.AddTextColumn("Currency", FPagedDataTable.Columns[2], 85);
             }
             else
             {
                 grdInvoiceResult.Columns.Clear();
-                grdInvoiceResult.AddTextColumn("AP#", FPagedDataTable.Columns[0]);
-                grdInvoiceResult.AddTextColumn("Inv#", FPagedDataTable.Columns[1]);
-                grdInvoiceResult.AddTextColumn("Supplier", FPagedDataTable.Columns[2]);
-                grdInvoiceResult.AddCurrencyColumn("Amount", FPagedDataTable.Columns[4]);
-                grdInvoiceResult.AddTextColumn("Currency", FPagedDataTable.Columns[3]);
+                grdInvoiceResult.AddCheckBoxColumn("", FPagedDataTable.Columns["Selected"],25,false);
+                grdInvoiceResult.AddTextColumn("AP#", FPagedDataTable.Columns[0], 55);
+                grdInvoiceResult.AddTextColumn("Inv#", FPagedDataTable.Columns[1], 90);
+                grdInvoiceResult.AddTextColumn("Supplier", FPagedDataTable.Columns[2], 240);
+                grdInvoiceResult.AddCurrencyColumn("Amount", FPagedDataTable.Columns[4],2);
+                grdInvoiceResult.AddTextColumn("Currency", FPagedDataTable.Columns[3], 70);
                 grdInvoiceResult.AddDateColumn("Due Date", FPagedDataTable.Columns[7]);
-                grdInvoiceResult.AddTextColumn("Status", FPagedDataTable.Columns[5]);
+                grdInvoiceResult.AddTextColumn("Status", FPagedDataTable.Columns[5], 100);
                 grdInvoiceResult.AddDateColumn("Issued", FPagedDataTable.Columns[6]);
-                grdInvoiceResult.AddTextColumn("Discount", FPagedDataTable.Columns["DiscountMsg"]);
+                grdInvoiceResult.AddTextColumn("Discount", FPagedDataTable.Columns["DiscountMsg"], 150);
 
-                grdInvoiceResult.Columns[0].Width = 55;
-                grdInvoiceResult.Columns[1].Width = 90;
-                grdInvoiceResult.Columns[2].Width = 240;
-                grdInvoiceResult.Columns[3].Width = 90;
-                grdInvoiceResult.Columns[4].Width = 70;
-                grdInvoiceResult.Columns[5].Width = 90;
-                grdInvoiceResult.Columns[6].Width = 100;
-                grdInvoiceResult.Columns[7].Width = 90;
-                grdInvoiceResult.Columns[8].Width = 150;
+                grdInvoiceResult.Columns[4].Width = 90;  // Only the text columns can have their widths set while
+                grdInvoiceResult.Columns[6].Width = 110; // they're being added. For these currency and date columns,
+                grdInvoiceResult.Columns[8].Width = 110; // I need to set the width afterwards. (THIS WILL GO WONKY IF EXTRA FIELDS ARE ADDED ABOVE.)
+
+                grdInvoiceResult.Click += new EventHandler(grdInvoiceResult_Click);
             }
+        }
+
+        void grdInvoiceResult_Click(object sender, EventArgs e) // this is OK, but it should be performed AFTER the default processing!
+        {
+            // Add up all the selected Items  ** I can only sum items that are in my currency! **
+            String MyCurrency = GetLedgerCurrency(FLedgerNumber);
+
+            Decimal TotalSelected = 0;
+            foreach (DataRow Row in FInvoiceTable.Rows)
+            {
+                if ((Row["Selected"].Equals(true)) && (Row["Currency"].Equals(MyCurrency)))
+                {
+                    TotalSelected += (Decimal)(Row["a_total_amount_n"]);
+                }
+            }
+            txtSumTagged.Text = TotalSelected.ToString(); // This needs formatting.
         }
 
         private void FinishThread()
@@ -298,17 +318,21 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             if (FSupplierFindObject != null)
             {
-                DataTable tble = FSupplierFindObject.GetDataPagedResult(ANeededPage, APageSize, out ATotalRecords, out ATotalPages);
+                FInvoiceTable = FSupplierFindObject.GetDataPagedResult(ANeededPage, APageSize, out ATotalRecords, out ATotalPages);
 
                 if (!FSearchForSuppliers)
                 {
-                    tble.Columns.Add("DiscountMsg");
+                    FInvoiceTable.Columns.Add("DiscountMsg");
+                    DataColumn Checkboxcolumn = new DataColumn("Selected", typeof(bool));
+                    FInvoiceTable.Columns.Add(Checkboxcolumn);
 
-                    foreach (DataRow Row in tble.Rows)
+                    foreach (DataRow Row in FInvoiceTable.Rows)
                     {
                         Row["DiscountMsg"] = "None";
+                        Row["Selected"] = false;
 
-                        if (Row[9].GetType() == typeof(DateTime))
+                        if ((Row[8].GetType() == typeof(Decimal))
+                          && (Row[9].GetType() == typeof(DateTime)))
                         {
                             Decimal DiscountPercent = (Decimal)Row[8];
                             DateTime DiscountUntil = (DateTime)Row[9];
@@ -326,7 +350,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     }
                 }
 
-                return tble;
+                return FInvoiceTable;
             }
             else
             {
@@ -351,6 +375,19 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             return -1;
         }
 
+        private Int32 GetCurrentlySelectedInvoice()
+        {
+            DataRowView[] SelectedGridRow = grdInvoiceResult.SelectedDataRowsAsDataRowView;
+
+            if (SelectedGridRow.Length >= 1)
+            {
+                Int32 InvoiceNum = Convert.ToInt32(SelectedGridRow[0]["a_ap_number_i"]);
+                return InvoiceNum;
+            }
+
+            return -1;
+        }
+
         /// <summary>
         /// open the transactions of the selected supplier
         /// </summary>
@@ -361,6 +398,19 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             frm.LoadSupplier(FLedgerNumber, GetCurrentlySelectedSupplier());
             frm.Show();
         }
+
+
+        /// <summary>
+        /// Open the selected invoice
+        /// </summary>
+        public void ShowInvoice(object sender, EventArgs e)
+        {
+            TFrmAPEditDocument frm = new TFrmAPEditDocument(this);
+
+            frm.LoadAApDocument(FLedgerNumber, GetCurrentlySelectedInvoice());
+            frm.Show();
+        }
+
 
         /// <summary>
         /// create a new supplier
@@ -492,3 +542,18 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         }
     }
 }
+
+/* cut from APMain.yaml:
+
+    Menu:
+        mniFile:
+            mniReports: {Label=&Reports}
+            mniReprintPaymentReport: {Label=Reprint Pa&yment Report}
+            mniSeparator: {Label=-}
+            mniImport: {Label=&Import}
+            mniExport: {Label=&Export}
+            mniSeparator: {Label=-}
+            mniDefaults: {Label=AP &Defaults}
+            mniSeparator: {Label=-}
+
+*/

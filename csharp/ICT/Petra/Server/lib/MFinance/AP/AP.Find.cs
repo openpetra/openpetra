@@ -42,6 +42,8 @@ using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Server.MFinance.AP.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.Interfaces.MFinance.AP.UIConnectors;
+using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Server.MFinance.Account.Data.Access;
 #endregion ManualCode
 
 namespace Ict.Petra.Server.MFinance.AP.UIConnectors
@@ -95,8 +97,6 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
         {
         }
 
-        #region ManualCode
-
         /// <summary>if true, then search for supplier; if false, then search for invoice</summary>
         private bool FSearchSupplierOrInvoice = false;
 
@@ -123,7 +123,16 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             PerformSearch(ACriteriaData);
         }
 
-        #endregion
+        /// <summary>
+        /// Retrieve all the information for the current Ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns>ALedgerTable</returns>
+        public ALedgerTable GetLedgerInfo(Int32 ALedgerNumber)
+        {
+            ALedgerTable Tbl = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, null);
+            return Tbl;
+        }
 
         /// <summary>
         /// Procedure to execute a Find query. Although the full
