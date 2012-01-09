@@ -101,6 +101,9 @@ namespace Ict.Petra.Client.CommonControls
             DataLabelLookupList,
 
             /// <summary>todoComment</summary>
+            DataLabelLookupCategoryList,
+
+            /// <summary>todoComment</summary>
             DenominationList,
 
             /// <summary>todoComment</summary>
@@ -138,6 +141,9 @@ namespace Ict.Petra.Client.CommonControls
 
             /// <summary>todoComment</summary>
             PartnerStatusList,
+
+            /// <summary>todoComment</summary>
+            PostCodeRegionList,
 
             /// <summary>todoComment</summary>
             FoundationOwnerList,
@@ -389,6 +395,24 @@ namespace Ict.Petra.Client.CommonControls
                     null);
                     break;
 
+                case TListTableEnum.DataLabelLookupList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.DataLabelLookupList),
+                    PDataLabelLookupTable.GetValueCodeDBName(),
+                    PDataLabelLookupTable.GetValueDescDBName(),
+                    null);
+                    break;
+
+                case TListTableEnum.DataLabelLookupCategoryList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.DataLabelLookupCategoryList),
+                    PDataLabelLookupCategoryTable.GetCategoryCodeDBName(),
+                    PDataLabelLookupCategoryTable.GetCategoryDescDBName(),
+                    null);
+                    break;
+
                 case TListTableEnum.DenominationList:
 
                     InitialiseUserControl(
@@ -518,6 +542,15 @@ namespace Ict.Petra.Client.CommonControls
                     null);
                     break;
 
+                case TListTableEnum.PostCodeRegionList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPartner.GetCacheableMailingTable(TCacheableMailingTablesEnum.PostCodeRegionList),
+                    PPostcodeRegionTable.GetRegionDBName(),
+                    null,
+                    null);
+                    break;
+
                 case TListTableEnum.ProposalStatusList:
 
                     InitialiseUserControl(
@@ -614,15 +647,6 @@ namespace Ict.Petra.Client.CommonControls
                     TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.UnitTypeList),
                     UUnitTypeTable.GetUnitTypeCodeDBName(),
                     UUnitTypeTable.GetUnitTypeNameDBName(),
-                    null);
-                    break;
-
-                case TListTableEnum.DataLabelLookupList:
-
-                    InitialiseUserControl(
-                    TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.DataLabelLookupList),
-                    PDataLabelLookupTable.GetValueCodeDBName(),
-                    PDataLabelLookupTable.GetValueDescDBName(),
                     null);
                     break;
             }
@@ -834,6 +858,14 @@ namespace Ict.Petra.Client.CommonControls
                     this.ColumnWidthCol2 = 170;
                     break;
 
+                case TListTableEnum.DataLabelLookupList:
+                    this.ColumnWidthCol2 = 200;
+                    break;
+
+                case TListTableEnum.DataLabelLookupCategoryList:
+                    this.ColumnWidthCol2 = 200;
+                    break;
+
                 case TListTableEnum.DenominationList:
                     this.ColumnWidthCol2 = 330;
                     break;
@@ -900,6 +932,10 @@ namespace Ict.Petra.Client.CommonControls
                     this.ColumnWidthCol1 = 95;
                     break;
 
+                case TListTableEnum.PostCodeRegionList:
+                    this.ColumnWidthCol1 = 110;
+                    break;
+
                 case TListTableEnum.ProposalSubmissionTypeList:
                     this.ColumnWidthCol2 = 100;
                     break;
@@ -935,9 +971,6 @@ namespace Ict.Petra.Client.CommonControls
                 case TListTableEnum.UnitTypeList:
                     this.ColumnWidthCol1 = 90;
                     this.ColumnWidthCol2 = 200;
-                    break;
-
-                case TListTableEnum.DataLabelLookupList:
                     this.ColumnWidthCol2 = 200;
                     break;
             }
