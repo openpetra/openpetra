@@ -74,7 +74,7 @@ else
         Response.ClearHeaders();         
         Response.ContentType = "image/jpeg";
         Response.AppendHeader("Content-Disposition","attachment; filename=photo.jpg");
-        Response.TransmitFile( Filename );
+        Response.WriteFile( Filename );
         Response.End();        
     }
 }
