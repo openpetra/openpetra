@@ -114,12 +114,12 @@ namespace Ict.Petra.Server.MFinance.Common
             if (accountTable.Rows.Count > 0)
             {
                 accountTable.DefaultView.Sort = 
-                    AAccountHierarchyDetailTable.GetReportOrderDBName() + " " +
+                    AAccountHierarchyDetailTable.GetReportOrderDBName() + ", " +
                     AAccountHierarchyDetailTable.GetReportingAccountCodeDBName();
                 
-                for (int i = 0; i < accountTable.Rows.Count; ++i)
+                foreach (DataRowView rv in accountTable.DefaultView)
                 {
-                    accountRow = (AAccountHierarchyDetailRow)accountTable.Rows[i];
+                    accountRow = (AAccountHierarchyDetailRow)rv.Row;
 
                     if (accountRow.AccountCodeToReportTo.Equals(AAccountCode))
                     {
