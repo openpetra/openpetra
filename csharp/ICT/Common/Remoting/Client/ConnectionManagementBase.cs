@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -368,11 +368,13 @@ namespace Ict.Common.Remoting.Client
                 if (FPollClientTasks != null)
                 {
                     FPollClientTasks.StopPollClientTasks();
+                    RemotingServices.Disconnect((MarshalByRefObject)FRemotePollClientTasks);
                 }
 
                 if (FRemote != null)
                 {
                     ReturnValue = TRemoteBase.ClientManager.DisconnectClient(FClientID, out ACantDisconnectReason);
+                    TRemoteBase.Disconnect();
                 }
             }
             catch (System.Net.Sockets.SocketException)
