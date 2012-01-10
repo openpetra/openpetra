@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -153,6 +153,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             TCarryForward carryForward = null;
             TVerificationResultCollection tvr = new TVerificationResultCollection();
 
+            int OrigYear = 2010 + (new TLedgerInfo(intLedgerNumber)).CurrentFinancialYear;
+
             for (int i = 1; i < 13; ++i)  // 12 Months
             {
                 carryForward = new TCarryForward(new TLedgerInfo(intLedgerNumber));
@@ -161,15 +163,15 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 carryForward.SetNextPeriod();
             }
 
-            Assert.AreEqual(2010, carryForward.Year, "Standard");
+            Assert.AreEqual(OrigYear, carryForward.Year, "Standard");
             TAccountPeriodToNewYear accountPeriodToNewYear =
-                new TAccountPeriodToNewYear(intLedgerNumber, 2010);
+                new TAccountPeriodToNewYear(intLedgerNumber, OrigYear);
             accountPeriodToNewYear.IsInInfoMode = false;
             accountPeriodToNewYear.VerificationResultCollection = tvr;
             accountPeriodToNewYear.RunEndOfPeriodOperation();
 
             carryForward = new TCarryForward(new TLedgerInfo(intLedgerNumber));
-            Assert.AreEqual(2010, carryForward.Year, "Non standard ...");
+            Assert.AreEqual(OrigYear, carryForward.Year, "Non standard ...");
             carryForward.SetNextPeriod();
 
             carryForward = new TCarryForward(new TLedgerInfo(intLedgerNumber));
@@ -177,7 +179,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             TLedgerInitFlagHandler ledgerInitFlag =
                 new TLedgerInitFlagHandler(intLedgerNumber, TLedgerInitFlagEnum.ActualYear);
-            ledgerInitFlag.AddMarker("2010");
+            ledgerInitFlag.AddMarker(OrigYear.ToString());
             Assert.IsFalse(ledgerInitFlag.Flag, "Should be deleted ...");
         }
 
