@@ -153,7 +153,9 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             TCarryForward carryForward = null;
             TVerificationResultCollection tvr = new TVerificationResultCollection();
 
-            int OrigYear = 2010 + (new TLedgerInfo(intLedgerNumber)).CurrentFinancialYear;
+            // assuming, the demo database ledger starts with 2010
+            int CurrentYear = 2010 + (new TLedgerInfo(intLedgerNumber)).CurrentFinancialYear;
+            TLogging.Log("Current Year: " + CurrentYear.ToString());
 
             for (int i = 1; i < 13; ++i)  // 12 Months
             {
@@ -163,15 +165,15 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 carryForward.SetNextPeriod();
             }
 
-            Assert.AreEqual(OrigYear, carryForward.Year, "Standard");
+            Assert.AreEqual(CurrentYear, carryForward.Year, "Standard");
             TAccountPeriodToNewYear accountPeriodToNewYear =
-                new TAccountPeriodToNewYear(intLedgerNumber, OrigYear);
+                new TAccountPeriodToNewYear(intLedgerNumber, CurrentYear);
             accountPeriodToNewYear.IsInInfoMode = false;
             accountPeriodToNewYear.VerificationResultCollection = tvr;
             accountPeriodToNewYear.RunEndOfPeriodOperation();
 
             carryForward = new TCarryForward(new TLedgerInfo(intLedgerNumber));
-            Assert.AreEqual(OrigYear, carryForward.Year, "Non standard ...");
+            Assert.AreEqual(CurrentYear, carryForward.Year, "Non standard ...");
             carryForward.SetNextPeriod();
 
             carryForward = new TCarryForward(new TLedgerInfo(intLedgerNumber));
@@ -179,7 +181,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             TLedgerInitFlagHandler ledgerInitFlag =
                 new TLedgerInitFlagHandler(intLedgerNumber, TLedgerInitFlagEnum.ActualYear);
-            ledgerInitFlag.AddMarker(OrigYear.ToString());
+            ledgerInitFlag.AddMarker(CurrentYear.ToString());
             Assert.IsFalse(ledgerInitFlag.Flag, "Should be deleted ...");
         }
 
