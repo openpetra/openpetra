@@ -113,6 +113,8 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             if (accountTable.Rows.Count > 0)
             {
+                accountTable.DefaultView.Sort = AAccountTable.GetAccountCodeDBName();
+                
                 for (int i = 0; i < accountTable.Rows.Count; ++i)
                 {
                     accountRow = (AAccountHierarchyDetailRow)accountTable.Rows[i];
