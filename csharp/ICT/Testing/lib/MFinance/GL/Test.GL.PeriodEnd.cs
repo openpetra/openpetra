@@ -161,7 +161,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             for (int i = 1; i < 13; ++i)  // 12 Months
             {
                 carryForward = new TCarryForward(new TLedgerInfo(intLedgerNumber));
-                TLogging.Log(carryForward.Year);
+                TLogging.Log(carryForward.Year.ToString());
                 Assert.AreEqual(carryForward.GetPeriodType, TCarryForwardENum.Month,
                     "Month: " + i.ToString());
                 carryForward.SetNextPeriod();
