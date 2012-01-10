@@ -100,20 +100,26 @@ namespace Ict.Common.Remoting.Client
                         }
 
                         ChannelServices.RegisterChannel(new TcpChannel(0), false);
-
-                        ARemote = (IClientManagerInterface)
-                                  Activator.GetObject(typeof(Ict.Common.Remoting.Shared.IClientManagerInterface),
-                            String.Format("tcp://{0}:{1}/Clientmanager",
-                                TAppSettingsManager.GetValue("Remote.Host"),
-                                TAppSettingsManager.GetValue("Remote.Port")));
                     }
                     else
                     {
                         // The following call must be done only once while the application runs (otherwise a RemotingException occurs)
                         RemotingConfiguration.Configure(ConfigFile, false);
-                        ARemote = (IClientManagerInterface)
-                                  TRemotingHelper.GetObject(typeof(IClientManagerInterface));
                     }
+                }
+
+                if (TAppSettingsManager.HasValue("Remote.Port"))
+                {
+                    ARemote = (IClientManagerInterface)
+                              Activator.GetObject(typeof(Ict.Common.Remoting.Shared.IClientManagerInterface),
+                        String.Format("tcp://{0}:{1}/Clientmanager",
+                            TAppSettingsManager.GetValue("Remote.Host"),
+                            TAppSettingsManager.GetValue("Remote.Port")));
+                }
+                else
+                {
+                    ARemote = (IClientManagerInterface)
+                              TRemotingHelper.GetObject(typeof(IClientManagerInterface));
                 }
 
                 if (ARemote == null)

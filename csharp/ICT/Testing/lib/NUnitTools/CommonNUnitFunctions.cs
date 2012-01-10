@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -95,7 +95,7 @@ namespace Ict.Testing.NUnitTools
         /// (csharp\\ICT\\Testing\\...\\filename.sql)</param>
         public static void LoadTestDataBase(string strSqlFilePathFromCSharpName)
         {
-            System.Diagnostics.Debug.WriteLine("strSqlFilePathFromCSharpName: " + strSqlFilePathFromCSharpName);
+            TLogging.Log("LoadTestDataBase file: " + strSqlFilePathFromCSharpName);
             //nant("stopPetraServer", true);
             // csharp\\ICT\\Testing\\...\\filename.sql"
             //  + " >C:\\report.txt"
@@ -137,7 +137,7 @@ namespace Ict.Testing.NUnitTools
 
             if (!NantProcess.Start())
             {
-                Debug.Print("failed to start " + NantProcess.StartInfo.FileName);
+                TLogging.Log("failed to start " + NantProcess.StartInfo.FileName);
             }
             else
             {
@@ -146,7 +146,7 @@ namespace Ict.Testing.NUnitTools
             }
 
             StreamReader sr = new StreamReader(rootPath + Path.DirectorySeparatorChar + "nant.txt");
-            Debug.Print(sr.ReadToEnd());
+            TLogging.Log(sr.ReadToEnd());
             sr.Close();
             File.Delete(rootPath + Path.DirectorySeparatorChar + "nant.txt");
         }
