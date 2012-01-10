@@ -15,92 +15,61 @@ RootNode:
     Security:
         ModulePermissionRequired: [PTNRUSER]
     Controls:
-        tpgReportSorting:
-            Label: Sorting
-            Controls: [ucoReportSorting]
-        tpgGeneralSettings:
-            Label: General Settings
+        tpgSpecialTypeExtract:
+            Label: Special Type Extract Options
             Controls: 
                 Row0: [lblIncludeSpecialTypes]
-                Row1: [clbIncludeSpecialTypes]
+                Row1: [pnlSpecialTypeOptions]
             Order: AlwaysFirst
+
         lblIncludeSpecialTypes:
             Label: Report on all partners that have one of these special types
+
+        pnlSpecialTypeOptions:
+            Controls: 
+                Row0: [pnlSpecialTypeOptionsLeft, pnlSpecialTypeOptionsRight]
+                Row1: [pnlSpecialTypeOptionsBottom]
+            ControlsOrientation: horizontal
+            Dock: Fill
+        pnlSpecialTypeOptionsLeft:
+            Controls:
+                Row0: [clbIncludeSpecialTypes]
+                Row1: [txtCity]
+                Row2: [txtPostCodeFrom]
+                Row3: [txtTo]
+                Row4: [txtRegion]
+                Row5: [txtCountry]
         clbIncludeSpecialTypes:
             NoLabel: true 
             ParameterName: param_explicit_specialtypes
             Width: 400
             Height: 200
-        ucoReportSorting:
-            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting
-            Dock: Fill
-    ReportParameters:{ColumnFunction=TPartnerColumnFunction}
-        Para1:
-            Name: Address Type
-            Parameter: 2.5
-        Para2:
-            Name: Alternate Telephone
-            Parameter: 3.3
-        Para3:
-            Name: Address valid from
-            Parameter: 1.8
-        Para4:
-            Name: Address valid to
-            Parameter: 1.8
-        Para5:
-            Name: City
-            Parameter: 3.0
-        Para6:
-            Name: Country
-            Parameter: 1.5
-        Para7:
-            Name: County
-            Parameter: 2.0
-        Para8:
-            Name: E-Mail Address
-            Parameter: 4.0
-        Para9:
-            Name: Fax
-            Parameter: 3.0
-        Para10:
-            Name: Field
-            Parameter: 2.0
-        Para11:
-            Name: First Address Line
-            Parameter: 3.0
-        Para12:
-            Name: Location Key
-            Parameter: 2.0
-        Para13:
-            Name: Mobile
-            Parameter: 3.0
-        Para14:
-            Name: Partner Class
-            Parameter: 1.0
-        Para15:
-            Name: Partner Key
-            Parameter: 2.0
-        Para16:
-            Name: Partner Name
-            Parameter: 4.0
-        Para17:
-            Name: Post Code
-            Parameter: 2.0
-        Para18:
-            Name: Send Mail
-            Parameter: 2.0
-        Para19:
-            Name: SiteKey
-            Parameter: 2.0
-        Para20:
-            Name: Street Name
-            Parameter: 3.0
-        Para21:
-            Name: Telephone
-            Parameter: 3.3
-        Para22:
-            Name: Third Address Line
-            Parameter: 3.0
-        Para23:
-            Name: URL
-            Parameter: 3.0
+        pnlSpecialTypeOptionsRight:
+            Controls:
+                Row0: [chkActivePartners]
+                Row1: [chkMailingAddressesOnly]
+                Row2: [chkFamiliesOnly]
+                Row3: [chkExcludeNoSolicitations]
+        pnlSpecialTypeOptionsBottom:
+            Controls: 
+                Row0: [txtDateSet]
+#                Row1: [txtKeysExtracted, txtExtractSegment]
+        chkActivePartners: {Label: Active Partners, CheckBoxAttachedLabel=right}
+        chkMailingAddressesOnly: {Label: Mailing Addresses Only, CheckBoxAttachedLabel=right}
+        chkFamiliesOnly: {Label: Families Only, CheckBoxAttachedLabel=right}
+        chkExcludeNoSolicitations: {Label: Exclude 'No Solicitations', CheckBoxAttachedLabel=right}
+        txtCity:
+            Label: Town/City
+        txtPostCodeFrom:
+            Label: Post Code From
+        txtTo:
+            Label: To
+        txtRegion:
+            Label: Region
+        txtCountry:
+            Label: Country
+        txtDateSet:
+            Label: Date Set
+#        chkSaveCSV: {Label: Save data in a CSV file, CheckBoxAttachedLabel=right}
+#        txtKeysExtracted: {Label: Keys Extracted, ReadOnly=true}
+#        txtExtractSegment: {Label: Extract Segment, ReadOnly=true}

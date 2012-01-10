@@ -134,5 +134,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             frm.CalledFromExtracts = true;
             frm.Show();
         }
+
+        /// <summary>
+        /// open screen to create "Partner by Special Type" Extract
+        /// </summary>
+        public static void PartnerBySpecialTypeExtract(Form AParentForm)
+        {
+            TFrmPartnerBySpecialType frm = new TFrmPartnerBySpecialType(AParentForm);
+
+            frm.CalledFromExtracts = true;
+            frm.Show();
+        }
     }
 }
