@@ -23,7 +23,6 @@
 
 using System;
 using System.Collections.Generic;
-using Ict.Common;
 using NUnit.Framework;
 using Ict.Testing.NUnitForms;
 using Ict.Common.Verification;
@@ -204,7 +203,6 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             Assert.IsFalse(gahdi.HasNoChildren("6800S"), "Root Account");
             List <String>list = gahdi.GetChildren("7000S");
             Assert.AreEqual(2, list.Count, "Two entries ...");
-            TLogging.Log("accounts " + list[0] + " " + list[1]);
             Assert.AreEqual("7000", list[0], "7000 is the first account");
             Assert.AreEqual("7010", list[1], "7010 is the second account");
             Assert.AreEqual("7000S", gahdi.GetParentAccount("7010"));

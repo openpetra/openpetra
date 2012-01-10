@@ -329,7 +329,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// This value is only defined if the TCarryForwardENum holds the value "year". In normal cases you can
         /// get the value of the actual accounting year from the table a_accounting_period
         /// of the open petra database. But this values are changed in the year end routine and in order
-        /// to make sure to get always the same value, the year is stored in a_ledger_init_flag from the
+        /// to make sure to get allways the same value, the year is stored in a_ledger_init_flag from the
         /// entrance to the TCarryForwardENum.Year-Period to the next TCarryForwardENum.Month-Period.
         /// </summary>
         public int Year
@@ -345,7 +345,6 @@ namespace Ict.Petra.Server.MFinance.Common
 
                 if (ledgerInitFlagHandler.Flag)
                 {
-                    TLogging.Log("ledgerInitFlagHandler.Flag has been set");
                     return intYear;
                 }
 
@@ -356,7 +355,7 @@ namespace Ict.Petra.Server.MFinance.Common
                     return intYear - 1;
                 }
 
-                return intYear;
+                throw new ApplicationException("Undefined TCarryForwardENum.Year Request");
             }
         }
 
