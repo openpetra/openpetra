@@ -113,7 +113,9 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             if (accountTable.Rows.Count > 0)
             {
-                accountTable.DefaultView.Sort = AAccountTable.GetAccountCodeDBName();
+                accountTable.DefaultView.Sort = 
+                    AAccountHierarchyDetailTable.GetReportOrderDBName() + " " +
+                    AAccountHierarchyDetailTable.GetReportingAccountCodeDBName();
                 
                 for (int i = 0; i < accountTable.Rows.Count; ++i)
                 {
