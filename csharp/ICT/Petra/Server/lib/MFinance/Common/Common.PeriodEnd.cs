@@ -356,7 +356,7 @@ namespace Ict.Petra.Server.MFinance.Common
                     return intYear - 1;
                 }
 
-                throw new ApplicationException("Undefined TCarryForwardENum.Year Request");
+                return intYear;
             }
         }
 
