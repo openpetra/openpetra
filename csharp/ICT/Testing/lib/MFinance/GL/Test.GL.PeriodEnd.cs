@@ -23,6 +23,7 @@
 
 using System;
 using NUnit.Framework;
+using Ict.Common;
 using Ict.Testing.NUnitTools;
 using Ict.Testing.NUnitPetraServer;
 using Ict.Common.Verification;
