@@ -146,7 +146,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         /// <summary>
         /// Post all tagged documents in one GL Batch
-        /// see very similar function in TFrmAPEditDocument
+        /// Uses static functions from TFrmAPEditDocument
         /// </summary>
         private void PostTaggedDocuments(object sender, EventArgs e)
         {
@@ -156,7 +156,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 if (!row.IsTaggedNull() && row.Tagged)
                 {
-                    TaggedDocuments.Add(row.ApNumber);
+                    if (TFrmAPEditDocument.ApDocumentCanPost (FMainDS, row))
+                    {
+                        TaggedDocuments.Add(row.ApNumber);
+                    }
                 }
             }
 
@@ -166,41 +169,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
 
             // TODO: make sure that there are uptodate exchange rates
-
-            TVerificationResultCollection Verifications;
-
-            TDlgGLEnterDateEffective dateEffectiveDialog = new TDlgGLEnterDateEffective(
-                FMainDS.AApDocument[0].LedgerNumber,
-                Catalog.GetString("Select posting date"),
-                Catalog.GetString("The date effective for posting") + ":");
-
-            if (dateEffectiveDialog.ShowDialog() != DialogResult.OK)
-            {
-                MessageBox.Show(Catalog.GetString("The payment was cancelled."), Catalog.GetString(
-                        "No Success"), MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            DateTime PostingDate = dateEffectiveDialog.SelectedDate;
-
-            if (!TRemote.MFinance.AP.WebConnectors.PostAPDocuments(
-                    FLedgerNumber,
-                    TaggedDocuments,
-                    PostingDate,
-                    out Verifications))
-            {
-                string ErrorMessages = String.Empty;
-
-                foreach (TVerificationResult verif in Verifications)
-                {
-                    ErrorMessages += "[" + verif.ResultContext + "] " +
-                                     verif.ResultTextCaption + ": " +
-                                     verif.ResultText + Environment.NewLine;
-                }
-
-                System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Posting failed"));
-            }
-            else
+            if (TFrmAPEditDocument.PostApDocumentList(FMainDS, FMainDS.AApDocument[0].LedgerNumber, TaggedDocuments))
             {
                 // TODO: print reports on successfully posted batch
                 MessageBox.Show(Catalog.GetString("The AP documents have been posted successfully!"));
@@ -214,7 +183,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
         }
 
-        /// add all selected invoices to the payment list and show that list so that the user can make the payment
+        /// Add all selected invoices to the payment list and show that list so that the user can make the payment
         private void AddTaggedToPayment(object sender, EventArgs e)
         {
             List <Int32>TaggedDocuments = new List <Int32>();

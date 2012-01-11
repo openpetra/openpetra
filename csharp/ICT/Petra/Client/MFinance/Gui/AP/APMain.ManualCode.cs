@@ -44,6 +44,9 @@ using Ict.Petra.Shared.Interfaces.MFinance.AP.UIConnectors;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using System.Globalization;
+using System.Timers;
+using System.Collections.Generic;
 
 namespace Ict.Petra.Client.MFinance.Gui.AP
 {
@@ -52,6 +55,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private IAPUIConnectorsFind FSupplierFindObject = null;
         private bool FKeepUpSearchFinishedCheck = false;
         private bool FSearchForSuppliers = false;
+        private DataTable FSupplierTable;
         private DataTable FInvoiceTable;
         private ALedgerRow FLedgerInfo;
 
@@ -73,6 +77,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 FSupplierFindObject = TRemote.MFinance.AP.UIConnectors.Find();
                 ALedgerTable Tbl = FSupplierFindObject.GetLedgerInfo(FLedgerNumber);
                 FLedgerInfo = Tbl[0];
+
+                // Now I've got a ledger number, I can set up the menu and toolbar.
+                TabChange(null, null);
             }
         }
 
@@ -198,11 +205,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             else
             {
                 grdInvoiceResult.Columns.Clear();
-                grdInvoiceResult.AddCheckBoxColumn("", FPagedDataTable.Columns["Selected"],25,false);
+                grdInvoiceResult.AddCheckBoxColumn("", FPagedDataTable.Columns["Selected"], 25, false);
                 grdInvoiceResult.AddTextColumn("AP#", FPagedDataTable.Columns[0], 55);
                 grdInvoiceResult.AddTextColumn("Inv#", FPagedDataTable.Columns[1], 90);
                 grdInvoiceResult.AddTextColumn("Supplier", FPagedDataTable.Columns[2], 240);
-                grdInvoiceResult.AddCurrencyColumn("Amount", FPagedDataTable.Columns[4],2);
+                grdInvoiceResult.AddCurrencyColumn("Amount", FPagedDataTable.Columns[4], 2);
                 grdInvoiceResult.AddTextColumn("Currency", FPagedDataTable.Columns[3], 70);
                 grdInvoiceResult.AddDateColumn("Due Date", FPagedDataTable.Columns[7]);
                 grdInvoiceResult.AddTextColumn("Status", FPagedDataTable.Columns[5], 100);
@@ -213,24 +220,75 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 grdInvoiceResult.Columns[6].Width = 110; // they're being added. For these currency and date columns,
                 grdInvoiceResult.Columns[8].Width = 110; // I need to set the width afterwards. (THIS WILL GO WONKY IF EXTRA FIELDS ARE ADDED ABOVE.)
 
-                grdInvoiceResult.Click += new EventHandler(grdInvoiceResult_Click);
+                grdInvoiceResult.MouseClick += new MouseEventHandler(grdInvoiceResult_Click);
             }
         }
 
-        void grdInvoiceResult_Click(object sender, EventArgs e) // this is OK, but it should be performed AFTER the default processing!
+        // Called from a timer, below, so that the default processing of
+        // the grid control completes before I get called.
+        private void RefreshSumTagged(Object Sender, EventArgs e)
         {
+            // If I was called from a timer, kill that now:
+            if (Sender != null)
+                ((System.Windows.Forms.Timer)Sender).Stop();
+
+
             // Add up all the selected Items  ** I can only sum items that are in my currency! **
             String MyCurrency = GetLedgerCurrency(FLedgerNumber);
 
+            bool TaggedInvoicesPostable = false;
+            bool TaggedInvoicesPayable = false;
             Decimal TotalSelected = 0;
-            foreach (DataRow Row in FInvoiceTable.Rows)
+            bool ListHasItems = false;
+
+            if (FInvoiceTable != null) // I may be called before the first search.
             {
-                if ((Row["Selected"].Equals(true)) && (Row["Currency"].Equals(MyCurrency)))
+                if (FInvoiceTable.Rows.Count > 0)
                 {
-                    TotalSelected += (Decimal)(Row["a_total_amount_n"]);
+                    ListHasItems = true;
+                }
+                foreach (DataRow Row in FInvoiceTable.Rows)
+                {
+                    if (Row["Selected"].Equals(true))
+                    {
+                        if (Row["a_currency_code_c"].Equals(MyCurrency))
+                        {
+                            TotalSelected += (Decimal)(Row["a_total_amount_n"]);
+                        }
+
+                        //
+                        // While I'm in this loop, I'll also check whether to enable the "Pay" and "Post" buttons.
+                        //
+                        if ("|POSTED|PARTPAID|".IndexOf(Row["a_document_status_c"].ToString()) > 0)
+                        {
+                            TaggedInvoicesPayable = true;
+                        }
+
+                        if ("|POSTED|PARTPAID|PAID|".IndexOf(Row["a_document_status_c"].ToString()) < 0)
+                        {
+                            TaggedInvoicesPostable = true;
+                        }
+                    }
                 }
             }
-            txtSumTagged.Text = TotalSelected.ToString(); // This needs formatting.
+            txtSumTagged.Text = TotalSelected.ToString("n2") + " " + MyCurrency;
+
+            ActionEnabledEvent(null, new ActionEventArgs("actPaySelected", TaggedInvoicesPayable));
+            ActionEnabledEvent(null, new ActionEventArgs("actPostSelected", TaggedInvoicesPostable));
+            ActionEnabledEvent(null, new ActionEventArgs("actTagAllPostable", ListHasItems));
+            ActionEnabledEvent(null, new ActionEventArgs("actTagAllPayable", ListHasItems));
+            ActionEnabledEvent(null, new ActionEventArgs("actUntagAll", ListHasItems));
+        }
+
+        private void grdInvoiceResult_Click(object sender, EventArgs e)
+        // I want to update the total tagged field, 
+        // but it needs to be performed AFTER the default processing so I'm using a timer.
+        {
+            System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
+
+            timer.Tick += new EventHandler(RefreshSumTagged);
+            timer.Interval = 100;
+            timer.Start();
         }
 
         private void FinishThread()
@@ -272,6 +330,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 }
 
                 ActionEnabledEvent(null, new ActionEventArgs("cndSelectedSupplier", grdSupplierResult.TotalPages > 0));
+
             }
             else
             {
@@ -289,13 +348,16 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     grdInvoiceResult.Focus();
                 }
 
-//              ActionEnabledEvent(null, new ActionEventArgs("cndSelectedDocument", grdInvoiceResult.TotalPages > 0));
             }
+            TabChange(null, null);
         }
 
         private void InitializeManualCode()
         {
             this.cmbSupplierCurrency.cmbCombobox.TextChanged += new System.EventHandler(this.SetSupplierFilters);
+
+            // I can't do this until I get a ledger number...
+            // TabChange(null, null);
         }
 
         private void EnableDisableUI(bool AEnable)
@@ -318,10 +380,15 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             if (FSupplierFindObject != null)
             {
-                FInvoiceTable = FSupplierFindObject.GetDataPagedResult(ANeededPage, APageSize, out ATotalRecords, out ATotalPages);
 
-                if (!FSearchForSuppliers)
+                if (FSearchForSuppliers)
                 {
+                    FSupplierTable = FSupplierFindObject.GetDataPagedResult(ANeededPage, APageSize, out ATotalRecords, out ATotalPages);
+                    return FSupplierTable;
+                }
+                else
+                {
+                    FInvoiceTable = FSupplierFindObject.GetDataPagedResult(ANeededPage, APageSize, out ATotalRecords, out ATotalPages);
                     FInvoiceTable.Columns.Add("DiscountMsg");
                     DataColumn Checkboxcolumn = new DataColumn("Selected", typeof(bool));
                     FInvoiceTable.Columns.Add(Checkboxcolumn);
@@ -348,9 +415,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                             }
                         }
                     }
+                    return FInvoiceTable;
                 }
 
-                return FInvoiceTable;
             }
             else
             {
@@ -540,20 +607,118 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 FPagedDataTable.DefaultView.RowFilter = RowFilter;
             }
         }
+
+        private void TagAllPostable(object sender, EventArgs e)
+        {
+            foreach (DataRow Row in FInvoiceTable.Rows)
+            {
+                if ("|POSTED|PARTPAID|PAID|".IndexOf(Row["a_document_status_c"].ToString()) < 0)
+                {
+                    Row["Selected"] = true;
+                }
+
+            }
+            RefreshSumTagged(null, null);
+        }
+
+        private void TagAllPayable(object sender, EventArgs e)
+        {
+            foreach (DataRow Row in FInvoiceTable.Rows)
+            {
+                if ("|POSTED|PARTPAID|".IndexOf(Row["a_document_status_c"].ToString()) > 0)
+                {
+                    Row["Selected"] = true;
+                }
+            }
+            RefreshSumTagged(null, null);
+        }
+
+        private void UntagAll(object sender, EventArgs e)
+        {
+            foreach (DataRow Row in FInvoiceTable.Rows)
+            {
+                Row["Selected"] = false;
+            }
+            RefreshSumTagged(null, null);
+        }
+
+        private AccountsPayableTDS LoadTaggedDocuments()
+        {
+            AccountsPayableTDS LoadDs = new AccountsPayableTDS();
+            foreach (DataRow Row in FInvoiceTable.Rows)
+            {
+                if (Row["Selected"].Equals(true))
+                {
+                    LoadDs.Merge(TRemote.MFinance.AP.WebConnectors.LoadAApDocument(FLedgerNumber, (int)Row["a_ap_number_i"]));
+                }
+            }
+
+            return LoadDs;
+        }
+
+        private void PayAllTagged(object sender, EventArgs e)
+        {
+            AccountsPayableTDS TempDS = LoadTaggedDocuments();
+        }
+
+        private void PostAllTagged(object sender, EventArgs e)
+        {
+            AccountsPayableTDS TempDS = LoadTaggedDocuments();
+
+            List<int> PostTheseDocs = new List<int>();
+            foreach (DataRow Row in FInvoiceTable.Rows)
+            {
+                if ((Row["Selected"].Equals(true) && ("|POSTED|PARTPAID|PAID|".IndexOf(Row["a_document_status_c"].ToString()) < 0)))
+                {
+                    PostTheseDocs.Add((int)Row["a_ap_number_i"]);
+                }
+            }
+            if (PostTheseDocs.Count > 0)
+            {
+                if (TFrmAPEditDocument.PostApDocumentList(TempDS, FLedgerNumber, PostTheseDocs))
+                {
+                    // TODO: print reports on successfully posted batch
+                    MessageBox.Show(Catalog.GetString("The tagged documents have been posted successfully!"));
+
+                    // TODO: show posting register of GL Batch?
+                }
+            }
+        }
+        
+        private void TabChange(object sender, EventArgs e)
+        {
+            if (tabSearchResult.SelectedTab == tpgOutstandingInvoices)
+            {
+                mniInvoice.Visible = true;
+                mniSupplier.Visible = false;
+
+                tbbEditSupplier.Visible = false;
+                tbbTransactions.Visible = false;
+                tbbNewSupplier.Visible = false;
+                tbbCreateInvoice.Visible = false;
+                tbbCreateCreditNote.Visible = false;
+                tbbSeparator0.Visible = false;
+                tbbSeparator1.Visible = false;
+                tbbPost.Visible = true;
+                tbbPay.Visible = true;
+            }
+            else
+            {
+                mniSupplier.Visible = true;
+                mniInvoice.Visible = false;
+
+                tbbEditSupplier.Visible = true;
+                tbbTransactions.Visible = true;
+                tbbNewSupplier.Visible = true;
+                tbbCreateInvoice.Visible = true;
+                tbbCreateCreditNote.Visible = true;
+                tbbSeparator0.Visible = true;
+                tbbSeparator1.Visible = true;
+                tbbPost.Visible = false;
+                tbbPay.Visible = false;
+            }
+            RefreshSumTagged(null, null);
+        }
     }
 }
 
-/* cut from APMain.yaml:
-
-    Menu:
-        mniFile:
-            mniReports: {Label=&Reports}
-            mniReprintPaymentReport: {Label=Reprint Pa&yment Report}
-            mniSeparator: {Label=-}
-            mniImport: {Label=&Import}
-            mniExport: {Label=&Export}
-            mniSeparator: {Label=-}
-            mniDefaults: {Label=AP &Defaults}
-            mniSeparator: {Label=-}
-
-*/

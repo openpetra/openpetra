@@ -229,6 +229,11 @@ namespace Ict.Petra.Server.App.Core.Security
                     {
                         string ParameterName = Parameter.ParameterType.ToString().Replace("&", "");
 
+                        if (ParameterName.IndexOf("System.Collections.Generic.List") == 0)
+                        {
+                            ParameterName = "LIST";
+                        }
+
                         if (ParameterName.Contains("."))
                         {
                             ParameterName = ParameterName.Substring(ParameterName.LastIndexOf(".") + 1);
