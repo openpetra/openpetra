@@ -334,11 +334,12 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Budget.WebConnectors
         TSubmitChangesResult SaveBudget(ref BudgetTDS AInspectDS,
                                         out TVerificationResultCollection AVerificationResult);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector)</summary>
-        System.Boolean ImportBudgets(Int32 ALedgerNumber,
-                                     System.String ACSVFileName,
-                                     System.String[] AFdlgSeparator,
-                                     ref BudgetTDS AImportDS,
-                                     out TVerificationResultCollection AVerificationResult);
+        System.Int32 ImportBudgets(Int32 ALedgerNumber,
+                                   Int32 ACurrentBudgetYear,
+                                   System.String ACSVFileName,
+                                   System.String[] AFdlgSeparator,
+                                   ref BudgetTDS AImportDS,
+                                   out TVerificationResultCollection AVerificationResult);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector)</summary>
         System.Int32 GetGLMSequenceForBudget(System.Int32 ALedgerNumber,
                                              System.String AAccountCode,

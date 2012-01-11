@@ -378,7 +378,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
                         for (int i = 1; i <= NumAccPeriods; i++)
                         {
-                            if (GetBudgetPeriod(ABudgetSeq, i) != GetBudgetPeriod(ABudgetSeq, 1))
+                            if (GetBudgetPeriodAmount(ABudgetSeq, i) != GetBudgetPeriodAmount(ABudgetSeq, 1))
                             {
                                 PeriodOfChange = i - 1;
                                 break;
@@ -609,7 +609,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         /// <param name="APeriodNumber"></param>
         /// <param name="ABudgetAmount"></param>
         /// <returns></returns>
-        private decimal GetBudgetPeriod(int ABudgetSequence, int APeriodNumber)
+        private decimal GetBudgetPeriodAmount(int ABudgetSequence, int APeriodNumber)
         {
             decimal retVal = 0;
 
