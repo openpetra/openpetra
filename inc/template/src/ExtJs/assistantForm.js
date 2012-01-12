@@ -140,6 +140,7 @@ me.items.add(Ext.create('Ext.FormPanel',
 {#IFDEF ONSHOW}
             {#ONSHOW}
 {#ENDIF ONSHOW}
+            MainForm.setHeight(50+Ext.getCmp('lowest-card-{#PAGENUMBER}').getPosition()[1]);
             window.scrollTo(0,0);
         },
 {#IFDEF ISVALID}
@@ -158,7 +159,8 @@ me.items.add(Ext.create('Ext.FormPanel',
         defaults     : {
             labelStyle : 'font-size:11px'
         },
-        items : [{#ITEMS}]
+        items : [{#ITEMS}
+         ,{xtype: 'label', name: 'lowest-card-{#PAGENUMBER}', id: 'lowest-card-{#PAGENUMBER}'}]
     }));
 
 {##SUBMITBUTTONDEFINITION}
