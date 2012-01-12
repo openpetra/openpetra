@@ -49,6 +49,11 @@ namespace Ict.Petra.Server.MPartner.queries
             // get the partner keys from the database
             try
             {
+                Console.WriteLine( "CONSOLE: Name of the CITY Extract: " + AParameters.Get("nameOfExtract"));
+                Console.WriteLine( "CONSOLE: Description of the CITY Extract: " + AParameters.Get("descriptionOfExtract"));
+                TLogging.Log( "LOG: Calculate CITY Extract....!!!ARW!!!"); // ARW
+                TLogging.Log( "LOG: Name of the CITY Extract: " + AParameters.Get("nameOfExtract"));
+                TLogging.Log( "LOG: Description of the CITY Extract: " + AParameters.Get("descriptionOfExtract"));
                 Boolean ReturnValue = false;
                 Boolean NewTransaction;
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
