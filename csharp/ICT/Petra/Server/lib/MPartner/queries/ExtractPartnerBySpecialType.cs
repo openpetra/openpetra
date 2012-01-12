@@ -70,19 +70,19 @@ namespace Ict.Petra.Server.MPartner.queries
                 string SqlStmt = TDataBase.ReadSqlFile("Partner.Queries.ExtractByPartnerSpecialType.sql");
                 // reading in parameters and getting them ready to be inserted into the query
                 // currently, query is for extract by city
-                OdbcParameter[] parameters = new OdbcParameter[4];
+                OdbcParameter[] parameters = new OdbcParameter[6];
                 parameters[0] = new OdbcParameter("param_explicit_specialtypes", OdbcType.VarChar);
-                parameters[0].Value = AParameters.Get("param_explicit_specialtypes").ToBool();
-//                parameters[1] = new OdbcParameter("param_dateFieldsIncluded", OdbcType.Bit); // field dates included?
-//                parameters[1].Value = false;
-//                parameters[1] = new OdbcParameter("Date", OdbcType.Date);
-//                parameters[1].Value = AParameters.Get("param_dateSet").ToDate();
-                parameters[1] =  new OdbcParameter("param_active", OdbcType.Bit);
-                parameters[1].Value = AParameters.Get("param_active").ToBool();
-                parameters[2] = new OdbcParameter("param_familiesOnly", OdbcType.Bit);
-                parameters[2].Value = AParameters.Get("param_familiesOnly").ToBool();
-                parameters[3] = new OdbcParameter("param_excludeNoSolicitations", OdbcType.Bit);
-                parameters[3].Value = AParameters.Get("param_excludeNoSolicitations").ToBool();
+                parameters[0].Value = AParameters.Get("param_explicit_specialtypes").ToString();
+                parameters[1] = new OdbcParameter("param_dateFieldsIncluded", OdbcType.Bit); // field dates included?
+                parameters[1].Value = false;
+                parameters[2] = new OdbcParameter("Date", OdbcType.Date);
+                parameters[2].Value = AParameters.Get("param_dateSet").ToDate();
+                parameters[3] =  new OdbcParameter("param_active", OdbcType.Bit);
+                parameters[3].Value = AParameters.Get("param_active").ToBool();
+                parameters[4] = new OdbcParameter("param_familiesOnly", OdbcType.Bit);
+                parameters[4].Value = AParameters.Get("param_familiesOnly").ToBool();
+                parameters[5] = new OdbcParameter("param_excludeNoSolicitations", OdbcType.Bit);
+                parameters[5].Value = AParameters.Get("param_excludeNoSolicitations").ToBool();
                 
                 TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
                 TLogging.Log("getting the data from the database");

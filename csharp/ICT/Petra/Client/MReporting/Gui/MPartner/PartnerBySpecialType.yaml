@@ -57,7 +57,7 @@ RootNode:
             Controls: 
                 Row0: [txtDateSet]
 #                Row1: [txtKeysExtracted, txtExtractSegment]
-        chkActivePartners: {Label=Active Partners, CheckBoxAttachedLabel=right,ParameterName=param_active}
+        chkActivePartners: {Label=Active Partners Only, CheckBoxAttachedLabel=right,ParameterName=param_active}
         chkMailingAddressesOnly: {Label=Mailing Addresses Only, CheckBoxAttachedLabel=right, ParameterName=param_mailingAddressesOnly}
         chkFamiliesOnly: {Label=Families Only, CheckBoxAttachedLabel=right, ParameterName=param_familiesOnly}
         chkExcludeNoSolicitations: {Label=Exclude 'No Solicitations', CheckBoxAttachedLabel=right, ParameterName=param_excludeNoSolicitations}
