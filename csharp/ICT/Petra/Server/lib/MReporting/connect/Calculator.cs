@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -139,6 +139,13 @@ namespace Ict.Petra.Server.MReporting.LogicConnectors
                 if (Calculate() && (Parameters.Get("CancelReportCalculation").ToBool() != true))
                 {
                     resultlist = this.Results;
+
+                    if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_REPORTING)
+                    {
+                        Parameters.Save(Path.GetDirectoryName(
+                                TSrvSetting.ServerLogFile) + Path.DirectorySeparatorChar + "LogParamAfterCalculation.xml", true);
+                    }
+
                     ReturnValue = true;
                 }
             }
