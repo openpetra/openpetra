@@ -2488,18 +2488,14 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             TSubmitChangesResult Result = TSubmitChangesResult.scrOK;
             TSubmitChangesResult TmpResult;
 
-            // this is not the cleanest solution: but removing the location 0 from changed records avoids a lot of trouble
-            // TODO properly fix this on the client and make sure that the exceptions are thrown here
-            for (Int16 LocationCounter = 0; LocationCounter <= LocationTable.Rows.Count - 1; LocationCounter++)
+            for (Int16 LocationCounter = 0; LocationCounter < LocationTable.Rows.Count; LocationCounter++)
             {
                 if ((LocationTable.Rows[LocationCounter].RowState == DataRowState.Added)
                     || (LocationTable.Rows[LocationCounter].RowState == DataRowState.Modified))
                 {
                     if (LocationTable[LocationCounter].LocationKey == 0)
                     {
-                        LocationTable.Rows.RemoveAt(LocationCounter);
-                        LocationCounter--;
-                        // throw new Exception("TPPartnerAddress.ProcessLocationChanges: must not add or modify the empty location");
+                        throw new Exception("TPPartnerAddress.ProcessLocationChanges: must not add or modify the empty location");
                     }
                 }
 
@@ -2508,15 +2504,10 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                     if (Convert.ToInt32(LocationTable[LocationCounter][PLocationTable.GetLocationKeyDBName(),
                                                                        DataRowVersion.Original]) == 0)
                     {
-                        LocationTable.Rows.RemoveAt(LocationCounter);
-                        LocationCounter--;
-                        // throw new Exception("TPPartnerAddress.ProcessLocationChanges: must not delete the empty location");
+                        throw new Exception("TPPartnerAddress.ProcessLocationChanges: must not delete the empty location");
                     }
                 }
-            }
 
-            for (Int16 LocationCounter = 0; LocationCounter <= LocationTable.Rows.Count - 1; LocationCounter += 1)
-            {
                 if (LocationTable.Rows[LocationCounter].RowState == DataRowState.Added)
                 {
                     bool ReUseSimilarLocation = false;
