@@ -624,6 +624,10 @@ namespace Ict.Common
                     {
                         value = new TVariant((String)valuestr, true);
                     }
+                    else if (typestr == eVariantTypes.eEmpty.ToString())
+                    {
+                        value = new TVariant();
+                    }
                     else
                     {
                         value = new TVariant(valuestr);

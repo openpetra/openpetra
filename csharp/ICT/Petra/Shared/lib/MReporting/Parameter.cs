@@ -340,7 +340,14 @@ namespace Ict.Petra.Shared.MReporting
         {
             foreach (TParameter param in AOtherList.parameters)
             {
-                if (!Exists(param.name))
+                /*
+                 * Do not use ParameterList.Exists() because that
+                 * function should be renamed to
+                 * ParameterList.ExistsOrEmpty(). We only actually
+                 * want to check ParamterList.Exists() here. Instead,
+                 * just check if GetParamter() returns null.
+                 */
+                if (GetParameter(param.name) == null)
                 {
                     Add(param.name, param.value, param.column);
                 }
