@@ -311,6 +311,9 @@ namespace Ict.Petra.Client.App.PetraClient
         /// </summary>
         public static void StartUp()
         {
+            string UsersLanguageCode;
+            string UsersCultureCode;
+            
             try
             {
                 new TAppSettingsManager();
@@ -325,7 +328,7 @@ namespace Ict.Petra.Client.App.PetraClient
                 TClientTasksQueue.ClientTasksInstanceType = typeof(TClientTaskInstance);
                 TConnectionManagementBase.ConnectorType = typeof(TConnector);
                 TConnectionManagementBase.GConnectionManagement = new TConnectionManagement();
-
+                
                 // TODO another Catalog.Init("org", "./locale") for organisation specific words?
             }
             catch (Exception e)
@@ -364,6 +367,27 @@ namespace Ict.Petra.Client.App.PetraClient
                 Environment.Exit(0);
             }
 
+            /*
+             *  Initialise Application Help
+             */
+            Ict.Common.HelpLauncher.LocalHTMLHelp = TClientSettings.LocalHTMLHelp;
+            
+            if (TClientSettings.LocalHTMLHelp) 
+            {                
+                Ict.Common.HelpLauncher.HelpHTMLBaseURL = TClientSettings.HTMLHelpBaseURLLocal;    
+            }
+            else
+            {
+                Ict.Common.HelpLauncher.HelpHTMLBaseURL = TClientSettings.HTMLHelpBaseURLOnInternet;    
+                
+                if (!Ict.Common.HelpLauncher.HelpHTMLBaseURL.EndsWith("/"))
+                {
+                    Ict.Common.HelpLauncher.HelpHTMLBaseURL = Ict.Common.HelpLauncher.HelpHTMLBaseURL + "/";
+                }
+            }
+            
+            Ict.Common.HelpLauncher.DetermineHelpTopic += new Ict.Common.HelpLauncher.TDetermineHelpTopic(Ict.Petra.Client.App.Core.THelpContext.DetermineHelpTopic);
+            
             /*
              * Specific information about this Petra installation can only be shown in the
              * Splash Screen after Client settings are loaded (done in LoadClientSettings).
@@ -421,6 +445,10 @@ namespace Ict.Petra.Client.App.PetraClient
             {
                 try
                 {
+                    // Set Application Help language to the User's preferred language
+                    TRemote.MSysMan.Maintenance.WebConnectors.GetLanguageAndCulture(out UsersLanguageCode, out UsersCultureCode);                   
+                    Ict.Common.HelpLauncher.HelpLanguage = UsersLanguageCode;                    
+                    
                     if (TClientSettings.RunAsStandalone == true)
                     {
                         ProcessReminders.StartStandaloneRemindersProcessing();

@@ -51,8 +51,10 @@ namespace Ict.Petra.Client.CommonDialogs
     /// <summary>
     /// login form for authentication of Petra user
     /// </summary>
-    public partial class TLoginForm : System.Windows.Forms.Form
+    public partial class TLoginForm : System.Windows.Forms.Form, Ict.Petra.Client.CommonForms.IFrmPetra
     {
+    	private TFrmPetraUtils FPetraUtilsObject;
+    	
         private static bool FPreviouslyShown = false;
 
         /// <summary>todoComment</summary>
@@ -118,6 +120,8 @@ namespace Ict.Petra.Client.CommonDialogs
             this.Text = Catalog.GetString("OpenPetra Login");
             #endregion
 
+            FPetraUtilsObject = new Ict.Petra.Client.CommonForms.TFrmPetraUtils(null, this, null);
+            
             this.Text = PETRA_LOGIN_FORMTITLE;
 
             //this.Height = 142;
@@ -156,6 +160,12 @@ namespace Ict.Petra.Client.CommonDialogs
             }
         }
 
+        void TLoginForm_Activated(object sender, EventArgs e)
+        {
+            // Needed to make sure the user can activate the Application Help
+        	RunOnceOnActivation();            
+        }
+       
         private void TLoginForm_Shown(System.Object sender, System.EventArgs e)
         {
             if (!FPreviouslyShown)
@@ -550,5 +560,39 @@ namespace Ict.Petra.Client.CommonDialogs
 
             return FConnectionEstablished;
         }
+
+#region Implement interface functions
+
+    /// auto generated
+    public void RunOnceOnActivation()
+    {
+    	FPetraUtilsObject.TFrmPetra_Activated(this, null);
+    }
+
+    /// <summary>
+    /// Adds event handlers for the appropiate onChange event to call a central procedure
+    /// </summary>
+    public void HookupAllControls()
+    {
+    }
+
+    /// auto generated
+    public void HookupAllInContainer(Control container)
+    {
+        FPetraUtilsObject.HookupAllInContainer(container);
+    }
+
+    /// auto generated
+    public bool CanClose()
+    {
+        return FPetraUtilsObject.CanClose();
+    }
+
+    /// auto generated
+    public TFrmPetraUtils GetPetraUtilsObject()
+    {
+        return (TFrmPetraUtils)FPetraUtilsObject;
+    }
+#endregion
     }
 }
