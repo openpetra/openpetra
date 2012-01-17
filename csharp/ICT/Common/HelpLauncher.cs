@@ -276,8 +276,9 @@ namespace Ict.Common
             }
             else
             {
-                AURL = FHelpHTMLBaseURL + PathSeparator + FHelpLanguage + PathSeparator +
+                AURL = FHelpHTMLBaseURL + PathSeparator + 
                        ApplicationVersion.Major + "_" + ApplicationVersion.Minor + "_" + ApplicationVersion.Build + PathSeparator +
+                       FHelpLanguage + PathSeparator +
                        "content" + PathSeparator + AURL;
             }
 
