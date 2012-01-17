@@ -28,6 +28,7 @@ using System.Data;
 using System.Data.Odbc;
 using System.Data.Common;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.IO;
 using System.Xml;
@@ -2128,11 +2129,12 @@ namespace Ict.Common.DB
                 throw new Exception("cannot open file " + ASqlFilename);
             }
 
+            Regex DecommenterRegex = new Regex(@"\s--.*");
             while ((line = reader.ReadLine()) != null)
             {
                 if (!line.Trim().StartsWith("--"))
                 {
-                    stmt += line.Trim() + Environment.NewLine;
+                    stmt += DecommenterRegex.Replace(line.Trim(), "") + Environment.NewLine;
                 }
             }
 
