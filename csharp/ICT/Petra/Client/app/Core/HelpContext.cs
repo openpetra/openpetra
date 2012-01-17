@@ -37,8 +37,7 @@ namespace Ict.Petra.Client.App.Core
     public static class THelpContext
     {
         private static bool FHelpTopicsLookupTableLoaded = false;
-        private static XPathDocument doc;
-        private static XPathNavigator nav;
+        private static XPathNavigator FXMLFileNavigation;
 
         /// <summary>
         /// Delegate that retrieves the help topic.
@@ -133,65 +132,66 @@ namespace Ict.Petra.Client.App.Core
             return ReturnValue;
         }
 
+        /// <summary>
+        /// Retrieves the Help Topic associated with a certain Control on a Form.
+        /// </summary>
+        /// <param name="AControl">Control.</param>
+        /// <returns>Help Topic URL part if there is a Help Topic associated with the Control, otherwise String.Empty.</returns>
         private static string HelpTopicForHelpContextControl(Control AControl)
         {
             string ReturnValue = String.Empty;
             string HelpContext = AControl.FindForm().GetType().Name + "." + AControl.Name;
 
-            // TODO: Look up help topic in an XML file instead of using the hard-coded if-statements, which are only for experimenting.
-            if (HelpContext == "TFrmSetupCurrency.pnlDetails")
-            {
-                ReturnValue = "scroll-bookmark-14.html#scroll-bookmark-17";
-            }
+            XPathExpression expr = FXMLFileNavigation.Compile("/pageGuide/page[@context='" + HelpContext + "']/link");
+            XPathNodeIterator iterator = FXMLFileNavigation.Select(expr);
 
-            if (HelpContext == "TFrmSetupCurrency.pnlButtons")
+            while (iterator.MoveNext())
             {
-                ReturnValue = "scroll-bookmark-3.html";
-            }
-
-            if (HelpContext == "TFrmGiftBatch.ucoTransactions")
-            {
-                ReturnValue = "scroll-bookmark-7.html#scroll-bookmark-9";
+                XPathNavigator nav2 = iterator.Current.Clone();
+                ReturnValue = nav2.Value;
             }
 
             return ReturnValue;
         }
 
+        /// <summary>
+        /// Retrieves the Help Topic associated with a Form.
+        /// </summary>
+        /// <param name="AFormTypeName">Type of the Form as a string.</param>
+        /// <returns>Help Topic URL part if there is a Help Topic associated with the Form, otherwise String.Empty.</returns>
         private static string HelpTopicForHelpContextForm(string AFormTypeName)
         {
             string ReturnValue = String.Empty;
 
-            // TODO: Look up help topic in an XML file instead of using the hard-coded if-statements, which are only for experimenting.
-            if (AFormTypeName == "TLoginForm")
-            {
-                ReturnValue = "scroll-bookmark-14.html#scroll-bookmark-17";
-            }
+            XPathExpression expr = FXMLFileNavigation.Compile("/pageGuide/page[@context='" + AFormTypeName + "']/link");
+            XPathNodeIterator iterator = FXMLFileNavigation.Select(expr);
 
-            if (AFormTypeName == "TFrmSetupCurrency")
+            while (iterator.MoveNext())
             {
-                ReturnValue = "scroll-bookmark-3.html#scroll-bookmark-5";
-            }
-
-            if (AFormTypeName == "TFrmGiftBatch")
-            {
-                ReturnValue = "scroll-bookmark-7.html#scroll-bookmark-8";
+                XPathNavigator nav2 = iterator.Current.Clone();
+                ReturnValue = nav2.Value;
             }
 
             return ReturnValue;
         }
 
+        /// <summary>
+        /// Loads the Form/Control and Help Topic associations from an XML file.
+        /// </summary>
+        /// <remarks>XML file is loaded only once and then remains cached.</remarks>
         private static void LoadHelpTopicsLookupTable()
         {
+            const string HELPTOPICS_XML_FILENAME = "HelpTopics.xml";
             FHelpTopicsLookupTableLoaded = true;
 
-            MessageBox.Show("Loading the Form/Control and Help Topic associations from an XML file...");
-
-            // TODO: Load the Form/Control and Help Topic associations from an XML file!
-
-//            string fileName = "data.xml";
-//            doc = new XPathDocument(fileName);
-//            nav = doc.CreateNavigator();
-//            ...
+            // The XML File that holds the Form/Control and Help Topic associations is found where
+            // the UINavigation.yml file is found, too.
+            string Tmp = TAppSettingsManager.GetValue("UINavigation.File");
+            Tmp = Tmp.Substring(0, Tmp.LastIndexOf("/") + 1);
+            string HelpTopicsXMLFileName = Tmp + HELPTOPICS_XML_FILENAME;
+            
+            // Load the XML File and prepare it for XPath Queries
+            FXMLFileNavigation = new XPathDocument(HelpTopicsXMLFileName).CreateNavigator();
         }
     }
 }

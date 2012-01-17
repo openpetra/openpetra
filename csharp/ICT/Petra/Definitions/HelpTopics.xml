@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<pageGuide>
+  <page context="TLoginForm">
+    <link>scroll-bookmark-2.html</link>
+  </page>
+  <page context="TFrmSetupCurrency">
+    <link>scroll-bookmark-16.html#scroll-bookmark-15</link>
+  </page>
+  <page context="TFrmGiftBatch">
+    <link>scroll-bookmark-7.html#scroll-bookmark-8</link>
+  </page>
+  <page context="TFrmSetupCurrency.pnlDetails">
+    <link>scroll-bookmark-16.html#scroll-bookmark-17</link>
+  </page>
+  <page context="TFrmSetupCurrency.pnlButtons">
+    <link>scroll-bookmark-3.html</link>
+  </page>
+  <page context="TFrmGiftBatch.ucoTransactions">
+    <link>scroll-bookmark-7.html#scroll-bookmark-9</link>
+  </page>
+</pageGuide>
