@@ -47,20 +47,22 @@ RootNode:
             Height: 200
         pnlSpecialTypeOptionsRight:
             Controls:
-                Row0: [chkActivePartners]
-                Row1: [chkMailingAddressesOnly]
-                Row2: [chkFamiliesOnly]
-                Row3: [chkExcludeNoSolicitations]
-                Row4: [txtNameOfExtract]
-                Row5: [txtExtractDescription]
+#                Row0: [chkActivePartners]
+#                Row1: [chkMailingAddressesOnly]
+#                Row2: [chkFamiliesOnly]
+#                Row3: [chkExcludeNoSolicitations]
+                Row0: [txtNameOfExtract]
+                Row1: [txtExtractDescription]
+                Row2: [ucoReportExtract]
+
         pnlSpecialTypeOptionsBottom:
             Controls: 
                 Row0: [txtDateSet]
 #                Row1: [txtKeysExtracted, txtExtractSegment]
-        chkActivePartners: {Label=Active Partners Only, CheckBoxAttachedLabel=right,ParameterName=param_active}
-        chkMailingAddressesOnly: {Label=Mailing Addresses Only, CheckBoxAttachedLabel=right, ParameterName=param_mailingAddressesOnly}
-        chkFamiliesOnly: {Label=Families Only, CheckBoxAttachedLabel=right, ParameterName=param_familiesOnly}
-        chkExcludeNoSolicitations: {Label=Exclude 'No Solicitations', CheckBoxAttachedLabel=right, ParameterName=param_excludeNoSolicitations}
+#        chkActivePartners: {Label=Active Partners Only, CheckBoxAttachedLabel=right,ParameterName=param_active}
+#        chkMailingAddressesOnly: {Label=Mailing Addresses Only, CheckBoxAttachedLabel=right, ParameterName=param_mailingAddressesOnly}
+#        chkFamiliesOnly: {Label=Families Only, CheckBoxAttachedLabel=right, ParameterName=param_familiesOnly}
+#        chkExcludeNoSolicitations: {Label=Exclude 'No Solicitations', CheckBoxAttachedLabel=right, ParameterName=param_excludeNoSolicitations}
         txtCity:
             Label: Town/City
             ParameterName: param_city
@@ -81,6 +83,6 @@ RootNode:
             ParameterName: param_dateSet
         txtNameOfExtract: {ParameterName=nameOfExtract}
         txtExtractDescription: {ParameterName=descriptionOfExtract}
-#        chkSaveCSV: {Label: Save data in a CSV file, CheckBoxAttachedLabel=right}
-#        txtKeysExtracted: {Label: Keys Extracted, ReadOnly=true}
-#        txtExtractSegment: {Label: Extract Segment, ReadOnly=true}
+        ucoReportExtract:
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_Extract
+            Dock: Fill

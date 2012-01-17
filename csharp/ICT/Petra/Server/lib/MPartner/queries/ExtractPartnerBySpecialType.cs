@@ -51,7 +51,18 @@ namespace Ict.Petra.Server.MPartner.queries
             {
                 TLogging.Log( "Name of the SPECIAL TYPE Extract: " + AParameters.Get("nameOfExtract"));
                 TLogging.Log( "Description of the SPECIAL TYPE Extract: " + AParameters.Get("descriptionOfExtract"));
-
+                TLogging.Log( "ARW LOG: Parameters received: \n\t" +
+//                             AParameters.Get("param_city") + "\n\t" +
+//                             AParameters.Get("param_from") + "\n\t" +
+//                             AParameters.Get("param_to") + "\n\t" +
+//                             AParameters.Get("param_region") + "\n\t" +
+//                             AParameters.Get("param_country") + "\n\t" +
+//                             AParameters.Get("param_dateSet") + "\n\t" +
+                             "param_active: "+ AParameters.Get("param_active") + "\n\t" +
+                             "param_mailingOnly: "+ AParameters.Get("param_mailingAddressesOnly") + "\n\t" +
+                             "param_familiesOnly: "+ AParameters.Get("param_familiesOnly") + "\n\t" +
+                             "param_excludeNoSolicitations: "+ AParameters.Get("param_excludeNoSolicitations") + "\n\t" +
+                             "param_explicit_specialtypes: "+ AParameters.Get("param_explicit_specialtypes"));
                 Boolean ReturnValue = false;
                 Boolean NewTransaction;
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
