@@ -50,7 +50,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         private Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_PersonalLanguages FUcoPersonalLanguages;
 		private Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_Abilities FUcoPersonalAbilities;
 		private Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_Passport FUcoPassportDetails;
-		private Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_PersonalData FUcoPersonalData;
+		//private Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_PersonalData FUcoPersonalData;
+		private Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_EmergencyData FUcoEmergencyData;
 
         /// <summary>
         /// Enumeration of dynamic loadable UserControls which are used
@@ -212,7 +213,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FPartnerEditTDS.Tables[PmPassportDetailsTable.GetTableName()].Merge(FMainDS.PmPassportDetails);
                 }
                 
-                //Personal Data
+                /*//Personal Data
                 if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucPersonalData))
                 {
                     TUC_IndividualData_PersonalData UCPersonalData =
@@ -227,7 +228,23 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FPartnerEditTDS.Tables[PPersonTable.GetTableName()].Rows.Clear();
                     FPartnerEditTDS.Tables[PPersonTable.GetTableName()].Merge(FMainDS.PPerson);
                 }
-                
+                */
+                    
+                //Emergency Data
+                if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucPassportDetails))
+                {
+                    TUC_IndividualData_Passport UCPassport =
+                        (TUC_IndividualData_Passport)FUserControlSetup[TDynamicLoadableUserControls.dlucPassportDetails];
+                    UCPassport.GetDataFromControls2();
+
+                    if (!FPartnerEditTDS.Tables.Contains(PmPassportDetailsTable.GetTableName()))
+                    {
+                        FPartnerEditTDS.Tables.Add(new PmPassportDetailsTable());
+                    }
+
+                    FPartnerEditTDS.Tables[PmPassportDetailsTable.GetTableName()].Rows.Clear();
+                    FPartnerEditTDS.Tables[PmPassportDetailsTable.GetTableName()].Merge(FMainDS.PmPassportDetails);
+                }
                 // TODO add code for all remaining Individual Data Items
             }
         }
@@ -431,22 +448,54 @@ namespace Ict.Petra.Client.MPartner.Gui
                     ReturnValue = ucoPassportDetails;
                     break;
                     
-                case TDynamicLoadableUserControls.dlucPersonalData:
+//                case TDynamicLoadableUserControls.dlucPersonalData:
+//                    // Create a Panel that hosts the UserControl. This is needed to allow scrolling of content in case the screen is too small to shown the whole UserControl
+//                    Panel pnlHostForUCPersonalData = new Panel();
+//                    pnlHostForUCPersonalData.AutoSize = true;
+//                    pnlHostForUCPersonalData.Dock = System.Windows.Forms.DockStyle.Fill;
+//                    pnlHostForUCPersonalData.Location = new System.Drawing.Point(0, 0);
+//                    pnlHostForUCPersonalData.Padding = new System.Windows.Forms.Padding(2);
+//                    pnlSelectedIndivDataItem.Controls.Add(pnlHostForUCPersonalData);
+//
+//                    // Create the UserControl
+//                    Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_PersonalData ucoPersonalData =
+//                        new Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_PersonalData();
+//                    FUserControlSetup.Add(TDynamicLoadableUserControls.dlucPersonalData, ucoPersonalData);
+//                    ucoPersonalData.Location = new Point(0, 2);
+//                    ucoPersonalData.Dock = DockStyle.Fill;
+//                    pnlHostForUCPersonalData.Controls.Add(ucoPersonalData);
+//
+//                    /*
+//                     * The following four commands seem strange and unnecessary; however, they are necessary
+//                     * to make things scale correctly on "Large Fonts (120DPI)" display setting.
+//                     */
+//                    if (TClientSettings.GUIRunningOnNonStandardDPI)
+//                    {
+//                        this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
+//                        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+//                        pnlHostForUCPersonalData.Dock = System.Windows.Forms.DockStyle.None;
+//                        pnlHostForUCPersonalData.Dock = System.Windows.Forms.DockStyle.Fill;
+//                    }
+//
+//                    ReturnValue = ucoPersonalData;
+//                    break;
+
+                case TDynamicLoadableUserControls.dlucEmergencyData:
                     // Create a Panel that hosts the UserControl. This is needed to allow scrolling of content in case the screen is too small to shown the whole UserControl
-                    Panel pnlHostForUCPersonalData = new Panel();
-                    pnlHostForUCPersonalData.AutoSize = true;
-                    pnlHostForUCPersonalData.Dock = System.Windows.Forms.DockStyle.Fill;
-                    pnlHostForUCPersonalData.Location = new System.Drawing.Point(0, 0);
-                    pnlHostForUCPersonalData.Padding = new System.Windows.Forms.Padding(2);
-                    pnlSelectedIndivDataItem.Controls.Add(pnlHostForUCPersonalData);
+                    Panel pnlHostForUCEmergencyData = new Panel();
+                    pnlHostForUCEmergencyData.AutoSize = true;
+                    pnlHostForUCEmergencyData.Dock = System.Windows.Forms.DockStyle.Fill;
+                    pnlHostForUCEmergencyData.Location = new System.Drawing.Point(0, 0);
+                    pnlHostForUCEmergencyData.Padding = new System.Windows.Forms.Padding(2);
+                    pnlSelectedIndivDataItem.Controls.Add(pnlHostForUCEmergencyData);
 
                     // Create the UserControl
-                    Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_PersonalData ucoPersonalData =
-                        new Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_PersonalData();
-                    FUserControlSetup.Add(TDynamicLoadableUserControls.dlucPersonalData, ucoPersonalData);
-                    ucoPersonalData.Location = new Point(0, 2);
-                    ucoPersonalData.Dock = DockStyle.Fill;
-                    pnlHostForUCPersonalData.Controls.Add(ucoPersonalData);
+                    Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_EmergencyData ucoEmergencyData =
+                        new Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_EmergencyData();
+                    FUserControlSetup.Add(TDynamicLoadableUserControls.dlucEmergencyData, ucoEmergencyData);
+                    ucoEmergencyData.Location = new Point(0, 2);
+                    ucoEmergencyData.Dock = DockStyle.Fill;
+                    pnlHostForUCEmergencyData.Controls.Add(ucoEmergencyData);
 
                     /*
                      * The following four commands seem strange and unnecessary; however, they are necessary
@@ -456,11 +505,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                     {
                         this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
                         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-                        pnlHostForUCPersonalData.Dock = System.Windows.Forms.DockStyle.None;
-                        pnlHostForUCPersonalData.Dock = System.Windows.Forms.DockStyle.Fill;
+                        pnlHostForUCEmergencyData.Dock = System.Windows.Forms.DockStyle.None;
+                        pnlHostForUCEmergencyData.Dock = System.Windows.Forms.DockStyle.Fill;
                     }
 
-                    ReturnValue = ucoPersonalData;
+                    ReturnValue = ucoEmergencyData;
                     break;
 
                     // TODO Add case code blocks for all remaining Individual Data Items
@@ -686,9 +735,50 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 FUcoPassportDetails.Parent.BringToFront();
             }
-            else if (ASender == llbPersonalData)
+//            else if (ASender == llbPersonalData)
+//            {
+//                if (!FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucPersonalData))
+//                {
+//                    if (TClientSettings.DelayedDataLoading)
+//                    {
+//                        // Signalise the user that data is beeing loaded
+//                        this.Cursor = Cursors.AppStarting;
+//                    }
+//
+//                    FUcoPersonalData = (Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_PersonalData)DynamicLoadUserControl(
+//                        TDynamicLoadableUserControls.dlucPersonalData);
+//                    FUcoPersonalData.MainDS = FMainDS;
+//                    FUcoPersonalData.PetraUtilsObject = FPetraUtilsObject;
+//                    FUcoPersonalData.PartnerEditUIConnector = FPartnerEditUIConnector;
+//                    FUcoPersonalData.SpecialInitUserControl(FMainDS);
+//                    FUcoPersonalData.InitUserControl();
+//                    ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoPersonalData);
+//
+//                    SendAllOtherItemsToBackExcluding("FUcoPersonalData");
+//
+////	TODO                OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
+//
+//                    this.Cursor = Cursors.Default;
+//                }
+//                else
+//                {
+////	TODO                OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "SubsequentActivation"));
+//
+//                    /*
+//                     * The following command seems strange and unnecessary; however, it is necessary
+//                     * to make things scale correctly on "Large Fonts (120DPI)" display setting.
+//                     */
+//                    if (TClientSettings.GUIRunningOnNonStandardDPI)
+//                    {
+//                        FUcoPersonalData.AdjustAfterResizing();
+//                    }
+//                }
+//
+//                FUcoPersonalData.Parent.BringToFront();
+//            }
+            else if (ASender == llbEmergencyData)
             {
-                if (!FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucPersonalData))
+                if (!FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucEmergencyData))
                 {
                     if (TClientSettings.DelayedDataLoading)
                     {
@@ -696,16 +786,16 @@ namespace Ict.Petra.Client.MPartner.Gui
                         this.Cursor = Cursors.AppStarting;
                     }
 
-                    FUcoPersonalData = (Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_PersonalData)DynamicLoadUserControl(
-                        TDynamicLoadableUserControls.dlucPersonalData);
-                    FUcoPersonalData.MainDS = FMainDS;
-                    FUcoPersonalData.PetraUtilsObject = FPetraUtilsObject;
-                    FUcoPersonalData.PartnerEditUIConnector = FPartnerEditUIConnector;
-                    FUcoPersonalData.SpecialInitUserControl(FMainDS);
-                    FUcoPersonalData.InitUserControl();
-                    ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoPersonalData);
+                    FUcoEmergencyData = (Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_EmergencyData)DynamicLoadUserControl(
+                        TDynamicLoadableUserControls.dlucEmergencyData);
+                    FUcoEmergencyData.MainDS = FMainDS;
+                    FUcoEmergencyData.PetraUtilsObject = FPetraUtilsObject;
+                    FUcoEmergencyData.PartnerEditUIConnector = FPartnerEditUIConnector;
+                    FUcoEmergencyData.SpecialInitUserControl(FMainDS);
+                    FUcoEmergencyData.InitUserControl();
+                    ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoEmergencyData);
 
-                    SendAllOtherItemsToBackExcluding("FUcoPersonalData");
+                    SendAllOtherItemsToBackExcluding("FUcoEmergencyData");
 
 //	TODO                OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
 
@@ -721,11 +811,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                      */
                     if (TClientSettings.GUIRunningOnNonStandardDPI)
                     {
-                        FUcoPersonalData.AdjustAfterResizing();
+                        FUcoEmergencyData.AdjustAfterResizing();
                     }
                 }
 
-                FUcoPersonalData.Parent.BringToFront();
+                FUcoEmergencyData.Parent.BringToFront();
             }
 
             // TODO Add else branch for all remaining Individual Data Items
@@ -759,9 +849,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 FUcoPassportDetails.SendToBack();
             }
-            if (FUcoPassportDetails != null && exclude != "FUcoPersonalData")
+//            if (FUcoPassportDetails != null && exclude != "FUcoPersonalData")
+//            {
+//                FUcoPersonalData.SendToBack();
+//            }
+            if (FUcoEmergencyData != null && exclude != "FUcoEmergencyData")
             {
-                FUcoPersonalData.SendToBack();
+                FUcoEmergencyData.SendToBack();
             }
             
             //TODO Add the other individualData items here.

@@ -36,7 +36,7 @@ using Ict.Petra.Shared.MPersonnel.Person;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
-    public partial class TUC_IndividualData_PersonalData
+    public partial class TUC_IndividualData_EmergencyData
     {
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
@@ -73,10 +73,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // There hasn't been data stored yet, so create a new Record
                 FMainDS.PPerson.Rows.Add(FMainDS.PPerson.NewRowTyped(true));
                 // ... and set its Primary Key
-                //FMainDS.PPerson[0].PartnerKey = FMainDS.PPerson[0].PartnerKey;
+                FMainDS.PPerson[0].PartnerKey = FMainDS.PPerson[0].PartnerKey;
             }
 
-            ShowData(FMainDS.PPerson[0]);
+            ShowData(FMainDS.PmPersonalData[0]);
         }
 
         /// <summary>
@@ -86,10 +86,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void GetDataFromControls2()
         {
-            //TODO FIX ME!!!!  The following line of code should not be here, for it is a work-around for the generator bug.
-            Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonRow myTempRow = (Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonRow)FMainDS.PPerson[0];
-            //GetDataFromControls(FMainDS.PPerson[0]);
-            GetDataFromControls(myTempRow);
+            GetDataFromControls(FMainDS.PmPersonalData[0]);
         }
 
         /// <summary>
@@ -112,28 +109,28 @@ namespace Ict.Petra.Client.MPartner.Gui
             try
             {
                 // Make sure that Typed DataTables are already there at Client side
-                if (FMainDS.PPerson == null)
+                if (FMainDS.PmPersonalData == null)
                 {
-                    FMainDS.Tables.Add(new PPersonTable());
+                    FMainDS.Tables.Add(new PmPersonalDataTable());
                     FMainDS.InitVars();
                 }
 
                 if (TClientSettings.DelayedDataLoading
-                    && (FMainDS.PPerson.Rows.Count == 0))
+                    && (FMainDS.PmPersonalData.Rows.Count == 0))
                 {
-                    FMainDS.Merge(FPartnerEditUIConnector.GetDataPersonnelIndividualData(TIndividualDataItemEnum.idiPersonalData));
+                    FMainDS.Merge(FPartnerEditUIConnector.GetDataPersonnelIndividualData(TIndividualDataItemEnum.idiEmergencyData));
 
                     // Make DataRows unchanged
-                    if (FMainDS.PPerson.Rows.Count > 0)
+                    if (FMainDS.PmPersonalData.Rows.Count > 0)
                     {
-                        if (FMainDS.PPerson.Rows[0].RowState != DataRowState.Added)
+                        if (FMainDS.PmPersonalData.Rows[0].RowState != DataRowState.Added)
                         {
-                            FMainDS.PPerson.AcceptChanges();
+                            FMainDS.PmPersonalData.AcceptChanges();
                         }
                     }
                 }
 
-                if (FMainDS.PPerson.Rows.Count != 0)
+                if (FMainDS.PmPersonalData.Rows.Count != 0)
                 {
                     ReturnValue = true;
                 }

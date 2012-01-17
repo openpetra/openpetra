@@ -49,7 +49,7 @@ RootNode:
 
         llbOverview: {Label=[&v] Overview, Action=actIndivDataItemSelected}
         llbPersonalData: {Label=[&c] Personal Data, Action=actIndivDataItemSelected}
-        llbEmergencyData: {Label=[&d] Emergency Data, Enabled=false, Action=actIndivDataItemSelected}
+        llbEmergencyData: {Label=[&d] Emergency Data, Action=actIndivDataItemSelected}
         llbPassportDetails: {Label=[&e] Passport Details ({0}), Action=actIndivDataItemSelected}
         llbPersonalDocuments: {Label=[&f] Personal Documents ({0}), Enabled=false, Action=actIndivDataItemSelected}
         llbSpecialNeeds: {Label=[&g] Special Needs, Action=actIndivDataItemSelected}

@@ -13,7 +13,10 @@ RootNode:
             Dock: Fill
        
         pnlEmergencyData:
-            Controls: [txtHeightCm, txtWeightKg, cmbEyeColour, cmbHairColour, cmbFacialHair, txtIdentifyingMarks]
+            Dock: Top
+            Controls: 
+                Column0: [txtHeightCm, txtWeightKg, cmbEyeColour, cmbHairColour, cmbFacialHair]
+                Column1: [txtIdentifyingMarks]
                    
         txtHeightCm:
             Label: Height (cm)
