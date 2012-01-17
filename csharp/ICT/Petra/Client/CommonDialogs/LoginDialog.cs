@@ -40,6 +40,7 @@ using Ict.Petra.Client.App.Core;
 using System.Threading;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Controls;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared;
