@@ -134,6 +134,14 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                 case TIndividualDataItemEnum.idiPassportDetails:
                     PmPassportDetailsAccess.LoadViaPPerson(IndividualDataDS, APartnerKey, AReadTransaction);
                     break;
+                    
+                case TIndividualDataItemEnum.idiPersonalData:
+                    PPersonAccess.LoadByPrimaryKey(IndividualDataDS, APartnerKey, AReadTransaction);
+                    break;
+                    
+                case TIndividualDataItemEnum.idiEmergencyData:
+                    PmPersonalDataAccess.LoadByPrimaryKey(IndividualDataDS, APartnerKey, AReadTransaction);
+                    break;
 
                     // TODO: work on all cases/load data for all Individual Data items
             }
@@ -581,6 +589,8 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
             PmPersonLanguageTable PmPersonLanguageTableSubmit;
             PmPersonAbilityTable PmPersonAbilityTableSubmit;
             PmPassportDetailsTable PmPassportDetailsSubmit;
+            PPersonTable PPersonTableSubmit;
+            PmPersonalDataTable PmPersonalDataSubmit;
 
             AVerificationResult = new TVerificationResultCollection();
 
@@ -685,6 +695,62 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
 
                         // Need to merge this Table back into APartnerEditInspectDS so the updated s_modification_id_c is returned correctly to the Partner Edit screen!
                         APartnerEditInspectDS.Tables[PmPassportDetailsTable.GetTableName()].Merge(AInspectDS.PmPassportDetails);
+                    }
+                    else
+                    {
+                        SubmissionResult = TSubmitChangesResult.scrError;
+                        AVerificationResult.AddCollection(SingleVerificationResultCollection);
+#if DEBUGMODE
+                        if (TLogging.DL >= 9)
+                        {
+                            Console.WriteLine(Messages.BuildMessageFromVerificationResult(
+                                    "TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
+                        }
+#endif
+                    }
+                }
+                
+                // Personal Data
+                if (AInspectDS.Tables.Contains(PPersonTable.GetTableName())
+                    && (AInspectDS.PPerson.Rows.Count > 0))
+                {
+                    PPersonTableSubmit = AInspectDS.PPerson;
+
+                    if (PPersonAccess.SubmitChanges(PPersonTableSubmit, ASubmitChangesTransaction,
+                            out SingleVerificationResultCollection))
+                    {
+                        SubmissionResult = TSubmitChangesResult.scrOK;
+
+                        // Need to merge this Table back into APartnerEditInspectDS so the updated s_modification_id_c is returned correctly to the Partner Edit screen!
+                        APartnerEditInspectDS.Tables[PPersonTable.GetTableName()].Merge(AInspectDS.PPerson);
+                    }
+                    else
+                    {
+                        SubmissionResult = TSubmitChangesResult.scrError;
+                        AVerificationResult.AddCollection(SingleVerificationResultCollection);
+#if DEBUGMODE
+                        if (TLogging.DL >= 9)
+                        {
+                            Console.WriteLine(Messages.BuildMessageFromVerificationResult(
+                                    "TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
+                        }
+#endif
+                    }
+                }
+                
+                // Emergency Data
+                if (AInspectDS.Tables.Contains(PmPersonalDataTable.GetTableName())
+                    && (AInspectDS.PmPersonalData.Rows.Count > 0))
+                {
+                    PmPersonalDataSubmit = AInspectDS.PmPersonalData;
+
+                    if (PmPersonalDataAccess.SubmitChanges(PmPersonalDataSubmit, ASubmitChangesTransaction,
+                            out SingleVerificationResultCollection))
+                    {
+                        SubmissionResult = TSubmitChangesResult.scrOK;
+
+                        // Need to merge this Table back into APartnerEditInspectDS so the updated s_modification_id_c is returned correctly to the Partner Edit screen!
+                        APartnerEditInspectDS.Tables[PmPersonalDataTable.GetTableName()].Merge(AInspectDS.PmPersonalData);
                     }
                     else
                     {

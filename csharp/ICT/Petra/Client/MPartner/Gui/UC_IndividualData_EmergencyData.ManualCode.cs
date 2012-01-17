@@ -68,12 +68,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             LoadDataOnDemand();
 
-            if (FMainDS.PPerson.Rows.Count == 0)
+            if (FMainDS.PmPersonalData.Rows.Count == 0)
             {
                 // There hasn't been data stored yet, so create a new Record
-                FMainDS.PPerson.Rows.Add(FMainDS.PPerson.NewRowTyped(true));
+                FMainDS.PmPersonalData.Rows.Add(FMainDS.PmPersonalData.NewRowTyped(true));
                 // ... and set its Primary Key
-                FMainDS.PPerson[0].PartnerKey = FMainDS.PPerson[0].PartnerKey;
+                FMainDS.PmPersonalData[0].PartnerKey = FMainDS.PPerson[0].PartnerKey;
             }
 
             ShowData(FMainDS.PmPersonalData[0]);
