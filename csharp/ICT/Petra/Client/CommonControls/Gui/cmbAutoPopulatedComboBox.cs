@@ -108,6 +108,9 @@ namespace Ict.Petra.Client.CommonControls
 
             /// <summary>todoComment</summary>
             DocumentTypeCategoryList,
+            
+            /// <summary>todoComment</summary>
+            DocumentTypeList,
 
             /// <summary>todoComment</summary>
             FrequencyList,
@@ -123,12 +126,18 @@ namespace Ict.Petra.Client.CommonControls
 
             /// <summary>todoComment</summary>
             InternationalPostalTypeList,
+            
+            /// <summary>todoComment</summary>
+            JobAssignmentTypeList,
 
             /// <summary>todoComment</summary>
             LanguageCodeList,
 
             /// <summary>todoComment</summary>
             LanguageLevelList,
+            
+            /// <summary>todoComment</summary>
+            LeavingCodeList,
 
             /// <summary>todoComment</summary>
             LocationTypeList,
@@ -141,6 +150,9 @@ namespace Ict.Petra.Client.CommonControls
 
             /// <summary>todoComment</summary>
             PartnerStatusList,
+            
+            /// <summary>todoComment</summary>
+            PositionList,
 
             /// <summary>todoComment</summary>
             PostCodeRegionList,
@@ -430,6 +442,15 @@ namespace Ict.Petra.Client.CommonControls
                     "pm_description_c",
                     null);
                     break;
+                    
+                case TListTableEnum.DocumentTypeList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.DocumentTypeList),
+                    "pm_doc_code_c",
+                    "pm_description_c",
+                    null);
+                    break;
 
                 case TListTableEnum.FoundationOwnerList:
 
@@ -486,6 +507,15 @@ namespace Ict.Petra.Client.CommonControls
                     PInternationalPostalTypeTable.GetDescriptionDBName(),
                     null);
                     break;
+                    
+                case TListTableEnum.JobAssignmentTypeList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPersonnel.GetCacheableUnitsTable(TCacheableUnitTablesEnum.JobAssignmentTypeList),
+                    "pt_assignment_type_code_c",
+                    "pt_assignment_code_descr_c",
+                    null);
+                    break;
 
                 case TListTableEnum.LanguageCodeList:
 
@@ -502,6 +532,15 @@ namespace Ict.Petra.Client.CommonControls
                     TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.LanguageLevelList),
                     PtLanguageLevelTable.GetLanguageLevelDBName(),
                     PtLanguageLevelTable.GetLanguageLevelDescrDBName(),
+                    null);
+                    break;
+                    
+                case TListTableEnum.LeavingCodeList:
+                    
+                    InitialiseUserControl(
+                    TDataCache.TMPersonnel.GetCacheableUnitsTable(TCacheableUnitTablesEnum.LeavingCodeList),
+                    "pt_leaving_code_ind_c",
+                    "pt_leaving_code_descr_c",
                     null);
                     break;
 
@@ -539,6 +578,15 @@ namespace Ict.Petra.Client.CommonControls
                     TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.PartnerStatusList),
                     "p_status_code_c",
                     null,
+                    null);
+                    break;
+                    
+                case TListTableEnum.PositionList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPersonnel.GetCacheableUnitsTable(TCacheableUnitTablesEnum.PositionList),
+                    "pt_position_name_c",
+                    "pt_position_descr_c",
                     null);
                     break;
 
@@ -873,6 +921,11 @@ namespace Ict.Petra.Client.CommonControls
                 case TListTableEnum.DocumentTypeCategoryList:
                     this.ColumnWidthCol2 = 200;
                     break;
+                    
+                case TListTableEnum.DocumentTypeList:
+                    this.ColumnWidthCol1 = 128;
+                    this.ColumnWidthCol2 = 200;
+                    break;
 
                 case TListTableEnum.FoundationOwnerList:
                     this.ColumnWidthCol1 = 120;
@@ -903,6 +956,11 @@ namespace Ict.Petra.Client.CommonControls
                     this.ColumnWidthCol1 = 100;
                     this.ColumnWidthCol2 = 230;
                     break;
+                    
+                case TListTableEnum.JobAssignmentTypeList:
+                    this.ColumnWidthCol1 = 40;
+                    this.ColumnWidthCol2 = 200;
+                    break;
 
                 case TListTableEnum.LanguageCodeList:
                     this.ColumnWidthCol1 = 57;
@@ -912,6 +970,11 @@ namespace Ict.Petra.Client.CommonControls
                 case TListTableEnum.LanguageLevelList:
                     this.ColumnWidthCol1 = 57;
                     this.ColumnWidthCol2 = 130;
+                    break;
+                    
+                case TListTableEnum.LeavingCodeList:
+                    this.ColumnWidthCol1 = 40;
+                    this.ColumnWidthCol2 = 200;
                     break;
 
                 case TListTableEnum.LocationTypeList:
@@ -930,6 +993,11 @@ namespace Ict.Petra.Client.CommonControls
 
                 case TListTableEnum.PartnerStatusList:
                     this.ColumnWidthCol1 = 95;
+                    break;
+                    
+                case TListTableEnum.PositionList:
+                    this.ColumnWidthCol1 = 200;
+                    this.ColumnWidthCol2 = 350;
                     break;
 
                 case TListTableEnum.PostCodeRegionList:

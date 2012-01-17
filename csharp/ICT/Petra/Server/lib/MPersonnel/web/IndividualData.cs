@@ -26,6 +26,7 @@ using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Odbc;
+using System.Runtime.Remoting;
 using System.Xml;
 using System.IO;
 using GNU.Gettext;
@@ -34,19 +35,24 @@ using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.Data;
 using Ict.Common.DB;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Server;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon;
+using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPersonnel.Person;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MCommon.Cacheable;
+using Ict.Petra.Server.MCommon.UIConnectors;
 using Ict.Petra.Server.MPartner;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Cacheable;
 using Ict.Petra.Server.App.Core.Security;
+
 
 namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
 {
@@ -126,13 +132,34 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                 case TIndividualDataItemEnum.idiSpecialNeeds:
                     PmSpecialNeedAccess.LoadByPrimaryKey(IndividualDataDS, APartnerKey, AReadTransaction);
                     break;
+                    
+                case TIndividualDataItemEnum.idiPreviousExperiences:
+                    PmPastExperienceAccess.LoadViaPPerson(IndividualDataDS, APartnerKey, AReadTransaction);
+                    break;
+                    
+                case TIndividualDataItemEnum.idiPersonalDocuments:
+                    PmDocumentAccess.LoadViaPPerson(IndividualDataDS, APartnerKey, AReadTransaction);
+                    break;
+                    
+                case TIndividualDataItemEnum.idiJobAssignments:
+                    PmJobAssignmentAccess.LoadViaPPartner(IndividualDataDS, APartnerKey, AReadTransaction);
+                    break;
+                    
+                case TIndividualDataItemEnum.idiLocalPersonnelData:
+                    bool labelsAvailable;
+                    TOfficeSpecificDataLabelsUIConnector OfficeSpecificDataLabelsUIConnector;
+                    OfficeSpecificDataLabelsUIConnector = new TOfficeSpecificDataLabelsUIConnector(APartnerKey,
+                    TOfficeSpecificDataLabelUseEnum.Personnel);
+                    IndividualDataDS.Merge(OfficeSpecificDataLabelsUIConnector.GetDataLocalPartnerDataValues(APartnerKey, out labelsAvailable, false, AReadTransaction));
+                    break;
 
                     // TODO: work on all cases/load data for all Individual Data items
             }
 
             return IndividualDataDS;
         }
-
+        
+        
         /// <summary>
         /// Retrieves data that will be shown on the 'Overview' UserControl and adds it to <paramref name="AIndividualDataDS" />.
         /// </summary>
@@ -571,6 +598,9 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
             TVerificationResultCollection SingleVerificationResultCollection;
             PmSpecialNeedTable PmSpecialNeedTableSubmit;
             PmPersonLanguageTable PmPersonLanguageTableSubmit;
+            PmPastExperienceTable PmPastExperienceTableSubmit;
+            PmDocumentTable PmDocumentTableSubmit;
+            PmJobAssignmentTable PmJobAssignmentTableSubmit;
 
             AVerificationResult = new TVerificationResultCollection();
 
@@ -619,6 +649,90 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
 
                         // Need to merge this Table back into APartnerEditInspectDS so the updated s_modification_id_c is returned correctly to the Partner Edit screen!
                         APartnerEditInspectDS.Tables[PmPersonLanguageTable.GetTableName()].Merge(AInspectDS.PmPersonLanguage);
+                    }
+                    else
+                    {
+                        SubmissionResult = TSubmitChangesResult.scrError;
+                        AVerificationResult.AddCollection(SingleVerificationResultCollection);
+#if DEBUGMODE
+                        if (TLogging.DL >= 9)
+                        {
+                            Console.WriteLine(Messages.BuildMessageFromVerificationResult(
+                                    "TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
+                        }
+#endif
+                    }
+                }
+                
+                // Past Experience
+                if (AInspectDS.Tables.Contains(PmPastExperienceTable.GetTableName())
+                    && (AInspectDS.PmPastExperience.Rows.Count > 0))
+                {
+                    PmPastExperienceTableSubmit = AInspectDS.PmPastExperience;
+
+                    if (PmPastExperienceAccess.SubmitChanges(PmPastExperienceTableSubmit, ASubmitChangesTransaction,
+                            out SingleVerificationResultCollection))
+                    {
+                        SubmissionResult = TSubmitChangesResult.scrOK;
+
+                        // Need to merge this Table back into APartnerEditInspectDS so the updated s_modification_id_c is returned correctly to the Partner Edit screen!
+                        APartnerEditInspectDS.Tables[PmPastExperienceTable.GetTableName()].Merge(AInspectDS.PmPastExperience);
+                    }
+                    else
+                    {
+                        SubmissionResult = TSubmitChangesResult.scrError;
+                        AVerificationResult.AddCollection(SingleVerificationResultCollection);
+#if DEBUGMODE
+                        if (TLogging.DL >= 9)
+                        {
+                            Console.WriteLine(Messages.BuildMessageFromVerificationResult(
+                                    "TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
+                        }
+#endif
+                    }
+                }
+                
+                // Personal Documents
+                if (AInspectDS.Tables.Contains(PmDocumentTable.GetTableName())
+                    && (AInspectDS.PmDocument.Rows.Count > 0))
+                {
+                    PmDocumentTableSubmit = AInspectDS.PmDocument;
+
+                    if (PmDocumentAccess.SubmitChanges(PmDocumentTableSubmit, ASubmitChangesTransaction,
+                            out SingleVerificationResultCollection))
+                    {
+                        SubmissionResult = TSubmitChangesResult.scrOK;
+
+                        // Need to merge this Table back into APartnerEditInspectDS so the updated s_modification_id_c is returned correctly to the Partner Edit screen!
+                        APartnerEditInspectDS.Tables[PmDocumentTable.GetTableName()].Merge(AInspectDS.PmDocument);
+                    }
+                    else
+                    {
+                        SubmissionResult = TSubmitChangesResult.scrError;
+                        AVerificationResult.AddCollection(SingleVerificationResultCollection);
+#if DEBUGMODE
+                        if (TLogging.DL >= 9)
+                        {
+                            Console.WriteLine(Messages.BuildMessageFromVerificationResult(
+                                    "TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
+                        }
+#endif
+                    }
+                }
+                
+                // Job Assignments
+                if (AInspectDS.Tables.Contains(PmJobAssignmentTable.GetTableName())
+                    && (AInspectDS.PmJobAssignment.Rows.Count > 0))
+                {
+                    PmJobAssignmentTableSubmit = AInspectDS.PmJobAssignment;
+
+                    if (PmJobAssignmentAccess.SubmitChanges(PmJobAssignmentTableSubmit, ASubmitChangesTransaction,
+                            out SingleVerificationResultCollection))
+                    {
+                        SubmissionResult = TSubmitChangesResult.scrOK;
+
+                        // Need to merge this Table back into APartnerEditInspectDS so the updated s_modification_id_c is returned correctly to the Partner Edit screen!
+                        APartnerEditInspectDS.Tables[PmJobAssignmentTable.GetTableName()].Merge(AInspectDS.PmJobAssignment);
                     }
                     else
                     {
