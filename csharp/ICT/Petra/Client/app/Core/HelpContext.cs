@@ -70,12 +70,10 @@ namespace Ict.Petra.Client.App.Core
             }
 
             // Show Hourglass Cursor
-            if (ASender is System.Windows.Forms.Form)
-            {
-                FormCursorAtTimeOfCall = ((System.Windows.Forms.Form)ASender).Cursor;
-                ((System.Windows.Forms.Form)ASender).Cursor = Cursors.WaitCursor;
-            }
+            FormCursorAtTimeOfCall = ((System.Windows.Forms.Form)HelpContextForm).Cursor;
+            ((System.Windows.Forms.Form)HelpContextForm).Cursor = Cursors.WaitCursor;
 
+            
             // Load help topics once and keep it cached from then on.
             if (!FHelpTopicsLookupTableLoaded)
             {
@@ -124,10 +122,7 @@ namespace Ict.Petra.Client.App.Core
             }
 
             // Reset to originally shown Cursor
-            if (ASender is System.Windows.Forms.Form)
-            {
-                ((System.Windows.Forms.Form)ASender).Cursor = FormCursorAtTimeOfCall;
-            }
+            ((System.Windows.Forms.Form)HelpContextForm).Cursor = FormCursorAtTimeOfCall;
 
             return ReturnValue;
         }
