@@ -2031,5 +2031,24 @@ namespace Ict.Common
         {
             return s.IndexOf(needle, StringComparison.OrdinalIgnoreCase) > -1;
         }
+        /// <summary>
+        /// Count the occurences of a certain character in a string
+        /// </summary>
+        /// <param name="instance"></param>
+        /// <param name="c"></param>
+        /// <returns></returns>
+		public static int CountOccurencesOfChar(string instance, char c) 
+		{
+			int result = 0;
+			foreach (char curChar in instance) 
+			{
+				if (c == curChar) 
+				{
+					++result;
+				}
+			}
+			return result;
+		}
+        
     }
 }

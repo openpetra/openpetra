@@ -134,5 +134,29 @@ namespace Ict.Petra.Client.MPartner.Gui
             frm.CalledFromExtracts = true;
             frm.Show();
         }
+		
+        /// <summary>
+        /// open screen to create "Conferece" Extract
+        /// </summary>
+        public static void PartnerByConference(Form AParentForm)
+        {
+            TFrmPartnerByEvent frm = new TFrmPartnerByEvent(AParentForm);
+
+            frm.CalledFromExtracts = true;
+            frm.CalledForConferences = true;
+            frm.Show();
+        }
+
+        /// <summary>
+        /// open screen to create "Conferece" Extract
+        /// </summary>
+        public static void PartnerByOutreach(Form AParentForm)
+        {
+            TFrmPartnerByEvent frm = new TFrmPartnerByEvent(AParentForm);
+
+            frm.CalledFromExtracts = true;
+            frm.CalledForConferences = false;
+            frm.Show();
+        }
     }
 }
