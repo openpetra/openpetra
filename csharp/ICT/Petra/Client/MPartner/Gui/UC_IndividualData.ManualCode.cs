@@ -48,6 +48,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         private SortedList <TDynamicLoadableUserControls, UserControl>FUserControlSetup;
         private Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_SpecialNeeds FUcoSpecialNeeds;
         private Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_PersonalLanguages FUcoPersonalLanguages;
+		private Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_Abilities FUcoPersonalAbilities;
+		private Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_Passport FUcoPassportDetails;
+		private Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_PersonalData FUcoPersonalData;
 
         /// <summary>
         /// Enumeration of dynamic loadable UserControls which are used
@@ -176,7 +179,55 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FPartnerEditTDS.Tables[PmPersonLanguageTable.GetTableName()].Rows.Clear();
                     FPartnerEditTDS.Tables[PmPersonLanguageTable.GetTableName()].Merge(FMainDS.PmPersonLanguage);
                 }
+				
+				// Abilities
+                if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucPersonalAbilities))
+                {
+                    TUC_IndividualData_Abilities UCAbilities =
+                        (TUC_IndividualData_Abilities)FUserControlSetup[TDynamicLoadableUserControls.dlucPersonalAbilities];
+                    UCAbilities.GetDataFromControls2();
 
+                    if (!FPartnerEditTDS.Tables.Contains(PmPersonAbilityTable.GetTableName()))
+                    {
+                        FPartnerEditTDS.Tables.Add(new PmPersonAbilityTable());
+                    }
+
+                    FPartnerEditTDS.Tables[PmPersonAbilityTable.GetTableName()].Rows.Clear();
+                    FPartnerEditTDS.Tables[PmPersonAbilityTable.GetTableName()].Merge(FMainDS.PmPersonAbility);
+                }
+                
+                //Passport Details
+                if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucPassportDetails))
+                {
+                    TUC_IndividualData_Passport UCPassport =
+                        (TUC_IndividualData_Passport)FUserControlSetup[TDynamicLoadableUserControls.dlucPassportDetails];
+                    UCPassport.GetDataFromControls2();
+
+                    if (!FPartnerEditTDS.Tables.Contains(PmPassportDetailsTable.GetTableName()))
+                    {
+                        FPartnerEditTDS.Tables.Add(new PmPassportDetailsTable());
+                    }
+
+                    FPartnerEditTDS.Tables[PmPassportDetailsTable.GetTableName()].Rows.Clear();
+                    FPartnerEditTDS.Tables[PmPassportDetailsTable.GetTableName()].Merge(FMainDS.PmPassportDetails);
+                }
+                
+                //Personal Data
+                if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucPersonalData))
+                {
+                    TUC_IndividualData_PersonalData UCPersonalData =
+                        (TUC_IndividualData_PersonalData)FUserControlSetup[TDynamicLoadableUserControls.dlucPersonalData];
+                    UCPersonalData.GetDataFromControls2();
+
+                    if (!FPartnerEditTDS.Tables.Contains(PPersonTable.GetTableName()))
+                    {
+                        FPartnerEditTDS.Tables.Add(new PPersonTable());
+                    }
+
+                    FPartnerEditTDS.Tables[PPersonTable.GetTableName()].Rows.Clear();
+                    FPartnerEditTDS.Tables[PPersonTable.GetTableName()].Merge(FMainDS.PPerson);
+                }
+                
                 // TODO add code for all remaining Individual Data Items
             }
         }
@@ -313,6 +364,104 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     ReturnValue = ucoPersonalLanguages;
                     break;
+					
+                //Personal Abilities
+				case TDynamicLoadableUserControls.dlucPersonalAbilities:
+                    // Create a Panel that hosts the UserControl. This is needed to allow scrolling of content in case the screen is too small to shown the whole UserControl
+                    Panel pnlHostForUCPersonalAblities = new Panel();
+                    pnlHostForUCPersonalAblities.AutoSize = true;
+                    pnlHostForUCPersonalAblities.Dock = System.Windows.Forms.DockStyle.Fill;
+                    pnlHostForUCPersonalAblities.Location = new System.Drawing.Point(0, 0);
+                    pnlHostForUCPersonalAblities.Padding = new System.Windows.Forms.Padding(2);
+                    pnlSelectedIndivDataItem.Controls.Add(pnlHostForUCPersonalAblities);
+
+                    // Create the UserControl
+                    Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_Abilities ucoPersonalAbilities =
+                        new Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_Abilities();
+                    FUserControlSetup.Add(TDynamicLoadableUserControls.dlucPersonalAbilities, ucoPersonalAbilities);
+                    ucoPersonalAbilities.Location = new Point(0, 2);
+                    ucoPersonalAbilities.Dock = DockStyle.Fill;
+                    pnlHostForUCPersonalAblities.Controls.Add(ucoPersonalAbilities);
+
+                    /*
+                     * The following four commands seem strange and unnecessary; however, they are necessary
+                     * to make things scale correctly on "Large Fonts (120DPI)" display setting.
+                     */
+                    if (TClientSettings.GUIRunningOnNonStandardDPI)
+                    {
+                        this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
+                        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+                        pnlHostForUCPersonalAblities.Dock = System.Windows.Forms.DockStyle.None;
+                        pnlHostForUCPersonalAblities.Dock = System.Windows.Forms.DockStyle.Fill;
+                    }
+
+                    ReturnValue = ucoPersonalAbilities;
+                    break;
+                    
+                     //Passport Details
+				case TDynamicLoadableUserControls.dlucPassportDetails:
+                    // Create a Panel that hosts the UserControl. This is needed to allow scrolling of content in case the screen is too small to shown the whole UserControl
+                    Panel pnlHostForUCPassport = new Panel();
+                    pnlHostForUCPassport.AutoSize = true;
+                    pnlHostForUCPassport.Dock = System.Windows.Forms.DockStyle.Fill;
+                    pnlHostForUCPassport.Location = new System.Drawing.Point(0, 0);
+                    pnlHostForUCPassport.Padding = new System.Windows.Forms.Padding(2);
+                    pnlSelectedIndivDataItem.Controls.Add(pnlHostForUCPassport);
+
+                    // Create the UserControl
+                    Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_Passport ucoPassportDetails =
+                        new Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_Passport();
+                    FUserControlSetup.Add(TDynamicLoadableUserControls.dlucPassportDetails, ucoPassportDetails);
+                    ucoPassportDetails.Location = new Point(0, 2);
+                    ucoPassportDetails.Dock = DockStyle.Fill;
+                    pnlHostForUCPassport.Controls.Add(ucoPassportDetails);
+
+                    /*
+                     * The following four commands seem strange and unnecessary; however, they are necessary
+                     * to make things scale correctly on "Large Fonts (120DPI)" display setting.
+                     */
+                    if (TClientSettings.GUIRunningOnNonStandardDPI)
+                    {
+                        this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
+                        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+                        pnlHostForUCPassport.Dock = System.Windows.Forms.DockStyle.None;
+                        pnlHostForUCPassport.Dock = System.Windows.Forms.DockStyle.Fill;
+                    }
+
+                    ReturnValue = ucoPassportDetails;
+                    break;
+                    
+                case TDynamicLoadableUserControls.dlucPersonalData:
+                    // Create a Panel that hosts the UserControl. This is needed to allow scrolling of content in case the screen is too small to shown the whole UserControl
+                    Panel pnlHostForUCPersonalData = new Panel();
+                    pnlHostForUCPersonalData.AutoSize = true;
+                    pnlHostForUCPersonalData.Dock = System.Windows.Forms.DockStyle.Fill;
+                    pnlHostForUCPersonalData.Location = new System.Drawing.Point(0, 0);
+                    pnlHostForUCPersonalData.Padding = new System.Windows.Forms.Padding(2);
+                    pnlSelectedIndivDataItem.Controls.Add(pnlHostForUCPersonalData);
+
+                    // Create the UserControl
+                    Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_PersonalData ucoPersonalData =
+                        new Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_PersonalData();
+                    FUserControlSetup.Add(TDynamicLoadableUserControls.dlucPersonalData, ucoPersonalData);
+                    ucoPersonalData.Location = new Point(0, 2);
+                    ucoPersonalData.Dock = DockStyle.Fill;
+                    pnlHostForUCPersonalData.Controls.Add(ucoPersonalData);
+
+                    /*
+                     * The following four commands seem strange and unnecessary; however, they are necessary
+                     * to make things scale correctly on "Large Fonts (120DPI)" display setting.
+                     */
+                    if (TClientSettings.GUIRunningOnNonStandardDPI)
+                    {
+                        this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
+                        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+                        pnlHostForUCPersonalData.Dock = System.Windows.Forms.DockStyle.None;
+                        pnlHostForUCPersonalData.Dock = System.Windows.Forms.DockStyle.Fill;
+                    }
+
+                    ReturnValue = ucoPersonalData;
+                    break;
 
                     // TODO Add case code blocks for all remaining Individual Data Items
             }
@@ -380,10 +529,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FUcoSpecialNeeds.InitUserControl();
                     ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoSpecialNeeds);
 
-                    if (FUcoPersonalLanguages != null)
-                    {
-                        FUcoPersonalLanguages.SendToBack();
-                    }
+                    SendAllOtherItemsToBackExcluding("FUcoSpecialNeeds");
 
 //	TODO                OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
 
@@ -428,10 +574,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FUcoPersonalLanguages.InitUserControl();
                     ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoPersonalLanguages);
 
-                    if (FUcoSpecialNeeds != null)
-                    {
-                        FUcoSpecialNeeds.SendToBack();
-                    }
+                    SendAllOtherItemsToBackExcluding("FUcoPersonalLanguages");
 
 //	TODO                OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
 
@@ -447,11 +590,142 @@ namespace Ict.Petra.Client.MPartner.Gui
                      */
                     if (TClientSettings.GUIRunningOnNonStandardDPI)
                     {
-                        FUcoSpecialNeeds.AdjustAfterResizing();
+                        FUcoPersonalLanguages.AdjustAfterResizing();
                     }
                 }
 
                 FUcoPersonalLanguages.Parent.BringToFront();
+            }
+            else if (ASender == llbPersonalAbilities)
+            {
+                if (!FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucPersonalAbilities))
+                {
+                    if (TClientSettings.DelayedDataLoading)
+                    {
+                        // Signalise the user that data is beeing loaded
+                        this.Cursor = Cursors.AppStarting;
+                    }
+
+                    FUcoPersonalAbilities = (Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_Abilities)DynamicLoadUserControl(
+                        TDynamicLoadableUserControls.dlucPersonalAbilities);
+
+                    // Hook up RecalculateScreenParts Event
+                    FUcoPersonalAbilities.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateLinkLabelCounters);
+
+                    FUcoPersonalAbilities.MainDS = FMainDS;
+                    FUcoPersonalAbilities.PetraUtilsObject = FPetraUtilsObject;
+                    FUcoPersonalAbilities.PartnerEditUIConnector = FPartnerEditUIConnector;
+                    FUcoPersonalAbilities.SpecialInitUserControl(FMainDS);
+                    FUcoPersonalAbilities.InitUserControl();
+                    ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoPersonalAbilities);
+
+                    SendAllOtherItemsToBackExcluding("FUcoPersonalAbilities");
+
+// TODO                    OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
+
+                    this.Cursor = Cursors.Default;
+                }
+                else
+                {
+//	TODO                OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "SubsequentActivation"));
+
+                    /*
+                     * The following command seems strange and unnecessary; however, it is necessary
+                     * to make things scale correctly on "Large Fonts (120DPI)" display setting.
+                     */
+                    if (TClientSettings.GUIRunningOnNonStandardDPI)
+                    {
+                        FUcoPersonalAbilities.AdjustAfterResizing();
+                    }
+                }
+
+                FUcoPersonalAbilities.Parent.BringToFront();
+            }
+            else if (ASender == llbPassportDetails)
+            {
+                if (!FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucPassportDetails))
+                {
+                    if (TClientSettings.DelayedDataLoading)
+                    {
+                        // Signalise the user that data is beeing loaded
+                        this.Cursor = Cursors.AppStarting;
+                    }
+
+                    FUcoPassportDetails = (Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_Passport)DynamicLoadUserControl(
+                        TDynamicLoadableUserControls.dlucPassportDetails);
+
+                    // Hook up RecalculateScreenParts Event
+                    FUcoPassportDetails.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateLinkLabelCounters);
+
+                    FUcoPassportDetails.MainDS = FMainDS;
+                    FUcoPassportDetails.PetraUtilsObject = FPetraUtilsObject;
+                    FUcoPassportDetails.PartnerEditUIConnector = FPartnerEditUIConnector;
+                    FUcoPassportDetails.SpecialInitUserControl(FMainDS);
+                    FUcoPassportDetails.InitUserControl();
+                    ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoPassportDetails);
+
+                    SendAllOtherItemsToBackExcluding("FUcoPassportDetails");
+
+// TODO                    OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
+
+                    this.Cursor = Cursors.Default;
+                }
+                else
+                {
+//	TODO                OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "SubsequentActivation"));
+
+                    /*
+                     * The following command seems strange and unnecessary; however, it is necessary
+                     * to make things scale correctly on "Large Fonts (120DPI)" display setting.
+                     */
+                    if (TClientSettings.GUIRunningOnNonStandardDPI)
+                    {
+                        FUcoPassportDetails.AdjustAfterResizing();
+                    }
+                }
+
+                FUcoPassportDetails.Parent.BringToFront();
+            }
+            else if (ASender == llbPersonalData)
+            {
+                if (!FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucPersonalData))
+                {
+                    if (TClientSettings.DelayedDataLoading)
+                    {
+                        // Signalise the user that data is beeing loaded
+                        this.Cursor = Cursors.AppStarting;
+                    }
+
+                    FUcoPersonalData = (Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_PersonalData)DynamicLoadUserControl(
+                        TDynamicLoadableUserControls.dlucPersonalData);
+                    FUcoPersonalData.MainDS = FMainDS;
+                    FUcoPersonalData.PetraUtilsObject = FPetraUtilsObject;
+                    FUcoPersonalData.PartnerEditUIConnector = FPartnerEditUIConnector;
+                    FUcoPersonalData.SpecialInitUserControl(FMainDS);
+                    FUcoPersonalData.InitUserControl();
+                    ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoPersonalData);
+
+                    SendAllOtherItemsToBackExcluding("FUcoPersonalData");
+
+//	TODO                OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
+
+                    this.Cursor = Cursors.Default;
+                }
+                else
+                {
+//	TODO                OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "SubsequentActivation"));
+
+                    /*
+                     * The following command seems strange and unnecessary; however, it is necessary
+                     * to make things scale correctly on "Large Fonts (120DPI)" display setting.
+                     */
+                    if (TClientSettings.GUIRunningOnNonStandardDPI)
+                    {
+                        FUcoPersonalData.AdjustAfterResizing();
+                    }
+                }
+
+                FUcoPersonalData.Parent.BringToFront();
             }
 
             // TODO Add else branch for all remaining Individual Data Items
@@ -462,6 +736,35 @@ namespace Ict.Petra.Client.MPartner.Gui
              * We need to turn the ChangeDetection routine back on.
              */
             OnDataLoadingFinished(this, new EventArgs());
+        }
+        
+        /// <summary>
+        /// This method sends all views, excluding the current one, to back.  BE SURE TO ADD EACH NEW VIEW TYPE HERE AS THEY ARE ADDED!!
+        /// </summary>
+        /// <param name="exclude">Type: String;  This is the name of the individualData item that will not be sent to back.</param>
+        private void SendAllOtherItemsToBackExcluding(String exclude){
+            if (FUcoPersonalLanguages != null && exclude != "FUcoPersonalLanguages")
+            {
+                FUcoPersonalLanguages.SendToBack();
+            }
+            if (FUcoSpecialNeeds != null && exclude != "FUcoSpecialNeeds")
+            {
+                FUcoSpecialNeeds.SendToBack();
+            }
+            if (FUcoPersonalAbilities != null && exclude != "FUcoPersonalAbilities")
+            {
+                FUcoPersonalAbilities.SendToBack();
+            }
+            if (FUcoPassportDetails != null && exclude != "FUcoPassportDetails")
+            {
+                FUcoPassportDetails.SendToBack();
+            }
+            if (FUcoPassportDetails != null && exclude != "FUcoPersonalData")
+            {
+                FUcoPersonalData.SendToBack();
+            }
+            
+            //TODO Add the other individualData items here.
         }
 
         private void OpenBasicDataShepherd(object Sender, EventArgs e)
@@ -497,7 +800,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             string OrigLabelText;
 
-            if ((ASender is TUC_IndividualData))     // TODO: || (ASender is TUC_IndividualData_PassportDetails)))
+            if ((ASender is TUC_IndividualData) || (ASender is TUC_IndividualData_Passport))
             {
                 if (FLinkLabelsOrigTexts.TryGetValue(llbPassportDetails.Name, out OrigLabelText))
                 {
@@ -545,6 +848,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
+            //Personal Languages
             if ((ASender is TUC_IndividualData) || (ASender is TUC_IndividualData_PersonalLanguages))
             {
                 if (FLinkLabelsOrigTexts.TryGetValue(llbLanguages.Name, out OrigLabelText))
@@ -561,7 +865,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
-            if ((ASender is TUC_IndividualData))     // TODO: || (ASender is TUC_IndividualData_PersonalAbilities)))
+            //Personal Abilities
+            if ((ASender is TUC_IndividualData) || (ASender is TUC_IndividualData_Abilities))
             {
                 if (FLinkLabelsOrigTexts.TryGetValue(llbPersonalAbilities.Name, out OrigLabelText))
                 {

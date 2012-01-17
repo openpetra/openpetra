@@ -1,0 +1,66 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MPartner.Gui   
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data, Ict.Petra.Shared.MPersonnel.Personnel.Data]
+    DatasetType: Ict.Petra.Shared.MPersonnel.Personnel.Data.IndividualDataTDS
+    FormType: edit
+    Template: usercontrol
+    MasterTable: PmPersonalData
+    Controls:
+        pnlContent: {ControlsOrientation=vertical}
+            Controls: [pnlEmergencyData, pnlMedicalData, pnlProofOfLifeQuestions]              
+            Dock: Fill
+       
+        pnlEmergencyData:
+            Controls: [txtHeightCm, txtWeightKg, cmbEyeColour, cmbHairColour, cmbFacialHair, txtIdentifyingMarks]
+                   
+        txtHeightCm:
+            Label: Height (cm)
+            Width: 100
+        txtWeightKg:
+            Width: 100
+            Label: Weight (kg)
+        cmbEyeColour:
+            Label: Eye Colour
+            Width: 160
+        cmbHairColour:
+            Label: Hair Colour
+            Width: 160
+        cmbFacialHair:
+            Label: Facial Hair
+            Width: 160
+        txtIdentifyingMarks:
+            Label: Scars, Marks, Tattoos, Piercings
+            ColSpan: 2
+            Width: 250
+            Height: 165
+            
+
+        pnlMedicalData:
+            Controls: [cmbBloodType]
+        
+        cmbBloodType:
+            Label: Blood Type
+
+        pnlProofOfLifeQuestions:
+            Controls: [txtQuestion1, txtAnswer1, txtQuestion2, txtAnswer2, txtQuestion3, txtAnswer3]
+        txtQuestion1:
+            #Label: Question 1
+            Width: 400
+        txtAnswer1:
+            #Label: Answer 1
+            Width: 400
+        txtQuestion2:
+            #Label: Question 2
+            Width: 400
+        txtAnswer2:
+            #Label: Answer 2
+            Width: 400
+        txtQuestion3:
+            #Label: Question 3
+            Width: 400
+        txtAnswer3:
+            Label: Answer 3
+            Width: 400
+        

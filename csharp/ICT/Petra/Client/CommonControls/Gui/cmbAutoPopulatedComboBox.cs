@@ -69,6 +69,12 @@ namespace Ict.Petra.Client.CommonControls
         {
             /// user defined list; calls InitializeUserControl(DataTable, ...) and AppearanceSetup(Int32[], Int32)
             UserDefinedList,
+            
+            /// <summary>todoComment</summary>
+            AbilityAreaNameList,
+            
+            /// <summary>todoComment</summary>
+            AbilityLevelList,
 
             /// <summary>todoComment</summary>
             AccommodationCodeList,
@@ -141,6 +147,12 @@ namespace Ict.Petra.Client.CommonControls
 
             /// <summary>todoComment</summary>
             PartnerStatusList,
+            
+            /// <summary>todoComment</summary>
+            PassportDetailsTypeList,
+            
+            /// <summary>todoComment</summary>
+            PassportNationalityCodeList,
 
             /// <summary>todoComment</summary>
             PostCodeRegionList,
@@ -310,6 +322,24 @@ namespace Ict.Petra.Client.CommonControls
 
             switch (FListTable)
             {
+                case TListTableEnum.AbilityAreaNameList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.AbilityAreaList),
+                    PtAbilityAreaTable.GetAbilityAreaNameDBName(),
+                    PtAbilityAreaTable.GetAbilityAreaDescrDBName(),
+                    null);
+                    break;   
+                    
+                case TListTableEnum.AbilityLevelList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.AbilityLevelList),
+                    PtAbilityLevelTable.GetAbilityLevelDBName(),
+                    PtAbilityLevelTable.GetAbilityLevelDescrDBName(),
+                    null);
+                    break;
+                    
                 case TListTableEnum.AccommodationCodeList:
 
                     InitialiseUserControl(
@@ -542,6 +572,25 @@ namespace Ict.Petra.Client.CommonControls
                     null);
                     break;
 
+                case TListTableEnum.PassportDetailsTypeList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.PassportTypeList),
+                    /*PmPassportDetailsTable.GetPassportDetailsTypeDBName(),*/
+                    PtPassportTypeTable.GetCodeDBName(),
+                    PtPassportTypeTable.GetDescriptionDBName(),
+                    null);
+                    break;
+                    
+                case TListTableEnum.PassportNationalityCodeList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.CountryList),
+                    PCountryTable.GetCountryCodeDBName(),
+                    PCountryTable.GetCountryNameDBName(),
+                    null);
+                    break;
+                    
                 case TListTableEnum.PostCodeRegionList:
 
                     InitialiseUserControl(
@@ -829,6 +878,16 @@ namespace Ict.Petra.Client.CommonControls
 
             switch (AListTable)
             {
+                case TListTableEnum.AbilityAreaNameList:
+                    this.ColumnWidthCol2 = 150;
+                    cmbCombobox.MaxDropDownItems = 9;
+                    break;
+
+                case TListTableEnum.AbilityLevelList:
+                    this.ColumnWidthCol2 = 150;
+                    cmbCombobox.MaxDropDownItems = 9;
+                    break;
+
                 case TListTableEnum.AcquisitionCodeList:
                     this.ColumnWidthCol2 = 350;
                     break;
@@ -930,6 +989,18 @@ namespace Ict.Petra.Client.CommonControls
 
                 case TListTableEnum.PartnerStatusList:
                     this.ColumnWidthCol1 = 95;
+                    break;
+                    
+                case TListTableEnum.PassportDetailsTypeList:
+                    this.ColumnWidthCol1 = 50;
+                    this.ColumnWidthCol2 = 150;
+                    cmbCombobox.MaxDropDownItems = 4;
+                    break;
+                    
+                case TListTableEnum.PassportNationalityCodeList:
+                    this.ColumnWidthCol1 = 50;
+                    this.ColumnWidthCol2 = 150;
+                    cmbCombobox.MaxDropDownItems = 9;
                     break;
 
                 case TListTableEnum.PostCodeRegionList:
