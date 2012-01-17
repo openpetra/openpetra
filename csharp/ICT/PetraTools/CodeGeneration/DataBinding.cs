@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -43,18 +43,31 @@ namespace Ict.Tools.CodeGeneration
         /// <summary>the code storage for writing the forms file</summary>
         public static TCodeStorage FCodeStorage = null;
         /// <summary>store the dataset tables that are used on this form</summary>
-        public static SortedList <string, TTable>FDatasetTables = null;
+        private static SortedList <string, SortedList <string, TTable>>FDatasetTables = null;
+        private static SortedList <string, TTable>FCurrentDataset = null;
 
         /// <summary>
         /// load the dataset tables
         /// </summary>
         public static SortedList <string, TTable>LoadDatasetTables(string AICTPath, string ADataSetTypeWithNamespace, TCodeStorage ACodeStorage)
         {
+            if (FDatasetTables == null)
+            {
+                FDatasetTables = new SortedList <string, SortedList <string, TTable>>();
+            }
+
             FCodeStorage = ACodeStorage;
 
             if (!ADataSetTypeWithNamespace.StartsWith("Ict.Petra.Shared"))
             {
                 throw new Exception("the DatasetType must contain the full namespace, starting with Ict.Petra.Shared");
+            }
+
+            if (FDatasetTables.ContainsKey(ADataSetTypeWithNamespace))
+            {
+                FCurrentDataset = FDatasetTables[ADataSetTypeWithNamespace];
+
+                return FCurrentDataset;
             }
 
             string[] datasetTypeSplit = ADataSetTypeWithNamespace.Split(new char[] { '.' });
@@ -88,13 +101,13 @@ namespace Ict.Tools.CodeGeneration
 
             foreach (XmlNode tableNode in tables)
             {
-                TTable table;
+                TTable table = new TTable();
                 string tablename;
 
                 if ((tableNode.Name == "Table") && TXMLParser.HasAttribute(tableNode, "sqltable"))
                 {
                     tablename = TTable.NiceTableName(tableNode.Attributes["sqltable"].Value);
-                    table = FPetraXMLStore.GetTable(tablename);
+                    table.Assign(FPetraXMLStore.GetTable(tablename));
 
                     table.strVariableNameInDataset = TXMLParser.HasAttribute(tableNode, "name") ? tableNode.Attributes["name"].Value : tablename;
 
@@ -157,6 +170,8 @@ namespace Ict.Tools.CodeGeneration
                 result.Add(tablename, table);
             }
 
+            FDatasetTables.Add(ADataSetTypeWithNamespace, result);
+            FCurrentDataset = result;
             return result;
         }
 
@@ -217,7 +232,7 @@ namespace Ict.Tools.CodeGeneration
                             // ADataField can either contain just the field, or the table name and the field
 
                             // does ADataField start with a table name?
-                            foreach (TTable table2 in FDatasetTables.Values)
+                            foreach (TTable table2 in FCurrentDataset.Values)
                             {
                                 if (ADataField.StartsWith(table2.strDotNetName) || ADataField.StartsWith(TTable.NiceTableName(table2.strName)))
                                 {
@@ -248,7 +263,7 @@ namespace Ict.Tools.CodeGeneration
                             // check if the master table has such a field
                             if ((fieldname.Length == 0) && FCodeStorage.HasAttribute("MasterTable"))
                             {
-                                TTable table2 = FDatasetTables[FCodeStorage.GetAttribute("MasterTable")];
+                                TTable table2 = FCurrentDataset[FCodeStorage.GetAttribute("MasterTable")];
 
                                 foreach (TTableField field in table2.grpTableField.List)
                                 {
@@ -263,7 +278,7 @@ namespace Ict.Tools.CodeGeneration
                             // check if there is a unique match for this control name in all the tables
                             if (fieldname.Length == 0)
                             {
-                                foreach (TTable table2 in FDatasetTables.Values)
+                                foreach (TTable table2 in FCurrentDataset.Values)
                                 {
                                     foreach (TTableField field in table2.grpTableField.List)
                                     {
@@ -336,9 +351,9 @@ namespace Ict.Tools.CodeGeneration
 
             TTable table = null;
 
-            if ((FDatasetTables != null) && FDatasetTables.ContainsKey(tablename))
+            if ((FCurrentDataset != null) && FCurrentDataset.ContainsKey(tablename))
             {
-                table = FDatasetTables[tablename];
+                table = FCurrentDataset[tablename];
             }
             else
             {
