@@ -380,9 +380,9 @@ namespace Ict.Petra.Client.App.PetraClient
             {
                 Ict.Common.HelpLauncher.HelpHTMLBaseURL = TClientSettings.HTMLHelpBaseURLOnInternet;
 
-                if (!Ict.Common.HelpLauncher.HelpHTMLBaseURL.EndsWith("/"))
+                if (Ict.Common.HelpLauncher.HelpHTMLBaseURL.EndsWith("/"))
                 {
-                    Ict.Common.HelpLauncher.HelpHTMLBaseURL = Ict.Common.HelpLauncher.HelpHTMLBaseURL + "/";
+                    Ict.Common.HelpLauncher.HelpHTMLBaseURL = Ict.Common.HelpLauncher.HelpHTMLBaseURL.Substring(0, Ict.Common.HelpLauncher.HelpHTMLBaseURL.Length - 1);
                 }
             }
 
