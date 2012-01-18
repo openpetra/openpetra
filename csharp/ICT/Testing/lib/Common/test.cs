@@ -263,8 +263,8 @@ namespace Ict.Common.Testing
             Assert.AreEqual(8, FindMatchingQuote("\" \"\" \"\" \""), "Test 3");
             Assert.AreEqual(8, FindMatchingQuote("\" \"\" \"\" \""), "Test 3");
             Assert.AreEqual(19, FindMatchingQuote("\"eString:\"\" test \"\"\"|\"eDateTime:29/03/2004\""), "Test 4");
-            s = "\"eComposite: :eString:test|\"\"eString:\"\"\"\" test \"\"\"\"\"\"|\"\"eDateTime:29/03/2004\"\"\"";
-            Assert.AreEqual("eComposite: :eString:test|\"eString:\"\" test \"\"\"|\"eDateTime:29/03/2004\"", StringHelper.GetNextCSV(ref s,
+            s = "\"eComposite::eString:test|\"\"eString:\"\"\"\" test \"\"\"\"\"\"|\"\"eDateTime:29/03/2004\"\"\"";
+            Assert.AreEqual("eComposite::eString:test|\"eString:\"\" test \"\"\"|\"eDateTime:29/03/2004\"", StringHelper.GetNextCSV(ref s,
                     "|"), "split composite CSV 1a");
             longStringBug672 =
                 "Actual vs Budget with % Variance\\, (Quarter)3 even longer and longer and longer and longer\\, testActual vs Budget with % VarianceActual vs Budget with % Variance,"
@@ -343,28 +343,28 @@ namespace Ict.Common.Testing
             v = new TVariant("test");
             Assert.AreEqual("eString:test", v.EncodeToString(), "before EncodeToString1");
             v.Add(new TVariant(true));
-            Assert.AreEqual("eComposite: :eString:test|eBoolean:true", v.EncodeToString(), "EncodeToString1");
+            Assert.AreEqual("eComposite::\"eString:test|eBoolean:true\"", v.EncodeToString(), "EncodeToString1");
             v.Add(new TVariant(2.23M, "Currency"));
             v.Add(new TVariant(2.23M));
             v.Add(new TVariant(2));
-            Assert.AreEqual("eComposite: :eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDecimal:4612203932384535511|eInteger:2",
+            Assert.AreEqual("eComposite::\"eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDecimal:4612203932384535511|eInteger:2\"",
                 v.EncodeToString(),
                 "EncodeToString2");
             v.Add(new TVariant(" test "));
             Assert.AreEqual(
-                "eComposite: :eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDecimal:4612203932384535511|eInteger:2|eString: test ",
+                "eComposite::\"eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDecimal:4612203932384535511|eInteger:2|eString: test \"",
                 v.EncodeToString(),
                 "EncodeToString3");
             v.Add(new TVariant(new DateTime(2004, 03, 29)));
             v2 = new TVariant(v); // copy constructor
             Assert.AreEqual(
-                "eComposite: :eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDecimal:4612203932384535511|eInteger:2|eString: test |eDateTime:29/03/2004",
+                "eComposite::\"eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDecimal:4612203932384535511|eInteger:2|eString: test |eDateTime:29/03/2004\"",
                 v2.EncodeToString(),
                 "EncodeToString4");
-            Assert.AreEqual("eComposite: :eString:test|eBoolean:true", TVariant.DecodeFromString(
-                    "eComposite: :eString:test|eBoolean:true").EncodeToString(), "DecodeFromString");
-            Assert.AreEqual("eComposite: :eString: test |eBoolean:true", TVariant.DecodeFromString(
-                    "eComposite: :eString: test |eBoolean:true").EncodeToString(), "DecodeFromString with spaces in string");
+            Assert.AreEqual("eComposite::\"eString:test|eBoolean:true\"", TVariant.DecodeFromString(
+                    "eComposite::\"eString:test|eBoolean:true\"").EncodeToString(), "DecodeFromString");
+            Assert.AreEqual("eComposite::\"eString: test |eBoolean:true\"", TVariant.DecodeFromString(
+                    "eComposite::\"eString: test |eBoolean:true\"").EncodeToString(), "DecodeFromString with spaces in string");
             Assert.AreEqual(v2.EncodeToString(), TVariant.DecodeFromString(v2.EncodeToString()).EncodeToString(), "DecodeFromString2");
             v = new TVariant();
             v.Add(new TVariant(2));
@@ -375,19 +375,19 @@ namespace Ict.Common.Testing
             v3.Add(v);
             v3.Add(v2);
             s =
-                "eInteger:1|\"eComposite: :eInteger:2|\"\"eString:\"\"\"\" test \"\"\"\"\"\"\"|\"eComposite: :eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDecimal:4612203932384535511|eInteger:2|\"\"eString:\"\"\"\" test \"\"\"\"\"\"|eDateTime:29/03/2004\"";
+                "eInteger:1|\"eComposite::\"\"eInteger:2|\"\"\"\"eString:\"\"\"\"\"\"\"\" test \"\"\"\"\"\"\"\"\"\"\"\"\"\"\"|\"eComposite::\"\"eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDecimal:4612203932384535511|eInteger:2|\"\"\"\"eString:\"\"\"\"\"\"\"\" test \"\"\"\"\"\"\"\"\"\"\"\"|eDateTime:29/03/2004\"\"\"";
             Assert.AreEqual("eInteger:1", StringHelper.GetNextCSV(ref s, "|"), "split composite CSV 1");
-            Assert.AreEqual("eComposite: :eInteger:2|\"eString:\"\" test \"\"\"", StringHelper.GetNextCSV(ref s, "|"), "split composite CSV 2");
+            Assert.AreEqual("eComposite::\"eInteger:2|\"\"eString:\"\"\"\" test \"\"\"\"\"\"\"", StringHelper.GetNextCSV(ref s, "|"), "split composite CSV 2");
             Assert.AreEqual(
-                "\"eComposite: :eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDecimal:4612203932384535511|eInteger:2|\"\"eString:\"\"\"\" test \"\"\"\"\"\"|eDateTime:29/03/2004\"",
+                "\"eComposite::\"\"eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDecimal:4612203932384535511|eInteger:2|\"\"\"\"eString:\"\"\"\"\"\"\"\" test \"\"\"\"\"\"\"\"\"\"\"\"|eDateTime:29/03/2004\"\"\"",
                 s,
                 "split composite CSV 4");
             Assert.AreEqual(
-                "eComposite: :eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDecimal:4612203932384535511|eInteger:2|\"eString:\"\" test \"\"\"|eDateTime:29/03/2004",
+                "eComposite::\"eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDecimal:4612203932384535511|eInteger:2|\"\"eString:\"\"\"\" test \"\"\"\"\"\"|eDateTime:29/03/2004\"",
                 StringHelper.GetNextCSV(ref s, "|"),
                 "split composite CSV 6");
             Assert.AreEqual(
-                "eComposite: :eInteger:1|\"eComposite: :eInteger:2|eString: test \"|\"eComposite: :eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDecimal:4612203932384535511|eInteger:2|eString: test |eDateTime:29/03/2004\"",
+                "eComposite::\"eInteger:1|\"\"eComposite::\"\"\"\"eInteger:2|eString: test \"\"\"\"\"\"|\"\"eComposite::\"\"\"\"eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDecimal:4612203932384535511|eInteger:2|eString: test |eDateTime:29/03/2004\"\"\"\"\"\"\"",
                 v3.EncodeToString(),
                 "EncodeToString1 with Composite containing Composite");
             Assert.AreEqual(v3.EncodeToString(), TVariant.DecodeFromString(
@@ -399,11 +399,22 @@ namespace Ict.Common.Testing
             v3.Add(v);
             v3.Add(v2);
             Assert.AreEqual(
-                "eComposite: :eInteger:2|eString: test|\"eComposite: :eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDecimal:4612203932384535511|eInteger:2|eString: test |eDateTime:29/03/2004\"",
+                "eComposite::\"eInteger:2|eString: test|\"\"eComposite::\"\"\"\"eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDecimal:4612203932384535511|eInteger:2|eString: test |eDateTime:29/03/2004\"\"\"\"\"\"\"",
                 v3.EncodeToString(),
                 "EncodeToString2 with Composite containing Composite");
             Assert.AreEqual(v3.EncodeToString(), TVariant.DecodeFromString(
                     v3.EncodeToString()).EncodeToString(), "DecodeFromString with Composite containing Composite");
+            v = new TVariant();
+            v2 = new TVariant();
+            v2.Add(new TVariant(""), "", false);
+            v.Add(v2);
+            v2 = new TVariant();
+            v2.Add(new TVariant(""), "", false);
+            v.Add(v2);
+            Assert.AreEqual("eComposite::\"eComposite::\"\"eString:\"\"|eComposite::\"\"eString:\"\"\"",
+                            v.EncodeToString(), "Composite containing two Composites encode");
+            Assert.AreEqual(v.EncodeToString(), TVariant.DecodeFromString(v.EncodeToString()).EncodeToString(),
+                            "Composite containing two Composites encode decode encode");
             v = new TVariant("test\"1");
             v.Add(new TVariant(" test\"2"));
             v2 = new TVariant("test\"3");
@@ -421,21 +432,21 @@ namespace Ict.Common.Testing
             v2.Add(new TVariant("2900"));
             v.Add(v2);
             v.Add(new TVariant("test3"));
-            Assert.AreEqual("eComposite: :\"eString:\"\"test1\"\"\"\" test2\"\"\"\"\"\"\"|eInteger:2900|eString:test3",
+            Assert.AreEqual("eComposite::\"\"\"eString:\"\"\"\"test1\"\"\"\"\"\"\"\" test2\"\"\"\"\"\"\"\"\"\"\"\"\"\"|eInteger:2900|eString:test3\"",
                 v.EncodeToString(), "Test Cascading Composite2");
             Assert.AreEqual("eString:\"\"\" )  ))\"", TVariant.DecodeFromString("eString:\"\"\" )  ))\"").EncodeToString(), "problem decoding string");
             v = new TVariant();
             v.Add(new TVariant("test\""));
             v.Add(new TVariant("2900"));
             v.Add(new TVariant("test"));
-            Assert.AreEqual("eComposite: :\"eString:\"\"test\"\"\"\"\"\"\"|eInteger:2900|eString:test", v.EncodeToString(), "problem encoding 1b");
+            Assert.AreEqual("eComposite::\"\"\"eString:\"\"\"\"test\"\"\"\"\"\"\"\"\"\"\"\"\"\"|eInteger:2900|eString:test\"", v.EncodeToString(), "problem encoding 1b");
             Assert.AreEqual(v.EncodeToString(), TVariant.DecodeFromString(v.EncodeToString()).EncodeToString(), "problem encoding1a");
             v = new TVariant();
             v.Add(new TVariant("SELECT DISTINCT  WHERE (  ( cc.a_cost_centre_code_c = \""));
             v.Add(new TVariant("2900"));
             v.Add(new TVariant("\" )  ))"));
-            encodedString = "eComposite: :\"eString:\"\"SELECT DISTINCT " +
-                            " WHERE (  ( cc.a_cost_centre_code_c = \"\"\"\"\"\"\"|eInteger:2900|\"eString:\"\"\"\"\"\" )  ))\"\"\"";
+            encodedString = "eComposite::\"\"\"eString:\"\"\"\"SELECT DISTINCT " +
+                            " WHERE (  ( cc.a_cost_centre_code_c = \"\"\"\"\"\"\"\"\"\"\"\"\"\"|eInteger:2900|\"\"eString:\"\"\"\"\"\"\"\"\"\"\"\" )  ))\"\"\"\"\"\"\"";
             Assert.AreEqual(encodedString, v.EncodeToString(), "problem encoding1");
             Assert.AreEqual(v.EncodeToString(), TVariant.DecodeFromString(v.EncodeToString()).EncodeToString(), "problem encoding2");
             Assert.AreEqual(encodedString, TVariant.DecodeFromString(encodedString).EncodeToString(), "problem encoding3");
@@ -444,7 +455,7 @@ namespace Ict.Common.Testing
             v.Add(new TVariant("29001235", "partnerkey"));
             v.Add(new TVariant("29001236", "partnerkey"));
             v.FormatString = "csvlistslash";
-            Assert.AreEqual("eComposite:csvlistslash:eInteger:partnerkey:29001234|eInteger:partnerkey:29001235|eInteger:partnerkey:29001236",
+            Assert.AreEqual("eComposite:csvlistslash:\"eInteger:partnerkey:29001234|eInteger:partnerkey:29001235|eInteger:partnerkey:29001236\"",
                 v.EncodeToString(),
                 "format list with slash separator 1");
             Assert.AreEqual("0029001234/0029001235/0029001236", v.ToFormattedString(""), "format list with slash separator 2");
@@ -459,23 +470,23 @@ namespace Ict.Common.Testing
             v = new TVariant();
             v.Add(new TVariant((Object)(29015041.0)));
             v.Add(new TVariant((Object)(29017453.0)));
-            Assert.AreEqual("eComposite:Currency:eCurrency:Currency:4718553875991232512|eCurrency:Currency:4718554523457552384",
+            Assert.AreEqual("eComposite:Currency:\"eCurrency:Currency:4718553875991232512|eCurrency:Currency:4718554523457552384\"",
                 v.EncodeToString(), "test composite partner key");
-            Assert.AreEqual("eComposite:Currency:eCurrency:Currency:4718553875991232512|eCurrency:Currency:4718554523457552384",
+            Assert.AreEqual("eComposite:Currency:\"eCurrency:Currency:4718553875991232512|eCurrency:Currency:4718554523457552384\"",
                 TVariant.DecodeFromString(v.EncodeToString()).EncodeToString(),
                 "test composite partner key 4");
             v.ApplyFormatString("csvlistslash:partnerkey");
-            Assert.AreEqual("eComposite:csvlistslash:eInt64:partnerkey:29015041|eInt64:partnerkey:29017453",
+            Assert.AreEqual("eComposite:csvlistslash:\"eInt64:partnerkey:29015041|eInt64:partnerkey:29017453\"",
                 v.EncodeToString(), "test composite partner key 2");
             Assert.AreEqual("0029015041/0029017453", v.ToFormattedString(" "), "test composite partner key 3");
-            v = TVariant.DecodeFromString("eComposite:csvlistslash:\"eString:text:de Vries, Rianne\"|\"eString:text:Visser, W. and K.K.J.\"");
+            v = TVariant.DecodeFromString("eComposite:csvlistslash:\"eString:text:de Vries, Rianne|eString:text:Visser, W. and K.K.J.\"");
             Assert.AreEqual("de Vries, Rianne/Visser, W. and K.K.J.", v.ToFormattedString(""));
             Assert.AreEqual("de Vries, Rianne/Visser, W. and K.K.J.", v.ToFormattedString("", "CSV"));
             v = new TVariant();
             v.Add(new TVariant("From Gift-Batch#: "));
             v.Add(new TVariant(8351));
             Assert.AreEqual("From Gift-Batch#: 8351", v.ToFormattedString(""), "colon in text");
-            Assert.AreEqual("eComposite: :\"eString:\"\"From Gift-Batch#: \"\"\"|eInteger:8351", v.EncodeToString(), "colon in text2");
+            Assert.AreEqual("eComposite::\"\"\"eString:\"\"\"\"From Gift-Batch#: \"\"\"\"\"\"|eInteger:8351\"", v.EncodeToString(), "colon in text2");
             Assert.AreEqual("From Gift-Batch#: 8351", TVariant.DecodeFromString(v.EncodeToString()).ToFormattedString(""), "colon in text3");
             v = new TVariant();
             v.Add(new TVariant("Total for Account "));
@@ -483,9 +494,29 @@ namespace Ict.Common.Testing
             v.Add(new TVariant(':'));
             Assert.AreEqual("Total for Account 1000:", v.ToFormattedString(), "colon in text on its own");
             Assert.AreEqual(v.EncodeToString(), TVariant.DecodeFromString(v.EncodeToString()).EncodeToString(), "colon in text on its own 2");
+            v = new TVariant();
+            v.Add(new TVariant("", "", false));
+            v.Add(new TVariant("", "", false));
+            Assert.AreEqual("eComposite::\"eString:|eString:\"", v.EncodeToString(), "Composite with two empty strings encoding");
+            Assert.AreEqual(TVariant.DecodeFromString(v.EncodeToString()).EncodeToString(),
+                            v.EncodeToString(), "Composite with two empty strings encoding decoding encoding");
+            v.Add(new TVariant("|", "", false));
+            Assert.AreEqual("eComposite::\"eString:|eString:|\"\"eString:|\"\"\"",
+                            v.EncodeString(), "Composite with pipe encoding");
+            Assert.AreEqual(TVariant.DecodeFromString(v.EncodeToString()).EncodeToString(),
+                            v.EncodeToString(), "Composite with pipe encoding decoding encoding");
             v = new TVariant("", true);
-            Assert.AreEqual("eString:text: ", v.EncodeToString(), "empty string encoding");
+            Assert.AreEqual("eString:text:", v.EncodeToString(), "empty string encoding");
             Assert.AreEqual(v.EncodeToString(), TVariant.DecodeFromString(v.EncodeToString()).EncodeToString(), "empty string decoding");
+            Assert.AreEqual(v.ToString(), "", "empty string identity");
+            Assert.AreEqual("", TVariant.DecodeFromString(v.EncodeToString()).ToString(), "empty string decoding identity");
+            Assert.AreEqual(eVariantTypes.eString, TVariant.DecodeFromString(v.EncodeToString()).TypeVariant, "empty string decoding type");
+            v = new TVariant(" ", true);
+            Assert.AreEqual(v.ToString(), " ", "one-space string identity");
+            Assert.AreEqual("eString:text: ", v.EncodeToString(), "one-space string encoding");
+            Assert.AreEqual(v.EncodeToString(), TVariant.DecodeFromString(v.EncodeToString()).EncodeToString(), "one-space string decoding");
+            Assert.AreEqual(" ", TVariant.DecodeFromString(v.EncodeToString()).ToString(), "one-space string decoding identity");
+            Assert.AreEqual(eVariantTypes.eString, TVariant.DecodeFromString(v.EncodeToString()).TypeVariant, "one-space string decoding type");
             Thread.CurrentThread.CurrentCulture = oldCulture;
         }
 
@@ -530,14 +561,14 @@ namespace Ict.Common.Testing
                         "CurrencyThousands"), "format progress currency 0 thousands");
                 Assert.AreEqual("", new TVariant("", true).ToFormattedString(
                         "Currency"), "format empty string in the column heading of a column that has currency values");
-                Assert.AreEqual("eString:text: ", new TVariant(new TVariant("",
+                Assert.AreEqual("eString:text:", new TVariant(new TVariant("",
                             true)).EncodeToString(), "format empty string in the column heading of a column that has currency values 2");
                 Assert.AreEqual("", new TVariant(new TVariant("", true)).ToFormattedString(
                         "Currency"), "format empty string in the column heading of a column that has currency values 3");
-                Assert.AreEqual("eString:text: ", new TVariant("",
+                Assert.AreEqual("eString:text:", new TVariant("",
                         true).EncodeToString(), "format empty string in the column heading of a column that has currency values 4");
                 v = new TVariant("", true);
-                Assert.AreEqual("eString:text: ",
+                Assert.AreEqual("eString:text:",
                     v.EncodeToString(), "format empty string in the column heading of a column that has currency values 5");
                 v = new TVariant();
                 v.Add(new TVariant("", true));
@@ -561,7 +592,7 @@ namespace Ict.Common.Testing
                 Assert.AreEqual("(1" + ThousandsOperator + "003" + DecimalSeparator + "25)",
                     v.ToFormattedString(), "format negative number with format that only prints negative values 2");
                 v.ApplyFormatString("#,##0.00; ; ; ;");
-                Assert.AreEqual("eEmpty:\"#,##0.00; ; ; ;\":",
+                Assert.AreEqual("eEmpty:#,##0.00; ; ; ;:",
                     v.EncodeToString(), "format negative number with format that only prints negative values 3");
                 Assert.AreEqual("", v.ToFormattedString(), "format negative number with format that only prints negative values 4");
                 Assert.AreEqual("12" + ThousandsOperator + "346", new TVariant(12345.67M, "Currency").ToFormattedString(
