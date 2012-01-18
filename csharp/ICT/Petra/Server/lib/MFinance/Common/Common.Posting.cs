@@ -83,6 +83,45 @@ namespace Ict.Petra.Server.MFinance.Common
             return GLMRow.GlmSequence;
         }
 
+		/// <summary>
+        /// creates the rows for the whole current year in AGeneralLedgerMaster and AGeneralLedgerMasterPeriod for an Account/CostCentre combination
+		/// </summary>
+		/// <param name="AMainDS"></param>
+		/// <param name="ALedgerNumber"></param>
+		/// <param name="AAccountCode"></param>
+		/// <param name="ACostCentreCode"></param>
+		/// <returns>the glm sequence</returns>
+        public static Int32 CreateGLMYear(
+            ref GLBatchTDS AMainDS,
+            Int32 ALedgerNumber,
+            int AYear,
+            string AAccountCode,
+            string ACostCentreCode)
+        {
+            ALedgerRow Ledger = AMainDS.ALedger[0];
+
+            AGeneralLedgerMasterRow GLMRow = AMainDS.AGeneralLedgerMaster.NewRowTyped();
+
+            // row.GlmSequence will be set by SubmitChanges
+            GLMRow.GlmSequence = (AMainDS.AGeneralLedgerMaster.Rows.Count * -1) - 1;
+            GLMRow.LedgerNumber = ALedgerNumber;
+            GLMRow.Year = AYear;
+            GLMRow.AccountCode = AAccountCode;
+            GLMRow.CostCentreCode = ACostCentreCode;
+
+            AMainDS.AGeneralLedgerMaster.Rows.Add(GLMRow);
+
+            for (int PeriodCount = 1; PeriodCount < Ledger.NumberOfAccountingPeriods + Ledger.NumberFwdPostingPeriods + 1; PeriodCount++)
+            {
+                AGeneralLedgerMasterPeriodRow PeriodRow = AMainDS.AGeneralLedgerMasterPeriod.NewRowTyped();
+                PeriodRow.GlmSequence = GLMRow.GlmSequence;
+                PeriodRow.PeriodNumber = PeriodCount;
+                AMainDS.AGeneralLedgerMasterPeriod.Rows.Add(PeriodRow);
+            }
+
+            return GLMRow.GlmSequence;
+        }
+
         /// <summary>
         /// load the batch and all associated tables into the typed dataset
         /// </summary>

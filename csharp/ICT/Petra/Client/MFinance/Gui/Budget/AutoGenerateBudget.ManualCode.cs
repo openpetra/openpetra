@@ -151,7 +151,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
             //TODO: call code on the server. To be completed with Timo.
             //TODO: Don't forget to examine code in lb_budget.p for the contents of functions ClearBudgets, StartConsolidation etc...
-            //ConsolidateBudgets();
+            TVerificationResultCollection VerificationResult = null;
+            
+            TRemote.MFinance.Budget.WebConnectors.ConsolidateBudgets(FLedgerNumber, ConsolidateAll, ref FMainDS, ref VerificationResult);
+            
             string CheckItemsList = clbCostCentreAccountCodes.GetCheckedStringList();
             string[] CheckedItems = CheckItemsList.Split(',');
 
@@ -204,6 +207,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             }
         }
 
+        
         private void GenBudgetForNextYear(int ABudgetSeq, string AForecastType)
         {
             decimal BudgetSum;
