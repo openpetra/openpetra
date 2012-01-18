@@ -35,10 +35,12 @@ using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Common.Data;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
+using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.MFinance.Common;
 using Ict.Petra.Server.MFinance.GL.Data.Access;
 using Ict.Petra.Server.App.Core.Security;
@@ -956,10 +958,6 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                     
                     AGeneralLedgerMasterRow GeneralLedgerMasterRow = null;
 
-                    AGeneralLedgerMasterPeriodTable GeneralLedgerMasterPeriodTable = null;
-                    AGeneralLedgerMasterPeriodRow GeneralLedgerMasterPeriodRow = null;
-                    
-
                     for (int j = 0; j < GeneralLedgerMasterTable.Count; j++)
                     {
                         GeneralLedgerMasterRow = (AGeneralLedgerMasterRow)GeneralLedgerMasterTable.Rows[j];
@@ -994,12 +992,60 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             	}
             }
 
-			//FinishConsolidateBudget(pv_ledger_number_i).
-            
-			            
+			FinishConsolidateBudget(ALedgerNumber, ref wtPeriodData, ref BudgetTable);
             
             return retVal;
         }
+        
+        
+        private static void FinishConsolidateBudget(int ALedgerNumber, ref DataTable APeriodDataTable, ref ABudgetTable ABudgetTable)
+        {
+        	decimal lv_intl_exchange_rate_n;
+    		int lv_prev_sequence_i = 0;
+    		int CurrentSequence;
+    		
+    		if (TExchangeRateTools.GetLatestIntlCorpExchangeRate(ALedgerNumber, out lv_intl_exchange_rate_n))
+    		{
+    			/*Consolidate_Budget*/
+
+    			AGeneralLedgerMasterPeriodTable GLMPTable = null;
+    			AGeneralLedgerMasterPeriodRow GLMPRow = null;
+    			DataRow DR = null;
+    			
+    			for (int i = 0; i < APeriodDataTable.Rows.Count; i++)
+    			{
+    				DR = (DataRow)APeriodDataTable.Rows[i];
+    				CurrentSequence = Convert.ToInt32(DR.ItemArray[0]);
+    				
+    				if (lv_prev_sequence_i != CurrentSequence)
+    				{
+    					lv_prev_sequence_i = CurrentSequence;
+    				}
+    				
+    				GLMPTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(lv_prev_sequence_i, Convert.ToInt32(DR.ItemArray[1]), null);
+					GLMPRow = (AGeneralLedgerMasterPeriodRow)GLMPTable.Rows[0];
+					
+					GLMPRow.BeginEdit();
+					GLMPRow.BudgetBase = Convert.ToDecimal(DR.ItemArray[2]);
+					GLMPRow.BudgetIntl = Math.Round(Convert.ToDecimal(DR.ItemArray[2]) / lv_intl_exchange_rate_n);
+					GLMPRow.EndEdit();
+    			}
+    			
+    			ABudgetRow BudgetRow = null;
+    			
+    			for (int i = 0; i < ABudgetTable.Count; i++)
+    			{
+    				BudgetRow = (ABudgetRow)ABudgetTable.Rows[i];
+    				
+    				BudgetRow.BeginEdit();
+    				BudgetRow.BudgetStatus = true;
+    				BudgetRow.EndEdit();
+    			}
+    			
+    		}
+	
+        }
+        
         
 		/// <summary>
         /// Return the budget amount from the temp table wtPeriodData. 
@@ -1283,11 +1329,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 						AddBudgetValue(ref APeriodDataTable, lv_glm_this_year_i, BPR.PeriodNumber, lv_debit_credit_multiply_i * BPR.BudgetThisYear);
         				AddBudgetValue(ref APeriodDataTable, lv_glm_next_year_i, BPR.PeriodNumber, lv_debit_credit_multiply_i * BPR.BudgetNextYear);
 					}
-  
 				}
-
-
-				
             }
             finally
             {
