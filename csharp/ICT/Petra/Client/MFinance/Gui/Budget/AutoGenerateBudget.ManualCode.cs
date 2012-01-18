@@ -93,7 +93,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             string AccountDBN = ABudgetTable.GetAccountCodeDBName();
             string CostCentreDBN = ABudgetTable.GetCostCentreCodeDBName();
             string BudgetSeqDBN = ABudgetTable.GetBudgetSequenceDBName();
-            string CCAccKey = "CostCentreAccountKey";
+            //string CCAccKey = "CostCentreAccountKey";
             string CCAccDesc = "CostCentreAccountDescription";
             string BudgetSeqKey = "BudgetSequenceKey";
 
@@ -153,7 +153,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             //TODO: Don't forget to examine code in lb_budget.p for the contents of functions ClearBudgets, StartConsolidation etc...
             TVerificationResultCollection VerificationResult = null;
             
-            TRemote.MFinance.Budget.WebConnectors.ConsolidateBudgets(FLedgerNumber, ConsolidateAll, ref FMainDS, ref VerificationResult);
+            TRemote.MFinance.Budget.WebConnectors.ConsolidateBudgets(FLedgerNumber, ConsolidateAll, ref FMainDS, out VerificationResult);
             
             string CheckItemsList = clbCostCentreAccountCodes.GetCheckedStringList();
             string[] CheckedItems = CheckItemsList.Split(',');
@@ -579,14 +579,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             }
         }
 
-        /// <summary>
+		/// <summary>
         /// Description: set the budget of a period.
-        /// </summary>
-        /// <param name="ABudgetSequence"></param>
-        /// <param name="AFieldName"></param>
-        /// <param name="APeriodNumber"></param>
-        /// <param name="ABudgetAmount"></param>
-        /// <returns></returns>
+		/// </summary>
+		/// <param name="ABudgetSequence"></param>
+		/// <param name="APeriodNumber"></param>
+		/// <param name="ABudgetAmount"></param>
+		/// <returns></returns>
         private decimal SetBudgetPeriod(int ABudgetSequence, int APeriodNumber, decimal ABudgetAmount)
         {
             decimal retVal = 0;
@@ -611,7 +610,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         /// </summary>
         /// <param name="ABudgetSequence"></param>
         /// <param name="APeriodNumber"></param>
-        /// <param name="ABudgetAmount"></param>
         /// <returns></returns>
         private decimal GetBudgetPeriodAmount(int ABudgetSequence, int APeriodNumber)
         {

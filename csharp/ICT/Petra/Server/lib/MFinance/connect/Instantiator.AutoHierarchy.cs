@@ -999,7 +999,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP.WebConnectors
                                               DateTime APostingDate,
                                               out TVerificationResultCollection AVerifications)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector), "PostAPDocuments", ";INT;LIST;DATETIME;TVERIFICATIONRESULTCOLLECTION;", ALedgerNumber);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector), "PostAPDocuments", ";INT;INT?;DATETIME;TVERIFICATIONRESULTCOLLECTION;", ALedgerNumber);
             return Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector.PostAPDocuments(ALedgerNumber, AAPDocumentNumbers, APostingDate, out AVerifications);
         }
 
@@ -1532,10 +1532,19 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Budget.WebConnectors
         public System.Boolean ConsolidateBudgets(Int32 ALedgerNumber,
                                                  System.Boolean AConsolidateAll,
                                                  ref BudgetTDS ABudgetTDS,
-                                                 ref TVerificationResultCollection AVerificationResult)
+                                                 out TVerificationResultCollection AVerificationResult)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector), "ConsolidateBudgets", ";INT;BOOL;BUDGETTDS;TVERIFICATIONRESULTCOLLECTION;", ALedgerNumber);
-            return Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector.ConsolidateBudgets(ALedgerNumber, AConsolidateAll, ref ABudgetTDS, ref AVerificationResult);
+            return Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector.ConsolidateBudgets(ALedgerNumber, AConsolidateAll, ref ABudgetTDS, out AVerificationResult);
+        }
+
+        /// generated method from connector
+        public System.Decimal GetBudgetValue(ref DataTable APeriodDataTable,
+                                             System.Int32 AGLMSequence,
+                                             System.Int32 APeriodNumber)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector), "GetBudgetValue", ";DATATABLE;INT;INT;");
+            return Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector.GetBudgetValue(ref APeriodDataTable, AGLMSequence, APeriodNumber);
         }
     }
 }

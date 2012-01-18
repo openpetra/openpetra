@@ -366,7 +366,11 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Budget.WebConnectors
         System.Boolean ConsolidateBudgets(Int32 ALedgerNumber,
                                           System.Boolean AConsolidateAll,
                                           ref BudgetTDS ABudgetTDS,
-                                          ref TVerificationResultCollection AVerificationResult);
+                                          out TVerificationResultCollection AVerificationResult);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector)</summary>
+        System.Decimal GetBudgetValue(ref DataTable APeriodDataTable,
+                                      System.Int32 AGLMSequence,
+                                      System.Int32 APeriodNumber);
     }
 
 }
