@@ -109,12 +109,16 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             return TSubmitChangesResult.scrError;
         }
 
-        /// <summary>
-        /// import budgets
-        /// </summary>
-        /// <param name="AImportDS"></param>
-        /// <param name="AVerificationResult"></param>
-        /// <returns></returns>
+		/// <summary>
+		/// Imports budgets
+		/// </summary>
+		/// <param name="ALedgerNumber"></param>
+		/// <param name="ACurrentBudgetYear"></param>
+		/// <param name="ACSVFileName"></param>
+		/// <param name="AFdlgSeparator"></param>
+		/// <param name="AImportDS"></param>
+		/// <param name="AVerificationResult"></param>
+		/// <returns></returns>
         [RequireModulePermission("FINANCE-3")]
         public static int ImportBudgets(Int32 ALedgerNumber, Int32 ACurrentBudgetYear, string ACSVFileName, string[] AFdlgSeparator, ref BudgetTDS AImportDS,
             out TVerificationResultCollection AVerificationResult)
@@ -131,15 +135,16 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         }
 
         
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ACSVFileName"></param>
-        /// <param name="AFdlgSeparator"></param>
-        /// <param name="AImportDS"></param>
-        /// <param name="AVerificationResult"></param>
-        /// <returns></returns>
+		/// <summary>
+        /// Import the budget from a CSV file
+		/// </summary>
+		/// <param name="ALedgerNumber"></param>
+		/// <param name="ACurrentBudgetYear"></param>
+		/// <param name="ACSVFileName"></param>
+		/// <param name="AFdlgSeparator"></param>
+		/// <param name="AImportDS"></param>
+		/// <param name="AVerificationResult"></param>
+		/// <returns>Total number of records imported</returns>
         private static int ImportBudgetFromCSV(Int32 ALedgerNumber, Int32 ACurrentBudgetYear, string ACSVFileName, string[] AFdlgSeparator, ref BudgetTDS AImportDS,
             ref TVerificationResultCollection AVerificationResult)
         {
@@ -344,7 +349,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                                 Account,
                                 BudgetType));
 
-                            break;
+                            //break;
                     }
 
                     if (ErrorInPeriodValues)
@@ -484,17 +489,29 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             return retVal;
         }
 
-        /*------------------------------------------------------------------------------
-         *         Description: GetActual retrieves the actuals value of the given period, no matter if it is in a forwarding period.
-         *           GetActual is similar to GetBudget. The main difference is, that forwarding periods are saved in the current year.
-         *           You still need the sequence_next_year, because this_year can be older than current_financial_year of the ledger.
-         *           So you need to give number_accounting_periods and current_financial_year of the ledger.
-         *           You also need to give the number of the year from which you want the data.
-         *           Currency_select is either "B" for base or "I" for international currency or "T" for transaction currency
-         *           You want e.g. the actual data of period 13 in year 2, the current financial year is 3.
-         *           The call would look like: GetActual(sequence_year_2, sequence_year_3, 13, 12, 3, 2, false, "B");
-         *           That means, the function has to return the difference between year 3 period 1 and the start balance of year 3.
-         *       ------------------------------------------------------------------------------*/
+        /// <summary>
+        /// ------------------------------------------------------------------------------
+        /// Description: GetActual retrieves the actuals value of the given period, no matter if it is in a forwarding period.
+        ///  GetActual is similar to GetBudget. The main difference is, that forwarding periods are saved in the current year.
+        ///  You still need the sequence_next_year, because this_year can be older than current_financial_year of the ledger.
+        ///  So you need to give number_accounting_periods and current_financial_year of the ledger.
+        ///  You also need to give the number of the year from which you want the data.
+        ///  Currency_select is either "B" for base or "I" for international currency or "T" for transaction currency
+        ///  You want e.g. the actual data of period 13 in year 2, the current financial year is 3.
+        ///  The call would look like: GetActual(sequence_year_2, sequence_year_3, 13, 12, 3, 2, false, "B");
+        ///  That means, the function has to return the difference between year 3 period 1 and the start balance of year 3.
+        /// ------------------------------------------------------------------------------
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AGLMSeqThisYear"></param>
+        /// <param name="AGLMSeqNextYear"></param>
+        /// <param name="APeriodNumber"></param>
+        /// <param name="ANumberAccountingPeriods"></param>
+        /// <param name="ACurrentFinancialYear"></param>
+        /// <param name="AThisYear"></param>
+        /// <param name="AYTD"></param>
+        /// <param name="ACurrencySelect"></param>
+        /// <returns></returns>
         [RequireModulePermission("FINANCE-3")]
         public static decimal GetActual(int ALedgerNumber,
             int AGLMSeqThisYear,
@@ -522,6 +539,20 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             return retVal;
         }
 
+        /// <summary>
+        /// Get the actual amount
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AGLMSeqThisYear"></param>
+        /// <param name="AGLMSeqNextYear"></param>
+        /// <param name="APeriodNumber"></param>
+        /// <param name="ANumberAccountingPeriods"></param>
+        /// <param name="ACurrentFinancialYear"></param>
+        /// <param name="AThisYear"></param>
+        /// <param name="AYTD"></param>
+        /// <param name="ABalSheetForwardPeriods"></param>
+        /// <param name="ACurrencySelect"></param>
+        /// <returns></returns>
         private static decimal GetActualInternal(int ALedgerNumber,
             int AGLMSeqThisYear,
             int AGLMSeqNextYear,
@@ -686,6 +717,16 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         }
 
         
+        /// <summary>
+        /// Retrieves a budget value
+        /// </summary>
+        /// <param name="AGLMSeqThisYear"></param>
+        /// <param name="AGLMSeqNextYear"></param>
+        /// <param name="APeriodNumber"></param>
+        /// <param name="ANumberAccountingPeriods"></param>
+        /// <param name="AYTD"></param>
+        /// <param name="ACurrencySelect"></param>
+        /// <returns></returns>
         [RequireModulePermission("FINANCE-3")]
         public static decimal GetBudget(int AGLMSeqThisYear,
             int AGLMSeqNextYear,
@@ -791,6 +832,11 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             return d == 0;
         }
 
+		/// <summary>
+		/// Validate Budget Type: Same
+		/// </summary>
+		/// <param name="APeriodValues"></param>
+		/// <returns></returns>
         private static bool ValidateBudgetTypeSame(decimal[] APeriodValues)
         {
             bool PeriodValuesOK = true;
@@ -809,6 +855,11 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             return PeriodValuesOK;
         }
 
+        /// <summary>
+        /// Validate Budget Type: Split
+        /// </summary>
+        /// <param name="APeriodValues"></param>
+        /// <returns></returns>
         private static bool ValidateBudgetTypeSplit(decimal[] APeriodValues)
         {
             bool PeriodValuesOK = true;
@@ -836,6 +887,11 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             return PeriodValuesOK;
         }
 
+        /// <summary>
+        /// Validate Budget Type: Base
+        /// </summary>
+        /// <param name="APeriodValues"></param>
+        /// <returns></returns>
         private static bool ValidateBudgetTypeInflateBase(decimal[] APeriodValues)
         {
             bool PeriodValuesOK = true;
@@ -848,6 +904,11 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             return PeriodValuesOK;
         }
 
+        /// <summary>
+        /// Validate Budget Type: Inflate n
+        /// </summary>
+        /// <param name="APeriodValues"></param>
+        /// <returns></returns>
         private static bool ValidateBudgetTypeInflateN(decimal[] APeriodValues)
         {
             bool PeriodValuesOK = true;
@@ -881,28 +942,25 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             return PeriodValuesOK;
         }
 
-        /// <summary>
-        /// import budgets
-        /// </summary>
-        /// <param name="ACSVFileName"></param>
-        /// <param name="AImportDS"></param>
-        /// <param name="AVerificationResult"></param>
-        /// <returns></returns>
+
+		/// <summary>
+		/// Consolidate Budgets.
+		/// </summary>
+		/// <param name="ALedgerNumber"></param>
+		/// <param name="AConsolidateAll"></param>
+		/// <param name="ABudgetTDS"></param>
+		/// <param name="AVerificationResult"></param>
+		/// <returns></returns>
         [RequireModulePermission("FINANCE-3")]
         public static bool ConsolidateBudgets(Int32 ALedgerNumber, bool AConsolidateAll, ref BudgetTDS ABudgetTDS,
             out TVerificationResultCollection AVerificationResult)
         {
-            //TODO Complete this code.
             bool retVal = false;
+            
+            int Year;
+            int Period;
 
-            int lv_year_i;
-            int lv_period_i;
-            decimal lv_temp_amounts_this_year_n;             // AS DECIMAL EXTENT {&MAX-PERIODS} NO-UNDO. Max-Periods = 20
-            decimal lv_temp_amounts_next_year_n;             // AS DECIMAL EXTENT {&MAX-PERIODS} NO-UNDO. Max-Periods = 20
-            bool lv_answer_l = false;
-            int lv_glm_sequence_this_year_i;
-            int lv_glm_sequence_next_year_i;
-            string lv_prev_account_c = string.Empty;
+            string PreviousAccount = string.Empty;
             
             string CurrentGLMAccountCode;
             int CurrentGLMSequence;
@@ -911,7 +969,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             
             //Create the temp table
             // Same as the wtPeriodData table in 4GL
-    		DataTable wtPeriodData = CreateTempTable();
+    		DataTable PeriodDataTempTable = CreateTempTable();
             
             ABudgetTable BudgetTable = ABudgetTDS.ABudget;
             ABudgetRow BudgetRow = null;
@@ -921,8 +979,6 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
             if (AConsolidateAll)
             {
-                lv_answer_l = true;
-
                 for (int i = 0; i < BudgetTable.Count; i++)
                 {
                     BudgetRow = (ABudgetRow)BudgetTable.Rows[i];
@@ -933,13 +989,13 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
                 for (int i = 0; i <= 1; i++)
                 {
-                	lv_year_i = LedgerRow.CurrentFinancialYear + i;
+                	Year = LedgerRow.CurrentFinancialYear + i;
 
                 	AGeneralLedgerMasterTable GenLedgerMasterTable = new AGeneralLedgerMasterTable();
                     AGeneralLedgerMasterRow TemplateRow = (AGeneralLedgerMasterRow)GenLedgerMasterTable.NewRowTyped(false);
 
                     TemplateRow.LedgerNumber = ALedgerNumber;
-                    TemplateRow.Year = lv_year_i;
+                    TemplateRow.Year = Year;
 
                     StringCollection operators = StringHelper.InitStrArr(new string[] { "=", "=" });
                     StringCollection OrderList = new StringCollection();
@@ -965,14 +1021,14 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                         CurrentGLMAccountCode = GeneralLedgerMasterRow.AccountCode;
                         CurrentGLMSequence = GeneralLedgerMasterRow.GlmSequence;
                         
-                        if (lv_prev_account_c != CurrentGLMAccountCode)
+                        if (PreviousAccount != CurrentGLMAccountCode)
                         {
-                        	lv_prev_account_c = CurrentGLMAccountCode;
+                        	PreviousAccount = CurrentGLMAccountCode;
                         }
 
-                      	for (lv_period_i = 1; lv_period_i <= LedgerRow.NumberOfAccountingPeriods; lv_period_i++)
+                      	for (Period = 1; Period <= LedgerRow.NumberOfAccountingPeriods; Period++)
                         {
-                      		ClearAllBudgetValues(ref wtPeriodData, CurrentGLMSequence, lv_period_i);
+                      		ClearAllBudgetValues(ref PeriodDataTempTable, CurrentGLMSequence, Period);
                         }
                     }
                 }
@@ -985,26 +1041,32 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             	{
             		if (!AConsolidateAll)
             		{
-            			UnPostBudget(ref wtPeriodData, ref ABudgetTDS, ref BudgetRow, ALedgerNumber);
+            			UnPostBudget(ref PeriodDataTempTable, ref ABudgetTDS, ref BudgetRow, ALedgerNumber);
             		}	
             		
-            		PostBudget(ref wtPeriodData, ref ABudgetTDS, ref BudgetRow, ALedgerNumber);
+            		PostBudget(ref PeriodDataTempTable, ref ABudgetTDS, ref BudgetRow, ALedgerNumber);
             	}
             }
 
-			FinishConsolidateBudget(ALedgerNumber, ref wtPeriodData, ref BudgetTable);
+			FinishConsolidateBudget(ALedgerNumber, ref PeriodDataTempTable, ref BudgetTable);
             
             return retVal;
         }
         
         
+        /// <summary>
+        /// Complete the Budget consolidation process
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="APeriodDataTable"></param>
+        /// <param name="ABudgetTable"></param>
         private static void FinishConsolidateBudget(int ALedgerNumber, ref DataTable APeriodDataTable, ref ABudgetTable ABudgetTable)
         {
-        	decimal lv_intl_exchange_rate_n;
-    		int lv_prev_sequence_i = 0;
+        	decimal IntlExchangeRate;
+    		int PreviousSequence = 0;
     		int CurrentSequence;
     		
-    		if (TExchangeRateTools.GetLatestIntlCorpExchangeRate(ALedgerNumber, out lv_intl_exchange_rate_n))
+    		if (TExchangeRateTools.GetLatestIntlCorpExchangeRate(ALedgerNumber, out IntlExchangeRate))
     		{
     			/*Consolidate_Budget*/
 
@@ -1017,17 +1079,17 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
     				DR = (DataRow)APeriodDataTable.Rows[i];
     				CurrentSequence = Convert.ToInt32(DR.ItemArray[0]);
     				
-    				if (lv_prev_sequence_i != CurrentSequence)
+    				if (PreviousSequence != CurrentSequence)
     				{
-    					lv_prev_sequence_i = CurrentSequence;
+    					PreviousSequence = CurrentSequence;
     				}
     				
-    				GLMPTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(lv_prev_sequence_i, Convert.ToInt32(DR.ItemArray[1]), null);
+    				GLMPTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(PreviousSequence, Convert.ToInt32(DR.ItemArray[1]), null);
 					GLMPRow = (AGeneralLedgerMasterPeriodRow)GLMPTable.Rows[0];
 					
 					GLMPRow.BeginEdit();
 					GLMPRow.BudgetBase = Convert.ToDecimal(DR.ItemArray[2]);
-					GLMPRow.BudgetIntl = Math.Round(Convert.ToDecimal(DR.ItemArray[2]) / lv_intl_exchange_rate_n);
+					GLMPRow.BudgetIntl = Math.Round(Convert.ToDecimal(DR.ItemArray[2]) / IntlExchangeRate);
 					GLMPRow.EndEdit();
     			}
     			
@@ -1089,25 +1151,33 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         }
 
         
+        /// <summary>
+        /// Unpost a budget
+        /// </summary>
+        /// <param name="APeriodDataTable"></param>
+        /// <param name="ABudgetTDS"></param>
+        /// <param name="ABudgetRow"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
         private static bool UnPostBudget(ref DataTable APeriodDataTable, ref BudgetTDS ABudgetTDS, ref ABudgetRow ABudgetRow, int ALedgerNumber)
         {
-        	decimal[] lv_temp_amounts_this_year_n = new decimal[19];             // AS DECIMAL EXTENT {&MAX-PERIODS} NO-UNDO. Max-Periods = 20
-        	decimal[] lv_temp_amounts_next_year_n = new decimal[19];             // AS DECIMAL EXTENT {&MAX-PERIODS} NO-UNDO. Max-Periods = 20
-            bool lv_answer_l = false;
-            int lv_glm_sequence_this_year_i;
-            int lv_glm_sequence_next_year_i;
+        	decimal[] TempAmountsThisYear = new decimal[19];             // AS DECIMAL EXTENT {&MAX-PERIODS} NO-UNDO. Max-Periods = 20
+        	decimal[] TempAmountsNextYear = new decimal[19];             // AS DECIMAL EXTENT {&MAX-PERIODS} NO-UNDO. Max-Periods = 20
+            //bool lv_answer_l = false;
+            int GLMSequenceThisYear;
+            int GLMSequenceNextYear;
 
             ALedgerRow LedgerRow = (ALedgerRow)ABudgetTDS.ALedger.Rows[0];
             
-            lv_glm_sequence_this_year_i = GetGLMSequenceForBudget(ALedgerNumber, ABudgetRow.AccountCode, ABudgetRow.CostCentreCode, LedgerRow.CurrentFinancialYear);
-			lv_glm_sequence_next_year_i = GetGLMSequenceForBudget(ALedgerNumber, ABudgetRow.AccountCode, ABudgetRow.CostCentreCode, LedgerRow.CurrentFinancialYear + 1);
+            GLMSequenceThisYear = GetGLMSequenceForBudget(ALedgerNumber, ABudgetRow.AccountCode, ABudgetRow.CostCentreCode, LedgerRow.CurrentFinancialYear);
+			GLMSequenceNextYear = GetGLMSequenceForBudget(ALedgerNumber, ABudgetRow.AccountCode, ABudgetRow.CostCentreCode, LedgerRow.CurrentFinancialYear + 1);
 
-			if (lv_glm_sequence_this_year_i != -1 || lv_glm_sequence_next_year_i != -1)
+			if (GLMSequenceThisYear != -1 || GLMSequenceNextYear != -1)
 			{
             	AGeneralLedgerMasterPeriodTable GenLedgerMasterPeriodTable = new AGeneralLedgerMasterPeriodTable();
                 AGeneralLedgerMasterPeriodRow TemplateRow = (AGeneralLedgerMasterPeriodRow)GenLedgerMasterPeriodTable.NewRowTyped(false);
 
-                TemplateRow.GlmSequence = lv_glm_sequence_this_year_i;
+                TemplateRow.GlmSequence = GLMSequenceThisYear;
                 TemplateRow.BudgetBase = 0;
 
                 StringCollection operators = StringHelper.InitStrArr(new string[] { "=", "<>" });
@@ -1131,7 +1201,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 	            	AGeneralLedgerMasterPeriodTable GenLedgerMasterPeriodTable2 = new AGeneralLedgerMasterPeriodTable();
 	                AGeneralLedgerMasterPeriodRow TemplateRow2 = (AGeneralLedgerMasterPeriodRow)GenLedgerMasterPeriodTable2.NewRowTyped(false);
 	
-	                TemplateRow2.GlmSequence = lv_glm_sequence_next_year_i;
+	                TemplateRow2.GlmSequence = GLMSequenceNextYear;
 	                TemplateRow2.BudgetBase = 0;
 	
 	                StringCollection operators2 = StringHelper.InitStrArr(new string[] { "=", "<>" });
@@ -1157,11 +1227,11 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 					{
 						ABudgetPeriodRow BPR = (ABudgetPeriodRow)BPT.Rows[i];
 						
-						lv_temp_amounts_this_year_n[BPR.PeriodNumber] = BPR.BudgetThisYear;
-						lv_temp_amounts_next_year_n[BPR.PeriodNumber] = BPR.BudgetNextYear;
+						TempAmountsThisYear[BPR.PeriodNumber] = BPR.BudgetThisYear;
+						TempAmountsNextYear[BPR.PeriodNumber] = BPR.BudgetNextYear;
 						BPR.BeginEdit();
-						BPR.BudgetThisYear = -1 * GetBudgetValue(ref APeriodDataTable, lv_glm_sequence_this_year_i, BPR.PeriodNumber);
-						BPR.BudgetNextYear = -1 * GetBudgetValue(ref APeriodDataTable, lv_glm_sequence_next_year_i, BPR.PeriodNumber);
+						BPR.BudgetThisYear = -1 * GetBudgetValue(ref APeriodDataTable, GLMSequenceThisYear, BPR.PeriodNumber);
+						BPR.BudgetNextYear = -1 * GetBudgetValue(ref APeriodDataTable, GLMSequenceNextYear, BPR.PeriodNumber);
 						BPR.EndEdit();
 					}					
 					
@@ -1176,8 +1246,8 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 						ABudgetPeriodRow BPR = (ABudgetPeriodRow)BPT.Rows[i];
 						
 						BPR.BeginEdit();
-						BPR.BudgetThisYear = lv_temp_amounts_this_year_n[BPR.PeriodNumber];
-						BPR.BudgetNextYear = lv_temp_amounts_next_year_n[BPR.PeriodNumber];
+						BPR.BudgetThisYear = TempAmountsThisYear[BPR.PeriodNumber];
+						BPR.BudgetNextYear = TempAmountsNextYear[BPR.PeriodNumber];
 						BPR.EndEdit();
 					}					
 				}
@@ -1191,18 +1261,23 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         }
         
 
+        /// <summary>
+        /// Post a budget
+        /// </summary>
+        /// <param name="APeriodDataTable"></param>
+        /// <param name="ABudgetTDS"></param>
+        /// <param name="ABudgetRow"></param>
+        /// <param name="ALedgerNumber"></param>
         private static void PostBudget(ref DataTable APeriodDataTable, ref BudgetTDS ABudgetTDS, ref ABudgetRow ABudgetRow, int ALedgerNumber)
         {
         	/* post the negative budget, which will result in an empty a_glm_period.budget */	
         	//gb5300.p
-			string pv_account_code_c = ABudgetRow.AccountCode;
+			string AccountCode = ABudgetRow.AccountCode;
 
-			string lv_cost_centre_list_c = ABudgetRow.CostCentreCode;  /* posting CC and parents */
-        	int lv_period_number_i;       /* period number */
-			int lv_count_i;
+			string CostCentreList = ABudgetRow.CostCentreCode;  /* posting CC and parents */
 
         	//Populate list of affected Cost Centres
-			CostCentreParentsList(ALedgerNumber, ref lv_cost_centre_list_c);
+			CostCentreParentsList(ALedgerNumber, ref CostCentreList);
 			
 			bool NewTransaction = false;
             TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
@@ -1217,8 +1292,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 			try
 			{
 				/* calculate values for budgets and store them in a temp table; uses lb_budget */
-				//ProcessAccountParent(RECID(a_account), a_account.a_debit_credit_indicator_l);
-				ProcessAccountParent(ref APeriodDataTable, ALedgerNumber, ABudgetRow.AccountCode, AccountRow.DebitCreditIndicator, lv_cost_centre_list_c, ABudgetRow.BudgetSequence);
+				ProcessAccountParent(ref APeriodDataTable, ALedgerNumber, ABudgetRow.AccountCode, AccountRow.DebitCreditIndicator, CostCentreList, ABudgetRow.BudgetSequence);
 			}
         	finally
             {
@@ -1230,26 +1304,28 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 			
         }
         
+        /// <summary>
+        /// Process the account code parent codes
+        /// </summary>
+        /// <param name="APeriodDataTable"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="CurrAccountCode"></param>
+        /// <param name="ADebitCreditIndicator"></param>
+        /// <param name="ACostCentreList"></param>
+        /// <param name="ABudgetSequence"></param>
         private static void ProcessAccountParent(ref DataTable APeriodDataTable, int ALedgerNumber, string CurrAccountCode, bool ADebitCreditIndicator, string ACostCentreList, int ABudgetSequence)
         {
-        	
-        	//string AAccountCode
-        	//TODO - need to finish
-        	
-			int lv_glm_this_year_i;
-			int lv_glm_next_year_i;
+			int GLMThisYear;
+			int GLMNextYear;
 
-			int lv_debit_credit_multiply_i; /* needed if the debit credit indicator is not the same */
-			string lv_cost_centre_code_c;
+			int DebitCreditMultiply; /* needed if the debit credit indicator is not the same */
+			string CostCentreCode;
 
 			AAccountTable a_current_account_b = null;    /* Current acct record */
 			AAccountTable a_parent_account_b = null;     /* Parent acct record */
 			AAccountHierarchyDetailTable AccountHierarchyDetailTable = null;
 			AAccountHierarchyDetailRow AccountHierarchyDetailRow = null;
 			
-			AGeneralLedgerMasterTable a_glm_next_year = null;
-			AGeneralLedgerMasterPeriodTable a_glm_period_next_year = null;
-
             bool NewTransaction = false;
             TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
         	
@@ -1279,7 +1355,6 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 						AAccountRow AccountRowP = (AAccountRow)a_parent_account_b.Rows.Find(new object[] {ALedgerNumber, AccountCodeToReportTo});
 		        		
 					    /* Recursively call this procedure. */
-					    //RUN {&ACCOUNT-PROCEDURE} (RECID(a_parent_account_b), pv_debit_credit_indicator_l).
 					    ProcessAccountParent(ref APeriodDataTable, ALedgerNumber, AccountCodeToReportTo, ADebitCreditIndicator, ACostCentreList, ABudgetSequence);
 		        	}
 	        	}
@@ -1289,11 +1364,11 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 		   		   Otherwise, subtract. */
 				if (AccountRow.DebitCreditIndicator = ADebitCreditIndicator)
 				{
-					lv_debit_credit_multiply_i = 1;
+					DebitCreditMultiply = 1;
 				}
 				else
 				{
-					lv_debit_credit_multiply_i = -1;
+					DebitCreditMultiply = -1;
 				}
 				
 				string[] CostCentres = ACostCentreList.Split(':');
@@ -1303,20 +1378,20 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 				/* For each associated Cost Centre, update the General Ledger Master. */
 				for (int i = 1; i < CostCentres.Length; i++)
 				{
-					lv_cost_centre_code_c = CostCentres[i];
+					CostCentreCode = CostCentres[i];
 					
-					lv_glm_this_year_i = GetGLMSequenceForBudget(ALedgerNumber, AccCode, lv_cost_centre_code_c, CurrYear);
-					lv_glm_next_year_i = GetGLMSequenceForBudget(ALedgerNumber, AccCode, lv_cost_centre_code_c, CurrYear + 1);
+					GLMThisYear = GetGLMSequenceForBudget(ALedgerNumber, AccCode, CostCentreCode, CurrYear);
+					GLMNextYear = GetGLMSequenceForBudget(ALedgerNumber, AccCode, CostCentreCode, CurrYear + 1);
 				
 				    /* If the posting CC/AC combination doesn't exist create it. */
-				    if (lv_glm_this_year_i == -1)
+				    if (GLMThisYear == -1)
 				    {
-						lv_glm_this_year_i = TGLPosting.CreateGLMYear(ref GLBatchDS, ALedgerNumber, CurrYear, AccCode, lv_cost_centre_code_c);
+						GLMThisYear = TGLPosting.CreateGLMYear(ref GLBatchDS, ALedgerNumber, CurrYear, AccCode, CostCentreCode);
 				    }
 
-				    if (lv_glm_next_year_i == -1)
+				    if (GLMNextYear == -1)
 				    {
-						lv_glm_next_year_i = TGLPosting.CreateGLMYear(ref GLBatchDS, ALedgerNumber, CurrYear + 1, AccCode, lv_cost_centre_code_c);
+						GLMNextYear = TGLPosting.CreateGLMYear(ref GLBatchDS, ALedgerNumber, CurrYear + 1, AccCode, CostCentreCode);
 				    }
 	
 					/* Update totals for the General Ledger Master record. */
@@ -1326,8 +1401,8 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 					for (int j = 0; j < BPT.Count; j++)
 					{
 						BPR = (ABudgetPeriodRow)BPT.Rows[j];
-						AddBudgetValue(ref APeriodDataTable, lv_glm_this_year_i, BPR.PeriodNumber, lv_debit_credit_multiply_i * BPR.BudgetThisYear);
-        				AddBudgetValue(ref APeriodDataTable, lv_glm_next_year_i, BPR.PeriodNumber, lv_debit_credit_multiply_i * BPR.BudgetNextYear);
+						AddBudgetValue(ref APeriodDataTable, GLMThisYear, BPR.PeriodNumber, DebitCreditMultiply * BPR.BudgetThisYear);
+        				AddBudgetValue(ref APeriodDataTable, GLMNextYear, BPR.PeriodNumber, DebitCreditMultiply * BPR.BudgetNextYear);
 					}
 				}
             }
@@ -1341,10 +1416,15 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
         }
         
+        /// <summary>
+        /// Return the list of parent cost centre codes
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ACurrentCostCentreList"></param>
         private static void CostCentreParentsList(int ALedgerNumber, ref string ACurrentCostCentreList)
         {
-        	string lv_parent_cost_centre_c;
-			string lv_cost_centre_list_c = ACurrentCostCentreList;
+        	string ParentCostCentre;
+			string CostCentreList = ACurrentCostCentreList;
 
  			TDBTransaction DBTransaction = DBAccess.GDBAccessObj.BeginTransaction();
         	
@@ -1355,19 +1435,23 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         	//ACostCentreAccess.LoadByPrimaryKey(GLBatchDS, ALedgerNumber, ACurrentCostCentre, null);
         	ACostCentreRow CostCentreRow = (ACostCentreRow)GLBatchDS.ACostCentre.Rows.Find(new object[] {ALedgerNumber, ACurrentCostCentreList});
         	
-			lv_parent_cost_centre_c = CostCentreRow.CostCentreToReportTo;
+			ParentCostCentre = CostCentreRow.CostCentreToReportTo;
 
-			while (lv_parent_cost_centre_c != string.Empty)
+			while (ParentCostCentre != string.Empty)
 			{
-				ACostCentreRow CCRow = (ACostCentreRow)GLBatchDS.ACostCentre.Rows.Find(new object[] {ALedgerNumber, lv_parent_cost_centre_c});
+				ACostCentreRow CCRow = (ACostCentreRow)GLBatchDS.ACostCentre.Rows.Find(new object[] {ALedgerNumber, ParentCostCentre});
 				
-				lv_cost_centre_list_c += ":" + CCRow.CostCentreCode;
-    			lv_parent_cost_centre_c = CCRow.CostCentreToReportTo;
+				CostCentreList += ":" + CCRow.CostCentreCode;
+    			ParentCostCentre = CCRow.CostCentreToReportTo;
 			}			
         	
         	DBAccess.GDBAccessObj.RollbackTransaction();
         }
 
+        /// <summary>
+        /// Create the temp table that stores the GLMSequence and budget data
+        /// </summary>
+        /// <returns></returns>
         private static DataTable CreateTempTable()
         {
     		DataTable wtPeriodData = new DataTable();
@@ -1379,6 +1463,13 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 			return wtPeriodData;
         }
 
+        /// <summary>
+        /// Write a budget value to the temporary table
+        /// </summary>
+        /// <param name="APeriodDataTable"></param>
+        /// <param name="AGLMSequence"></param>
+        /// <param name="APeriodNumber"></param>
+        /// <param name="APeriodAmount"></param>
         private static void AddBudgetValue(ref DataTable APeriodDataTable, int AGLMSequence, int APeriodNumber, decimal APeriodAmount)
         {
         	/*  add a budget amount to the temp table wtPeriodData. 
@@ -1416,13 +1507,13 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
         }
 
-        /// <summary>
+		/// <summary>
         /// Reset the budget amount in the temp table wtPeriodData.
     	///   if the record is not already in the temp table, it is created empty
-        /// </summary>
-        /// <param name="ATempTable"></param>
-        /// <param name="AGLMSeq"></param>
-        /// <param name="APeriod"></param>
+		/// </summary>
+		/// <param name="ATempTable"></param>
+		/// <param name="AGLMSequence"></param>
+		/// <param name="APeriodNumber"></param>
         private static void ClearAllBudgetValues(ref DataTable ATempTable, int AGLMSequence, int APeriodNumber)
         {
         	DataRow TempRow = (DataRow)ATempTable.Rows.Find(new object[] {AGLMSequence, APeriodNumber});

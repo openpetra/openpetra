@@ -604,7 +604,12 @@ namespace Ict.Petra.Server.MFinance.Common
             return true;
         }
 
-        
+        /// <summary>
+        /// Get the latest Corporate exchange rate
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AIntlExchangeRate"></param>
+        /// <returns></returns>
         public static bool GetLatestIntlCorpExchangeRate(int ALedgerNumber, out decimal AIntlExchangeRate)
         {
     		string CurrencyFrom;
@@ -655,7 +660,7 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             
             return true;
-    		
+
         }
         
         

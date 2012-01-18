@@ -84,13 +84,14 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
 		/// <summary>
-        /// creates the rows for the whole current year in AGeneralLedgerMaster and AGeneralLedgerMasterPeriod for an Account/CostCentre combination
+        /// creates the rows for the specified year in AGeneralLedgerMaster and AGeneralLedgerMasterPeriod for an Account/CostCentre combination
 		/// </summary>
 		/// <param name="AMainDS"></param>
 		/// <param name="ALedgerNumber"></param>
+		/// <param name="AYear"></param>
 		/// <param name="AAccountCode"></param>
 		/// <param name="ACostCentreCode"></param>
-		/// <returns>the glm sequence</returns>
+		/// <returns> The GLM Sequence</returns>
         public static Int32 CreateGLMYear(
             ref GLBatchTDS AMainDS,
             Int32 ALedgerNumber,
