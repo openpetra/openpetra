@@ -448,8 +448,13 @@ namespace Ict.Petra.Client.App.PetraClient
                 {
                     // Set Application Help language to the User's preferred language
                     TRemote.MSysMan.Maintenance.WebConnectors.GetLanguageAndCulture(out UsersLanguageCode, out UsersCultureCode);
-                    Ict.Common.HelpLauncher.HelpLanguage = UsersLanguageCode;
+                    
+                    if (UsersLanguageCode != String.Empty)
+                    {
+                        Ict.Common.HelpLauncher.HelpLanguage = UsersLanguageCode;    
+                    }                    
 
+                    
                     if (TClientSettings.RunAsStandalone == true)
                     {
                         ProcessReminders.StartStandaloneRemindersProcessing();
