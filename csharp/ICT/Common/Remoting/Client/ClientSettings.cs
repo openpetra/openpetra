@@ -470,8 +470,8 @@ namespace Ict.Common.Remoting.Client
                 UCustomStartupMessage = TAppSettingsManager.GetValue("StartupMessage");
             }
             
-            UHTMLHelpBaseURLLocal = TAppSettingsManager.GetValue("HTMLHelpBaseURLLocal");
-            UHTMLHelpBaseURLOnInternet = TAppSettingsManager.GetValue("HTMLHelpBaseURLOnInternet");
+            UHTMLHelpBaseURLLocal = TAppSettingsManager.GetValue("HTMLHelpBaseURLLocal", String.Empty);
+            UHTMLHelpBaseURLOnInternet = TAppSettingsManager.GetValue("HTMLHelpBaseURLOnInternet", String.Empty);
             ULocalHTMLHelp = TAppSettingsManager.GetBoolean("LocalHTMLHelp", true);
         }
     }
