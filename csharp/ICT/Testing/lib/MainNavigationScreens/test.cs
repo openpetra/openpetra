@@ -61,13 +61,13 @@ namespace Tests.MainNavigationScreens
             // nant startPetraServer
             // this may take some time ....
             new TLogging("TestClient_MainNavigationTest.log");
-            
+
             // clear the log file
             using (FileStream stream = new FileStream("TestClient_MainNavigationTest.log", FileMode.Create))
-            using (TextWriter writer = new StreamWriter(stream))
-            {
-                writer.WriteLine("");
-            }
+                using (TextWriter writer = new StreamWriter(stream))
+                {
+                    writer.WriteLine("");
+                }
 
             TPetraConnector.Connect("../../etc/TestClient.config");
 
@@ -114,12 +114,11 @@ namespace Tests.MainNavigationScreens
             }
         }
 
-
         /// <summary>
         /// verify that user can open the Partner Find screen
         /// </summary>
         [Test]
-        [Ignore("problem with exception ThreadStateException")]
+        // [Ignore("problem with exception ThreadStateException")]
         public void TestOpenPartnerFind()
         {
             // get the node that opens the screen
@@ -179,6 +178,9 @@ namespace Tests.MainNavigationScreens
         {
             Assert.AreEqual("demo", UserInfo.GUserInfo.UserID.ToLower(), "Test should be run with DEMO user");
 
+            //change demo's permissions in the xml back to normal
+            TLstTasks.Init(UserInfo.GUserInfo.UserID, FalsePermission);
+
             // get the node that opens the screen TFrmMaintainUsers
             XPathExpression expr = FNavigator.Compile("//*[@ActionOpenScreen='TFrmMaintainUsers']");
             XPathNodeIterator iterator = FNavigator.Select(expr);
@@ -214,9 +216,10 @@ namespace Tests.MainNavigationScreens
             int NoPermissionCount = 0;
             int BadFailures = 0;
             int TotalWindowsOpened = 0;
-            List<String> notOpened = new List<String>();
-            List<String> permissions = new List<String>();
-            List<String> workingWindows = new List<String>();
+
+            List <String>notOpened = new List <String>();
+            List <String>permissions = new List <String>();
+            List <String>workingWindows = new List <String>();
 
             while (iterator.MoveNext())
             {
@@ -234,25 +237,24 @@ namespace Tests.MainNavigationScreens
                         TLstTasks.LastOpenedScreen.Close();
                         TotalWindowsOpened++;
                         string WindowAndModule = ActionNode.Name + Environment.NewLine + "            Permission Required: " +
-                            Module;
+                                                 Module;
                         workingWindows.Add(WindowAndModule);
 
                         //make sure the user had the permissions to open the windows that it opened
-                        if (!UserInfo.GUserInfo.IsInModule(Module) && !Module.Contains("")) 
+                        if (!UserInfo.GUserInfo.IsInModule(Module) && !Module.Contains(""))
                         {
                             BadFailures++;
                             workingWindows.Add("User did not have permission to access " + Module);
                         }
-
                     }
                     catch (AssertionException e)
                     {
-                        TLogging.Log("Window can't be opened: " + ActionNode.Name + " " + ActionNode.Attributes["ActionOpenScreen"].Value
-                            + Environment.NewLine + e.ToString());
+                        TLogging.Log("Window can't be opened: " + ActionNode.Name + " " + ActionNode.Attributes["ActionOpenScreen"].Value +
+                            Environment.NewLine + e.ToString());
 
                         // if the failure is a permission failure, just log it but don't fail the test
                         if (Catalog.GetString("Sorry, you don't have enough permissions to do this") ==
-                             TLstTasks.ExecuteAction(ActionNode, null))
+                            TLstTasks.ExecuteAction(ActionNode, null))
                         {
                             // make sure user didn't have the necessary permissions to open that window
                             // true means user should have been able to open without error
@@ -260,34 +262,34 @@ namespace Tests.MainNavigationScreens
                             {
                                 BadFailures++;
                                 string whyFailed = "User should have been able to open " + ActionNode.Name + " with his " +
-                                    Module + " permission...";
+                                                   Module + " permission...";
                                 notOpened.Add(whyFailed);
                             }
                             else
                             {
                                 NoPermissionCount++;
                                 string WindowAndModule = ActionNode.Name + Environment.NewLine + "            Permission Required: " +
-                                    TXMLParser.GetAttributeRecursive(ActionNode, "PermissionsRequired", true);
+                                                         TXMLParser.GetAttributeRecursive(ActionNode, "PermissionsRequired", true);
                                 permissions.Add(WindowAndModule);
                             }
                         }
                         else
                         {
                             BadFailures++;
-                            
+
                             string WindowAndModule = ActionNode.Name + Environment.NewLine + "            Permission Required: " +
-                                TXMLParser.GetAttributeRecursive(ActionNode, "PermissionsRequired", true);
-                            
-                            notOpened.Add(WindowAndModule);                           
+                                                     TXMLParser.GetAttributeRecursive(ActionNode, "PermissionsRequired", true);
+
+                            notOpened.Add(WindowAndModule);
                         }
                     }
                     // if the exception has to due with a ledger that the user doesn't have permission to access,
                     // make it a permission exception. Else, fail the test.
                     catch (Exception e)
                     {
-                        TLogging.Log("Window can't be opened: " + ActionNode.Name + " " + ActionNode.Attributes["ActionOpenScreen"].Value
-                            + Environment.NewLine + e.ToString());
-                       
+                        TLogging.Log("Window can't be opened: " + ActionNode.Name + " " + ActionNode.Attributes["ActionOpenScreen"].Value +
+                            Environment.NewLine + e.ToString());
+
                         string ledgerNumber = TXMLParser.GetAttributeRecursive(ActionNode, "LedgerNumber", true);
                         string ledger = "LEDGER00" + ledgerNumber;
 
@@ -295,20 +297,21 @@ namespace Tests.MainNavigationScreens
                         {
                             NoPermissionCount++;
                             string WindowAndModule = ActionNode.Name + Environment.NewLine + "            Permission Required: " +
-                                TXMLParser.GetAttributeRecursive(ActionNode, "PermissionsRequired", true) + Environment.NewLine +
-                                "                                 " + ledger;
+                                                     TXMLParser.GetAttributeRecursive(ActionNode, "PermissionsRequired",
+                                true) + Environment.NewLine +
+                                                     "                                 " + ledger;
                             permissions.Add(WindowAndModule);
                         }
                         else
                         {
                             BadFailures++;
                             string WindowAndModule = ActionNode.Name + Environment.NewLine + "            Permission Required: " +
-                                TXMLParser.GetAttributeRecursive(ActionNode, "PermissionsRequired", true) + Environment.NewLine +
-                                "                                 " + ledger;
+                                                     TXMLParser.GetAttributeRecursive(ActionNode, "PermissionsRequired",
+                                true) + Environment.NewLine +
+                                                     "                                 " + ledger;
                             notOpened.Add(WindowAndModule);
                         }
                     }
-
                 }
             }
 
@@ -320,19 +323,70 @@ namespace Tests.MainNavigationScreens
 
             //print the permissions the user should have
             TLogging.Log(Environment.NewLine + Environment.NewLine + "User Permissions: " + Environment.NewLine +
-                UserInfo.GUserInfo.GetPermissions());                      
+                UserInfo.GUserInfo.GetPermissions());
 
             TLogging.Log(Environment.NewLine + Environment.NewLine + "Statistics: " + Environment.NewLine + "Number of windows opened: " +
                 TotalWindowsOpened + Environment.NewLine + "      " + workingWindowsString + Environment.NewLine +
-                Environment.NewLine + Environment.NewLine + Environment.NewLine + "Permission Exceptions: " + 
-                permissions.Count + Environment.NewLine + "      " + permissionsString + Environment.NewLine + 
-                Environment.NewLine + Environment.NewLine + "Windows that should be opened but couldn't: " + 
+                Environment.NewLine + Environment.NewLine + Environment.NewLine + "Permission Exceptions: " +
+                permissions.Count + Environment.NewLine + "      " + permissionsString + Environment.NewLine +
+                Environment.NewLine + Environment.NewLine + "Windows that should be opened but couldn't: " +
                 notOpened.Count + Environment.NewLine + "      " + notOpenedString + Environment.NewLine);
-
 
             //Now the loop is finished so fail if there were exceptions
             if (BadFailures > 0)
+            {
                 Assert.Fail();
+            }
+        }
+
+        //helper method for the below test
+        private static bool TruePermission(XmlNode node, string aUserID)
+        {
+            return true;
+        }
+
+        //another helper method to reset the test below
+        private static bool FalsePermission(XmlNode node, string aUserId)
+        {
+            return false;
+        }
+
+        /// <summary>
+        /// verify that demo user is unable to fool the server to get SYSADMIN permissions
+        /// </summary>
+        [Test]
+        public void TestBrokenClientPermissions()
+        {
+            TLstTasks.Init(UserInfo.GUserInfo.UserID, TruePermission);
+
+            Assert.AreEqual("demo", UserInfo.GUserInfo.UserID.ToLower(), "Test should be run with DEMO user");
+
+            // get the node that opens the screen TFrmMaintainUsers
+            XPathExpression expr = FNavigator.Compile("//*[@ActionOpenScreen='TFrmMaintainUsers']");
+            XPathNodeIterator iterator = FNavigator.Select(expr);
+
+            iterator.MoveNext();
+
+            if (iterator.Current is IHasXmlNode)
+            {
+                XmlNode ActionNode = ((IHasXmlNode)iterator.Current).GetNode();
+
+                TLogging.Log(ActionNode.Name + " " + ActionNode.Attributes["ActionOpenScreen"].Value);
+
+                Assert.AreEqual(false, TFrmMainWindowNew.HasAccessPermission(ActionNode, UserInfo.GUserInfo.UserID),
+                    "user DEMO should not have permissions for TFrmMaintainUsers");
+
+                try
+                {
+                    TLstTasks.ExecuteAction(ActionNode, null);
+
+                    Assert.Fail("Demo was able to open the screen!");
+                }
+                catch (ApplicationException e)
+                {
+                    Assert.AreEqual(e.Message, "Exception has been thrown by the target of an invocation.");
+                }
+            }
         }
     }
 }
