@@ -118,7 +118,7 @@ namespace Tests.MainNavigationScreens
         /// verify that user can open the Partner Find screen
         /// </summary>
         [Test]
-        // [Ignore("problem with exception ThreadStateException")]
+        [Ignore("problem with exception ThreadStateException")]
         public void TestOpenPartnerFind()
         {
             // get the node that opens the screen
