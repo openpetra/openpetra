@@ -146,11 +146,12 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                     break;
                     
                 case TIndividualDataItemEnum.idiLocalPersonnelData:
-                    bool labelsAvailable;
+                    // TODO: Fix this so LocalPersonnelData can actually load some data
+                    /*bool labelsAvailable;
                     TOfficeSpecificDataLabelsUIConnector OfficeSpecificDataLabelsUIConnector;
                     OfficeSpecificDataLabelsUIConnector = new TOfficeSpecificDataLabelsUIConnector(APartnerKey,
                     TOfficeSpecificDataLabelUseEnum.Personnel);
-                    IndividualDataDS.Merge(OfficeSpecificDataLabelsUIConnector.GetDataLocalPartnerDataValues(APartnerKey, out labelsAvailable, false, AReadTransaction));
+                    IndividualDataDS.Merge(OfficeSpecificDataLabelsUIConnector.GetDataLocalPartnerDataValues(APartnerKey, out labelsAvailable, false, AReadTransaction));*/
                     break;
 
                     // TODO: work on all cases/load data for all Individual Data items
