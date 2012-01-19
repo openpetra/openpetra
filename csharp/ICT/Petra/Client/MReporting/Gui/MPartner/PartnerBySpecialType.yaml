@@ -84,5 +84,5 @@ RootNode:
         txtNameOfExtract: {ParameterName=nameOfExtract}
         txtExtractDescription: {ParameterName=descriptionOfExtract}
         ucoReportExtract:
-            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_Extract
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_ExtractChkFilter
             Dock: Fill

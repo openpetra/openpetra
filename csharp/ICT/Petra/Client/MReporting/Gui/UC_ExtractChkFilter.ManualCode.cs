@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       wolfgangb
+//       Andrew Webster <arw7@students.calvin.edu>
 //
 // Copyright 2004-2010 by OM International
 //
@@ -21,6 +21,7 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
+
 using System;
 using System.Collections;
 using System.ComponentModel;
@@ -38,12 +39,13 @@ namespace Ict.Petra.Client.MReporting.Gui
     /// <summary>
     /// Description of TFrmUC_Extract
     /// </summary>
-    public partial class TFrmUC_Extract
+    public partial class TFrmUC_ExtractChkFilter
     {
         /// <summary>
         /// initialisation
         /// </summary>
         /// <param name="AReportParameter">Initialisation values needed for some reports</param>
+        
         public void InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)
         {
             FPetraUtilsObject = APetraUtilsObject;
@@ -60,8 +62,6 @@ namespace Ict.Petra.Client.MReporting.Gui
             ACalc.AddParameter("param_mailingAddressesOnly", this.chkMailingAddressesOnly.Checked);
             ACalc.AddParameter("param_familiesOnly", this.chkFamiliesOnly.Checked);
             ACalc.AddParameter("param_excludeNoSolicitations", this.chkExcludeNoSolicitations.Checked);
-            ucoReportSorting.ReadControls(ACalc, AReportAction);
-            ucoReportColumns.ReadControls(ACalc, AReportAction);
         }
 
         /// <summary>
@@ -81,7 +81,6 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// </summary>
         public void SetAvailableFunctions(ArrayList AAvailableFunctions)
         {
-            ucoReportColumns.SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());
         }
         
     }

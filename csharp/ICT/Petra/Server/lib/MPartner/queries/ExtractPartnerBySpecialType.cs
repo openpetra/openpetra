@@ -3,6 +3,7 @@
 //
 // @Authors:
 //       timop
+//       Andrew Webster <arw7@students.calvin.edu>
 //
 // Copyright 2004-2011 by OM International
 //
@@ -34,7 +35,7 @@ using Ict.Petra.Server.MPartner.Extracts;
 namespace Ict.Petra.Server.MPartner.queries
 {
     /// <summary>
-    /// this report is quite simple, and should be used as an example for more complex reports and extracts
+    /// this creates the query for extracts of partners by special types
     /// </summary>
     public class QueryPartnerBySpecialType
     {
@@ -49,20 +50,20 @@ namespace Ict.Petra.Server.MPartner.queries
             // get the partner keys from the database
             try
             {
-                TLogging.Log( "Name of the SPECIAL TYPE Extract: " + AParameters.Get("nameOfExtract"));
-                TLogging.Log( "Description of the SPECIAL TYPE Extract: " + AParameters.Get("descriptionOfExtract"));
-                TLogging.Log( "ARW LOG: Parameters received: \n\t" +
-//                             AParameters.Get("param_city") + "\n\t" +
-//                             AParameters.Get("param_from") + "\n\t" +
-//                             AParameters.Get("param_to") + "\n\t" +
-//                             AParameters.Get("param_region") + "\n\t" +
-//                             AParameters.Get("param_country") + "\n\t" +
-//                             AParameters.Get("param_dateSet") + "\n\t" +
-                             "param_active: "+ AParameters.Get("param_active") + "\n\t" +
-                             "param_mailingOnly: "+ AParameters.Get("param_mailingAddressesOnly") + "\n\t" +
-                             "param_familiesOnly: "+ AParameters.Get("param_familiesOnly") + "\n\t" +
-                             "param_excludeNoSolicitations: "+ AParameters.Get("param_excludeNoSolicitations") + "\n\t" +
-                             "param_explicit_specialtypes: "+ AParameters.Get("param_explicit_specialtypes"));
+//                TLogging.Log( "Name of the SPECIAL TYPE Extract: " + AParameters.Get("nameOfExtract"));
+//                TLogging.Log( "Description of the SPECIAL TYPE Extract: " + AParameters.Get("descriptionOfExtract"));
+//                TLogging.Log( "ARW LOG: Parameters received: \n\t" +
+////                             AParameters.Get("param_city") + "\n\t" +
+////                             AParameters.Get("param_from") + "\n\t" +
+////                             AParameters.Get("param_to") + "\n\t" +
+////                             AParameters.Get("param_region") + "\n\t" +
+////                             AParameters.Get("param_country") + "\n\t" +
+////                             AParameters.Get("param_dateSet") + "\n\t" +
+//                             "param_active: "+ AParameters.Get("param_active").ToString() + ".\n\t" +
+//                             "param_mailingOnly: "+ AParameters.Get("param_mailingAddressesOnly") + ".\n\t" +
+//                             "param_familiesOnly: "+ AParameters.Get("param_familiesOnly") + ".\n\t" +
+//                             "param_excludeNoSolicitations: "+ AParameters.Get("param_excludeNoSolicitations") + ".\n\t" +
+//                             "param_explicit_specialtypes: "+ AParameters.Get("param_explicit_specialtypes"));
                 Boolean ReturnValue = false;
                 Boolean NewTransaction;
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
@@ -76,15 +77,14 @@ namespace Ict.Petra.Server.MPartner.queries
                 // set array to correct size depending on number of specialtypes selected
                 ValueList = AParameters.Get("param_explicit_specialtypes").ToString();
                 SizeOfArray = StringHelper.CountOccurencesOfChar (ValueList, ',') + 1;                
-
-                TLogging.Log("SizeOfArray is: " + SizeOfArray);
                 
                 OdbcParameter[] parameters = new OdbcParameter[SizeOfArray + 5];
-                TLogging.Log("parameters[] created...");
+//                TLogging.Log("parameters[] created...");
                 // this *should* always have at least one selection because the client requires it
                 ListValue = StringHelper.GetNextCSV(ref ValueList, ",");
                 if(ListValue.Length == 0) throw new NoNullAllowedException("At least one option must be checked."); // safety
                 Index = 0;
+                // this will determine how many ?'s to put in the SQL query and then insert the values pulled out of the CSV list
                 while (ListValue != "")
                 {
                     parameters[Index] = new OdbcParameter("specialtype" + Index.ToString(), OdbcType.VarChar);
@@ -160,7 +160,7 @@ namespace Ict.Petra.Server.MPartner.queries
             }
             catch (Exception e)
             {
-                TLogging.Log(e.ToString());
+//                TLogging.Log(e.ToString());
                 DBAccess.GDBAccessObj.RollbackTransaction();
                 return false;
             }
