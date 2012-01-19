@@ -89,6 +89,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             //TODO FIX ME!!!!  The following two lines of code should not be here, they only make the compiler ignore the generator error (IT DOES NOT FIX THE ERROR)!
             Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonRow myTempRow = (Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonRow)FMainDS.PPerson[0];
             GetDataFromControls(myTempRow);
+            
+            //This is the line that should be here.  Please uncomment when fixed.
             //GetDataFromControls(FMainDS.PPerson[0]);
         }
 
