@@ -55,6 +55,10 @@ namespace Ict.Petra.Client.MPartner.Gui
 		private Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_Passport FUcoPassportDetails;
 		private Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_PersonalData FUcoPersonalData;
 		private Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_EmergencyData FUcoEmergencyData;
+        private Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_PreviousExperience FUcoPreviousExperience;
+        private Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_PersonalDocuments FUcoPersonalDocuments;
+        private Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_JobAssignments FUcoJobAssignments;
+        private Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_LocalPersonnelData FUcoLocalPersonnelData;
         
         
         /// <summary>
@@ -296,6 +300,72 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FPartnerEditTDS.Tables[PmPersonSkillTable.GetTableName()].Merge(FMainDS.PmPersonSkill);
                 }
 
+				// Previous Experience
+				// dluc corresponds to enum above, UCPreviousExperience to UC_IndividualData_PreviousExperience.ManualCode,
+				// 		PmPastExperienceTable to the DB table name
+                if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucPreviousExperience))
+                {
+                    TUC_IndividualData_PreviousExperience UCPreviousExperience =
+                        (TUC_IndividualData_PreviousExperience)FUserControlSetup[TDynamicLoadableUserControls.dlucPreviousExperience];
+                    UCPreviousExperience.GetDataFromControls2();
+
+                    if (!FPartnerEditTDS.Tables.Contains(PmPastExperienceTable.GetTableName()))
+                    {
+                        FPartnerEditTDS.Tables.Add(new PmPastExperienceTable());
+                    }
+
+                    FPartnerEditTDS.Tables[PmPastExperienceTable.GetTableName()].Rows.Clear();
+                    FPartnerEditTDS.Tables[PmPastExperienceTable.GetTableName()].Merge(FMainDS.PmPastExperience);
+                }
+                
+                // Personal Documents
+                if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucPersonalDocuments))
+                {
+                    TUC_IndividualData_PersonalDocuments UCPersonalDocuments =
+                        (TUC_IndividualData_PersonalDocuments)FUserControlSetup[TDynamicLoadableUserControls.dlucPersonalDocuments];
+                    UCPersonalDocuments.GetDataFromControls2();
+
+                    if (!FPartnerEditTDS.Tables.Contains(PmDocumentTable.GetTableName()))
+                    {
+                        FPartnerEditTDS.Tables.Add(new PmDocumentTable());
+                    }
+
+                    FPartnerEditTDS.Tables[PmDocumentTable.GetTableName()].Rows.Clear();
+                    FPartnerEditTDS.Tables[PmDocumentTable.GetTableName()].Merge(FMainDS.PmDocument);
+                }
+                
+                // Job Assignments
+                if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucJobAssignments))
+                {
+                    TUC_IndividualData_JobAssignments UCJobAssignments =
+                        (TUC_IndividualData_JobAssignments)FUserControlSetup[TDynamicLoadableUserControls.dlucJobAssignments];
+                    UCJobAssignments.GetDataFromControls2();
+
+                    if (!FPartnerEditTDS.Tables.Contains(PmJobAssignmentTable.GetTableName()))
+                    {
+                        FPartnerEditTDS.Tables.Add(new PmJobAssignmentTable());
+                    }
+
+                    FPartnerEditTDS.Tables[PmJobAssignmentTable.GetTableName()].Rows.Clear();
+                    FPartnerEditTDS.Tables[PmJobAssignmentTable.GetTableName()].Merge(FMainDS.PmJobAssignment);
+                }
+                
+                // Local Personnel Data
+                if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucLocalPersonnelData))
+                {
+                    TUC_IndividualData_LocalPersonnelData UCLocalPersonnelData =
+                        (TUC_IndividualData_LocalPersonnelData)FUserControlSetup[TDynamicLoadableUserControls.dlucLocalPersonnelData];
+                    UCLocalPersonnelData.GetDataFromControls2();
+
+                    if (!FPartnerEditTDS.Tables.Contains(PDataLabelValuePartnerTable.GetTableName()))
+                    {
+                        FPartnerEditTDS.Tables.Add(new PDataLabelValuePartnerTable());
+                    }
+
+                    FPartnerEditTDS.Tables[PDataLabelValuePartnerTable.GetTableName()].Rows.Clear();
+                    FPartnerEditTDS.Tables[PDataLabelValuePartnerTable.GetTableName()].Merge(FMainDS.PDataLabelValuePartner);
+                }
+                
                 // TODO add code for all remaining Individual Data Items
             }
         }
@@ -658,6 +728,134 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
 
                     ReturnValue = ucoEmergencyData;
+                    break;
+
+                case TDynamicLoadableUserControls.dlucPreviousExperience:
+                    // Create a Panel that hosts the UserControl. This is needed to allow scrolling of content in case the screen is too small to shown the whole UserControl
+                    Panel pnlHostForUCPreviousExperience = new Panel();
+                    pnlHostForUCPreviousExperience.AutoSize = true;
+                    pnlHostForUCPreviousExperience.Dock = System.Windows.Forms.DockStyle.Fill;
+                    pnlHostForUCPreviousExperience.Location = new System.Drawing.Point(0, 0);
+                    pnlHostForUCPreviousExperience.Padding = new System.Windows.Forms.Padding(2);
+                    pnlSelectedIndivDataItem.Controls.Add(pnlHostForUCPreviousExperience);
+
+                    // Create the UserControl
+                    Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_PreviousExperience ucoPreviousExperience =
+                        new Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_PreviousExperience();
+                    FUserControlSetup.Add(TDynamicLoadableUserControls.dlucPreviousExperience, ucoPreviousExperience);
+                    ucoPreviousExperience.Location = new Point(0, 2);
+                    ucoPreviousExperience.Dock = DockStyle.Fill;
+                    pnlHostForUCPreviousExperience.Controls.Add(ucoPreviousExperience);
+
+                    /*
+                     * The following four commands seem strange and unnecessary; however, they are necessary
+                     * to make things scale correctly on "Large Fonts (120DPI)" display setting.
+                     */
+                    if (TClientSettings.GUIRunningOnNonStandardDPI)
+                    {
+                        this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
+                        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+                        pnlHostForUCPreviousExperience.Dock = System.Windows.Forms.DockStyle.None;
+                        pnlHostForUCPreviousExperience.Dock = System.Windows.Forms.DockStyle.Fill;
+                    }
+
+                    ReturnValue = ucoPreviousExperience;
+                    break;
+                    
+                case TDynamicLoadableUserControls.dlucPersonalDocuments:
+                    // Create a Panel that hosts the UserControl. This is needed to allow scrolling of content in case the screen is too small to shown the whole UserControl
+                    Panel pnlHostForUCPersonalDocuments = new Panel();
+                    pnlHostForUCPersonalDocuments.AutoSize = true;
+                    pnlHostForUCPersonalDocuments.Dock = System.Windows.Forms.DockStyle.Fill;
+                    pnlHostForUCPersonalDocuments.Location = new System.Drawing.Point(0, 0);
+                    pnlHostForUCPersonalDocuments.Padding = new System.Windows.Forms.Padding(2);
+                    pnlSelectedIndivDataItem.Controls.Add(pnlHostForUCPersonalDocuments);
+
+                    // Create the UserControl
+                    Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_PersonalDocuments ucoPersonalDocuments =
+                        new Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_PersonalDocuments();
+                    FUserControlSetup.Add(TDynamicLoadableUserControls.dlucPersonalDocuments, ucoPersonalDocuments);
+                    ucoPersonalDocuments.Location = new Point(0, 2);
+                    ucoPersonalDocuments.Dock = DockStyle.Fill;
+                    pnlHostForUCPersonalDocuments.Controls.Add(ucoPersonalDocuments);
+
+                    /*
+                     * The following four commands seem strange and unnecessary; however, they are necessary
+                     * to make things scale correctly on "Large Fonts (120DPI)" display setting.
+                     */
+                    if (TClientSettings.GUIRunningOnNonStandardDPI)
+                    {
+                        this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
+                        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+                        pnlHostForUCPersonalDocuments.Dock = System.Windows.Forms.DockStyle.None;
+                        pnlHostForUCPersonalDocuments.Dock = System.Windows.Forms.DockStyle.Fill;
+                    }
+
+                    ReturnValue = ucoPersonalDocuments;
+                    break;
+                    
+                case TDynamicLoadableUserControls.dlucJobAssignments:
+                    // Create a Panel that hosts the UserControl. This is needed to allow scrolling of content in case the screen is too small to shown the whole UserControl
+                    Panel pnlHostForUCJobAssignments = new Panel();
+                    pnlHostForUCJobAssignments.AutoSize = true;
+                    pnlHostForUCJobAssignments.Dock = System.Windows.Forms.DockStyle.Fill;
+                    pnlHostForUCJobAssignments.Location = new System.Drawing.Point(0, 0);
+                    pnlHostForUCJobAssignments.Padding = new System.Windows.Forms.Padding(2);
+                    pnlSelectedIndivDataItem.Controls.Add(pnlHostForUCJobAssignments);
+
+                    // Create the UserControl
+                    Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_JobAssignments ucoJobAssignments =
+                        new Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_JobAssignments();
+                    FUserControlSetup.Add(TDynamicLoadableUserControls.dlucJobAssignments, ucoJobAssignments);
+                    ucoJobAssignments.Location = new Point(0, 2);
+                    ucoJobAssignments.Dock = DockStyle.Fill;
+                    pnlHostForUCJobAssignments.Controls.Add(ucoJobAssignments);
+
+                    /*
+                     * The following four commands seem strange and unnecessary; however, they are necessary
+                     * to make things scale correctly on "Large Fonts (120DPI)" display setting.
+                     */
+                    if (TClientSettings.GUIRunningOnNonStandardDPI)
+                    {
+                        this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
+                        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+                        pnlHostForUCJobAssignments.Dock = System.Windows.Forms.DockStyle.None;
+                        pnlHostForUCJobAssignments.Dock = System.Windows.Forms.DockStyle.Fill;
+                    }
+
+                    ReturnValue = ucoJobAssignments;
+                    break;
+                    
+                case TDynamicLoadableUserControls.dlucLocalPersonnelData:
+                    // Create a Panel that hosts the UserControl. This is needed to allow scrolling of content in case the screen is too small to shown the whole UserControl
+                    Panel pnlHostForUCLocalPersonnelData = new Panel();
+                    pnlHostForUCLocalPersonnelData.AutoSize = true;
+                    pnlHostForUCLocalPersonnelData.Dock = System.Windows.Forms.DockStyle.Fill;
+                    pnlHostForUCLocalPersonnelData.Location = new System.Drawing.Point(0, 0);
+                    pnlHostForUCLocalPersonnelData.Padding = new System.Windows.Forms.Padding(2);
+                    pnlSelectedIndivDataItem.Controls.Add(pnlHostForUCLocalPersonnelData);
+
+                    // Create the UserControl
+                    Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_LocalPersonnelData ucoLocalPersonnelData =
+                        new Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_LocalPersonnelData();
+                    FUserControlSetup.Add(TDynamicLoadableUserControls.dlucLocalPersonnelData, ucoLocalPersonnelData);
+                    ucoLocalPersonnelData.Location = new Point(0, 2);
+                    ucoLocalPersonnelData.Dock = DockStyle.Fill;
+                    pnlHostForUCLocalPersonnelData.Controls.Add(ucoLocalPersonnelData);
+
+                    /*
+                     * The following four commands seem strange and unnecessary; however, they are necessary
+                     * to make things scale correctly on "Large Fonts (120DPI)" display setting.
+                     */
+                    if (TClientSettings.GUIRunningOnNonStandardDPI)
+                    {
+                        this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
+                        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+                        pnlHostForUCLocalPersonnelData.Dock = System.Windows.Forms.DockStyle.None;
+                        pnlHostForUCLocalPersonnelData.Dock = System.Windows.Forms.DockStyle.Fill;
+                    }
+
+                    ReturnValue = ucoLocalPersonnelData;
                     break;
                     
                     // TODO Add case code blocks for all remaining Individual Data Items
@@ -1086,7 +1284,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
                 else
                 {
-//	TODO                OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "SubsequentActivation"));
+//	TODO                OnTabPageEvent(new TTabPageEventArgs(tpgEmergencyData, FUcoEmergencyData, "SubsequentActivation"));
 
                     /*
                      * The following command seems strange and unnecessary; however, it is necessary
@@ -1099,6 +1297,190 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
 
                 FUcoEmergencyData.Parent.BringToFront();
+                
+            }    
+            else if (ASender == llbPreviousExperience)
+            {
+                if (!FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucPreviousExperience))
+                {
+                    if (TClientSettings.DelayedDataLoading)
+                    {
+                        // Signalise the user that data is beeing loaded
+                        this.Cursor = Cursors.AppStarting;
+                    }
+
+                    FUcoPreviousExperience = (Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_PreviousExperience)DynamicLoadUserControl(
+                        TDynamicLoadableUserControls.dlucPreviousExperience);
+
+                    // Hook up RecalculateScreenParts Event
+                    FUcoPreviousExperience.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateLinkLabelCounters);
+
+                    FUcoPreviousExperience.MainDS = FMainDS;
+                    FUcoPreviousExperience.PetraUtilsObject = FPetraUtilsObject;
+                    FUcoPreviousExperience.PartnerEditUIConnector = FPartnerEditUIConnector;
+                    FUcoPreviousExperience.SpecialInitUserControl(FMainDS);
+                    FUcoPreviousExperience.InitUserControl();
+                    ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoPreviousExperience);
+
+                    SendAllOtherItemsToBackExcluding("FUcoPreviousExperience");
+
+//	TODO                OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
+
+                    this.Cursor = Cursors.Default;
+                }
+                else
+                {
+//	TODO                OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "SubsequentActivation"));
+
+                    /*
+                     * The following command seems strange and unnecessary; however, it is necessary
+                     * to make things scale correctly on "Large Fonts (120DPI)" display setting.
+                     */
+                    if (TClientSettings.GUIRunningOnNonStandardDPI)
+                    {
+                        FUcoPreviousExperience.AdjustAfterResizing();
+                    }
+                }
+
+                FUcoPreviousExperience.Parent.BringToFront();
+            }
+            
+            else if (ASender == llbPersonalDocuments)
+            {
+                if (!FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucPersonalDocuments))
+                {
+                    if (TClientSettings.DelayedDataLoading)
+                    {
+                        // Signalise the user that data is beeing loaded
+                        this.Cursor = Cursors.AppStarting;
+                    }
+
+                    FUcoPersonalDocuments = (Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_PersonalDocuments)DynamicLoadUserControl(
+                        TDynamicLoadableUserControls.dlucPersonalDocuments);
+
+                    // Hook up RecalculateScreenParts Event
+                    FUcoPersonalDocuments.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateLinkLabelCounters);
+
+                    FUcoPersonalDocuments.MainDS = FMainDS;
+                    FUcoPersonalDocuments.PetraUtilsObject = FPetraUtilsObject;
+                    FUcoPersonalDocuments.PartnerEditUIConnector = FPartnerEditUIConnector;
+                    FUcoPersonalDocuments.SpecialInitUserControl(FMainDS);
+                    FUcoPersonalDocuments.InitUserControl();
+                    ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoPersonalDocuments);
+
+                    SendAllOtherItemsToBackExcluding("FUcoPersonalDocuments");
+
+//	TODO                OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
+
+                    this.Cursor = Cursors.Default;
+                }
+                else
+                {
+//	TODO                OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "SubsequentActivation"));
+
+                    /*
+                     * The following command seems strange and unnecessary; however, it is necessary
+                     * to make things scale correctly on "Large Fonts (120DPI)" display setting.
+                     */
+                    if (TClientSettings.GUIRunningOnNonStandardDPI)
+                    {
+                        FUcoPersonalDocuments.AdjustAfterResizing();
+                    }
+                }
+
+                FUcoPersonalDocuments.Parent.BringToFront();
+            }
+            
+            else if (ASender == llbJobAssignments)
+            {
+                if (!FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucJobAssignments))
+                {
+                    if (TClientSettings.DelayedDataLoading)
+                    {
+                        // Signalise the user that data is beeing loaded
+                        this.Cursor = Cursors.AppStarting;
+                    }
+
+                    FUcoJobAssignments = (Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_JobAssignments)DynamicLoadUserControl(
+                        TDynamicLoadableUserControls.dlucJobAssignments);
+
+                    // Hook up RecalculateScreenParts Event
+                    FUcoJobAssignments.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateLinkLabelCounters);
+
+                    FUcoJobAssignments.MainDS = FMainDS;
+                    FUcoJobAssignments.PetraUtilsObject = FPetraUtilsObject;
+                    FUcoJobAssignments.PartnerEditUIConnector = FPartnerEditUIConnector;
+                    FUcoJobAssignments.SpecialInitUserControl(FMainDS);
+                    FUcoJobAssignments.InitUserControl();
+                    ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoJobAssignments);
+
+                    SendAllOtherItemsToBackExcluding("FUcoJobAssignments");
+
+//	TODO                OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
+
+                    this.Cursor = Cursors.Default;
+                }
+                else
+                {
+//	TODO                OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "SubsequentActivation"));
+
+                    /*
+                     * The following command seems strange and unnecessary; however, it is necessary
+                     * to make things scale correctly on "Large Fonts (120DPI)" display setting.
+                     */
+                    if (TClientSettings.GUIRunningOnNonStandardDPI)
+                    {
+                        FUcoJobAssignments.AdjustAfterResizing();
+                    }
+                }
+
+                FUcoJobAssignments.Parent.BringToFront();
+            }
+                
+            else if (ASender == llbLocalPersonnelData)
+            {
+                if (!FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucLocalPersonnelData))
+                {
+                    if (TClientSettings.DelayedDataLoading)
+                    {
+                        // Signalise the user that data is beeing loaded
+                        this.Cursor = Cursors.AppStarting;
+                    }
+
+                    FUcoLocalPersonnelData = (Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_LocalPersonnelData)DynamicLoadUserControl(
+                        TDynamicLoadableUserControls.dlucLocalPersonnelData);
+
+                    // Hook up RecalculateScreenParts Event
+                    //FUcoLocalPersonnelData.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateLinkLabelCounters);
+
+                    FUcoLocalPersonnelData.MainDS = FMainDS;
+                    FUcoLocalPersonnelData.PetraUtilsObject = FPetraUtilsObject;
+                    FUcoLocalPersonnelData.PartnerEditUIConnector = FPartnerEditUIConnector;
+                    FUcoLocalPersonnelData.InitUserControl();
+                    FUcoLocalPersonnelData.SpecialInitUserControl();
+                    ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoLocalPersonnelData);
+
+                    SendAllOtherItemsToBackExcluding("FUcoLocalPersonnelData");
+
+//	TODO                OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
+
+                    this.Cursor = Cursors.Default;
+                }
+                else
+                {
+//	TODO                OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "SubsequentActivation"));
+
+                    /*
+                     * The following command seems strange and unnecessary; however, it is necessary
+                     * to make things scale correctly on "Large Fonts (120DPI)" display setting.
+                     */
+                    if (TClientSettings.GUIRunningOnNonStandardDPI)
+                    {
+                        FUcoLocalPersonnelData.AdjustAfterResizing();
+                    }
+                }
+
+                FUcoLocalPersonnelData.Parent.BringToFront();
             }
 
             
@@ -1116,7 +1498,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// This method sends all views, excluding the current one, to back.  BE SURE TO ADD EACH NEW VIEW TYPE HERE AS THEY ARE ADDED!!
         /// </summary>
         /// <param name="exclude">Type: String;  This is the name of the individualData item that will not be sent to back.</param>
-        private void SendAllOtherItemsToBackExcluding(String exclude){
+        private void SendAllOtherItemsToBackExcluding(String exclude)
+        {
             if (FUcoPersonalLanguages != null && exclude != "FUcoPersonalLanguages")
             {
                 FUcoPersonalLanguages.SendToBack();
@@ -1152,6 +1535,22 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (FUcoCommitmentPeriods != null && exclude != "FUcoCommitmentPeriods")
             {
                 FUcoCommitmentPeriods.SendToBack();
+            }
+            if (FUcoPreviousExperience != null && exclude != "FUcoPreviousExperience")
+            {
+                FUcoPreviousExperience.SendToBack();
+            }
+            if (FUcoPersonalDocuments != null && exclude != "FUcoPersonalDocuments")
+            {
+                FUcoPersonalDocuments.SendToBack();
+            }
+            if (FUcoJobAssignments != null && exclude != "FUcoJobAssignments")
+            {
+                FUcoJobAssignments.SendToBack();
+            }
+            if (FUcoLocalPersonnelData != null && exclude != "FUcoLocalPersonnelData")
+            {
+                FUcoLocalPersonnelData.SendToBack();
             }
             
             //TODO Add the other individualData items here.
@@ -1207,7 +1606,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
-            if ((ASender is TUC_IndividualData))     // TODO: || (ASender is TUC_IndividualData_PersonalDocuments)))
+            if ((ASender is TUC_IndividualData) || (ASender is TUC_IndividualData_PersonalDocuments))
             {
                 if (FLinkLabelsOrigTexts.TryGetValue(llbPersonalDocuments.Name, out OrigLabelText))
                 {
@@ -1271,7 +1670,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
-            if ((ASender is TUC_IndividualData))     // TODO: || (ASender is TUC_IndividualData_PreviousExperience)))
+            if ((ASender is TUC_IndividualData) || (ASender is TUC_IndividualData_PreviousExperience))
             {
                 if (FLinkLabelsOrigTexts.TryGetValue(llbPreviousExperience.Name, out OrigLabelText))
                 {
@@ -1303,7 +1702,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
-            if ((ASender is TUC_IndividualData))     // TODO: || (ASender is TUC_IndividualData_JobAssignments)))
+            if ((ASender is TUC_IndividualData) || (ASender is TUC_IndividualData_JobAssignments))
             {
                 if (FLinkLabelsOrigTexts.TryGetValue(llbJobAssignments.Name, out OrigLabelText))
                 {
