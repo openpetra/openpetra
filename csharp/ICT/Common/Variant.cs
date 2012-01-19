@@ -986,7 +986,7 @@ namespace Ict.Common
             }
             else
             {
-                ReturnValue = new ArrayList();
+                ReturnValue = new ArrayList(new Object[]{ this });
             }
 
             return ReturnValue;
