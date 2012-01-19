@@ -45,6 +45,7 @@ RootNode:
                 Row11: [llbCommitmentPeriods]
                 Row12: [llbJobAssignments]
                 Row13: [llbProgressReports]
+                Row14: [llbPersonSkills]
             RowHeights: [0=Fixed:28]
 
         llbOverview: {Label=[&v] Overview, Action=actIndivDataItemSelected}
@@ -58,9 +59,10 @@ RootNode:
         llbLanguages: {Label=[&k] Languages ({0}), Action=actIndivDataItemSelected}
         llbPersonalAbilities: {Label=[&l] Abilities ({0}), Enabled=false, Action=actIndivDataItemSelected}
         llbPreviousExperience: {Label=[&m] Previous Experience ({0}), Enabled=false, Action=actIndivDataItemSelected}
-        llbCommitmentPeriods: {Label=[&o] Commitment Periods ({0}), Enabled=false, Action=actIndivDataItemSelected}
+        llbCommitmentPeriods: {Label=[&o] Commitment Periods ({0}), Action=actIndivDataItemSelected}
         llbJobAssignments: {Label=[&p] Job Assignments ({0}), Enabled=false, Action=actIndivDataItemSelected}
-        llbProgressReports: {Label=[&q] Progress Reports ({0}), Enabled=false, Action=actIndivDataItemSelected}
+        llbProgressReports: {Label=[&q] Progress Reports ({0}), Action=actIndivDataItemSelected}
+        llbPersonSkills: {Label=[&r] Person Skills ({0}), Action=actIndivDataItemSelected}
             
         pnlSelectedIndivDataItem:
             Dock: Fill

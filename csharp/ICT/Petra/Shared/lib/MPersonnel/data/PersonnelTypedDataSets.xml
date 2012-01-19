@@ -27,6 +27,7 @@
         <Table sqltable="pm_staff_data"/>                 <!-- Commitment Periods -->
         <Table sqltable="pm_job_assignment"/>             <!-- Job Assignments -->
         <Table sqltable="pm_person_evaluation"/>          <!-- Progress Reports -->
+        <Table sqltable="pm_person_skill"/>               <!-- Person Skills -->
           
         <CustomTable name="SummaryData">
             <Field sqltable="p_person" sqlfield="p_partner_key_n"/>
