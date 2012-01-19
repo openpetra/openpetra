@@ -47,6 +47,14 @@ namespace Ict.Tools.CodeGeneration
         private static SortedList <string, TTable>FCurrentDataset = null;
 
         /// <summary>
+        /// reset the selection of the current dataset
+        /// </summary>
+        public static void ResetCurrentDataset()
+        {
+            FCurrentDataset = null;
+        }
+
+        /// <summary>
         /// load the dataset tables
         /// </summary>
         public static SortedList <string, TTable>LoadDatasetTables(string AICTPath, string ADataSetTypeWithNamespace, TCodeStorage ACodeStorage)
@@ -227,7 +235,7 @@ namespace Ict.Tools.CodeGeneration
                     else
                     {
                         // check for other tables in the typed Dataset
-                        if (FDatasetTables != null)
+                        if (FCurrentDataset != null)
                         {
                             // ADataField can either contain just the field, or the table name and the field
 
@@ -271,6 +279,24 @@ namespace Ict.Tools.CodeGeneration
                                     {
                                         tablename = FCodeStorage.GetAttribute("MasterTable");
                                         fieldname = ADataField;
+                                    }
+                                }
+                            }
+
+                            // check if the detail table has such a field
+                            if ((fieldname.Length == 0) && FCodeStorage.HasAttribute("DetailTable"))
+                            {
+                                if ((FCurrentDataset != null) && FCurrentDataset.ContainsKey(FCodeStorage.GetAttribute("DetailTable")))
+                                {
+                                    TTable table2 = FCurrentDataset[FCodeStorage.GetAttribute("DetailTable")];
+
+                                    foreach (TTableField field in table2.grpTableField.List)
+                                    {
+                                        if ((TTable.NiceFieldName(field.strName) == ADataField) || (field.strNameDotNet == ADataField))
+                                        {
+                                            tablename = FCodeStorage.GetAttribute("DetailTable");
+                                            fieldname = ADataField;
+                                        }
                                     }
                                 }
                             }

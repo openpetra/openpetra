@@ -882,6 +882,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             else
             {
                 TDataBinding.FCodeStorage = FCodeStorage;
+                TDataBinding.ResetCurrentDataset();
             }
 
             if (FCodeStorage.HasAttribute("MasterTable"))
