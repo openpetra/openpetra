@@ -27,6 +27,7 @@ using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Core;
@@ -59,20 +60,20 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
         {
             
             string CheckedMember = "CHECKED";
-            string ValueMember = PPartnerTable.GetPartnerKeyDBName();
-            string DisplayMember = PPartnerTable.GetPartnerShortNameDBName();
+            string ValueMember = PUnitTable.GetPartnerKeyDBName();
+            string DisplayMember = PUnitTable.GetUnitNameDBName();
             //TODO:Add the eventcode to EventCodeMember
-            string EventCodeMember = PPartnerTable.GetStatusCodeDBName();
-            DataTable Table;
+            string EventCodeMember = PUnitTable.GetOutreachCodeDBName();
+            PUnitTable Table;
             
             //TODO:The difference between outreach and conference
             if (FCalledForConferences)
             {
-                 Table = TRemote.MConference.WebConnectors.GetConferences("*", "").PPartner;
+                Table = TRemote.MPartner.Partner.WebConnectors.GetConferenceUnits("");
             }
             else
             {
-                 Table = TRemote.MConference.WebConnectors.GetConferences("*", "").PPartner;
+                Table = TRemote.MPartner.Partner.WebConnectors.GetOutreachUnits("");
             }
             
             DataView view = new DataView(Table);
