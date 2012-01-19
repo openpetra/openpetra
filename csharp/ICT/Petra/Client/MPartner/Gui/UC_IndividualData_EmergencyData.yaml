@@ -14,7 +14,13 @@ RootNode:
        
         grpEmergencyData:
             Dock: Top
-            Controls: [txtHeightCm, txtWeightKg, cmbEyeColour, cmbHairColour, cmbFacialHair, txtIdentifyingMarks]
+            #Controls: [txtHeightCm, txtWeightKg, cmbEyeColour, cmbHairColour, cmbFacialHair, txtIdentifyingMarks]
+            Controls:
+                Row0: [txtHeightCm, lblIdentMarks]
+                Row1: [txtWeightKg, txtIdentifyingMarks]
+                Row2: [cmbEyeColour]
+                Row3: [cmbHairColour]
+                Row4: [cmbFacialHair]
             Label: Emergency Data (will not be exported)
                    
         txtHeightCm:
@@ -35,11 +41,14 @@ RootNode:
             Label: Facial Hair
             Width: 160
             OptionalValues: [=Unknown, Moustache, Beard, Goatee, Sideburns]
+        lblIdentMarks:
+            Label:Scars, Marks, Tattoos, Piercings
         txtIdentifyingMarks:
-            Label: Scars, Marks, Tattoos, Piercings
-            ColSpan: 2
+            #Label: Scars, Marks, Tattoos, Piercings
+            NoLabel: True
+            RowSpan:2
             Width: 250
-            Height: 165
+            Height: 200
             DataField: PmPersonalData.PhysicalDesc
             
            

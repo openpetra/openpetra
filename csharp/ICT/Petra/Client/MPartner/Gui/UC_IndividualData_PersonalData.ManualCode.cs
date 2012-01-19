@@ -86,10 +86,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void GetDataFromControls2()
         {
-            //TODO FIX ME!!!!  The following line of code should not be here, for it is a work-around for the generator bug.
+            //TODO FIX ME!!!!  The following two lines of code should not be here, they only make the compiler ignore the generator error (IT DOES NOT FIX THE ERROR)!
             Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonRow myTempRow = (Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonRow)FMainDS.PPerson[0];
-            //GetDataFromControls(FMainDS.PPerson[0]);
             GetDataFromControls(myTempRow);
+            //GetDataFromControls(FMainDS.PPerson[0]);
         }
 
         /// <summary>
