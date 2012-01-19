@@ -612,7 +612,8 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <returns></returns>
         public static bool GetLatestIntlCorpExchangeRate(int ALedgerNumber, out decimal AIntlExchangeRate)
         {
-    		string CurrencyFrom;
+    		bool retVal = true;        	
+        	string CurrencyFrom;
             string CurrencyTo;
             DateTime StartDate;
             DateTime EndDate;
@@ -645,7 +646,7 @@ namespace Ict.Petra.Server.MFinance.Common
     				CurrencyTo = IntlCurrency;
     				StartDate = AccountingPeriodRow.PeriodStartDate;
     				EndDate = AccountingPeriodRow.PeriodEndDate;
-    				return GetCorporateExchangeRate(CurrencyFrom, CurrencyTo, StartDate, EndDate, out AIntlExchangeRate);
+    				retVal = GetCorporateExchangeRate(CurrencyFrom, CurrencyTo, StartDate, EndDate, out AIntlExchangeRate);
     			}
     		}
     		
@@ -656,10 +657,10 @@ namespace Ict.Petra.Server.MFinance.Common
 
             if (AIntlExchangeRate == decimal.MinValue)
             {
-                return false;
+                retVal =  false;
             }
             
-            return true;
+            return retVal;
 
         }
         

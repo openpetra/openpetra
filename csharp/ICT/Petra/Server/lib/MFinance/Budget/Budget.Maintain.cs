@@ -453,37 +453,19 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         {
             int retVal;
 
-            bool NewTransaction = false;
-            TDBTransaction dbtrans = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+            AGeneralLedgerMasterTable GeneralLedgerMasterTable = AGeneralLedgerMasterAccess.LoadByUniqueKey(ALedgerNumber,
+                AYear,
+                AAccountCode,
+                ACostCentreCode,
+                null);
 
-            try
+            if (GeneralLedgerMasterTable.Count > 0)
             {
-                AGeneralLedgerMasterTable GeneralLedgerMasterTable = AGeneralLedgerMasterAccess.LoadByUniqueKey(ALedgerNumber,
-                    AYear,
-                    AAccountCode,
-                    ACostCentreCode,
-                    dbtrans);
-
-                if (GeneralLedgerMasterTable.Count > 0)
-                {
-                    retVal = (int)GeneralLedgerMasterTable.Rows[0].ItemArray[0];
-                }
-                else
-                {
-                    retVal = -1;
-                }
+                retVal = (int)GeneralLedgerMasterTable.Rows[0].ItemArray[0];
             }
-            catch (Exception ex)
+            else
             {
-                Console.WriteLine(ex.Message);
-                throw;
-            }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
+                retVal = -1;
             }
 
             return retVal;
@@ -578,7 +560,8 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                 return retVal;
             }
 
-            TDBTransaction DBTransaction = DBAccess.GDBAccessObj.BeginTransaction();
+			bool NewTransaction = false;
+            TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
 
             AGeneralLedgerMasterTable GeneralLedgerMasterTable = null;
             AGeneralLedgerMasterRow GeneralLedgerMasterRow = null;
@@ -703,14 +686,12 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
                 retVal = CurrencyAmount;
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                throw;
-            }
             finally
             {
-                DBAccess.GDBAccessObj.RollbackTransaction();
+                if (NewTransaction)
+                {
+                	DBAccess.GDBAccessObj.RollbackTransaction();
+                }
             }
 
             return retVal;
@@ -770,52 +751,46 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             decimal lv_currency_amount_n = 0;
             int lv_ytd_period_i;
 
-            TDBTransaction DBTransaction = DBAccess.GDBAccessObj.BeginTransaction();
-
+			bool NewTransaction = false;
+            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+            
             AGeneralLedgerMasterPeriodTable GeneralLedgerMasterPeriodTable = null;
             AGeneralLedgerMasterPeriodRow GeneralLedgerMasterPeriodRow = null;
 
-            try
+            if (AGLMSeq == -1)
             {
-                if (AGLMSeq == -1)
-                {
-                    return retVal;
-                }
+                return retVal;
+            }
 
-                if (!AYTD)
-                {
-                    AStartPeriod = AEndPeriod;
-                }
+            if (!AYTD)
+            {
+                AStartPeriod = AEndPeriod;
+            }
 
-                for (lv_ytd_period_i = AStartPeriod; lv_ytd_period_i <= AEndPeriod; lv_ytd_period_i++)
-                {
-                    GeneralLedgerMasterPeriodTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(AGLMSeq, lv_ytd_period_i, DBTransaction);
-                    GeneralLedgerMasterPeriodRow = (AGeneralLedgerMasterPeriodRow)GeneralLedgerMasterPeriodTable.Rows[0];
+            for (lv_ytd_period_i = AStartPeriod; lv_ytd_period_i <= AEndPeriod; lv_ytd_period_i++)
+            {
+                GeneralLedgerMasterPeriodTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(AGLMSeq, lv_ytd_period_i, transaction);
+                GeneralLedgerMasterPeriodRow = (AGeneralLedgerMasterPeriodRow)GeneralLedgerMasterPeriodTable.Rows[0];
 
-                    if (GeneralLedgerMasterPeriodRow != null)
+                if (GeneralLedgerMasterPeriodRow != null)
+                {
+                    if (ACurrencySelect == MFinanceConstants.CURRENCY_BASE)
                     {
-                        if (ACurrencySelect == MFinanceConstants.CURRENCY_BASE)
-                        {
-                            lv_currency_amount_n += GeneralLedgerMasterPeriodRow.BudgetBase;
-                        }
-                        else if (ACurrencySelect == MFinanceConstants.CURRENCY_INTERNATIONAL)
-                        {
-                            lv_currency_amount_n += GeneralLedgerMasterPeriodRow.BudgetIntl;
-                        }
+                        lv_currency_amount_n += GeneralLedgerMasterPeriodRow.BudgetBase;
+                    }
+                    else if (ACurrencySelect == MFinanceConstants.CURRENCY_INTERNATIONAL)
+                    {
+                        lv_currency_amount_n += GeneralLedgerMasterPeriodRow.BudgetIntl;
                     }
                 }
+            }
 
-                retVal = lv_currency_amount_n;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                throw;
-            }
-            finally
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+            retVal = lv_currency_amount_n;
+
+	        if (NewTransaction)
+	        {
+	            DBAccess.GDBAccessObj.RollbackTransaction();
+	        }
 
             return retVal;
         }
@@ -1050,7 +1025,14 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
 			FinishConsolidateBudget(ALedgerNumber, ref PeriodDataTempTable, ref BudgetTable);
             
-            return retVal;
+			
+			//Check for any unclosed transactions
+			if (DBAccess.GDBAccessObj.Transaction != null)
+			{
+				DBAccess.GDBAccessObj.RollbackTransaction();
+			}
+			
+			return retVal;
         }
         
         
@@ -1066,8 +1048,13 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
     		int PreviousSequence = 0;
     		int CurrentSequence;
     		
+			bool NewTransaction = false;
+            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+
+    		
     		if (TExchangeRateTools.GetLatestIntlCorpExchangeRate(ALedgerNumber, out IntlExchangeRate))
     		{
+    			
     			/*Consolidate_Budget*/
 
     			AGeneralLedgerMasterPeriodTable GLMPTable = null;
@@ -1105,6 +1092,12 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
     			}
     			
     		}
+    		
+            if (NewTransaction)
+	        {
+            	DBAccess.GDBAccessObj.CommitTransaction();
+	        }
+
 	
         }
         
@@ -1279,28 +1272,15 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         	//Populate list of affected Cost Centres
 			CostCentreParentsList(ALedgerNumber, ref CostCentreList);
 			
-			bool NewTransaction = false;
-            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
-        	
         	//Locate the row for the current account
         	GLBatchTDS GLBatchDS = new GLBatchTDS();
         	
-        	AAccountAccess.LoadViaALedger(GLBatchDS, ALedgerNumber, transaction);	
+        	AAccountAccess.LoadViaALedger(GLBatchDS, ALedgerNumber, null);	
         	
         	AAccountRow AccountRow = (AAccountRow)GLBatchDS.AAccount.Rows.Find(new object[] {ALedgerNumber, ABudgetRow.AccountCode});
 
-			try
-			{
-				/* calculate values for budgets and store them in a temp table; uses lb_budget */
-				ProcessAccountParent(ref APeriodDataTable, ALedgerNumber, ABudgetRow.AccountCode, AccountRow.DebitCreditIndicator, CostCentreList, ABudgetRow.BudgetSequence);
-			}
-        	finally
-            {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-            }
+			/* calculate values for budgets and store them in a temp table; uses lb_budget */
+			ProcessAccountParent(ref APeriodDataTable, ALedgerNumber, ABudgetRow.AccountCode, AccountRow.DebitCreditIndicator, CostCentreList, ABudgetRow.BudgetSequence);
 			
         }
         
@@ -1326,15 +1306,15 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 			AAccountHierarchyDetailTable AccountHierarchyDetailTable = null;
 			AAccountHierarchyDetailRow AccountHierarchyDetailRow = null;
 			
-            bool NewTransaction = false;
-            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+            //bool NewTransaction = false;
+            //TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
         	
         	//Locate the row for the current account
         	GLBatchTDS GLBatchDS = new GLBatchTDS();
         	
-        	AAccountAccess.LoadViaALedger(GLBatchDS, ALedgerNumber, transaction);	
+        	AAccountAccess.LoadViaALedger(GLBatchDS, ALedgerNumber, null); //transaction);
 
-        	ALedgerAccess.LoadByPrimaryKey(GLBatchDS, ALedgerNumber, transaction);
+        	ALedgerAccess.LoadByPrimaryKey(GLBatchDS, ALedgerNumber, null); //transaction);
         	ALedgerRow LedgerRow = (ALedgerRow)GLBatchDS.ALedger.Rows[0];
         	
         	a_current_account_b = GLBatchDS.AAccount;
@@ -1408,10 +1388,10 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             }
             finally
             {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
+//                if (NewTransaction)
+//                {
+//                    DBAccess.GDBAccessObj.RollbackTransaction();
+//                }
             }
 
         }
@@ -1426,8 +1406,9 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         	string ParentCostCentre;
 			string CostCentreList = ACurrentCostCentreList;
 
- 			TDBTransaction DBTransaction = DBAccess.GDBAccessObj.BeginTransaction();
-        	
+			bool NewTransaction = false;
+            TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+
         	GLBatchTDS GLBatchDS = new GLBatchTDS();
         	
         	ACostCentreAccess.LoadViaALedger(GLBatchDS, ALedgerNumber, DBTransaction);
@@ -1445,7 +1426,11 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
     			ParentCostCentre = CCRow.CostCentreToReportTo;
 			}			
         	
-        	DBAccess.GDBAccessObj.RollbackTransaction();
+        	if (NewTransaction)
+        	{
+        		DBAccess.GDBAccessObj.RollbackTransaction();	
+        	}
+			
         }
 
         /// <summary>
