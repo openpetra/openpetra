@@ -151,8 +151,8 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             StreamReader DataFile = new StreamReader(ACSVFileName, System.Text.Encoding.Default);
 
             string Separator = AFdlgSeparator[0];
-            string DateFormat = AFdlgSeparator[1];
-            string NumberFormat = AFdlgSeparator[2] == "0" ? "American" : "European";
+            //string DateFormat = AFdlgSeparator[1];
+            //string NumberFormat = AFdlgSeparator[2] == "0" ? "American" : "European";
 
             //CultureInfo MyCultureInfoDate = new CultureInfo("en-GB");
             //MyCultureInfoDate.DateTimeFormat.ShortDatePattern = DateFormat;
@@ -163,7 +163,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             //   the inverse value.
 
             string currentBudgetVal = string.Empty;
-            string mess = string.Empty;
+            //string mess = string.Empty;
             string CostCentre = string.Empty;
             string Account = string.Empty;
             string BudgetType = string.Empty;
@@ -215,7 +215,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                     //Turn current line into string array of column values
                     string[] CsvColumns = Line.Split(Sep);
 
-                    int NumCols = CsvColumns.Length;
+                    //int NumCols = CsvColumns.Length;
 
                     //If number of columns is not 4 then import csv file is wrongly formed.
 //                if (NumCols != 24)
@@ -751,16 +751,16 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             decimal lv_currency_amount_n = 0;
             int lv_ytd_period_i;
 
+            if (AGLMSeq == -1)
+            {
+                return retVal;
+            }
+
 			bool NewTransaction = false;
             TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
             
             AGeneralLedgerMasterPeriodTable GeneralLedgerMasterPeriodTable = null;
             AGeneralLedgerMasterPeriodRow GeneralLedgerMasterPeriodRow = null;
-
-            if (AGLMSeq == -1)
-            {
-                return retVal;
-            }
 
             if (!AYTD)
             {
@@ -1071,7 +1071,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
     					PreviousSequence = CurrentSequence;
     				}
     				
-    				GLMPTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(PreviousSequence, Convert.ToInt32(DR.ItemArray[1]), null);
+    				GLMPTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(PreviousSequence, Convert.ToInt32(DR.ItemArray[1]), transaction);
 					GLMPRow = (AGeneralLedgerMasterPeriodRow)GLMPTable.Rows[0];
 					
 					GLMPRow.BeginEdit();
@@ -1277,10 +1277,10 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         	
         	AAccountAccess.LoadViaALedger(GLBatchDS, ALedgerNumber, null);	
         	
-        	AAccountRow AccountRow = (AAccountRow)GLBatchDS.AAccount.Rows.Find(new object[] {ALedgerNumber, ABudgetRow.AccountCode});
+        	AAccountRow AccountRow = (AAccountRow)GLBatchDS.AAccount.Rows.Find(new object[] {ALedgerNumber, AccountCode});
 
 			/* calculate values for budgets and store them in a temp table; uses lb_budget */
-			ProcessAccountParent(ref APeriodDataTable, ALedgerNumber, ABudgetRow.AccountCode, AccountRow.DebitCreditIndicator, CostCentreList, ABudgetRow.BudgetSequence);
+			ProcessAccountParent(ref APeriodDataTable, ALedgerNumber, AccountCode, AccountRow.DebitCreditIndicator, CostCentreList, ABudgetRow.BudgetSequence);
 			
         }
         
@@ -1332,7 +1332,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 		        	if (AccountCodeToReportTo != null && AccountCodeToReportTo != string.Empty)
 		        	{
 						a_parent_account_b = GLBatchDS.AAccount;
-						AAccountRow AccountRowP = (AAccountRow)a_parent_account_b.Rows.Find(new object[] {ALedgerNumber, AccountCodeToReportTo});
+						//AAccountRow AccountRowP = (AAccountRow)a_parent_account_b.Rows.Find(new object[] {ALedgerNumber, AccountCodeToReportTo});
 		        		
 					    /* Recursively call this procedure. */
 					    ProcessAccountParent(ref APeriodDataTable, ALedgerNumber, AccountCodeToReportTo, ADebitCreditIndicator, ACostCentreList, ABudgetSequence);
@@ -1470,17 +1470,12 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 				{
 					GeneralLedgerMasterPeriodRow = (AGeneralLedgerMasterPeriodRow)GeneralLedgerMasterPeriodTable.Rows[0];
 
-					/* only create records for periods which have a value. try to keep the number of records low,
-			           to make the lock count in the write transaction smaller */
-					if (GeneralLedgerMasterPeriodRow.BudgetBase != 0)
-					{
-						DataRow DR = (DataRow)APeriodDataTable.NewRow();
-						DR.ItemArray[0] = AGLMSequence;
-						DR.ItemArray[1] = APeriodNumber;
-						DR.ItemArray[2] = GeneralLedgerMasterPeriodRow.BudgetBase;
-						
-						APeriodDataTable.Rows.Add(DR);
-					}
+					DataRow DR = (DataRow)APeriodDataTable.NewRow();
+					DR.ItemArray[0] = AGLMSequence;
+					DR.ItemArray[1] = APeriodNumber;
+					DR.ItemArray[2] = GeneralLedgerMasterPeriodRow.BudgetBase;
+					
+					APeriodDataTable.Rows.Add(DR);
 				}			
         	}
         	else
