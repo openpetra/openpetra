@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -47,7 +47,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// constructor
         /// </summary>
         public TableLayoutPanelGenerator()
-            : base("tlp", typeof(TableLayoutPanel))
+            : base("tlp", typeof(Panel))
         {
             FAutoSize = true;
         }
@@ -64,7 +64,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public string CalculateName()
         {
             countTableLayoutPanel++;
-            return "tableLayoutPanel" + countTableLayoutPanel.ToString();
+            return "layoutPanel" + countTableLayoutPanel.ToString();
         }
 
         /// <summary>
@@ -136,212 +136,141 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
         /// <summary>
         /// optimise the table layout, and write it;
-        /// Mono has some problems with columnspan and autosize columns (https://bugzilla.novell.com/show_bug.cgi?id=531591)
         /// </summary>
         public void WriteTableLayout(TFormWriter writer, string ctrlname)
         {
-            List <int>SkippedColumns = new List <int>();
+            // calculate the width and height for the columns and rows
+            int[] ColumnWidth = new int[FColumnCount];
+            int[] RowHeight = new int[FRowCount];
 
-            // check if there are empty columns, that are always spanned; remove them
+            // first go: ignore cells spanning rows and columns; second go: check that spanning cells fit as well
+            for (int spanRunCounter = 0; spanRunCounter < 2; spanRunCounter++)
+            {
+                for (int columnCounter = 0; columnCounter < FColumnCount; columnCounter++)
+                {
+                    // initialise the summary values
+                    if (spanRunCounter == 0)
+                    {
+                        ColumnWidth[columnCounter] = 0;
+
+                        if (columnCounter == 0)
+                        {
+                            for (int rowCounter = 0; rowCounter < FRowCount; rowCounter++)
+                            {
+                                RowHeight[rowCounter] = 0;
+                            }
+                        }
+                    }
+
+                    for (int rowCounter = 0; rowCounter < FRowCount; rowCounter++)
+                    {
+                        if ((FGrid[columnCounter, rowCounter] != null))
+                        {
+                            TControlDef ctrl;
+
+                            if (FGrid[columnCounter, rowCounter].GetType() == typeof(TControlDef))
+                            {
+                                ctrl = (TControlDef)FGrid[columnCounter, rowCounter];
+                            }
+                            else
+                            {
+                                ctrl = writer.CodeStorage.FindOrCreateControl(FGrid[columnCounter, rowCounter].ToString(), "");
+                            }
+
+                            int CellWidth = ctrl.Width;
+
+                            if ((spanRunCounter == 0) && (ctrl.colSpan == 1))
+                            {
+                                if (CellWidth > ColumnWidth[columnCounter])
+                                {
+                                    ColumnWidth[columnCounter] = CellWidth;
+                                }
+                            }
+                            else
+                            {
+                                int CurrentSpanWidth = 0;
+
+                                for (int columnCounter2 = columnCounter; columnCounter2 < columnCounter + ctrl.colSpan; columnCounter2++)
+                                {
+                                    CurrentSpanWidth += ColumnWidth[columnCounter2];
+                                }
+
+                                if (CurrentSpanWidth < CellWidth)
+                                {
+                                    ColumnWidth[columnCounter + ctrl.colSpan - 1] += CellWidth - CurrentSpanWidth;
+                                }
+                            }
+
+                            int CellHeight = ctrl.Height;
+
+                            if ((spanRunCounter == 0) && (ctrl.rowSpan == 1))
+                            {
+                                if (CellHeight > RowHeight[rowCounter])
+                                {
+                                    RowHeight[rowCounter] = CellHeight;
+                                }
+                            }
+                            else
+                            {
+                                int CurrentSpanHeight = 0;
+
+                                for (int rowCounter2 = rowCounter; rowCounter2 < rowCounter + ctrl.rowSpan; rowCounter2++)
+                                {
+                                    CurrentSpanHeight += RowHeight[rowCounter2];
+                                }
+
+                                if (CurrentSpanHeight < CellHeight)
+                                {
+                                    RowHeight[rowCounter + ctrl.rowSpan - 1] += CellHeight - CurrentSpanHeight;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            int CurrentLeftPosition = 0;
+
             for (int columnCounter = 0; columnCounter < FColumnCount; columnCounter++)
             {
-                bool canSkipColumn = true;
+                int CurrentTopPosition = 0;
 
                 for (int rowCounter = 0; rowCounter < FRowCount; rowCounter++)
                 {
                     if (FGrid[columnCounter, rowCounter] != null)
                     {
-                        canSkipColumn = false;
-                    }
-                }
+                        string childCtrlName;
 
-                if (canSkipColumn)
-                {
-                    SkippedColumns.Add(columnCounter);
-                }
-            }
-
-            // check all controls in previous columns and reduce ColumnSpan if they cover the skipped column
-            for (int columnCounter = 0; columnCounter < FColumnCount; columnCounter++)
-            {
-                for (int rowCounter = 0; rowCounter < FRowCount; rowCounter++)
-                {
-                    if ((FGrid[columnCounter, rowCounter] != null) && (FGrid[columnCounter, rowCounter].GetType() == typeof(TControlDef)))
-                    {
-                        TControlDef childctrl = (TControlDef)FGrid[columnCounter, rowCounter];
-
-                        if (childctrl.colSpan > 1)
+                        if (FGrid[columnCounter, rowCounter].GetType() == typeof(TControlDef))
                         {
-                            int ReduceColumnSpan = 0;
-
-                            foreach (int SkippedColumn in SkippedColumns)
-                            {
-                                if ((columnCounter < SkippedColumn) && (columnCounter + childctrl.colSpan > SkippedColumn))
-                                {
-                                    ReduceColumnSpan++;
-                                }
-                            }
-
-                            childctrl.colSpan -= ReduceColumnSpan;
-                        }
-                    }
-                }
-            }
-
-            #region ColumnStyles and RowStyles
-
-            writer.SetControlProperty(ctrlname, "ColumnCount", (FColumnCount - SkippedColumns.Count).ToString(), false);
-
-            /*
-             * Generate ColumnStyles which influence the width of the Columns. If custom widths are specified by the user,
-             * ColumStyles with the appropriate Arguments are generated, otherwise standard ColumnStyles, which means that
-             * Colum Widths are AutoSized at runtime.
-             */
-            for (Int32 countCol = 0; countCol < FColumnCount - SkippedColumns.Count; countCol++)
-            {
-                if (FColWidths != null)
-                {
-                    if (FColWidths.ContainsKey(countCol))
-                    {
-                        string[] ColWidthSpec = FColWidths[countCol].Split(':');
-
-                        if (ColWidthSpec[0].ToLower() != "auto")
-                        {
-                            if (ColWidthSpec[0].ToLower() == "fixed")
-                            {
-                                writer.CallControlFunction(ctrlname,
-                                    String.Format("ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Absolute, {0}))", ColWidthSpec[1]));
-                            }
-                            else if (ColWidthSpec[0].ToLower() == "percent")
-                            {
-                                writer.CallControlFunction(ctrlname,
-                                    String.Format("ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Percent, {0}))", ColWidthSpec[1]));
-                            }
-                            else
-                            {
-                                throw new Exception("Invalid ColWidhts Type '" + ColWidthSpec[0] + "' for Control '" + ctrlname + "'");
-                            }
+                            TControlDef childctrl = (TControlDef)FGrid[columnCounter, rowCounter];
+                            childCtrlName = childctrl.controlName;
                         }
                         else
                         {
-                            writer.CallControlFunction(ctrlname, "ColumnStyles.Add(new System.Windows.Forms.ColumnStyle())");
+                            childCtrlName = (string)FGrid[columnCounter, rowCounter];
                         }
-                    }
-                    else
-                    {
-                        writer.CallControlFunction(ctrlname, "ColumnStyles.Add(new System.Windows.Forms.ColumnStyle())");
-                    }
-                }
-                else
-                {
-                    writer.CallControlFunction(ctrlname, "ColumnStyles.Add(new System.Windows.Forms.ColumnStyle())");
-                }
-            }
 
-            writer.SetControlProperty(ctrlname, "RowCount", FRowCount.ToString(), false);
+                        writer.CallControlFunction(ctrlname,
+                            "Controls.Add(this." + childCtrlName + ")");
+                        writer.SetControlProperty(childCtrlName,
+                            "Location",
+                            String.Format("new System.Drawing.Point({0},{1})",
+                                CurrentLeftPosition.ToString(),
+                                CurrentTopPosition.ToString()),
+                            false);
 
-            /*
-             * Generate RowStyles which influence the height of the Columns. If custom heights are specified by the user,
-             * RowStyles with the appropriate Arguments are generated, otherwise standard RowStyles, which means that
-             * Row Heights are AutoSized at runtime.
-             */
-            for (Int32 countRow = 0; countRow < FRowCount; countRow++)
-            {
-                if (FRowHeights != null)
-                {
-                    if (FRowHeights.ContainsKey(countRow))
-                    {
-                        string[] RowHeightSpec = FRowHeights[countRow].Split(':');
-
-                        if (RowHeightSpec[0].ToLower() != "auto")
+                        if (FTabOrder == "Horizontal")
                         {
-                            if (RowHeightSpec[0].ToLower() == "fixed")
-                            {
-                                writer.CallControlFunction(ctrlname,
-                                    String.Format("RowStyles.Add(new System.Windows.Forms.RowStyle(SizeType.Absolute, {0}))", RowHeightSpec[1]));
-                            }
-                            else if (RowHeightSpec[0].ToLower() == "percent")
-                            {
-                                writer.CallControlFunction(ctrlname,
-                                    String.Format("RowStyles.Add(new System.Windows.Forms.RowStyle(SizeType.Percent, {0}))", RowHeightSpec[1]));
-                            }
-                            else
-                            {
-                                throw new Exception("Invalid RowHeights Type '" + RowHeightSpec[0] + "' for Control '" + ctrlname + "'");
-                            }
-                        }
-                        else
-                        {
-                            writer.CallControlFunction(ctrlname, "RowStyles.Add(new System.Windows.Forms.RowStyle())");
+                            writer.SetControlProperty(childCtrlName, "TabIndex", FCurrentTabIndex.ToString(), false);
+                            FCurrentTabIndex++;
                         }
                     }
-                    else
-                    {
-                        writer.CallControlFunction(ctrlname, "RowStyles.Add(new System.Windows.Forms.RowStyle())");
-                    }
+
+                    CurrentTopPosition += RowHeight[rowCounter];
                 }
-                else
-                {
-                    writer.CallControlFunction(ctrlname, "RowStyles.Add(new System.Windows.Forms.RowStyle())");
-                }
-            }
 
-            #endregion
-
-            for (int columnCounter = 0; columnCounter < FColumnCount; columnCounter++)
-            {
-                if (!SkippedColumns.Contains(columnCounter))
-                {
-                    for (int rowCounter = 0; rowCounter < FRowCount; rowCounter++)
-                    {
-                        if (FGrid[columnCounter, rowCounter] != null)
-                        {
-                            string childCtrlName;
-
-                            if (FGrid[columnCounter, rowCounter].GetType() == typeof(TControlDef))
-                            {
-                                TControlDef childctrl = (TControlDef)FGrid[columnCounter, rowCounter];
-                                childCtrlName = childctrl.controlName;
-
-                                if (childctrl.colSpan > 1)
-                                {
-                                    writer.CallControlFunction(FTlpName,
-                                        "SetColumnSpan(this." + childctrl.controlName + ", " + childctrl.colSpan + ")");
-                                }
-
-                                if (childctrl.rowSpan > 1)
-                                {
-                                    writer.CallControlFunction(FTlpName, "SetRowSpan(this." + childctrl.controlName + ", " + childctrl.rowSpan + ")");
-                                }
-                            }
-                            else
-                            {
-                                childCtrlName = (string)FGrid[columnCounter, rowCounter];
-                            }
-
-                            int NewColumn = columnCounter;
-
-                            foreach (int SkippedColumn in SkippedColumns)
-                            {
-                                if (SkippedColumn < columnCounter)
-                                {
-                                    NewColumn--;
-                                }
-                            }
-
-                            writer.CallControlFunction(ctrlname,
-                                "Controls.Add(this." +
-                                childCtrlName + ", " +
-                                NewColumn.ToString() + ", " + rowCounter.ToString() + ")");
-
-                            if (FTabOrder == "Horizontal")
-                            {
-                                writer.SetControlProperty(childCtrlName, "TabIndex", FCurrentTabIndex.ToString(), false);
-                                FCurrentTabIndex++;
-                            }
-                        }
-                    }
-                }
+                CurrentLeftPosition += ColumnWidth[columnCounter];
             }
 
             // by default, the TabOrder is by column, Vertical

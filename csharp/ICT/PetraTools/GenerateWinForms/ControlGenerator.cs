@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -97,7 +97,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (FRightAlign)
             {
-                writer.SetControlProperty(ctrl, "Dock", "System.Windows.Forms.DockStyle.Right");
                 writer.SetControlProperty(ctrl, "TextAlign", "System.Drawing.ContentAlignment.TopRight");
             }
 
@@ -153,6 +152,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             FAutoSize = true;
             FGenerateLabel = false;
+            FDefaultWidth = 80;
         }
 
         /// <summary>write the code for the designer file where the properties of the control are written</summary>

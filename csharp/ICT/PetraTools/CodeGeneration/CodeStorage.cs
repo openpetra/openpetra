@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -865,6 +865,42 @@ namespace Ict.Tools.CodeGeneration
             set
             {
                 SetAttribute("Label", value);
+            }
+        }
+
+        /// <summary>
+        /// get the width
+        /// </summary>
+        public int Width
+        {
+            get
+            {
+                if (HasAttribute("Width"))
+                {
+                    return Convert.ToInt32(GetAttribute("Width"));
+                }
+                else if (HasAttribute("DefaultWidth"))
+                {
+                    return Convert.ToInt32(GetAttribute("DefaultWidth"));
+                }
+
+                return 20;
+            }
+        }
+
+        /// <summary>
+        /// get the height
+        /// </summary>
+        public int Height
+        {
+            get
+            {
+                if (HasAttribute("Height"))
+                {
+                    return Convert.ToInt32(GetAttribute("Height"));
+                }
+
+                return 20;
             }
         }
 

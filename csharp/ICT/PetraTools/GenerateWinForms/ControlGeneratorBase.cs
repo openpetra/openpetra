@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -583,6 +583,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 writer.SetControlProperty(ctrl, "BackColor", ctrl.GetAttribute("BackColor"));
             }
+
+            ctrl.SetAttribute("DefaultWidth", FDefaultWidth.ToString());
 
             if ((ctrl.HasAttribute("Width") || ctrl.HasAttribute("Height")) && (ctrl.GetAttribute("GenerateWithOtherControls") != "yes"))
             {
