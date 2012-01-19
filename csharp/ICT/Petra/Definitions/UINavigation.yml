@@ -45,6 +45,8 @@ OpenPetra:
                         ExtractMasterList: {Label=Extract Master List, ActionOpenScreen=TFrmExtractMaster}
                     GenerateExtracts: {Label=Generate Extract}
                         PartnerByCity: {Namespace=Ict.Petra.Client.MPartner.Gui, Label=Partner by City, ActionClick=TFrmPartnerMain.PartnerByCityExtract}
+                        ConferenceExtract: {Namespace=Ict.Petra.Client.MPartner.Gui, Label=Partner By Conference, ActionClick=TFrmPartnerMain.PartnerByConference}
+                        OutreachExtract: {Namespace=Ict.Petra.Client.MPartner.Gui, Label=Partner By Outreach, ActionClick=TFrmPartnerMain.PartnerByOutreach}
                         PublicationExtract: {Namespace=Ict.Petra.Client.MPartner.Gui, Label=Publication Extract, ActionClick=TFrmPartnerMain.PublicationExtract}
                         #PublicationExtract: {Label=Publication Extract, ActionOpenScreen=TFrmExtractPublication}
                         #PartnerTypeExtract: {Label=Partner Type Extract, ActionOpenScreen=TFrmExtractPartnerType}
