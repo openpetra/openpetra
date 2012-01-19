@@ -404,17 +404,6 @@ namespace Ict.Common.Testing
                 "EncodeToString2 with Composite containing Composite");
             Assert.AreEqual(v3.EncodeToString(), TVariant.DecodeFromString(
                     v3.EncodeToString()).EncodeToString(), "DecodeFromString with Composite containing Composite");
-            v = new TVariant();
-            v2 = new TVariant();
-            v2.Add(new TVariant(""), "", false);
-            v.Add(v2);
-            v2 = new TVariant();
-            v2.Add(new TVariant(""), "", false);
-            v.Add(v2);
-            Assert.AreEqual("eComposite::\"eComposite::\"\"eString:\"\"|eComposite::\"\"eString:\"\"\"",
-                            v.EncodeToString(), "Composite containing two Composites encode");
-            Assert.AreEqual(v.EncodeToString(), TVariant.DecodeFromString(v.EncodeToString()).EncodeToString(),
-                            "Composite containing two Composites encode decode encode");
             v = new TVariant("test\"1");
             v.Add(new TVariant(" test\"2"));
             v2 = new TVariant("test\"3");
@@ -494,15 +483,13 @@ namespace Ict.Common.Testing
             v.Add(new TVariant(':'));
             Assert.AreEqual("Total for Account 1000:", v.ToFormattedString(), "colon in text on its own");
             Assert.AreEqual(v.EncodeToString(), TVariant.DecodeFromString(v.EncodeToString()).EncodeToString(), "colon in text on its own 2");
-            v = new TVariant();
-            v.Add(new TVariant("", "", false));
-            v.Add(new TVariant("", "", false));
-            Assert.AreEqual("eComposite::\"eString:|eString:\"", v.EncodeToString(), "Composite with two empty strings encoding");
             Assert.AreEqual(TVariant.DecodeFromString(v.EncodeToString()).EncodeToString(),
                             v.EncodeToString(), "Composite with two empty strings encoding decoding encoding");
-            v.Add(new TVariant("|", "", false));
-            Assert.AreEqual("eComposite::\"eString:|eString:|\"\"eString:|\"\"\"",
-                            v.EncodeString(), "Composite with pipe encoding");
+            v = new TVariant();
+            v.Add(new TVariant("t"), "", false);
+            v.Add(new TVariant("|"), "", false);
+            Assert.AreEqual("eComposite::\"eString:t|\"\"eString:|\"\"\"",
+                            v.EncodeToString(), "Composite with pipe encoding");
             Assert.AreEqual(TVariant.DecodeFromString(v.EncodeToString()).EncodeToString(),
                             v.EncodeToString(), "Composite with pipe encoding decoding encoding");
             v = new TVariant("", true);
