@@ -582,9 +582,11 @@ namespace Ict.Common
                     {
                         try
                         {
-                            value = new TVariant(DateTime.ParseExact(valuestr, DATETIME_UNAMBIGUOUS_FORMAT, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.AssumeUniversal));
+                            value =
+                                new TVariant(DateTime.ParseExact(valuestr, DATETIME_UNAMBIGUOUS_FORMAT, DateTimeFormatInfo.InvariantInfo,
+                                        DateTimeStyles.AssumeUniversal));
                         }
-                        catch(Exception e)
+                        catch (Exception e)
                         {
                             value = new TVariant(DateTime.MinValue);
                         }
@@ -662,7 +664,9 @@ namespace Ict.Common
                 else if (this.TypeVariant == eVariantTypes.eDateTime)
                 {
                     // Force encoding into a well-defined UTC-grounded format
-                    ReturnValue = StringHelper.AddCSV(ReturnValue, DateValue.ToUniversalTime().ToString(DATETIME_UNAMBIGUOUS_FORMAT, DateTimeFormatInfo.InvariantInfo), ":");
+                    ReturnValue =
+                        StringHelper.AddCSV(ReturnValue,
+                            DateValue.ToUniversalTime().ToString(DATETIME_UNAMBIGUOUS_FORMAT, DateTimeFormatInfo.InvariantInfo), ":");
                 }
                 else if (this.TypeVariant == eVariantTypes.eComposite)
                 {
@@ -672,6 +676,7 @@ namespace Ict.Common
                     foreach (TVariant v in this.CompositeValue)
                     {
                         String CompositeEncoded = v.EncodeToString();
+
                         /*
                          * StringHelper.AddCSV() was not used for the first
                          * entry which was an empty string because
@@ -680,10 +685,16 @@ namespace Ict.Common
                          * case where the length of the first member of the
                          * composite value is an empty string.
                          */
-                        if (CompositeEncodedLine.Length == 0 && !first)
+                        if ((CompositeEncodedLine.Length == 0) && !first)
+                        {
                             CompositeEncodedLine += "|";
-                        if (!first || CompositeEncoded.Length > 0)
+                        }
+
+                        if (!first || (CompositeEncoded.Length > 0))
+                        {
                             CompositeEncodedLine = StringHelper.AddCSV(CompositeEncodedLine, CompositeEncoded, "|");
+                        }
+
                         first = false;
                     }
 
@@ -976,7 +987,7 @@ namespace Ict.Common
             }
             else
             {
-                ReturnValue = new ArrayList(new Object[]{ this });
+                ReturnValue = new ArrayList(new Object[] { this });
             }
 
             return ReturnValue;

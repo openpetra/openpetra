@@ -51,6 +51,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
         private void grdCommitmentStatusChoices_InitialiseData(TFrmPetraReportingUtils FPetraUtilsObject)
         {
             #region Copied from csharp/ICT/Petra/Client/MReporting/Gui/MPersonnel/StartOfCommitmentReport.ManualCode.cs
+
             /**
              * \todo
              *   The following block of code should be generalized
@@ -93,22 +94,31 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
              *   DecodeFromString().
              */
             TVariant param_grdCommitmentStatusChoices = new TVariant();
+
             foreach (DataRow ARow in FCommitmentStatusTable.Rows)
+            {
                 if ((bool)ARow["Selection"])
+                {
                     param_grdCommitmentStatusChoices.Add(new TVariant((String)ARow[PmCommitmentStatusTable.GetCodeDBName()]), "", false);
+                }
+            }
 
             ACalc.AddParameter("param_grdCommitmentStatusChoices", param_grdCommitmentStatusChoices);
         }
 
         private void grdCommitmentStatusChoices_SetControls(TParameterList AParameters)
         {
-            HashSet<String> AValues = new HashSet<String>();
+            HashSet <String>AValues = new HashSet <String>();
 
             foreach (TVariant choice in AParameters.Get("param_grdCommitmentStatusChoices").ToComposite())
-                    AValues.Add(choice.ToString());
+            {
+                AValues.Add(choice.ToString());
+            }
 
             foreach (DataRow ARow in FCommitmentStatusTable.Rows)
+            {
                 ARow["Selection"] = AValues.Contains((String)ARow[PmCommitmentStatusTable.GetCodeDBName()]);
+            }
         }
 
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
@@ -125,7 +135,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             TVariant AValue)
         {
             if (AValue.IsZeroOrNull())
+            {
                 AControl.Date = null;
+            }
         }
 
         private void SetControlsManual(TParameterList AProperties)
@@ -143,11 +155,19 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
              *   is finished.
              */
             if (AProperties.GetParameter("param_chkPartnerActive") == null)
+            {
                 chkPartnerActive.Checked = true;
+            }
+
             if (AProperties.GetParameter("param_chkMailable") == null)
+            {
                 chkMailable.Checked = true;
+            }
+
             if (AProperties.GetParameter("param_chkRespectNoSolicitors") == null)
+            {
                 chkRespectNoSolicitors.Checked = true;
+            }
 
             /*
              * For some reason, when setting a textbox to have the
@@ -155,9 +175,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
              * and ReadControls() stuff for them.
              */
             if (AProperties.GetParameter("param_txtFieldReceiving") != null)
+            {
                 txtFieldReceiving.Text = AProperties.Get("param_txtFieldReceiving").ToString();
+            }
+
             if (AProperties.GetParameter("param_txtFieldSending") != null)
+            {
                 txtFieldSending.Text = AProperties.Get("param_txtFieldSending").ToString();
+            }
 
             chkCommitmentStatus_Changed(chkCommitmentStatus, null);
         }

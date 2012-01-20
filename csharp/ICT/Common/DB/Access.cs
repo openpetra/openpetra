@@ -2134,6 +2134,7 @@ namespace Ict.Common.DB
             }
 
             Regex DecommenterRegex = new Regex(@"\s--.*");
+
             while ((line = reader.ReadLine()) != null)
             {
                 if (!line.Trim().StartsWith("--"))
@@ -2167,38 +2168,54 @@ namespace Ict.Common.DB
         {
             /* Check if there are any parameters which need `IN (?)' expansion. */
             Boolean INExpansionNeeded = false;
+
             if (AParametersArray != null)
+            {
                 foreach (OdbcParameter param in AParametersArray)
+                {
                     if (param.Value is TDbListParameterValue)
                     {
                         INExpansionNeeded = true;
                         break;
                     }
+                }
+            }
+
             /* Perform the `IN (?)' expansion. */
             if (INExpansionNeeded)
             {
-                List<OdbcParameter> NewParametersArray = new List<OdbcParameter>();
+                List <OdbcParameter>NewParametersArray = new List <OdbcParameter>();
                 String NewCommandText = "";
 
-                IEnumerator<OdbcParameter> ParametersEnumerator = ((IEnumerable<OdbcParameter>)AParametersArray).GetEnumerator();
-                foreach (String SqlPart in ACommandText.Split(new Char[] {'?'}))
+                IEnumerator <OdbcParameter>ParametersEnumerator = ((IEnumerable <OdbcParameter> )AParametersArray).GetEnumerator();
+
+                foreach (String SqlPart in ACommandText.Split(new Char[] { '?' }))
                 {
                     NewCommandText += SqlPart;
 
                     if (!ParametersEnumerator.MoveNext())
+                    {
                         /* We're at the end of the string/parameter array */
                         continue;
+                    }
 
                     OdbcParameter param = ParametersEnumerator.Current;
+
                     if (param.Value is TDbListParameterValue)
                     {
                         Boolean first = true;
+
                         foreach (OdbcParameter subparam in (TDbListParameterValue)param.Value)
                         {
                             if (first)
+                            {
                                 first = false;
+                            }
                             else
+                            {
                                 NewCommandText += ", ";
+                            }
+
                             NewCommandText += "?";
 
                             NewParametersArray.Add(subparam);
@@ -2208,6 +2225,7 @@ namespace Ict.Common.DB
                         if (first)
                         {
                             NewCommandText += "?";
+
                             /* `column IN ()' is invalid, use `column IN (NULL)' */
                             param.Value = DBNull.Value;
                             NewParametersArray.Add(param);
@@ -2222,7 +2240,9 @@ namespace Ict.Common.DB
 
                 /* Catch any leftover parameters? */
                 while (ParametersEnumerator.MoveNext())
+                {
                     NewParametersArray.Add(ParametersEnumerator.Current);
+                }
 
                 ACommandText = NewCommandText;
                 AParametersArray = NewParametersArray.ToArray();
@@ -2757,7 +2777,7 @@ namespace Ict.Common.DB
     ///     };
     ///   </code>
     /// </example>
-    public class TDbListParameterValue : IEnumerable<OdbcParameter>
+    public class TDbListParameterValue : IEnumerable <OdbcParameter>
     {
         private IEnumerable SubValues;
 
@@ -2787,15 +2807,20 @@ namespace Ict.Common.DB
             SubValues = value;
         }
 
-        IEnumerator<OdbcParameter> IEnumerable<OdbcParameter>.GetEnumerator()
+        IEnumerator <OdbcParameter>IEnumerable <OdbcParameter> .GetEnumerator()
         {
             UInt32 i = 0;
+
             foreach (Object value in SubValues)
             {
                 OdbcParameter SubParameter = (OdbcParameter)((ICloneable)OdbcParam).Clone();
                 SubParameter.Value = value;
+
                 if (SubParameter.ParameterName != null)
+                {
                     SubParameter.ParameterName += "_" + (i++);
+                }
+
                 yield return SubParameter;
             }
         }
@@ -2805,7 +2830,7 @@ namespace Ict.Common.DB
         /// </summary>
         public IEnumerator GetEnumerator()
         {
-            return ((IEnumerable<OdbcParameter>)this).GetEnumerator();
+            return ((IEnumerable <OdbcParameter> ) this).GetEnumerator();
         }
 
         /// <summary>
@@ -2814,7 +2839,7 @@ namespace Ict.Common.DB
         /// </summary>
         public override String ToString()
         {
-            return "[" + String.Join(",", SubValues.Cast<Object>()) + "]";
+            return "[" + String.Join(",", SubValues.Cast <Object>()) + "]";
         }
 
         /// <summary>
@@ -2824,9 +2849,9 @@ namespace Ict.Common.DB
         public static OdbcParameter OdbcListParameterValue(String name, OdbcType type, IEnumerable value)
         {
             return new OdbcParameter(name, type)
-                {
-                    Value = new TDbListParameterValue(name, type, value)
-                };
+                   {
+                       Value = new TDbListParameterValue(name, type, value)
+                   };
         }
     }
 }

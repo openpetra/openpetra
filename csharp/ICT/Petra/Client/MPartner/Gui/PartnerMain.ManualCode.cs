@@ -169,7 +169,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             frm.CalledFromExtracts = true;
             frm.Show();
         }
-        
+
         /// Open screen for creating "Partner by Commitment" Extract
         /// </summary>
         public static void PartnerByCommitmentExtract(Form AParentForm)

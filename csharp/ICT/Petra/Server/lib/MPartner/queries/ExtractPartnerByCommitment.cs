@@ -51,50 +51,96 @@ namespace Ict.Petra.Server.MPartner.queries
 
                 String SqlStmt = TDataBase.ReadSqlFile("Partner.Queries.ExtractPartnerByCommitment.sql");
 
-                List<String> param_grdCommitmentStatusChoices = new List<String>();
+                List <String>param_grdCommitmentStatusChoices = new List <String>();
+
                 foreach (TVariant choice in AParameters.Get("param_grdCommitmentStatusChoices").ToComposite())
+                {
                     param_grdCommitmentStatusChoices.Add(choice.ToString());
+                }
 
                 OdbcParameter[] parameters = new OdbcParameter[]
                 {
-                    new OdbcParameter("param_dtpStartTimeFrom_unset", OdbcType.Bit) { Value = AParameters.Get("param_dtpStartDateFrom").IsZeroOrNull() },
-                    new OdbcParameter("param_dtpStartTimeFrom", OdbcType.Date) { Value = AParameters.Get("param_dtpStartDateFrom").ToDate() },
-                    new OdbcParameter("param_dtpStartTimeTo_unset", OdbcType.Bit) { Value = AParameters.Get("param_dtpStartDateTo").IsZeroOrNull() },
-                    new OdbcParameter("param_dtpStartTimeTo", OdbcType.Date) { Value = AParameters.Get("param_dtpStartDateTo").ToDate() },
-                    new OdbcParameter("param_dtpEndTimeFrom_unset", OdbcType.Bit) { Value = AParameters.Get("param_dtpEndDateFrom").IsZeroOrNull() },
-                    new OdbcParameter("param_dtpEndTimeFrom", OdbcType.Date) { Value = AParameters.Get("param_dtpEndDateFrom").ToDate() },
-                    new OdbcParameter("param_dtpEndTimeTo_unset", OdbcType.Bit) { Value = AParameters.Get("param_dtpEndDateTo").IsZeroOrNull() },
-                    new OdbcParameter("param_dtpEndTimeTo", OdbcType.Date) { Value = AParameters.Get("param_dtpEndDateTo").ToDate() },
-                    new OdbcParameter("param_dtpDateValidOn_unset", OdbcType.Bit) { Value = AParameters.Get("param_dtpDateValidOn").IsZeroOrNull() },
-                    new OdbcParameter("param_dtpDateValidOn_a", OdbcType.Date) { Value = AParameters.Get("param_dtpDateValidOn").ToDate() },
-                    new OdbcParameter("param_dtpDateValidOn_b", OdbcType.Date) { Value = AParameters.Get("param_dtpDateValidOn").ToDate() },
+                    new OdbcParameter("param_dtpStartTimeFrom_unset", OdbcType.Bit) {
+                        Value = AParameters.Get("param_dtpStartDateFrom").IsZeroOrNull()
+                    },
+                    new OdbcParameter("param_dtpStartTimeFrom", OdbcType.Date) {
+                        Value = AParameters.Get("param_dtpStartDateFrom").ToDate()
+                    },
+                    new OdbcParameter("param_dtpStartTimeTo_unset", OdbcType.Bit) {
+                        Value = AParameters.Get("param_dtpStartDateTo").IsZeroOrNull()
+                    },
+                    new OdbcParameter("param_dtpStartTimeTo", OdbcType.Date) {
+                        Value = AParameters.Get("param_dtpStartDateTo").ToDate()
+                    },
+                    new OdbcParameter("param_dtpEndTimeFrom_unset", OdbcType.Bit) {
+                        Value = AParameters.Get("param_dtpEndDateFrom").IsZeroOrNull()
+                    },
+                    new OdbcParameter("param_dtpEndTimeFrom", OdbcType.Date) {
+                        Value = AParameters.Get("param_dtpEndDateFrom").ToDate()
+                    },
+                    new OdbcParameter("param_dtpEndTimeTo_unset", OdbcType.Bit) {
+                        Value = AParameters.Get("param_dtpEndDateTo").IsZeroOrNull()
+                    },
+                    new OdbcParameter("param_dtpEndTimeTo", OdbcType.Date) {
+                        Value = AParameters.Get("param_dtpEndDateTo").ToDate()
+                    },
+                    new OdbcParameter("param_dtpDateValidOn_unset", OdbcType.Bit) {
+                        Value = AParameters.Get("param_dtpDateValidOn").IsZeroOrNull()
+                    },
+                    new OdbcParameter("param_dtpDateValidOn_a", OdbcType.Date) {
+                        Value = AParameters.Get("param_dtpDateValidOn").ToDate()
+                    },
+                    new OdbcParameter("param_dtpDateValidOn_b", OdbcType.Date) {
+                        Value = AParameters.Get("param_dtpDateValidOn").ToDate()
+                    },
 
-                    new OdbcParameter("param_txtFieldSending_unset", OdbcType.Bit) { Value = AParameters.Get("param_txtFieldSending").IsZeroOrNull() },
-                    new OdbcParameter("param_txtFieldSending", OdbcType.Int) { Value = AParameters.Get("param_txtFieldSending").ToInt32() },
-                    new OdbcParameter("param_txtFieldReceiving_unset", OdbcType.Bit) { Value = AParameters.Get("param_txtFieldReceiving").IsZeroOrNull() },
-                    new OdbcParameter("param_txtFieldReceiving", OdbcType.Int) { Value = AParameters.Get("param_txtFieldReceiving").ToInt32() },
+                    new OdbcParameter("param_txtFieldSending_unset", OdbcType.Bit) {
+                        Value = AParameters.Get("param_txtFieldSending").IsZeroOrNull()
+                    },
+                    new OdbcParameter("param_txtFieldSending", OdbcType.Int) {
+                        Value = AParameters.Get("param_txtFieldSending").ToInt32()
+                    },
+                    new OdbcParameter("param_txtFieldReceiving_unset", OdbcType.Bit) {
+                        Value = AParameters.Get("param_txtFieldReceiving").IsZeroOrNull()
+                    },
+                    new OdbcParameter("param_txtFieldReceiving", OdbcType.Int) {
+                        Value = AParameters.Get("param_txtFieldReceiving").ToInt32()
+                    },
 
-                    new OdbcParameter("param_chkCommitmentStatus_not", OdbcType.Bit) { Value = !AParameters.Get("param_chkCommitmentStatus").ToBool() },
+                    new OdbcParameter("param_chkCommitmentStatus_not", OdbcType.Bit) {
+                        Value = !AParameters.Get("param_chkCommitmentStatus").ToBool()
+                    },
                     TDbListParameterValue.OdbcListParameterValue("param_grdCommitmentStatusChoices",
-                                                                 OdbcType.NChar,
-                                                                 param_grdCommitmentStatusChoices),
-                    new OdbcParameter("param_chkCommitmentStatusOthers", OdbcType.Bit) { Value = AParameters.Get("param_chkCommitmentStatusOthers").ToBool() },
+                        OdbcType.NChar,
+                        param_grdCommitmentStatusChoices),
+                    new OdbcParameter("param_chkCommitmentStatusOthers", OdbcType.Bit) {
+                        Value = AParameters.Get("param_chkCommitmentStatusOthers").ToBool()
+                    },
 
-                    new OdbcParameter("param_chkPartnerActive_not", OdbcType.Bit) { Value = !AParameters.Get("param_chkPartnerActive").ToBool() },
+                    new OdbcParameter("param_chkPartnerActive_not", OdbcType.Bit) {
+                        Value = !AParameters.Get("param_chkPartnerActive").ToBool()
+                    },
+
 /*                    new OdbcParameter("param_chkMailable_not", OdbcType.Bit) { Value = !AParameters.Get("param_chkMailable").ToBool() },*/
-                    new OdbcParameter("param_chkRespectNoSolicitors_not", OdbcType.Bit) { Value = !AParameters.Get("param_chkRespectNoSolicitors").ToBool() },
+                    new OdbcParameter("param_chkRespectNoSolicitors_not", OdbcType.Bit) {
+                        Value = !AParameters.Get("param_chkRespectNoSolicitors").ToBool()
+                    },
                 };
 
                 TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
                 DataTable partnerkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "partners", Transaction, parameters);
 
                 if (NewTransaction)
+                {
                     DBAccess.GDBAccessObj.RollbackTransaction();
+                }
 
                 // if this is taking a long time, every now and again update the TLogging statusbar, and check for the cancel button
                 // TODO: we might need to add this functionality to TExtractsHandling.ExtractFromListOfPartnerKeys as well???
                 if (AParameters.Get("CancelReportCalculation").ToBool() == true)
+                {
                     return false;
+                }
 
                 TLogging.Log("preparing the extract", TLoggingType.ToStatusBar);
 
@@ -111,9 +157,13 @@ namespace Ict.Petra.Server.MPartner.queries
                     0);
 
                 if (ReturnValue)
+                {
                     DBAccess.GDBAccessObj.CommitTransaction();
+                }
                 else
+                {
                     DBAccess.GDBAccessObj.RollbackTransaction();
+                }
 
                 return ReturnValue;
             }
