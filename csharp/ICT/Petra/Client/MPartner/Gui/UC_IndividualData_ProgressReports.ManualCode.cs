@@ -76,7 +76,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             FMainDS = AMainDS;
 
             LoadDataOnDemand();
-
         }
 
         /// <summary>

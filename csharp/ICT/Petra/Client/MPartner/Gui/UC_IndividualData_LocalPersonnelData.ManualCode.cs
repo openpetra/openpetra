@@ -111,7 +111,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             ucoGrid.InitialiseUserControlAndShowData(FMainDS.PDataLabelValuePartner,
                 ((PPersonRow)FMainDS.PPerson.Rows[0]).PartnerKey,
                 TOfficeSpecificDataLabelUseEnum.Personnel);
-            
+
             // TODO: Activate this somehow
             //OnHookupDataChange(new THookupPartnerEditDataChangeEventArgs(TPartnerEditTabPageEnum.petpOfficeSpecific));
 

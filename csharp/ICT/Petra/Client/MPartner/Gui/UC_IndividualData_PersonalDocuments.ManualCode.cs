@@ -147,27 +147,27 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /*private void ShowLanguageLevelExplanation(System.Object sender, EventArgs e)
-        {
-            PtLanguageLevelRow LangLevelDR;
-
-            if (FLanguageLevelDT == null)
-            {
-                FLanguageLevelDT = (PtLanguageLevelTable)TDataCache.TMPersonnel.GetCacheablePersonnelTable(
-                    TCacheablePersonTablesEnum.LanguageLevelList);
-            }
-
-            LangLevelDR = (PtLanguageLevelRow)FLanguageLevelDT.Rows.Find(new object[] { Convert.ToInt32(cmbLanguageLevel.cmbCombobox.SelectedValue) });
-
-            if (LangLevelDR != null)
-            {
-                MessageBox.Show(LangLevelDR.LanguageLevelDescr.Trim() + ":" + Environment.NewLine + LangLevelDR.LanguageComment,
-                    Catalog.GetString("Language Level Explanation"));
-            }
-            else
-            {
-                MessageBox.Show(String.Format(Catalog.GetString("There is no explanation available for Language Level {0}."), cmbLanguageLevel.Text));
-            }
-        }*/
+         * {
+         *  PtLanguageLevelRow LangLevelDR;
+         *
+         *  if (FLanguageLevelDT == null)
+         *  {
+         *      FLanguageLevelDT = (PtLanguageLevelTable)TDataCache.TMPersonnel.GetCacheablePersonnelTable(
+         *          TCacheablePersonTablesEnum.LanguageLevelList);
+         *  }
+         *
+         *  LangLevelDR = (PtLanguageLevelRow)FLanguageLevelDT.Rows.Find(new object[] { Convert.ToInt32(cmbLanguageLevel.cmbCombobox.SelectedValue) });
+         *
+         *  if (LangLevelDR != null)
+         *  {
+         *      MessageBox.Show(LangLevelDR.LanguageLevelDescr.Trim() + ":" + Environment.NewLine + LangLevelDR.LanguageComment,
+         *          Catalog.GetString("Language Level Explanation"));
+         *  }
+         *  else
+         *  {
+         *      MessageBox.Show(String.Format(Catalog.GetString("There is no explanation available for Language Level {0}."), cmbLanguageLevel.Text));
+         *  }
+         * }*/
 
         /// <summary>
         /// Gets the data from all controls on this UserControl.

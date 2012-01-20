@@ -41,7 +41,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
     public partial class TFrmPartnerByEvent
     {
         private bool FCalledForConferences;
-        
+
         /// helper object for the whole screen
         public Boolean CalledForConferences
         {
@@ -49,23 +49,22 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             {
                 return FCalledForConferences;
             }
-    
+
             set
             {
                 FCalledForConferences = value;
             }
         }
-        
+
         private void InitializeManualCode()
         {
-            
             string CheckedMember = "CHECKED";
             string ValueMember = PUnitTable.GetPartnerKeyDBName();
             string DisplayMember = PUnitTable.GetUnitNameDBName();
             //TODO:Add the eventcode to EventCodeMember
             string EventCodeMember = PUnitTable.GetOutreachCodeDBName();
             PUnitTable Table;
-            
+
             //TODO:The difference between outreach and conference
             if (FCalledForConferences)
             {
@@ -75,13 +74,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             {
                 Table = TRemote.MPartner.Partner.WebConnectors.GetOutreachUnits("");
             }
-            
+
             DataView view = new DataView(Table);
 
             // TODO view.RowFilter = only active types?
             view.Sort = DisplayMember;
 
-            DataTable NewTable = view.ToTable(true, new string[] {DisplayMember, ValueMember, EventCodeMember });
+            DataTable NewTable = view.ToTable(true, new string[] { DisplayMember, ValueMember, EventCodeMember });
             NewTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
 
             clbEvent.SpecialKeys =
@@ -90,6 +89,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
                                                   SourceGrid.GridSpecialKeys.Enter) |
                                                  SourceGrid.GridSpecialKeys.Escape) |
                                                 SourceGrid.GridSpecialKeys.Control) | SourceGrid.GridSpecialKeys.Shift)));
+
             if (FCalledForConferences)
             {
                 clbEvent.Columns.Clear();
@@ -99,7 +99,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
                 clbEvent.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
             }
             else
-                
             {
                 clbEvent.Columns.Clear();
                 clbEvent.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
@@ -108,12 +107,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
                 clbEvent.AddTextColumn(Catalog.GetString("Event Code"), NewTable.Columns[EventCodeMember], 80);
                 clbEvent.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
             }
-            
+
             //TODO: only temporarily until settings file exists
-            clbEvent.SetCheckedStringList("");             
+            clbEvent.SetCheckedStringList("");
         }
-        
-         private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)
+
+        private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             if (clbEvent.GetCheckedStringList().Length == 0)
             {
@@ -124,6 +123,5 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
                 FPetraUtilsObject.AddVerificationResult(VerificationResult);
             }
         }
-       
     }
 }

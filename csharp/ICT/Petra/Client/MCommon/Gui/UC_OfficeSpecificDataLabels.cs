@@ -135,7 +135,7 @@ namespace Ict.Petra.Client.MCommon.Gui
                 // FMainDS = value;
             }
         }
-        
+
         //public Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS MainDS
 
         /// dataset for local data structure

@@ -736,7 +736,7 @@ namespace Ict.Tools.NAntTasks
             sw.Close();
         }
 
-        private void ReadMap(string filename, out Dictionary <string, TDetailsOfDll>map, out Dictionary <string, string> mapOutputNameToPath)
+        private void ReadMap(string filename, out Dictionary <string, TDetailsOfDll>map, out Dictionary <string, string>mapOutputNameToPath)
         {
             if (!File.Exists(filename))
             {
@@ -764,7 +764,7 @@ namespace Ict.Tools.NAntTasks
                     string[] LineDetails = line.Split(new char[] { ',' });
                     currentDll.OutputType = LineDetails[1];
 
-                    if (LineDetails.Length > 2 && LineDetails[2].Length > 0)
+                    if ((LineDetails.Length > 2) && (LineDetails[2].Length > 0))
                     {
                         currentDll.OutputName = LineDetails[2];
                         mapOutputNameToPath.Add(currentDll.OutputName, LineDetails[0]);

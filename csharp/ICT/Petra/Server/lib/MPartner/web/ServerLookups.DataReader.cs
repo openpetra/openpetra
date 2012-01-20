@@ -50,7 +50,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <returns></returns>
         public static PUnitTable GetConferenceUnits(string AConferenceName)
         {
-        	return GetConferenceOrOutreachUnits (true, AConferenceName);
+            return GetConferenceOrOutreachUnits(true, AConferenceName);
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <returns></returns>
         public static PUnitTable GetOutreachUnits(string AOutreachName)
         {
-        	return GetConferenceOrOutreachUnits (false, AOutreachName);
+            return GetConferenceOrOutreachUnits(false, AOutreachName);
         }
 
         /// <summary>
@@ -129,9 +129,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 #endif
                 }
             }
-            
+
             return UnitTable;
         }
-        
     }
 }

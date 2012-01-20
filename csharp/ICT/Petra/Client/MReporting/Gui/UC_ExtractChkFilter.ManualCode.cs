@@ -45,12 +45,12 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// initialisation
         /// </summary>
         /// <param name="AReportParameter">Initialisation values needed for some reports</param>
-        
+
         public void InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)
         {
             FPetraUtilsObject = APetraUtilsObject;
         }
-    
+
         /// <summary>
         /// Reads the selected values from the controls, and stores them into the parameter system of FCalculator
         /// </summary>
@@ -75,13 +75,12 @@ namespace Ict.Petra.Client.MReporting.Gui
             chkFamiliesOnly.Checked = AParameters.Get("param_familiesOnly").ToBool();
             chkExcludeNoSolicitations.Checked = AParameters.Get("param_excludeNoSolicitations").ToBool();
         }
-        
+
         /// <summary>
         /// This will add functions to the list of available functions
         /// </summary>
         public void SetAvailableFunctions(ArrayList AAvailableFunctions)
         {
         }
-        
     }
 }

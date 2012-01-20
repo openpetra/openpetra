@@ -166,7 +166,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void AdjustAfterResizing()
         {
         }
-        
+
         /// <summary>
         /// called for HereFlag event for work location check box
         /// </summary>
@@ -184,7 +184,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 chkSimilarOrgFlag.Enabled = true;
                 chkSimilarOrgFlag.Checked = false;
             }
-             
         }
 
         private int CurrentRowIndex()

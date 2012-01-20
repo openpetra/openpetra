@@ -160,7 +160,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             // of a non-existing 'AfterNewRowManual' Method....
             DoRecalculateScreenParts();
         }
-        
+
         private void ShowAbilityLevelExplanation(System.Object sender, EventArgs e)
         {
             PtLanguageLevelRow LangLevelDR;
@@ -183,9 +183,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 MessageBox.Show(String.Format(Catalog.GetString("There is no explanation available for Ability Level {0}."), cmbAbilityLevel.Text));
             }
         }
-
-        
-        
 
         /// <summary>
         /// Gets the data from all controls on this UserControl.

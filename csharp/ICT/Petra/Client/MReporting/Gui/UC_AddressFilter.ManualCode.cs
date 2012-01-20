@@ -48,7 +48,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             FPetraUtilsObject = APetraUtilsObject;
         }
-    
+
         /// <summary>
         /// Reads the selected values from the controls, and stores them into the parameter system of FCalculator
         /// </summary>
@@ -67,7 +67,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             //TODO
         }
-        
+
         /// <summary>
         /// This will add functions to the list of available functions
         /// </summary>
@@ -75,6 +75,5 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             //TODO
         }
-        
     }
 }

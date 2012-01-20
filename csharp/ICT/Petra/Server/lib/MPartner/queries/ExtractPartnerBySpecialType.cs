@@ -73,23 +73,30 @@ namespace Ict.Petra.Server.MPartner.queries
                 String ValueList;
                 String ListValue;
                 String ParameterList = "";
-                             
+
                 // set array to correct size depending on number of specialtypes selected
                 ValueList = AParameters.Get("param_explicit_specialtypes").ToString();
-                SizeOfArray = StringHelper.CountOccurencesOfChar (ValueList, ',') + 1;                
-                
+                SizeOfArray = StringHelper.CountOccurencesOfChar(ValueList, ',') + 1;
+
                 OdbcParameter[] parameters = new OdbcParameter[SizeOfArray + 5];
 //                TLogging.Log("parameters[] created...");
                 // this *should* always have at least one selection because the client requires it
                 ListValue = StringHelper.GetNextCSV(ref ValueList, ",");
-                if(ListValue.Length == 0) throw new NoNullAllowedException("At least one option must be checked."); // safety
+
+                if (ListValue.Length == 0)
+                {
+                    throw new NoNullAllowedException("At least one option must be checked.");                       // safety
+                }
+
                 Index = 0;
+
                 // this will determine how many ?'s to put in the SQL query and then insert the values pulled out of the CSV list
                 while (ListValue != "")
                 {
                     parameters[Index] = new OdbcParameter("specialtype" + Index.ToString(), OdbcType.VarChar);
                     parameters[Index].Value = ListValue;
                     Index++;
+
                     if (ParameterList.Length == 0)
                     {
                         ParameterList = "?";
@@ -98,26 +105,32 @@ namespace Ict.Petra.Server.MPartner.queries
                     {
                         ParameterList = ParameterList + ",?";
                     }
-                    
+
                     ListValue = StringHelper.GetNextCSV(ref ValueList, ",");
                 }
-                
-                SqlStmt = SqlStmt.Replace("##ParameterList##", ParameterList); 
+
+                SqlStmt = SqlStmt.Replace("##ParameterList##", ParameterList);
                 // reading in parameters and getting them ready to be inserted into the query
                 parameters[Index + 1] = new OdbcParameter("Date", OdbcType.Date);
                 parameters[Index + 1].Value = AParameters.Get("param_dateSet").ToDate();
-                parameters[Index ] = new OdbcParameter("param_dateFieldsIncluded", OdbcType.Bit); 
-                if(parameters[Index + 1].Value == null)  // if a date has not been supplied
+                parameters[Index] = new OdbcParameter("param_dateFieldsIncluded", OdbcType.Bit);
+
+                if (parameters[Index + 1].Value == null)  // if a date has not been supplied
+                {
                     parameters[Index].Value = false;
+                }
                 else // if there is a date supplied, we want to use it
+                {
                     parameters[Index].Value = true;
-                parameters[Index + 2] =  new OdbcParameter("param_active", OdbcType.Bit);
+                }
+
+                parameters[Index + 2] = new OdbcParameter("param_active", OdbcType.Bit);
                 parameters[Index + 2].Value = AParameters.Get("param_active").ToBool();
                 parameters[Index + 3] = new OdbcParameter("param_familiesOnly", OdbcType.Bit);
                 parameters[Index + 3].Value = AParameters.Get("param_familiesOnly").ToBool();
                 parameters[Index + 4] = new OdbcParameter("param_excludeNoSolicitations", OdbcType.Bit);
                 parameters[Index + 4].Value = AParameters.Get("param_excludeNoSolicitations").ToBool();
-                
+
                 TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
                 DataTable partnerkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "partners", Transaction, parameters);
 

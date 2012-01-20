@@ -133,36 +133,37 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                 case TIndividualDataItemEnum.idiSpecialNeeds:
                     PmSpecialNeedAccess.LoadByPrimaryKey(IndividualDataDS, APartnerKey, AReadTransaction);
                     break;
-                    
+
                 case TIndividualDataItemEnum.idiPreviousExperiences:
                     PmPastExperienceAccess.LoadViaPPerson(IndividualDataDS, APartnerKey, AReadTransaction);
                     break;
-                    
+
                 case TIndividualDataItemEnum.idiPersonalDocuments:
                     PmDocumentAccess.LoadViaPPerson(IndividualDataDS, APartnerKey, AReadTransaction);
                     break;
-                    
+
                 case TIndividualDataItemEnum.idiJobAssignments:
                     PmJobAssignmentAccess.LoadViaPPartner(IndividualDataDS, APartnerKey, AReadTransaction);
                     break;
-                    
+
                 case TIndividualDataItemEnum.idiLocalPersonnelData:
                     // TODO: Fix this so LocalPersonnelData can actually load some data
                     bool labelsAvailable;
                     TOfficeSpecificDataLabelsUIConnector OfficeSpecificDataLabelsUIConnector;
                     OfficeSpecificDataLabelsUIConnector = new TOfficeSpecificDataLabelsUIConnector(APartnerKey,
                     TOfficeSpecificDataLabelUseEnum.Personnel);
-                    IndividualDataDS.Merge(OfficeSpecificDataLabelsUIConnector.GetDataLocalPartnerDataValues(APartnerKey, out labelsAvailable, false, AReadTransaction));
+                    IndividualDataDS.Merge(OfficeSpecificDataLabelsUIConnector.GetDataLocalPartnerDataValues(APartnerKey, out labelsAvailable, false,
+                        AReadTransaction));
                     break;
 
                 case TIndividualDataItemEnum.idiProgressReports:
                     PmPersonEvaluationAccess.LoadViaPPerson(IndividualDataDS, APartnerKey, AReadTransaction);
                     break;
-                    
+
                 case TIndividualDataItemEnum.idiCommitmentPeriods:
                     PmStaffDataAccess.LoadViaPPerson(IndividualDataDS, APartnerKey, AReadTransaction);
                     break;
-                    
+
                 case TIndividualDataItemEnum.idiPersonSkills:
                     PmPersonSkillAccess.LoadViaPPerson(IndividualDataDS, APartnerKey, AReadTransaction);
                     break;
@@ -170,26 +171,25 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                 case TIndividualDataItemEnum.idiPersonalAbilities:
                     PmPersonAbilityAccess.LoadViaPPerson(IndividualDataDS, APartnerKey, AReadTransaction);
                     break;
-                    
+
                 case TIndividualDataItemEnum.idiPassportDetails:
                     PmPassportDetailsAccess.LoadViaPPerson(IndividualDataDS, APartnerKey, AReadTransaction);
                     break;
-                    
+
                 case TIndividualDataItemEnum.idiPersonalData:
                     PPersonAccess.LoadByPrimaryKey(IndividualDataDS, APartnerKey, AReadTransaction);
                     break;
-                    
+
                 case TIndividualDataItemEnum.idiEmergencyData:
                     PmPersonalDataAccess.LoadByPrimaryKey(IndividualDataDS, APartnerKey, AReadTransaction);
                     break;
-                    
-                // TODO: work on all cases/load data for all Individual Data items
+
+                    // TODO: work on all cases/load data for all Individual Data items
             }
 
             return IndividualDataDS;
         }
-        
-        
+
         /// <summary>
         /// Retrieves data that will be shown on the 'Overview' UserControl and adds it to <paramref name="AIndividualDataDS" />.
         /// </summary>
@@ -672,7 +672,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
 #endif
                     }
                 }
-                
+
                 //Personal Ability
                 if (AInspectDS.Tables.Contains(PmPersonAbilityTable.GetTableName())
                     && (AInspectDS.PmPersonAbility.Rows.Count > 0))
@@ -700,7 +700,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
 #endif
                     }
                 }
-                
+
                 //Passport
                 if (AInspectDS.Tables.Contains(PmPassportDetailsTable.GetTableName())
                     && (AInspectDS.PmPassportDetails.Rows.Count > 0))
@@ -728,7 +728,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
 #endif
                     }
                 }
-                
+
                 // Personal Data
                 if (AInspectDS.Tables.Contains(PPersonTable.GetTableName())
                     && (AInspectDS.PPerson.Rows.Count > 0))
@@ -756,7 +756,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
 #endif
                     }
                 }
-                
+
                 // Emergency Data
                 if (AInspectDS.Tables.Contains(PmPersonalDataTable.GetTableName())
                     && (AInspectDS.PmPersonalData.Rows.Count > 0))
@@ -812,7 +812,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
 #endif
                     }
                 }
-                
+
                 // Progress Reports (Person Evaluation)
                 if (AInspectDS.Tables.Contains(PmPersonEvaluationTable.GetTableName())
                     && (AInspectDS.PmPersonEvaluation.Rows.Count > 0))
@@ -868,7 +868,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
 #endif
                     }
                 }
-                
+
                 // Person Skills
                 if (AInspectDS.Tables.Contains(PmPersonSkillTable.GetTableName())
                     && (AInspectDS.PmPersonSkill.Rows.Count > 0))
@@ -895,8 +895,8 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                         }
 #endif
                     }
-                }    
-                
+                }
+
                 // Past Experience
                 if (AInspectDS.Tables.Contains(PmPastExperienceTable.GetTableName())
                     && (AInspectDS.PmPastExperience.Rows.Count > 0))
@@ -924,7 +924,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
 #endif
                     }
                 }
-                
+
                 // Personal Documents
                 if (AInspectDS.Tables.Contains(PmDocumentTable.GetTableName())
                     && (AInspectDS.PmDocument.Rows.Count > 0))
@@ -952,7 +952,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
 #endif
                     }
                 }
-                
+
                 // Job Assignments
                 if (AInspectDS.Tables.Contains(PmJobAssignmentTable.GetTableName())
                     && (AInspectDS.PmJobAssignment.Rows.Count > 0))
@@ -993,7 +993,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
 #endif
                 SubmissionResult = TSubmitChangesResult.scrNothingToBeSaved;
             }
-            
+
             // TODO Add if code blocks for all remaining Individual Data Items
 
             return SubmissionResult;

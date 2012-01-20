@@ -74,7 +74,7 @@ namespace Ict.Petra.Shared.MPersonnel.Person
 
         /// <summary>Progress Reports (Person Evaluations)</summary>
         idiProgressReports,
-        
+
         /// <summary>Person Skills</summary>
         idiPersonSkills,
     }

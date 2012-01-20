@@ -51,16 +51,16 @@ namespace Ict.Petra.Client.MPartner.Gui
         private Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_ProgressReports FUcoProgressReports;
         private Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_CommitmentPeriods FUcoCommitmentPeriods;
         private Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_PersonSkills FUcoPersonSkills;
-		private Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_Abilities FUcoPersonalAbilities;
-		private Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_Passport FUcoPassportDetails;
-		private Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_PersonalData FUcoPersonalData;
-		private Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_EmergencyData FUcoEmergencyData;
+        private Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_Abilities FUcoPersonalAbilities;
+        private Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_Passport FUcoPassportDetails;
+        private Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_PersonalData FUcoPersonalData;
+        private Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_EmergencyData FUcoEmergencyData;
         private Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_PreviousExperience FUcoPreviousExperience;
         private Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_PersonalDocuments FUcoPersonalDocuments;
         private Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_JobAssignments FUcoJobAssignments;
         private Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_LocalPersonnelData FUcoLocalPersonnelData;
-        
-        
+
+
         /// <summary>
         /// Enumeration of dynamic loadable UserControls which are used
         /// on this UserControl.
@@ -189,8 +189,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FPartnerEditTDS.Tables[PmPersonLanguageTable.GetTableName()].Rows.Clear();
                     FPartnerEditTDS.Tables[PmPersonLanguageTable.GetTableName()].Merge(FMainDS.PmPersonLanguage);
                 }
-                
-				// Abilities
+
+                // Abilities
                 if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucPersonalAbilities))
                 {
                     TUC_IndividualData_Abilities UCAbilities =
@@ -205,7 +205,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FPartnerEditTDS.Tables[PmPersonAbilityTable.GetTableName()].Rows.Clear();
                     FPartnerEditTDS.Tables[PmPersonAbilityTable.GetTableName()].Merge(FMainDS.PmPersonAbility);
                 }
-                
+
                 //Passport Details
                 if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucPassportDetails))
                 {
@@ -221,7 +221,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FPartnerEditTDS.Tables[PmPassportDetailsTable.GetTableName()].Rows.Clear();
                     FPartnerEditTDS.Tables[PmPassportDetailsTable.GetTableName()].Merge(FMainDS.PmPassportDetails);
                 }
-                
+
                 //Personal Data
                 if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucPersonalData))
                 {
@@ -236,7 +236,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     FPartnerEditTDS.Tables[PPersonTable.GetTableName()].Merge(FMainDS.PPerson);
                 }
-                    
+
                 //Emergency Data
                 if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucEmergencyData))
                 {
@@ -251,7 +251,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     FPartnerEditTDS.Tables[PmPersonalDataTable.GetTableName()].Merge(FMainDS.PmPersonalData);
                 }
-                
+
                 // Progress Reports (Person Evaluations)
                 if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucProgressReports))
                 {
@@ -267,7 +267,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FPartnerEditTDS.Tables[PmPersonEvaluationTable.GetTableName()].Rows.Clear();
                     FPartnerEditTDS.Tables[PmPersonEvaluationTable.GetTableName()].Merge(FMainDS.PmPersonEvaluation);
                 }
-                
+
                 // Commitment Periods
                 if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucCommitmentPeriods))
                 {
@@ -283,7 +283,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FPartnerEditTDS.Tables[PmStaffDataTable.GetTableName()].Rows.Clear();
                     FPartnerEditTDS.Tables[PmStaffDataTable.GetTableName()].Merge(FMainDS.PmStaffData);
                 }
-                
+
                 // Person Skills
                 if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucPersonSkills))
                 {
@@ -300,9 +300,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FPartnerEditTDS.Tables[PmPersonSkillTable.GetTableName()].Merge(FMainDS.PmPersonSkill);
                 }
 
-				// Previous Experience
-				// dluc corresponds to enum above, UCPreviousExperience to UC_IndividualData_PreviousExperience.ManualCode,
-				// 		PmPastExperienceTable to the DB table name
+                // Previous Experience
+                // dluc corresponds to enum above, UCPreviousExperience to UC_IndividualData_PreviousExperience.ManualCode,
+                //              PmPastExperienceTable to the DB table name
                 if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucPreviousExperience))
                 {
                     TUC_IndividualData_PreviousExperience UCPreviousExperience =
@@ -317,7 +317,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FPartnerEditTDS.Tables[PmPastExperienceTable.GetTableName()].Rows.Clear();
                     FPartnerEditTDS.Tables[PmPastExperienceTable.GetTableName()].Merge(FMainDS.PmPastExperience);
                 }
-                
+
                 // Personal Documents
                 if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucPersonalDocuments))
                 {
@@ -333,7 +333,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FPartnerEditTDS.Tables[PmDocumentTable.GetTableName()].Rows.Clear();
                     FPartnerEditTDS.Tables[PmDocumentTable.GetTableName()].Merge(FMainDS.PmDocument);
                 }
-                
+
                 // Job Assignments
                 if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucJobAssignments))
                 {
@@ -349,7 +349,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FPartnerEditTDS.Tables[PmJobAssignmentTable.GetTableName()].Rows.Clear();
                     FPartnerEditTDS.Tables[PmJobAssignmentTable.GetTableName()].Merge(FMainDS.PmJobAssignment);
                 }
-                
+
                 // Local Personnel Data
                 if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucLocalPersonnelData))
                 {
@@ -365,7 +365,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FPartnerEditTDS.Tables[PDataLabelValuePartnerTable.GetTableName()].Rows.Clear();
                     FPartnerEditTDS.Tables[PDataLabelValuePartnerTable.GetTableName()].Merge(FMainDS.PDataLabelValuePartner);
                 }
-                
+
                 // TODO add code for all remaining Individual Data Items
             }
         }
@@ -534,7 +534,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     ReturnValue = ucoProgressReports;
                     break;
-                    
+
                 case TDynamicLoadableUserControls.dlucCommitmentPeriods:
                     // Create a Panel that hosts the UserControl. This is needed to allow scrolling of content in case the screen is too small to shown the whole UserControl
                     Panel pnlHostForUCCommitmentPeriods = new Panel();
@@ -566,7 +566,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     ReturnValue = ucoCommitmentPeriods;
                     break;
-                    
+
 
                 case TDynamicLoadableUserControls.dlucPersonSkills:
                     // Create a Panel that hosts the UserControl. This is needed to allow scrolling of content in case the screen is too small to shown the whole UserControl
@@ -601,7 +601,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     break;
 
                 //Personal Abilities
-				case TDynamicLoadableUserControls.dlucPersonalAbilities:
+                case TDynamicLoadableUserControls.dlucPersonalAbilities:
                     // Create a Panel that hosts the UserControl. This is needed to allow scrolling of content in case the screen is too small to shown the whole UserControl
                     Panel pnlHostForUCPersonalAblities = new Panel();
                     pnlHostForUCPersonalAblities.AutoSize = true;
@@ -632,9 +632,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     ReturnValue = ucoPersonalAbilities;
                     break;
-                    
-                     //Passport Details
-				case TDynamicLoadableUserControls.dlucPassportDetails:
+
+                //Passport Details
+                case TDynamicLoadableUserControls.dlucPassportDetails:
                     // Create a Panel that hosts the UserControl. This is needed to allow scrolling of content in case the screen is too small to shown the whole UserControl
                     Panel pnlHostForUCPassport = new Panel();
                     pnlHostForUCPassport.AutoSize = true;
@@ -665,7 +665,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     ReturnValue = ucoPassportDetails;
                     break;
-                    
+
                 case TDynamicLoadableUserControls.dlucPersonalData:
                     // Create a Panel that hosts the UserControl. This is needed to allow scrolling of content in case the screen is too small to shown the whole UserControl
                     Panel pnlHostForUCPersonalData = new Panel();
@@ -761,7 +761,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     ReturnValue = ucoPreviousExperience;
                     break;
-                    
+
                 case TDynamicLoadableUserControls.dlucPersonalDocuments:
                     // Create a Panel that hosts the UserControl. This is needed to allow scrolling of content in case the screen is too small to shown the whole UserControl
                     Panel pnlHostForUCPersonalDocuments = new Panel();
@@ -793,7 +793,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     ReturnValue = ucoPersonalDocuments;
                     break;
-                    
+
                 case TDynamicLoadableUserControls.dlucJobAssignments:
                     // Create a Panel that hosts the UserControl. This is needed to allow scrolling of content in case the screen is too small to shown the whole UserControl
                     Panel pnlHostForUCJobAssignments = new Panel();
@@ -825,7 +825,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     ReturnValue = ucoJobAssignments;
                     break;
-                    
+
                 case TDynamicLoadableUserControls.dlucLocalPersonnelData:
                     // Create a Panel that hosts the UserControl. This is needed to allow scrolling of content in case the screen is too small to shown the whole UserControl
                     Panel pnlHostForUCLocalPersonnelData = new Panel();
@@ -857,7 +857,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     ReturnValue = ucoLocalPersonnelData;
                     break;
-                    
+
                     // TODO Add case code blocks for all remaining Individual Data Items
             }
 
@@ -925,7 +925,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoSpecialNeeds);
 
                     SendAllOtherItemsToBackExcluding("FUcoSpecialNeeds");
-                    
+
 //	TODO                OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
 
                     this.Cursor = Cursors.Default;
@@ -970,7 +970,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoPersonalLanguages);
 
                     SendAllOtherItemsToBackExcluding("FUcoPersonalLanguages");
-                    
+
 //	TODO                OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
 
                     this.Cursor = Cursors.Default;
@@ -1125,7 +1125,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
 
                 FUcoPersonSkills.Parent.BringToFront();
-            }     
+            }
             else if (ASender == llbPersonalAbilities)
             {
                 if (!FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucPersonalAbilities))
@@ -1297,8 +1297,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
 
                 FUcoEmergencyData.Parent.BringToFront();
-                
-            }    
+            }
             else if (ASender == llbPreviousExperience)
             {
                 if (!FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucPreviousExperience))
@@ -1344,7 +1343,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 FUcoPreviousExperience.Parent.BringToFront();
             }
-            
             else if (ASender == llbPersonalDocuments)
             {
                 if (!FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucPersonalDocuments))
@@ -1390,7 +1388,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 FUcoPersonalDocuments.Parent.BringToFront();
             }
-            
             else if (ASender == llbJobAssignments)
             {
                 if (!FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucJobAssignments))
@@ -1436,7 +1433,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 FUcoJobAssignments.Parent.BringToFront();
             }
-                
             else if (ASender == llbLocalPersonnelData)
             {
                 if (!FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucLocalPersonnelData))
@@ -1483,7 +1479,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FUcoLocalPersonnelData.Parent.BringToFront();
             }
 
-            
             // TODO Add else branch for all remaining Individual Data Items
 
 
@@ -1500,63 +1495,74 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="exclude">Type: String;  This is the name of the individualData item that will not be sent to back.</param>
         private void SendAllOtherItemsToBackExcluding(String exclude)
         {
-            if (FUcoPersonalLanguages != null && exclude != "FUcoPersonalLanguages")
+            if ((FUcoPersonalLanguages != null) && (exclude != "FUcoPersonalLanguages"))
             {
                 FUcoPersonalLanguages.SendToBack();
             }
-            if (FUcoSpecialNeeds != null && exclude != "FUcoSpecialNeeds")
+
+            if ((FUcoSpecialNeeds != null) && (exclude != "FUcoSpecialNeeds"))
             {
                 FUcoSpecialNeeds.SendToBack();
             }
-            if (FUcoPersonalAbilities != null && exclude != "FUcoPersonalAbilities")
+
+            if ((FUcoPersonalAbilities != null) && (exclude != "FUcoPersonalAbilities"))
             {
                 FUcoPersonalAbilities.SendToBack();
             }
-            if (FUcoPassportDetails != null && exclude != "FUcoPassportDetails")
+
+            if ((FUcoPassportDetails != null) && (exclude != "FUcoPassportDetails"))
             {
                 FUcoPassportDetails.SendToBack();
             }
-            if (FUcoPersonalData != null && exclude != "FUcoPersonalData")
+
+            if ((FUcoPersonalData != null) && (exclude != "FUcoPersonalData"))
             {
                 FUcoPersonalData.SendToBack();
             }
-            if (FUcoEmergencyData != null && exclude != "FUcoEmergencyData")
+
+            if ((FUcoEmergencyData != null) && (exclude != "FUcoEmergencyData"))
             {
                 FUcoEmergencyData.SendToBack();
             }
-            if (FUcoPersonSkills != null && exclude != "FUcoPersonSkills")
+
+            if ((FUcoPersonSkills != null) && (exclude != "FUcoPersonSkills"))
             {
                 FUcoPersonSkills.SendToBack();
             }
-            if (FUcoProgressReports != null && exclude != "FUcoProgressReports")
+
+            if ((FUcoProgressReports != null) && (exclude != "FUcoProgressReports"))
             {
                 FUcoProgressReports.SendToBack();
             }
-            if (FUcoCommitmentPeriods != null && exclude != "FUcoCommitmentPeriods")
+
+            if ((FUcoCommitmentPeriods != null) && (exclude != "FUcoCommitmentPeriods"))
             {
                 FUcoCommitmentPeriods.SendToBack();
             }
-            if (FUcoPreviousExperience != null && exclude != "FUcoPreviousExperience")
+
+            if ((FUcoPreviousExperience != null) && (exclude != "FUcoPreviousExperience"))
             {
                 FUcoPreviousExperience.SendToBack();
             }
-            if (FUcoPersonalDocuments != null && exclude != "FUcoPersonalDocuments")
+
+            if ((FUcoPersonalDocuments != null) && (exclude != "FUcoPersonalDocuments"))
             {
                 FUcoPersonalDocuments.SendToBack();
             }
-            if (FUcoJobAssignments != null && exclude != "FUcoJobAssignments")
+
+            if ((FUcoJobAssignments != null) && (exclude != "FUcoJobAssignments"))
             {
                 FUcoJobAssignments.SendToBack();
             }
-            if (FUcoLocalPersonnelData != null && exclude != "FUcoLocalPersonnelData")
+
+            if ((FUcoLocalPersonnelData != null) && (exclude != "FUcoLocalPersonnelData"))
             {
                 FUcoLocalPersonnelData.SendToBack();
             }
-            
+
             //TODO Add the other individualData items here.
         }
 
-        
         private void OpenBasicDataShepherd(object Sender, EventArgs e)
         {
             throw new NotImplementedException();
@@ -1590,7 +1596,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             string OrigLabelText;
 
-            if ((ASender is TUC_IndividualData)|| (ASender is TUC_IndividualData_Passport))
+            if ((ASender is TUC_IndividualData) || (ASender is TUC_IndividualData_Passport))
             {
                 if (FLinkLabelsOrigTexts.TryGetValue(llbPassportDetails.Name, out OrigLabelText))
                 {
@@ -1654,7 +1660,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
-            if ((ASender is TUC_IndividualData)|| (ASender is TUC_IndividualData_Abilities))
+            if ((ASender is TUC_IndividualData) || (ASender is TUC_IndividualData_Abilities))
             {
                 if (FLinkLabelsOrigTexts.TryGetValue(llbPersonalAbilities.Name, out OrigLabelText))
                 {
@@ -1686,7 +1692,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
-            if ((ASender is TUC_IndividualData)|| (ASender is TUC_IndividualData_CommitmentPeriods))
+            if ((ASender is TUC_IndividualData) || (ASender is TUC_IndividualData_CommitmentPeriods))
             {
                 if (FLinkLabelsOrigTexts.TryGetValue(llbCommitmentPeriods.Name, out OrigLabelText))
                 {
@@ -1718,7 +1724,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
-            if ((ASender is TUC_IndividualData) ||(ASender is TUC_IndividualData_ProgressReports))
+            if ((ASender is TUC_IndividualData) || (ASender is TUC_IndividualData_ProgressReports))
             {
                 if (FLinkLabelsOrigTexts.TryGetValue(llbProgressReports.Name, out OrigLabelText))
                 {
@@ -1733,8 +1739,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
                 }
             }
-            
-            if ((ASender is TUC_IndividualData)|| (ASender is TUC_IndividualData_PersonSkills))
+
+            if ((ASender is TUC_IndividualData) || (ASender is TUC_IndividualData_PersonSkills))
             {
                 if (FLinkLabelsOrigTexts.TryGetValue(llbPersonSkills.Name, out OrigLabelText))
                 {

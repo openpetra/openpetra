@@ -79,7 +79,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             FMainDS = AMainDS;
 
             LoadDataOnDemand();
-            
+
             FPassportTypeDT = (PtPassportTypeTable)TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.PassportTypeList);
         }
 
@@ -100,7 +100,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             ARow.PartnerKey = FMainDS.PPerson[0].PartnerKey;
             newName = FPassportTypeDT[0].Code;
-            
+
             if (FMainDS.PmPassportDetails.Rows.Find(new object[] { ARow.PartnerKey, newName }) != null)
             {
                 while (FMainDS.PmPassportDetails.Rows.Find(new object[] { ARow.PartnerKey, newName }) != null)

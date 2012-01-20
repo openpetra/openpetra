@@ -69,10 +69,10 @@ namespace Ict.Petra.Client.CommonControls
         {
             /// user defined list; calls InitializeUserControl(DataTable, ...) and AppearanceSetup(Int32[], Int32)
             UserDefinedList,
-            
+
             /// <summary>todoComment</summary>
             AbilityAreaNameList,
-            
+
             /// <summary>todoComment</summary>
             AbilityLevelList,
 
@@ -99,7 +99,7 @@ namespace Ict.Petra.Client.CommonControls
 
             /// <summary>todoComment</summary>
             CommitmentStatusList,
-            
+
             /// <summary>todoComment</summary>
             CountryList,
 
@@ -138,7 +138,7 @@ namespace Ict.Petra.Client.CommonControls
 
             /// <summary>todoComment</summary>
             JobAssignmentTypeList,
-            
+
             /// <summary>todoComment</summary>
             LanguageCodeList,
 
@@ -162,7 +162,7 @@ namespace Ict.Petra.Client.CommonControls
 
             /// <summary>todoComment</summary>
             PassportDetailsTypeList,
-            
+
             /// <summary>todoComment</summary>
             PassportNationalityCodeList,
 
@@ -201,13 +201,13 @@ namespace Ict.Petra.Client.CommonControls
 
             /// <summary>todoComment</summary>
             RelationCategoryList,
-            
+
             /// <summary>todoComment</summary>
             SkillCategoryList,
-            
+
             /// <summary>todoComment</summary>
             SkillLevelList,
-            
+
             /// <summary>todoComment</summary>
             SubscriptionStatus,
 
@@ -350,8 +350,8 @@ namespace Ict.Petra.Client.CommonControls
                     PtAbilityAreaTable.GetAbilityAreaNameDBName(),
                     PtAbilityAreaTable.GetAbilityAreaDescrDBName(),
                     null);
-                    break;   
-                    
+                    break;
+
                 case TListTableEnum.AbilityLevelList:
 
                     InitialiseUserControl(
@@ -360,7 +360,7 @@ namespace Ict.Petra.Client.CommonControls
                     PtAbilityLevelTable.GetAbilityLevelDescrDBName(),
                     null);
                     break;
-                    
+
                 case TListTableEnum.AccommodationCodeList:
 
                     InitialiseUserControl(
@@ -491,7 +491,7 @@ namespace Ict.Petra.Client.CommonControls
                     "pm_description_c",
                     null);
                     break;
-                    
+
                 case TListTableEnum.DocumentTypeList:
 
                     InitialiseUserControl(
@@ -500,7 +500,7 @@ namespace Ict.Petra.Client.CommonControls
                     "pm_description_c",
                     null);
                     break;
-                    
+
                 case TListTableEnum.FoundationOwnerList:
 
                     InitialiseUserControl(
@@ -565,7 +565,7 @@ namespace Ict.Petra.Client.CommonControls
                     "pt_assignment_code_descr_c",
                     null);
                     break;
-                    
+
                 case TListTableEnum.LanguageCodeList:
 
                     InitialiseUserControl(
@@ -583,9 +583,9 @@ namespace Ict.Petra.Client.CommonControls
                     PtLanguageLevelTable.GetLanguageLevelDescrDBName(),
                     null);
                     break;
-                    
+
                 case TListTableEnum.LeavingCodeList:
-                    
+
                     InitialiseUserControl(
                     TDataCache.TMPersonnel.GetCacheableUnitsTable(TCacheableUnitTablesEnum.LeavingCodeList),
                     "pt_leaving_code_ind_c",
@@ -629,7 +629,7 @@ namespace Ict.Petra.Client.CommonControls
                     null,
                     null);
                     break;
-                    
+
                 case TListTableEnum.PositionList:
 
                     InitialiseUserControl(
@@ -643,12 +643,13 @@ namespace Ict.Petra.Client.CommonControls
 
                     InitialiseUserControl(
                     TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.PassportTypeList),
+
                     /*PmPassportDetailsTable.GetPassportDetailsTypeDBName(),*/
                     PtPassportTypeTable.GetCodeDBName(),
                     PtPassportTypeTable.GetDescriptionDBName(),
                     null);
                     break;
-                    
+
                 case TListTableEnum.PassportNationalityCodeList:
 
                     InitialiseUserControl(
@@ -657,7 +658,7 @@ namespace Ict.Petra.Client.CommonControls
                     PCountryTable.GetCountryNameDBName(),
                     null);
                     break;
-                    
+
                 case TListTableEnum.PostCodeRegionList:
 
                     InitialiseUserControl(
@@ -765,16 +766,16 @@ namespace Ict.Petra.Client.CommonControls
                     PtSkillCategoryTable.GetDescriptionDBName(),
                     null);
                     break;
-                    
+
                 case TListTableEnum.SkillLevelList:
 
                     InitialiseUserControl(
                     TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.SkillLevelList),
-                    PtSkillLevelTable.GetLevelDBName(), 
+                    PtSkillLevelTable.GetLevelDBName(),
                     PtSkillLevelTable.GetDescriptionDBName(),
                     null);
                     break;
-                    
+
                 case TListTableEnum.UnitTypeList:
 
                     InitialiseUserControl(
@@ -1018,7 +1019,7 @@ namespace Ict.Petra.Client.CommonControls
                 case TListTableEnum.DenominationList:
                     this.ColumnWidthCol2 = 330;
                     break;
-                    
+
                 case TListTableEnum.DocumentTypeList:
                     this.ColumnWidthCol1 = 128;
                     this.ColumnWidthCol2 = 200;
@@ -1057,7 +1058,7 @@ namespace Ict.Petra.Client.CommonControls
                     this.ColumnWidthCol1 = 100;
                     this.ColumnWidthCol2 = 230;
                     break;
-                    
+
                 case TListTableEnum.JobAssignmentTypeList:
                     this.ColumnWidthCol1 = 40;
                     this.ColumnWidthCol2 = 200;
@@ -1072,7 +1073,7 @@ namespace Ict.Petra.Client.CommonControls
                     this.ColumnWidthCol1 = 57;
                     this.ColumnWidthCol2 = 130;
                     break;
-                    
+
                 case TListTableEnum.LeavingCodeList:
                     this.ColumnWidthCol1 = 40;
                     this.ColumnWidthCol2 = 200;
@@ -1095,7 +1096,7 @@ namespace Ict.Petra.Client.CommonControls
                 case TListTableEnum.PartnerStatusList:
                     this.ColumnWidthCol1 = 95;
                     break;
-                    
+
                 case TListTableEnum.PositionList:
                     this.ColumnWidthCol1 = 200;
                     this.ColumnWidthCol2 = 350;
@@ -1106,7 +1107,7 @@ namespace Ict.Petra.Client.CommonControls
                     this.ColumnWidthCol2 = 150;
                     cmbCombobox.MaxDropDownItems = 4;
                     break;
-                    
+
                 case TListTableEnum.PassportNationalityCodeList:
                     this.ColumnWidthCol1 = 50;
                     this.ColumnWidthCol2 = 150;
@@ -1144,12 +1145,12 @@ namespace Ict.Petra.Client.CommonControls
                     this.ColumnWidthCol1 = 57;
                     this.ColumnWidthCol2 = 130;
                     break;
-                    
+
                 case TListTableEnum.SkillLevelList:
                     this.ColumnWidthCol1 = 57;
                     this.ColumnWidthCol2 = 130;
                     break;
-                    
+
                 case TListTableEnum.RelationList:
                     this.ColumnWidthCol2 = 150;
                     cmbCombobox.MaxDropDownItems = 15;

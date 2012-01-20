@@ -46,7 +46,6 @@ namespace Ict.Petra.Server.MPartner.queries
         /// <returns></returns>
         public static bool CalculateExtract(TParameterList AParameters, TResultList AResults)
         {
-            
             // get the partner keys from the database
             try
             {
@@ -56,34 +55,34 @@ namespace Ict.Petra.Server.MPartner.queries
 
                 string SqlStmt = TDataBase.ReadSqlFile("Partner.Queries.ExtractPartnerByEvent.sql");
 
-                
-                
-                
-                
-                
-                
-                
+
                 int Index = 0;
                 int SizeOfArray;
                 String ValueList;
                 Int64 ListValueInt;
                 String ListValue;
                 String ParameterList = "";
-                             
+
                 // set array to correct size depending on number of specialtypes selected
                 ValueList = AParameters.Get("param_event").ToString();
 
-                SizeOfArray = StringHelper.CountOccurencesOfChar(ValueList,',') + 1;                
+                SizeOfArray = StringHelper.CountOccurencesOfChar(ValueList, ',') + 1;
 
                 TLogging.Log("SizeOfArray is: " + SizeOfArray);
-                
+
                 OdbcParameter[] parameters = new OdbcParameter[SizeOfArray + 7];
                 TLogging.Log("parameters[] created...");
                 // this *should* always have at least one selection because the client requires it
 
                 ListValue = StringHelper.GetNextCSV(ref ValueList, ",");
-                if(ListValue.Length == 0) throw new NoNullAllowedException("At least one option must be checked."); // safety
+
+                if (ListValue.Length == 0)
+                {
+                    throw new NoNullAllowedException("At least one option must be checked.");                       // safety
+                }
+
                 Index = 0;
+
                 while (ListValue != "")
                 {
                     ListValueInt = Convert.ToInt64(ListValue);
@@ -91,8 +90,8 @@ namespace Ict.Petra.Server.MPartner.queries
 
                     parameters[Index].Value = ListValueInt;
                     Index++;
-                    if (ParameterList.Length == 0)
 
+                    if (ParameterList.Length == 0)
                     {
                         ParameterList = "?";
                     }
@@ -100,13 +99,12 @@ namespace Ict.Petra.Server.MPartner.queries
                     {
                         ParameterList = ParameterList + ",?";
                     }
-                    
+
                     ListValue = StringHelper.GetNextCSV(ref ValueList, ",");
                 }
-                
 
                 SqlStmt = SqlStmt.Replace("##ParameterList##", ParameterList);
-                
+
                 // reading in parameters and getting them ready to be inserted into the query
                 parameters[Index] = new OdbcParameter("Accepted", OdbcType.Bit);
                 parameters[Index].Value = AParameters.Get("param_status_Accepted").ToBool();
@@ -124,29 +122,28 @@ namespace Ict.Petra.Server.MPartner.queries
                 parameters[Index + 6].Value = AParameters.Get("param_Exclude_No_Soliotions").ToBool();
                 //parameters[Index + 7] =  new OdbcParameter("Mailing_Addresses_Only", OdbcType.Bit)
                 //parameters[Index + 7].Value = AParameters.Get("param_Mailing_Addresses_Only").ToBool();
-                
-                
-                
+
+
                 //OdbcParameter[] parameters = new OdbcParameter[8];
                 //parameters[0] = new OdbcParameter("Event", OdbcType.BigInt);
                 parameters[0].Value = AParameters.Get("param_event").ToInt64();
-               // parameters[1] = new OdbcParameter("Accepted", OdbcType.Bit);
+                // parameters[1] = new OdbcParameter("Accepted", OdbcType.Bit);
                 //parameters[1].Value = AParameters.Get("param_status_Accepted").ToBool();
                 //parameters[2] = new OdbcParameter("Hold", OdbcType.Bit);
                 //parameters[2].Value = AParameters.Get("param_status_Hold").ToBool();
-               // parameters[3] = new OdbcParameter("Enquiry", OdbcType.Bit);
+                // parameters[3] = new OdbcParameter("Enquiry", OdbcType.Bit);
                 //parameters[3].Value = AParameters.Get("param_status_Enquiry").ToBool();
                 //parameters[4] = new OdbcParameter("cancelled", OdbcType.Bit);
                 //parameters[4].Value = AParameters.Get("param_status_cancelled").ToBool();
                 //parameters[5] = new OdbcParameter("Rejected", OdbcType.Bit);
-                //parameters[5].Value = AParameters.Get("param_status_Rejected").ToBool(); 
+                //parameters[5].Value = AParameters.Get("param_status_Rejected").ToBool();
                 //parameters[6] = new OdbcParameter("Active_Parteners", OdbcType.Bit);
                 //parameters[6].Value = AParameters.Get("param_Active_Parteners").ToBool();
                 //parameters[7] = new OdbcParameter("Exclude_No_Soliotions", OdbcType.Bit);
                 //parameters[7].Value = AParameters.Get("param_Exclude_No_Soliotions").ToBool();
-             // parameters[8] = new OdbcParameter("Mailing_Addresses_Only", OdbcType.Bit);
-             // parameters[8].Value = AParameters.Get("param_Mailing_Addresses_Only");
-                
+                // parameters[8] = new OdbcParameter("Mailing_Addresses_Only", OdbcType.Bit);
+                // parameters[8].Value = AParameters.Get("param_Mailing_Addresses_Only");
+
                 TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
                 DataTable partnerkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "partners", Transaction, parameters);
 

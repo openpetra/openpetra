@@ -519,9 +519,9 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
 
             return MCommonMain.RetrievePartnerShortName(APartnerKey, out APartnerShortName, out APartnerClass, out PartnerStatus);
         }
-        
-        public PDataLabelValuePartnerTable GetDataLocalPartnerDataValues(Int64 APartnerKey, out Boolean ALabelsAvailable, 
-                                                                         Boolean ACountOnly, TDBTransaction AReadTransaction)
+
+        public PDataLabelValuePartnerTable GetDataLocalPartnerDataValues(Int64 APartnerKey, out Boolean ALabelsAvailable,
+            Boolean ACountOnly, TDBTransaction AReadTransaction)
         {
             PDataLabelValuePartnerTable DataLabelValuePartnerDT;
             OfficeSpecificDataLabelsTDS OfficeSpecificDataLabels;
@@ -534,7 +534,7 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
             {
                 OfficeSpecificDataLabels = GetData();
                 //ALabelsAvailable =
-                  //  (CountLabelUse(SharedTypes.PartnerClassEnumToString(FPartnerClass), AReadTransaction) != 0);
+                //  (CountLabelUse(SharedTypes.PartnerClassEnumToString(FPartnerClass), AReadTransaction) != 0);
 
                 if (!ACountOnly)
                 {
@@ -545,7 +545,7 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
             {
                 // TODO: Exception processing
             }
-            
+
             return DataLabelValuePartnerDT;
         }
 

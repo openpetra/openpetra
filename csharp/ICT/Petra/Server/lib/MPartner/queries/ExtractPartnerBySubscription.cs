@@ -60,33 +60,35 @@ namespace Ict.Petra.Server.MPartner.queries
                 String ValueList;
                 String ListValue;
                 String ParameterList = "";
-                
+
                 // set array to correct size depending on number of publications selected
                 ValueList = AParameters.Get("param_explicit_publication").ToString();
-                SizeOfArray = StringHelper.CountOccurencesOfChar (ValueList, ',') + 1;
-                
+                SizeOfArray = StringHelper.CountOccurencesOfChar(ValueList, ',') + 1;
+
                 OdbcParameter[] parameters = new OdbcParameter[SizeOfArray];
                 Index = 0;
                 ListValue = StringHelper.GetNextCSV(ref ValueList, ",");
+
                 while (ListValue != "")
-				{
-                	parameters[Index] = new OdbcParameter("publication" + Index.ToString(), OdbcType.VarChar);
-	                parameters[Index].Value = ListValue;
-	                Index++;
-	                if (ParameterList.Length == 0)
-	                {
-	                	ParameterList = "?";
-	                }
-	                else
-	                {
-	                	ParameterList = ParameterList + ",?";
-	                }
-	                
-	                ListValue = StringHelper.GetNextCSV(ref ValueList, ",");
+                {
+                    parameters[Index] = new OdbcParameter("publication" + Index.ToString(), OdbcType.VarChar);
+                    parameters[Index].Value = ListValue;
+                    Index++;
+
+                    if (ParameterList.Length == 0)
+                    {
+                        ParameterList = "?";
+                    }
+                    else
+                    {
+                        ParameterList = ParameterList + ",?";
+                    }
+
+                    ListValue = StringHelper.GetNextCSV(ref ValueList, ",");
                 }
-                
+
                 SqlStmt = SqlStmt.Replace("##ParameterList##", ParameterList);
-                
+
                 TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
                 DataTable partnerkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "partners", Transaction, parameters);
 
