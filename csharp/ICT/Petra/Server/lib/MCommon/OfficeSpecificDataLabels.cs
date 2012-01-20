@@ -520,6 +520,38 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
             return MCommonMain.RetrievePartnerShortName(APartnerKey, out APartnerShortName, out APartnerClass, out PartnerStatus);
         }
 
+        /// <summary>
+        /// get the local partner data
+        /// </summary>
+        public PDataLabelValuePartnerTable GetDataLocalPartnerDataValues(Int64 APartnerKey, out Boolean ALabelsAvailable,
+            Boolean ACountOnly, TDBTransaction AReadTransaction)
+        {
+            PDataLabelValuePartnerTable DataLabelValuePartnerDT;
+            OfficeSpecificDataLabelsTDS OfficeSpecificDataLabels;
+
+            ALabelsAvailable = false;
+
+            DataLabelValuePartnerDT = new PDataLabelValuePartnerTable();
+
+            try
+            {
+                OfficeSpecificDataLabels = GetData();
+                //ALabelsAvailable =
+                //  (CountLabelUse(SharedTypes.PartnerClassEnumToString(FPartnerClass), AReadTransaction) != 0);
+
+                if (!ACountOnly)
+                {
+                    DataLabelValuePartnerDT.Merge(OfficeSpecificDataLabels.PDataLabelValuePartner);
+                }
+            }
+            catch (Exception)
+            {
+                // TODO: Exception processing
+            }
+
+            return DataLabelValuePartnerDT;
+        }
+
         #endregion
     }
 }

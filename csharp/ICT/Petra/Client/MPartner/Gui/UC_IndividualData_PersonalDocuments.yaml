@@ -1,0 +1,95 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MPartner.Gui
+    DatasetType: Ict.Petra.Shared.MPersonnel.Personnel.Data.IndividualDataTDS
+    DetailTable: PmDocument
+    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data]
+    FormType: edit
+    Template: controlMaintainTable
+    Actions:
+        actNew: {Label=&Add, ActionClick=NewRow}
+        actDelete: {Label=&Delete, ActionClick=DeleteRow}
+    Controls:
+        pnlContent:
+            Dock: Fill
+            Controls: [pnlDetailGrid, pnlDetails]
+        pnlDetailGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlDetailButtons]
+        pnlDetailButtons:
+            Dock: Right
+            Controls: [btnNew, btnDelete]
+        btnNew: {Action=actNew}
+        btnDelete: {Action=actDelete}
+        grdDetails:
+            Dock: Fill
+            TableName: PmDocument
+            Columns: [DocCode, DocumentId, AssocDocId, DateOfStart, PlaceOfIssue, DateOfExpiration, DateOfIssue, DocComment]
+            CustomColumns:
+                DocCode: {Label=Document Type}
+                DocumentId: {Label=Document ID}
+                AssocDocId: {Label=Associated Document ID}
+                DateOfStart: {Label=Start Date, Type=DateTime}
+                PlaceOfIssue: {Label=Place of Issue}
+                DateOfExpiration: {Label=Date of Expiry}
+                DateOfIssue: (Label=Date of Issue}
+                DocComment: {Label=Comments}
+            ActionFocusRow: FocusedRowChanged
+            SortOrder: DocCode ASC
+            
+        pnlDetails:
+            Dock: Bottom
+#            Width: 500
+#            Height: 400
+            Controls:
+                Row0: [cmbDocumentCode]
+                Row1: [txtDocumentID, txtDocumentAssociatedID]
+                Row2: [txtPlaceOfIssue, dtpDateOfIssue]
+                Row3: [dtpDateOfStart, dtpDateOfExpiry]
+                Row4: [txtContact]
+                Row5: [txtComment]
+                
+        cmbDocumentCode:
+            List: DocumentTypeList
+            DataField: PmDocument.DocCode
+            ColSpan: 3
+        
+        txtDocumentID:
+            Label: Document ID
+            DataField: PmDocument.DocumentId
+            ColSpan: 1
+        txtDocumentAssociatedID:
+            Label: Associated Document ID
+            DataField: PmDocument.AssocDocId
+            ColSpan: 1
+        
+        txtPlaceOfIssue:
+            Label: Place of Issue
+            DataField: PmDocument.PlaceOfIssue
+            ColSpan: 1
+        dtpDateOfIssue:
+            Label: Date of Issue
+            DataField: PmDocument.DateOfIssue
+            ColSpan: 1
+        
+        dtpDateOfStart:
+            Label: Date of Start
+            DataField: PmDocument.DateOfStart
+            ColSpan: 1
+        dtpDateOfExpiry:
+            Label: Date of Expiry
+            DataField: PmDocument.DateOfExpiration
+            ColSpan: 1
+        
+        txtContact:
+            Type: PartnerKey
+            ColSpan: 3
+        
+        txtComment:
+            DataField: PmDocument.DocComment
+            Multiline: true
+            ScrollBars: Vertical
+            Height: 110
+            Width: 380
+            ColSpan: 3

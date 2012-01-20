@@ -4,6 +4,8 @@ RootNode:
     FormTitle: Partner By Special Type
     Namespace: Ict.Petra.Client.MReporting.Gui.MPartner
     TemplateParameters:
+        CALCULATEFROMMETHOD: Ict.Petra.Server.MPartner.queries.QueryPartnerBySpecialType.CalculateExtract
+        ISOLATIONLEVEL: serializable
         XMLFILES: [Partner\\\\partnerbyspecialtype.xml]
         REPORTNAME: Partner By Special Type
         CURRENTREPORT: Partner By Special Type
@@ -22,15 +24,71 @@ RootNode:
             Label: General Settings
             Controls: 
                 Row0: [lblIncludeSpecialTypes]
-                Row1: [clbIncludeSpecialTypes]
+                Row1: [pnlSpecialTypeOptions]
             Order: AlwaysFirst
         lblIncludeSpecialTypes:
             Label: Report on all partners that have one of these special types
+
+        pnlSpecialTypeOptions:
+            Controls: 
+                Row0: [pnlSpecialTypeOptionsLeft, pnlSpecialTypeOptionsRight]
+                Row1: [pnlSpecialTypeOptionsBottom]
+            ControlsOrientation: horizontal
+            Dock: Fill
+        pnlSpecialTypeOptionsLeft:
+            Controls:
+                Row0: [clbIncludeSpecialTypes]
+                Row1: [txtCity]
+                Row2: [txtPostCodeFrom]
+                Row3: [txtTo]
+                Row4: [txtRegion]
+                Row5: [txtCountry]
         clbIncludeSpecialTypes:
             NoLabel: true 
             ParameterName: param_explicit_specialtypes
             Width: 400
             Height: 200
+        pnlSpecialTypeOptionsRight:
+            Controls:
+#                Row0: [chkActivePartners]
+#                Row1: [chkMailingAddressesOnly]
+#                Row2: [chkFamiliesOnly]
+#                Row3: [chkExcludeNoSolicitations]
+                Row0: [txtNameOfExtract]
+                Row1: [txtExtractDescription]
+                Row2: [ucoReportExtract]
+
+        pnlSpecialTypeOptionsBottom:
+            Controls: 
+                Row0: [txtDateSet]
+#                Row1: [txtKeysExtracted, txtExtractSegment]
+#        chkActivePartners: {Label=Active Partners Only, CheckBoxAttachedLabel=right,ParameterName=param_active}
+#        chkMailingAddressesOnly: {Label=Mailing Addresses Only, CheckBoxAttachedLabel=right, ParameterName=param_mailingAddressesOnly}
+#        chkFamiliesOnly: {Label=Families Only, CheckBoxAttachedLabel=right, ParameterName=param_familiesOnly}
+#        chkExcludeNoSolicitations: {Label=Exclude 'No Solicitations', CheckBoxAttachedLabel=right, ParameterName=param_excludeNoSolicitations}
+        txtCity:
+            Label: Town/City
+            ParameterName: param_city
+        txtPostCodeFrom:
+            Label: Post Code From
+            ParameterName: param_from
+        txtTo:
+            Label: To
+            ParameterName: param_to
+        txtRegion:
+            Label: Region
+            ParameterName: param_region
+        txtCountry:
+            Label: Country
+            ParameterName: param_country
+        txtDateSet:
+            Label: Date Set
+            ParameterName: param_dateSet
+        txtNameOfExtract: {ParameterName=nameOfExtract}
+        txtExtractDescription: {ParameterName=descriptionOfExtract}
+        ucoReportExtract:
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_ExtractChkFilter
+            Dock: Fill
         ucoReportSorting:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting
             Dock: Fill
@@ -107,3 +165,4 @@ RootNode:
         Para23:
             Name: URL
             Parameter: 3.0
+            

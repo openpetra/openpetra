@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="systemsettings" value="True" />
-  <Parameter id="xmlfiles" value="Personnel\\unithierarchy.xml" />
-  <Parameter id="currentReport" value="Unit Hierarchy Report" />
-  <Parameter id="MaxDisplayColumns" value="3" />
-  <Parameter id="param_txtUnitCode" value="" />
-  <Parameter id="param_chkInclude" value="false" />
-  <Parameter id="param_calculation" column="0" value="UnitKey" />
-  <Parameter id="ColumnWidth" column="0" value="3" />
-  <Parameter id="param_calculation" column="1" value="UnitType" />
-  <Parameter id="ColumnWidth" column="1" value="4.5" />
-  <Parameter id="param_calculation" column="2" value="UnitName" />
-  <Parameter id="ColumnWidth" column="2" value="12" />
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:Personnel\\unithierarchy.xml" />
+  <Parameter id="currentReport" value="eString:Unit Hierarchy Report" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:3" />
+  <Parameter id="param_txtUnitCode" value="eString:" />
+  <Parameter id="param_chkInclude" value="eString:false" />
+  <Parameter id="param_calculation" column="0" value="eString:UnitKey" />
+  <Parameter id="ColumnWidth" column="0" value="eInteger:3" />
+  <Parameter id="param_calculation" column="1" value="eString:UnitType" />
+  <Parameter id="ColumnWidth" column="1" value="eDecimal:4616752568008179712" />
+  <Parameter id="param_calculation" column="2" value="eString:UnitName" />
+  <Parameter id="ColumnWidth" column="2" value="eInteger:12" />
 </Parameters>

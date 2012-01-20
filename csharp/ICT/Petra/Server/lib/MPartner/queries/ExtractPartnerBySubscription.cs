@@ -55,18 +55,42 @@ namespace Ict.Petra.Server.MPartner.queries
 
                 string SqlStmt = TDataBase.ReadSqlFile("Partner.Queries.ExtractPartnerBySubscription.sql");
 
-//SqlStmt = "SELECT DISTINCT pub_p_partner.p_partner_key_n, pub_p_partner.p_partner_short_name_c FROM pub_p_partner, pub_p_subscription"
-//+ " WHERE pub_p_subscription.p_publication_code_c IN ('INDEED','NB-WIM')"
-//+ " AND pub_p_partner.p_partner_key_n = pub_p_subscription.p_partner_key_n"
-//+ " ORDER BY pub_p_partner.p_partner_short_name_c";
+                int Index = 0;
+                int SizeOfArray;
+                String ValueList;
+                String ListValue;
+                String ParameterList = "";
 
-                OdbcParameter[] parameters = new OdbcParameter[1];
-                parameters[0] = new OdbcParameter("publication", OdbcType.VarChar);
-                parameters[0].Value = AParameters.Get("param_explicit_publication");
+                // set array to correct size depending on number of publications selected
+                ValueList = AParameters.Get("param_explicit_publication").ToString();
+                SizeOfArray = StringHelper.CountOccurencesOfChar(ValueList, ',') + 1;
+
+                OdbcParameter[] parameters = new OdbcParameter[SizeOfArray];
+                Index = 0;
+                ListValue = StringHelper.GetNextCSV(ref ValueList, ",");
+
+                while (ListValue != "")
+                {
+                    parameters[Index] = new OdbcParameter("publication" + Index.ToString(), OdbcType.VarChar);
+                    parameters[Index].Value = ListValue;
+                    Index++;
+
+                    if (ParameterList.Length == 0)
+                    {
+                        ParameterList = "?";
+                    }
+                    else
+                    {
+                        ParameterList = ParameterList + ",?";
+                    }
+
+                    ListValue = StringHelper.GetNextCSV(ref ValueList, ",");
+                }
+
+                SqlStmt = SqlStmt.Replace("##ParameterList##", ParameterList);
 
                 TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
                 DataTable partnerkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "partners", Transaction, parameters);
-//DataTable partnerkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "partners", Transaction);
 
                 if (NewTransaction)
                 {
