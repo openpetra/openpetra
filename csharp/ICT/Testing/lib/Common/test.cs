@@ -246,9 +246,9 @@ namespace Ict.Common.Testing
                 i++;
             }
 
-            s = "eDateTime:29/03/2004";
+            s = "eDateTime:\"2004-03-29T00:00:00+0000\"";
             Assert.AreEqual("eDateTime", StringHelper.GetNextCSV(ref s, ":"), "read CSV 1");
-            Assert.AreEqual("29/03/2004", StringHelper.GetNextCSV(ref s, ":"), "read CSV 2");
+            Assert.AreEqual("2004-03-29T00:00:00+0000", StringHelper.GetNextCSV(ref s, ":"), "read CSV 2");
             s = "";
             s = StringHelper.AddCSV(s, "test", ",");
             s = StringHelper.AddCSV(s, "\" )  ))", ",");
@@ -262,9 +262,9 @@ namespace Ict.Common.Testing
             Assert.AreEqual(4, FindMatchingQuote("\"   \""), "Test 2");
             Assert.AreEqual(8, FindMatchingQuote("\" \"\" \"\" \""), "Test 3");
             Assert.AreEqual(8, FindMatchingQuote("\" \"\" \"\" \""), "Test 3");
-            Assert.AreEqual(19, FindMatchingQuote("\"eString:\"\" test \"\"\"|\"eDateTime:29/03/2004\""), "Test 4");
-            s = "\"eComposite::eString:test|\"\"eString:\"\"\"\" test \"\"\"\"\"\"|\"\"eDateTime:29/03/2004\"\"\"";
-            Assert.AreEqual("eComposite::eString:test|\"eString:\"\" test \"\"\"|\"eDateTime:29/03/2004\"", StringHelper.GetNextCSV(ref s,
+            Assert.AreEqual(19, FindMatchingQuote("\"eString:\"\" test \"\"\"|\"eDateTime:\"\"2004-03-29T00:00:00+0000\"\"\""), "Test 4");
+            s = "\"eComposite::eString:test|\"\"eString:\"\"\"\" test \"\"\"\"\"\"|\"\"eDateTime:\"\"\"\"2004-03-29T00:00:00+0000\"\"\"\"\"\"\"";
+            Assert.AreEqual("eComposite::eString:test|\"eString:\"\" test \"\"\"|\"eDateTime:\"\"2004-03-29T00:00:00+0000\"\"\"", StringHelper.GetNextCSV(ref s,
                     "|"), "split composite CSV 1a");
             longStringBug672 =
                 "Actual vs Budget with % Variance\\, (Quarter)3 even longer and longer and longer and longer\\, testActual vs Budget with % VarianceActual vs Budget with % Variance,"
@@ -306,7 +306,7 @@ namespace Ict.Common.Testing
             Assert.AreEqual(new TVariant("#20040329#").ToString(), new TVariant(new DateTime(2004, 03, 29)).ToString(), "Problem B date GB");
             Assert.AreEqual(new TVariant("#20040731#").ToString(), new TVariant(new DateTime(2004, 07, 31)).ToString(), "Problem C date GB");
             Assert.AreEqual("29-MAR-2004", StringHelper.DateToLocalizedString(new TVariant(new DateTime(2004, 03, 29)).ToDate()), "Problem D date GB");
-            Assert.AreEqual("eDateTime:31/07/2004", new TVariant("#20040731#").EncodeToString(), "EncodeToString GB");
+            Assert.AreEqual("eDateTime:\"2004-07-31T00:00:00+0000\"", new TVariant("#20040731#").EncodeToString(), "EncodeToString GB");
             Assert.AreEqual("29-MAR-2004", new TVariant(new DateTime(2004, 03, 29), "formatteddate").ToFormattedString(
                     ""), "Problem formatting dates");
             Thread.CurrentThread.CurrentCulture = new CultureInfo("de-DE", false);
@@ -316,13 +316,14 @@ namespace Ict.Common.Testing
             Assert.AreEqual("29-MRZ", new TVariant(new DateTime(2004, 03, 29)).ToFormattedString("dayofyear"), "Problem A2 day of year DE");
             Assert.AreEqual("29.03." + DateTime.Now.Year.ToString(), new TVariant(new DateTime(2004, 03, 29)).ToFormattedString("dayofyear",
                     "CSV"), "Problem A2 day of year CSV DE");
+            /* Support for parsing the following sort of #<date># is obsolete: */
             Assert.AreEqual(new TVariant("#20040329#").ToString(), new TVariant(new DateTime(2004, 03, 29)).ToString(), "Problem B date DE");
             Assert.AreEqual(new TVariant("#20040731#").ToString(), new TVariant(new DateTime(2004, 07, 31)).ToString(), "Problem C date DE");
 
             /* To make this work, we should use short month names from local array, similar to GetLongMonthName; see the comment in Ict.Common.StringHelper, DateToLocalizedString */
             /* Assert.AreEqual('29M�R2004', DateToLocalizedString(TVariant.Create(DateTime.Create(2004,03,29)).ToDate()),'Problem D date DE'); */
             Assert.AreEqual("29-MRZ-2004", StringHelper.DateToLocalizedString(new TVariant(new DateTime(2004, 03, 29)).ToDate()), "Problem D date DE");
-            Assert.AreEqual("eDateTime:31/07/2004", new TVariant("#20040731#").EncodeToString(), "EncodeToString DE");
+            Assert.AreEqual("eDateTime:\"2004-07-31T00:00:00+0000\"", new TVariant("#20040731#").EncodeToString(), "EncodeToString DE");
             Assert.AreEqual("29-MRZ-2004", StringHelper.DateToLocalizedString(new TVariant("2004-03-29 00:00:00").ToDate()), "sqlite date value");
             Thread.CurrentThread.CurrentCulture = oldCulture;
         }
@@ -358,7 +359,7 @@ namespace Ict.Common.Testing
             v.Add(new TVariant(new DateTime(2004, 03, 29)));
             v2 = new TVariant(v); // copy constructor
             Assert.AreEqual(
-                "eComposite::\"eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDecimal:4612203932384535511|eInteger:2|eString: test |eDateTime:29/03/2004\"",
+                "eComposite::\"eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDecimal:4612203932384535511|eInteger:2|eString: test |\"\"eDateTime:\"\"\"\"2004-03-29T00:00:00+0000\"\"\"\"\"\"\"",
                 v2.EncodeToString(),
                 "EncodeToString4");
             Assert.AreEqual("eComposite::\"eString:test|eBoolean:true\"", TVariant.DecodeFromString(
@@ -375,19 +376,19 @@ namespace Ict.Common.Testing
             v3.Add(v);
             v3.Add(v2);
             s =
-                "eInteger:1|\"eComposite::\"\"eInteger:2|\"\"\"\"eString:\"\"\"\"\"\"\"\" test \"\"\"\"\"\"\"\"\"\"\"\"\"\"\"|\"eComposite::\"\"eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDecimal:4612203932384535511|eInteger:2|\"\"\"\"eString:\"\"\"\"\"\"\"\" test \"\"\"\"\"\"\"\"\"\"\"\"|eDateTime:29/03/2004\"\"\"";
+                "eInteger:1|\"eComposite::\"\"eInteger:2|\"\"\"\"eString:\"\"\"\"\"\"\"\" test \"\"\"\"\"\"\"\"\"\"\"\"\"\"\"|\"eComposite::\"\"eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDecimal:4612203932384535511|eInteger:2|\"\"\"\"eString:\"\"\"\"\"\"\"\" test \"\"\"\"\"\"\"\"\"\"\"\"|\"\"\"\"eDateTime:\"\"\"\"\"\"\"\"2004-03-29T00:00:00+0000\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"";
             Assert.AreEqual("eInteger:1", StringHelper.GetNextCSV(ref s, "|"), "split composite CSV 1");
             Assert.AreEqual("eComposite::\"eInteger:2|\"\"eString:\"\"\"\" test \"\"\"\"\"\"\"", StringHelper.GetNextCSV(ref s, "|"), "split composite CSV 2");
             Assert.AreEqual(
-                "\"eComposite::\"\"eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDecimal:4612203932384535511|eInteger:2|\"\"\"\"eString:\"\"\"\"\"\"\"\" test \"\"\"\"\"\"\"\"\"\"\"\"|eDateTime:29/03/2004\"\"\"",
+                "\"eComposite::\"\"eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDecimal:4612203932384535511|eInteger:2|\"\"\"\"eString:\"\"\"\"\"\"\"\" test \"\"\"\"\"\"\"\"\"\"\"\"|\"\"\"\"eDateTime:\"\"\"\"\"\"\"\"2004-03-29T00:00:00+0000\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"",
                 s,
                 "split composite CSV 4");
             Assert.AreEqual(
-                "eComposite::\"eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDecimal:4612203932384535511|eInteger:2|\"\"eString:\"\"\"\" test \"\"\"\"\"\"|eDateTime:29/03/2004\"",
+                "eComposite::\"eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDecimal:4612203932384535511|eInteger:2|\"\"eString:\"\"\"\" test \"\"\"\"\"\"|\"\"eDateTime:\"\"\"\"2004-03-29T00:00:00+0000\"\"\"\"\"\"\"",
                 StringHelper.GetNextCSV(ref s, "|"),
                 "split composite CSV 6");
             Assert.AreEqual(
-                "eComposite::\"eInteger:1|\"\"eComposite::\"\"\"\"eInteger:2|eString: test \"\"\"\"\"\"|\"\"eComposite::\"\"\"\"eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDecimal:4612203932384535511|eInteger:2|eString: test |eDateTime:29/03/2004\"\"\"\"\"\"\"",
+                "eComposite::\"eInteger:1|\"\"eComposite::\"\"\"\"eInteger:2|eString: test \"\"\"\"\"\"|\"\"eComposite::\"\"\"\"eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDecimal:4612203932384535511|eInteger:2|eString: test |\"\"\"\"\"\"\"\"eDateTime:\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"2004-03-29T00:00:00+0000\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"",
                 v3.EncodeToString(),
                 "EncodeToString1 with Composite containing Composite");
             Assert.AreEqual(v3.EncodeToString(), TVariant.DecodeFromString(
@@ -399,7 +400,7 @@ namespace Ict.Common.Testing
             v3.Add(v);
             v3.Add(v2);
             Assert.AreEqual(
-                "eComposite::\"eInteger:2|eString: test|\"\"eComposite::\"\"\"\"eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDecimal:4612203932384535511|eInteger:2|eString: test |eDateTime:29/03/2004\"\"\"\"\"\"\"",
+                "eComposite::\"eInteger:2|eString: test|\"\"eComposite::\"\"\"\"eString:test|eBoolean:true|eCurrency:Currency:4612203932384535511|eDecimal:4612203932384535511|eInteger:2|eString: test |\"\"\"\"\"\"\"\"eDateTime:\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"2004-03-29T00:00:00+0000\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"",
                 v3.EncodeToString(),
                 "EncodeToString2 with Composite containing Composite");
             Assert.AreEqual(v3.EncodeToString(), TVariant.DecodeFromString(

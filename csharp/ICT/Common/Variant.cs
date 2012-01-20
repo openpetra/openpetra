@@ -90,6 +90,8 @@ namespace Ict.Common
     [Serializable]
     public class TVariant : System.Runtime.Serialization.ISerializable
     {
+        private const String DATETIME_UNAMBIGUOUS_FORMAT = @"yyyy-MM-ddTHH:mm:ss+0000";
+
         /// <summary>
         /// remove all trailing zeros, and the decimal point, if there are no decimals left
         /// </summary>
@@ -578,26 +580,14 @@ namespace Ict.Common
 
                     if (typestr == eVariantTypes.eDateTime.ToString())
                     {
-                        // this has been encoded with TVariant.ToString, so we know the format: dd/MM/yyyy/hour/minute/second
-                        // Convert.ToDateTime(valuestr) is not reliable, because it does not know whether month or day come first
-                        valueSeparated = StringHelper.StrSplit(valuestr, "/");
-
-                        if (valueSeparated.Count == 6)
+                        try
                         {
-                            hour = Convert.ToInt32(valueSeparated[3]);
-                            minute = Convert.ToInt32(valueSeparated[4]);
-                            second = Convert.ToInt32(valueSeparated[5]);
+                            value = new TVariant(DateTime.ParseExact(valuestr, DATETIME_UNAMBIGUOUS_FORMAT, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.AssumeUniversal));
                         }
-                        else
+                        catch(Exception e)
                         {
-                            hour = 0;
-                            minute = 0;
-                            second = 0;
+                            value = new TVariant(DateTime.MinValue);
                         }
-
-                        value =
-                            new TVariant(new DateTime(Convert.ToInt32(valueSeparated[2]), Convert.ToInt32(valueSeparated[1]),
-                                    Convert.ToInt32(valueSeparated[0]), hour, minute, second, 0));
                         value.FormatString = currencyFormat;
                     }
                     else if ((typestr == eVariantTypes.eDecimal.ToString()) || (typestr == "eDouble"))
@@ -671,8 +661,8 @@ namespace Ict.Common
                 }
                 else if (this.TypeVariant == eVariantTypes.eDateTime)
                 {
-                    // it seems that the date separator is always the local culture, so for communicating between client and server, we need to use a standard one
-                    ReturnValue = StringHelper.AddCSV(ReturnValue, this.ToString().Replace(DateTimeFormatInfo.CurrentInfo.DateSeparator, "/"), ":");
+                    // Force encoding into a well-defined UTC-grounded format
+                    ReturnValue = StringHelper.AddCSV(ReturnValue, DateValue.ToUniversalTime().ToString(DATETIME_UNAMBIGUOUS_FORMAT, DateTimeFormatInfo.InvariantInfo), ":");
                 }
                 else if (this.TypeVariant == eVariantTypes.eComposite)
                 {
