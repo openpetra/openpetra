@@ -194,7 +194,6 @@ namespace Ict.Petra.Client.App.PetraClient
             XmlNode OpenPetraNode = UINavigation.FirstChild.NextSibling.FirstChild;
             XmlNode SearchBoxesNode = OpenPetraNode.FirstChild;
             XmlNode MainMenuNode = SearchBoxesNode.NextSibling;
-            XmlNode DepartmentNode = MainMenuNode.FirstChild;
 
             AddNavigationForEachLedger(MainMenuNode, AvailableLedgers);
 
