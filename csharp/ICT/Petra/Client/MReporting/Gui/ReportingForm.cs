@@ -380,6 +380,9 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
         }
 
+        /// <summary>
+        /// generate an extract
+        /// </summary>
         public void MI_GenerateExtract_Click(System.Object sender, System.EventArgs e)
         {
             if ((FGenerateExtractThread != null) && FGenerateExtractThread.IsAlive)

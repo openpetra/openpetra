@@ -171,7 +171,7 @@ namespace Ict.Petra.Server.MPartner.queries
 
                 return ReturnValue;
             }
-            catch (Exception e)
+            catch (Exception)
             {
 //                TLogging.Log(e.ToString());
                 DBAccess.GDBAccessObj.RollbackTransaction();

@@ -520,6 +520,9 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
             return MCommonMain.RetrievePartnerShortName(APartnerKey, out APartnerShortName, out APartnerClass, out PartnerStatus);
         }
 
+        /// <summary>
+        /// get the local partner data
+        /// </summary>
         public PDataLabelValuePartnerTable GetDataLocalPartnerDataValues(Int64 APartnerKey, out Boolean ALabelsAvailable,
             Boolean ACountOnly, TDBTransaction AReadTransaction)
         {
@@ -541,7 +544,7 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
                     DataLabelValuePartnerDT.Merge(OfficeSpecificDataLabels.PDataLabelValuePartner);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 // TODO: Exception processing
             }

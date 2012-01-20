@@ -53,21 +53,21 @@
         chkExcludeNoSoliotions:{Label=Exclude 'No Soliotions', ParameterName=param_Exclude_No_Soliotions}
         txtExtractName: {Label=Name for the new extract, ParameterName=nameOfExtract}
         txtExtractDescription: {Label=Description for the new extract, ParameterName=descriptionOfExtract}   ReportParameters:{ColumnFunction=TPartnerColumnFunction}
-        Para1:
-            Name: City
-            Parameter: 4.0
-        Para2:
-            Name: Partner Shortname
-            Parameter: 3.0
-        Para3:
-            Name: Partner Key
-            Parameter: 2.0
-        Para4:
-            Name: PostCode
-            Parameter: 2.5
-        Para5:
-            Name: Partner Class
-            Parameter: 2.0
-        Para6:
-            Name: Street
-            Parameter: 3.5
+            Para1:
+                Name: City
+                Parameter: 4.0
+            Para2:
+                Name: Partner Shortname
+                Parameter: 3.0
+            Para3:
+                Name: Partner Key
+                Parameter: 2.0
+            Para4:
+                Name: PostCode
+                Parameter: 2.5
+            Para5:
+                Name: Partner Class
+                Parameter: 2.0
+            Para6:
+                Name: Street
+                Parameter: 3.5

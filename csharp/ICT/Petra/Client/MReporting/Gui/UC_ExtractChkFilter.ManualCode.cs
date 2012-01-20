@@ -44,8 +44,6 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <summary>
         /// initialisation
         /// </summary>
-        /// <param name="AReportParameter">Initialisation values needed for some reports</param>
-
         public void InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)
         {
             FPetraUtilsObject = APetraUtilsObject;

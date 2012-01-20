@@ -2761,7 +2761,7 @@ namespace Ict.Common.DB
     ///   <code>
     ///     SELECT * FROM table WHERE column IN (?)
     ///   </code>
-
+    ///
     ///     Then, to test if <c>column</c> is the string <c>"First"</c>,
     ///     <c>"Second"</c>, or <c>"Third"</c>, set the <c>OdbcParameter.Value</c>
     ///     property to a <c>TDbListParameterValue</c> instance. You

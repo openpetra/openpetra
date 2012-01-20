@@ -35,6 +35,9 @@ using Ict.Petra.Server.MPartner.Extracts;
 
 namespace Ict.Petra.Server.MPartner.queries
 {
+    /// <summary>
+    /// find all partners that match a commitment
+    /// </summary>
     public class QueryPartnerByCommitment
     {
         /// <summary>

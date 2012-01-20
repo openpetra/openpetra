@@ -1017,7 +1017,6 @@ namespace Ict.Petra.Shared.MReporting
             int levelNr;
             int columnNr;
             int subreport;
-            String potentialDecimal;
 
             myDoc = new TXMLParser(filename, false);
             try

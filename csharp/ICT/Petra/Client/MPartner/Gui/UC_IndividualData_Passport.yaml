@@ -57,5 +57,5 @@ RootNode:
         dtpDateOfBirth: {Label=Date of Birth, DataField=PmPassportDetails.PassportDob}
         cmbPassportNationality: {Label=Passport Nationality, DataField=PmPassportDetails.PassportNationalityCode, List=PassportNationalityCodeList, Width=300}
         txtPlaceOfIssue: {Label=Place of Issue, Width=160, DataField=PmPassportDetails.PlaceOfIssue}
-        dtpDateOfIssue: {Label=Date of Issue, DataField=PmPassportDetails.DataOfIssue}
+        dtpDateOfIssue: {Label=Date of Issue, DataField=PmPassportDetails.DateOfIssue}
         dtpDateOfExpiration: {Label=Date of Expiration, DataField=PmPassportDetails.DateOfExpiration}

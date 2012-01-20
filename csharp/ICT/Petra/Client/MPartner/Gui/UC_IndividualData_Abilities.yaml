@@ -52,7 +52,7 @@ RootNode:
         cmbAbilityLevel: {Label=Level, List=AbilityLevelList, Width=300, ColSpan=2}
         chkBringInstrument: {Label=Bringing own Instrument, DataField=PmPersonAbility.BringingInstrument}
         txtComment:
-            DataField: PmPersonAbility.PmComment
+            DataField: PmPersonAbility.Comment
             Multiline: true
             ScrollBars: Vertical
             Height: 110

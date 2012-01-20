@@ -534,10 +534,6 @@ namespace Ict.Common
             String typestr;
             String valuestr;
             String currencyFormat;
-            StringCollection valueSeparated;
-            Int32 hour;
-            Int32 minute;
-            Int32 second;
             String originalEncodedValue;
             String BeforeTryingFormat;
             String compositeEncodedValue;
@@ -586,7 +582,7 @@ namespace Ict.Common
                                 new TVariant(DateTime.ParseExact(valuestr, DATETIME_UNAMBIGUOUS_FORMAT, DateTimeFormatInfo.InvariantInfo,
                                         DateTimeStyles.AssumeLocal));
                         }
-                        catch (Exception e)
+                        catch (Exception)
                         {
                             value = new TVariant(DateTime.MinValue);
                         }

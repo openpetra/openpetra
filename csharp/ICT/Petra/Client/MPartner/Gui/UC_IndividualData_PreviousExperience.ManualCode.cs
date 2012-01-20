@@ -69,9 +69,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         #endregion
 
-        // / <summary>
-        // / todoComment
-        // / </summary>
+        /// <summary>
+        /// todoComment
+        /// </summary>
         public void SpecialInitUserControl(IndividualDataTDS AMainDS)
         {
             FMainDS = AMainDS;

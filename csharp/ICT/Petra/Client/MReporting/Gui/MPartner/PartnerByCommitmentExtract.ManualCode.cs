@@ -52,12 +52,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
         {
             #region Copied from csharp/ICT/Petra/Client/MReporting/Gui/MPersonnel/StartOfCommitmentReport.ManualCode.cs
 
-            /**
-             * \todo
-             *   The following block of code should be generalized
-             *   along with the similar code from
-             *   StartOfCommitmentReport.ManualCode.cs.
-             */
+            // TODO
+            //   The following block of code should be generalized
+            //   along with the similar code from
+            //   StartOfCommitmentReport.ManualCode.cs.
             FCommitmentStatusTable = TDataCache.TMPersonnel.GetCacheablePersonnelTable(
                 TCacheablePersonTablesEnum.CommitmentStatusList);
 
@@ -79,20 +77,18 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 
         private void grdCommitmentStatusChoices_ReadControls(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
-            /**
-             * \todo
-             *   The reason that the status choices listbox is not
-             *   filled in with saved data is that Parameter.Save()
-             *   and Parameter.Load() do not use
-             *   TVariant.EncodeToString() and
-             *   TVariant.DecodeFromString() when storing a saved set
-             *   of parameters. Composites survive fine over the
-             *   remoting interface, though. I (binki) am allowed to
-             *   change the behavior of TParameterList.Save() and
-             *   TParameterList.Load() _if_ I change the
-             *   XmlReports/Settings/.../standard.xml files to support
-             *   DecodeFromString().
-             */
+             // TODO
+             //   The reason that the status choices listbox is not
+             //   filled in with saved data is that Parameter.Save()
+             //   and Parameter.Load() do not use
+             //   TVariant.EncodeToString() and
+             //   TVariant.DecodeFromString() when storing a saved set
+             //   of parameters. Composites survive fine over the
+             //   remoting interface, though. I (binki) am allowed to
+             //   change the behavior of TParameterList.Save() and
+             //   TParameterList.Load() _if_ I change the
+             //   XmlReports/Settings/.../standard.xml files to support
+             //   DecodeFromString().
             TVariant param_grdCommitmentStatusChoices = new TVariant();
 
             foreach (DataRow ARow in FCommitmentStatusTable.Rows)
@@ -148,12 +144,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             SetdtpControlManual(dtpEndDateTo, AProperties.Get("param_dtpEndDateTo"));
             SetdtpControlManual(dtpDateValidOn, AProperties.Get("param_dtpDateValidOn"));
 
-            /**
-             * \todo
-             *   The following code will be obsolete once Andrew
-             *   Webster's UC_ExtractChkFilter / ucoExtractChkFilter
-             *   is finished.
-             */
+            // TODO
+            //   The following code will be obsolete once Andrew
+            //   Webster's UC_ExtractChkFilter / ucoExtractChkFilter
+            //   is finished.
             if (AProperties.GetParameter("param_chkPartnerActive") == null)
             {
                 chkPartnerActive.Checked = true;

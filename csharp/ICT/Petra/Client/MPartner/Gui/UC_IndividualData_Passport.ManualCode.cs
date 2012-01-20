@@ -41,10 +41,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 {
     public partial class TUC_IndividualData_Passport
     {
-        /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
+        /// <summary>holds a reference to the Proxy object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
-        private PtPassportTypeTable FPassportTypeDT;                             //List 1
-        private PmPassportDetailsTable FPassportNationalityListDT;                  //List 2 - larger line numbers
+        private PtPassportTypeTable FPassportTypeDT;
 
         #region Properties
 
