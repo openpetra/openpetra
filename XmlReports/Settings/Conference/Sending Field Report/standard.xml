@@ -13,7 +13,7 @@
   <Parameter id="param_calculation" column="14" value="eString:DummyValue14" />
   <Parameter id="param_report_detail" value="eString:Full" />
   <Parameter id="param_selected_keys_csv" value="eString:" />
-  <Parameter id="param_today" value="eDateTime:&quot;2010-08-10T00:00:00+0000&quot;" />
+  <Parameter id="param_today" value="eDateTime:&quot;2010-08-10T00:00:00&quot;" />
   <Parameter id="param_chkFinancialReport" value="eString:true" />
   <Parameter id="param_chkAcceptedApplications" value="eString:false" />
   <Parameter id="param_chkExtraCosts" value="eString:false" />

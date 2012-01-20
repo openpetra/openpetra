@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -90,7 +90,7 @@ namespace Ict.Common
     [Serializable]
     public class TVariant : System.Runtime.Serialization.ISerializable
     {
-        private const String DATETIME_UNAMBIGUOUS_FORMAT = @"yyyy-MM-ddTHH:mm:ss+0000";
+        private const String DATETIME_UNAMBIGUOUS_FORMAT = @"yyyy-MM-ddTHH:mm:ss";
 
         /// <summary>
         /// remove all trailing zeros, and the decimal point, if there are no decimals left
@@ -584,7 +584,7 @@ namespace Ict.Common
                         {
                             value =
                                 new TVariant(DateTime.ParseExact(valuestr, DATETIME_UNAMBIGUOUS_FORMAT, DateTimeFormatInfo.InvariantInfo,
-                                        DateTimeStyles.AssumeUniversal));
+                                        DateTimeStyles.AssumeLocal));
                         }
                         catch (Exception e)
                         {
@@ -666,7 +666,7 @@ namespace Ict.Common
                     // Force encoding into a well-defined UTC-grounded format
                     ReturnValue =
                         StringHelper.AddCSV(ReturnValue,
-                            DateValue.ToUniversalTime().ToString(DATETIME_UNAMBIGUOUS_FORMAT, DateTimeFormatInfo.InvariantInfo), ":");
+                                            DateValue.ToString(DATETIME_UNAMBIGUOUS_FORMAT, DateTimeFormatInfo.InvariantInfo), ":");
                 }
                 else if (this.TypeVariant == eVariantTypes.eComposite)
                 {

@@ -4,8 +4,8 @@
   <Parameter id="xmlfiles" value="eString:Personnel\\startofcommitmentreport.xml,Personnel\\personnel.xml" />
   <Parameter id="currentReport" value="eString:Start of Commitment Report" />
   <Parameter id="MaxDisplayColumns" value="eInteger:8" />
-  <Parameter id="param_dtpStartDate" value="eDateTime:&quot;2010-06-22T00:00:00+0000&quot;" />
-  <Parameter id="param_dtpEndDate" value="eDateTime:&quot;2010-06-22T00:00:00+0000&quot;" />
+  <Parameter id="param_dtpStartDate" value="eDateTime:&quot;2010-06-22T00:00:00&quot;" />
+  <Parameter id="param_dtpEndDate" value="eDateTime:&quot;2010-06-22T00:00:00&quot;" />
   <Parameter id="param_chkSelectedStatus" value="eString:false" />
   <Parameter id="param_chkNoSelectedStatus" value="eString:false" />
   <Parameter id="orderby0" value="eString:Start Date" />
@@ -32,5 +32,5 @@
   <Parameter id="ColumnWidth" column="6" value="eInteger:10" />
   <Parameter id="param_calculation" column="7" value="eString:Telephone" />
   <Parameter id="ColumnWidth" column="7" value="eInteger:2" />
-  <Parameter id="param_today" value="eDateTime:&quot;2010-06-22T00:00:00+0000&quot;" />
+  <Parameter id="param_today" value="eDateTime:&quot;2010-06-22T00:00:00&quot;" />
 </Parameters>
