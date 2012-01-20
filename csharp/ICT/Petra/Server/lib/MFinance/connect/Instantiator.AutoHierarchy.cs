@@ -999,7 +999,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP.WebConnectors
                                               DateTime APostingDate,
                                               out TVerificationResultCollection AVerifications)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector), "PostAPDocuments", ";INT;LIST;DATETIME;TVERIFICATIONRESULTCOLLECTION;", ALedgerNumber);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector), "PostAPDocuments", ";INT;INT?;DATETIME;TVERIFICATIONRESULTCOLLECTION;", ALedgerNumber);
             return Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector.PostAPDocuments(ALedgerNumber, AAPDocumentNumbers, APostingDate, out AVerifications);
         }
 
