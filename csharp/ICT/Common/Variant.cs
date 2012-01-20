@@ -90,6 +90,8 @@ namespace Ict.Common
     [Serializable]
     public class TVariant : System.Runtime.Serialization.ISerializable
     {
+        private const String DATETIME_UNAMBIGUOUS_FORMAT = @"yyyy-MM-ddTHH:mm:ss+0000";
+
         /// <summary>
         /// remove all trailing zeros, and the decimal point, if there are no decimals left
         /// </summary>
@@ -550,7 +552,7 @@ namespace Ict.Common
                 if (typestr == eVariantTypes.eComposite.ToString())
                 {
                     currencyFormat = StringHelper.GetNextCSV(ref encodedValue, ":");
-                    valuestr = encodedValue;
+                    valuestr = StringHelper.GetNextCSV(ref encodedValue, ":");
                     value = new TVariant();
 
                     while (valuestr.Length > 0)
@@ -578,26 +580,14 @@ namespace Ict.Common
 
                     if (typestr == eVariantTypes.eDateTime.ToString())
                     {
-                        // this has been encoded with TVariant.ToString, so we know the format: dd/MM/yyyy/hour/minute/second
-                        // Convert.ToDateTime(valuestr) is not reliable, because it does not know whether month or day come first
-                        valueSeparated = StringHelper.StrSplit(valuestr, "/");
-
-                        if (valueSeparated.Count == 6)
+                        try
                         {
-                            hour = Convert.ToInt32(valueSeparated[3]);
-                            minute = Convert.ToInt32(valueSeparated[4]);
-                            second = Convert.ToInt32(valueSeparated[5]);
+                            value = new TVariant(DateTime.ParseExact(valuestr, DATETIME_UNAMBIGUOUS_FORMAT, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.AssumeUniversal));
                         }
-                        else
+                        catch(Exception e)
                         {
-                            hour = 0;
-                            minute = 0;
-                            second = 0;
+                            value = new TVariant(DateTime.MinValue);
                         }
-
-                        value =
-                            new TVariant(new DateTime(Convert.ToInt32(valueSeparated[2]), Convert.ToInt32(valueSeparated[1]),
-                                    Convert.ToInt32(valueSeparated[0]), hour, minute, second, 0));
                         value.FormatString = currencyFormat;
                     }
                     else if ((typestr == eVariantTypes.eDecimal.ToString()) || (typestr == "eDouble"))
@@ -623,6 +613,10 @@ namespace Ict.Common
                     else if (typestr == eVariantTypes.eString.ToString())
                     {
                         value = new TVariant((String)valuestr, true);
+                    }
+                    else if (typestr == eVariantTypes.eEmpty.ToString())
+                    {
+                        value = new TVariant();
                     }
                     else
                     {
@@ -650,48 +644,59 @@ namespace Ict.Common
         {
             String ReturnValue = "";
 
-            //TVariant v;
-            String compositeString;
-
             try
             {
-                ReturnValue = this.TypeVariant.ToString() + ':';
+                ReturnValue = this.TypeVariant.ToString();
 
                 if ((this.TypeVariant == eVariantTypes.eCurrency) || (this.TypeVariant == eVariantTypes.eComposite) || (FormatString.Length > 0))
                 {
                     // make sure that it is put into quotes if there appear to be any separators in the string
-                    ReturnValue = ReturnValue + StringHelper.AddCSV("", FormatString) + ':';
+                    ReturnValue = StringHelper.AddCSV(ReturnValue, FormatString, ":");
                 }
 
                 if ((this.TypeVariant == eVariantTypes.eDecimal) || (TypeVariant == eVariantTypes.eCurrency))
                 {
                     // what about decimal point/comma? BitConverter saves it as int; that way no trouble with decimal point
-                    ReturnValue = ReturnValue + BitConverter.DoubleToInt64Bits(this.ToDouble()).ToString();
+                    ReturnValue = StringHelper.AddCSV(ReturnValue, BitConverter.DoubleToInt64Bits(this.ToDouble()).ToString(), ":");
                 }
                 else if (this.TypeVariant == eVariantTypes.eDateTime)
                 {
-                    // it seems that the date separator is always the local culture, so for communicating between client and server, we need to use a standard one
-                    ReturnValue = ReturnValue + this.ToString().Replace(DateTimeFormatInfo.CurrentInfo.DateSeparator, "/");
+                    // Force encoding into a well-defined UTC-grounded format
+                    ReturnValue = StringHelper.AddCSV(ReturnValue, DateValue.ToUniversalTime().ToString(DATETIME_UNAMBIGUOUS_FORMAT, DateTimeFormatInfo.InvariantInfo), ":");
                 }
                 else if (this.TypeVariant == eVariantTypes.eComposite)
                 {
-                    compositeString = "";
+                    String CompositeEncodedLine = "";
+                    Boolean first = true;
 
                     foreach (TVariant v in this.CompositeValue)
                     {
-                        compositeString = StringHelper.AddCSV(compositeString, v.EncodeToString(), "|");
+                        String CompositeEncoded = v.EncodeToString();
+                        /*
+                         * StringHelper.AddCSV() was not used for the first
+                         * entry which was an empty string because
+                         * StringHelper.AddCSV() will use a space in that
+                         * circumstance. Therefore, we must manually handle the
+                         * case where the length of the first member of the
+                         * composite value is an empty string.
+                         */
+                        if (CompositeEncodedLine.Length == 0 && !first)
+                            CompositeEncodedLine += "|";
+                        if (!first || CompositeEncoded.Length > 0)
+                            CompositeEncodedLine = StringHelper.AddCSV(CompositeEncodedLine, CompositeEncoded, "|");
+                        first = false;
                     }
 
-                    ReturnValue = ReturnValue + compositeString;
+                    ReturnValue = StringHelper.AddCSV(ReturnValue, CompositeEncodedLine, ":");
                 }
                 else if (this.TypeVariant == eVariantTypes.eString)
                 {
                     // make sure that enough quotes are around the value
-                    ReturnValue = ReturnValue + StringHelper.AddCSV("", this.ToString(), ":");
+                    ReturnValue = StringHelper.AddCSV(ReturnValue, this.ToString(), ":");
                 }
                 else
                 {
-                    ReturnValue = ReturnValue + this.ToString();
+                    ReturnValue = StringHelper.AddCSV(ReturnValue, this.ToString(), ":");
                 }
             }
             catch (Exception e)
@@ -971,7 +976,7 @@ namespace Ict.Common
             }
             else
             {
-                ReturnValue = new ArrayList();
+                ReturnValue = new ArrayList(new Object[]{ this });
             }
 
             return ReturnValue;

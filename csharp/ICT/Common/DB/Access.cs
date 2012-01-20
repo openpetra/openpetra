@@ -27,7 +27,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Odbc;
 using System.Data.Common;
+using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.IO;
 using System.Xml;
@@ -696,6 +698,9 @@ namespace Ict.Common.DB
 
             try
             {
+                /* Preprocess ACommandText for `IN (?)' syntax */
+                PreProcessCommand(ref ACommandText, ref AParametersArray);
+
                 if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                 {
                     TLogging.Log(this.GetType().FullName + ".Command: now getting IDbCommand(" + ACommandText + ")...");
@@ -2128,11 +2133,12 @@ namespace Ict.Common.DB
                 throw new Exception("cannot open file " + ASqlFilename);
             }
 
+            Regex DecommenterRegex = new Regex(@"\s--.*");
             while ((line = reader.ReadLine()) != null)
             {
                 if (!line.Trim().StartsWith("--"))
                 {
-                    stmt += line.Trim() + Environment.NewLine;
+                    stmt += DecommenterRegex.Replace(line.Trim(), "") + Environment.NewLine;
                 }
             }
 
@@ -2152,6 +2158,81 @@ namespace Ict.Common.DB
             }
 
             return stmt.Replace(Environment.NewLine, " ");
+        }
+
+        /// <summary>
+        ///   Expand IList items in a parameter list so that `IN (?)' syntax works.
+        /// </summary>
+        static private void PreProcessCommand(ref String ACommandText, ref DbParameter[] AParametersArray)
+        {
+            /* Check if there are any parameters which need `IN (?)' expansion. */
+            Boolean INExpansionNeeded = false;
+            if (AParametersArray != null)
+                foreach (OdbcParameter param in AParametersArray)
+                    if (param.Value is TDbListParameterValue)
+                    {
+                        INExpansionNeeded = true;
+                        break;
+                    }
+            /* Perform the `IN (?)' expansion. */
+            if (INExpansionNeeded)
+            {
+                List<OdbcParameter> NewParametersArray = new List<OdbcParameter>();
+                String NewCommandText = "";
+
+                IEnumerator<OdbcParameter> ParametersEnumerator = ((IEnumerable<OdbcParameter>)AParametersArray).GetEnumerator();
+                foreach (String SqlPart in ACommandText.Split(new Char[] {'?'}))
+                {
+                    NewCommandText += SqlPart;
+
+                    if (!ParametersEnumerator.MoveNext())
+                        /* We're at the end of the string/parameter array */
+                        continue;
+
+                    OdbcParameter param = ParametersEnumerator.Current;
+                    if (param.Value is TDbListParameterValue)
+                    {
+                        Boolean first = true;
+                        foreach (OdbcParameter subparam in (TDbListParameterValue)param.Value)
+                        {
+                            if (first)
+                                first = false;
+                            else
+                                NewCommandText += ", ";
+                            NewCommandText += "?";
+
+                            NewParametersArray.Add(subparam);
+                        }
+
+                        /* We had an empty list. */
+                        if (first)
+                        {
+                            NewCommandText += "?";
+                            /* `column IN ()' is invalid, use `column IN (NULL)' */
+                            param.Value = DBNull.Value;
+                            NewParametersArray.Add(param);
+                        }
+                    }
+                    else
+                    {
+                        NewCommandText += "?";
+                        NewParametersArray.Add(param);
+                    }
+                }
+
+                /* Catch any leftover parameters? */
+                while (ParametersEnumerator.MoveNext())
+                    NewParametersArray.Add(ParametersEnumerator.Current);
+
+                ACommandText = NewCommandText;
+                AParametersArray = NewParametersArray.ToArray();
+
+                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                {
+                    TLogging.Log("PreProcessCommand(): Performed `column IN (?)' expansion, result follows:");
+                    LogSqlStatement("PreProcessCommand()", ACommandText, AParametersArray);
+                }
+            }
         }
 
         private bool FConnectionReady = false;
@@ -2648,6 +2729,104 @@ namespace Ict.Common.DB
             //FConnection = ATransaction.Connection;
             FConnection = AConnection;
             FIsolationLevel = ATransaction.IsolationLevel;
+        }
+    }
+
+    /// <summary>
+    ///   A list of parameters which should be expanded into an `IN (?)'
+    ///   context.
+    /// </summary>
+    /// <example>
+    ///   Simply use the following style in your .sql file:
+    ///   <code>
+    ///     SELECT * FROM table WHERE column IN (?)
+    ///   </code>
+
+    ///     Then, to test if <c>column</c> is the string <c>"First"</c>,
+    ///     <c>"Second"</c>, or <c>"Third"</c>, set the <c>OdbcParameter.Value</c>
+    ///     property to a <c>TDbListParameterValue</c> instance. You
+    ///     can use the
+    ///     <c>TDbListParameterValue.OdbcListParameterValu()</c>
+    ///     function to produce an <c>OdbcParameter</c> with an
+    ///     appropriate <c>Value</c> property.
+    ///   <code>
+    ///     OdbcParameter[] parameters = new OdbcParamter[]
+    ///     {
+    ///         TDbListParameterValue(param_grdCommitmentStatusChoices", OdbcType.NChar,
+    ///             new String[] { "First", "Second", "Third" }),
+    ///     };
+    ///   </code>
+    /// </example>
+    public class TDbListParameterValue : IEnumerable<OdbcParameter>
+    {
+        private IEnumerable SubValues;
+
+        /// <summary>
+        ///   The OdbcParameter from which sub-parameters are Clone()d.
+        /// </summary>
+        public OdbcParameter OdbcParam;
+
+        /// <summary>
+        ///   Create a list parameter, such as is used for `column IN (?)' in
+        ///   SQL queries, from any IEnumerable object.
+        /// </summary>
+        /// <param name="name">The ParameterName to use when creating OdbcParameters</param>
+        /// <param name="type">The OdbcType of the produced OdbcParameters</param>
+        /// <param name="value">An enumerable collection of objects.
+        ///   If there are no objects in the enumeration, then the resulting
+        ///   query will look like <c>column IN (NULL)</c> because
+        ///   <c>column IN ()</c> is invalid. To avoid the case where
+        ///   the query should not match any rows and <c>column</c>
+        ///   may be NULL, use an expression like <c>(? AND column IN (?)</c>.
+        ///   Set the first parameter to FALSE if the list is empty and
+        ///   TRUE otherwise so that the prepared statement remains both
+        ///   syntactically and semantically valid.</param>
+        public TDbListParameterValue(String name, OdbcType type, IEnumerable value)
+        {
+            OdbcParam = new OdbcParameter(name, type);
+            SubValues = value;
+        }
+
+        IEnumerator<OdbcParameter> IEnumerable<OdbcParameter>.GetEnumerator()
+        {
+            UInt32 i = 0;
+            foreach (Object value in SubValues)
+            {
+                OdbcParameter SubParameter = (OdbcParameter)((ICloneable)OdbcParam).Clone();
+                SubParameter.Value = value;
+                if (SubParameter.ParameterName != null)
+                    SubParameter.ParameterName += "_" + (i++);
+                yield return SubParameter;
+            }
+        }
+
+        /// <summary>
+        ///   Get the generic IEnumerator over the sub OdbcParameters.
+        /// </summary>
+        public IEnumerator GetEnumerator()
+        {
+            return ((IEnumerable<OdbcParameter>)this).GetEnumerator();
+        }
+
+        /// <summary>
+        ///   Represent this list of parameters as a string, using
+        ///   each value's <c>ToString()</c> method.
+        /// </summary>
+        public override String ToString()
+        {
+            return "[" + String.Join(",", SubValues.Cast<Object>()) + "]";
+        }
+
+        /// <summary>
+        ///   Convenience method for creating an OdbcParameter with an
+        ///   appropriate <c>TDbListParameterValue</c> as a value.
+        /// </summary>
+        public static OdbcParameter OdbcListParameterValue(String name, OdbcType type, IEnumerable value)
+        {
+            return new OdbcParameter(name, type)
+                {
+                    Value = new TDbListParameterValue(name, type, value)
+                };
         }
     }
 }
