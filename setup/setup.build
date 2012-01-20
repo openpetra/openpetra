@@ -346,12 +346,13 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
     <fileset basedir="${dir.bin}">
       <include name="*.dll" />
       <include name="*.exe" />
-      <exclude name="Tests*" />
+      <exclude name="Ict.Testing.*" />
       <exclude name="Ict.Tools.*" />
       <exclude name="Mono.*" />
       <include name="*/*.dll" /> <!-- i18n DLLs-->
     </fileset>
   </copy>
+  <copy file="${dir.bin}/Ict.Tools.PatchTool.exe" tofile="${setupDir}/bin30/Ict.Tools.PatchTool.exe" overwrite="true"/>
   
   <property name="UINavigation.file" value="${dir.root}/csharp/ICT/Petra/Definitions/UINavigation.yml.my"/>
   <if test="${file::exists(UINavigation.file)}">

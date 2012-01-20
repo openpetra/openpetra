@@ -4,7 +4,7 @@
 // @Authors:
 //       markusm, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -259,7 +259,7 @@ namespace Ict.Petra.Client.CommonDialogs
                         MessageBoxIcon.Information);
                 }
 
-                TUserDefaults.GUserDefaults = new TUserDefaults();
+                TUserDefaults.InitUserDefaults();
                 prbLogin.Value = 100;
                 FConnectionEstablished = true;
                 this.Cursor = Cursors.Default;

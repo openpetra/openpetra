@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Runtime.Remoting;
 using Ict.Common;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Client;
@@ -140,6 +141,14 @@ namespace Ict.Petra.Client.App.Core.RemoteObjects
             UPersonnelObject = APersonnelObject;
             UFinanceObject = AFinanceObject;
             UReportingObject = AReportingObject;
+
+            FRemoteObjects.Add((MarshalByRefObject)USysManObject);
+            FRemoteObjects.Add((MarshalByRefObject)UConferenceObject);
+            FRemoteObjects.Add((MarshalByRefObject)UPartnerObject);
+            FRemoteObjects.Add((MarshalByRefObject)UCommonObject);
+            FRemoteObjects.Add((MarshalByRefObject)UPersonnelObject);
+            FRemoteObjects.Add((MarshalByRefObject)UFinanceObject);
+            FRemoteObjects.Add((MarshalByRefObject)UReportingObject);
         }
     }
 }

@@ -1090,7 +1090,7 @@ namespace Ict.Petra.Client.MCommon
             if (PartnerLocationRecordZero != null)
             {
                 LocationRecordZero = FMainDS.PLocation.Rows.Find(new object[] { SharedConstants.FIXED_SITE_KEY, 0 });
-                LocationRecordZero.Delete();
+                FMainDS.PLocation.Rows.Remove(LocationRecordZero);
                 PartnerLocationRecordZero.Delete();
 
                 // LocationRecordZero.AcceptChanges();

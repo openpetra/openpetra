@@ -31,8 +31,11 @@
         Para1:
             Name: City
             Parameter: 4.0
+        Para2a:
+            Name: Partner Name
+            Parameter: 3.0
         Para2:
-            Name: Partner Shortname
+            Name: Short Name
             Parameter: 3.0
         Para3:
             Name: Partner Key
