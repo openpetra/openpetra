@@ -48,6 +48,7 @@ OpenPetra:
                         ConferenceExtract: {Namespace=Ict.Petra.Client.MPartner.Gui, Label=Partner By Conference, ActionClick=TFrmPartnerMain.PartnerByConference}
                         OutreachExtract: {Namespace=Ict.Petra.Client.MPartner.Gui, Label=Partner By Outreach, ActionClick=TFrmPartnerMain.PartnerByOutreach}
                         PublicationExtract: {Namespace=Ict.Petra.Client.MPartner.Gui, Label=Publication Extract, ActionClick=TFrmPartnerMain.PublicationExtract}
+                        PartnerBySpecialType: {Namespace=Ict.Petra.Client.MPartner.Gui, Label=Partner by Special Type, ActionClick=TFrmPartnerMain.PartnerBySpecialTypeExtract}
                         #PublicationExtract: {Label=Publication Extract, ActionOpenScreen=TFrmExtractPublication}
                         #PartnerTypeExtract: {Label=Partner Type Extract, ActionOpenScreen=TFrmExtractPartnerType}
                 Reports: {Icon=printer.ico, Namespace=Ict.Petra.Client.MReporting.Gui.MPartner}

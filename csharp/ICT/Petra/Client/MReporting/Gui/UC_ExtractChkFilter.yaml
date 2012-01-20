@@ -1,0 +1,22 @@
+RootNode:
+    BaseClass: UserControl
+    UtilObjectClass: TFrmPetraReportingUtils
+    Namespace: Ict.Petra.Client.MReporting.Gui
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data]
+    DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerInfoTDS
+    FormType: edit
+    Template: usercontrolUnbound
+    Controls:
+        pnlExtractOptions:
+            ControlsOrientation: horizontal
+            Dock: Fill
+            Controls:
+                Row0: [chkActivePartners]
+                Row1: [chkMailingAddressesOnly]
+                Row2: [chkFamiliesOnly]
+                Row3: [chkExcludeNoSolicitations]
+
+        chkActivePartners: {Label=Active Partners Only, CheckBoxAttachedLabel=right,ParameterName=param_active}
+        chkMailingAddressesOnly: {Label=Mailing Addresses Only, CheckBoxAttachedLabel=right, ParameterName=param_mailingAddressesOnly}
+        chkFamiliesOnly: {Label=Families Only, CheckBoxAttachedLabel=right, ParameterName=param_familiesOnly}
+        chkExcludeNoSolicitations: {Label=Exclude 'No Solicitations', CheckBoxAttachedLabel=right, ParameterName=param_excludeNoSolicitations}
