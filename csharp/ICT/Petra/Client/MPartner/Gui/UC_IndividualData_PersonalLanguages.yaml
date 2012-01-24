@@ -8,7 +8,7 @@ RootNode:
     FormType: edit
     Template: controlMaintainTable
     Actions:
-        actNew: {Label=&Add, ActionClick=NewRow}
+        actNew: {Label=&New, ActionClick=NewRow}
         actDelete: {Label=&Delete, ActionClick=DeleteRow}
         actShowLanguageLevelExplanation: {Label=&Explanation..., ActionClick=ShowLanguageLevelExplanation}
     Controls:

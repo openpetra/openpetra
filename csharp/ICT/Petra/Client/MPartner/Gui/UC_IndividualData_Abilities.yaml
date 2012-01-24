@@ -8,7 +8,7 @@ RootNode:
     FormType: edit
     Template: controlMaintainTable
     Actions:
-        actNew: {Label=&Add, ActionClick=NewRow}
+        actNew: {Label=&New, ActionClick=NewRow}
         actDelete: {Label=&Delete, ActionClick=DeleteRow}
         actShowAbilityLevelExplanation: {Label=&Explanation..., ActionClick=ShowAbilityLevelExplanation}
     Controls:
@@ -43,14 +43,12 @@ RootNode:
                 Row0: [cmbAbilityAreaName]
                 Row1: [txtYearsOfExperience, dtpYearsOfExperienceAsOf]
                 Row2: [cmbAbilityLevel]
-                Row3: [chkBringInstrument]
-                Row4: [txtComment]
+                Row3: [txtComment]
                 
         cmbAbilityAreaName: {Label=Ability, DataField=PmPersonAbility.AbilityAreaName, List=AbilityAreaNameList, Width=200, ColSpan=3}
         txtYearsOfExperience: {DataField=PmPersonAbility.YearsOfExperience, Width=25, Format=Integer}
         dtpYearsOfExperienceAsOf: {Label=as of Date, DataField=PmPersonAbility.YearsOfExperienceAsOf}
         cmbAbilityLevel: {Label=Level, List=AbilityLevelList, Width=300, ColSpan=2}
-        chkBringInstrument: {Label=Bringing own Instrument, DataField=PmPersonAbility.BringingInstrument}
         txtComment:
             DataField: PmPersonAbility.Comment
             Multiline: true

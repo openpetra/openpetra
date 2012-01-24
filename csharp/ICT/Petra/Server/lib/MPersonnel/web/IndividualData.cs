@@ -603,6 +603,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
             AMiscellaneousDataDR.ItemsCountCommitmentPeriods = PmStaffDataAccess.CountViaPPerson(PartnerKey, AReadTransaction);
             AMiscellaneousDataDR.ItemsCountJobAssignments = PmJobAssignmentAccess.CountViaPPartner(PartnerKey, AReadTransaction);
             AMiscellaneousDataDR.ItemsCountProgressReports = PmPersonEvaluationAccess.CountViaPPerson(PartnerKey, AReadTransaction);
+            AMiscellaneousDataDR.ItemsCountPersonSkills = PmPersonSkillAccess.CountViaPPerson(PartnerKey, AReadTransaction);
         }
 
         /// <summary>

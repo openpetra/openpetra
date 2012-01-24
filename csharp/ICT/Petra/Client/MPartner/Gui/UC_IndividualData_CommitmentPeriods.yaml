@@ -8,7 +8,7 @@ RootNode:
     FormType: edit
     Template: controlMaintainTable
     Actions:
-        actNew: {Label=&Add, ActionClick=NewRow}
+        actNew: {Label=&New, ActionClick=NewRow}
         actDelete: {Label=&Delete, ActionClick=DeleteRow}
     Controls:
         pnlContent:
@@ -28,8 +28,8 @@ RootNode:
             Columns: [StatusCode, StartOfCommitment, EndOfCommitment, ReceivingField, HomeOffice, OfficeRecruitedBy]
             CustomColumns:
                 StatusCode: {Label=Commitment Status}
-                StartOfCommitment: {Label=Start Date}
-                EndOfCommitment: {Label=End Date}
+                StartOfCommitment: {Label=Start Date, Type=DateTime}
+                EndOfCommitment: {Label=End Date, Type=DateTime}
                 ReceivingField: {Label=Receiving Field}
                 HomeOffice: {Label=Sending Field}
                 OfficeRecruitedBy: {Label=Recruiting Office}
@@ -59,7 +59,7 @@ RootNode:
             Label: Commitment Status
             DataField: PmStaffData.StatusCode
             List: CommitmentStatusList
-            Width: 300
+            Width: 400
         txtSendingField:
             Label: Sending Field
             Type: PartnerKey
@@ -77,7 +77,6 @@ RootNode:
             ScrollBars: Vertical
             Height: 50
             Width: 380
-            ColSpan: 3
         txtJobTitle: {Label=Job Title, DataField=PmStaffData.JobTitle, Width=200}
 
         
