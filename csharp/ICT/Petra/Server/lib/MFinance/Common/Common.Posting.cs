@@ -83,15 +83,15 @@ namespace Ict.Petra.Server.MFinance.Common
             return GLMRow.GlmSequence;
         }
 
-		/// <summary>
+        /// <summary>
         /// creates the rows for the specified year in AGeneralLedgerMaster and AGeneralLedgerMasterPeriod for an Account/CostCentre combination
-		/// </summary>
-		/// <param name="AMainDS"></param>
-		/// <param name="ALedgerNumber"></param>
-		/// <param name="AYear"></param>
-		/// <param name="AAccountCode"></param>
-		/// <param name="ACostCentreCode"></param>
-		/// <returns> The GLM Sequence</returns>
+        /// </summary>
+        /// <param name="AMainDS"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AYear"></param>
+        /// <param name="AAccountCode"></param>
+        /// <param name="ACostCentreCode"></param>
+        /// <returns> The GLM Sequence</returns>
         public static Int32 CreateGLMYear(
             ref GLBatchTDS AMainDS,
             Int32 ALedgerNumber,

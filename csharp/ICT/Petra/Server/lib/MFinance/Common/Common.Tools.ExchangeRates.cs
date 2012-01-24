@@ -612,44 +612,44 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <returns></returns>
         public static bool GetLatestIntlCorpExchangeRate(int ALedgerNumber, out decimal AIntlExchangeRate)
         {
-    		bool retVal = true;        	
-        	string CurrencyFrom;
+            bool retVal = true;
+            string CurrencyFrom;
             string CurrencyTo;
             DateTime StartDate;
             DateTime EndDate;
-    		
+
             AIntlExchangeRate = decimal.MinValue;
-            
+
             bool NewTransaction;
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
 
             ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-    		ALedgerRow LedgerRow = (ALedgerRow)LedgerTable.Rows[0];
-    		
-    		string IntlCurrency = LedgerRow.IntlCurrency.Trim();
-    		string BaseCurrency = LedgerRow.BaseCurrency;
-    		int CurrentPeriod = LedgerRow.CurrentPeriod;
-    		
-    		if (IntlCurrency != string.Empty)
-    		{
-    			//ACurrencyTable CurrencyTable = ACurrencyAccess.LoadByPrimaryKey(IntlCurrency, null);
-    			AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, CurrentPeriod, Transaction);
-    			AAccountingPeriodRow AccountingPeriodRow = (AAccountingPeriodRow)AccountingPeriodTable.Rows[0];
-    			
-    			if (BaseCurrency == IntlCurrency)
-    			{
-    				AIntlExchangeRate = 1;
-    			}
-    			else
-    			{
-    				CurrencyFrom = BaseCurrency;
-    				CurrencyTo = IntlCurrency;
-    				StartDate = AccountingPeriodRow.PeriodStartDate;
-    				EndDate = AccountingPeriodRow.PeriodEndDate;
-    				retVal = GetCorporateExchangeRate(CurrencyFrom, CurrencyTo, StartDate, EndDate, out AIntlExchangeRate);
-    			}
-    		}
-    		
+            ALedgerRow LedgerRow = (ALedgerRow)LedgerTable.Rows[0];
+
+            string IntlCurrency = LedgerRow.IntlCurrency.Trim();
+            string BaseCurrency = LedgerRow.BaseCurrency;
+            int CurrentPeriod = LedgerRow.CurrentPeriod;
+
+            if (IntlCurrency != string.Empty)
+            {
+                //ACurrencyTable CurrencyTable = ACurrencyAccess.LoadByPrimaryKey(IntlCurrency, null);
+                AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, CurrentPeriod, Transaction);
+                AAccountingPeriodRow AccountingPeriodRow = (AAccountingPeriodRow)AccountingPeriodTable.Rows[0];
+
+                if (BaseCurrency == IntlCurrency)
+                {
+                    AIntlExchangeRate = 1;
+                }
+                else
+                {
+                    CurrencyFrom = BaseCurrency;
+                    CurrencyTo = IntlCurrency;
+                    StartDate = AccountingPeriodRow.PeriodStartDate;
+                    EndDate = AccountingPeriodRow.PeriodEndDate;
+                    retVal = GetCorporateExchangeRate(CurrencyFrom, CurrencyTo, StartDate, EndDate, out AIntlExchangeRate);
+                }
+            }
+
             if (NewTransaction)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
@@ -657,14 +657,12 @@ namespace Ict.Petra.Server.MFinance.Common
 
             if (AIntlExchangeRate == decimal.MinValue)
             {
-                retVal =  false;
+                retVal = false;
             }
-            
-            return retVal;
 
+            return retVal;
         }
-        
-        
+
         /// <summary>
         /// Checks whether or not a given currency exists in the Currency table
         /// </summary>

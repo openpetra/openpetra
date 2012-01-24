@@ -104,7 +104,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 {
                     EnableBudgetEntry(false);
                 }
-                
+
                 LoadCompleted = true;
             }
         }
@@ -116,7 +116,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 EnableBudgetEntry(true);
             }
 
-            //TODO: Time will fix this so that newSequence can start at -1 
+            //TODO: Time will fix this so that newSequence can start at -1
             //Needed to complicate this to handle an error when you add budgets for new years.
             int newSequence = -1 * FMainDS.ABudget.Rows.Count;
 
@@ -171,35 +171,37 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
         private void SelectBudgetYear(Object sender, EventArgs e)
         {
-        	if (LoadCompleted)
+            if (LoadCompleted)
             {
-        		//MessageBox.Show(RejectYearChange.ToString());
-	        	if (RejectYearChange)
-	        	{
-	        		return;
-	        	}
-            	//MessageBox.Show(FMainDS.ABudget.Rows.Count.ToString());
-            	if (FPetraUtilsObject.HasChanges)
-            	{
-            		RejectYearChange = true;
-            		MessageBox.Show("Please save changes before attempting to change year.");
-            			cmbSelectBudgetYear.SetSelectedInt32(CurrentBudgetYear);
-            			return;
-            	}
-            	
-            	if (int.TryParse(cmbSelectBudgetYear.GetSelectedString(), out CurrentBudgetYear))
+                //MessageBox.Show(RejectYearChange.ToString());
+                if (RejectYearChange)
                 {
-            		//MessageBox.Show(cmbSelectBudgetYear.GetSelectedString() + " - " + CurrentBudgetYear.ToString());
-            		DataView myDataView = FMainDS.ABudget.DefaultView;
-	                myDataView.AllowNew = false;
-	                myDataView.RowFilter = String.Format("{0} = {1}", ABudgetTable.GetYearDBName(), CurrentBudgetYear);
-	                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+                    return;
+                }
+
+                //MessageBox.Show(FMainDS.ABudget.Rows.Count.ToString());
+                if (FPetraUtilsObject.HasChanges)
+                {
+                    RejectYearChange = true;
+                    MessageBox.Show("Please save changes before attempting to change year.");
+                    cmbSelectBudgetYear.SetSelectedInt32(CurrentBudgetYear);
+                    return;
+                }
+
+                if (int.TryParse(cmbSelectBudgetYear.GetSelectedString(), out CurrentBudgetYear))
+                {
+                    //MessageBox.Show(cmbSelectBudgetYear.GetSelectedString() + " - " + CurrentBudgetYear.ToString());
+                    DataView myDataView = FMainDS.ABudget.DefaultView;
+                    myDataView.AllowNew = false;
+                    myDataView.RowFilter = String.Format("{0} = {1}", ABudgetTable.GetYearDBName(), CurrentBudgetYear);
+                    grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+
                     if (grdDetails.Rows.Count > 0)
                     {
-                    	SelectByIndex(0);
+                        SelectByIndex(0);
                     }
 
-//            		FMainDS.ABudget.DefaultView.RowFilter = String.Format("{0} = {1}", ABudgetTable.GetYearDBName(), CurrentBudgetYear);
+//                      FMainDS.ABudget.DefaultView.RowFilter = String.Format("{0} = {1}", ABudgetTable.GetYearDBName(), CurrentBudgetYear);
 //                    grdDetails.Refresh();
 //                    SelectByIndex(0);
 
@@ -227,9 +229,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         private TSubmitChangesResult StoreManualCode(ref BudgetTDS ASubmitChanges, out TVerificationResultCollection AVerificationResult)
         {
             //Reset this flag
-        	RejectYearChange= false;
-        	
-        	TSubmitChangesResult TSCR = TRemote.MFinance.Budget.WebConnectors.SaveBudget(ref ASubmitChanges, out AVerificationResult);
+            RejectYearChange = false;
+
+            TSubmitChangesResult TSCR = TRemote.MFinance.Budget.WebConnectors.SaveBudget(ref ASubmitChanges, out AVerificationResult);
 
             return TSCR;
         }
@@ -360,24 +362,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
                 if (NumRecsImported > 0)
                 {
-                	MessageBox.Show(String.Format(Catalog.GetString("{0} budget records imported successfully!"), NumRecsImported),
+                    MessageBox.Show(String.Format(Catalog.GetString("{0} budget records imported successfully!"), NumRecsImported),
                         Catalog.GetString("Success"),
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information);
 
-                	//DataView myView = FMainDS.ABudget.DefaultView;
-                	//myView.RowFilter = String.Format("{0} = {1}", ABudgetTable.GetYearDBName(), CurrentBudgetYear);
-                		
-					//FMainDS.ABudget.DefaultView.RowFilter = String.Format("{0} = {1}", ABudgetTable.GetYearDBName(), CurrentBudgetYear);
+                    //DataView myView = FMainDS.ABudget.DefaultView;
+                    //myView.RowFilter = String.Format("{0} = {1}", ABudgetTable.GetYearDBName(), CurrentBudgetYear);
+
+                    //FMainDS.ABudget.DefaultView.RowFilter = String.Format("{0} = {1}", ABudgetTable.GetYearDBName(), CurrentBudgetYear);
                     //grdDetails.Refresh();
                     //MessageBox.Show(String.Format("Current Year is {0}", CurrentBudgetYear));
                     DataView myDataView = FMainDS.ABudget.DefaultView;
-	                myDataView.AllowNew = false;
-	                myDataView.RowFilter = String.Format("{0} = {1}", ABudgetTable.GetYearDBName(), CurrentBudgetYear);
-	                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+                    myDataView.AllowNew = false;
+                    myDataView.RowFilter = String.Format("{0} = {1}", ABudgetTable.GetYearDBName(), CurrentBudgetYear);
+                    grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+
                     if (grdDetails.Rows.Count > 0)
                     {
-                    	SelectByIndex(0);
+                        SelectByIndex(0);
                     }
 
                     //SelectDetailRowByDataTableIndex(FMainDS.ABudget.Rows.Count - 1);
@@ -388,16 +391,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 }
                 else if (NumRecsImported == -1)
                 {
-                	MessageBox.Show("The year contained in the import file is different to the current selected year.");
-                	//grdDetails.Refresh();
+                    MessageBox.Show("The year contained in the import file is different to the current selected year.");
+
+                    //grdDetails.Refresh();
                     if (grdDetails.Rows.Count > 0)
                     {
-                    	SelectByIndex(0);
+                        SelectByIndex(0);
                     }
                 }
                 else
                 {
-                	MessageBox.Show("No records found to import");
+                    MessageBox.Show("No records found to import");
                 }
             }
         }
