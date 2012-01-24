@@ -76,9 +76,6 @@ namespace Ict.Tools.GenerateExtJsForms
         {
             foreach (string file in System.IO.Directory.GetFiles(ADirName, "*.yaml"))
             {
-                // reset the dataset each time to force reload
-                TDataBinding.FDatasetTables = null;
-
                 // only look for main files, not language specific files (*.XY.yaml or *.xy-xy.yaml")
                 if ((file[file.Length - 8] != '.') && (file[file.Length - 8] != '-'))
                 {

@@ -1,40 +1,40 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="systemsettings" value="True" />
-  <Parameter id="xmlfiles" value="Finance\\donorgiftstatement.xml,Finance\\finance.xml,common.xml" />
-  <Parameter id="currentReport" value="DonorGiftStatement" />
-  <Parameter id="MaxDisplayColumns" value="8" />
-  <Parameter id="param_report_type" value="Complete" />
-  <Parameter id="param_donor" value="All Donors" />
-  <Parameter id="param_min_amount" value="0" />
-  <Parameter id="param_max_amount" value="999999999" />
-  <Parameter id="param_currency" value="Base" />
-  <Parameter id="param_calculation" column="0" value="Recipient Name" />
-  <Parameter id="ColumnWidth" column="0" value="4" />
-  <Parameter id="param_ytd" column="0" value="false" />
-  <Parameter id="param_calculation" column="1" value="Field" />
-  <Parameter id="ColumnWidth" column="1" value="2.5" />
-  <Parameter id="param_ytd" column="1" value="false" />
-  <Parameter id="param_calculation" column="2" value="Motivation Detail" />
-  <Parameter id="ColumnWidth" column="2" value="3.5" />
-  <Parameter id="param_ytd" column="2" value="false" />
-  <Parameter id="param_calculation" column="3" value="Gift Date" />
-  <Parameter id="ColumnWidth" column="3" value="2" />
-  <Parameter id="param_ytd" column="3" value="false" />
-  <Parameter id="param_calculation" column="4" value="Receipt" />
-  <Parameter id="ColumnWidth" column="4" value="2" />
-  <Parameter id="param_ytd" column="4" value="false" />
-  <Parameter id="param_calculation" column="5" value="Gift Type" />
-  <Parameter id="ColumnWidth" column="5" value="2" />
-  <Parameter id="param_ytd" column="5" value="false" />
-  <Parameter id="param_calculation" column="6" value="Confidential" />
-  <Parameter id="ColumnWidth" column="6" value="2" />
-  <Parameter id="param_ytd" column="6" value="false" />
-  <Parameter id="param_calculation" column="7" value="Gift Amount" />
-  <Parameter id="ColumnWidth" column="7" value="2" />
-  <Parameter id="param_ytd" column="7" value="false" />
-  <Parameter id="param_currency_format" value="CurrencyComplete" />
-  <Parameter id="param_donorkey" value="0" />
-  <Parameter id="param_extract_name" value="" />
-  <Parameter id="param_gift_amount_column" value="7" />
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:Finance\\donorgiftstatement.xml,Finance\\finance.xml,common.xml" />
+  <Parameter id="currentReport" value="eString:DonorGiftStatement" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:8" />
+  <Parameter id="param_report_type" value="eString:Complete" />
+  <Parameter id="param_donor" value="eString:All Donors" />
+  <Parameter id="param_min_amount" value="eInteger:0" />
+  <Parameter id="param_max_amount" value="eInteger:999999999" />
+  <Parameter id="param_currency" value="eString:Base" />
+  <Parameter id="param_calculation" column="0" value="eString:Recipient Name" />
+  <Parameter id="ColumnWidth" column="0" value="eInteger:4" />
+  <Parameter id="param_ytd" column="0" value="eString:false" />
+  <Parameter id="param_calculation" column="1" value="eString:Field" />
+  <Parameter id="ColumnWidth" column="1" value="eDecimal:4612811918334230528" />
+  <Parameter id="param_ytd" column="1" value="eString:false" />
+  <Parameter id="param_calculation" column="2" value="eString:Motivation Detail" />
+  <Parameter id="ColumnWidth" column="2" value="eDecimal:4615063718147915776" />
+  <Parameter id="param_ytd" column="2" value="eString:false" />
+  <Parameter id="param_calculation" column="3" value="eString:Gift Date" />
+  <Parameter id="ColumnWidth" column="3" value="eInteger:2" />
+  <Parameter id="param_ytd" column="3" value="eString:false" />
+  <Parameter id="param_calculation" column="4" value="eString:Receipt" />
+  <Parameter id="ColumnWidth" column="4" value="eInteger:2" />
+  <Parameter id="param_ytd" column="4" value="eString:false" />
+  <Parameter id="param_calculation" column="5" value="eString:Gift Type" />
+  <Parameter id="ColumnWidth" column="5" value="eInteger:2" />
+  <Parameter id="param_ytd" column="5" value="eString:false" />
+  <Parameter id="param_calculation" column="6" value="eString:Confidential" />
+  <Parameter id="ColumnWidth" column="6" value="eInteger:2" />
+  <Parameter id="param_ytd" column="6" value="eString:false" />
+  <Parameter id="param_calculation" column="7" value="eString:Gift Amount" />
+  <Parameter id="ColumnWidth" column="7" value="eInteger:2" />
+  <Parameter id="param_ytd" column="7" value="eString:false" />
+  <Parameter id="param_currency_format" value="eString:CurrencyComplete" />
+  <Parameter id="param_donorkey" value="eInteger:0" />
+  <Parameter id="param_extract_name" value="eString:" />
+  <Parameter id="param_gift_amount_column" value="eInteger:7" />
 </Parameters>

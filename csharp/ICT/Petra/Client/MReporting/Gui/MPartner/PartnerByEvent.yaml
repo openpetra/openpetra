@@ -1,0 +1,73 @@
+﻿RootNode:
+    BaseYaml: PartnerReportingForm.yaml
+    FormType: report
+    FormTitle: Partner By Event
+    Namespace: Ict.Petra.Client.MReporting.Gui.MPartner
+    TemplateParameters:
+        #XMLFILES: [Partner\\\\PartnerByEvent]
+        CALCULATEFROMMETHOD: Ict.Petra.Server.MPartner.queries.QueryPartnerByEvent.CalculateExtract
+        ISOLATIONLEVEL: serializable
+        REPORTNAME: Partner By Event
+        CURRENTREPORT: Partner By Event 
+        CONTROLSUSPENDLAYOUT: BLANK
+        CONTROLRESUMELAYOUT: BLANK
+        READCONTROLSVERIFICATION: BLANK
+        # TODO: the following things have to be set by generator
+        READCONTROLSLOCALVARS: ACalc.AddParameter("param_today", new TVariant(DateTime.Now));
+        SETCONTROLSLOCALVARS: BLANK
+    Security:
+        ModulePermissionRequired: [PTNRUSER]
+    Controls:
+        tpgReportSpecific:
+            Label: Report parameters
+            Controls: [pnlGrid, pnlChkBoxs]
+        pnlGrid:
+            Dock: Fill
+            Controls: [clbEvent]
+        clbEvent:
+            Dock: Fill
+            NoLabel: true 
+            ParameterName: param_event
+            Width: 600
+            Height: 200
+        pnlChkBoxs:
+            Dock: Right
+            Controls:
+                Row0:[chkAccepted]
+                Row1:[chkCancelled]
+                Row2:[chkHold]
+                Row3:[chkEnquiry]
+                Row4:[chkRejected]
+                Row5:[chkActiveParteners]
+                Row6:[chkMailingAddressesOnly]
+                Row7:[chkExcludeNoSoliotions]
+                Row8:[txtExtractName]
+                Row9:[txtExtractDescription]
+        chkCancelled: {Label=Cancelled, ParameterName=param_status_cancelled}
+        chkRejected: {Label=Rejected, ParameterName=param_status_Rejected}
+        chkAccepted: {Label=Accepted, ParameterName=param_status_Accepted}
+        chkHold: {Label=Hold, ParameterName=param_status_Hold}
+        chkEnquiry:{Label=Enquiry, ParameterName=param_status_Enquiry}
+        chkActiveParteners:{Label=Active Parteners, ParameterName=param_Active_Parteners}
+        chkMailingAddressesOnly:{Label=Mailing Addresses Only, ParameterName=param_Mailing_Addresses_Only}
+        chkExcludeNoSoliotions:{Label=Exclude 'No Soliotions', ParameterName=param_Exclude_No_Soliotions}
+        txtExtractName: {Label=Name for the new extract, ParameterName=nameOfExtract}
+        txtExtractDescription: {Label=Description for the new extract, ParameterName=descriptionOfExtract}   ReportParameters:{ColumnFunction=TPartnerColumnFunction}
+            Para1:
+                Name: City
+                Parameter: 4.0
+            Para2:
+                Name: Partner Shortname
+                Parameter: 3.0
+            Para3:
+                Name: Partner Key
+                Parameter: 2.0
+            Para4:
+                Name: PostCode
+                Parameter: 2.5
+            Para5:
+                Name: Partner Class
+                Parameter: 2.0
+            Para6:
+                Name: Street
+                Parameter: 3.5
