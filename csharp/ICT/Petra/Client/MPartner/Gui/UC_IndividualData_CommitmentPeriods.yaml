@@ -1,0 +1,83 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MPartner.Gui
+    DatasetType: Ict.Petra.Shared.MPersonnel.Personnel.Data.IndividualDataTDS
+    DetailTable: PmStaffData
+    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data]
+    FormType: edit
+    Template: controlMaintainTable
+    Actions:
+        actNew: {Label=&Add, ActionClick=NewRow}
+        actDelete: {Label=&Delete, ActionClick=DeleteRow}
+    Controls:
+        pnlContent:
+            Dock: Fill
+            Controls: [pnlDetailGrid, pnlDetails]
+        pnlDetailGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlDetailButtons]
+        pnlDetailButtons:
+            Dock: Right
+            Controls: [btnNew, btnDelete]
+        btnNew: {Action=actNew}
+        btnDelete: {Action=actDelete}
+        grdDetails:
+            Dock: Fill
+            TableName: PmStaffData
+            Columns: [StatusCode, StartOfCommitment, EndOfCommitment, ReceivingField, HomeOffice, OfficeRecruitedBy]
+            CustomColumns:
+                StatusCode: {Label=Commitment Status}
+                StartOfCommitment: {Label=Start Date}
+                EndOfCommitment: {Label=End Date}
+                ReceivingField: {Label=Receiving Field}
+                HomeOffice: {Label=Sending Field}
+                OfficeRecruitedBy: {Label=Recruiting Office}
+            ActionFocusRow: FocusedRowChanged
+            SortOrder: StatusCode ASC
+            
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtReceivingField]
+                Row1: [dtpStartDate]
+                Row2: [dtpEndDate]
+                Row3: [cmbCommitmentStatus]
+                Row4: [txtSendingField]
+                Row5: [txtRecruitingField]
+                Row6: [txtStaffDataComments]
+                Row7: [txtJobTitle]
+                
+        txtReceivingField:
+            Label: Receiving Field
+            Type: PartnerKey
+            PartnerClass: UNIT
+            DataField: PmStaffData.ReceivingField
+        dtpStartDate: {Label=Commitment Start Date, DataField=PmStaffData.StartOfCommitment}
+        dtpEndDate: {Label=Commitment End Date, DataField=PmStaffData.EndOfCommitment}
+        cmbCommitmentStatus:
+            Label: Commitment Status
+            DataField: PmStaffData.StatusCode
+            List: CommitmentStatusList
+            Width: 300
+        txtSendingField:
+            Label: Sending Field
+            Type: PartnerKey
+            PartnerClass: UNIT
+            DataField: PmStaffData.HomeOffice
+        txtRecruitingField:
+            Label: Recruiting Field
+            Type: PartnerKey
+            PartnerClass: UNIT
+            DataField: PmStaffData.OfficeRecruitedBy
+        txtStaffDataComments:
+            Label: Comments
+            DataField: PmStaffData.StaffDataComments
+            Multiline: true
+            ScrollBars: Vertical
+            Height: 50
+            Width: 380
+            ColSpan: 3
+        txtJobTitle: {Label=Job Title, DataField=PmStaffData.JobTitle, Width=200}
+
+        

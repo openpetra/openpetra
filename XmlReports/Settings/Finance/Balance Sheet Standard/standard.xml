@@ -1,31 +1,31 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="systemsettings" value="True" />
-  <Parameter id="xmlfiles" value="Finance\\balancesheet.xml,Finance\\finance.xml,common.xml" />
-  <Parameter id="currentReport" value="Balance Sheet" />
-  <Parameter id="MaxDisplayColumns" value="5" />
-  <Parameter id="param_account_hierarchy_c" value="STANDARD" />
-  <Parameter id="param_currency" value="Base" />
-  <Parameter id="param_quarter" value="false" />
-  <Parameter id="param_calculation" column="0" value="Actual Selected Year" />
-  <Parameter id="param_ytd" column="0" value="false" />
-  <Parameter id="param_calculation" column="1" value="Actual Previous Year" />
-  <Parameter id="param_ytd" column="1" value="false" />
-  <Parameter id="param_calculation" column="2" value="Actual End of Previous Year" />
-  <Parameter id="param_ytd" column="2" value="false" />
-  <Parameter id="param_calculation" column="3" value="Variance" />
-  <Parameter id="FirstColumn" column="3" value="0" />
-  <Parameter id="SecondColumn" column="3" value="1" />
-  <Parameter id="param_ytd" column="3" value="false" />
-  <Parameter id="param_calculation" column="4" value="Variance %" />
-  <Parameter id="FirstColumn" column="4" value="0" />
-  <Parameter id="SecondColumn" column="4" value="1" />
-  <Parameter id="param_ytd" column="4" value="false" />
-  <Parameter id="param_ytd" value="false" />
-  <Parameter id="param_currency_format" value="CurrencyComplete" />
-  <Parameter id="param_depth" value="standard" />
-  <Parameter id="param_cost_centre_breakdown" value="false" />
-  <Parameter id="param_cost_centre_summary" value="false" />
-  <Parameter id="param_cost_centre_codes" value="" />
-  <Parameter id="param_costcentreoptions" value="AccountLevel" />
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:Finance\\balancesheet.xml,Finance\\finance.xml,common.xml" />
+  <Parameter id="currentReport" value="eString:Balance Sheet" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:5" />
+  <Parameter id="param_account_hierarchy_c" value="eString:STANDARD" />
+  <Parameter id="param_currency" value="eString:Base" />
+  <Parameter id="param_quarter" value="eString:false" />
+  <Parameter id="param_calculation" column="0" value="eString:Actual Selected Year" />
+  <Parameter id="param_ytd" column="0" value="eString:false" />
+  <Parameter id="param_calculation" column="1" value="eString:Actual Previous Year" />
+  <Parameter id="param_ytd" column="1" value="eString:false" />
+  <Parameter id="param_calculation" column="2" value="eString:Actual End of Previous Year" />
+  <Parameter id="param_ytd" column="2" value="eString:false" />
+  <Parameter id="param_calculation" column="3" value="eString:Variance" />
+  <Parameter id="FirstColumn" column="3" value="eInteger:0" />
+  <Parameter id="SecondColumn" column="3" value="eInteger:1" />
+  <Parameter id="param_ytd" column="3" value="eString:false" />
+  <Parameter id="param_calculation" column="4" value="eString:Variance %" />
+  <Parameter id="FirstColumn" column="4" value="eInteger:0" />
+  <Parameter id="SecondColumn" column="4" value="eInteger:1" />
+  <Parameter id="param_ytd" column="4" value="eString:false" />
+  <Parameter id="param_ytd" value="eString:false" />
+  <Parameter id="param_currency_format" value="eString:CurrencyComplete" />
+  <Parameter id="param_depth" value="eString:standard" />
+  <Parameter id="param_cost_centre_breakdown" value="eString:false" />
+  <Parameter id="param_cost_centre_summary" value="eString:false" />
+  <Parameter id="param_cost_centre_codes" value="eString:" />
+  <Parameter id="param_costcentreoptions" value="eString:AccountLevel" />
 </Parameters>

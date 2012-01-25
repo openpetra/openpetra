@@ -1,0 +1,70 @@
+RootNode:
+    BaseYaml: PartnerReportingForm.yaml
+    FormType: report
+    FormTitle: Partner by Commitment
+    Namespace: Ict.Petra.Client.MReporting.Gui.MPartner
+#    UsingNamespaces: 
+    TemplateParameters:
+        CALCULATEFROMMETHOD: Ict.Petra.Server.MPartner.queries.QueryPartnerByCommitment.CalculateExtract
+        ISOLATIONLEVEL: serializable
+        XMLFILES: [Partner\\\\partnerbycommitmentextract.xml]
+        REPORTNAME: Partner By Commitment
+        CURRENTREPORT: Partner By Commitment
+        CONTROLSUSPENDLAYOUT: BLANK
+        CONTROLRESUMELAYOUT: BLANK
+        READCONTROLSVERIFICATION: BLANK
+        READCONTROLSLOCALVARS: BLANK
+        SETCONTROLSLOCALVARS: BLANK
+    Security:
+        ModulePermissionRequired: [PTNRUSER]
+    Controls:
+        tpgGeneralSettings:
+            Controls: [pnlDates, pnlFields, pnlCommitments, pnlMisc]
+        pnlDates:
+            Controls:
+                Row0: [dtpStartDateFrom, dtpStartDateTo]
+                Row1: [dtpEndDateFrom, dtpEndDateTo]
+                Row2: [dtpDateValidOn]
+        pnlFields:
+            Controls:
+                Row0: [txtFieldSending]
+                Row1: [txtFieldReceiving]
+        pnlCommitments:
+            Controls:
+                Row0: [chkCommitmentStatus]
+                Row1: [grpCommitmentStatuses]
+        pnlMisc:
+            Controls:
+                Row0: [chkPartnerActive]
+                Row1: [chkMailable]
+                Row2: [chkRespectNoSolicitors]
+                Row3: [txtExtractName, txtExtractDescription]
+
+        dtpStartDateFrom: {Label="&Start Date from", DefaultValue=null}
+        dtpStartDateTo: {Label="to", Value=null}
+        dtpEndDateFrom: {Label="&End Date from"}
+        dtpEndDateTo: {Label="to"}
+        dtpDateValidOn: {Label="&Valid on Day"}
+
+        txtFieldSending: {Label="Sending &Field", Type=PartnerKey, PartnerClass=UNIT}
+        txtFieldReceiving: {Label="&Receiving Field", Type=PartnerKey, PartnerClass=UNIT}
+
+        chkCommitmentStatus:
+            Label: "&Include only Persons with one or more of the selected Commitment Status(es)"
+            OnChange: chkCommitmentStatus_Changed
+        grpCommitmentStatuses:
+            Label: "Commitment Statuses"
+            Controls:
+                Row0: [grdCommitmentStatusChoices]
+                Row1: [chkCommitmentStatusOthers]
+        grdCommitmentStatusChoices:
+            Dock: Fill
+        chkCommitmentStatusOthers:
+            Label: "Include Persons with &no Commitment Status set"
+
+        chkPartnerActive: {Label="&Active partners only", DefaultValue=true}
+        chkMailable: {Label="&Mailing Addresses only", DefaultValue=true}
+        chkRespectNoSolicitors: {Label="E&xclude 'No Solicitations'", DefaultValue=true}
+
+        txtExtractName:
+        txtExtractDescription:

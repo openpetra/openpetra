@@ -1,30 +1,30 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="systemsettings" value="True" />
-  <Parameter id="xmlfiles" value="Finance\\donorgiftstofieldsreport.xml,Finance\\finance.xml,common.xml" />
-  <Parameter id="currentReport" value="DonorGiftToFields" />
-  <Parameter id="MaxDisplayColumns" value="4" />
-  <Parameter id="param_report_type" value="Summary" />
-  <Parameter id="param_donor" value="All Donors" />
-  <Parameter id="param_min_amount" value="0" />
-  <Parameter id="param_max_amount" value="999999999" />
-  <Parameter id="param_currency" value="Base" />
-  <Parameter id="param_calculation" column="0" value="Donor Key" />
-  <Parameter id="ColumnWidth" column="0" value="2" />
-  <Parameter id="param_ytd" column="0" value="false" />
-  <Parameter id="param_calculation" column="1" value="Donor Name" />
-  <Parameter id="ColumnWidth" column="1" value="3.5" />
-  <Parameter id="param_ytd" column="1" value="false" />
-  <Parameter id="param_calculation" column="2" value="Donor Address" />
-  <Parameter id="ColumnWidth" column="2" value="8" />
-  <Parameter id="param_ytd" column="2" value="false" />
-  <Parameter id="param_calculation" column="3" value="Gift Amount" />
-  <Parameter id="ColumnWidth" column="3" value="2" />
-  <Parameter id="param_ytd" column="3" value="false" />
-  <Parameter id="param_currency_format" value="CurrencyComplete" />
-  <Parameter id="param_field_selection" value="all_fields" />
-  <Parameter id="param_donorkey" value="0" />
-  <Parameter id="param_extract_name" value="" />
-  <Parameter id="param_gift_amount_column" value="3" />
-  <Parameter id="param_clbFields" value="" />
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:Finance\\donorgiftstofieldsreport.xml,Finance\\finance.xml,common.xml" />
+  <Parameter id="currentReport" value="eString:DonorGiftToFields" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:4" />
+  <Parameter id="param_report_type" value="eString:Summary" />
+  <Parameter id="param_donor" value="eString:All Donors" />
+  <Parameter id="param_min_amount" value="eInteger:0" />
+  <Parameter id="param_max_amount" value="eInteger:999999999" />
+  <Parameter id="param_currency" value="eString:Base" />
+  <Parameter id="param_calculation" column="0" value="eString:Donor Key" />
+  <Parameter id="ColumnWidth" column="0" value="eInteger:2" />
+  <Parameter id="param_ytd" column="0" value="eString:false" />
+  <Parameter id="param_calculation" column="1" value="eString:Donor Name" />
+  <Parameter id="ColumnWidth" column="1" value="eDecimal:4615063718147915776" />
+  <Parameter id="param_ytd" column="1" value="eString:false" />
+  <Parameter id="param_calculation" column="2" value="eString:Donor Address" />
+  <Parameter id="ColumnWidth" column="2" value="eInteger:8" />
+  <Parameter id="param_ytd" column="2" value="eString:false" />
+  <Parameter id="param_calculation" column="3" value="eString:Gift Amount" />
+  <Parameter id="ColumnWidth" column="3" value="eInteger:2" />
+  <Parameter id="param_ytd" column="3" value="eString:false" />
+  <Parameter id="param_currency_format" value="eString:CurrencyComplete" />
+  <Parameter id="param_field_selection" value="eString:all_fields" />
+  <Parameter id="param_donorkey" value="eInteger:0" />
+  <Parameter id="param_extract_name" value="eString:" />
+  <Parameter id="param_gift_amount_column" value="eInteger:3" />
+  <Parameter id="param_clbFields" value="eString:" />
 </Parameters>

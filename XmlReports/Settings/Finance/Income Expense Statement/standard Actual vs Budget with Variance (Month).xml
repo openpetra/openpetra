@@ -1,40 +1,40 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="systemsettings" value="True" />
-  <Parameter id="xmlfiles" value="Finance\\incomeexpensestatement.xml,Finance\\finance.xml,common.xml" />
-  <Parameter id="currentReport" value="Income Expense Statement" />
-  <Parameter id="MaxDisplayColumns" value="7" />
-  <Parameter id="param_diff_period_i" value="0" />
-  <Parameter id="param_account_hierarchy_c" value="STANDARD" />
-  <Parameter id="param_currency" value="Base" />
-  <Parameter id="param_quarter" value="false" />
-  <Parameter id="param_costcentreoptions" value="SelectedCostCentres" />
-  <Parameter id="param_cost_centre_codes" value="" />
-  <Parameter id="param_cost_centre_summary" value="false" />
-  <Parameter id="param_cost_centre_breakdown" value="false" />
-  <Parameter id="ExcludeInactiveCostCentres" value="false" />
-  <Parameter id="param_depth" value="standard" />
-  <Parameter id="param_calculation" column="0" value="Actual Selected Year" />
-  <Parameter id="param_ytd" column="0" value="false" />
-  <Parameter id="param_calculation" column="1" value="Budget Selected Year" />
-  <Parameter id="param_ytd" column="1" value="false" />
-  <Parameter id="param_calculation" column="2" value="Variance" />
-  <Parameter id="param_ytd" column="2" value="" />
-  <Parameter id="FirstColumn" column="2" value="0" />
-  <Parameter id="SecondColumn" column="2" value="1" />
-  <Parameter id="param_calculation" column="3" value="Actual Selected Year" />
-  <Parameter id="param_ytd" column="3" value="true" />
-  <Parameter id="FirstColumn" column="3" value="0" />
-  <Parameter id="SecondColumn" column="3" value="1" />
-  <Parameter id="param_calculation" column="4" value="Budget Selected Year" />
-  <Parameter id="param_ytd" column="4" value="true" />
-  <Parameter id="FirstColumn" column="4" value="0" />
-  <Parameter id="SecondColumn" column="4" value="1" />
-  <Parameter id="param_calculation" column="5" value="Variance" />
-  <Parameter id="param_ytd" column="5" value="" />
-  <Parameter id="FirstColumn" column="5" value="3" />
-  <Parameter id="SecondColumn" column="5" value="4" />
-  <Parameter id="param_calculation" column="6" value="Budget Whole Selected Year" />
-  <Parameter id="param_ytd" column="6" value="true" />
-  <Parameter id="param_currency_format" value="CurrencyComplete" />
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:Finance\\incomeexpensestatement.xml,Finance\\finance.xml,common.xml" />
+  <Parameter id="currentReport" value="eString:Income Expense Statement" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:7" />
+  <Parameter id="param_diff_period_i" value="eInteger:0" />
+  <Parameter id="param_account_hierarchy_c" value="eString:STANDARD" />
+  <Parameter id="param_currency" value="eString:Base" />
+  <Parameter id="param_quarter" value="eString:false" />
+  <Parameter id="param_costcentreoptions" value="eString:SelectedCostCentres" />
+  <Parameter id="param_cost_centre_codes" value="eString:" />
+  <Parameter id="param_cost_centre_summary" value="eString:false" />
+  <Parameter id="param_cost_centre_breakdown" value="eString:false" />
+  <Parameter id="ExcludeInactiveCostCentres" value="eString:false" />
+  <Parameter id="param_depth" value="eString:standard" />
+  <Parameter id="param_calculation" column="0" value="eString:Actual Selected Year" />
+  <Parameter id="param_ytd" column="0" value="eString:false" />
+  <Parameter id="param_calculation" column="1" value="eString:Budget Selected Year" />
+  <Parameter id="param_ytd" column="1" value="eString:false" />
+  <Parameter id="param_calculation" column="2" value="eString:Variance" />
+  <Parameter id="param_ytd" column="2" value="eString:" />
+  <Parameter id="FirstColumn" column="2" value="eInteger:0" />
+  <Parameter id="SecondColumn" column="2" value="eInteger:1" />
+  <Parameter id="param_calculation" column="3" value="eString:Actual Selected Year" />
+  <Parameter id="param_ytd" column="3" value="eString:true" />
+  <Parameter id="FirstColumn" column="3" value="eInteger:0" />
+  <Parameter id="SecondColumn" column="3" value="eInteger:1" />
+  <Parameter id="param_calculation" column="4" value="eString:Budget Selected Year" />
+  <Parameter id="param_ytd" column="4" value="eString:true" />
+  <Parameter id="FirstColumn" column="4" value="eInteger:0" />
+  <Parameter id="SecondColumn" column="4" value="eInteger:1" />
+  <Parameter id="param_calculation" column="5" value="eString:Variance" />
+  <Parameter id="param_ytd" column="5" value="eString:" />
+  <Parameter id="FirstColumn" column="5" value="eInteger:3" />
+  <Parameter id="SecondColumn" column="5" value="eInteger:4" />
+  <Parameter id="param_calculation" column="6" value="eString:Budget Whole Selected Year" />
+  <Parameter id="param_ytd" column="6" value="eString:true" />
+  <Parameter id="param_currency_format" value="eString:CurrencyComplete" />
 </Parameters>
