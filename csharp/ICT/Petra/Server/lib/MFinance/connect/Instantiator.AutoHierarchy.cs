@@ -7,7 +7,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -999,7 +999,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP.WebConnectors
                                               DateTime APostingDate,
                                               out TVerificationResultCollection AVerifications)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector), "PostAPDocuments", ";INT;LIST;DATETIME;TVERIFICATIONRESULTCOLLECTION;", ALedgerNumber);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector), "PostAPDocuments", ";INT;INT?;DATETIME;TVERIFICATIONRESULTCOLLECTION;", ALedgerNumber);
             return Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector.PostAPDocuments(ALedgerNumber, AAPDocumentNumbers, APostingDate, out AVerifications);
         }
 
@@ -1477,6 +1477,64 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Budget.WebConnectors
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector), "SaveBudget", ";BUDGETTDS;TVERIFICATIONRESULTCOLLECTION;");
             return Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector.SaveBudget(ref AInspectDS, out AVerificationResult);
+        }
+
+        /// generated method from connector
+        public System.Boolean ImportBudgets(Int32 ALedgerNumber,
+                                            System.String ACSVFileName,
+                                            System.String[] AFdlgSeparator,
+                                            ref BudgetTDS AImportDS,
+                                            out TVerificationResultCollection AVerificationResult)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector), "ImportBudgets", ";INT;STRING;STRING.ARRAY;BUDGETTDS;TVERIFICATIONRESULTCOLLECTION;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector.ImportBudgets(ALedgerNumber, ACSVFileName, AFdlgSeparator, ref AImportDS, out AVerificationResult);
+        }
+
+        /// generated method from connector
+        public System.Int32 GetGLMSequenceForBudget(System.Int32 ALedgerNumber,
+                                                    System.String AAccountCode,
+                                                    System.String ACostCentreCode,
+                                                    System.Int32 AYear)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector), "GetGLMSequenceForBudget", ";INT;STRING;STRING;INT;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector.GetGLMSequenceForBudget(ALedgerNumber, AAccountCode, ACostCentreCode, AYear);
+        }
+
+        /// generated method from connector
+        public System.Decimal GetActual(System.Int32 ALedgerNumber,
+                                        System.Int32 AGLMSeqThisYear,
+                                        System.Int32 AGLMSeqNextYear,
+                                        System.Int32 APeriodNumber,
+                                        System.Int32 ANumberAccountingPeriods,
+                                        System.Int32 ACurrentFinancialYear,
+                                        System.Int32 AThisYear,
+                                        System.Boolean AYTD,
+                                        System.String ACurrencySelect)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector), "GetActual", ";INT;INT;INT;INT;INT;INT;INT;BOOL;STRING;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector.GetActual(ALedgerNumber, AGLMSeqThisYear, AGLMSeqNextYear, APeriodNumber, ANumberAccountingPeriods, ACurrentFinancialYear, AThisYear, AYTD, ACurrencySelect);
+        }
+
+        /// generated method from connector
+        public System.Decimal GetBudget(System.Int32 AGLMSeqThisYear,
+                                        System.Int32 AGLMSeqNextYear,
+                                        System.Int32 APeriodNumber,
+                                        System.Int32 ANumberAccountingPeriods,
+                                        System.Boolean AYTD,
+                                        System.String ACurrencySelect)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector), "GetBudget", ";INT;INT;INT;INT;BOOL;STRING;");
+            return Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector.GetBudget(AGLMSeqThisYear, AGLMSeqNextYear, APeriodNumber, ANumberAccountingPeriods, AYTD, ACurrencySelect);
+        }
+
+        /// generated method from connector
+        public System.Boolean ConsolidateBudgets(Int32 ALedgerNumber,
+                                                 System.Boolean AConsolidateAll,
+                                                 ref BudgetTDS ABudgetTDS,
+                                                 ref TVerificationResultCollection AVerificationResult)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector), "ConsolidateBudgets", ";INT;BOOL;BUDGETTDS;TVERIFICATIONRESULTCOLLECTION;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector.ConsolidateBudgets(ALedgerNumber, AConsolidateAll, ref ABudgetTDS, ref AVerificationResult);
         }
     }
 }

@@ -462,4 +462,12 @@
     <Table sqltable="pc_building"/>
     <Table sqltable="pc_room"/>
   </DataSet>
+
+  <DataSet name="ExtractTDS">
+    <Table sqltable="m_extract_master"/>
+    <Table sqltable="m_extract"/>	
+    <Table sqltable="m_extract_type"/>	
+    <Table sqltable="m_extract_parameter"/>	
+  </DataSet>   
+  
 </PetraDataSets>

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,6 +23,7 @@
 //
 using System;
 using System.Data;
+using System.IO;
 using System.Windows.Forms;
 using GNU.Gettext;
 using Ict.Common;
@@ -32,7 +33,6 @@ using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Core;
-using Ict.Petra.Shared.Interfaces.Plugins.MFinance;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
@@ -54,7 +54,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             {
                 FLedgerNumber = value;
 
-                TFinanceControls.InitialiseAccountList(ref cmbSelectBankAccount, FLedgerNumber, true, false, true, true);
+                cmbBankAccount.Enabled = false;
 
                 ALedgerRow Ledger =
                     ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
@@ -62,9 +62,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                 txtDebitSum.CurrencySymbol = Ledger.BaseCurrency;
                 txtAmount.CurrencySymbol = Ledger.BaseCurrency;
 
-                // we can only load the statements when the ledger number is known
-                PopulateStatementCombobox();
-                cmbSelectStatement.SelectedIndex = cmbSelectStatement.Items.Count - 1;
+                pnlDetails.Visible = false;
             }
         }
 
@@ -72,42 +70,37 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
         private DataView FMatchView = null;
         private DataView FTransactionView = null;
 
-        private void InitializeManualCode()
+        private void RunOnceOnActivationManual()
         {
-            pnlDetails.Visible = false;
-            cmbSelectStatement.SelectedValueChanged += new EventHandler(SelectBankStatement);
+            TFrmSelectBankStatement DlgSelect = new TFrmSelectBankStatement(FPetraUtilsObject.GetCallerForm());
+
+            DlgSelect.LedgerNumber = FLedgerNumber;
+
+            if (DlgSelect.ShowDialog() == DialogResult.OK)
+            {
+                SelectBankStatement(DlgSelect.StatementKey);
+            }
+            else
+            {
+                this.Close();
+            }
         }
 
-        private void SelectBankStatement(System.Object sender, EventArgs e)
+        /// <summary>
+        /// select the bank statement that should be loaded
+        /// </summary>
+        /// <param name="AStatementKey"></param>
+        private void SelectBankStatement(Int32 AStatementKey)
         {
-            // TODO: check if we want to save the changed matches?
-            SaveMatches(null, null);
-
             CurrentlySelectedMatch = null;
             CurrentStatement = null;
-
-            if (cmbSelectStatement.GetSelectedInt32() == -1)
-            {
-                // no statement selected, therefore show no transactions. happens when deleting a statement
-                if (FTransactionView != null)
-                {
-                    FTransactionView.RowFilter = "false";
-                    pnlDetails.Visible = false;
-                }
-
-                return;
-            }
-
-            FMainDS.AEpStatement.DefaultView.RowFilter = String.Format("{0}={1}",
-                AEpStatementTable.GetStatementKeyDBName(),
-                cmbSelectStatement.GetSelectedInt32());
-            CurrentStatement = (AEpStatementRow)FMainDS.AEpStatement.DefaultView[0].Row;
-            FMainDS.AEpStatement.DefaultView.RowFilter = String.Empty;
 
             // load the transactions of the selected statement, and the matches
             FMainDS.Merge(
                 TRemote.MFinance.ImportExport.WebConnectors.GetBankStatementTransactionsAndMatches(
-                    CurrentStatement.StatementKey, FLedgerNumber));
+                    AStatementKey, FLedgerNumber));
+
+            CurrentStatement = (AEpStatementRow)FMainDS.AEpStatement[0];
 
             grdAllTransactions.Columns.Clear();
             grdAllTransactions.AddTextColumn(Catalog.GetString("Nr"), FMainDS.AEpTransaction.ColumnOrder, 40);
@@ -136,88 +129,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             FMatchView.AllowNew = false;
             grdGiftDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMatchView);
 
-            TFinanceControls.InitialiseAccountList(ref cmbSelectBankAccount, FLedgerNumber, true, false, true, true);
+            TFinanceControls.InitialiseAccountList(ref cmbBankAccount, FLedgerNumber, true, false, true, true);
 
             if (CurrentStatement != null)
             {
                 FMainDS.AEpStatement.DefaultView.RowFilter = String.Format("{0}={1}",
                     AEpStatementTable.GetStatementKeyDBName(),
                     CurrentStatement.StatementKey);
-                cmbSelectBankAccount.SetSelectedString(CurrentStatement.BankAccountCode);
+                cmbBankAccount.SetSelectedString(CurrentStatement.BankAccountCode);
+                txtBankStatement.Text = CurrentStatement.Filename;
                 FMainDS.AEpStatement.DefaultView.RowFilter = string.Empty;
             }
 
             rbtListAll.Checked = true;
             TransactionFilterChanged(null, null);
             grdAllTransactions.SelectRowInGrid(1);
-        }
-
-        private void PopulateStatementCombobox()
-        {
-            // TODO: add datetimepicker to toolstrip
-            // see http://www.daniweb.com/forums/thread109966.html#
-            // dtTScomponent = new ToolStripControlHost(dtMyDateTimePicker);
-            // MainToolStrip.Items.Add(dtTScomponent);
-            // DateTime.Now.AddMonths(-100);
-            DateTime dateStatementsFrom = DateTime.MinValue;
-
-            // update the combobox with the bank statements
-            AEpStatementTable stmts = TRemote.MFinance.ImportExport.WebConnectors.GetImportedBankStatements(dateStatementsFrom);
-
-            FMainDS.Merge(stmts);
-
-            cmbSelectStatement.BeginUpdate();
-            cmbSelectStatement.DataSource = stmts.DefaultView;
-            cmbSelectStatement.DisplayMember = AEpStatementTable.GetFilenameDBName();
-            cmbSelectStatement.ValueMember = AEpStatementTable.GetStatementKeyDBName();
-            cmbSelectStatement.DataSource = stmts.DefaultView;
-            cmbSelectStatement.DropDownWidth = 300;
-            cmbSelectStatement.EndUpdate();
-
-            cmbSelectStatement.SelectedIndex = -1;
-        }
-
-        private void ImportNewStatement(System.Object sender, EventArgs e)
-        {
-            // look for available plugin for importing a bank statement.
-            // the plugin will upload the data into the tables a_ep_statement and a_ep_transaction on the server/database
-            string BankStatementImportPlugin = TAppSettingsManager.GetValue("Plugin.BankStatementImport", "");
-
-            if (BankStatementImportPlugin.Length == 0)
-            {
-                MessageBox.Show(Catalog.GetString("Please install a valid plugin for the import of bank statements!"));
-                return;
-            }
-
-            if (cmbSelectBankAccount.Count == 0)
-            {
-                MessageBox.Show(Catalog.GetString("Please create a bank account first, before importing bank statements!"),
-                    Catalog.GetString("Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            // namespace of the class TBankStatementImport, eg. Plugin.BankImportFromCSV
-            // the dll has to be in the normal application directory
-            string Namespace = BankStatementImportPlugin;
-            string NameOfDll = Namespace + ".dll";
-            string NameOfClass = Namespace + ".TBankStatementImport";
-
-            // dynamic loading of dll
-            System.Reflection.Assembly assemblyToUse = System.Reflection.Assembly.LoadFrom(NameOfDll);
-            System.Type CustomClass = assemblyToUse.GetType(NameOfClass);
-
-            IImportBankStatement ImportBankStatement = (IImportBankStatement)Activator.CreateInstance(CustomClass);
-
-            Int32 StatementKey;
-
-            if (ImportBankStatement.ImportBankStatement(out StatementKey))
-            {
-                PopulateStatementCombobox();
-
-                // select the loaded bank statement and display all transactions
-                cmbSelectStatement.SetSelectedInt32(StatementKey);
-                SelectBankStatement(null, null);
-            }
         }
 
         private void MotivationDetailChanged(System.Object sender, EventArgs e)
@@ -304,27 +230,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
         private bool rbtGLWasChecked = false;
         private bool rbtGiftWasChecked = false;
 
-        private void DeleteStatement(System.Object Sender, EventArgs e)
-        {
-            if (CurrentStatement != null)
-            {
-                if (TRemote.MFinance.ImportExport.WebConnectors.DropBankStatement(CurrentStatement.StatementKey))
-                {
-                    FMainDS.AEpStatement.Rows.Remove(CurrentStatement);
-                    CurrentStatement = null;
-                    PopulateStatementCombobox();
-                    SelectBankStatement(null, null);
-                }
-            }
-        }
-
         /// store current selections in the a_ep_match table
         private void GetValuesFromScreen()
         {
             if (CurrentStatement != null)
             {
                 CurrentStatement.LedgerNumber = FLedgerNumber;
-                CurrentStatement.BankAccountCode = cmbSelectBankAccount.GetSelectedString();
             }
 
             if (CurrentlySelectedTransaction == null)
@@ -666,12 +577,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             // TODO: should we first ask? also when closing the window?
             SaveMatches(null, null);
 
-            if (cmbSelectBankAccount.SelectedIndex == -1)
-            {
-                MessageBox.Show(Catalog.GetString("Please select a bank account first!"), Catalog.GetString("No gift batch has been created"));
-                return;
-            }
-
             TVerificationResultCollection VerificationResult;
             Int32 GiftBatchNumber = TRemote.MFinance.ImportExport.WebConnectors.CreateGiftBatch(FMainDS,
                 FLedgerNumber,
@@ -706,12 +611,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
 
             // TODO: should we first ask? also when closing the window?
             SaveMatches(null, null);
-
-            if (cmbSelectBankAccount.SelectedIndex == -1)
-            {
-                MessageBox.Show(Catalog.GetString("Please select a bank account first!"), Catalog.GetString("No gift batch has been created"));
-                return;
-            }
 
             TVerificationResultCollection VerificationResult;
             Int32 GLBatchNumber = TRemote.MFinance.ImportExport.WebConnectors.CreateGLBatch(FMainDS,

@@ -1,0 +1,21 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraFormDialog.yaml
+    Template: window
+    FormTitle: AP Analysis Attributes
+    Namespace: Ict.Petra.Client.MFinance.Gui.AP
+    MasterTable: AApAnalAttrib
+    DetailTable: AApDocumentDetail
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.AP.Data]
+    FormType: dialog
+    WindowWidth: 450
+    WindowHeight: 250
+    Actions:
+    Controls:
+        pnlDialogContent:
+            Controls: [grdDetails,pnlDetails]
+        grdDetails:
+            Dock: Fill
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+          Controls: [cmbDetailAttrib]
+        cmbDetailAttrib: { OnChange=UnloadDetails, AcceptNewValues=false }

@@ -152,7 +152,7 @@ namespace Ict.Tools.PatchTool
                         // if this is a file required for the patch program, include the new version
                         if ((Path.GetFileName(filename) == "Ict.Common.dll") || (Path.GetFileName(filename) == "Ict.Common.IO.dll")
                             || (Path.GetFileName(filename) == "ICSharpCode.SharpZipLib.dll")
-                            || (Path.GetFileName(filename).ToLower() == "patchtool.exe"))
+                            || (Path.GetFileName(filename).ToLower() == "Ict.Tools.PatchTool.exe".ToLower()))
                         {
                             // don't compress here:
                             // the whole patch directory is zipped anyways in the end;

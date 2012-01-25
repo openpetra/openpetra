@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       wolfgangu
+//       wolfgangu, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,8 +26,10 @@ using System.Collections;
 using System.IO;
 using System.Data.Odbc;
 using NUnit.Framework;
-using Ict.Testing.NUnitForms;
+using Ict.Testing.NUnitTools;
+using Ict.Testing.NUnitPetraServer;
 using Ict.Petra.Server.MFinance.GL;
+using Ict.Common;
 using Ict.Common.Verification;
 
 using Ict.Petra.Server.MFinance.Account.Data.Access;
@@ -52,7 +54,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
     /// TestGLImport
     /// </summary>
     [TestFixture]
-    public class TestGLImport : CommonNUnitFunctions
+    public class TestGLImport
     {
         private const int intLedgerNumber = 43;
 
@@ -67,37 +69,50 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             requestParams.Add("ALedgerNumber", intLedgerNumber);
             requestParams.Add("Delimiter", ";");
-            requestParams.Add("DateFormatString", "dd/mm/yyyy");
+            requestParams.Add("DateFormatString", "dd/MM/yyyy");
             requestParams.Add("NumberFormat", "European");
             requestParams.Add("NewLine", Environment.NewLine);
 
-            string strContent = LoadCSVFileToString("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
+            string strContent = CommonNUnitFunctions.LoadCSVFileToString("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
                 "test-csv\\glbatch-import.csv");
-            // FileStream fs = new FileStream(
 
-            System.Diagnostics.Debug.WriteLine(strContent);
+            // Console.WriteLine(strContent);
             TVerificationResultCollection verificationResult;
 
-            //Assert.IsTrue(
-            TTransactionWebConnector.ImportGLBatches(requestParams, strContent, out verificationResult);
+            bool importSuccess = TTransactionWebConnector.ImportGLBatches(requestParams, strContent, out verificationResult);
 
-            //,
-            //"Import glbatch-import.csv done well ....");
-            for (int i = 0; i < verificationResult.Count; ++i)
+            if (verificationResult.HasCriticalError())
             {
-                System.Diagnostics.Debug.WriteLine(i + " : " + verificationResult[i].ResultText);
+                TLogging.Log(verificationResult.BuildVerificationResultString());
             }
+
+            Assert.IsTrue(importSuccess, "Import glbatch-import.csv done well ....");
         }
 
         /// <summary>
         /// TestFixtureSetUp
         /// </summary>
-        [SetUp]
+        [TestFixtureSetUp]
         public void Init()
         {
-            InitServerConnection();
-            System.Diagnostics.Debug.WriteLine("Init: " + this.ToString());
-            ResetDatabase();
+            TPetraServerConnector.Connect();
+            PrepareTestCaseData();
+        }
+
+        private void PrepareTestCaseData()
+        {
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
+
+            // Check if some special test data are available - otherwise load ...
+            bool CostCentreTestCasesAvailable = ACostCentreAccess.Exists(intLedgerNumber, "4301", Transaction);
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+
+            if (!CostCentreTestCasesAvailable)
+            {
+                CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
+                    "test-sql\\gl-test-costcentre-data.sql");
+            }
         }
 
         /// <summary>
@@ -106,8 +121,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [TestFixtureTearDown]
         public void TearDownTest()
         {
-            DisconnectServerConnection();
-            System.Diagnostics.Debug.WriteLine("TearDown: " + this.ToString());
+            TPetraServerConnector.Disconnect();
         }
     }
 }

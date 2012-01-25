@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,126 +26,52 @@ using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
 
-using NUnit.Extensions.Forms;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
-
 
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.Remoting.Server;
 using Ict.Common.Remoting.Shared;
-using Ict.Petra.Client.MFinance.Gui;
-using Ict.Petra.Client.MFinance.Gui.GL;
-using Ict.Petra.Client.MFinance.Gui.Setup;
-using Ict.Petra.Server.App.Core;
-using Ict.Testing.NUnitForms;
-using Ict.Testing.NUnitPetraClient;
 
-using Ict.Testing.NUnitPetraServer;
-
-namespace Ict.Testing.NUnitForms
+namespace Ict.Testing.NUnitTools
 {
     /// <summary>
-    /// The idea of CommonNUnitFunctions is that you can replace the test inheritace of
-    /// NUnitFormTest by NUnitFormTest. So you will get a set of small helpfull routines
-    /// to make testing something easier.
+    /// a set of small helpfull routines to make testing something easier.
     /// </summary>
-    public class CommonNUnitFunctions : NUnitFormTest
+    public class CommonNUnitFunctions
     {
-        /// <summary>
-        /// Empty Constructor ...
-        /// </summary>
-        public CommonNUnitFunctions()
-        {
-        }
-
-        /// <summary>
-        /// This "string" can be used as an public property to read in the
-        /// Title of the last Message box.
-        /// </summary>
-        public String lastMessageTitle;
-
-        /// <summary>
-        /// This "string" can be used as an public property to read in the
-        /// Message of the last Message box.
-        /// </summary>
-        public String lastMessageText;
-
         /// <summary>
         /// This is the central path of the complete tree
         /// </summary>
-        public string rootPath;
+        public static string rootPath;
 
         /// <summary>
-        /// Actually this setting shall be done manually.
+        /// get the root path of this OpenPetra directory
         /// </summary>
-        private string pathAndFileNameToNantExe = "nant";
-
-        /// <summary>
-        /// The delegate to handle the message box is installed.
-        /// </summary>
-        /// <param name="cmd">Contains a NUnit.Extensions.Forms.MessageBoxTester.Command to
-        /// insert the desired reaction.</param>
-        public void WaitForMessageBox(NUnit.Extensions.Forms.MessageBoxTester.Command cmd)
-        {
-            lastMessageTitle = "";
-            lastMessageText = "";
-
-            ModalFormHandler = delegate(string name, IntPtr hWnd, Form form)
-            {
-                MessageBoxTester tester = new MessageBoxTester(hWnd);
-
-                System.Console.WriteLine("Title: " + tester.Title);
-                System.Console.WriteLine("Message: " + tester.Text);
-
-                lastMessageTitle = tester.Title;
-                lastMessageText = tester.Text;
-
-                tester.SendCommand(cmd);
-            };
-        }
-
-        /// <summary>
-        /// Routine to initialize the connection to TestServer.config and TestServer.log
-        /// </summary>
-        public void InitServerConnection()
+        public static void InitRootPath()
         {
             string strAssemblyPath = System.AppDomain.CurrentDomain.BaseDirectory.ToString();
 
             string[] strArr = strAssemblyPath.Split(new char[] { '\\', '/' });
-            string strTrunkRoot = "";
+            rootPath = "";
 
             for (int i = 0; i < strArr.Length - 2; ++i)
             {
-                strTrunkRoot = strTrunkRoot + strArr[i] + "/";
+                rootPath += strArr[i] + "/";
             }
 
-            rootPath = strTrunkRoot;
-
-            System.Diagnostics.Debug.WriteLine("strRootPath: " + rootPath);
-
-            string strNameLog = strTrunkRoot + "log/TestServer.log";
-            string strNameConfig = strTrunkRoot + "etc/TestServer.config";
-
-            new TLogging(strNameLog);
-            TPetraServerConnector.Connect(strNameConfig);
+            // System.Diagnostics.Debug.WriteLine("rootPath: " + rootPath);
         }
 
         /// <summary>
         /// ...
         /// </summary>
-        public void DisconnectServerConnection()
+        public static string LoadCSVFileToString(string fileName)
         {
-            TPetraServerConnector.Disconnect();
-        }
-
-        /// <summary>
-        /// ...
-        /// </summary>
-        public string LoadCSVFileToString(string fileName)
-        {
-            using (FileStream fs = new FileStream(rootPath + "/" + fileName, FileMode.Open))
+            using (FileStream fs = new FileStream(rootPath + "/" +
+                       fileName.Replace('\\', Path.DirectorySeparatorChar),
+                       FileMode.Open))
             {
                 using (StreamReader sr = new StreamReader(fs))
                 {
@@ -157,7 +83,7 @@ namespace Ict.Testing.NUnitForms
         /// <summary>
         /// Resets the data base to its initial value ...
         /// </summary>
-        public void ResetDatabase()
+        public static void ResetDatabase()
         {
             nant("resetDatabase", false);
         }
@@ -167,9 +93,9 @@ namespace Ict.Testing.NUnitForms
         /// </summary>
         /// <param name="strSqlFilePathFromCSharpName">A filename starting from the root.
         /// (csharp\\ICT\\Testing\\...\\filename.sql)</param>
-        public void LoadTestDataBase(string strSqlFilePathFromCSharpName)
+        public static void LoadTestDataBase(string strSqlFilePathFromCSharpName)
         {
-            System.Diagnostics.Debug.WriteLine("strSqlFilePathFromCSharpName: " + strSqlFilePathFromCSharpName);
+            TLogging.Log("LoadTestDataBase file: " + strSqlFilePathFromCSharpName);
             //nant("stopPetraServer", true);
             // csharp\\ICT\\Testing\\...\\filename.sql"
             //  + " >C:\\report.txt"
@@ -178,17 +104,32 @@ namespace Ict.Testing.NUnitForms
         }
 
         /// <summary>
+        /// Actually this setting shall be done manually.
+        /// </summary>
+        private static string pathAndFileNameToNantExe = "nant";
+
+        /// <summary>
         /// Routine to start nant ...
         /// </summary>
         /// <param name="argument"></param>
         /// <param name="ignoreError"></param>
-        private void nant(String argument, bool ignoreError)
+        private static void nant(String argument, bool ignoreError)
         {
             Process NantProcess = new Process();
 
             NantProcess.EnableRaisingEvents = false;
-            NantProcess.StartInfo.FileName = "cmd";
-            NantProcess.StartInfo.Arguments = "/c " + pathAndFileNameToNantExe + " " + argument + " -logfile:nant.txt";
+
+            if (Ict.Common.Utilities.DetermineExecutingOS() == TExecutingOSEnum.eosWinNTOrLater)
+            {
+                NantProcess.StartInfo.FileName = "cmd";
+                NantProcess.StartInfo.Arguments = "/c " + pathAndFileNameToNantExe + " " + argument + " -logfile:nant.txt";
+            }
+            else
+            {
+                NantProcess.StartInfo.FileName = pathAndFileNameToNantExe;
+                NantProcess.StartInfo.Arguments = argument.Replace("\\", "/") + " -logfile:nant.txt";
+            }
+
             NantProcess.StartInfo.WorkingDirectory = rootPath;
             NantProcess.StartInfo.UseShellExecute = true;
             NantProcess.EnableRaisingEvents = true;
@@ -196,7 +137,7 @@ namespace Ict.Testing.NUnitForms
 
             if (!NantProcess.Start())
             {
-                Debug.Print("failed to start " + NantProcess.StartInfo.FileName);
+                TLogging.Log("failed to start " + NantProcess.StartInfo.FileName);
             }
             else
             {
@@ -205,7 +146,7 @@ namespace Ict.Testing.NUnitForms
             }
 
             StreamReader sr = new StreamReader(rootPath + Path.DirectorySeparatorChar + "nant.txt");
-            Debug.Print(sr.ReadToEnd());
+            TLogging.Log(sr.ReadToEnd());
             sr.Close();
             File.Delete(rootPath + Path.DirectorySeparatorChar + "nant.txt");
         }

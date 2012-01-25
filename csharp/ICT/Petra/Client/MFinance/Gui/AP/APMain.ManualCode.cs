@@ -33,13 +33,16 @@ using System.Resources;
 using System.Collections.Specialized;
 using GNU.Gettext;
 using Ict.Common;
-using Ict.Petra.Client.App.Core;
 using Ict.Common.Controls;
+using Ict.Common.Conversion;
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MPartner.Gui;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.Interfaces.MFinance.AP.UIConnectors;
+using Ict.Petra.Shared.MFinance.AP.Data;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.AP
 {
@@ -47,6 +50,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
     {
         private IAPUIConnectorsFind FSupplierFindObject = null;
         private bool FKeepUpSearchFinishedCheck = false;
+        private bool FSearchForSuppliers = false;
+
 
         /// <summary>DataTable that holds all Pages of data (also empty ones that are not retrieved yet!)</summary>
         private DataTable FPagedDataTable;
@@ -65,9 +70,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         }
 
         /// <summary>
-        /// search button was clicked
+        /// Search button was clicked
         /// </summary>
-        public void SearchForSupplier(object sender, EventArgs e)
+        public void DoSearch(object sender, EventArgs e)
         {
             if (FKeepUpSearchFinishedCheck)
             {
@@ -75,18 +80,49 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 return;
             }
 
+            FSearchForSuppliers = tpgSuppliers.Visible;
+
             FSupplierFindObject = TRemote.MFinance.AP.UIConnectors.Find();
-
             DataTable CriteriaTable = new DataTable();
-
-            // TODO: fill this criteria table with generated code? or check for visible controls during runtime?
+            CriteriaTable.Columns.Add("LedgerNumber", typeof(Int32));
             CriteriaTable.Columns.Add("SupplierId", typeof(string));
+
+            decimal DaysPlus = -1;
+
+            if (chkDueFuture.Checked)  // Calculate the future date to send to the server
+            {
+                DaysPlus = nudNumberTimeUnits.Value;
+
+                if (cmbTimeUnit.SelectedText == "Months")
+                {
+                    DaysPlus *= 31;
+                }
+                else if (cmbTimeUnit.SelectedText == "Weeks")
+                {
+                    DaysPlus *= 7;
+                }
+            }
+            else if (chkDueToday.Checked)
+            {
+                DaysPlus = 0;
+            }
+
+            CriteriaTable.Columns.Add("DaysPlus", typeof(decimal));
             DataRow row = CriteriaTable.NewRow();
+            row["DaysPlus"] = DaysPlus;
+            row["SupplierId"] = cmbSupplierCode.Text;
+            row["LedgerNumber"] = FLedgerNumber;
             CriteriaTable.Rows.Add(row);
-            row["SupplierId"] = cmbSupplierCode.GetSelectedString();
 
             // Start the asynchronous search operation on the PetraServer
-            FSupplierFindObject.FindSupplier(CriteriaTable);
+            if (FSearchForSuppliers)
+            {
+                FSupplierFindObject.FindSupplier(CriteriaTable);
+            }
+            else
+            {
+                FSupplierFindObject.FindInvoices(CriteriaTable);
+            }
 
             // Start thread that checks for the end of the search operation on the PetraServer
             FKeepUpSearchFinishedCheck = true;
@@ -141,18 +177,55 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private void InitialiseGrid()
         {
-            grdSupplierResult.Columns.Clear();
-            grdSupplierResult.AddTextColumn("Partner Key", FPagedDataTable.Columns[0]);
-            grdSupplierResult.AddTextColumn("Partner Name", FPagedDataTable.Columns[1]);
+            if (FSearchForSuppliers)
+            {
+                grdSupplierResult.Columns.Clear();
+                grdSupplierResult.AddTextColumn("Supplier Key", FPagedDataTable.Columns[0]);
+                grdSupplierResult.AddTextColumn("Supplier Name", FPagedDataTable.Columns[1]);
+                grdSupplierResult.AddTextColumn("Currency", FPagedDataTable.Columns[2]);
+
+                grdSupplierResult.Columns[0].Width = 90;
+                grdSupplierResult.Columns[1].Width = 250;
+                grdSupplierResult.Columns[2].Width = 85;
+            }
+            else
+            {
+                grdInvoiceResult.Columns.Clear();
+                grdInvoiceResult.AddTextColumn("AP#", FPagedDataTable.Columns[0]);
+                grdInvoiceResult.AddTextColumn("Inv#", FPagedDataTable.Columns[1]);
+                grdInvoiceResult.AddTextColumn("Supplier", FPagedDataTable.Columns[2]);
+                grdInvoiceResult.AddCurrencyColumn("Amount", FPagedDataTable.Columns[4]);
+                grdInvoiceResult.AddTextColumn("Currency", FPagedDataTable.Columns[3]);
+                grdInvoiceResult.AddDateColumn("Due Date", FPagedDataTable.Columns[7]);
+                grdInvoiceResult.AddTextColumn("Status", FPagedDataTable.Columns[5]);
+                grdInvoiceResult.AddDateColumn("Issued", FPagedDataTable.Columns[6]);
+                grdInvoiceResult.AddTextColumn("Discount", FPagedDataTable.Columns["DiscountMsg"]);
+
+                grdInvoiceResult.Columns[0].Width = 55;
+                grdInvoiceResult.Columns[1].Width = 90;
+                grdInvoiceResult.Columns[2].Width = 240;
+                grdInvoiceResult.Columns[3].Width = 90;
+                grdInvoiceResult.Columns[4].Width = 70;
+                grdInvoiceResult.Columns[5].Width = 90;
+                grdInvoiceResult.Columns[6].Width = 100;
+                grdInvoiceResult.Columns[7].Width = 90;
+                grdInvoiceResult.Columns[8].Width = 150;
+            }
         }
 
-        /// make sure that this is called in the normal GUI thread
         private void FinishThread()
         {
             // Fetch the first page of data
             try
             {
-                FPagedDataTable = grdSupplierResult.LoadFirstDataPage(@GetDataPagedResult);
+                if (FSearchForSuppliers)
+                {
+                    FPagedDataTable = grdSupplierResult.LoadFirstDataPage(@GetDataPagedResult);
+                }
+                else
+                {
+                    FPagedDataTable = grdInvoiceResult.LoadFirstDataPage(@GetDataPagedResult);
+                }
             }
             catch (Exception E)
             {
@@ -161,22 +234,48 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             InitialiseGrid();
             DataView myDataView = FPagedDataTable.DefaultView;
             myDataView.AllowNew = false;
-            grdSupplierResult.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
-            grdSupplierResult.AutoSizeCells();
-            grdSupplierResult.Visible = true;
 
-            if (grdSupplierResult.TotalPages > 0)
+            if (FSearchForSuppliers)
             {
-                grdSupplierResult.BringToFront();
+                grdSupplierResult.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+                grdSupplierResult.Visible = true;
 
-                // Highlight first Row
-                grdSupplierResult.Selection.SelectRow(1, true);
+                if (grdSupplierResult.TotalPages > 0)
+                {
+                    grdSupplierResult.BringToFront();
 
-                // Make the Grid respond on updown keys
-                grdSupplierResult.Focus();
+                    // Highlight first Row
+                    grdSupplierResult.Selection.SelectRow(1, true);
+
+                    // Make the Grid respond on updown keys
+                    grdSupplierResult.Focus();
+                }
+
+                ActionEnabledEvent(null, new ActionEventArgs("cndSelectedSupplier", grdSupplierResult.TotalPages > 0));
             }
+            else
+            {
+                grdInvoiceResult.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+                grdInvoiceResult.Visible = true;
 
-            ActionEnabledEvent(null, new ActionEventArgs("cndSelectedSupplier", grdSupplierResult.TotalPages > 0));
+                if (grdInvoiceResult.TotalPages > 0)
+                {
+                    grdInvoiceResult.BringToFront();
+
+                    // Highlight first Row
+                    grdInvoiceResult.Selection.SelectRow(1, true);
+
+                    // Make the Grid respond on updown keys
+                    grdInvoiceResult.Focus();
+                }
+
+//              ActionEnabledEvent(null, new ActionEventArgs("cndSelectedDocument", grdInvoiceResult.TotalPages > 0));
+            }
+        }
+
+        private void InitializeManualCode()
+        {
+            this.cmbSupplierCurrency.cmbCombobox.TextChanged += new System.EventHandler(this.SetSupplierFilters);
         }
 
         private void EnableDisableUI(bool AEnable)
@@ -199,7 +298,35 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             if (FSupplierFindObject != null)
             {
-                return FSupplierFindObject.GetDataPagedResult(ANeededPage, APageSize, out ATotalRecords, out ATotalPages);
+                DataTable tble = FSupplierFindObject.GetDataPagedResult(ANeededPage, APageSize, out ATotalRecords, out ATotalPages);
+
+                if (!FSearchForSuppliers)
+                {
+                    tble.Columns.Add("DiscountMsg");
+
+                    foreach (DataRow Row in tble.Rows)
+                    {
+                        Row["DiscountMsg"] = "None";
+
+                        if (Row[9].GetType() == typeof(DateTime))
+                        {
+                            Decimal DiscountPercent = (Decimal)Row[8];
+                            DateTime DiscountUntil = (DateTime)Row[9];
+
+                            if (DiscountUntil > DateTime.Now)
+                            {
+                                Row["DiscountMsg"] =
+                                    String.Format("{0:n0}% until {1}", DiscountPercent, TDate.DateTimeToLongDateString2(DiscountUntil));
+                            }
+                            else
+                            {
+                                Row["DiscountMsg"] = "Expired";
+                            }
+                        }
+                    }
+                }
+
+                return tble;
             }
             else
             {
@@ -217,7 +344,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             if (SelectedGridRow.Length >= 1)
             {
-                return Convert.ToInt64(SelectedGridRow[0][FPagedDataTable.Columns[0].ColumnName]);
+                Int64 SupplierKey = Convert.ToInt64(SelectedGridRow[0][0]);
+                return SupplierKey;
             }
 
             return -1;
@@ -310,6 +438,56 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                 frm.CreateAApDocument(FLedgerNumber, PartnerKey, true);
                 frm.Show();
+            }
+        }
+
+        private void SupplierOutstandingOpt(object sender, EventArgs e)
+        {
+        }
+
+        private void SetDueFilters(object sender, EventArgs e)
+        {
+            bool CanShow =
+                (chkDueToday.CheckState == CheckState.Checked)
+                || (chkOverdue.CheckState == CheckState.Checked)
+                || (chkDueFuture.CheckState == CheckState.Checked);
+
+            if (!CanShow)
+            {
+                chkShowOutstandingAmounts.CheckState = CheckState.Unchecked;
+            }
+
+            chkShowOutstandingAmounts.Enabled = CanShow;
+        }
+
+        private void SetSupplierFilters(object sender, EventArgs e)
+        {
+            if (FPagedDataTable != null)
+            {
+                String CurrencyRowFilter = "";
+                String ActiveRowFilter = "";
+
+                String CurrencyCode = cmbSupplierCurrency.cmbCombobox.Text;
+
+                if (CurrencyCode != "")
+                {
+                    CurrencyRowFilter = String.Format("{0}='{1}'", AApSupplierTable.GetCurrencyCodeDBName(), CurrencyCode);
+                }
+
+                if (chkHideInactiveSuppliers.CheckState == CheckState.Checked)
+                {
+                    ActiveRowFilter = String.Format("{0}='ACTIVE'", PPartnerTable.GetStatusCodeDBName());
+                }
+
+                String RowFilter = CurrencyRowFilter;
+
+                if ((CurrencyRowFilter != "") && (ActiveRowFilter != ""))
+                {
+                    RowFilter += " AND ";
+                }
+
+                RowFilter += ActiveRowFilter;
+                FPagedDataTable.DefaultView.RowFilter = RowFilter;
             }
         }
     }

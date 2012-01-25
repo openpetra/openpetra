@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1224,12 +1224,8 @@ namespace Ict.Common.IO
             PatchExecutableFiles.Add(binPath + "Ict.Common.dll");
             PatchExecutableFiles.Add(binPath + "Ict.Common.IO.dll");
             PatchExecutableFiles.Add(binPath + "ICSharpCode.SharpZipLib.dll");
-            PatchExecutableFiles.Add(binPath + "PatchTool.exe");
+            PatchExecutableFiles.Add(binPath + "Ict.Tools.PatchTool.exe");
             PatchExecutableFiles.Add(binPath + "GNU.Gettext.dll");
-            PatchExecutableFiles.Add(binPath + "intl.dll");
-            PatchExecutableFiles.Add(binPath + "Mono.Posix.dll");
-            PatchExecutableFiles.Add(binPath + "Mono.Security.dll");
-            PatchExecutableFiles.Add(binPath + "MonoPosixHelper.dll");
 
             // copy the PatchTool.exe and required files from the currently installed application to a temp directory
             foreach (string patchExeFile in PatchExecutableFiles)

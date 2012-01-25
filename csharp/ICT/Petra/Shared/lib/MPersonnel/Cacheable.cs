@@ -7,7 +7,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -166,6 +166,16 @@ namespace Ict.Petra.Shared.MPersonnel
         /// <summary>
         /// Describes the importance of the country and target choices
         /// </summary>
-        OutreachPreferenceLevelList
+        OutreachPreferenceLevelList,
+
+        /// <summary>
+        /// Contains the categories describing person's skills
+        /// </summary>
+        SkillCategoryList,
+
+        /// <summary>
+        /// Contains the levels to which a skill is possessed
+        /// </summary>
+        SkillLevelList
     };
 }

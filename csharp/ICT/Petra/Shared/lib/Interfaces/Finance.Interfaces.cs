@@ -8,7 +8,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -333,6 +333,39 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Budget.WebConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector)</summary>
         TSubmitChangesResult SaveBudget(ref BudgetTDS AInspectDS,
                                         out TVerificationResultCollection AVerificationResult);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector)</summary>
+        System.Boolean ImportBudgets(Int32 ALedgerNumber,
+                                     System.String ACSVFileName,
+                                     System.String[] AFdlgSeparator,
+                                     ref BudgetTDS AImportDS,
+                                     out TVerificationResultCollection AVerificationResult);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector)</summary>
+        System.Int32 GetGLMSequenceForBudget(System.Int32 ALedgerNumber,
+                                             System.String AAccountCode,
+                                             System.String ACostCentreCode,
+                                             System.Int32 AYear);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector)</summary>
+        System.Decimal GetActual(System.Int32 ALedgerNumber,
+                                 System.Int32 AGLMSeqThisYear,
+                                 System.Int32 AGLMSeqNextYear,
+                                 System.Int32 APeriodNumber,
+                                 System.Int32 ANumberAccountingPeriods,
+                                 System.Int32 ACurrentFinancialYear,
+                                 System.Int32 AThisYear,
+                                 System.Boolean AYTD,
+                                 System.String ACurrencySelect);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector)</summary>
+        System.Decimal GetBudget(System.Int32 AGLMSeqThisYear,
+                                 System.Int32 AGLMSeqNextYear,
+                                 System.Int32 APeriodNumber,
+                                 System.Int32 ANumberAccountingPeriods,
+                                 System.Boolean AYTD,
+                                 System.String ACurrencySelect);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector)</summary>
+        System.Boolean ConsolidateBudgets(Int32 ALedgerNumber,
+                                          System.Boolean AConsolidateAll,
+                                          ref BudgetTDS ABudgetTDS,
+                                          ref TVerificationResultCollection AVerificationResult);
     }
 
 }

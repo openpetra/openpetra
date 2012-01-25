@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -198,9 +198,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.btnClearCriteria.Text = Catalog.GetString("Clea&r");
             this.grpCriteria.Text = Catalog.GetString("Find Criteria");
             this.btnCustomCriteriaDemo.Text = Catalog.GetString("Custom Criteria Demo");
+            this.ucoPartnerInfo.Text = Catalog.GetString("Partner Info");
             this.grpResult.Text = Catalog.GetString("Fin&d Result");
             this.lblSearchInfo.Text = Catalog.GetString("Searching...");
             #endregion
+
+            // on Mono: we need to change the AutoSize so that the results will be displayed
+            if (Ict.Common.Utilities.DetermineExecutingCLR() == TExecutingCLREnum.eclrMono)
+            {
+                this.pnlPartnerInfoContainer.AutoSize = false;
+            }
 
             // Define the screen's Logic
             FLogic = new TPartnerFindScreenLogic();

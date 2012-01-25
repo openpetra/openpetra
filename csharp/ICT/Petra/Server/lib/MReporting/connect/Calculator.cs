@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,6 +27,8 @@ using Ict.Petra.Server.MReporting;
 using System.Data.Odbc;
 using System.Data;
 using System.Collections;
+using System.Collections.Generic;
+using System.Reflection;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.IO; // Implicit reference
@@ -102,17 +104,22 @@ namespace Ict.Petra.Server.MReporting.LogicConnectors
             try
             {
                 this.Parameters = parameterlist;
-                LoadReportDefinitionFiles(Parameters.Get("xmlfiles").ToString());
-                this.CurrentReport = this.ReportStore.Get(Parameters.Get("currentReport").ToString());
 
-                if (this.CurrentReport == null)
+                if (!Parameters.Exists("calculateFromMethod"))
                 {
-                    TLogging.Log("report \"" + Parameters.Get("currentReport").ToString() + "\" could not be found. XML file missing?");
-                    return false;
+                    LoadReportDefinitionFiles(Parameters.Get("xmlfiles").ToString());
+                    this.CurrentReport = this.ReportStore.Get(Parameters.Get("currentReport").ToString());
+
+                    if (this.CurrentReport == null)
+                    {
+                        TLogging.Log("report \"" + Parameters.Get("currentReport").ToString() + "\" could not be found. XML file missing?");
+                        return false;
+                    }
+
+                    InitColumns();
+                    InitColumnsFormat();
                 }
 
-                InitColumns();
-                InitColumnsFormat();
                 InitParameterLedgers();
 
                 if (Parameters.Get("param_multiperiod").ToBool())
@@ -133,6 +140,13 @@ namespace Ict.Petra.Server.MReporting.LogicConnectors
                 if (Calculate() && (Parameters.Get("CancelReportCalculation").ToBool() != true))
                 {
                     resultlist = this.Results;
+
+                    if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_REPORTING)
+                    {
+                        Parameters.Save(Path.GetDirectoryName(
+                                TSrvSetting.ServerLogFile) + Path.DirectorySeparatorChar + "LogParamAfterCalculation.xml", true);
+                    }
+
                     ReturnValue = true;
                 }
             }
@@ -159,31 +173,98 @@ namespace Ict.Petra.Server.MReporting.LogicConnectors
             return ReturnValue;
         }
 
+        private SortedList <string, Assembly>FReportAssemblies = new SortedList <string, Assembly>();
+
+        /// <summary>
+        /// as an alternative to calculate reports from an xml file, you can also write a method now that calculates the result for a report or extract
+        /// </summary>
+        /// <param name="ANamespaceClassAndMethodName"></param>
+        /// <returns></returns>
+        protected Boolean CalculateFromMethod(string ANamespaceClassAndMethodName)
+        {
+            string methodName = ANamespaceClassAndMethodName.Substring(ANamespaceClassAndMethodName.LastIndexOf(".") + 1);
+
+            ANamespaceClassAndMethodName = ANamespaceClassAndMethodName.Substring(0, ANamespaceClassAndMethodName.LastIndexOf("."));
+            string className = ANamespaceClassAndMethodName.Substring(ANamespaceClassAndMethodName.LastIndexOf(".") + 1);
+            string namespaceName = ANamespaceClassAndMethodName.Substring(0, ANamespaceClassAndMethodName.LastIndexOf("."));
+
+            if (!FReportAssemblies.Keys.Contains(namespaceName))
+            {
+                // work around dlls containing several namespaces, eg Ict.Petra.Client.MFinance.Gui contains AR as well
+                string DllName = (TAppSettingsManager.ApplicationDirectory + Path.DirectorySeparatorChar + namespaceName).ToString().
+                                 Replace("Ict.Petra.Server.", "Ict.Petra.Server.lib.");
+
+                if (!System.IO.File.Exists(DllName + ".dll"))
+                {
+                    DllName = DllName.Substring(0, DllName.LastIndexOf("."));
+                }
+
+                try
+                {
+                    FReportAssemblies.Add(namespaceName, Assembly.LoadFrom(DllName + ".dll"));
+                }
+                catch (Exception exp)
+                {
+                    throw new Exception("error loading assembly " + namespaceName + ".dll: " + exp.Message);
+                }
+            }
+
+            Assembly asm = FReportAssemblies[namespaceName];
+
+            System.Type classType = asm.GetType(namespaceName + "." + className);
+
+            if (classType == null)
+            {
+                throw new Exception("cannot find class " + namespaceName + "." + className + " for method " + methodName);
+            }
+
+            MethodInfo method = classType.GetMethod(methodName, BindingFlags.Static | BindingFlags.Public);
+
+            if (method != null)
+            {
+                return (bool)method.Invoke(null, new object[] { this.Parameters, this.Results });
+            }
+            else
+            {
+                throw new Exception("cannot find method " + className + "." + methodName);
+            }
+        }
+
         /// <summary>
         /// todoComment
         /// </summary>
         /// <returns></returns>
         protected Boolean Calculate()
         {
-            TRptDataCalcHeaderFooter calcHeaderFooter;
-            TRptDataCalcLevel calclevel;
-
             this.Results.Clear();
-            calcHeaderFooter = new TRptDataCalcHeaderFooter(this, -1, -1, 0, 0);
-            calcHeaderFooter.Calculate(CurrentReport.pagefield, CurrentReport.pageswitch);
-            InitColumnCaptions();
-            calclevel = new TRptDataCalcLevel(this, 0, -1, 0, 0);
 
-            if ((calclevel.Calculate(CurrentReport.GetLevel("main"), 0) == -1) || (Parameters.Get("CancelReportCalculation").ToBool() == true))
+            if (Parameters.Exists("calculateFromMethod"))
             {
-                TLogging.Log("ERROR: could not calculate main level (or report was cancelled).");
-                return false;
+                if (!CalculateFromMethod(Parameters.Get("calculateFromMethod").ToString()))
+                {
+                    TLogging.Log("ERROR: could not calculate from method (or report was cancelled).");
+                    return false;
+                }
+            }
+            else
+            {
+                TRptDataCalcHeaderFooter calcHeaderFooter = new TRptDataCalcHeaderFooter(this, -1, -1, 0, 0);
+                calcHeaderFooter.Calculate(CurrentReport.pagefield, CurrentReport.pageswitch);
+                InitColumnCaptions();
+                TRptDataCalcLevel calclevel = new TRptDataCalcLevel(this, 0, -1, 0, 0);
+
+                if ((calclevel.Calculate(CurrentReport.GetLevel("main"), 0) == -1) || (Parameters.Get("CancelReportCalculation").ToBool() == true))
+                {
+                    TLogging.Log("ERROR: could not calculate main level (or report was cancelled).");
+                    return false;
+                }
+
+                InitColumnLayout();
             }
 
-            InitColumnLayout();
+            // call after calculating, because new parameters will be added
             InitDetailReports();
 
-            // call after calculating, because new parameters will be added
             return true;
         }
 
@@ -781,7 +862,7 @@ namespace Ict.Petra.Server.MReporting.LogicConnectors
 
             Counter = 0;
 
-            if (CurrentReport.rptGrpDetailReport != null)
+            if ((CurrentReport != null) && (CurrentReport.rptGrpDetailReport != null))
             {
                 foreach (TRptDetailReport detailReport in CurrentReport.rptGrpDetailReport.List)
                 {

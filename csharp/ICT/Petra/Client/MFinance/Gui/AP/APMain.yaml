@@ -10,7 +10,7 @@ RootNode:
         cndSelectedSupplier: {InitialValue=false}
         actSearch:
             Label: &Search
-            ActionClick: SearchForSupplier
+            ActionClick: DoSearch
         actSupplierTransactions:
             Label: Open Transactions
             ActionClick: SupplierTransactions
@@ -50,23 +50,25 @@ RootNode:
             Dock: Top
             Controls: [chkDueToday, chkOverdue, chkDueFuture]
             ControlsOrientation: horizontal
-        chkDueToday: {Label=Due &Today}
+        chkDueToday: {OnChange=SetDueFilters, Label=Due &Today}
             CheckBoxAttachedLabel: right
-        chkOverdue: {Label=&Overdue, CheckBoxAttachedLabel=right}        
-        chkDueFuture:
-            Label: Due &Within Future
+        chkOverdue: {OnChange=SetDueFilters, Label=&Overdue, CheckBoxAttachedLabel=right}        
+        chkDueFuture: {OnChange=SetDueFilters}
+            Label: Due &Within
             CheckBoxAttachedLabel: right
             Controls: [nudNumberTimeUnits, cmbTimeUnit]
             ControlsOrientation: horizontal
-        nudNumberTimeUnits: {NoLabel=true}
-        cmbTimeUnit:
+            
+        nudNumberTimeUnits: {OnChange=SetDueFilters, NoLabel=true}
+            Width:50
+        cmbTimeUnit: {OnChange=SetDueFilters}
             NoLabel: true
             OptionalValues: [=Days, Weeks, Months]
+            Width:70
         pnlSearchButtons:
-            Controls: [btnSearch, btnReset]
+            Controls: [btnSearch]
             ControlsOrientation: horizontal
         btnSearch: {Action=actSearch, AcceptButton=true}
-        btnReset: {Label=&Reset Criteria}
         tabSearchResult:
             Controls: [tpgSuppliers, tpgOutstandingInvoices]
             Dock: Fill
@@ -81,9 +83,9 @@ RootNode:
             ControlsOrientation: horizontal
         grdSupplierResult: {Dock=Fill, ActionDoubleClick=actSupplierTransactions, SelectedRowActivates=cndSelectedSupplier}
         grdInvoiceResult: {Dock=Fill}
-        chkShowOutstandingAmounts: {Label=Show Outstanding &Amounts, CheckBoxAttachedLabel=right}
-        chkHideInactiveSuppliers: {Label=Hide &Inactive Suppliers, CheckBoxAttachedLabel=right}
-        cmbSupplierCurrency: {Label=C&urrency}
+        chkShowOutstandingAmounts: {Label=Show Outstanding &Amounts, CheckBoxAttachedLabel=right,  OnChange=SupplierOutstandingOpt, Enabled=false}
+        chkHideInactiveSuppliers: {Label=Hide &Inactive Suppliers, CheckBoxAttachedLabel=right,  OnChange=SetSupplierFilters}
+        cmbSupplierCurrency: {Label=C&urrency, List=CurrencyCodeList, OnChange=SetSupplierFilters}
         pnlTaggingOptions:
             Controls: [btnTagAllApprovable, btnTagAllPostable, btnTagAllPayable, btnUntagAll, txtSumTagged]
             ControlsOrientation: horizontal

@@ -119,8 +119,6 @@ namespace Ict.Petra.Server.MFinance.GL
 
                         if (RowType == "B")
                         {
-                            System.Diagnostics.Debug.WriteLine("B");
-
                             if (NewBatch != null)
                             {
                                 // update the totals of the batch that has just been imported
@@ -140,7 +138,6 @@ namespace Ict.Petra.Server.MFinance.GL
                             NewBatch.BatchControlTotal = ImportDecimal(Catalog.GetString("batch hash value"));
                             NewBatch.DateEffective = ImportDate(Catalog.GetString("batch  effective date"));
                             FImportMessage = Catalog.GetString("Saving GL batch:");
-                            System.Diagnostics.Debug.WriteLine("B");
 
                             if (!ABatchAccess.SubmitChanges(MainDS.ABatch, Transaction, out AMessages))
                             {
@@ -299,8 +296,8 @@ namespace Ict.Petra.Server.MFinance.GL
                                     DataRow afrow = SetupDS.AFreeformAnalysis.Rows.Find(new Object[] { NewTransaction.LedgerNumber, type, val });
                                     DataRow anrow =
                                         SetupDS.AAnalysisAttribute.Rows.Find(new Object[] { NewTransaction.LedgerNumber,
-                                                                                            NewTransaction.AccountCode,
-                                                                                            type });
+                                                                                            type,
+                                                                                            NewTransaction.AccountCode });
 
                                     if ((atrow != null) && (afrow != null) && (anrow != null))
                                     {
@@ -477,11 +474,9 @@ namespace Ict.Petra.Server.MFinance.GL
 
         private DateTime ImportDate(String message)
         {
-            System.Diagnostics.Debug.WriteLine("1");
             FImportMessage = String.Format(Catalog.GetString("Parsing the {0}:"), message);
             String sDate = StringHelper.GetNextCSV(ref FImportLine, FDelimiter);
             DateTime dtReturn = Convert.ToDateTime(sDate, FCultureInfoDate);
-            System.Diagnostics.Debug.WriteLine(dtReturn.ToLongDateString());
             return dtReturn;
         }
     }

@@ -233,6 +233,7 @@ namespace Ict.Petra.Client.CommonDialogs
             this.Text = "OpenPetra Login";
             this.Load += new System.EventHandler(this.TLoginForm_Load);
             this.Shown += new System.EventHandler(this.TLoginForm_Shown);
+            this.Activated += new EventHandler(TLoginForm_Activated);
             this.pnlLoginControls.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();

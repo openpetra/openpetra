@@ -46,7 +46,7 @@ namespace Tests.MFinance.GLBatches
     /// ...
     /// </summary>
     [TestFixture]
-    public class GLAccountHierarchy_test : CommonNUnitFunctions
+    public class GLAccountHierarchy_test : CommonNUnitFormFunctions
     {
         // Each account is defined by its LedgerNumber ...
         // Actually the value is read by the TAppSettingsManager

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -88,12 +88,39 @@ namespace Ict.Common.Remoting.Client
             {
                 if (!FRemotingConfigurationSetup)
                 {
-                    // The following call must be done only once while the application runs (otherwise a RemotingException occurs)
-                    RemotingConfiguration.Configure(ConfigFile, false);
                     FRemotingConfigurationSetup = true;
+
+                    if (TAppSettingsManager.HasValue("Remote.Port"))
+                    {
+                        IChannel[] regChannels = ChannelServices.RegisteredChannels;
+
+                        foreach (IChannel ch in regChannels)
+                        {
+                            ChannelServices.UnregisterChannel(ch);
+                        }
+
+                        ChannelServices.RegisterChannel(new TcpChannel(0), false);
+                    }
+                    else
+                    {
+                        // The following call must be done only once while the application runs (otherwise a RemotingException occurs)
+                        RemotingConfiguration.Configure(ConfigFile, false);
+                    }
                 }
 
-                ARemote = (IClientManagerInterface)TRemotingHelper.GetObject(typeof(IClientManagerInterface));
+                if (TAppSettingsManager.HasValue("Remote.Port"))
+                {
+                    ARemote = (IClientManagerInterface)
+                              Activator.GetObject(typeof(Ict.Common.Remoting.Shared.IClientManagerInterface),
+                        String.Format("tcp://{0}:{1}/Clientmanager",
+                            TAppSettingsManager.GetValue("Remote.Host"),
+                            TAppSettingsManager.GetValue("Remote.Port")));
+                }
+                else
+                {
+                    ARemote = (IClientManagerInterface)
+                              TRemotingHelper.GetObject(typeof(IClientManagerInterface));
+                }
 
                 if (ARemote == null)
                 {
@@ -171,6 +198,11 @@ namespace Ict.Common.Remoting.Client
 
             System.Int16 strServerIPAddrStart;
             string strServerIPAddr = "";
+
+            if (TAppSettingsManager.HasValue("Remote.Host"))
+            {
+                FServerIPAddr = TAppSettingsManager.GetValue("Remote.Host");
+            }
 
             if (FServerIPAddr == "")
             {

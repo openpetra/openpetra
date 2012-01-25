@@ -103,7 +103,7 @@ namespace Ict.Petra.Client.App.PetraClient
         /// <summary>
         /// checks if the user has access to the navigation node
         /// </summary>
-        private bool HasAccessPermission(XmlNode ANode, string AUserId)
+        public static bool HasAccessPermission(XmlNode ANode, string AUserId)
         {
             // TODO: if this is an action node, eg. opens a screen, check the static function that tells RequiredPermissions of the screen
 
@@ -133,7 +133,7 @@ namespace Ict.Petra.Client.App.PetraClient
             return true;
         }
 
-        private void AddNavigationForEachLedger(XmlNode AMenuNode, ALedgerTable AAvailableLedgers)
+        private static void AddNavigationForEachLedger(XmlNode AMenuNode, ALedgerTable AAvailableLedgers)
         {
             XmlNode childNode = AMenuNode.FirstChild;
 
@@ -175,14 +175,12 @@ namespace Ict.Petra.Client.App.PetraClient
         }
 
         /// <summary>
-        /// load or reload the navigation
+        /// build an XML document which includes all ledgers etc.
         /// </summary>
-        public void LoadNavigationUI()
+        public static XmlNode BuildNavigationXml()
         {
             TYml2Xml parser = new TYml2Xml(TAppSettingsManager.GetValue("UINavigation.File"));
             XmlDocument UINavigation = parser.ParseYML2XML();
-
-            lstFolders.ClearFolders();
 
             ALedgerTable AvailableLedgers = new ALedgerTable();
 
@@ -196,9 +194,21 @@ namespace Ict.Petra.Client.App.PetraClient
             XmlNode OpenPetraNode = UINavigation.FirstChild.NextSibling.FirstChild;
             XmlNode SearchBoxesNode = OpenPetraNode.FirstChild;
             XmlNode MainMenuNode = SearchBoxesNode.NextSibling;
-            XmlNode DepartmentNode = MainMenuNode.FirstChild;
 
             AddNavigationForEachLedger(MainMenuNode, AvailableLedgers);
+
+            return MainMenuNode;
+        }
+
+        /// <summary>
+        /// load or reload the navigation
+        /// </summary>
+        public void LoadNavigationUI()
+        {
+            XmlNode MainMenuNode = BuildNavigationXml();
+            XmlNode DepartmentNode = MainMenuNode.FirstChild;
+
+            lstFolders.ClearFolders();
 
             TLstTasks.Init(UserInfo.GUserInfo.UserID, HasAccessPermission);
 

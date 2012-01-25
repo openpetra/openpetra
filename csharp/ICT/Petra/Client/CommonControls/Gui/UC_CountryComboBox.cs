@@ -122,9 +122,9 @@ namespace Ict.Petra.Client.CommonControls
                 cmbCountry.cmbCombobox.Tag = this.Tag;
                 FDataCache_CountryListTable = TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.CountryList);
                 cmbCountry.cmbCombobox.BeginUpdate();
-                cmbCountry.cmbCombobox.DataSource = FDataCache_CountryListTable.DefaultView;
                 cmbCountry.cmbCombobox.DisplayMember = "p_country_code_c";
                 cmbCountry.cmbCombobox.ValueMember = "p_country_code_c";
+                cmbCountry.cmbCombobox.DataSource = FDataCache_CountryListTable.DefaultView;
                 cmbCountry.cmbCombobox.EndUpdate();
 
                 this.cmbCountry.cmbCombobox.SelectedValueChanged += new System.EventHandler(this.CmbCombobox_SelectedValueChanged);

@@ -116,7 +116,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
         /// <summary>
         /// Find a list of invoices matching the search criteria
         /// </summary>
-        /// <param name="ACriteriaData">HashTable containing non-empty Find parameters</param>
+        /// <param name="ACriteriaData">Optional HashTable containing "DaysPlus" for "due by" calculation</param>
         public void FindInvoices(DataTable ACriteriaData)
         {
             FSearchSupplierOrInvoice = false;
@@ -150,15 +150,14 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             // Build WHERE criteria string based on ACriteriaData
             OdbcParameter[] ParametersArray;
             string WhereClause = BuildWhereClause(CriteriaRow, out ParametersArray);
+            string FieldList = BuildFieldList(CriteriaRow);
+            string FromClause = BuildFromClause(CriteriaRow, ref WhereClause);
+            string OrderByClause = BuildOrderByClause(CriteriaRow);
 
             if (WhereClause.StartsWith(" AND") == true)
             {
                 WhereClause = WhereClause.Substring(4);
             }
-
-            string FieldList = BuildFieldList(CriteriaRow);
-            string FromClause = BuildFromClause(CriteriaRow, ref WhereClause);
-            string OrderByClause = BuildOrderByClause(CriteriaRow);
 
             Hashtable ColumnNameMapping = new Hashtable();
             FPagedDataSetObject.FindParameters = new TPagedDataSet.TAsyncFindParameters(
@@ -247,11 +246,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
 
             // Thread.Sleep(500);    enable only for simulation of slow (modem) connection!
 
-            #region ManualCode
-
             // TODO TAccountsPayableAggregate.ApplySecurity(ref ReturnValue);
-            #endregion
-
             return ReturnValue;
         }
 
@@ -262,7 +257,6 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
         /// <returns></returns>
         private DataRow PrepareDataRow(DataTable ACriteriaTable)
         {
-            #region ManualCode
             try
             {
                 // try if this is a partner key
@@ -276,7 +270,6 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                 // this is just a partner short name
                 FSearchByPartnerKeyOrSupplierName = false;
             }
-            #endregion
             return ACriteriaTable.Rows[0];
         }
 
@@ -288,10 +281,8 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
         /// <returns>the where clause</returns>
         private string BuildWhereClause(DataRow ACriteriaRow, out OdbcParameter[] AParametersArray)
         {
-            string WhereClause = "";
             ArrayList InternalParameters = new ArrayList();
-
-            #region ManualCode
+            string WhereClause = "";
 
             if (FSearchByPartnerKeyOrSupplierName == true)
             {
@@ -305,15 +296,34 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             else
             {
                 // search by supplier name
-                WhereClause += String.Format(" AND {0} LIKE ?", PPartnerTable.GetPartnerShortNameDBName());
-                OdbcParameter Param = TTypedDataTable.CreateOdbcParameter(PPartnerTable.TableId, PPartnerTable.ColumnPartnerShortNameId);
+                if (((String)ACriteriaRow["SupplierId"]).Length > 0) // If the search box is empty, I'll not add this at all...
+                {
+                    WhereClause += String.Format(" AND {0} LIKE ?", PPartnerTable.GetPartnerShortNameDBName());
+                    OdbcParameter Param = TTypedDataTable.CreateOdbcParameter(PPartnerTable.TableId, PPartnerTable.ColumnPartnerShortNameId);
 
-                // TODO: add LIKE % in the right place, defined by user
-                Param.Value = ACriteriaRow["SupplierId"] + "%";
-                InternalParameters.Add(Param);
+                    // TODO: add LIKE % in the right place, defined by user
+                    Param.Value = ACriteriaRow["SupplierId"] + "%";
+                    InternalParameters.Add(Param);
+                }
             }
 
-            #endregion
+            if (!FSearchSupplierOrInvoice) // I'm looking for a list of outstanding invoices
+            {
+                WhereClause += String.Format(" AND {0}=?", AApDocumentTable.GetLedgerNumberDBName());
+                OdbcParameter Param = TTypedDataTable.CreateOdbcParameter(AApDocumentTable.TableId, AApDocumentTable.ColumnLedgerNumberId);
+                Param.Value = (Int32)ACriteriaRow["LedgerNumber"];
+                InternalParameters.Add(Param);
+
+                WhereClause += String.Format(" AND {0} <> 'CANCELLED' AND {0} <> 'PAID'", AApDocumentTable.GetDocumentStatusDBName());
+                decimal DaysPlus = (decimal)ACriteriaRow["DaysPlus"];
+
+                if (DaysPlus >= 0)
+                {
+                    DateTime Deadline = DateTime.Now.AddDays((double)DaysPlus);
+                    WhereClause += String.Format(" AND {0}+{1}<'{2}'",
+                        AApDocumentTable.GetDateIssuedDBName(), AApDocumentTable.GetCreditTermsDBName(), Deadline.ToString("yyyyMMdd"));
+                }
+            }
 
             // Convert ArrayList to a array of ODBCParameters
             // seem to need to declare a type first
@@ -330,21 +340,29 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
         /// <returns></returns>
         private string BuildFieldList(DataRow ACriteriaRow)
         {
-            #region ManualCode
-
-            if (FSearchSupplierOrInvoice == false)
+            if (!FSearchSupplierOrInvoice) // Find invoices
             {
+                String DocTbl = "PUB_" + AApDocumentTable.GetTableDBName() + ".";
                 // TODO: FSearchSupplierOrInvoice: select invoices
-                return "";
+                return DocTbl + AApDocumentTable.GetApNumberDBName() + "," +
+                       DocTbl + AApDocumentTable.GetDocumentCodeDBName() + "," +
+                       "PUB_" + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerShortNameDBName() + "," +
+                       "PUB_" + AApSupplierTable.GetTableDBName() + "." + AApSupplierTable.GetCurrencyCodeDBName() + "," +
+                       DocTbl + AApDocumentTable.GetTotalAmountDBName() + "," +
+                       DocTbl + AApDocumentTable.GetDocumentStatusDBName() + "," +
+                       DocTbl + AApDocumentTable.GetDateIssuedDBName() + "," +
+                       DocTbl + AApDocumentTable.GetDateIssuedDBName() + "+" + DocTbl + AApDocumentTable.GetCreditTermsDBName() + "," +
+                       DocTbl + AApDocumentTable.GetDiscountPercentageDBName() + "," +
+                       DocTbl + AApDocumentTable.GetDateIssuedDBName() + "+" + DocTbl + AApDocumentTable.GetDiscountDaysDBName();
             }
-            else
+            else    // Find Suppliers
             {
                 // TODO: add amount of outstanding invoices etc
                 return "PUB_" + AApSupplierTable.GetTableDBName() + "." + AApSupplierTable.GetPartnerKeyDBName() + "," +
-                       "PUB_" + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerShortNameDBName();
+                       "PUB_" + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerShortNameDBName() + "," +
+                       "PUB_" + AApSupplierTable.GetTableDBName() + "." + AApSupplierTable.GetCurrencyCodeDBName() + "," +
+                       "PUB_" + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetStatusCodeDBName();
             }
-
-            #endregion
         }
 
         /// <summary>
@@ -354,24 +372,31 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
         /// <returns>the orderby clause</returns>
         private string BuildOrderByClause(DataRow ACriteriaRow)
         {
-            #region ManualCode
             return PPartnerTable.GetPartnerShortNameDBName();
-            #endregion
         }
 
         /// <summary>
-        /// build the from clause
+        /// Build the from clause
         /// </summary>
         /// <param name="ACriteriaRow"></param>
         /// <param name="AWhereClause">the where clause will be extended by the join conditions</param>
         /// <returns>the from clause</returns>
         private string BuildFromClause(DataRow ACriteriaRow, ref string AWhereClause)
         {
-            #region ManualCode
             AWhereClause += " AND " + "PUB_" + AApSupplierTable.GetTableDBName() + "." + AApSupplierTable.GetPartnerKeyDBName() + " = " + "PUB_" +
                             PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerKeyDBName();
-            return "PUB_" + AApSupplierTable.GetTableDBName() + ", PUB_" + PPartnerTable.GetTableDBName();
-            #endregion
+
+            string FromClause = "PUB_" + AApSupplierTable.GetTableDBName() + ", PUB_" + PPartnerTable.GetTableDBName();
+
+            if (!FSearchSupplierOrInvoice)
+            {
+                AWhereClause += " AND " + "PUB_" + AApDocumentTable.GetTableDBName() + "." + AApDocumentTable.GetPartnerKeyDBName() + " = " +
+                                "PUB_" +
+                                PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerKeyDBName();
+                FromClause += (", PUB_" + AApDocumentTable.GetTableDBName());
+            }
+
+            return FromClause;
         }
     }
 }

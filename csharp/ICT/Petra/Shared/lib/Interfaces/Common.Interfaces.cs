@@ -8,7 +8,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -41,6 +41,7 @@ using Ict.Common.DB;
 using Ict.Common.Data;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 #endregion ManualCode
 namespace Ict.Petra.Shared.Interfaces.MCommon
 {
@@ -134,6 +135,11 @@ namespace Ict.Petra.Shared.Interfaces.MCommon.UIConnectors
         Boolean GetPartnerShortName(Int64 APartnerKey,
                                     out String APartnerShortName,
                                     out TPartnerClass APartnerClass);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MCommon.UIConnectors.TOfficeSpecificDataLabelsUIConnector)</summary>
+        PDataLabelValuePartnerTable GetDataLocalPartnerDataValues(Int64 APartnerKey,
+                                                                  out Boolean ALabelsAvailable,
+                                                                  Boolean ACountOnly,
+                                                                  TDBTransaction AReadTransaction);
     }
 
     /// <summary>auto generated</summary>
