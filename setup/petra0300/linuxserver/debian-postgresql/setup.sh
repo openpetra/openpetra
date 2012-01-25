@@ -31,13 +31,16 @@ mkdir -p $OpenPetraOrgPath/backup30
 mkdir -p $OpenPetraOrgPath/log30
 touch $OpenPetraOrgPath/log30/Server.log
 if [ ! -f $OpenPetraOrgPath/etc30/publickey.xml ]
+then
   cp $OpenPetraOrgPath/etc30/publickey-sample.xml $OpenPetraOrgPath/etc30/publickey.xml
 fi
 if [ ! -f $OpenPetraOrgPath/etc30/privatekey.xml ]
+then
   cp $OpenPetraOrgPath/etc30/privatekey-sample.xml $OpenPetraOrgPath/etc30/privatekey.xml
 fi
 mkdir -p `dirname $OPENPETRA_LocationPublicKeyFile`
 if [ ! -h $OPENPETRA_LocationPublicKeyFile ]
+then
   ln -s $OpenPetraOrgPath/etc30/publickey.xml $OPENPETRA_LocationPublicKeyFile
 fi
 mkdir -p /etc/openpetra
@@ -51,7 +54,7 @@ echo "host  $OPENPETRA_DBNAME $OPENPETRA_DBUSER  127.0.0.1/32   md5" >> /etc/pos
 # for postgres user we need the following line (for creating new databases):
 #commented since it should be there by default
 #echo "local   postgres         postgres        ident">> /etc/postgresql/9.1/main/pg_hba.conf
-cat /etc/postgresql/9.1/main/pg_hba.conf > /etc/postgresql/9.1/main/pg_hba.conf.new
+cat /etc/postgresql/9.1/main/pg_hba.conf >> /etc/postgresql/9.1/main/pg_hba.conf.new
 mv /etc/postgresql/9.1/main/pg_hba.conf.new /etc/postgresql/9.1/main/pg_hba.conf
 /etc/init.d/postgresql restart
 
