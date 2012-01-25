@@ -34,9 +34,9 @@ compat:
   resetDatabase: just resets the data, resets the permissions
   patchDatabase: update the database to the latest development version
   dumpDatabase: dump the database to a db specific format.
-        nant dumpDatabase -D:OutputDB.file=test.sql
+        nant dumpDatabase -D:file=test.sql
   loadDatabase: load the database from a db specific dump
-        nant loadDatabase -D:LoadDB.file=test.sql
+        nant loadDatabase -D:file=test.sql
   generateORM: generates Object Relational Mapping routines from petra.xml
     sub items: generateORMCachedTables, generateORMData, generateORMAccess
   generateGlue: generates the interfaces and instantiators, which is the glue between client and server

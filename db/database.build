@@ -189,7 +189,7 @@
                 <echo message="If this fails, make sure you have already called nant createDatabaseUser"/>
             </if>
 
-            <property name="LoadDB.file" value="nothing"/>
+            <property name="file" value="nothing"/>
             <call target="loadDatabase"/>
         </if>
         <if test="${DBMS.Type=='mysql'}">
@@ -281,12 +281,12 @@
         </if>
     </target>
 
-    <target name="dumpDatabase" depends="init" description="dump the database to a DBMS specific file, eg. nant dumpDatabase -D:OutputDB.file=testmysql.sql">
+    <target name="dumpDatabase" depends="init" description="dump the database to a DBMS specific file, eg. nant dumpDatabase -D:file=testmysql.sql">
         <if test="${DBMS.Type=='sqlite'}">
-            <copy file="${SQLitedb.file}" tofile="${OutputDB.file}" overwrite="true"/>
+            <copy file="${SQLitedb.file}" tofile="${file}" overwrite="true"/>
         </if>
         <if test="${DBMS.Type=='postgresql'}">
-            <exec program="${pgdump.exe}" commandline="--data-only --username=${DBMS.UserName} --file=&quot;${OutputDB.file}&quot; ${DBMS.DBName}">
+            <exec program="${pgdump.exe}" commandline="--data-only --username=${DBMS.UserName} --file=&quot;${file}&quot; ${DBMS.DBName}">
                 <environment>
                     <variable name="PGPASSWORD" value="${DBMS.Password}"/>
                 </environment>
@@ -294,24 +294,24 @@
         </if>
         <if test="${DBMS.Type=='mysql'}">
             <if test="${not platform::is-windows()}" >
-                <exec program="mysqldump" commandline="${DBMS.DBName} --no-create-info --user=root --password=${DBMS.Password} --result-file=${OutputDB.file}" />
+                <exec program="mysqldump" commandline="${DBMS.DBName} --no-create-info --user=root --password=${DBMS.Password} --result-file=${file}" />
             </if>
             <if test="${platform::is-windows()}" >
-                <exec program="${MySQLDump.exe}" commandline="${DBMS.DBName} --no-create-info --user=root --password=${DBMS.Password} --result-file=&quot;${OutputDB.file}&quot;"/>
+                <exec program="${MySQLDump.exe}" commandline="${DBMS.DBName} --no-create-info --user=root --password=${DBMS.Password} --result-file=&quot;${file}&quot;"/>
             </if>
 
-            <property name="temp" value="${script::ReplaceInFile(OutputDB.file,'RegEx:^^','SET AUTOCOMMIT=0;SET FOREIGN_KEY_CHECKS=0;')}"/>
-            <property name="temp" value="${script::ReplaceInFile(OutputDB.file,'RegEx:$$','SET FOREIGN_KEY_CHECKS=1;COMMIT;SET AUTOCOMMIT=1;')}"/>
-            <property name="temp" value="${script::ReplaceInFile(OutputDB.file,'RegEx:INSERT INTO `seq_(?&lt;seq_name&gt;.*)`','DELETE FROM `seq_${seq_name}`; INSERT INTO `seq_${seq_name}`')}"/>
+            <property name="temp" value="${script::ReplaceInFile(file,'RegEx:^^','SET AUTOCOMMIT=0;SET FOREIGN_KEY_CHECKS=0;')}"/>
+            <property name="temp" value="${script::ReplaceInFile(file,'RegEx:$$','SET FOREIGN_KEY_CHECKS=1;COMMIT;SET AUTOCOMMIT=1;')}"/>
+            <property name="temp" value="${script::ReplaceInFile(file,'RegEx:INSERT INTO `seq_(?&lt;seq_name&gt;.*)`','DELETE FROM `seq_${seq_name}`; INSERT INTO `seq_${seq_name}`')}"/>
         </if>
     </target>
 
-    <target name="loadDatabase" depends="init" description="load the database from a DBMS specific file, eg. nant loadDatabase -D:LoadDB.file=testmysql.sql">
+    <target name="loadDatabase" depends="init" description="load the database from a DBMS specific file, eg. nant loadDatabase -D:file=testmysql.sql">
         <call target="createSQLStatements" unless="${target::has-executed('createSQLStatements')}"/>
         <property name="BaseData.Dir" value="${OpenPetraRoot.dir}/db/basedata"/>
     
         <if test="${DBMS.Type=='sqlite'}">
-            <copy file="${LoadDB.file}" tofile="${SQLitedb.file}" overwrite="true"/>
+            <copy file="${file}" tofile="${SQLitedb.file}" overwrite="true"/>
         </if>
         <if test="${DBMS.Type=='postgresql'}">
             <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra_remove.sql" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
@@ -325,28 +325,28 @@
             <delete file="${tempfile}" if="${file::exists(tempfile)}"/>
 
             <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra_withoutConstraints.sql" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
-            <if test="${LoadDB.file!='nothing'}">
-                <psql exe="${PostgreSQL.exe}" sqlfile="${LoadDB.file}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+            <if test="${file!='nothing'}">
+                <psql exe="${PostgreSQL.exe}" sqlfile="${file}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
             </if>
             <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createconstraints-PostgreSQL.sql" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
         </if>
         <if test="${DBMS.Type=='mysql'}">
             <mysql exe="${MySQL.exe}" sqlfile="${BaseData.Dir}/clean.sql" database="${DBMS.DBName}" user="root" password="${DBMS.Password}"/>
-            <mysql exe="${MySQL.exe}" sqlfile="${LoadDB.file}" database="${DBMS.DBName}" user="root" password="${DBMS.Password}"/>
+            <mysql exe="${MySQL.exe}" sqlfile="${file}" database="${DBMS.DBName}" user="root" password="${DBMS.Password}"/>
         </if>
     </target>
 
-    <target name="loadDatabaseIncrement" depends="init" description="load a test increment for the database from a DBMS specific file, eg. nant loadDatabaseIncrement -D:LoadDB.file=testmysql.sql">
+    <target name="loadDatabaseIncrement" depends="init" description="load a test increment for the database from a DBMS specific file, eg. nant loadDatabaseIncrement -D:file=testmysql.sql">
         <property name="BaseData.Dir" value="${OpenPetraRoot.dir}/db/basedata"/>
     
         <if test="${DBMS.Type=='sqlite'}">
-            <copy file="${LoadDB.file}" tofile="${SQLitedb.file}" overwrite="true"/>
+            <copy file="${file}" tofile="${SQLitedb.file}" overwrite="true"/>
         </if>
         <if test="${DBMS.Type=='postgresql'}">
-            <psql exe="${PostgreSQL.exe}" sqlfile="${LoadDB.file}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+            <psql exe="${PostgreSQL.exe}" sqlfile="${file}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
         </if>
         <if test="${DBMS.Type=='mysql'}">
-            <mysql exe="${MySQL.exe}" sqlfile="${LoadDB.file}" database="${DBMS.DBName}" user="root" password="${DBMS.Password}"/>
+            <mysql exe="${MySQL.exe}" sqlfile="${file}" database="${DBMS.DBName}" user="root" password="${DBMS.Password}"/>
         </if>
     </target>
 
@@ -372,7 +372,7 @@
         <property name="DBMS.DBName" value="openpetra_basedb"/>
         <call target="recreateDatabase"/>
         <call target="resetDatabase"/>
-        <property name="OutputDB.file" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demodata-PostgreSQL.sql"/>
+        <property name="file" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demodata-PostgreSQL.sql"/>
         <call target="dumpDatabase"/>
         <property name="DBMS.Type" value="${DBMS.Type.Orig}"/>
     </target>
@@ -388,7 +388,7 @@
         <property name="DBMS.DBName" value="openpetra_basedb"/>
         <call target="recreateDatabase"/>
         <call target="resetDatabase"/>
-        <property name="OutputDB.file" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demodata-MySQL.sql"/>
+        <property name="file" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demodata-MySQL.sql"/>
         <call target="dumpDatabase"/>
         <property name="DBMS.Type" value="${DBMS.Type.Orig}"/>
         <property name="DBMS.Password" value="${DBMS.Password.Orig}"/>
