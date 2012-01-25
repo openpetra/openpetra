@@ -212,7 +212,6 @@ list of available commands:
     <fileset basedir="${dir.webserver}" prefix="webserver">
       <include name="**.*" />
       <exclude name="web.config" />
-      <exclude name="index.html" />
       <exclude name="formletters/*.*" />
       <exclude name="config/*.*" />
     </fileset>
