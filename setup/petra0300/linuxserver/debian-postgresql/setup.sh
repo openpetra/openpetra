@@ -43,6 +43,11 @@ if [ ! -h $OPENPETRA_LocationPublicKeyFile ]
 then
   ln -s $OpenPetraOrgPath/etc30/publickey.xml $OPENPETRA_LocationPublicKeyFile
 fi
+if [ ! -f $OpenPetraOrgPath/etc30/web.config ]
+then
+  cp $OpenPetraOrgPath/etc30/web-sample.config $OpenPetraOrgPath/etc30/web.config
+fi
+
 mkdir -p /etc/openpetra
 ln -s $OpenPetraOrgPath/config.sh /etc/openpetra/openpetra`basename $OpenPetraOrgPath`
 ln -s $OpenPetraOrgPath/openpetraorg-server.sh /etc/init.d/openpetra`basename $OpenPetraOrgPath`

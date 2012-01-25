@@ -149,7 +149,7 @@ list of available commands:
       <exclude name="WebDriver.dll" />
       <exclude name="Ionic.Zip.dll" />
       <exclude name="Ict.Testing.*"/>
-      <exclude name="Ict.Petra.Client.*"/>
+      <exclude name="Ict.Petra.Client*"/>
       <exclude name="Ict.Tools.*"/>
       <!-- some unmanaged dlls cause problems for mono xsp -->
       <exclude name="Mono*" />
@@ -208,7 +208,6 @@ list of available commands:
 </target>
 
 <target name="packWebApp" depends="clean, prepareWebServer, generateWebforms">
-  <copy file="${dir.webserver}/web.config" tofile="${tempdir}/web-sample.config" overwrite="true"/>
   <zip zipfile="${dir.delivery}/WebRelease.zip">
     <fileset basedir="${dir.webserver}" prefix="webserver">
       <include name="**.*" />
@@ -216,10 +215,6 @@ list of available commands:
       <exclude name="index.html" />
       <exclude name="formletters/*.*" />
       <exclude name="config/*.*" />
-    </fileset>
-
-    <fileset basedir="${tempdir}" prefix="webserver">
-      <include name="web-sample.config" if="${webserver.includeSamples == 'true'}"/>
     </fileset>
 
     <fileset basedir="${dir.webserver}/formletters" prefix="formletters">
@@ -230,7 +225,6 @@ list of available commands:
       <include name="*.*" />
     </fileset>
   </zip>
-  <delete file="${tempdir}/web-sample.config"/>
 </target>
 
 <script language="C#" prefix="OP" >
