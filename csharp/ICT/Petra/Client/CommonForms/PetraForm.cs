@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christiank
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -101,7 +101,7 @@ namespace Ict.Petra.Client.CommonForms
 
         /// This holds a reference to ALL controls on the screen  even if they are buried in GroupBoxes, Panels, or TabPages
         protected ArrayList FAllControls;
-        
+
         /// This holds a reference to ALL controls on the screen that have child controls, even if they are buried in GroupBoxes, Panels, or TabPages
         protected ArrayList FControlsWithChildren;
 
@@ -189,13 +189,13 @@ namespace Ict.Petra.Client.CommonForms
                 if ((ctrl.HasChildren == true) && !(ctrl is UpDownBase) && !(ctrl is TClbVersatile))
                 {
                     EnumerateControls(ctrl);
-                    
-                    if ((ctrl is Panel) 
+
+                    if ((ctrl is Panel)
                         || (ctrl is GroupBox)
                         || (ctrl is UserControl))
-                        {
-                    		FControlsWithChildren.Add(ctrl);
-                    	}                    
+                    {
+                        FControlsWithChildren.Add(ctrl);
+                    }
                 }
                 else
                 {
@@ -209,21 +209,21 @@ namespace Ict.Petra.Client.CommonForms
         /// </summary>
         public virtual void HookupAllControls()
         {
-        	Control IteratedControl;
-        	
+            Control IteratedControl;
+
             FAllControls = new ArrayList();
             FControlsWithChildren = new ArrayList();
-            
+
             EnumerateControls(FWinForm); //this adds all controls on form to ArrayList
 
             // this is on an international version of Windows, so we want no bold fonts
             // because the letters are difficult to read
             bool changeFonts = TAppSettingsManager.ChangeFontForLocalisation();
 
-            for (int Counter1 = 0; Counter1 < FAllControls.Count; Counter1++) 
+            for (int Counter1 = 0; Counter1 < FAllControls.Count; Counter1++)
             {
-            	IteratedControl = (Control)FAllControls[Counter1];
-            	
+                IteratedControl = (Control)FAllControls[Counter1];
+
                 if (changeFonts)
                 {
                     if (TAppSettingsManager.ReplaceFont(IteratedControl.Font))
@@ -232,17 +232,17 @@ namespace Ict.Petra.Client.CommonForms
                         IteratedControl.Font = new System.Drawing.Font(IteratedControl.Font.Name,
                             IteratedControl.Font.Size,
                             System.Drawing.FontStyle.Regular);
-                    }                                       
-                }              
+                    }
+                }
             }
 
             // Hook up Global Application Help handler to to the Form itself
             FWinForm.HelpRequested += new HelpEventHandler(GlobalApplicationHelpEventHandler);
-                        
+
             // Hook up Global Application Help handler to all Controls that have child controls
-            for (int Counter2 = 0; Counter2 < FControlsWithChildren.Count; Counter2++) 
+            for (int Counter2 = 0; Counter2 < FControlsWithChildren.Count; Counter2++)
             {
-            	((Control)FControlsWithChildren[Counter2]).HelpRequested += new HelpEventHandler(GlobalApplicationHelpEventHandler);
+                ((Control)FControlsWithChildren[Counter2]).HelpRequested += new HelpEventHandler(GlobalApplicationHelpEventHandler);
             }
         }
 
@@ -256,33 +256,33 @@ namespace Ict.Petra.Client.CommonForms
         {
             Form HelpContextForm;
             Control HelpContextControl;
-            
-        	if (ASender is Form) 
-        	{        		
-        		HelpContextForm = (Form)ASender;
-        		HelpContextControl = null;
-        	}
-        	else
-        	{
-        	    HelpContextForm = FWinForm;
-        	    HelpContextControl = (Control)ASender;
-        	}
-        	
-        	try 
-        	{
-            	if (!Ict.Common.HelpLauncher.ShowHelp(HelpContextForm, HelpContextControl)) 
-            	{
-            	    WriteToStatusBar(Catalog.GetString("Sorry, there is no help available for the context."));
-            	}
-        	} 
-        	catch (EHelpLauncherException Exp)
-        	{
-        	    MessageBox.Show(Exp.Message, "Error Launching Application Help", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-        	}
-        	catch (Exception)
-        	{        	    
-        	    throw;
-        	}         	
+
+            if (ASender is Form)
+            {
+                HelpContextForm = (Form)ASender;
+                HelpContextControl = null;
+            }
+            else
+            {
+                HelpContextForm = FWinForm;
+                HelpContextControl = (Control)ASender;
+            }
+
+            try
+            {
+                if (!Ict.Common.HelpLauncher.ShowHelp(HelpContextForm, HelpContextControl))
+                {
+                    WriteToStatusBar(Catalog.GetString("Sorry, there is no help available for the context."));
+                }
+            }
+            catch (EHelpLauncherException Exp)
+            {
+                MessageBox.Show(Exp.Message, "Error Launching Application Help", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         /// <summary>
@@ -499,10 +499,10 @@ namespace Ict.Petra.Client.CommonForms
          */
         public void WriteToStatusBar(String s)
         {
-            if (FStatusBar != null) 
+            if (FStatusBar != null)
             {
                 // StatusBar appears to be threadsafe; otherwise you would need a Invoke(System.Delegate(@myDelegate)); call
-                FStatusBar.ShowMessage(s);                
+                FStatusBar.ShowMessage(s);
             }
         }
 

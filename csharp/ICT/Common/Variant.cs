@@ -662,7 +662,7 @@ namespace Ict.Common
                     // Force encoding into a well-defined UTC-grounded format
                     ReturnValue =
                         StringHelper.AddCSV(ReturnValue,
-                                            DateValue.ToString(DATETIME_UNAMBIGUOUS_FORMAT, DateTimeFormatInfo.InvariantInfo), ":");
+                            DateValue.ToString(DATETIME_UNAMBIGUOUS_FORMAT, DateTimeFormatInfo.InvariantInfo), ":");
                 }
                 else if (this.TypeVariant == eVariantTypes.eComposite)
                 {

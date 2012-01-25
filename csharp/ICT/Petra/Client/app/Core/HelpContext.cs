@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -73,7 +73,6 @@ namespace Ict.Petra.Client.App.Core
             FormCursorAtTimeOfCall = ((System.Windows.Forms.Form)HelpContextForm).Cursor;
             ((System.Windows.Forms.Form)HelpContextForm).Cursor = Cursors.WaitCursor;
 
-            
             // Load help topics once and keep it cached from then on.
             if (!FHelpTopicsLookupTableLoaded)
             {
@@ -177,6 +176,7 @@ namespace Ict.Petra.Client.App.Core
         private static void LoadHelpTopicsLookupTable()
         {
             const string HELPTOPICS_XML_FILENAME = "HelpTopics.xml";
+
             FHelpTopicsLookupTableLoaded = true;
 
             // The XML File that holds the Form/Control and Help Topic associations is found where
@@ -184,7 +184,7 @@ namespace Ict.Petra.Client.App.Core
             string Tmp = TAppSettingsManager.GetValue("UINavigation.File");
             Tmp = Tmp.Substring(0, Tmp.LastIndexOf("/") + 1);
             string HelpTopicsXMLFileName = Tmp + HELPTOPICS_XML_FILENAME;
-            
+
             // Load the XML File and prepare it for XPath Queries
             FXMLFileNavigation = new XPathDocument(HelpTopicsXMLFileName).CreateNavigator();
         }

@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       Calvin Students
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -276,7 +276,7 @@ namespace Ict.Common
             }
             else
             {
-                AURL = FHelpHTMLBaseURL + PathSeparator + 
+                AURL = FHelpHTMLBaseURL + PathSeparator +
                        ApplicationVersion.Major + "_" + ApplicationVersion.Minor + "_" + ApplicationVersion.Build + PathSeparator +
                        FHelpLanguage + PathSeparator +
                        "content" + PathSeparator + AURL;

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -382,7 +382,8 @@ namespace Ict.Petra.Client.App.PetraClient
 
                 if (Ict.Common.HelpLauncher.HelpHTMLBaseURL.EndsWith("/"))
                 {
-                    Ict.Common.HelpLauncher.HelpHTMLBaseURL = Ict.Common.HelpLauncher.HelpHTMLBaseURL.Substring(0, Ict.Common.HelpLauncher.HelpHTMLBaseURL.Length - 1);
+                    Ict.Common.HelpLauncher.HelpHTMLBaseURL = Ict.Common.HelpLauncher.HelpHTMLBaseURL.Substring(0,
+                        Ict.Common.HelpLauncher.HelpHTMLBaseURL.Length - 1);
                 }
             }
 
@@ -448,13 +449,12 @@ namespace Ict.Petra.Client.App.PetraClient
                 {
                     // Set Application Help language to the User's preferred language
                     TRemote.MSysMan.Maintenance.WebConnectors.GetLanguageAndCulture(out UsersLanguageCode, out UsersCultureCode);
-                    
+
                     if (UsersLanguageCode != String.Empty)
                     {
-                        Ict.Common.HelpLauncher.HelpLanguage = UsersLanguageCode;    
-                    }                    
+                        Ict.Common.HelpLauncher.HelpLanguage = UsersLanguageCode;
+                    }
 
-                    
                     if (TClientSettings.RunAsStandalone == true)
                     {
                         ProcessReminders.StartStandaloneRemindersProcessing();

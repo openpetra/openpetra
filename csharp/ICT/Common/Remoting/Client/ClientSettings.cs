@@ -328,16 +328,16 @@ namespace Ict.Common.Remoting.Client
                 return UHTMLHelpBaseURLLocal;
             }
         }
-        
+
         /// <summary>Base URL for the HTMLHelp for the case where it is running off local files.</summary>
         public static string HTMLHelpBaseURLOnInternet
         {
             get
             {
-                return UHTMLHelpBaseURLOnInternet;        
+                return UHTMLHelpBaseURLOnInternet;
             }
         }
-        
+
         /// <summary>Tells whether the HTMLHelp is to be run off local files, or from an Internet location.</summary>
         public static bool LocalHTMLHelp
         {
@@ -346,7 +346,7 @@ namespace Ict.Common.Remoting.Client
                 return ULocalHTMLHelp;
             }
         }
-        
+
         private static string GetUserPath(string AVariableName, string ADefaultValue)
         {
             string result = TAppSettingsManager.GetValue(AVariableName, ADefaultValue);
@@ -469,7 +469,7 @@ namespace Ict.Common.Remoting.Client
             {
                 UCustomStartupMessage = TAppSettingsManager.GetValue("StartupMessage");
             }
-            
+
             UHTMLHelpBaseURLLocal = TAppSettingsManager.GetValue("HTMLHelpBaseURLLocal", String.Empty);
             UHTMLHelpBaseURLOnInternet = TAppSettingsManager.GetValue("HTMLHelpBaseURLOnInternet", String.Empty);
             ULocalHTMLHelp = TAppSettingsManager.GetBoolean("LocalHTMLHelp", true);
