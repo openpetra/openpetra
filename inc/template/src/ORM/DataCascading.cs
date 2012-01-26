@@ -48,6 +48,36 @@ public class {#TABLENAME}Cascading : TTypedDataAccess
 {#ENDIF DELETEBYTEMPLATECASCADING}
         {#TABLENAME}Access.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
     }
+
+    /// cascading count
+    public static int CountByPrimaryKey({#FORMALPARAMETERSPRIMARYKEY}, TDBTransaction ATransaction, bool AWithCascCount)
+    {
+        int OverallReferences = 0;
+
+{#IFDEF COUNTBYPRIMARYKEYCASCADING}
+        int countRow;
+        if ((AWithCascCount == true))
+        {
+            {#COUNTBYPRIMARYKEYCASCADING}
+        }
+{#ENDIF COUNTBYPRIMARYKEYCASCADING}
+        return OverallReferences;
+    }
+
+    /// cascading count
+    public static int CountUsingTemplate({#TABLENAME}Row ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascCount)
+    {
+        int OverallReferences = 0;
+
+{#IFDEF COUNTBYTEMPLATECASCADING}
+        int countRow;
+        if ((AWithCascCount == true))
+        {
+            {#COUNTBYTEMPLATECASCADING}
+        }
+{#ENDIF COUNTBYTEMPLATECASCADING}
+        return OverallReferences + {#TABLENAME}Access.CountUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
+    }
 }
 
 {##DELETEBYPRIMARYKEYCASCADING}
@@ -71,5 +101,29 @@ for (countRow = 0; (countRow != {#MYOTHERTABLENAME}Table.Rows.Count); countRow =
 {#ENDIF OTHERTABLEALSOCASCADING}
 {#IFNDEF OTHERTABLEALSOCASCADING}
     {#OTHERTABLENAME}Access.DeleteUsingTemplate({#MYOTHERTABLENAME}Table[countRow], null, ATransaction);
+{#ENDIFN OTHERTABLEALSOCASCADING}
+}
+
+{##COUNTBYPRIMARYKEYCASCADING}
+{#OTHERTABLENAME}Table {#MYOTHERTABLENAME}Table = {#OTHERTABLENAME}Access.Load{#VIAPROCEDURENAME}({#ACTUALPARAMETERSPRIMARYKEY}, StringHelper.StrSplit("{#CSVLISTOTHERPRIMARYKEYFIELDS}", ","), ATransaction);
+for (countRow = 0; (countRow != {#MYOTHERTABLENAME}Table.Rows.Count); countRow = (countRow + 1))
+{
+{#IFDEF OTHERTABLEALSOCASCADING}
+    OverallReferences += {#OTHERTABLENAME}Cascading.CountUsingTemplate({#MYOTHERTABLENAME}Table[countRow], null, ATransaction, AWithCascCount);
+{#ENDIF OTHERTABLEALSOCASCADING}
+{#IFNDEF OTHERTABLEALSOCASCADING}
+    OverallReferences += {#OTHERTABLENAME}Access.CountUsingTemplate({#MYOTHERTABLENAME}Table[countRow], null, ATransaction);
+{#ENDIFN OTHERTABLEALSOCASCADING}
+}
+
+{##COUNTBYTEMPLATECASCADING}
+{#OTHERTABLENAME}Table {#MYOTHERTABLENAME}Table = {#OTHERTABLENAME}Access.Load{#VIAPROCEDURENAME}Template(ATemplateRow, StringHelper.StrSplit("{#CSVLISTOTHERPRIMARYKEYFIELDS}", ","), ATransaction);
+for (countRow = 0; (countRow != {#MYOTHERTABLENAME}Table.Rows.Count); countRow = (countRow + 1))
+{
+{#IFDEF OTHERTABLEALSOCASCADING}
+    OverallReferences += {#OTHERTABLENAME}Cascading.CountUsingTemplate({#MYOTHERTABLENAME}Table[countRow], null, ATransaction, AWithCascCount);
+{#ENDIF OTHERTABLEALSOCASCADING}
+{#IFNDEF OTHERTABLEALSOCASCADING}
+    OverallReferences += {#OTHERTABLENAME}Access.CountUsingTemplate({#MYOTHERTABLENAME}Table[countRow], null, ATransaction);
 {#ENDIFN OTHERTABLEALSOCASCADING}
 }

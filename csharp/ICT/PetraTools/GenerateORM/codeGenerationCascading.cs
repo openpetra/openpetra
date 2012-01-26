@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -160,6 +160,32 @@ namespace Ict.Tools.CodeGeneration.DataStore
                     }
 
                     ASnippet.InsertSnippet("DELETEBYTEMPLATECASCADING", snippetDelete);
+
+                    ProcessTemplate snippetCount = ASnippet.GetSnippet("COUNTBYPRIMARYKEYCASCADING");
+                    snippetCount.SetCodelet("OTHERTABLENAME", TTable.NiceTableName(constraint.strThisTable));
+                    snippetCount.SetCodelet("MYOTHERTABLENAME", MyOtherTableName);
+                    snippetCount.SetCodelet("VIAPROCEDURENAME", "Via" + LoadViaProcedureName);
+                    snippetCount.SetCodelet("CSVLISTOTHERPRIMARYKEYFIELDS", csvListOtherPrimaryKeyFields);
+
+                    if (OtherTable.FReferenced.Count <= CASCADING_DELETE_MAX_REFERENCES)
+                    {
+                        snippetCount.SetCodelet("OTHERTABLEALSOCASCADING", "true");
+                    }
+
+                    ASnippet.InsertSnippet("COUNTBYPRIMARYKEYCASCADING", snippetCount);
+
+                    snippetCount = ASnippet.GetSnippet("COUNTBYTEMPLATECASCADING");
+                    snippetCount.SetCodelet("OTHERTABLENAME", TTable.NiceTableName(constraint.strThisTable));
+                    snippetCount.SetCodelet("MYOTHERTABLENAME", MyOtherTableName);
+                    snippetCount.SetCodelet("VIAPROCEDURENAME", "Via" + LoadViaProcedureName);
+                    snippetCount.SetCodelet("CSVLISTOTHERPRIMARYKEYFIELDS", csvListOtherPrimaryKeyFields);
+
+                    if (OtherTable.FReferenced.Count <= CASCADING_DELETE_MAX_REFERENCES)
+                    {
+                        snippetCount.SetCodelet("OTHERTABLEALSOCASCADING", "true");
+                    }
+
+                    ASnippet.InsertSnippet("COUNTBYTEMPLATECASCADING", snippetCount);
                 }
             }
 
