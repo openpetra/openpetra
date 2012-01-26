@@ -15,7 +15,8 @@ RootNode:
         actNewDetail: {Label=Add De&tail, ActionClick=NewDetail}
         actRemoveDetail:  {Label=&Remove Detail, ActionClick=RemoveDetail}
         actAnalyse: {ActionClick=Analyse}
-        actPostDocument: {Label=Post Document, ActionClick=PostDocument}
+        actPostDocument: {Label=Post, ActionClick=PostDocument}
+        actPayDocument: {Label=Pay, ActionClick=PayDocument}
         actUseTaxAccount: {ActionClick=UseTaxAccount}
     Controls:
         pnlContent:
@@ -51,13 +52,14 @@ RootNode:
             Label: Date D&ue
             Tooltip: Credit Terms is the number of days between date issued and due date
             OnChange: UpdateCreditTerms
-        nudDiscountDays: {Label=Discount &Days, PositiveValueActivates=cndDiscountEnabled}
-        txtDiscountPercentage: {Label=Discount &Value (%), Enabled=cndDiscountEnabled}
+        nudDiscountDays: {Label=Discount &Days, PositiveValueActivates=cndDiscountEnabled, Format: Integer}
+        txtDiscountPercentage: {Label=Discount, Enabled=cndDiscountEnabled, Format: PercentDecimal(1)}
         txtTotalAmount:
             Label: &Amount
             Format: Currency
         txtExchangeRateToBase:
             Label: E&xchange Rate
+            Format: Decimal
             # TODO: default value from daily exchange rate? update daily exchange rate?
         grpDetails:
             Label: Details
@@ -128,3 +130,6 @@ RootNode:
 #            Enabled: false
     Toolbar:
         tbbPostDocument:
+            Action: actPostDocument
+        tbbPayDocument:
+            Action: actPayDocument

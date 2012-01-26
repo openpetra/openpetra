@@ -196,6 +196,9 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AP.UIConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.UIConnectors.TFindUIConnector)</summary>
         void FindInvoices(DataTable ACriteriaData);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.UIConnectors.TFindUIConnector)</summary>
+        void FindSupplierTransactions(Int32 ALedgerNumber,
+                                      Int64 ASupplierKey);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.UIConnectors.TFindUIConnector)</summary>
         ALedgerTable GetLedgerInfo(Int32 ALedgerNumber);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.UIConnectors.TFindUIConnector)</summary>
         void PerformSearch(DataTable ACriteriaData);
@@ -230,6 +233,9 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AP.WebConnectors
     public interface IAPWebConnectorsNamespace : IInterface
     {
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
+        AccountsPayableTDS LoadAApSupplier(Int32 ALedgerNumber,
+                                           Int64 APartnerKey);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
         AccountsPayableTDS LoadAApDocument(Int32 ALedgerNumber,
                                            Int32 AAPNumber);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
@@ -252,6 +258,10 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AP.WebConnectors
                                            System.String ADocumentStatus,
                                            System.Boolean IsCreditNoteNotInvoice,
                                            System.Boolean AHideAgedTransactions);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
+        System.Boolean DeleteAPDocuments(Int32 ALedgerNumber,
+                                         List<Int32> ADeleteTheseDocs,
+                                         out TVerificationResultCollection AVerifications);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
         System.Boolean PostAPDocuments(Int32 ALedgerNumber,
                                        List<Int32> AAPDocumentNumbers,

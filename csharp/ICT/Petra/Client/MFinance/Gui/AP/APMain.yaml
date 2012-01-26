@@ -49,7 +49,9 @@ RootNode:
         actPaySelected:
             Enabled: cndCanPay
             ActionClick: PayAllTagged
-
+        actDeleteSelected:
+            Enabled: cndCanDelete
+            ActionClick: DeleteAllTagged
         actTagAllPostable:
             ActionClick: TagAllPostable
         actTagAllPayable:
@@ -146,3 +148,4 @@ RootNode:
             mniFind: {Action=actFindInvoice}
             mniPost: {Action=actPostSelected}
             mniPay: {Action=actPaySelected}
+            mniDelete: {Action=actDeleteSelected}

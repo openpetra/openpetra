@@ -44,6 +44,7 @@ using Ict.Petra.Server.MPartner.Partner.ServerLookups;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.Interfaces.MFinance.AP.WebConnectors;
 using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
 
 namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 {
@@ -65,35 +66,71 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         }
 
         /// <summary>
-        /// Passes data as a Typed DataSet to the Transaction Edit Screen
+        /// Loads ApDocument row, and also Supplier, DocumentDetail, and AnalAttrib.
         /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AAPNumber"></param>
+        /// <returns>TDS with tables loaded</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static AccountsPayableTDS LoadAApSupplier(Int32 ALedgerNumber, Int64 APartnerKey)
+        {
+            // create the DataSet that will be passed to the Client
+            AccountsPayableTDS MainDS = new AccountsPayableTDS();
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            AApSupplierAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
+            PPartnerAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
+            // Accept row changes here so that the Client gets 'unmodified' rows
+            MainDS.AcceptChanges();
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+
+            // Remove any Tables that were not filled with data before remoting them.
+            MainDS.RemoveEmptyTables();
+
+            return MainDS;
+        }
+
+        /// <summary>
+        /// Loads ApDocument row, and also Supplier, DocumentDetail, and AnalAttrib.
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AAPNumber"></param>
+        /// <returns>TDS with tables loaded</returns>
         [RequireModulePermission("FINANCE-1")]
         public static AccountsPayableTDS LoadAApDocument(Int32 ALedgerNumber, Int32 AAPNumber)
         {
-            // create the DataSet that will later be passed to the Client
+            // create the DataSet that will be passed to the Client
             AccountsPayableTDS MainDS = new AccountsPayableTDS();
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
             AApDocumentAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, AAPNumber, Transaction);
-            AApDocumentDetailAccess.LoadViaAApDocument(MainDS, ALedgerNumber, AAPNumber, Transaction);
-            AApSupplierAccess.LoadByPrimaryKey(MainDS, MainDS.AApDocument[0].PartnerKey, Transaction);
 
-            // Load via template...
+            // If the load didn't work, don't bother with anything else..
+            if (MainDS.AApDocument.Count > 0)
             {
-                AApAnalAttribRow TemplateRow = MainDS.AApAnalAttrib.NewRowTyped(false);
-                TemplateRow.LedgerNumber = ALedgerNumber;
-                TemplateRow.ApNumber = AAPNumber;
-                AApAnalAttribAccess.LoadUsingTemplate(MainDS, TemplateRow, Transaction);
+                SetOutstandingAmount(MainDS.AApDocument[0], ALedgerNumber, MainDS.AApDocumentPayment);
+
+                AApDocumentDetailAccess.LoadViaAApDocument(MainDS, ALedgerNumber, AAPNumber, Transaction);
+                AApSupplierAccess.LoadByPrimaryKey(MainDS, MainDS.AApDocument[0].PartnerKey, Transaction);
+
+                // Load Anal attrib via template...
+                {
+                    AApAnalAttribRow TemplateRow = MainDS.AApAnalAttrib.NewRowTyped(false);
+                    TemplateRow.LedgerNumber = ALedgerNumber;
+                    TemplateRow.ApNumber = AAPNumber;
+                    AApAnalAttribAccess.LoadUsingTemplate(MainDS, TemplateRow, Transaction);
+                }
+
+                // Accept row changes here so that the Client gets 'unmodified' rows
+                MainDS.AcceptChanges();
+
+                // I also need a full list of analysis attributes that could apply to this document
+                // (although if it's already been posted I don't need to get this...)
+
+                LoadAnalysisAttributes(MainDS, ALedgerNumber, Transaction);
             }
-
-            // Accept row changes here so that the Client gets 'unmodified' rows
-            MainDS.AcceptChanges();
-
-            // I also need a full list of analysis attributes that could apply to this document
-            // (although if it's already been posted I don't need to get this...)
-
-            LoadAnalysisAttributes(MainDS, ALedgerNumber, Transaction);
 
             DBAccess.GDBAccessObj.RollbackTransaction();
 
@@ -180,11 +217,11 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         ///
         /// </summary>
         /// <param name="AInspectDS">Typed DataSet that needs to contain known DataTables</param>
-        /// <param name="AVerificationResult">Null if all verifications are OK and all DB calls
+        /// <param name="AVerificationResult">Empty if all verifications are OK and all DB calls
         /// succeded, otherwise filled with 1..n TVerificationResult objects
         /// (can also contain DB call exceptions)</param>
-        /// <returns>true if all verifications are OK and all DB calls succeeded, false if
-        /// any verification or DB call failed
+        /// <returns>true if all verifications are OK and all DB calls succeeded, 
+        /// false if any verification or DB call failed
         /// </returns>
         [RequireModulePermission("FINANCE-1")]
         public static TSubmitChangesResult SaveAApDocument(ref AccountsPayableTDS AInspectDS,
@@ -195,14 +232,38 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
             AVerificationResult = null;
 
-            if (AInspectDS != null)
+            if (AInspectDS != null && AInspectDS.AApDocument != null && AInspectDS.AApDocument.Rows.Count > 0)
             {
                 AVerificationResult = new TVerificationResultCollection();
+
+                // I want to check that the Invoice number is not blank, 
+                // and that it doesn't already exist in the database.
+
+                AApDocumentRow NewDocRow = AInspectDS.AApDocument[0];
+                if (NewDocRow.DocumentCode.Length == 0)
+                {
+                    AVerificationResult.Add(new TVerificationResult("Save AP Document", "The Document has empty Document Reference.", TResultSeverity.Resv_Noncritical));
+                    return TSubmitChangesResult.scrInfoNeeded;
+                }
+
+                { // Load via Template
+                    AApDocumentRow DocTemplateRow = AInspectDS.AApDocument.NewRowTyped(false);
+                    DocTemplateRow.LedgerNumber = NewDocRow.LedgerNumber;
+                    DocTemplateRow.PartnerKey = NewDocRow.PartnerKey;
+                    DocTemplateRow.DocumentCode = NewDocRow.DocumentCode;
+                    AApDocumentTable MatchingRecords =  AApDocumentAccess.LoadUsingTemplate(DocTemplateRow, null);
+                    if (MatchingRecords.Rows.Count > 0)
+                    {
+                        AVerificationResult.Add(new TVerificationResult("Save AP Document", "A Document with this Reference already exists.", TResultSeverity.Resv_Noncritical));
+                        return TSubmitChangesResult.scrInfoNeeded;
+                    }
+                }
+
                 SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
                 try
                 {
                     // set AP Number if it has not been set yet
-                    if ((AInspectDS.AApDocument != null) && (AInspectDS.AApDocument[0].ApNumber == -1))
+                    if (AInspectDS.AApDocument[0].ApNumber == -1)
                     {
                         StringCollection fieldlist = new StringCollection();
                         ALedgerTable myLedgerTable;
@@ -218,14 +279,16 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         {
                             foreach (AApDocumentDetailRow detailrow in AInspectDS.AApDocumentDetail.Rows)
                             {
-                                detailrow.ApNumber = AInspectDS.AApDocument[0].ApNumber;
+                                if (detailrow.RowState != DataRowState.Deleted)
+                                {
+                                    detailrow.ApNumber = AInspectDS.AApDocument[0].ApNumber;
+                                }
                             }
                         }
-
                         ALedgerAccess.SubmitChanges(myLedgerTable, SubmitChangesTransaction, out AVerificationResult);
                     }
 
-                    if ((AInspectDS.AApDocument == null) || AApDocumentAccess.SubmitChanges(AInspectDS.AApDocument, SubmitChangesTransaction,
+                    if ((AInspectDS.AApDocument != null) && AApDocumentAccess.SubmitChanges(AInspectDS.AApDocument, SubmitChangesTransaction,
                             out AVerificationResult))
                     {
                         if ((AInspectDS.AApDocumentDetail == null) // Document detail lines
@@ -315,6 +378,25 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             return MainDS;
         }
 
+        private static void SetOutstandingAmount(AccountsPayableTDSAApDocumentRow Row, Int32 ALedgerNumber, AApDocumentPaymentTable DocPaymentTbl)
+        {
+            if (Row.DocumentStatus == MFinanceConstants.AP_DOCUMENT_PAID)
+            {
+                Row.OutstandingAmount = 0;
+            }
+            else
+            {
+                Row.OutstandingAmount = Row.TotalAmount;
+            }
+
+
+            if (Row.DocumentStatus == MFinanceConstants.AP_DOCUMENT_PARTIALLY_PAID)
+            // For any invoices that are partly paid, find out how much is outstanding.
+            {
+                Row.OutstandingAmount -= UIConnectors.TFindUIConnector.GetPartPaidAmount(ALedgerNumber, Row.ApNumber, DocPaymentTbl);
+            }
+        }
+
         /// <summary>
         /// Find AP Documents
         /// TODO: date
@@ -330,10 +412,17 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
             AApSupplierAccess.LoadByPrimaryKey(MainDS, ASupplierKey, null);
 
-            // TODO: filters for documents
-            // TODO: filter by ledger number
-            AApDocumentAccess.LoadViaAApSupplier(MainDS, ASupplierKey, null);
+            // TODO: filters for document status
+            AccountsPayableTDSAApDocumentRow DocumentTemplate = MainDS.AApDocument.NewRowTyped(false);
+            DocumentTemplate.LedgerNumber = ALedgerNumber;
+            DocumentTemplate.PartnerKey = ASupplierKey;
+            AApDocumentAccess.LoadUsingTemplate(MainDS, DocumentTemplate, null);
 
+
+            foreach (AccountsPayableTDSAApDocumentRow Row in MainDS.AApDocument.Rows)
+            {
+                SetOutstandingAmount(Row, ALedgerNumber, MainDS.AApDocumentPayment);
+            }
             return MainDS;
         }
 
@@ -669,6 +758,65 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         }
 
         /// <summary>
+        /// Documents can only be deleted if they're not posted yet.
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ADeleteTheseDocs"></param>
+        /// <param name="AVerifications"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-3")]
+        public static bool DeleteAPDocuments(Int32 ALedgerNumber, List <Int32>ADeleteTheseDocs, out TVerificationResultCollection AVerifications)
+        {
+            AVerifications = new TVerificationResultCollection();
+            AccountsPayableTDS TempDS = new AccountsPayableTDS();
+
+            foreach (Int32 ApNumber in ADeleteTheseDocs)
+            {
+                TempDS.Merge(LoadAApDocument(ALedgerNumber, ApNumber)); // This gives me documents, details, and potentially ap_anal_attrib records.
+            }
+
+            foreach (AApAnalAttribRow AnalAttribRow in TempDS.AApAnalAttrib.Rows)
+            {
+                AnalAttribRow.Delete();
+            }
+
+            foreach (AApDocumentDetailRow DetailRow in TempDS.AApDocumentDetail.Rows)
+            {
+                DetailRow.Delete();
+            }
+
+            foreach (AApDocumentRow DocRow in TempDS.AApDocument.Rows)
+            {
+                DocRow.Delete();
+            }
+
+            TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+            bool DeleteOK = AApAnalAttribAccess.SubmitChanges(TempDS.AApAnalAttrib, SubmitChangesTransaction, out AVerifications);
+
+            if (DeleteOK)
+            {
+                DeleteOK = AApDocumentDetailAccess.SubmitChanges(TempDS.AApDocumentDetail, SubmitChangesTransaction, out AVerifications);
+            }
+
+            if (DeleteOK)
+            {
+                DeleteOK = AApDocumentAccess.SubmitChanges(TempDS.AApDocument, SubmitChangesTransaction, out AVerifications);
+            }
+
+            if (DeleteOK)
+            {
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            else
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return DeleteOK;
+        }
+
+        /// <summary>
         /// creates GL transactions for the selected AP documents,
         /// and posts those GL transactions,
         /// and marks the AP documents as Posted
@@ -928,14 +1076,21 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             {
                 AApDocumentAccess.LoadByPrimaryKey(MainDS, row.LedgerNumber, row.ApNumber, ReadTransaction);
 
-                // TODO: once partial payments are implemented, check for total amount
-                // TODO: check that documents have not been paid already
-
-                // TODO: modify the ap documents and mark as paid or partially paid
+                // Modify the ap documents and mark as paid or partially paid
                 MainDS.AApDocument.DefaultView.Sort = AApDocumentTable.GetApNumberDBName();
-                AApDocumentRow documentRow = (AApDocumentRow)MainDS.AApDocument.DefaultView[
+                AccountsPayableTDSAApDocumentRow documentRow = (AccountsPayableTDSAApDocumentRow)MainDS.AApDocument.DefaultView[
                     MainDS.AApDocument.DefaultView.Find(row.ApNumber)].Row;
-                documentRow.DocumentStatus = MFinanceConstants.AP_DOCUMENT_PAID;
+
+                SetOutstandingAmount(documentRow, documentRow.LedgerNumber, ADocumentPayments);
+
+                if ((row.Amount >= documentRow.OutstandingAmount) || (documentRow.OutstandingAmount == 0.0m))
+                {
+                    documentRow.DocumentStatus = MFinanceConstants.AP_DOCUMENT_PAID;
+                }
+                else
+                {
+                    documentRow.DocumentStatus = MFinanceConstants.AP_DOCUMENT_PARTIALLY_PAID;
+                }
             }
 
             // get max payment number for this ledger
@@ -988,6 +1143,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     {
                         // TODO: what if posting fails? do we have an orphaned batch lying around? can this be put into one single transaction? probably not
                         // TODO: we should cancel that batch
+
+                        // TODO: I need to at least report this to the user.
                     }
                     else
                     {
@@ -1015,7 +1172,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 // we should not get here; how would the database get broken?
                 // TODO do we need a bigger transaction around everything?
 
-                TLogging.Log("after submitchanges: exception " + e.Message);
+                TLogging.Log("Posting payments: exception " + e.Message);
 
                 if (SubmitChangesTransaction != null)
                 {

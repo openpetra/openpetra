@@ -41,28 +41,26 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
     public partial class TFrmAPPayment
     {
         AccountsPayableTDS FMainDS = null;
+        AccountsPayableTDSAApPaymentRow FSelectedPaymentRow = null;
+        AccountsPayableTDSAApDocumentPaymentRow FSelectedDocumentRow = null;
 
-        private AApSupplierRow GetSupplier(Int64 APartnerKey)
+
+        private void RunOnceOnActivationManual()
         {
-            FMainDS.AApSupplier.DefaultView.Sort = AApSupplierTable.GetPartnerKeyDBName();
-
-            int indexSupplier = FMainDS.AApSupplier.DefaultView.Find(APartnerKey);
-
-            if (indexSupplier == -1)
-            {
-                return null;
-            }
-
-            return FMainDS.AApSupplier[indexSupplier];
+            rbtPayFullOutstandingAmount.CheckedChanged += new EventHandler(EnablePartialPayment);
         }
 
+        /// <summary>
         /// set which payments should be paid; initialises the data of this screen
+        /// </summary>
+        /// <param name="ADataset"></param>
+        /// <param name="ADocumentsToPay"></param>
         public void AddDocumentsToPayment(AccountsPayableTDS ADataset, List <Int32>ADocumentsToPay)
         {
             FMainDS = ADataset;
 
             FMainDS.AApDocument.DefaultView.Sort = AApDocumentTable.GetApNumberDBName();
-            FMainDS.AApPayment.Clear();
+            FMainDS.AApPayment.Clear(); // Because of this line, AddDocumentsToPayment may only be called once per payment.
 
             foreach (Int32 apnumber in ADocumentsToPay)
             {
@@ -70,28 +68,21 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                 if (indexDocument != -1)
                 {
-                    AApDocumentRow apdocument = FMainDS.AApDocument[indexDocument];
+                    AccountsPayableTDSAApDocumentRow apdocument = (AccountsPayableTDSAApDocumentRow)FMainDS.AApDocument.DefaultView[indexDocument].Row;
 
-                    AApSupplierRow supplier = GetSupplier(apdocument.PartnerKey);
-
-                    if (supplier == null)
-                    {
-                        // TODO: load supplier information if it is not already there
-
-                        supplier = GetSupplier(apdocument.PartnerKey);
-                    }
+                    AApSupplierRow supplier = TFrmAPMain.GetSupplier(FMainDS.AApSupplier, apdocument.PartnerKey);
 
                     if (supplier != null)
                     {
                         AccountsPayableTDSAApPaymentRow supplierPaymentsRow = null;
 
-                        FMainDS.AApPayment.DefaultView.Sort = AccountsPayableTDSAApPaymentTable.GetSupplierKeyDBName();
-                        int indexSupplierPayments = FMainDS.AApPayment.DefaultView.Find(supplier.PartnerKey);
-
-                        if (indexSupplierPayments != -1)
+                        // My TDS may already have a AApPayment row for this supplier.
+                        FMainDS.AApPayment.DefaultView.RowFilter = String.Format("{0}='{1}'", AccountsPayableTDSAApPaymentTable.GetSupplierKeyDBName(), supplier.PartnerKey);
+                        if (FMainDS.AApPayment.DefaultView.Count > 0)
                         {
-                            supplierPaymentsRow =
-                                (AccountsPayableTDSAApPaymentRow)FMainDS.AApPayment.DefaultView[indexSupplierPayments].Row;
+                            supplierPaymentsRow = (AccountsPayableTDSAApPaymentRow)FMainDS.AApPayment.DefaultView[0].Row;
+                            supplierPaymentsRow.TotalAmountToPay += apdocument.OutstandingAmount;
+                            supplierPaymentsRow.Amount = supplierPaymentsRow.TotalAmountToPay; // The user may choose to change the amount paid.
                         }
                         else
                         {
@@ -101,6 +92,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                             supplierPaymentsRow.SupplierKey = supplier.PartnerKey;
                             supplierPaymentsRow.MethodOfPayment = supplier.PaymentType;
                             supplierPaymentsRow.BankAccount = supplier.DefaultBankAccount;
+                            supplierPaymentsRow.CurrencyCode = supplier.CurrencyCode;
 
                             // TODO: use uptodate exchange rate?
                             supplierPaymentsRow.ExchangeRateToBase = 1.0M;
@@ -118,43 +110,49 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                                 eShortNameFormat.eReverseWithoutTitle);
 
                             supplierPaymentsRow.ListLabel = supplierPaymentsRow.SupplierName + " (" + supplierPaymentsRow.MethodOfPayment + ")";
+                            supplierPaymentsRow.TotalAmountToPay = apdocument.OutstandingAmount;
+                            supplierPaymentsRow.Amount = supplierPaymentsRow.TotalAmountToPay; // The user may choose to change the amount paid.
 
                             FMainDS.AApPayment.Rows.Add(supplierPaymentsRow);
                         }
-
-                        FMainDS.AApDocument.DefaultView.Sort = AApDocumentTable.GetApNumberDBName();
 
                         AccountsPayableTDSAApDocumentPaymentRow paymentdetails = FMainDS.AApDocumentPayment.NewRowTyped();
                         paymentdetails.LedgerNumber = supplierPaymentsRow.LedgerNumber;
                         paymentdetails.PaymentNumber = supplierPaymentsRow.PaymentNumber;
                         paymentdetails.ApNumber = apnumber;
+                        paymentdetails.CurrencyCode = supplier.CurrencyCode;
+                        paymentdetails.Amount = apdocument.TotalAmount;
+                        paymentdetails.InvoiceTotal = apdocument.OutstandingAmount;
                         paymentdetails.PayFullInvoice = true;
-
-                        // outstanding amount (TODO: consider partial payments!)
-                        paymentdetails.TotalAmountToPay = apdocument.TotalAmount;
-                        paymentdetails.Amount = paymentdetails.TotalAmountToPay;
 
                         // TODO: discounts
                         paymentdetails.HasValidDiscount = false;
                         paymentdetails.DiscountPercentage = 0;
                         paymentdetails.UseDiscount = false;
+                        paymentdetails.DocumentCode = apdocument.DocumentCode;
+                        paymentdetails.DocType = (apdocument.CreditNoteFlag ? "CREDIT" : "INVOICE");
                         FMainDS.AApDocumentPayment.Rows.Add(paymentdetails);
                     }
                 }
             }
 
+            FMainDS.AApPayment.DefaultView.RowFilter = "";
+
             TFinanceControls.InitialiseAccountList(ref cmbBankAccount, FMainDS.AApDocument[0].LedgerNumber, true, false, true, true);
 
-            grdDetails.AddTextColumn("AP No", FMainDS.AApDocumentPayment.ColumnApNumber);
+            grdDetails.AddTextColumn("AP No", FMainDS.AApDocumentPayment.ColumnApNumber, 50);
 
-            // TODO grdDetails.AddTextColumn("Invoice No", );
-            // TODO grdDetails.AddTextColumn("Type", ); // invoice or credit note
-            grdDetails.AddTextColumn("Discount used", FMainDS.AApDocumentPayment.ColumnUseDiscount);
-            grdDetails.AddTextColumn("Amount", FMainDS.AApDocumentPayment.ColumnAmount);
-            FMainDS.AApDocumentPayment.DefaultView.AllowNew = false;
-            FMainDS.AApDocumentPayment.DefaultView.AllowEdit = false;
+            grdDetails.AddTextColumn("Invoice No", FMainDS.AApDocumentPayment.ColumnDocumentCode, 80);
+            grdDetails.AddTextColumn("Type", FMainDS.AApDocumentPayment.ColumnDocType, 80);
+            grdDetails.AddTextColumn("Discount used", FMainDS.AApDocumentPayment.ColumnUseDiscount, 80);
+            grdDetails.AddCurrencyColumn("Amount", FMainDS.AApDocumentPayment.ColumnAmount);
+            // grdDetails.AddTextColumn("Currency", FMainDS.AApDocumentPayment.ColumnCurrencyCode, 50); // I like this, but it's not required...
 
             grdPayments.AddTextColumn("Supplier", FMainDS.AApPayment.ColumnListLabel);
+
+
+            FMainDS.AApDocumentPayment.DefaultView.AllowNew = false;
+            FMainDS.AApDocumentPayment.DefaultView.AllowEdit = false;
             FMainDS.AApPayment.DefaultView.AllowNew = false;
             grdPayments.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AApPayment.DefaultView);
             grdPayments.Refresh();
@@ -162,40 +160,107 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             FocusedRowChanged(null, null);
         }
 
+        private void CalculateTotalPayment()
+        {
+            FMainDS.AApDocumentPayment.DefaultView.RowFilter = String.Format("{0}={1}", 
+                AApDocumentPaymentTable.GetPaymentNumberDBName(), FSelectedPaymentRow.PaymentNumber);
+
+            FSelectedPaymentRow.Amount = 0m;
+            foreach (DataRowView rv in FMainDS.AApDocumentPayment.DefaultView)
+            {
+                AccountsPayableTDSAApDocumentPaymentRow DocPaymentRow = (AccountsPayableTDSAApDocumentPaymentRow)rv.Row;
+                FSelectedPaymentRow.Amount += DocPaymentRow.Amount;
+            }
+
+            txtTotalAmount.Text = FSelectedPaymentRow.Amount.ToString("N2");
+        }
+
+        private void EnablePartialPayment(object sender, EventArgs e)
+        {
+            //
+            // If this invoice is already partpaid, the outstanding amount box
+            // should show the amount remaining to be paid.
+            //
+            txtAmountToPay.Enabled = rbtPayAPartialAmount.Checked;
+
+            FSelectedDocumentRow.PayFullInvoice = rbtPayFullOutstandingAmount.Checked;
+
+            if (rbtPayFullOutstandingAmount.Checked)
+            {
+                FSelectedDocumentRow.Amount = FSelectedDocumentRow.InvoiceTotal;
+            }
+
+            txtAmountToPay.Text = FSelectedDocumentRow.Amount.ToString("N2");
+            CalculateTotalPayment();
+        }
+
         private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
         {
             DataRowView[] SelectedGridRow = grdPayments.SelectedDataRowsAsDataRowView;
 
-            // TODO: store values in previously selected item???
-
             if (SelectedGridRow.Length >= 1)
             {
-                AccountsPayableTDSAApPaymentRow row = (AccountsPayableTDSAApPaymentRow)SelectedGridRow[0].Row;
+                FSelectedPaymentRow = (AccountsPayableTDSAApPaymentRow)SelectedGridRow[0].Row;
 
-                AApSupplierRow supplier = GetSupplier(row.SupplierKey);
+                AApSupplierRow supplier = TFrmAPMain.GetSupplier(FMainDS.AApSupplier, FSelectedPaymentRow.SupplierKey);
 
                 txtCurrency.Text = supplier.CurrencyCode;
-                cmbBankAccount.SetSelectedString(row.BankAccount);
+                cmbBankAccount.SetSelectedString(FSelectedPaymentRow.BankAccount);
                 txtExchangeRate.Text = "1.0";
 
                 FMainDS.AApDocumentPayment.DefaultView.RowFilter = AccountsPayableTDSAApDocumentPaymentTable.GetPaymentNumberDBName() +
-                                                                   " = " + row.PaymentNumber.ToString();
+                                                                   " = " + FSelectedPaymentRow.PaymentNumber.ToString();
 
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AApDocumentPayment.DefaultView);
                 grdDetails.Refresh();
                 grdDetails.Selection.SelectRow(1, true);
+                FocusedRowChangedDetails(null, null);
             }
         }
 
         private void FocusedRowChangedDetails(System.Object sender, SourceGrid.RowEventArgs e)
         {
-            // TODO
+            DataRowView[] SelectedGridRow = grdDetails.SelectedDataRowsAsDataRowView;
+
+            if (FSelectedDocumentRow != null)  // unload amount to pay into currently selected record
+            {
+                FSelectedDocumentRow.Amount = Decimal.Parse(txtAmountToPay.Text);
+            }
+
+
+            FSelectedDocumentRow = (AccountsPayableTDSAApDocumentPaymentRow)SelectedGridRow[0].Row;
+            rbtPayFullOutstandingAmount.Checked = FSelectedDocumentRow.PayFullInvoice;
+            rbtPayAPartialAmount.Checked = !rbtPayFullOutstandingAmount.Checked;
+
+            EnablePartialPayment(null, null);
         }
 
         private void MakePayment(object sender, EventArgs e)
         {
-            // TODO get data from controls into typed dataset
+            FSelectedDocumentRow.Amount = Decimal.Parse(txtAmountToPay.Text);
 
+            //
+            // I want to check whether the user is paying more than the due amount on any of these payments...
+            //
+            foreach (AccountsPayableTDSAApPaymentRow PaymentRow in FMainDS.AApPayment.Rows)
+            {
+                FMainDS.AApDocumentPayment.DefaultView.RowFilter = String.Format("{0}={1}",AApDocumentPaymentTable.GetPaymentNumberDBName(), PaymentRow.PaymentNumber);
+                foreach (DataRowView rv in FMainDS.AApDocumentPayment.DefaultView)
+                {
+                    AccountsPayableTDSAApDocumentPaymentRow DocPaymentRow = (AccountsPayableTDSAApDocumentPaymentRow)rv.Row;
+                    if (DocPaymentRow.Amount > DocPaymentRow.InvoiceTotal)
+                    {
+                        String strMessage = String.Format(Catalog.GetString("Payment of {0:n2} {1} to {2} is more than the due amount.\r\nPress OK to accept this amount."),
+                            DocPaymentRow.Amount, PaymentRow.CurrencyCode, PaymentRow.SupplierName);
+
+                        if (System.Windows.Forms.MessageBox.Show(strMessage, Catalog.GetString("OverPayment"), MessageBoxButtons.OKCancel)
+                            == DialogResult.Cancel)
+                        {
+                            return;
+                        }
+                    }
+                }
+            }
             TVerificationResultCollection Verifications;
 
             TDlgGLEnterDateEffective dateEffectiveDialog = new TDlgGLEnterDateEffective(
@@ -236,6 +301,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                 // TODO: refresh the screen, to reflect that the documents have been payed
                 // TODO: refresh/notify other screens as well?
+                Close();
             }
         }
     }

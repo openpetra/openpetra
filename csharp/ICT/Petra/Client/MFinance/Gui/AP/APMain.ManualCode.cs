@@ -47,6 +47,7 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 using System.Globalization;
 using System.Timers;
 using System.Collections.Generic;
+using Ict.Common.Verification;
 
 namespace Ict.Petra.Client.MFinance.Gui.AP
 {
@@ -186,7 +187,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                         return;
                 }
 
-                // Sleep for some time. After that, this function is called again automatically.
+                // Sleep a bit, then loop...
                 Thread.Sleep(200);
             }
 
@@ -210,6 +211,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 grdInvoiceResult.AddTextColumn("Inv#", FPagedDataTable.Columns[1], 90);
                 grdInvoiceResult.AddTextColumn("Supplier", FPagedDataTable.Columns[2], 240);
                 grdInvoiceResult.AddCurrencyColumn("Amount", FPagedDataTable.Columns[4], 2);
+                grdInvoiceResult.AddCurrencyColumn("Outstanding", FPagedDataTable.Columns["OutstandingAmount"], 2);
                 grdInvoiceResult.AddTextColumn("Currency", FPagedDataTable.Columns[3], 70);
                 grdInvoiceResult.AddDateColumn("Due Date", FPagedDataTable.Columns[7]);
                 grdInvoiceResult.AddTextColumn("Status", FPagedDataTable.Columns[5], 100);
@@ -217,8 +219,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 grdInvoiceResult.AddTextColumn("Discount", FPagedDataTable.Columns["DiscountMsg"], 150);
 
                 grdInvoiceResult.Columns[4].Width = 90;  // Only the text columns can have their widths set while
-                grdInvoiceResult.Columns[6].Width = 110; // they're being added. For these currency and date columns,
-                grdInvoiceResult.Columns[8].Width = 110; // I need to set the width afterwards. (THIS WILL GO WONKY IF EXTRA FIELDS ARE ADDED ABOVE.)
+                grdInvoiceResult.Columns[5].Width = 90;  // they're being added. 
+                grdInvoiceResult.Columns[7].Width = 110; // For these currency and date columns,
+                grdInvoiceResult.Columns[9].Width = 110; // I need to set the width afterwards. (THIS WILL GO WONKY IF EXTRA FIELDS ARE ADDED ABOVE.)
 
                 grdInvoiceResult.MouseClick += new MouseEventHandler(grdInvoiceResult_Click);
             }
@@ -259,7 +262,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                         //
                         // While I'm in this loop, I'll also check whether to enable the "Pay" and "Post" buttons.
                         //
-                        if ("|POSTED|PARTPAID|".IndexOf(Row["a_document_status_c"].ToString()) > 0)
+                        if ("|POSTED|PARTPAID|".IndexOf("|" + Row["a_document_status_c"].ToString()) >= 0)
                         {
                             TaggedInvoicesPayable = true;
                         }
@@ -366,7 +369,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         }
 
         /// <summary>
-        /// todoComment
+        /// 
         /// </summary>
         /// <param name="ANeededPage"></param>
         /// <param name="APageSize"></param>
@@ -389,9 +392,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 else
                 {
                     FInvoiceTable = FSupplierFindObject.GetDataPagedResult(ANeededPage, APageSize, out ATotalRecords, out ATotalPages);
-                    FInvoiceTable.Columns.Add("DiscountMsg");
-                    DataColumn Checkboxcolumn = new DataColumn("Selected", typeof(bool));
-                    FInvoiceTable.Columns.Add(Checkboxcolumn);
+                    FInvoiceTable.Columns.Add("DiscountMsg", typeof(string));
+                    FInvoiceTable.Columns.Add("Selected", typeof(bool));
 
                     foreach (DataRow Row in FInvoiceTable.Rows)
                     {
@@ -426,33 +428,59 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="Tbl"></param>
+        /// <param name="APartnerKey"></param>
+        /// <returns></returns>
+        public static AApSupplierRow GetSupplier(AApSupplierTable Tbl, Int64 APartnerKey)
+        {
+            Tbl.DefaultView.Sort = AApSupplierTable.GetPartnerKeyDBName();
+
+            int indexSupplier = Tbl.DefaultView.Find(APartnerKey);
+
+            if (indexSupplier == -1)
+            {
+                return null;
+            }
+
+            return Tbl[indexSupplier];
+        }
+
+        /// <summary>
         /// get the partner key of the currently selected supplier in the grid
         /// </summary>
         /// <returns></returns>
         private Int64 GetCurrentlySelectedSupplier()
         {
             DataRowView[] SelectedGridRow = grdSupplierResult.SelectedDataRowsAsDataRowView;
-
+            Int64 SupplierKey = -1;
             if (SelectedGridRow.Length >= 1)
             {
-                Int64 SupplierKey = Convert.ToInt64(SelectedGridRow[0][0]);
-                return SupplierKey;
+                Object Cell = SelectedGridRow[0][0];
+                if (Cell.GetType() == typeof(Int64))
+                {
+                    SupplierKey = Convert.ToInt64(Cell);
+                }
             }
-
-            return -1;
+            return SupplierKey;
         }
 
         private Int32 GetCurrentlySelectedInvoice()
         {
             DataRowView[] SelectedGridRow = grdInvoiceResult.SelectedDataRowsAsDataRowView;
+            Int32 InvoiceNum = -1;
 
             if (SelectedGridRow.Length >= 1)
             {
-                Int32 InvoiceNum = Convert.ToInt32(SelectedGridRow[0]["a_ap_number_i"]);
-                return InvoiceNum;
+                Object Cell = SelectedGridRow[0]["a_ap_number_i"];
+                if (Cell.GetType() == typeof(Int32))
+                {
+                    InvoiceNum = Convert.ToInt32(Cell);
+                }
             }
 
-            return -1;
+            return InvoiceNum;
         }
 
         /// <summary>
@@ -473,9 +501,12 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         public void ShowInvoice(object sender, EventArgs e)
         {
             TFrmAPEditDocument frm = new TFrmAPEditDocument(this);
-
-            frm.LoadAApDocument(FLedgerNumber, GetCurrentlySelectedInvoice());
-            frm.Show();
+            Int32 SelectedInvoice = GetCurrentlySelectedInvoice();
+            if (SelectedInvoice > 0)
+            {
+                frm.LoadAApDocument(FLedgerNumber, SelectedInvoice);
+                frm.Show();
+            }
         }
 
 
@@ -612,7 +643,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             foreach (DataRow Row in FInvoiceTable.Rows)
             {
-                if ("|POSTED|PARTPAID|PAID|".IndexOf(Row["a_document_status_c"].ToString()) < 0)
+                if ("|POSTED|PARTPAID|PAID|".IndexOf("|" + Row["a_document_status_c"].ToString()) < 0)
                 {
                     Row["Selected"] = true;
                 }
@@ -625,7 +656,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             foreach (DataRow Row in FInvoiceTable.Rows)
             {
-                if ("|POSTED|PARTPAID|".IndexOf(Row["a_document_status_c"].ToString()) > 0)
+                if ("|POSTED|PARTPAID|".IndexOf("|" + Row["a_document_status_c"].ToString()) >= 0)
                 {
                     Row["Selected"] = true;
                 }
@@ -656,9 +687,67 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             return LoadDs;
         }
 
+        private void DeleteAllTagged(object sender, EventArgs e) 
+        {
+            // I can only delete invoices that are not posted already.
+            List<int> DeleteTheseDocs = new List<int>();
+            foreach (DataRow Row in FInvoiceTable.Rows)
+            {
+                if (Row["Selected"].Equals(true))
+                {
+                    if ("|POSTED|PARTPAID|PAID|".IndexOf("|" + Row["a_document_status_c"].ToString()) < 0)
+                    {
+                        DeleteTheseDocs.Add((int)Row["a_ap_number_i"]);
+                    }
+                    else
+                    {
+                        System.Windows.Forms.MessageBox.Show(Catalog.GetString("Can't delete posted invoices."), Catalog.GetString("Document Deletion failed"));
+                    }
+                }
+            }
+
+            if (DeleteTheseDocs.Count == 0)
+            {
+                System.Windows.Forms.MessageBox.Show(Catalog.GetString("No tagged invoices can be deleted."), Catalog.GetString("Document Deletion failed"));
+                return;
+            }
+
+            TVerificationResultCollection Verifications;
+
+            if (TRemote.MFinance.AP.WebConnectors.DeleteAPDocuments(FLedgerNumber, DeleteTheseDocs, out Verifications))
+            {
+                MessageBox.Show(Catalog.GetString("Document(s) deleted successfully!"));
+            }
+            else
+            {
+                string ErrorMessages = String.Empty;
+
+                foreach (TVerificationResult verif in Verifications)
+                {
+                    ErrorMessages += "[" + verif.ResultContext + "] " +
+                                     verif.ResultTextCaption + ": " +
+                                     verif.ResultText + Environment.NewLine;
+                }
+
+                System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Document Deletion failed"));
+            }
+        }
+
         private void PayAllTagged(object sender, EventArgs e)
         {
             AccountsPayableTDS TempDS = LoadTaggedDocuments();
+            TFrmAPPayment PaymentScreen = new TFrmAPPayment(this);
+            List<int> PayTheseDocs = new List<int>();
+            foreach (DataRow Row in FInvoiceTable.Rows)
+            {
+                if ((Row["Selected"].Equals(true) 
+                    && ("|POSTED|PARTPAID".IndexOf("|" + Row["a_document_status_c"].ToString()) >= 0)))
+                {
+                    PayTheseDocs.Add((int)Row["a_ap_number_i"]);
+                }
+            }
+            PaymentScreen.AddDocumentsToPayment(TempDS, PayTheseDocs);
+            PaymentScreen.Show();
         }
 
         private void PostAllTagged(object sender, EventArgs e)

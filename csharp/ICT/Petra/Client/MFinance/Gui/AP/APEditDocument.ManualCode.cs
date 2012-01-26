@@ -3,8 +3,9 @@
 //
 // @Authors:
 //       timop
+//       Tim Ingham
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -35,11 +36,14 @@ using Ict.Petra.Client.MFinance.Gui.GL;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Shared.Interfaces.MFinance.AP.UIConnectors;
 
 namespace Ict.Petra.Client.MFinance.Gui.AP
 {
     public partial class TFrmAPEditDocument
     {
+        ALedgerRow FLedgerRow = null;
+
         private void InitializeManualCode()
         {
         }
@@ -51,7 +55,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private void EnableControls()
         {
             // I need to make everything read-only if this document was already posted.
-            if ("|POSTED|PARTPAID|PAID|".IndexOf(FMainDS.AApDocument[0].DocumentStatus) > 0)
+            if ("|POSTED|PARTPAID|PAID|".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) > 0)
             {
                 tbbPostDocument.Enabled = false;
 
@@ -171,13 +175,19 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private void ShowDataManual()
         {
-            txtTotalAmount.CurrencySymbol = FMainDS.AApSupplier[0].CurrencyCode;
-            txtDetailAmount.CurrencySymbol = FMainDS.AApSupplier[0].CurrencyCode;
+            AccountsPayableTDSAApDocumentRow DocumentRow = FMainDS.AApDocument[0];
+            AApSupplierRow SupplierRow = FMainDS.AApSupplier[0];
+            txtTotalAmount.CurrencySymbol = SupplierRow.CurrencyCode;
+            txtDetailAmount.CurrencySymbol = SupplierRow.CurrencyCode;
 
-            // Create Text description of Anal Attribs for each DetailRow..
+            IAPUIConnectorsFind FSupplierFindObject = TRemote.MFinance.AP.UIConnectors.Find();
+            ALedgerTable Tbl = FSupplierFindObject.GetLedgerInfo(DocumentRow.LedgerNumber);
+            FLedgerRow = Tbl[0];
+            txtDetailBaseAmount.CurrencySymbol = FLedgerRow.BaseCurrency;
 
             if (FMainDS.AApDocumentDetail != null) // When the form is new, this can be null.
             {
+                // Create Text description of Anal Attribs for each DetailRow..
                 foreach (AccountsPayableTDSAApDocumentDetailRow DetailRow in FMainDS.AApDocumentDetail.Rows)
                 {
                     string strAnalAttr = "";
@@ -348,8 +358,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         }
 
         /// <summary>
+        /// 
         /// </summary>
         /// <param name="Atds"></param>
+        /// <param name="AApDocument"></param>
         /// <returns>true if the document TotalAmount equals the sum of its parts!</returns>
         public static bool BatchBalancesOK(AccountsPayableTDS Atds, AApDocumentRow AApDocument)
         {
@@ -509,6 +521,26 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 {
                     ((TFrmAPSupplierTransactions)Opener).Reload();
                 }
+            }
+        }
+
+        private void PayDocument(object sender, EventArgs e)
+        {
+            TFrmAPPayment PaymentScreen = new TFrmAPPayment(this);
+            List<int> PayTheseDocs = new List<int>();
+
+            PayTheseDocs.Add(FMainDS.AApDocument[0].ApNumber);
+            PaymentScreen.AddDocumentsToPayment(FMainDS, PayTheseDocs);
+            PaymentScreen.Show();
+
+            // After the payments screen, The status of this document may have chaged.
+
+            EnableControls();
+            Form Opener = FPetraUtilsObject.GetCallerForm();
+
+            if (Opener.GetType() == typeof(TFrmAPSupplierTransactions))
+            {
+                ((TFrmAPSupplierTransactions)Opener).Reload();
             }
         }
     }
