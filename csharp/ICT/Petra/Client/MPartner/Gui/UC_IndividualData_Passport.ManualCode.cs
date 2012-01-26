@@ -121,6 +121,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             ARow.PassportNumber = newName;
+            
         }
 
         private void DeleteRow(System.Object sender, EventArgs e)
@@ -166,6 +167,16 @@ namespace Ict.Petra.Client.MPartner.Gui
                 pnlDetails.Visible = true;
             }
         	
+            // always take "date of birth" field value from person record
+            if (FMainDS.PPerson[0].IsDateOfBirthNull())
+            {
+	            dtpDateOfBirth.Date = null;
+            }
+            else
+            {
+	            dtpDateOfBirth.Date = FMainDS.PPerson[0].DateOfBirth;
+            }
+            
             // In theory, the next Method call could be done in Methods NewRowManual; however, NewRowManual runs before
             // the Row is actually added and this would result in the Count to be one too less, so we do the Method call here, short
             // of a non-existing 'AfterNewRowManual' Method....
@@ -292,6 +303,55 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 RecalculateScreenParts(this, e);
             }
+        }
+ 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void PassportNameHelp(System.Object sender, EventArgs e)
+        {
+            String StrPassportNameExplained;
+
+            StrPassportNameExplained = Catalog.GetString(
+                "The Family Name in the Passport Name Field must be put in brackets." + "\r\n" +
+                "For example: Mike (Miller)"+ "\r\n");
+            
+            MessageBox.Show(StrPassportNameExplained, Catalog.GetString("Passport Name Explained"));
+        }
+        
+        private void SuggestPassportName(System.Object sender, EventArgs e)
+        {
+            Boolean ReturnValue;
+            TFrmPassportNameSuggestDialog Scd;
+            string PassportName;
+
+            /* Open 'Cancel All Subscriptions' Dialog */
+            Scd = new TFrmPassportNameSuggestDialog(this.ParentForm);
+
+            PassportName = FMainDS.PPerson[0].FirstName;
+            if (FMainDS.PPerson[0].MiddleName1.Trim() != "")
+            {
+	            PassportName = PassportName + " " + FMainDS.PPerson[0].MiddleName1;
+            }
+	        PassportName = PassportName + " (" + FMainDS.PPerson[0].FamilyName + ")";
+
+            Scd.SetPassportName (PassportName);
+
+            Scd.ShowDialog();
+
+            if (Scd.DialogResult != System.Windows.Forms.DialogResult.Cancel)
+            {
+                /* Get values from the Dialog */
+                Scd.GetReturnedParameters(out PassportName);
+
+                txtPassportName.Text = PassportName;
+                
+            }
+
+            Scd.Dispose();
+
         }
         
         /// <summary>

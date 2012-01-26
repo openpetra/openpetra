@@ -10,6 +10,7 @@ RootNode:
     Actions:
         actNew: {Label=&New, ActionClick=NewRow}
         actDelete: {Label=&Delete, ActionClick=DeleteRow}
+        actPassportNameHelp: {ActionClick=PassportNameHelp, Image: Help2.ico}
     Controls:
         pnlContent:
             Dock: Fill
@@ -42,7 +43,7 @@ RootNode:
             Controls:
                 Row0: [txtPassportNumber]
                 Row1: [cmbPassportType]
-                Row2: [txtPassportName]
+                Row2: [txtPassportName, btnPassportNameHelp]
                 Row3: [txtPlaceOfBirth]
                 Row4: [dtpDateOfBirth]
                 Row5: [cmbPassportNationality]
@@ -52,9 +53,12 @@ RootNode:
                 
         txtPassportNumber: {Label=Passport Number, DataField=PmPassportDetails.PassportNumber, Width=180}
         cmbPassportType: {Label=Type, DataField=PmPassportDetails.PassportDetailsType, List=PassportDetailsTypeList, Width=200}
-        txtPassportName: {Label=Passport Name, DataField=PmPassportDetails.FullPassportName, Width=200}
+        txtPassportName: {Label=Passport Name, DataField=PmPassportDetails.FullPassportName, Width=300, OnEnter=SuggestPassportName}
+        btnPassportNameHelp: {NoLabel=true}
+            Action: actPassportNameHelp
+            Help: Passport Name explained
         txtPlaceOfBirth:{Label=Place of Birth, DataField=PmPassportDetails.PlaceOfBirth, Width=200}
-        dtpDateOfBirth: {Label=Date of Birth, DataField=PmPassportDetails.PassportDob}
+        dtpDateOfBirth: {Label=Date of Birth, DataField=PmPassportDetails.PassportDob, Enabled=false}
         cmbPassportNationality: {Label=Passport Nationality, DataField=PmPassportDetails.PassportNationalityCode, List=PassportNationalityCodeList, Width=300}
         txtPlaceOfIssue: {Label=Place of Issue, Width=160, DataField=PmPassportDetails.PlaceOfIssue}
         dtpDateOfIssue: {Label=Date of Issue, DataField=PmPassportDetails.DateOfIssue}

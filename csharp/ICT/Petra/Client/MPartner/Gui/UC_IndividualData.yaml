@@ -62,7 +62,7 @@ RootNode:
         llbCommitmentPeriods: {Label=[&o] Commitment Periods ({0}), Action=actIndivDataItemSelected}
         llbJobAssignments: {Label=[&p] Job Assignments ({0}), Action=actIndivDataItemSelected}
         llbProgressReports: {Label=[&q] Progress Reports ({0}), Action=actIndivDataItemSelected}
-        llbPersonSkills: {Label=[&r] Person Skills ({0}), Action=actIndivDataItemSelected}
+        llbPersonSkills: {Label=[&r] Skills ({0}), Action=actIndivDataItemSelected}
             
         pnlSelectedIndivDataItem:
             Dock: Fill

@@ -42,55 +42,25 @@ using Ict.Petra.Client.CommonControls;
 namespace Ict.Petra.Client.MPartner.Gui
 {
     /// manual methods for the generated window
-    public partial class TFrmSubscriptionsCancelAllDialog : System.Windows.Forms.Form
+    public partial class TFrmPassportNameSuggestDialog : System.Windows.Forms.Form
     {
-        private DateTime FDateEndedPreset = DateTime.MinValue;
-
-        /// <summary>
-        /// Set this Property to a Date to preset the 'Date Ended' date in the Dialog to
-        /// this date (instead of to today, to which it defaults).
-        ///
-        /// </summary>
-        public DateTime DateEnded
+		/// <summary>
+		/// set the initial value for passport name in the dialog
+		/// </summary>
+		/// <param name="APassportName"></param>
+    	public void SetPassportName (String APassportName)
         {
-            get
-            {
-                return FDateEndedPreset;
-            }
-
-            set
-            {
-                FDateEndedPreset = value;
-            }
+	        txtPassportName.Text = APassportName;
         }
-
+        
         private void InitializeManualCode()
         {
-            DateTime DateEnded;
-
-            lblExplanationText.Text = Catalog.GetString(
-                "Select the 'Reason ended' and enter the 'Date ended'." + "\r\n" +
-                "On clicking OK these will be applied to all active Subscriptions." + "\r\n" +
-                "The Partner will be left with no active Subscriptions!");
-
-            if (FDateEndedPreset == DateTime.MinValue)
-            {
-                DateEnded = DateTime.Today;
-            }
-            else
-            {
-                /* MessageBox.Show('FDateEndedPreset: ' + FDateEndedPreset.ToString); */
-                DateEnded = FDateEndedPreset;
-
-                /* MessageBox.Show('Presetting the Reason Ended to ''BADADDR'''); */
-                /* FDateEnded was set via the DateEnded property, which happens if this */
-                /* Dialog is called from the 'Deactivate Partner' process. In this case */
-                /* the probability is high that this is done because mail was returned */
-                /* undeliverable, so we preset the Reason Ended to 'BADADDR'. */
-                cmbPSubscriptionReasonSubsCancelledCode.cmbCombobox.SelectedValue = MPartnerConstants.SUBSCRIPTIONS_REASON_ENDED_BADADDR;
-            }
-
-            dtpPSubscriptionDateCancelled.Date = DateEnded;
+            lblExplanation.Text = Catalog.GetString(
+                "To use the short name listed below simply select 'OK'." + "\r\n" +
+                "You may change the name and then select 'OK'." + "\r\n" +
+                "Select 'Cancel' to ignore any changes you have made." + "\r\n" +
+                "The Family Name must be put in brackets." + "\r\n" +
+                "For example: Mike (Miller)"+ "\r\n");
         }
 
         private void CustomClosingHandler(System.Object sender, System.ComponentModel.CancelEventArgs e)
@@ -121,12 +91,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="ADateEnded">Date when the Subscriptions should end (can be empty)</param>
         /// <returns>false if the Dialog is still uninitialised, otherwise true.
         /// </returns>
-        public Boolean GetReturnedParameters(out String AReasonEnded, out DateTime ADateEnded)
+        public Boolean GetReturnedParameters(out String APassportName)
         {
             Boolean ReturnValue = true;
 
-            AReasonEnded = cmbPSubscriptionReasonSubsCancelledCode.GetSelectedString();
-            ADateEnded = (DateTime)dtpPSubscriptionDateCancelled.Date;
+            APassportName = txtPassportName.Text;
 
             return ReturnValue;
         }
