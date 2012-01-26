@@ -2488,7 +2488,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             TSubmitChangesResult Result = TSubmitChangesResult.scrOK;
             TSubmitChangesResult TmpResult;
 
-            for (Int16 LocationCounter = 0; LocationCounter <= LocationTable.Rows.Count - 1; LocationCounter += 1)
+            for (Int16 LocationCounter = 0; LocationCounter < LocationTable.Rows.Count; LocationCounter++)
             {
                 if ((LocationTable.Rows[LocationCounter].RowState == DataRowState.Added)
                     || (LocationTable.Rows[LocationCounter].RowState == DataRowState.Modified))

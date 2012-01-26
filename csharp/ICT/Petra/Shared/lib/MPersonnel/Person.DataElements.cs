@@ -72,7 +72,10 @@ namespace Ict.Petra.Shared.MPersonnel.Person
         /// <summary>TODO</summary>
         idiJobAssignments,
 
-        /// <summary>TODO</summary>
-        idiProgressReports
+        /// <summary>Progress Reports (Person Evaluations)</summary>
+        idiProgressReports,
+
+        /// <summary>Person Skills</summary>
+        idiPersonSkills,
     }
 }

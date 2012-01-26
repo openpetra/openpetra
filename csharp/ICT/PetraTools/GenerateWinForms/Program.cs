@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -164,9 +164,6 @@ namespace Ict.Tools.GenerateWinForms
 
                         foreach (string file in yamlFilesSorted)
                         {
-                            // reset the dataset each time to force reload
-                            TDataBinding.FDatasetTables = null;
-
                             // only look for main files, not language specific files (*.XY.yaml)
                             if (file[file.Length - 8] != '.')
                             {

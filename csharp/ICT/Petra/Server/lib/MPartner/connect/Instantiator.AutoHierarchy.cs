@@ -2749,6 +2749,18 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
         }
 
         /// generated method from connector
+        public PUnitTable GetConferenceUnits(System.String AConferenceName)
+        {
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerDataReader.GetConferenceUnits(AConferenceName);
+        }
+
+        /// generated method from connector
+        public PUnitTable GetOutreachUnits(System.String AOutreachName)
+        {
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerDataReader.GetOutreachUnits(AOutreachName);
+        }
+
+        /// generated method from connector
         public Int64 NewPartnerKey(Int64 AFieldPartnerKey)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerEditWebConnector), "NewPartnerKey", ";LONG;");

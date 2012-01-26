@@ -40,9 +40,9 @@ RootNode:
 #                Row3: [cmbSubscriptionStatus]
 #                Row4: [dtpStartDateFrom, dtpStartDateTo]
 #                Row5: [dtpExpiryDateFrom, dtpExpiryDateTo]
-#                Row6: [ucoAddress]
                 Row1: [txtExtractName]
                 Row2: [txtExtractDescription]
+#                Row3: [ucoAddress]
         lblIncludePublication:
             Label: Report on all partners that have one of these subscriptions
         clbIncludePublication:
@@ -69,9 +69,9 @@ RootNode:
 #            Label:  Expiry Date From
 #        dtpExpiryDateTo:
 #            Label:  To
-#        #ucoAddress:
-#        #    ColSpan: 2
-#        #    Type: Ict.Petra.Client.MReporting.Gui.TUC_AddressFilter
+        ucoAddress:
+            ColSpan: 2
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_AddressFilter
         txtExtractName: {Label=Name for the new extract, ParameterName=nameOfExtract}
         txtExtractDescription: {Label=Description for the new extract, ParameterName=descriptionOfExtract}
         ucoReportSorting:
@@ -123,8 +123,11 @@ RootNode:
         Para15:
             Name: Partner Key
             Parameter: 2.0
-        Para16:
+        Para16a:
             Name: Partner Name
+            Parameter: 4.0
+        Para16:
+            Name: Short Name
             Parameter: 4.0
         Para17:
             Name: Post Code

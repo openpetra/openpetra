@@ -1,30 +1,30 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="systemsettings" value="True" />
-  <Parameter id="xmlfiles" value="Finance\\totalgivingforrecipients.xml,Finance\\finance.xml,common.xml" />
-  <Parameter id="currentReport" value="TotalGivingForRecipients" />
-  <Parameter id="MaxDisplayColumns" value="7" />
-  <Parameter id="param_recipient" value="One Recipient" />
-  <Parameter id="param_currency" value="Base" />
-  <Parameter id="param_currency_format" value="CurrencyComplete" />
-  <Parameter id="param_clbFields" value="" />
-  <Parameter id="param_field_selection" value="all_fields" />
-  <Parameter id="param_clbTypes" value="" />
-  <Parameter id="param_type_selection" value="all_types" />
-  <Parameter id="param_recipient_key" value="0" />
-  <Parameter id="param_extract_name" value="" />
-  <Parameter id="param_calculation" column="0" value="PartnerKey" />
-  <Parameter id="ColumnWidth" column="0" value="2.5" />
-  <Parameter id="param_calculation" column="1" value="DonorName" />
-  <Parameter id="ColumnWidth" column="1" value="6" />
-  <Parameter id="param_calculation" column="2" value="DonorClass" />
-  <Parameter id="ColumnWidth" column="2" value="2" />
-  <Parameter id="param_calculation" column="3" value="Year-0" />
-  <Parameter id="ColumnWidth" column="3" value="2" />
-  <Parameter id="param_calculation" column="4" value="Year-1" />
-  <Parameter id="ColumnWidth" column="4" value="2" />
-  <Parameter id="param_calculation" column="5" value="Year-2" />
-  <Parameter id="ColumnWidth" column="5" value="2" />
-  <Parameter id="param_calculation" column="6" value="Year-3" />
-  <Parameter id="ColumnWidth" column="6" value="2" />
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:Finance\\totalgivingforrecipients.xml,Finance\\finance.xml,common.xml" />
+  <Parameter id="currentReport" value="eString:TotalGivingForRecipients" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:7" />
+  <Parameter id="param_recipient" value="eString:One Recipient" />
+  <Parameter id="param_currency" value="eString:Base" />
+  <Parameter id="param_currency_format" value="eString:CurrencyComplete" />
+  <Parameter id="param_clbFields" value="eString:" />
+  <Parameter id="param_field_selection" value="eString:all_fields" />
+  <Parameter id="param_clbTypes" value="eString:" />
+  <Parameter id="param_type_selection" value="eString:all_types" />
+  <Parameter id="param_recipient_key" value="eInteger:0" />
+  <Parameter id="param_extract_name" value="eString:" />
+  <Parameter id="param_calculation" column="0" value="eString:PartnerKey" />
+  <Parameter id="ColumnWidth" column="0" value="eDecimal:4612811918334230528" />
+  <Parameter id="param_calculation" column="1" value="eString:DonorName" />
+  <Parameter id="ColumnWidth" column="1" value="eInteger:6" />
+  <Parameter id="param_calculation" column="2" value="eString:DonorClass" />
+  <Parameter id="ColumnWidth" column="2" value="eInteger:2" />
+  <Parameter id="param_calculation" column="3" value="eString:Year-0" />
+  <Parameter id="ColumnWidth" column="3" value="eInteger:2" />
+  <Parameter id="param_calculation" column="4" value="eString:Year-1" />
+  <Parameter id="ColumnWidth" column="4" value="eInteger:2" />
+  <Parameter id="param_calculation" column="5" value="eString:Year-2" />
+  <Parameter id="ColumnWidth" column="5" value="eInteger:2" />
+  <Parameter id="param_calculation" column="6" value="eString:Year-3" />
+  <Parameter id="ColumnWidth" column="6" value="eInteger:2" />
 </Parameters>

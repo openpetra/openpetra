@@ -128,13 +128,15 @@ namespace Ict.Petra.Client.MCommon.Gui
         }
 
         /// dataset for the whole screen
-        public Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS MainDS
+        public DataSet MainDS
         {
             set
             {
                 // FMainDS = value;
             }
         }
+
+        //public Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS MainDS
 
         /// dataset for local data structure
         public Ict.Petra.Shared.MCommon.Data.OfficeSpecificDataLabelsTDS LocalDataDS

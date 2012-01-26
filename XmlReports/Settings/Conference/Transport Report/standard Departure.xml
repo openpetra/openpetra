@@ -1,43 +1,43 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="systemsettings" value="True" />
-  <Parameter id="xmlfiles" value="Conference\\transportreport.xml,Conference\\conference.xml" />
-  <Parameter id="currentReport" value="Transport Report" />
-  <Parameter id="MaxDisplayColumns" value="9" />
-  <Parameter id="param_conferenceselection" value="one conference" />
-  <Parameter id="param_attendeeselection" value="all attendees" />
-  <Parameter id="param_partnerkey" value="0" />
-  <Parameter id="param_conferencekey" value="0" />
-  <Parameter id="param_conferencename" value="" />
-  <Parameter id="param_extractname" value="" />
-  <Parameter id="orderby0" value="Departure Date" />
-  <Parameter id="orderby1" value="Departure Time" />
-  <Parameter id="orderby2" value="Partner Name" />
-  <Parameter id="param_sortby_readable" value="Departure Date, Departure Time, Partner Name" />
-  <Parameter id="param_calculation" column="9" value="Departure Date" />
-  <Parameter id="param_calculation" column="10" value="Departure Time" />
-  <Parameter id="param_calculation" column="11" value="Partner Name" />
-  <Parameter id="param_sortby_columns" value="9,10,11" />
-  <Parameter id="param_rgrArrivalDeparture" value="ListDepartures" />
-  <Parameter id="param_chkOnlyTravelDay" value="false" />
-  <Parameter id="param_chkNeedTransport" value="false" />
-  <Parameter id="param_chkIncompleteDetails" value="false" />
-  <Parameter id="param_calculation" column="0" value="Partner Name" />
-  <Parameter id="ColumnWidth" column="0" value="4" />
-  <Parameter id="param_calculation" column="1" value="Charged Office" />
-  <Parameter id="ColumnWidth" column="1" value="3" />
-  <Parameter id="param_calculation" column="2" value="Departure Date" />
-  <Parameter id="ColumnWidth" column="2" value="2" />
-  <Parameter id="param_calculation" column="3" value="Departure Time" />
-  <Parameter id="ColumnWidth" column="3" value="2" />
-  <Parameter id="param_calculation" column="4" value="Departure Needs Transport" />
-  <Parameter id="ColumnWidth" column="4" value="1" />
-  <Parameter id="param_calculation" column="5" value="Departure Point" />
-  <Parameter id="ColumnWidth" column="5" value="3" />
-  <Parameter id="param_calculation" column="6" value="Departure Details" />
-  <Parameter id="ColumnWidth" column="6" value="3" />
-  <Parameter id="param_calculation" column="7" value="Departure Expected Date" />
-  <Parameter id="ColumnWidth" column="7" value="3" />
-  <Parameter id="param_calculation" column="8" value="Departure Expected Time" />
-  <Parameter id="ColumnWidth" column="8" value="3" />
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:Conference\\transportreport.xml,Conference\\conference.xml" />
+  <Parameter id="currentReport" value="eString:Transport Report" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:9" />
+  <Parameter id="param_conferenceselection" value="eString:one conference" />
+  <Parameter id="param_attendeeselection" value="eString:all attendees" />
+  <Parameter id="param_partnerkey" value="eInteger:0" />
+  <Parameter id="param_conferencekey" value="eInteger:0" />
+  <Parameter id="param_conferencename" value="eString:" />
+  <Parameter id="param_extractname" value="eString:" />
+  <Parameter id="orderby0" value="eString:Departure Date" />
+  <Parameter id="orderby1" value="eString:Departure Time" />
+  <Parameter id="orderby2" value="eString:Partner Name" />
+  <Parameter id="param_sortby_readable" value="eString:Departure Date, Departure Time, Partner Name" />
+  <Parameter id="param_calculation" column="9" value="eString:Departure Date" />
+  <Parameter id="param_calculation" column="10" value="eString:Departure Time" />
+  <Parameter id="param_calculation" column="11" value="eString:Partner Name" />
+  <Parameter id="param_sortby_columns" value="eString:9,10,11" />
+  <Parameter id="param_rgrArrivalDeparture" value="eString:ListDepartures" />
+  <Parameter id="param_chkOnlyTravelDay" value="eString:false" />
+  <Parameter id="param_chkNeedTransport" value="eString:false" />
+  <Parameter id="param_chkIncompleteDetails" value="eString:false" />
+  <Parameter id="param_calculation" column="0" value="eString:Partner Name" />
+  <Parameter id="ColumnWidth" column="0" value="eInteger:4" />
+  <Parameter id="param_calculation" column="1" value="eString:Charged Office" />
+  <Parameter id="ColumnWidth" column="1" value="eInteger:3" />
+  <Parameter id="param_calculation" column="2" value="eString:Departure Date" />
+  <Parameter id="ColumnWidth" column="2" value="eInteger:2" />
+  <Parameter id="param_calculation" column="3" value="eString:Departure Time" />
+  <Parameter id="ColumnWidth" column="3" value="eInteger:2" />
+  <Parameter id="param_calculation" column="4" value="eString:Departure Needs Transport" />
+  <Parameter id="ColumnWidth" column="4" value="eInteger:1" />
+  <Parameter id="param_calculation" column="5" value="eString:Departure Point" />
+  <Parameter id="ColumnWidth" column="5" value="eInteger:3" />
+  <Parameter id="param_calculation" column="6" value="eString:Departure Details" />
+  <Parameter id="ColumnWidth" column="6" value="eInteger:3" />
+  <Parameter id="param_calculation" column="7" value="eString:Departure Expected Date" />
+  <Parameter id="ColumnWidth" column="7" value="eInteger:3" />
+  <Parameter id="param_calculation" column="8" value="eString:Departure Expected Time" />
+  <Parameter id="ColumnWidth" column="8" value="eInteger:3" />
 </Parameters>
