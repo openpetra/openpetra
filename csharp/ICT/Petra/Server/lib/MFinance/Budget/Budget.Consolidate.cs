@@ -106,6 +106,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             string CurrentGLMAccountCode;
             int CurrentGLMSequence;
 
+
             AVerificationResult = null;
 
             //Create the temp table
@@ -161,7 +162,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
                         CurrentGLMAccountCode = GeneralLedgerMasterRow.AccountCode;
                         CurrentGLMSequence = GeneralLedgerMasterRow.GlmSequence;
-
+                        
                         if (PreviousAccount != CurrentGLMAccountCode)
                         {
                             PreviousAccount = CurrentGLMAccountCode;
@@ -679,36 +680,44 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         {
             DataRow TempRow = (DataRow)ATempTable.Rows.Find(new object[] { AGLMSequence, APeriodNumber });
 
-            if (TempRow == null)
+            try
             {
-                AGeneralLedgerMasterPeriodTable GeneralLedgerMasterPeriodTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(AGLMSequence,
-                    APeriodNumber,
-                    null);
-                AGeneralLedgerMasterPeriodRow GeneralLedgerMasterPeriodRow = null;
+	            if (TempRow == null)
+	            {
+	                AGeneralLedgerMasterPeriodTable GeneralLedgerMasterPeriodTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(AGLMSequence,
+	                    APeriodNumber,
+	                    null);
+	                AGeneralLedgerMasterPeriodRow GeneralLedgerMasterPeriodRow = null;
+	
+	                if (GeneralLedgerMasterPeriodTable.Count > 0)
+	                {
+	                    GeneralLedgerMasterPeriodRow = (AGeneralLedgerMasterPeriodRow)GeneralLedgerMasterPeriodTable.Rows[0];
+	
+	                    /* only create records for periods which have a value. try to keep the number of records low,
+	                     * to make the lock count in the write transaction smaller */
+	                    if (GeneralLedgerMasterPeriodRow.BudgetBase != 0)
+	                    {
+	                        DataRow DR = (DataRow)ATempTable.NewRow();
+	                        DR["GLMSequence"] = AGLMSequence;
+	                        DR["PeriodNumber"] = APeriodNumber;
+	                        DR["BudgetBase"] = 0;
 
-                if (GeneralLedgerMasterPeriodTable.Count > 0)
-                {
-                    GeneralLedgerMasterPeriodRow = (AGeneralLedgerMasterPeriodRow)GeneralLedgerMasterPeriodTable.Rows[0];
-
-                    /* only create records for periods which have a value. try to keep the number of records low,
-                     * to make the lock count in the write transaction smaller */
-                    if (GeneralLedgerMasterPeriodRow.BudgetBase != 0)
-                    {
-                        DataRow DR = (DataRow)ATempTable.NewRow();
-                        DR.ItemArray[0] = AGLMSequence;
-                        DR.ItemArray[1] = APeriodNumber;
-                        DR.ItemArray[2] = 0;
-
-                        ATempTable.Rows.Add(DR);
-                    }
-                }
+	                        ATempTable.Rows.Add(DR);
+	                    }
+	                }
+	            }
+	            else
+	            {
+	                TempRow.BeginEdit();
+	                TempRow.ItemArray[2] = 0;
+	                TempRow.EndEdit();
+	            }
             }
-            else
+            catch (Exception)
             {
-                TempRow.BeginEdit();
-                TempRow.ItemArray[2] = 0;
-                TempRow.EndEdit();
+            	throw;
             }
+            
         }
     }
 }

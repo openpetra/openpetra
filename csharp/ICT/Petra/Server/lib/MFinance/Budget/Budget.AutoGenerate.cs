@@ -128,17 +128,17 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                 BudgetRow.BudgetStatus = false;
                 BudgetRow.EndEdit();
 
-                string BudgetType = BudgetRow.BudgetTypeCode;
+                string BudgetType = BudgetRow.BudgetTypeCode.ToUpper();
 
 
                 decimal BudgetAmount = 0;
                 decimal ActualAmount = 0;
                 bool ValidBudgetType = true;
-
+                
                 switch (BudgetType)
                 {
-                    case MFinanceConstants.BUDGET_ADHOC:
-                    case MFinanceConstants.BUDGET_INFLATE_BASE:
+                	case MFinanceConstants.BUDGET_ADHOC_U:
+                    case MFinanceConstants.BUDGET_INFLATE_BASE_U:
 
                         for (int i = 1; i < CurrentPeriod; i++)
                         {
@@ -182,8 +182,8 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
                         break;
 
-                    case MFinanceConstants.BUDGET_SAME:                      //because this case has no code it will fall through to the next case until it finds code.
-                    case MFinanceConstants.BUDGET_SPLIT:
+                    case MFinanceConstants.BUDGET_SAME_U:                      //because this case has no code it will fall through to the next case until it finds code.
+                    case MFinanceConstants.BUDGET_SPLIT_U:
 
                         if ((CurrentPeriod - 1) != 0)
                         {
@@ -261,7 +261,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
                         break;
 
-                    case MFinanceConstants.BUDGET_INFLATE_N:
+                    case MFinanceConstants.BUDGET_INFLATE_N_U:
 
                         for (int i = 1; i <= NumAccPeriods; i++)
                         {

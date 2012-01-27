@@ -150,30 +150,31 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             //TODO: call code on the server. To be completed with Timo.
             TVerificationResultCollection VerificationResult = null;
 
-        	bool LoadBudgetData = TRemote.MFinance.Budget.WebConnectors.LoadBudgetForConsolidate(FLedgerNumber);	
-            
-            TRemote.MFinance.Budget.WebConnectors.ConsolidateBudgets(FLedgerNumber, ConsolidateAll, out VerificationResult);
-
-            string CheckItemsList = clbCostCentreAccountCodes.GetCheckedStringList();
-            string[] CheckedItems = CheckItemsList.Split(',');
-
-            string ForecastType;
-
-            if (rbtThisYearsBudgets.Checked)
-            {
-                ForecastType = "Budget";
-            }
-            else
-            {
-                ForecastType = "Actuals";
-            }
-
             try
             {
+                Cursor.Current = Cursors.WaitCursor;
+
+                bool LoadBudgetData = TRemote.MFinance.Budget.WebConnectors.LoadBudgetForConsolidate(FLedgerNumber);
+	            
+	            TRemote.MFinance.Budget.WebConnectors.ConsolidateBudgets(FLedgerNumber, ConsolidateAll, out VerificationResult);
+	
+	            string CheckItemsList = clbCostCentreAccountCodes.GetCheckedStringList();
+	            string[] CheckedItems = CheckItemsList.Split(',');
+	
+	            string ForecastType;
+	
+	            if (rbtThisYearsBudgets.Checked)
+	            {
+	                ForecastType = "Budget";
+	            }
+	            else
+	            {
+	                ForecastType = "Actuals";
+	            }
+	
                 if (rbtSelectedBudgets.Checked && (CheckItemsList.Length > 0)
                     || (rbtAllBudgets.Checked == true))
                 {
-                    Cursor.Current = Cursors.WaitCursor;
 
                     foreach (string BudgetItem in CheckedItems)
                     {
@@ -183,14 +184,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                         bool GenBudget = TRemote.MFinance.Budget.WebConnectors.GenBudgetForNextYear(FLedgerNumber, BudgetItemNo, ForecastType);
                     }
 
-                    Cursor.Current = Cursors.Default;
-
                     MessageBox.Show("Budget Auto-Generate Complete.");
                 }
                 else
                 {
                     throw new InvalidOperationException("There are no budgets selected!");
                 }
+	                
+	            Cursor.Current = Cursors.Default;
+
             }
             catch (InvalidOperationException ex)
             {
