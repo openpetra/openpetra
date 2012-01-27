@@ -25,14 +25,13 @@ RootNode:
         grdDetails:
             Dock: Fill
             TableName: PmStaffData
-            Columns: [StatusCode, StartOfCommitment, EndOfCommitment, ReceivingField, HomeOffice, OfficeRecruitedBy]
+            Columns: [StatusCode, StartOfCommitment, EndOfCommitment, ReceivingField, HomeOffice]
             CustomColumns:
                 StatusCode: {Label=Commitment Status}
                 StartOfCommitment: {Label=Start Date, Type=DateTime}
                 EndOfCommitment: {Label=End Date, Type=DateTime}
                 ReceivingField: {Label=Receiving Field}
                 HomeOffice: {Label=Sending Field}
-                OfficeRecruitedBy: {Label=Recruiting Office}
             ActionFocusRow: FocusedRowChanged
             SortOrder: StatusCode ASC
             

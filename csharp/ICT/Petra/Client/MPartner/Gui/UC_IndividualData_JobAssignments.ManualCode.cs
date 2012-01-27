@@ -108,9 +108,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             ARow.PositionName = "";
             ARow.PositionScope = "O";
             ARow.FromDate = DateTime.Now.Date;
-            ARow.JobKey = 2;
+            ARow.JobKey = -1;
             ARow.JobAssignmentKey = -1;
-            ARow.LeavingCodeUpdatedDate = DateTime.Now.Date;
         }
 
         private void DeleteRow(System.Object sender, EventArgs e)

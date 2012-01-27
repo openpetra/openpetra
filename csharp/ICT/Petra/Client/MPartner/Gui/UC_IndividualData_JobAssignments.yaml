@@ -48,8 +48,6 @@ RootNode:
                 Row2: [txtUnitKey]
                 Row3: [cmbPositionName]
                 Row4: [chkAssistantTo]
-                Row5: [cmbLeavingCode]
-                Row6: [dtpLeavingCodeUpdatedDate]
                 
         cmbAssignmentTypeCode:
             List: JobAssignmentTypeList
@@ -83,13 +81,3 @@ RootNode:
             DataField: PmJobAssignment.AssistantTo
             ColSpan: 1
         
-        cmbLeavingCode:
-            Label: Leaving Code
-            List: LeavingCodeList
-            DataField: PmJobAssignment.LeavingCode
-            ColSpan: 3
-        
-        dtpLeavingCodeUpdatedDate:
-            Label: Updated
-            DataField: PmJobAssignment.LeavingCodeUpdatedDate
-            ColSpan: 1
