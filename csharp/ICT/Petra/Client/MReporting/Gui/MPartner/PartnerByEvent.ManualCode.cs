@@ -56,11 +56,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             }
         }
 
-	    /// <summary>
-	    /// only run this code once during activation
-	    /// </summary>
-	    private void RunOnceOnActivationManual()
-	    {
+        /// <summary>
+        /// only run this code once during activation
+        /// </summary>
+        private void RunOnceOnActivationManual()
+        {
             string CheckedMember = "CHECKED";
             string ValueMember = PUnitTable.GetPartnerKeyDBName();
             string DisplayMember = PUnitTable.GetUnitNameDBName();
@@ -98,7 +98,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             clbEvent.AddTextColumn(Catalog.GetString("Partner Key"), NewTable.Columns[ValueMember], 80);
             clbEvent.AddTextColumn(Catalog.GetString("Event Code"), NewTable.Columns[EventCodeMember], 80);
 
-			// outreach/event code column only needed in case of displaying Outreaches
+            // outreach/event code column only needed in case of displaying Outreaches
             if (!FCalledForConferences)
             {
                 clbEvent.AddTextColumn(Catalog.GetString("Event Code"), NewTable.Columns[EventCodeMember], 80);
@@ -108,8 +108,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 
             //TODO: only temporarily until settings file exists
             clbEvent.SetCheckedStringList("");
-	    }
-        
+        }
+
         private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             if (clbEvent.GetCheckedStringList().Length == 0)

@@ -924,7 +924,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     // The following code is not needed at the moment unless there would be some special initialization later on
                     // beyond what it is done in SpecialInitUserControl
-					//OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
+                    //OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
 
                     this.Cursor = Cursors.Default;
                 }
@@ -932,7 +932,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     // The following code is not needed at the moment unless there would be some special initialization later on
                     // beyond what it is done in SpecialInitUserControl
-					//OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "SubsequentActivation"));
+                    //OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "SubsequentActivation"));
 
                     /*
                      * The following command seems strange and unnecessary; however, it is necessary
@@ -973,7 +973,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     // The following code is not needed at the moment unless there would be some special initialization later on
                     // beyond what it is done in SpecialInitUserControl
-					//OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
+                    //OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
 
                     this.Cursor = Cursors.Default;
                 }
@@ -981,7 +981,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     // The following code is not needed at the moment unless there would be some special initialization later on
                     // beyond what it is done in SpecialInitUserControl
-					//OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "SubsequentActivation"));
+                    //OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "SubsequentActivation"));
 
                     /*
                      * The following command seems strange and unnecessary; however, it is necessary
@@ -1022,7 +1022,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     // The following code is not needed at the moment unless there would be some special initialization later on
                     // beyond what it is done in SpecialInitUserControl
-					//OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
+                    //OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
 
                     this.Cursor = Cursors.Default;
                 }
@@ -1030,7 +1030,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     // The following code is not needed at the moment unless there would be some special initialization later on
                     // beyond what it is done in SpecialInitUserControl
-					//OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "SubsequentActivation"));
+                    //OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "SubsequentActivation"));
 
                     /*
                      * The following command seems strange and unnecessary; however, it is necessary
@@ -1071,7 +1071,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     // The following code is not needed at the moment unless there would be some special initialization later on
                     // beyond what it is done in SpecialInitUserControl
-					//OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
+                    //OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
 
                     this.Cursor = Cursors.Default;
                 }
@@ -1079,7 +1079,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     // The following code is not needed at the moment unless there would be some special initialization later on
                     // beyond what it is done in SpecialInitUserControl
-					//OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "SubsequentActivation"));
+                    //OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "SubsequentActivation"));
 
                     /*
                      * The following command seems strange and unnecessary; however, it is necessary
@@ -1120,7 +1120,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     // The following code is not needed at the moment unless there would be some special initialization later on
                     // beyond what it is done in SpecialInitUserControl
-		            //OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
+                    //OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
 
                     this.Cursor = Cursors.Default;
                 }
@@ -1128,7 +1128,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     // The following code is not needed at the moment unless there would be some special initialization later on
                     // beyond what it is done in SpecialInitUserControl
-					//OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "SubsequentActivation"));
+                    //OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "SubsequentActivation"));
 
                     /*
                      * The following command seems strange and unnecessary; however, it is necessary
@@ -1169,7 +1169,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     // The following code is not needed at the moment unless there would be some special initialization later on
                     // beyond what it is done in SpecialInitUserControl
-					//OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
+                    //OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
 
                     this.Cursor = Cursors.Default;
                 }
@@ -1177,7 +1177,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     // The following code is not needed at the moment unless there would be some special initialization later on
                     // beyond what it is done in SpecialInitUserControl
-					//OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "SubsequentActivation"));
+                    //OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "SubsequentActivation"));
 
                     /*
                      * The following command seems strange and unnecessary; however, it is necessary
@@ -1218,7 +1218,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     // The following code is not needed at the moment unless there would be some special initialization later on
                     // beyond what it is done in SpecialInitUserControl
-					//OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
+                    //OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
 
                     this.Cursor = Cursors.Default;
                 }
@@ -1226,7 +1226,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     // The following code is not needed at the moment unless there would be some special initialization later on
                     // beyond what it is done in SpecialInitUserControl
-					//OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "SubsequentActivation"));
+                    //OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "SubsequentActivation"));
 
                     /*
                      * The following command seems strange and unnecessary; however, it is necessary
@@ -1263,7 +1263,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     // The following code is not needed at the moment unless there would be some special initialization later on
                     // beyond what it is done in SpecialInitUserControl
-					//OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
+                    //OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
 
                     this.Cursor = Cursors.Default;
                 }
@@ -1271,7 +1271,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     // The following code is not needed at the moment unless there would be some special initialization later on
                     // beyond what it is done in SpecialInitUserControl
-					//OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "SubsequentActivation"));
+                    //OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "SubsequentActivation"));
 
                     /*
                      * The following command seems strange and unnecessary; however, it is necessary
@@ -1308,7 +1308,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     // The following code is not needed at the moment unless there would be some special initialization later on
                     // beyond what it is done in SpecialInitUserControl
-					//OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
+                    //OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
 
                     this.Cursor = Cursors.Default;
                 }
@@ -1316,7 +1316,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     // The following code is not needed at the moment unless there would be some special initialization later on
                     // beyond what it is done in SpecialInitUserControl
-					//OnTabPageEvent(new TTabPageEventArgs(tpgEmergencyData, FUcoEmergencyData, "SubsequentActivation"));
+                    //OnTabPageEvent(new TTabPageEventArgs(tpgEmergencyData, FUcoEmergencyData, "SubsequentActivation"));
 
                     /*
                      * The following command seems strange and unnecessary; however, it is necessary
@@ -1357,7 +1357,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     // The following code is not needed at the moment unless there would be some special initialization later on
                     // beyond what it is done in SpecialInitUserControl
-					//OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
+                    //OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
 
                     this.Cursor = Cursors.Default;
                 }
@@ -1365,7 +1365,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     // The following code is not needed at the moment unless there would be some special initialization later on
                     // beyond what it is done in SpecialInitUserControl
-					//OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "SubsequentActivation"));
+                    //OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "SubsequentActivation"));
 
                     /*
                      * The following command seems strange and unnecessary; however, it is necessary
@@ -1406,7 +1406,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     // The following code is not needed at the moment unless there would be some special initialization later on
                     // beyond what it is done in SpecialInitUserControl
-					//OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
+                    //OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
 
                     this.Cursor = Cursors.Default;
                 }
@@ -1414,7 +1414,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     // The following code is not needed at the moment unless there would be some special initialization later on
                     // beyond what it is done in SpecialInitUserControl
-					//OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "SubsequentActivation"));
+                    //OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "SubsequentActivation"));
 
                     /*
                      * The following command seems strange and unnecessary; however, it is necessary
@@ -1455,7 +1455,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     // The following code is not needed at the moment unless there would be some special initialization later on
                     // beyond what it is done in SpecialInitUserControl
-					//OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
+                    //OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
 
                     this.Cursor = Cursors.Default;
                 }
@@ -1463,7 +1463,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     // The following code is not needed at the moment unless there would be some special initialization later on
                     // beyond what it is done in SpecialInitUserControl
-					//OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "SubsequentActivation"));
+                    //OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "SubsequentActivation"));
 
                     /*
                      * The following command seems strange and unnecessary; however, it is necessary
@@ -1504,7 +1504,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     // The following code is not needed at the moment unless there would be some special initialization later on
                     // beyond what it is done in SpecialInitUserControl
-					//OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
+                    //OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
 
                     this.Cursor = Cursors.Default;
                 }
@@ -1512,7 +1512,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     // The following code is not needed at the moment unless there would be some special initialization later on
                     // beyond what it is done in SpecialInitUserControl
-					//OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "SubsequentActivation"));
+                    //OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "SubsequentActivation"));
 
                     /*
                      * The following command seems strange and unnecessary; however, it is necessary
@@ -1526,7 +1526,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 FUcoLocalPersonnelData.Parent.BringToFront();
             }
-
 
             /*
              * Raise the following Event to inform the base Form that we have finished loading fresh data.

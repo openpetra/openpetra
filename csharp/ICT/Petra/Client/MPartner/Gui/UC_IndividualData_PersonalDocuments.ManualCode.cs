@@ -88,7 +88,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (grdDetails.Rows.Count <= 1)
             {
-            	pnlDetails.Visible = false;
+                pnlDetails.Visible = false;
                 btnDelete.Enabled = false;
             }
         }
@@ -140,13 +140,13 @@ namespace Ict.Petra.Client.MPartner.Gui
                 SelectByIndex(rowIndex);
 
                 DoRecalculateScreenParts();
-                
-	            if (grdDetails.Rows.Count <= 1)
-	            {
-	                // hide details part and disable buttons if no record in grid (first row for headings)
-	                btnDelete.Enabled = false;
-	                pnlDetails.Visible = false;
-	            }
+
+                if (grdDetails.Rows.Count <= 1)
+                {
+                    // hide details part and disable buttons if no record in grid (first row for headings)
+                    btnDelete.Enabled = false;
+                    pnlDetails.Visible = false;
+                }
             }
         }
 
@@ -164,7 +164,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 btnDelete.Enabled = true;
                 pnlDetails.Visible = true;
             }
-        	
+
             // In theory, the next Method call could be done in Methods NewRowManual; however, NewRowManual runs before
             // the Row is actually added and this would result in the Count to be one too less, so we do the Method call here, short
             // of a non-existing 'AfterNewRowManual' Method....
@@ -251,7 +251,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
-            	FPreviouslySelectedDetailRow = null;
+                FPreviouslySelectedDetailRow = null;
             }
         }
 
@@ -315,7 +315,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 RecalculateScreenParts(this, e);
             }
         }
-        
+
         /// <summary>
         /// Event Handler for Grid Event
         /// </summary>

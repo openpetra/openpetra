@@ -44,15 +44,15 @@ namespace Ict.Petra.Client.MPartner.Gui
     /// manual methods for the generated window
     public partial class TFrmPassportNameSuggestDialog : System.Windows.Forms.Form
     {
-		/// <summary>
-		/// set the initial value for passport name in the dialog
-		/// </summary>
-		/// <param name="APassportName"></param>
-    	public void SetPassportName (String APassportName)
+        /// <summary>
+        /// set the initial value for passport name in the dialog
+        /// </summary>
+        /// <param name="APassportName"></param>
+        public void SetPassportName(String APassportName)
         {
-	        txtPassportName.Text = APassportName;
+            txtPassportName.Text = APassportName;
         }
-        
+
         private void InitializeManualCode()
         {
             lblExplanation.Text = Catalog.GetString(
@@ -60,7 +60,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 "You may change the name and then select 'OK'." + "\r\n" +
                 "Select 'Cancel' to ignore any changes you have made." + "\r\n" +
                 "The Family Name must be put in brackets." + "\r\n" +
-                "For example: Mike (Miller)"+ "\r\n");
+                "For example: Mike (Miller)" + "\r\n");
         }
 
         private void CustomClosingHandler(System.Object sender, System.ComponentModel.CancelEventArgs e)
@@ -82,12 +82,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
-		/// <summary>
-		/// Called by the instantiator of this Dialog to retrieve the values of Fields
+        /// <summary>
+        /// Called by the instantiator of this Dialog to retrieve the values of Fields
         /// on the screen.
-		/// </summary>
-		/// <param name="APassportName"></param>
-		/// <returns></returns>
+        /// </summary>
+        /// <param name="APassportName"></param>
+        /// <returns></returns>
         public Boolean GetReturnedParameters(out String APassportName)
         {
             Boolean ReturnValue = true;

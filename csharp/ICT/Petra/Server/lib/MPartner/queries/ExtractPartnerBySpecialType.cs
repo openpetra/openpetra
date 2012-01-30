@@ -69,9 +69,10 @@ namespace Ict.Petra.Server.MPartner.queries
                 Boolean NewTransaction;
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
                 string SqlStmt = TDataBase.ReadSqlFile("Partner.Queries.ExtractByPartnerSpecialType.sql");
-                ICollection<String> param_explicit_specialtypes;
+                ICollection <String>param_explicit_specialtypes;
 
                 param_explicit_specialtypes = AParameters.Get("param_explicit_specialtypes").ToString().Split(new Char[] { ',', });
+
                 if (param_explicit_specialtypes.Count == 0)
                 {
                     throw new NoNullAllowedException("At least one option must be checked.");
@@ -80,11 +81,21 @@ namespace Ict.Petra.Server.MPartner.queries
                 OdbcParameter[] parameters = new OdbcParameter[]
                 {
                     TDbListParameterValue.OdbcListParameterValue("specialtype", OdbcType.NChar, param_explicit_specialtypes),
-                    new OdbcParameter("param_dateFieldsIncluded", OdbcType.Bit) { Value = !AParameters.Get("param_dateSet").IsZeroOrNull() },
-                    new OdbcParameter("Date", OdbcType.Date) { Value = AParameters.Get("param_dateSet").ToDate() },
-                    new OdbcParameter("param_active", OdbcType.Bit) { Value = AParameters.Get("param_active").ToBool() },
-                    new OdbcParameter("param_familiesOnly", OdbcType.Bit) { Value = AParameters.Get("param_familiesOnly").ToBool() },
-                    new OdbcParameter("param_excludeNoSolicitations", OdbcType.Bit) { Value = AParameters.Get("param_excludeNoSolicitations").ToBool() },
+                    new OdbcParameter("param_dateFieldsIncluded", OdbcType.Bit) {
+                        Value = !AParameters.Get("param_dateSet").IsZeroOrNull()
+                    },
+                    new OdbcParameter("Date", OdbcType.Date) {
+                        Value = AParameters.Get("param_dateSet").ToDate()
+                    },
+                    new OdbcParameter("param_active", OdbcType.Bit) {
+                        Value = AParameters.Get("param_active").ToBool()
+                    },
+                    new OdbcParameter("param_familiesOnly", OdbcType.Bit) {
+                        Value = AParameters.Get("param_familiesOnly").ToBool()
+                    },
+                    new OdbcParameter("param_excludeNoSolicitations", OdbcType.Bit) {
+                        Value = AParameters.Get("param_excludeNoSolicitations").ToBool()
+                    },
                 };
 
                 TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);

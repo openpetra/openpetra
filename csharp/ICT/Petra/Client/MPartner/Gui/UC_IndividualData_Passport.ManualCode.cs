@@ -81,14 +81,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             LoadDataOnDemand();
 
             FPassportTypeDT = (PtPassportTypeTable)TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.PassportTypeList);
-            
+
             // enable grid to react to insert and delete keyboard keys
             grdDetails.InsertKeyPressed += new TKeyPressedEventHandler(grdDetails_InsertKeyPressed);
             grdDetails.DeleteKeyPressed += new TKeyPressedEventHandler(grdDetails_DeleteKeyPressed);
 
             if (grdDetails.Rows.Count <= 1)
             {
-            	pnlDetails.Visible = false;
+                pnlDetails.Visible = false;
                 btnDelete.Enabled = false;
             }
         }
@@ -121,7 +121,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             ARow.PassportNumber = newName;
-            
         }
 
         private void DeleteRow(System.Object sender, EventArgs e)
@@ -142,13 +141,13 @@ namespace Ict.Petra.Client.MPartner.Gui
                 SelectByIndex(rowIndex);
 
                 DoRecalculateScreenParts();
-                
-	            if (grdDetails.Rows.Count <= 1)
-	            {
-	                // hide details part and disable buttons if no record in grid (first row for headings)
-	                btnDelete.Enabled = false;
-	                pnlDetails.Visible = false;
-	            }
+
+                if (grdDetails.Rows.Count <= 1)
+                {
+                    // hide details part and disable buttons if no record in grid (first row for headings)
+                    btnDelete.Enabled = false;
+                    pnlDetails.Visible = false;
+                }
             }
         }
 
@@ -166,17 +165,17 @@ namespace Ict.Petra.Client.MPartner.Gui
                 btnDelete.Enabled = true;
                 pnlDetails.Visible = true;
             }
-        	
+
             // always take "date of birth" field value from person record
             if (FMainDS.PPerson[0].IsDateOfBirthNull())
             {
-	            dtpDateOfBirth.Date = null;
+                dtpDateOfBirth.Date = null;
             }
             else
             {
-	            dtpDateOfBirth.Date = FMainDS.PPerson[0].DateOfBirth;
+                dtpDateOfBirth.Date = FMainDS.PPerson[0].DateOfBirth;
             }
-            
+
             // In theory, the next Method call could be done in Methods NewRowManual; however, NewRowManual runs before
             // the Row is actually added and this would result in the Count to be one too less, so we do the Method call here, short
             // of a non-existing 'AfterNewRowManual' Method....
@@ -240,7 +239,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
-            	FPreviouslySelectedDetailRow = null;
+                FPreviouslySelectedDetailRow = null;
             }
         }
 
@@ -304,7 +303,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 RecalculateScreenParts(this, e);
             }
         }
- 
+
         /// <summary>
         ///
         /// </summary>
@@ -316,11 +315,11 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             StrPassportNameExplained = Catalog.GetString(
                 "The Family Name in the Passport Name Field must be put in brackets." + "\r\n" +
-                "For example: Mike (Miller)"+ "\r\n");
-            
+                "For example: Mike (Miller)" + "\r\n");
+
             MessageBox.Show(StrPassportNameExplained, Catalog.GetString("Passport Name Explained"));
         }
-        
+
         private void SuggestPassportName(System.Object sender, EventArgs e)
         {
             TFrmPassportNameSuggestDialog Scd;
@@ -330,13 +329,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             Scd = new TFrmPassportNameSuggestDialog(this.ParentForm);
 
             PassportName = FMainDS.PPerson[0].FirstName;
+
             if (FMainDS.PPerson[0].MiddleName1.Trim() != "")
             {
-	            PassportName = PassportName + " " + FMainDS.PPerson[0].MiddleName1;
+                PassportName = PassportName + " " + FMainDS.PPerson[0].MiddleName1;
             }
-	        PassportName = PassportName + " (" + FMainDS.PPerson[0].FamilyName + ")";
 
-            Scd.SetPassportName (PassportName);
+            PassportName = PassportName + " (" + FMainDS.PPerson[0].FamilyName + ")";
+
+            Scd.SetPassportName(PassportName);
 
             Scd.ShowDialog();
 
@@ -346,13 +347,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                 Scd.GetReturnedParameters(out PassportName);
 
                 txtPassportName.Text = PassportName;
-                
             }
 
             Scd.Dispose();
-
         }
-        
+
         /// <summary>
         /// Event Handler for Grid Event
         /// </summary>

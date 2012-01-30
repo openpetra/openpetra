@@ -82,7 +82,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             LoadDataOnDemand();
 
             FAbilityAreaNameDT = (PtAbilityAreaTable)TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.AbilityAreaList);
-            
+
             // enable grid to react to insert and delete keyboard keys
             grdDetails.InsertKeyPressed += new TKeyPressedEventHandler(grdDetails_InsertKeyPressed);
             grdDetails.DeleteKeyPressed += new TKeyPressedEventHandler(grdDetails_DeleteKeyPressed);
@@ -90,9 +90,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (grdDetails.Rows.Count <= 1)
             {
                 btnDelete.Enabled = false;
-            	pnlDetails.Visible = false;
+                pnlDetails.Visible = false;
             }
-            
         }
 
         /// <summary>
@@ -143,13 +142,13 @@ namespace Ict.Petra.Client.MPartner.Gui
                 SelectByIndex(rowIndex);
 
                 DoRecalculateScreenParts();
-                
-	            if (grdDetails.Rows.Count <= 1)
-	            {
-	                // hide details part and disable buttons if no record in grid (first row for headings)
-	                btnDelete.Enabled = false;
-	                pnlDetails.Visible = false;
-	            }
+
+                if (grdDetails.Rows.Count <= 1)
+                {
+                    // hide details part and disable buttons if no record in grid (first row for headings)
+                    btnDelete.Enabled = false;
+                    pnlDetails.Visible = false;
+                }
             }
         }
 
@@ -254,7 +253,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
-            	FPreviouslySelectedDetailRow = null;
+                FPreviouslySelectedDetailRow = null;
             }
         }
 
@@ -318,7 +317,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 RecalculateScreenParts(this, e);
             }
         }
-        
+
         /// <summary>
         /// Event Handler for Grid Event
         /// </summary>
@@ -339,6 +338,5 @@ namespace Ict.Petra.Client.MPartner.Gui
                 this.DeleteRow(this, null);
             }
         }
-        
     }
 }
