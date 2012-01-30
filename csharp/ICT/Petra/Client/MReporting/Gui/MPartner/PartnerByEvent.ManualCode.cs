@@ -56,16 +56,18 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             }
         }
 
-        private void InitializeManualCode()
+        /// <summary>
+        /// only run this code once during activation
+        /// </summary>
+        private void RunOnceOnActivationManual()
         {
             string CheckedMember = "CHECKED";
             string ValueMember = PUnitTable.GetPartnerKeyDBName();
             string DisplayMember = PUnitTable.GetUnitNameDBName();
-            //TODO:Add the eventcode to EventCodeMember
             string EventCodeMember = PUnitTable.GetOutreachCodeDBName();
             PUnitTable Table;
 
-            //TODO:The difference between outreach and conference
+            // The difference between outreach and conference
             if (FCalledForConferences)
             {
                 Table = TRemote.MPartner.Partner.WebConnectors.GetConferenceUnits("");
@@ -78,7 +80,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             DataView view = new DataView(Table);
 
             // TODO view.RowFilter = only active types?
-            view.Sort = DisplayMember;
+            //view.Sort = DisplayMember;
 
             DataTable NewTable = view.ToTable(true, new string[] { DisplayMember, ValueMember, EventCodeMember });
             NewTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
@@ -90,23 +92,19 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
                                                  SourceGrid.GridSpecialKeys.Escape) |
                                                 SourceGrid.GridSpecialKeys.Control) | SourceGrid.GridSpecialKeys.Shift)));
 
-            if (FCalledForConferences)
+            clbEvent.Columns.Clear();
+            clbEvent.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
+            clbEvent.AddTextColumn(Catalog.GetString("Event Name"), NewTable.Columns[DisplayMember], 240);
+            clbEvent.AddTextColumn(Catalog.GetString("Partner Key"), NewTable.Columns[ValueMember], 80);
+            clbEvent.AddTextColumn(Catalog.GetString("Event Code"), NewTable.Columns[EventCodeMember], 80);
+
+            // outreach/event code column only needed in case of displaying Outreaches
+            if (!FCalledForConferences)
             {
-                clbEvent.Columns.Clear();
-                clbEvent.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
-                clbEvent.AddTextColumn(Catalog.GetString("Event Name"), NewTable.Columns[DisplayMember], 240);
-                clbEvent.AddTextColumn(Catalog.GetString("Partner Key"), NewTable.Columns[ValueMember], 80);
-                clbEvent.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
-            }
-            else
-            {
-                clbEvent.Columns.Clear();
-                clbEvent.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
-                clbEvent.AddTextColumn(Catalog.GetString("Event Name"), NewTable.Columns[DisplayMember], 240);
-                clbEvent.AddTextColumn(Catalog.GetString("Partner Key"), NewTable.Columns[ValueMember], 80);
                 clbEvent.AddTextColumn(Catalog.GetString("Event Code"), NewTable.Columns[EventCodeMember], 80);
-                clbEvent.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
             }
+
+            clbEvent.DataBindGrid(NewTable, DisplayMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
 
             //TODO: only temporarily until settings file exists
             clbEvent.SetCheckedStringList("");

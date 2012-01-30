@@ -44,8 +44,11 @@ using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPersonnel.Person;
+using Ict.Petra.Shared.MPersonnel.Units;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
+using Ict.Petra.Shared.MPersonnel.Units.Data;
+using Ict.Petra.Server.MPersonnel.Units.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MCommon.Cacheable;
 using Ict.Petra.Server.MCommon.UIConnectors;
@@ -603,6 +606,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
             AMiscellaneousDataDR.ItemsCountCommitmentPeriods = PmStaffDataAccess.CountViaPPerson(PartnerKey, AReadTransaction);
             AMiscellaneousDataDR.ItemsCountJobAssignments = PmJobAssignmentAccess.CountViaPPartner(PartnerKey, AReadTransaction);
             AMiscellaneousDataDR.ItemsCountProgressReports = PmPersonEvaluationAccess.CountViaPPerson(PartnerKey, AReadTransaction);
+            AMiscellaneousDataDR.ItemsCountPersonSkills = PmPersonSkillAccess.CountViaPPerson(PartnerKey, AReadTransaction);
         }
 
         /// <summary>
@@ -957,7 +961,70 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                 if (AInspectDS.Tables.Contains(PmJobAssignmentTable.GetTableName())
                     && (AInspectDS.PmJobAssignment.Rows.Count > 0))
                 {
+                    UmJobTable JobTableTemp = new UmJobTable();
+                    UmJobRow TemplateRow = (UmJobRow)JobTableTemp.NewRow();
+
+                    UmJobTable JobTableSubmit = new UmJobTable();
+                    UmJobRow JobRow;
+
                     PmJobAssignmentTableSubmit = AInspectDS.PmJobAssignment;
+
+                    // every job_assignment_row needs to have a row that it references in um_job
+                    foreach (PmJobAssignmentRow JobAssignmentRow in PmJobAssignmentTableSubmit.Rows)
+                    {
+                        if (JobAssignmentRow.RowState != DataRowState.Deleted)
+                        {
+                            TemplateRow.UnitKey = JobAssignmentRow.UnitKey;
+                            TemplateRow.PositionName = JobAssignmentRow.PositionName;
+                            TemplateRow.PositionScope = JobAssignmentRow.PositionScope;
+                            JobTableTemp = UmJobAccess.LoadUsingTemplate(TemplateRow, ASubmitChangesTransaction);
+
+                            // if no corresponding job record found then we need to create one
+                            if (JobTableTemp.Count == 0)
+                            {
+                                JobRow = (UmJobRow)JobTableSubmit.NewRow();
+
+                                JobRow.UnitKey = JobAssignmentRow.UnitKey;
+                                JobRow.PositionName = JobAssignmentRow.PositionName;
+                                JobRow.PositionScope = JobAssignmentRow.PositionScope;
+                                JobRow.JobKey = -1;
+                                JobRow.FromDate = JobAssignmentRow.FromDate;
+                                JobRow.ToDate = JobAssignmentRow.ToDate;
+                                JobRow.CommitmentPeriod = "None";
+                                JobRow.TrainingPeriod = "None";
+
+                                JobTableSubmit.Rows.Add(JobRow);
+
+                                if (UmJobAccess.SubmitChanges(JobTableSubmit, ASubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                {
+                                    SubmissionResult = TSubmitChangesResult.scrOK;
+
+                                    // Need to update the JobKey field from job table in job assignment table.
+                                    // This was set during SubmitChanges of the job table.
+                                    JobAssignmentRow.JobKey = JobRow.JobKey;
+                                }
+                                else
+                                {
+                                    SubmissionResult = TSubmitChangesResult.scrError;
+                                    AVerificationResult.AddCollection(SingleVerificationResultCollection);
+#if DEBUGMODE
+                                    if (TLogging.DL >= 9)
+                                    {
+                                        Console.WriteLine(Messages.BuildMessageFromVerificationResult(
+                                                "TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
+                                    }
+#endif
+                                }
+                            }
+                            else
+                            {
+                                // job record exists: in this case we need to update JobKey in
+                                // the Job Assignment Record from Job Row
+                                JobAssignmentRow.JobKey = ((UmJobRow)JobTableTemp.Rows[0]).JobKey;
+                            }
+                        }
+                    }
 
                     if (PmJobAssignmentAccess.SubmitChanges(PmJobAssignmentTableSubmit, ASubmitChangesTransaction,
                             out SingleVerificationResultCollection))

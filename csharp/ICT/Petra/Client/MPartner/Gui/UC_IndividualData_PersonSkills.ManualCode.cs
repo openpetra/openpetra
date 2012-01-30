@@ -25,6 +25,7 @@ using System;
 using System.Data;
 using System.Windows.Forms;
 using Ict.Common;
+using Ict.Common.Controls;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.MPartner;
@@ -77,6 +78,21 @@ namespace Ict.Petra.Client.MPartner.Gui
             FMainDS = AMainDS;
 
             LoadDataOnDemand();
+
+            // enable grid to react to insert and delete keyboard keys
+            grdDetails.InsertKeyPressed += new TKeyPressedEventHandler(grdDetails_InsertKeyPressed);
+            grdDetails.DeleteKeyPressed += new TKeyPressedEventHandler(grdDetails_DeleteKeyPressed);
+
+            chkProfSkill.Text = "";
+
+            if (grdDetails.Rows.Count <= 1)
+            {
+                pnlDetails.Visible = false;
+                btnDelete.Enabled = false;
+            }
+
+            // limit length of year field to 4
+            txtYearOfDegree.MaxLength = 4;
         }
 
         /// <summary>
@@ -102,18 +118,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 return;
             }
 
-// TODO: perform a check if the value is already referenced somewhere (similar to what the commented-out code does)
-//            int num = TRemote.MFinance.Setup.WebConnectors.CheckDeleteAFreeformAnalysis(FLedgerNumber,
-//                FPreviouslySelectedDetailRow.AnalysisTypeCode,
-//                FPreviouslySelectedDetailRow.AnalysisValue);
-//
-//            if (num > 0)
-//            {
-//                MessageBox.Show(Catalog.GetString(
-//                        "This value is already referenced and cannot be deleted."));
-//                return;
-//            }
-
             if (MessageBox.Show(String.Format(Catalog.GetString(
                             "You have choosen to delete this value ({0}).\n\nDo you really want to delete it?"),
                         FPreviouslySelectedDetailRow.PersonSkillKey), Catalog.GetString("Confirm Delete"),
@@ -125,6 +129,13 @@ namespace Ict.Petra.Client.MPartner.Gui
                 SelectByIndex(rowIndex);
 
                 DoRecalculateScreenParts();
+
+                if (grdDetails.Rows.Count <= 1)
+                {
+                    // hide details part and disable buttons if no record in grid (first row for headings)
+                    btnDelete.Enabled = false;
+                    pnlDetails.Visible = false;
+                }
             }
         }
 
@@ -137,6 +148,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void ShowDetailsManual(PmPersonSkillRow ARow)
         {
+            if (ARow != null)
+            {
+                btnDelete.Enabled = true;
+                pnlDetails.Visible = true;
+            }
+
             // In theory, the next Method call could be done in Methods NewRowManual; however, NewRowManual runs before
             // the Row is actually added and this would result in the Count to be one too less, so we do the Method call here, short
             // of a non-existing 'AfterNewRowManual' Method....
@@ -197,12 +214,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                 grdDetails.Selection.SelectRow(rowIndex, true);
                 FPreviouslySelectedDetailRow = GetSelectedDetailRow();
                 ShowDetails(FPreviouslySelectedDetailRow);
-
-                pnlDetails.Visible = true;
             }
             else
             {
-                pnlDetails.Visible = false;
+                FPreviouslySelectedDetailRow = null;
             }
         }
 
@@ -264,6 +279,27 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (RecalculateScreenParts != null)
             {
                 RecalculateScreenParts(this, e);
+            }
+        }
+
+        /// <summary>
+        /// Event Handler for Grid Event
+        /// </summary>
+        /// <returns>void</returns>
+        private void grdDetails_InsertKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
+        {
+            NewRow(this, null);
+        }
+
+        /// <summary>
+        /// Event Handler for Grid Event
+        /// </summary>
+        /// <returns>void</returns>
+        private void grdDetails_DeleteKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
+        {
+            if (e.Row != -1)
+            {
+                this.DeleteRow(this, null);
             }
         }
     }

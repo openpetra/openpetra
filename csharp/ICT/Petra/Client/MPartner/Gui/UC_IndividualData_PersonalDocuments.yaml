@@ -8,7 +8,7 @@ RootNode:
     FormType: edit
     Template: controlMaintainTable
     Actions:
-        actNew: {Label=&Add, ActionClick=NewRow}
+        actNew: {Label=&New, ActionClick=NewRow}
         actDelete: {Label=&Delete, ActionClick=DeleteRow}
     Controls:
         pnlContent:
@@ -25,16 +25,12 @@ RootNode:
         grdDetails:
             Dock: Fill
             TableName: PmDocument
-            Columns: [DocCode, DocumentId, AssocDocId, DateOfStart, PlaceOfIssue, DateOfExpiration, DateOfIssue, DocComment]
+            Columns: [DocCode, DocumentId, DateOfStart, DateOfExpiration]
             CustomColumns:
                 DocCode: {Label=Document Type}
                 DocumentId: {Label=Document ID}
-                AssocDocId: {Label=Associated Document ID}
                 DateOfStart: {Label=Start Date, Type=DateTime}
-                PlaceOfIssue: {Label=Place of Issue}
-                DateOfExpiration: {Label=Date of Expiry}
-                DateOfIssue: (Label=Date of Issue}
-                DocComment: {Label=Comments}
+                DateOfExpiration: {Label=Expiration Date, Type=DateTime}
             ActionFocusRow: FocusedRowChanged
             SortOrder: DocCode ASC
             
@@ -51,6 +47,7 @@ RootNode:
                 Row5: [txtComment]
                 
         cmbDocumentCode:
+            Label: Document Type
             List: DocumentTypeList
             DataField: PmDocument.DocCode
             ColSpan: 3
@@ -74,11 +71,11 @@ RootNode:
             ColSpan: 1
         
         dtpDateOfStart:
-            Label: Date of Start
+            Label: Start Date
             DataField: PmDocument.DateOfStart
             ColSpan: 1
         dtpDateOfExpiry:
-            Label: Date of Expiry
+            Label: Expiration Date
             DataField: PmDocument.DateOfExpiration
             ColSpan: 1
         

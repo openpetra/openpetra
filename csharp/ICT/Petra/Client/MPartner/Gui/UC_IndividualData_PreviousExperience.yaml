@@ -8,7 +8,7 @@ RootNode:
     FormType: edit
     Template: controlMaintainTable
     Actions:
-        actNew: {Label=&Add, ActionClick=NewRow}
+        actNew: {Label=&New, ActionClick=NewRow}
         actDelete: {Label=&Delete, ActionClick=DeleteRow}
     Controls:
         pnlContent:
@@ -25,14 +25,13 @@ RootNode:
         grdDetails:
             Dock: Fill
             TableName: PmPastExperience
-            Columns: [PrevLocation, StartDate, EndDate, PrevRole, OtherOrganisation, Category]
+            Columns: [PrevLocation, StartDate, EndDate, PrevRole, OtherOrganisation]
             CustomColumns:
                 PrevLocation: {Label=Location}
                 StartDate: {Label=Start Date, Type=DateTime}
                 EndDate: {Label=End Date, Type=DateTime}
                 PrevRole: {Label=Role}
                 OtherOrganisation: {Label=Organisation}
-                Category: {Label=Category}
             ActionFocusRow: FocusedRowChanged
             SortOrder: PrevLocation ASC
             
@@ -43,17 +42,18 @@ RootNode:
             Controls:
                 Row0: [chkHereFlag, chkSimilarOrgFlag]
                 Row1: [txtOrganisation]
-                Row2: [txtLocation, txtRole]
-                Row3: [dtpStartDate, dtpEndDate]
-                Row4: [txtComment]
+                Row2: [txtLocation]
+                Row3: [txtRole]
+                Row4: [dtpStartDate, dtpEndDate]
+                Row5: [txtComment]
                 
         chkHereFlag:
-            Label: With Our Organisation
+            Label: With our Organisation
             DataField: PmPastExperience.PrevWorkHere
             OnChange: HereFlagChanged
             CheckBoxAttachedLabel: left
         chkSimilarOrgFlag:
-            Label: With Similar Organisation
+            Label: With similar Organisation
             DataField: PmPastExperience.PrevWork
             CheckBoxAttachedLabel: left
         

@@ -2766,7 +2766,7 @@ namespace Ict.Common.DB
     ///     <c>"Second"</c>, or <c>"Third"</c>, set the <c>OdbcParameter.Value</c>
     ///     property to a <c>TDbListParameterValue</c> instance. You
     ///     can use the
-    ///     <c>TDbListParameterValue.OdbcListParameterValu()</c>
+    ///     <c>TDbListParameterValue.OdbcListParameterValue()</c>
     ///     function to produce an <c>OdbcParameter</c> with an
     ///     appropriate <c>Value</c> property.
     ///   <code>

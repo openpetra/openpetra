@@ -994,8 +994,8 @@ namespace Ict.Petra.Client.CommonControls
                     break;
 
                 case TListTableEnum.CommitmentStatusList:
-                    this.ColumnWidthCol1 = 80;
-                    this.ColumnWidthCol2 = 200;
+                    this.ColumnWidthCol1 = 120;
+                    this.ColumnWidthCol2 = 300;
                     break;
 
                 case TListTableEnum.CountryList:
@@ -1142,7 +1142,7 @@ namespace Ict.Petra.Client.CommonControls
                     break;
 
                 case TListTableEnum.SkillCategoryList:
-                    this.ColumnWidthCol1 = 57;
+                    this.ColumnWidthCol1 = 110;
                     this.ColumnWidthCol2 = 130;
                     break;
 

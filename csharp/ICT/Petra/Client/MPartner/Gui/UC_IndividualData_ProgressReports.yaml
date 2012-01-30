@@ -8,7 +8,7 @@ RootNode:
     FormType: edit
     Template: controlMaintainTable
     Actions:
-        actNew: {Label=&Add, ActionClick=NewRow}
+        actNew: {Label=&New, ActionClick=NewRow}
         actDelete: {Label=&Delete, ActionClick=DeleteRow}
     Controls:
         pnlContent:
@@ -28,7 +28,7 @@ RootNode:
             Columns: [Evaluator, EvaluationDate, EvaluationType]
             CustomColumns:
                 Evaluator: {Label=Reporter}
-                EvaluationDate: {Label=Report Date}
+                EvaluationDate: {Label=Report Date, Type=DateTime}
                 EvaluationType: {Label=Report Type}
             ActionFocusRow: FocusedRowChanged
             SortOrder: Evaluator ASC

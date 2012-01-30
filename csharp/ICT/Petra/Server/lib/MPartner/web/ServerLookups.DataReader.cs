@@ -72,6 +72,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         private static PUnitTable GetConferenceOrOutreachUnits(bool AConference, string AEventName)
         {
             PUnitTable UnitTable = new PUnitTable();
+            PUnitRow UnitRow;
             PUnitRow TemplateRow = (PUnitRow)UnitTable.NewRow();
 
             TDBTransaction ReadTransaction;
@@ -99,22 +100,51 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             try
             {
-                /* Load data */
+                // Load data
+                string SqlStmt = "SELECT pub_" + PUnitTable.GetTableDBName() + "." + PUnitTable.GetPartnerKeyDBName() +
+                                 ", pub_" + PUnitTable.GetTableDBName() + "." + PUnitTable.GetUnitNameDBName() +
+                                 ", pub_" + PUnitTable.GetTableDBName() + "." + PUnitTable.GetOutreachCodeDBName() +
+                                 " FROM " + PUnitTable.GetTableDBName();
 
-                if (AEventName.Length > 0)
+                if (AConference)
                 {
-                    AEventName = AEventName.Replace('*', '%') + "%";
-                    TemplateRow.UnitName = AEventName;
-
-                    StringCollection Operators = new StringCollection();
-                    Operators.Add("LIKE");
-
-                    UnitTable = PUnitAccess.LoadUsingTemplate(TemplateRow, Operators, null, ReadTransaction);
+                    // for conferences the unit type needs to contain 'CON' (for CONF or CONG)
+                    SqlStmt = SqlStmt + " WHERE " + PUnitTable.GetUnitTypeCodeDBName() +
+                              " LIKE '%CON%'";
                 }
                 else
                 {
-                    UnitTable = PUnitAccess.LoadAll(ReadTransaction);
+                    // for outreaches the outreach code is set
+                    SqlStmt = SqlStmt + " WHERE " + PUnitTable.GetOutreachCodeDBName() +
+                              " IS NOT NULL AND " + PUnitTable.GetOutreachCodeDBName() +
+                              " <> ''";
                 }
+
+                if (AEventName.Length > 0)
+                {
+                    // in case there is a filter set for the event name
+                    AEventName = AEventName.Replace('*', '%') + "%";
+                    SqlStmt = SqlStmt + " AND " + PUnitTable.GetUnitNameDBName() +
+                              " LIKE '" + AEventName + "'";
+                }
+
+                // sort rows according to name
+                SqlStmt = SqlStmt + " ORDER BY " + PUnitTable.GetUnitNameDBName();
+
+                DataTable events = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "events", ReadTransaction);
+
+                foreach (DataRow eventRow in events.Rows)
+                {
+                    UnitRow = (PUnitRow)UnitTable.NewRow();
+                    UnitRow.PartnerKey = Convert.ToInt64(eventRow[0]);
+                    UnitRow.UnitName = Convert.ToString(eventRow[1]);
+                    UnitRow.OutreachCode = Convert.ToString(eventRow[2]);
+                    UnitTable.Rows.Add(UnitRow);
+                }
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(e.ToString());
             }
             finally
             {

@@ -8,7 +8,7 @@ RootNode:
     FormType: edit
     Template: controlMaintainTable
     Actions:
-        actNew: {Label=&Add, ActionClick=NewRow}
+        actNew: {Label=&New, ActionClick=NewRow}
         actDelete: {Label=&Delete, ActionClick=DeleteRow}
     Controls:
         pnlContent:
@@ -32,8 +32,8 @@ RootNode:
                 #UnitName: {Label=Unit}
                 PositionName: {Label=Position/Role}
                 AssistantTo: {Label=Assist.}
-                FromDate: {Label=From Date}
-                ToDate: {Label=To Date}
+                FromDate: {Label=From Date, Type=DateTime}
+                ToDate: {Label=To Date, Type=DateTime}
                 AssignmentTypeCode: {Label=Assignment Type}
             ActionFocusRow: FocusedRowChanged
             SortOrder: UnitKey ASC
@@ -48,8 +48,6 @@ RootNode:
                 Row2: [txtUnitKey]
                 Row3: [cmbPositionName]
                 Row4: [chkAssistantTo]
-                Row5: [cmbLeavingCode]
-                Row6: [dtpLeavingCodeUpdatedDate]
                 
         cmbAssignmentTypeCode:
             List: JobAssignmentTypeList
@@ -83,13 +81,3 @@ RootNode:
             DataField: PmJobAssignment.AssistantTo
             ColSpan: 1
         
-        cmbLeavingCode:
-            Label: Leaving Code
-            List: LeavingCodeList
-            DataField: PmJobAssignment.LeavingCode
-            ColSpan: 3
-        
-        dtpLeavingCodeUpdatedDate:
-            Label: Updated
-            DataField: PmJobAssignment.LeavingCodeUpdatedDate
-            ColSpan: 1

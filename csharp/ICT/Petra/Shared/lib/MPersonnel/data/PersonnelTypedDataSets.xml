@@ -64,15 +64,16 @@
         
         <CustomTable name="MiscellaneousData">
             <Field sqltable="p_person" sqlfield="p_partner_key_n"/>
-            <CustomField name="ItemsCountPassportDetails" type="Int32"/>        <!-- not in use yet! -->
-            <CustomField name="ItemsCountPersonalDocuments" type="Int32"/>      <!-- not in use yet! -->
+            <CustomField name="ItemsCountPassportDetails" type="Int32"/>
+            <CustomField name="ItemsCountPersonalDocuments" type="Int32"/>
             <CustomField name="ItemsCountProfessionalAreas" type="Int32"/>      <!-- not in use yet! -->
             <CustomField name="ItemsCountPersonalLanguages" type="Int32"/>          
-            <CustomField name="ItemsCountPersonalAbilities" type="Int32"/>      <!-- not in use yet! -->
-            <CustomField name="ItemsCountPreviousExperience" type="Int32"/>     <!-- not in use yet! -->
-            <CustomField name="ItemsCountCommitmentPeriods" type="Int32"/>      <!-- not in use yet! -->
-            <CustomField name="ItemsCountJobAssignments" type="Int32"/>         <!-- not in use yet! -->
-            <CustomField name="ItemsCountProgressReports" type="Int32"/>        <!-- not in use yet! -->
+            <CustomField name="ItemsCountPersonalAbilities" type="Int32"/>
+            <CustomField name="ItemsCountPreviousExperience" type="Int32"/>
+            <CustomField name="ItemsCountCommitmentPeriods" type="Int32"/>
+            <CustomField name="ItemsCountJobAssignments" type="Int32"/>
+            <CustomField name="ItemsCountProgressReports" type="Int32"/>
+            <CustomField name="ItemsCountPersonSkills" type="Int32"/>
             <PrimaryKey thisFields="PartnerKey"/>
         </CustomTable>                    
    </DataSet>    
