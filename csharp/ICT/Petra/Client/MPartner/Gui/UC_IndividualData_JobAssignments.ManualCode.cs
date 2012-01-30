@@ -104,7 +104,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             ARow.PartnerKey = FMainDS.PPerson[0].PartnerKey;
             ARow.UnitKey = 0;
-            // TODO: Refine/modify default values
             ARow.PositionName = "";
             ARow.PositionScope = "O";
             ARow.FromDate = DateTime.Now.Date;

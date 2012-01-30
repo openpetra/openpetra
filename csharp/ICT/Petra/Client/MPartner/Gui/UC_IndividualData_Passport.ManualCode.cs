@@ -323,7 +323,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         
         private void SuggestPassportName(System.Object sender, EventArgs e)
         {
-            Boolean ReturnValue;
             TFrmPassportNameSuggestDialog Scd;
             string PassportName;
 

@@ -82,15 +82,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
-        /// <summary>
-        /// Called by the instantiator of this Dialog to retrieve the values of Fields
+		/// <summary>
+		/// Called by the instantiator of this Dialog to retrieve the values of Fields
         /// on the screen.
-        ///
-        /// </summary>
-        /// <param name="AReasonEnded">Text that gives the reason for ending the Subscriptions</param>
-        /// <param name="ADateEnded">Date when the Subscriptions should end (can be empty)</param>
-        /// <returns>false if the Dialog is still uninitialised, otherwise true.
-        /// </returns>
+		/// </summary>
+		/// <param name="APassportName"></param>
+		/// <returns></returns>
         public Boolean GetReturnedParameters(out String APassportName)
         {
             Boolean ReturnValue = true;
