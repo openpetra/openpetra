@@ -152,8 +152,8 @@ namespace Ict.Petra.Server.MPartner.queries
 
                 // create an extract with the given name in the parameters
                 ReturnValue = TExtractsHandling.CreateExtractFromListOfPartnerKeys(
-                    AParameters.Get("param_txtExtractName").ToString(),
-                    AParameters.Get("param_txtExtractDescription").ToString(),
+                    AParameters.Get("param_extract_name").ToString(),
+                    AParameters.Get("param_extract_description").ToString(),
                     out NewExtractID,
                     out VerificationResult,
                     partnerkeys,

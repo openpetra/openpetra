@@ -96,7 +96,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             clbEvent.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
             clbEvent.AddTextColumn(Catalog.GetString("Event Name"), NewTable.Columns[DisplayMember], 240);
             clbEvent.AddTextColumn(Catalog.GetString("Partner Key"), NewTable.Columns[ValueMember], 80);
-            clbEvent.AddTextColumn(Catalog.GetString("Event Code"), NewTable.Columns[EventCodeMember], 80);
 
             // outreach/event code column only needed in case of displaying Outreaches
             if (!FCalledForConferences)

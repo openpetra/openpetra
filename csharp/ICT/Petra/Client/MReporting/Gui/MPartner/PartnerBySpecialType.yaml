@@ -54,9 +54,7 @@ RootNode:
 #                Row1: [chkMailingAddressesOnly]
 #                Row2: [chkFamiliesOnly]
 #                Row3: [chkExcludeNoSolicitations]
-                Row0: [txtNameOfExtract]
-                Row1: [txtExtractDescription]
-                Row2: [ucoReportExtract]
+                Row0: [ucoReportExtract]
 
         pnlSpecialTypeOptionsBottom:
             Controls: 
@@ -84,8 +82,6 @@ RootNode:
         txtDateSet:
             Label: Date Set
             ParameterName: param_dateSet
-        txtNameOfExtract: {ParameterName=nameOfExtract}
-        txtExtractDescription: {ParameterName=descriptionOfExtract}
         ucoReportExtract:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_ExtractChkFilter
             Dock: Fill

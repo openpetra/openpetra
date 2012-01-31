@@ -32,6 +32,7 @@ using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Server.MCommon.Data.Cascading;
 
 namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 {
@@ -54,6 +55,51 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             DBAccess.GDBAccessObj.CommitTransaction();
 
             return ExtractMasterDT;
+        }
+
+        /// <summary>
+        /// retrieve all extract master records
+        /// </summary>
+        /// <param name="AExtractId"></param>
+        /// <returns>returns true if deletion was successful</returns>
+        public static Boolean DeleteExtract(int AExtractId)
+        {
+        	Boolean ReturnValue = true;
+        	
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+            MExtractMasterCascading.DeleteByPrimaryKey(AExtractId, Transaction, true);
+
+            DBAccess.GDBAccessObj.CommitTransaction();
+            
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// check if extract with given name already exists
+        /// </summary>
+        /// <param name="AExtractName"></param>
+        /// <returns>returns true if extract already exists</returns>
+        public static Boolean ExtractExists(String AExtractName)
+        {
+            MExtractMasterTable TemplateTable;
+            MExtractMasterRow   TemplateRow;
+        	Boolean             ReturnValue = true;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+        	TemplateTable = new MExtractMasterTable();
+            TemplateRow = TemplateTable.NewRowTyped(false);
+            TemplateRow.ExtractName= AExtractName;
+
+            if (MExtractMasterAccess.CountUsingTemplate(TemplateRow, null, Transaction) == 0)
+            {
+            	ReturnValue = false;
+            }
+
+            DBAccess.GDBAccessObj.CommitTransaction();
+            
+            return ReturnValue;
         }
     }
 }

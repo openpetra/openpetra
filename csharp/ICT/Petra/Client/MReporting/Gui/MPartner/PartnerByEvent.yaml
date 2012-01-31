@@ -27,7 +27,7 @@
         clbEvent:
             Dock: Fill
             NoLabel: true 
-            ParameterName: param_event
+            ParameterName: param_events
             Width: 600
             Height: 200
         pnlChkBoxs:
@@ -38,21 +38,18 @@
                 Row2:[chkHold]
                 Row3:[chkEnquiry]
                 Row4:[chkRejected]
-                Row5:[chkActiveParteners]
+                Row5:[chkActivePartners]
                 Row6:[chkMailingAddressesOnly]
-                Row7:[chkExcludeNoSoliotions]
-                Row8:[txtExtractName]
-                Row9:[txtExtractDescription]
+                Row7:[chkExcludeNoSolicitations]
         chkCancelled: {Label=Cancelled, ParameterName=param_status_cancelled}
-        chkRejected: {Label=Rejected, ParameterName=param_status_Rejected}
-        chkAccepted: {Label=Accepted, ParameterName=param_status_Accepted}
-        chkHold: {Label=Hold, ParameterName=param_status_Hold}
-        chkEnquiry:{Label=Enquiry, ParameterName=param_status_Enquiry}
-        chkActiveParteners:{Label=Active Parteners, ParameterName=param_Active_Parteners}
-        chkMailingAddressesOnly:{Label=Mailing Addresses Only, ParameterName=param_Mailing_Addresses_Only}
-        chkExcludeNoSoliotions:{Label=Exclude 'No Soliotions', ParameterName=param_Exclude_No_Soliotions}
-        txtExtractName: {Label=Name for the new extract, ParameterName=nameOfExtract}
-        txtExtractDescription: {Label=Description for the new extract, ParameterName=descriptionOfExtract}   ReportParameters:{ColumnFunction=TPartnerColumnFunction}
+        chkRejected: {Label=Rejected, ParameterName=param_status_rejected}
+        chkAccepted: {Label=Accepted, ParameterName=param_status_accepted}
+        chkHold: {Label=Hold, ParameterName=param_status_hold}
+        chkEnquiry:{Label=Enquiry, ParameterName=param_status_enquiry}
+        chkActivePartners:{Label=Active Partners, ParameterName=param_active_partners}
+        chkMailingAddressesOnly:{Label=Mailing Addresses Only, ParameterName=param_mailing_addresses_only}
+        chkExcludeNoSolicitations:{Label=Exclude 'No Solicitations', ParameterName=param_exclude_no_solicitations}
+        ReportParameters:{ColumnFunction=TPartnerColumnFunction}
             Para1:
                 Name: City
                 Parameter: 4.0

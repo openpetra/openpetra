@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Odbc;
 using Ict.Common;
@@ -55,95 +56,44 @@ namespace Ict.Petra.Server.MPartner.queries
 
                 string SqlStmt = TDataBase.ReadSqlFile("Partner.Queries.ExtractPartnerByEvent.sql");
 
+                ICollection <String>param_events;
 
-                int Index = 0;
-                int SizeOfArray;
-                String ValueList;
-                Int64 ListValueInt;
-                String ListValue;
-                String ParameterList = "";
+                param_events = AParameters.Get("param_events").ToString().Split(new Char[] { ',', });
 
-                // set array to correct size depending on number of specialtypes selected
-                ValueList = AParameters.Get("param_event").ToString();
-
-                SizeOfArray = StringHelper.CountOccurencesOfChar(ValueList, ',') + 1;
-
-                TLogging.Log("SizeOfArray is: " + SizeOfArray);
-
-                OdbcParameter[] parameters = new OdbcParameter[SizeOfArray + 7];
-                TLogging.Log("parameters[] created...");
-                // this *should* always have at least one selection because the client requires it
-
-                ListValue = StringHelper.GetNextCSV(ref ValueList, ",");
-
-                if (ListValue.Length == 0)
+                if (param_events.Count == 0)
                 {
-                    throw new NoNullAllowedException("At least one option must be checked.");                       // safety
+                    throw new NoNullAllowedException("At least one option must be checked.");
                 }
 
-                Index = 0;
-
-                while (ListValue != "")
+                OdbcParameter[] parameters = new OdbcParameter[]
                 {
-                    ListValueInt = Convert.ToInt64(ListValue);
-                    parameters[Index] = new OdbcParameter("Event" + Index.ToString(), OdbcType.BigInt);
-
-                    parameters[Index].Value = ListValueInt;
-                    Index++;
-
-                    if (ParameterList.Length == 0)
-                    {
-                        ParameterList = "?";
-                    }
-                    else
-                    {
-                        ParameterList = ParameterList + ",?";
-                    }
-
-                    ListValue = StringHelper.GetNextCSV(ref ValueList, ",");
-                }
-
-                SqlStmt = SqlStmt.Replace("##ParameterList##", ParameterList);
-
-                // reading in parameters and getting them ready to be inserted into the query
-                parameters[Index] = new OdbcParameter("Accepted", OdbcType.Bit);
-                parameters[Index].Value = AParameters.Get("param_status_Accepted").ToBool();
-                parameters[Index + 1] = new OdbcParameter("Hold", OdbcType.Bit);
-                parameters[Index + 1].Value = AParameters.Get("param_status_Hold").ToBool();
-                parameters[Index + 2] = new OdbcParameter("Enquiry", OdbcType.Bit);
-                parameters[Index + 2].Value = AParameters.Get("param_status_Enquiry").ToBool();
-                parameters[Index + 3] = new OdbcParameter("cancelled", OdbcType.Bit);
-                parameters[Index + 3].Value = AParameters.Get("param_status_cancelled").ToBool();
-                parameters[Index + 4] = new OdbcParameter("Rejected", OdbcType.Bit);;
-                parameters[Index + 4].Value = AParameters.Get("param_status_Rejected").ToBool();
-                parameters[Index + 5] = new OdbcParameter("cancelled", OdbcType.Bit);
-                parameters[Index + 5].Value = AParameters.Get("param_Active_Parteners").ToBool();
-                parameters[Index + 6] = new OdbcParameter("Exclude_No_Soliotions", OdbcType.Bit);
-                parameters[Index + 6].Value = AParameters.Get("param_Exclude_No_Soliotions").ToBool();
-                //parameters[Index + 7] =  new OdbcParameter("Mailing_Addresses_Only", OdbcType.Bit)
-                //parameters[Index + 7].Value = AParameters.Get("param_Mailing_Addresses_Only").ToBool();
-
-
-                //OdbcParameter[] parameters = new OdbcParameter[8];
-                //parameters[0] = new OdbcParameter("Event", OdbcType.BigInt);
-                parameters[0].Value = AParameters.Get("param_event").ToInt64();
-                // parameters[1] = new OdbcParameter("Accepted", OdbcType.Bit);
-                //parameters[1].Value = AParameters.Get("param_status_Accepted").ToBool();
-                //parameters[2] = new OdbcParameter("Hold", OdbcType.Bit);
-                //parameters[2].Value = AParameters.Get("param_status_Hold").ToBool();
-                // parameters[3] = new OdbcParameter("Enquiry", OdbcType.Bit);
-                //parameters[3].Value = AParameters.Get("param_status_Enquiry").ToBool();
-                //parameters[4] = new OdbcParameter("cancelled", OdbcType.Bit);
-                //parameters[4].Value = AParameters.Get("param_status_cancelled").ToBool();
-                //parameters[5] = new OdbcParameter("Rejected", OdbcType.Bit);
-                //parameters[5].Value = AParameters.Get("param_status_Rejected").ToBool();
-                //parameters[6] = new OdbcParameter("Active_Parteners", OdbcType.Bit);
-                //parameters[6].Value = AParameters.Get("param_Active_Parteners").ToBool();
-                //parameters[7] = new OdbcParameter("Exclude_No_Soliotions", OdbcType.Bit);
-                //parameters[7].Value = AParameters.Get("param_Exclude_No_Soliotions").ToBool();
-                // parameters[8] = new OdbcParameter("Mailing_Addresses_Only", OdbcType.Bit);
-                // parameters[8].Value = AParameters.Get("param_Mailing_Addresses_Only");
-
+                    TDbListParameterValue.OdbcListParameterValue("events", OdbcType.BigInt, param_events),
+                    new OdbcParameter("Accepted", OdbcType.Bit) {
+                        Value = AParameters.Get("param_status_accepted").ToBool()
+                    },
+                    new OdbcParameter("Hold", OdbcType.Bit) {
+                        Value = AParameters.Get("param_status_hold").ToBool()
+                    },
+                    new OdbcParameter("Enquiry", OdbcType.Bit) {
+                        Value = AParameters.Get("param_status_enquiry").ToBool()
+                    },
+                    new OdbcParameter("Cancelled", OdbcType.Bit) {
+                        Value = AParameters.Get("param_status_cancelled").ToBool()
+                    },
+                    new OdbcParameter("Rejected", OdbcType.Bit) {
+                        Value = AParameters.Get("param_status_rejected").ToBool()
+                    },
+                    new OdbcParameter("Active", OdbcType.Bit) {
+                        Value = AParameters.Get("param_active_partners").ToBool()
+                    },
+                    new OdbcParameter("Exclude_no_soliciations", OdbcType.Bit) {
+                        Value = AParameters.Get("param_exclude_no_solicitations").ToBool()
+                    },
+                    //new OdbcParameter("Mailing_Addresses_Only", OdbcType.Bit) {
+                    //    Value = AParameters.Get("param_mailing_addresses_only").ToBool()
+                    //},
+                };
+                
                 TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
                 DataTable partnerkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "partners", Transaction, parameters);
 
@@ -166,8 +116,8 @@ namespace Ict.Petra.Server.MPartner.queries
 
                 // create an extract with the given name in the parameters
                 ReturnValue = TExtractsHandling.CreateExtractFromListOfPartnerKeys(
-                    AParameters.Get("nameOfExtract").ToString(),
-                    AParameters.Get("descriptionOfExtract").ToString(),
+                    AParameters.Get("param_extract_name").ToString(),
+                    AParameters.Get("param_extract_description").ToString(),
                     out NewExtractID,
                     out VerificationResult,
                     partnerkeys,

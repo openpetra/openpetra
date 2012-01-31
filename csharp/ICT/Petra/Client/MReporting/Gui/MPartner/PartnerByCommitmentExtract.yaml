@@ -38,7 +38,6 @@ RootNode:
                 Row0: [chkPartnerActive]
                 Row1: [chkMailable]
                 Row2: [chkRespectNoSolicitors]
-                Row3: [txtExtractName, txtExtractDescription]
 
         dtpStartDateFrom: {Label="&Start Date from", DefaultValue=null}
         dtpStartDateTo: {Label="to", Value=null}
@@ -65,6 +64,3 @@ RootNode:
         chkPartnerActive: {Label="&Active partners only", DefaultValue=true}
         chkMailable: {Label="&Mailing Addresses only", DefaultValue=true}
         chkRespectNoSolicitors: {Label="E&xclude 'No Solicitations'", DefaultValue=true}
-
-        txtExtractName:
-        txtExtractDescription:
