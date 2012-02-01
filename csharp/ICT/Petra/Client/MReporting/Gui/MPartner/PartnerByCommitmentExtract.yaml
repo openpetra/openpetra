@@ -19,8 +19,15 @@ RootNode:
         ModulePermissionRequired: [PTNRUSER]
     Controls:
         tpgGeneralSettings:
-            Controls: [pnlDates, pnlFields, pnlCommitments, pnlMisc]
-        pnlDates:
+            Controls: 
+                Row0: [pnlTop]
+                Row1: [pnlFields]
+                Row2: [pnlCommitments]
+        pnlTop:
+            Controls: 
+                Row0: [grpDates, ucoChkFilter]
+        grpDates:
+            NoLabel: true
             Controls:
                 Row0: [dtpStartDateFrom, dtpStartDateTo]
                 Row1: [dtpEndDateFrom, dtpEndDateTo]
@@ -33,24 +40,20 @@ RootNode:
             Controls:
                 Row0: [chkCommitmentStatus]
                 Row1: [grpCommitmentStatuses]
-        pnlMisc:
-            Controls:
-                Row0: [chkPartnerActive]
-                Row1: [chkMailable]
-                Row2: [chkRespectNoSolicitors]
 
-        dtpStartDateFrom: {Label="&Start Date from", DefaultValue=null}
-        dtpStartDateTo: {Label="to", Value=null}
-        dtpEndDateFrom: {Label="&End Date from"}
-        dtpEndDateTo: {Label="to"}
-        dtpDateValidOn: {Label="&Valid on Day"}
+        dtpStartDateFrom: {Label="&Start Date from", DefaultValue=null, ParameterName= param_start_date_from}
+        dtpStartDateTo: {Label="to", Value=null, ParameterName= param_start_date_to}
+        dtpEndDateFrom: {Label="&End Date from", ParameterName= param_end_date_from}
+        dtpEndDateTo: {Label="to", ParameterName= param_end_date_to}
+        dtpDateValidOn: {Label="&Valid on Day", ParameterName= param_date_valid_on}
 
-        txtFieldSending: {Label="Sending &Field", Type=PartnerKey, PartnerClass=UNIT}
-        txtFieldReceiving: {Label="&Receiving Field", Type=PartnerKey, PartnerClass=UNIT}
+        txtFieldSending: {Label="Sending &Field", Type=PartnerKey, PartnerClass=UNIT, ParameterName= param_field_sending}
+        txtFieldReceiving: {Label="&Receiving Field", Type=PartnerKey, PartnerClass=UNIT, ParameterName= param_field_receiving}
 
         chkCommitmentStatus:
             Label: "&Include only Persons with one or more of the selected Commitment Status(es)"
             OnChange: chkCommitmentStatus_Changed
+            ParameterName: param_consider_commitment_status
         grpCommitmentStatuses:
             Label: "Commitment Statuses"
             Controls:
@@ -58,9 +61,10 @@ RootNode:
                 Row1: [chkCommitmentStatusOthers]
         grdCommitmentStatusChoices:
             Dock: Fill
+            ParameterName: param_commitment_status_choices
         chkCommitmentStatusOthers:
             Label: "Include Persons with &no Commitment Status set"
-
-        chkPartnerActive: {Label="&Active partners only", DefaultValue=true}
-        chkMailable: {Label="&Mailing Addresses only", DefaultValue=true}
-        chkRespectNoSolicitors: {Label="E&xclude 'No Solicitations'", DefaultValue=true}
+            ParameterName: param_include_no_commitment_status
+        ucoChkFilter:
+            Dock: Left
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_ExtractChkFilter

@@ -54,79 +54,78 @@ namespace Ict.Petra.Server.MPartner.queries
 
                 String SqlStmt = TDataBase.ReadSqlFile("Partner.Queries.ExtractPartnerByCommitment.sql");
 
-                List <String>param_grdCommitmentStatusChoices = new List <String>();
+                List <String>param_commitment_status_choices = new List <String>();
 
-                foreach (TVariant choice in AParameters.Get("param_grdCommitmentStatusChoices").ToComposite())
+                foreach (TVariant choice in AParameters.Get("param_commitment_status_choices").ToComposite())
                 {
-                    param_grdCommitmentStatusChoices.Add(choice.ToString());
+                    param_commitment_status_choices.Add(choice.ToString());
                 }
 
                 OdbcParameter[] parameters = new OdbcParameter[]
                 {
-                    new OdbcParameter("param_dtpStartTimeFrom_unset", OdbcType.Bit) {
-                        Value = AParameters.Get("param_dtpStartDateFrom").IsZeroOrNull()
+                    new OdbcParameter("param_start_date_from_unset", OdbcType.Bit) {
+                        Value = AParameters.Get("param_start_date_from").IsZeroOrNull()
                     },
-                    new OdbcParameter("param_dtpStartTimeFrom", OdbcType.Date) {
-                        Value = AParameters.Get("param_dtpStartDateFrom").ToDate()
+                    new OdbcParameter("param_start_date_from", OdbcType.Date) {
+                        Value = AParameters.Get("param_start_date_from").ToDate()
                     },
-                    new OdbcParameter("param_dtpStartTimeTo_unset", OdbcType.Bit) {
-                        Value = AParameters.Get("param_dtpStartDateTo").IsZeroOrNull()
+                    new OdbcParameter("param_start_date_from_unset", OdbcType.Bit) {
+                        Value = AParameters.Get("param_start_date_to").IsZeroOrNull()
                     },
-                    new OdbcParameter("param_dtpStartTimeTo", OdbcType.Date) {
+                    new OdbcParameter("param_dtpStartDateTo", OdbcType.Date) {
                         Value = AParameters.Get("param_dtpStartDateTo").ToDate()
                     },
-                    new OdbcParameter("param_dtpEndTimeFrom_unset", OdbcType.Bit) {
-                        Value = AParameters.Get("param_dtpEndDateFrom").IsZeroOrNull()
+                    new OdbcParameter("param_end_date_from_unset", OdbcType.Bit) {
+                        Value = AParameters.Get("param_end_date_from").IsZeroOrNull()
                     },
-                    new OdbcParameter("param_dtpEndTimeFrom", OdbcType.Date) {
-                        Value = AParameters.Get("param_dtpEndDateFrom").ToDate()
+                    new OdbcParameter("param_end_date_from", OdbcType.Date) {
+                        Value = AParameters.Get("param_end_date_from").ToDate()
                     },
-                    new OdbcParameter("param_dtpEndTimeTo_unset", OdbcType.Bit) {
-                        Value = AParameters.Get("param_dtpEndDateTo").IsZeroOrNull()
+                    new OdbcParameter("param_end_date_to_unset", OdbcType.Bit) {
+                        Value = AParameters.Get("param_end_date_to").IsZeroOrNull()
                     },
-                    new OdbcParameter("param_dtpEndTimeTo", OdbcType.Date) {
-                        Value = AParameters.Get("param_dtpEndDateTo").ToDate()
+                    new OdbcParameter("param_end_date_to", OdbcType.Date) {
+                        Value = AParameters.Get("param_end_date_to").ToDate()
                     },
-                    new OdbcParameter("param_dtpDateValidOn_unset", OdbcType.Bit) {
-                        Value = AParameters.Get("param_dtpDateValidOn").IsZeroOrNull()
+                    new OdbcParameter("param_date_valid_on_unset", OdbcType.Bit) {
+                        Value = AParameters.Get("param_date_valid_on").IsZeroOrNull()
                     },
-                    new OdbcParameter("param_dtpDateValidOn_a", OdbcType.Date) {
-                        Value = AParameters.Get("param_dtpDateValidOn").ToDate()
+                    new OdbcParameter("param_date_valid_on_a", OdbcType.Date) {
+                        Value = AParameters.Get("param_date_valid_on").ToDate()
                     },
-                    new OdbcParameter("param_dtpDateValidOn_b", OdbcType.Date) {
-                        Value = AParameters.Get("param_dtpDateValidOn").ToDate()
-                    },
-
-                    new OdbcParameter("param_txtFieldSending_unset", OdbcType.Bit) {
-                        Value = AParameters.Get("param_txtFieldSending").IsZeroOrNull()
-                    },
-                    new OdbcParameter("param_txtFieldSending", OdbcType.Int) {
-                        Value = AParameters.Get("param_txtFieldSending").ToInt32()
-                    },
-                    new OdbcParameter("param_txtFieldReceiving_unset", OdbcType.Bit) {
-                        Value = AParameters.Get("param_txtFieldReceiving").IsZeroOrNull()
-                    },
-                    new OdbcParameter("param_txtFieldReceiving", OdbcType.Int) {
-                        Value = AParameters.Get("param_txtFieldReceiving").ToInt32()
+                    new OdbcParameter("param_date_valid_on_b", OdbcType.Date) {
+                        Value = AParameters.Get("param_date_valid_on").ToDate()
                     },
 
-                    new OdbcParameter("param_chkCommitmentStatus_not", OdbcType.Bit) {
-                        Value = !AParameters.Get("param_chkCommitmentStatus").ToBool()
+                    new OdbcParameter("param_field_sending_unset", OdbcType.Bit) {
+                        Value = AParameters.Get("param_field_sending").IsZeroOrNull()
                     },
-                    TDbListParameterValue.OdbcListParameterValue("param_grdCommitmentStatusChoices",
+                    new OdbcParameter("param_field_sending", OdbcType.Int) {
+                        Value = AParameters.Get("param_field_sending").ToInt32()
+                    },
+                    new OdbcParameter("param_field_receiving_unset", OdbcType.Bit) {
+                        Value = AParameters.Get("param_field_receiving").IsZeroOrNull()
+                    },
+                    new OdbcParameter("param_field_receiving", OdbcType.Int) {
+                        Value = AParameters.Get("param_field_receiving").ToInt32()
+                    },
+
+                    new OdbcParameter("param_consider_commitment_status_not", OdbcType.Bit) {
+                        Value = !AParameters.Get("param_consider_commitment_status").ToBool()
+                    },
+                    TDbListParameterValue.OdbcListParameterValue("param_commitment_status_choices",
                         OdbcType.NChar,
-                        param_grdCommitmentStatusChoices),
-                    new OdbcParameter("param_chkCommitmentStatusOthers", OdbcType.Bit) {
-                        Value = AParameters.Get("param_chkCommitmentStatusOthers").ToBool()
+                        param_commitment_status_choices),
+                    new OdbcParameter("param_include_no_commitment_status", OdbcType.Bit) {
+                        Value = AParameters.Get("param_include_no_commitment_status").ToBool()
                     },
 
-                    new OdbcParameter("param_chkPartnerActive_not", OdbcType.Bit) {
-                        Value = !AParameters.Get("param_chkPartnerActive").ToBool()
+                    new OdbcParameter("param_active_not", OdbcType.Bit) {
+                        Value = !AParameters.Get("param_active").ToBool()
                     },
-
-/*                    new OdbcParameter("param_chkMailable_not", OdbcType.Bit) { Value = !AParameters.Get("param_chkMailable").ToBool() },*/
-                    new OdbcParameter("param_chkRespectNoSolicitors_not", OdbcType.Bit) {
-                        Value = !AParameters.Get("param_chkRespectNoSolicitors").ToBool()
+/*                    new OdbcParameter("param_mailing_addresses_only_not", OdbcType.Bit) { Value = !AParameters.Get("param_mailing_addresses_only").ToBool() },*/
+                    new OdbcParameter("param_exclude_no_solicitations_not", OdbcType.Bit) {
+                        Value = !AParameters.Get("param_exclude_no_solicitations").ToBool()
                     },
                 };
 

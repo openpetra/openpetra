@@ -82,19 +82,19 @@ namespace Ict.Petra.Server.MPartner.queries
                 {
                     TDbListParameterValue.OdbcListParameterValue("specialtype", OdbcType.NChar, param_explicit_specialtypes),
                     new OdbcParameter("param_dateFieldsIncluded", OdbcType.Bit) {
-                        Value = !AParameters.Get("param_dateSet").IsZeroOrNull()
+                        Value = !AParameters.Get("param_date_set").IsZeroOrNull()
                     },
                     new OdbcParameter("Date", OdbcType.Date) {
-                        Value = AParameters.Get("param_dateSet").ToDate()
+                        Value = AParameters.Get("param_date_set").ToDate()
                     },
                     new OdbcParameter("param_active", OdbcType.Bit) {
                         Value = AParameters.Get("param_active").ToBool()
                     },
-                    new OdbcParameter("param_familiesOnly", OdbcType.Bit) {
-                        Value = AParameters.Get("param_familiesOnly").ToBool()
+                    new OdbcParameter("param_families_only", OdbcType.Bit) {
+                        Value = AParameters.Get("param_families_only").ToBool()
                     },
-                    new OdbcParameter("param_excludeNoSolicitations", OdbcType.Bit) {
-                        Value = AParameters.Get("param_excludeNoSolicitations").ToBool()
+                    new OdbcParameter("param_exclude_no_solicitations", OdbcType.Bit) {
+                        Value = AParameters.Get("param_exclude_no_solicitations").ToBool()
                     },
                 };
 
