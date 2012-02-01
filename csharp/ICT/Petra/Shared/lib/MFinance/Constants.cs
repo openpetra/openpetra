@@ -268,6 +268,9 @@ namespace Ict.Petra.Shared.MFinance
 
         /// Budget Forecast Types
         public const string FORECAST_TYPE_ACTUALS = "Actuals";
+
+        /// Email File Code Types
+        public const string EMAIL_FILE_CODE_STEWARDSHIP = "STEWARDSHIP";
     }
 
     /// <summary>

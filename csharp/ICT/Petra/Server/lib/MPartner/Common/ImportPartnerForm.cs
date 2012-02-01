@@ -446,7 +446,7 @@ namespace Ict.Petra.Server.MPartner.Import
             // load the language file for the specific country
             Catalog.Init(ACountryCode, ACountryCode);
 
-            // send email
+            // send emai
             TSmtpSender emailSender = new TSmtpSender();
 
             MailMessage msg = new MailMessage(SenderAddress,
