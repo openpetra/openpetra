@@ -92,8 +92,6 @@ CachedTables:
                 PtVisionArea: {Comment="Contains the areas a person may have vision for, e.g. children's work or a particular country"}
                 PtVisionLevel: {Comment="Contains the levels  to which a vision is possessed, e.g. a possibility, do nothing else"}
                 PtOutreachPreferenceLevel: {Comment=Describes the importance of the country and target choices}
-                PtSkillCategory: {Comment="Contains the categories describing person's skills"}
-                PtSkillLevel: {Comment="Contains the levels to which a skill is possessed"}
 
     Finance:
         Finance:

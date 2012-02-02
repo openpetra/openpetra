@@ -28,6 +28,10 @@ using System.IO;
 
 namespace Ict.Tools.DevelopersAssistant
 {
+    /// <summary>
+    /// A class that maintains local settings between user sessions by reading and writing the settings to a file.
+    /// It uses its own simple text-based serialisation
+    /// </summary>
     public class SettingsDictionary : SortedDictionary <string, string>
     {
         /// <summary>

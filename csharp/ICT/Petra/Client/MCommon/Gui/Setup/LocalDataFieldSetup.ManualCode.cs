@@ -310,7 +310,8 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             // And now we can set up our context-specific view and override the original binding to the grid
             // that the generated code did earlier
             // Note that we do not use the table.defaultView property but we create a new view specifically for our context
-            DataView contextView = new DataView(FMainDS.PDataLabel, "Context=" + ((int)CurrentContext).ToString(), "", DataViewRowState.CurrentRows);
+            // The rows are sorted by Group and code(text)
+            DataView contextView = new DataView(FMainDS.PDataLabel, "Context=" + ((int)CurrentContext).ToString(), "p_group_c, p_text_c", DataViewRowState.CurrentRows);
             contextView.AllowNew = false;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(contextView);
             grdDetails.Refresh();

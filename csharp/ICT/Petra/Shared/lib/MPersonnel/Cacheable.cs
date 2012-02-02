@@ -176,16 +176,6 @@ namespace Ict.Petra.Shared.MPersonnel
         /// <summary>
         /// Describes the importance of the country and target choices
         /// </summary>
-        OutreachPreferenceLevelList,
-
-        /// <summary>
-        /// Contains the categories describing person's skills
-        /// </summary>
-        SkillCategoryList,
-
-        /// <summary>
-        /// Contains the levels to which a skill is possessed
-        /// </summary>
-        SkillLevelList
+        OutreachPreferenceLevelList
     };
 }
