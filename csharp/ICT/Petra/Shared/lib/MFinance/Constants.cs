@@ -39,6 +39,12 @@ namespace Ict.Petra.Shared.MFinance
         /// <summary>Currency select: International</summary>
         public const string CURRENCY_INTERNATIONAL = "I";
 
+        /// <summary>Currency select: Base</summary>
+        public const int CURRENCY_BASE_NUM = 1;
+
+        /// <summary>Currency select: International</summary>
+        public const int CURRENCY_INTERNATIONAL_NUM = 2;
+
         /// <summary>GL Batch</summary>
         public const String BATCH_UNPOSTED = "Unposted";
 
@@ -208,6 +214,12 @@ namespace Ict.Petra.Shared.MFinance
 
         /// standard account
         public const string ICH_SETTLEMENT_ACCT = "5601";
+
+        /// ICH accounts
+        public const string ICH_ACCT_DEPOSITS_WITH_ICH = "8540";
+
+        /// ICH accounts
+        public const string ICH_ACCT_LOCAL_LEDGER = "8520";
 
         /// standard account
         public const string ICH_ACCT = "8500";
