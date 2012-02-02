@@ -72,15 +72,15 @@ namespace Ict.Tools.DevelopersAssistant
             PopulateCombos();
 
             this.Text = Program.APP_TITLE;
-            cboCodeGeneration.SelectedIndex = _localSettings.CodeGenerationComboID;;
-            cboCompilation.SelectedIndex = _localSettings.CompilationComboID;;
-            cboMiscellaneous.SelectedIndex = _localSettings.MiscellaneousComboID;;
-            cboDatabase.SelectedIndex = _localSettings.DatabaseComboID;;
-            chkAutoStartServer.Checked = _localSettings.AutoStartServer;;
-            chkAutoStopServer.Checked = _localSettings.AutoStopServer;;
-            chkMinimizeServer.Checked = _localSettings.MinimiseServerAtStartup;;
-            chkTreatWarningsAsErrors.Checked = _localSettings.TreatWarningsAsErrors;;
-            txtBranchLocation.Text = _localSettings.BranchLocation;;
+            cboCodeGeneration.SelectedIndex = _localSettings.CodeGenerationComboID;
+            cboCompilation.SelectedIndex = _localSettings.CompilationComboID;
+            cboMiscellaneous.SelectedIndex = _localSettings.MiscellaneousComboID;
+            cboDatabase.SelectedIndex = _localSettings.DatabaseComboID;
+            chkAutoStartServer.Checked = _localSettings.AutoStartServer;
+            chkAutoStopServer.Checked = _localSettings.AutoStopServer;
+            chkMinimizeServer.Checked = _localSettings.MinimiseServerAtStartup;
+            chkTreatWarningsAsErrors.Checked = _localSettings.TreatWarningsAsErrors;
+            txtBranchLocation.Text = _localSettings.BranchLocation;
             txtYAMLPath.Text = _localSettings.YAMLLocation;
             txtFlashAfterSeconds.Text = _localSettings.FlashAfterSeconds.ToString();
             txtBazaarPath.Text = _localSettings.BazaarPath;
