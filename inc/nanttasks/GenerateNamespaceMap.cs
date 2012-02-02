@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -135,7 +135,7 @@ namespace Ict.Tools.NAntTasks
         /// </summary>
         protected override void ExecuteTask()
         {
-            Dictionary <string, string>map = new Dictionary <string, string>();
+            Dictionary <string, string>NamespaceMap = new Dictionary <string, string>();
             Dictionary <string, TDetailsOfDll>UsingMap = new Dictionary <string, TDetailsOfDll>();
 
             string[] csfiles = Directory.GetFiles(FCodeRootDir, "*.cs", SearchOption.AllDirectories);
@@ -147,14 +147,35 @@ namespace Ict.Tools.NAntTasks
                     continue;
                 }
 
-                ParseCSFile(map, UsingMap, csfile);
+                ParseCSFile(NamespaceMap, UsingMap, csfile);
             }
 
-            WriteMap(FNamespaceMapFilename, map);
+            // fix all namespaces where the dll/exe is called differently than the namespace calculated from the directory
+            bool change = true;
+
+            while (change)
+            {
+                change = false;
+
+                foreach (string key in NamespaceMap.Keys)
+                {
+                    if (UsingMap.ContainsKey(NamespaceMap[key])
+                        && (UsingMap[NamespaceMap[key]].OutputName.Length > 0)
+                        && (NamespaceMap[key] != UsingMap[NamespaceMap[key]].OutputName))
+                    {
+                        NamespaceMap[key] = UsingMap[NamespaceMap[key]].OutputName;
+                        change = true;
+                        break;
+                    }
+                }
+            }
 
             Dictionary <string, string>ThirdPartyMap = ReadMap(FNamespaceMap3rdParty);
+            Dictionary <string, TDetailsOfDll>dllMap = UsingNamespaceMapToDll(NamespaceMap, ThirdPartyMap, UsingMap, FShowWarnings);
 
-            WriteMap(FDependencyMapFilename, UsingNamespaceMapToDll(map, ThirdPartyMap, UsingMap, FShowWarnings));
+            WriteNamespaceMap(FNamespaceMapFilename, NamespaceMap);
+
+            WriteProjectMap(FDependencyMapFilename, dllMap);
         }
 
         private bool IgnoreNamespace(string ANamespace)
@@ -354,7 +375,7 @@ namespace Ict.Tools.NAntTasks
                     {
                         string dllname = NamespaceMap[usingNamespace];
 
-                        if ((dllname != key) && !DetailsOfDll.ReferencedDlls.Contains(dllname))
+                        if ((dllname != key) && !DetailsOfDll.ReferencedDlls.Contains(dllname) && (DetailsOfDll.OutputName != dllname))
                         {
                             DetailsOfDll.ReferencedDlls.Add(dllname);
                         }
@@ -387,7 +408,7 @@ namespace Ict.Tools.NAntTasks
             return Result;
         }
 
-        private void WriteMap(string filename, Dictionary <string, string>map)
+        private void WriteNamespaceMap(string filename, Dictionary <string, string>map)
         {
             // If the directory does not exist, we have to create it
             string dirname = Path.GetDirectoryName(filename);
@@ -411,7 +432,7 @@ namespace Ict.Tools.NAntTasks
             sw.Close();
         }
 
-        private void WriteMap(string filename, Dictionary <string, TDetailsOfDll>map)
+        private void WriteProjectMap(string filename, Dictionary <string, TDetailsOfDll>map)
         {
             // If the directory does not exist, we have to create it
             string dirname = Path.GetDirectoryName(filename);

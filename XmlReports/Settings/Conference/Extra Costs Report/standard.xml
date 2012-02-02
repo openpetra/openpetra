@@ -1,32 +1,32 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="systemsettings" value="True" />
-  <Parameter id="xmlfiles" value="Conference\\extracostsreport.xml,Conference\\conference.xml" />
-  <Parameter id="currentReport" value="Extra Costs Report" />
-  <Parameter id="MaxDisplayColumns" value="6" />
-  <Parameter id="param_conferenceselection" value="one conference" />
-  <Parameter id="param_attendeeselection" value="all attendees" />
-  <Parameter id="param_partnerkey" value="0" />
-  <Parameter id="param_conferencekey" value="0" />
-  <Parameter id="param_conferencename" value="" />
-  <Parameter id="param_extractname" value="" />
-  <Parameter id="orderby0" value="Cost Type" />
-  <Parameter id="orderby1" value="Amount" />
-  <Parameter id="orderby2" value="Partner Name" />
-  <Parameter id="param_sortby_readable" value="Cost Type, Amount, Partner Name" />
-  <Parameter id="param_sortby_columns" value="0,1,2" />
-  <Parameter id="param_selectedfieldkeys" value="" />
-  <Parameter id="param_chargedfields" value="All Fields" />
-  <Parameter id="param_calculation" column="0" value="Partner Name" />
-  <Parameter id="ColumnWidth" column="0" value="5" />
-  <Parameter id="param_calculation" column="1" value="Cost Type" />
-  <Parameter id="ColumnWidth" column="1" value="3.5" />
-  <Parameter id="param_calculation" column="2" value="Amount" />
-  <Parameter id="ColumnWidth" column="2" value="2" />
-  <Parameter id="param_calculation" column="3" value="Authorising Field" />
-  <Parameter id="ColumnWidth" column="3" value="3" />
-  <Parameter id="param_calculation" column="4" value="Authorising Person" />
-  <Parameter id="ColumnWidth" column="4" value="3" />
-  <Parameter id="param_calculation" column="5" value="Cost Type Comment" />
-  <Parameter id="ColumnWidth" column="5" value="8" />
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:Conference\\extracostsreport.xml,Conference\\conference.xml" />
+  <Parameter id="currentReport" value="eString:Extra Costs Report" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:6" />
+  <Parameter id="param_conferenceselection" value="eString:one conference" />
+  <Parameter id="param_attendeeselection" value="eString:all attendees" />
+  <Parameter id="param_partnerkey" value="eInteger:0" />
+  <Parameter id="param_conferencekey" value="eInteger:0" />
+  <Parameter id="param_conferencename" value="eString:" />
+  <Parameter id="param_extractname" value="eString:" />
+  <Parameter id="orderby0" value="eString:Cost Type" />
+  <Parameter id="orderby1" value="eString:Amount" />
+  <Parameter id="orderby2" value="eString:Partner Name" />
+  <Parameter id="param_sortby_readable" value="eString:Cost Type, Amount, Partner Name" />
+  <Parameter id="param_sortby_columns" value="eString:0,1,2" />
+  <Parameter id="param_selectedfieldkeys" value="eString:" />
+  <Parameter id="param_chargedfields" value="eString:All Fields" />
+  <Parameter id="param_calculation" column="0" value="eString:Partner Name" />
+  <Parameter id="ColumnWidth" column="0" value="eInteger:5" />
+  <Parameter id="param_calculation" column="1" value="eString:Cost Type" />
+  <Parameter id="ColumnWidth" column="1" value="eDecimal:4615063718147915776" />
+  <Parameter id="param_calculation" column="2" value="eString:Amount" />
+  <Parameter id="ColumnWidth" column="2" value="eInteger:2" />
+  <Parameter id="param_calculation" column="3" value="eString:Authorising Field" />
+  <Parameter id="ColumnWidth" column="3" value="eInteger:3" />
+  <Parameter id="param_calculation" column="4" value="eString:Authorising Person" />
+  <Parameter id="ColumnWidth" column="4" value="eInteger:3" />
+  <Parameter id="param_calculation" column="5" value="eString:Cost Type Comment" />
+  <Parameter id="ColumnWidth" column="5" value="eInteger:8" />
 </Parameters>

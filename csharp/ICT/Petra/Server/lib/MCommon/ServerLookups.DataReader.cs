@@ -310,7 +310,7 @@ namespace Ict.Petra.Server.MCommon.DataReader
                     else if (ATablename == PMailingTable.GetTableDBName())
                     {
                         if (PMailingAccess.SubmitChanges((PMailingTable)ASubmitTable, SubmitChangesTransaction,
-                                 out SingleVerificationResultCollection))
+                                out SingleVerificationResultCollection))
                         {
                             SubmissionResult = TSubmitChangesResult.scrOK;
                         }
@@ -322,7 +322,7 @@ namespace Ict.Petra.Server.MCommon.DataReader
                     else if (ATablename == PtAppFormTypesTable.GetTableDBName())
                     {
                         if (PtAppFormTypesAccess.SubmitChanges((PtAppFormTypesTable)ASubmitTable, SubmitChangesTransaction,
-                                                               out SingleVerificationResultCollection))
+                                out SingleVerificationResultCollection))
                         {
                             SubmissionResult = TSubmitChangesResult.scrOK;
                         }
@@ -334,7 +334,7 @@ namespace Ict.Petra.Server.MCommon.DataReader
                     else if (ATablename == PmDocumentTypeTable.GetTableDBName())
                     {
                         if (PmDocumentTypeAccess.SubmitChanges((PmDocumentTypeTable)ASubmitTable, SubmitChangesTransaction,
-                                                               out SingleVerificationResultCollection))
+                                out SingleVerificationResultCollection))
                         {
                             SubmissionResult = TSubmitChangesResult.scrOK;
                         }
@@ -346,7 +346,7 @@ namespace Ict.Petra.Server.MCommon.DataReader
                     else if (ATablename == SGroupTable.GetTableDBName())
                     {
                         if (SGroupAccess.SubmitChanges((SGroupTable)ASubmitTable, SubmitChangesTransaction,
-                                                               out SingleVerificationResultCollection))
+                                out SingleVerificationResultCollection))
                         {
                             SubmissionResult = TSubmitChangesResult.scrOK;
                         }

@@ -1,36 +1,36 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="systemsettings" value="True" />
-  <Parameter id="xmlfiles" value="Personnel\\startofcommitmentreport.xml,Personnel\\personnel.xml" />
-  <Parameter id="currentReport" value="Start of Commitment Report" />
-  <Parameter id="MaxDisplayColumns" value="8" />
-  <Parameter id="param_dtpStartDate" value="#20100622#" />
-  <Parameter id="param_dtpEndDate" value="#20100622#" />
-  <Parameter id="param_chkSelectedStatus" value="false" />
-  <Parameter id="param_chkNoSelectedStatus" value="false" />
-  <Parameter id="orderby0" value="Start Date" />
-  <Parameter id="orderby1" value="End Date" />
-  <Parameter id="orderby2" value="Partner Name" />
-  <Parameter id="param_sortby_readable" value="Start Date, End Date, Partner Name" />
-  <Parameter id="param_calculation" column="8" value="Start Date" />
-  <Parameter id="param_calculation" column="9" value="End Date" />
-  <Parameter id="param_calculation" column="10" value="Partner Name" />
-  <Parameter id="param_sortby_columns" value="8,9,10" />
-  <Parameter id="param_calculation" column="0" value="Start Date" />
-  <Parameter id="ColumnWidth" column="0" value="2" />
-  <Parameter id="param_calculation" column="1" value="End Date" />
-  <Parameter id="ColumnWidth" column="1" value="2" />
-  <Parameter id="param_calculation" column="2" value="Field Name" />
-  <Parameter id="ColumnWidth" column="2" value="2" />
-  <Parameter id="param_calculation" column="3" value="Commitment Status" />
-  <Parameter id="ColumnWidth" column="3" value="3" />
-  <Parameter id="param_calculation" column="4" value="Partner Name" />
-  <Parameter id="ColumnWidth" column="4" value="4" />
-  <Parameter id="param_calculation" column="5" value="Partner Key" />
-  <Parameter id="ColumnWidth" column="5" value="2" />
-  <Parameter id="param_calculation" column="6" value="Partner Address" />
-  <Parameter id="ColumnWidth" column="6" value="10" />
-  <Parameter id="param_calculation" column="7" value="Telephone" />
-  <Parameter id="ColumnWidth" column="7" value="2" />
-  <Parameter id="param_today" value="#20100622#" />
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:Personnel\\startofcommitmentreport.xml,Personnel\\personnel.xml" />
+  <Parameter id="currentReport" value="eString:Start of Commitment Report" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:8" />
+  <Parameter id="param_dtpStartDate" value="eDateTime:&quot;2010-06-22T00:00:00&quot;" />
+  <Parameter id="param_dtpEndDate" value="eDateTime:&quot;2010-06-22T00:00:00&quot;" />
+  <Parameter id="param_chkSelectedStatus" value="eString:false" />
+  <Parameter id="param_chkNoSelectedStatus" value="eString:false" />
+  <Parameter id="orderby0" value="eString:Start Date" />
+  <Parameter id="orderby1" value="eString:End Date" />
+  <Parameter id="orderby2" value="eString:Partner Name" />
+  <Parameter id="param_sortby_readable" value="eString:Start Date, End Date, Partner Name" />
+  <Parameter id="param_calculation" column="8" value="eString:Start Date" />
+  <Parameter id="param_calculation" column="9" value="eString:End Date" />
+  <Parameter id="param_calculation" column="10" value="eString:Partner Name" />
+  <Parameter id="param_sortby_columns" value="eString:8,9,10" />
+  <Parameter id="param_calculation" column="0" value="eString:Start Date" />
+  <Parameter id="ColumnWidth" column="0" value="eInteger:2" />
+  <Parameter id="param_calculation" column="1" value="eString:End Date" />
+  <Parameter id="ColumnWidth" column="1" value="eInteger:2" />
+  <Parameter id="param_calculation" column="2" value="eString:Field Name" />
+  <Parameter id="ColumnWidth" column="2" value="eInteger:2" />
+  <Parameter id="param_calculation" column="3" value="eString:Commitment Status" />
+  <Parameter id="ColumnWidth" column="3" value="eInteger:3" />
+  <Parameter id="param_calculation" column="4" value="eString:Partner Name" />
+  <Parameter id="ColumnWidth" column="4" value="eInteger:4" />
+  <Parameter id="param_calculation" column="5" value="eString:Partner Key" />
+  <Parameter id="ColumnWidth" column="5" value="eInteger:2" />
+  <Parameter id="param_calculation" column="6" value="eString:Partner Address" />
+  <Parameter id="ColumnWidth" column="6" value="eInteger:10" />
+  <Parameter id="param_calculation" column="7" value="eString:Telephone" />
+  <Parameter id="ColumnWidth" column="7" value="eInteger:2" />
+  <Parameter id="param_today" value="eDateTime:&quot;2010-06-22T00:00:00&quot;" />
 </Parameters>

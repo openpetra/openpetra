@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -872,21 +872,24 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 FTemplate.AddToCodelet("USINGNAMESPACES", "");
             }
 
+            SortedList <string, TTable>DataSetTables = null;
+
             // load the dataset if there is a dataset defined for this screen. this allows us to reference customtables and custom fields
-            if (FCodeStorage.HasAttribute("DatasetType") && (TDataBinding.FDatasetTables == null))
+            if (FCodeStorage.HasAttribute("DatasetType"))
             {
-                TDataBinding.FDatasetTables = TDataBinding.LoadDatasetTables(CSParser.ICTPath, FCodeStorage.GetAttribute("DatasetType"), FCodeStorage);
+                DataSetTables = TDataBinding.LoadDatasetTables(CSParser.ICTPath, FCodeStorage.GetAttribute("DatasetType"), FCodeStorage);
             }
             else
             {
                 TDataBinding.FCodeStorage = FCodeStorage;
+                TDataBinding.ResetCurrentDataset();
             }
 
             if (FCodeStorage.HasAttribute("MasterTable"))
             {
-                if ((TDataBinding.FDatasetTables != null) && TDataBinding.FDatasetTables.ContainsKey(FCodeStorage.GetAttribute("MasterTable")))
+                if ((DataSetTables != null) && DataSetTables.ContainsKey(FCodeStorage.GetAttribute("MasterTable")))
                 {
-                    TTable table = TDataBinding.FDatasetTables[FCodeStorage.GetAttribute("MasterTable")];
+                    TTable table = DataSetTables[FCodeStorage.GetAttribute("MasterTable")];
                     FTemplate.AddToCodelet("MASTERTABLE", table.strVariableNameInDataset);
                     FTemplate.AddToCodelet("MASTERTABLETYPE", table.strDotNetName);
                 }
@@ -912,9 +915,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (FCodeStorage.HasAttribute("DetailTable"))
             {
-                if ((TDataBinding.FDatasetTables != null) && TDataBinding.FDatasetTables.ContainsKey(FCodeStorage.GetAttribute("DetailTable")))
+                if ((DataSetTables != null) && DataSetTables.ContainsKey(FCodeStorage.GetAttribute("DetailTable")))
                 {
-                    TTable table = TDataBinding.FDatasetTables[FCodeStorage.GetAttribute("DetailTable")];
+                    TTable table = DataSetTables[FCodeStorage.GetAttribute("DetailTable")];
                     FTemplate.AddToCodelet("DETAILTABLE", table.strVariableNameInDataset);
                     FTemplate.AddToCodelet("DETAILTABLETYPE", table.strDotNetName);
                 }

@@ -24,6 +24,7 @@ app.config
 _bin
 obj
 *.yaml.xml
+*.yml.xml
 *.cs.error
 *.error
 *.new

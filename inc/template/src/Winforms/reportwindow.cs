@@ -32,7 +32,8 @@ namespace {#NAMESPACE}
   public partial class {#CLASSNAME}: System.Windows.Forms.Form, {#INTERFACENAME}
   {
     private {#UTILOBJECTCLASS} FPetraUtilsObject;
-      
+    private Boolean FCalledFromExtracts = false;
+    
     /// <summary>
     /// constructor
     /// </summary>
@@ -52,7 +53,15 @@ namespace {#NAMESPACE}
       
       FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentForm, this, stbMain);
 
+{#IFDEF CALCULATEFROMMETHOD}
+      FPetraUtilsObject.FCalculateFromMethod = "{#CALCULATEFROMMETHOD}";
+{#ENDIF CALCULATEFROMMETHOD}
+{#IFDEF ISOLATIONLEVEL}
+      FPetraUtilsObject.FIsolationLevel = "{#ISOLATIONLEVEL}";
+{#ENDIF ISOLATIONLEVEL}
+{#IFDEF XMLFILES}
       FPetraUtilsObject.FXMLFiles = "{#XMLFILES}";
+{#ENDIF XMLFILES}
       FPetraUtilsObject.FReportName = "{#REPORTNAME}";
       FPetraUtilsObject.FCurrentReport = "{#CURRENTREPORT}";
       FPetraUtilsObject.FSettingsDirectory = "{#REPORTSETTINGSDIRECTORY}";
@@ -77,6 +86,21 @@ namespace {#NAMESPACE}
     private void TFrmPetra_Closed(object sender, EventArgs e)
     {
     }
+
+    /// helper object for the whole screen
+    public Boolean CalledFromExtracts
+    {
+        get
+        {
+            return FCalledFromExtracts;
+        }
+
+        set
+        {
+            FCalledFromExtracts = value;
+        }
+    }
+    
 #region Parameter/Settings Handling
     /** 
        Reads the selected values from the controls, and stores them into the parameter system of FCalculator
@@ -128,6 +152,15 @@ namespace {#NAMESPACE}
     /// </summary>
     public void RunOnceOnActivation()
     {
+        if (CalledFromExtracts)
+        {
+            tbbGenerateReport.Visible = false;
+        }
+        else
+        {
+            tbbGenerateExtract.Visible = false;
+        }
+        
         {#RUNONCEONACTIVATIONMANUAL}
         {#RUNONCEINTERFACEIMPLEMENTATION}
     }

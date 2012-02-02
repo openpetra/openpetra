@@ -164,9 +164,11 @@
         <if test="${DBMS.Type=='postgresql'}">
             <if test="${platform::is-unix()}">
                 <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE USER ${DBMS.UserName} WITH CREATEDB PASSWORD '${DBMS.Password}';" database="template1" failonerror="false" username="postgres"/>
+                <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE DATABASE ${DBMS.DBName} WITH OWNER=${DBMS.UserName};" database="template1" username="${DBMS.UserName}" password="${DBMS.Password}"/>
             </if>
             <if test="${platform::is-windows()}">
-                <fail message="Please manually add a user with username ${DBMS.UserName} and password ${DBMS.Password} in pgAdmin"/>
+                <echo message="If this fails, make sure you have already manually created a database user in pgAdmin, username ${DBMS.UserName} and password ${DBMS.Password}, that has permissions to create databases."/>
+                <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE DATABASE ${DBMS.DBName} WITH OWNER=${DBMS.UserName};" database="template1" username="${DBMS.UserName}" password="${DBMS.Password}"/>               
             </if>
         </if>
     </target>
@@ -180,21 +182,14 @@
         <if test="${DBMS.Type=='postgresql'}">
             <if test="${platform::is-unix()}">
                 <echo message="If this fails, make sure you have already called nant createDatabaseUser"/>
-                <exec program="dropdb" commandline="--username=${DBMS.UserName} ${DBMS.DBName}" failonerror="false">
-                    <environment>
-                        <variable name="PGPASSWORD" value="${DBMS.Password}"/>
-                    </environment>
-                </exec>
-                <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE DATABASE ${DBMS.DBName} WITH OWNER=${DBMS.UserName};" database="template1" username="${DBMS.UserName}" password="${DBMS.Password}"/>
                 <echo message="you need to add the following line at the top of your pg_hba.conf file (eg. /etc/postgresql/9.1/main/pg_hba.conf) and restart postgresql: "/>
                 <echo message="local   all             ${DBMS.UserName}     md5"/>
             </if>
             <if test="${platform::is-windows()}">
-                <echo message="If this fails, make sure you have already manually created a database user in pgAdmin, username ${DBMS.UserName} and password ${DBMS.Password}, that has permissions to create databases."/>
-                <psql exe="${PostgreSQL.exe}" sqlcommand="DROP DATABASE IF EXISTS ${DBMS.DBName};" database="template1" username="${DBMS.UserName}" password="${DBMS.Password}"/>
-                <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE DATABASE ${DBMS.DBName} WITH OWNER=${DBMS.UserName};" database="template1" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+                <echo message="If this fails, make sure you have already called nant createDatabaseUser"/>
             </if>
 
+            <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra_remove.sql" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
             <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
         </if>
         <if test="${DBMS.Type=='mysql'}">

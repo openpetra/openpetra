@@ -1,21 +1,21 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="systemsettings" value="True" />
-  <Parameter id="xmlfiles" value="Conference\\agesummaryreport.xml,Conference\\conference.xml" />
-  <Parameter id="currentReport" value="Age Summary Report" />
-  <Parameter id="MaxDisplayColumns" value="5" />
-  <Parameter id="param_conferenceselection" value="one conference" />
-  <Parameter id="param_attendeeselection" value="all attendees" />
-  <Parameter id="param_partnerkey" value="0" />
-  <Parameter id="param_extractname" value="" />
-  <Parameter id="param_calculation" column="0" value="Age" />
-  <Parameter id="ColumnWidth" column="0" value="2" />
-  <Parameter id="param_calculation" column="1" value="Total" />
-  <Parameter id="ColumnWidth" column="1" value="2" />
-  <Parameter id="param_calculation" column="2" value="Female" />
-  <Parameter id="ColumnWidth" column="2" value="2" />
-  <Parameter id="param_calculation" column="3" value="Male" />
-  <Parameter id="ColumnWidth" column="3" value="2" />
-  <Parameter id="param_calculation" column="4" value="Other" />
-  <Parameter id="ColumnWidth" column="4" value="2" />
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:Conference\\agesummaryreport.xml,Conference\\conference.xml" />
+  <Parameter id="currentReport" value="eString:Age Summary Report" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:5" />
+  <Parameter id="param_conferenceselection" value="eString:one conference" />
+  <Parameter id="param_attendeeselection" value="eString:all attendees" />
+  <Parameter id="param_partnerkey" value="eInteger:0" />
+  <Parameter id="param_extractname" value="eString:" />
+  <Parameter id="param_calculation" column="0" value="eString:Age" />
+  <Parameter id="ColumnWidth" column="0" value="eInteger:2" />
+  <Parameter id="param_calculation" column="1" value="eString:Total" />
+  <Parameter id="ColumnWidth" column="1" value="eInteger:2" />
+  <Parameter id="param_calculation" column="2" value="eString:Female" />
+  <Parameter id="ColumnWidth" column="2" value="eInteger:2" />
+  <Parameter id="param_calculation" column="3" value="eString:Male" />
+  <Parameter id="ColumnWidth" column="3" value="eInteger:2" />
+  <Parameter id="param_calculation" column="4" value="eString:Other" />
+  <Parameter id="ColumnWidth" column="4" value="eInteger:2" />
 </Parameters>

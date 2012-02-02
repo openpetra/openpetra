@@ -733,6 +733,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     ctrl.GetAttribute("OnChange"));
             }
 
+            if (ctrl.HasAttribute("OnEnter"))
+            {
+                AssignEventHandlerToControl(writer, ctrl,
+                    "Enter",
+                    "System.EventHandler",
+                    ctrl.GetAttribute("OnEnter"));
+            }
+
             if (ctrl.HasAttribute("OnLeave"))
             {
                 AssignEventHandlerToControl(writer, ctrl,

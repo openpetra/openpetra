@@ -119,6 +119,11 @@ namespace Ict.Petra.Server.MReporting.LogicConnectors
                     // for financial reports: it is important to have consistent data; e.g. for totals
                     DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.RepeatableRead);
                 }
+                else if (FParameterList.Get("IsolationLevel").ToString().ToLower() == "serializable")
+                {
+                    // for creating extracts: we need to write to the database
+                    DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+                }
                 else
                 {
                     // default behaviour for normal reports

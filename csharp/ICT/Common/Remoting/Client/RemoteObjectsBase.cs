@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,6 +22,8 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Generic;
+using System.Runtime.Remoting;
 using Ict.Common;
 using Ict.Common.Remoting.Shared;
 
@@ -49,11 +51,29 @@ namespace Ict.Common.Remoting.Client
         private static IClientManagerInterface UClientManager;
 
         /// <summary>
+        /// list of the main remoted objects
+        /// </summary>
+        protected static List <MarshalByRefObject>FRemoteObjects = new List <MarshalByRefObject>();
+
+        /// <summary>
         /// constructor
         /// </summary>
         public TRemoteBase(IClientManagerInterface AClientManager)
         {
             UClientManager = AClientManager;
+        }
+
+        /// <summary>
+        /// disconnect the remoted objects
+        /// </summary>
+        public static void Disconnect()
+        {
+            RemotingServices.Disconnect((MarshalByRefObject)UClientManager);
+
+            foreach (MarshalByRefObject obj in FRemoteObjects)
+            {
+                RemotingServices.Disconnect(obj);
+            }
         }
     }
 }

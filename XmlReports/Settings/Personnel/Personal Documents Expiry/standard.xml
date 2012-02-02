@@ -1,30 +1,30 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="systemsettings" value="True" />
-  <Parameter id="xmlfiles" value="Personnel\\personaldocumentexpiryreport.xml,Personnel\\personnel.xml" />
-  <Parameter id="currentReport" value="Personal Documents Expiry Report" />
-  <Parameter id="MaxDisplayColumns" value="7" />
-  <Parameter id="param_selection" value="one partner" />
-  <Parameter id="param_extract" value="" />
-  <Parameter id="param_partnerkey" value="0" />
-  <Parameter id="orderby0" value="Expiry Date" />
-  <Parameter id="orderby1" value="Document Type" />
-  <Parameter id="orderby2" value="Partner Name" />
-  <Parameter id="param_sortby_readable" value="Expiry Date, Document Type, Partner Name" />
-  <Parameter id="param_sortby_columns" value="4,5,6" />
-  <Parameter id="param_chkUseDates" value="false" />
-  <Parameter id="param_calculation" column="0" value="Partner Name" />
-  <Parameter id="ColumnWidth" column="0" value="5" />
-  <Parameter id="param_calculation" column="1" value="Partner Key" />
-  <Parameter id="ColumnWidth" column="1" value="3" />
-  <Parameter id="param_calculation" column="2" value="Document Type" />
-  <Parameter id="ColumnWidth" column="2" value="3" />
-  <Parameter id="param_calculation" column="3" value="Start Date" />
-  <Parameter id="ColumnWidth" column="3" value="2" />
-  <Parameter id="param_calculation" column="4" value="Expiry Date" />
-  <Parameter id="ColumnWidth" column="4" value="2" />
-  <Parameter id="param_calculation" column="5" value="Document ID" />
-  <Parameter id="ColumnWidth" column="5" value="2.5" />
-  <Parameter id="param_calculation" column="6" value="Associated Document" />
-  <Parameter id="ColumnWidth" column="6" value="4" />
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:Personnel\\personaldocumentexpiryreport.xml,Personnel\\personnel.xml" />
+  <Parameter id="currentReport" value="eString:Personal Documents Expiry Report" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:7" />
+  <Parameter id="param_selection" value="eString:one partner" />
+  <Parameter id="param_extract" value="eString:" />
+  <Parameter id="param_partnerkey" value="eInteger:0" />
+  <Parameter id="orderby0" value="eString:Expiry Date" />
+  <Parameter id="orderby1" value="eString:Document Type" />
+  <Parameter id="orderby2" value="eString:Partner Name" />
+  <Parameter id="param_sortby_readable" value="eString:Expiry Date, Document Type, Partner Name" />
+  <Parameter id="param_sortby_columns" value="eString:4,5,6" />
+  <Parameter id="param_chkUseDates" value="eString:false" />
+  <Parameter id="param_calculation" column="0" value="eString:Partner Name" />
+  <Parameter id="ColumnWidth" column="0" value="eInteger:5" />
+  <Parameter id="param_calculation" column="1" value="eString:Partner Key" />
+  <Parameter id="ColumnWidth" column="1" value="eInteger:3" />
+  <Parameter id="param_calculation" column="2" value="eString:Document Type" />
+  <Parameter id="ColumnWidth" column="2" value="eInteger:3" />
+  <Parameter id="param_calculation" column="3" value="eString:Start Date" />
+  <Parameter id="ColumnWidth" column="3" value="eInteger:2" />
+  <Parameter id="param_calculation" column="4" value="eString:Expiry Date" />
+  <Parameter id="ColumnWidth" column="4" value="eInteger:2" />
+  <Parameter id="param_calculation" column="5" value="eString:Document ID" />
+  <Parameter id="ColumnWidth" column="5" value="eDecimal:4612811918334230528" />
+  <Parameter id="param_calculation" column="6" value="eString:Associated Document" />
+  <Parameter id="ColumnWidth" column="6" value="eInteger:4" />
 </Parameters>

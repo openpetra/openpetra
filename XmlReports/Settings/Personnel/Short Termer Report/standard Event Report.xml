@@ -1,50 +1,50 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="systemsettings" value="True" />
-  <Parameter id="xmlfiles" value="Personnel\\generalshorttermerreport.xml,Personnel\\shorttermerreport.xml" />
-  <Parameter id="currentReport" value="Short Termer Report" />
-  <Parameter id="MaxDisplayColumns" value="9" />
-  <Parameter id="param_source" value="Event" />
-  <Parameter id="param_event_selection" value="this" />
-  <Parameter id="param_event_code" value="" />
-  <Parameter id="param_event_name" value="" />
-  <Parameter id="param_extract_name" value="" />
-  <Parameter id="param_conference_code" value="" />
-  <Parameter id="param_unit_key" value="" />
-  <Parameter id="param_application_status_accepted" value="true" />
-  <Parameter id="param_application_status_cancelled" value="false" />
-  <Parameter id="param_application_status_enquiry" value="false" />
-  <Parameter id="param_application_status_hold" value="false" />
-  <Parameter id="param_application_status_rejected" value="false" />
-  <Parameter id="orderby0" value="Application Status" />
-  <Parameter id="orderby1" value="Accepted by Serving Field" />
-  <Parameter id="orderby2" value="Partner Name" />
-  <Parameter id="param_sortby_readable" value="Application Status, Accepted by Serving Field, Partner Name" />
-  <Parameter id="param_calculation" column="9" value="Application Status" />
-  <Parameter id="param_calculation" column="10" value="Accepted by Serving Field" />
-  <Parameter id="param_calculation" column="11" value="Partner Name" />
-  <Parameter id="param_sortby_columns" value="9,10,11" />
-  <Parameter id="param_hide_empty_lines" value="false" />
-  <Parameter id="param_print_two_lines" value="false" />
-  <Parameter id="param_calculation" column="0" value="Application Status" />
-  <Parameter id="ColumnWidth" column="0" value="1.5" />
-  <Parameter id="param_calculation" column="1" value="Accepted by Serving Field" />
-  <Parameter id="ColumnWidth" column="1" value="2" />
-  <Parameter id="param_calculation" column="2" value="Event Code" />
-  <Parameter id="ColumnWidth" column="2" value="3" />
-  <Parameter id="param_calculation" column="3" value="Event Preference 1 Code" />
-  <Parameter id="ColumnWidth" column="3" value="3" />
-  <Parameter id="param_calculation" column="4" value="Event Preference 2 Code" />
-  <Parameter id="ColumnWidth" column="4" value="3" />
-  <Parameter id="param_calculation" column="5" value="Partner Key" />
-  <Parameter id="ColumnWidth" column="5" value="2" />
-  <Parameter id="param_calculation" column="6" value="Partner Name" />
-  <Parameter id="ColumnWidth" column="6" value="4" />
-  <Parameter id="param_calculation" column="7" value="Nationality" />
-  <Parameter id="ColumnWidth" column="7" value="2" />
-  <Parameter id="param_calculation" column="8" value="Conference Role" />
-  <Parameter id="ColumnWidth" column="8" value="3" />
-  <Parameter id="param_address_detail" value="false" />
-  <Parameter id="param_passport_detail" value="true" />
-  <Parameter id="param_church_detail" value="false" />
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:Personnel\\generalshorttermerreport.xml,Personnel\\shorttermerreport.xml" />
+  <Parameter id="currentReport" value="eString:Short Termer Report" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:9" />
+  <Parameter id="param_source" value="eString:Event" />
+  <Parameter id="param_event_selection" value="eString:this" />
+  <Parameter id="param_event_code" value="eString:" />
+  <Parameter id="param_event_name" value="eString:" />
+  <Parameter id="param_extract_name" value="eString:" />
+  <Parameter id="param_conference_code" value="eString:" />
+  <Parameter id="param_unit_key" value="eString:" />
+  <Parameter id="param_application_status_accepted" value="eString:true" />
+  <Parameter id="param_application_status_cancelled" value="eString:false" />
+  <Parameter id="param_application_status_enquiry" value="eString:false" />
+  <Parameter id="param_application_status_hold" value="eString:false" />
+  <Parameter id="param_application_status_rejected" value="eString:false" />
+  <Parameter id="orderby0" value="eString:Application Status" />
+  <Parameter id="orderby1" value="eString:Accepted by Serving Field" />
+  <Parameter id="orderby2" value="eString:Partner Name" />
+  <Parameter id="param_sortby_readable" value="eString:Application Status, Accepted by Serving Field, Partner Name" />
+  <Parameter id="param_calculation" column="9" value="eString:Application Status" />
+  <Parameter id="param_calculation" column="10" value="eString:Accepted by Serving Field" />
+  <Parameter id="param_calculation" column="11" value="eString:Partner Name" />
+  <Parameter id="param_sortby_columns" value="eString:9,10,11" />
+  <Parameter id="param_hide_empty_lines" value="eString:false" />
+  <Parameter id="param_print_two_lines" value="eString:false" />
+  <Parameter id="param_calculation" column="0" value="eString:Application Status" />
+  <Parameter id="ColumnWidth" column="0" value="eDecimal:4609434218613702656" />
+  <Parameter id="param_calculation" column="1" value="eString:Accepted by Serving Field" />
+  <Parameter id="ColumnWidth" column="1" value="eInteger:2" />
+  <Parameter id="param_calculation" column="2" value="eString:Event Code" />
+  <Parameter id="ColumnWidth" column="2" value="eInteger:3" />
+  <Parameter id="param_calculation" column="3" value="eString:Event Preference 1 Code" />
+  <Parameter id="ColumnWidth" column="3" value="eInteger:3" />
+  <Parameter id="param_calculation" column="4" value="eString:Event Preference 2 Code" />
+  <Parameter id="ColumnWidth" column="4" value="eInteger:3" />
+  <Parameter id="param_calculation" column="5" value="eString:Partner Key" />
+  <Parameter id="ColumnWidth" column="5" value="eInteger:2" />
+  <Parameter id="param_calculation" column="6" value="eString:Partner Name" />
+  <Parameter id="ColumnWidth" column="6" value="eInteger:4" />
+  <Parameter id="param_calculation" column="7" value="eString:Nationality" />
+  <Parameter id="ColumnWidth" column="7" value="eInteger:2" />
+  <Parameter id="param_calculation" column="8" value="eString:Conference Role" />
+  <Parameter id="ColumnWidth" column="8" value="eInteger:3" />
+  <Parameter id="param_address_detail" value="eString:false" />
+  <Parameter id="param_passport_detail" value="eString:true" />
+  <Parameter id="param_church_detail" value="eString:false" />
 </Parameters>
