@@ -72,15 +72,15 @@ namespace Ict.Tools.DevelopersAssistant
             PopulateCombos();
 
             this.Text = Program.APP_TITLE;
-            cboCodeGeneration.SelectedIndex = _localSettings.CodeGenerationComboID; ;
-            cboCompilation.SelectedIndex = _localSettings.CompilationComboID; ;
-            cboMiscellaneous.SelectedIndex = _localSettings.MiscellaneousComboID; ;
-            cboDatabase.SelectedIndex = _localSettings.DatabaseComboID; ;
-            chkAutoStartServer.Checked = _localSettings.AutoStartServer; ;
-            chkAutoStopServer.Checked = _localSettings.AutoStopServer; ;
-            chkMinimizeServer.Checked = _localSettings.MinimiseServerAtStartup; ;
-            chkTreatWarningsAsErrors.Checked = _localSettings.TreatWarningsAsErrors; ;
-            txtBranchLocation.Text = _localSettings.BranchLocation; ;
+            cboCodeGeneration.SelectedIndex = _localSettings.CodeGenerationComboID;;
+            cboCompilation.SelectedIndex = _localSettings.CompilationComboID;;
+            cboMiscellaneous.SelectedIndex = _localSettings.MiscellaneousComboID;;
+            cboDatabase.SelectedIndex = _localSettings.DatabaseComboID;;
+            chkAutoStartServer.Checked = _localSettings.AutoStartServer;;
+            chkAutoStopServer.Checked = _localSettings.AutoStopServer;;
+            chkMinimizeServer.Checked = _localSettings.MinimiseServerAtStartup;;
+            chkTreatWarningsAsErrors.Checked = _localSettings.TreatWarningsAsErrors;;
+            txtBranchLocation.Text = _localSettings.BranchLocation;;
             txtYAMLPath.Text = _localSettings.YAMLLocation;
             txtFlashAfterSeconds.Text = _localSettings.FlashAfterSeconds.ToString();
             txtBazaarPath.Text = _localSettings.BazaarPath;
@@ -523,7 +523,7 @@ namespace Ict.Tools.DevelopersAssistant
 
             txtOutput.Text = (chkVerbose.Checked) ? OutputText.VerboseOutput : OutputText.ConciseOutput;
 
-            if ((NumFailures > 0) || (NumWarnings > 0 && chkTreatWarningsAsErrors.Checked))
+            if ((NumFailures > 0) || ((NumWarnings > 0) && chkTreatWarningsAsErrors.Checked))
             {
                 tabControl.SelectedTab = OutputPage;
                 chkVerbose.Checked = true;
@@ -656,7 +656,8 @@ namespace Ict.Tools.DevelopersAssistant
             _localSettings.TreatWarningsAsErrors = chkTreatWarningsAsErrors.Checked;
             _localSettings.YAMLLocation = txtYAMLPath.Text;
 
-            _localSettings.ContentHeader = String.Format("; Settings file for Open Petra Developer's Assistant\r\n; Application {0}\r\n", lblVersion.Text);
+            _localSettings.ContentHeader = String.Format("; Settings file for Open Petra Developer's Assistant\r\n; Application {0}\r\n",
+                lblVersion.Text);
             _localSettings.Save();
         }
 
@@ -683,24 +684,31 @@ namespace Ict.Tools.DevelopersAssistant
                     case Keys.G | Keys.Control:
                         btnCodeGeneration_Click(null, null);
                         return true;
+
                     case Keys.I | Keys.Control:
                         btnCompilation_Click(null, null);
                         return true;
+
                     case Keys.M | Keys.Control:
                         btnMiscellaneous_Click(null, null);
                         return true;
+
                     case Keys.O | Keys.Control:
                         btnStartClient_Click(null, null);
                         return true;
+
                     case Keys.R | Keys.Control:
                         linkLabelRestartServer_LinkClicked(null, null);
                         return true;
+
                     case Keys.S | Keys.Control:
                         linkLabelStartServer_LinkClicked(null, null);
                         return true;
+
                     case Keys.Y | Keys.Control:
                         btnGenerateWinform_Click(null, null);
                         return true;
+
                     case Keys.Z | Keys.Control:
                         linkLabelBazaar_LinkClicked(null, null);
                         return true;
@@ -745,7 +753,7 @@ namespace Ict.Tools.DevelopersAssistant
 
                 txtOutput.Text = (chkVerbose.Checked) ? OutputText.VerboseOutput : OutputText.ConciseOutput;
 
-                if ((NumFailures > 0) || (NumWarnings > 0 && chkTreatWarningsAsErrors.Checked))
+                if ((NumFailures > 0) || ((NumWarnings > 0) && chkTreatWarningsAsErrors.Checked))
                 {
                     tabControl.SelectedTab = OutputPage;
                     chkVerbose.Checked = true;
@@ -771,7 +779,7 @@ namespace Ict.Tools.DevelopersAssistant
 
                 txtOutput.Text = (chkVerbose.Checked) ? OutputText.VerboseOutput : OutputText.ConciseOutput;
 
-                if ((NumFailures > 0) || (NumWarnings > 0 && chkTreatWarningsAsErrors.Checked))
+                if ((NumFailures > 0) || ((NumWarnings > 0) && chkTreatWarningsAsErrors.Checked))
                 {
                     tabControl.SelectedTab = OutputPage;
                     chkVerbose.Checked = true;
@@ -806,7 +814,7 @@ namespace Ict.Tools.DevelopersAssistant
 
             txtOutput.Text = (chkVerbose.Checked) ? OutputText.VerboseOutput : OutputText.ConciseOutput;
 
-            if ((NumFailures > 0) || (NumWarnings > 0 && chkTreatWarningsAsErrors.Checked))
+            if ((NumFailures > 0) || ((NumWarnings > 0) && chkTreatWarningsAsErrors.Checked))
             {
                 tabControl.SelectedTab = OutputPage;
                 chkVerbose.Checked = true;
@@ -843,7 +851,7 @@ namespace Ict.Tools.DevelopersAssistant
 
             txtOutput.Text = (chkVerbose.Checked) ? OutputText.VerboseOutput : OutputText.ConciseOutput;
 
-            if ((NumFailures > 0) || (NumWarnings > 0 && chkTreatWarningsAsErrors.Checked))
+            if ((NumFailures > 0) || ((NumWarnings > 0) && chkTreatWarningsAsErrors.Checked))
             {
                 tabControl.SelectedTab = OutputPage;
                 chkVerbose.Checked = true;
@@ -885,7 +893,7 @@ namespace Ict.Tools.DevelopersAssistant
 
             txtOutput.Text = (chkVerbose.Checked) ? OutputText.VerboseOutput : OutputText.ConciseOutput;
 
-            if ((NumFailures > 0) || (NumWarnings > 0 && chkTreatWarningsAsErrors.Checked))
+            if ((NumFailures > 0) || ((NumWarnings > 0) && chkTreatWarningsAsErrors.Checked))
             {
                 tabControl.SelectedTab = OutputPage;
                 chkVerbose.Checked = true;
@@ -948,7 +956,7 @@ namespace Ict.Tools.DevelopersAssistant
 
             txtOutput.Text = (chkVerbose.Checked) ? OutputText.VerboseOutput : OutputText.ConciseOutput;
 
-            if ((NumFailures > 0) || (NumWarnings > 0 && chkTreatWarningsAsErrors.Checked))
+            if ((NumFailures > 0) || ((NumWarnings > 0) && chkTreatWarningsAsErrors.Checked))
             {
                 tabControl.SelectedTab = OutputPage;
                 chkVerbose.Checked = true;
@@ -990,7 +998,7 @@ namespace Ict.Tools.DevelopersAssistant
 
             txtOutput.Text = (chkVerbose.Checked) ? OutputText.VerboseOutput : OutputText.ConciseOutput;
 
-            if ((NumFailures > 0) || (NumWarnings > 0 && chkTreatWarningsAsErrors.Checked))
+            if ((NumFailures > 0) || ((NumWarnings > 0) && chkTreatWarningsAsErrors.Checked))
             {
                 tabControl.SelectedTab = OutputPage;
                 chkVerbose.Checked = true;
@@ -1031,7 +1039,7 @@ namespace Ict.Tools.DevelopersAssistant
 
             txtOutput.Text = (chkVerbose.Checked) ? OutputText.VerboseOutput : OutputText.ConciseOutput;
 
-            if ((NumFailures > 0) || (NumWarnings > 0 && chkTreatWarningsAsErrors.Checked))
+            if ((NumFailures > 0) || ((NumWarnings > 0) && chkTreatWarningsAsErrors.Checked))
             {
                 tabControl.SelectedTab = OutputPage;
                 chkVerbose.Checked = true;
@@ -1073,7 +1081,7 @@ namespace Ict.Tools.DevelopersAssistant
 
             txtOutput.Text = (chkVerbose.Checked) ? OutputText.VerboseOutput : OutputText.ConciseOutput;
 
-            if ((NumFailures > 0) || (NumWarnings > 0 && chkTreatWarningsAsErrors.Checked))
+            if ((NumFailures > 0) || ((NumWarnings > 0) && chkTreatWarningsAsErrors.Checked))
             {
                 tabControl.SelectedTab = OutputPage;
                 chkVerbose.Checked = true;
@@ -1255,7 +1263,7 @@ namespace Ict.Tools.DevelopersAssistant
                         break;
                 }
 
-                if ((NumFailures > 0) || (NumWarnings > 0 && chkTreatWarningsAsErrors.Checked))
+                if ((NumFailures > 0) || ((NumWarnings > 0) && chkTreatWarningsAsErrors.Checked))
                 {
                     bShowOutputTab = true;
                 }
@@ -1290,24 +1298,37 @@ namespace Ict.Tools.DevelopersAssistant
             _currentWarning = -1;
             lblWarnings.Text = String.Format("{0} failed, {1} errors/warnings", OutputText.ErrorCount, OutputText.WarningCount);
             SetWarningButtons();
-            if (btnNextWarning.Enabled) btnNextWarning_Click(null, null);
+
+            if (btnNextWarning.Enabled)
+            {
+                btnNextWarning_Click(null, null);
+            }
         }
 
         private void btnBrowseBazaar_Click(object sender, EventArgs e)
         {
             string x86 = Environment.GetEnvironmentVariable("ProgramFiles(x86)", EnvironmentVariableTarget.Process);
-            if (x86 == null) x86 = Environment.GetEnvironmentVariable("ProgramFiles", EnvironmentVariableTarget.Process);
+
+            if (x86 == null)
+            {
+                x86 = Environment.GetEnvironmentVariable("ProgramFiles", EnvironmentVariableTarget.Process);
+            }
 
             OpenFileDialog dlg = new OpenFileDialog();
             dlg.Title = "Browse for the Bazaar Explorer Application";
             dlg.FileName = "bzrw.exe";
             dlg.Filter = "Applications|*.exe";
             dlg.CheckFileExists = true;
+
             if (x86 != null)
             {
                 dlg.InitialDirectory = x86;
             }
-            if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.Cancel) return;
+
+            if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
+            {
+                return;
+            }
 
             txtBazaarPath.Text = dlg.FileName;
             linkLabelBazaar.Enabled = true;
@@ -1351,22 +1372,38 @@ namespace Ict.Tools.DevelopersAssistant
             {
                 // We will try and find it
                 string x86 = Environment.GetEnvironmentVariable("ProgramFiles(x86)", EnvironmentVariableTarget.Process);
-                if (x86 == null) x86 = Environment.GetEnvironmentVariable("ProgramFiles", EnvironmentVariableTarget.Process);
-                if (x86 == null) return;
+
+                if (x86 == null)
+                {
+                    x86 = Environment.GetEnvironmentVariable("ProgramFiles", EnvironmentVariableTarget.Process);
+                }
+
+                if (x86 == null)
+                {
+                    return;
+                }
 
                 try
                 {
                     string[] tryPath = Directory.GetFiles(x86, "bzrw.exe", SearchOption.AllDirectories);
-                    if (tryPath == null || tryPath.Length < 1) return;
+
+                    if ((tryPath == null) || (tryPath.Length < 1))
+                    {
+                        return;
+                    }
+
                     txtBazaarPath.Text = tryPath[0];
                     linkLabelBazaar.Enabled = true;
                 }
                 catch (Exception ex)
                 {
                     string msg = "The Assistant could not verify the location of bzrw.exe - the Windows executable for the Bazaar Explorer.  ";
-                    msg += String.Format("The Assistant searched the folders beneath '{0}' but the following error was generated: {1}", x86, ex.Message);
+                    msg += String.Format("The Assistant searched the folders beneath '{0}' but the following error was generated: {1}",
+                        x86,
+                        ex.Message);
                     msg += (Environment.NewLine + Environment.NewLine);
-                    msg += "You should select the Options Tab on the Assistant main window and click the small browse button to manually locate the bzrw.exe file.  ";
+                    msg +=
+                        "You should select the Options Tab on the Assistant main window and click the small browse button to manually locate the bzrw.exe file.  ";
                     msg += "This will prevent this message from being displayed again.";
                     MessageBox.Show(msg, Program.APP_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
                     txtBazaarPath.Text = String.Empty;
@@ -1378,7 +1415,11 @@ namespace Ict.Tools.DevelopersAssistant
         {
             if (chkVerbose.Checked)
             {
-                return String.Format("{0} failed, {1} errors/warnings : Showing {2} of {3}", OutputText.ErrorCount, OutputText.WarningCount, _currentWarning + 1, _warnings.Count);
+                return String.Format("{0} failed, {1} errors/warnings : Showing {2} of {3}",
+                    OutputText.ErrorCount,
+                    OutputText.WarningCount,
+                    _currentWarning + 1,
+                    _warnings.Count);
             }
             else
             {

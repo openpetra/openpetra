@@ -57,13 +57,17 @@ namespace Ict.Tools.DevelopersAssistant
             public int SelLength;
         }
 
-        static Comparison<ErrorItem> ErrorItemComparisonDelegate = OnErrorItemSort;
+        static Comparison <ErrorItem>ErrorItemComparisonDelegate = OnErrorItemSort;
 
         static private string _conciseOutput = "";
         static private string _verboseOutput = "";
 
-        static public int WarningCount { get; private set; }
-        static public int ErrorCount { get; private set; }
+        static public int WarningCount {
+            get; private set;
+        }
+        static public int ErrorCount {
+            get; private set;
+        }
 
         /// <summary>
         /// Gets the concise output string
@@ -155,34 +159,45 @@ namespace Ict.Tools.DevelopersAssistant
         public static List <ErrorItem>FindWarnings()
         {
             List <ErrorItem>list = new List <ErrorItem>();
-            string[] candidates = { "BUILD FAILED", "error", "warning", "exception" };
+            string[] candidates =
+            {
+                "BUILD FAILED", "error", "warning", "exception"
+            };
             bool bIsValid = false;
             int itemID = 0;
+
             foreach (string lookFor in candidates)
             {
                 int p = 0;
+
                 while (p >= 0)
                 {
                     p = _verboseOutput.IndexOf(lookFor, p, StringComparison.InvariantCultureIgnoreCase);
+
                     if (p >= 0)
                     {
                         bIsValid = true;
-                        if (itemID == 1 || itemID == 2)
+
+                        if ((itemID == 1) || (itemID == 2))
                         {
                             // error and warning must not be plural because this is just a repeat of what we know already
-                            bIsValid = (_verboseOutput.Substring(p + lookFor.Length, 3).CompareTo("(s)") != 0 && _verboseOutput.Substring(p + lookFor.Length, 1).CompareTo("s") != 0);
+                            bIsValid =
+                                (_verboseOutput.Substring(p + lookFor.Length,
+                                3).CompareTo("(s)") != 0 && _verboseOutput.Substring(p + lookFor.Length, 1).CompareTo("s") != 0);
                         }
                         else if (itemID == 3)
                         {
                             // exception must not be ExceptionDetailsDialog
                             bIsValid = (_verboseOutput.LastIndexOf('\\', p, 24) == -1 && _verboseOutput.IndexOf("DetailsDialog", p, 24) == -1);
                         }
+
                         if (bIsValid)
                         {
                             ErrorItem ei = new ErrorItem();
                             ei.Position = p;
                             ei.SelLength = lookFor.Length;
                             list.Add(ei);
+
                             if (itemID == 0)
                             {
                                 ErrorCount++;
@@ -192,9 +207,11 @@ namespace Ict.Tools.DevelopersAssistant
                                 WarningCount++;
                             }
                         }
+
                         p++;
                     }
                 }
+
                 itemID++;
             }
 
@@ -253,33 +270,48 @@ namespace Ict.Tools.DevelopersAssistant
             }
 
             // Finally we note the number of 'suspicious' entries
-            string[] candidates = { "error", "warning", "exception" };
+            string[] candidates =
+            {
+                "error", "warning", "exception"
+            };
             int itemID = 0;
+
             foreach (string lookFor in candidates)
             {
                 p = 0;
+
                 while (p >= 0)
                 {
                     p = TextToParse.IndexOf(lookFor, p, StringComparison.InvariantCultureIgnoreCase);
+
                     if (p > 0)
                     {
-                        if (itemID == 0 || itemID == 1)
+                        if ((itemID == 0) || (itemID == 1))
                         {
                             // error and warning must not be plural
-                            if (TextToParse.Substring(p + lookFor.Length, 3).CompareTo("(s)") != 0 && TextToParse.Substring(p + lookFor.Length, 1).CompareTo("s") != 0) NumWarnings++;
+                            if ((TextToParse.Substring(p + lookFor.Length,
+                                     3).CompareTo("(s)") != 0) && (TextToParse.Substring(p + lookFor.Length, 1).CompareTo("s") != 0))
+                            {
+                                NumWarnings++;
+                            }
                         }
                         else if (itemID == 2)
                         {
                             // exception must not refer to ExceptionDetailsDialog
-                            if (TextToParse.LastIndexOf('\\', p, 24) == -1 && TextToParse.IndexOf("DetailsDialog", p, 24) == -1) NumWarnings++;
+                            if ((TextToParse.LastIndexOf('\\', p, 24) == -1) && (TextToParse.IndexOf("DetailsDialog", p, 24) == -1))
+                            {
+                                NumWarnings++;
+                            }
                         }
                         else
                         {
                             NumWarnings++;
                         }
+
                         p++;
                     }
                 }
+
                 itemID++;
             }
         }

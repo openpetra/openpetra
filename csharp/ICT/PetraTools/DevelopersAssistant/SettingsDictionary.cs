@@ -28,92 +28,123 @@ using System.IO;
 
 namespace Ict.Tools.DevelopersAssistant
 {
-    
-    public class SettingsDictionary : SortedDictionary<string, string>
+    public class SettingsDictionary : SortedDictionary <string, string>
     {
         /// <summary>
         /// Sets the header content that is written to the settings file
         /// </summary>
-        public string ContentHeader { private get; set; }
+        public string ContentHeader {
+            private get; set;
+        }
 
         /// <summary>
         /// The alternate multi-task sequence
         /// </summary>
-        public string AltSequence { get; set; }
+        public string AltSequence {
+            get; set;
+        }
 
         /// <summary>
         /// The path to bzrw.exe that runs Bazaar
         /// </summary>
-        public string BazaarPath { get; set; }
+        public string BazaarPath {
+            get; set;
+        }
 
         /// <summary>
         /// The path to the current branch folder
         /// </summary>
-        public string BranchLocation { get; set; }
+        public string BranchLocation {
+            get; set;
+        }
 
         /// <summary>
         /// The delimited list of my preferred database build configurations
         /// </summary>
-        public string DbBuildConfigurations { get; set; }
+        public string DbBuildConfigurations {
+            get; set;
+        }
 
         /// <summary>
         /// The multi-task sequence
         /// </summary>
-        public string Sequence { get; set; }
+        public string Sequence {
+            get; set;
+        }
 
         /// <summary>
         /// The path to the current working YAML file
         /// </summary>
-        public string YAMLLocation { get; set; }
+        public string YAMLLocation {
+            get; set;
+        }
 
 
         /// <summary>
         /// The selected index for the code generation combo box
         /// </summary>
-        public int CodeGenerationComboID { get; set; }
+        public int CodeGenerationComboID {
+            get; set;
+        }
 
         /// <summary>
         /// The selected index for the compilation combo box
         /// </summary>
-        public int CompilationComboID { get; set; }
+        public int CompilationComboID {
+            get; set;
+        }
 
         /// <summary>
         /// The selected index for the database combo box
         /// </summary>
-        public int DatabaseComboID { get; set; }
+        public int DatabaseComboID {
+            get; set;
+        }
 
         /// <summary>
         /// The number of seconds a task must run for before flashing the application window on completeion of a task
         /// </summary>
-        public uint FlashAfterSeconds { get; set; }
+        public uint FlashAfterSeconds {
+            get; set;
+        }
 
         /// <summary>
         /// The selected index for the miscellaneous combo box
         /// </summary>
-        public int MiscellaneousComboID { get; set; }
+        public int MiscellaneousComboID {
+            get; set;
+        }
 
 
         /// <summary>
         /// True if the Assistant should automatically start the server if the current task needs it to run
         /// </summary>
-        public bool AutoStartServer { get; set; }
+        public bool AutoStartServer {
+            get; set;
+        }
 
         /// <summary>
         /// True if the Assistant should stop the server if the current task requires it to be stopped
         /// </summary>
-        public bool AutoStopServer { get; set; }
+        public bool AutoStopServer {
+            get; set;
+        }
 
         /// <summary>
         /// True if the Assistant should start the server minimised
         /// </summary>
-        public bool MinimiseServerAtStartup { get; set; }
+        public bool MinimiseServerAtStartup {
+            get; set;
+        }
 
         /// <summary>
         /// True if the Assistant should show the Output tab if the task completes successfully but with warnings/errors
         /// </summary>
-        public bool TreatWarningsAsErrors { get; set; }
+        public bool TreatWarningsAsErrors {
+            get; set;
+        }
 
-        
+
         // Private members
         private string _path;       // path to local settings file
         private string _applicationVersion;
@@ -220,33 +251,37 @@ namespace Ict.Tools.DevelopersAssistant
             this["TreatWarningsAsErrors"] = TreatWarningsAsErrors ? "1" : "0";
 
             // Add our appVersion key/value
-            if (!this.ContainsKey("ApplicationVersion")) this.Add("ApplicationVersion", _applicationVersion);
+            if (!this.ContainsKey("ApplicationVersion"))
+            {
+                this.Add("ApplicationVersion", _applicationVersion);
+            }
 
             // Now do the low-level save of the file
             DoFileSave(_path);
         }
 
         /***************************************************************************************************************************************
-         * 
+         *
          * Helpers that handle the raw saving and loading
-         * 
+         *
          * ************************************************************************************************************************************/
         private void DoFileSave(string path)
         {
             // Save each key/value pair
             using (StreamWriter sw = new StreamWriter(path))
             {
-                if (ContentHeader != String.Empty) 
+                if (ContentHeader != String.Empty)
                 {
                     sw.Write(ContentHeader);
                     sw.WriteLine();
                 }
 
-                foreach (KeyValuePair<string,string> kvp in this)
+                foreach (KeyValuePair <string, string>kvp in this)
                 {
                     string s = String.Format("{0} = {1}", kvp.Key, kvp.Value);
                     sw.WriteLine(s);
                 }
+
                 sw.WriteLine();
                 sw.Close();
             }
@@ -254,7 +289,10 @@ namespace Ict.Tools.DevelopersAssistant
 
         private void DoFileLoad(string path)
         {
-            if (!File.Exists(path)) return;
+            if (!File.Exists(path))
+            {
+                return;
+            }
 
             // Note that we load all key/values - even ones that we have not actually specified as public properties of the class
             // So any that were in the original file are preserved
@@ -265,14 +303,17 @@ namespace Ict.Tools.DevelopersAssistant
                     // Read each line and split it on the = sign
                     // Ignore blank lines and any lines starting with ;
                     string s = sr.ReadLine();
+
                     if (s.Length > 0)
                     {
                         string[] items = s.Split('=');
+
                         if (items.Length == 2)
                         {
                             string s1 = items[0].Trim();
                             string s2 = items[1].Trim();
-                            if (s1.Length > 0 && s2.Length > 0 && !s1.StartsWith(";"))
+
+                            if ((s1.Length > 0) && (s2.Length > 0) && !s1.StartsWith(";"))
                             {
                                 if (this.ContainsKey(s1))
                                 {
@@ -288,6 +329,7 @@ namespace Ict.Tools.DevelopersAssistant
                         }
                     }
                 }
+
                 sr.Close();
             }
         }
