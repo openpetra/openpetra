@@ -81,7 +81,7 @@ namespace Ict.Tools.GenerateExtJsForms
             foreach (string file in System.IO.Directory.GetFiles(ADirName, "*.yaml"))
             {
                 string baseyaml;
-                
+
                 if (TYml2Xml.ReadHeader(file, out baseyaml))
                 {
                     if (!AbstractFiles.Contains(baseyaml))
