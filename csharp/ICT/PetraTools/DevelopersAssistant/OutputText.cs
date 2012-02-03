@@ -183,7 +183,7 @@ namespace Ict.Tools.DevelopersAssistant
                             // error and warning must not be plural because this is just a repeat of what we know already
                             bIsValid =
                                 (_verboseOutput.Substring(p + lookFor.Length,
-                                3).CompareTo("(s)") != 0 && _verboseOutput.Substring(p + lookFor.Length, 1).CompareTo("s") != 0);
+                                     3).CompareTo("(s)") != 0 && _verboseOutput.Substring(p + lookFor.Length, 1).CompareTo("s") != 0);
                         }
                         else if (itemID == 3)
                         {

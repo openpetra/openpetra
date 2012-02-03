@@ -311,7 +311,8 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             // that the generated code did earlier
             // Note that we do not use the table.defaultView property but we create a new view specifically for our context
             // The rows are sorted by Group and code(text)
-            DataView contextView = new DataView(FMainDS.PDataLabel, "Context=" + ((int)CurrentContext).ToString(), "p_group_c, p_text_c", DataViewRowState.CurrentRows);
+            DataView contextView = new DataView(FMainDS.PDataLabel,
+                "Context=" + ((int)CurrentContext).ToString(), "p_group_c, p_text_c", DataViewRowState.CurrentRows);
             contextView.AllowNew = false;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(contextView);
             grdDetails.Refresh();
