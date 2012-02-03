@@ -321,7 +321,7 @@
                      sqlcommand="SELECT 'DROP TABLE ' || n.nspname || '.' || c.relname || ' CASCADE;' FROM pg_catalog.pg_class AS c LEFT JOIN pg_catalog.pg_namespace AS n ON n.oid = c.relnamespace WHERE relkind = 'r' AND n.nspname NOT IN ('pg_catalog', 'pg_toast') AND pg_catalog.pg_table_is_visible(c.oid)" 
                      outputfile="${tempfile}"
                      database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
-            <psql exe="${PostgreSQL.exe}" sqlfile="${tempfile}" database="${DBMS.DBName}" password="${DBMS.Password}"/>
+            <psql exe="${PostgreSQL.exe}" sqlfile="${tempfile}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
             <delete file="${tempfile}" if="${file::exists(tempfile)}"/>
 
             <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra_withoutConstraints.sql" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
