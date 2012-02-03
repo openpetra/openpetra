@@ -397,6 +397,8 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             TControlDef ctrl = FCodeStorage.GetRootControl(prefix);
 
             AddResourceString(FTemplate, "FORMCAPTION", ctrl, FCodeStorage.FFormTitle);
+            AddResourceString(FTemplate, "FORMCAPTIONPage", ctrl, "page");
+            AddResourceString(FTemplate, "FORMCAPTIONOf", ctrl, "of");
 
             InsertControl(ctrl, FTemplate, "FORMITEMSDEFINITION", "Controls", this);
 

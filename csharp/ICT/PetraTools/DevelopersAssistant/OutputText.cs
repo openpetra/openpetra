@@ -53,12 +53,21 @@ namespace Ict.Tools.DevelopersAssistant
         /// </summary>
         public struct ErrorItem
         {
-            public int Severity;
             public int Position;
+            public int SelLength;
         }
+
+        static Comparison <ErrorItem>ErrorItemComparisonDelegate = OnErrorItemSort;
 
         static private string _conciseOutput = "";
         static private string _verboseOutput = "";
+
+        static public int WarningCount {
+            get; private set;
+        }
+        static public int ErrorCount {
+            get; private set;
+        }
 
         /// <summary>
         /// Gets the concise output string
@@ -86,6 +95,8 @@ namespace Ict.Tools.DevelopersAssistant
         {
             _conciseOutput = String.Empty;
             _verboseOutput = String.Empty;
+            WarningCount = 0;
+            ErrorCount = 0;
         }
 
         /// <summary>
@@ -112,9 +123,9 @@ namespace Ict.Tools.DevelopersAssistant
         /// The main call to read and parse a log file, given its path.
         /// </summary>
         /// <param name="path">Path to the logfile to parse and append the result to the output streams</param>
-        /// <param name="NumFailed">Return the number of failures</param>
-        /// <param name="NumWarnings">Return the number of warnings</param>
-        static public void AddLogFileOutput(string path, ref int NumFailed, ref int NumWarnings)
+        /// <param name="NumFailures">Return the number of failed builds</param>
+        /// <param name="NumWarnings">Return the number of warnings and/or errors</param>
+        static public void AddLogFileOutput(string path, ref int NumFailures, ref int NumWarnings)
         {
             string result = ReadStreamFile(path);
 
@@ -126,80 +137,86 @@ namespace Ict.Tools.DevelopersAssistant
             else
             {
                 int NumSucceeded;
-                ParseOutput(result, out NumSucceeded, ref NumFailed, ref NumWarnings);
+                ParseOutput(result, out NumSucceeded, ref NumFailures, ref NumWarnings);
 
                 AppendText(OutputStream.Verbose, result + "\r\n");
                 AppendText(OutputStream.Both,
-                    String.Format("~~~~~~~ {0} succeeded, {1} failed, {2} warnings\r\n\r\n", NumSucceeded, NumFailed, NumWarnings));
+                    String.Format("~~~~~~~ {0} succeeded, {1} failed, {2} warning(s) or error(s)\r\n\r\n", NumSucceeded, NumFailures, NumWarnings));
 
                 File.Delete(path);
             }
         }
 
+        public static int OnErrorItemSort(ErrorItem item1, ErrorItem item2)
+        {
+            return (item1.Position > item2.Position) ? 1 : (item1.Position == item2.Position) ? 0 : -1;
+        }
+
         /// <summary>
         /// Parse the complete verbose output text looking for errors and warnings
         /// </summary>
-        /// <returns>Return a list of error item structs that are the cursor positions for 'warning ' or 'BUILD FAILED' in the verbose output</returns>
+        /// <returns>Returns a sorted list of error item structs that are the cursor positions for 'warning ' or ' error' in the verbose output</returns>
         public static List <ErrorItem>FindWarnings()
         {
             List <ErrorItem>list = new List <ErrorItem>();
-            int pWarning = 0;
-            int pError = 0;
-
-            while (pWarning >= 0 || pError >= 0)
+            string[] candidates =
             {
-                ErrorItem ei = new ErrorItem();
-                bool bAddWarning = false;
-                bool bAddError = false;
+                "BUILD FAILED", "error", "warning", "exception"
+            };
+            bool bIsValid = false;
+            int itemID = 0;
 
-                if (pWarning >= 0)
-                {
-                    pWarning = _verboseOutput.IndexOf("warning ", pWarning, StringComparison.InvariantCultureIgnoreCase);
-                }
+            foreach (string lookFor in candidates)
+            {
+                int p = 0;
 
-                if (pError >= 0)
+                while (p >= 0)
                 {
-                    pError = _verboseOutput.IndexOf("error ", pError, StringComparison.InvariantCultureIgnoreCase);
-                }
+                    p = _verboseOutput.IndexOf(lookFor, p, StringComparison.InvariantCultureIgnoreCase);
 
-                if ((pWarning >= 0) && (pError >= 0))
-                {
-                    // we have both
-                    if (pWarning < pError)
+                    if (p >= 0)
                     {
-                        bAddWarning = true;
+                        bIsValid = true;
+
+                        if ((itemID == 1) || (itemID == 2))
+                        {
+                            // error and warning must not be plural because this is just a repeat of what we know already
+                            bIsValid =
+                                (_verboseOutput.Substring(p + lookFor.Length,
+                                     3).CompareTo("(s)") != 0 && _verboseOutput.Substring(p + lookFor.Length, 1).CompareTo("s") != 0);
+                        }
+                        else if (itemID == 3)
+                        {
+                            // exception must not be ExceptionDetailsDialog
+                            bIsValid = (_verboseOutput.LastIndexOf('\\', p, 24) == -1 && _verboseOutput.IndexOf("DetailsDialog", p, 24) == -1);
+                        }
+
+                        if (bIsValid)
+                        {
+                            ErrorItem ei = new ErrorItem();
+                            ei.Position = p;
+                            ei.SelLength = lookFor.Length;
+                            list.Add(ei);
+
+                            if (itemID == 0)
+                            {
+                                ErrorCount++;
+                            }
+                            else
+                            {
+                                WarningCount++;
+                            }
+                        }
+
+                        p++;
                     }
-                    else
-                    {
-                        bAddError = true;
-                    }
-                }
-                else if (pWarning >= 0)
-                {
-                    // just warnings left
-                    bAddWarning = true;
-                }
-                else if (pError >= 0)
-                {
-                    // just errors left
-                    bAddError = true;
                 }
 
-                if (bAddError)
-                {
-                    ei.Position = pError++;
-                    ei.Severity = 2;
-                    list.Add(ei);
-                }
-
-                if (bAddWarning)
-                {
-                    ei.Position = pWarning++;
-                    ei.Severity = 1;
-                    list.Add(ei);
-                }
+                itemID++;
             }
 
+            // Put everything in order of occurrence in the text
+            list.Sort(ErrorItemComparisonDelegate);
             return list;
         }
 
@@ -219,11 +236,12 @@ namespace Ict.Tools.DevelopersAssistant
             }
         }
 
-        // Parse the text, looking for specific strings that indicate success, errors or warnings
-        static private void ParseOutput(string TextToParse, out int NumSucceeded, ref int NumFailed, ref int NumWarnings)
+        // Parse the text, looking for specific strings that indicate success, failure, errors, exceptions or warnings
+        static private void ParseOutput(string TextToParse, out int NumSucceeded, ref int NumFailures, ref int NumWarnings)
         {
             NumSucceeded = 0;
 
+            // We note the number of successes
             int p = 0;
 
             while (p >= 0)
@@ -237,6 +255,7 @@ namespace Ict.Tools.DevelopersAssistant
                 }
             }
 
+            // We note the number of failed builds
             p = 0;
 
             while (p >= 0)
@@ -245,22 +264,55 @@ namespace Ict.Tools.DevelopersAssistant
 
                 if (p > 0)
                 {
-                    NumFailed++;
+                    NumFailures++;
                     p++;
                 }
             }
 
-            p = 0;
-
-            while (p >= 0)
+            // Finally we note the number of 'suspicious' entries
+            string[] candidates =
             {
-                p = TextToParse.IndexOf("warning ", p, StringComparison.InvariantCultureIgnoreCase);
+                "error", "warning", "exception"
+            };
+            int itemID = 0;
 
-                if (p > 0)
+            foreach (string lookFor in candidates)
+            {
+                p = 0;
+
+                while (p >= 0)
                 {
-                    NumWarnings++;
-                    p++;
+                    p = TextToParse.IndexOf(lookFor, p, StringComparison.InvariantCultureIgnoreCase);
+
+                    if (p > 0)
+                    {
+                        if ((itemID == 0) || (itemID == 1))
+                        {
+                            // error and warning must not be plural
+                            if ((TextToParse.Substring(p + lookFor.Length,
+                                     3).CompareTo("(s)") != 0) && (TextToParse.Substring(p + lookFor.Length, 1).CompareTo("s") != 0))
+                            {
+                                NumWarnings++;
+                            }
+                        }
+                        else if (itemID == 2)
+                        {
+                            // exception must not refer to ExceptionDetailsDialog
+                            if ((TextToParse.LastIndexOf('\\', p, 24) == -1) && (TextToParse.IndexOf("DetailsDialog", p, 24) == -1))
+                            {
+                                NumWarnings++;
+                            }
+                        }
+                        else
+                        {
+                            NumWarnings++;
+                        }
+
+                        p++;
+                    }
                 }
+
+                itemID++;
             }
         }
     }

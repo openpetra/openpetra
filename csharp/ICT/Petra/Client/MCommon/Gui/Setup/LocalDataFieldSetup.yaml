@@ -26,10 +26,10 @@ RootNode:
         btnNew:
         grdDetails:
             Dock: Fill
-            Columns: [DetailText, DetailGroup, DetailDataType, DetailDisplayed, DetailUsedBy]
+            Columns: [DetailGroup, DetailText, DetailDataType, DetailDisplayed]
             CustomColumns:
-                DetailText: {Label=Label}            
                 DetailGroup: {Label=Group Heading}            
+                DetailText: {Label=Label}            
                 DetailDisplayed: {Label=Displayed, Type=Boolean}            
             ActionFocusRow: FocusedRowChanged
         pnlDetails:

@@ -101,6 +101,13 @@ OpenPetra:
                         LocalDataOptionListNames: {Label=Setup Local Data Option List Names, Description=Maintain Local Data Option List names, ActionOpenScreen=TFrmLocalDataOptionListNameSetup}
                         LocalDataOptions: {Label=Setup Local Data Options, Description=Maintain Local Data Options, ActionOpenScreen=TFrmLocalDataOptionsSetup}
                         LocalDataFields: {Label=Setup Local Partner Data Fields, Description=Maintain Local Partner Data Fields, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalPartnerDataFieldSetup}
+                        LocalDataFieldOrderBank: {Label=Setup Field Order for Bank, Description=Maintain Field Order for Bank, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=Bank}
+                        LocalDataFieldOrderChurch: {Label=Setup Field Order for Church, Description=Maintain Field Order for Church, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=Church}
+                        LocalDataFieldOrderFamily: {Label=Setup Field Order for Family, Description=Maintain Field Order for Family, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=Family}
+                        LocalDataFieldOrderPerson: {Label=Setup Field Order for Person, Description=Maintain Field Order for Person, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=Person}
+                        LocalDataFieldOrderOrganisation: {Label=Setup Field Order for Organisation, Description=Maintain Field Order for Organisation, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=Organisation}
+                        LocalDataFieldOrderUnit: {Label=Setup Field Order for Unit, Description=Maintain Field Order for Unit, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=Unit}
+                        LocalDataFieldOrderVenue: {Label=Setup Field Order for Venue, Description=Maintain Field Order for Venue, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=Venue}
 
                     Mailing-related:
                         Mailings: {Label=Setup Mailings, Description=Maintain Mailings, ActionOpenScreen=TFrmMailingSetup}					
@@ -241,7 +248,9 @@ OpenPetra:
                         PassportType: {Label=Setup Passport Types, Description=Maintain Passport Types, ActionOpenScreen=TFrmPassportTypeSetup} 
                         Position: {Label=Setup Positions, Description=Maintain Positions, ActionOpenScreen=TFrmPositionSetup}
                         ProfessionalArea: {Label=Setup Professional Areas, Description=Maintain Professional Areas, ActionOpenScreen=TFrmProfessionalAreaSetup}   
-                        QualificationLevel: {Label=Setup Qualification Levels, Description=Maintain Qualification Levels, ActionOpenScreen=TFrmQualificationLevelSetup} 						
+                        QualificationLevel: {Label=Setup Qualification Levels, Description=Maintain Qualification Levels, ActionOpenScreen=TFrmQualificationLevelSetup}
+                        SkillCategory: {Label=Setup Skill Categories, Description=Maintain Skill Categories, ActionOpenScreen=TFrmSkillCategorySetup}
+                        SkillLevel: {Label=Setup Skill Levels, Description=Maintain Skill Levels, ActionOpenScreen=TFrmSkillLevelSetup} 						
                         ValuableItem: {Label=Setup Valuable Items, Description=Maintain Valuable Items, ActionOpenScreen=TFrmValuableItemSetup}
                         VisionArea: {Label=Setup Vision Areas, Description=Maintain Vision Areas, ActionOpenScreen=TFrmVisionAreaSetup} 
                         VisionLevel: {Label=Setup Vision Levels, Description=Maintain Vision Levels, ActionOpenScreen=TFrmVisionLevelSetup}
@@ -256,6 +265,9 @@ OpenPetra:
                         LocalDataOptionListNames: {Label=Setup Local Data Option List Names, Description=Maintain Local Data Option List names, Namespace=Ict.Petra.Client.MPartner.Gui.Setup, ActionOpenScreen=TFrmLocalDataOptionListNameSetup}
                         LocalApplicationDataFields: {Label=Setup Local Application Data Fields, Description=Maintain Local Application Data Fields, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalApplicationDataFieldSetup}
                         LocalPersonnelDataFields: {Label=Setup Local Personnel Data Fields, Description=Maintain Local Personnel Data Fields, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalPersonnelDataFieldSetup}
+                        LocalDataFieldOrderLongTermApp: {Label=Setup Field Order for Long Term Applications, Description=Maintain Field Order for Long Term Applications, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=LongTermApp}
+                        LocalDataFieldOrderShortTermApp: {Label=Setup Field Order for Short Term Applications, Description=Maintain Field Order for Short Term Applications, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=ShortTermApp}
+                        LocalDataFieldOrderPersonnel: {Label=Setup Field Order for Personnel, Description=Maintain Field Order for Personnel, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=Personnel}
 
                     
             Reports:

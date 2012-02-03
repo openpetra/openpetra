@@ -408,6 +408,12 @@ namespace Ict.Common.IO
             int index = FCodelets.IndexOfKey(APlaceholder + FCodeletPostfix);
             string Codelet = FCodelets.GetByIndex(index).ToString();
 
+            if (Codelet.Trim().EndsWith(";"))
+            {
+                // we do not need a separator for such situations
+                ASeparator = string.Empty;
+            }
+
             if (Codelet.EndsWith(Environment.NewLine))
             {
                 Codelet = Codelet.Substring(0, Codelet.Length - Environment.NewLine.Length) + ASeparator + Environment.NewLine;

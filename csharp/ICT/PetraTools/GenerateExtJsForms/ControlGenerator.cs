@@ -526,7 +526,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
     /// </summary>
     public class AssistantPageGenerator : GroupBoxBaseGenerator
     {
-        private static int PageCounter = 0;
+        private int PageCounter = 0;
 
         /// <summary>constructor</summary>
         public AssistantPageGenerator()

@@ -23,7 +23,8 @@ RootNode:
         hidRegistrationCountryCode: {value=en-US}
         hidRole: {value=TS-SERVE}
         aspPhoto:
-            Controls: 
+            Height: 500
+            Controls:
                 Row1: [grpPhoto]
         grpPhoto:
             Controls:

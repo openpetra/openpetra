@@ -26,7 +26,7 @@ try
         Response.ContentType = "application/pdf";
         Response.AppendHeader("Content-Disposition","attachment; filename=application.pdf");
         TLogging.Log(pdfFileName);
-        Response.TransmitFile( pdfFileName );
+        Response.WriteFile( pdfFileName );
         // comment Response.End() to avoid System.Threading.ThreadAbortException
         // see http://www.west-wind.com/Weblog/posts/368975.aspx
         Response.End();

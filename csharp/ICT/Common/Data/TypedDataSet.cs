@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -458,35 +458,26 @@ namespace Ict.Common.Data
         /// merge the updated sequence numbers of new rows
         /// </summary>
         /// <param name="ATable"></param>
-        /// <param name="AUpdatedTable"></param>
-        private void MergeSequences(DataTable ATable, DataTable AUpdatedTable)
+        private void MergeSequences(DataTable ATable)
         {
-            if ((ATable != null) && (AUpdatedTable != null))
+            if (ATable != null)
             {
-                foreach (DataRow row in ATable.Rows)
+                for (int counter = 0; counter < ATable.Rows.Count; counter++)
                 {
-                    if (row.RowState == DataRowState.Added)
+                    DataRow row = ATable.Rows[counter];
+
+                    foreach (DataColumn col in ATable.PrimaryKey)
                     {
-                        foreach (DataColumn col in ATable.PrimaryKey)
+                        if ((row[col] != null)
+                            && ((row[col].GetType() == typeof(Int32))
+                                || (row[col].GetType() == typeof(Int64))
+                                || (row[col].GetType() == typeof(Int16)))
+                            && (Convert.ToInt64(row[col]) < 0))
                         {
-                            if ((row[col] != null)
-                                && ((row[col].GetType() == typeof(Int32))
-                                    || (row[col].GetType() == typeof(Int64))
-                                    || (row[col].GetType() == typeof(Int16)))
-                                && (Convert.ToInt64(row[col]) < 0))
-                            {
-                                // find the same row in the other dataset
-                                foreach (DataRow UpdatedRow in AUpdatedTable.Rows)
-                                {
-                                    if ((UpdatedRow.RowState == DataRowState.Modified)
-                                        && (Convert.ToInt64(UpdatedRow[col.ColumnName, DataRowVersion.Original]) ==
-                                            Convert.ToInt64(row[col])))
-                                    {
-                                        // update the sequence value
-                                        row[col] = UpdatedRow[col.ColumnName];
-                                    }
-                                }
-                            }
+                            // drop this row since it must be replaced with a row from the merged table
+                            ATable.Rows.Remove(row);
+                            counter--;
+                            break;
                         }
                     }
                 }
@@ -501,7 +492,7 @@ namespace Ict.Common.Data
         {
             if (ATable != null)
             {
-                MergeSequences(this.Tables[ATable.TableName], ATable);
+                MergeSequences(this.Tables[ATable.TableName]);
             }
 
             base.Merge(ATable);
@@ -518,12 +509,26 @@ namespace Ict.Common.Data
             // update with the new sequence number from the updated ADataSet
             foreach (DataTable table in this.Tables)
             {
-                DataTable UpdatedTable = ADataSet.Tables[table.TableName];
-
-                MergeSequences(table, UpdatedTable);
+                MergeSequences(table);
             }
 
             base.Merge(ADataSet);
+            MapTables();
+        }
+
+        /// <summary>
+        /// overload that makes sure that the typed tables are mapped again
+        /// </summary>
+        public new void Merge(DataSet ADataSet, bool APreserveChanges)
+        {
+            // check new rows for sequence values in the primary key, that are negative in this dataset
+            // update with the new sequence number from the updated ADataSet
+            foreach (DataTable table in this.Tables)
+            {
+                MergeSequences(table);
+            }
+
+            base.Merge(ADataSet, APreserveChanges);
             MapTables();
         }
 

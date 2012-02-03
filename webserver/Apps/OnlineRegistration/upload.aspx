@@ -92,7 +92,7 @@ try
             Response.ClearHeaders();         
             Response.ContentType = "image/jpeg";
             Response.AppendHeader("Content-Disposition","attachment; filename=photo.jpg");
-            Response.TransmitFile( Filename );
+            Response.WriteFile( Filename );
             // comment Response.End() to avoid System.Threading.ThreadAbortException
             // see http://www.west-wind.com/Weblog/posts/368975.aspx
             Response.End();

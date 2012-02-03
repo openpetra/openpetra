@@ -68,7 +68,7 @@
 </head>
 <body>
     <form runat="server">
-        <ext:ResourceManager runat="server" />
+        <ext:ResourceManager runat="server" CleanResourceUrl="false" />
     
         <ext:Desktop 
             ID="MyDesktop" 
