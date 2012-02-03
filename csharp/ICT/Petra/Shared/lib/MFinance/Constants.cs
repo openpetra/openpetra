@@ -263,6 +263,21 @@ namespace Ict.Petra.Shared.MFinance
         /// Budget Types
         public const string BUDGET_INFLATE_N = "Inf. n";
 
+        /// Budget Types
+        public const string BUDGET_SPLIT_U = "SPLIT";
+
+        /// Budget Types
+        public const string BUDGET_ADHOC_U = "ADHOC";
+
+        /// Budget Types
+        public const string BUDGET_SAME_U = "SAME";
+
+        /// Budget Types
+        public const string BUDGET_INFLATE_BASE_U = "INF.BASE";
+
+        /// Budget Types
+        public const string BUDGET_INFLATE_N_U = "INF. N";
+
         /// Budget Forecast Types
         public const string FORECAST_TYPE_BUDGET = "Budget";
 

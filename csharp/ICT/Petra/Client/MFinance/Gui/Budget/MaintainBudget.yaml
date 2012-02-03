@@ -148,4 +148,4 @@ RootNode:
         #TODO: radio buttons for selection of budget type, display different user controls depending on selection, similar to bankimport screen
     Menu:
     Toolbar:
-        cmbSelectBudgetYear: {List=UserDefinedList, OnChange=SelectBudgetYear, Width=250}
+        cmbSelectBudgetYear: {List=UserDefinedList, OnChange=SelectBudgetYear, Width=250, SuppressChangeDetection=true}

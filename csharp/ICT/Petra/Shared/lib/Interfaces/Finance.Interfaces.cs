@@ -328,17 +328,34 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Budget.WebConnectors
     /// <summary>auto generated</summary>
     public interface IBudgetWebConnectorsNamespace : IInterface
     {
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetAutoGenerateWebConnector)</summary>
+        BudgetTDS LoadBudgetForAutoGenerate(Int32 ALedgerNumber);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetAutoGenerateWebConnector)</summary>
+        System.Boolean GenBudgetForNextYear(System.Int32 ALedgerNumber,
+                                            System.Int32 ABudgetSeq,
+                                            System.String AForecastType);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetConsolidateWebConnector)</summary>
+        System.Boolean LoadBudgetForConsolidate(Int32 ALedgerNumber);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetConsolidateWebConnector)</summary>
+        System.Boolean ConsolidateBudgets(Int32 ALedgerNumber,
+                                          System.Boolean AConsolidateAll,
+                                          out TVerificationResultCollection AVerificationResult);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetConsolidateWebConnector)</summary>
+        System.Decimal GetBudgetValue(ref DataTable APeriodDataTable,
+                                      System.Int32 AGLMSequence,
+                                      System.Int32 APeriodNumber);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector)</summary>
         BudgetTDS LoadBudget(Int32 ALedgerNumber);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector)</summary>
         TSubmitChangesResult SaveBudget(ref BudgetTDS AInspectDS,
                                         out TVerificationResultCollection AVerificationResult);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector)</summary>
-        System.Boolean ImportBudgets(Int32 ALedgerNumber,
-                                     System.String ACSVFileName,
-                                     System.String[] AFdlgSeparator,
-                                     ref BudgetTDS AImportDS,
-                                     out TVerificationResultCollection AVerificationResult);
+        System.Int32 ImportBudgets(Int32 ALedgerNumber,
+                                   Int32 ACurrentBudgetYear,
+                                   System.String ACSVFileName,
+                                   System.String[] AFdlgSeparator,
+                                   ref BudgetTDS AImportDS,
+                                   out TVerificationResultCollection AVerificationResult);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector)</summary>
         System.Int32 GetGLMSequenceForBudget(System.Int32 ALedgerNumber,
                                              System.String AAccountCode,
@@ -361,11 +378,6 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Budget.WebConnectors
                                  System.Int32 ANumberAccountingPeriods,
                                  System.Boolean AYTD,
                                  System.String ACurrencySelect);
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector)</summary>
-        System.Boolean ConsolidateBudgets(Int32 ALedgerNumber,
-                                          System.Boolean AConsolidateAll,
-                                          ref BudgetTDS ABudgetTDS,
-                                          ref TVerificationResultCollection AVerificationResult);
     }
 
 }
