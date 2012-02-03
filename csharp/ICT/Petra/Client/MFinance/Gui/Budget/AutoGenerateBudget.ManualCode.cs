@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christophert
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -155,27 +155,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 Cursor.Current = Cursors.WaitCursor;
 
                 bool LoadBudgetData = TRemote.MFinance.Budget.WebConnectors.LoadBudgetForConsolidate(FLedgerNumber);
-	            
-	            TRemote.MFinance.Budget.WebConnectors.ConsolidateBudgets(FLedgerNumber, ConsolidateAll, out VerificationResult);
-	
-	            string CheckItemsList = clbCostCentreAccountCodes.GetCheckedStringList();
-	            string[] CheckedItems = CheckItemsList.Split(',');
-	
-	            string ForecastType;
-	
-	            if (rbtThisYearsBudgets.Checked)
-	            {
-	                ForecastType = "Budget";
-	            }
-	            else
-	            {
-	                ForecastType = "Actuals";
-	            }
-	
+
+                TRemote.MFinance.Budget.WebConnectors.ConsolidateBudgets(FLedgerNumber, ConsolidateAll, out VerificationResult);
+
+                string CheckItemsList = clbCostCentreAccountCodes.GetCheckedStringList();
+                string[] CheckedItems = CheckItemsList.Split(',');
+
+                string ForecastType;
+
+                if (rbtThisYearsBudgets.Checked)
+                {
+                    ForecastType = "Budget";
+                }
+                else
+                {
+                    ForecastType = "Actuals";
+                }
+
                 if (rbtSelectedBudgets.Checked && (CheckItemsList.Length > 0)
                     || (rbtAllBudgets.Checked == true))
                 {
-
                     foreach (string BudgetItem in CheckedItems)
                     {
                         /* Generate report. Parameters are recid of the budget and the forecast type.
@@ -190,9 +189,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 {
                     throw new InvalidOperationException("There are no budgets selected!");
                 }
-	                
-	            Cursor.Current = Cursors.Default;
 
+                Cursor.Current = Cursors.Default;
             }
             catch (InvalidOperationException ex)
             {

@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       timop, christophert
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -78,22 +78,22 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
             // Remove all Tables that were not filled with data before remoting them.
             FMainDS.RemoveEmptyTables();
-            
+
             return FMainDS;
         }
 
-		/// <summary>
+        /// <summary>
         /// Generate the budget for next year
-		/// </summary>
-		/// <param name="ALedgerNumber"></param>
-		/// <param name="ABudgetSeq"></param>
-		/// <param name="AForecastType"></param>
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABudgetSeq"></param>
+        /// <param name="AForecastType"></param>
         [RequireModulePermission("FINANCE-3")]
         public static bool GenBudgetForNextYear(int ALedgerNumber, int ABudgetSeq, string AForecastType)
         {
             bool retVal = false;
-        	
-        	decimal BudgetSum;
+
+            decimal BudgetSum;
             decimal PriorAmount = 0;
             decimal AfterAmount = 0;
             int PeriodOfChange = 0;
@@ -134,10 +134,10 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                 decimal BudgetAmount = 0;
                 decimal ActualAmount = 0;
                 bool ValidBudgetType = true;
-                
+
                 switch (BudgetType)
                 {
-                	case MFinanceConstants.BUDGET_ADHOC_U:
+                    case MFinanceConstants.BUDGET_ADHOC_U:
                     case MFinanceConstants.BUDGET_INFLATE_BASE_U:
 
                         for (int i = 1; i < CurrentPeriod; i++)
@@ -455,14 +455,14 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                             BudgetType,
                             BudgetRow.BudgetSequence));
                 }
-                
+
                 retVal = true;
             }
             catch (Exception)
             {
                 throw;
             }
-            
+
             return retVal;
         }
 

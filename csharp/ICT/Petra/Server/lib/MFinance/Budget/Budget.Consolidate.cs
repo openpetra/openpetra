@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       timop, christophert
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -78,14 +78,11 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
             // Remove all Tables that were not filled with data before remoting them.
             BudgetTDS.RemoveEmptyTables();
-            
+
             return true;
         }
-        
-    	
-    	
-    	
-    	/// <summary>
+
+        /// <summary>
         /// Consolidate Budgets.
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -162,7 +159,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
                         CurrentGLMAccountCode = GeneralLedgerMasterRow.AccountCode;
                         CurrentGLMSequence = GeneralLedgerMasterRow.GlmSequence;
-                        
+
                         if (PreviousAccount != CurrentGLMAccountCode)
                         {
                             PreviousAccount = CurrentGLMAccountCode;
@@ -682,42 +679,41 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
             try
             {
-	            if (TempRow == null)
-	            {
-	                AGeneralLedgerMasterPeriodTable GeneralLedgerMasterPeriodTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(AGLMSequence,
-	                    APeriodNumber,
-	                    null);
-	                AGeneralLedgerMasterPeriodRow GeneralLedgerMasterPeriodRow = null;
-	
-	                if (GeneralLedgerMasterPeriodTable.Count > 0)
-	                {
-	                    GeneralLedgerMasterPeriodRow = (AGeneralLedgerMasterPeriodRow)GeneralLedgerMasterPeriodTable.Rows[0];
-	
-	                    /* only create records for periods which have a value. try to keep the number of records low,
-	                     * to make the lock count in the write transaction smaller */
-	                    if (GeneralLedgerMasterPeriodRow.BudgetBase != 0)
-	                    {
-	                        DataRow DR = (DataRow)ATempTable.NewRow();
-	                        DR["GLMSequence"] = AGLMSequence;
-	                        DR["PeriodNumber"] = APeriodNumber;
-	                        DR["BudgetBase"] = 0;
+                if (TempRow == null)
+                {
+                    AGeneralLedgerMasterPeriodTable GeneralLedgerMasterPeriodTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(AGLMSequence,
+                        APeriodNumber,
+                        null);
+                    AGeneralLedgerMasterPeriodRow GeneralLedgerMasterPeriodRow = null;
 
-	                        ATempTable.Rows.Add(DR);
-	                    }
-	                }
-	            }
-	            else
-	            {
-	                TempRow.BeginEdit();
-	                TempRow.ItemArray[2] = 0;
-	                TempRow.EndEdit();
-	            }
+                    if (GeneralLedgerMasterPeriodTable.Count > 0)
+                    {
+                        GeneralLedgerMasterPeriodRow = (AGeneralLedgerMasterPeriodRow)GeneralLedgerMasterPeriodTable.Rows[0];
+
+                        /* only create records for periods which have a value. try to keep the number of records low,
+                         * to make the lock count in the write transaction smaller */
+                        if (GeneralLedgerMasterPeriodRow.BudgetBase != 0)
+                        {
+                            DataRow DR = (DataRow)ATempTable.NewRow();
+                            DR["GLMSequence"] = AGLMSequence;
+                            DR["PeriodNumber"] = APeriodNumber;
+                            DR["BudgetBase"] = 0;
+
+                            ATempTable.Rows.Add(DR);
+                        }
+                    }
+                }
+                else
+                {
+                    TempRow.BeginEdit();
+                    TempRow.ItemArray[2] = 0;
+                    TempRow.EndEdit();
+                }
             }
             catch (Exception)
             {
-            	throw;
+                throw;
             }
-            
         }
     }
 }
