@@ -69,11 +69,11 @@ namespace Ict.Petra.Server.MPartner.queries
                     new OdbcParameter("param_start_date_from", OdbcType.Date) {
                         Value = AParameters.Get("param_start_date_from").ToDate()
                     },
-                    new OdbcParameter("param_start_date_from_unset", OdbcType.Bit) {
+                    new OdbcParameter("param_start_date_to_unset", OdbcType.Bit) {
                         Value = AParameters.Get("param_start_date_to").IsZeroOrNull()
                     },
-                    new OdbcParameter("param_dtpStartDateTo", OdbcType.Date) {
-                        Value = AParameters.Get("param_dtpStartDateTo").ToDate()
+                    new OdbcParameter("param_start_date_to", OdbcType.Date) {
+                        Value = AParameters.Get("param_start_date_to").ToDate()
                     },
                     new OdbcParameter("param_end_date_from_unset", OdbcType.Bit) {
                         Value = AParameters.Get("param_end_date_from").IsZeroOrNull()
@@ -114,7 +114,7 @@ namespace Ict.Petra.Server.MPartner.queries
                         Value = !AParameters.Get("param_consider_commitment_status").ToBool()
                     },
                     TDbListParameterValue.OdbcListParameterValue("param_commitment_status_choices",
-                        OdbcType.NChar,
+                        OdbcType.VarChar,
                         param_commitment_status_choices),
                     new OdbcParameter("param_include_no_commitment_status", OdbcType.Bit) {
                         Value = AParameters.Get("param_include_no_commitment_status").ToBool()

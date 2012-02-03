@@ -60,6 +60,10 @@ namespace Ict.Petra.Client.MReporting.Gui
             ACalc.AddParameter("param_postcode_to", this.txtPostCodeTo.Text);
             ACalc.AddParameter("param_region", this.cmbRegion.Text);
             ACalc.AddParameter("param_country", this.cmbCountry.Text);
+            
+            // manually add validity date here until we introduce a checkbox and/or date field in control
+            ACalc.AddParameter("param_only_addresses_valid_on", this.chkCurrentAddressesOnly.Checked);
+            ACalc.AddParameter("param_address_date_valid_on", DateTime.Today);
         }
 
         /// <summary>

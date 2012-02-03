@@ -8,13 +8,16 @@ RootNode:
     Template: usercontrolUnbound
     Controls:
         grpAddress: {NoLabel=true}
-            Controls: 
-                Row0: [txtCity]
-                Row1: [txtPostCodeFrom]
-                Row2: [txtPostCodeTo]
-                Row3: [cmbRegion]
-                Row4: [cmbCountry]
+            Controls:
+                Row0: [chkCurrentAddressesOnly]
+                Row1: [txtCity]
+                Row2: [txtPostCodeFrom]
+                Row3: [txtPostCodeTo]
+                Row4: [cmbRegion]
+                Row5: [cmbCountry]
 		
+        chkCurrentAddressesOnly:
+            Label: Current Addresses only
         txtCity:
             Label: Town/City
         txtPostCodeFrom:

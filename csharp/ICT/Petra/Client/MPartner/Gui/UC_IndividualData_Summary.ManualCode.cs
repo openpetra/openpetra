@@ -331,6 +331,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FMainDS.Tables[PartnerEditTDSPPartnerLocationTable.GetTableName()]);
             DataRow BestPartnerLocationDR;
             DataRow BestLocationDR;
+            string TelephoneNumber;
+            string Extension;
+            string CountryCode;
 
             // Initialise out Arguments
             APhoneNumberOfPerson = null;
@@ -344,10 +347,37 @@ namespace Ict.Petra.Client.MPartner.Gui
                 BestLocationDR = FMainDS.Tables[PLocationTable.GetTableName()].Rows.Find(new object[]
                     { ReturnValue.SiteKey, ReturnValue.LocationKey });
 
+                if (!BestPartnerLocationDR.IsNull(PPartnerLocationTable.GetTelephoneNumberDBName()))
+                {
+                    TelephoneNumber = (string)BestPartnerLocationDR[PPartnerLocationTable.GetTelephoneNumberDBName()];
+                }
+                else
+                {
+                    TelephoneNumber = String.Empty;
+                }
+
+                if (!BestPartnerLocationDR.IsNull(PPartnerLocationTable.GetExtensionDBName()))
+                {
+                    Extension = ((int)BestPartnerLocationDR[PPartnerLocationTable.GetExtensionDBName()]).ToString();
+                }
+                else
+                {
+                    Extension = String.Empty;
+                }
+
+                if (!BestLocationDR.IsNull(PLocationTable.GetCountryCodeDBName()))
+                {
+                    CountryCode = (string)BestLocationDR[PLocationTable.GetCountryCodeDBName()];
+                }
+                else
+                {
+                    CountryCode = String.Empty;
+                }
+                
                 APhoneNumberOfPerson = Ict.Petra.Shared.MPartner.Calculations.FormatIntlPhoneNumber(
-                    (string)BestPartnerLocationDR[PPartnerLocationTable.GetTelephoneNumberDBName()],
-                    ((int)BestPartnerLocationDR[PPartnerLocationTable.GetExtensionDBName()]).ToString(),
-                    (string)BestLocationDR[PLocationTable.GetCountryCodeDBName()],
+                    TelephoneNumber,
+                    Extension,
+                    CountryCode,
                     @TDataCache.GetCacheableDataTableFromCache);
 
                 if (!BestPartnerLocationDR.IsNull(PPartnerLocationTable.GetEmailAddressDBName()))
