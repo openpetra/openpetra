@@ -60,7 +60,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
         {
             ucoChkFilter.ShowFamiliesOnly(false);
         }
-        
+
         /// <summary>
         /// only run this code once during activation
         /// </summary>
@@ -112,10 +112,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 
             //TODO: only temporarily until settings file exists
             clbEvent.SetCheckedStringList("");
-            
+
             if (FCalledFromExtracts)
             {
-   	            tpgColumns.Visible = false;
+                tpgColumns.Visible = false;
             }
         }
 

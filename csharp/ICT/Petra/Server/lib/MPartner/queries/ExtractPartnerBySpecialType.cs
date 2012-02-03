@@ -79,38 +79,38 @@ namespace Ict.Petra.Server.MPartner.queries
                     throw new NoNullAllowedException("At least one option must be checked.");
                 }
 
-				// add parameters to ArrayList
+                // add parameters to ArrayList
                 TSelfExpandingArrayList parameterList = new TSelfExpandingArrayList();
-                
+
                 parameterList.Add(TDbListParameterValue.OdbcListParameterValue("specialtype", OdbcType.VarChar, param_explicit_specialtypes));
-                parameterList.Add( new OdbcParameter("param_dateFieldsIncluded", OdbcType.Bit) 
+                parameterList.Add(new OdbcParameter("param_dateFieldsIncluded", OdbcType.Bit)
                     {
                         Value = !AParameters.Get("param_date_set").IsZeroOrNull()
                     });
-                parameterList.Add(new OdbcParameter("Date", OdbcType.Date) 
+                parameterList.Add(new OdbcParameter("Date", OdbcType.Date)
                     {
-                    	Value = AParameters.Get("param_date_set").ToDate()
+                        Value = AParameters.Get("param_date_set").ToDate()
                     });
-                parameterList.Add(new OdbcParameter("param_active", OdbcType.Bit) 
+                parameterList.Add(new OdbcParameter("param_active", OdbcType.Bit)
                     {
                         Value = AParameters.Get("param_active").ToBool()
                     });
-                parameterList.Add(new OdbcParameter("param_families_only", OdbcType.Bit) 
+                parameterList.Add(new OdbcParameter("param_families_only", OdbcType.Bit)
                     {
                         Value = AParameters.Get("param_families_only").ToBool()
                     });
-                parameterList.Add(new OdbcParameter("param_exclude_no_solicitations", OdbcType.Bit) 
+                parameterList.Add(new OdbcParameter("param_exclude_no_solicitations", OdbcType.Bit)
                     {
                         Value = AParameters.Get("param_exclude_no_solicitations").ToBool()
                     });
 
                 // add address filter information to sql statement and parameter list
-                TExtractHelper.AddAddressFilter (AParameters, ref SqlStmt, ref parameterList, out AddressFilterAdded);
+                TExtractHelper.AddAddressFilter(AParameters, ref SqlStmt, ref parameterList, out AddressFilterAdded);
 
-				// now run the database query                
+                // now run the database query
                 TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
-                DataTable partnerkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "partners", Transaction, 
-                                                                       TExtractHelper.ConvertParameterArrayList(parameterList));
+                DataTable partnerkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "partners", Transaction,
+                    TExtractHelper.ConvertParameterArrayList(parameterList));
 
                 if (NewTransaction)
                 {

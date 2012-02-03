@@ -406,8 +406,8 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
             else
             {
-            	// dialog was cancelled, do not continue with extract generation
-            	return;
+                // dialog was cancelled, do not continue with extract generation
+                return;
             }
 
             ExtractNameDialog.Dispose();
@@ -418,11 +418,11 @@ namespace Ict.Petra.Client.MReporting.Gui
                 return;
             }
 
-            // add extract name and description to parameter list 
+            // add extract name and description to parameter list
             // (don't add it earlier as the list gets cleared while reading controls from screens)
             FCalculator.AddParameter("param_extract_name", ExtractName);
             FCalculator.AddParameter("param_extract_description", ExtractDescription);
-            
+
             if (TClientSettings.DebugLevel >= TClientSettings.DEBUGLEVEL_REPORTINGDATA)
             {
                 FCalculator.GetParameters().Save(TClientSettings.PathLog + Path.DirectorySeparatorChar + "debugParameter.xml", true);

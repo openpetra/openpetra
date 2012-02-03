@@ -90,6 +90,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             //Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonRow myTempRow =
             //    (Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonRow)FMainDS.PPerson[0];
             PPersonRow myTempRow = FMainDS.PPerson[0];
+
             GetDataFromControls(myTempRow);
 
             //This is the line that should be here.  Please uncomment when fixed.

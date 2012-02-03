@@ -64,14 +64,14 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <returns>returns true if deletion was successful</returns>
         public static Boolean DeleteExtract(int AExtractId)
         {
-        	Boolean ReturnValue = true;
-        	
+            Boolean ReturnValue = true;
+
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
             MExtractMasterCascading.DeleteByPrimaryKey(AExtractId, Transaction, true);
 
             DBAccess.GDBAccessObj.CommitTransaction();
-            
+
             return ReturnValue;
         }
 
@@ -83,22 +83,22 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         public static Boolean ExtractExists(String AExtractName)
         {
             MExtractMasterTable TemplateTable;
-            MExtractMasterRow   TemplateRow;
-        	Boolean             ReturnValue = true;
+            MExtractMasterRow TemplateRow;
+            Boolean ReturnValue = true;
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
-        	TemplateTable = new MExtractMasterTable();
+            TemplateTable = new MExtractMasterTable();
             TemplateRow = TemplateTable.NewRowTyped(false);
-            TemplateRow.ExtractName= AExtractName;
+            TemplateRow.ExtractName = AExtractName;
 
             if (MExtractMasterAccess.CountUsingTemplate(TemplateRow, null, Transaction) == 0)
             {
-            	ReturnValue = false;
+                ReturnValue = false;
             }
 
             DBAccess.GDBAccessObj.CommitTransaction();
-            
+
             return ReturnValue;
         }
     }

@@ -739,12 +739,12 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                 {
                     PPersonTableSubmit = AInspectDS.PPerson;
 
-                    
+
                     //PPersonAccess.CountViaPPartner(
-                    
+
                     //PPersonTableSubmit.Rows[0].RowState = DataRowState.Modified;
-                    
-//                    if (PPersonAccess.SubmitChanges(PPersonTableSubmit, ASubmitChangesTransaction, eSubmitChangesOperations.eUpdate, 
+
+//                    if (PPersonAccess.SubmitChanges(PPersonTableSubmit, ASubmitChangesTransaction, eSubmitChangesOperations.eUpdate,
 //                            out SingleVerificationResultCollection))
                     if (PPersonAccess.SubmitChanges(PPersonTableSubmit, ASubmitChangesTransaction,
                             out SingleVerificationResultCollection))

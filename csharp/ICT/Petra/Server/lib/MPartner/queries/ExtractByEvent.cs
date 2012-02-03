@@ -93,7 +93,7 @@ namespace Ict.Petra.Server.MPartner.queries
                     //    Value = AParameters.Get("param_mailing_addresses_only").ToBool()
                     //},
                 };
-                
+
                 TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
                 DataTable partnerkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "partners", Transaction, parameters);
 

@@ -2111,19 +2111,19 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                     if (SubmissionResult == TSubmitChangesResult.scrOK)
                     {
-                    	// Save data from the Personnel Data part (needs to be done here towards the end of saving 
-                    	// as p_person record needs to be saved earlier in the process and is referenced from data saved here.
-	                    if (SubmitChangesPersonnelData(ref FSubmissionDS, SubmitChangesTransaction, out SingleVerificationResultCollection))
-	                    {
-	                        SubmissionResult = TSubmitChangesResult.scrOK;
-	                    }
-	                    else
-	                    {
-	                        SubmissionResult = TSubmitChangesResult.scrError;
-	                        AVerificationResult.AddCollection(SingleVerificationResultCollection);
-	                    }
+                        // Save data from the Personnel Data part (needs to be done here towards the end of saving
+                        // as p_person record needs to be saved earlier in the process and is referenced from data saved here.
+                        if (SubmitChangesPersonnelData(ref FSubmissionDS, SubmitChangesTransaction, out SingleVerificationResultCollection))
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                            AVerificationResult.AddCollection(SingleVerificationResultCollection);
+                        }
                     }
-                    
+
                     if (SubmissionResult == TSubmitChangesResult.scrOK)
                     {
 #if DEBUGMODE
@@ -2594,8 +2594,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                 // can remove table PPerson here as this is part of both PartnerEditTDS and IndividualDataTDS and
                 // so the relevant data was already saved when PartnerEditTDS was saved
-                TempDS.RemoveTable("PPerson"); 
-                
+                TempDS.RemoveTable("PPerson");
+
                 IndividualDataResult = TIndividualDataWebConnector.SubmitChangesServerSide(ref TempDS, ref AInspectDS, ASubmitChangesTransaction,
                     out SingleVerificationResultCollection);
 
@@ -2614,7 +2614,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 {
                     if (AllSubmissionsOK == false)
                     {
-                        Console.WriteLine(Messages.BuildMessageFromVerificationResult("TPartnerEditUIConnector.SubmitChangesPersonnelData AVerificationResult: ",
+                        Console.WriteLine(Messages.BuildMessageFromVerificationResult(
+                                "TPartnerEditUIConnector.SubmitChangesPersonnelData AVerificationResult: ",
                                 AVerificationResult));
                     }
                 }
@@ -2633,7 +2634,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
             return AllSubmissionsOK;
         }
-        
+
         private void SpecialPreSubmitProcessingPartner(PPartnerTable APartnerTableSubmitDT)
         {
             String CurrentPartnerStatus;

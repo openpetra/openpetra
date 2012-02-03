@@ -61,7 +61,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="e"></param>
         public void DeleteRow(System.Object sender, EventArgs e)
         {
-        	
             if (MessageBox.Show(String.Format(Catalog.GetString(
                             "You have choosen to delete this value ({0}).\n\nDo you really want to delete it?"),
                         FPreviouslySelectedDetailRow.ExtractName), Catalog.GetString("Confirm Delete"),
@@ -71,11 +70,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
                 // delete extract on the server (needs cascading delete)
                 TRemote.MPartner.Partner.WebConnectors.DeleteExtract(FPreviouslySelectedDetailRow.ExtractId);
-                
+
                 // now delete it in the grid
                 FPreviouslySelectedDetailRow.Delete();
 
-                
+
                 SelectByIndex(rowIndex);
 
                 if (grdDetails.Rows.Count <= 1)
@@ -85,7 +84,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 }
             }
         }
-        
+
         #endregion
 
         #region Private Methods
@@ -186,7 +185,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 FPreviouslySelectedDetailRow = null;
             }
         }
-        
+
         #endregion
     }
 }

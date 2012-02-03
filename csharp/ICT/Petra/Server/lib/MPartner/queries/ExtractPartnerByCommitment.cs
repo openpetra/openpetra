@@ -123,6 +123,7 @@ namespace Ict.Petra.Server.MPartner.queries
                     new OdbcParameter("param_active_not", OdbcType.Bit) {
                         Value = !AParameters.Get("param_active").ToBool()
                     },
+
 /*                    new OdbcParameter("param_mailing_addresses_only_not", OdbcType.Bit) { Value = !AParameters.Get("param_mailing_addresses_only").ToBool() },*/
                     new OdbcParameter("param_exclude_no_solicitations_not", OdbcType.Bit) {
                         Value = !AParameters.Get("param_exclude_no_solicitations").ToBool()

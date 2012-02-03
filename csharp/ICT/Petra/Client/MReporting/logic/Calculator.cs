@@ -56,7 +56,7 @@ namespace Ict.Petra.Client.MReporting.Logic
 
         /// <summary>will be set by SetMaxDisplayColumns;</summary>
         protected Int32 MaxDisplayColumns;
-        
+
         /// <summary>
         /// is this calculator used for a report or an extract
         /// </summary>
@@ -76,23 +76,22 @@ namespace Ict.Petra.Client.MReporting.Logic
             MaxDisplayColumns = -1;
         }
 
-        
-		/// <summary>
-		/// get/set if this calculator is used for a report or an extract
-		/// </summary>
-		public bool CalculatesExtract
-		{
-		    get
-		    {
-		        return FCalculatesExtract;
-		    }
-		
-		    set
-		    {
-		        FCalculatesExtract = value;
-		    }
-		}
-		
+        /// <summary>
+        /// get/set if this calculator is used for a report or an extract
+        /// </summary>
+        public bool CalculatesExtract
+        {
+            get
+            {
+                return FCalculatesExtract;
+            }
+
+            set
+            {
+                FCalculatesExtract = value;
+            }
+        }
+
         /// <summary>
         /// Setup the sorting.
         /// Uses the param_sortby_readable, and adds missing columns to be calculated, but not displayed
@@ -490,16 +489,16 @@ namespace Ict.Petra.Client.MReporting.Logic
 
             if (ReturnValue)
             {
-            	if (FCalculatesExtract)
-            	{
-	                TLogging.Log("Extract calculation finished. Look for extract '" + 
-            			            Parameters.Get("param_extract_name").ToString() +
-            			            "' in Extract Master List.", TLoggingType.ToStatusBar);
-            	}
-            	else
-            	{
-	                TLogging.Log("Report calculation finished", TLoggingType.ToStatusBar);
-            	}
+                if (FCalculatesExtract)
+                {
+                    TLogging.Log("Extract calculation finished. Look for extract '" +
+                        Parameters.Get("param_extract_name").ToString() +
+                        "' in Extract Master List.", TLoggingType.ToStatusBar);
+                }
+                else
+                {
+                    TLogging.Log("Report calculation finished", TLoggingType.ToStatusBar);
+                }
             }
 
             return ReturnValue;

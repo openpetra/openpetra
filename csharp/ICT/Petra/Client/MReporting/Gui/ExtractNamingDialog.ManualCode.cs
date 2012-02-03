@@ -81,7 +81,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             Boolean ReturnValue = true;
 
-            AExtractName        = txtExtractName.Text;
+            AExtractName = txtExtractName.Text;
             AExtractDescription = txtDescription.Text;
 
             return ReturnValue;
@@ -89,26 +89,26 @@ namespace Ict.Petra.Client.MReporting.Gui
 
         private void BtnOK_Click(Object Sender, EventArgs e)
         {
-        	// extract name has to be set
-        	if (txtExtractName.Text.Trim().Length == 0)
-        	{
-        		MessageBox.Show(Catalog.GetString("An extract must have a name"), 
-        		                Catalog.GetString("Invalid Data entered"),
-                        		MessageBoxButtons.OK,
-                        		MessageBoxIcon.Stop);
-        		return;
-        	}
-        	
-        	// check if extract already exists
-        	if (TRemote.MPartner.Partner.WebConnectors.ExtractExists(txtExtractName.Text))
-        	{
-        		MessageBox.Show(Catalog.GetString("An extract with this name already exists. Please enter a new name."), 
-        		                Catalog.GetString("Invalid Data entered"),
-                        		MessageBoxButtons.OK,
-                        		MessageBoxIcon.Stop);
-        		return;
-        	}
-        	
+            // extract name has to be set
+            if (txtExtractName.Text.Trim().Length == 0)
+            {
+                MessageBox.Show(Catalog.GetString("An extract must have a name"),
+                    Catalog.GetString("Invalid Data entered"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Stop);
+                return;
+            }
+
+            // check if extract already exists
+            if (TRemote.MPartner.Partner.WebConnectors.ExtractExists(txtExtractName.Text))
+            {
+                MessageBox.Show(Catalog.GetString("An extract with this name already exists. Please enter a new name."),
+                    Catalog.GetString("Invalid Data entered"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Stop);
+                return;
+            }
+
             this.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.Close();
         }

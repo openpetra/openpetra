@@ -41,7 +41,7 @@ namespace Ict.Petra.Client.MReporting.Gui
     /// </summary>
     public partial class TFrmUC_ExtractChkFilter
     {
-		/// <summary>
+        /// <summary>
         /// initialisation
         /// </summary>
         public void InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)
@@ -81,12 +81,12 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
         }
 
-		/// <summary>
-		/// hide/show tick box for "Families Only"
-		/// </summary>
-		public void ShowFamiliesOnly (bool AShow)
-		{
-			chkFamiliesOnly.Visible = AShow;
-		}
+        /// <summary>
+        /// hide/show tick box for "Families Only"
+        /// </summary>
+        public void ShowFamiliesOnly(bool AShow)
+        {
+            chkFamiliesOnly.Visible = AShow;
+        }
     }
 }

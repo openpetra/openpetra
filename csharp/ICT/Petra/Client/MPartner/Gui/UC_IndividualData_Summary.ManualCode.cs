@@ -373,7 +373,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     CountryCode = String.Empty;
                 }
-                
+
                 APhoneNumberOfPerson = Ict.Petra.Shared.MPartner.Calculations.FormatIntlPhoneNumber(
                     TelephoneNumber,
                     Extension,
