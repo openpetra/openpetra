@@ -40,9 +40,7 @@ RootNode:
 #                Row3: [cmbSubscriptionStatus]
 #                Row4: [dtpStartDateFrom, dtpStartDateTo]
 #                Row5: [dtpExpiryDateFrom, dtpExpiryDateTo]
-                Row1: [txtExtractName]
-                Row2: [txtExtractDescription]
-#                Row3: [ucoAddress]
+                Row0: [ucoAddress]
         lblIncludePublication:
             Label: Report on all partners that have one of these subscriptions
         clbIncludePublication:
@@ -72,8 +70,6 @@ RootNode:
         ucoAddress:
             ColSpan: 2
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_AddressFilter
-        txtExtractName: {Label=Name for the new extract, ParameterName=nameOfExtract}
-        txtExtractDescription: {Label=Description for the new extract, ParameterName=descriptionOfExtract}
         ucoReportSorting:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting
             Dock: Fill

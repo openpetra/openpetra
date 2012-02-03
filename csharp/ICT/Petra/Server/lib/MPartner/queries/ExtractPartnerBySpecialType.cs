@@ -70,6 +70,7 @@ namespace Ict.Petra.Server.MPartner.queries
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
                 string SqlStmt = TDataBase.ReadSqlFile("Partner.Queries.ExtractByPartnerSpecialType.sql");
                 ICollection <String>param_explicit_specialtypes;
+                bool AddressFilterAdded;
 
                 param_explicit_specialtypes = AParameters.Get("param_explicit_specialtypes").ToString().Split(new Char[] { ',', });
 
@@ -78,28 +79,38 @@ namespace Ict.Petra.Server.MPartner.queries
                     throw new NoNullAllowedException("At least one option must be checked.");
                 }
 
-                OdbcParameter[] parameters = new OdbcParameter[]
-                {
-                    TDbListParameterValue.OdbcListParameterValue("specialtype", OdbcType.NChar, param_explicit_specialtypes),
-                    new OdbcParameter("param_dateFieldsIncluded", OdbcType.Bit) {
-                        Value = !AParameters.Get("param_dateSet").IsZeroOrNull()
-                    },
-                    new OdbcParameter("Date", OdbcType.Date) {
-                        Value = AParameters.Get("param_dateSet").ToDate()
-                    },
-                    new OdbcParameter("param_active", OdbcType.Bit) {
-                        Value = AParameters.Get("param_active").ToBool()
-                    },
-                    new OdbcParameter("param_familiesOnly", OdbcType.Bit) {
-                        Value = AParameters.Get("param_familiesOnly").ToBool()
-                    },
-                    new OdbcParameter("param_excludeNoSolicitations", OdbcType.Bit) {
-                        Value = AParameters.Get("param_excludeNoSolicitations").ToBool()
-                    },
-                };
+                // add parameters to ArrayList
+                TSelfExpandingArrayList parameterList = new TSelfExpandingArrayList();
 
+                parameterList.Add(TDbListParameterValue.OdbcListParameterValue("specialtype", OdbcType.VarChar, param_explicit_specialtypes));
+                parameterList.Add(new OdbcParameter("param_dateFieldsIncluded", OdbcType.Bit)
+                    {
+                        Value = !AParameters.Get("param_date_set").IsZeroOrNull()
+                    });
+                parameterList.Add(new OdbcParameter("Date", OdbcType.Date)
+                    {
+                        Value = AParameters.Get("param_date_set").ToDate()
+                    });
+                parameterList.Add(new OdbcParameter("param_active", OdbcType.Bit)
+                    {
+                        Value = AParameters.Get("param_active").ToBool()
+                    });
+                parameterList.Add(new OdbcParameter("param_families_only", OdbcType.Bit)
+                    {
+                        Value = AParameters.Get("param_families_only").ToBool()
+                    });
+                parameterList.Add(new OdbcParameter("param_exclude_no_solicitations", OdbcType.Bit)
+                    {
+                        Value = AParameters.Get("param_exclude_no_solicitations").ToBool()
+                    });
+
+                // add address filter information to sql statement and parameter list
+                TExtractHelper.AddAddressFilter(AParameters, ref SqlStmt, ref parameterList, out AddressFilterAdded);
+
+                // now run the database query
                 TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
-                DataTable partnerkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "partners", Transaction, parameters);
+                DataTable partnerkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "partners", Transaction,
+                    TExtractHelper.ConvertParameterArrayList(parameterList));
 
                 if (NewTransaction)
                 {
@@ -120,8 +131,8 @@ namespace Ict.Petra.Server.MPartner.queries
 
                 // create an extract with the given name in the parameters
                 ReturnValue = TExtractsHandling.CreateExtractFromListOfPartnerKeys(
-                    AParameters.Get("nameOfExtract").ToString(),
-                    AParameters.Get("descriptionOfExtract").ToString(),
+                    AParameters.Get("param_extract_name").ToString(),
+                    AParameters.Get("param_extract_description").ToString(),
                     out NewExtractID,
                     out VerificationResult,
                     partnerkeys,

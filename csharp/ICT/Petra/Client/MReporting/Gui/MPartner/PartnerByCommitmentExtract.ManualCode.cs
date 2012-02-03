@@ -46,6 +46,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
         private void InitializeManualCode()
         {
             SetControls(new TParameterList());
+            ucoChkFilter.ShowFamiliesOnly(false);
         }
 
         private void grdCommitmentStatusChoices_InitialiseData(TFrmPetraReportingUtils FPetraUtilsObject)
@@ -99,14 +100,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
                 }
             }
 
-            ACalc.AddParameter("param_grdCommitmentStatusChoices", param_grdCommitmentStatusChoices);
+            ACalc.AddParameter("param_commitment_status_choices", param_grdCommitmentStatusChoices);
         }
 
         private void grdCommitmentStatusChoices_SetControls(TParameterList AParameters)
         {
             HashSet <String>AValues = new HashSet <String>();
 
-            foreach (TVariant choice in AParameters.Get("param_grdCommitmentStatusChoices").ToComposite())
+            foreach (TVariant choice in AParameters.Get("param_commitment_status_choices").ToComposite())
             {
                 AValues.Add(choice.ToString());
             }
@@ -119,8 +120,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
-            ACalc.AddParameter("param_txtFieldSending", txtFieldSending.Text);
-            ACalc.AddParameter("param_txtFieldReceiving", txtFieldReceiving.Text);
+            ACalc.AddParameter("param_field_sending", txtFieldSending.Text);
+            ACalc.AddParameter("param_field_receiving", txtFieldReceiving.Text);
         }
 
         /// <summary>
@@ -138,44 +139,25 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 
         private void SetControlsManual(TParameterList AProperties)
         {
-            SetdtpControlManual(dtpStartDateFrom, AProperties.Get("param_dtpStartDateFrom"));
-            SetdtpControlManual(dtpStartDateTo, AProperties.Get("param_dtpStartDateTo"));
-            SetdtpControlManual(dtpEndDateFrom, AProperties.Get("param_dtpEndDateFrom"));
-            SetdtpControlManual(dtpEndDateTo, AProperties.Get("param_dtpEndDateTo"));
-            SetdtpControlManual(dtpDateValidOn, AProperties.Get("param_dtpDateValidOn"));
-
-            // TODO
-            //   The following code will be obsolete once Andrew
-            //   Webster's UC_ExtractChkFilter / ucoExtractChkFilter
-            //   is finished.
-            if (AProperties.GetParameter("param_chkPartnerActive") == null)
-            {
-                chkPartnerActive.Checked = true;
-            }
-
-            if (AProperties.GetParameter("param_chkMailable") == null)
-            {
-                chkMailable.Checked = true;
-            }
-
-            if (AProperties.GetParameter("param_chkRespectNoSolicitors") == null)
-            {
-                chkRespectNoSolicitors.Checked = true;
-            }
+            SetdtpControlManual(dtpStartDateFrom, AProperties.Get("param_start_date_from"));
+            SetdtpControlManual(dtpStartDateTo, AProperties.Get("param_start_date_to"));
+            SetdtpControlManual(dtpEndDateFrom, AProperties.Get("param_end_date_from"));
+            SetdtpControlManual(dtpEndDateTo, AProperties.Get("param_end_date_to"));
+            SetdtpControlManual(dtpDateValidOn, AProperties.Get("param_date_valid_on"));
 
             /*
              * For some reason, when setting a textbox to have the
              * class PartnerKey we lose the automatic SetControls()
              * and ReadControls() stuff for them.
              */
-            if (AProperties.GetParameter("param_txtFieldReceiving") != null)
+            if (AProperties.GetParameter("param_field_receiving") != null)
             {
-                txtFieldReceiving.Text = AProperties.Get("param_txtFieldReceiving").ToString();
+                txtFieldReceiving.Text = AProperties.Get("param_field_receiving").ToString();
             }
 
-            if (AProperties.GetParameter("param_txtFieldSending") != null)
+            if (AProperties.GetParameter("param_field_sending") != null)
             {
-                txtFieldSending.Text = AProperties.Get("param_txtFieldSending").ToString();
+                txtFieldSending.Text = AProperties.Get("param_field_sending").ToString();
             }
 
             chkCommitmentStatus_Changed(chkCommitmentStatus, null);

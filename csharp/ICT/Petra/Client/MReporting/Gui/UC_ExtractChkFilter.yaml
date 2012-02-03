@@ -7,9 +7,7 @@ RootNode:
     FormType: edit
     Template: usercontrolUnbound
     Controls:
-        pnlExtractOptions:
-            ControlsOrientation: horizontal
-            Dock: Fill
+        grpExtractOptions: {NoLabel=true}
             Controls:
                 Row0: [chkActivePartners]
                 Row1: [chkMailingAddressesOnly]
@@ -17,6 +15,6 @@ RootNode:
                 Row3: [chkExcludeNoSolicitations]
 
         chkActivePartners: {Label=Active Partners Only, CheckBoxAttachedLabel=right,ParameterName=param_active}
-        chkMailingAddressesOnly: {Label=Mailing Addresses Only, CheckBoxAttachedLabel=right, ParameterName=param_mailingAddressesOnly}
-        chkFamiliesOnly: {Label=Families Only, CheckBoxAttachedLabel=right, ParameterName=param_familiesOnly}
-        chkExcludeNoSolicitations: {Label=Exclude 'No Solicitations', CheckBoxAttachedLabel=right, ParameterName=param_excludeNoSolicitations}
+        chkMailingAddressesOnly: {Label=Mailing Addresses Only, CheckBoxAttachedLabel=right, ParameterName=param_mailing_addresses_only}
+        chkFamiliesOnly: {Label=Families Only, CheckBoxAttachedLabel=right, ParameterName=param_families_only}
+        chkExcludeNoSolicitations: {Label=Exclude 'No Solicitations', CheckBoxAttachedLabel=right, ParameterName=param_exclude_no_solicitations}

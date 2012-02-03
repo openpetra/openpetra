@@ -85,6 +85,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// </summary>
         private void InitializeManualCode()
         {
+            tbbSave.Visible = false;
         }
 
         /// <summary>
@@ -101,6 +102,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="e"></param>
         private void DeleteRow(System.Object sender, EventArgs e)
         {
+            ucoExtractMasterList.DeleteRow(sender, e);
         }
 
         #endregion

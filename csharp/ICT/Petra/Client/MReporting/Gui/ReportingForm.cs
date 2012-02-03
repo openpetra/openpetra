@@ -392,11 +392,36 @@ namespace Ict.Petra.Client.MReporting.Gui
                 return;
             }
 
+            // open dialog to prompt the user to enter a name for new extract
+            TFrmExtractNamingDialog ExtractNameDialog = new TFrmExtractNamingDialog(this.FWinForm);
+            string ExtractName;
+            string ExtractDescription;
+
+            ExtractNameDialog.ShowDialog();
+
+            if (ExtractNameDialog.DialogResult != System.Windows.Forms.DialogResult.Cancel)
+            {
+                /* Get values from the Dialog */
+                ExtractNameDialog.GetReturnedParameters(out ExtractName, out ExtractDescription);
+            }
+            else
+            {
+                // dialog was cancelled, do not continue with extract generation
+                return;
+            }
+
+            ExtractNameDialog.Dispose();
+
             // read the settings and parameters from the controls
             if (!ReadControlsWithErrorHandling(TReportActionEnum.raGenerate))
             {
                 return;
             }
+
+            // add extract name and description to parameter list
+            // (don't add it earlier as the list gets cleared while reading controls from screens)
+            FCalculator.AddParameter("param_extract_name", ExtractName);
+            FCalculator.AddParameter("param_extract_description", ExtractDescription);
 
             if (TClientSettings.DebugLevel >= TClientSettings.DEBUGLEVEL_REPORTINGDATA)
             {
@@ -497,6 +522,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
 
             // at the moment triggers same procedure as generating a report
+            FCalculator.CalculatesExtract = true;
             GenerateReport();
         }
 

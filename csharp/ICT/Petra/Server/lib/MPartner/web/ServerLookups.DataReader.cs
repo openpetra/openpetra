@@ -73,7 +73,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         {
             PUnitTable UnitTable = new PUnitTable();
             PUnitRow UnitRow;
-            PUnitRow TemplateRow = (PUnitRow)UnitTable.NewRow();
 
             TDBTransaction ReadTransaction;
             Boolean NewTransaction = false;

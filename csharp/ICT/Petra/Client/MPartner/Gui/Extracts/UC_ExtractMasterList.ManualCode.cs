@@ -54,6 +54,37 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             return ReturnValue;
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void DeleteRow(System.Object sender, EventArgs e)
+        {
+            if (MessageBox.Show(String.Format(Catalog.GetString(
+                            "You have choosen to delete this value ({0}).\n\nDo you really want to delete it?"),
+                        FPreviouslySelectedDetailRow.ExtractName), Catalog.GetString("Confirm Delete"),
+                    MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
+            {
+                int rowIndex = CurrentRowIndex();
+
+                // delete extract on the server (needs cascading delete)
+                TRemote.MPartner.Partner.WebConnectors.DeleteExtract(FPreviouslySelectedDetailRow.ExtractId);
+
+                // now delete it in the grid
+                FPreviouslySelectedDetailRow.Delete();
+
+
+                SelectByIndex(rowIndex);
+
+                if (grdDetails.Rows.Count <= 1)
+                {
+                    // disable buttons if no record in grid (first row for headings)
+                    btnDelete.Enabled = false;
+                }
+            }
+        }
+
         #endregion
 
         #region Private Methods
@@ -117,13 +148,42 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         {
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void DeleteRow(System.Object sender, EventArgs e)
+        private int CurrentRowIndex()
         {
+            int rowIndex = -1;
+
+            SourceGrid.RangeRegion selectedRegion = grdDetails.Selection.GetSelectionRegion();
+
+            if ((selectedRegion != null) && (selectedRegion.GetRowsIndex().Length > 0))
+            {
+                rowIndex = selectedRegion.GetRowsIndex()[0];
+            }
+
+            return rowIndex;
+        }
+
+        private void SelectByIndex(int rowIndex)
+        {
+            if (rowIndex >= grdDetails.Rows.Count)
+            {
+                rowIndex = grdDetails.Rows.Count - 1;
+            }
+
+            if ((rowIndex < 1) && (grdDetails.Rows.Count > 1))
+            {
+                rowIndex = 1;
+            }
+
+            if ((rowIndex >= 1) && (grdDetails.Rows.Count > 1))
+            {
+                grdDetails.Selection.SelectRow(rowIndex, true);
+                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+                ShowDetails(FPreviouslySelectedDetailRow);
+            }
+            else
+            {
+                FPreviouslySelectedDetailRow = null;
+            }
         }
 
         #endregion

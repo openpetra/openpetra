@@ -56,6 +56,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             }
         }
 
+        private void InitializeManualCode()
+        {
+            ucoChkFilter.ShowFamiliesOnly(false);
+        }
+
         /// <summary>
         /// only run this code once during activation
         /// </summary>
@@ -96,18 +101,22 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             clbEvent.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
             clbEvent.AddTextColumn(Catalog.GetString("Event Name"), NewTable.Columns[DisplayMember], 240);
             clbEvent.AddTextColumn(Catalog.GetString("Partner Key"), NewTable.Columns[ValueMember], 80);
-            clbEvent.AddTextColumn(Catalog.GetString("Event Code"), NewTable.Columns[EventCodeMember], 80);
 
             // outreach/event code column only needed in case of displaying Outreaches
             if (!FCalledForConferences)
             {
-                clbEvent.AddTextColumn(Catalog.GetString("Event Code"), NewTable.Columns[EventCodeMember], 80);
+                clbEvent.AddTextColumn(Catalog.GetString("Event Code"), NewTable.Columns[EventCodeMember], 110);
             }
 
             clbEvent.DataBindGrid(NewTable, DisplayMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
 
             //TODO: only temporarily until settings file exists
             clbEvent.SetCheckedStringList("");
+
+            if (FCalledFromExtracts)
+            {
+                tpgColumns.Visible = false;
+            }
         }
 
         private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)

@@ -2738,6 +2738,18 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
         }
 
         /// generated method from connector
+        public Boolean DeleteExtract(System.Int32 AExtractId)
+        {
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.DeleteExtract(AExtractId);
+        }
+
+        /// generated method from connector
+        public Boolean ExtractExists(String AExtractName)
+        {
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.ExtractExists(AExtractName);
+        }
+
+        /// generated method from connector
         public System.Boolean ChangeFamily(Int64 APersonKey,
                                            Int64 AOldFamilyKey,
                                            Int64 ANewFamilyKey,
