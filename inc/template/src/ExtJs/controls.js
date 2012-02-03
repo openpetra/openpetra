@@ -1,5 +1,6 @@
 {##ROWDEFINITION}
 {
+    xtype: 'container',
     layout:'column',
     border:false,
     items: [{#ITEMS}]
@@ -11,7 +12,7 @@
 {#IFDEF LABELWIDTH}
     labelWidth: {#LABELWIDTH},
 {#ENDIF LABELWIDTH}
-    layout: 'form',
+    layout: 'anchor',
     border:false,
     items: [{#ITEM}]
 }
@@ -21,6 +22,10 @@
     xtype: 'fieldset',
     columnWidth: 1.0,
     border:false,
+    defaults: {
+        anchor: '100%',
+        hideEmptyLabel: false
+    },
     items: [{#ITEMS}]
 }
 
@@ -51,6 +56,9 @@
 {#IFDEF INPUTTYPE}
     inputType: '{#INPUTTYPE}',
 {#ENDIF INPUTTYPE}
+{#IFDEF REGEX}
+    regex: new RegExp("{#REGEX}"),
+{#ENDIF REGEX}
 {#IFDEF HIDELABEL}
     hideLabel: {#HIDELABEL},
 {#ENDIF HIDELABEL}
@@ -172,20 +180,20 @@
 },
 {
     columnWidth:1,
-    layout: 'form',
+    layout: 'anchor',
     border:false,
     items: [{
                 xtype: 'displayfield',
                 fieldLabel: this.{#LABEL}+' *',
                 allowBlank: false,
                 width: 300,
-                html: '<img id="photoPreview" src="../../img/default_blank.gif" style="width:120px; height:160px; border-style: dotted; border-width: 1px; align: right"></div>',
+                html: '<div><img id="photoPreview" src="../../img/default_blank.gif" style="width:120px; height:160px; border-style: dotted; border-width: 1px; align: right"></img><div id="uploadDiv" style="position:relative;top:-160px;left:125px;"/></div>',
                 name: '{#ITEMNAME}',
                 id: '{#ITEMNAME}',
                 anchor: '97.5%'
     }]
 }
-
+    
 {##CHECKBOXDEFINITION}
 {
     xtype: '{#XTYPE}',
@@ -216,8 +224,9 @@
 }
 
 {##COMBOBOXDEFINITION}
-new Ext.form.ComboBox({
-    hiddenName:'{#ITEMNAME}',
+Ext.create('Ext.form.field.ComboBox',
+  {
+    name:'{#ITEMNAME}',
     store: new Ext.data.ArrayStore({
         fields: ['value', 'display'],
         data : {#OPTIONALVALUESARRAY}
@@ -241,7 +250,8 @@ new Ext.form.ComboBox({
     allowBlank: false,
 {#ENDIFN ALLOWBLANK}
     selectOnFocus:true,
-    width: {#WIDTH}
+    labelWidth: {#LABELWIDTH},
+    width: {#WIDTH} + {#LABELWIDTH}
 })
 
 {##GRIDDEFINITION}

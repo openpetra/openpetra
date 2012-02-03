@@ -13,6 +13,7 @@ NUnit.Extensions.Forms*=${dir.3rdParty}/NUnit/NUnitForms.dll
 log4net*=${dir.3rdParty}/log4net/log4net.dll
 Mono.Data.Sqlite=${dir.3rdParty}/SQLite/Mono.Data.Sqlite.dll
 System.Data.SQLite*=${dir.3rdParty}/SQLite/System.Data.SQLite.DLL
+OpenQA.Selenium*=${dir.3rdParty}/Selenium/WebDriver.dll
 Accessibility=${csharpStdLibs}/Accessibility.dll
 System.Collections.Generic=${csharpStdLibs}/System.Core.dll
 System.Configuration=${csharpStdLibs}/System.Configuration.dll

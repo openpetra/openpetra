@@ -183,7 +183,9 @@ public class TOpenPetraOrg : WebService
             DBAccess.GDBAccessObj.CloseDBConnection();
         }
 
-        Session.Abandon();
+        // Session Abandon causes problems in Mono 2.10.x see https://bugzilla.novell.com/show_bug.cgi?id=669807
+        // TODO Session.Abandon();
+        Session.Clear();
     }
 
     /// <summary>

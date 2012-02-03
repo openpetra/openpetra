@@ -32,7 +32,7 @@ try
         Response.ClearHeaders();         
         Response.ContentType = "image/jpeg";
         Response.AppendHeader("Content-Disposition","attachment; filename=" + HttpContext.Current.Request.Params["filename"]);
-        Response.TransmitFile( Filename );
+        Response.WriteFile( Filename );
         File.Delete(Filename);
         // Response.End(); avoid System.Threading.ThreadAbortException 
     }

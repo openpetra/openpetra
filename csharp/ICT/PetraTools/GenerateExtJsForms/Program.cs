@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,6 +24,7 @@
 using System;
 using System.Xml;
 using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.IO;
 using Ict.Common;
 using Ict.Common.IO; // Implicit referemce
@@ -74,14 +75,36 @@ namespace Ict.Tools.GenerateExtJsForms
 
         private static void ProcessDirectory(string ADirName, string ASelectedLocalisation)
         {
+            List <string>FilesToProcess = new List <string>();
+            List <string>AbstractFiles = new List <string>();
+
             foreach (string file in System.IO.Directory.GetFiles(ADirName, "*.yaml"))
             {
-                // only look for main files, not language specific files (*.XY.yaml or *.xy-xy.yaml")
-                if ((file[file.Length - 8] != '.') && (file[file.Length - 8] != '-'))
+                string baseyaml;
+                
+                if (TYml2Xml.ReadHeader(file, out baseyaml))
                 {
-                    Console.WriteLine("working on " + file);
-                    ProcessFile(file, ASelectedLocalisation);
+                    if (!AbstractFiles.Contains(baseyaml))
+                    {
+                        AbstractFiles.Add(baseyaml);
+
+                        if (FilesToProcess.Contains(baseyaml))
+                        {
+                            FilesToProcess.Remove(baseyaml);
+                        }
+                    }
+
+                    if (!AbstractFiles.Contains(Path.GetFileName(file)) && !FilesToProcess.Contains(Path.GetFileName(file)))
+                    {
+                        FilesToProcess.Add(Path.GetFileName(file));
+                    }
                 }
+            }
+
+            foreach (string file in FilesToProcess)
+            {
+                Console.WriteLine("working on " + file);
+                ProcessFile(ADirName + Path.DirectorySeparatorChar + file, ASelectedLocalisation);
             }
 
             foreach (string subdir in System.IO.Directory.GetDirectories(ADirName))
@@ -104,6 +127,8 @@ namespace Ict.Tools.GenerateExtJsForms
                 {
                     new TLogging("generateextjsforms.log");
                 }
+
+                TLogging.DebugLevel = TAppSettingsManager.GetInt16("DebugLevel", 0);
 
                 if (!TAppSettingsManager.HasValue("ymlfile"))
                 {
@@ -173,7 +198,7 @@ namespace Ict.Tools.GenerateExtJsForms
                 }
 
                 // do not print a stacktrace for custom generated exception, eg. by the YML parser
-                if (e.GetType() != typeof(System.Exception))
+                if ((e.GetType() != typeof(System.Exception)) || (TLogging.DebugLevel > 0))
                 {
                     Console.WriteLine(e.StackTrace);
                 }

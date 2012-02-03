@@ -18,6 +18,7 @@ RootNode:
                 Row2: [rgrGender]
                 Row2b: [rgrCountry]
                 Row3: [txtMyText]
+                Row3a: [txtMyTextDigitsOnly]
                 Row3b: [dtpDateOfBirth]
                 Row3c: [cmbDOBDay, cmbDOBMonth, cmbDOBYear]
                 Row4: [cmbTShirtSize]
@@ -27,6 +28,7 @@ RootNode:
             Buttons: [btnConfirm]
         txtEmail: {vtype=email}
         txtMyText: {Multiline=true}
+        txtMyTextDigitsOnly: {regex="^[0-9]+$"}
         rgrGender:
             OptionalValues: [male, female]
         rgrCountry:
