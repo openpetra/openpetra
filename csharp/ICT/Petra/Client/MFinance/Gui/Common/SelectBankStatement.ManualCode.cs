@@ -138,7 +138,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
 
                 IImportBankStatement ImportBankStatement = (IImportBankStatement)Activator.CreateInstance(CustomClass);
 
-                if (ImportBankStatement.ImportBankStatement(out FStatementKey, DlgImport.FAccountCode))
+                if (ImportBankStatement.ImportBankStatement(out FStatementKey, FLedgerNumber, DlgImport.FAccountCode))
                 {
                     this.DialogResult = DialogResult.OK;
                     this.Close();
