@@ -976,7 +976,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
 
                     PmJobAssignmentRow JobAssignmentRowOrigin;
 
-                    
+
                     PmJobAssignmentTableSubmit = AInspectDS.PmJobAssignment;
 
                     // every job_assignment_row needs to have a row that it references in um_job
@@ -985,13 +985,13 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                         if (JobAssignmentRow.RowState != DataRowState.Deleted)
                         {
                             JobTableTemp = UmJobAccess.LoadByPrimaryKey(JobAssignmentRow.UnitKey,
-                                                                        JobAssignmentRow.PositionName,
-                                                                        JobAssignmentRow.PositionScope,
-                                                                        JobAssignmentRow.JobKey,
-                                                                        ASubmitChangesTransaction);
+                                JobAssignmentRow.PositionName,
+                                JobAssignmentRow.PositionScope,
+                                JobAssignmentRow.JobKey,
+                                ASubmitChangesTransaction);
 
                             // if no corresponding job record found then we need to create one
-                            // (job key was already set on client side to new value so merging back to the 
+                            // (job key was already set on client side to new value so merging back to the
                             // client does not cause problems because of primary key change)
                             if (JobTableTemp.Count == 0)
                             {
@@ -1006,9 +1006,9 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                                 JobRow.CommitmentPeriod = "None";
                                 JobRow.TrainingPeriod = "None";
 
-                                // Need to update the JobKey field in job assignment table record from job record 
+                                // Need to update the JobKey field in job assignment table record from job record
                                 JobAssignmentRow.JobKey = JobRow.JobKey;
-                                
+
                                 JobTableSubmit.Rows.Add(JobRow);
                             }
                             else
@@ -1031,16 +1031,16 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                         {
                             SubmissionResult = TSubmitChangesResult.scrError;
                             AVerificationResult.AddCollection(SingleVerificationResultCollection);
-    #if DEBUGMODE
+#if DEBUGMODE
                             if (TLogging.DL >= 9)
                             {
                                 Console.WriteLine(Messages.BuildMessageFromVerificationResult(
                                         "TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
                             }
-    #endif
+#endif
                         }
                     }
-                    
+
                     if (PmJobAssignmentAccess.SubmitChanges(PmJobAssignmentTableSubmit, ASubmitChangesTransaction,
                             out SingleVerificationResultCollection))
                     {

@@ -349,21 +349,21 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
 
                     // Set the job key before data sets are merged so the primary key of job assignment record
-                    // does not have to be changed later. If UmJob record does not exist yet new key is set 
+                    // does not have to be changed later. If UmJob record does not exist yet new key is set
                     // here but UmJob record still has to be created on server side.
                     foreach (PmJobAssignmentRow JobAssignmentRow in FMainDS.PmJobAssignment.Rows)
                     {
-                        if (JobAssignmentRow.RowState != DataRowState.Deleted
-                            && JobAssignmentRow.JobKey < 0)
+                        if ((JobAssignmentRow.RowState != DataRowState.Deleted)
+                            && (JobAssignmentRow.JobKey < 0))
                         {
-                            JobAssignmentRow.JobKey 
+                            JobAssignmentRow.JobKey
                                 = TRemote.MPersonnel.WebConnectors.GetOrCreateUmJobKey
-                                                                (JobAssignmentRow.PartnerKey,
-                                                                 JobAssignmentRow.PositionName,
-                                                                 JobAssignmentRow.PositionScope);
+                                      (JobAssignmentRow.PartnerKey,
+                                      JobAssignmentRow.PositionName,
+                                      JobAssignmentRow.PositionScope);
                         }
                     }
-                    
+
                     FPartnerEditTDS.Tables[PmJobAssignmentTable.GetTableName()].Rows.Clear();
                     FPartnerEditTDS.Tables[PmJobAssignmentTable.GetTableName()].Merge(FMainDS.PmJobAssignment);
                 }

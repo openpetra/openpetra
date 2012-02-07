@@ -130,17 +130,17 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
         {
             int JobKey;
             bool NewTransaction;
-            
+
             UmJobTable JobTableTemp = new UmJobTable();
             UmJobRow TemplateRow = (UmJobRow)JobTableTemp.NewRow();
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
-            
+
             TemplateRow.UnitKey = AUnitKey;
             TemplateRow.PositionName = APositionName;
             TemplateRow.PositionScope = APositionScope;
             JobTableTemp = UmJobAccess.LoadUsingTemplate(TemplateRow, Transaction);
-    
+
             // if no corresponding job record found then we need to create a new job key
             if (JobTableTemp.Count == 0)
             {
