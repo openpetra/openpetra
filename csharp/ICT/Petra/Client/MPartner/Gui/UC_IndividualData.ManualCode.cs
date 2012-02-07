@@ -29,11 +29,13 @@ using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
+
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -346,6 +348,22 @@ namespace Ict.Petra.Client.MPartner.Gui
                         FPartnerEditTDS.Tables.Add(new PmJobAssignmentTable());
                     }
 
+                    // Set the job key before data sets are merged so the primary key of job assignment record
+                    // does not have to be changed later. If UmJob record does not exist yet new key is set 
+                    // here but UmJob record still has to be created on server side.
+                    foreach (PmJobAssignmentRow JobAssignmentRow in FMainDS.PmJobAssignment.Rows)
+                    {
+                        if (JobAssignmentRow.RowState != DataRowState.Deleted
+                            && JobAssignmentRow.JobKey < 0)
+                        {
+                            JobAssignmentRow.JobKey 
+                                = TRemote.MPersonnel.WebConnectors.GetOrCreateUmJobKey
+                                                                (JobAssignmentRow.PartnerKey,
+                                                                 JobAssignmentRow.PositionName,
+                                                                 JobAssignmentRow.PositionScope);
+                        }
+                    }
+                    
                     FPartnerEditTDS.Tables[PmJobAssignmentTable.GetTableName()].Rows.Clear();
                     FPartnerEditTDS.Tables[PmJobAssignmentTable.GetTableName()].Merge(FMainDS.PmJobAssignment);
                 }

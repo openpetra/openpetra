@@ -970,11 +970,13 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                     && (AInspectDS.PmJobAssignment.Rows.Count > 0))
                 {
                     UmJobTable JobTableTemp = new UmJobTable();
-                    UmJobRow TemplateRow = (UmJobRow)JobTableTemp.NewRow();
 
                     UmJobTable JobTableSubmit = new UmJobTable();
                     UmJobRow JobRow;
 
+                    PmJobAssignmentRow JobAssignmentRowOrigin;
+
+                    
                     PmJobAssignmentTableSubmit = AInspectDS.PmJobAssignment;
 
                     // every job_assignment_row needs to have a row that it references in um_job
@@ -982,12 +984,15 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                     {
                         if (JobAssignmentRow.RowState != DataRowState.Deleted)
                         {
-                            TemplateRow.UnitKey = JobAssignmentRow.UnitKey;
-                            TemplateRow.PositionName = JobAssignmentRow.PositionName;
-                            TemplateRow.PositionScope = JobAssignmentRow.PositionScope;
-                            JobTableTemp = UmJobAccess.LoadUsingTemplate(TemplateRow, ASubmitChangesTransaction);
+                            JobTableTemp = UmJobAccess.LoadByPrimaryKey(JobAssignmentRow.UnitKey,
+                                                                        JobAssignmentRow.PositionName,
+                                                                        JobAssignmentRow.PositionScope,
+                                                                        JobAssignmentRow.JobKey,
+                                                                        ASubmitChangesTransaction);
 
                             // if no corresponding job record found then we need to create one
+                            // (job key was already set on client side to new value so merging back to the 
+                            // client does not cause problems because of primary key change)
                             if (JobTableTemp.Count == 0)
                             {
                                 JobRow = (UmJobRow)JobTableSubmit.NewRow();
@@ -995,7 +1000,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                                 JobRow.UnitKey = JobAssignmentRow.UnitKey;
                                 JobRow.PositionName = JobAssignmentRow.PositionName;
                                 JobRow.PositionScope = JobAssignmentRow.PositionScope;
-                                JobRow.JobKey = Convert.ToInt32(MCommon.WebConnectors.TSequenceWebConnector.GetNextSequence(TSequenceNames.seq_job));
+                                JobRow.JobKey = JobAssignmentRow.JobKey;
                                 JobRow.FromDate = JobAssignmentRow.FromDate;
                                 JobRow.ToDate = JobAssignmentRow.ToDate;
                                 JobRow.CommitmentPeriod = "None";
