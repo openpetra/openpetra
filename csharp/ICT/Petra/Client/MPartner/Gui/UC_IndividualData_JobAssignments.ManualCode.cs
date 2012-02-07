@@ -31,7 +31,9 @@ using Ict.Common.Controls;
 using Ict.Common.Remoting.Client;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MPartner;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
@@ -109,21 +111,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             ARow.PositionName = "";
             ARow.PositionScope = "O";
             ARow.FromDate = DateTime.Now.Date;
-            // do we need to preselect a default job?
-            ARow.JobKey = -1;
-
-            // need to increase the sequence number
-            int maxNegativeSequence = -1;
-
-            foreach (PmJobAssignmentRow row in FMainDS.PmJobAssignment.Rows)
-            {
-                if (row.JobAssignmentKey <= maxNegativeSequence)
-                {
-                    maxNegativeSequence = row.JobAssignmentKey - 1;
-                }
-            }
-
-            ARow.JobAssignmentKey = maxNegativeSequence;
+            ARow.JobKey = Convert.ToInt32(TRemote.MCommon.WebConnectors.GetNextSequence(TSequenceNames.seq_job));
+            ARow.JobAssignmentKey = Convert.ToInt32(TRemote.MCommon.WebConnectors.GetNextSequence(TSequenceNames.seq_job_assignment));
         }
 
         private void DeleteRow(System.Object sender, EventArgs e)

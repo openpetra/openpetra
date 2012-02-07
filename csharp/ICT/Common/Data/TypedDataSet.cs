@@ -455,46 +455,11 @@ namespace Ict.Common.Data
         }
 
         /// <summary>
-        /// merge the updated sequence numbers of new rows
-        /// </summary>
-        /// <param name="ATable"></param>
-        private void MergeSequences(DataTable ATable)
-        {
-            if (ATable != null)
-            {
-                for (int counter = 0; counter < ATable.Rows.Count; counter++)
-                {
-                    DataRow row = ATable.Rows[counter];
-
-                    foreach (DataColumn col in ATable.PrimaryKey)
-                    {
-                        if ((row[col] != null)
-                            && ((row[col].GetType() == typeof(Int32))
-                                || (row[col].GetType() == typeof(Int64))
-                                || (row[col].GetType() == typeof(Int16)))
-                            && (Convert.ToInt64(row[col]) < 0))
-                        {
-                            // drop this row since it must be replaced with a row from the merged table
-                            ATable.Rows.Remove(row);
-                            counter--;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        /// <summary>
         /// overload that makes sure that the typed tables are mapped again
         /// </summary>
         /// <param name="ATable"></param>
         public new void Merge(DataTable ATable)
         {
-            if (ATable != null)
-            {
-                MergeSequences(this.Tables[ATable.TableName]);
-            }
-
             base.Merge(ATable);
             MapTables();
         }
@@ -505,13 +470,6 @@ namespace Ict.Common.Data
         /// <param name="ADataSet"></param>
         public new void Merge(DataSet ADataSet)
         {
-            // check new rows for sequence values in the primary key, that are negative in this dataset
-            // update with the new sequence number from the updated ADataSet
-            foreach (DataTable table in this.Tables)
-            {
-                MergeSequences(table);
-            }
-
             base.Merge(ADataSet);
             MapTables();
         }
@@ -521,13 +479,6 @@ namespace Ict.Common.Data
         /// </summary>
         public new void Merge(DataSet ADataSet, bool APreserveChanges)
         {
-            // check new rows for sequence values in the primary key, that are negative in this dataset
-            // update with the new sequence number from the updated ADataSet
-            foreach (DataTable table in this.Tables)
-            {
-                MergeSequences(table);
-            }
-
             base.Merge(ADataSet, APreserveChanges);
             MapTables();
         }
