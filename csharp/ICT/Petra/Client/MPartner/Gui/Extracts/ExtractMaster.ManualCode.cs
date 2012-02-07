@@ -43,7 +43,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
     public partial class TFrmExtractMaster
     {
         /// <summary>holds the DataSet that contains most data that is used on the screen</summary>
-        private ExtractTDS FMainDS;
+        private ExtractTDS FMainDS = null;
 
         #region Public Methods
 

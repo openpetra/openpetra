@@ -111,7 +111,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             ARow.PositionName = "";
             ARow.PositionScope = "O";
             ARow.FromDate = DateTime.Now.Date;
-            ARow.JobKey = Convert.ToInt32(TRemote.MCommon.WebConnectors.GetNextSequence(TSequenceNames.seq_job));
+
+            // set job key to random value for now as this will be set correctly during saving on server side
+            // depending on if job record already exists or not
+            ARow.JobKey = -1;
             ARow.JobAssignmentKey = Convert.ToInt32(TRemote.MCommon.WebConnectors.GetNextSequence(TSequenceNames.seq_job_assignment));
         }
 

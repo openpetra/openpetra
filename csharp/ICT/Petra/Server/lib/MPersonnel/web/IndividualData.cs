@@ -52,6 +52,7 @@ using Ict.Petra.Server.MPersonnel.Units.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MCommon.Cacheable;
 using Ict.Petra.Server.MCommon.UIConnectors;
+using Ict.Petra.Server.MCommon.WebConnectors;
 using Ict.Petra.Server.MPartner;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Cacheable;
@@ -969,10 +970,12 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                     && (AInspectDS.PmJobAssignment.Rows.Count > 0))
                 {
                     UmJobTable JobTableTemp = new UmJobTable();
-                    UmJobRow TemplateRow = (UmJobRow)JobTableTemp.NewRow();
 
                     UmJobTable JobTableSubmit = new UmJobTable();
                     UmJobRow JobRow;
+
+                    PmJobAssignmentRow JobAssignmentRowOrigin;
+
 
                     PmJobAssignmentTableSubmit = AInspectDS.PmJobAssignment;
 
@@ -981,12 +984,15 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                     {
                         if (JobAssignmentRow.RowState != DataRowState.Deleted)
                         {
-                            TemplateRow.UnitKey = JobAssignmentRow.UnitKey;
-                            TemplateRow.PositionName = JobAssignmentRow.PositionName;
-                            TemplateRow.PositionScope = JobAssignmentRow.PositionScope;
-                            JobTableTemp = UmJobAccess.LoadUsingTemplate(TemplateRow, ASubmitChangesTransaction);
+                            JobTableTemp = UmJobAccess.LoadByPrimaryKey(JobAssignmentRow.UnitKey,
+                                JobAssignmentRow.PositionName,
+                                JobAssignmentRow.PositionScope,
+                                JobAssignmentRow.JobKey,
+                                ASubmitChangesTransaction);
 
                             // if no corresponding job record found then we need to create one
+                            // (job key was already set on client side to new value so merging back to the
+                            // client does not cause problems because of primary key change)
                             if (JobTableTemp.Count == 0)
                             {
                                 JobRow = (UmJobRow)JobTableSubmit.NewRow();
@@ -994,35 +1000,16 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                                 JobRow.UnitKey = JobAssignmentRow.UnitKey;
                                 JobRow.PositionName = JobAssignmentRow.PositionName;
                                 JobRow.PositionScope = JobAssignmentRow.PositionScope;
-                                JobRow.JobKey = -1;
+                                JobRow.JobKey = JobAssignmentRow.JobKey;
                                 JobRow.FromDate = JobAssignmentRow.FromDate;
                                 JobRow.ToDate = JobAssignmentRow.ToDate;
                                 JobRow.CommitmentPeriod = "None";
                                 JobRow.TrainingPeriod = "None";
 
+                                // Need to update the JobKey field in job assignment table record from job record
+                                JobAssignmentRow.JobKey = JobRow.JobKey;
+
                                 JobTableSubmit.Rows.Add(JobRow);
-
-                                if (UmJobAccess.SubmitChanges(JobTableSubmit, ASubmitChangesTransaction,
-                                        out SingleVerificationResultCollection))
-                                {
-                                    SubmissionResult = TSubmitChangesResult.scrOK;
-
-                                    // Need to update the JobKey field from job table in job assignment table.
-                                    // This was set during SubmitChanges of the job table.
-                                    JobAssignmentRow.JobKey = JobRow.JobKey;
-                                }
-                                else
-                                {
-                                    SubmissionResult = TSubmitChangesResult.scrError;
-                                    AVerificationResult.AddCollection(SingleVerificationResultCollection);
-#if DEBUGMODE
-                                    if (TLogging.DL >= 9)
-                                    {
-                                        Console.WriteLine(Messages.BuildMessageFromVerificationResult(
-                                                "TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
-                                    }
-#endif
-                                }
                             }
                             else
                             {
@@ -1030,6 +1017,27 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                                 // the Job Assignment Record from Job Row
                                 JobAssignmentRow.JobKey = ((UmJobRow)JobTableTemp.Rows[0]).JobKey;
                             }
+                        }
+                    }
+
+                    if (JobTableSubmit.Rows.Count > 0)
+                    {
+                        if (UmJobAccess.SubmitChanges(JobTableSubmit, ASubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                            AVerificationResult.AddCollection(SingleVerificationResultCollection);
+#if DEBUGMODE
+                            if (TLogging.DL >= 9)
+                            {
+                                Console.WriteLine(Messages.BuildMessageFromVerificationResult(
+                                        "TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
+                            }
+#endif
                         }
                     }
 

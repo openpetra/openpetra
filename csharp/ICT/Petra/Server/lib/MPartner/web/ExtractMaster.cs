@@ -33,6 +33,7 @@ using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MCommon.Data.Cascading;
+using Ict.Petra.Server.App.Core.Security;
 
 namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 {
@@ -45,6 +46,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// retrieve all extract master records
         /// </summary>
         /// <returns>returns table filled with all extract headers</returns>
+        [RequireModulePermission("PTNRUSER")]
         public static MExtractMasterTable GetAllExtractHeaders()
         {
             MExtractMasterTable ExtractMasterDT;
@@ -62,6 +64,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// </summary>
         /// <param name="AExtractId"></param>
         /// <returns>returns true if deletion was successful</returns>
+        [RequireModulePermission("PTNRUSER")]
         public static Boolean DeleteExtract(int AExtractId)
         {
             Boolean ReturnValue = true;
@@ -80,6 +83,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// </summary>
         /// <param name="AExtractName"></param>
         /// <returns>returns true if extract already exists</returns>
+        [RequireModulePermission("PTNRUSER")]
         public static Boolean ExtractExists(String AExtractName)
         {
             MExtractMasterTable TemplateTable;
