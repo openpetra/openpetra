@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -854,7 +854,7 @@ namespace Ict.Petra.WebServer.MConference
                 this.Response.Clear();
                 this.Response.ContentType = "application/pdf";
                 this.Response.AddHeader("Content-Type", "application/pdf");
-                this.Response.AddHeader("Content-Disposition", "attachment; filename=" + row.PartnerKey.ToString());
+                this.Response.AddHeader("Content-Disposition", "attachment; filename=" + row.PartnerKey.ToString() + ".pdf");
                 this.Response.WriteFile(pdfFilename);
                 // this.Response.End(); avoid System.Threading.ThreadAbortException
             }
