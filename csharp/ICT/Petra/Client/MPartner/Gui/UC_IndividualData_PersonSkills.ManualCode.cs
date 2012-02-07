@@ -28,7 +28,9 @@ using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MPartner;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
@@ -107,7 +109,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void NewRowManual(ref PmPersonSkillRow ARow)
         {
-            ARow.PersonSkillKey = -1;   // TODO: need to generate new integer key each time...
+            ARow.PersonSkillKey = Convert.ToInt32(TRemote.MCommon.WebConnectors.GetNextSequence(TSequenceNames.seq_person_skill));
             ARow.PartnerKey = FMainDS.PPerson[0].PartnerKey;
         }
 

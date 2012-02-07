@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christophert
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -116,19 +116,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 EnableBudgetEntry(true);
             }
 
-            //TODO: Time will fix this so that newSequence can start at -1
-            //Needed to complicate this to handle an error when you add budgets for new years.
-            int newSequence = -1 * FMainDS.ABudget.Rows.Count;
-
-            if (FMainDS.ABudget.Rows.Find(new object[] { newSequence }) != null)
-            {
-                while (FMainDS.ABudget.Rows.Find(new object[] { newSequence }) != null)
-                {
-                    newSequence--;
-                }
-            }
-
-            ARow.BudgetSequence = newSequence;
+            ARow.BudgetSequence = Convert.ToInt32(TRemote.MCommon.WebConnectors.GetNextSequence(TSequenceNames.seq_budget));;
             ARow.LedgerNumber = FLedgerNumber;
             ARow.Revision = CreateBudgetRevisionRow(FLedgerNumber, CurrentBudgetYear);
             ARow.Year = CurrentBudgetYear;

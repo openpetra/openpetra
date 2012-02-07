@@ -48,6 +48,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// </summary>
         /// <param name="AConferenceName">match string for conference name search</param>
         /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
         public static PUnitTable GetConferenceUnits(string AConferenceName)
         {
             return GetConferenceOrOutreachUnits(true, AConferenceName);
@@ -58,6 +59,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// </summary>
         /// <param name="AOutreachName">match string for conference name search</param>
         /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
         public static PUnitTable GetOutreachUnits(string AOutreachName)
         {
             return GetConferenceOrOutreachUnits(false, AOutreachName);

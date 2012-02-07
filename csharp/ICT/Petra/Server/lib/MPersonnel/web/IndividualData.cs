@@ -52,6 +52,7 @@ using Ict.Petra.Server.MPersonnel.Units.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MCommon.Cacheable;
 using Ict.Petra.Server.MCommon.UIConnectors;
+using Ict.Petra.Server.MCommon.WebConnectors;
 using Ict.Petra.Server.MPartner;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Cacheable;
@@ -994,35 +995,16 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                                 JobRow.UnitKey = JobAssignmentRow.UnitKey;
                                 JobRow.PositionName = JobAssignmentRow.PositionName;
                                 JobRow.PositionScope = JobAssignmentRow.PositionScope;
-                                JobRow.JobKey = -1;
+                                JobRow.JobKey = Convert.ToInt32(MCommon.WebConnectors.TSequenceWebConnector.GetNextSequence(TSequenceNames.seq_job));
                                 JobRow.FromDate = JobAssignmentRow.FromDate;
                                 JobRow.ToDate = JobAssignmentRow.ToDate;
                                 JobRow.CommitmentPeriod = "None";
                                 JobRow.TrainingPeriod = "None";
 
+                                // Need to update the JobKey field in job assignment table record from job record 
+                                JobAssignmentRow.JobKey = JobRow.JobKey;
+                                
                                 JobTableSubmit.Rows.Add(JobRow);
-
-                                if (UmJobAccess.SubmitChanges(JobTableSubmit, ASubmitChangesTransaction,
-                                        out SingleVerificationResultCollection))
-                                {
-                                    SubmissionResult = TSubmitChangesResult.scrOK;
-
-                                    // Need to update the JobKey field from job table in job assignment table.
-                                    // This was set during SubmitChanges of the job table.
-                                    JobAssignmentRow.JobKey = JobRow.JobKey;
-                                }
-                                else
-                                {
-                                    SubmissionResult = TSubmitChangesResult.scrError;
-                                    AVerificationResult.AddCollection(SingleVerificationResultCollection);
-#if DEBUGMODE
-                                    if (TLogging.DL >= 9)
-                                    {
-                                        Console.WriteLine(Messages.BuildMessageFromVerificationResult(
-                                                "TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
-                                    }
-#endif
-                                }
                             }
                             else
                             {
@@ -1033,6 +1015,27 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                         }
                     }
 
+                    if (JobTableSubmit.Rows.Count > 0)
+                    {
+                        if (UmJobAccess.SubmitChanges(JobTableSubmit, ASubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                            AVerificationResult.AddCollection(SingleVerificationResultCollection);
+    #if DEBUGMODE
+                            if (TLogging.DL >= 9)
+                            {
+                                Console.WriteLine(Messages.BuildMessageFromVerificationResult(
+                                        "TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
+                            }
+    #endif
+                        }
+                    }
+                    
                     if (PmJobAssignmentAccess.SubmitChanges(PmJobAssignmentTableSubmit, ASubmitChangesTransaction,
                             out SingleVerificationResultCollection))
                     {

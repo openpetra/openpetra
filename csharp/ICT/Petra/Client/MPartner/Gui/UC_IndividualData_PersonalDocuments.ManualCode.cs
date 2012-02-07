@@ -1,4 +1,4 @@
-﻿//
+//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -28,7 +28,9 @@ using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MPartner;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
@@ -106,7 +108,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void NewRowManual(ref PmDocumentRow ARow)
         {
             ARow.PartnerKey = FMainDS.PPerson[0].PartnerKey;
-            ARow.DocumentKey = -1;
+            ARow.DocumentKey = Convert.ToInt32(TRemote.MCommon.WebConnectors.GetNextSequence(TSequenceNames.seq_document));
         }
 
         private void DeleteRow(System.Object sender, EventArgs e)
