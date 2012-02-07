@@ -277,6 +277,11 @@
 <property name="DBMS.DBHostOrFile" value="127.0.0.1"
           overwrite="false"/>
 
+<!-- smtp -->
+<property name="smtp.host" value="smtp.example.org"/>
+<property name="smtp.username" value="smtpuser"/>
+<property name="smtp.password" value="YourSmtpPassword"/>
+<property name="smtp.enablessl" value="true"/>
 
 <!-- Set correct .NET platform -->
 <property name="NETframework-version" value ="4.0" overwrite="false" />

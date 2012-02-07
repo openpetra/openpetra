@@ -58,9 +58,10 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromCSV
         /// asks the user to open a csv file and imports the contents according to the config file
         /// </summary>
         /// <param name="AStatementKey">this returns the first key of a statement that was imported. depending on the implementation, several statements can be created from one file</param>
+        /// <param name="ALedgerNumber">the current ledger number</param>
         /// <param name="ABankAccountCode">the bank account against which the statement should be stored</param>
         /// <returns></returns>
-        public bool ImportBankStatement(out Int32 AStatementKey, string ABankAccountCode)
+        public bool ImportBankStatement(out Int32 AStatementKey, Int32 ALedgerNumber, string ABankAccountCode)
         {
             OpenFileDialog DialogOpen = new OpenFileDialog();
 
@@ -143,6 +144,7 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromCSV
                 stmt.Filename = BankStatementFilename.Substring(BankStatementFilename.Length - AEpStatementTable.GetFilenameLength());
             }
 
+            stmt.LedgerNumber = ALedgerNumber;
             stmt.CurrencyCode = CurrencyCode;
             stmt.BankAccountCode = ABankAccountCode;
             stmtTable.Rows.Add(stmt);
