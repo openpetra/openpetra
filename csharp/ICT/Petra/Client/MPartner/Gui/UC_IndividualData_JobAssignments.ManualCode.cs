@@ -4,8 +4,9 @@
 // @Authors:
 //       christiank
 //       dinwiggy
+//       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,6 +29,7 @@ using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Remoting.Client;
+using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.MPartner;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
@@ -107,8 +109,21 @@ namespace Ict.Petra.Client.MPartner.Gui
             ARow.PositionName = "";
             ARow.PositionScope = "O";
             ARow.FromDate = DateTime.Now.Date;
+            // do we need to preselect a default job?
             ARow.JobKey = -1;
-            ARow.JobAssignmentKey = -1;
+
+            // need to increase the sequence number
+            int maxNegativeSequence = -1;
+
+            foreach (PmJobAssignmentRow row in FMainDS.PmJobAssignment.Rows)
+            {
+                if (row.JobAssignmentKey <= maxNegativeSequence)
+                {
+                    maxNegativeSequence = row.JobAssignmentKey - 1;
+                }
+            }
+
+            ARow.JobAssignmentKey = maxNegativeSequence;
         }
 
         private void DeleteRow(System.Object sender, EventArgs e)
@@ -158,6 +173,33 @@ namespace Ict.Petra.Client.MPartner.Gui
             // the Row is actually added and this would result in the Count to be one too less, so we do the Method call here, short
             // of a non-existing 'AfterNewRowManual' Method....
             DoRecalculateScreenParts();
+        }
+
+        /// <summary>
+        /// validate the data entered, so that the caller can cancel the current operation if data is missing
+        /// </summary>
+        /// <param name="ARow"></param>
+        /// <param name="AVerifications"></param>
+        /// <returns>true if everything is fine</returns>
+        private bool ValidateDetailsManual(PmJobAssignmentRow ARow, out TVerificationResultCollection AVerifications)
+        {
+            AVerifications = new TVerificationResultCollection();
+
+            if (Convert.ToInt64(txtUnitKey.Text) == 0)
+            {
+                AVerifications.Add(new TVerificationResult(Catalog.GetString("Unit key"),
+                        Catalog.GetString("You need to select the unit that the person will work for"),
+                        TResultSeverity.Resv_Critical));
+            }
+
+            if (cmbPositionName.GetSelectedString().Length == 0)
+            {
+                AVerifications.Add(new TVerificationResult(Catalog.GetString("Position"),
+                        Catalog.GetString("You need to select the position"),
+                        TResultSeverity.Resv_Critical));
+            }
+
+            return !AVerifications.HasCriticalError();
         }
 
         /// <summary>
