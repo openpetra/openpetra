@@ -26,7 +26,7 @@
 <body>
 	<iframe id="DownloadPDFFrame" style="display:none"></iframe>
     <form runat="server">
-        <ext:ResourceManager runat="server" />
+        <ext:ResourceManager runat="server" CleanResourceUrl="false"/>
 		<ext:FormPanel 
             ID="BadgeForm" 
             runat="server"
