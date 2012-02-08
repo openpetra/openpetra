@@ -224,16 +224,16 @@ namespace Ict.Petra.Shared.MFinance
         /// ICH accounts
         public const string ICH_ACCT_DEPOSITS_WITH_ICH = "8540";
 
-        /// ICH account for International Clearing House
-        public const string ICH_ACCT_ICH = "8500";
-
         /// ICH accounts
         public const string ICH_ACCT_LOCAL_LEDGER = "8520";
 
         /// ICH accounts
+        public const string ICH_ACCT_ICH = "8500";
+
+        /// ICH accounts
         public const string ICH_ACCT_SUSPENSE_ACCOUNT = "8200";
 
-        /// standard account
+        /// ICH accounts
         public const string ICH_ACCT_SETTLEMENT = "5601";
 
         /// ICH accounts
@@ -243,7 +243,10 @@ namespace Ict.Petra.Shared.MFinance
         public const string ICH_ACCT_FOREIGN_EXPENSES_UNIDENTIFIED = "5400";
 
         /// ICH accounts
-        //public const string ICH_ACCT_LOCAL_LEDGER = "1900";
+        public const string ICH_ACCT_FOREIGN_INCOME_UNIDENTIFIED = "1900";
+
+        /// ICH
+        public const string ICH_COST_CENTRE = "0400";
 
         /// standard account
         public const string INTERNAL_XFER_ACCT = "9800";
