@@ -69,7 +69,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         /// Loads ApDocument row, and also Supplier, DocumentDetail, and AnalAttrib.
         /// </summary>
         /// <param name="ALedgerNumber"></param>
-        /// <param name="AAPNumber"></param>
+        /// <param name="APartnerKey"></param>
         /// <returns>TDS with tables loaded</returns>
         [RequireModulePermission("FINANCE-1")]
         public static AccountsPayableTDS LoadAApSupplier(Int32 ALedgerNumber, Int64 APartnerKey)
@@ -210,7 +210,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         }
 
         /// <summary>
-        /// store the AP Document (and document details)
+        /// Store the AP Documents (and matching document details and analattribs).
         ///
         /// All DataTables contained in the Typed DataSet are inspected for added,
         /// changed or deleted rows by submitting them to the DataStore.
@@ -236,56 +236,78 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             {
                 AVerificationResult = new TVerificationResultCollection();
 
-                // I want to check that the Invoice number is not blank, 
-                // and that it doesn't already exist in the database.
+                // I want to check that the Invoice numbers are not blank, 
+                // and that none of the documents already exist in the database.
 
-                AApDocumentRow NewDocRow = AInspectDS.AApDocument[0];
-                if (NewDocRow.DocumentCode.Length == 0)
+                foreach (AApDocumentRow NewDocRow in AInspectDS.AApDocument.Rows)
                 {
-                    AVerificationResult.Add(new TVerificationResult("Save AP Document", "The Document has empty Document Reference.", TResultSeverity.Resv_Noncritical));
-                    return TSubmitChangesResult.scrInfoNeeded;
-                }
-
-                { // Load via Template
-                    AApDocumentRow DocTemplateRow = AInspectDS.AApDocument.NewRowTyped(false);
-                    DocTemplateRow.LedgerNumber = NewDocRow.LedgerNumber;
-                    DocTemplateRow.PartnerKey = NewDocRow.PartnerKey;
-                    DocTemplateRow.DocumentCode = NewDocRow.DocumentCode;
-                    AApDocumentTable MatchingRecords =  AApDocumentAccess.LoadUsingTemplate(DocTemplateRow, null);
-                    if (MatchingRecords.Rows.Count > 0)
+                    if (NewDocRow.DocumentCode.Length == 0)
                     {
-                        AVerificationResult.Add(new TVerificationResult("Save AP Document", "A Document with this Reference already exists.", TResultSeverity.Resv_Noncritical));
+                        AVerificationResult.Add(new TVerificationResult("Save AP Document", "The Document has empty Document Reference.", TResultSeverity.Resv_Noncritical));
                         return TSubmitChangesResult.scrInfoNeeded;
+                    }
+
+                    if (NewDocRow.RowState == DataRowState.Added)
+                    { // Load via Template
+                        AApDocumentRow DocTemplateRow = AInspectDS.AApDocument.NewRowTyped(false);
+                        DocTemplateRow.LedgerNumber = NewDocRow.LedgerNumber;
+                        DocTemplateRow.PartnerKey = NewDocRow.PartnerKey;
+                        DocTemplateRow.DocumentCode = NewDocRow.DocumentCode;
+                        AApDocumentTable MatchingRecords = AApDocumentAccess.LoadUsingTemplate(DocTemplateRow, null);
+                        if (MatchingRecords.Rows.Count > 0)
+                        {
+                            AVerificationResult.Add(new TVerificationResult("Save AP Document", "A Document with this Reference already exists.", TResultSeverity.Resv_Noncritical));
+                            return TSubmitChangesResult.scrInfoNeeded;
+                        }
                     }
                 }
 
                 SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
                 try
                 {
-                    // set AP Number if it has not been set yet
-                    if (AInspectDS.AApDocument[0].ApNumber == -1)
+                    foreach (AccountsPayableTDSAApDocumentRow NewDocRow in AInspectDS.AApDocument.Rows)
                     {
-                        StringCollection fieldlist = new StringCollection();
-                        ALedgerTable myLedgerTable;
-                        fieldlist.Add(ALedgerTable.GetLastApInvNumberDBName());
-                        myLedgerTable = ALedgerAccess.LoadByPrimaryKey(
-                            AInspectDS.AApDocument[0].LedgerNumber,
-                            fieldlist,
-                            SubmitChangesTransaction);
-                        myLedgerTable[0].LastApInvNumber++;
-                        AInspectDS.AApDocument[0].ApNumber = myLedgerTable[0].LastApInvNumber;
-
-                        if (AInspectDS.AApDocumentDetail != null)
+                        // Set AP Number if it has not been set yet. Also on DetailRows and AnalAttribs.
+                        Int32 ExistingApNum = NewDocRow.ApNumber;
+                        if (ExistingApNum < 0)
                         {
-                            foreach (AApDocumentDetailRow detailrow in AInspectDS.AApDocumentDetail.Rows)
+                            StringCollection fieldlist = new StringCollection();
+                            ALedgerTable myLedgerTable;
+                            fieldlist.Add(ALedgerTable.GetLastApInvNumberDBName());
+                            myLedgerTable = ALedgerAccess.LoadByPrimaryKey(
+                                NewDocRow.LedgerNumber,
+                                fieldlist,
+                                SubmitChangesTransaction);
+                            myLedgerTable[0].LastApInvNumber++;
+                            Int32 NewApNum = myLedgerTable[0].LastApInvNumber;
+                            NewDocRow.ApNumber = NewApNum;
+
+                            if (AInspectDS.AApDocumentDetail != null)
                             {
-                                if (detailrow.RowState != DataRowState.Deleted)
+                                foreach (AApDocumentDetailRow detailrow in AInspectDS.AApDocumentDetail.Rows)
                                 {
-                                    detailrow.ApNumber = AInspectDS.AApDocument[0].ApNumber;
+                                    if (detailrow.RowState != DataRowState.Deleted && detailrow.ApNumber == ExistingApNum)
+                                    {
+                                        detailrow.ApNumber = NewApNum;
+                                    }
+                                }
+
+                                if (AInspectDS.AApAnalAttrib != null)
+                                {
+                                    foreach (AApAnalAttribRow AnalAttribRow in AInspectDS.AApAnalAttrib.Rows)
+                                    {
+                                        if (AnalAttribRow.RowState != DataRowState.Deleted && AnalAttribRow.ApNumber == ExistingApNum)
+                                        {
+                                            AnalAttribRow.ApNumber = NewApNum;
+                                        }
+                                    }
                                 }
                             }
+                            ALedgerAccess.SubmitChanges(myLedgerTable, SubmitChangesTransaction, out AVerificationResult);
                         }
-                        ALedgerAccess.SubmitChanges(myLedgerTable, SubmitChangesTransaction, out AVerificationResult);
+
+                        // This isn't as useful as I'd hoped (since the caller throws this TDS away...)
+                        SetOutstandingAmount(NewDocRow, NewDocRow.LedgerNumber, AInspectDS.AApDocumentPayment);
                     }
 
                     if ((AInspectDS.AApDocument != null) && AApDocumentAccess.SubmitChanges(AInspectDS.AApDocument, SubmitChangesTransaction,
@@ -388,7 +410,6 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             {
                 Row.OutstandingAmount = Row.TotalAmount;
             }
-
 
             if (Row.DocumentStatus == MFinanceConstants.AP_DOCUMENT_PARTIALLY_PAID)
             // For any invoices that are partly paid, find out how much is outstanding.
@@ -618,7 +639,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
             Int32 CounterJournals = 1;
 
-            // add journal for each currency and the transactions
+            // Add journal for each currency and the transactions
             foreach (string CurrencyCode in DocumentsByCurrency.Keys)
             {
                 AJournalRow journal = GLDataset.AJournal.NewRowTyped();
@@ -665,8 +686,9 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         // Analysis Attributes - Any attributes linked to this row,
                         // I need to create equivalents in the Transaction DS.
 
-                        APDataset.AApAnalAttrib.DefaultView.RowFilter = String.Format("{0}={1}",
-                            AApAnalAttribTable.GetDetailNumberDBName(), documentDetail.DetailNumber);
+                        APDataset.AApAnalAttrib.DefaultView.RowFilter = String.Format("{0}={1} AND {2}={3}",
+                            AApAnalAttribTable.GetDetailNumberDBName(), documentDetail.DetailNumber,
+                            AApDocumentTable.GetApNumberDBName(), document.ApNumber);
 
                         foreach (DataRowView rv in APDataset.AApAnalAttrib.DefaultView)
                         {
@@ -718,22 +740,24 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     transaction.TransactionNumber = TransactionCounter++;
                     transaction.TransactionAmount = document.TotalAmount;
 
-                    // TODO: support foreign currencies
-                    transaction.AmountInBaseCurrency = document.TotalAmount;
 
-                    if (document.CreditNoteFlag)
+                    if (!document.CreditNoteFlag)
                     {
-                        transaction.AmountInBaseCurrency *= -1;
+                        transaction.TransactionAmount *= -1;
                     }
 
-                    transaction.DebitCreditIndicator = (transaction.AmountInBaseCurrency > 0);
+                    transaction.DebitCreditIndicator = (transaction.TransactionAmount > 0);
 
-                    if (transaction.AmountInBaseCurrency < 0)
+                    if (transaction.TransactionAmount < 0)
                     {
-                        transaction.AmountInBaseCurrency *= -1;
+                        transaction.TransactionAmount *= -1;
                     }
 
-                    transaction.DebitCreditIndicator = false;
+                     // TODO: support foreign currencies
+                    transaction.AmountInBaseCurrency = transaction.TransactionAmount;
+
+                    // This seems to be wrong here? (Tim, Feb 2012)
+                    // transaction.DebitCreditIndicator = false;
 
                     // TODO: if document.ApAccount is empty, look for supplier default ap account?
                     transaction.AccountCode = document.ApAccount;
@@ -1049,7 +1073,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         }
 
         /// <summary>
-        /// store payments in the database, and post the payment to GL
+        /// Store payments in the database, and post the payment to GL
         /// </summary>
         /// <param name="APayments"></param>
         /// <param name="ADocumentPayments"></param>
@@ -1066,6 +1090,14 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             AVerifications = null;
             bool ResultValue = false;
 
+            if ((APayments.Rows.Count < 1) || (ADocumentPayments.Rows.Count < 1))
+            {
+                AVerifications = new TVerificationResultCollection();
+                AVerifications.Add(new TVerificationResult("Post Payment", String.Format("Nothing to do - Payments has {0} rows, Documents has {1} rows.",
+                    APayments.Rows.Count, ADocumentPayments.Rows.Count), TResultSeverity.Resv_Noncritical));
+                return false;
+            }
+
             AccountsPayableTDS MainDS = new AccountsPayableTDS();
             MainDS.AApPayment.Merge(APayments);
             MainDS.AApDocumentPayment.Merge(ADocumentPayments);
@@ -1076,29 +1108,45 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             {
                 AApDocumentAccess.LoadByPrimaryKey(MainDS, row.LedgerNumber, row.ApNumber, ReadTransaction);
 
-                // Modify the ap documents and mark as paid or partially paid
+                // Modify the AP documents and mark as paid or partially paid
                 MainDS.AApDocument.DefaultView.Sort = AApDocumentTable.GetApNumberDBName();
                 AccountsPayableTDSAApDocumentRow documentRow = (AccountsPayableTDSAApDocumentRow)MainDS.AApDocument.DefaultView[
                     MainDS.AApDocument.DefaultView.Find(row.ApNumber)].Row;
 
                 SetOutstandingAmount(documentRow, documentRow.LedgerNumber, ADocumentPayments);
 
-                if ((row.Amount >= documentRow.OutstandingAmount) || (documentRow.OutstandingAmount == 0.0m))
+                //
+                // If the amount paid is negative, this is a refund..
+                if (row.Amount < 0)
                 {
-                    documentRow.DocumentStatus = MFinanceConstants.AP_DOCUMENT_PAID;
+                    if (row.Amount <= documentRow.OutstandingAmount)
+                    {
+                        documentRow.DocumentStatus = MFinanceConstants.AP_DOCUMENT_PAID;
+                    }
+                    else
+                    {
+                        documentRow.DocumentStatus = MFinanceConstants.AP_DOCUMENT_PARTIALLY_PAID;
+                    }
                 }
                 else
                 {
-                    documentRow.DocumentStatus = MFinanceConstants.AP_DOCUMENT_PARTIALLY_PAID;
+                    if ((row.Amount >= documentRow.OutstandingAmount) || (documentRow.OutstandingAmount == 0.0m))
+                    {
+                        documentRow.DocumentStatus = MFinanceConstants.AP_DOCUMENT_PAID;
+                    }
+                    else
+                    {
+                        documentRow.DocumentStatus = MFinanceConstants.AP_DOCUMENT_PARTIALLY_PAID;
+                    }
                 }
             }
 
-            // get max payment number for this ledger
+            // Get max payment number for this ledger
             // PROBLEM: what if two payments are happening at the same time? do we need locking?
             // see also http://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=50
             object maxPaymentCanBeNull = DBAccess.GDBAccessObj.ExecuteScalar(
                 "SELECT MAX(PUB_a_ap_payment.a_payment_number_i) FROM PUB_a_ap_payment WHERE PUB_a_ap_payment.a_ledger_number_i = " +
-                MainDS.AApDocumentPayment[0].LedgerNumber.ToString(),
+                MainDS.AApPayment[0].LedgerNumber.ToString(),
                 ReadTransaction);
             Int32 maxPaymentNumberInLedger = (maxPaymentCanBeNull == System.DBNull.Value ? 1 : Convert.ToInt32(maxPaymentCanBeNull));
 
@@ -1193,5 +1241,48 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
             return ResultValue;
         }
+
+        /// <summary>
+        /// Load this payment, together with the supplier and all the related documents.
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="APaymentNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-3")]
+        public static AccountsPayableTDS LoadAPPayment(Int32 ALedgerNumber, Int32 APaymentNumber)
+        {
+            TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            AccountsPayableTDS MainDs = new AccountsPayableTDS();
+            AApPaymentAccess.LoadByPrimaryKey(MainDs, ALedgerNumber, APaymentNumber, ReadTransaction);
+
+            if (MainDs.AApPayment.Rows.Count > 0) // If I can load the referenced payment, I'll also load related documents.
+            {
+                AApPaymentRow PaymentRow = MainDs.AApPayment[0];
+                AApDocumentPaymentAccess.LoadViaAApPayment(MainDs, ALedgerNumber, APaymentNumber, ReadTransaction);
+                // There may be a batch of several invoices in this payment,
+                // but they should all be to the same supplier.
+                foreach (AApDocumentPaymentRow Row in MainDs.AApDocumentPayment.Rows)
+                {
+                    AApDocumentAccess.LoadByPrimaryKey(MainDs, ALedgerNumber, Row.ApNumber, ReadTransaction);
+                    AApDocumentDetailAccess.LoadViaAApDocument(MainDs, ALedgerNumber, Row.ApNumber, ReadTransaction);
+
+                    // Then I also need to get any referenced AnalAttrib records
+                    MainDs.AApDocumentDetail.DefaultView.RowFilter = String.Format("{0}={1}",
+                        AApDocumentDetailTable.GetApNumberDBName(), Row.ApNumber);
+                    foreach (DataRowView rv in MainDs.AApDocumentDetail.DefaultView)
+                    {
+                        AApDocumentDetailRow DetailRow = (AApDocumentDetailRow)rv.Row;
+                        AApAnalAttribAccess.LoadViaAApDocumentDetail(MainDs, ALedgerNumber, Row.ApNumber, DetailRow.DetailNumber, ReadTransaction);
+                    }
+                }
+
+                AApSupplierAccess.LoadByPrimaryKey(MainDs, MainDs.AApDocument[0].PartnerKey, ReadTransaction);
+                PPartnerAccess.LoadByPrimaryKey(MainDs, MainDs.AApDocument[0].PartnerKey, ReadTransaction);
+            }
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            return MainDs;
+        }
+
     }
 }

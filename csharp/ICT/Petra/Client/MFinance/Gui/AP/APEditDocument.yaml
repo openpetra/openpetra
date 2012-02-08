@@ -56,7 +56,7 @@ RootNode:
         txtDiscountPercentage: {Label=Discount, Enabled=cndDiscountEnabled, Format: PercentDecimal(1)}
         txtTotalAmount:
             Label: &Amount
-            Format: Currency
+            Format: Currency(2)
         txtExchangeRateToBase:
             Label: E&xchange Rate
             Format: Decimal
@@ -91,11 +91,11 @@ RootNode:
             Width: 350
             Label: Detail &Ref
         txtDetailAmount:
-            Format: Currency
+            Format: Currency(2)
             Label: A&mount
         txtDetailBaseAmount:
             Label: Base
-            Format: Currency
+            Format: Currency(2)
             ReadOnly: true
             #TODO: calculate using exchange rate from document
         Empty1:

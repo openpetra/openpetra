@@ -254,20 +254,26 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 {
                     if (Row["Selected"].Equals(true))
                     {
-                        if (Row["a_currency_code_c"].Equals(MyCurrency))
+                        if (Row[AApSupplierTable.GetCurrencyCodeDBName()].Equals(MyCurrency))
                         {
-                            TotalSelected += (Decimal)(Row["a_total_amount_n"]);
+                            if (Row[AApDocumentTable.GetCreditNoteFlagDBName()].Equals(true))
+                            {
+                                TotalSelected -= (Decimal)(Row[AApDocumentTable.GetTotalAmountDBName()]);
+                            }
+                            else
+                            {
+                                TotalSelected += (Decimal)(Row[AApDocumentTable.GetTotalAmountDBName()]);
+                            }
                         }
-
                         //
                         // While I'm in this loop, I'll also check whether to enable the "Pay" and "Post" buttons.
                         //
-                        if ("|POSTED|PARTPAID|".IndexOf("|" + Row["a_document_status_c"].ToString()) >= 0)
+                        if ("|POSTED|PARTPAID|".IndexOf("|" + Row[AApDocumentTable.GetDocumentStatusDBName()].ToString()) >= 0)
                         {
                             TaggedInvoicesPayable = true;
                         }
 
-                        if ("|POSTED|PARTPAID|PAID|".IndexOf(Row["a_document_status_c"].ToString()) < 0)
+                        if ("|POSTED|PARTPAID|PAID|".IndexOf(Row[AApDocumentTable.GetDocumentStatusDBName()].ToString()) < 0)
                         {
                             TaggedInvoicesPostable = true;
                         }
@@ -457,8 +463,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             Int64 SupplierKey = -1;
             if (SelectedGridRow.Length >= 1)
             {
-                Object Cell = SelectedGridRow[0][0];
-                if (Cell.GetType() == typeof(Int64))
+                Object Cell = SelectedGridRow[0]["p_partner_key_n"];
+                if (Cell.GetType() == typeof(Decimal))
                 {
                     SupplierKey = Convert.ToInt64(Cell);
                 }
@@ -488,10 +494,15 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// </summary>
         public void SupplierTransactions(object sender, EventArgs e)
         {
-            TFrmAPSupplierTransactions frm = new TFrmAPSupplierTransactions(this);
+            Int64 SelectedSupplier = GetCurrentlySelectedSupplier();
 
-            frm.LoadSupplier(FLedgerNumber, GetCurrentlySelectedSupplier());
-            frm.Show();
+            if (SelectedSupplier != -1)
+            {
+                TFrmAPSupplierTransactions frm = new TFrmAPSupplierTransactions(this);
+
+                frm.LoadSupplier(FLedgerNumber, SelectedSupplier);
+                frm.Show();
+            }
         }
 
 
@@ -500,10 +511,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// </summary>
         public void ShowInvoice(object sender, EventArgs e)
         {
-            TFrmAPEditDocument frm = new TFrmAPEditDocument(this);
             Int32 SelectedInvoice = GetCurrentlySelectedInvoice();
             if (SelectedInvoice > 0)
             {
+                TFrmAPEditDocument frm = new TFrmAPEditDocument(this);
                 frm.LoadAApDocument(FLedgerNumber, SelectedInvoice);
                 frm.Show();
             }
@@ -746,8 +757,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     PayTheseDocs.Add((int)Row["a_ap_number_i"]);
                 }
             }
-            PaymentScreen.AddDocumentsToPayment(TempDS, PayTheseDocs);
-            PaymentScreen.Show();
+            if (PayTheseDocs.Count > 0)
+            {
+                PaymentScreen.AddDocumentsToPayment(TempDS, PayTheseDocs);
+                PaymentScreen.Show();
+            }
         }
 
         private void PostAllTagged(object sender, EventArgs e)

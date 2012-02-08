@@ -88,7 +88,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             FinishedCheckThread.Start();
 
             grdResult.MouseClick += new MouseEventHandler(grdResult_Click);
-            RefreshSumTagged(null, null);
         }
 
         private delegate void SimpleDelegate();
@@ -193,7 +192,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             grdResult.Columns.Clear();
             grdResult.AddCheckBoxColumn("", FPagedDataTable.Columns["Tagged"], 25, false);
-            grdResult.AddTextColumn("AP#", FPagedDataTable.Columns["ApNum"], 55);
+            grdResult.AddTextColumn("AP#", FPagedDataTable.Columns["ApNum"], 50);
             grdResult.AddTextColumn("Inv#", FPagedDataTable.Columns["InvNum"], 90);
             grdResult.AddTextColumn("Type", FPagedDataTable.Columns["Type"], 90);
             grdResult.AddCurrencyColumn("Amount", FPagedDataTable.Columns["Amount"], 2);
@@ -201,8 +200,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             grdResult.AddTextColumn("Status", FPagedDataTable.Columns["Status"], 100);
             grdResult.AddDateColumn("Date", FPagedDataTable.Columns["Date"]);
 
-            grdResult.Columns[3].Width = 90;  // Only the text columns can have their widths set while they're being added. For these currency and date columns,
-            grdResult.Columns[6].Width = 110; // I need to set the width afterwards. (THIS WILL GO WONKY IF EXTRA FIELDS ARE ADDED ABOVE.)
+            grdResult.Columns[4].Width = 90;  // Only the text columns can have their widths set while they're being added. For these currency and date columns,
+            grdResult.Columns[7].Width = 110; // I need to set the width afterwards. (THIS WILL GO WONKY IF EXTRA FIELDS ARE ADDED ABOVE.)
         }
 
 
@@ -215,13 +214,16 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 foreach (DataRowView rv in FPagedDataTable.DefaultView)
                 {
                     DataRow Row = rv.Row;
-                    if (Row["CreditNote"].Equals(true))  // Payments also carry this "Credit note" label
+                    if (Row["Amount"].GetType() == typeof(Decimal))
                     {
-                        SumDisplayed -= (Decimal)Row["Amount"];
-                    }
-                    else
-                    {
-                        SumDisplayed += (Decimal)Row["Amount"];
+                        if (Row["CreditNote"].Equals(true))  // Payments also carry this "Credit note" label
+                        {
+                            SumDisplayed -= (Decimal)Row["Amount"];
+                        }
+                        else
+                        {
+                            SumDisplayed += (Decimal)Row["Amount"];
+                        }
                     }
                 }
             }
@@ -270,6 +272,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 // Make the Grid respond on updown keys
                 grdResult.Focus();
                 UpdateDisplayedBalance();
+                RefreshSumTagged(null, null);
             }
 
             ActionEnabledEvent(null, new ActionEventArgs("cndSelectedSupplier", grdResult.TotalPages > 0));
@@ -281,6 +284,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         public void Reload()
         {
             LoadSupplier(FLedgerNumber, FPartnerKey);
+        }
+
+        private void DoRefreshButton(Object Sender, EventArgs e)
+        {
+            Reload();
         }
 
         // Called from a timer, below, so that the default processing of
@@ -309,7 +317,19 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                 if (Row["Tagged"].Equals(true))
                 {
-                    TotalSelected += (Decimal)(Row["Amount"]);
+                    // If it's a payment or a credit note, I'll subract it
+                    // If it's an invoice, I'll add it!
+                    // (The payment of a credit note appears on this list as a negative number, so it's always subracted.)
+                    //
+                    if (Row["CreditNote"].Equals(true))  // Payments also carry this "Credit note" label
+                    {
+                        TotalSelected -= (Decimal)(Row["Amount"]);
+                    }
+                    else
+                    {
+                        TotalSelected += (Decimal)(Row["Amount"]);
+                    }
+
 
                     //
                     // While I'm in this loop, I'll also check whether to enable the "Pay" and "Post" buttons.
@@ -431,7 +451,25 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
         }
 
-        /// <summary>
+         private void ReverseSelected(object sender, EventArgs e)
+        {
+            DataRowView[] SelectedGridRow = grdResult.SelectedDataRowsAsDataRowView;
+
+            if (SelectedGridRow.Length >= 1)
+            {
+                if (SelectedGridRow[0]["Status"].ToString().Length > 0) // invoices have status, and payments don't.
+                {  // Reverse invoice to a previous (unpaid?) state
+                }
+                else
+                {  // Reverse payment
+                    Int32 PaymentNum = (Int32)SelectedGridRow[0]["ApNum"];
+                    TFrmAPPayment PaymentScreen = new TFrmAPPayment(this);
+                    PaymentScreen.ReversePayment(FLedgerNumber, PaymentNum);
+                }
+            }
+        }
+
+       /// <summary>
         /// Create a new invoice
         /// </summary>
         /// <param name="sender"></param>
@@ -473,10 +511,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                 {
                     Int32 ApNum = (Int32)row["ApNum"];
-                    FMainDS.Merge(TRemote.MFinance.AP.WebConnectors.LoadAApDocument(FLedgerNumber, ApNum));
+                    TempDS.Merge(TRemote.MFinance.AP.WebConnectors.LoadAApDocument(FLedgerNumber, ApNum));
 
                     // I've loaded this record in my DS, but I was not given a handle to it, so I need to find it!
-                    TempDS.AApDocument.DefaultView.Sort = "ApNum";
+                    TempDS.AApDocument.DefaultView.Sort = "a_ap_number_i";
                     Int32 Idx = TempDS.AApDocument.DefaultView.Find(ApNum);
                     AApDocumentRow DocumentRow = TempDS.AApDocument[Idx];
                     if (TFrmAPEditDocument.ApDocumentCanPost (TempDS, DocumentRow))
@@ -515,14 +553,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 {
                     // TODO: only use tagged rows that can be paid
                     Int32 ApNum = (Int32)row["ApNum"];
-                    FMainDS.Merge(TRemote.MFinance.AP.WebConnectors.LoadAApDocument(FLedgerNumber, ApNum));
+                    TempDS.Merge(TRemote.MFinance.AP.WebConnectors.LoadAApDocument(FLedgerNumber, ApNum));
 
                     // I've loaded this record in my DS, but I was not given a handle to it, so I need to find it!
-                    TempDS.AApDocument.DefaultView.Sort = "ApNum";
+                    TempDS.AApDocument.DefaultView.Sort = "a_ap_number_i";
                     Int32 Idx = TempDS.AApDocument.DefaultView.Find(ApNum);
                     AApDocumentRow DocumentRow = TempDS.AApDocument[Idx];
 
-                    if ("|POSTED|PARTPAID|".IndexOf("|" + DocumentRow["Status"].ToString()) >= 0)
+                    if ("|POSTED|PARTPAID|".IndexOf("|" + DocumentRow["a_document_status_c"].ToString()) >= 0)
                     {
                         TaggedDocuments.Add(ApNum);
                     }
@@ -539,11 +577,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             frm.AddDocumentsToPayment(TempDS, TaggedDocuments);
 
             frm.Show();
-
-            // After the payments screen, one or more of the transactions here may
-            // be changed, so I want to update my list.
-
-            LoadSupplier(FLedgerNumber, FPartnerKey);
         }
+
     }
 }

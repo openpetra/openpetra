@@ -189,19 +189,6 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             {
                 Int64 PartnerKey = Convert.ToInt64(CriteriaRow["PartnerKey"]);
                 String SqlQuery = "SELECT "
-                    + "a_ap_number_i as ApNum, "
-                    + "a_document_code_c as InvNum, "
-                    + "a_credit_note_flag_l as CreditNote, "
-                    + "a_total_amount_n as Amount, "
-                    + "a_document_status_c as Status, "
-                    + "a_discount_percentage_n as DiscountPercent, "
-                    + "a_discount_days_i as DiscountDays, "
-                    + "a_date_issued_d as Date\n"
-                    + " FROM PUB_a_ap_document\n"
-                    + " WHERE a_ledger_number_i=" + FLedgerNumber
-                    + " AND p_partner_key_n=" + PartnerKey
-                    + "\nUNION\n"
-                    + " SELECT "
                     + "PUB_a_ap_document_payment.a_payment_number_i as ApNum, "
                     + "a_document_code_c||'-Payment' as InvNum, "
                     + "true as CreditNote, "
@@ -214,6 +201,20 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                     + " AND PUB_a_ap_document_payment.a_ap_number_i=PUB_a_ap_document.a_ap_number_i\n"
                     + " WHERE PUB_a_ap_document_payment.a_ledger_number_i=" + FLedgerNumber
                     + " AND p_partner_key_n=" + PartnerKey
+                    + "\nUNION\n"
+                    + " SELECT "
+                    + "a_ap_number_i as ApNum, "
+                    + "a_document_code_c as InvNum, "
+                    + "a_credit_note_flag_l as CreditNote, "
+                    + "a_total_amount_n as Amount, "
+                    + "a_document_status_c as Status, "
+                    + "a_discount_percentage_n as DiscountPercent, "
+                    + "a_discount_days_i as DiscountDays, "
+                    + "a_date_issued_d as Date\n"
+                    + " FROM PUB_a_ap_document\n"
+                    + " WHERE a_ledger_number_i=" + FLedgerNumber
+                    + " AND p_partner_key_n=" + PartnerKey
+                    + " ORDER BY Date DESC"
                     ;
                 FPagedDataSetObject.FindParameters = new TPagedDataSet.TAsyncFindParameters(SqlQuery);
             }
@@ -392,9 +393,11 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
         {
             try
             {
+                ACriteriaTable.Columns.Add("PartnerKey", typeof(Int64));
+                ACriteriaTable.Rows[0]["PartnerKey"] = 0;
+
                 // try if this is a partner key
                 Int64 SupplierPartnerKey = Convert.ToInt64(ACriteriaTable.Rows[0]["SupplierId"]);
-                ACriteriaTable.Columns.Add("PartnerKey", typeof(Int64));
                 ACriteriaTable.Rows[0]["PartnerKey"] = SupplierPartnerKey;
             }
             catch (Exception)
@@ -413,6 +416,46 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
         {
             ArrayList InternalParameters = new ArrayList();
             string WhereClause = "";
+
+            if (FSearchSupplierOrInvoice) // Search by supplier name
+            {
+                if (((String)ACriteriaRow["SupplierId"]).Length > 0) // If the search box is empty, I'll not add this at all...
+                {
+                    WhereClause += String.Format(" AND {0} LIKE ?", PPartnerTable.GetPartnerShortNameDBName());
+                    OdbcParameter Param = TTypedDataTable.CreateOdbcParameter(PPartnerTable.TableId, PPartnerTable.ColumnPartnerShortNameId);
+
+                    // TODO: add LIKE % in the right place, defined by user
+                    Param.Value = ACriteriaRow["SupplierId"] + "%";
+                    InternalParameters.Add(Param);
+                }
+            }
+            else // I'm looking for a list of outstanding invoices 
+            {
+                // search by partner key
+                Int64 SupplierPartnerKey = Convert.ToInt64(ACriteriaRow["PartnerKey"]);
+                OdbcParameter Param;
+                if (SupplierPartnerKey > 0)
+                {
+                    WhereClause += String.Format(" AND PUB_{0}.{1} = ?", AApSupplierTable.GetTableDBName(), AApSupplierTable.GetPartnerKeyDBName());
+                    Param = TTypedDataTable.CreateOdbcParameter(AApSupplierTable.TableId, AApSupplierTable.ColumnPartnerKeyId);
+                    Param.Value = SupplierPartnerKey;
+                    InternalParameters.Add(Param);
+                }
+
+                WhereClause += String.Format(" AND {0}=?", AApDocumentTable.GetLedgerNumberDBName());
+                Param = TTypedDataTable.CreateOdbcParameter(AApDocumentTable.TableId, AApDocumentTable.ColumnLedgerNumberId);
+                Param.Value = (Int32)ACriteriaRow["LedgerNumber"];
+                InternalParameters.Add(Param);
+
+                WhereClause += String.Format(" AND {0} <> 'CANCELLED' AND {0} <> 'PAID'", AApDocumentTable.GetDocumentStatusDBName());
+                decimal DaysPlus = (decimal)ACriteriaRow["DaysPlus"];
+                if (DaysPlus >= 0)
+                {
+                    DateTime Deadline = DateTime.Now.AddDays((double)DaysPlus);
+                    WhereClause += String.Format(" AND {0}+{1}<'{2}'",
+                        AApDocumentTable.GetDateIssuedDBName(), AApDocumentTable.GetCreditTermsDBName(), Deadline.ToString("yyyyMMdd"));
+                }
+            }
 
             // Convert ArrayList to a array of ODBCParameters
             // seem to need to declare a type first
@@ -442,7 +485,8 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                        DocTbl + AApDocumentTable.GetDateIssuedDBName() + "," +
                        DocTbl + AApDocumentTable.GetDateIssuedDBName() + "+" + DocTbl + AApDocumentTable.GetCreditTermsDBName() + "," +
                        DocTbl + AApDocumentTable.GetDiscountPercentageDBName() + "," +
-                       DocTbl + AApDocumentTable.GetDateIssuedDBName() + "+" + DocTbl + AApDocumentTable.GetDiscountDaysDBName();
+                       DocTbl + AApDocumentTable.GetDateIssuedDBName() + "+" + DocTbl + AApDocumentTable.GetDiscountDaysDBName() + "," +
+                       DocTbl + AApDocumentTable.GetCreditNoteFlagDBName();
             }
             else    // Find Suppliers
             {

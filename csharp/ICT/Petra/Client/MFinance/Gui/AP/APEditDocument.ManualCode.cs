@@ -99,6 +99,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 bool IhaveAllMyAttributes = true;
 
+                //
+                // It's possible that my TDS doesn't even have an AnalAttrib table...
+
+                if (Atds.AApAnalAttrib == null)
+                {
+                    Atds.Merge(new AApAnalAttribTable());
+                }
                 foreach (DataRowView rv in Atds.AAnalysisAttribute.DefaultView)
                 {
                     AAnalysisAttributeRow AttrRow = (AAnalysisAttributeRow)rv.Row;
@@ -269,7 +276,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             // I have to prevent the auto-generated code from attempting to access this deleted row.
             grdDetails.Selection.SelectRow(rowIndex, true);
             FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-            ShowDetails(FPreviouslySelectedDetailRow);
+            if (FPreviouslySelectedDetailRow != null)
+            {
+                ShowDetails(FPreviouslySelectedDetailRow);
+            }
             // Then I need to re-draw the grid, and enable controls as appropriate.
             grdDetails.Refresh();
             FPetraUtilsObject.SetChangedFlag();
@@ -457,7 +467,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             if (dateEffectiveDialog.ShowDialog() != DialogResult.OK)
             {
-                MessageBox.Show(Catalog.GetString("The payment was cancelled."), Catalog.GetString(
+                MessageBox.Show(Catalog.GetString("Posting was cancelled."), Catalog.GetString(
                         "No Success"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
@@ -532,16 +542,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             PayTheseDocs.Add(FMainDS.AApDocument[0].ApNumber);
             PaymentScreen.AddDocumentsToPayment(FMainDS, PayTheseDocs);
             PaymentScreen.Show();
-
-            // After the payments screen, The status of this document may have chaged.
-
-            EnableControls();
-            Form Opener = FPetraUtilsObject.GetCallerForm();
-
-            if (Opener.GetType() == typeof(TFrmAPSupplierTransactions))
-            {
-                ((TFrmAPSupplierTransactions)Opener).Reload();
-            }
         }
     }
 }

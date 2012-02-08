@@ -272,6 +272,9 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AP.WebConnectors
                                       AccountsPayableTDSAApDocumentPaymentTable ADocumentPayments,
                                       DateTime APostingDate,
                                       out TVerificationResultCollection AVerifications);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
+        AccountsPayableTDS LoadAPPayment(Int32 ALedgerNumber,
+                                         Int32 APaymentNumber);
     }
 
 }

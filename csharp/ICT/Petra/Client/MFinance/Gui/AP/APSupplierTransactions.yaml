@@ -12,13 +12,14 @@ RootNode:
         actNewInvoice: {Label=New &Invoice, ShortCut=Ctrl+I, ActionClick=CreateInvoice}        
         actNewCreditNote:{Label=New &Credit Note, ShortCut=Ctrl+R, ActionClick=CreateCreditNote}
         actOpenSelected: {Label=&Open Selected, ShortCut=Ctrl+O, ActionClick=OpenSelectedTransaction}
-        actReverseSelected: {Label=Re&verse Selected, ShortCut=F5}
+        actReverseSelected: {Label=Re&verse Selected, ShortCut=F5, ActionClick=ReverseSelected}
         #actApproveTagged: {Label=&Approve Tagged, ShortCut=F6}
         actPostTagged: {Label=&Post Tagged, ShortCut=F7, ActionClick=PostTaggedDocuments}
         actAddTaggedToPayment: {Label=Pay Tagged, ShortCut=F8, ActionClick=AddTaggedToPayment}
         actTagPayable: {ActionClick=TagAllPayable}
         actTagPostable: {ActionClick=TagAllPostable}
         actUntagAll: {Label=&Untag All, ActionClick=UntagAll}
+        actReloadList: {ActionClick=DoRefreshButton}
     Controls:
         pnlContent:
             Dock: Fill
@@ -52,7 +53,7 @@ RootNode:
             OnChange: StatusFilterChange
         chkHideAgedTransactions: {Label=Hide &Aged Transactions, CheckBoxAttachedLabel=right}
         pnlButtons:
-            Controls: [btnTagPostable, btnTagPayable, btnUntagAll, txtSumOfTagged]
+            Controls: [btnTagPostable, btnTagPayable, btnUntagAll, txtSumOfTagged, btnReloadList]
             ControlsOrientation: horizontal
             Dock:Top
         #btnTagApprovable: {Label=Tag all Appro&vable}
@@ -60,15 +61,17 @@ RootNode:
         btnTagPayable: {Label=Tag all Paya&ble}
         btnUntagAll:
         txtSumOfTagged: {Label=Sum of Tagged, ReadOnly=true}
+        btnReloadList: {Label=Reload List}
         grdResult: 
             Dock: Fill
             ActionDoubleClick: actOpenSelected
     Menu:
         mniFile:
+            mniReloadList:
+            mniSeparator: {Label=-}
             mniReprintRemittanceAdvice: {Label=Reprint Re&mittance Advice}
             mniReprintCheque: {Label=Reprint &Cheque}
             mniReprintPaymentReport: {Label=Reprint Pa&yment Report}
-            mniSeparator: {Label=-}
         mniAction:
             Label: &Action
             mniActionNew:

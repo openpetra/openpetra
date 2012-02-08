@@ -1029,6 +1029,14 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP.WebConnectors
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector), "PostAPPayments", ";ACCOUNTSPAYABLETDSAAPPAYMENTTABLE;ACCOUNTSPAYABLETDSAAPDOCUMENTPAYMENTTABLE;DATETIME;TVERIFICATIONRESULTCOLLECTION;");
             return Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector.PostAPPayments(APayments, ADocumentPayments, APostingDate, out AVerifications);
         }
+
+        /// generated method from connector
+        public AccountsPayableTDS LoadAPPayment(Int32 ALedgerNumber,
+                                                Int32 APaymentNumber)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector), "LoadAPPayment", ";INT;INT;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector.LoadAPPayment(ALedgerNumber, APaymentNumber);
+        }
     }
 }
 
