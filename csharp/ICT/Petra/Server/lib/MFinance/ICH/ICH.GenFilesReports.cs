@@ -64,13 +64,13 @@ namespace Ict.Petra.Server.MFinance.ICH
         /// Performs the ICH code to generate Stewardship Calculation.
         ///  Relates to gi3100.p
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="APeriodNumber"></param>
+        /// <param name="ALedgerNumber">ICH Ledger number</param>
+        /// <param name="APeriodNumber">Period</param>
         /// <param name="AICHNumber"></param>
-        /// <param name="ACurrencyType"></param>
-        /// <param name="AFileName"></param>
-        /// <param name="AEmail"></param>
-        /// <param name="AVerificationResult"></param>
+        /// <param name="ACurrencyType">Currency type</param>
+        /// <param name="AFileName">File name to process</param>
+        /// <param name="AEmail">If true then send email</param>
+        /// <param name="AVerificationResult">Error messaging</param>
         /// <returns></returns>
         public void GenerateStewardshipFile(int ALedgerNumber,
             int APeriodNumber,
@@ -290,14 +290,14 @@ namespace Ict.Petra.Server.MFinance.ICH
         /// <param name="ACurrentYear">Current year of ICH ledger</param>
         /// <param name="ADBTransaction">Current database transaction</param>
         /// <returns>The batch number of the matching batch or 0 if there is no match.</returns>
-        public int FindMatchingStewardshipBatchInICH(int AICHLedgerNumber,
+        public int FindMatchingStewardshipBatch(int AICHLedgerNumber,
             string ABatchRef,
             int AYear,
             int AMonth,
             int ACurrentPeriod,
             int ACurrentYear,
             ref TDBTransaction ADBTransaction
-           )
+            )
         {
             int BatchNumber = 0;
 
@@ -309,8 +309,8 @@ namespace Ict.Petra.Server.MFinance.ICH
              * and yy was the period number. Therefore we need to strip off the final 3 characters to convert
              * from the new style reference to the old style reference (those 3 characters are the run number).
              * We need to do this because some of the batches we will search through will be in old format. */
-            string cOldStyleReference = ABatchRef.Substring(0, ABatchRef.Length - 3);
-            int cOldStyleReferenceLen = cOldStyleReference.Length;
+            string OldStyleReference = ABatchRef.Substring(0, ABatchRef.Length - 3);
+            int OldStyleReferenceLen = OldStyleReference.Length;
 
             /* Note: In the queries below we need to check the length of the reference as well because of the
              * 3 digit fund numbers (eg. Central America Period 12 would have reference 2012 while NAA Period 2 would be
@@ -338,8 +338,8 @@ namespace Ict.Petra.Server.MFinance.ICH
                 TransRef = TransactionRow.Reference;
                 TransRefLen = TransRef.Length;
 
-                if ((TransRef.Substring(0, cOldStyleReferenceLen) == cOldStyleReference)
-                    && ((TransRefLen == cOldStyleReferenceLen) || (TransRefLen == (cOldStyleReferenceLen + 3))))
+                if ((TransRef.Substring(0, OldStyleReferenceLen) == OldStyleReference)
+                    && ((TransRefLen == OldStyleReferenceLen) || (TransRefLen == (OldStyleReferenceLen + 3))))
                 {
                     BatchNumber = TransactionRow.BatchNumber;
                     MatchFound = true;
@@ -376,8 +376,8 @@ namespace Ict.Petra.Server.MFinance.ICH
                     OldTransRef = ThisYearOldTransactionRow.Reference;
                     OldTransRefLen = OldTransRef.Length;
 
-                    if ((OldTransRef.Substring(0, cOldStyleReferenceLen) == cOldStyleReference)
-                        && ((OldTransRefLen == cOldStyleReferenceLen) || (OldTransRefLen == (cOldStyleReferenceLen + 3)))
+                    if ((OldTransRef.Substring(0, OldStyleReferenceLen) == OldStyleReference)
+                        && ((OldTransRefLen == OldStyleReferenceLen) || (OldTransRefLen == (OldStyleReferenceLen + 3)))
                         && ((AMonth <= ThisYearOldTransactionRow.TransactionDate.Month) || (AMonth > ACurrentPeriod)))
                     {
                         BatchNumber = ThisYearOldTransactionRow.BatchNumber;
@@ -414,8 +414,8 @@ namespace Ict.Petra.Server.MFinance.ICH
                         PreviousTransRef = PreviousYearTransactionRow.Reference;
                         PreviousTransRefLen = PreviousTransRef.Length;
 
-                        if ((PreviousTransRef.Substring(0, cOldStyleReferenceLen) == cOldStyleReference)
-                            && ((PreviousTransRefLen == cOldStyleReferenceLen) || (PreviousTransRefLen == (cOldStyleReferenceLen + 3)))
+                        if ((PreviousTransRef.Substring(0, OldStyleReferenceLen) == OldStyleReference)
+                            && ((PreviousTransRefLen == OldStyleReferenceLen) || (PreviousTransRefLen == (OldStyleReferenceLen + 3)))
                             && (PreviousYearTransactionRow.TransactionDate.Month >= AMonth)
                             && (AMonth > ACurrentPeriod)
                             && (PreviousYearTransactionRow.TransactionDate.Year == AYear))
@@ -450,7 +450,7 @@ namespace Ict.Petra.Server.MFinance.ICH
             decimal ATransferAmount,
             ref TDBTransaction ADBTransaction)
         {
-            decimal dExistingIncExpTotal;
+            decimal ExistingIncExpTotal;
 
             ABatchTable BatchTable = ABatchAccess.LoadByPrimaryKey(AICHLedgerNumber, ABatchNumber, ADBTransaction);
             ABatchRow BatchRow = (ABatchRow)BatchTable.Rows[0];
@@ -481,7 +481,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                 }
 
                 /* find the summary transactions for income and expense and sum them */
-                dExistingIncExpTotal = 0;
+                ExistingIncExpTotal = 0;
 
                 ATransactionTable TransTable2 = new ATransactionTable();
                 ATransactionRow TemplateRow2 = (ATransactionRow)TransTable2.NewRowTyped(false);
@@ -500,11 +500,11 @@ namespace Ict.Petra.Server.MFinance.ICH
                 {
                     TransactionRow2 = (ATransactionRow)TransactionTable2.Rows[i];
 
-                    dExistingIncExpTotal += TransactionRow2.TransactionAmount;
+                    ExistingIncExpTotal += TransactionRow2.TransactionAmount;
                 }
 
                 DBAccess.GDBAccessObj.RollbackTransaction();
-                return dExistingIncExpTotal == (AIncomeAmount + AExpenseAmount);
+                return ExistingIncExpTotal == (AIncomeAmount + AExpenseAmount);
             }
 
             /* now check previous periods if batch wasn't in current period */
@@ -540,7 +540,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                 }
 
                 /* find the summary transactions for income and expense and sum them */
-                dExistingIncExpTotal = 0;
+                ExistingIncExpTotal = 0;
 
                 AThisYearOldTransactionTable ThisYearOldTransTable4 = new AThisYearOldTransactionTable();
                 AThisYearOldTransactionRow TemplateRow4 = (AThisYearOldTransactionRow)ThisYearOldTransTable4.NewRowTyped(false);
@@ -562,11 +562,11 @@ namespace Ict.Petra.Server.MFinance.ICH
                 {
                     ThisYearOldTransactionRow2 = (AThisYearOldTransactionRow)ThisYearOldTransactionTable2.Rows[i];
 
-                    dExistingIncExpTotal += ThisYearOldTransactionRow2.TransactionAmount;
+                    ExistingIncExpTotal += ThisYearOldTransactionRow2.TransactionAmount;
                 }
 
                 DBAccess.GDBAccessObj.RollbackTransaction();
-                return dExistingIncExpTotal == (AIncomeAmount + AExpenseAmount);
+                return ExistingIncExpTotal == (AIncomeAmount + AExpenseAmount);
             }
 
             /* now check previous years if batch wasn't in current year */
@@ -602,7 +602,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                 }
 
                 /* find the summary transactions for income and expense and sum them */
-                dExistingIncExpTotal = 0;
+                ExistingIncExpTotal = 0;
 
                 APreviousYearTransactionTable PreviousYearTransTable4 = new APreviousYearTransactionTable();
                 APreviousYearTransactionRow TemplateRow6 = (APreviousYearTransactionRow)PreviousYearTransTable4.NewRowTyped(false);
@@ -624,11 +624,11 @@ namespace Ict.Petra.Server.MFinance.ICH
                 {
                     PreviousYearTransactionRow2 = (APreviousYearTransactionRow)PreviousYearTransactionTable2.Rows[i];
 
-                    dExistingIncExpTotal += PreviousYearTransactionRow2.TransactionAmount;
+                    ExistingIncExpTotal += PreviousYearTransactionRow2.TransactionAmount;
                 }
 
                 DBAccess.GDBAccessObj.RollbackTransaction();
-                return dExistingIncExpTotal == (AIncomeAmount + AExpenseAmount);
+                return ExistingIncExpTotal == (AIncomeAmount + AExpenseAmount);
             }
 
             DBAccess.GDBAccessObj.RollbackTransaction();
@@ -639,37 +639,37 @@ namespace Ict.Petra.Server.MFinance.ICH
         /// Imports all available stewardships (reading from a specific directory)
         ///   into the current period.
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="AICHFolder"></param>
+        /// <param name="ALedgerNumber">THe ICH Ledger number</param>
+        /// <param name="AICHFolder">The ICH folder</param>
         public void ImportAllAvailableStewardshipReports(int ALedgerNumber, string AICHFolder)
         {
-            string cLogFile;
-            string cPendingDir;
-            string cNewDir;
-            string cCurrentFile;
-            string cInputLine;
-            string cPeriod;
-            string cUnsuccessfulFileList;
-            DateTime cTime;
-            int iHours;
-            int iCount;
-            int iMins;
-            bool lFormatOK = true;
-            DateTime dtPeriodDate;
-            bool lDateLineValid;
+            string LogFile;
+            string PendingDir;
+            string NewDir;
+            string CurrentFile;
+            string InputLine;
+            string Period;
+            string UnsuccessfulFileList;
+            DateTime Time;
+            int Hours;
+            int Count;
+            int Mins;
+            bool FormatOK = true;
+            DateTime PeriodDate;
+            bool DateLineValid;
 
             /* temp table to store basic details about each stewardship file */
-            DataTable ttFileList = new DataTable();
+            DataTable FileListTable = new DataTable();
 
-            ttFileList.Columns.Add("cFileName", typeof(string));
-            ttFileList.Columns.Add("dtReportDate", typeof(DateTime));
-            ttFileList.Columns.Add("iReportTimeInMins", typeof(int));
-            ttFileList.Columns.Add("iLedger", typeof(int));
-            ttFileList.Columns.Add("iPeriod", typeof(int));
-            ttFileList.Columns.Add("iYear", typeof(int));
-            ttFileList.Columns.Add("iRunNumber", typeof(int));
+            FileListTable.Columns.Add("FileName", typeof(string));
+            FileListTable.Columns.Add("ReportDate", typeof(DateTime));
+            FileListTable.Columns.Add("ReportTimeInMins", typeof(int));
+            FileListTable.Columns.Add("Ledger", typeof(int));
+            FileListTable.Columns.Add("Period", typeof(int));
+            FileListTable.Columns.Add("Year", typeof(int));
+            FileListTable.Columns.Add("RunNumber", typeof(int));
 
-            cPendingDir = AICHFolder + @"\pending";
+            PendingDir = AICHFolder + @"\pending";
 
             TDBTransaction DBTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
@@ -693,32 +693,32 @@ namespace Ict.Petra.Server.MFinance.ICH
                 }
             }
 
-            cLogFile = Path.GetTempPath() + @"\Stewardship Import.log";
+            LogFile = Path.GetTempPath() + @"\Stewardship Import.log";
 
-            TextWriter tw = new StreamWriter(cLogFile);
+            TextWriter LogWrite = new StreamWriter(LogFile);
 
             // write a line of text to the file
-            tw.WriteLine("Import Started: " + DateTime.Today.ToShortDateString() + " " + DateTime.Today.ToShortTimeString());
+            LogWrite.WriteLine("Import Started: " + DateTime.Today.ToShortDateString() + " " + DateTime.Today.ToShortTimeString());
 
             /* create new directory to store processed stewardships (named by current date) */
-            cNewDir = AICHFolder + @"\" + DateTime.Today.Year.ToString() + DateTime.Today.Month.ToString("00") + DateTime.Today.Day.ToString("00");
-            Directory.CreateDirectory(cNewDir);
+            NewDir = AICHFolder + @"\" + DateTime.Today.Year.ToString() + DateTime.Today.Month.ToString("00") + DateTime.Today.Day.ToString("00");
+            Directory.CreateDirectory(NewDir);
 
-            cUnsuccessfulFileList = string.Empty;
+            UnsuccessfulFileList = string.Empty;
 
-            DateTime fileDate;
-            DataRow dr;
+            DateTime FileDate;
+            DataRow DatRow;
 
             /* Process every .txt file in pending stewardship directory */
-            string[] fileEntries = Directory.GetFiles(cPendingDir, "*.txt");
+            string[] FileEntries = Directory.GetFiles(PendingDir, "*.txt");
 
-            foreach (string fileName in fileEntries)
+            foreach (string FileName in FileEntries)
             {
-                cCurrentFile = fileName;
-                lFormatOK = true;
-                iCount = 1;
+                CurrentFile = FileName;
+                FormatOK = true;
+                Count = 1;
 
-                dr = (DataRow)ttFileList.NewRow();
+                DatRow = (DataRow)FileListTable.NewRow();
 
                 int YearNo;
                 int PeriodNo;
@@ -726,69 +726,69 @@ namespace Ict.Petra.Server.MFinance.ICH
 
                 /* look at first 6 lines in file (ie. header lines) and pick up key information
                  * (report date and time, fund number, period, year, run number) */
-                using (StreamReader sr = new StreamReader(fileName))
+                using (StreamReader FileReader = new StreamReader(FileName))
                 {
-                    while (iCount < 7 && lFormatOK)
+                    while (Count < 7 && FormatOK)
                     {
-                        cInputLine = sr.ReadLine().Trim();
+                        InputLine = FileReader.ReadLine().Trim();
 
-                        if (sr.Peek() >= 0)
+                        if (FileReader.Peek() >= 0)
                         {
-                            if (!((cInputLine.Length == 0) && (iCount == 1)))
+                            if (!((InputLine.Length == 0) && (Count == 1)))
                             {
-                                switch (iCount)
+                                switch (Count)
                                 {
                                     case 1:
-                                        lFormatOK = (DateTime.TryParse(cInputLine.Substring(69, 11), out fileDate));
-                                        dr["dtReportDate"] = fileDate;
+                                        FormatOK = (DateTime.TryParse(InputLine.Substring(69, 11), out FileDate));
+                                        DatRow["ReportDate"] = FileDate;
                                         break;
 
                                     case 2:
-                                        cTime = Convert.ToDateTime(cInputLine.Substring(69).Trim());
-                                        iHours = cTime.Hour;
-                                        iMins = cTime.Minute;
-                                        dr["iReportTimeInMins"] = (iHours * 60) + iMins;
+                                        Time = Convert.ToDateTime(InputLine.Substring(69).Trim());
+                                        Hours = Time.Hour;
+                                        Mins = Time.Minute;
+                                        DatRow["ReportTimeInMins"] = (Hours * 60) + Mins;
                                         break;
 
                                     case 5:
 
-                                        if (cInputLine.Length == 0)
+                                        if (InputLine.Length == 0)
                                         {
                                             /* on reports for closed years there are some extra blank lines before the Ledger line */
-                                            cInputLine = sr.ReadLine().Trim();
+                                            InputLine = FileReader.ReadLine().Trim();
                                         }
 
-                                        dr["iLedger"] = cInputLine.Substring(7, 3);
-                                        lDateLineValid = (DateTime.TryParse(cInputLine.Substring(64, 12), out dtPeriodDate));
+                                        DatRow["Ledger"] = InputLine.Substring(7, 3);
+                                        DateLineValid = (DateTime.TryParse(InputLine.Substring(64, 12), out PeriodDate));
 
                                         /* if the report is from an old year then the date may be offset by 3 characters */
 
-                                        if (!lDateLineValid)
+                                        if (!DateLineValid)
                                         {
-                                            lDateLineValid = (DateTime.TryParse(cInputLine.Substring(67, 12), out dtPeriodDate));
+                                            DateLineValid = (DateTime.TryParse(InputLine.Substring(67, 12), out PeriodDate));
                                         }
 
-                                        if (!lDateLineValid)
+                                        if (!DateLineValid)
                                         {
-                                            lFormatOK = false;
+                                            FormatOK = false;
                                         }
                                         else
                                         {
                                             /* if start date is greater than 20th of the month then consider it the next month (to cope with
                                              * strange period dates in Korea) */
-                                            if (dtPeriodDate.Day > 20)
+                                            if (PeriodDate.Day > 20)
                                             {
-                                                dtPeriodDate.AddDays(30);
+                                                PeriodDate.AddDays(30);
                                             }
 
                                             /* handle 13th period stewardship separately (needs to be treated as
                                              *                 another period 12 one with run number 999) */
-                                            if ((dtPeriodDate.Day == 31) && (dtPeriodDate.Month == 12))
+                                            if ((PeriodDate.Day == 31) && (PeriodDate.Month == 12))
                                             {
-                                                dr["iPeriod"] = 12;
-                                                dr["iYear"] = dtPeriodDate.Year;
+                                                DatRow["Period"] = 12;
+                                                DatRow["Year"] = PeriodDate.Year;
                                                 RunNo = 999;
-                                                dr["iRunNumber"] = RunNo;
+                                                DatRow["RunNumber"] = RunNo;
                                             }
                                             else
                                             {
@@ -796,15 +796,15 @@ namespace Ict.Petra.Server.MFinance.ICH
                                                     DBTransaction);
 
                                                 string SqlExpression = "MONTH(" + AAccountingPeriodTable.GetPeriodStartDateDBName() + ") = " +
-                                                                       dtPeriodDate.Month.ToString();
+                                                                       PeriodDate.Month.ToString();
                                                 DataRow[] AccPeriodRows = AccPeriodTable.Select(SqlExpression);
                                                 DataRow AccPeriodRow = AccPeriodRows[0];
 
                                                 PeriodNo = Convert.ToInt32(AccPeriodRow[AAccountingPeriodTable.GetAccountingPeriodNumberDBName()]);
-                                                dr["iPeriod"] = PeriodNo;
-                                                YearNo = dtPeriodDate.Year;
-                                                dr["iYear"] = YearNo;
-                                                cPeriod = PeriodNo.ToString("00") + (YearNo - 2000).ToString("00");
+                                                DatRow["Period"] = PeriodNo;
+                                                YearNo = PeriodDate.Year;
+                                                DatRow["Year"] = YearNo;
+                                                Period = PeriodNo.ToString("00") + (YearNo - 2000).ToString("00");
                                             }
                                         }
 
@@ -814,7 +814,7 @@ namespace Ict.Petra.Server.MFinance.ICH
 
                                         if (RunNo != 999)
                                         {
-                                            dr["iRunNumber"] = Convert.ToInt32(cInputLine.Substring(76, 6).Trim());
+                                            DatRow["RunNumber"] = Convert.ToInt32(InputLine.Substring(76, 6).Trim());
                                         }
 
                                         break;
@@ -823,57 +823,56 @@ namespace Ict.Petra.Server.MFinance.ICH
                                         break;
                                 }
 
-                                iCount += 1;
+                                Count += 1;
                             }
                         }
                     }
                 }
 
-                if (lFormatOK)
+                if (FormatOK)
                 {
-                    dr["cFileName"] = cCurrentFile;
+                    DatRow["FileName"] = CurrentFile;
                     //Add the new row
-                    ttFileList.Rows.Add(dr);
+                    FileListTable.Rows.Add(DatRow);
                 }
                 else
                 {
-                    tw.WriteLine("File: " + cCurrentFile + " is not in the correct format and will therefore be skipped.");
-                    cUnsuccessfulFileList += cCurrentFile + ",";
-                    dr.Delete();
+                    LogWrite.WriteLine("File: " + CurrentFile + " is not in the correct format and will therefore be skipped.");
+                    UnsuccessfulFileList += CurrentFile + ",";
+                    DatRow.Delete();
                 }
             }
 
-            GenerateStewardshipBatchFromFileList(ALedgerNumber, ref ttFileList, ref tw, ref cUnsuccessfulFileList, cNewDir, ref DBTransaction);
+            GenerateStewardshipBatchFromFileList(ALedgerNumber, ref FileListTable, ref LogWrite, ref UnsuccessfulFileList, NewDir, ref DBTransaction);
 
             // close the stream
-            tw.Close();
+            LogWrite.Close();
 
-            ListUnprocessedFiles(cUnsuccessfulFileList);
+            ListUnprocessedFiles(UnsuccessfulFileList);
         }
 
-        
         /// <summary>
         ///
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="AFileList"></param>
-        /// <param name="Atw"></param>
-        /// <param name="AUnsuccessfulFileList"></param>
+        /// <param name="ALedgerNumber">ICH Ledger number</param>
+        /// <param name="AFileList">Table listing files to process</param>
+        /// <param name="ALogWriter">TextWriter for the log file</param>
+        /// <param name="AUnsuccessfulFileList">List of files that failed</param>
         /// <param name="ANewDir"></param>
         /// <param name="ADBTransaction"></param>
         private void GenerateStewardshipBatchFromFileList(int ALedgerNumber,
             ref DataTable AFileList,
-            ref TextWriter Atw,
+            ref TextWriter ALogWriter,
             ref string AUnsuccessfulFileList,
             string ANewDir,
             ref TDBTransaction ADBTransaction)
         {
-            int iPreviousLedger = 0;
-            int iPreviousRunNumber = 0;
-            int iPreviousPeriod = 0;
-            string cPreviousFileName = string.Empty;
+            int PreviousLedger = 0;
+            int PreviousRunNumber = 0;
+            int PreviousPeriod = 0;
+            string PreviousFileName = string.Empty;
 
-            string cNewFileName = string.Empty;
+            string NewFileName = string.Empty;
 
             string FileName;
             string LogMessage = string.Empty;
@@ -883,45 +882,46 @@ namespace Ict.Petra.Server.MFinance.ICH
             int PeriodNo;
             int RunNo;
 
-            bool lSuccessful = false;
+            bool Successful = false;
 
-            DataView dv = AFileList.DefaultView;
+            DataView DatView = AFileList.DefaultView;
 
-            dv.Sort = "iLedger asc, iPeriod asc, iRunNumber asc, dtReportDate desc, iReportTimeInMins desc";
-            dv.RowFilter = "cFileName <> ''";
+            DatView.Sort = "Ledger asc, Period asc, RunNumber asc, ReportDate desc, ReportTimeInMins desc";
+            DatView.RowFilter = "FileName <> ''";
 
-            foreach (DataRow dr in dv)
+            foreach (DataRow DatRow in DatView)
             {
                 /* if this is not the same as the previous stewardship then go ahead and try to create the
                  * stewardship batch from it */
-                FileName = Convert.ToString(dr["cFileName"]);
-                LedgerNo = Convert.ToInt32(dr["iLedger"]);
-                YearNo = Convert.ToInt32(dr["iYear"]);
-                PeriodNo = Convert.ToInt32(dr["iPeriod"]);
-                RunNo = Convert.ToInt32(dr["iRunNumber"]);
+                FileName = Convert.ToString(DatRow["FileName"]);
+                LedgerNo = Convert.ToInt32(DatRow["Ledger"]);
+                YearNo = Convert.ToInt32(DatRow["Year"]);
+                PeriodNo = Convert.ToInt32(DatRow["Period"]);
+                RunNo = Convert.ToInt32(DatRow["RunNumber"]);
 
-                if ((LedgerNo != iPreviousLedger) || (PeriodNo != iPreviousPeriod) || (RunNo != iPreviousRunNumber))
+                if ((LedgerNo != PreviousLedger) || (PeriodNo != PreviousPeriod) || (RunNo != PreviousRunNumber))
                 {
-                    GenerateStewardshipBatch(ALedgerNumber, YearNo, PeriodNo, RunNo, LedgerNo.ToString("00") + "00", FileName, ref Atw, out lSuccessful);
+                    GenerateStewardshipBatch(ALedgerNumber, YearNo, PeriodNo, RunNo, LedgerNo.ToString(
+                            "00") + "00", FileName, ref ALogWriter, out Successful);
                 }
                 else
                 {
-                    Atw.WriteLine("File " + FileName + " is a duplicate of " + cPreviousFileName + " and will therefore be skipped.");
+                    ALogWriter.WriteLine("File " + FileName + " is a duplicate of " + PreviousFileName + " and will therefore be skipped.");
                 }
 
-                if (lSuccessful)
+                if (Successful)
                 {
                     AAccountingPeriodTable APT = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, PeriodNo, ADBTransaction);
                     AAccountingPeriodRow APR = (AAccountingPeriodRow)APT.Rows[0];
 
                     //TODO: Need to add function for LangSpecMonthName
-                    cNewFileName = LedgerNo.ToString("000") + RunNo.ToString("000") + ".txt";
+                    NewFileName = LedgerNo.ToString("000") + RunNo.ToString("000") + ".txt";
 
                     FileInfo fi = new FileInfo(FileName);
 
                     if (fi.Exists)
                     {
-                        fi.MoveTo(ANewDir + @"\" + cNewFileName);
+                        fi.MoveTo(ANewDir + @"\" + NewFileName);
                     }
                 }
                 else
@@ -929,15 +929,14 @@ namespace Ict.Petra.Server.MFinance.ICH
                     AUnsuccessfulFileList += FileName + ",";
                 }
 
-                iPreviousLedger = LedgerNo;
-                iPreviousRunNumber = RunNo;
-                iPreviousPeriod = PeriodNo;
-                cPreviousFileName = FileName;
+                PreviousLedger = LedgerNo;
+                PreviousRunNumber = RunNo;
+                PreviousPeriod = PeriodNo;
+                PreviousFileName = FileName;
             }
 
-            Atw.WriteLine("Import Completed: " + DateTime.Today.ToShortTimeString() + " " + DateTime.Today.ToShortTimeString());
+            ALogWriter.WriteLine("Import Completed: " + DateTime.Today.ToShortTimeString() + " " + DateTime.Today.ToShortTimeString());
         }
-
 
         /// <summary>
         /// Creates stewardship batch from the specified stewardship report file.
@@ -948,7 +947,7 @@ namespace Ict.Petra.Server.MFinance.ICH
         /// <param name="ARunNumber">Run number of stewardship</param>
         /// <param name="AFromCostCentre">Fund to which stewardship relates</param>
         /// <param name="AFileName">Filename of stewardship report to process</param>
-        /// <param name="Atw">TextWriter for log file</param>
+        /// <param name="ALogWriter">TextWriter for log file</param>
         /// <param name="ASuccessful">Returns whether process successful</param>
         private void GenerateStewardshipBatch(int ALedgerNumber,
             int AYear,
@@ -956,7 +955,7 @@ namespace Ict.Petra.Server.MFinance.ICH
             int ARunNumber,
             string AFromCostCentre,
             string AFileName,
-            ref TextWriter Atw,
+            ref TextWriter ALogWriter,
             out bool ASuccessful)
         {
             ASuccessful = false;
@@ -1014,8 +1013,9 @@ namespace Ict.Petra.Server.MFinance.ICH
             if ((AYear < AccPeriodRow.PeriodStartDate.Year)
                 && (APeriod < LedgerRow.CurrentPeriod))
             {
-                LogMessage = "File " + AFileName + " is for a period more than 12 months prior to the current period and will need to be processed manually.";
-                Atw.WriteLine(LogMessage);
+                LogMessage = "File " + AFileName +
+                             " is for a period more than 12 months prior to the current period and will need to be processed manually.";
+                ALogWriter.WriteLine(LogMessage);
                 return;
             }
 
@@ -1025,7 +1025,7 @@ namespace Ict.Petra.Server.MFinance.ICH
             if (CostCentreRow == null)
             {
                 LogMessage = "Cost Centre " + AFromCostCentre + " does not exist. File " + AFileName + " will be skipped";
-                Atw.WriteLine(LogMessage);
+                ALogWriter.WriteLine(LogMessage);
                 return;
             }
 
@@ -1047,7 +1047,7 @@ namespace Ict.Petra.Server.MFinance.ICH
 
             /* look for any previously entered batches that appear to match this stewardship (ie. same fund,
              * period, run number) */
-            MatchingBatchNumber = FindMatchingStewardshipBatchInICH(ALedgerNumber,
+            MatchingBatchNumber = FindMatchingStewardshipBatch(ALedgerNumber,
                 Reference,
                 AYear,
                 APeriod,
@@ -1058,19 +1058,19 @@ namespace Ict.Petra.Server.MFinance.ICH
             if (!CostCentreRow.CostCentreActiveFlag)
             {
                 LogMessage = "Cost Centre " + AFromCostCentre + " is not active. File " + AFileName + " will be skipped";
-                Atw.WriteLine(LogMessage);
+                ALogWriter.WriteLine(LogMessage);
                 return;
             }
 
             /* get currency information from the header */
             Count = 1;
-            using (StreamReader sr = new StreamReader(AFileName))
+            using (StreamReader FileReader = new StreamReader(AFileName))
             {
                 while (Count <= 6)
                 {
-                    InputLine = sr.ReadLine().Trim();
+                    InputLine = FileReader.ReadLine().Trim();
 
-                    if (sr.Peek() >= 0)
+                    if (FileReader.Peek() >= 0)
                     {
                         /* ignore any blank lines at beginning */
                         if (!((Count == 1) && (InputLine == string.Empty)))
@@ -1092,7 +1092,7 @@ namespace Ict.Petra.Server.MFinance.ICH
             if (CurrencyRow == null)
             {
                 LogMessage = "Currency " + Currency + " does not exist. File " + AFileName + " will be skipped";
-                Atw.WriteLine(LogMessage);
+                ALogWriter.WriteLine(LogMessage);
                 return;
             }
 
@@ -1123,9 +1123,9 @@ namespace Ict.Petra.Server.MFinance.ICH
                 }
                 else
                 {
-	                LogMessage = "File " + AFileName + " could not be imported as there is no Corporate Exchange Rate ";
-	                LogMessage += "for currency " + Currency + " period " + APeriod.ToString() + " year " + AYear;
-	                Atw.WriteLine(LogMessage);
+                    LogMessage = "File " + AFileName + " could not be imported as there is no Corporate Exchange Rate ";
+                    LogMessage += "for currency " + Currency + " period " + APeriod.ToString() + " year " + AYear;
+                    ALogWriter.WriteLine(LogMessage);
                     return;
                 }
             }
@@ -1133,9 +1133,9 @@ namespace Ict.Petra.Server.MFinance.ICH
             CurrentPeriodDate = AccPeriodRow.PeriodEndDate;
 
             /* create the batch, journal and transactions */
-			
+
             //Start of GenerateBatch process
-			
+
             //Use Commit and Rollback here
 
             /*RUN gl1110o.p ("new":U,
@@ -1174,13 +1174,13 @@ namespace Ict.Petra.Server.MFinance.ICH
 
             ContinueImporting = true;
 
-            using (StreamReader sr = new StreamReader(AFileName))
+            using (StreamReader FileReader = new StreamReader(AFileName))
             {
                 while (ContinueImporting)
                 {
-                    InputLine = sr.ReadLine().Trim();
+                    InputLine = FileReader.ReadLine().Trim();
 
-                    if (sr.Peek() >= 0)
+                    if (FileReader.Peek() >= 0)
                     {
                         if (Count > 10)
                         {
@@ -1212,7 +1212,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                                     Reference,
                                     CurrentPeriodDate,
                                     false,
-                                    ref Atw,
+                                    ref ALogWriter,
                                     ref DBTransaction,
                                     out TransCreateOk);
 
@@ -1233,7 +1233,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                                     Reference,
                                     CurrentPeriodDate,
                                     false,
-                                    ref Atw,
+                                    ref ALogWriter,
                                     ref DBTransaction,
                                     out TransCreateOk);
 
@@ -1254,7 +1254,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                                     Reference,
                                     CurrentPeriodDate,
                                     false,
-                                    ref Atw,
+                                    ref ALogWriter,
                                     ref DBTransaction,
                                     out TransCreateOk);
 
@@ -1289,7 +1289,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                     TotalIncome,
                     TotalExpense,
                     TotalTransfer,
-                    ref Atw,
+                    ref ALogWriter,
                     ref DBTransaction,
                     out ProcessFile);
 
@@ -1313,7 +1313,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                 Reference,
                 CurrentPeriodDate,
                 true,
-                ref Atw,
+                ref ALogWriter,
                 ref DBTransaction,
                 out TransCreateOk);
 
@@ -1334,7 +1334,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                 Reference,
                 CurrentPeriodDate,
                 true,
-                ref Atw,
+                ref ALogWriter,
                 ref DBTransaction,
                 out TransCreateOk);
 
@@ -1355,7 +1355,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                 Reference,
                 CurrentPeriodDate,
                 true,
-                ref Atw,
+                ref ALogWriter,
                 ref DBTransaction,
                 out TransCreateOk);
 
@@ -1384,26 +1384,26 @@ PostGenerateBatch:
             {
                 if (!BatchCreateOk)
                 {
-	                LogMessage = "File " + AFileName + " could not be imported as batch creation failed.";
-	                Atw.WriteLine(LogMessage);
+                    LogMessage = "File " + AFileName + " could not be imported as batch creation failed.";
+                    ALogWriter.WriteLine(LogMessage);
                     return;
                 }
                 else if (!JournalCreateOk)
                 {
-	                LogMessage = "File " + AFileName + " could not be imported as journal creation failed.";
-	                Atw.WriteLine(LogMessage);
+                    LogMessage = "File " + AFileName + " could not be imported as journal creation failed.";
+                    ALogWriter.WriteLine(LogMessage);
                     return;
                 }
                 else if (!TransCreateOk)
                 {
-	                LogMessage = "File " + AFileName + " could not be imported as transaction creation failed.";
-	                Atw.WriteLine(LogMessage);
+                    LogMessage = "File " + AFileName + " could not be imported as transaction creation failed.";
+                    ALogWriter.WriteLine(LogMessage);
                     return;
                 }
                 else
                 {
-	                LogMessage = "File " + AFileName + " could not be . Cause unknown. Cost Centre " + ToCostCentre;
-	                Atw.WriteLine(LogMessage);
+                    LogMessage = "File " + AFileName + " could not be . Cause unknown. Cost Centre " + ToCostCentre;
+                    ALogWriter.WriteLine(LogMessage);
                     //"File " pcFileName " could not be imported. Cause unknown. Cost Centre "  + ToCostCentre
                 }
             }
@@ -1413,9 +1413,9 @@ PostGenerateBatch:
                  * batch that we have just created */
 
                 /*RUN gl1210.p (piLedgerNumber,
-                 * iBatchNumber,
-                 * FALSE,
-                 * OUTPUT lPostingSuccessful).*/
+                * iBatchNumber,
+                * FALSE,
+                * OUTPUT lPostingSuccessful).*/
                 ASuccessful = PostingSuccessful;
             }
             else if (ProcessFile && EmptyStewardship)
@@ -1452,13 +1452,13 @@ PostGenerateBatch:
         /// <param name="ATotalIncome">Total amount of income transactions in stewardship being processed</param>
         /// <param name="ATotalExpense">Total amount of expense transactions in stewardship being processed</param>
         /// <param name="ATotalTransfer">Total amount of transfer transactions in stewardship being processed</param>
-        /// <param name="Atw">TextWriter for log file</param>
+        /// <param name="ALogWriter">TextWriter for log file</param>
         /// <param name="ADBTransaction">Current database transaction</param>
         /// <param name="AProcessFile">Set to True if processing of the stewardship should go ahead or False if it should be rejected (ie. if a duplicate or possible duplicate</param>
         private void DealWithMatchingStewardshipBatch(int ALedgerNumber, int ABatchNumber, int ARunNumber,
             int AYear, string AFileName, string AFromCostCentre,
             string AFromCostCentreName, string APeriodName, decimal ATotalIncome,
-            decimal ATotalExpense, decimal ATotalTransfer, ref TextWriter Atw, ref TDBTransaction ADBTransaction, out bool AProcessFile)
+            decimal ATotalExpense, decimal ATotalTransfer, ref TextWriter ALogWriter, ref TDBTransaction ADBTransaction, out bool AProcessFile)
         {
             string LogMessage = string.Empty;
 
@@ -1491,18 +1491,18 @@ PostGenerateBatch:
                     if (SummaryStewardshipTransactionsMatch(ALedgerNumber, ABatchNumber, AFromCostCentre, ATotalIncome, ATotalExpense, ATotalTransfer,
                             ref ADBTransaction))
                     {
-                		LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
-		                LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ") and data is identical. ";
+                        LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
+                        LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ") and data is identical. ";
                         LogMessage += AFileName + " will be skipped";
-		                Atw.WriteLine(LogMessage);
+                        ALogWriter.WriteLine(LogMessage);
                         AProcessFile = false;
                     }
                     else
                     {
-                		LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
-		                LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ") and data has changed. ";
+                        LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
+                        LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ") and data has changed. ";
                         LogMessage += AFileName + " will be skipped";
-		                Atw.WriteLine(LogMessage);
+                        ALogWriter.WriteLine(LogMessage);
                         AProcessFile = false;
                     }
                 }
@@ -1529,18 +1529,18 @@ PostGenerateBatch:
                             if (SummaryStewardshipTransactionsMatch(ALedgerNumber, ABatchNumber, AFromCostCentre, ATotalIncome, ATotalExpense,
                                     ATotalTransfer, ref ADBTransaction))
                             {
-		                		LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
-				                LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ") and data is identical. ";
-		                        LogMessage += AFileName + " will be skipped";
-				                Atw.WriteLine(LogMessage);
+                                LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
+                                LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ") and data is identical. ";
+                                LogMessage += AFileName + " will be skipped";
+                                ALogWriter.WriteLine(LogMessage);
                                 AProcessFile = false;
                             }
                             else
                             {
-		                		LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
-				                LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ") and data has changed. ";
-		                        LogMessage += AFileName + " will be skipped";
-				                Atw.WriteLine(LogMessage);
+                                LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
+                                LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ") and data has changed. ";
+                                LogMessage += AFileName + " will be skipped";
+                                ALogWriter.WriteLine(LogMessage);
                                 AProcessFile = false;
                             }
 
@@ -1551,12 +1551,13 @@ PostGenerateBatch:
                             if (SummaryStewardshipTransactionsMatch(ALedgerNumber, ABatchNumber, AFromCostCentre, ATotalIncome, ATotalExpense,
                                     ATotalTransfer, ref ADBTransaction))
                             {
-		                		LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
-				                LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ", date ";
-				                LogMessage += TransactionRow.TransactionDate.ToShortDateString() + ") and is run number 0. ";
-				                LogMessage += "File " + AFileName + " is for run number " + ARunNumber.ToString() + " but the data is identical to the ";
-				                LogMessage += "existing batch so it will not be processed.";
-				                Atw.WriteLine(LogMessage);
+                                LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
+                                LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ", date ";
+                                LogMessage += TransactionRow.TransactionDate.ToShortDateString() + ") and is run number 0. ";
+                                LogMessage += "File " + AFileName + " is for run number " + ARunNumber.ToString() +
+                                              " but the data is identical to the ";
+                                LogMessage += "existing batch so it will not be processed.";
+                                ALogWriter.WriteLine(LogMessage);
                                 AProcessFile = false;
                             }
                             else
@@ -1605,19 +1606,19 @@ PostGenerateBatch:
                         if (SummaryStewardshipTransactionsMatch(ALedgerNumber, ABatchNumber, AFromCostCentre, ATotalIncome, ATotalExpense,
                                 ATotalTransfer, ref ADBTransaction))
                         {
-	                		LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
-			                LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ") and data is identical. ";
-	                        LogMessage += AFileName + " will be skipped";
-			                Atw.WriteLine(LogMessage);
+                            LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
+                            LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ") and data is identical. ";
+                            LogMessage += AFileName + " will be skipped";
+                            ALogWriter.WriteLine(LogMessage);
                             AProcessFile = false;
                         }
                         else
                         {
-	                		LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
-			                LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ", date ";
-			                LogMessage += OldTransactionRow.TransactionDate.ToShortDateString() + ") but data has changed. ";
-			                LogMessage += "File " + AFileName + " will be skipped.";
-			                Atw.WriteLine(LogMessage);
+                            LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
+                            LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ", date ";
+                            LogMessage += OldTransactionRow.TransactionDate.ToShortDateString() + ") but data has changed. ";
+                            LogMessage += "File " + AFileName + " will be skipped.";
+                            ALogWriter.WriteLine(LogMessage);
                             AProcessFile = false;
                         }
                     }
@@ -1626,13 +1627,13 @@ PostGenerateBatch:
                         if (SummaryStewardshipTransactionsMatch(ALedgerNumber, ABatchNumber, AFromCostCentre, ATotalIncome, ATotalExpense,
                                 ATotalTransfer, ref ADBTransaction))
                         {
-	                		LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
-			                LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ", date ";
-			                LogMessage += OldTransactionRow.TransactionDate.ToShortDateString() + ") but the run number is unknown. ";
-			                LogMessage += "File " + AFileName + " is for run number " + ARunNumber.ToString() + " but the data is identical to the ";
-			                LogMessage += "existing batch so it will not be processed.";
-			                Atw.WriteLine(LogMessage);
-			                AProcessFile = false;
+                            LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
+                            LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ", date ";
+                            LogMessage += OldTransactionRow.TransactionDate.ToShortDateString() + ") but the run number is unknown. ";
+                            LogMessage += "File " + AFileName + " is for run number " + ARunNumber.ToString() + " but the data is identical to the ";
+                            LogMessage += "existing batch so it will not be processed.";
+                            ALogWriter.WriteLine(LogMessage);
+                            AProcessFile = false;
                         }
                         else
                         {
@@ -1649,31 +1650,31 @@ PostGenerateBatch:
                         if (SummaryStewardshipTransactionsMatch(ALedgerNumber, ABatchNumber, AFromCostCentre, ATotalIncome, ATotalExpense,
                                 ATotalTransfer, ref ADBTransaction))
                         {
-	                		LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
-			                LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ", date ";
-			                LogMessage += OldTransactionRow.TransactionDate.ToShortDateString() + ") and data is identical. ";
-	                        LogMessage += AFileName + " will be skipped";
-			                Atw.WriteLine(LogMessage);
+                            LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
+                            LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ", date ";
+                            LogMessage += OldTransactionRow.TransactionDate.ToShortDateString() + ") and data is identical. ";
+                            LogMessage += AFileName + " will be skipped";
+                            ALogWriter.WriteLine(LogMessage);
                             AProcessFile = false;
                         }
                         else
                         {
-	                		LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
-			                LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ", date ";
-			                LogMessage += OldTransactionRow.TransactionDate.ToShortDateString() + ") but data has changed. ";
-	                        LogMessage += AFileName + " will be skipped";
-			                Atw.WriteLine(LogMessage);
+                            LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
+                            LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ", date ";
+                            LogMessage += OldTransactionRow.TransactionDate.ToShortDateString() + ") but data has changed. ";
+                            LogMessage += AFileName + " will be skipped";
+                            ALogWriter.WriteLine(LogMessage);
                             AProcessFile = false;
                         }
                     }
                     else if (ARunNumber < BatchRunNumber)
                     {
-                		LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
-		                LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ", date ";
-		                LogMessage += OldTransactionRow.TransactionDate.ToShortDateString() + ").  The run number on that batch ";
-		                LogMessage += "(" + BatchRunNumber.ToString() + ") is higher than the run number on the file being processed and therefore ";
+                        LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
+                        LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ", date ";
+                        LogMessage += OldTransactionRow.TransactionDate.ToShortDateString() + ").  The run number on that batch ";
+                        LogMessage += "(" + BatchRunNumber.ToString() + ") is higher than the run number on the file being processed and therefore ";
                         LogMessage += AFileName + " will be skipped";
-		                Atw.WriteLine(LogMessage);
+                        ALogWriter.WriteLine(LogMessage);
                         AProcessFile = false;
                     }
                     else if (BatchRunNumber == 0)
@@ -1681,28 +1682,28 @@ PostGenerateBatch:
                         if (SummaryStewardshipTransactionsMatch(ALedgerNumber, ABatchNumber, AFromCostCentre, ATotalIncome, ATotalExpense,
                                 ATotalTransfer, ref ADBTransaction))
                         {
-	                		LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
-			                LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ", date ";
-			                LogMessage += OldTransactionRow.TransactionDate.ToShortDateString() + ") and is run number 0. ";
-			                LogMessage += "File " + AFileName + " is for run number " + ARunNumber.ToString() + " but the data is identical to the ";
-			                LogMessage += "existing batch so it will not be processed.";
-			                Atw.WriteLine(LogMessage);
+                            LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
+                            LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ", date ";
+                            LogMessage += OldTransactionRow.TransactionDate.ToShortDateString() + ") and is run number 0. ";
+                            LogMessage += "File " + AFileName + " is for run number " + ARunNumber.ToString() + " but the data is identical to the ";
+                            LogMessage += "existing batch so it will not be processed.";
+                            ALogWriter.WriteLine(LogMessage);
                             AProcessFile = false;
                         }
                         else
                         {
                             AProcessFile = true;
                         }
-                    	
                     }
                     else
                     {
-                    	AProcessFile = true;
+                        AProcessFile = true;
                     }
                 }
+
                 return;
             }
-            
+
             /* if we still haven't found the batch try previous years */
             APreviousYearTransactionTable PreviousTransTable = new APreviousYearTransactionTable();
             APreviousYearTransactionRow TemplateRow3 = (APreviousYearTransactionRow)PreviousTransTable.NewRowTyped(false);
@@ -1730,20 +1731,20 @@ PostGenerateBatch:
                         if (SummaryStewardshipTransactionsMatch(ALedgerNumber, ABatchNumber, AFromCostCentre, ATotalIncome, ATotalExpense,
                                 ATotalTransfer, ref ADBTransaction))
                         {
-	                		LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
-			                LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ", date ";
-			                LogMessage += PreviousTransactionRow.TransactionDate.ToShortDateString() + ") and data is identical. ";
-	                        LogMessage += AFileName + " will be skipped";
-			                Atw.WriteLine(LogMessage);
+                            LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
+                            LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ", date ";
+                            LogMessage += PreviousTransactionRow.TransactionDate.ToShortDateString() + ") and data is identical. ";
+                            LogMessage += AFileName + " will be skipped";
+                            ALogWriter.WriteLine(LogMessage);
                             AProcessFile = false;
                         }
                         else
                         {
-	                		LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
-			                LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ", date ";
-			                LogMessage += PreviousTransactionRow.TransactionDate.ToShortDateString() + ") but data has changed. ";
-	                        LogMessage += AFileName + " will be skipped";
-			                Atw.WriteLine(LogMessage);
+                            LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
+                            LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ", date ";
+                            LogMessage += PreviousTransactionRow.TransactionDate.ToShortDateString() + ") but data has changed. ";
+                            LogMessage += AFileName + " will be skipped";
+                            ALogWriter.WriteLine(LogMessage);
                             AProcessFile = false;
                         }
                     }
@@ -1752,12 +1753,12 @@ PostGenerateBatch:
                         if (SummaryStewardshipTransactionsMatch(ALedgerNumber, ABatchNumber, AFromCostCentre, ATotalIncome, ATotalExpense,
                                 ATotalTransfer, ref ADBTransaction))
                         {
-	                		LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
-			                LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ", date ";
-			                LogMessage += PreviousTransactionRow.TransactionDate.ToShortDateString() + ") but the run number is unknown. ";
-			                LogMessage += "File " + AFileName + " is for run number " + ARunNumber.ToString() + " but the data is identical to the ";
-			                LogMessage += "existing batch so it will not be processed.";
-			                Atw.WriteLine(LogMessage);
+                            LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
+                            LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ", date ";
+                            LogMessage += PreviousTransactionRow.TransactionDate.ToShortDateString() + ") but the run number is unknown. ";
+                            LogMessage += "File " + AFileName + " is for run number " + ARunNumber.ToString() + " but the data is identical to the ";
+                            LogMessage += "existing batch so it will not be processed.";
+                            ALogWriter.WriteLine(LogMessage);
                             AProcessFile = false;
                         }
                         else
@@ -1775,31 +1776,31 @@ PostGenerateBatch:
                         if (SummaryStewardshipTransactionsMatch(ALedgerNumber, ABatchNumber, AFromCostCentre, ATotalIncome, ATotalExpense,
                                 ATotalTransfer, ref ADBTransaction))
                         {
-	                		LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
-			                LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ", date ";
-			                LogMessage += PreviousTransactionRow.TransactionDate.ToShortDateString() + ") and data is identical. ";
-	                        LogMessage += AFileName + " will be skipped";
-			                Atw.WriteLine(LogMessage);
+                            LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
+                            LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ", date ";
+                            LogMessage += PreviousTransactionRow.TransactionDate.ToShortDateString() + ") and data is identical. ";
+                            LogMessage += AFileName + " will be skipped";
+                            ALogWriter.WriteLine(LogMessage);
                             AProcessFile = false;
                         }
                         else
                         {
-	                		LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
-			                LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ", date ";
-			                LogMessage += PreviousTransactionRow.TransactionDate.ToShortDateString() + ") but data has changed. ";
-	                        LogMessage += AFileName + " will be skipped";
-			                Atw.WriteLine(LogMessage);
+                            LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
+                            LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ", date ";
+                            LogMessage += PreviousTransactionRow.TransactionDate.ToShortDateString() + ") but data has changed. ";
+                            LogMessage += AFileName + " will be skipped";
+                            ALogWriter.WriteLine(LogMessage);
                             AProcessFile = false;
                         }
                     }
                     else if (ARunNumber < BatchRunNumber)
                     {
-                		LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
-		                LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ", date ";
-		                LogMessage += PreviousTransactionRow.TransactionDate.ToShortDateString() + ").  The run number on that batch ";
-		                LogMessage += "(" + BatchRunNumber.ToString() + ") is higher than the run number on the file being processed and therefore ";
+                        LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
+                        LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ", date ";
+                        LogMessage += PreviousTransactionRow.TransactionDate.ToShortDateString() + ").  The run number on that batch ";
+                        LogMessage += "(" + BatchRunNumber.ToString() + ") is higher than the run number on the file being processed and therefore ";
                         LogMessage += AFileName + " will be skipped";
-		                Atw.WriteLine(LogMessage);
+                        ALogWriter.WriteLine(LogMessage);
                         AProcessFile = false;
                     }
                     else if (BatchRunNumber == 0)
@@ -1807,12 +1808,12 @@ PostGenerateBatch:
                         if (SummaryStewardshipTransactionsMatch(ALedgerNumber, ABatchNumber, AFromCostCentre, ATotalIncome, ATotalExpense,
                                 ATotalTransfer, ref ADBTransaction))
                         {
-	                		LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
-			                LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ", date ";
-			                LogMessage += PreviousTransactionRow.TransactionDate.ToShortDateString() + ") and is run number 0. ";
-			                LogMessage += "File " + AFileName + " is for run number " + ARunNumber.ToString() + " but the data is identical to the ";
-			                LogMessage += "existing batch so it will not be processed.";
-			                Atw.WriteLine(LogMessage);
+                            LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
+                            LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ", date ";
+                            LogMessage += PreviousTransactionRow.TransactionDate.ToShortDateString() + ") and is run number 0. ";
+                            LogMessage += "File " + AFileName + " is for run number " + ARunNumber.ToString() + " but the data is identical to the ";
+                            LogMessage += "existing batch so it will not be processed.";
+                            ALogWriter.WriteLine(LogMessage);
                             AProcessFile = false;
                         }
                         else
@@ -1825,11 +1826,8 @@ PostGenerateBatch:
                         AProcessFile = true;
                     }
                 }
-
             }
-            
         }
-        
 
         /// <summary>
         /// Creates a stewardship transaction using the parameters specified
@@ -1844,13 +1842,13 @@ PostGenerateBatch:
         /// <param name="AReference">Transaction reference</param>
         /// <param name="ADate">Transaction date</param>
         /// <param name="ASummary">Is this a summary transaction or a detail transaction</param>
-        /// <param name="Atw">TextWriter for log file</param>
+        /// <param name="ALogWriter">TextWriter for log file</param>
         /// <param name="ADBTransaction">Current database transaction</param>
         /// <param name="ASuccessful">Was the transaction successfully created</param>
         private void CreateStewardshipTransaction(int ALedgerNumber, int ABatchNumber, int AJournalNumber,
             string ATransactionType, string ACostCentre, string ANarrative,
             decimal AAmount, string AReference, DateTime ADate,
-            bool ASummary, ref TextWriter Atw, ref TDBTransaction ADBTransaction, out bool ASuccessful)
+            bool ASummary, ref TextWriter ALogWriter, ref TDBTransaction ADBTransaction, out bool ASuccessful)
         {
             string Account = string.Empty;
             bool TransCreateOk = false;
@@ -1886,8 +1884,8 @@ PostGenerateBatch:
                 if (CostCentreRow == null)
                 {
                     ASuccessful = false;
-					LogMessage = "Cost Centre " + ACostCentre +" does not exist.";
-					Atw.WriteLine(LogMessage);
+                    LogMessage = "Cost Centre " + ACostCentre + " does not exist.";
+                    ALogWriter.WriteLine(LogMessage);
                     return;
                 }
 
