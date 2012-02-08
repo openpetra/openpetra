@@ -974,8 +974,6 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                     UmJobTable JobTableSubmit = new UmJobTable();
                     UmJobRow JobRow;
 
-                    PmJobAssignmentRow JobAssignmentRowOrigin;
-
 
                     PmJobAssignmentTableSubmit = AInspectDS.PmJobAssignment;
 
