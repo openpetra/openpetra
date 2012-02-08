@@ -57,9 +57,9 @@ namespace Ict.Petra.Client.MReporting.Gui
         public void ReadControls(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             ACalc.AddParameter("param_active", this.chkActivePartners.Checked);
-            ACalc.AddParameter("param_mailingAddressesOnly", this.chkMailingAddressesOnly.Checked);
-            ACalc.AddParameter("param_familiesOnly", this.chkFamiliesOnly.Checked);
-            ACalc.AddParameter("param_excludeNoSolicitations", this.chkExcludeNoSolicitations.Checked);
+            ACalc.AddParameter("param_mailing_addresses_only", this.chkMailingAddressesOnly.Checked);
+            ACalc.AddParameter("param_families_only", this.chkFamiliesOnly.Checked);
+            ACalc.AddParameter("param_exclude_no_solicitations", this.chkExcludeNoSolicitations.Checked);
         }
 
         /// <summary>
@@ -69,9 +69,9 @@ namespace Ict.Petra.Client.MReporting.Gui
         public void SetControls(TParameterList AParameters)
         {
             chkActivePartners.Checked = AParameters.Get("param_active").ToBool();
-            chkMailingAddressesOnly.Checked = AParameters.Get("param_mailingAddressesOnly").ToBool();
-            chkFamiliesOnly.Checked = AParameters.Get("param_familiesOnly").ToBool();
-            chkExcludeNoSolicitations.Checked = AParameters.Get("param_excludeNoSolicitations").ToBool();
+            chkMailingAddressesOnly.Checked = AParameters.Get("param_mailing_addresses_only").ToBool();
+            chkFamiliesOnly.Checked = AParameters.Get("param_families_only").ToBool();
+            chkExcludeNoSolicitations.Checked = AParameters.Get("param_exclude_no_solicitations").ToBool();
         }
 
         /// <summary>
@@ -79,6 +79,14 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// </summary>
         public void SetAvailableFunctions(ArrayList AAvailableFunctions)
         {
+        }
+
+        /// <summary>
+        /// hide/show tick box for "Families Only"
+        /// </summary>
+        public void ShowFamiliesOnly(bool AShow)
+        {
+            chkFamiliesOnly.Visible = AShow;
         }
     }
 }

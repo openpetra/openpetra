@@ -4,8 +4,9 @@
 // @Authors:
 //       christiank
 //       dinwiggy
+//       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,9 +27,13 @@ using System;
 using System.Data;
 using System.Windows.Forms;
 using Ict.Common;
+using Ict.Common.Controls;
 using Ict.Common.Remoting.Client;
+using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MPartner;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
@@ -77,6 +82,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             FMainDS = AMainDS;
 
             LoadDataOnDemand();
+
+            // enable grid to react to insert and delete keyboard keys
+            grdDetails.InsertKeyPressed += new TKeyPressedEventHandler(grdDetails_InsertKeyPressed);
+            grdDetails.DeleteKeyPressed += new TKeyPressedEventHandler(grdDetails_DeleteKeyPressed);
+
+            if (grdDetails.Rows.Count <= 1)
+            {
+                pnlDetails.Visible = false;
+                btnDelete.Enabled = false;
+            }
         }
 
         /// <summary>
@@ -93,13 +108,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             ARow.PartnerKey = FMainDS.PPerson[0].PartnerKey;
             ARow.UnitKey = 0;
-            // TODO: Refine/modify default values
             ARow.PositionName = "";
             ARow.PositionScope = "O";
             ARow.FromDate = DateTime.Now.Date;
-            ARow.JobKey = 2;
-            ARow.JobAssignmentKey = -1;
-            ARow.LeavingCodeUpdatedDate = DateTime.Now.Date;
+
+            // set job key to random value for now as this will be set correctly during saving on server side
+            // depending on if job record already exists or not
+            ARow.JobKey = -1;
+            ARow.JobAssignmentKey = Convert.ToInt32(TRemote.MCommon.WebConnectors.GetNextSequence(TSequenceNames.seq_job_assignment));
         }
 
         private void DeleteRow(System.Object sender, EventArgs e)
@@ -108,18 +124,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 return;
             }
-
-// TODO: perform a check if the value is already referenced somewhere (similar to what the commented-out code does)
-//            int num = TRemote.MFinance.Setup.WebConnectors.CheckDeleteAFreeformAnalysis(FLedgerNumber,
-//                FPreviouslySelectedDetailRow.AnalysisTypeCode,
-//                FPreviouslySelectedDetailRow.AnalysisValue);
-//
-//            if (num > 0)
-//            {
-//                MessageBox.Show(Catalog.GetString(
-//                        "This value is already referenced and cannot be deleted."));
-//                return;
-//            }
 
             if (MessageBox.Show(String.Format(Catalog.GetString(
                             "You have choosen to delete this value ({0}).\n\nDo you really want to delete it?"),
@@ -132,6 +136,13 @@ namespace Ict.Petra.Client.MPartner.Gui
                 SelectByIndex(rowIndex);
 
                 DoRecalculateScreenParts();
+
+                if (grdDetails.Rows.Count <= 1)
+                {
+                    // hide details part and disable buttons if no record in grid (first row for headings)
+                    btnDelete.Enabled = false;
+                    pnlDetails.Visible = false;
+                }
             }
         }
 
@@ -144,10 +155,43 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void ShowDetailsManual(PmJobAssignmentRow ARow)
         {
+            if (ARow != null)
+            {
+                btnDelete.Enabled = true;
+                pnlDetails.Visible = true;
+            }
+
             // In theory, the next Method call could be done in Methods NewRowManual; however, NewRowManual runs before
             // the Row is actually added and this would result in the Count to be one too less, so we do the Method call here, short
             // of a non-existing 'AfterNewRowManual' Method....
             DoRecalculateScreenParts();
+        }
+
+        /// <summary>
+        /// validate the data entered, so that the caller can cancel the current operation if data is missing
+        /// </summary>
+        /// <param name="ARow"></param>
+        /// <param name="AVerifications"></param>
+        /// <returns>true if everything is fine</returns>
+        private bool ValidateDetailsManual(PmJobAssignmentRow ARow, out TVerificationResultCollection AVerifications)
+        {
+            AVerifications = new TVerificationResultCollection();
+
+            if (Convert.ToInt64(txtUnitKey.Text) == 0)
+            {
+                AVerifications.Add(new TVerificationResult(Catalog.GetString("Unit key"),
+                        Catalog.GetString("You need to select the unit that the person will work for"),
+                        TResultSeverity.Resv_Critical));
+            }
+
+            if (cmbPositionName.GetSelectedString().Length == 0)
+            {
+                AVerifications.Add(new TVerificationResult(Catalog.GetString("Position"),
+                        Catalog.GetString("You need to select the position"),
+                        TResultSeverity.Resv_Critical));
+            }
+
+            return !AVerifications.HasCriticalError();
         }
 
         /// <summary>
@@ -204,12 +248,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                 grdDetails.Selection.SelectRow(rowIndex, true);
                 FPreviouslySelectedDetailRow = GetSelectedDetailRow();
                 ShowDetails(FPreviouslySelectedDetailRow);
-
-                pnlDetails.Visible = true;
             }
             else
             {
-                pnlDetails.Visible = false;
+                FPreviouslySelectedDetailRow = null;
             }
         }
 
@@ -271,6 +313,27 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (RecalculateScreenParts != null)
             {
                 RecalculateScreenParts(this, e);
+            }
+        }
+
+        /// <summary>
+        /// Event Handler for Grid Event
+        /// </summary>
+        /// <returns>void</returns>
+        private void grdDetails_InsertKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
+        {
+            NewRow(this, null);
+        }
+
+        /// <summary>
+        /// Event Handler for Grid Event
+        /// </summary>
+        /// <returns>void</returns>
+        private void grdDetails_DeleteKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
+        {
+            if (e.Row != -1)
+            {
+                this.DeleteRow(this, null);
             }
         }
     }

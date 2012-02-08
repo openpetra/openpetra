@@ -136,6 +136,9 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         private const int DefaultNumDecimalPlaces = 0;
         private const string DefaultCurrencyCode = "USD";
 
+        // Keep track of the maximum Idx1 value that occurs in the PDataLabelUse table
+        private int MaxIdx1Value = 0;
+
         /// <summary>
         /// This is the simple two column data table used by the list box.
         /// The row content (and column headings) depend on our launch context
@@ -207,6 +210,12 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
                     }
 
                     usedBy += useRow.Use;
+
+                    // Update the value of our MaxIdx1Value variable
+                    if (useRow.Idx1 > MaxIdx1Value)
+                    {
+                        MaxIdx1Value = useRow.Idx1;
+                    }
                 }
 
                 // Initially our two new columns hold the same values, but if we make a change we modify the second one.
@@ -301,7 +310,9 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             // And now we can set up our context-specific view and override the original binding to the grid
             // that the generated code did earlier
             // Note that we do not use the table.defaultView property but we create a new view specifically for our context
-            DataView contextView = new DataView(FMainDS.PDataLabel, "Context=" + ((int)CurrentContext).ToString(), "", DataViewRowState.CurrentRows);
+            // The rows are sorted by Group and code(text)
+            DataView contextView = new DataView(FMainDS.PDataLabel,
+                "Context=" + ((int)CurrentContext).ToString(), "p_group_c, p_text_c", DataViewRowState.CurrentRows);
             contextView.AllowNew = false;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(contextView);
             grdDetails.Refresh();
@@ -650,27 +661,63 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
                 if (labelRow[UsedByColumnOrdinal].ToString() != labelRow[UsedByColumnOrdinal - 1].ToString())
                 {
                     // This row's UsedBy column has been edited
-                    // Delete the old rows that applied to this key
+                    // Get the key and the list of usedBy's for this row
                     int key = labelRow.Key;
-                    DataRow[] Userows = FExtraDS.PDataLabelUse.Select("p_data_label_key_i=" + key.ToString());
-
-                    foreach (DataRow r in Userows)
-                    {
-                        r.Delete();
-                    }
-
-                    // Create new rows and add them
                     string usedByList = labelRow[UsedByColumnOrdinal].ToString();
                     string[] uses = usedByList.Split(',');
-                    int nIndex = 1;
 
+                    // Get the usedBy's that are in the database at the moment
+                    DataRow[] UseRows = FExtraDS.PDataLabelUse.Select("p_data_label_key_i=" + key.ToString());
+
+                    // For each current UsedBy, make sure it has a row in the database.
+                    // If not, we need to add a new row, using an Idx1 value greater than anything used before
                     foreach (string use in uses)
                     {
-                        PDataLabelUseRow newRow = FExtraDS.PDataLabelUse.NewRowTyped();
-                        newRow.DataLabelKey = key;
-                        newRow.Use = use;
-                        newRow.Idx1 = nIndex++;
-                        FExtraDS.PDataLabelUse.Rows.Add(newRow);
+                        bool bUseExistsAlready = false;
+
+                        foreach (DataRow r in UseRows)
+                        {
+                            string tryUse = r.ItemArray[PDataLabelUseTable.ColumnUseId].ToString();
+
+                            if (String.Compare(tryUse, use, true) == 0)
+                            {
+                                bUseExistsAlready = true;
+                                break;
+                            }
+                        }
+
+                        if (!bUseExistsAlready)
+                        {
+                            PDataLabelUseRow newRow = FExtraDS.PDataLabelUse.NewRowTyped();
+                            newRow.DataLabelKey = key;
+                            newRow.Use = use;
+                            newRow.Idx1 = ++MaxIdx1Value;
+                            FExtraDS.PDataLabelUse.Rows.Add(newRow);
+                        }
+                    }
+
+                    // Now go round the other way
+                    // Go round each database row and check if its UsedBy is still in our current usedBy List
+                    // If we don't find it in the current list we need to delete this row
+                    foreach (DataRow r in UseRows)
+                    {
+                        string tryUse = r.ItemArray[PDataLabelUseTable.ColumnUseId].ToString();
+                        bool bUseStillExists = false;
+
+                        foreach (string use in uses)
+                        {
+                            if (String.Compare(tryUse, use, true) == 0)
+                            {
+                                bUseStillExists = true;
+                                break;
+                            }
+                        }
+
+                        if (!bUseStillExists)
+                        {
+                            // We no longer need this row for this usedBy/LabelKey
+                            ((PDataLabelUseRow)r).Delete();
+                        }
                     }
                 }
             }

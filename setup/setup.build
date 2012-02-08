@@ -418,7 +418,21 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
         </filterchain>
     </copy>
     <copy file="${dir.root}/setup/petra${PetraRelease}/linuxserver/${LinuxTargetDistribution}/setup.sh" tofile="${setupDir}/setup.sh"/>
-   
+
+    <!-- ***************  create the web.config file ***************  -->
+    <property name="Config.file" value="${dir.root}/setup/petra${PetraRelease}/linuxserver/${LinuxTargetDistribution}/web.config.my"/>
+    <if test="${not file::exists(Config.file)}">
+        <property name="Config.file" value="${dir.root}/setup/petra${PetraRelease}/linuxserver/${LinuxTargetDistribution}/web.config"/>
+    </if>
+    <if test="${file::exists(Config.file)}">
+        <copy file="${Config.file}"
+            tofile="${setupDir}/etc30/web-sample.config" overwrite="true">
+            <filterchain>
+                <expandproperties />
+            </filterchain>
+        </copy>
+    </if>
+
     <copy todir="${setupDir}/etc30">
       <fileset basedir="${dir.root}/setup/petra${PetraRelease}/linuxserver/">
           <include name="*.config" />

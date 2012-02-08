@@ -8,7 +8,7 @@ RootNode:
     FormType: edit
     Template: controlMaintainTable
     Actions:
-        actNew: {Label=&Add, ActionClick=NewRow}
+        actNew: {Label=&New, ActionClick=NewRow}
         actDelete: {Label=&Delete, ActionClick=DeleteRow}
     Controls:
         pnlContent:
@@ -45,13 +45,13 @@ RootNode:
                 Row3: [cmbLocalLanguage]
                 Row4: [txtDescriptInLocalLanguage]
                 Row5: [txtYearsOfExperience, dtpYearsOfExperienceAsOf]
-                Row6: [chkProfSkill, chkCurrOccupation]
-                Row7: [txtDegree]
-                Row8: [txtYearOfDegree]
+                Row6: [chkProfSkill]
+                Row7: [chkCurrOccupation]
+                Row8: [txtDegree, txtYearOfDegree]
                 Row9: [txtComment]
                 
         cmbSkillCode:
-            Label: Skill
+            Label: Skill Category
             DataField: PmPersonSkill.SkillCategoryCode
             List: SkillCategoryList
             Width: 200
@@ -73,12 +73,12 @@ RootNode:
         dtpYearsOfExperienceAsOf: {Label=as of Date, DataField=PmPersonSkill.YearsOfExperienceAsOf}
         chkProfSkill: {Label=Is this a professional skill?, DataField=PmPersonSkill.ProfessionalSkill}
         chkCurrOccupation: {Label=Is person's current occupation?, DataField=PmPersonSkill.CurrentOccupation}
-        txtDegree: {Label=Degree linked with this skill, DataField=PmPersonSkill.Degree, ColSpan=3}
-        txtYearOfDegree: {DataField=PmPersonSkill.YearOfDegree, Width=60, Format=Integer}
+        txtDegree: {Label=Degree linked with this skill, DataField=PmPersonSkill.Degree}
+        txtYearOfDegree: {DataField=PmPersonSkill.YearOfDegree, Width=50, Format=Integer}
         txtComment:
             DataField: PmPersonSkill.Comment
             Multiline: true
             ScrollBars: Vertical
-            Height: 110
+            Height: 70
             Width: 380
             ColSpan: 3

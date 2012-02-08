@@ -57,7 +57,7 @@ namespace Ict.Petra.WebServer.MConference
             this.Response.AddHeader("Content-Type", "text/plain");
             this.Response.AddHeader("Content-Disposition", "attachment; filename=test.txt");
             this.Response.Write("Hello World");
-            // this.Response.TransmitFile(PDFPath);
+            // this.Response.WriteFile(PDFPath);
             this.Response.End();
         }
 

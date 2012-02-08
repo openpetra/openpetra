@@ -13,16 +13,27 @@ RootNode:
             Dock: Fill
        
         grpEmergencyData:
-            Dock: Top
-            #Controls: [txtHeightCm, txtWeightKg, cmbEyeColour, cmbHairColour, cmbFacialHair, txtIdentifyingMarks]
+            Dock: Fill
             Controls:
-                Row0: [txtHeightCm, lblIdentMarks]
-                Row1: [txtWeightKg, txtIdentifyingMarks]
+                Row0: [pnlEmergencyDataLeft, pnlEmergencyDataRight]
+            Label: Emergency Data (will not be exported)
+
+        pnlEmergencyDataLeft:
+            Dock: Fill
+            Controls:
+                Row0: [txtHeightCm]
+                Row1: [txtWeightKg]
                 Row2: [cmbEyeColour]
                 Row3: [cmbHairColour]
                 Row4: [cmbFacialHair]
+        
+        pnlEmergencyDataRight:
+            #Dock: Right
+            Controls:
+                Row0: [lblIdentMarks]
+                Row1: [txtIdentifyingMarks]
             Label: Emergency Data (will not be exported)
-                   
+            
         txtHeightCm:
             Label: Height (cm)
             Width: 100
@@ -45,13 +56,15 @@ RootNode:
             Label:Scars, Marks, Tattoos, Piercings
         txtIdentifyingMarks:
             #Label: Scars, Marks, Tattoos, Piercings
+            Dock: Fill
+            Multiline: true
+            ScrollBars: Vertical
             NoLabel: True
-            RowSpan:2
-            Width: 250
-            Height: 200
+            #RowSpan:4
+            #Width: 250
+            Height: 110
             DataField: PmPersonalData.PhysicalDesc
             
-           
         grpMedical: {Label=Blood Type (will be exported), Stretch=horizontally}
             Controls: [cmbBloodType]
         

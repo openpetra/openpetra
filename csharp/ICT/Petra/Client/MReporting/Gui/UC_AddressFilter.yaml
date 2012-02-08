@@ -7,13 +7,17 @@ RootNode:
     FormType: edit
     Template: usercontrolUnbound
     Controls:
-        pnlAddress:
-            Controls: 
-                Row0: [txtCity]
-                Row1: [txtPostCodeFrom, txtPostCodeTo]
-                Row2: [cmbRegion]
-                Row3: [cmbCountry]
+        grpAddress: {NoLabel=true}
+            Controls:
+                Row0: [chkCurrentAddressesOnly]
+                Row1: [txtCity]
+                Row2: [txtPostCodeFrom]
+                Row3: [txtPostCodeTo]
+                Row4: [cmbRegion]
+                Row5: [cmbCountry]
 		
+        chkCurrentAddressesOnly:
+            Label: Current Addresses only
         txtCity:
             Label: Town/City
         txtPostCodeFrom:

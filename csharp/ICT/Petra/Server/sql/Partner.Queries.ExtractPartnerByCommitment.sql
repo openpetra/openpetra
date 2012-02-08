@@ -18,4 +18,4 @@ WHERE
     AND (? OR pub_p_partner.p_status_code_c = "ACTIVE") -- Active partners only
 --    AND (? OR pub_p_partner_location.p_send_mail_l) -- Mailable
     AND (? OR NOT pub_p_partner.p_no_solicitations_l) -- Respect no solicitations
-ORDER BY pub_pub_p_partner.p_partner_short_name_c
+ORDER BY pub_p_partner.p_partner_short_name_c

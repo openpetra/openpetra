@@ -249,6 +249,18 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                             FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
+                        case TCacheablePersonTablesEnum.SkillCategoryList:
+                        {
+                            DataTable TmpTable = PtSkillCategoryAccess.LoadAll(ReadTransaction);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheablePersonTablesEnum.SkillLevelList:
+                        {
+                            DataTable TmpTable = PtSkillLevelAccess.LoadAll(ReadTransaction);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
                         case TCacheablePersonTablesEnum.ValuableItemList:
                         {
                             DataTable TmpTable = PtValuableItemAccess.LoadAll(ReadTransaction);
@@ -270,18 +282,6 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                         case TCacheablePersonTablesEnum.OutreachPreferenceLevelList:
                         {
                             DataTable TmpTable = PtOutreachPreferenceLevelAccess.LoadAll(ReadTransaction);
-                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
-                            break;
-                        }
-                        case TCacheablePersonTablesEnum.SkillCategoryList:
-                        {
-                            DataTable TmpTable = PtSkillCategoryAccess.LoadAll(ReadTransaction);
-                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
-                            break;
-                        }
-                        case TCacheablePersonTablesEnum.SkillLevelList:
-                        {
-                            DataTable TmpTable = PtSkillLevelAccess.LoadAll(ReadTransaction);
                             FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
@@ -469,6 +469,20 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                                 SubmissionResult = TSubmitChangesResult.scrOK;
                             }
                             break;
+                        case TCacheablePersonTablesEnum.SkillCategoryList:
+                            if (PtSkillCategoryAccess.SubmitChanges((PtSkillCategoryTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            break;
+                        case TCacheablePersonTablesEnum.SkillLevelList:
+                            if (PtSkillLevelAccess.SubmitChanges((PtSkillLevelTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            break;
                         case TCacheablePersonTablesEnum.ValuableItemList:
                             if (PtValuableItemAccess.SubmitChanges((PtValuableItemTable)ASubmitTable, SubmitChangesTransaction,
                                     out SingleVerificationResultCollection))
@@ -492,20 +506,6 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                             break;
                         case TCacheablePersonTablesEnum.OutreachPreferenceLevelList:
                             if (PtOutreachPreferenceLevelAccess.SubmitChanges((PtOutreachPreferenceLevelTable)ASubmitTable, SubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
-                            {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
-                            }
-                            break;
-                        case TCacheablePersonTablesEnum.SkillCategoryList:
-                            if (PtSkillCategoryAccess.SubmitChanges((PtSkillCategoryTable)ASubmitTable, SubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
-                            {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
-                            }
-                            break;
-                        case TCacheablePersonTablesEnum.SkillLevelList:
-                            if (PtSkillLevelAccess.SubmitChanges((PtSkillLevelTable)ASubmitTable, SubmitChangesTransaction,
                                     out SingleVerificationResultCollection))
                             {
                                 SubmissionResult = TSubmitChangesResult.scrOK;
