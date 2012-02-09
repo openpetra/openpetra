@@ -235,7 +235,7 @@ namespace Ict.Petra.Server.MFinance.ICH
 
                     string SenderAddress = "";
                     string EmailAddress = EmailDestinationRow.EmailAddress;
-                    string EmailSubject = "Stewardship File from " + LedgerName;
+                    string EmailSubject = string.Format(Catalog.GetString("Stewardship File from {0}"), LedgerName);
                     string HTMLText = string.Empty;
 
                     //Read the file title
@@ -244,11 +244,11 @@ namespace Ict.Petra.Server.MFinance.ICH
 
                     if (!File.Exists(AFileName))
                     {
-                        HTMLText = "<html><body>" + String.Format("Cannot find file {0}", AFileName) + "</body></html>";
+                        HTMLText = "<html><body>" + String.Format(Catalog.GetString("Cannot find file {0}"), AFileName) + "</body></html>";
                     }
                     else
                     {
-                        HTMLText = "<html><body>" + EmailSubject + ": " + FileTitle + " is attached.</body></html>";
+                        HTMLText = "<html><body>" + EmailSubject + ": " + FileTitle + Catalog.GetString(" is attached.") + "</body></html>";
                     }
 
                     TSmtpSender SendMail = new TSmtpSender();
@@ -837,7 +837,8 @@ namespace Ict.Petra.Server.MFinance.ICH
                 }
                 else
                 {
-                    LogWrite.WriteLine("File: " + CurrentFile + " is not in the correct format and will therefore be skipped.");
+                    LogWrite.WriteLine(String.Format(Catalog.GetString("File: {0} is not in the correct format and will therefore be skipped."),
+                            CurrentFile));
                     UnsuccessfulFileList += CurrentFile + ",";
                     DatRow.Delete();
                 }
@@ -906,7 +907,8 @@ namespace Ict.Petra.Server.MFinance.ICH
                 }
                 else
                 {
-                    ALogWriter.WriteLine("File " + FileName + " is a duplicate of " + PreviousFileName + " and will therefore be skipped.");
+                    ALogWriter.WriteLine(String.Format(Catalog.GetString("File {0} is a duplicate of {1} and will therefore be skipped."), FileName,
+                            PreviousFileName));
                 }
 
                 if (Successful)
@@ -935,7 +937,8 @@ namespace Ict.Petra.Server.MFinance.ICH
                 PreviousFileName = FileName;
             }
 
-            ALogWriter.WriteLine("Import Completed: " + DateTime.Today.ToShortTimeString() + " " + DateTime.Today.ToShortTimeString());
+            ALogWriter.WriteLine(String.Format(Catalog.GetString("Import Completed: {0} {1}"), DateTime.Today.ToShortDateString(),
+                    DateTime.Today.ToShortTimeString()));
         }
 
         /// <summary>
@@ -1013,8 +1016,10 @@ namespace Ict.Petra.Server.MFinance.ICH
             if ((AYear < AccPeriodRow.PeriodStartDate.Year)
                 && (APeriod < LedgerRow.CurrentPeriod))
             {
-                LogMessage = "File " + AFileName +
-                             " is for a period more than 12 months prior to the current period and will need to be processed manually.";
+                LogMessage =
+                    String.Format(Catalog.GetString(
+                            "File {0} is for a period more than 12 months prior to the current period and will need to be processed manually."),
+                        AFileName);
                 ALogWriter.WriteLine(LogMessage);
                 return;
             }
@@ -1024,7 +1029,7 @@ namespace Ict.Petra.Server.MFinance.ICH
 
             if (CostCentreRow == null)
             {
-                LogMessage = "Cost Centre " + AFromCostCentre + " does not exist. File " + AFileName + " will be skipped";
+                LogMessage = String.Format(Catalog.GetString("Cost Centre {0} does not exist. File {1} will be skipped."), AFromCostCentre, AFileName);
                 ALogWriter.WriteLine(LogMessage);
                 return;
             }
@@ -1057,7 +1062,7 @@ namespace Ict.Petra.Server.MFinance.ICH
 
             if (!CostCentreRow.CostCentreActiveFlag)
             {
-                LogMessage = "Cost Centre " + AFromCostCentre + " is not active. File " + AFileName + " will be skipped";
+                LogMessage = String.Format(Catalog.GetString("Cost Centre {0} is not active. File {1} will be skipped."), AFromCostCentre, AFileName);
                 ALogWriter.WriteLine(LogMessage);
                 return;
             }
@@ -1091,7 +1096,7 @@ namespace Ict.Petra.Server.MFinance.ICH
 
             if (CurrencyRow == null)
             {
-                LogMessage = "Currency " + Currency + " does not exist. File " + AFileName + " will be skipped";
+                LogMessage = String.Format(Catalog.GetString("Currency {0} does not exist. File {1} will be skipped."), Currency, AFileName);
                 ALogWriter.WriteLine(LogMessage);
                 return;
             }
@@ -1123,8 +1128,10 @@ namespace Ict.Petra.Server.MFinance.ICH
                 }
                 else
                 {
-                    LogMessage = "File " + AFileName + " could not be imported as there is no Corporate Exchange Rate ";
-                    LogMessage += "for currency " + Currency + " period " + APeriod.ToString() + " year " + AYear;
+                    LogMessage =
+                        String.Format(Catalog.GetString(
+                                "File {0} could not be imported as there is no Corporate Exchange Rate for currency {1} period {2} year {3}"),
+                            AFileName, Currency, APeriod.ToString(), AYear);
                     ALogWriter.WriteLine(LogMessage);
                     return;
                 }
@@ -1384,25 +1391,26 @@ PostGenerateBatch:
             {
                 if (!BatchCreateOk)
                 {
-                    LogMessage = "File " + AFileName + " could not be imported as batch creation failed.";
+                    LogMessage = String.Format(Catalog.GetString("File {0} could not be imported as batch creation failed."), AFileName);
                     ALogWriter.WriteLine(LogMessage);
                     return;
                 }
                 else if (!JournalCreateOk)
                 {
-                    LogMessage = "File " + AFileName + " could not be imported as journal creation failed.";
+                    LogMessage = String.Format(Catalog.GetString("File {0} could not be imported as journal creation failed."), AFileName);
                     ALogWriter.WriteLine(LogMessage);
                     return;
                 }
                 else if (!TransCreateOk)
                 {
-                    LogMessage = "File " + AFileName + " could not be imported as transaction creation failed.";
+                    LogMessage = String.Format(Catalog.GetString("File {0} could not be imported as transaction creation failed."), AFileName);
                     ALogWriter.WriteLine(LogMessage);
                     return;
                 }
                 else
                 {
-                    LogMessage = "File " + AFileName + " could not be . Cause unknown. Cost Centre " + ToCostCentre;
+                    LogMessage = String.Format(Catalog.GetString(
+                            "File {0} could not be imported. Cause unknown. Cost Centre {1}"), AFileName, ToCostCentre);
                     ALogWriter.WriteLine(LogMessage);
                     //"File " pcFileName " could not be imported. Cause unknown. Cost Centre "  + ToCostCentre
                 }
@@ -1491,17 +1499,19 @@ PostGenerateBatch:
                     if (SummaryStewardshipTransactionsMatch(ALedgerNumber, ABatchNumber, AFromCostCentre, ATotalIncome, ATotalExpense, ATotalTransfer,
                             ref ADBTransaction))
                     {
-                        LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
-                        LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ") and data is identical. ";
-                        LogMessage += AFileName + " will be skipped";
+                        LogMessage =
+                            String.Format(Catalog.GetString(
+                                    "Stewardship Batch for {0} {1} {2} already exists (Batch {3}) and data is identical. {4} will be skipped."),
+                                AFromCostCentreName, APeriodName, AYear, ABatchNumber, AFileName);
                         ALogWriter.WriteLine(LogMessage);
                         AProcessFile = false;
                     }
                     else
                     {
-                        LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
-                        LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ") and data has changed. ";
-                        LogMessage += AFileName + " will be skipped";
+                        LogMessage =
+                            String.Format(Catalog.GetString(
+                                    "Stewardship Batch for {0} {1} {2} already exists (Batch {3}) and data has changed. {4} will be skipped."),
+                                AFromCostCentreName, APeriodName, AYear, ABatchNumber, AFileName);
                         ALogWriter.WriteLine(LogMessage);
                         AProcessFile = false;
                     }
@@ -1529,17 +1539,19 @@ PostGenerateBatch:
                             if (SummaryStewardshipTransactionsMatch(ALedgerNumber, ABatchNumber, AFromCostCentre, ATotalIncome, ATotalExpense,
                                     ATotalTransfer, ref ADBTransaction))
                             {
-                                LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
-                                LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ") and data is identical. ";
-                                LogMessage += AFileName + " will be skipped";
+                                LogMessage =
+                                    String.Format(Catalog.GetString(
+                                            "Stewardship Batch for {0} {1} {2} already exists (Batch {3}) and data is identical. {4} will be skipped."),
+                                        AFromCostCentreName, APeriodName, AYear, ABatchNumber, AFileName);
                                 ALogWriter.WriteLine(LogMessage);
                                 AProcessFile = false;
                             }
                             else
                             {
-                                LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
-                                LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ") and data has changed. ";
-                                LogMessage += AFileName + " will be skipped";
+                                LogMessage =
+                                    String.Format(Catalog.GetString(
+                                            "Stewardship Batch for {0} {1} {2} already exists (Batch {3}) and data has changed. {4} will be skipped."),
+                                        AFromCostCentreName, APeriodName, AYear, ABatchNumber, AFileName);
                                 ALogWriter.WriteLine(LogMessage);
                                 AProcessFile = false;
                             }
@@ -1551,12 +1563,11 @@ PostGenerateBatch:
                             if (SummaryStewardshipTransactionsMatch(ALedgerNumber, ABatchNumber, AFromCostCentre, ATotalIncome, ATotalExpense,
                                     ATotalTransfer, ref ADBTransaction))
                             {
-                                LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
-                                LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ", date ";
-                                LogMessage += TransactionRow.TransactionDate.ToShortDateString() + ") and is run number 0. ";
-                                LogMessage += "File " + AFileName + " is for run number " + ARunNumber.ToString() +
-                                              " but the data is identical to the ";
-                                LogMessage += "existing batch so it will not be processed.";
+                                LogMessage =
+                                    String.Format(Catalog.GetString(
+                                            "Stewardship Batch for {0} {1} {2} already exists (Batch {3}, date {4}) and is run number 0. File {5} is for run number {6} but the data is identical to the existing batch so it will not be processed."),
+                                        AFromCostCentreName, APeriodName, AYear, ABatchNumber,
+                                        TransactionRow.TransactionDate.ToShortDateString(), AFileName, ARunNumber);
                                 ALogWriter.WriteLine(LogMessage);
                                 AProcessFile = false;
                             }
@@ -1606,18 +1617,21 @@ PostGenerateBatch:
                         if (SummaryStewardshipTransactionsMatch(ALedgerNumber, ABatchNumber, AFromCostCentre, ATotalIncome, ATotalExpense,
                                 ATotalTransfer, ref ADBTransaction))
                         {
-                            LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
-                            LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ") and data is identical. ";
-                            LogMessage += AFileName + " will be skipped";
+                            LogMessage =
+                                String.Format(Catalog.GetString(
+                                        "Stewardship Batch for {0} {1} {2} already exists (Batch {3}, date {4}) and data is identical. {5} will be skipped."),
+                                    AFromCostCentreName, APeriodName, AYear, ABatchNumber,
+                                    OldTransactionRow.TransactionDate.ToShortDateString(), AFileName);
                             ALogWriter.WriteLine(LogMessage);
                             AProcessFile = false;
                         }
                         else
                         {
-                            LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
-                            LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ", date ";
-                            LogMessage += OldTransactionRow.TransactionDate.ToShortDateString() + ") but data has changed. ";
-                            LogMessage += "File " + AFileName + " will be skipped.";
+                            LogMessage =
+                                String.Format(Catalog.GetString(
+                                        "Stewardship Batch for {0} {1} {2} already exists (Batch {3}, date {4}) and data has changed. {5} will be skipped."),
+                                    AFromCostCentreName, APeriodName, AYear, ABatchNumber,
+                                    OldTransactionRow.TransactionDate.ToShortDateString(), AFileName);
                             ALogWriter.WriteLine(LogMessage);
                             AProcessFile = false;
                         }
@@ -1627,11 +1641,11 @@ PostGenerateBatch:
                         if (SummaryStewardshipTransactionsMatch(ALedgerNumber, ABatchNumber, AFromCostCentre, ATotalIncome, ATotalExpense,
                                 ATotalTransfer, ref ADBTransaction))
                         {
-                            LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
-                            LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ", date ";
-                            LogMessage += OldTransactionRow.TransactionDate.ToShortDateString() + ") but the run number is unknown. ";
-                            LogMessage += "File " + AFileName + " is for run number " + ARunNumber.ToString() + " but the data is identical to the ";
-                            LogMessage += "existing batch so it will not be processed.";
+                            LogMessage =
+                                String.Format(Catalog.GetString(
+                                        "Stewardship Batch for {0} {1} {2} already exists (Batch {3}, date {4}) but the run number is unknown. File {5} is for run number {6} but the data is identical to the existing batch so it will not be processed."),
+                                    AFromCostCentreName, APeriodName, AYear, ABatchNumber,
+                                    OldTransactionRow.TransactionDate.ToShortDateString(), AFileName, ARunNumber);
                             ALogWriter.WriteLine(LogMessage);
                             AProcessFile = false;
                         }
@@ -1650,30 +1664,32 @@ PostGenerateBatch:
                         if (SummaryStewardshipTransactionsMatch(ALedgerNumber, ABatchNumber, AFromCostCentre, ATotalIncome, ATotalExpense,
                                 ATotalTransfer, ref ADBTransaction))
                         {
-                            LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
-                            LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ", date ";
-                            LogMessage += OldTransactionRow.TransactionDate.ToShortDateString() + ") and data is identical. ";
-                            LogMessage += AFileName + " will be skipped";
+                            LogMessage =
+                                String.Format(Catalog.GetString(
+                                        "Stewardship Batch for {0} {1} {2} already exists (Batch {3}, date {4}) and data is identical. {5} will be skipped."),
+                                    AFromCostCentreName, APeriodName, AYear, ABatchNumber,
+                                    OldTransactionRow.TransactionDate.ToShortDateString(), AFileName);
                             ALogWriter.WriteLine(LogMessage);
                             AProcessFile = false;
                         }
                         else
                         {
-                            LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
-                            LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ", date ";
-                            LogMessage += OldTransactionRow.TransactionDate.ToShortDateString() + ") but data has changed. ";
-                            LogMessage += AFileName + " will be skipped";
+                            LogMessage =
+                                String.Format(Catalog.GetString(
+                                        "Stewardship Batch for {0} {1} {2} already exists (Batch {3}, date {4}) and data has changed. {5} will be skipped."),
+                                    AFromCostCentreName, APeriodName, AYear, ABatchNumber,
+                                    OldTransactionRow.TransactionDate.ToShortDateString(), AFileName);
                             ALogWriter.WriteLine(LogMessage);
                             AProcessFile = false;
                         }
                     }
                     else if (ARunNumber < BatchRunNumber)
                     {
-                        LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
-                        LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ", date ";
-                        LogMessage += OldTransactionRow.TransactionDate.ToShortDateString() + ").  The run number on that batch ";
-                        LogMessage += "(" + BatchRunNumber.ToString() + ") is higher than the run number on the file being processed and therefore ";
-                        LogMessage += AFileName + " will be skipped";
+                        LogMessage =
+                            String.Format(Catalog.GetString(
+                                    "Stewardship Batch for {0} {1} {2} already exists (Batch {3}, date {4}).  The run number on that batch ({5}) is higher than the run number on the file being processed and therefore {6} will be skipped."),
+                                AFromCostCentreName, APeriodName, AYear, ABatchNumber,
+                                OldTransactionRow.TransactionDate.ToShortDateString(), BatchRunNumber, AFileName);
                         ALogWriter.WriteLine(LogMessage);
                         AProcessFile = false;
                     }
@@ -1682,11 +1698,11 @@ PostGenerateBatch:
                         if (SummaryStewardshipTransactionsMatch(ALedgerNumber, ABatchNumber, AFromCostCentre, ATotalIncome, ATotalExpense,
                                 ATotalTransfer, ref ADBTransaction))
                         {
-                            LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
-                            LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ", date ";
-                            LogMessage += OldTransactionRow.TransactionDate.ToShortDateString() + ") and is run number 0. ";
-                            LogMessage += "File " + AFileName + " is for run number " + ARunNumber.ToString() + " but the data is identical to the ";
-                            LogMessage += "existing batch so it will not be processed.";
+                            LogMessage =
+                                String.Format(Catalog.GetString(
+                                        "Stewardship Batch for {0} {1} {2} already exists (Batch {3}, date {4}) and is run number 0. File {5} is for run number {6} but the data is identical to the existing batch so it will not be processed."),
+                                    AFromCostCentreName, APeriodName, AYear, ABatchNumber,
+                                    OldTransactionRow.TransactionDate.ToShortDateString(), AFileName, ARunNumber);
                             ALogWriter.WriteLine(LogMessage);
                             AProcessFile = false;
                         }
@@ -1731,19 +1747,21 @@ PostGenerateBatch:
                         if (SummaryStewardshipTransactionsMatch(ALedgerNumber, ABatchNumber, AFromCostCentre, ATotalIncome, ATotalExpense,
                                 ATotalTransfer, ref ADBTransaction))
                         {
-                            LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
-                            LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ", date ";
-                            LogMessage += PreviousTransactionRow.TransactionDate.ToShortDateString() + ") and data is identical. ";
-                            LogMessage += AFileName + " will be skipped";
+                            LogMessage =
+                                String.Format(Catalog.GetString(
+                                        "Stewardship Batch for {0} {1} {2} already exists (Batch {3}, date {4}) and data is identical. {5} will be skipped."),
+                                    AFromCostCentreName, APeriodName, AYear, ABatchNumber,
+                                    PreviousTransactionRow.TransactionDate.ToShortDateString(), AFileName);
                             ALogWriter.WriteLine(LogMessage);
                             AProcessFile = false;
                         }
                         else
                         {
-                            LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
-                            LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ", date ";
-                            LogMessage += PreviousTransactionRow.TransactionDate.ToShortDateString() + ") but data has changed. ";
-                            LogMessage += AFileName + " will be skipped";
+                            LogMessage =
+                                String.Format(Catalog.GetString(
+                                        "Stewardship Batch for {0} {1} {2} already exists (Batch {3}, date {4}) and data has changed. {5} will be skipped."),
+                                    AFromCostCentreName, APeriodName, AYear, ABatchNumber,
+                                    PreviousTransactionRow.TransactionDate.ToShortDateString(), AFileName);
                             ALogWriter.WriteLine(LogMessage);
                             AProcessFile = false;
                         }
@@ -1753,11 +1771,11 @@ PostGenerateBatch:
                         if (SummaryStewardshipTransactionsMatch(ALedgerNumber, ABatchNumber, AFromCostCentre, ATotalIncome, ATotalExpense,
                                 ATotalTransfer, ref ADBTransaction))
                         {
-                            LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
-                            LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ", date ";
-                            LogMessage += PreviousTransactionRow.TransactionDate.ToShortDateString() + ") but the run number is unknown. ";
-                            LogMessage += "File " + AFileName + " is for run number " + ARunNumber.ToString() + " but the data is identical to the ";
-                            LogMessage += "existing batch so it will not be processed.";
+                            LogMessage =
+                                String.Format(Catalog.GetString(
+                                        "Stewardship Batch for {0} {1} {2} already exists (Batch {3}, date {4}) but the run number is unknown. File {5} is for run number {6} but the data is identical to the existing batch so it will not be processed."),
+                                    AFromCostCentreName, APeriodName, AYear, ABatchNumber,
+                                    PreviousTransactionRow.TransactionDate.ToShortDateString(), AFileName, ARunNumber);
                             ALogWriter.WriteLine(LogMessage);
                             AProcessFile = false;
                         }
@@ -1776,30 +1794,32 @@ PostGenerateBatch:
                         if (SummaryStewardshipTransactionsMatch(ALedgerNumber, ABatchNumber, AFromCostCentre, ATotalIncome, ATotalExpense,
                                 ATotalTransfer, ref ADBTransaction))
                         {
-                            LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
-                            LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ", date ";
-                            LogMessage += PreviousTransactionRow.TransactionDate.ToShortDateString() + ") and data is identical. ";
-                            LogMessage += AFileName + " will be skipped";
+                            LogMessage =
+                                String.Format(Catalog.GetString(
+                                        "Stewardship Batch for {0} {1} {2} already exists (Batch {3}, date {4}) and data is identical. {5} will be skipped."),
+                                    AFromCostCentreName, APeriodName, AYear, ABatchNumber,
+                                    PreviousTransactionRow.TransactionDate.ToShortDateString(), AFileName);
                             ALogWriter.WriteLine(LogMessage);
                             AProcessFile = false;
                         }
                         else
                         {
-                            LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
-                            LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ", date ";
-                            LogMessage += PreviousTransactionRow.TransactionDate.ToShortDateString() + ") but data has changed. ";
-                            LogMessage += AFileName + " will be skipped";
+                            LogMessage =
+                                String.Format(Catalog.GetString(
+                                        "Stewardship Batch for {0} {1} {2} already exists (Batch {3}, date {4}) and data has changed. {5} will be skipped."),
+                                    AFromCostCentreName, APeriodName, AYear, ABatchNumber,
+                                    PreviousTransactionRow.TransactionDate.ToShortDateString(), AFileName);
                             ALogWriter.WriteLine(LogMessage);
                             AProcessFile = false;
                         }
                     }
                     else if (ARunNumber < BatchRunNumber)
                     {
-                        LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
-                        LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ", date ";
-                        LogMessage += PreviousTransactionRow.TransactionDate.ToShortDateString() + ").  The run number on that batch ";
-                        LogMessage += "(" + BatchRunNumber.ToString() + ") is higher than the run number on the file being processed and therefore ";
-                        LogMessage += AFileName + " will be skipped";
+                        LogMessage =
+                            String.Format(Catalog.GetString(
+                                    "Stewardship Batch for {0} {1} {2} already exists (Batch {3}, date {4}).  The run number on that batch ({5}) is higher than the run number on the file being processed and therefore {6} will be skipped."),
+                                AFromCostCentreName, APeriodName, AYear, ABatchNumber,
+                                PreviousTransactionRow.TransactionDate.ToShortDateString(), BatchRunNumber, AFileName);
                         ALogWriter.WriteLine(LogMessage);
                         AProcessFile = false;
                     }
@@ -1808,11 +1828,11 @@ PostGenerateBatch:
                         if (SummaryStewardshipTransactionsMatch(ALedgerNumber, ABatchNumber, AFromCostCentre, ATotalIncome, ATotalExpense,
                                 ATotalTransfer, ref ADBTransaction))
                         {
-                            LogMessage = "Stewardship Batch for " + AFromCostCentreName + " " + APeriodName + " " + AYear.ToString();
-                            LogMessage += " already exists (Batch " + ABatchNumber.ToString() + ", date ";
-                            LogMessage += PreviousTransactionRow.TransactionDate.ToShortDateString() + ") and is run number 0. ";
-                            LogMessage += "File " + AFileName + " is for run number " + ARunNumber.ToString() + " but the data is identical to the ";
-                            LogMessage += "existing batch so it will not be processed.";
+                            LogMessage =
+                                String.Format(Catalog.GetString(
+                                        "Stewardship Batch for {0} {1} {2} already exists (Batch {3}, date {4}) and is run number 0. File {5} is for run number {6} but the data is identical to the existing batch so it will not be processed."),
+                                    AFromCostCentreName, APeriodName, AYear, ABatchNumber,
+                                    PreviousTransactionRow.TransactionDate.ToShortDateString(), AFileName, ARunNumber);
                             ALogWriter.WriteLine(LogMessage);
                             AProcessFile = false;
                         }
