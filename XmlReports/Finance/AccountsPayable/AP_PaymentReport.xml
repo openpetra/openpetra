@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE reports SYSTEM "../../reports.dtd">
+<reports>
+
+	<report id="APPaymentReport">
+		<description>
+			Show all the documents that together made up a payment to a supplier.
+		</description>
+		<reportparameters>
+			<reportparameter name="param_ledger_number_i"/>
+			<reportparameter name="param_payment_number_i"/>
+		</reportparameters>
+		
+		<reportheader/>
+		
+		<pageheader>
+			<field whichfield="title1">
+					<value text ="AP - Payment Report" />
+			</field>
+			<field whichfield="title2"><value function="getLedgerName({{param_ledger_number_i}})"/></field>
+			<field whichfield="descr1"><value text="Ledger "/><value variable="param_ledger_number_i"/>
+				<value text="   "/><value function="getLedgerName({{param_ledger_number_i}})"/>
+			</field>
+      <field whichfield="descr2">
+        <value calculation="SupplierCurrency"/>
+      </field>
+			
+		</pageheader>
+		
+		<calculations>
+
+      <calculation id="SupplierCurrency" returns="Currency, SupplierKey" returnsFormat="list">
+        <caption> <value text="Currency "/></caption>
+				<query>
+					<queryDetail>
+						<value>
+              SELECT DISTINCT
+                PUB_a_ap_supplier.a_currency_code_c AS Currency,
+                PUB_a_ap_supplier.p_partner_key_n AS SupplierKey
+              FROM
+              PUB_a_ap_document, PUB_a_ap_supplier, PUB_a_ap_payment, PUB_a_ap_document_payment
+              WHERE
+              PUB_a_ap_payment.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_ap_document.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_ap_document_payment.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_ap_document_payment.a_payment_number_i = PUB_a_ap_payment.a_payment_number_i
+              AND PUB_a_ap_document_payment.a_ap_number_i = PUB_a_ap_document.a_ap_number_i
+              AND PUB_a_ap_document.p_partner_key_n = PUB_a_ap_supplier.p_partner_key_n
+            </value>
+					</queryDetail>
+				</query>
+			</calculation>
+
+			<calculation id="SelectDetails" returns="automatic" returnsFormat="row">
+				<query>
+					<queryDetail>
+						<value>
+						SELECT
+							PUB_a_ap_document.a_total_amount_n AS APAmount,
+							PUB_a_ap_document.a_ap_number_i AS APNumber,
+							PUB_a_ap_document.a_credit_note_flag_l AS IsCredit,
+							PUB_a_ap_document.a_date_issued_d AS IssueDate,
+							PUB_a_ap_document.a_credit_terms_i AS CreditTerms,
+							PUB_a_ap_document.a_document_code_c AS DocumentCode,
+							PUB_a_ap_document.a_reference_c AS Reference,
+							PUB_a_ap_document.a_discount_days_i AS DiscountDays,
+							PUB_a_ap_supplier.a_currency_code_c
+						FROM
+							PUB_a_ap_document,
+							PUB_a_ap_supplier,
+							PUB_p_partner
+						WHERE
+								PUB_a_ap_document.a_ledger_number_i = {{param_ledger_number_i}}
+							AND PUB_a_ap_document.p_partner_key_n = PUB_a_ap_supplier.p_partner_key_n
+							AND PUB_a_ap_document.a_date_entered_d &lt; {#param_date_selection#}
+							AND PUB_a_ap_document.a_document_status_c &lt;&gt; "CANCELLED"
+							AND PUB_a_ap_document.a_document_status_c &lt;&gt; "PAID"
+							
+							AND PUB_p_partner.p_partner_key_n = PUB_a_ap_document.p_partner_key_n
+							
+							AND PUB_p_partner.p_partner_short_name_c = {SupplierName}
+							AND PUB_a_ap_document.p_partner_key_n = {{SupplierKey}}
+						</value>
+					</queryDetail>
+					<queryDetail condition="eq({param_discounted_only}, true)">
+						<value>
+							AND PUB_a_ap_document.a_discount_days_i &gt; 0
+						</value>
+					</queryDetail>
+					<queryDetail>
+						<value>
+							ORDER BY
+								PUB_a_ap_document.a_date_issued_d,
+								PUB_a_ap_document.a_credit_terms_i
+						</value>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="SelectPaymentAmount" returns="PaidAmount" returnsFormat="row">
+				<query>
+					<queryDetail>
+						<value>
+						SELECT
+							SUM (PUB_a_ap_document_payment.a_amount_n) AS PaidAmount
+						FROM
+							PUB_a_ap_document_payment
+						WHERE
+								PUB_a_ap_document_payment.a_ledger_number_i = {{param_ledger_number_i}}
+							AND PUB_a_ap_document_payment.a_ap_number_i = {{APNumber}}
+						</value>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="CalculateAmount" returns="NetAmount" returnsFormat="amount">
+				<query>
+					<queryDetail condition="not(not({IsCredit}))">
+						<value function="assign(NetAmount, sub(mul({APAmount}, -1), {PaidAmount}))"/>
+					</queryDetail>
+					<queryDetail condition="not({IsCredit})">
+						<value function="assign(NetAmount, sub({APAmount}, {PaidAmount}))"/>
+					</queryDetail>
+					<queryDetail>
+						<value function="assign(DueDate, addDays({IssueDate}, {{CreditTerms}}))"/>
+					</queryDetail>
+					<!-- Hide the Rows if we don't show the invoices -->
+					<queryDetail condition="eq({param_show_invoices}, false)">
+						<value function="ConditionRow(false)"/>
+					</queryDetail>
+				</query>
+			</calculation>
+
+		</calculations>
+		
+		<levels>
+		<level name="main">
+			<detail>
+				<lowerLevelReport level="DetailLevel" calculation="SelectDetails"/>
+			</detail>
+			<footer space="below">
+			</footer>
+		</level>
+		
+		<level name="DetailLevel">
+			<detail>
+				<field whichfield="left 0" calculation="SelectPaymentAmount"/>
+				<field whichfield="columns" calculation="CalculateAmount"/>
+			</detail>
+		</level>
+		
+		</levels>
+	</report>
+</reports>

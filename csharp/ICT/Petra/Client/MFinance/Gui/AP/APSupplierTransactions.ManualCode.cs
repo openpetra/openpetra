@@ -45,6 +45,8 @@ using Ict.Petra.Client.MFinance.Gui.GL;
 using Ict.Petra.Shared.Interfaces.MFinance.AP.UIConnectors;
 using System.Threading;
 using Ict.Common.Conversion;
+using Ict.Petra.Client.MReporting.Gui;
+using Ict.Petra.Client.MReporting.Gui.MFinance;
 
 namespace Ict.Petra.Client.MFinance.Gui.AP
 {
@@ -577,6 +579,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             frm.AddDocumentsToPayment(TempDS, TaggedDocuments);
 
             frm.Show();
+        }
+        private void PaymentReport(object sender, EventArgs e)
+        {
+            TFrmAP_PaymentReport reporter = new TFrmAP_PaymentReport(this);
+            reporter.Show();
         }
 
     }

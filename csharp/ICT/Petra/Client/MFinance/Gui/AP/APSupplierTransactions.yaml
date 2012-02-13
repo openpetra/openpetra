@@ -20,6 +20,7 @@ RootNode:
         actTagPostable: {ActionClick=TagAllPostable}
         actUntagAll: {Label=&Untag All, ActionClick=UntagAll}
         actReloadList: {ActionClick=DoRefreshButton}
+        actReprintPaymentReport: {ActionClick=PaymentReport}
     Controls:
         pnlContent:
             Dock: Fill
