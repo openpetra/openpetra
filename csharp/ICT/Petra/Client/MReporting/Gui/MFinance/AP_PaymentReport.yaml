@@ -22,9 +22,9 @@
         tpgReportSpecific:
             Controls: [txtLedgerNumber, txtPaymentNumber, txtSupplierNumber]
         txtLedgerNumber:
-            ParameterName: param_ledger_number
+            ParameterName: param_ledger_number_i
         txtPaymentNumber:
-            ParameterName: param_payment_number
+            ParameterName: param_payment_number_i
         txtSupplierNumber:
-            ParameterName: param_supplier_number
+            ParameterName: param_supplier_number_i
             

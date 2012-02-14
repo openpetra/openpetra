@@ -707,7 +707,7 @@ namespace Ict.Petra.Shared.MReporting
             System.Data.DataRow row;
             System.Int32 i;
             System.Int32 maxColumn;
-            maxColumn = -1;
+            maxColumn = -1; // This causes a crash if it is not overwritten. below.
 
             for (i = 0; i <= MaxDisplayColumns - 1; i += 1)
             {
