@@ -68,15 +68,15 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             LoadDataOnDemand();
 
-            if (FMainDS.PPerson.Rows.Count == 0)
+            if (FMainDS.PmPersonalData.Rows.Count == 0)
             {
                 // There hasn't been data stored yet, so create a new Record
-                FMainDS.PPerson.Rows.Add(FMainDS.PPerson.NewRowTyped(true));
+                FMainDS.PmPersonalData.Rows.Add(FMainDS.PmPersonalData.NewRowTyped(true));
                 // ... and set its Primary Key
-                //FMainDS.PPerson[0].PartnerKey = FMainDS.PPerson[0].PartnerKey;
+                FMainDS.PmPersonalData[0].PartnerKey = FMainDS.PPerson[0].PartnerKey;
             }
 
-            ShowData(FMainDS.PPerson[0]);
+            ShowData(FMainDS.PmPersonalData[0]);
         }
 
         /// <summary>
@@ -86,15 +86,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void GetDataFromControls2()
         {
-            //TODO FIX ME!!!!  The following two lines of code should not be here, they only make the compiler ignore the generator error (IT DOES NOT FIX THE ERROR)!
-            //Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonRow myTempRow =
-            //    (Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDSPPersonRow)FMainDS.PPerson[0];
-            PPersonRow myTempRow = FMainDS.PPerson[0];
-
-            GetDataFromControls(myTempRow);
-
-            //This is the line that should be here.  Please uncomment when fixed.
-            //GetDataFromControls(FMainDS.PPerson[0]);
+            GetDataFromControls(FMainDS.PmPersonalData[0]);
         }
 
         /// <summary>
@@ -117,28 +109,28 @@ namespace Ict.Petra.Client.MPartner.Gui
             try
             {
                 // Make sure that Typed DataTables are already there at Client side
-                if (FMainDS.PPerson == null)
+                if (FMainDS.PmPersonalData == null)
                 {
-                    FMainDS.Tables.Add(new PPersonTable());
+                    FMainDS.Tables.Add(new PmPersonalDataTable());
                     FMainDS.InitVars();
                 }
 
                 if (TClientSettings.DelayedDataLoading
-                    && (FMainDS.PPerson.Rows.Count == 0))
+                    && (FMainDS.PmPersonalData.Rows.Count == 0))
                 {
                     FMainDS.Merge(FPartnerEditUIConnector.GetDataPersonnelIndividualData(TIndividualDataItemEnum.idiPersonalData));
 
                     // Make DataRows unchanged
-                    if (FMainDS.PPerson.Rows.Count > 0)
+                    if (FMainDS.PmPersonalData.Rows.Count > 0)
                     {
-                        if (FMainDS.PPerson.Rows[0].RowState != DataRowState.Added)
+                        if (FMainDS.PmPersonalData.Rows[0].RowState != DataRowState.Added)
                         {
-                            FMainDS.PPerson.AcceptChanges();
+                            FMainDS.PmPersonalData.AcceptChanges();
                         }
                     }
                 }
 
-                if (FMainDS.PPerson.Rows.Count != 0)
+                if (FMainDS.PmPersonalData.Rows.Count != 0)
                 {
                     ReturnValue = true;
                 }

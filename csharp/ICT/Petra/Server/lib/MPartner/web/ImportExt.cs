@@ -415,7 +415,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             return PartnerRow;
         }
 
-        private void ImportPartnerClassSpecific(string APartnerClass, TDBTransaction ATransaction)
+        private void ImportPartnerClassSpecific(string APartnerClass, TFileVersionInfo APetraVersion, TDBTransaction ATransaction)
         {
             if (APartnerClass == MPartnerConstants.PARTNERCLASS_CHURCH)
             {
@@ -487,14 +487,14 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 PersonRow.MaritalStatus = ReadString();
                 PersonRow.MaritalStatusSince = ReadNullableDate();
                 PersonRow.MaritalStatusComment = ReadString();
-                Int32? BelieverSinceYear = ReadNullableInt32();
 
-                if (BelieverSinceYear.HasValue)
+                if (APetraVersion.FileMajorPart < 3)
                 {
-                    PersonRow.BelieverSinceYear = BelieverSinceYear.Value;
+                    // used to be BelieverSinceYear and BelieverSinceComment before 3.0
+                    ReadNullableInt32();
+                    ReadString();
                 }
 
-                PersonRow.BelieverSinceComment = ReadString();
                 PersonRow.OccupationCode = ReadString();
                 Int64? FieldKey = ReadNullableInt64();
 
@@ -1307,6 +1307,17 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                 /* PersonalDataRow.InternalDriverLicense = */ ReadBoolean();     // Field removed
             }
+            else
+            {
+                Int32? BelieverSinceYear = ReadNullableInt32();
+
+                if (BelieverSinceYear.HasValue)
+                {
+                    PersonalDataRow.BelieverSinceYear = BelieverSinceYear.Value;
+                }
+
+                PersonalDataRow.BelieverSinceComment = ReadString();
+            }
 
             if (!FIgnorePartner)
             {
@@ -1811,7 +1822,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     {
                         PPartnerRow PartnerRow = ImportPartner(Transaction);
 
-                        ImportPartnerClassSpecific(PartnerRow.PartnerClass, Transaction);
+                        ImportPartnerClassSpecific(PartnerRow.PartnerClass, PetraVersion, Transaction);
 
                         ImportLocation(Transaction);
 
