@@ -181,7 +181,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                     break;
 
                 case TIndividualDataItemEnum.idiPersonalData:
-                    PPersonAccess.LoadByPrimaryKey(IndividualDataDS, APartnerKey, AReadTransaction);
+                    PmPersonalDataAccess.LoadByPrimaryKey(IndividualDataDS, APartnerKey, AReadTransaction);
                     break;
 
                 case TIndividualDataItemEnum.idiEmergencyData:
@@ -638,7 +638,6 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
             PmPersonSkillTable PmPersonSkillTableSubmit;
             PmPersonAbilityTable PmPersonAbilityTableSubmit;
             PmPassportDetailsTable PmPassportDetailsSubmit;
-            PPersonTable PPersonTableSubmit;
             PmPersonalDataTable PmPersonalDataSubmit;
             PmPastExperienceTable PmPastExperienceTableSubmit;
             PmDocumentTable PmDocumentTableSubmit;
@@ -734,42 +733,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                     }
                 }
 
-                // Personal Data
-                if (AInspectDS.Tables.Contains(PPersonTable.GetTableName())
-                    && (AInspectDS.PPerson.Rows.Count > 0))
-                {
-                    PPersonTableSubmit = AInspectDS.PPerson;
-
-
-                    //PPersonAccess.CountViaPPartner(
-
-                    //PPersonTableSubmit.Rows[0].RowState = DataRowState.Modified;
-
-//                    if (PPersonAccess.SubmitChanges(PPersonTableSubmit, ASubmitChangesTransaction, eSubmitChangesOperations.eUpdate,
-//                            out SingleVerificationResultCollection))
-                    if (PPersonAccess.SubmitChanges(PPersonTableSubmit, ASubmitChangesTransaction,
-                            out SingleVerificationResultCollection))
-                    {
-                        SubmissionResult = TSubmitChangesResult.scrOK;
-
-                        // Need to merge this Table back into APartnerEditInspectDS so the updated s_modification_id_c is returned correctly to the Partner Edit screen!
-                        APartnerEditInspectDS.Tables[PPersonTable.GetTableName()].Merge(AInspectDS.PPerson);
-                    }
-                    else
-                    {
-                        SubmissionResult = TSubmitChangesResult.scrError;
-                        AVerificationResult.AddCollection(SingleVerificationResultCollection);
-#if DEBUGMODE
-                        if (TLogging.DL >= 9)
-                        {
-                            Console.WriteLine(Messages.BuildMessageFromVerificationResult(
-                                    "TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
-                        }
-#endif
-                    }
-                }
-
-                // Emergency Data
+                // Emergency Data and Personal Data stored in same table
                 if (AInspectDS.Tables.Contains(PmPersonalDataTable.GetTableName())
                     && (AInspectDS.PmPersonalData.Rows.Count > 0))
                 {

@@ -6,13 +6,14 @@ RootNode:
     DatasetType: Ict.Petra.Shared.MPersonnel.Personnel.Data.IndividualDataTDS
     FormType: edit
     Template: usercontrol
-    MasterTable: PPerson
+    MasterTable: PmPersonalData
     Controls:
         pnlContent: {ControlsOrientation=vertical}
-            Controls: [pnlChristianSince, pnlDriver]              
+            Controls: [grpBelieverSince, grpDriver]              
             Dock: Fill
        
-        pnlChristianSince:
+        grpBelieverSince:
+            Label: Believer since
             Controls: [txtBelieverSinceYear, txtBelieverSinceComment]
                    
         txtBelieverSinceYear:
@@ -24,9 +25,10 @@ RootNode:
             ScrollBars: Vertical
             Label: Comment
         #The following required data from field pm_personal_data.pm_driving_license_number_c
-        pnlDriver:
-            #Controls: [txtDriverLicenseNumber]
-#
-        #txtDriverLicenseNumber:
-            #Width: 180
-            #Label: License Number
+        grpDriver:
+            Label: Driver information
+            Controls: [txtDrivingLicenseNumber]
+
+        txtDrivingLicenseNumber:
+            Width: 260
+            Label: Driving Licence Number
