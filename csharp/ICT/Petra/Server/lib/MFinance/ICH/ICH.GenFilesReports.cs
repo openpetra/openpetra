@@ -1145,34 +1145,18 @@ namespace Ict.Petra.Server.MFinance.ICH
 
             //Use Commit and Rollback here
 
-            /*RUN gl1110o.p ("new":U,
-             * ALedgerNumber,
-             * ?,
-             * cBatchDescription,
-             * 0,
-             * dtCurrentPeriodDate,
-             * OUTPUT iBatchNumber,
-             * OUTPUT lBatchCreateOk). */
+            BatchCreateOk = TGLPosting.CreateABatch(ALedgerNumber, BatchDescription, 0, CurrentPeriodDate, out BatchNumber);
+
             if (!BatchCreateOk)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
                 goto PostGenerateBatch;
             }
 
-            /* create journal record
-             * RUN gl1120o.p ("new":U,
-             * ALedgerNumber,
-             * iBatchNumber,
-             * ?,
-             * cBatchDescription,
-             * "{&GENERAL-LEDGER}":U,
-             * "{&STANDARD-JOURNAL}":U,
-             * cCurrency,
-             * dExchangeRate,
-             * dtCurrentPeriodDate,
-             * OUTPUT iJournalNumber,
-             * OUTPUT lJournalCreateOk).*/
+            int LastJournalNumber = 0; //always for the creation of a new batch
 
+            JournalCreateOk = TGLPosting.CreateAJournal(ALedgerNumber, BatchNumber, LastJournalNumber, BatchDescription, Currency, ExchangeRate, CurrentPeriodDate, APeriod, out JournalNumber);
+            
             if (!JournalCreateOk)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
@@ -1419,11 +1403,15 @@ PostGenerateBatch:
             {
                 /* if the file was processed successfully and it was not an empty stewardship we can now post the
                  * batch that we have just created */
-
+            	
                 /*RUN gl1210.p (piLedgerNumber,
                 * iBatchNumber,
                 * FALSE,
                 * OUTPUT lPostingSuccessful).*/
+               TVerificationResultCollection VerificationResultCollection;
+               
+               PostingSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, BatchNumber, out VerificationResultCollection);
+               
                 ASuccessful = PostingSuccessful;
             }
             else if (ProcessFile && EmptyStewardship)
@@ -1437,10 +1425,9 @@ PostGenerateBatch:
                 ASuccessful = PostingSuccessful;
             }
 
-            //TODO:
-            //Close inputfile
         }
 
+        
         /// <summary>
         /// Looks at the specified batch and works out whether it is a duplicate
         ///       of the stewardship currently being processed (defined by the other
@@ -1963,7 +1950,7 @@ PostGenerateBatch:
                 }
 
                 /* create the transaction */
-
+				//TODO:
                 /*RUN gl1130o.p ("new":U,
                  * ALedgerNumber,
                  * ABatchNumber,
@@ -1986,6 +1973,11 @@ PostGenerateBatch:
                  * OUTPUT TransactionNumber,
                  * OUTPUT TransCreateOk).*/
 
+                int TransactionNumber = 0;
+
+                TransCreateOk = TGLPosting.CreateATransaction(ALedgerNumber, ABatchNumber, AJournalNumber, ANarrative, Account, ACostCentre, AAmount, ADate, DrCrIndicator,
+                                                             AReference, false, 0, out TransactionNumber);
+                
                 ASuccessful = TransCreateOk;
             }
             else
