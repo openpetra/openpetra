@@ -19,7 +19,5 @@
     Controls:
         tpgReportSpecific:
             Label: Report parameters
-            Controls: [txtCityName, txtExtractName, txtExtractDescription]
+            Controls: [txtCityName]
         txtCityName: {Label=Name of City, ParameterName=param_city}
-        txtExtractName: {Label=Name for the new extract, ParameterName=nameOfExtract}
-        txtExtractDescription: {Label=Description for the new extract, ParameterName=descriptionOfExtract}

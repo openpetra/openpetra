@@ -484,20 +484,26 @@ namespace Ict.Petra.Client.MPartner.Gui
                 return;
             }
 
-            int rowIndex = CurrentRowIndex();
-            FPreviouslySelectedDetailRow.Delete();
-            FPetraUtilsObject.SetChangedFlag();
-            SelectByIndex(rowIndex);
-
-            // reset counter in tab header
-            RecalculateTabHeaderCounter();
-
-            if (grdDetails.Rows.Count <= 1)
+            if (MessageBox.Show(String.Format(Catalog.GetString(
+                            "You have choosen to delete this value ({0}).\n\nDo you really want to delete it?"),
+                        FPreviouslySelectedDetailRow.PublicationCode), Catalog.GetString("Confirm Delete"),
+                    MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
             {
-                // hide details part and disable buttons if no record in grid (first row for headings)
-                btnDelete.Enabled = false;
-                btnCancelAllSubscriptions.Enabled = false;
-                ucoDetails.MakeScreenInvisible(true);
+	            int rowIndex = CurrentRowIndex();
+	            FPreviouslySelectedDetailRow.Delete();
+	            FPetraUtilsObject.SetChangedFlag();
+	            SelectByIndex(rowIndex);
+	
+	            // reset counter in tab header
+	            RecalculateTabHeaderCounter();
+	
+	            if (grdDetails.Rows.Count <= 1)
+	            {
+	                // hide details part and disable buttons if no record in grid (first row for headings)
+	                btnDelete.Enabled = false;
+	                btnCancelAllSubscriptions.Enabled = false;
+	                ucoDetails.MakeScreenInvisible(true);
+	            }
             }
         }
 

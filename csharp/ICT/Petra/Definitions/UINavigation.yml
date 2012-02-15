@@ -45,13 +45,11 @@ OpenPetra:
                         ExtractMasterList: {Label=Extract Master List, ActionOpenScreen=TFrmExtractMaster}
                     GenerateExtracts: {Label=Generate Extract}
                         PartnerByCity: {Namespace=Ict.Petra.Client.MPartner.Gui, Label=Partner by City, ActionClick=TFrmPartnerMain.PartnerByCityExtract}
-                        ConferenceExtract: {Namespace=Ict.Petra.Client.MPartner.Gui, Label=Partner By Conference, ActionClick=TFrmPartnerMain.PartnerByConference}
-                        OutreachExtract: {Namespace=Ict.Petra.Client.MPartner.Gui, Label=Partner By Outreach, ActionClick=TFrmPartnerMain.PartnerByOutreach}
-                        PartnerByCommitment: {Namespace=Ict.Petra.Client.MPartner.Gui, Label=Partner by Commitment, ActionClick=TFrmPartnerMain.PartnerByCommitmentExtract}
-                        PublicationExtract: {Namespace=Ict.Petra.Client.MPartner.Gui, Label=Publication Extract, ActionClick=TFrmPartnerMain.PublicationExtract}
+                        PartnerBySubscription: {Namespace=Ict.Petra.Client.MPartner.Gui, Label=Partner by Subscription, ActionClick=TFrmPartnerMain.PartnerBySubscriptionExtract}
                         PartnerBySpecialType: {Namespace=Ict.Petra.Client.MPartner.Gui, Label=Partner by Special Type, ActionClick=TFrmPartnerMain.PartnerBySpecialTypeExtract}
-                        #PublicationExtract: {Label=Publication Extract, ActionOpenScreen=TFrmExtractPublication}
-                        #PartnerTypeExtract: {Label=Partner Type Extract, ActionOpenScreen=TFrmExtractPartnerType}
+                        PartnerByConference: {Namespace=Ict.Petra.Client.MPartner.Gui, Label=Partner by Conference, ActionClick=TFrmPartnerMain.PartnerByConferenceExtract}
+                        PartnerByOutreach: {Namespace=Ict.Petra.Client.MPartner.Gui, Label=Partner by Outreach, ActionClick=TFrmPartnerMain.PartnerByOutreachExtract}
+                        PartnerByCommitment: {Namespace=Ict.Petra.Client.MPartner.Gui, Label=Partner by Commitment, ActionClick=TFrmPartnerMain.PartnerByCommitmentExtract}
                 Reports: {Icon=printer.ico, Namespace=Ict.Petra.Client.MReporting.Gui.MPartner}
                     PartnerReports:
                         PartnerByCity: {ActionOpenScreen=TFrmPartnerByCity}
@@ -234,6 +232,37 @@ OpenPetra:
             # Module
             Main:
                 # Sub Module
+                Extracts: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts}
+                    Administration:
+                        ExtractMasterList: {Label=Extract Master List, ActionOpenScreen=TFrmExtractMaster}
+                    GenerateExtracts: {Label=Generate Extract}
+                        PartnerByConference: {Namespace=Ict.Petra.Client.MPartner.Gui, Label=Partner by Conference, ActionClick=TFrmPartnerMain.PartnerByConferenceExtract}
+                        PartnerByOutreach: {Namespace=Ict.Petra.Client.MPartner.Gui, Label=Partner by Outreach, ActionClick=TFrmPartnerMain.PartnerByOutreachExtrac}
+                        PartnerByCommitment: {Namespace=Ict.Petra.Client.MPartner.Gui, Label=Partner by Commitment, ActionClick=TFrmPartnerMain.PartnerByCommitmentExtract}
+
+                Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPersonnel}
+                    PersonnelReports:
+                        ProgressReport: {ActionOpenScreen=TFrmProgressReport}
+                        PreviousExperienceReport: {ActionOpenScreen=TFrmPreviousExperienceReport}
+                        EndOfCommitmentReport: {ActionOpenScreen=TFrmEndOfCommitmentReport}
+                        StartOfCommitmentReport: {ActionOpenScreen=TFrmStartOfCommitmentReport}
+                        JobAssignmentReport: {ActionOpenScreen=TFrmJobAssignmentReport}
+                        BirthdayList: {ActionOpenScreen=TFrmBirthdayListReport}
+                        EmergencyContactReport: {ActionOpenScreen=TFrmEmergencyContactReportStaff}
+                        PassportExpiryReport: {ActionOpenScreen=TFrmPassportExpiryReport}
+                        PersonalDocumentExpiryReport: {ActionOpenScreen=TFrmPersonalDocumentExpiryReport}
+                        EmergencyDataReport: {ActionOpenScreen=TFrmEmergencyDataReport}
+                        PersonalDataReport: {ActionOpenScreen=TFrmPersonalDataReport}
+                        OutreachOptions: {ActionOpenScreen=TFrmOutreachOptions}
+                        UnitHierarchy: {ActionOpenScreen=TFrmUnitHierarchy}
+                        LocalPersonnelData: {ActionOpenScreen=TFrmLocalPersonnelDataReport}
+                        RelationshipReport: {ActionOpenScreen=TFrmRelationshipReport}
+                    ShortTermerReports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm}
+                        GeneralShortTermerReport: {ActionOpenScreen=TFrmShortTermerReport}
+                        AbilitiesReport: {ActionOpenScreen=TFrmAbilitiesReport}
+                        EmergencyContactReport: {ActionOpenScreen=TFrmEmergencyContactInformationReport}
+                        LanguagesReport: {ActionOpenScreen=TFrmLanguagesReport}
+
                 Setup: {Namespace=Ict.Petra.Client.MPersonnel.Gui.Setup}
                     General:
                         AbilityArea: {Label=Setup Ability Areas, Description=Maintain Ability Areas, ActionOpenScreen=TFrmAbilityAreaSetup}
@@ -268,31 +297,7 @@ OpenPetra:
                         LocalDataFieldOrderLongTermApp: {Label=Setup Field Order for Long Term Applications, Description=Maintain Field Order for Long Term Applications, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=LongTermApp}
                         LocalDataFieldOrderShortTermApp: {Label=Setup Field Order for Short Term Applications, Description=Maintain Field Order for Short Term Applications, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=ShortTermApp}
                         LocalDataFieldOrderPersonnel: {Label=Setup Field Order for Personnel, Description=Maintain Field Order for Personnel, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=Personnel}
-
-                    
-            Reports:
-                Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPersonnel}
-                    PersonnelReports:
-                        ProgressReport: {ActionOpenScreen=TFrmProgressReport}
-                        PreviousExperienceReport: {ActionOpenScreen=TFrmPreviousExperienceReport}
-                        EndOfCommitmentReport: {ActionOpenScreen=TFrmEndOfCommitmentReport}
-                        StartOfCommitmentReport: {ActionOpenScreen=TFrmStartOfCommitmentReport}
-                        JobAssignmentReport: {ActionOpenScreen=TFrmJobAssignmentReport}
-                        BirthdayList: {ActionOpenScreen=TFrmBirthdayListReport}
-                        EmergencyContactReport: {ActionOpenScreen=TFrmEmergencyContactReportStaff}
-                        PassportExpiryReport: {ActionOpenScreen=TFrmPassportExpiryReport}
-                        PersonalDocumentExpiryReport: {ActionOpenScreen=TFrmPersonalDocumentExpiryReport}
-                        EmergencyDataReport: {ActionOpenScreen=TFrmEmergencyDataReport}
-                        PersonalDataReport: {ActionOpenScreen=TFrmPersonalDataReport}
-                        OutreachOptions: {ActionOpenScreen=TFrmOutreachOptions}
-                        UnitHierarchy: {ActionOpenScreen=TFrmUnitHierarchy}
-                        LocalPersonnelData: {ActionOpenScreen=TFrmLocalPersonnelDataReport}
-                        RelationshipReport: {ActionOpenScreen=TFrmRelationshipReport}
-                    ShortTermerReports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm}
-                        GeneralShortTermerReport: {ActionOpenScreen=TFrmShortTermerReport}
-                        AbilitiesReport: {ActionOpenScreen=TFrmAbilitiesReport}
-                        EmergencyContactReport: {ActionOpenScreen=TFrmEmergencyContactInformationReport}
-                        LanguagesReport: {ActionOpenScreen=TFrmLanguagesReport}
+                        
         ConferenceManagement: {Icon=conference_small.ico, PermissionsRequired=CONFERENCE}
             Main:
                 Find: {Namespace=Ict.Petra.Client.MConference.Gui}

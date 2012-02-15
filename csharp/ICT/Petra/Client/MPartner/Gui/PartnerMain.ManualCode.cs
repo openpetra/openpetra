@@ -116,7 +116,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// open screen to create Publication Extract
         /// </summary>
-        public static void PublicationExtract(Form AParentForm)
+        public static void PartnerBySubscriptionExtract(Form AParentForm)
         {
             TFrmPartnerBySubscription frm = new TFrmPartnerBySubscription(AParentForm);
 
@@ -138,7 +138,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// open screen to create "Conferece" Extract
         /// </summary>
-        public static void PartnerByConference(Form AParentForm)
+        public static void PartnerByConferenceExtract(Form AParentForm)
         {
             TFrmPartnerByEvent frm = new TFrmPartnerByEvent(AParentForm);
 
@@ -150,7 +150,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// open screen to create "Conferece" Extract
         /// </summary>
-        public static void PartnerByOutreach(Form AParentForm)
+        public static void PartnerByOutreachExtract(Form AParentForm)
         {
             TFrmPartnerByEvent frm = new TFrmPartnerByEvent(AParentForm);
 
