@@ -494,7 +494,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     ReadNullableInt32();
                     ReadString();
                 }
-                
+
                 PersonRow.OccupationCode = ReadString();
                 Int64? FieldKey = ReadNullableInt64();
 
