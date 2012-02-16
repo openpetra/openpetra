@@ -1308,9 +1308,6 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 AJournalRow JournalRow = (AJournalRow)AMainDS.AJournal.Rows.Find(new object[] { ALedgerNumber, ABatchNumber, AJournalNumber });
 
-                decimal ExchangeRateToBase = JournalRow.ExchangeRateToBase;
-                string TransactionCurrency = JournalRow.TransactionCurrency;
-
                 //Increment the LastTransactionNumber
                 JournalRow.LastTransactionNumber++;
                 ATransactionNumber = JournalRow.LastTransactionNumber;

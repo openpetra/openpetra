@@ -649,7 +649,6 @@ namespace Ict.Petra.Server.MFinance.ICH
             string NewDir;
             string CurrentFile;
             string InputLine;
-            string Period;
             string UnsuccessfulFileList;
             DateTime Time;
             int Hours;
@@ -805,7 +804,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                                                 DatRow["Period"] = PeriodNo;
                                                 YearNo = PeriodDate.Year;
                                                 DatRow["Year"] = YearNo;
-                                                Period = PeriodNo.ToString("00") + (YearNo - 2000).ToString("00");
+                                                // string Period = PeriodNo.ToString("00") + (YearNo - 2000).ToString("00");
                                             }
                                         }
 
@@ -877,7 +876,6 @@ namespace Ict.Petra.Server.MFinance.ICH
             string NewFileName = string.Empty;
 
             string FileName;
-            string LogMessage = string.Empty;
 
             int LedgerNo;
             int YearNo;
@@ -914,8 +912,8 @@ namespace Ict.Petra.Server.MFinance.ICH
 
                 if (Successful)
                 {
-                    AAccountingPeriodTable APT = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, PeriodNo, ADBTransaction);
-                    AAccountingPeriodRow APR = (AAccountingPeriodRow)APT.Rows[0];
+                    // AAccountingPeriodTable APT = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, PeriodNo, ADBTransaction);
+                    // AAccountingPeriodRow APR = (AAccountingPeriodRow)APT.Rows[0];
 
                     //TODO: Need to add function for LangSpecMonthName
                     NewFileName = LedgerNo.ToString("000") + RunNo.ToString("000") + ".txt";

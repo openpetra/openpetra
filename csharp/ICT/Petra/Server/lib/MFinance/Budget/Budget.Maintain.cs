@@ -5,7 +5,7 @@
 //       timop
 //		 cthomas
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -223,7 +223,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                     //Convert separator to a char
                     char Sep = Separator[0];
                     //Turn current line into string array of column values
-                    string[] CsvColumns = Line.Split(Sep);
+                    // string[] CsvColumns = Line.Split(Sep);
 
                     //int NumCols = CsvColumns.Length;
 
