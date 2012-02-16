@@ -1155,8 +1155,16 @@ namespace Ict.Petra.Server.MFinance.ICH
 
             int LastJournalNumber = 0; //always for the creation of a new batch
 
-            JournalCreateOk = TGLPosting.CreateAJournal(ALedgerNumber, BatchNumber, LastJournalNumber, BatchDescription, Currency, ExchangeRate, CurrentPeriodDate, APeriod, out JournalNumber);
-            
+            JournalCreateOk = TGLPosting.CreateAJournal(ALedgerNumber,
+                BatchNumber,
+                LastJournalNumber,
+                BatchDescription,
+                Currency,
+                ExchangeRate,
+                CurrentPeriodDate,
+                APeriod,
+                out JournalNumber);
+
             if (!JournalCreateOk)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
@@ -1403,15 +1411,15 @@ PostGenerateBatch:
             {
                 /* if the file was processed successfully and it was not an empty stewardship we can now post the
                  * batch that we have just created */
-            	
+
                 /*RUN gl1210.p (piLedgerNumber,
                 * iBatchNumber,
                 * FALSE,
                 * OUTPUT lPostingSuccessful).*/
-               TVerificationResultCollection VerificationResultCollection;
-               
-               PostingSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, BatchNumber, out VerificationResultCollection);
-               
+                TVerificationResultCollection VerificationResultCollection;
+
+                PostingSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, BatchNumber, out VerificationResultCollection);
+
                 ASuccessful = PostingSuccessful;
             }
             else if (ProcessFile && EmptyStewardship)
@@ -1424,10 +1432,8 @@ PostGenerateBatch:
             {
                 ASuccessful = PostingSuccessful;
             }
-
         }
 
-        
         /// <summary>
         /// Looks at the specified batch and works out whether it is a duplicate
         ///       of the stewardship currently being processed (defined by the other
@@ -1950,7 +1956,8 @@ PostGenerateBatch:
                 }
 
                 /* create the transaction */
-				//TODO:
+                //TODO:
+
                 /*RUN gl1130o.p ("new":U,
                  * ALedgerNumber,
                  * ABatchNumber,
@@ -1975,9 +1982,20 @@ PostGenerateBatch:
 
                 int TransactionNumber = 0;
 
-                TransCreateOk = TGLPosting.CreateATransaction(ALedgerNumber, ABatchNumber, AJournalNumber, ANarrative, Account, ACostCentre, AAmount, ADate, DrCrIndicator,
-                                                             AReference, false, 0, out TransactionNumber);
-                
+                TransCreateOk = TGLPosting.CreateATransaction(ALedgerNumber,
+                    ABatchNumber,
+                    AJournalNumber,
+                    ANarrative,
+                    Account,
+                    ACostCentre,
+                    AAmount,
+                    ADate,
+                    DrCrIndicator,
+                    AReference,
+                    false,
+                    0,
+                    out TransactionNumber);
+
                 ASuccessful = TransCreateOk;
             }
             else

@@ -1193,7 +1193,6 @@ namespace Ict.Petra.Server.MFinance.Common
             return MainDS;
         }
 
-
         /// <summary>
         /// Create a batch based upon gl1110.i
         /// </summary>
@@ -1203,13 +1202,17 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="ADateEffective"></param>
         /// <param name="ABatchNumber"></param>
         /// <returns></returns>
-        public static bool CreateABatch(Int32 ALedgerNumber, string ABatchDescription, decimal ABatchControlTotal, DateTime ADateEffective, out int ABatchNumber)
+        public static bool CreateABatch(Int32 ALedgerNumber,
+            string ABatchDescription,
+            decimal ABatchControlTotal,
+            DateTime ADateEffective,
+            out int ABatchNumber)
         {
             bool NewTransactionStarted = false;
-			bool CreationSuccessful = false;
-            
-			ABatchNumber = 0;
-			
+            bool CreationSuccessful = false;
+
+            ABatchNumber = 0;
+
             GLBatchTDS MainDS = null;
 
             //Error handling
@@ -1237,14 +1240,14 @@ namespace Ict.Petra.Server.MFinance.Common
                 NewRow.BatchControlTotal = ABatchControlTotal;
                 NewRow.DateEffective = ADateEffective;
                 //NewRow.LastJournal = 0; - set by default
-                
+
                 MainDS.ABatch.Rows.Add(NewRow);
 
                 if (GLBatchTDSAccess.SubmitChanges(MainDS, out VerificationResult) == TSubmitChangesResult.scrOK)
                 {
                     MainDS.AcceptChanges();
                 }
-                
+
                 CreationSuccessful = true;
             }
             catch (Exception ex)
@@ -1267,28 +1270,28 @@ namespace Ict.Petra.Server.MFinance.Common
             return CreationSuccessful;
         }
 
-		/// <summary>
-		/// Create a new journal as per gl1120.i
-		/// </summary>
-		/// <param name="ALedgerNumber"></param>
-		/// <param name="ABatchNumber"></param>
-		/// <param name="ALastJournalNumber"></param>
-		/// <param name="AJournalDescription"></param>
-		/// <param name="ACurrency"></param>
-		/// <param name="AXRateToBase"></param>
-		/// <param name="ADateEffective"></param>
-		/// <param name="APeriodNumber"></param>
-		/// <param name="AJournalNumber"></param>
-		/// <returns></returns>
-        public static bool CreateAJournal(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 ALastJournalNumber, 
-                                          string AJournalDescription, string ACurrency, decimal AXRateToBase,
-                                          DateTime ADateEffective, Int32 APeriodNumber, out Int32 AJournalNumber)
+        /// <summary>
+        /// Create a new journal as per gl1120.i
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="ALastJournalNumber"></param>
+        /// <param name="AJournalDescription"></param>
+        /// <param name="ACurrency"></param>
+        /// <param name="AXRateToBase"></param>
+        /// <param name="ADateEffective"></param>
+        /// <param name="APeriodNumber"></param>
+        /// <param name="AJournalNumber"></param>
+        /// <returns></returns>
+        public static bool CreateAJournal(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 ALastJournalNumber,
+            string AJournalDescription, string ACurrency, decimal AXRateToBase,
+            DateTime ADateEffective, Int32 APeriodNumber, out Int32 AJournalNumber)
         {
             bool NewTransactionStarted = false;
-			bool CreationSuccessful = false;
+            bool CreationSuccessful = false;
 
-			AJournalNumber = 0;
-			
+            AJournalNumber = 0;
+
             GLBatchTDS MainDS = null;
 
             //Error handling
@@ -1297,7 +1300,7 @@ namespace Ict.Petra.Server.MFinance.Common
             //Set default type as non-critical
             TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
             TVerificationResultCollection VerificationResult = null;
-            
+
             try
             {
                 MainDS = new GLBatchTDS();
@@ -1319,16 +1322,16 @@ namespace Ict.Petra.Server.MFinance.Common
                 JournalRow.DateEffective = ADateEffective;
                 JournalRow.JournalPeriod = APeriodNumber;
                 MainDS.AJournal.Rows.Add(JournalRow);
-                
+
                 //Update the Last Journal
-                ABatchRow BatchRow = (ABatchRow)MainDS.ABatch.Rows.Find(new object[] {ALedgerNumber, ABatchNumber});
+                ABatchRow BatchRow = (ABatchRow)MainDS.ABatch.Rows.Find(new object[] { ALedgerNumber, ABatchNumber });
                 BatchRow.LastJournal = AJournalNumber;
-				
+
                 if (GLBatchTDSAccess.SubmitChanges(MainDS, out VerificationResult) == TSubmitChangesResult.scrOK)
                 {
                     MainDS.AcceptChanges();
                 }
-                
+
                 CreationSuccessful = true;
             }
             catch (Exception ex)
@@ -1351,16 +1354,25 @@ namespace Ict.Petra.Server.MFinance.Common
             return CreationSuccessful;
         }
 
-	
-
-		public static bool CreateATransaction(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, string ANarrative, string AAccountCode, string ACostCentreCode,
-		                                     decimal ATransAmount, DateTime ATransDate, bool ADebCredIndicator, string AReference, bool ASystemGenerated, decimal ABaseAmount, out int ATransactionNumber)
+        public static bool CreateATransaction(Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            Int32 AJournalNumber,
+            string ANarrative,
+            string AAccountCode,
+            string ACostCentreCode,
+            decimal ATransAmount,
+            DateTime ATransDate,
+            bool ADebCredIndicator,
+            string AReference,
+            bool ASystemGenerated,
+            decimal ABaseAmount,
+            out int ATransactionNumber)
         {
             bool NewTransactionStarted = false;
-			bool CreationSuccessful = false;
+            bool CreationSuccessful = false;
 
-			ATransactionNumber = 0;
-			
+            ATransactionNumber = 0;
+
             GLBatchTDS MainDS = null;
 
             //Error handling
@@ -1369,7 +1381,7 @@ namespace Ict.Petra.Server.MFinance.Common
             //Set default type as non-critical
             TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
             TVerificationResultCollection VerificationResult = null;
-            
+
             try
             {
                 MainDS = new GLBatchTDS();
@@ -1378,25 +1390,25 @@ namespace Ict.Petra.Server.MFinance.Common
 
                 ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
 
-                AJournalRow JournalRow = (AJournalRow)MainDS.AJournal.Rows.Find(new object[] {ALedgerNumber, ABatchNumber, AJournalNumber});
-                
+                AJournalRow JournalRow = (AJournalRow)MainDS.AJournal.Rows.Find(new object[] { ALedgerNumber, ABatchNumber, AJournalNumber });
+
                 decimal ExchangeRateToBase = JournalRow.ExchangeRateToBase;
                 string TransactionCurrency = JournalRow.TransactionCurrency;
-                
+
                 //Increment the LastTransactionNumber
                 JournalRow.LastTransactionNumber++;
                 ATransactionNumber = JournalRow.LastTransactionNumber;
-                
+
                 ATransactionRow TransactionRow = MainDS.ATransaction.NewRowTyped();
-                
+
 
                 MainDS.ATransaction.Rows.Add(TransactionRow);
-                
+
                 if (GLBatchTDSAccess.SubmitChanges(MainDS, out VerificationResult) == TSubmitChangesResult.scrOK)
                 {
                     MainDS.AcceptChanges();
                 }
-                
+
                 CreationSuccessful = true;
             }
             catch (Exception ex)
@@ -1418,10 +1430,5 @@ namespace Ict.Petra.Server.MFinance.Common
 
             return CreationSuccessful;
         }
-
-
-
-
-
     }
 }
