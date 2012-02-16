@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       timop, TimI
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1257,7 +1257,6 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
             if (MainDs.AApPayment.Rows.Count > 0) // If I can load the referenced payment, I'll also load related documents.
             {
-                AApPaymentRow PaymentRow = MainDs.AApPayment[0];
                 AApDocumentPaymentAccess.LoadViaAApPayment(MainDs, ALedgerNumber, APaymentNumber, ReadTransaction);
                 // There may be a batch of several invoices in this payment,
                 // but they should all be to the same supplier.

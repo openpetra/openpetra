@@ -534,7 +534,9 @@ namespace Ict.Tools.DevelopersAssistant
 
         private void btnSaveCurrentDbBuildConfig_Click(object sender, EventArgs e)
         {
-            BuildConfiguration dbCfg = new BuildConfiguration(txtBranchLocation.Text, _localSettings);
+            // BuildConfiguration dbCfg = new BuildConfiguration(txtBranchLocation.Text, _localSettings);
+            // please avoid variable dbCfg, because it is never used, and gives a warning on the Jenkins Build server
+            new BuildConfiguration(txtBranchLocation.Text, _localSettings);
         }
 
         private void chkUseAutoLogon_CheckedChanged(object sender, EventArgs e)
@@ -620,7 +622,9 @@ namespace Ict.Tools.DevelopersAssistant
         {
             try
             {
-                UInt32 i = Convert.ToUInt32(txtFlashAfterSeconds.Text);
+                // UInt32 i = Convert.ToUInt32(txtFlashAfterSeconds.Text);
+                // please avoid using variable i, because it is not needed, and gives a warning on the Jenkins Build Server
+                Convert.ToUInt32(txtFlashAfterSeconds.Text);
                 bHaveAlertedFlashSetting = false;
             }
             catch (Exception)

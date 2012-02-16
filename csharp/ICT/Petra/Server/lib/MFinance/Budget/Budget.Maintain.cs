@@ -221,7 +221,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                     rowNumber++;
 
                     //Convert separator to a char
-                    char Sep = Separator[0];
+                    // char Sep = Separator[0];
                     //Turn current line into string array of column values
                     // string[] CsvColumns = Line.Split(Sep);
 
