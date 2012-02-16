@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank, christophert, timop
+//       christophert, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -33,6 +33,7 @@ using Ict.Common.DB;
 using Ict.Common.Data;
 using Ict.Common.IO;
 using Ict.Common.Verification;
+using Ict.Petra.Server.MFinance.GL.Data.Access;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -902,8 +903,8 @@ namespace Ict.Petra.Server.MFinance.ICH
 
                 if ((LedgerNo != PreviousLedger) || (PeriodNo != PreviousPeriod) || (RunNo != PreviousRunNumber))
                 {
-                    GenerateStewardshipBatch(ALedgerNumber, YearNo, PeriodNo, RunNo, LedgerNo.ToString(
-                            "00") + "00", FileName, ref ALogWriter, out Successful);
+                    Successful = GenerateStewardshipBatch(ALedgerNumber, YearNo, PeriodNo, RunNo, LedgerNo.ToString(
+                            "00") + "00", FileName, ref ALogWriter);
                 }
                 else
                 {
@@ -951,18 +952,14 @@ namespace Ict.Petra.Server.MFinance.ICH
         /// <param name="AFromCostCentre">Fund to which stewardship relates</param>
         /// <param name="AFileName">Filename of stewardship report to process</param>
         /// <param name="ALogWriter">TextWriter for log file</param>
-        /// <param name="ASuccessful">Returns whether process successful</param>
-        private void GenerateStewardshipBatch(int ALedgerNumber,
+        private bool GenerateStewardshipBatch(int ALedgerNumber,
             int AYear,
             int APeriod,
             int ARunNumber,
             string AFromCostCentre,
             string AFileName,
-            ref TextWriter ALogWriter,
-            out bool ASuccessful)
+            ref TextWriter ALogWriter)
         {
-            ASuccessful = false;
-
             string InputLine;
             string LogMessage = string.Empty;
             string PeriodName;
@@ -988,7 +985,6 @@ namespace Ict.Petra.Server.MFinance.ICH
             bool TransCreateOk = false;
             bool Complete = false;
             bool ContinueImporting;
-            bool PostingSuccessful = false;
             bool ProcessFile = true;
             bool EmptyStewardship = false;
             DateTime CurrentPeriodDate;
@@ -1021,7 +1017,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                             "File {0} is for a period more than 12 months prior to the current period and will need to be processed manually."),
                         AFileName);
                 ALogWriter.WriteLine(LogMessage);
-                return;
+                return false;
             }
 
             ACostCentreTable CostCentreTable = ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, AFromCostCentre, DBTransaction);
@@ -1031,7 +1027,7 @@ namespace Ict.Petra.Server.MFinance.ICH
             {
                 LogMessage = String.Format(Catalog.GetString("Cost Centre {0} does not exist. File {1} will be skipped."), AFromCostCentre, AFileName);
                 ALogWriter.WriteLine(LogMessage);
-                return;
+                return false;
             }
 
             /* set batch description and transaction reference based on fund, period, year and run number */
@@ -1064,7 +1060,7 @@ namespace Ict.Petra.Server.MFinance.ICH
             {
                 LogMessage = String.Format(Catalog.GetString("Cost Centre {0} is not active. File {1} will be skipped."), AFromCostCentre, AFileName);
                 ALogWriter.WriteLine(LogMessage);
-                return;
+                return false;
             }
 
             /* get currency information from the header */
@@ -1098,7 +1094,7 @@ namespace Ict.Petra.Server.MFinance.ICH
             {
                 LogMessage = String.Format(Catalog.GetString("Currency {0} does not exist. File {1} will be skipped."), Currency, AFileName);
                 ALogWriter.WriteLine(LogMessage);
-                return;
+                return false;
             }
 
             /* work out which date to get the exchange rate for (should be for the period of the stewardship) */
@@ -1133,7 +1129,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                                 "File {0} could not be imported as there is no Corporate Exchange Rate for currency {1} period {2} year {3}"),
                             AFileName, Currency, APeriod.ToString(), AYear);
                     ALogWriter.WriteLine(LogMessage);
-                    return;
+                    return false;
                 }
             }
 
@@ -1145,7 +1141,11 @@ namespace Ict.Petra.Server.MFinance.ICH
 
             //Use Commit and Rollback here
 
-            BatchCreateOk = TGLPosting.CreateABatch(ALedgerNumber, BatchDescription, 0, CurrentPeriodDate, out BatchNumber);
+            GLBatchTDS MainDS = TGLPosting.CreateABatch(ALedgerNumber, BatchDescription, 0, CurrentPeriodDate);
+
+            BatchNumber = MainDS.ABatch[0].BatchNumber;
+
+            BatchCreateOk = (MainDS != null);
 
             if (!BatchCreateOk)
             {
@@ -1155,7 +1155,9 @@ namespace Ict.Petra.Server.MFinance.ICH
 
             int LastJournalNumber = 0; //always for the creation of a new batch
 
-            JournalCreateOk = TGLPosting.CreateAJournal(ALedgerNumber,
+            JournalCreateOk = TGLPosting.CreateAJournal(
+                MainDS,
+                ALedgerNumber,
                 BatchNumber,
                 LastJournalNumber,
                 BatchDescription,
@@ -1201,7 +1203,9 @@ namespace Ict.Petra.Server.MFinance.ICH
 
                                 /* create one transaction for income, one for expense, one for transfers */
                                 Narrative = PeriodName + " Income " + FromCostCentreName;
-                                CreateStewardshipTransaction(ALedgerNumber,
+                                TransCreateOk = CreateStewardshipTransaction(
+                                    MainDS,
+                                    ALedgerNumber,
                                     BatchNumber,
                                     JournalNumber,
                                     MFinanceConstants.TRANSACTION_TYPE_INCOME,
@@ -1212,8 +1216,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                                     CurrentPeriodDate,
                                     false,
                                     ref ALogWriter,
-                                    ref DBTransaction,
-                                    out TransCreateOk);
+                                    ref DBTransaction);
 
                                 if (!TransCreateOk)
                                 {
@@ -1222,7 +1225,9 @@ namespace Ict.Petra.Server.MFinance.ICH
                                 }
 
                                 Narrative = "AE " + PeriodName + " " + FromCostCentreName;
-                                CreateStewardshipTransaction(ALedgerNumber,
+                                TransCreateOk = CreateStewardshipTransaction(
+                                    MainDS,
+                                    ALedgerNumber,
                                     BatchNumber,
                                     JournalNumber,
                                     MFinanceConstants.TRANSACTION_TYPE_EXPENSE,
@@ -1233,8 +1238,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                                     CurrentPeriodDate,
                                     false,
                                     ref ALogWriter,
-                                    ref DBTransaction,
-                                    out TransCreateOk);
+                                    ref DBTransaction);
 
                                 if (!TransCreateOk)
                                 {
@@ -1243,7 +1247,9 @@ namespace Ict.Petra.Server.MFinance.ICH
                                 }
 
                                 Narrative = PeriodName + " Direct xfer " + FromCostCentreName;
-                                CreateStewardshipTransaction(ALedgerNumber,
+                                TransCreateOk = CreateStewardshipTransaction(
+                                    MainDS,
+                                    ALedgerNumber,
                                     BatchNumber,
                                     JournalNumber,
                                     MFinanceConstants.TRANSACTION_TYPE_TRANSFER,
@@ -1254,8 +1260,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                                     CurrentPeriodDate,
                                     false,
                                     ref ALogWriter,
-                                    ref DBTransaction,
-                                    out TransCreateOk);
+                                    ref DBTransaction);
 
                                 if (!TransCreateOk)
                                 {
@@ -1302,7 +1307,9 @@ namespace Ict.Petra.Server.MFinance.ICH
 
             /* create the summary transactions for income, expense and transfers */
             Narrative = PeriodName + " Income For Others " + FromCostCentreName;
-            CreateStewardshipTransaction(ALedgerNumber,
+            TransCreateOk = CreateStewardshipTransaction(
+                MainDS,
+                ALedgerNumber,
                 BatchNumber,
                 JournalNumber,
                 MFinanceConstants.TRANSACTION_TYPE_INCOME,
@@ -1313,8 +1320,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                 CurrentPeriodDate,
                 true,
                 ref ALogWriter,
-                ref DBTransaction,
-                out TransCreateOk);
+                ref DBTransaction);
 
             if (!TransCreateOk)
             {
@@ -1323,7 +1329,9 @@ namespace Ict.Petra.Server.MFinance.ICH
             }
 
             Narrative = "AE For Others " + PeriodName + " " + FromCostCentreName;
-            CreateStewardshipTransaction(ALedgerNumber,
+            TransCreateOk = CreateStewardshipTransaction(
+                MainDS,
+                ALedgerNumber,
                 BatchNumber,
                 JournalNumber,
                 MFinanceConstants.TRANSACTION_TYPE_EXPENSE,
@@ -1334,8 +1342,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                 CurrentPeriodDate,
                 true,
                 ref ALogWriter,
-                ref DBTransaction,
-                out TransCreateOk);
+                ref DBTransaction);
 
             if (!TransCreateOk)
             {
@@ -1344,7 +1351,9 @@ namespace Ict.Petra.Server.MFinance.ICH
             }
 
             Narrative = PeriodName + " Direct xfer For Others " + FromCostCentreName;
-            CreateStewardshipTransaction(ALedgerNumber,
+            TransCreateOk = CreateStewardshipTransaction(
+                MainDS,
+                ALedgerNumber,
                 BatchNumber,
                 JournalNumber,
                 MFinanceConstants.TRANSACTION_TYPE_TRANSFER,
@@ -1355,8 +1364,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                 CurrentPeriodDate,
                 true,
                 ref ALogWriter,
-                ref DBTransaction,
-                out TransCreateOk);
+                ref DBTransaction);
 
             if (!TransCreateOk)
             {
@@ -1373,6 +1381,16 @@ namespace Ict.Petra.Server.MFinance.ICH
                 goto PostGenerateBatch;
             }
 
+            TVerificationResultCollection VerificationResult;
+
+            if (GLBatchTDSAccess.SubmitChanges(MainDS, out VerificationResult) != TSubmitChangesResult.scrOK)
+            {
+                LogMessage = String.Format(Catalog.GetString("Problem saving the ICH batch for File {0}"), AFileName);
+                ALogWriter.WriteLine(LogMessage);
+                ALogWriter.WriteLine(VerificationResult.BuildVerificationResultString());
+                return false;
+            }
+
             Complete = true;
 
             //End of Generate Batch
@@ -1385,19 +1403,19 @@ PostGenerateBatch:
                 {
                     LogMessage = String.Format(Catalog.GetString("File {0} could not be imported as batch creation failed."), AFileName);
                     ALogWriter.WriteLine(LogMessage);
-                    return;
+                    return false;
                 }
                 else if (!JournalCreateOk)
                 {
                     LogMessage = String.Format(Catalog.GetString("File {0} could not be imported as journal creation failed."), AFileName);
                     ALogWriter.WriteLine(LogMessage);
-                    return;
+                    return false;
                 }
                 else if (!TransCreateOk)
                 {
                     LogMessage = String.Format(Catalog.GetString("File {0} could not be imported as transaction creation failed."), AFileName);
                     ALogWriter.WriteLine(LogMessage);
-                    return;
+                    return false;
                 }
                 else
                 {
@@ -1405,6 +1423,7 @@ PostGenerateBatch:
                             "File {0} could not be imported. Cause unknown. Cost Centre {1}"), AFileName, ToCostCentre);
                     ALogWriter.WriteLine(LogMessage);
                     //"File " pcFileName " could not be imported. Cause unknown. Cost Centre "  + ToCostCentre
+                    return false;
                 }
             }
             else if (ProcessFile && !EmptyStewardship)
@@ -1418,20 +1437,18 @@ PostGenerateBatch:
                 * OUTPUT lPostingSuccessful).*/
                 TVerificationResultCollection VerificationResultCollection;
 
-                PostingSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, BatchNumber, out VerificationResultCollection);
+                bool PostingSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, BatchNumber, out VerificationResultCollection);
 
-                ASuccessful = PostingSuccessful;
+                return PostingSuccessful;
             }
             else if (ProcessFile && EmptyStewardship)
             {
                 /* if the stewardship was empty we still want to make it as successful even though we didn't create
                  *              a batch */
-                ASuccessful = true;
+                return true;
             }
-            else
-            {
-                ASuccessful = PostingSuccessful;
-            }
+
+            return false;
         }
 
         /// <summary>
@@ -1845,6 +1862,7 @@ PostGenerateBatch:
         /// <summary>
         /// Creates a stewardship transaction using the parameters specified
         /// </summary>
+        /// <param name="AMainDS">the main dataset</param>
         /// <param name="ALedgerNumber">ICH Ledger number</param>
         /// <param name="ABatchNumber">The number of the batch in which this transaction should be created</param>
         /// <param name="AJournalNumber">The number of the journal in which this transaction should be created </param>
@@ -1857,18 +1875,16 @@ PostGenerateBatch:
         /// <param name="ASummary">Is this a summary transaction or a detail transaction</param>
         /// <param name="ALogWriter">TextWriter for log file</param>
         /// <param name="ADBTransaction">Current database transaction</param>
-        /// <param name="ASuccessful">Was the transaction successfully created</param>
-        private void CreateStewardshipTransaction(int ALedgerNumber, int ABatchNumber, int AJournalNumber,
+        private bool CreateStewardshipTransaction(
+            GLBatchTDS AMainDS,
+            int ALedgerNumber, int ABatchNumber, int AJournalNumber,
             string ATransactionType, string ACostCentre, string ANarrative,
             decimal AAmount, string AReference, DateTime ADate,
-            bool ASummary, ref TextWriter ALogWriter, ref TDBTransaction ADBTransaction, out bool ASuccessful)
+            bool ASummary, ref TextWriter ALogWriter, ref TDBTransaction ADBTransaction)
         {
             string Account = string.Empty;
-            bool TransCreateOk = false;
             bool DrCrIndicator;
             string LogMessage = string.Empty;
-
-            ASuccessful = false;
 
             /* only create the transaction if it is non-zero */
             if (AAmount != 0)
@@ -1896,10 +1912,9 @@ PostGenerateBatch:
 
                 if (CostCentreRow == null)
                 {
-                    ASuccessful = false;
                     LogMessage = "Cost Centre " + ACostCentre + " does not exist.";
                     ALogWriter.WriteLine(LogMessage);
-                    return;
+                    return false;
                 }
 
                 if (CostCentreRow.CostCentreActiveFlag)
@@ -1956,33 +1971,11 @@ PostGenerateBatch:
                 }
 
                 /* create the transaction */
-                //TODO:
-
-                /*RUN gl1130o.p ("new":U,
-                 * ALedgerNumber,
-                 * ABatchNumber,
-                 * AJournalNumber,
-                 * ?,
-                 * ANarrative,
-                 * Account,
-                 * ACostCentre,
-                 * AAmount,
-                 * ADate,
-                 * DrCrIndicator,
-                 * ?,
-                 * ?,
-                 * ?,
-                 * ?,
-                 * ?,
-                 * AReference,
-                 * FALSE,
-                 * 0,
-                 * OUTPUT TransactionNumber,
-                 * OUTPUT TransCreateOk).*/
-
                 int TransactionNumber = 0;
 
-                TransCreateOk = TGLPosting.CreateATransaction(ALedgerNumber,
+                return TGLPosting.CreateATransaction(
+                    AMainDS,
+                    ALedgerNumber,
                     ABatchNumber,
                     AJournalNumber,
                     ANarrative,
@@ -1995,12 +1988,10 @@ PostGenerateBatch:
                     false,
                     0,
                     out TransactionNumber);
-
-                ASuccessful = TransCreateOk;
             }
             else
             {
-                ASuccessful = true;
+                return true;
             }
         }
 
