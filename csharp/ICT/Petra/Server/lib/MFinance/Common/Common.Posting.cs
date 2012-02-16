@@ -1192,5 +1192,236 @@ namespace Ict.Petra.Server.MFinance.Common
 
             return MainDS;
         }
+
+
+        /// <summary>
+        /// Create a batch based upon gl1110.i
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchDescription"></param>
+        /// <param name="ABatchControlTotal"></param>
+        /// <param name="ADateEffective"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <returns></returns>
+        public static bool CreateABatch(Int32 ALedgerNumber, string ABatchDescription, decimal ABatchControlTotal, DateTime ADateEffective, out int ABatchNumber)
+        {
+            bool NewTransactionStarted = false;
+			bool CreationSuccessful = false;
+            
+			ABatchNumber = 0;
+			
+            GLBatchTDS MainDS = null;
+
+            //Error handling
+            string ErrorContext = "Create a Batch";
+            string ErrorMessage = String.Empty;
+            //Set default type as non-critical
+            TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
+            TVerificationResultCollection VerificationResult = null;
+
+            try
+            {
+                MainDS = new GLBatchTDS();
+
+                TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransactionStarted);
+
+                ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+
+                ABatchRow NewRow = MainDS.ABatch.NewRowTyped(true);
+                NewRow.LedgerNumber = ALedgerNumber;
+                MainDS.ALedger[0].LastBatchNumber++;
+                ABatchNumber = MainDS.ALedger[0].LastBatchNumber;
+                NewRow.BatchNumber = ABatchNumber;
+                NewRow.BatchPeriod = MainDS.ALedger[0].CurrentPeriod;
+                NewRow.BatchDescription = ABatchDescription;
+                NewRow.BatchControlTotal = ABatchControlTotal;
+                NewRow.DateEffective = ADateEffective;
+                //NewRow.LastJournal = 0; - set by default
+                
+                MainDS.ABatch.Rows.Add(NewRow);
+
+                if (GLBatchTDSAccess.SubmitChanges(MainDS, out VerificationResult) == TSubmitChangesResult.scrOK)
+                {
+                    MainDS.AcceptChanges();
+                }
+                
+                CreationSuccessful = true;
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage =
+                    String.Format(Catalog.GetString("Unknown error while creating a batch for Ledger: {0}." +
+                            Environment.NewLine + Environment.NewLine + ex.ToString()),
+                        ALedgerNumber);
+                ErrorType = TResultSeverity.Resv_Critical;
+                VerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
+            }
+            finally
+            {
+                if (NewTransactionStarted)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+            }
+
+            return CreationSuccessful;
+        }
+
+		/// <summary>
+		/// Create a new journal as per gl1120.i
+		/// </summary>
+		/// <param name="ALedgerNumber"></param>
+		/// <param name="ABatchNumber"></param>
+		/// <param name="ALastJournalNumber"></param>
+		/// <param name="AJournalDescription"></param>
+		/// <param name="ACurrency"></param>
+		/// <param name="AXRateToBase"></param>
+		/// <param name="ADateEffective"></param>
+		/// <param name="APeriodNumber"></param>
+		/// <param name="AJournalNumber"></param>
+		/// <returns></returns>
+        public static bool CreateAJournal(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 ALastJournalNumber, 
+                                          string AJournalDescription, string ACurrency, decimal AXRateToBase,
+                                          DateTime ADateEffective, Int32 APeriodNumber, out Int32 AJournalNumber)
+        {
+            bool NewTransactionStarted = false;
+			bool CreationSuccessful = false;
+
+			AJournalNumber = 0;
+			
+            GLBatchTDS MainDS = null;
+
+            //Error handling
+            string ErrorContext = "Create a Journal";
+            string ErrorMessage = String.Empty;
+            //Set default type as non-critical
+            TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
+            TVerificationResultCollection VerificationResult = null;
+            
+            try
+            {
+                MainDS = new GLBatchTDS();
+
+                TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransactionStarted);
+
+                ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+
+                AJournalRow JournalRow = MainDS.AJournal.NewRowTyped();
+                JournalRow.LedgerNumber = ALedgerNumber;
+                JournalRow.BatchNumber = ABatchNumber;
+                AJournalNumber = ALastJournalNumber + 1;
+                JournalRow.JournalNumber = AJournalNumber;
+                JournalRow.JournalDescription = AJournalDescription;
+                JournalRow.SubSystemCode = MFinanceConstants.SUB_SYSTEM_GL;
+                JournalRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.STD.ToString();
+                JournalRow.TransactionCurrency = ACurrency;
+                JournalRow.ExchangeRateToBase = AXRateToBase;
+                JournalRow.DateEffective = ADateEffective;
+                JournalRow.JournalPeriod = APeriodNumber;
+                MainDS.AJournal.Rows.Add(JournalRow);
+                
+                //Update the Last Journal
+                ABatchRow BatchRow = (ABatchRow)MainDS.ABatch.Rows.Find(new object[] {ALedgerNumber, ABatchNumber});
+                BatchRow.LastJournal = AJournalNumber;
+				
+                if (GLBatchTDSAccess.SubmitChanges(MainDS, out VerificationResult) == TSubmitChangesResult.scrOK)
+                {
+                    MainDS.AcceptChanges();
+                }
+                
+                CreationSuccessful = true;
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage =
+                    String.Format(Catalog.GetString("Unknown error while creating a batch for Ledger: {0}." +
+                            Environment.NewLine + Environment.NewLine + ex.ToString()),
+                        ALedgerNumber);
+                ErrorType = TResultSeverity.Resv_Critical;
+                VerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
+            }
+            finally
+            {
+                if (NewTransactionStarted)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+            }
+
+            return CreationSuccessful;
+        }
+
+	
+
+		public static bool CreateATransaction(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, string ANarrative, string AAccountCode, string ACostCentreCode,
+		                                     decimal ATransAmount, DateTime ATransDate, bool ADebCredIndicator, string AReference, bool ASystemGenerated, decimal ABaseAmount, out int ATransactionNumber)
+        {
+            bool NewTransactionStarted = false;
+			bool CreationSuccessful = false;
+
+			ATransactionNumber = 0;
+			
+            GLBatchTDS MainDS = null;
+
+            //Error handling
+            string ErrorContext = "Create a Transaction";
+            string ErrorMessage = String.Empty;
+            //Set default type as non-critical
+            TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
+            TVerificationResultCollection VerificationResult = null;
+            
+            try
+            {
+                MainDS = new GLBatchTDS();
+
+                TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransactionStarted);
+
+                ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+
+                AJournalRow JournalRow = (AJournalRow)MainDS.AJournal.Rows.Find(new object[] {ALedgerNumber, ABatchNumber, AJournalNumber});
+                
+                decimal ExchangeRateToBase = JournalRow.ExchangeRateToBase;
+                string TransactionCurrency = JournalRow.TransactionCurrency;
+                
+                //Increment the LastTransactionNumber
+                JournalRow.LastTransactionNumber++;
+                ATransactionNumber = JournalRow.LastTransactionNumber;
+                
+                ATransactionRow TransactionRow = MainDS.ATransaction.NewRowTyped();
+                
+
+                MainDS.ATransaction.Rows.Add(TransactionRow);
+                
+                if (GLBatchTDSAccess.SubmitChanges(MainDS, out VerificationResult) == TSubmitChangesResult.scrOK)
+                {
+                    MainDS.AcceptChanges();
+                }
+                
+                CreationSuccessful = true;
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage =
+                    String.Format(Catalog.GetString("Unknown error while creating a batch for Ledger: {0}." +
+                            Environment.NewLine + Environment.NewLine + ex.ToString()),
+                        ALedgerNumber);
+                ErrorType = TResultSeverity.Resv_Critical;
+                VerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
+            }
+            finally
+            {
+                if (NewTransactionStarted)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+            }
+
+            return CreationSuccessful;
+        }
+
+
+
+
+
     }
 }
