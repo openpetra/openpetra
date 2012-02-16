@@ -72,13 +72,25 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             string EventCodeMember = PUnitTable.GetOutreachCodeDBName();
             PUnitTable Table;
 
-            // The difference between outreach and conference
+            // no columns tab needed if called from extracts
+            if (CalledFromExtracts)
+            {
+                tabReportSettings.Controls.Remove(tpgColumns);
+            }
+            
+            // Prepare the window title and settings directory (will be used later by TFrmPetraReportingUtils).
+            // Normally the settings directory is set earlier but since this is one form that covers two extracts
+            // we need to initialize it a second time here with the correct directory.
             if (FCalledForConferences)
             {
+            	this.FindForm().Text = Catalog.GetString("Partner by Conference");
+            	FPetraUtilsObject.InitialiseStoredSettings("Partner by Conference");
                 Table = TRemote.MPartner.Partner.WebConnectors.GetConferenceUnits("");
             }
             else
             {
+            	this.FindForm().Text = Catalog.GetString("Partner by Outreach");
+            	FPetraUtilsObject.InitialiseStoredSettings("Partner by Outreach");
                 Table = TRemote.MPartner.Partner.WebConnectors.GetOutreachUnits("");
             }
 
@@ -113,10 +125,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             //TODO: only temporarily until settings file exists
             clbEvent.SetCheckedStringList("");
 
-            if (FCalledFromExtracts)
-            {
-                tpgColumns.Visible = false;
-            }
         }
 
         private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)

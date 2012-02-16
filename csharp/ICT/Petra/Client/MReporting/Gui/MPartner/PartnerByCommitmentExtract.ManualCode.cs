@@ -49,6 +49,18 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             ucoChkFilter.ShowFamiliesOnly(false);
         }
 
+        /// <summary>
+        /// only run this code once during activation
+        /// </summary>
+        private void RunOnceOnActivationManual()
+        {
+            // no columns tab needed if called from extracts
+            if (CalledFromExtracts)
+            {
+                tabReportSettings.Controls.Remove(tpgColumns);
+            }
+        }
+        
         private void grdCommitmentStatusChoices_InitialiseData(TFrmPetraReportingUtils FPetraUtilsObject)
         {
             #region Copied from csharp/ICT/Petra/Client/MReporting/Gui/MPersonnel/StartOfCommitmentReport.ManualCode.cs

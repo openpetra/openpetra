@@ -71,6 +71,19 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             dtpDateOfSendingCopy.Date = DateTime.Now;
         }
 
+        /// <summary>
+        /// only run this code once during activation
+        /// </summary>
+        private void RunOnceOnActivationManual()
+        {
+            // no columns tab needed if called from extracts
+            if (CalledFromExtracts)
+            {
+                tabReportSettings.Controls.Remove(tpgColumns);
+                tabReportSettings.Controls.Remove(tpgReportSorting);
+            }
+        }
+        
         private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             if (clbIncludePublication.GetCheckedStringList().Length == 0)

@@ -129,7 +129,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public static void PartnerByCityExtract(Form AParentForm)
         {
-            TFrmPartnerByCityExtract frm = new TFrmPartnerByCityExtract(AParentForm);
+            TFrmPartnerByCity frm = new TFrmPartnerByCity(AParentForm);
 
             frm.CalledFromExtracts = true;
             frm.Show();

@@ -68,6 +68,19 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             clbIncludeSpecialTypes.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
         }
 
+        /// <summary>
+        /// only run this code once during activation
+        /// </summary>
+        private void RunOnceOnActivationManual()
+        {
+            // no columns tab needed if called from extracts
+            if (CalledFromExtracts)
+            {
+                tabReportSettings.Controls.Remove(tpgColumns);
+                tabReportSettings.Controls.Remove(tpgReportSorting);
+            }
+        }
+        
         private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             if (clbIncludeSpecialTypes.GetCheckedStringList().Length == 0)
