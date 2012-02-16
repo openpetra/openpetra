@@ -32,6 +32,7 @@ using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MReporting.Gui.MPartner;
+//using Ict.Petra.Client.MReporting.Gui.MPersonnel;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Client.MPartner.Gui.Extracts;
 using System.Collections.Specialized;
@@ -140,11 +141,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public static void PartnerByConferenceExtract(Form AParentForm)
         {
-            TFrmPartnerByEvent frm = new TFrmPartnerByEvent(AParentForm);
+            //TFrmPartnerByEvent frm = new TFrmPartnerByEvent(AParentForm);
 
-            frm.CalledFromExtracts = true;
-            frm.CalledForConferences = true;
-            frm.Show();
+            //frm.CalledFromExtracts = true;
+            //frm.CalledForConferences = true;
+            //frm.Show();
         }
 
         /// <summary>
@@ -152,11 +153,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public static void PartnerByOutreachExtract(Form AParentForm)
         {
-            TFrmPartnerByEvent frm = new TFrmPartnerByEvent(AParentForm);
+            //TFrmPartnerByEvent frm = new TFrmPartnerByEvent(AParentForm);
 
-            frm.CalledFromExtracts = true;
-            frm.CalledForConferences = false;
-            frm.Show();
+            //frm.CalledFromExtracts = true;
+            //frm.CalledForConferences = false;
+            //frm.Show();
         }
 
         /// <summary>
@@ -173,10 +174,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// Open screen for creating "Partner by Commitment" Extract
         public static void PartnerByCommitmentExtract(Form AParentForm)
         {
-            TFrmPartnerByCommitmentExtract frm = new TFrmPartnerByCommitmentExtract(AParentForm);
+            //TFrmPartnerByCommitmentExtract frm = new TFrmPartnerByCommitmentExtract(AParentForm);
 
-            frm.CalledFromExtracts = true;
-            frm.Show();
+            //frm.CalledFromExtracts = true;
+            //frm.Show();
         }
     }
 }

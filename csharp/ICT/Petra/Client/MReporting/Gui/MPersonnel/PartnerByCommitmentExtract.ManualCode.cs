@@ -34,7 +34,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 
-namespace Ict.Petra.Client.MReporting.Gui.MPartner
+namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 {
     public partial class TFrmPartnerByCommitmentExtract
     {

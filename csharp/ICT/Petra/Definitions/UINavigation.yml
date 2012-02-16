@@ -47,9 +47,9 @@ OpenPetra:
                         PartnerByCity: {Namespace=Ict.Petra.Client.MPartner.Gui, Label=Partner by City, ActionClick=TFrmPartnerMain.PartnerByCityExtract}
                         PartnerBySubscription: {Namespace=Ict.Petra.Client.MPartner.Gui, Label=Partner by Subscription, ActionClick=TFrmPartnerMain.PartnerBySubscriptionExtract}
                         PartnerBySpecialType: {Namespace=Ict.Petra.Client.MPartner.Gui, Label=Partner by Special Type, ActionClick=TFrmPartnerMain.PartnerBySpecialTypeExtract}
-                        PartnerByConference: {Namespace=Ict.Petra.Client.MPartner.Gui, Label=Partner by Conference, ActionClick=TFrmPartnerMain.PartnerByConferenceExtract}
-                        PartnerByOutreach: {Namespace=Ict.Petra.Client.MPartner.Gui, Label=Partner by Outreach, ActionClick=TFrmPartnerMain.PartnerByOutreachExtract}
-                        PartnerByCommitment: {Namespace=Ict.Petra.Client.MPartner.Gui, Label=Partner by Commitment, ActionClick=TFrmPartnerMain.PartnerByCommitmentExtract}
+                        PartnerByConference: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Conference, ActionClick=TFrmPersonnelMain.PartnerByConferenceExtract}
+                        PartnerByOutreach: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Outreach, ActionClick=TFrmPersonnelMain.PartnerByOutreachExtract}
+                        PartnerByCommitment: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Commitment, ActionClick=TFrmPersonnelMain.PartnerByCommitmentExtract}
                 Reports: {Icon=printer.ico, Namespace=Ict.Petra.Client.MReporting.Gui.MPartner}
                     PartnerReports:
                         PartnerByCity: {ActionOpenScreen=TFrmPartnerByCity}
@@ -236,9 +236,9 @@ OpenPetra:
                     Administration:
                         ExtractMasterList: {Label=Extract Master List, ActionOpenScreen=TFrmExtractMaster}
                     GenerateExtracts: {Label=Generate Extract}
-                        PartnerByConference: {Namespace=Ict.Petra.Client.MPartner.Gui, Label=Partner by Conference, ActionClick=TFrmPartnerMain.PartnerByConferenceExtract}
-                        PartnerByOutreach: {Namespace=Ict.Petra.Client.MPartner.Gui, Label=Partner by Outreach, ActionClick=TFrmPartnerMain.PartnerByOutreachExtrac}
-                        PartnerByCommitment: {Namespace=Ict.Petra.Client.MPartner.Gui, Label=Partner by Commitment, ActionClick=TFrmPartnerMain.PartnerByCommitmentExtract}
+                        PartnerByConference: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Conference, ActionClick=TFrmPersonnelMain.PartnerByConferenceExtract}
+                        PartnerByOutreach: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Outreach, ActionClick=TFrmPersonnelMain.PartnerByOutreachExtract}
+                        PartnerByCommitment: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Commitment, ActionClick=TFrmPersonnelMain.PartnerByCommitmentExtract}
 
                 Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPersonnel}
                     PersonnelReports:
