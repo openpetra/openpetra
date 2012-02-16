@@ -1451,6 +1451,16 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Mailing.Cacheable
             ADataTable = GetCacheableTableInternal(ACacheableTable, "", true, out TmpType);
             #endregion ManualCode
         }
+
+        /// generated method from interface
+        public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableMailingTablesEnum ACacheableTable,
+                                                                      ref TTypedDataTable ASubmitTable,
+                                                                      out TVerificationResultCollection AVerificationResult)
+        {
+            #region ManualCode
+            return FCachePopulator.SaveChangedStandardCacheableTable(ACacheableTable, ref ASubmitTable, out AVerificationResult);
+            #endregion ManualCode                                    
+        }
     }
 }
 

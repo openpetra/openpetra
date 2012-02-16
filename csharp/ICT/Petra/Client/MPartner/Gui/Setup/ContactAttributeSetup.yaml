@@ -1,0 +1,56 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Setup Contact Attributes and Details
+    Namespace: Ict.Petra.Client.MPartner.Gui.Setup
+    DetailTable: PContactAttribute
+    CacheableTable: ContactAttributeList
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data]
+    FormType: edit
+    Template: windowMaintainCacheableTable
+    WindowWidth: 660
+    WindowHeight: 750
+    Actions:
+        actNew: {Label=&New, ActionClick=NewRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}      
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew, btnDelete]
+        btnNew:
+        btnDelete:
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailContactAttributeCode, DetailContactAttributeDescr, DetailActive]
+            CustomColumns:
+                DetailContactAttributeCode: {Label=Attribute Code}
+                DetailContactAttributeDescr: {Label=Description}
+                DetailActive: {Label=Active, Type=Boolean}
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtDetailContactAttributeCode]
+                Row1: [txtDetailContactAttributeDescr]
+                Row2: [chkDetailActive]
+                Row3: [pnlExtraDetails]
+        txtDetailContactAttributeCode: {Label=Attribute Code}
+        txtDetailContactAttributeDescr: {Label=Description, Width=465}
+        chkDetailActive:
+        pnlExtraDetails:
+            Height: 400
+            Margin: 0
+            Padding: 0
+            Controls: [ucContactDetail]
+        ucContactDetail:
+            Type: Ict.Petra.Client.MPartner.Gui.Setup.TUC_ContactAttributeDetail
+            Dock: Fill
+
+    Toolbar:
+        tbbNew: 
+            Label: New Contact Attribute
