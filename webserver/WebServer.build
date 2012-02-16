@@ -178,6 +178,8 @@ list of available commands:
       description="only supports postgresql and mysql server at the moment, not sqlite; would need microsoft xsp">
 
   <if test="${'win32'==platform::get-name()}" >
+    <if test="${directory::exists(MonoBinPath)}">
+      <delete file="${dir.webserver.bin}/Mono.Security.dll"/>
       <exec program="cmd.exe" 
               workingdir="${dir.webserver}"
               commandline="/C start xsp4.bat --verbose --root . --port 8081 --applications /:."
@@ -190,7 +192,49 @@ list of available commands:
           <!-- <variable name="MONO_IOMAP" value="all"/> -->
         </environment>
       </exec>
-      <echo message="in your browser, go to http://localhost:8081/"/>
+    </if>
+    <if test="${not directory::exists(MonoBinPath)}">
+      <!-- copy Mono.Security.dll for pgsql driver -->
+      <copy file="${path::combine(dir.bin, 'Mono.Security.dll')}"
+          tofile="${path::combine(dir.webserver.bin, 'Mono.Security.dll')}"
+          overwrite="false"/>
+
+      <copy file="${path::combine(dir.root, 'setup/tools/SimpleASPHost/SimpleHost.exe')}"
+          tofile="${path::combine(dir.webserver, 'SimpleHost.exe')}" 
+          overwrite="false"/>
+      <!-- SimpleHost.exe.config auch? -->
+
+      <!-- create batch script -->
+<echo file="${dir.delivery}/startWebServer1.bat">@echo OFF
+AT > NUL
+IF %ERRORLEVEL% EQU 0 (
+    "${dir.delivery}/startWebServer2.bat"
+) ELSE (
+    runas /user:administrator "cmd /c call ${dir.delivery}/startWebServer2.bat"
+)
+</echo>
+<echo file="${dir.delivery}/startWebServer2.bat">@echo OFF
+cd &quot;${dir.delivery}\webserver&quot;
+call SimpleHost.exe</echo>
+<echo file="${dir.delivery}/SimpleHost.exe.config">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;configuration>
+    &lt;startup>
+        &lt;supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.0" />
+    &lt;/startup>
+&lt;/configuration>
+</echo>
+
+      <exec program="cmd.exe" 
+              workingdir="${dir.delivery}"
+              spawn="true">
+           <arg value="/c" />
+           <arg value="start" />
+           <arg value="cmd" /> <!-- This window stays open after the process finishes -->
+           <arg value="/k" />
+           <arg value="${dir.delivery}/startWebServer1.bat" />
+      </exec>
+    </if>
+    <echo message="in your browser, go to http://localhost:8081/"/>
   </if>
   <if test="${'unix'==platform::get-name()}" >
       <echo message="in your browser, go to http://localhost:8081/"/>
