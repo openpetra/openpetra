@@ -139,6 +139,7 @@ OpenPetra:
                     Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}
                         DetailReport: {ActionOpenScreen=TFrmAP_AccountDetailReport}
                         AgedSupplierList: {ActionOpenScreen=TFrmAP_AgedSupplierList}
+                        ApPaymentReport: {ActionOpenScreen=TFrmAP_PaymentReport}
                 Budgets: {Namespace=Ict.Petra.Client.MFinance.Gui.Budget}
                     General:
                         MaintainBudget: {ActionOpenScreen=TFrmMaintainBudget}

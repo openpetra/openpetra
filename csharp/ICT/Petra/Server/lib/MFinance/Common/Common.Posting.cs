@@ -241,15 +241,15 @@ namespace Ict.Petra.Server.MFinance.Common
                         TResultSeverity.Resv_Critical));
             }
 
-            // calculate the base currency amounts for each transaction, using the exchange rate from the journals.
-            // calculate the credit and debit totals
+            // Calculate the base currency amounts for each transaction, using the exchange rate from the journals.
+            // Calculate the credit and debit totals
             GLRoutines.UpdateTotalsOfBatch(ref ADataSet, Batch);
 
             if (Convert.ToDecimal(Batch.BatchCreditTotal) != Convert.ToDecimal(Batch.BatchDebitTotal))
             {
                 AVerifications.Add(new TVerificationResult(
                         String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
-                        String.Format(Catalog.GetString("It does not balance: Debit is {0}, Credit is {1}"), Batch.BatchDebitTotal,
+                        String.Format(Catalog.GetString("It does not balance: Debit is {0:n2}, Credit is {1:n2}"), Batch.BatchDebitTotal,
                             Batch.BatchCreditTotal),
                         TResultSeverity.Resv_Critical));
             }
@@ -264,7 +264,7 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 AVerifications.Add(new TVerificationResult(
                         String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
-                        String.Format(Catalog.GetString("The control total {0} does not fit the Credit/Debit Total {1}."), Batch.BatchControlTotal,
+                        String.Format(Catalog.GetString("The control total {0:n2} does not fit the Credit/Debit Total {1:n2}."), Batch.BatchControlTotal,
                             Batch.BatchCreditTotal),
                         TResultSeverity.Resv_Critical));
             }
@@ -302,7 +302,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 {
                     AVerifications.Add(new TVerificationResult(
                             String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
-                            String.Format(Catalog.GetString("The journal {0} does not balance: Debit is {1}, Credit is {2}"), journal.JournalNumber,
+                            String.Format(Catalog.GetString("The journal {0} does not balance: Debit is {1:n2}, Credit is {2:n2}"), journal.JournalNumber,
                                 journal.JournalDebitTotal, journal.JournalCreditTotal),
                             TResultSeverity.Resv_Critical));
                 }

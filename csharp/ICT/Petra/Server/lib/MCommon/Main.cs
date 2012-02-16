@@ -369,22 +369,29 @@ namespace Ict.Petra.Server.MCommon
         {
 //            TDBTransaction ReadTransaction;
 //            Boolean NewTransaction = false;
-            string SQLOrderBy = "";
-            string SQLWhereCriteria = "";
-
-            if (FFindParameters.FPagedTableWhereCriteria != "")
+            if (FFindParameters.FParametersGivenSeparately)
             {
-                SQLWhereCriteria = "WHERE " + FFindParameters.FPagedTableWhereCriteria;
-            }
+                string SQLOrderBy = "";
+                string SQLWhereCriteria = "";
 
-            if (FFindParameters.FPagedTableOrderBy != "")
+                if (FFindParameters.FPagedTableWhereCriteria != "")
+                {
+                    SQLWhereCriteria = "WHERE " + FFindParameters.FPagedTableWhereCriteria;
+                }
+
+                if (FFindParameters.FPagedTableOrderBy != "")
+                {
+                    SQLOrderBy = " ORDER BY " + FFindParameters.FPagedTableOrderBy;
+                }
+
+                FSelectSQL = "SELECT " + FFindParameters.FPagedTableColumns + " FROM " + FFindParameters.FPagedTable +
+                             ' ' +
+                             SQLWhereCriteria + SQLOrderBy;
+            }
+            else
             {
-                SQLOrderBy = " ORDER BY " + FFindParameters.FPagedTableOrderBy;
+                FSelectSQL = FFindParameters.FSqlQuery;
             }
-
-            FSelectSQL = "SELECT " + FFindParameters.FPagedTableColumns + " FROM " + FFindParameters.FPagedTable +
-                         ' ' +
-                         SQLWhereCriteria + SQLOrderBy;
 #if DEBUGMODE
             if (TLogging.DL >= 9)
             {
@@ -695,7 +702,7 @@ namespace Ict.Petra.Server.MCommon
          * Nested Class for passing in of parameters.
          *
          * This is used because the main execution occurs in a Thread, and it's not
-         * straightforward to pass in several typed parameters to a Tread Delegate.
+         * straightforward to pass in several typed parameters to a Thread Delegate.
          *
          */
         public class TAsyncFindParameters : object
@@ -718,21 +725,21 @@ namespace Ict.Petra.Server.MCommon
             /// Array containing the OdbcParameters for the parameterised query
             internal OdbcParameter[] FParametersArray;
 
-            /**
-             * Initialises the fields.
-             *
-             * @param AColumns Columns part of the SQL SELECT statement
-             * @param ATable Table part of the SQL SELECT statement
-             * @param AWhereCriteria WHERE part of the SQL SELECT statement
-             * @param AOrderBy ORDER BY part of the SQL SELECT statement
-             * @param AColumNameMapping HashTable containing a mapping of source column
-             * names to result column names
-             * @param APageSize Number of DataRows in a Page of data
-             * @param AParametersArray Array containing the OdbcParameters for the
-             * parameterised query
-             *
-             */
-            public TAsyncFindParameters(String AColumns,
+            internal bool FParametersGivenSeparately;
+
+            internal String FSqlQuery;
+            
+            /// <summary>
+            /// Initialises the fields.
+            /// </summary>
+            /// <param name="AColumns">Columns part of the SQL SELECT statement</param>
+            /// <param name="ATable">Table part of the SQL SELECT statement</param>
+            /// <param name="AWhereCriteria">WHERE part of the SQL SELECT statement</param>
+            /// <param name="AOrderBy">ORDER BY part of the SQL SELECT statement</param>
+            /// <param name="AColumNameMapping">HashTable containing a mapping of source column names to result column names</param>
+            /// <param name="AParametersArray">Array containing the OdbcParameters for the parameterised query</param>
+            public TAsyncFindParameters(
+                String AColumns,
                 String ATable,
                 String AWhereCriteria,
                 String AOrderBy,
@@ -745,6 +752,18 @@ namespace Ict.Petra.Server.MCommon
                 FPagedTableOrderBy = AOrderBy;
                 FColumNameMapping = AColumNameMapping;
                 FParametersArray = AParametersArray;
+                FParametersGivenSeparately = true;
+            }
+
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="ASqlQuery">Completely formed SqlQuery</param>
+            public TAsyncFindParameters(String ASqlQuery)
+            {
+                FSqlQuery = ASqlQuery;
+                FPagedTable = "Find";
+                FParametersGivenSeparately = false;
             }
         }
         #endregion
