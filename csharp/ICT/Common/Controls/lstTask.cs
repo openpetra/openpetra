@@ -238,7 +238,51 @@ namespace Ict.Common.Controls
 
                 if (method != null)
                 {
-                    method.Invoke(null, new object[] { AParentWindow });
+                    List <object>parameters = new List <object>();
+                    parameters.Add(AParentWindow);
+
+                    // Check the parameters, if we have such an attribute
+                    foreach (ParameterInfo param in method.GetParameters())
+                    {
+                        // ignore the first letter, A, eg. in ALedgerNumber
+                        if (TYml2Xml.HasAttributeRecursive(node, param.Name.Substring(1)))
+                        {
+                            Object obj = TYml2Xml.GetAttributeRecursive(node, param.Name.Substring(1));
+
+                            if (param.ParameterType == typeof(Int32))
+                            {
+                                obj = Convert.ToInt32(obj);
+                            }
+                            else if (param.ParameterType == typeof(Int64))
+                            {
+                                obj = Convert.ToInt64(obj);
+                            }
+                            else if (param.ParameterType == typeof(bool))
+                            {
+                                obj = Convert.ToBoolean(obj);
+                            }
+                            else if (param.ParameterType == typeof(string))
+                            {
+                                // leave it as string
+                            }
+                            else if (param.ParameterType.IsEnum)
+                            {
+                                obj = Enum.Parse(param.ParameterType, obj.ToString(), true);
+                            }
+                            else
+                            {
+                                // to avoid that Icon is set etc, clear obj
+                                obj = null;
+                            }
+
+                            if (obj != null)
+                            {
+                                parameters.Add(obj);
+                            }
+                        }
+                    }
+
+                    method.Invoke(null, parameters.ToArray());
                 }
                 else
                 {
