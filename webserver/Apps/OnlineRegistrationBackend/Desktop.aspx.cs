@@ -1563,30 +1563,34 @@ namespace Ict.Petra.WebServer.MConference
             {
                 //string test = "[{\"ID\":1,\"When\":\"2011-07-21T16:55:04\",\"What\":\"\",\"Consequence\":\"TBD\"}]";
 
-                Jayrock.Json.JsonArray list = (Jayrock.Json.JsonArray)Jayrock.Json.Conversion.JsonConvert.Import(AData);
+                Object obj = Jayrock.Json.Conversion.JsonConvert.Import(AData);
 
-                foreach (Jayrock.Json.JsonObject element in list)
-                {
-                    string time = string.Empty;
-
-                    try
+                if (obj is Jayrock.Json.JsonArray)
+                { 
+                    Jayrock.Json.JsonArray list = (Jayrock.Json.JsonArray) obj;
+                    foreach (Jayrock.Json.JsonObject element in list)
                     {
-                        time = element["Time"].ToString();
-                    }
-                    catch (Exception)
-                    {
-                    }
+                        string time = string.Empty;
 
-                    if (Convert.ToInt32(element["ID"]) >= NewRebukeId)
-                    {
-                        NewRebukeId = Convert.ToInt32(element["ID"]) + 1;
-                    }
+                        try
+                        {
+                            time = element["Time"].ToString();
+                        }
+                        catch (Exception)
+                        {
+                        }
 
-                    store.Add(new TRebuke(Convert.ToInt32(element["ID"]),
-                            Convert.ToDateTime(element["When"]),
-                            time,
-                            element["What"].ToString(),
-                            element["Consequence"].ToString()));
+                        if (Convert.ToInt32(element["ID"]) >= NewRebukeId)
+                        {
+                            NewRebukeId = Convert.ToInt32(element["ID"]) + 1;
+                        }
+
+                        store.Add(new TRebuke(Convert.ToInt32(element["ID"]),
+                                Convert.ToDateTime(element["When"]),
+                                time,
+                                element["What"].ToString(),
+                                element["Consequence"].ToString()));
+                    }
                 }
             }
 
