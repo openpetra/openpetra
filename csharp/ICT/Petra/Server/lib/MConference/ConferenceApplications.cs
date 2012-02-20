@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -937,10 +937,11 @@ namespace Ict.Petra.Server.MConference.Applications
                         // data has been loaded above already.
                         DataView DuplicateView = new DataView(AMainDS.PmGeneralApplication);
 
+                        // TODO problems with single quotes in rawData: this is not the best solution, because it will not find matches, but at least it will save.
                         DuplicateView.RowFilter =
                             String.Format("{0} = '{1}' AND {2} = 'H'",
                                 PmGeneralApplicationTable.GetRawApplicationDataDBName(),
-                                AChangedRow.JSONData,
+                                AChangedRow.JSONData.Replace("'", "&apos;"),
                                 PmGeneralApplicationTable.GetGenApplicationStatusDBName());
 
                         foreach (DataRowView rv in DuplicateView)
