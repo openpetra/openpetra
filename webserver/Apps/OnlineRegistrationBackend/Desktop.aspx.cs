@@ -698,124 +698,135 @@ namespace Ict.Petra.WebServer.MConference
             {
             }
 
-            if (UserInfo.GUserInfo.IsInModule("MEDICAL"))
+            try
             {
-                row.MedicalNotes = GetMedicalLogsFromScreen(values);
+                if (UserInfo.GUserInfo.IsInModule("MEDICAL"))
+                {
+                    row.MedicalNotes = GetMedicalLogsFromScreen(values);
+                }
+                else
+                {
+                    string RawData = TApplicationManagement.GetRawApplicationData(row.PartnerKey, row.ApplicationKey, row.RegistrationOffice);
+                    Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(RawData);
+
+                    if (!rawDataObject.Contains("RegistrationCountryCode"))
+                    {
+                        // some of the late registrations do not have a country code
+                        rawDataObject.Put("RegistrationCountryCode", "en-GB");
+                    }
+
+                    CultureInfo OrigCulture = Catalog.SetCulture(rawDataObject["RegistrationCountryCode"].ToString());
+
+                    row.FamilyName = values["FamilyName"];
+                    row.FirstName = values["FirstName"];
+                    row.Gender = values["Gender"];
+
+                    if (values["DateOfBirth"].Length == 0)
+                    {
+                        row.DateOfBirth = new Nullable <DateTime>();
+                    }
+                    else
+                    {
+                        // avoid problems with different formatting of dates, could cause parsing errors later, into the typed class
+                        // Problem: Mär und Mrz. caused by javascript, ext.js?
+                        values["DateOfBirth"] = values["DateOfBirth"].ToString().Replace("Mär", "Mrz");
+                        values["DateOfBirth"] = Convert.ToDateTime(values["DateOfBirth"]).ToShortDateString();
+                        row.DateOfBirth = Convert.ToDateTime(values["DateOfBirth"]);
+                    }
+
+                    if (values["DateOfArrival"].Length == 0)
+                    {
+                        row.SetDateOfArrivalNull();
+                    }
+                    else
+                    {
+                        values["DateOfArrival"] = Convert.ToDateTime(values["DateOfArrival"]).ToShortDateString();
+                        row.DateOfArrival = Convert.ToDateTime(values["DateOfArrival"]);
+                    }
+
+                    if (values["DateOfDeparture"].Length == 0)
+                    {
+                        row.SetDateOfDepartureNull();
+                    }
+                    else
+                    {
+                        values["DateOfDeparture"] = Convert.ToDateTime(values["DateOfDeparture"]).ToShortDateString();
+                        row.DateOfDeparture = Convert.ToDateTime(values["DateOfDeparture"]);
+                    }
+
+                    row.GenAppDate = Convert.ToDateTime(values["GenAppDate"]);
+                    row.StCongressCode = values["StCongressCode_Value"];
+                    row.GenApplicationStatus = values["GenApplicationStatus_Value"];
+                    row.StFgLeader = values.ContainsKey("StFgLeader");
+                    row.StFgCode = values.ContainsKey("StFgCode") ? values["StFgCode"] : string.Empty;
+
+                    if (values.ContainsKey("StFieldCharged_Value"))
+                    {
+                        row.StFieldCharged = Convert.ToInt64(values["StFieldCharged_Value"]);
+                    }
+
+                    row.Comment = values["Comment"];
+
+                    row.RebukeNotes = RebukeValues;
+
+                    bool SecondSibling = false;
+                    bool CancelledByFinanceOffice = false;
+
+                    foreach (string key in values.Keys)
+                    {
+                        // TODO: typecast dates?
+                        object value = values[key];
+
+                        if (rawDataObject.Contains(key))
+                        {
+                            rawDataObject[key] = value;
+                        }
+                        else if (key.EndsWith("_ActiveTab")
+                                 || key.EndsWith("_SelIndex")
+                                 || key.EndsWith("_Value"))
+                        {
+                            // do not add all values, eg. _Value or _SelIndex for comboboxes or _ActiveTab, cause trouble otherwise
+                        }
+                        else if (key == "JobAssigned")
+                        {
+                            rawDataObject.Put(key, value);
+                        }
+                        else if (key == "SecondSibling")
+                        {
+                            SecondSibling = true;
+                            rawDataObject.Put(key, true);
+                        }
+                        else if (key == "CancelledByFinanceOffice")
+                        {
+                            CancelledByFinanceOffice = true;
+                            rawDataObject.Put(key, true);
+                        }
+                    }
+
+                    if (!SecondSibling)
+                    {
+                        rawDataObject.Put("SecondSibling", false);
+                    }
+
+                    if (!CancelledByFinanceOffice)
+                    {
+                        rawDataObject.Put("CancelledByFinanceOffice", false);
+                    }
+
+                    rawDataObject["Role"] = values["StCongressCode_Value"];
+                    rawDataObject["SecondSibling"] = values.ContainsKey("SecondSibling");
+                    rawDataObject["CancelledByFinanceOffice"] = values.ContainsKey("CancelledByFinanceOffice");
+
+                    row.JSONData = TJsonTools.ToJsonString(rawDataObject);
+
+                    Catalog.SetCulture(OrigCulture);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                string RawData = TApplicationManagement.GetRawApplicationData(row.PartnerKey, row.ApplicationKey, row.RegistrationOffice);
-                Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(RawData);
-
-                if (!rawDataObject.Contains("RegistrationCountryCode"))
-                {
-                    // some of the late registrations do not have a country code
-                    rawDataObject.Put("RegistrationCountryCode", "en-GB");
-                }
-
-                CultureInfo OrigCulture = Catalog.SetCulture(rawDataObject["RegistrationCountryCode"].ToString());
-
-                row.FamilyName = values["FamilyName"];
-                row.FirstName = values["FirstName"];
-                row.Gender = values["Gender"];
-
-                if (values["DateOfBirth"].Length == 0)
-                {
-                    row.DateOfBirth = new Nullable <DateTime>();
-                }
-                else
-                {
-                    // avoid problems with different formatting of dates, could cause parsing errors later, into the typed class
-                    values["DateOfBirth"] = Convert.ToDateTime(values["DateOfBirth"]).ToShortDateString();
-                    row.DateOfBirth = Convert.ToDateTime(values["DateOfBirth"]);
-                }
-
-                if (values["DateOfArrival"].Length == 0)
-                {
-                    row.SetDateOfArrivalNull();
-                }
-                else
-                {
-                    values["DateOfArrival"] = Convert.ToDateTime(values["DateOfArrival"]).ToShortDateString();
-                    row.DateOfArrival = Convert.ToDateTime(values["DateOfArrival"]);
-                }
-
-                if (values["DateOfDeparture"].Length == 0)
-                {
-                    row.SetDateOfDepartureNull();
-                }
-                else
-                {
-                    values["DateOfDeparture"] = Convert.ToDateTime(values["DateOfDeparture"]).ToShortDateString();
-                    row.DateOfDeparture = Convert.ToDateTime(values["DateOfDeparture"]);
-                }
-
-                row.GenAppDate = Convert.ToDateTime(values["GenAppDate"]);
-                row.StCongressCode = values["StCongressCode_Value"];
-                row.GenApplicationStatus = values["GenApplicationStatus_Value"];
-                row.StFgLeader = values.ContainsKey("StFgLeader");
-                row.StFgCode = values.ContainsKey("StFgCode") ? values["StFgCode"] : string.Empty;
-
-                if (values.ContainsKey("StFieldCharged_Value"))
-                {
-                    row.StFieldCharged = Convert.ToInt64(values["StFieldCharged_Value"]);
-                }
-
-                row.Comment = values["Comment"];
-
-                row.RebukeNotes = RebukeValues;
-
-                bool SecondSibling = false;
-                bool CancelledByFinanceOffice = false;
-
-                foreach (string key in values.Keys)
-                {
-                    // TODO: typecast dates?
-                    object value = values[key];
-
-                    if (rawDataObject.Contains(key))
-                    {
-                        rawDataObject[key] = value;
-                    }
-                    else if (key.EndsWith("_ActiveTab")
-                             || key.EndsWith("_SelIndex")
-                             || key.EndsWith("_Value"))
-                    {
-                        // do not add all values, eg. _Value or _SelIndex for comboboxes or _ActiveTab, cause trouble otherwise
-                    }
-                    else if (key == "JobAssigned")
-                    {
-                        rawDataObject.Put(key, value);
-                    }
-                    else if (key == "SecondSibling")
-                    {
-                        SecondSibling = true;
-                        rawDataObject.Put(key, true);
-                    }
-                    else if (key == "CancelledByFinanceOffice")
-                    {
-                        CancelledByFinanceOffice = true;
-                        rawDataObject.Put(key, true);
-                    }
-                }
-
-                if (!SecondSibling)
-                {
-                    rawDataObject.Put("SecondSibling", false);
-                }
-
-                if (!CancelledByFinanceOffice)
-                {
-                    rawDataObject.Put("CancelledByFinanceOffice", false);
-                }
-
-                rawDataObject["Role"] = values["StCongressCode_Value"];
-                rawDataObject["SecondSibling"] = values.ContainsKey("SecondSibling");
-                rawDataObject["CancelledByFinanceOffice"] = values.ContainsKey("CancelledByFinanceOffice");
-
-                row.JSONData = TJsonTools.ToJsonString(rawDataObject);
-
-                Catalog.SetCulture(OrigCulture);
+                TLogging.Log(ex.ToString());
+                X.Msg.Alert("Error", "Saving did not work").Show();
+                return;
             }
 
             if (TApplicationManagement.SaveApplication(EventCode, row) != TSubmitChangesResult.scrOK)
