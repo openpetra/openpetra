@@ -176,9 +176,8 @@ list of available commands:
 
 <target name="startWebServer" depends="prepareWebServer"
       description="only supports postgresql and mysql server at the moment, not sqlite; would need microsoft xsp">
-
   <if test="${'win32'==platform::get-name()}" >
-    <if test="${directory::exists(MonoBinPath)}">
+    <if test="${file::exists(MonoBinPath+'/xsp4.bat')}">
       <delete file="${dir.webserver.bin}/Mono.Security.dll"/>
       <exec program="cmd.exe" 
               workingdir="${dir.webserver}"
@@ -193,7 +192,7 @@ list of available commands:
         </environment>
       </exec>
     </if>
-    <if test="${not directory::exists(MonoBinPath)}">
+    <if test="${not file::exists(MonoBinPath+'/xsp4.bat')}">
       <!-- copy Mono.Security.dll for pgsql driver -->
       <copy file="${path::combine(dir.bin, 'Mono.Security.dll')}"
           tofile="${path::combine(dir.webserver.bin, 'Mono.Security.dll')}"
@@ -212,6 +211,7 @@ IF %ERRORLEVEL% EQU 0 (
 ) ELSE (
     runas /user:administrator "cmd /c call ${dir.delivery}/startWebServer2.bat"
 )
+exit
 </echo>
 <echo file="${dir.delivery}/startWebServer2.bat">@echo OFF
 cd &quot;${dir.delivery}\webserver&quot;
