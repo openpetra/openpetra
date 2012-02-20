@@ -82,5 +82,15 @@
             </Buttons>
         </ext:Window>
     </form>
+    <ext:KeyMap runat="server" Target="={#{Window1}.getBody()}">
+        <ext:KeyBinding>
+            <Keys>
+                <ext:Key Code="ENTER" />
+            </Keys>
+            <Listeners>
+                <Event Handler="e.stopEvent();#{Button1}.fireEvent('click');" />
+            </Listeners>
+        </ext:KeyBinding>
+     </ext:KeyMap>
 </body>
 </html>
