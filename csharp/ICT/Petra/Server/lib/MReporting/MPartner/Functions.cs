@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -36,6 +36,7 @@ using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Cacheable;
 using Ict.Petra.Server.MReporting;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -474,26 +475,17 @@ namespace Ict.Petra.Server.MReporting.MPartner
         /// <returns>void</returns>
         private bool GetPartnerBestAddress(Int64 APartnerKey)
         {
-            bool ReturnValue;
-            DataSet PartnerLocationsDS;
-            DataTable PartnerLocationTable;
-            PLocationTable LocationTable;
-            PFamilyTable FamilyTable;
-            PPersonTable PersonTable;
-            PPartnerTable PartnerTable;
-            StringCollection NameColumnNames;
-
-            ReturnValue = false;
+            bool ReturnValue = false;
 
             // reset the variables
-            LocationTable = new PLocationTable();
+            PLocationTable LocationTable = new PLocationTable();
 
             foreach (DataColumn col in LocationTable.Columns)
             {
                 situation.GetParameters().RemoveVariable(StringHelper.UpperCamelCase(col.ColumnName, true, true));
             }
 
-            PartnerLocationTable = new PPartnerLocationTable();
+            DataTable PartnerLocationTable = new PPartnerLocationTable();
 
             foreach (DataColumn col in PartnerLocationTable.Columns)
             {
@@ -506,7 +498,17 @@ namespace Ict.Petra.Server.MReporting.MPartner
 
             situation.GetParameters().RemoveVariable("FirstName");
             situation.GetParameters().RemoveVariable("FamilyName");
-            PartnerLocationsDS = new DataSet();
+
+            StringCollection NameColumnNames = new StringCollection();
+            NameColumnNames.Add(PPartnerTable.GetPartnerShortNameDBName());
+            PPartnerTable PartnerTable = PPartnerAccess.LoadByPrimaryKey(APartnerKey, NameColumnNames,
+                situation.GetDatabaseConnection().Transaction);
+            string PartnerShortName = PartnerTable.Rows[0][PPartnerTable.GetPartnerShortNameDBName()].ToString();
+
+            situation.GetParameters().Add("NameWithTitle",
+                Ict.Petra.Shared.MPartner.Calculations.FormatShortName(PartnerShortName, eShortNameFormat.eReverseShortname));
+
+            DataSet PartnerLocationsDS = new DataSet();
             PartnerLocationsDS.Tables.Add(new PPartnerLocationTable());
             PartnerLocationTable = PartnerLocationsDS.Tables[PPartnerLocationTable.GetTableName()];
 
@@ -551,7 +553,8 @@ namespace Ict.Petra.Server.MReporting.MPartner
                         NameColumnNames = new StringCollection();
                         NameColumnNames.Add(PPersonTable.GetFirstNameDBName());
                         NameColumnNames.Add(PPersonTable.GetFamilyNameDBName());
-                        PersonTable = PPersonAccess.LoadByPrimaryKey(APartnerKey, NameColumnNames, situation.GetDatabaseConnection().Transaction);
+                        PPersonTable PersonTable = PPersonAccess.LoadByPrimaryKey(APartnerKey, NameColumnNames,
+                            situation.GetDatabaseConnection().Transaction);
 
                         if (PersonTable.Rows.Count > 0)
                         {
@@ -564,7 +567,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
                             NameColumnNames = new StringCollection();
                             NameColumnNames.Add(PFamilyTable.GetFirstNameDBName());
                             NameColumnNames.Add(PFamilyTable.GetFamilyNameDBName());
-                            FamilyTable = PFamilyAccess.LoadByPrimaryKey(APartnerKey, NameColumnNames,
+                            PFamilyTable FamilyTable = PFamilyAccess.LoadByPrimaryKey(APartnerKey, NameColumnNames,
                                 situation.GetDatabaseConnection().Transaction);
 
                             if (FamilyTable.Rows.Count > 0)
@@ -577,15 +580,11 @@ namespace Ict.Petra.Server.MReporting.MPartner
                                 // it was an organisation or church, just use the shortname
                                 situation.GetParameters().RemoveVariable("FirstName");
                                 situation.GetParameters().RemoveVariable("FamilyName");
-                                NameColumnNames = new StringCollection();
-                                NameColumnNames.Add(PPartnerTable.GetPartnerShortNameDBName());
-                                PartnerTable = PPartnerAccess.LoadByPrimaryKey(APartnerKey, NameColumnNames,
-                                    situation.GetDatabaseConnection().Transaction);
 
                                 if (PartnerTable.Rows.Count > 0)
                                 {
                                     situation.GetParameters().Add("FamilyName",
-                                        new TVariant(PartnerTable.Rows[0][PPartnerTable.GetPartnerShortNameDBName()]));
+                                        new TVariant(PartnerShortName));
                                 }
                             }
                         }

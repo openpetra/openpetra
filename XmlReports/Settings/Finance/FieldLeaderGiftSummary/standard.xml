@@ -1,28 +1,28 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="systemsettings" value="True" />
-  <Parameter id="xmlfiles" value="Finance\\fieldleadergiftsummary.xml,Finance\\finance.xml,common.xml" />
-  <Parameter id="currentReport" value="FieldLeaderGiftSummary" />
-  <Parameter id="MaxDisplayColumns" value="5" />
-  <Parameter id="param_currency" value="Base" />
-  <Parameter id="param_txtYears" value="4" />
-  <Parameter id="param_calculation" column="0" value="Partner Key" />
-  <Parameter id="ColumnWidth" column="0" value="2" />
-  <Parameter id="param_ytd" column="0" value="false" />
-  <Parameter id="param_calculation" column="1" value="Partner Name" />
-  <Parameter id="ColumnWidth" column="1" value="3.5" />
-  <Parameter id="param_ytd" column="1" value="false" />
-  <Parameter id="param_calculation" column="2" value="Motivation Detail" />
-  <Parameter id="ColumnWidth" column="2" value="3.5" />
-  <Parameter id="param_ytd" column="2" value="false" />
-  <Parameter id="param_calculation" column="3" value="Motivation Group" />
-  <Parameter id="ColumnWidth" column="3" value="3.5" />
-  <Parameter id="param_ytd" column="3" value="false" />
-  <Parameter id="param_calculation" column="4" value="Gift Amount" />
-  <Parameter id="ColumnWidth" column="4" value="2" />
-  <Parameter id="param_ytd" column="4" value="false" />
-  <Parameter id="param_clbFields" value="" />
-  <Parameter id="param_field_selection" value="selected_fields" />
-  <Parameter id="param_currency_format" value="CurrencyComplete" />
-  <Parameter id="param_gift_amount_column" value="4" />
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:Finance\\fieldleadergiftsummary.xml,Finance\\finance.xml,common.xml" />
+  <Parameter id="currentReport" value="eString:FieldLeaderGiftSummary" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:5" />
+  <Parameter id="param_currency" value="eString:Base" />
+  <Parameter id="param_txtYears" value="eInteger:4" />
+  <Parameter id="param_calculation" column="0" value="eString:Partner Key" />
+  <Parameter id="ColumnWidth" column="0" value="eInteger:2" />
+  <Parameter id="param_ytd" column="0" value="eString:false" />
+  <Parameter id="param_calculation" column="1" value="eString:Partner Name" />
+  <Parameter id="ColumnWidth" column="1" value="eDecimal:4615063718147915776" />
+  <Parameter id="param_ytd" column="1" value="eString:false" />
+  <Parameter id="param_calculation" column="2" value="eString:Motivation Detail" />
+  <Parameter id="ColumnWidth" column="2" value="eDecimal:4615063718147915776" />
+  <Parameter id="param_ytd" column="2" value="eString:false" />
+  <Parameter id="param_calculation" column="3" value="eString:Motivation Group" />
+  <Parameter id="ColumnWidth" column="3" value="eDecimal:4615063718147915776" />
+  <Parameter id="param_ytd" column="3" value="eString:false" />
+  <Parameter id="param_calculation" column="4" value="eString:Gift Amount" />
+  <Parameter id="ColumnWidth" column="4" value="eInteger:2" />
+  <Parameter id="param_ytd" column="4" value="eString:false" />
+  <Parameter id="param_clbFields" value="eString:" />
+  <Parameter id="param_field_selection" value="eString:selected_fields" />
+  <Parameter id="param_currency_format" value="eString:CurrencyComplete" />
+  <Parameter id="param_gift_amount_column" value="eInteger:4" />
 </Parameters>

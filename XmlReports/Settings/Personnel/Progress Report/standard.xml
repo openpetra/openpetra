@@ -1,29 +1,29 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="systemsettings" value="True" />
-  <Parameter id="xmlfiles" value="Personnel\\progressreport.xml,Personnel\\personnel.xml" />
-  <Parameter id="currentReport" value="Progress Report" />
-  <Parameter id="MaxDisplayColumns" value="7" />
-  <Parameter id="param_selection" value="one partner" />
-  <Parameter id="param_extract" value="" />
-  <Parameter id="param_partnerkey" value="0" />
-  <Parameter id="orderby0" value="Partner Name" />
-  <Parameter id="orderby1" value="Partner Key" />
-  <Parameter id="orderby2" value="Report Date" />
-  <Parameter id="param_sortby_readable" value="Partner Name, Partner Key, Report Date" />
-  <Parameter id="param_sortby_columns" value="0,1,2" />
-  <Parameter id="param_calculation" column="0" value="Partner Name" />
-  <Parameter id="ColumnWidth" column="0" value="4" />
-  <Parameter id="param_calculation" column="1" value="Partner Key" />
-  <Parameter id="ColumnWidth" column="1" value="3" />
-  <Parameter id="param_calculation" column="2" value="Report Date" />
-  <Parameter id="ColumnWidth" column="2" value="3" />
-  <Parameter id="param_calculation" column="3" value="Report Type" />
-  <Parameter id="ColumnWidth" column="3" value="3" />
-  <Parameter id="param_calculation" column="4" value="Reporter" />
-  <Parameter id="ColumnWidth" column="4" value="4" />
-  <Parameter id="param_calculation" column="5" value="Next Report Date" />
-  <Parameter id="ColumnWidth" column="5" value="3" />
-  <Parameter id="param_calculation" column="6" value="Report Comment" />
-  <Parameter id="ColumnWidth" column="6" value="8" />
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:Personnel\\progressreport.xml,Personnel\\personnel.xml" />
+  <Parameter id="currentReport" value="eString:Progress Report" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:7" />
+  <Parameter id="param_selection" value="eString:one partner" />
+  <Parameter id="param_extract" value="eString:" />
+  <Parameter id="param_partnerkey" value="eInteger:0" />
+  <Parameter id="orderby0" value="eString:Partner Name" />
+  <Parameter id="orderby1" value="eString:Partner Key" />
+  <Parameter id="orderby2" value="eString:Report Date" />
+  <Parameter id="param_sortby_readable" value="eString:Partner Name, Partner Key, Report Date" />
+  <Parameter id="param_sortby_columns" value="eString:0,1,2" />
+  <Parameter id="param_calculation" column="0" value="eString:Partner Name" />
+  <Parameter id="ColumnWidth" column="0" value="eInteger:4" />
+  <Parameter id="param_calculation" column="1" value="eString:Partner Key" />
+  <Parameter id="ColumnWidth" column="1" value="eInteger:3" />
+  <Parameter id="param_calculation" column="2" value="eString:Report Date" />
+  <Parameter id="ColumnWidth" column="2" value="eInteger:3" />
+  <Parameter id="param_calculation" column="3" value="eString:Report Type" />
+  <Parameter id="ColumnWidth" column="3" value="eInteger:3" />
+  <Parameter id="param_calculation" column="4" value="eString:Reporter" />
+  <Parameter id="ColumnWidth" column="4" value="eInteger:4" />
+  <Parameter id="param_calculation" column="5" value="eString:Next Report Date" />
+  <Parameter id="ColumnWidth" column="5" value="eInteger:3" />
+  <Parameter id="param_calculation" column="6" value="eString:Report Comment" />
+  <Parameter id="ColumnWidth" column="6" value="eInteger:8" />
 </Parameters>

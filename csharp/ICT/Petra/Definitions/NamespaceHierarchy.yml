@@ -2,6 +2,7 @@ NamespaceHierarchy:
     Common: {Description=Common Module}
         Cacheable: {Description=Cacheable DataTables}
         UIConnectors: {Description = User Interface Connectors}
+        WebConnectors: {Description = Web Connectors}
         DataReader: {Description="Simple Data Connector for reading data; checks for permissions; returns typed tables"}
     Partner: {Description=Partner Module}
         Extracts: {Description=Extracts Sub-System}
@@ -38,8 +39,9 @@ NamespaceHierarchy:
                     UIConnectors: {Description=User Interface Connectors}
                 Cacheable: {Description=Cacheable DataTables}
                 UIConnectors: {Description=User Interface Connectors}
+                WebConnectors: {Description=Web Connectors}
             Shepherds: {Description=Shepherds Sub-System}
-                UIConnectors: {Description=User Interface Connectors}
+                UIConnectors: {Description=User Interface Connectors}            
         TableMaintenance: {Description=Table Maintenance Sub-System}
             UIConnectors: {Description=User Interface Connectors}
         Units: {Description=Units Sub-System}
@@ -54,6 +56,7 @@ NamespaceHierarchy:
             WebConnectors: {Description="Connectors for Web Services (stateless, simple)"}
         Budget: {Description=Budget Sub-System}
             UIConnectors: {Description=User Interface Connectors}
+            WebConnectors: {Description="Connectors for Web Services (stateless, simple)"}
         Cacheable: {Description=Cacheable DataTables}
         ImportExport: {Description=ImportExport Sub-System}
             WebConnectors: {Description="Connectors for Web Services (stateless, simple)"}

@@ -51,13 +51,13 @@ RootNode:
             Label: Report Range
             Controls: [cmbContactor, cmbContact, dtpDateFrom, dtpDateTo]
         cmbContactor:
-            Label: Contactor:
+            Label: Contactor
         cmbContact:
             Label: Contact
         dtpDateFrom:
-            Label: Date From:
+            Label: Date From
         dtpDateTo:
-            Label: Date To:
+            Label: Date To
             
         pnlDummy:
         

@@ -25,93 +25,93 @@ using System;
 using System.IO;
 using Ict.Common;
 
-namespace ConvertExtToCSV
+namespace Ict.Tools.ConvertExtToCSV
 {
-class Program
-{
-    public static void Main(string[] args)
+    class Program
     {
-        new TAppSettingsManager(false);
-
-        try
+        public static void Main(string[] args)
         {
-            string filename = TAppSettingsManager.GetValue("extfile");
-            string newCSVFilename = Path.GetDirectoryName(filename) +
-                                    Path.DirectorySeparatorChar +
-                                    Path.GetFileNameWithoutExtension(filename) +
-                                    ".csv";
+            new TAppSettingsManager(false);
 
-            StreamReader sr = new StreamReader(filename);
-            StreamWriter sw = new StreamWriter(newCSVFilename);
-
-            string newCSVLine = String.Empty;
-            bool recordData = false;
-            bool cleanFileEnd = false;
-
-            while (!sr.EndOfStream)
+            try
             {
-                string line = sr.ReadLine();
+                string filename = TAppSettingsManager.GetValue("extfile");
+                string newCSVFilename = Path.GetDirectoryName(filename) +
+                                        Path.DirectorySeparatorChar +
+                                        Path.GetFileNameWithoutExtension(filename) +
+                                        ".csv";
 
-                if (line.StartsWith("\"APPL-FORM\""))
-                {
-                    recordData = false;
-                }
+                StreamReader sr = new StreamReader(filename);
+                StreamWriter sw = new StreamWriter(newCSVFilename);
 
-                if (line.Trim() == "\"END\"")
-                {
-                    sw.WriteLine(newCSVLine);
-                    newCSVLine = string.Empty;
-                    recordData = false;
-                }
+                string newCSVLine = String.Empty;
+                bool recordData = false;
+                bool cleanFileEnd = false;
 
-                if (recordData)
+                while (!sr.EndOfStream)
                 {
-                    while (line.Length > 0)
+                    string line = sr.ReadLine();
+
+                    if (line.StartsWith("\"APPL-FORM\""))
                     {
-                        try
+                        recordData = false;
+                    }
+
+                    if (line.Trim() == "\"END\"")
+                    {
+                        sw.WriteLine(newCSVLine);
+                        newCSVLine = string.Empty;
+                        recordData = false;
+                    }
+
+                    if (recordData)
+                    {
+                        while (line.Length > 0)
                         {
-                            newCSVLine = StringHelper.AddCSV(newCSVLine, StringHelper.GetNextCSV(ref line, "  "));
+                            try
+                            {
+                                newCSVLine = StringHelper.AddCSV(newCSVLine, StringHelper.GetNextCSV(ref line, "  "));
+                            }
+                            catch (ArgumentOutOfRangeException)
+                            {
+                                // we have the case that a string contains new line characters, so the ending quote cannot be found in the current line
+                                line += " " + sr.ReadLine();
+                            }
                         }
-                        catch (ArgumentOutOfRangeException)
-                        {
-                            // we have the case that a string contains new line characters, so the ending quote cannot be found in the current line
-                            line += " " + sr.ReadLine();
-                        }
+                    }
+
+                    if (line.Trim() == "\"PARTNER\"")
+                    {
+                        recordData = true;
+                    }
+
+                    if (line.Trim() == "\"END\"  \"FORMS\"")
+                    {
+                        recordData = true;
+                    }
+
+                    if (line.Trim() == "0  \"FINISH\"")
+                    {
+                        cleanFileEnd = true;
                     }
                 }
 
-                if (line.Trim() == "\"PARTNER\"")
+                if (!cleanFileEnd)
                 {
-                    recordData = true;
+                    Console.WriteLine("Your file " + filename + " is broken, it does not have the correct finish line. Please export again");
                 }
 
-                if (line.Trim() == "\"END\"  \"FORMS\"")
-                {
-                    recordData = true;
-                }
+                Console.WriteLine("File " + newCSVFilename + " has been written.");
 
-                if (line.Trim() == "0  \"FINISH\"")
-                {
-                    cleanFileEnd = true;
-                }
+                sw.Close();
+                sr.Close();
             }
-
-            if (!cleanFileEnd)
+            catch (Exception e)
             {
-                Console.WriteLine("Your file " + filename + " is broken, it does not have the correct finish line. Please export again");
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
+                Environment.Exit(-1);
             }
-
-            Console.WriteLine("File " + newCSVFilename + " has been written.");
-
-            sw.Close();
-            sr.Close();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-            Console.WriteLine(e.StackTrace);
-            Environment.Exit(-1);
         }
     }
-}
 }

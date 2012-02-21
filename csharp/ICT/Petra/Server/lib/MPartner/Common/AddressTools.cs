@@ -31,6 +31,7 @@ using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Data;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MCommon.Data;
@@ -41,9 +42,9 @@ using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.MSysMan.Data.Access;
-using Ict.Petra.Server.App.ClientDomain;
+using Ict.Petra.Server.App.Core;
 
-namespace Ict.Petra.Server.MPartner
+namespace Ict.Petra.Server.MPartner.Common
 {
     ///<summary>
     /// useful functions for the address of a partner
@@ -53,12 +54,14 @@ namespace Ict.Petra.Server.MPartner
         /// find the current best address for the partner
         public static bool GetBestAddress(Int64 APartnerKey,
             out PLocationTable AAddress,
+            out PPartnerLocationTable APartnerLocation,
             out string ACountryNameLocal,
             out string AEmailAddress,
             TDBTransaction ATransaction)
         {
             AEmailAddress = "";
             AAddress = null;
+            APartnerLocation = null;
             ACountryNameLocal = "";
 
             DataSet PartnerLocationsDS = new DataSet();
@@ -92,6 +95,9 @@ namespace Ict.Petra.Server.MPartner
                     // we also want the post address, need to load the p_location table:
                     AAddress = PLocationAccess.LoadByPrimaryKey(row.SiteKey, row.LocationKey, ATransaction);
 
+                    APartnerLocation = new PPartnerLocationTable();
+                    APartnerLocation.ImportRow(row);
+
                     if (CountryTable.DefaultView.Find(AAddress[0].CountryCode) == -1)
                     {
                         CountryTable.Merge(PCountryAccess.LoadByPrimaryKey(AAddress[0].CountryCode, ATransaction));
@@ -111,6 +117,7 @@ namespace Ict.Petra.Server.MPartner
         public static BestAddressTDSLocationTable AddPostalAddress(DataTable APartnerTable,
             DataColumn APartnerKeyColumn,
             bool AIgnoreForeignAddresses,
+            bool AIgnoreNoSolicitationPartners,
             TDBTransaction ATransaction)
         {
             BestAddressTDSLocationTable ResultTable = new BestAddressTDSLocationTable();
@@ -122,10 +129,33 @@ namespace Ict.Petra.Server.MPartner
                 if (partnerRow[APartnerKeyColumn] != DBNull.Value)
                 {
                     PLocationTable Address;
+                    PPartnerLocationTable PartnerLocation;
                     string CountryNameLocal;
                     string EmailAddress;
                     Int64 PartnerKey = Convert.ToInt64(partnerRow[APartnerKeyColumn]);
-                    GetBestAddress(PartnerKey, out Address, out CountryNameLocal, out EmailAddress, ATransaction);
+
+                    if (AIgnoreNoSolicitationPartners)
+                    {
+                        // try if the NoSolicitation column is already part of the dataset
+                        if (APartnerTable.Columns.Contains(PPartnerTable.GetNoSolicitationsDBName()))
+                        {
+                            if (Convert.ToBoolean(partnerRow[APartnerTable.Columns.IndexOf(PPartnerTable.GetNoSolicitationsDBName())]))
+                            {
+                                continue;
+                            }
+                        }
+                        else
+                        {
+                            PPartnerTable Partner = PPartnerAccess.LoadByPrimaryKey(PartnerKey, ATransaction);
+
+                            if (Partner[0].NoSolicitations)
+                            {
+                                continue;
+                            }
+                        }
+                    }
+
+                    GetBestAddress(PartnerKey, out Address, out PartnerLocation, out CountryNameLocal, out EmailAddress, ATransaction);
 
                     if (AIgnoreForeignAddresses)
                     {
@@ -146,6 +176,11 @@ namespace Ict.Petra.Server.MPartner
                     }
 
                     row.ValidAddress = (Address != null);
+
+                    if (!PartnerLocation[0].SendMail)
+                    {
+                        row.ValidAddress = false;
+                    }
 
                     if (Address == null)
                     {

@@ -174,7 +174,7 @@ namespace Ict.Common.IO
 
                 XmlReaderSettings settings = new XmlReaderSettings();
                 settings.IgnoreWhitespace = false;
-                settings.ProhibitDtd = false;
+                settings.DtdProcessing = DtdProcessing.Parse;
                 settings.XmlResolver = new MyUrlResolver(Path.GetDirectoryName(Path.GetFullPath(filename)));
                 settings.ValidationType = withValidation ? ValidationType.DTD : ValidationType.None;
                 settings.ValidationEventHandler += new ValidationEventHandler(eventHandler);
@@ -515,7 +515,7 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
-        /// retrieve the value of an attribute. Does prevent unnecessary exceptions, if the attribute is not existing
+        /// Retrieve an XML attribute. Empty if attribute is not present
         /// </summary>
         /// <param name="cur">the current node</param>
         /// <param name="attrib">the name of the attribute</param>
@@ -540,8 +540,8 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
-        /// retrieve the value of an attribute. Does prevent unnecessary exceptions, if the attribute is not existing.
-        /// check the parent nodes for the attribute, if the current node does not have that attribute
+        /// Retrieve an XML attribute. Empty if attribute is not present.
+        /// Check the parent nodes, if the current node does not have that attribute
         /// </summary>
         /// <param name="cur">the current node</param>
         /// <param name="attrib">the name of the attribute</param>

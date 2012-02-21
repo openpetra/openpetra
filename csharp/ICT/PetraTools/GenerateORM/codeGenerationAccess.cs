@@ -28,6 +28,7 @@ using System.Collections;
 using Ict.Tools.CodeGeneration;
 using Ict.Tools.DBXML;
 using Ict.Common;
+using Ict.Common.IO;
 using System.Collections.Specialized;
 
 namespace Ict.Tools.CodeGeneration.DataStore

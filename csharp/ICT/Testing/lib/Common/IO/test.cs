@@ -46,6 +46,7 @@ namespace Ict.Common.IO.Testing
         {
             new TLogging("test.log");
             new TAppSettingsManager("../../etc/TestClient.config");
+            TLogging.DebugLevel = TAppSettingsManager.GetInt16("Client.DebugLevel", 0);
 
             PathToTestData = "../../csharp/ICT/Testing/lib/Common/IO/TestData/".Replace("/", System.IO.Path.DirectorySeparatorChar.ToString());
         }
@@ -121,6 +122,8 @@ namespace Ict.Common.IO.Testing
         [Test]
         public void TestCSVWriter()
         {
+            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+
             XmlDocument doc = CreateTestDoc();
             // now test the csv file
             string filename = PathToTestData + "test.csv";

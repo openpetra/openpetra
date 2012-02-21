@@ -7,7 +7,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -78,6 +78,16 @@ namespace Ict.Petra.Shared.MFinance
         /// list of motivations (for gifts)
         /// </summary>
         MotivationList,
+
+        /// <summary>
+        /// Fees owed to another ledger. (e.g. admin grant)
+        /// </summary>
+        FeesPayableList,
+
+        /// <summary>
+        /// Charges to collect from other ledgers. (e.g. office admin fee)
+        /// </summary>
+        FeesReceivableList,
         /// <summary>
         /// todoComment
         /// </summary>

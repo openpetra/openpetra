@@ -30,6 +30,21 @@ namespace Ict.Petra.Shared.MFinance
     /// </summary>
     public class MFinanceConstants
     {
+        /// <summary>Maximum no. of periods in the system</summary>
+        public const int MAX_PERIODS = 20;
+
+        /// <summary>Currency select: Base</summary>
+        public const string CURRENCY_BASE = "B";
+
+        /// <summary>Currency select: International</summary>
+        public const string CURRENCY_INTERNATIONAL = "I";
+
+        /// <summary>Currency select: Base</summary>
+        public const int CURRENCY_BASE_NUM = 1;
+
+        /// <summary>Currency select: International</summary>
+        public const int CURRENCY_INTERNATIONAL_NUM = 2;
+
         /// <summary>GL Batch</summary>
         public const String BATCH_UNPOSTED = "Unposted";
 
@@ -38,6 +53,21 @@ namespace Ict.Petra.Shared.MFinance
 
         /// <summary>GL Batch</summary>
         public const String BATCH_CANCELLED = "Cancelled";
+
+        /// <summary>Subsystem and Transaction Types</summary>
+        public const String GENERAL_LEDGER = "GL";
+
+        /// <summary>Subsystem and Transaction Types</summary>
+        public const String STANDARD_JOURNAL = "STD";
+
+        /// <summary>Subsystem and Transaction Types</summary>
+        public const String CASHBOOK_RECEIPTING = "CBR";
+
+        /// <summary>Subsystem and Transaction Types</summary>
+        public const String CASHBOOK_PAYMENT = "CBP";
+
+        /// <summary>Subsystem and Transaction Types</summary>
+        public const String GIFT_RECEIPTING = "GR";
 
         /// <summary>General Ledger</summary>
         public const String ACCOUNT_TYPE_ASSET = "Asset";
@@ -57,6 +87,18 @@ namespace Ict.Petra.Shared.MFinance
         /// <summary>General Ledger</summary>
         public const String ACCOUNT_HIERARCHY_STANDARD = "STANDARD";
 
+        /// <summary>General Ledger</summary>
+        public const String ACCOUNT_HIERARCHY_CODE = "STANDARD";
+
+        /// <summary>Transaction Types</summary>
+        public const String TRANSACTION_TYPE_INCOME = "INCOME";
+
+        /// <summary>Transaction Types</summary>
+        public const String TRANSACTION_TYPE_EXPENSE = "EXPENSE";
+
+        /// <summary>Transaction Types</summary>
+        public const String TRANSACTION_TYPE_TRANSFER = "TRANSFER";
+
         /// <summary>Accounts Payable</summary>
         public const String AP_DOCUMENT_OPEN = "OPEN";
 
@@ -73,7 +115,7 @@ namespace Ict.Petra.Shared.MFinance
         public const String AP_DOCUMENT_PAID = "PAID";
 
         /// <summary>Account Property</summary>
-        public const String ACCOUNT_PROPERTY_BANK_ACCOUNT = "Bank Account";
+        public const String ACCOUNT_PROPERTY_BANK_ACCOUNT = "BANK ACCOUNT";
 
         /// <summary>Bank statements</summary>
         public const String BANK_STMT_STATUS_MATCHED = "MATCHED";
@@ -109,16 +151,177 @@ namespace Ict.Petra.Shared.MFinance
         public const String GROUP_DETAIL_KEY_MIN = "KEYMIN";
 
         /// <summary>Used in Admin Grants Payable and Receivable</summary>
-        public const int ADMIN_FEE_INCOME_ACCT = 3400;
+        public const string ADMIN_FEE_INCOME_ACCT = "3400";
 
         /// <summary>Used in Admin Grants Payable and Receivable</summary>
-        public const int ADMIN_FEE_EXPENSE_ACCT = 4900;
+        public const string ADMIN_FEE_EXPENSE_ACCT = "4900";
+
+        /// <summary>Used in Admin Fee Charge Options</summary>
+        public const string ADMIN_CHARGE_OPTION_MAX = "MAXIMUM";
+
+        /// <summary>Used in Admin Fee Charge Options</summary>
+        public const string ADMIN_CHARGE_OPTION_MIN = "MINIMUM";
+
+        /// <summary>Used in Admin Fee Charge Options</summary>
+        public const string ADMIN_CHARGE_OPTION_FIXED = "FIXED";
+
+        /// <summary>Used in Admin Fee Charge Options</summary>
+        public const string ADMIN_CHARGE_OPTION_PERCENT = "PERCENTAGE";
 
         /// <summary>Sets the transaction to a debit transaction</summary>
         public const bool IS_DEBIT = true;
 
         /// <summary>Sets the transaction to a credit transaction</summary>
         public const bool IS_CREDIT = false;
+
+        /// Logical values for debit and credit transactions.
+        public const bool POSTED = true;
+
+        /// standard account for earnings bf
+        public const string EARNINGS_BF_ACCT = "9700";
+
+
+        //System account/summary names //
+        /// standard account summary name
+        public const string GIFT_HEADING = "GIFT";
+
+        /// standard account summary name
+        public const string INTER_LEDGER_HEADING = "ILT";
+
+        /// standard account summary name
+        public const string BANK_HEADING = "CASH";
+
+        /// standard account summary name
+        public const string BALANCE_SHEET_HEADING = "BAL SHT";
+
+        /// standard account summary name
+        public const string PROFIT_AND_LOSS_HEADING = "PL";
+
+        /// standard account summary name
+        public const string INCOME_HEADING = "INC";
+
+        /// standard account summary name
+        public const string EXPENSE_HEADING = "EXP";
+
+        /// standard account summary name
+        public const string DEBTOR_HEADING = "DRS";
+
+        /// standard account summary name
+        public const string CREDITOR_HEADING = "CRS";
+
+        /// standard account summary name
+        public const string TOTAL_ASSET_HEADING = "ASSETS";
+
+        /// standard account summary name
+        public const string TOTAL_LIABILITY_HEADING = "LIABS";
+
+        /// standard account summary name
+        public const string EQUITY_HEADING = "RET EARN";
+
+        /// standard account summary name
+        public const string DIRECT_XFER_ACCT = "5501";
+
+        /// ICH accounts
+        public const string ICH_ACCT_DEPOSITS_WITH_ICH = "8540";
+
+        /// ICH accounts
+        public const string ICH_ACCT_LOCAL_LEDGER = "8520";
+
+        /// ICH accounts
+        public const string ICH_ACCT_ICH = "8500";
+
+        /// ICH accounts
+        public const string ICH_ACCT_SUSPENSE_ACCOUNT = "8200";
+
+        /// ICH accounts
+        public const string ICH_ACCT_SETTLEMENT = "5601";
+
+        /// ICH accounts
+        public const string ICH_ACCT_SETTLEMENT_TRANSFERS = "5600";
+
+        /// ICH accounts
+        public const string ICH_ACCT_FOREIGN_EXPENSES_UNIDENTIFIED = "5400";
+
+        /// ICH accounts
+        public const string ICH_ACCT_FOREIGN_INCOME_UNIDENTIFIED = "1900";
+
+        /// ICH
+        public const string ICH_COST_CENTRE = "0400";
+
+        /// standard account
+        public const string INTERNAL_XFER_ACCT = "9800";
+
+        /// Cost Centres
+        public const string FOREIGN_CC_TYPE = "FOREIGN";
+
+        /// admin fee accounts.
+        public const string FUND_TRANSFER_INCOME_ACC = "3300";
+
+        /// admin fee accounts.
+        public const string FUND_TRANSFER_EXPENSE_ACCT = "4800";
+
+        /// standard root account
+        public const string ACCOUNT_BAL_SHT = "BAL SHT";
+
+        /// standard gift account
+        public const string ACCOUNT_GIFT = "GIFT";
+
+        /// standard creditors account
+        public const string ACCOUNT_CREDITORS = "CRS CTRL";
+
+        /// standard account
+        public const string CASH_ACCT = "CASH";
+
+        /// Allocation Journal values
+        public const int MAX_AC_CC_SPLIT_INTO = 10;
+
+        /// Allocation Journal values
+        public const int MAX_ALLOCATION_DESTINATIONS = 10;
+
+        /// Number of fees which can be assigned to each motivation det. code
+        public const int MAX_FEE_CODES = 5;
+
+        /// Finance User Levels
+        public const string HIGH_FIN_USER_LEVEL = "FINANCE-3";
+
+        /// Budget Types
+        public const string BUDGET_SPLIT = "Split";
+
+        /// Budget Types
+        public const string BUDGET_ADHOC = "Adhoc";
+
+        /// Budget Types
+        public const string BUDGET_SAME = "Same";
+
+        /// Budget Types
+        public const string BUDGET_INFLATE_BASE = "Inf.Base";
+
+        /// Budget Types
+        public const string BUDGET_INFLATE_N = "Inf. n";
+
+        /// Budget Types
+        public const string BUDGET_SPLIT_U = "SPLIT";
+
+        /// Budget Types
+        public const string BUDGET_ADHOC_U = "ADHOC";
+
+        /// Budget Types
+        public const string BUDGET_SAME_U = "SAME";
+
+        /// Budget Types
+        public const string BUDGET_INFLATE_BASE_U = "INF.BASE";
+
+        /// Budget Types
+        public const string BUDGET_INFLATE_N_U = "INF. N";
+
+        /// Budget Forecast Types
+        public const string FORECAST_TYPE_BUDGET = "Budget";
+
+        /// Budget Forecast Types
+        public const string FORECAST_TYPE_ACTUALS = "Actuals";
+
+        /// Email File Code Types
+        public const string EMAIL_FILE_CODE_STEWARDSHIP = "STEWARDSHIP";
     }
 
     /// <summary>
@@ -187,5 +390,113 @@ namespace Ict.Petra.Shared.MFinance
         /// Used in a revaluation only ...
         /// </summary>
             REVAL
+    }
+
+    /// <summary>
+    /// enum for several runtime environments
+    /// </summary>
+    public enum TLedgerInitialisationArrayEnum
+    {
+        /// <summary>
+        /// Tax = 1
+        /// </summary>
+        liaTax,
+
+        /// <summary>
+        /// Currency = 2
+        /// </summary>
+            liaCurrency,
+
+        /// <summary>
+        /// AcctPeriods = 3
+        /// </summary>
+            liaAcctPeriods,
+
+        /// <summary>
+        /// DataRetain = 4
+        /// </summary>
+            liaDataRetain,
+
+        /// <summary>
+        /// PL = 5
+        /// </summary>
+            liaPL,
+
+        /// <summary>
+        /// ILT = 6
+        /// </summary>
+            liaILT,
+
+        /// <summary>
+        /// Forex = 7
+        /// </summary>
+            liaForex,
+
+        /// <summary>
+        /// SysInt = 8
+        /// </summary>
+            liaSysInt,
+
+        /// <summary>
+        /// SuspAcct = 9
+        /// </summary>
+            liaSuspAcct,
+
+        /// <summary>
+        /// Cal = 10
+        /// </summary>
+            liaCal,
+
+        /// <summary>
+        /// Budget = 11
+        /// </summary>
+            liaBudget,
+
+        /// <summary>
+        /// FwdPosting = 12
+        /// </summary>
+            liaFwdPosting,
+
+        /// <summary>
+        /// CurrentPeriod = 13
+        /// </summary>
+            liaCurrentPeriod,
+
+        /// <summary>
+        /// RevaluationRun = 14
+        /// </summary>
+            liaRevaluationRun
+    }
+
+
+    /// <summary>
+    /// enum for several runtime environments
+    /// </summary>
+    public enum TMOPTypeEnum
+    {
+        /// <summary>
+        /// UseExtraFields = 1
+        /// </summary>
+        moptUseExtraFields,
+
+        /// <summary>
+        /// RecurringOnly = 2
+        /// </summary>
+            moptRecurringOnly,
+
+        /// <summary>
+        /// EntireBatchOnly = 3
+        /// </summary>
+            moptEntireBatchOnly,
+
+        /// <summary>
+        /// NeedBankingDetailKey = 4
+        /// </summary>
+            moptNeedBankingDetailKey,
+
+        /// <summary>
+        /// BankingTypesAllowed = 5
+        /// </summary>
+            moptBankingTypesAllowed
     }
 }

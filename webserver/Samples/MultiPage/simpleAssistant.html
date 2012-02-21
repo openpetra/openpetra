@@ -1,0 +1,207 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <title>Sample Registration</title>
+
+    <link rel="stylesheet" type="text/css" href="../../resources/css/ext-all.css"/>
+    
+    <script type="text/javascript" src="../../js/ext-all-debug.js"></script>
+
+<script type="text/javascript">
+    <!-- 
+    Ext.BLANK_IMAGE_URL = '../../img/default_blank.gif';
+    Ext.onReady(function() {
+        Ext.QuickTips.init();
+        Ext.form.Field.prototype.msgTarget = 'side';
+
+    Ext.define('TMainForm', {
+        extend: 'Ext.Panel',
+            id:'card-assistant-panel',
+            title: 'Card Layout (Assistant)',
+            layout:'card',
+            activeItem: 0,
+            bodyStyle: 'padding:15px',
+            defaults: {border:false},
+            lblFirstnameLABEL:'Vorname',
+            grpNameAndAddressLABEL:'Name and Address',
+            
+            /// get the data as a structured object
+            getAssistantData: function () 
+            {
+                var layout = this.getLayout();
+                var formValues = {};
+                var cards = layout.getLayoutItems();
+
+                for (var i = 0, len = cards.length; i < len; i++) 
+                {
+                    var f = cards[i].getForm();
+                    if (f) 
+                    {
+                        formValues[cards[i].id] = f.getValues(false);
+                    }
+                    else
+                    {
+                        formValues[cards[i].id] = {};
+                    }
+                }
+
+                return formValues;
+            },
+
+            cardFinish: function() {
+                alert('finish');
+                alert(Ext.JSON.encode(this.getAssistantData()));
+            },
+
+            /// navigate across the pages
+            cardNav: function(incr){
+                var layout = this.getLayout();
+                var i = layout.activeItem.id.split('card-')[1];
+                var next = parseInt(i, 10) + incr;
+                
+                f = layout.activeItem.getForm();
+                if (f.isValid()) {
+                    layout.setActiveItem(next);
+                    Ext.getCmp('card-prev').setDisabled(!layout.getPrev());
+                    Ext.getCmp('card-next').setDisabled(!layout.getNext());
+                    if (!layout.getNext())
+                    {
+                        Ext.getCmp('card-finish').show();
+                        Ext.getCmp('card-next').hide();
+                    }
+                    else
+                    {
+                        Ext.getCmp('card-finish').hide();
+                        Ext.getCmp('card-next').show();
+                    }
+                }
+            },
+            
+            /// constructor creates the pages
+            /// this is necessary for the localisation to work with the class variables
+            constructor: function(owner, config) {
+                var me = this;
+
+                me.callParent();
+
+                me.items.add(Ext.create('Ext.FormPanel',
+                    {
+                        id: 'card-0',
+                        border: false,
+                        html: '<h1>Welcome to the Demo Assistant!</h1><p>Step 1 of 3</p><p>Please click the "Next" button to continue...</p>'
+                    }));
+                me.items.add(Ext.create('Ext.FormPanel',
+                    {
+                        id: 'card-1',
+                        border: false,
+                        onShow: function() {
+                             Ext.form.Panel.superclass.onShow.call(this);
+                             MainForm.setHeight(300);
+                             window.scrollTo(0,0);
+                        },
+                        items: [{
+                                xtype: 'fieldset',
+                                title: this.grpNameAndAddressLABEL,
+                                autoHeight: true,
+                                items: [{
+                                            xtype: 'container',
+                                            layout:'column',
+                                            border:false,
+                                            items: [{
+                                                        columnWidth:1,
+                                                        layout: 'anchor',
+                                                        border:false,
+                                                        items: [{
+                                                                    xtype: 'textfield',
+                                                                    fieldLabel: this.lblFirstnameLABEL + ' *',
+                                                                    allowBlank: false,
+                                                                    emptyText: this.txtFirstNameHELP,
+                                                                    name: 'txtFirstName',
+                                                                    id: 'txtFirstName',
+                                                                    anchor: '97.5%'
+                                                                }
+                                                                ]
+                                                    }
+                                                    ]
+                                        },
+                                        {
+                                            xtype: 'container',
+                                            layout:'column',
+                                            border:false,
+                                            items: [{
+                                                        columnWidth:1,
+                                                        layout: 'anchor',
+                                                        border:false,
+                                                        items: [{
+                                                                    xtype: 'textfield',
+                                                                    fieldLabel: 'groupwish *',
+                                                                    allowBlank: false,
+                                                                    emptyText: this.txtGroupWishHELP,
+                                                                    name: 'txtGroupWish',
+                                                                    id: 'txtGroupWish',
+                                                                    anchor: '97.5%'
+                                                                }
+                                                                ]
+                                                    }
+                                                    ]
+                                        }
+                                        ]
+                            }
+                            ],
+                    }));
+                me.items.add(Ext.create('Ext.FormPanel',
+                    {
+                        id: 'card-2',
+                        border: false,
+                        onShow: function() {
+                             Ext.form.Panel.superclass.onShow.call(this);
+                             MainForm.setHeight(150);
+                             window.scrollTo(0,0);
+                        },
+                        html: '<h1>Congratulations!</h1><p>Step 3 of 3 - Complete</p>'
+                    }));
+                    
+                var toolbar = Ext.create('Ext.toolbar.Toolbar',
+                    {
+                        xtype: 'toolbar',
+                        dock: 'bottom',
+                        valign: 'right',
+                    });
+                toolbar.add('->');
+                toolbar.add({
+                    id: 'card-prev',
+                    text: '&laquo; Previous',
+                    handler: Ext.Function.bind(this.cardNav, this, [-1]),
+                    disabled: true
+                });
+                toolbar.add({
+                    id: 'card-next',
+                    text: 'Next &raquo;',
+                    handler: Ext.Function.bind(this.cardNav, this, [1])
+                });
+                toolbar.add({
+                    id: 'card-finish',
+                    text: 'Finish',
+                    hidden: true,
+                    handler: Ext.Function.bind(this.cardFinish, this)
+                });
+
+                me.dockedItems.add(toolbar);
+            },
+            
+            // items will be added in the constructor, otherwise the localisation would not work
+            items: [],
+        });
+
+        MainForm = Ext.create('TMainForm');
+        MainForm.render('mainFormDiv');
+    });
+    -->
+</script>    
+</head>
+
+<body>
+<div id="mainFormDiv"></div>
+</body>
+</html>

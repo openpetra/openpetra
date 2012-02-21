@@ -1,0 +1,1108 @@
+
+
+User Given permission for PTNRUSER.
+
+
+
+17 January 2012, 11:08:46 : Cannot find RemoteDataDirectory in command line options or in the config file ../../etc/TestClient.config
+
+17 January 2012, 11:08:46 : Cannot find RemoteTmpDirectory in command line options or in the config file ../../etc/TestClient.config
+
+17 January 2012, 11:08:46 : Cannot find SiteKey in command line options or in the config file ../../etc/TestClient.config
+
+17 January 2012, 11:08:46 : Problem reading Int64 value from key SiteKey from config file.
+
+17 January 2012, 11:08:46 : connecting UserId: demo to Server...
+
+17 January 2012, 11:08:46 : GetRemoteServerConnection: connected.
+
+17 January 2012, 11:08:47 : Entering GetRemotePollClientTasks()...
+
+17 January 2012, 11:08:47 : Connecting to: tcp://localhost:5021/DEMO_1711847_6117216168
+
+17 January 2012, 11:08:47 : GetRemotePollClientTasks: connected.
+
+17 January 2012, 11:08:47 : Entering GetRemoteMConferenceObject()...
+
+17 January 2012, 11:08:47 : Connecting to: tcp://localhost:5021/1711847_1176913445
+
+17 January 2012, 11:08:47 : GetRemoteMConferenceObject: connected.
+
+17 January 2012, 11:08:47 : Entering GetRemoteMPersonnelObject()...
+
+17 January 2012, 11:08:47 : Connecting to: tcp://localhost:5021/
+
+17 January 2012, 11:08:47 : GetRemoteMPersonnelObject: connected.
+
+17 January 2012, 11:08:47 : Entering GetRemoteMCommonObject()...
+
+17 January 2012, 11:08:47 : Connecting to: tcp://localhost:5021/1711847_2482256021
+
+17 January 2012, 11:08:47 : GetRemoteMCommonObject: connected.
+
+17 January 2012, 11:08:47 : Entering GetRemoteMPartnerObject()...
+
+17 January 2012, 11:08:47 : Connecting to: tcp://localhost:5021/1711847_16951114150
+
+17 January 2012, 11:08:47 : GetRemoteMPartnerObject: connected.
+
+17 January 2012, 11:08:47 : Entering GetRemoteMFinanceObject()...
+
+17 January 2012, 11:08:47 : Connecting to: tcp://localhost:5021/
+
+17 January 2012, 11:08:47 : GetRemoteMFinanceObject: connected.
+
+17 January 2012, 11:08:47 : Entering GetRemoteMReportingObject()...
+
+17 January 2012, 11:08:47 : Connecting to: tcp://localhost:5021/1711847_1873471198
+
+17 January 2012, 11:08:47 : GetRemoteMReportingObject: connected.
+
+17 January 2012, 11:08:47 : Entering GetRemoteMSysManObject()...
+
+17 January 2012, 11:08:47 : Connecting to: tcp://localhost:5021/1711847_2552975128
+
+17 January 2012, 11:08:47 : GetRemoteMSysManObject: connected.
+
+17 January 2012, 11:08:47 : client is connected ClientID: 20 UserId: demo to Server...
+
+17 January 2012, 11:08:47 : loading C:\OpenPetra\MitchBranch1\csharp\ICT/Petra/Definitions/UINavigation.yml
+
+17 January 2012, 11:08:53 : Window can't be opened: CreateLedger TFrmGLCreateLedger
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: SetupCurrencies TFrmSetupCurrency
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: SetupCurrencyLanguages TFrmCurrencyLanguageSetup
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: SetupMethodsOfGiving TFrmSetupMethodOfGiving
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: SetupMethodsOfPayment TFrmSetupMethodOfPayment
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: SetupCorporateExchangeRates TFrmSetupCorporateExchangeRate
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: SetupDailyExchangeRates TFrmSetupDailyExchangeRate
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: AbilityArea TFrmAbilityAreaSetup
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: AbilityLevel TFrmAbilityLevelSetup
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: DocumentTypeCategory TFrmDocumentTypeCategorySetup
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: DocumentType TFrmDocumentTypeSetup
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: DriverStatus TFrmDriverStatusSetup
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: JobAssignmentType TFrmJobAssignmentTypeSetup
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: LanguageLevel TFrmLanguageLevelSetup
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: LeadershipRating TFrmLeadershipRatingSetup
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: LeavingCode TFrmLeavingCodeSetup
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: PassportType TFrmPassportTypeSetup
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: Position TFrmPositionSetup
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: ProfessionalArea TFrmProfessionalAreaSetup
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: QualificationLevel TFrmQualificationLevelSetup
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: ValuableItem TFrmValuableItemSetup
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: VisionArea TFrmVisionAreaSetup
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: VisionLevel TFrmVisionLevelSetup
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: ApplicantStatus TFrmApplicantStatusSetup
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: ApplicationForm TFrmApplicationFormSetup
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: ApplicationType TFrmApplicationTypeSetup
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: ArrivalDeparturePoint TFrmArrivalDeparturePointSetup
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: Country_EventPreferenceLevel TFrmCountry_EventLevelSetup
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: EventRole TFrmEventRoleSetup
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: LocalDataOptionListNames TFrmLocalDataOptionListNameSetup
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: LocalApplicationDataFields TFrmLocalApplicationDataFieldSetup
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: LocalPersonnelDataFields TFrmLocalPersonnelDataFieldSetup
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: ProgressReport TFrmProgressReport
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: PreviousExperienceReport TFrmPreviousExperienceReport
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: EndOfCommitmentReport TFrmEndOfCommitmentReport
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: StartOfCommitmentReport TFrmStartOfCommitmentReport
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: JobAssignmentReport TFrmJobAssignmentReport
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: BirthdayList TFrmBirthdayListReport
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: EmergencyContactReport TFrmEmergencyContactReportStaff
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: PassportExpiryReport TFrmPassportExpiryReport
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: PersonalDocumentExpiryReport TFrmPersonalDocumentExpiryReport
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: EmergencyDataReport TFrmEmergencyDataReport
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: PersonalDataReport TFrmPersonalDataReport
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: OutreachOptions TFrmOutreachOptions
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: UnitHierarchy TFrmUnitHierarchy
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: LocalPersonnelData TFrmLocalPersonnelDataReport
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: RelationshipReport TFrmRelationshipReport
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: GeneralShortTermerReport TFrmShortTermerReport
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: AbilitiesReport TFrmAbilitiesReport
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: EmergencyContactReport TFrmEmergencyContactInformationReport
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: LanguagesReport TFrmLanguagesReport
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: FindConference TFrmConferenceFindForm
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: AbsenteeReport TFrmAbsenteeReport
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: AccommodationReport TFrmAccommodationReport
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: AgeSummaryReport TFrmAgeSummaryReport
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: ArrivalDepartureGroupReport TFrmArrivalDepartureGroup
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: ArrivalListingReport TFrmArrivalListingReport
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: AttendanceSummaryReport TFrmAttendanceSummaryReport
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: AttendeeReport TFrmAttendeeReport
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: ChildrenReport TFrmChildrenReport
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: CommentsReport TFrmCommentsReport
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: ConferenceRoleReport TFrmConferenceRoleReport
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: ExtraCostsReport TFrmExtraCostsReport
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: FamilyListingReport TFrmFamilyListingReport
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: GroupReports TFrmGroupReports
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: LanguageReport TFrmLanguagesReport
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: NationalitySummaryReport TFrmNationalitySummaryReport
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: PresentAttendeeReport TFrmPresentAttendeeReport
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: TransportReport TFrmTransportReport
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: ChargedFieldReport TFrmChargedFieldReport
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: SendingFieldReport TFrmSendingFieldReport
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: ReceivingFieldReport TFrmReceivingFieldReport
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: RegisteringFieldReport TFrmRegisteringFieldReport
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: OutreachReport TFrmOutreachReport
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: ConferenceCostType TFrmConferenceCostTypeSetup
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: MaintainUsers TFrmMaintainUsers
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: Groups TFrmSecurityGroupSetup
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : Window can't be opened: LanguageSpecifics TFrmLanguageSpecificSetup
+NUnit.Framework.AssertionException:   Expected string length 0 but was 51. Strings differ at index 0.
+  Expected: <string.Empty>
+  But was:  "Sorry, you don't have enough permissions to do this"
+  -----------^
+
+   at NUnit.Framework.Assert.That(Object actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.AreEqual(Object expected, Object actual)
+   at Tests.MainNavigationScreens.TMainNavigationTest.TestOpenAllWindows() in c:\OpenPetra\MitchBranch1\csharp\ICT\Testing\lib\MainNavigationScreens\test.cs:line 232
+
+17 January 2012, 11:08:53 : 
+
+User Permissions: 
+PTNRUSER
+
+17 January 2012, 11:08:53 : 
+
+Statistics: 
+Number of windows opened: 42
+      FindAndDeleteContacts
+            Permission Required: PTNRUSER
+      ImportPartners
+            Permission Required: PTNRUSER
+      ExtractMasterList
+            Permission Required: PTNRUSER
+      PartnerByCity
+            Permission Required: PTNRUSER
+      PartnerBySpecialType
+            Permission Required: PTNRUSER
+      PartnerBySubscription
+            Permission Required: PTNRUSER
+      PartnerAddress
+            Permission Required: PTNRUSER
+      BriefFoundation
+            Permission Required: PTNRUSER
+      SupportingChurches
+            Permission Required: PTNRUSER
+      ValidBankAccount
+            Permission Required: PTNRUSER
+      PublicationStatisticalReport
+            Permission Required: PTNRUSER
+      BulkAddressReport
+            Permission Required: PTNRUSER
+      PartnerContactReport
+            Permission Required: PTNRUSER
+      SubscriptionReport
+            Permission Required: PTNRUSER
+      LocalPartnerDataReport
+            Permission Required: PTNRUSER
+      Country
+            Permission Required: PTNRUSER
+      Language
+            Permission Required: PTNRUSER
+      Frequency
+            Permission Required: PTNRUSER
+      PartnerStatus
+            Permission Required: PTNRUSER
+      Acquisition
+            Permission Required: PTNRUSER
+      SpecialTypes
+            Permission Required: PTNRUSER
+      Denomination
+            Permission Required: PTNRUSER
+      Business
+            Permission Required: PTNRUSER
+      Occupation
+            Permission Required: PTNRUSER
+      MaritalStatus
+            Permission Required: PTNRUSER
+      RelationshipCategory
+            Permission Required: PTNRUSER
+      Relationship
+            Permission Required: PTNRUSER
+      ContactMethod
+            Permission Required: PTNRUSER
+      InterestCategory
+            Permission Required: PTNRUSER
+      Interest
+            Permission Required: PTNRUSER
+      Publications
+            Permission Required: PTNRUSER
+      PublicationCosts
+            Permission Required: PTNRUSER
+      ReasonSubscriptionGiven
+            Permission Required: PTNRUSER
+      ReasonSubscriptionCancelled
+            Permission Required: PTNRUSER
+      AddreseeTypes
+            Permission Required: PTNRUSER
+      LocationTypes
+            Permission Required: PTNRUSER
+      InternationalPostalTypes
+            Permission Required: PTNRUSER
+      LocalDataOptionListNames
+            Permission Required: PTNRUSER
+      LocalDataOptions
+            Permission Required: PTNRUSER
+      LocalDataFields
+            Permission Required: PTNRUSER
+      Mailings
+            Permission Required: PTNRUSER
+      SetLanguageSettings
+            Permission Required: 
+
+
+
+Permission Exceptions: 78
+      CreateLedger
+            Permission Required: FINANCE-1,FINANCE-3
+      SetupCurrencies
+            Permission Required: FINANCE-1,FINANCE-3
+      SetupCurrencyLanguages
+            Permission Required: FINANCE-1,FINANCE-3
+      SetupMethodsOfGiving
+            Permission Required: FINANCE-1,FINANCE-3
+      SetupMethodsOfPayment
+            Permission Required: FINANCE-1,FINANCE-3
+      SetupCorporateExchangeRates
+            Permission Required: FINANCE-1
+      SetupDailyExchangeRates
+            Permission Required: FINANCE-1
+      AbilityArea
+            Permission Required: PERSONNEL
+      AbilityLevel
+            Permission Required: PERSONNEL
+      DocumentTypeCategory
+            Permission Required: PERSONNEL
+      DocumentType
+            Permission Required: PERSONNEL
+      DriverStatus
+            Permission Required: PERSONNEL
+      JobAssignmentType
+            Permission Required: PERSONNEL
+      LanguageLevel
+            Permission Required: PERSONNEL
+      LeadershipRating
+            Permission Required: PERSONNEL
+      LeavingCode
+            Permission Required: PERSONNEL
+      PassportType
+            Permission Required: PERSONNEL
+      Position
+            Permission Required: PERSONNEL
+      ProfessionalArea
+            Permission Required: PERSONNEL
+      QualificationLevel
+            Permission Required: PERSONNEL
+      ValuableItem
+            Permission Required: PERSONNEL
+      VisionArea
+            Permission Required: PERSONNEL
+      VisionLevel
+            Permission Required: PERSONNEL
+      ApplicantStatus
+            Permission Required: PERSONNEL
+      ApplicationForm
+            Permission Required: PERSONNEL
+      ApplicationType
+            Permission Required: PERSONNEL
+      ArrivalDeparturePoint
+            Permission Required: PERSONNEL
+      Country_EventPreferenceLevel
+            Permission Required: PERSONNEL
+      EventRole
+            Permission Required: PERSONNEL
+      LocalDataOptionListNames
+            Permission Required: PERSONNEL
+      LocalApplicationDataFields
+            Permission Required: PERSONNEL
+      LocalPersonnelDataFields
+            Permission Required: PERSONNEL
+      ProgressReport
+            Permission Required: PERSONNEL
+      PreviousExperienceReport
+            Permission Required: PERSONNEL
+      EndOfCommitmentReport
+            Permission Required: PERSONNEL
+      StartOfCommitmentReport
+            Permission Required: PERSONNEL
+      JobAssignmentReport
+            Permission Required: PERSONNEL
+      BirthdayList
+            Permission Required: PERSONNEL
+      EmergencyContactReport
+            Permission Required: PERSONNEL
+      PassportExpiryReport
+            Permission Required: PERSONNEL
+      PersonalDocumentExpiryReport
+            Permission Required: PERSONNEL
+      EmergencyDataReport
+            Permission Required: PERSONNEL
+      PersonalDataReport
+            Permission Required: PERSONNEL
+      OutreachOptions
+            Permission Required: PERSONNEL
+      UnitHierarchy
+            Permission Required: PERSONNEL
+      LocalPersonnelData
+            Permission Required: PERSONNEL
+      RelationshipReport
+            Permission Required: PERSONNEL
+      GeneralShortTermerReport
+            Permission Required: PERSONNEL
+      AbilitiesReport
+            Permission Required: PERSONNEL
+      EmergencyContactReport
+            Permission Required: PERSONNEL
+      LanguagesReport
+            Permission Required: PERSONNEL
+      FindConference
+            Permission Required: CONFERENCE
+      AbsenteeReport
+            Permission Required: CONFERENCE
+      AccommodationReport
+            Permission Required: CONFERENCE
+      AgeSummaryReport
+            Permission Required: CONFERENCE
+      ArrivalDepartureGroupReport
+            Permission Required: CONFERENCE
+      ArrivalListingReport
+            Permission Required: CONFERENCE
+      AttendanceSummaryReport
+            Permission Required: CONFERENCE
+      AttendeeReport
+            Permission Required: CONFERENCE
+      ChildrenReport
+            Permission Required: CONFERENCE
+      CommentsReport
+            Permission Required: CONFERENCE
+      ConferenceRoleReport
+            Permission Required: CONFERENCE
+      ExtraCostsReport
+            Permission Required: CONFERENCE
+      FamilyListingReport
+            Permission Required: CONFERENCE
+      GroupReports
+            Permission Required: CONFERENCE
+      LanguageReport
+            Permission Required: CONFERENCE
+      NationalitySummaryReport
+            Permission Required: CONFERENCE
+      PresentAttendeeReport
+            Permission Required: CONFERENCE
+      TransportReport
+            Permission Required: CONFERENCE
+      ChargedFieldReport
+            Permission Required: CONFERENCE
+      SendingFieldReport
+            Permission Required: CONFERENCE
+      ReceivingFieldReport
+            Permission Required: CONFERENCE
+      RegisteringFieldReport
+            Permission Required: CONFERENCE
+      OutreachReport
+            Permission Required: CONFERENCE
+      ConferenceCostType
+            Permission Required: CONFERENCE
+      MaintainUsers
+            Permission Required: SYSMAN
+      Groups
+            Permission Required: SYSMAN
+      LanguageSpecifics
+            Permission Required: SYSMAN
+
+
+Windows that should be opened but couldn't: 0
+      
+

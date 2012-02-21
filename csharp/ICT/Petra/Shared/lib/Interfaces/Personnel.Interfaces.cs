@@ -8,7 +8,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.Data;
 using Ict.Common;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared.Interfaces.MPersonnel.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MPersonnel.Person;
 using Ict.Petra.Shared.Interfaces.MPersonnel.TableMaintenance;
@@ -42,6 +43,7 @@ using Ict.Petra.Shared.Interfaces.MPersonnel.Person.DataElements.Applications.Ca
 using Ict.Petra.Shared.Interfaces.MPersonnel.Person.DataElements.Applications.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MPersonnel.Person.DataElements.Cacheable;
 using Ict.Petra.Shared.Interfaces.MPersonnel.Person.DataElements.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MPersonnel.Person.DataElements.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MPersonnel.Person.Shepherds;
 using Ict.Petra.Shared.Interfaces.MPersonnel.Person.Shepherds.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MPersonnel.TableMaintenance.UIConnectors;
@@ -51,6 +53,7 @@ using Ict.Petra.Shared.Interfaces.MPersonnel.Units.DataElements.UIConnectors;
 #region ManualCode
 using Ict.Common.Data;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
+using Ict.Petra.Shared.MPersonnel.Person;
 #endregion ManualCode
 namespace Ict.Petra.Shared.Interfaces.MPersonnel
 {
@@ -96,6 +99,12 @@ namespace Ict.Petra.Shared.Interfaces.MPersonnel.WebConnectors
                                               out TVerificationResultCollection AVerificationResult);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPersonnel.WebConnectors.TPersonnelWebConnector)</summary>
         PersonnelTDS LoadPersonellStaffData(Int64 APartnerKey);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPersonnel.WebConnectors.TPersonnelWebConnector)</summary>
+        System.Boolean HasCurrentCommitmentRecord(Int64 APartnerKey);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPersonnel.WebConnectors.TPersonnelWebConnector)</summary>
+        System.Int32 GetOrCreateUmJobKey(Int64 AUnitKey,
+                                         System.String APositionName,
+                                         System.String APositionScope);
     }
 
 }
@@ -142,6 +151,12 @@ namespace Ict.Petra.Shared.Interfaces.MPersonnel.Person.DataElements
 
         /// <summary>access to sub namespace</summary>
         IPersonDataElementsUIConnectorsNamespace UIConnectors
+        {
+            get;
+        }
+
+        /// <summary>access to sub namespace</summary>
+        IPersonDataElementsWebConnectorsNamespace WebConnectors
         {
             get;
         }
@@ -228,6 +243,22 @@ namespace Ict.Petra.Shared.Interfaces.MPersonnel.Person.DataElements.UIConnector
         Ict.Petra.Shared.Interfaces.MCommon.UIConnectors.IDataElementsUIConnectorsOfficeSpecificDataLabels OfficeSpecificDataLabels(System.Int64 APartnerKey,
                                                                                                                                     Ict.Petra.Shared.MCommon.TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse,
                                                                                                                                     out Ict.Petra.Shared.MCommon.Data.OfficeSpecificDataLabelsTDS AOfficeSpecificDataLabelsDataSet);
+    }
+
+}
+
+
+namespace Ict.Petra.Shared.Interfaces.MPersonnel.Person.DataElements.WebConnectors
+{
+    /// <summary>auto generated</summary>
+    public interface IPersonDataElementsWebConnectorsNamespace : IInterface
+    {
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors.TIndividualDataWebConnector)</summary>
+        IndividualDataTDS GetData(Int64 APartnerKey,
+                                  TIndividualDataItemEnum AIndivDataItem);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors.TIndividualDataWebConnector)</summary>
+        System.Boolean GetSummaryData(Int64 APartnerKey,
+                                      ref IndividualDataTDS AIndividualDataDS);
     }
 
 }

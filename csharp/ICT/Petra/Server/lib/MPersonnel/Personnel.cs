@@ -1,4 +1,4 @@
-﻿//
+//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -37,10 +37,11 @@ using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
-using Ict.Petra.Shared.MPersonnel.Personnel;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
+using Ict.Petra.Shared.MPersonnel.Units.Data;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
+using Ict.Petra.Server.MPersonnel.Units.Data.Access;
 
 namespace Ict.Petra.Server.MPersonnel.WebConnectors
 {
@@ -84,6 +85,80 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
 
             DBAccess.GDBAccessObj.RollbackTransaction();
             return MainDS;
+        }
+
+        /// <summary>
+        /// retrieves information if person has a current commitment (staff data) record
+        /// </summary>
+        /// <param name="APartnerKey"></param>
+        /// <returns>true if person has current commitment (staff data) record(s)</returns>
+        [RequireModulePermission("PERSONNEL")]
+        public static bool HasCurrentCommitmentRecord(Int64 APartnerKey)
+        {
+            PmStaffDataTable StaffDataDT;
+            bool Result = false;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            StaffDataDT = PmStaffDataAccess.LoadByPrimaryKey(0, APartnerKey, Transaction);
+
+            foreach (PmStaffDataRow row in StaffDataDT.Rows)
+            {
+                if ((row.IsEndOfCommitmentNull()
+                     || (row.EndOfCommitment >= DateTime.Today))
+                    && (row.IsStartOfCommitmentNull()
+                        || (row.StartOfCommitment <= DateTime.Today)))
+                {
+                    Result = true;
+                }
+            }
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+
+            return Result;
+        }
+
+        /// <summary>
+        /// Return UmJob.JobKey for existing job record or create a new one if not existing
+        /// </summary>
+        /// <param name="AUnitKey"></param>
+        /// <param name="APositionName"></param>
+        /// <param name="APositionScope"></param>
+        /// <returns></returns>
+        [RequireModulePermission("PERSONNEL")]
+        public static int GetOrCreateUmJobKey(Int64 AUnitKey, string APositionName, string APositionScope)
+        {
+            int JobKey;
+            bool NewTransaction;
+
+            UmJobTable JobTableTemp = new UmJobTable();
+            UmJobRow TemplateRow = (UmJobRow)JobTableTemp.NewRow();
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+
+            TemplateRow.UnitKey = AUnitKey;
+            TemplateRow.PositionName = APositionName;
+            TemplateRow.PositionScope = APositionScope;
+            JobTableTemp = UmJobAccess.LoadUsingTemplate(TemplateRow, Transaction);
+
+            // if no corresponding job record found then we need to create a new job key
+            if (JobTableTemp.Count == 0)
+            {
+                JobKey = Convert.ToInt32(MCommon.WebConnectors.TSequenceWebConnector.GetNextSequence(TSequenceNames.seq_job));
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+            }
+            else
+            {
+                JobKey = ((UmJobRow)JobTableTemp.Rows[0]).JobKey;
+
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return JobKey;
         }
     }
 }

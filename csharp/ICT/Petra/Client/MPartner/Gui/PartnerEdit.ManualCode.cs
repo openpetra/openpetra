@@ -24,47 +24,31 @@
 using System;
 using System.Data;
 using System.Windows.Forms;
+using System.Collections.Specialized;
 
 using Ict.Common;
+using Ict.Common.IO;
 using Ict.Common.Controls;
 using Ict.Common.DB;
+using Ict.Common.Data;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MCommon;
+using Ict.Petra.Client.MPartner.Logic;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.RemotedExceptions;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
     public partial class TFrmPartnerEdit
     {
-        #region Enums
-
-        /// <summary>
-        /// Used for enabling/disabling parts of the screen according to the
-        /// Petra Module.
-        /// </summary>
-        public enum TModuleSwitchEnum
-        {
-            /// <summary>No module</summary>
-            msNone,
-
-            /// <summary>Partner Module</summary>
-            msPartner,
-
-            /// <summary>Personnel Module</summary>
-            msPersonnel,
-
-            /// <summary>Finance Module</summary>
-            msFinance
-        }
-
         /// <summary>
         /// Determines the type of call to the UIConnector of the screen.
         /// </summary>
@@ -74,13 +58,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             uictPartnerKey,
 
             /// <summary>Call the UIConnector with Partner Key, Location Key and Site Key Arguments</summary>
-           uictLocationKey,
+            uictLocationKey,
 
             /// <summary>Call the UIConnector without any Arguments, thus signalising that a new Partner should be created</summary>
-           uictNewPartner
+            uictNewPartner
         }
-
-        #endregion
 
         #region Fields
 
@@ -127,12 +109,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private TPartnerEditTabPageEnum FInitiallySelectedTabPage;
         private Boolean FUppperPartInitiallyCollapsed;
         private Boolean FFoundationDetailsEnabled;
-
-// TODO        private Boolean FPartnerTabSetInitialised;
-
-//TODO        private Boolean FPersonnelTabSetInitialised;
-//TODO        private Boolean FFinanceTabSetInitialised;
-        private TModuleSwitchEnum FCurrentModuleTabGroup;
+        private TPartnerEditScreenLogic.TModuleTabGroupEnum FCurrentModuleTabGroup;
 
         /// <summary>Stores any Exception that occurs while the screen is loading</summary>
         public static Exception UExceptionAtLoad = null;
@@ -833,6 +810,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             Control FirstErrorControl;
             System.Object FirstErrorContext;
             Int32 MaxColumn;
+            bool AddressesOrRelationsChanged = false;
+            System.Int32 ChangedColumns;
 #if SHOWCHANGES
             System.Int32 Counter;
             String DebugMessage;
@@ -887,7 +866,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                             if ((InspectDT.TableName != PLocationTable.GetTableName()) && (InspectDT.TableName != PPartnerLocationTable.GetTableName()))
                             {
                                 MaxColumn = InspectDT.Columns.Count;
-                                Int32 ChangedColumns = SharedDataUtilities.AcceptChangesForUnmodifiedRows(InspectDT, MaxColumn);
+                                ChangedColumns = DataUtilities.AcceptChangesForUnmodifiedRows(InspectDT, MaxColumn);
 
                                 if (ChangedColumns != 0)
                                 {
@@ -901,7 +880,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                                 MaxColumn = new PLocationTable().Columns.Count;
 
                                 // MessageBox.Show('PLocation MaxColumn: ' + MaxColumn.ToString);
-                                Int32 ChangedColumns = SharedDataUtilities.AcceptChangesForUnmodifiedRows(AInspectDS.PLocation, MaxColumn, true);
+                                ChangedColumns = DataUtilities.AcceptChangesForUnmodifiedRows(AInspectDS.PLocation, MaxColumn, true);
 
                                 if (ChangedColumns != 0)
                                 {
@@ -915,7 +894,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                                 MaxColumn = new PPartnerLocationTable().Columns.Count;
 
                                 // MessageBox.Show('PPartnerLocation MaxColumn: ' + MaxColumn.ToString);
-                                Int32 ChangedColumns = SharedDataUtilities.AcceptChangesForUnmodifiedRows(AInspectDS.PPartnerLocation,
+                                ChangedColumns = DataUtilities.AcceptChangesForUnmodifiedRows(AInspectDS.PPartnerLocation,
                                     MaxColumn,
                                     true);
 
@@ -986,6 +965,13 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     SubmitDS = AInspectDS.GetChangesTyped(true);
 
+                    if ((SubmitDS.Tables.Contains(PLocationTable.GetTableName()))
+                        || (SubmitDS.Tables.Contains(PPartnerLocationTable.GetTableName()))
+                        || (SubmitDS.Tables.Contains(PPartnerRelationshipTable.GetTableName())))
+                    {
+                        AddressesOrRelationsChanged = true;
+                    }
+
                     // $IFDEF DEBUGMODE if SubmitDS = nil then MessageBox.Show('SubmitDS = nil!'); $ENDIF
                     // TLogging.Log('Before submitting data to the Server  Client DataSet: ' + SubmitDS.GetXml);
                     // Submit changes to the PETRAServer
@@ -1005,8 +991,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     {
                         FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
                         this.Cursor = Cursors.Default;
-                        MessageBox.Show("The PETRA Server cannot be reached! Data cannot be saved!",
-                            "No Server response",
+                        MessageBox.Show(Catalog.GetString("The PETRA Server cannot be reached! Data cannot be saved!"),
+                            Catalog.GetString("No Server response"),
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Stop);
                         ReturnValue = false;
@@ -1177,6 +1163,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                             // end;
                             // $ENDIF
                             ucoLowerPart.RefreshAddressesAfterMerge();
+                            ucoLowerPart.RefreshPersonnelDataAfterMerge(AddressesOrRelationsChanged);
 
                             // Call AcceptChanges so that we don't have any changed data anymore!
                             AInspectDS.AcceptChanges();
@@ -1386,9 +1373,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 this.Height = 600;
             }
 
-            // Determine which tab page will be shown
-            DetermineInitiallySelectedTabPage();
-
             /*
              * Load data for new Partner or existing Partner
              */
@@ -1406,12 +1390,16 @@ namespace Ict.Petra.Client.MPartner.Gui
              */
             FPartnerClass = FMainDS.PPartner[0].PartnerClass;
 
+            // Determine which tab page will be shown
+            DetermineInitiallySelectedTabPage();
+
+
             // Determine whether Partner is of PartnerClass ORGANISATION and whether it is a Foundation
             DetermineOrganisationIsFoundation();
 
 
             // Setup Modulerelated Toggle Buttons in ToolBar
-            SetupAvailableModuleDataItems(true, TModuleSwitchEnum.msNone);
+            SetupAvailableModuleDataItems(true, TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgNone);
 
             /*
              * Setup the bottom part of the screen - that is the TabSet that corresponds
@@ -1436,37 +1424,32 @@ namespace Ict.Petra.Client.MPartner.Gui
             ucoLowerPart.HookupDataChange += new THookupDataChangeEventHandler(this.UcoPartnerTabSet_HookupDataChange);
             ucoLowerPart.HookupPartnerEditDataChange += new THookupPartnerEditDataChangeEventHandler(
                 this.UcoPartnerTabSet_HookupPartnerEditDataChange);
-            ucoLowerPart.InitChildUserControl();
-
-            if (FNewPartnerWithAutoCreatedAddress)
-            {
-                // hardcoded for the first Address of a new Partner
-                ucoLowerPart.DisableNewButtonOnAutoCreatedAddress();
-            }
 
             switch (FCurrentModuleTabGroup)
             {
-                case TModuleSwitchEnum.msPartner:
+                case TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner:
 
-                    /*
-                     * Set up ucoPartnerTabSet
-                     */
-
-                    // TODO 1
-
-                    // TODO FPartnerTabSetInitialised = true;
+                    ViewPartnerData(null, null);
 
                     break;
 
-                case TModuleSwitchEnum.msPersonnel:
+                case TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPersonnel:
 
-                    // TODO 2
+                    // Only switch to Personnel Tab Group if Partner is of Partner Class PERSON
+                    if (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
+                    {
+                        ViewPersonnelData(null, null);
+                    }
+                    else
+                    {
+                        ViewPartnerData(null, null);
+                    }
 
                     break;
 
-                case TModuleSwitchEnum.msFinance:
+                case TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgFinance:
 
-                    // TODO 2
+                    ViewFinanceData(null, null);
 
                     break;
             }
@@ -1572,7 +1555,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
-                SetupAvailableModuleDataItems(e.Enable, TModuleSwitchEnum.msNone);
+                SetupAvailableModuleDataItems(e.Enable, TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgNone);
                 EnableSave(FPetraUtilsObject.HasChanges);
                 FPetraUtilsObject.DetailEditMode = false;
             }
@@ -1624,7 +1607,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void FileNewPartner(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            Ict.Petra.Client.MPartner.Gui.TFrmPartnerEdit PartnerEditForm = new Ict.Petra.Client.MPartner.Gui.TFrmPartnerEdit(this);
+
+            PartnerEditForm.SetParameters(TScreenMode.smNew,
+                FPartnerClass, -1, -1, ucoLowerPart.LocationDataRowOfCurrentlySelectedAddress.CountryCode);
+
+            PartnerEditForm.Show();
         }
 
         private void FileNewPartnerWithShepherdPerson(System.Object sender, System.EventArgs e)
@@ -1700,6 +1688,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     // TPartnerEditTabPageEnum.petpDocuments:     SelectedTab := 4;
                     // TPartnerEditTabPageEnum.petpOfficeSpecific:     SelectedTab := 5;
                     // TPartnerEditTabPageEnum.petpFoundationDetails:     SelectedTab := 6;
+                    // TPartnerEditTabPageEnum.petpPartnerRelationshipsDetails:     SelectedTab := 7;
             }
 
             TPartnerPrintSectionDialog PrintSectionDialog = new TPartnerPrintSectionDialog();
@@ -1711,7 +1700,24 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void FileExportPartner(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            String FileName = TImportExportDialogs.GetExportFilename(Catalog.GetString("Save Partners into File"));
+
+            if (FileName.Length > 0)
+            {
+                if (FileName.EndsWith("ext"))
+                {
+                    StringCollection ASpecificBuildingInfo = null;
+                    String doc = TRemote.MPartner.ImportExport.WebConnectors.GetExtFileHeader();
+                    Int32 SiteKey = 0;
+                    Int32 LocationKey = 0;
+
+                    doc += TRemote.MPartner.ImportExport.WebConnectors.ExportPartnerExt(
+                        this.PartnerKey, SiteKey, LocationKey, false, ASpecificBuildingInfo);
+
+                    doc += TRemote.MPartner.ImportExport.WebConnectors.GetExtFileFooter();
+                    TImportExportDialogs.ExportTofile(doc, FileName);
+                }
+            }
         }
 
         #endregion
@@ -1720,12 +1726,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void MaintainAddresses(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            ucoLowerPart.SelectTabPage(TPartnerEditTabPageEnum.petpAddresses);
         }
 
         private void MaintainPartnerDetails(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            ucoLowerPart.SelectTabPage(TPartnerEditTabPageEnum.petpDetails);
         }
 
         private void MaintainFoundationDetails(System.Object sender, System.EventArgs e)
@@ -1735,12 +1741,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void MaintainSubscriptions(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            ucoLowerPart.SelectTabPage(TPartnerEditTabPageEnum.petpSubscriptions);
         }
 
         private void MaintainSpecialTypes(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            ucoLowerPart.SelectTabPage(TPartnerEditTabPageEnum.petpPartnerTypes);
         }
 
         private void MaintainContacts(System.Object sender, System.EventArgs e)
@@ -1750,12 +1756,21 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void MaintainFamilyMembers(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            if ((FMainDS.PPartner[0].PartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.FAMILY))
+                || (FMainDS.PPartner[0].PartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON)))
+            {
+                ucoLowerPart.SelectTabPage(TPartnerEditTabPageEnum.petpFamilyMembers);
+            }
+            else
+            {
+                MessageBox.Show(CommonResourcestrings.StrErrorOnlyForFamilyOrPerson,
+                    CommonResourcestrings.StrGenericFunctionalityNotAvailable);
+            }
         }
 
         private void MaintainRelationships(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            ucoLowerPart.SelectTabPage(TPartnerEditTabPageEnum.petpPartnerRelationships);
         }
 
         private void MaintainInterests(System.Object sender, System.EventArgs e)
@@ -1770,12 +1785,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void MaintainNotes(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            ucoLowerPart.SelectTabPage(TPartnerEditTabPageEnum.petpNotes);
         }
 
         private void MaintainLocalPartnerData(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            ucoLowerPart.SelectTabPage(TPartnerEditTabPageEnum.petpOfficeSpecific);
         }
 
         /// <summary>
@@ -1788,22 +1803,36 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void MaintainWorkerField(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            TFrmPersonnelStaffData staffDataForm = new TFrmPersonnelStaffData(FPetraUtilsObject.GetForm());
+
+            staffDataForm.PartnerKey = FPartnerKey;
+            staffDataForm.Show();
         }
 
         private void MaintainIndividualData(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            if (FPartnerClass != SharedTypes.PartnerClassEnumToString(TPartnerClass.UNIT))
+            {
+                ViewPersonnelData(null, null);
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
         }
 
         private void MaintainDonorHistory(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory.OpenWindowDonorRecipientHistory("mniMaintainDonorHistory",
+                PartnerKey,
+                FPetraUtilsObject.GetForm());
         }
 
         private void MaintainRecipientHistory(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory.OpenWindowDonorRecipientHistory("mniMaintainRecipientHistory",
+                PartnerKey,
+                FPetraUtilsObject.GetForm());
         }
 
         private void MaintainFinanceReports(System.Object sender, System.EventArgs e)
@@ -1842,17 +1871,64 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void ViewPartnerData(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            tbbViewPartnerData.Checked = true;
+            tbbViewPersonnelData.Checked = false;
+            tbbViewFinanceData.Checked = false;
+            mniViewPartnerData.Checked = true;
+            mniViewPersonnelData.Checked = false;
+            mniViewFinanceData.Checked = false;
+
+            ucoLowerPart.ShowChildUserControl(TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner);
+
+            if (FNewPartnerWithAutoCreatedAddress)
+            {
+                // hardcoded for the first Address of a new Partner
+                ucoLowerPart.DisableNewButtonOnAutoCreatedAddress();
+            }
         }
 
         private void ViewPersonnelData(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            if (UserHasPersonnelAccess())
+            {
+                if (FPartnerClass != SharedTypes.PartnerClassEnumToString(TPartnerClass.UNIT))
+                {
+                    tbbViewPersonnelData.Checked = true;
+                    tbbViewPartnerData.Checked = false;
+                    tbbViewFinanceData.Checked = false;
+                    mniViewPersonnelData.Checked = true;
+                    mniViewPartnerData.Checked = false;
+                    mniViewFinanceData.Checked = false;
+
+                    ucoLowerPart.ShowChildUserControl(TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPersonnel);
+                }
+                else
+                {
+                    // If editing a Partner of Partner Class UNIT, don't enable the Personnel Data TabGroup!
+                }
+            }
+            else
+            {
+                MessageBox.Show(Catalog.GetString("You do not have access rights to the Personnel System of OpenPetra.\r\n\r\n" +
+                        "For that reason the Pesonnel Data Tabs cannot be switched to on the\r\n" +
+                        "Partner Edit screen. Showing the Partner Data Tabs instead."),
+                    Catalog.GetString("Access Denied"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                tbbViewPersonnelData.Enabled = false;
+                mniViewPersonnelData.Enabled = false;
+
+                ViewPartnerData(null, null);
+            }
         }
 
         private void ViewFinanceData(System.Object sender, System.EventArgs e)
         {
             throw new NotImplementedException();
+        }
+
+        private bool UserHasPersonnelAccess()
+        {
+            return UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_PERSONNEL);
         }
 
         #endregion
@@ -2225,7 +2301,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     // TODO 2 oChristianK cPartner Edit / Tabs : Introduce a User Default that can specify which TabPage is the one the User wants to see as default.
                     FShowTabPage = TPartnerEditTabPageEnum.petpAddresses;
                     FInitiallySelectedTabPage = FShowTabPage;
-                    FCurrentModuleTabGroup = TModuleSwitchEnum.msPartner;
+
                     break;
 
                 case TPartnerEditTabPageEnum.petpFoundationDetails:
@@ -2236,7 +2312,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
 
                     FInitiallySelectedTabPage = FShowTabPage;
-                    FCurrentModuleTabGroup = TModuleSwitchEnum.msPartner;
+
                     break;
 
                 case TPartnerEditTabPageEnum.petpFamilyMembers:
@@ -2248,7 +2324,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
 
                     FInitiallySelectedTabPage = FShowTabPage;
-                    FCurrentModuleTabGroup = TModuleSwitchEnum.msPartner;
+
                     break;
 
                 case TPartnerEditTabPageEnum.petpOfficeSpecific:
@@ -2259,46 +2335,50 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
 
                     FInitiallySelectedTabPage = FShowTabPage;
-                    FCurrentModuleTabGroup = TModuleSwitchEnum.msPartner;
+
                     break;
 
                 case TPartnerEditTabPageEnum.petpAddresses:
                 case TPartnerEditTabPageEnum.petpDetails:
                 case TPartnerEditTabPageEnum.petpSubscriptions:
                 case TPartnerEditTabPageEnum.petpPartnerTypes:
+                case TPartnerEditTabPageEnum.petpPartnerRelationships:
                 case TPartnerEditTabPageEnum.petpNotes:
                     FInitiallySelectedTabPage = FShowTabPage;
-                    FCurrentModuleTabGroup = TModuleSwitchEnum.msPartner;
+
                     break;
 
 #if  SHOWUNFINISHEDTABS
-                case TPartnerEditTabPageEnum.petpRelationships:
                 case TPartnerEditTabPageEnum.petpContacts:
                 case TPartnerEditTabPageEnum.petpReminders:
                 case TPartnerEditTabPageEnum.petpInterests:
                     FInitiallySelectedTabPage = FShowTabPage;
-                    FCurrentModuleTabGroup = TModuleSwitchEnum.msPartner;
+
                     break;
 
 #else
-                case TPartnerEditTabPageEnum.petpRelationships:
                 case TPartnerEditTabPageEnum.petpContacts:
                 case TPartnerEditTabPageEnum.petpReminders:
                 case TPartnerEditTabPageEnum.petpInterests:
                     FShowTabPage = TPartnerEditTabPageEnum.petpAddresses;
                     FInitiallySelectedTabPage = FShowTabPage;
-                    FCurrentModuleTabGroup = TModuleSwitchEnum.msPartner;
+
                     break;
 #endif
-                default:
 
-                    // Fallback
-#if TODO
-                    ucoPartnerTabSet.InitiallySelectedTabPage = TPartnerEditTabPageEnum.petpAddresses;
-                    FCurrentModuleTabGroup = TModuleSwitchEnum.msPartner;
-#endif
+                case TPartnerEditTabPageEnum.petpPersonnelIndividualData:
+                case TPartnerEditTabPageEnum.petpPersonnelApplications:
+                    FInitiallySelectedTabPage = FShowTabPage;
+
+                    break;
+
+                default:
+                    FInitiallySelectedTabPage = TPartnerEditTabPageEnum.petpAddresses;
+
                     break;
             }
+
+            FCurrentModuleTabGroup = TPartnerEditScreenLogic.DetermineTabGroup(FInitiallySelectedTabPage);
         }
 
         /// <summary>
@@ -2325,17 +2405,16 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// Sets Module-related Toggle Buttons in ToolBar up
         /// </summary>
         /// <returns>void</returns>
-        private void SetupAvailableModuleDataItems(Boolean AEnable, TModuleSwitchEnum ALockOnModule)
+        private void SetupAvailableModuleDataItems(Boolean AEnable, TPartnerEditScreenLogic.TModuleTabGroupEnum ALockOnModule)
         {
-// TODO enable disable buttons
-#if TODO
             Boolean IsEnabled = false;
 
             // TODO 2 oChristianK cSecurity : Take security settings into consideration.
             // Partner Module Data
-            if ((ALockOnModule == TModuleSwitchEnum.msNone) || (ALockOnModule == TModuleSwitchEnum.msPartner))
+            if ((ALockOnModule == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgNone)
+                || (ALockOnModule == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner))
             {
-                if (ALockOnModule == TModuleSwitchEnum.msPartner)
+                if (ALockOnModule == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner)
                 {
                     IsEnabled = false;
                 }
@@ -2344,26 +2423,33 @@ namespace Ict.Petra.Client.MPartner.Gui
                     IsEnabled = AEnable;
                 }
 
-                tbbTogglePartner.Enabled = IsEnabled;
-                mniViewPartnerData.Enabled = IsEnabled;
-
                 if (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
                 {
+                    tbbViewPartnerData.Enabled = IsEnabled;
+                    mniViewPartnerData.Enabled = IsEnabled;
+
                     mniMaintainFamilyMembers.Enabled = IsEnabled;
                     mniMaintainWorkerField.Enabled = IsEnabled;
                     mniMaintainFamilyMembers.Text = Resourcestrings.StrFamilyMenuItemText;
 
-                    // Exchange the 'Family Members' icon with the 'Family' icon!
-                    this.XPMenuItemExtender.SetMenuGlyph(this.mniMaintainFamilyMembers, imlMenuHelper.Images[0]);
+                    // TODO
+//                    // Exchange the 'Family Members' icon with the 'Family' icon!
+//                    this.XPMenuItemExtender.SetMenuGlyph(this.mniMaintainFamilyMembers, imlMenuHelper.Images[0]);
                 }
                 else if (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.FAMILY))
                 {
+                    tbbViewPartnerData.Enabled = false;
+                    mniViewPartnerData.Enabled = false;
+
                     mniMaintainFamilyMembers.Enabled = IsEnabled;
                     mniMaintainWorkerField.Enabled = IsEnabled;
                     mniMaintainFamilyMembers.Text = Resourcestrings.StrFamilyMembersMenuItemText;
                 }
                 else
                 {
+                    tbbViewPartnerData.Enabled = false;
+                    mniViewPartnerData.Enabled = false;
+
                     // Following functionality is available only for PERSON and FAMILY
                     mniMaintainFamilyMembers.Enabled = false;
                     mniMaintainWorkerField.Enabled = false;
@@ -2380,7 +2466,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 mniMaintainSubscriptions.Enabled = IsEnabled;
                 mniMaintainSpecialTypes.Enabled = IsEnabled;
-                mniMaintainOfficeSpecific.Enabled = IsEnabled;
+                mniMaintainLocalPartnerData.Enabled = IsEnabled;
                 mniMaintainInterests.Enabled = IsEnabled;
                 mniMaintainReminders.Enabled = IsEnabled;
                 mniMaintainRelationships.Enabled = IsEnabled;
@@ -2390,8 +2476,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
-                tbbTogglePartner.Enabled = (!IsEnabled);
-                mniViewFinanceData.Enabled = (!IsEnabled);
+                tbbViewPartnerData.Enabled = (!IsEnabled);
+                tbbViewPartnerData.Enabled = (!IsEnabled);
                 mniMaintainAddresses.Enabled = (!IsEnabled);
                 mniEditFindNewAddress.Enabled = (!IsEnabled);
                 mniMaintainPartnerDetails.Enabled = (!IsEnabled);
@@ -2403,7 +2489,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 mniMaintainSubscriptions.Enabled = (!IsEnabled);
                 mniMaintainSpecialTypes.Enabled = (!IsEnabled);
-                mniMaintainOfficeSpecific.Enabled = (!IsEnabled);
+                mniMaintainLocalPartnerData.Enabled = (!IsEnabled);
                 mniMaintainInterests.Enabled = (!IsEnabled);
                 mniMaintainReminders.Enabled = (!IsEnabled);
                 mniMaintainFamilyMembers.Enabled = (!IsEnabled);
@@ -2415,45 +2501,54 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             // Personnel Module Data
-            if ((ALockOnModule == TModuleSwitchEnum.msNone) || (ALockOnModule == TModuleSwitchEnum.msPersonnel))
+            if ((ALockOnModule == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgNone)
+                || (ALockOnModule == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPersonnel))
             {
                 if (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
                 {
-                    tbbTogglePersonnel.Enabled = AEnable;
-                    mniViewPersonnelData.Enabled = AEnable;
-                    mniMaintainPersonnelIndividualData.Enabled = AEnable;
-                    mniMaintainPersonnelIndividualData.Text = Resourcestrings.StrPersonnelPersonMenuItemText;
+                    if (UserHasPersonnelAccess())
+                    {
+                        tbbViewPersonnelData.Enabled = AEnable;
+                        mniViewPersonnelData.Enabled = AEnable;
+                        mniMaintainPersonnelData.Enabled = AEnable;
+                    }
+                    else
+                    {
+                        tbbViewPersonnelData.Enabled = false;
+                        mniViewPersonnelData.Enabled = false;
+                        mniMaintainPersonnelData.Enabled = false;
+                    }
+
+                    mniMaintainPersonnelData.Text = Resourcestrings.StrPersonnelPersonMenuItemText;
                 }
                 else if (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.UNIT))
                 {
-                    mniMaintainPersonnelIndividualData.Enabled = AEnable;
-                    mniMaintainPersonnelIndividualData.Text = Resourcestrings.StrPersonnelUnitMenuItemText;
+                    mniMaintainPersonnelData.Enabled = AEnable;
+                    tbbViewPersonnelData.Enabled = false;
+                    mniViewPersonnelData.Enabled = false;
+
+                    mniMaintainPersonnelData.Text = Resourcestrings.StrPersonnelUnitMenuItemText;
                 }
                 else
                 {
-                    tbbTogglePersonnel.Enabled = (!AEnable);
+                    tbbViewPersonnelData.Enabled = (!AEnable);
                     mniViewPersonnelData.Enabled = (!AEnable);
-                    mniMaintainPersonnelIndividualData.Enabled = (!AEnable);
+                    mniMaintainPersonnelData.Enabled = (!AEnable);
                 }
             }
             else
             {
-                tbbTogglePersonnel.Enabled = (!AEnable);
+                tbbViewPersonnelData.Enabled = (!AEnable);
                 mniViewPersonnelData.Enabled = (!AEnable);
-                mniMaintainPersonnelIndividualData.Enabled = (!AEnable);
+                mniMaintainPersonnelData.Enabled = (!AEnable);
             }
 
-#if  ENABLEMODULESWITCHBUTTONS
-#else
-            tbbTogglePersonnel.Enabled = false;
-            mniViewPersonnelData.Enabled = false;
-#endif
-
             // Finance Module Data
-            if ((ALockOnModule == TModuleSwitchEnum.msNone) || (ALockOnModule == TModuleSwitchEnum.msFinance))
+            if ((ALockOnModule == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgNone)
+                || (ALockOnModule == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgFinance))
             {
-                tbbToggleFinance.Enabled = AEnable;
-                mniViewFinanceData.Enabled = AEnable;
+                //tbbViewFinanceData.Enabled = AEnable;   // This Tab Group is not functional yet
+                //mniViewFinanceData.Enabled = AEnable;   // This Tab Group is not functional yet
                 mniMaintainDonorHistory.Enabled = AEnable;
                 mniMaintainRecipientHistory.Enabled = AEnable;
 
@@ -2464,8 +2559,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
-                tbbToggleFinance.Enabled = (!AEnable);
-                mniViewFinanceData.Enabled = (!AEnable);
+                //tbbViewFinanceData.Enabled = (!AEnable);    // This Tab Group is not functional yet
+                //mniViewFinanceData.Enabled = (!AEnable);    // This Tab Group is not functional yet
                 mniMaintainDonorHistory.Enabled = (!AEnable);
                 mniMaintainRecipientHistory.Enabled = (!AEnable);
 
@@ -2479,22 +2574,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             mniMaintainFinanceReports.Visible = false;
             mniMaintainBankAccounts.Visible = false;
             mniMaintainGiftReceipting.Visible = false;
-#if  ENABLEMODULESWITCHBUTTONS
-#else
-            tbbToggleFinance.Enabled = false;
-            mniViewFinanceData.Enabled = false;
-#endif
-#if SHOWMODULESWITCHBUTTONS
-            tbbSeparator2.Visible = true;
-            mniViewSeparator1.Visible = true;
-            tbbTogglePartner.Visible = true;
-            mniViewPartnerData.Visible = true;
-            tbbTogglePersonnel.Visible = true;
-            mniViewPersonnelData.Visible = true;
-            tbbToggleFinance.Visible = true;
-            mniViewFinanceData.Visible = true;
-#endif
-#endif
         }
 
         private bool CheckSecurityOKToCreateNewPartner(Boolean AShowMessage)
@@ -2771,7 +2850,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FMainDS.PDataLabelValuePartner.ColumnChanging += new DataColumnChangeEventHandler(FPetraUtilsObject.OnAnyDataColumnChanging);
                     break;
 
-                case TPartnerEditTabPageEnum.petpRelationships:
+                case TPartnerEditTabPageEnum.petpPartnerRelationships:
+                    FMainDS.PPartnerRelationship.ColumnChanging += new DataColumnChangeEventHandler(FPetraUtilsObject.OnAnyDataColumnChanging);
+                    FMainDS.PPartnerRelationship.RowDeleting += new DataRowChangeEventHandler(FPetraUtilsObject.OnAnyDataRowChanging);
                     break;
 
                 case TPartnerEditTabPageEnum.petpContacts:

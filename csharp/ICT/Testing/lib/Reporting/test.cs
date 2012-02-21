@@ -67,7 +67,7 @@ namespace Tests.Reporting
         {
             new TLogging("test.log");
 
-            // todo: what about different cultures?
+            // TODO: what about different cultures?
             OrigCulture = new CultureInfo("en-GB", false);
             Thread.CurrentThread.CurrentCulture = OrigCulture;
             TPetraConnector.Connect("../../etc/TestClient.config");

@@ -33,6 +33,9 @@ using Ict.Common.DB;
 using Ict.Common.Data;
 using Ict.Common.IO;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Server;
+using Ict.Common.Remoting.Shared;
+using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.ImportExport;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -77,7 +80,7 @@ namespace Tests.MPartner.Server.PartnerExports
 
             TVerificationResultCollection VerificationResult;
             TPartnerFileImport importer = new TPartnerFileImport();
-            PartnerImportExportTDS MainDS = importer.ImportAllData(lines, SelectedEventCode, true, out VerificationResult);
+            PartnerImportExportTDS MainDS = importer.ImportAllData(lines, SelectedEventCode, false, out VerificationResult);
 
             if (VerificationResult.HasCriticalError())
             {

@@ -3,8 +3,9 @@
 //
 // @Authors:
 //       timop
+//       Tim Ingham
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -32,13 +33,193 @@ using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MFinance.Gui.GL;
+using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Shared.Interfaces.MFinance.AP.UIConnectors;
 
 namespace Ict.Petra.Client.MFinance.Gui.AP
 {
     public partial class TFrmAPEditDocument
     {
+        ALedgerRow FLedgerRow = null;
+
+        private void InitializeManualCode()
+        {
+        }
+
+        private void RunOnceOnActivationManual()
+        {
+        }
+
+        private void EnableControls()
+        {
+            // I need to make everything read-only if this document was already posted.
+            if ("|POSTED|PARTPAID|PAID|".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) > 0)
+            {
+                tbbPostDocument.Enabled = false;
+
+                txtSupplierName.Enabled = false;
+                txtSupplierCurrency.Enabled = false;
+                txtDocumentCode.Enabled = false;
+                cmbDocumentType.Enabled = false;
+                txtReference.Enabled = false;
+                dtpDateIssued.Enabled = false;
+                dtpDateDue.Enabled = false;
+                nudCreditTerms.Enabled = false;
+                nudDiscountDays.Enabled = false;
+                txtDiscountPercentage.Enabled = false;
+                txtTotalAmount.Enabled = false;
+                txtExchangeRateToBase.Enabled = false;
+
+                btnAddDetail.Enabled = false;
+                btnRemoveDetail.Enabled = false;
+                btnAnalysisAttributes.Enabled = false;
+
+                txtDetailNarrative.Enabled = false;
+                txtDetailItemRef.Enabled = false;
+                txtDetailAmount.Enabled = false;
+                cmbDetailCostCentreCode.Enabled = false;
+                btnUseTaxAccount.Enabled = false;
+                txtDetailBaseAmount.Enabled = false;
+                cmbDetailAccountCode.Enabled = false;
+            }
+            else
+            {
+                btnRemoveDetail.Enabled = (GetSelectedDetailRow() != null);
+            }
+        }
+
+        private static bool DetailLineAttributesRequired(ref bool AllPresent, AccountsPayableTDS Atds, AApDocumentDetailRow DetailRow)
+        {
+            Atds.AAnalysisAttribute.DefaultView.RowFilter =
+                String.Format("{0}={1}", AAnalysisAttributeTable.GetAccountCodeDBName(), DetailRow.AccountCode);         // Do I need Cost Centre in here too?
+
+            if (Atds.AAnalysisAttribute.DefaultView.Count > 0)
+            {
+                bool IhaveAllMyAttributes = true;
+
+                //
+                // It's possible that my TDS doesn't even have an AnalAttrib table...
+
+                if (Atds.AApAnalAttrib == null)
+                {
+                    Atds.Merge(new AApAnalAttribTable());
+                }
+                foreach (DataRowView rv in Atds.AAnalysisAttribute.DefaultView)
+                {
+                    AAnalysisAttributeRow AttrRow = (AAnalysisAttributeRow)rv.Row;
+
+                    Atds.AApAnalAttrib.DefaultView.RowFilter =
+                        String.Format("{0}={1} AND {2}={3}",
+                            AApAnalAttribTable.GetDetailNumberDBName(), DetailRow.DetailNumber,
+                            AApAnalAttribTable.GetAccountCodeDBName(), AttrRow.AccountCode);
+
+                    if (Atds.AApAnalAttrib.DefaultView.Count == 0)
+                    {
+                        IhaveAllMyAttributes = false;
+                        break;
+                    }
+                }
+
+                if (IhaveAllMyAttributes)
+                {
+                    AllPresent = true;         // This detail line is fully specified
+                }
+                else
+                {
+                    AllPresent = false;         // This detail line requires attributes
+                }
+
+                return true;
+            }
+            else
+            {
+                AllPresent = true; // This detail line is fully specified
+                return false;         // No attributes are required
+            }
+        }
+
+        /// <summary>
+        /// When an account is selected for a detail line,
+        /// I need to determine whether analysis attributes are required for this account
+        /// and if they are, whether I already have all the attributes required.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+
+        private void CheckAccountRequiredAttr(Object sender, EventArgs e)
+        {
+            string AccountCode = cmbDetailAccountCode.GetSelectedString();
+
+            if (AccountCode.Length == 0)
+            {
+                return;
+            }
+
+            FPreviouslySelectedDetailRow.AccountCode = AccountCode;
+
+            bool AllPresent = true;
+
+            if (DetailLineAttributesRequired(ref AllPresent, FMainDS, FPreviouslySelectedDetailRow))
+            {
+                btnAnalysisAttributes.Enabled = true;
+
+                if (AllPresent)
+                {
+                    btnAnalysisAttributes.ForeColor = System.Drawing.Color.Green;             // This detail line is fully specified
+                }
+                else
+                {
+                    btnAnalysisAttributes.ForeColor = System.Drawing.Color.Red;             // This detail line requires attributes
+                }
+            }
+            else
+            {
+                btnAnalysisAttributes.Enabled = false;         // No attributes are required
+            }
+        }
+
+        private void ShowDataManual()
+        {
+            AccountsPayableTDSAApDocumentRow DocumentRow = FMainDS.AApDocument[0];
+            AApSupplierRow SupplierRow = FMainDS.AApSupplier[0];
+            txtTotalAmount.CurrencySymbol = SupplierRow.CurrencyCode;
+            txtDetailAmount.CurrencySymbol = SupplierRow.CurrencyCode;
+
+            IAPUIConnectorsFind FSupplierFindObject = TRemote.MFinance.AP.UIConnectors.Find();
+            ALedgerTable Tbl = FSupplierFindObject.GetLedgerInfo(DocumentRow.LedgerNumber);
+            FLedgerRow = Tbl[0];
+            txtDetailBaseAmount.CurrencySymbol = FLedgerRow.BaseCurrency;
+
+            if (FMainDS.AApDocumentDetail != null) // When the form is new, this can be null.
+            {
+                // Create Text description of Anal Attribs for each DetailRow..
+                foreach (AccountsPayableTDSAApDocumentDetailRow DetailRow in FMainDS.AApDocumentDetail.Rows)
+                {
+                    string strAnalAttr = "";
+                    FMainDS.AApAnalAttrib.DefaultView.RowFilter =
+                        String.Format("{0}={1}", AApAnalAttribTable.GetDetailNumberDBName(), DetailRow.DetailNumber);
+
+                    foreach (DataRowView rv in FMainDS.AApAnalAttrib.DefaultView)
+                    {
+                        AApAnalAttribRow Row = (AApAnalAttribRow)rv.Row;
+
+                        if (strAnalAttr.Length > 0)
+                        {
+                            strAnalAttr += ", ";
+                        }
+
+                        strAnalAttr += (Row.AnalysisTypeCode + "=" + Row.AnalysisAttributeValue);
+                    }
+
+                    DetailRow.AnalAttr = strAnalAttr;
+                }
+            }
+
+            EnableControls();
+        }
+
         private void NewDetail(Object sender, EventArgs e)
         {
             // get the entered amounts, so that we can calculate the missing amount for the new detail
@@ -50,7 +231,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 foreach (AApDocumentDetailRow detailRow in FMainDS.AApDocumentDetail.Rows)
                 {
-                    DetailAmount -= detailRow.Amount;
+                    if (detailRow.RowState != DataRowState.Deleted)
+                    {
+                        DetailAmount -= detailRow.Amount;
+                    }
                 }
             }
 
@@ -68,8 +252,60 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 FMainDS.AApDocument[0].LastDetailNumber);
             FMainDS.AApDocument[0].LastDetailNumber++;
 
-            // for the moment, set all to approved, since we don't support approval of documents at the moment
+            // for the moment, set all to approved, since we don't yet support approval of documents
             FMainDS.AApDocument[0].DocumentStatus = MFinanceConstants.AP_DOCUMENT_APPROVED;
+            EnableControls();
+            txtDetailNarrative.Focus();
+        }
+
+        private void RemoveDetail(Object sender, EventArgs e)
+        {
+            AApDocumentDetailRow Row = GetSelectedDetailRow();
+
+            if (Row == null)
+            {
+                return;
+            }
+
+            GetDataFromControls(FMainDS.AApDocument[0]);
+            int rowIndex = grdDetails.Selection.GetSelectionRegion().GetRowsIndex()[0];
+//          MessageBox.Show("Deleting "+ Row.Narrative, "Remove Row");
+
+            Row.Delete();          // This row is not removed, but marked for deletion.
+
+            // I have to prevent the auto-generated code from attempting to access this deleted row.
+            grdDetails.Selection.SelectRow(rowIndex, true);
+            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+            if (FPreviouslySelectedDetailRow != null)
+            {
+                ShowDetails(FPreviouslySelectedDetailRow);
+            }
+            // Then I need to re-draw the grid, and enable controls as appropriate.
+            grdDetails.Refresh();
+            FPetraUtilsObject.SetChangedFlag();
+            EnableControls();
+        }
+
+        /// <summary>
+        /// Display the Analysis Attributes form for this selected detail
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Analyse(Object sender, EventArgs e)
+        {
+            TFrmAPAnalysisAttributes AnalAttrForm = new TFrmAPAnalysisAttributes(this);
+
+            GetDetailsFromControls(FPreviouslySelectedDetailRow);
+
+            AnalAttrForm.Initialise(ref FMainDS, FPreviouslySelectedDetailRow);
+            AnalAttrForm.ShowDialog();
+            ShowData(FMainDS.AApDocument[0]);
+//          CheckAccountRequiredAttr(null, null);
+            FPetraUtilsObject.SetChangedFlag();
+        }
+
+        private void UseTaxAccount(Object sender, EventArgs e)
+        {
         }
 
         private void UpdateCreditTerms(object sender, TPetraDateChangedEventArgs e)
@@ -107,51 +343,147 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// initialise some comboboxes
         private void BeforeShowDetailsManual(AApDocumentDetailRow ARow)
         {
+            grdDetails.Columns[1].Width = pnlDetailGrid.Width - 380;      // It doesn't really work having these here -
+            grdDetails.Columns[0].Width = 90;                          // there's something else that overrides these settings.
+            grdDetails.Columns[2].Width = 200;
+            grdDetails.Columns[3].Width = 90;
+
             // if this form is readonly, then we need all account and cost centre codes, because old codes might have been used
             bool ActiveOnly = this.Enabled;
 
             TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, ARow.LedgerNumber, true, false, ActiveOnly, false);
             TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, ARow.LedgerNumber, true, false, ActiveOnly, false);
+            EnableControls();
+
+            if (ARow.IsAmountNull() || (FMainDS.AApDocument[0].IsExchangeRateToBaseNull() || (FMainDS.AApDocument[0].ExchangeRateToBase == 0)))
+            {
+                txtDetailBaseAmount.NumberValueDecimal = null;
+            }
+            else
+            {
+                decimal DetailAmount = Convert.ToDecimal(ARow.Amount);
+                DetailAmount *= FMainDS.AApDocument[0].ExchangeRateToBase;
+                txtDetailBaseAmount.NumberValueDecimal = DetailAmount;
+            }
         }
 
         /// <summary>
-        /// Post document as a GL Batch
-        /// see very similar function in TFrmAPSupplierTransactions
+        /// 
         /// </summary>
-        private void PostDocument(object sender, EventArgs e)
+        /// <param name="Atds"></param>
+        /// <param name="AApDocument"></param>
+        /// <returns>true if the document TotalAmount equals the sum of its parts!</returns>
+        public static bool BatchBalancesOK(AccountsPayableTDS Atds, AApDocumentRow AApDocument)
         {
-            List <Int32>TaggedDocuments = new List <Int32>();
+            decimal DocumentBalance = AApDocument.TotalAmount;
 
-            TaggedDocuments.Add(FMainDS.AApDocument[0].ApNumber);
-
-            if (TaggedDocuments.Count == 0)
+            foreach (AApDocumentDetailRow Row in Atds.AApDocumentDetail.Rows)
             {
-                return;
+                if (Row.ApNumber == AApDocument.ApNumber) // NOTE: When called from elsewhere, the TDS could contain data for several documents.
+                {
+                    DocumentBalance -= Row.Amount;
+                }
             }
 
-            // TODO: make sure that there are uptodate exchange rates
+            if (DocumentBalance == 0.0m)
+            {
+                return true;
+            }
+            else
+            {
+                System.Windows.Forms.MessageBox.Show(Catalog.GetString(
+                        "The document Amount does not equal the sum of the detail lines."), Catalog.GetString("Balance Problem"));
+                return false;
+            }
+        }
 
+        /// <summary>
+        /// Check the required analysis attributes for the detail lines in this invoice
+        /// </summary>
+        /// <param name="Atds"></param>
+        /// <param name="AApDocument"></param>
+        /// <returns>false if any lines don't have the analysis attributes they require</returns>
+        public static bool AllLinesHaveAttributes(AccountsPayableTDS Atds, AApDocumentRow AApDocument)
+        {
+            foreach (AApDocumentDetailRow Row in Atds.AApDocumentDetail.Rows)
+            {
+                if (Row.ApNumber == AApDocument.ApNumber)  // NOTE: When called from elsewhere, the TDS could contain data for several documents.
+                {
+                    bool AllPresent = true;
+
+                    if (DetailLineAttributesRequired(ref AllPresent, Atds, Row))
+                    {
+                        if (!AllPresent)
+                        {
+                            System.Windows.Forms.MessageBox.Show(
+                                String.Format(Catalog.GetString("Analysis Attributes are required for account {0}."), Row.AccountCode),
+                                Catalog.GetString("Analysis Attributes"));
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// This static function is called from several places
+        /// </summary>
+        /// <param name="Atds"></param>
+        /// <param name="Adocument"></param>
+        /// <returns>true if this document seems OK to post.</returns>
+        public static bool ApDocumentCanPost (AccountsPayableTDS Atds, AApDocumentRow Adocument)
+        {
+           // If the batch will not balance, or required attributes are missing, I'll stop right here..
+            bool CanPost = true;
+
+            if (!BatchBalancesOK(Atds, Adocument))
+            {
+                CanPost = false;
+            }
+
+            if (!AllLinesHaveAttributes(Atds, Adocument))
+            {
+                CanPost = false;
+            }
+
+            return CanPost;
+        }
+
+        /// <summary>
+        /// Post a list of AP documents
+        /// This static function is called from several places
+        /// /// </summary>
+        /// <returns>true if everything went OK</returns>
+        public static bool PostApDocumentList(AccountsPayableTDS Atds, int ALedgerNumber, List<int> AApDocumentNumbers)
+        {
             TVerificationResultCollection Verifications;
 
             TDlgGLEnterDateEffective dateEffectiveDialog = new TDlgGLEnterDateEffective(
-                FMainDS.AApDocument[0].LedgerNumber,
+                ALedgerNumber,
                 Catalog.GetString("Select posting date"),
                 Catalog.GetString("The date effective for posting") + ":");
 
             if (dateEffectiveDialog.ShowDialog() != DialogResult.OK)
             {
-                MessageBox.Show(Catalog.GetString("The payment was cancelled."), Catalog.GetString(
+                MessageBox.Show(Catalog.GetString("Posting was cancelled."), Catalog.GetString(
                         "No Success"), MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+                return false;
             }
 
             DateTime PostingDate = dateEffectiveDialog.SelectedDate;
 
-            if (!TRemote.MFinance.AP.WebConnectors.PostAPDocuments(
-                    FMainDS.AApDocument[0].LedgerNumber,
-                    TaggedDocuments,
-                    PostingDate,
-                    out Verifications))
+
+            if (TRemote.MFinance.AP.WebConnectors.PostAPDocuments(
+                   ALedgerNumber,
+                   AApDocumentNumbers,
+                   PostingDate,
+                   out Verifications))
+            {
+                return true;
+            }
+            else
             {
                 string ErrorMessages = String.Empty;
 
@@ -164,16 +496,52 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                 System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Posting failed"));
             }
-            else
+                return false;
+        }
+
+        /// <summary>
+        /// Post document as a GL Batch
+        /// See very similar function in TFrmAPSupplierTransactions
+        /// </summary>
+        private void PostDocument(object sender, EventArgs e)
+        {
+            GetDataFromControls(FMainDS.AApDocument[0]);
+
+            // TODO: make sure that there are uptodate exchange rates
+
+            if (!ApDocumentCanPost(FMainDS, FMainDS.AApDocument[0]))
+                return;
+
+            List<Int32> TaggedDocuments = new List<Int32>();
+
+            TaggedDocuments.Add(FMainDS.AApDocument[0].ApNumber);
+
+            if (PostApDocumentList(FMainDS, FMainDS.AApDocument[0].LedgerNumber, TaggedDocuments))
             {
+
                 // TODO: print reports on successfully posted batch
                 MessageBox.Show(Catalog.GetString("The AP document has been posted successfully!"));
 
                 // TODO: show posting register of GL Batch?
 
-                // TODO: refresh the screen, to reflect that the transactions have been posted
-                // TODO: refresh/notify other screens as well?
+                EnableControls();
+                Form Opener = FPetraUtilsObject.GetCallerForm();
+
+                if (Opener.GetType() == typeof(TFrmAPSupplierTransactions))
+                {
+                    ((TFrmAPSupplierTransactions)Opener).Reload();
+                }
             }
+        }
+
+        private void PayDocument(object sender, EventArgs e)
+        {
+            TFrmAPPayment PaymentScreen = new TFrmAPPayment(this);
+            List<int> PayTheseDocs = new List<int>();
+
+            PayTheseDocs.Add(FMainDS.AApDocument[0].ApNumber);
+            PaymentScreen.AddDocumentsToPayment(FMainDS, PayTheseDocs);
+            PaymentScreen.Show();
         }
     }
 }

@@ -1,42 +1,42 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="systemsettings" value="True" />
-  <Parameter id="xmlfiles" value="Personnel\\jobassignmentreport.xml,Personnel\\personnel.xml" />
-  <Parameter id="currentReport" value="Job Assignment Report" />
-  <Parameter id="MaxDisplayColumns" value="8" />
-  <Parameter id="param_selection" value="all current staff" />
-  <Parameter id="param_extract" value="" />
-  <Parameter id="param_partnerkey" value="0" />
-  <Parameter id="orderby0" value="Partner Name" />
-  <Parameter id="orderby1" value="Start Date" />
-  <Parameter id="orderby2" value="Role Key" />
-  <Parameter id="param_sortby_readable" value="Partner Name, Start Date, Role Key" />
-  <Parameter id="param_calculation" column="8" value="Partner Name" />
-  <Parameter id="param_calculation" column="9" value="Start Date" />
-  <Parameter id="param_calculation" column="10" value="Role Key" />
-  <Parameter id="param_sortby_columns" value="8,9,10" />
-  <Parameter id="param_calculation" column="0" value="Partner Key" />
-  <Parameter id="ColumnWidth" column="0" value="2" />
-  <Parameter id="param_ytd" column="0" value="false" />
-  <Parameter id="param_calculation" column="1" value="Partner Name" />
-  <Parameter id="ColumnWidth" column="1" value="5" />
-  <Parameter id="param_ytd" column="1" value="false" />
-  <Parameter id="param_calculation" column="2" value="Start Date" />
-  <Parameter id="ColumnWidth" column="2" value="2" />
-  <Parameter id="param_ytd" column="2" value="false" />
-  <Parameter id="param_calculation" column="3" value="End Date" />
-  <Parameter id="ColumnWidth" column="3" value="2" />
-  <Parameter id="param_ytd" column="3" value="false" />
-  <Parameter id="param_calculation" column="4" value="Field Name" />
-  <Parameter id="ColumnWidth" column="4" value="4" />
-  <Parameter id="param_ytd" column="4" value="false" />
-  <Parameter id="param_calculation" column="5" value="Role Key" />
-  <Parameter id="ColumnWidth" column="5" value="4" />
-  <Parameter id="param_ytd" column="5" value="false" />
-  <Parameter id="param_calculation" column="6" value="Role Name" />
-  <Parameter id="ColumnWidth" column="6" value="6" />
-  <Parameter id="param_ytd" column="6" value="false" />
-  <Parameter id="param_calculation" column="7" value="Assistant" />
-  <Parameter id="ColumnWidth" column="7" value="2" />
-  <Parameter id="param_ytd" column="7" value="false" />
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:Personnel\\jobassignmentreport.xml,Personnel\\personnel.xml" />
+  <Parameter id="currentReport" value="eString:Job Assignment Report" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:8" />
+  <Parameter id="param_selection" value="eString:all current staff" />
+  <Parameter id="param_extract" value="eString:" />
+  <Parameter id="param_partnerkey" value="eInteger:0" />
+  <Parameter id="orderby0" value="eString:Partner Name" />
+  <Parameter id="orderby1" value="eString:Start Date" />
+  <Parameter id="orderby2" value="eString:Role Key" />
+  <Parameter id="param_sortby_readable" value="eString:Partner Name, Start Date, Role Key" />
+  <Parameter id="param_calculation" column="8" value="eString:Partner Name" />
+  <Parameter id="param_calculation" column="9" value="eString:Start Date" />
+  <Parameter id="param_calculation" column="10" value="eString:Role Key" />
+  <Parameter id="param_sortby_columns" value="eString:8,9,10" />
+  <Parameter id="param_calculation" column="0" value="eString:Partner Key" />
+  <Parameter id="ColumnWidth" column="0" value="eInteger:2" />
+  <Parameter id="param_ytd" column="0" value="eString:false" />
+  <Parameter id="param_calculation" column="1" value="eString:Partner Name" />
+  <Parameter id="ColumnWidth" column="1" value="eInteger:5" />
+  <Parameter id="param_ytd" column="1" value="eString:false" />
+  <Parameter id="param_calculation" column="2" value="eString:Start Date" />
+  <Parameter id="ColumnWidth" column="2" value="eInteger:2" />
+  <Parameter id="param_ytd" column="2" value="eString:false" />
+  <Parameter id="param_calculation" column="3" value="eString:End Date" />
+  <Parameter id="ColumnWidth" column="3" value="eInteger:2" />
+  <Parameter id="param_ytd" column="3" value="eString:false" />
+  <Parameter id="param_calculation" column="4" value="eString:Field Name" />
+  <Parameter id="ColumnWidth" column="4" value="eInteger:4" />
+  <Parameter id="param_ytd" column="4" value="eString:false" />
+  <Parameter id="param_calculation" column="5" value="eString:Role Key" />
+  <Parameter id="ColumnWidth" column="5" value="eInteger:4" />
+  <Parameter id="param_ytd" column="5" value="eString:false" />
+  <Parameter id="param_calculation" column="6" value="eString:Role Name" />
+  <Parameter id="ColumnWidth" column="6" value="eInteger:6" />
+  <Parameter id="param_ytd" column="6" value="eString:false" />
+  <Parameter id="param_calculation" column="7" value="eString:Assistant" />
+  <Parameter id="ColumnWidth" column="7" value="eInteger:2" />
+  <Parameter id="param_ytd" column="7" value="eString:false" />
 </Parameters>

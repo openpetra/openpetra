@@ -25,9 +25,10 @@ using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using Ict.Testing.NUnitForms;
+using Ict.Common.Verification;
 using Ict.Petra.Server.MFinance.GL;
 using Ict.Petra.Server.MFinance.Common;
-
+using Ict.Testing.NUnitPetraServer;
 
 namespace Ict.Testing.Petra.Server.MFinance.GL
 {
@@ -35,7 +36,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
     /// TestGLCommonTools
     /// </summary>
     [TestFixture]
-    public class TestGLCommonTools : CommonNUnitFunctions
+    public class TestGLCommonTools
     {
         int LedgerNumber = 43;
         /// <summary>
@@ -104,7 +105,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 new FormatConverter("nonsens");
                 Assert.Fail("No InternalException thrown");
             }
-            catch (TerminateException internalException)
+            catch (TVerificationException internalException)
             {
                 Assert.AreEqual("TCurrencyInfo03", internalException.ErrorCode, "Wrong Error Code");
             }
@@ -114,6 +115,11 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             }
         }
 
+        private void CreateInvalidCurrency()
+        {
+            new TCurrencyInfo("JPN");
+        }
+
         /// <summary>
         /// Test of the internal routine TCurrencyInfo
         /// </summary>
@@ -121,45 +127,19 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         public void Test_05_TCurrencyInfo()
         {
             Assert.AreEqual(2, new TCurrencyInfo("EUR").digits, "Number of digits: 2");
+
+            Assert.Throws <TVerificationException>(CreateInvalidCurrency, "No InternalException thrown");
             try
             {
-                new TCurrencyInfo("JPN");
-                Assert.Fail("No InternalException thrown");
+                CreateInvalidCurrency();
             }
-            catch (TerminateException internalException)
+            catch (TVerificationException internalException)
             {
                 Assert.AreEqual("TCurrencyInfo02", internalException.ErrorCode, "Wrong Error Code");
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                Assert.Fail("Other than InternalException thrown");
-            }
-
-            try
-            {
-                new TCurrencyInfo("DMG");
-                Assert.Fail("No InternalException thrown");
-            }
-            catch (TerminateException internalException)
-            {
-                if (internalException.ErrorCode.Equals("TCurrencyInfo01"))
-                {
-                    Assert.Fail("Test Data are not loaded correctly");
-                }
-                else if (internalException.ErrorCode.Equals("TCurrencyInfo02"))
-                {
-                    Assert.Pass("DMG-Test ok");
-                }
-                else
-                {
-                    Assert.AreEqual("TCurrencyInfo03",
-                        internalException.ErrorCode,
-                        "Wrong Error Code");
-                }
-            }
-            catch (Exception)
-            {
-                Assert.Fail("Other than InternalException thrown");
+                Assert.Fail("Other than InternalException thrown: " + e.GetType().ToString());
             }
         }
 
@@ -219,15 +199,15 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             TGetAccountHierarchyDetailInfo gahdi = new TGetAccountHierarchyDetailInfo(
                 new TLedgerInfo(LedgerNumber));
 
-            Assert.IsTrue(gahdi.HasNoChilds("6800"), "Base Account without childs");
-            Assert.IsFalse(gahdi.HasNoChilds("6800S"), "Root Account");
-            IList <String>list = gahdi.ChildList("7000S");
+            Assert.IsTrue(gahdi.HasNoChildren("6800"), "Base Account without childs");
+            Assert.IsFalse(gahdi.HasNoChildren("6800S"), "Root Account");
+            List <String>list = gahdi.GetChildren("7000S");
             Assert.AreEqual(2, list.Count, "Two entries ...");
             Assert.AreEqual("7000", list[0], "7000 is the first account");
             Assert.AreEqual("7010", list[1], "7010 is the second account");
             Assert.AreEqual("7000S", gahdi.GetParentAccount("7010"));
 
-            IList <String>list2 = gahdi.ChildList("ASSETS");
+            List <String>list2 = gahdi.GetChildren("ASSETS");
             Assert.AreEqual(40, list2.Count, "Atually 40 chield entries ...");
         }
 
@@ -261,10 +241,10 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         /// <summary>
         /// TestFixtureSetUp
         /// </summary>
-        [SetUp]
+        [TestFixtureSetUp]
         public void Init()
         {
-            InitServerConnection();
+            TPetraServerConnector.Connect();
             System.Diagnostics.Debug.WriteLine("Init: " + this.ToString());
         }
 
@@ -274,7 +254,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [TestFixtureTearDown]
         public void TearDownTest()
         {
-            DisconnectServerConnection();
+            TPetraServerConnector.Disconnect();
             System.Diagnostics.Debug.WriteLine("TearDown: " + this.ToString());
         }
     }

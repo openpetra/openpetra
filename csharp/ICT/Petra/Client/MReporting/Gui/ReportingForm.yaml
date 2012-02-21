@@ -6,7 +6,8 @@ RootNode:
     #don't generate this file with designer code, because it should not have the menuitems and toolbar
     FormType: abstract
     Actions:
-        actGenerateReport: {Label=&Generate, Tooltip=Generate the report, Image=Go.gif, ActionClick=FPetraUtilsObject.MI_GenerateReport_Click}
+        actGenerateReport: {Label=&Generate Report, Tooltip=Generate the report, Image=Go.gif, ActionClick=FPetraUtilsObject.MI_GenerateReport_Click}
+        actGenerateExtract: {Label=Generate &Extract, Tooltip=Generate the extract, Image=Go.gif, ActionClick=FPetraUtilsObject.MI_GenerateExtract_Click}
         actSaveSettingsAs: {Label=Save Settings &As..., Image=SaveAs.ico, ActionClick=FPetraUtilsObject.MI_SaveSettingsAs_Click}
         actSaveSettings: {Label=&Save Settings, Image=Save.ico, ActionClick=FPetraUtilsObject.MI_SaveSettings_Click}
         actLoadSettingsDialog: {Label=&Open..., ActionClick=FPetraUtilsObject.MI_LoadSettingsDialog_Click}
@@ -19,9 +20,9 @@ RootNode:
             # it is necessary to set the RootControl because tabReportSettings is not automatically the first control
             RootControl: true
             # add tpgSorting and tpgOutputDestinations and tpgColumns later
-            #~ Controls: [tpgReportSpecific]
-        #~ tpgReportSpecific:
-            #~ Order: AlwaysFirst
+#~          Controls: [tpgReportSpecific]
+#~          tpgReportSpecific:
+#~          Order: AlwaysFirst
 #        tpgColumns:
 #            Controls: [ucoReportColumns]
 #            Order: AlwaysLast
@@ -37,9 +38,9 @@ RootNode:
 #        ucoReportSorting:
 #            Type: Ict.Petra.Client.MReporting.Gui.UC_Sorting
 #            Dock: Fill
-        #~ ucoReportColumns:
-            #~ Type: Ict.Petra.Client.MReporting.Gui.UC_Columns
-            #~ Dock: Fill
+#~      ucoReportColumns:
+#~          Type: Ict.Petra.Client.MReporting.Gui.UC_Columns
+#~          Dock: Fill
     Menu:
         mniFile:
             mniLoadSettings: {Label=&Load Settings, Order=AlwaysFirst}
@@ -60,6 +61,7 @@ RootNode:
             mniSeparator: {Label=-}
     Toolbar:
         tbbGenerateReport:
+        tbbGenerateExtract:
         tbbSaveSettings:
         tbbSaveSettingsAs:
 # do we show the last few settings?

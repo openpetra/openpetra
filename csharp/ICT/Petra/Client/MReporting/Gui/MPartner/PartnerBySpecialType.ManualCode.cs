@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,10 +26,10 @@ using System.Data;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Core;
-using Ict.Petra.Shared.Interfaces;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Client.MReporting.Gui;
 using Ict.Petra.Client.MReporting.Logic;
@@ -63,8 +63,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             //clbIncludeSpecialTypes.SelectionMode = SourceGrid.GridSelectionMode.Row;
             clbIncludeSpecialTypes.Columns.Clear();
             clbIncludeSpecialTypes.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
-            clbIncludeSpecialTypes.AddTextColumn(Catalog.GetString("Type Code"), NewTable.Columns[ValueMember], 60);
-            clbIncludeSpecialTypes.AddTextColumn(Catalog.GetString("Type Description"), NewTable.Columns[DisplayMember], 200);
+            clbIncludeSpecialTypes.AddTextColumn(Catalog.GetString("Type Code"), NewTable.Columns[ValueMember], 100);
+            clbIncludeSpecialTypes.AddTextColumn(Catalog.GetString("Type Description"), NewTable.Columns[DisplayMember], 320);
             clbIncludeSpecialTypes.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
         }
 

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -471,6 +471,15 @@ namespace Ict.Common.Data
         public new void Merge(DataSet ADataSet)
         {
             base.Merge(ADataSet);
+            MapTables();
+        }
+
+        /// <summary>
+        /// overload that makes sure that the typed tables are mapped again
+        /// </summary>
+        public new void Merge(DataSet ADataSet, bool APreserveChanges)
+        {
+            base.Merge(ADataSet, APreserveChanges);
             MapTables();
         }
 

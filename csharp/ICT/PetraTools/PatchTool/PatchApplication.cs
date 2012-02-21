@@ -104,6 +104,7 @@ namespace Ict.Tools.PatchTool
             TLogging.SetStatusBarProcedure(new TLogging.TStatusCallbackProcedure(WriteToStatusWindow));
             patchTools =
                 new TPetraPatchTools(TAppSettingsManager.GetValue("OpenPetra.Path"),
+                    TAppSettingsManager.GetValue("OpenPetra.Path") + Path.DirectorySeparatorChar + "bin" + TPatchTools.OPENPETRA_VERSIONPREFIX,
                     TAppSettingsManager.GetValue("OpenPetra.PathTemp"),
                     "",                  // appOpts.GetValue("OpenPetra.Path.Dat"),
                     "",
@@ -198,12 +199,13 @@ namespace Ict.Tools.PatchTool
         /// constructor
         /// </summary>
         public TPetraPatchTools(String AInstallPath,
+            String ABinPath,
             String ATmpPath,
             String ADatPath,
             String ADBPath,
             String APatchesPath,
             String ARemotePatchesPath)
-            : base(AInstallPath, "30", ATmpPath, ADatPath, ADBPath, APatchesPath, ARemotePatchesPath)
+            : base(AInstallPath, ABinPath, TPatchTools.OPENPETRA_VERSIONPREFIX, ATmpPath, ADatPath, ADBPath, APatchesPath, ARemotePatchesPath)
         {
         }
 
@@ -290,7 +292,7 @@ namespace Ict.Tools.PatchTool
                     }
 
                     // unzip the file
-                    BZip2.Decompress(System.IO.File.OpenRead(filename), System.IO.File.OpenWrite(TargetFile));
+                    BZip2.Decompress(System.IO.File.OpenRead(filename), System.IO.File.OpenWrite(TargetFile), true);
                 }
                 else if ((action == "patch") && File.Exists(TargetFile))
                 {

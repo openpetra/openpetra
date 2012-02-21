@@ -32,6 +32,9 @@ using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MReporting.Gui.MPartner;
+using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Client.MPartner.Gui.Extracts;
+using System.Collections.Specialized;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -72,10 +75,31 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// export partners into file
         public static void ExportPartners(Form AParentForm)
         {
-            XmlDocument doc = new XmlDocument();
+            String FileName = TImportExportDialogs.GetExportFilename(Catalog.GetString("Save Partners into File"));
 
-            doc.LoadXml(TRemote.MPartner.ImportExport.WebConnectors.ExportPartners());
-            TImportExportDialogs.ExportWithDialog(doc, Catalog.GetString("Save Partners into File"));
+            if (FileName.Length > 0)
+            {
+                if (FileName.EndsWith("ext"))
+                {
+                    Int64 PartnerKey = 10000026;
+                    StringCollection ASpecificBuildingInfo = null;
+                    String doc = TRemote.MPartner.ImportExport.WebConnectors.GetExtFileHeader();
+                    Int32 SiteKey = 0;
+                    Int32 LocationKey = 0;
+
+                    doc += TRemote.MPartner.ImportExport.WebConnectors.ExportPartnerExt(
+                        PartnerKey, SiteKey, LocationKey, false, ASpecificBuildingInfo);
+
+                    doc += TRemote.MPartner.ImportExport.WebConnectors.GetExtFileFooter();
+                    TImportExportDialogs.ExportTofile(doc, FileName);
+                }
+                else
+                {
+                    XmlDocument doc = new XmlDocument();
+                    doc.LoadXml(TRemote.MPartner.ImportExport.WebConnectors.ExportPartners());
+                    TImportExportDialogs.ExportTofile(doc, FileName);
+                }
+            }
         }
 
         /// <summary>
@@ -86,6 +110,72 @@ namespace Ict.Petra.Client.MPartner.Gui
             TPartnerFindScreen frm = new TPartnerFindScreen(AParentForm);
 
             frm.SetParameters(false, -1);
+            frm.Show();
+        }
+
+        /// <summary>
+        /// open screen to create Publication Extract
+        /// </summary>
+        public static void PublicationExtract(Form AParentForm)
+        {
+            TFrmPartnerBySubscription frm = new TFrmPartnerBySubscription(AParentForm);
+
+            frm.CalledFromExtracts = true;
+            frm.Show();
+        }
+
+        /// <summary>
+        /// open screen to create "Partner by City" Extract
+        /// </summary>
+        public static void PartnerByCityExtract(Form AParentForm)
+        {
+            TFrmPartnerByCityExtract frm = new TFrmPartnerByCityExtract(AParentForm);
+
+            frm.CalledFromExtracts = true;
+            frm.Show();
+        }
+
+        /// <summary>
+        /// open screen to create "Conferece" Extract
+        /// </summary>
+        public static void PartnerByConference(Form AParentForm)
+        {
+            TFrmPartnerByEvent frm = new TFrmPartnerByEvent(AParentForm);
+
+            frm.CalledFromExtracts = true;
+            frm.CalledForConferences = true;
+            frm.Show();
+        }
+
+        /// <summary>
+        /// open screen to create "Conferece" Extract
+        /// </summary>
+        public static void PartnerByOutreach(Form AParentForm)
+        {
+            TFrmPartnerByEvent frm = new TFrmPartnerByEvent(AParentForm);
+
+            frm.CalledFromExtracts = true;
+            frm.CalledForConferences = false;
+            frm.Show();
+        }
+
+        /// <summary>
+        /// open screen to create "Partner by Special Type" Extract
+        /// </summary>
+        public static void PartnerBySpecialTypeExtract(Form AParentForm)
+        {
+            TFrmPartnerBySpecialType frm = new TFrmPartnerBySpecialType(AParentForm);
+
+            frm.CalledFromExtracts = true;
+            frm.Show();
+        }
+
+        /// Open screen for creating "Partner by Commitment" Extract
+        public static void PartnerByCommitmentExtract(Form AParentForm)
+        {
+            TFrmPartnerByCommitmentExtract frm = new TFrmPartnerByCommitmentExtract(AParentForm);
+
+            frm.CalledFromExtracts = true;
             frm.Show();
         }
     }

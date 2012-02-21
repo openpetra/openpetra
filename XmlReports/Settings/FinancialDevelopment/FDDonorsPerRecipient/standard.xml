@@ -1,65 +1,65 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="systemsettings" value="True" />
-  <Parameter id="xmlfiles" value="FinancialDevelopment/fddonorsperrecipient.xml,common.xml" />
-  <Parameter id="currentReport" value="FDDonorsPerRecipient" />
-  <Parameter id="MaxDisplayColumns" value="17" />
-  <Parameter id="param_calculation" column="0" value="DonorKey" />
-  <Parameter id="ColumnWidth" column="0" value="2.5" />
-  <Parameter id="param_ytd" column="0" value="false" />
-  <Parameter id="param_calculation" column="1" value="Firstname" />
-  <Parameter id="ColumnWidth" column="1" value="3" />
-  <Parameter id="param_ytd" column="1" value="false" />
-  <Parameter id="param_calculation" column="2" value="Surname" />
-  <Parameter id="ColumnWidth" column="2" value="3" />
-  <Parameter id="param_ytd" column="2" value="false" />
-  <Parameter id="param_calculation" column="3" value="Address line 1" />
-  <Parameter id="ColumnWidth" column="3" value="2.5" />
-  <Parameter id="param_ytd" column="3" value="false" />
-  <Parameter id="param_calculation" column="4" value="Street" />
-  <Parameter id="ColumnWidth" column="4" value="3" />
-  <Parameter id="param_ytd" column="4" value="false" />
-  <Parameter id="param_calculation" column="5" value="Post Code" />
-  <Parameter id="ColumnWidth" column="5" value="1.5" />
-  <Parameter id="param_ytd" column="5" value="false" />
-  <Parameter id="param_calculation" column="6" value="City" />
-  <Parameter id="ColumnWidth" column="6" value="3" />
-  <Parameter id="param_ytd" column="6" value="false" />
-  <Parameter id="param_calculation" column="7" value="Country" />
-  <Parameter id="ColumnWidth" column="7" value="2" />
-  <Parameter id="param_ytd" column="7" value="false" />
-  <Parameter id="param_calculation" column="8" value="Last Gift Amount" />
-  <Parameter id="ColumnWidth" column="8" value="2.5" />
-  <Parameter id="param_ytd" column="8" value="false" />
-  <Parameter id="param_calculation" column="9" value="Last Gift Comment1" />
-  <Parameter id="ColumnWidth" column="9" value="3" />
-  <Parameter id="param_ytd" column="9" value="false" />
-  <Parameter id="param_calculation" column="10" value="Last Gift Date" />
-  <Parameter id="ColumnWidth" column="10" value="2.5" />
-  <Parameter id="param_ytd" column="10" value="false" />
-  <Parameter id="param_calculation" column="11" value="Last Gift Motivation" />
-  <Parameter id="ColumnWidth" column="11" value="3" />
-  <Parameter id="param_ytd" column="11" value="false" />
-  <Parameter id="param_calculation" column="12" value="Subscriptions" />
-  <Parameter id="ColumnWidth" column="12" value="6" />
-  <Parameter id="param_ytd" column="12" value="false" />
-  <Parameter id="param_calculation" column="13" value="Last Gift Other Ammount" />
-  <Parameter id="ColumnWidth" column="13" value="2" />
-  <Parameter id="param_ytd" column="13" value="false" />
-  <Parameter id="param_calculation" column="14" value="Last Gift Other Comment1" />
-  <Parameter id="ColumnWidth" column="14" value="3" />
-  <Parameter id="param_ytd" column="14" value="false" />
-  <Parameter id="param_calculation" column="15" value="Last Gift Other Date" />
-  <Parameter id="ColumnWidth" column="15" value="2.5" />
-  <Parameter id="param_ytd" column="15" value="false" />
-  <Parameter id="param_calculation" column="16" value="Last Gift Other Recipient" />
-  <Parameter id="ColumnWidth" column="16" value="3" />
-  <Parameter id="param_ytd" column="16" value="false" />
-  <Parameter id="orderby0" value="DonorKey" />
-  <Parameter id="orderby1" value="Firstname" />
-  <Parameter id="orderby2" value="Surname" />
-  <Parameter id="param_sortby_readable" value="DonorKey, Firstname, Surname" />
-  <Parameter id="param_sortby_columns" value="0,1,2" />
-  <Parameter id="param_currency_format" value="CurrencyComplete" />
-  <Parameter id="param_recipient_key_n" value="0" />
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:FinancialDevelopment/fddonorsperrecipient.xml,common.xml" />
+  <Parameter id="currentReport" value="eString:FDDonorsPerRecipient" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:17" />
+  <Parameter id="param_calculation" column="0" value="eString:DonorKey" />
+  <Parameter id="ColumnWidth" column="0" value="eDecimal:4612811918334230528" />
+  <Parameter id="param_ytd" column="0" value="eString:false" />
+  <Parameter id="param_calculation" column="1" value="eString:Firstname" />
+  <Parameter id="ColumnWidth" column="1" value="eInteger:3" />
+  <Parameter id="param_ytd" column="1" value="eString:false" />
+  <Parameter id="param_calculation" column="2" value="eString:Surname" />
+  <Parameter id="ColumnWidth" column="2" value="eInteger:3" />
+  <Parameter id="param_ytd" column="2" value="eString:false" />
+  <Parameter id="param_calculation" column="3" value="eString:Address line 1" />
+  <Parameter id="ColumnWidth" column="3" value="eDecimal:4612811918334230528" />
+  <Parameter id="param_ytd" column="3" value="eString:false" />
+  <Parameter id="param_calculation" column="4" value="eString:Street" />
+  <Parameter id="ColumnWidth" column="4" value="eInteger:3" />
+  <Parameter id="param_ytd" column="4" value="eString:false" />
+  <Parameter id="param_calculation" column="5" value="eString:Post Code" />
+  <Parameter id="ColumnWidth" column="5" value="eDecimal:4609434218613702656" />
+  <Parameter id="param_ytd" column="5" value="eString:false" />
+  <Parameter id="param_calculation" column="6" value="eString:City" />
+  <Parameter id="ColumnWidth" column="6" value="eInteger:3" />
+  <Parameter id="param_ytd" column="6" value="eString:false" />
+  <Parameter id="param_calculation" column="7" value="eString:Country" />
+  <Parameter id="ColumnWidth" column="7" value="eInteger:2" />
+  <Parameter id="param_ytd" column="7" value="eString:false" />
+  <Parameter id="param_calculation" column="8" value="eString:Last Gift Amount" />
+  <Parameter id="ColumnWidth" column="8" value="eDecimal:4612811918334230528" />
+  <Parameter id="param_ytd" column="8" value="eString:false" />
+  <Parameter id="param_calculation" column="9" value="eString:Last Gift Comment1" />
+  <Parameter id="ColumnWidth" column="9" value="eInteger:3" />
+  <Parameter id="param_ytd" column="9" value="eString:false" />
+  <Parameter id="param_calculation" column="10" value="eString:Last Gift Date" />
+  <Parameter id="ColumnWidth" column="10" value="eDecimal:4612811918334230528" />
+  <Parameter id="param_ytd" column="10" value="eString:false" />
+  <Parameter id="param_calculation" column="11" value="eString:Last Gift Motivation" />
+  <Parameter id="ColumnWidth" column="11" value="eInteger:3" />
+  <Parameter id="param_ytd" column="11" value="eString:false" />
+  <Parameter id="param_calculation" column="12" value="eString:Subscriptions" />
+  <Parameter id="ColumnWidth" column="12" value="eInteger:6" />
+  <Parameter id="param_ytd" column="12" value="eString:false" />
+  <Parameter id="param_calculation" column="13" value="eString:Last Gift Other Ammount" />
+  <Parameter id="ColumnWidth" column="13" value="eInteger:2" />
+  <Parameter id="param_ytd" column="13" value="eString:false" />
+  <Parameter id="param_calculation" column="14" value="eString:Last Gift Other Comment1" />
+  <Parameter id="ColumnWidth" column="14" value="eInteger:3" />
+  <Parameter id="param_ytd" column="14" value="eString:false" />
+  <Parameter id="param_calculation" column="15" value="eString:Last Gift Other Date" />
+  <Parameter id="ColumnWidth" column="15" value="eDecimal:4612811918334230528" />
+  <Parameter id="param_ytd" column="15" value="eString:false" />
+  <Parameter id="param_calculation" column="16" value="eString:Last Gift Other Recipient" />
+  <Parameter id="ColumnWidth" column="16" value="eInteger:3" />
+  <Parameter id="param_ytd" column="16" value="eString:false" />
+  <Parameter id="orderby0" value="eString:DonorKey" />
+  <Parameter id="orderby1" value="eString:Firstname" />
+  <Parameter id="orderby2" value="eString:Surname" />
+  <Parameter id="param_sortby_readable" value="eString:DonorKey, Firstname, Surname" />
+  <Parameter id="param_sortby_columns" value="eString:0,1,2" />
+  <Parameter id="param_currency_format" value="eString:CurrencyComplete" />
+  <Parameter id="param_recipient_key_n" value="eInteger:0" />
 </Parameters>

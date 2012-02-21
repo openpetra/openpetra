@@ -34,7 +34,7 @@ using Ict.Common.DB;
 using Ict.Common.IO;
 using Ict.Common.Verification;
 using Ict.Petra.Server.MCommon.Data.Cascading;
-using Ict.Petra.Server.App.ClientDomain;
+using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;

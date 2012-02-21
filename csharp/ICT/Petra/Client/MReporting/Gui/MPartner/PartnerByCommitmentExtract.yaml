@@ -1,0 +1,70 @@
+RootNode:
+    BaseYaml: PartnerReportingForm.yaml
+    FormType: report
+    FormTitle: Partner by Commitment
+    Namespace: Ict.Petra.Client.MReporting.Gui.MPartner
+#    UsingNamespaces: 
+    TemplateParameters:
+        CALCULATEFROMMETHOD: Ict.Petra.Server.MPartner.queries.QueryPartnerByCommitment.CalculateExtract
+        ISOLATIONLEVEL: serializable
+        XMLFILES: [Partner\\\\partnerbycommitmentextract.xml]
+        REPORTNAME: Partner By Commitment
+        CURRENTREPORT: Partner By Commitment
+        CONTROLSUSPENDLAYOUT: BLANK
+        CONTROLRESUMELAYOUT: BLANK
+        READCONTROLSVERIFICATION: BLANK
+        READCONTROLSLOCALVARS: BLANK
+        SETCONTROLSLOCALVARS: BLANK
+    Security:
+        ModulePermissionRequired: [PTNRUSER]
+    Controls:
+        tpgGeneralSettings:
+            Controls: 
+                Row0: [pnlTop]
+                Row1: [pnlFields]
+                Row2: [pnlCommitments]
+        pnlTop:
+            Controls: 
+                Row0: [grpDates, ucoChkFilter]
+        grpDates:
+            NoLabel: true
+            Controls:
+                Row0: [dtpStartDateFrom, dtpStartDateTo]
+                Row1: [dtpEndDateFrom, dtpEndDateTo]
+                Row2: [dtpDateValidOn]
+        pnlFields:
+            Controls:
+                Row0: [txtFieldSending]
+                Row1: [txtFieldReceiving]
+        pnlCommitments:
+            Controls:
+                Row0: [chkCommitmentStatus]
+                Row1: [grpCommitmentStatuses]
+
+        dtpStartDateFrom: {Label="&Start Date from", DefaultValue=null, ParameterName= param_start_date_from}
+        dtpStartDateTo: {Label="to", Value=null, ParameterName= param_start_date_to}
+        dtpEndDateFrom: {Label="&End Date from", ParameterName= param_end_date_from}
+        dtpEndDateTo: {Label="to", ParameterName= param_end_date_to}
+        dtpDateValidOn: {Label="&Valid on Day", ParameterName= param_date_valid_on}
+
+        txtFieldSending: {Label="Sending &Field", Type=PartnerKey, PartnerClass=UNIT, ParameterName= param_field_sending}
+        txtFieldReceiving: {Label="&Receiving Field", Type=PartnerKey, PartnerClass=UNIT, ParameterName= param_field_receiving}
+
+        chkCommitmentStatus:
+            Label: "&Include only Persons with one or more of the selected Commitment Status(es)"
+            OnChange: chkCommitmentStatus_Changed
+            ParameterName: param_consider_commitment_status
+        grpCommitmentStatuses:
+            Label: "Commitment Statuses"
+            Controls:
+                Row0: [grdCommitmentStatusChoices]
+                Row1: [chkCommitmentStatusOthers]
+        grdCommitmentStatusChoices:
+            Dock: Fill
+            ParameterName: param_commitment_status_choices
+        chkCommitmentStatusOthers:
+            Label: "Include Persons with &no Commitment Status set"
+            ParameterName: param_include_no_commitment_status
+        ucoChkFilter:
+            Dock: Left
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_ExtractChkFilter

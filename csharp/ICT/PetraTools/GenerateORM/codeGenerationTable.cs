@@ -25,11 +25,11 @@ using System;
 using System.Data;
 using System.Data.Odbc;
 using System.Collections;
-using System.Web;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Collections.Specialized;
 using Ict.Common;
+using Ict.Common.IO;
 using Ict.Tools.CodeGeneration;
 using Ict.Tools.DBXML;
 
@@ -86,21 +86,55 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 TConstraint primKey = currentTable.GetPrimaryKey();
                 bool first = true;
                 string primaryKeyColumns = "";
+                int prevIndex = -1;
 
-                foreach (string columnName in primKey.strThisFields)
+                // the fields in the primary key should be used in the same order as in the table.
+                // otherwise this is causing confusion. eg. a_processed_fee
+                foreach (TTableField column in currentTable.grpTableField.List)
                 {
-                    string toAdd = currentTable.grpTableField.List.IndexOf(currentTable.GetField(columnName)).ToString();
+                    int newIndex = -1;
 
-                    if (!first)
+                    if (primKey.strThisFields.Contains(column.strName))
                     {
-                        toAdd = ", " + toAdd;
-                        primaryKeyColumns += ",";
+                        newIndex = primKey.strThisFields.IndexOf(column.strName);
+                    }
+                    else if (primKey.strThisFields.Contains(TTable.NiceFieldName(column)))
+                    {
+                        newIndex = primKey.strThisFields.IndexOf(TTable.NiceFieldName(column));
                     }
 
-                    first = false;
+                    if (newIndex != -1)
+                    {
+                        if (newIndex < prevIndex)
+                        {
+                            throw new Exception("Please fix the order of the fields in the primary key of table " + currentTable.strName);
+                        }
 
-                    snippet.AddToCodelet("COLUMNPRIMARYKEYORDER", toAdd);
-                    primaryKeyColumns += "Column" + TTable.NiceFieldName(currentTable.GetField(columnName));
+                        prevIndex = newIndex;
+                    }
+                }
+
+                // the fields in the primary key should be used in the same order as in the table.
+                // otherwise this is causing confusion. eg. a_processed_fee
+                foreach (TTableField column in currentTable.grpTableField.List)
+                {
+                    if (primKey.strThisFields.Contains(column.strName) || primKey.strThisFields.Contains(TTable.NiceFieldName(column)))
+                    {
+                        string columnName = column.strName;
+
+                        string toAdd = currentTable.grpTableField.List.IndexOf(currentTable.GetField(columnName)).ToString();
+
+                        if (!first)
+                        {
+                            toAdd = ", " + toAdd;
+                            primaryKeyColumns += ",";
+                        }
+
+                        first = false;
+
+                        snippet.AddToCodelet("COLUMNPRIMARYKEYORDER", toAdd);
+                        primaryKeyColumns += "Column" + TTable.NiceFieldName(currentTable.GetField(columnName));
+                    }
                 }
 
                 if (primaryKeyColumns.Length > 0)

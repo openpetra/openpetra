@@ -10,9 +10,10 @@ using Ict.Common.Data;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.RemotedExceptions;
-using Ict.Petra.Server.App.ClientDomain;
+using Ict.Petra.Server.App.Core;
 
 namespace {#NAMESPACE}
 {
@@ -41,7 +42,7 @@ namespace {#NAMESPACE}
             }
 #endif
             FStartTime = DateTime.Now;
-            FCacheableTablesManager = DomainManager.GCacheableTablesManager;
+            FCacheableTablesManager = TCacheableTablesManager.GCacheableTablesManager;
         }
 
 #if DEBUGMODE
@@ -102,7 +103,7 @@ namespace {#NAMESPACE}
             }
 #endif
 
-            if ((ARefreshFromDB) || ((!DomainManager.GCacheableTablesManager.IsTableCached(TableName))))
+            if ((ARefreshFromDB) || ((!FCacheableTablesManager.IsTableCached(TableName))))
             {
                 Boolean NewTransaction;
                 TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
@@ -281,14 +282,14 @@ public DataTable GetCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTa
     }
 #endif
 #if DEBUGMODE
-    if (DomainManager.GCacheableTablesManager.IsTableCached(TableName))
+    if (FCacheableTablesManager.IsTableCached(TableName))
     {
         if (TLogging.DL >= 7)
         {
             Console.WriteLine("Cached DataTable has currently " +
-                DomainManager.GCacheableTablesManager.GetCachedDataTable(TableName, out AType).Rows.Count.ToString() + " rows in total.");
+                FCacheableTablesManager.GetCachedDataTable(TableName, out AType).Rows.Count.ToString() + " rows in total.");
             Console.WriteLine("Cached DataTable has currently " +
-                Convert.ToString(DomainManager.GCacheableTablesManager.GetCachedDataTable(TableName,
+                Convert.ToString(FCacheableTablesManager.GetCachedDataTable(TableName,
                         out AType).Select(
                         ALedgerTable.GetLedgerNumberDBName() + " = " +
                         ALedgerNumber.ToString()).Length) + " rows with ALedgerNumber=" + ALedgerNumber.ToString() + '.');
@@ -296,9 +297,9 @@ public DataTable GetCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTa
     }
 #endif
 
-    if ((ARefreshFromDB) || ((!DomainManager.GCacheableTablesManager.IsTableCached(TableName)))
-        || ((DomainManager.GCacheableTablesManager.IsTableCached(TableName))
-            && (DomainManager.GCacheableTablesManager.GetCachedDataTable(TableName,
+    if ((ARefreshFromDB) || ((!FCacheableTablesManager.IsTableCached(TableName)))
+        || ((FCacheableTablesManager.IsTableCached(TableName))
+            && (FCacheableTablesManager.GetCachedDataTable(TableName,
                     out AType).Select(ALedgerTable.GetLedgerNumberDBName() + " = " +
                     ALedgerNumber.ToString()).Length == 0)))
     {
@@ -337,7 +338,7 @@ public DataTable GetCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTa
         }
     }
 
-    DataView TmpView = new DataView(DomainManager.GCacheableTablesManager.GetCachedDataTable(TableName,
+    DataView TmpView = new DataView(FCacheableTablesManager.GetCachedDataTable(TableName,
             out AType), ALedgerTable.GetLedgerNumberDBName() + " = " + ALedgerNumber.ToString(), "", DataViewRowState.CurrentRows);
 
     // Return the DataTable from the Cache only if the Hash is not the same
@@ -435,7 +436,7 @@ public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceT
      */
     if (SubmissionResult == TSubmitChangesResult.scrOK)
     {
-        //DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(ATableName, ASubmitTable, DomainManager.GClientID);
+        //FCacheableTablesManager.AddOrRefreshCachedTable(ATableName, ASubmitTable, DomainManager.GClientID);
         GetCacheableTable(ACacheableTable, String.Empty, true, ALedgerNumber, out TmpType);
     }
 
@@ -447,7 +448,7 @@ public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceT
 case TCacheable{#SUBMODULE}TablesEnum.{#ENUMNAME}:
 {
     DataTable TmpTable = {#DATATABLENAME}Access.LoadAll(ReadTransaction);
-    DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+    FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
     break;
 }
 
@@ -455,7 +456,7 @@ case TCacheable{#SUBMODULE}TablesEnum.{#ENUMNAME}:
 case TCacheable{#SUBMODULE}TablesEnum.{#ENUMNAME}:
 {
     DataTable TmpTable = {#DATATABLENAME}Access.LoadViaALedger(ALedgerNumber, ReadTransaction);
-    DomainManager.GCacheableTablesManager.AddOrMergeCachedTable(TableName, TmpTable, DomainManager.GClientID, (object)ALedgerNumber);
+    FCacheableTablesManager.AddOrMergeCachedTable(TableName, TmpTable, DomainManager.GClientID, (object)ALedgerNumber);
     break;
 }
 
@@ -463,7 +464,7 @@ case TCacheable{#SUBMODULE}TablesEnum.{#ENUMNAME}:
 case TCacheable{#SUBMODULE}TablesEnum.{#ENUMNAME}:
 {
     DataTable TmpTable = Get{#CALCULATEDLISTNAME}Table(ReadTransaction, TableName);
-    DomainManager.GCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+    FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
     break;
 }
 
@@ -471,7 +472,7 @@ case TCacheable{#SUBMODULE}TablesEnum.{#ENUMNAME}:
 case TCacheable{#SUBMODULE}TablesEnum.{#ENUMNAME}:
 {
     DataTable TmpTable = Get{#CALCULATEDLISTNAME}Table(ReadTransaction, ALedgerNumber, TableName);
-    DomainManager.GCacheableTablesManager.AddOrMergeCachedTable(TableName, TmpTable, DomainManager.GClientID, (object)ALedgerNumber);
+    FCacheableTablesManager.AddOrMergeCachedTable(TableName, TmpTable, DomainManager.GClientID, (object)ALedgerNumber);
     break;
 }
 

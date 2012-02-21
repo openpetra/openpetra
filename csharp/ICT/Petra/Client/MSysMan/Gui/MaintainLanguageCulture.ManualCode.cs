@@ -28,10 +28,12 @@ using System.Windows.Forms;
 using System.Threading;
 using GNU.Gettext;
 using Ict.Common;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Client;
+using Ict.Petra.Shared.Interfaces.MSysMan;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces;
 
 namespace Ict.Petra.Client.MSysMan.Gui
 {
@@ -58,9 +60,9 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
             CultureTable.DefaultView.Sort = "Display";
 
-            cmbCulture.DataSource = CultureTable.DefaultView;
             cmbCulture.DisplayMember = "Display";
             cmbCulture.ValueMember = "Value";
+            cmbCulture.DataSource = CultureTable.DefaultView;
 
             // TODO: load languages from names of language sub directories
             cmbLanguage.SetDataSourceStringList("en-GB,es-ES,da-DK,de-DE");

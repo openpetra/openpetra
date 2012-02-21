@@ -143,7 +143,8 @@ namespace Ict.Petra.Client.MReporting.Logic
 
             if (("RptStg" + FReportName).Length > 32)
             {
-                throw new Exception("Report name is too long for the settings");
+                throw new Exception(String.Format("Report name ({0}) is too long for the settings",
+                        FReportName));
             }
 
             // get names of recently used settings from the database

@@ -26,9 +26,10 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
-
 using System.Data;
-using Ict.Petra.Shared.Interfaces; // Implicit references
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Client;
+using Ict.Petra.Shared.Interfaces.MCommon;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
@@ -43,6 +44,7 @@ using System.Globalization;
 using Ict.Petra.Shared;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 
 namespace Ict.Petra.Client.CommonControls
 {
@@ -69,6 +71,12 @@ namespace Ict.Petra.Client.CommonControls
             UserDefinedList,
 
             /// <summary>todoComment</summary>
+            AbilityAreaNameList,
+
+            /// <summary>todoComment</summary>
+            AbilityLevelList,
+
+            /// <summary>todoComment</summary>
             AccommodationCodeList,
 
             /// <summary>todoComment</summary>
@@ -90,6 +98,9 @@ namespace Ict.Petra.Client.CommonControls
             BusinessCodeList,
 
             /// <summary>todoComment</summary>
+            CommitmentStatusList,
+
+            /// <summary>todoComment</summary>
             CountryList,
 
             /// <summary>todoComment</summary>
@@ -99,10 +110,16 @@ namespace Ict.Petra.Client.CommonControls
             DataLabelLookupList,
 
             /// <summary>todoComment</summary>
+            DataLabelLookupCategoryList,
+
+            /// <summary>todoComment</summary>
             DenominationList,
 
             /// <summary>todoComment</summary>
             DocumentTypeCategoryList,
+
+            /// <summary>todoComment</summary>
+            DocumentTypeList,
 
             /// <summary>todoComment</summary>
             FrequencyList,
@@ -120,7 +137,16 @@ namespace Ict.Petra.Client.CommonControls
             InternationalPostalTypeList,
 
             /// <summary>todoComment</summary>
+            JobAssignmentTypeList,
+
+            /// <summary>todoComment</summary>
             LanguageCodeList,
+
+            /// <summary>todoComment</summary>
+            LanguageLevelList,
+
+            /// <summary>todoComment</summary>
+            LeavingCodeList,
 
             /// <summary>todoComment</summary>
             LocationTypeList,
@@ -133,6 +159,18 @@ namespace Ict.Petra.Client.CommonControls
 
             /// <summary>todoComment</summary>
             PartnerStatusList,
+
+            /// <summary>todoComment</summary>
+            PassportDetailsTypeList,
+
+            /// <summary>todoComment</summary>
+            PassportNationalityCodeList,
+
+            /// <summary>todoComment</summary>
+            PositionList,
+
+            /// <summary>todoComment</summary>
+            PostCodeRegionList,
 
             /// <summary>todoComment</summary>
             FoundationOwnerList,
@@ -165,6 +203,12 @@ namespace Ict.Petra.Client.CommonControls
             RelationCategoryList,
 
             /// <summary>todoComment</summary>
+            SkillCategoryList,
+
+            /// <summary>todoComment</summary>
+            SkillLevelList,
+
+            /// <summary>todoComment</summary>
             SubscriptionStatus,
 
             /// <summary>todoComment</summary>
@@ -180,13 +224,23 @@ namespace Ict.Petra.Client.CommonControls
         private String FNotSetValue;
         private String FNotSetDisplay;
 
-        /// this allows to set the table manually,
-        /// when it cannot come from a cache because it depends on too many other parameters on the screen
+        /// <summary>
+        /// Exposes the DataTable that defines the items that are shown as drop-down items.
+        /// <para>
+        /// Use this Property only to access the underlying DataTable of the items that
+        /// are displayed in the ComboBox in a <em>read-only</em> manner!
+        /// </para>
+        /// </summary>
+        /// <remarks>Do not modifiy the DataTable that is returned to achieve an update of
+        /// the ComboBox's drop-down items, as this will not reliably be reflected in the
+        /// CombBox's drop-down items! To achieve that, initialise the ComboBox again by
+        /// calling one of the InitialiseUserControl Methods.
+        /// </remarks>
         public DataTable Table
         {
-            set
+            get
             {
-                FDataCache_ListTable = value;
+                return FDataCache_ListTable;
             }
         }
 
@@ -249,6 +303,23 @@ namespace Ict.Petra.Client.CommonControls
             }
         }
 
+        /**
+         * This Event is thrown when the internal ComboBox throws the SelectedValueChanged Event.
+         */
+        [Category("Action"),
+         Browsable(true),
+         RefreshPropertiesAttribute(System.ComponentModel.RefreshProperties.All),
+         Description("Occurs when when the internal ComboBox throws the TextChanged Event.")]
+        public new event System.EventHandler TextChanged;
+
+        private void CmbCombobox_TextChanged(System.Object sender, EventArgs e)
+        {
+            if (TextChanged != null)
+            {
+                TextChanged(this, e);
+            }
+        }
+
         /// <summary>
         /// constructor
         /// </summary>
@@ -272,6 +343,24 @@ namespace Ict.Petra.Client.CommonControls
 
             switch (FListTable)
             {
+                case TListTableEnum.AbilityAreaNameList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.AbilityAreaList),
+                    PtAbilityAreaTable.GetAbilityAreaNameDBName(),
+                    PtAbilityAreaTable.GetAbilityAreaDescrDBName(),
+                    null);
+                    break;
+
+                case TListTableEnum.AbilityLevelList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.AbilityLevelList),
+                    PtAbilityLevelTable.GetAbilityLevelDBName(),
+                    PtAbilityLevelTable.GetAbilityLevelDescrDBName(),
+                    null);
+                    break;
+
                 case TListTableEnum.AccommodationCodeList:
 
                     InitialiseUserControl(
@@ -336,6 +425,16 @@ namespace Ict.Petra.Client.CommonControls
                     null);
                     break;
 
+                case TListTableEnum.CommitmentStatusList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.CommitmentStatusList),
+                    PmCommitmentStatusTable.GetCodeDBName(),
+                    PmCommitmentStatusTable.GetDescDBName(),
+                    null
+                    );
+                    break;
+
                 case TListTableEnum.CountryList:
 
                     InitialiseUserControl(
@@ -357,6 +456,24 @@ namespace Ict.Petra.Client.CommonControls
                     null);
                     break;
 
+                case TListTableEnum.DataLabelLookupList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.DataLabelLookupList),
+                    PDataLabelLookupTable.GetValueCodeDBName(),
+                    PDataLabelLookupTable.GetValueDescDBName(),
+                    null);
+                    break;
+
+                case TListTableEnum.DataLabelLookupCategoryList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.DataLabelLookupCategoryList),
+                    PDataLabelLookupCategoryTable.GetCategoryCodeDBName(),
+                    PDataLabelLookupCategoryTable.GetCategoryDescDBName(),
+                    null);
+                    break;
+
                 case TListTableEnum.DenominationList:
 
                     InitialiseUserControl(
@@ -371,6 +488,15 @@ namespace Ict.Petra.Client.CommonControls
                     InitialiseUserControl(
                     TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.DocumentTypeCategoryList),
                     "pm_code_c",
+                    "pm_description_c",
+                    null);
+                    break;
+
+                case TListTableEnum.DocumentTypeList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.DocumentTypeList),
+                    "pm_doc_code_c",
                     "pm_description_c",
                     null);
                     break;
@@ -431,12 +557,39 @@ namespace Ict.Petra.Client.CommonControls
                     null);
                     break;
 
+                case TListTableEnum.JobAssignmentTypeList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPersonnel.GetCacheableUnitsTable(TCacheableUnitTablesEnum.JobAssignmentTypeList),
+                    "pt_assignment_type_code_c",
+                    "pt_assignment_code_descr_c",
+                    null);
+                    break;
+
                 case TListTableEnum.LanguageCodeList:
 
                     InitialiseUserControl(
                     TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.LanguageCodeList),
                     "p_language_code_c",
                     "p_language_description_c",
+                    null);
+                    break;
+
+                case TListTableEnum.LanguageLevelList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.LanguageLevelList),
+                    PtLanguageLevelTable.GetLanguageLevelDBName(),
+                    PtLanguageLevelTable.GetLanguageLevelDescrDBName(),
+                    null);
+                    break;
+
+                case TListTableEnum.LeavingCodeList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPersonnel.GetCacheableUnitsTable(TCacheableUnitTablesEnum.LeavingCodeList),
+                    "pt_leaving_code_ind_c",
+                    "pt_leaving_code_descr_c",
                     null);
                     break;
 
@@ -473,6 +626,44 @@ namespace Ict.Petra.Client.CommonControls
                     InitialiseUserControl(
                     TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.PartnerStatusList),
                     "p_status_code_c",
+                    null,
+                    null);
+                    break;
+
+                case TListTableEnum.PositionList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPersonnel.GetCacheableUnitsTable(TCacheableUnitTablesEnum.PositionList),
+                    "pt_position_name_c",
+                    "pt_position_descr_c",
+                    null);
+                    break;
+
+                case TListTableEnum.PassportDetailsTypeList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.PassportTypeList),
+
+                    /*PmPassportDetailsTable.GetPassportDetailsTypeDBName(),*/
+                    PtPassportTypeTable.GetCodeDBName(),
+                    PtPassportTypeTable.GetDescriptionDBName(),
+                    null);
+                    break;
+
+                case TListTableEnum.PassportNationalityCodeList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.CountryList),
+                    PCountryTable.GetCountryCodeDBName(),
+                    PCountryTable.GetCountryNameDBName(),
+                    null);
+                    break;
+
+                case TListTableEnum.PostCodeRegionList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPartner.GetCacheableMailingTable(TCacheableMailingTablesEnum.PostCodeRegionList),
+                    PPostcodeRegionTable.GetRegionDBName(),
                     null,
                     null);
                     break;
@@ -567,21 +758,30 @@ namespace Ict.Petra.Client.CommonControls
                     null);
                     break;
 
+                case TListTableEnum.SkillCategoryList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.SkillCategoryList),
+                    PtSkillCategoryTable.GetCodeDBName(),
+                    PtSkillCategoryTable.GetDescriptionDBName(),
+                    null);
+                    break;
+
+                case TListTableEnum.SkillLevelList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.SkillLevelList),
+                    PtSkillLevelTable.GetLevelDBName(),
+                    PtSkillLevelTable.GetDescriptionDBName(),
+                    null);
+                    break;
+
                 case TListTableEnum.UnitTypeList:
 
                     InitialiseUserControl(
                     TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.UnitTypeList),
                     UUnitTypeTable.GetUnitTypeCodeDBName(),
                     UUnitTypeTable.GetUnitTypeNameDBName(),
-                    null);
-                    break;
-
-                case TListTableEnum.DataLabelLookupList:
-
-                    InitialiseUserControl(
-                    TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.DataLabelLookupList),
-                    PDataLabelLookupTable.GetValueCodeDBName(),
-                    PDataLabelLookupTable.GetValueDescDBName(),
                     null);
                     break;
             }
@@ -609,6 +809,7 @@ namespace Ict.Petra.Client.CommonControls
             // Pass on any set Tag
             cmbCombobox.Tag = this.Tag;
             this.cmbCombobox.SelectedValueChanged += new System.EventHandler(this.CmbCombobox_SelectedValueChanged);
+            this.cmbCombobox.TextChanged += new System.EventHandler(this.CmbCombobox_TextChanged);
 
             if (FAddNotSetValue)
             {
@@ -624,19 +825,33 @@ namespace Ict.Petra.Client.CommonControls
                 FDataCache_ListTable.Rows.InsertAt(Dr, 0);
             }
 
-            string DescriptionDBName = (ADescDBName != null && ADescDBName.Length > 0) ? ADescDBName : null;
-
-            LabelDisplaysColumn = DescriptionDBName;
+            if ((ADescDBName == null) || (ADescDBName.Length == 0))
+            {
+                RemoveDescriptionLabel();
+            }
+            else
+            {
+                LabelDisplaysColumn = ADescDBName;
+            }
 
             cmbCombobox.BeginUpdate();
             FDataView = new DataView(FDataCache_ListTable);
             FDataView.RowFilter = FFilter;
-            FDataView.Sort = ADisplayDBName;
+
+            if ((ATable.DefaultView.Sort == null) || (ATable.DefaultView.Sort.Length == 0))
+            {
+                FDataView.Sort = ADisplayDBName;
+            }
+            else
+            {
+                FDataView.Sort = ATable.DefaultView.Sort;
+            }
+
             cmbCombobox.DescriptionMember = ADescDBName;
             cmbCombobox.DisplayMember = ADisplayDBName;
             cmbCombobox.ValueMember = AValueDBName;
             cmbCombobox.DisplayInColumn1 = ADisplayDBName;
-            cmbCombobox.DisplayInColumn2 = DescriptionDBName;
+            cmbCombobox.DisplayInColumn2 = (ADescDBName != null && ADescDBName.Length > 0) ? ADescDBName : null;
             cmbCombobox.DisplayInColumn3 = null;
             cmbCombobox.DisplayInColumn4 = null;
             cmbCombobox.ColumnsToSearch = AColumnsToSearch;
@@ -749,6 +964,16 @@ namespace Ict.Petra.Client.CommonControls
 
             switch (AListTable)
             {
+                case TListTableEnum.AbilityAreaNameList:
+                    this.ColumnWidthCol2 = 150;
+                    cmbCombobox.MaxDropDownItems = 9;
+                    break;
+
+                case TListTableEnum.AbilityLevelList:
+                    this.ColumnWidthCol2 = 150;
+                    cmbCombobox.MaxDropDownItems = 9;
+                    break;
+
                 case TListTableEnum.AcquisitionCodeList:
                     this.ColumnWidthCol2 = 350;
                     break;
@@ -768,6 +993,11 @@ namespace Ict.Petra.Client.CommonControls
                     cmbCombobox.MaxDropDownItems = 9;
                     break;
 
+                case TListTableEnum.CommitmentStatusList:
+                    this.ColumnWidthCol1 = 120;
+                    this.ColumnWidthCol2 = 300;
+                    break;
+
                 case TListTableEnum.CountryList:
                     this.ColumnWidthCol1 = 50;
                     this.ColumnWidthCol2 = 200;
@@ -778,8 +1008,21 @@ namespace Ict.Petra.Client.CommonControls
                     this.ColumnWidthCol2 = 170;
                     break;
 
+                case TListTableEnum.DataLabelLookupList:
+                    this.ColumnWidthCol2 = 200;
+                    break;
+
+                case TListTableEnum.DataLabelLookupCategoryList:
+                    this.ColumnWidthCol2 = 200;
+                    break;
+
                 case TListTableEnum.DenominationList:
                     this.ColumnWidthCol2 = 330;
+                    break;
+
+                case TListTableEnum.DocumentTypeList:
+                    this.ColumnWidthCol1 = 128;
+                    this.ColumnWidthCol2 = 200;
                     break;
 
                 case TListTableEnum.DocumentTypeCategoryList:
@@ -816,9 +1059,24 @@ namespace Ict.Petra.Client.CommonControls
                     this.ColumnWidthCol2 = 230;
                     break;
 
+                case TListTableEnum.JobAssignmentTypeList:
+                    this.ColumnWidthCol1 = 40;
+                    this.ColumnWidthCol2 = 200;
+                    break;
+
                 case TListTableEnum.LanguageCodeList:
                     this.ColumnWidthCol1 = 57;
                     this.ColumnWidthCol2 = 130;
+                    break;
+
+                case TListTableEnum.LanguageLevelList:
+                    this.ColumnWidthCol1 = 57;
+                    this.ColumnWidthCol2 = 130;
+                    break;
+
+                case TListTableEnum.LeavingCodeList:
+                    this.ColumnWidthCol1 = 40;
+                    this.ColumnWidthCol2 = 200;
                     break;
 
                 case TListTableEnum.LocationTypeList:
@@ -837,6 +1095,27 @@ namespace Ict.Petra.Client.CommonControls
 
                 case TListTableEnum.PartnerStatusList:
                     this.ColumnWidthCol1 = 95;
+                    break;
+
+                case TListTableEnum.PositionList:
+                    this.ColumnWidthCol1 = 200;
+                    this.ColumnWidthCol2 = 350;
+                    break;
+
+                case TListTableEnum.PassportDetailsTypeList:
+                    this.ColumnWidthCol1 = 50;
+                    this.ColumnWidthCol2 = 150;
+                    cmbCombobox.MaxDropDownItems = 4;
+                    break;
+
+                case TListTableEnum.PassportNationalityCodeList:
+                    this.ColumnWidthCol1 = 50;
+                    this.ColumnWidthCol2 = 150;
+                    cmbCombobox.MaxDropDownItems = 9;
+                    break;
+
+                case TListTableEnum.PostCodeRegionList:
+                    this.ColumnWidthCol1 = 110;
                     break;
 
                 case TListTableEnum.ProposalSubmissionTypeList:
@@ -862,6 +1141,16 @@ namespace Ict.Petra.Client.CommonControls
                     this.ColumnWidthCol1 = 110;
                     break;
 
+                case TListTableEnum.SkillCategoryList:
+                    this.ColumnWidthCol1 = 110;
+                    this.ColumnWidthCol2 = 130;
+                    break;
+
+                case TListTableEnum.SkillLevelList:
+                    this.ColumnWidthCol1 = 57;
+                    this.ColumnWidthCol2 = 130;
+                    break;
+
                 case TListTableEnum.RelationList:
                     this.ColumnWidthCol2 = 150;
                     cmbCombobox.MaxDropDownItems = 15;
@@ -874,9 +1163,6 @@ namespace Ict.Petra.Client.CommonControls
                 case TListTableEnum.UnitTypeList:
                     this.ColumnWidthCol1 = 90;
                     this.ColumnWidthCol2 = 200;
-                    break;
-
-                case TListTableEnum.DataLabelLookupList:
                     this.ColumnWidthCol2 = 200;
                     break;
             }

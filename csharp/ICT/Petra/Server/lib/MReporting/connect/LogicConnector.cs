@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,9 +23,9 @@
 //
 using System;
 using System.Data;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces;
-using Ict.Petra.Shared.Interfaces.AsynchronousExecution;
 using Ict.Petra.Shared.Interfaces.MReporting.LogicConnectors;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Shared.MReporting;
@@ -118,6 +118,11 @@ namespace Ict.Petra.Server.MReporting.LogicConnectors
                 {
                     // for financial reports: it is important to have consistent data; e.g. for totals
                     DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.RepeatableRead);
+                }
+                else if (FParameterList.Get("IsolationLevel").ToString().ToLower() == "serializable")
+                {
+                    // for creating extracts: we need to write to the database
+                    DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
                 }
                 else
                 {

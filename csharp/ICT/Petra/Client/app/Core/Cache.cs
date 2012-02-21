@@ -27,6 +27,8 @@ using System.IO;
 using System.IO.IsolatedStorage;
 using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Shared.Interfaces.MPartner;
+using Ict.Petra.Shared.Interfaces.MConference;
+using Ict.Petra.Shared.MConference;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPersonnel;
@@ -101,6 +103,33 @@ namespace Ict.Petra.Client.App.Core
              *
              */
             public static DataTable GetCacheableCommonTable(TCacheableCommonTablesEnum ACacheableTable)
+            {
+                return TDataCache.GetCacheableDataTableFromCache(ACacheableTable.ToString());
+            }
+        }
+
+        #endregion
+
+
+        #region TDataCache.TMCommon
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        public class TMConference
+        {
+            /**
+             * Returns the chosen DataTable for the Conference Namespace from the Cache.
+             *
+             * If the DataTable is not available on the Client side, it is automatically
+             * retrieved from the Petra Server.
+             *
+             * @param ACacheableTable The cached DataTable that should be returned in the
+             * DataSet
+             * @return Chosen DataTable
+             *
+             */
+            public static DataTable GetCacheableCommonTable(TCacheableConferenceTablesEnum ACacheableTable)
             {
                 return TDataCache.GetCacheableDataTableFromCache(ACacheableTable.ToString());
             }
@@ -295,6 +324,16 @@ namespace Ict.Petra.Client.App.Core
                         AMotivationDetailTable.GetLedgerNumberDBName(), ALedgerNumber, out DataTableType);
                         break;
 
+                    case TCacheableFinanceTablesEnum.FeesPayableList:
+                        ReturnValue = GetBasedOnLedger(ACacheableTable,
+                        AFeesPayableTable.GetLedgerNumberDBName(), ALedgerNumber, out DataTableType);
+                        break;
+
+                    case TCacheableFinanceTablesEnum.FeesReceivableList:
+                        ReturnValue = GetBasedOnLedger(ACacheableTable,
+                        AFeesReceivableTable.GetLedgerNumberDBName(), ALedgerNumber, out DataTableType);
+                        break;
+
                     default:
 
                         // $IFDEF DEBUGMODE MessageBox.Show('GetCacheableFinanceTable: Cache Table ''' + Enum.GetName(typeof(
@@ -373,7 +412,7 @@ namespace Ict.Petra.Client.App.Core
                 catch (Exception ex)
                 {
                     // most probably a permission problem: System.Runtime.Remoting.RemotingException: Requested Service not found
-                    throw new Exception(Catalog.GetString("You do not have enough permissions to access the Finance module:\n") + ex);
+                    throw new Exception(Catalog.GetString("You do not have enough permissions to access the Finance module:") + "\n" + ex);
                 }
             }
         }
@@ -661,6 +700,7 @@ namespace Ict.Petra.Client.App.Core
             TCacheableSysManTablesEnum CacheableMSysManTable;
             TCacheablePersonTablesEnum CacheableMPersonnelPersonTable;
             TCacheableUnitTablesEnum CacheableMPersonnelUnitsTable;
+            TCacheableConferenceTablesEnum CacheableMConferenceTable;
             ReturnValue = null;
 
             if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableCommonTablesEnum)), ACacheableTableName) != -1)
@@ -670,6 +710,17 @@ namespace Ict.Petra.Client.App.Core
 
                 // PetraServer method call
                 ReturnValue = TRemote.MCommon.Cacheable.GetCacheableTable(CacheableMCommonTable,
+                    AHashCode,
+                    out ACacheableTableSystemType);
+            }
+            else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableConferenceTablesEnum)), ACacheableTableName) != -1)
+            {
+                // MConference Namespace
+                CacheableMConferenceTable = (TCacheableConferenceTablesEnum)Enum.Parse(typeof(TCacheableConferenceTablesEnum),
+                    ACacheableTableName);
+
+                // PetraServer method call
+                ReturnValue = TRemote.MConference.Cacheable.GetCacheableTable(CacheableMConferenceTable,
                     AHashCode,
                     out ACacheableTableSystemType);
             }
@@ -805,6 +856,25 @@ namespace Ict.Petra.Client.App.Core
             Type DataTableType;
 
             return GetCacheableDataTableFromCache(ACacheableTableName, "", null, out DataTableType);
+        }
+
+        /// <summary>
+        /// Returns the chosen DataTable from the Client-side Cache.
+        ///
+        /// If the DataTable is not available on the Client side, this procedure checks
+        /// whether it available from a file and whether this file contains up-to-date
+        /// data. If it isn't available from file or the file is out of date, the
+        /// DataTable is retrieved once from the Petra Server and persisted in a file
+        /// (as Binary Serialized DataTable) before giving it to the caller.
+        /// </summary>
+        /// <remarks>Can be used with the TGetCacheableDataTableFromCache delegate.</remarks>
+        /// <param name="ACacheableTableName">The cached DataTable that should be returned in the
+        /// DataTable</param>
+        /// <param name="AType"><see cref="System.Type" /> of the returned <see cref="DataTable" />.</param>
+        /// <returns>Chosen DataTable.</returns>
+        public static DataTable GetCacheableDataTableFromCache(String ACacheableTableName, out System.Type AType)
+        {
+            return GetCacheableDataTableFromCache(ACacheableTableName, "", null, out AType);
         }
 
         /// <summary>
@@ -1178,11 +1248,13 @@ namespace Ict.Petra.Client.App.Core
         {
             TSubmitChangesResult ReturnValue = TSubmitChangesResult.scrError;
             TCacheableCommonTablesEnum CacheableMCommonTable;
+            TCacheableConferenceTablesEnum CacheableMConferenceTable;
             TCacheableFinanceTablesEnum CacheableMFinanceTable;
             TCacheableSubscriptionsTablesEnum CacheableMPartnerSubscriptionsTable;
             TCacheablePartnerTablesEnum CacheableMPartnerPartnerTable;
             TCacheablePersonTablesEnum CacheableMPersonnelPersonTable;
             TCacheableUnitTablesEnum CacheableMPersonnelUnitTable;
+            TCacheableSysManTablesEnum CacheableMSysManTable;
 
             AVerificationResult = null;
 
@@ -1193,6 +1265,16 @@ namespace Ict.Petra.Client.App.Core
 
                 // PetraServer method call
                 ReturnValue = TRemote.MCommon.Cacheable.SaveChangedStandardCacheableTable(CacheableMCommonTable,
+                    ref AChangedCacheableDT,
+                    out AVerificationResult);
+            }
+            else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableConferenceTablesEnum)), ACacheableTableName) != -1)
+            {
+                // MConference Namespace
+                CacheableMConferenceTable = (TCacheableConferenceTablesEnum)Enum.Parse(typeof(TCacheableConferenceTablesEnum), ACacheableTableName);
+
+                // PetraServer method call
+                ReturnValue = TRemote.MConference.Cacheable.SaveChangedStandardCacheableTable(CacheableMConferenceTable,
                     ref AChangedCacheableDT,
                     out AVerificationResult);
             }
@@ -1245,6 +1327,16 @@ namespace Ict.Petra.Client.App.Core
 
                 // PetraServer method call
                 ReturnValue = TRemote.MPersonnel.Units.DataElements.Cacheable.SaveChangedStandardCacheableTable(CacheableMPersonnelUnitTable,
+                    ref AChangedCacheableDT,
+                    out AVerificationResult);
+            }
+            else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableSysManTablesEnum)), ACacheableTableName) != -1)
+            {
+                // MSysMan.Unit Namespace
+                CacheableMSysManTable = (TCacheableSysManTablesEnum)Enum.Parse(typeof(TCacheableSysManTablesEnum), ACacheableTableName);
+
+                // PetraServer method call
+                ReturnValue = TRemote.MSysMan.Cacheable.SaveChangedStandardCacheableTable(CacheableMSysManTable,
                     ref AChangedCacheableDT,
                     out AVerificationResult);
             }

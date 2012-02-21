@@ -1,15 +1,6 @@
 <?xml version="1.0"?>
 <project name="ICT-common-Build">
 
-<property name="Namespace" value="Ict.Common" />
-<property name="ProjectGuid" value="{ED73B0A3-AC08-4FB0-A18C-2816C9AC5588}" />
-
-<property name="RunCsDepend" value="true" /> 
-
 <include buildfile="../../../inc/nant/OpenPetra.csharp.xml"/> 
-
-<patternset id="references">
-  <patternset refid="3rdPartyPattern" />
-</patternset>
 
 </project>

@@ -90,7 +90,8 @@ Section "Main Section" SecInstallFiles
   CreateDirectory "$INSTDIR\bin30"
   SetOutPath "$INSTDIR\bin30"
   File ..\..\..\csharp\ThirdParty\DevAge\SourceGrid.dll
-  File ..\..\..\csharp\ThirdParty\SQLite\System.Data.SQLite.dll
+  File ..\..\..\csharp\ThirdParty\SQLite\Mono.Data.Sqlite.dll
+  File ..\..\..\csharp\ThirdParty\SQLite\sqlite3.dll
   File ..\..\..\csharp\ThirdParty\ICSharpCode\ICSharpCode.SharpZipLib.dll
   File ..\..\..\csharp\ThirdParty\GNU\GNU.Gettext.dll
   File ..\..\..\csharp\ThirdParty\Npgsql\Npgsql.dll
@@ -98,6 +99,7 @@ Section "Main Section" SecInstallFiles
   File ..\..\..\delivery\bin\Ict.Petra.Client*dll
   File ..\..\..\delivery\bin\Ict.Petra.Shared*dll
   File ..\..\..\delivery\bin\PetraClient.exe
+  File ..\..\..\delivery\bin\Ict.Tools.PatchTool.exe
   File ..\..\..\tmp\UINavigation.yml
   SetOutPath "$INSTDIR\bin30\de-DE"
   File ..\..\..\delivery\bin\de-DE\OpenPetra.resources.dll
@@ -115,7 +117,7 @@ Section "Main Section" SecInstallFiles
   File ..\..\..\resources\*.ico
   File ..\..\..\resources\*.png
   SetOutPath "$INSTDIR\bin30"
-  File version.txt
+  File ..\..\..\tmp\version.txt
   SetOutPath "$INSTDIR"
   File ..\..\..\LICENSE
   File ..\..\..\resources\petraico-big.ico
@@ -126,7 +128,7 @@ Section "Main Section" SecInstallFiles
   ; Now create shortcuts
   CreateDirectory "$SMPROGRAMS\${MUI_PRODUCT}"
   SetOutPath "$INSTDIR\bin30"
-  CreateShortCut "$SMPROGRAMS\${MUI_PRODUCT}\OpenPetra.org Client.lnk" "$INSTDIR\bin30\PetraClient.exe" "-C:'$INSTDIR\etc30\PetraClientRemote.config'" $INSTDIR\petraico-big.ico 0 SW_SHOWNORMAL
+  CreateShortCut "$SMPROGRAMS\${MUI_PRODUCT}\OpenPetra.org Client.lnk" "$INSTDIR\bin30\PetraClient.exe" '-C:"$INSTDIR\etc30\PetraClientRemote.config"' $INSTDIR\petraico-big.ico 0 SW_SHOWNORMAL
   ; avoid problems with empty hotkey. so no comment for the moment for the shortcut: "Start OpenPetra.org (connecting to your OpenPetra server)"
   CreateShortCut "$SMPROGRAMS\${MUI_PRODUCT}\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
   
@@ -178,15 +180,15 @@ FunctionEnd
 ; GetCORVersion always returns v2.0, but not the installed v3.5
 ; we don't want to install .Net directly, since the user might not have admin permissions
 Function CheckDotNETVersion
-    !insertmacro IfKeyExists "HKLM" "SOFTWARE\Microsoft\.NETFramework\AssemblyFolders" "v3.5"
+    !insertmacro IfKeyExists "HKLM" "SOFTWARE\Microsoft\.NETFramework\Policy" "v4.0"
     Pop $R0
     ;$R0 contains 0 (not present) or 1 (present)
 
   ${If} $R0 == 0
-    DetailPrint ".NET Framework v3.5 not installed."
+    DetailPrint ".NET Framework v4.0 not installed."
     DetailPrint "Please first install this .NET Framework version from www.microsoft.com!"
     MessageBox MB_OK|MB_ICONSTOP \
-    ".NET Framework v3.5 not installed.$\nPlease first install this .NET Framework version from www.microsoft.com!"
+    ".NET Framework v4.0 not installed.$\nPlease first install this .NET Framework version from www.microsoft.com!"
     Abort
   ${EndIf}
 FunctionEnd

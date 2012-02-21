@@ -21,6 +21,7 @@ then
 fi
 
 if [ ! -d $OpenPetraOrgPath ]
+then
   export mono=mono
   export OpenPetraOrgPath=/usr/local/openpetraorg
   export CustomerName=DefaultTOREPLACE
@@ -32,7 +33,7 @@ if [ ! -d $OpenPetraOrgPath ]
   export OPENPETRA_DBUSER=petraserver
   export OPENPETRA_DBNAME=openpetra
   export OPENPETRA_PORT=9000
-  export backupfile=$OpenPetraOrgPath/backup-`date +%Y%m%d`.sql.gz
+  export backupfile=$OpenPetraOrgPath/backup30/backup-`date +%Y%m%d`.sql.gz
 fi
 
 # Override defaults from /etc/sysconfig/openpetra if file is present
@@ -51,7 +52,7 @@ start() {
 
     cd $OpenPetraOrgPath/bin30
     parameters="-Server.DBPassword:ENV_OPENPETRA_DBPWD -Server.DBUserName:$OPENPETRA_DBUSER -Server.DBName:$OPENPETRA_DBNAME -Server.DBPort:$OPENPETRA_DBPORT -Server.DBHostOrFile:$OPENPETRA_DBHOST -Server.IPBasePort:$OPENPETRA_PORT -Server.RDBMSType:$OPENPETRA_RDBMSType -Server.ChannelEncryption.PrivateKeyfile:$OPENPETRA_LocationPrivateKeyFile"
-    su $userName -c "$mono --server PetraServerConsole.exe -C:$OpenPetraOrgPath/etc30/PetraServerConsole.config $parameters -RunWithoutMenu:true &> /dev/null &"
+    su $userName -c "$mono --runtime=v4.0 --server PetraServerConsole.exe -C:$OpenPetraOrgPath/etc30/PetraServerConsole.config $parameters -RunWithoutMenu:true &> /dev/null &"
     # in order to see if the server started successfully, wait a few seconds and then show the end of the log file
     sleep 5
     tail $OpenPetraOrgPath/log30/Server.log
@@ -67,7 +68,7 @@ stop() {
     log_daemon_msg "Stopping OpenPetra.org server for $CustomerName"
     cd $OpenPetraOrgPath/bin30
     parameters="-Server.IPBasePort:$OPENPETRA_PORT -Server.ChannelEncryption.PublicKeyfile:$OPENPETRA_LocationPublicKeyFile"
-    su $userName -c "$mono --server PetraServerAdminConsole.exe -C:$OpenPetraOrgPath/etc30/PetraServerAdminConsole.config $parameters -Command:Stop"
+    su $userName -c "$mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:$OpenPetraOrgPath/etc30/PetraServerAdminConsole.config $parameters -Command:Stop"
     status=0
     log_end_msg $status
 }
@@ -76,7 +77,7 @@ stop() {
 menu() {
     cd $OpenPetraOrgPath/bin30
     parameters="-Server.IPBasePort:$OPENPETRA_PORT -Server.ChannelEncryption.PublicKeyfile:$OPENPETRA_LocationPublicKeyFile"
-    su $userName -c "$mono --server PetraServerAdminConsole.exe -C:$OpenPetraOrgPath/etc30/PetraServerAdminConsole.config $parameters"
+    su $userName -c "$mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:$OpenPetraOrgPath/etc30/PetraServerAdminConsole.config $parameters"
 }
 
 # backup the mysql database

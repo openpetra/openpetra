@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
 // Copyright 2004-2011 by OM International
 //
@@ -44,8 +44,25 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
     /// The TPPartnerAddressAggregate Class contains logic to create, edit and delete
     /// addresses, involving both p_location and p_partner_location tables.
     /// </summary>
-    public class TPPartnerAddressAggregate : object
+    public class TPPartnerAddressAggregate
     {
+        private static void DebugLoadedDataset(DataSet ADataSet)
+        {
+            TLogging.Log("Select done in TPPartnerAddressAggregate.GetData(). Result: ");
+
+            foreach (DataRow TheRow in ADataSet.Tables[PLocationTable.GetTableName()].Rows)
+            {
+                TLogging.Log(PLocationTable.GetTableName() + ": Processing rows...");
+                TLogging.Log(TheRow[0].ToString() + " | " + TheRow[1].ToString());
+            }
+
+            foreach (DataRow TheRow in ADataSet.Tables[PPartnerLocationTable.GetTableName()].Rows)
+            {
+                TLogging.Log(PPartnerLocationTable.GetTableName() + ": Processing rows...");
+                TLogging.Log(TheRow[0].ToString() + " | " + TheRow[1].ToString());
+            }
+        }
+
         /// <summary>
         /// Passes Partner Address data as a DataSet to the caller. Loads all available
         /// Addresses for the Partner.
@@ -70,38 +87,11 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             LocationDT = (PLocationTable)ADataSet.Tables[PLocationTable.GetTableName()];
             PartnerLocationDT = (PPartnerLocationTable)ADataSet.Tables[PPartnerLocationTable.GetTableName()];
             ApplySecurity(ref PartnerLocationDT, ref LocationDT);
-#if DEBUGMODE
+
             if (TLogging.DL >= 9)
             {
-                TLogging.Log("Select done in TPPartnerAddressAggregate.GetData(). Result: ");
-
-                foreach (DataRow TheRow in ADataSet.Tables[PLocationTable.GetTableName()].Rows)
-                {
-                    TLogging.Log(PLocationTable.GetTableName() + ": Processing rows...");
-                    TLogging.Log(TheRow[0].ToString() + " | " + TheRow[1].ToString());
-                }
-
-                foreach (DataRow TheRow in ADataSet.Tables[PPartnerLocationTable.GetTableName()].Rows)
-                {
-                    TLogging.Log(PPartnerLocationTable.GetTableName() + ": Processing rows...");
-                    TLogging.Log(TheRow[0].ToString() + " | " + TheRow[1].ToString());
-                }
+                DebugLoadedDataset(ADataSet);
             }
-#endif
-        }
-
-        /// <summary>
-        /// Returns the number of Addresses (p_partner_location records) a Partner has.
-        ///
-        /// </summary>
-        /// <param name="APartnerKey">PartnerKey of the Partner for which Address data is to be
-        /// loaded</param>
-        /// <param name="AReadTransaction">Transaction for the SELECT COUNT statement</param>
-        /// <returns>Number of Addresses
-        /// </returns>
-        public static Int32 Count(Int64 APartnerKey, TDBTransaction AReadTransaction)
-        {
-            return PPartnerLocationAccess.CountViaPPartner(APartnerKey, AReadTransaction);
         }
 
         /// <summary>
@@ -115,19 +105,17 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <param name="AAddressAddedPromotionDT"></param>
         /// <param name="AChangeLocationParametersDT"></param>
         /// <param name="APartnerLocationTable"></param>
-        /// <param name="APartnerLocationExtraSubmitTable"></param>
         /// <param name="AVerificationResult"></param>
         /// <param name="ACreateLocation"></param>
         /// <param name="AOriginalLocationKey"></param>
         /// <returns></returns>
-        public static TSubmitChangesResult PerformLocationChangeChecks(PLocationRow ALocationRow,
+        private static TSubmitChangesResult PerformLocationChangeChecks(PLocationRow ALocationRow,
             Int64 APartnerKey,
             ref PartnerAddressAggregateTDS AResponseDS,
             TDBTransaction ASubmitChangesTransaction,
             ref PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable AAddressAddedPromotionDT,
             ref PartnerAddressAggregateTDSChangePromotionParametersTable AChangeLocationParametersDT,
             ref PPartnerLocationTable APartnerLocationTable,
-            ref PPartnerLocationTable APartnerLocationExtraSubmitTable,
             ref TVerificationResultCollection AVerificationResult,
             out Boolean ACreateLocation,
             out TLocationPK AOriginalLocationKey)
@@ -157,7 +145,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
             if (TLogging.DL >= 9)
             {
-                Console.WriteLine("PerformLocationChangeChecks: AAddressAddedPromotionDT.Rows.Count: " + AAddressAddedPromotionDT.Rows.Count.ToString());
+                TLogging.Log("PerformLocationChangeChecks: AAddressAddedPromotionDT.Rows.Count: " + AAddressAddedPromotionDT.Rows.Count.ToString());
             }
 #endif
 
@@ -180,7 +168,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine(
+                        TLogging.Log(
                             "PerformLocationChangeChecks: Location " + ALocationRow.LocationKey.ToString() +
                             ": Location has been changed, decision on propagation is needed.");
                     }
@@ -196,7 +184,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                         if (TLogging.DL >= 9)
                         {
-                            Console.WriteLine("PerformLocationChangeChecks: Creating AResponseDS.");
+                            TLogging.Log("PerformLocationChangeChecks: Creating AResponseDS.");
                         }
 #endif
                         AResponseDS = new PartnerAddressAggregateTDS(MPartnerConstants.PARTNERADDRESSAGGREGATERESPONSE_DATASET);
@@ -205,7 +193,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine(
+                        TLogging.Log(
                             "PerformLocationChangeChecks: AAddressAddedPromotionDT.Rows.Count: " + AAddressAddedPromotionDT.Rows.Count.ToString());
                     }
 #endif
@@ -213,33 +201,27 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine("PerformLocationChangeChecks: Merged AAddressAddedPromotionDT into AResponseDS.");
+                        TLogging.Log("PerformLocationChangeChecks: Merged AAddressAddedPromotionDT into AResponseDS.");
                     }
 #endif
                     AResponseDS.Merge(ChangePromotionParametersDT);
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine("PerformLocationChangeChecks: Merged ChangePromotionParametersDT into AResponseDS.");
-                    }
-#endif
-#if DEBUGMODE
-                    if (TLogging.DL >= 9)
-                    {
-                        Console.WriteLine(
+                        TLogging.Log("PerformLocationChangeChecks: Merged ChangePromotionParametersDT into AResponseDS.");
+                        TLogging.Log(
                             "PerformLocationChangeChecks: AResponseDS.Tables[" + MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME +
                             "].Rows.Count: " + AResponseDS.Tables[MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME].Rows.Count.ToString());
                     }
 #endif
-                    ReturnValue = TSubmitChangesResult.scrInfoNeeded;
-                    return ReturnValue;
+                    return TSubmitChangesResult.scrInfoNeeded;
                 }
                 else
                 {
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine(
+                        TLogging.Log(
                             "PerformLocationChangeChecks: User made his/her choice regarding Location Change promotion; now processing...");
                     }
 #endif
@@ -260,7 +242,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                         if (TLogging.DL >= 9)
                         {
-                            Console.WriteLine(
+                            TLogging.Log(
                                 "PerformLocationChangeChecks: Location " + AOriginalLocationKey.LocationKey.ToString() + ": should be created.");
                         }
 #endif
@@ -278,8 +260,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                         if (!PLocationAccess.SubmitChanges(NewLocationTable, ASubmitChangesTransaction, out SingleVerificationResultCollection))
                         {
                             AVerificationResult.AddCollection(SingleVerificationResultCollection);
-                            ReturnValue = TSubmitChangesResult.scrError;
-                            return ReturnValue;
+                            return TSubmitChangesResult.scrError;
                         }
 
                         // The DB gives us a LocationKey from a Sequence. Remember this one.
@@ -287,7 +268,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                         if (TLogging.DL >= 9)
                         {
-                            Console.WriteLine(
+                            TLogging.Log(
                                 "PerformLocationChangeChecks: New Location created! Its Location Key is: " + NewLocationLocationKey.ToString());
                         }
 #endif
@@ -334,7 +315,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                             if (TLogging.DL >= 9)
                             {
-                                Console.WriteLine(
+                                TLogging.Log(
                                     "PerformLocationChangeChecks: Created Location " + NewLocationLocationKey.ToString() +
                                     ": should be assigned to " +
                                     Convert.ToInt32(CreateLocationOtherPartnerKeys.Length).ToString() + " Partners...");
@@ -379,8 +360,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                                     ASubmitChangesTransaction, out SingleVerificationResultCollection))
                             {
                                 AVerificationResult.AddCollection(SingleVerificationResultCollection);
-                                ReturnValue = TSubmitChangesResult.scrError;
-                                return ReturnValue;
+                                return TSubmitChangesResult.scrError;
                             }
                         }
                         else
@@ -388,7 +368,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                             if (TLogging.DL >= 9)
                             {
-                                Console.WriteLine(
+                                TLogging.Log(
                                     "PerformLocationChangeChecks: Created Location " + NewLocationLocationKey.ToString() +
                                     ": should not be assigned to any other Partners...");
                             }
@@ -405,7 +385,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                         if (TLogging.DL >= 9)
                         {
-                            Console.WriteLine(
+                            TLogging.Log(
                                 "PerformLocationChangeChecks: Location " + ALocationRow.LocationKey.ToString() +
                                 ": should simply get updated; therefore the Locations of ALL Partners will be changed...");
                         }
@@ -426,7 +406,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                 if (TLogging.DL >= 9)
                 {
-                    Console.WriteLine(
+                    TLogging.Log(
                         "PerformLocationChangeChecks: Location " + ALocationRow.LocationKey.ToString() +
                         ": User cancelled the selection - stopping the whole saving process!");
                 }
@@ -483,7 +463,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                 if (TLogging.DL >= 9)
                 {
-                    Console.WriteLine("ApplySecurity (1): User isn't in Security Group ADDRESSCAN.");
+                    TLogging.Log("ApplySecurity (1): User isn't in Security Group ADDRESSCAN.");
                 }
 #endif
 
@@ -492,7 +472,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine("ApplySecurity (1): LocationType is present.");
+                        TLogging.Log("ApplySecurity (1): LocationType is present.");
                     }
 #endif
 
@@ -500,7 +480,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                     {
                         if (TLogging.DL >= 9)
                         {
-                            Console.WriteLine("LocationType: " + TmpDR[LocationTypeDBName].ToString());
+                            TLogging.Log("LocationType: " + TmpDR[LocationTypeDBName].ToString());
                         }
 
                         if (TmpDR[LocationTypeDBName].ToString().EndsWith(SharedConstants.SECURITY_CAN_LOCATIONTYPE))
@@ -508,7 +488,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                             if (TLogging.DL >= 9)
                             {
-                                Console.WriteLine("ApplySecurity (1): LocationType is ending with '-CAN', applying Address Security...");
+                                TLogging.Log("ApplySecurity (1): LocationType is ending with '-CAN', applying Address Security...");
                             }
 #endif
 
@@ -690,7 +670,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                 if (TLogging.DL >= 9)
                 {
-                    Console.WriteLine("ApplySecurity (2): User isn't in Security Group ADDRESSCAN.");
+                    TLogging.Log("ApplySecurity (2): User isn't in Security Group ADDRESSCAN.");
                 }
 #endif
 
@@ -768,7 +748,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <param name="AUpdatePartnerLocationOtherPersons"></param>
         /// <param name="AChangePromotionParametersDT"></param>
         /// <returns></returns>
-        public static Boolean CheckPartnerLocationChange(PPartnerLocationRow APartnerLocationRow,
+        private static Boolean CheckPartnerLocationChange(PPartnerLocationRow APartnerLocationRow,
             Int64 APartnerKey,
             ref PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable AAddressAddedOrChangedPromotionDT,
             TDBTransaction AReadTransaction,
@@ -797,7 +777,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
             if (TLogging.DL >= 9)
             {
-                Console.WriteLine(
+                TLogging.Log(
                     "CheckPartnerLocationChange for Location " + APartnerLocationRow.LocationKey.ToString() +
                     ": AAddressAddedOrChangedPromotionDT.Rows.Count: " + AAddressAddedOrChangedPromotionDT.Rows.Count.ToString());
             }
@@ -832,7 +812,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                         if (TLogging.DL >= 9)
                         {
-                            Console.WriteLine(
+                            TLogging.Log(
                                 "CheckPartnerLocationChange: PartnerLocation with LocationKey " + APartnerLocationRow.LocationKey.ToString() +
                                 ": certain fields have been changed and there are Family Members to which they can be promoted!");
                         }
@@ -859,7 +839,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                         if (TLogging.DL >= 9)
                         {
-                            Console.WriteLine(
+                            TLogging.Log(
                                 "CheckPartnerLocationChange: ChangedFields String: " + AddressAddedOrChangedRow.ChangedFields.ToString() +
                                 " (ChangedDetails.Count /4: " + Convert.ToInt16(ChangedDetails.Count / 4.0).ToString() + ')');
                         }
@@ -967,7 +947,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                         if (TLogging.DL >= 9)
                         {
-                            Console.WriteLine(
+                            TLogging.Log(
                                 "CheckPartnerLocationChange: Location " + APartnerLocationRow.LocationKey.ToString() +
                                 ": inserted PartnerLocation data of " + AChangePromotionParametersDT.Rows.Count.ToString() +
                                 " PERSON''s of that FAMILY into AChangePromotionParametersDT!");
@@ -989,7 +969,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine(
+                        TLogging.Log(
                             "CheckPartnerLocationChange: AAddressAddedOrChangedPromotionDT tells me to UPDATE NONE of the Persons with the changes that were made to the PartnerLocation.");
                     }
 #endif
@@ -1004,7 +984,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine(
+                        TLogging.Log(
                             "CheckPartnerLocationChange: AAddressAddedOrChangedPromotionDT tells me to UPDATE SOME Persons with the changes that were made to the PartnerLocation.");
                     }
 #endif
@@ -1013,7 +993,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                     // Parse the UserAnswer. It's format is 'CHANGESOME:PartnerKey1,SiteKey1,LocationKey1;PartnerKey2,SiteKey2,LocationKey2;PartnerKeyN,SiteKeyN,LocationKeyN'
                     ChangeSomeArray = AddressAddedOrChangedRow.UserAnswer.Split(":,;".ToCharArray());
 
-                    // $IFDEF DEBUGMODE if TLogging.DL >= 9 then Console.WriteLine('CheckPartnerLocationChange: Length(ChangeSomeArray): ' + Convert.ToInt32(Length(ChangeSomeArray)).ToString); $ENDIF
+                    // $IFDEF DEBUGMODE if TLogging.DL >= 9 then TLogging.Log('CheckPartnerLocationChange: Length(ChangeSomeArray): ' + Convert.ToInt32(Length(ChangeSomeArray)).ToString); $ENDIF
 
                     /*
                      * Build the AUpdatePartnerLocationOtherPersons array from the UserAnswer
@@ -1023,20 +1003,20 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                      */
                     AUpdatePartnerLocationOtherPersons = new Int64[Convert.ToInt32((ChangeSomeArray.Length - 1) / 3.0), 3];
 
-                    // $IFDEF DEBUGMODE if TLogging.DL >= 9 then Console.WriteLine('CheckPartnerLocationChange: Length(AUpdatePartnerLocationOtherPersons):' + Convert.ToInt32(Length(AUpdatePartnerLocationOtherPersons)).ToString); $ENDIF
+                    // $IFDEF DEBUGMODE if TLogging.DL >= 9 then TLogging.Log('CheckPartnerLocationChange: Length(AUpdatePartnerLocationOtherPersons):' + Convert.ToInt32(Length(AUpdatePartnerLocationOtherPersons)).ToString); $ENDIF
                     // Counter: ' 1': don't include 'CHANGESOME' array entry, '/ 3' each entry consists of three strings:
                     Counter = 1;
                     Counter2 = 0;
 
                     while (Counter < AUpdatePartnerLocationOtherPersons.GetLength(0) * 3)
                     {
-                        // $IFDEF DEBUGMODE if TLogging.DL >= 9 then Console.WriteLine('CheckPartnerLocationChange: Counter: ' + Counter.ToString + ';  Counter2: ' + Counter2.ToString); $ENDIF
+                        // $IFDEF DEBUGMODE if TLogging.DL >= 9 then TLogging.Log('CheckPartnerLocationChange: Counter: ' + Counter.ToString + ';  Counter2: ' + Counter2.ToString); $ENDIF
                         // store PartnerKey
                         AUpdatePartnerLocationOtherPersons[Counter2, 0] = Convert.ToInt64(ChangeSomeArray[Counter]);
 #if DEBUGMODE
                         if (TLogging.DL >= 9)
                         {
-                            Console.WriteLine(
+                            TLogging.Log(
                                 "CheckPartnerLocationChange: PartnerKey[" + Counter2.ToString() + "]: " +
                                 AUpdatePartnerLocationOtherPersons[Counter2, 0].ToString());
                         }
@@ -1047,7 +1027,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                         if (TLogging.DL >= 9)
                         {
-                            Console.WriteLine(
+                            TLogging.Log(
                                 "CheckPartnerLocationChange: SiteKey[" + Counter2.ToString() + "]: " +
                                 AUpdatePartnerLocationOtherPersons[Counter2, 1].ToString());
                         }
@@ -1058,7 +1038,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                         if (TLogging.DL >= 9)
                         {
-                            Console.WriteLine(
+                            TLogging.Log(
                                 "CheckPartnerLocationChange: LocationKey[" + Counter2.ToString() + "]: " +
                                 AUpdatePartnerLocationOtherPersons[Counter2, 2].ToString());
                         }
@@ -1078,7 +1058,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine(
+                        TLogging.Log(
                             "CheckPartnerLocationChange: AAddressAddedOrChangedPromotionDT tells me to UPDATE ALL Persons with the changes that were made to the PartnerLocation.");
                     }
 #endif
@@ -1097,7 +1077,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine(
+                        TLogging.Log(
                             "CheckPartnerLocationChange: AChangePromotionParametersDT.Rows.Count: " +
                             AChangePromotionParametersDT.Rows.Count.ToString());
                     }
@@ -1117,7 +1097,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine(
+                        TLogging.Log(
                             "CheckPartnerLocationChange: AChangePromotionParametersDV.Count: " + AChangePromotionParametersDV.Count.ToString());
                     }
 #endif
@@ -1150,7 +1130,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine(
+                        TLogging.Log(
                             "CheckPartnerLocationChange: AAddressAddedOrChangedPromotionDT tells me to CANCEL the changing of the PartnerLocation.");
                     }
 #endif
@@ -1163,7 +1143,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine(
+                        TLogging.Log(
                             "CheckPartnerLocationChange: AAddressAddedOrChangedPromotionDT holds unexpected UserAnswer: " +
                             AddressAddedOrChangedRow.UserAnswer + "! Aborting operation!!!");
                     }
@@ -1187,7 +1167,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <param name="ALocationPK"></param>
         /// <param name="AReadTransaction"></param>
         /// <returns></returns>
-        public static Boolean CheckFamilyMemberPropagation(PPartnerLocationRow APartnerLocationRow,
+        private static Boolean CheckFamilyMemberPropagation(PPartnerLocationRow APartnerLocationRow,
             Int64 APartnerKey,
             String APartnerClass,
             ref PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable AAddressAddedOrChangedPromotionDT,
@@ -1202,15 +1182,10 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
             if (TLogging.DL >= 9)
             {
-                Console.WriteLine(
+                TLogging.Log(
                     "CheckFamilyMemberPropagation for Location " + APartnerLocationRow.LocationKey.ToString() +
                     ": AAddressAddedOrChangedPromotionDT.Rows.Count: " + AAddressAddedOrChangedPromotionDT.Rows.Count.ToString());
-            }
-#endif
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine("CheckFamilyMemberPropagation: ALocationPK.LocationKey: " + ALocationPK.LocationKey.ToString());
+                TLogging.Log("CheckFamilyMemberPropagation: ALocationPK.LocationKey: " + ALocationPK.LocationKey.ToString());
             }
 #endif
 
@@ -1241,7 +1216,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine(
+                        TLogging.Log(
                             "CheckFamilyMemberPropagation: Location " + APartnerLocationRow.LocationKey.ToString() +
                             ": Partner is Family and has Family Members!");
                     }
@@ -1264,7 +1239,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine(
+                        TLogging.Log(
                             "CheckFamilyMemberPropagation: Location " + APartnerLocationRow.LocationKey.ToString() + ": found no Family Members.");
                     }
 #endif
@@ -1281,7 +1256,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine(
+                        TLogging.Log(
                             "CheckFamilyMemberPropagation: AAddressAddedOrChangedPromotionDT tells me to propagate the new Location to all Family Members.");
                     }
 #endif
@@ -1294,7 +1269,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine(
+                        TLogging.Log(
                             "CheckFamilyMemberPropagation: AAddressAddedOrChangedPromotionDT tells me NOT to propagate the new Location.");
                     }
 #endif
@@ -1319,7 +1294,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <param name="ACreateLocationOtherPartnerKeys"></param>
         /// <param name="AChangePromotionParametersDT"></param>
         /// <returns></returns>
-        public static Boolean CheckLocationChange(PLocationRow ALocationRow,
+        private static Boolean CheckLocationChange(PLocationRow ALocationRow,
             Int64 APartnerKey,
             ref PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable AAddressAddedOrChangedPromotionDT,
             TDBTransaction AReadTransaction,
@@ -1329,15 +1304,8 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             out PartnerAddressAggregateTDSChangePromotionParametersTable AChangePromotionParametersDT)
         {
             Boolean ReturnValue;
-            DataView AddressAddedOrChangedPromotionDV;
-            PartnerAddressAggregateTDSAddressAddedOrChangedPromotionRow AddressAddedOrChangedRow;
 
-            string[] ChangeSomeArray;
-            OdbcParameter[] ParametersArray;
-            int Counter;
             PartnerAddressAggregateTDSChangePromotionParametersRow AddressAddedPromotionRow;
-            DataSet OtherPartnerLocationReferencesDS;
-            DataRow OtherPartnerLocationReferenceRow;
 
             ACreateLocation = false;
             AUpdateLocation = false;
@@ -1348,14 +1316,14 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
             if (TLogging.DL >= 9)
             {
-                Console.WriteLine(
+                TLogging.Log(
                     "CheckLocationChange for Location " + ALocationRow.LocationKey.ToString() + ": AAddressAddedOrChangedPromotionDT.Rows.Count: " +
                     AAddressAddedOrChangedPromotionDT.Rows.Count.ToString());
             }
 #endif
 
             // Check if there is a Parameter Row for the LocationKey we are looking at
-            AddressAddedOrChangedPromotionDV = new DataView(AAddressAddedOrChangedPromotionDT,
+            DataView AddressAddedOrChangedPromotionDV = new DataView(AAddressAddedOrChangedPromotionDT,
                 PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable.GetSiteKeyDBName() + " = " + ALocationRow.SiteKey.ToString() +
                 " AND " +
                 PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable.GetLocationKeyDBName() + " = " + ALocationRow.LocationKey.ToString() +
@@ -1369,14 +1337,15 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                 if (TLogging.DL >= 9)
                 {
-                    Console.WriteLine(
+                    TLogging.Log(
                         "CheckLocationChange: Location " + ALocationRow.LocationKey.ToString() +
                         ": Location has been changed and is referenced by other Partners!");
                 }
 #endif
                 AAddressAddedOrChangedPromotionDT = new PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable(
                     MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME);
-                AddressAddedOrChangedRow = AAddressAddedOrChangedPromotionDT.NewRowTyped(false);
+                PartnerAddressAggregateTDSAddressAddedOrChangedPromotionRow AddressAddedOrChangedRow =
+                    AAddressAddedOrChangedPromotionDT.NewRowTyped(false);
                 AddressAddedOrChangedRow.SiteKey = ALocationRow.SiteKey;
                 AddressAddedOrChangedRow.LocationKey = ALocationRow.LocationKey;
                 AddressAddedOrChangedRow.PartnerKey = APartnerKey;
@@ -1391,14 +1360,14 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                     MPartnerConstants.ADDRESSCHANGEPROMOTIONPARAMETERS_TABLENAME);
 
                 // Load data for all other Partners that reference the PartnerLocation
-                ParametersArray = new OdbcParameter[3];
+                OdbcParameter[] ParametersArray = new OdbcParameter[3];
                 ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
                 ParametersArray[0].Value = (System.Object)(APartnerKey);
                 ParametersArray[1] = new OdbcParameter("", OdbcType.Decimal, 10);
                 ParametersArray[1].Value = (System.Object)(ALocationRow.SiteKey);
                 ParametersArray[2] = new OdbcParameter("", OdbcType.Int);
                 ParametersArray[2].Value = (System.Object)(ALocationRow.LocationKey);
-                OtherPartnerLocationReferencesDS = DBAccess.GDBAccessObj.Select(
+                DataTable OtherPartnerLocationReferencesDT = DBAccess.GDBAccessObj.SelectDT(
                     "SELECT PUB_" + PPartnerLocationTable.GetTableDBName() + '.' + PPartnerLocationTable.GetPartnerKeyDBName() + ", " +
                     PPartnerTable.GetPartnerShortNameDBName() + ", " +
                     PPartnerTable.GetPartnerClassDBName() + ", " + PPartnerLocationTable.GetTelephoneNumberDBName() + ", " +
@@ -1408,7 +1377,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                     " = PUB_" + PPartnerLocationTable.GetTableDBName() + '.' + PPartnerLocationTable.GetPartnerKeyDBName() + ' ' + "WHERE    PUB_" +
                     PPartnerLocationTable.GetTableDBName() + '.' + PPartnerLocationTable.GetPartnerKeyDBName() + " <> ? " + "AND    " +
                     PPartnerLocationTable.GetSiteKeyDBName() + " = ? " + "AND    " + PPartnerLocationTable.GetLocationKeyDBName() + " = ?",
-                    "OtherPartnerLocationReferences", AReadTransaction, ParametersArray);
+                    "OtherPartnerLocationReferencesDT", AReadTransaction, ParametersArray);
 
                 // Don't need these columns for the moment, but it would be nice to have them later on
                 // PPartnerLocationTable.GetExtensionDBName + ', ' +
@@ -1422,9 +1391,9 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                 // PPartnerLocationTable.GetDateEffectiveDBName + ', ' +
                 // PPartnerLocationTable.GetDateGoodUntilDBName + ', ' +
                 // Insert data into the ChangePromotionParameters DataTable
-                for (Counter = 0; Counter <= OtherPartnerLocationReferencesDS.Tables[0].Rows.Count - 1; Counter += 1)
+                for (int Counter = 0; Counter <= OtherPartnerLocationReferencesDT.Rows.Count - 1; Counter += 1)
                 {
-                    OtherPartnerLocationReferenceRow = OtherPartnerLocationReferencesDS.Tables[0].Rows[Counter];
+                    DataRow OtherPartnerLocationReferenceRow = OtherPartnerLocationReferencesDT.Rows[Counter];
                     AddressAddedPromotionRow = AChangePromotionParametersDT.NewRowTyped(false);
                     AddressAddedPromotionRow.SiteKey = ALocationRow.SiteKey;
                     AddressAddedPromotionRow.LocationKey = (Int32)ALocationRow.LocationKey;
@@ -1471,7 +1440,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                 if (TLogging.DL >= 9)
                 {
-                    Console.WriteLine(
+                    TLogging.Log(
                         "CheckLocationChange: Location " + ALocationRow.LocationKey.ToString() + ": inserted PartnerLocation data of " +
                         AChangePromotionParametersDT.Rows.Count.ToString() +
                         " other Partners that reference this Location into AChangePromotionParametersDT!");
@@ -1483,14 +1452,15 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             else
             {
                 // AAddressAddedOrChangedPromotionDT was passed in, holding parameters for the LocationKey we are looking at
-                AddressAddedOrChangedRow = (PartnerAddressAggregateTDSAddressAddedOrChangedPromotionRow)AddressAddedOrChangedPromotionDV[0].Row;
+                PartnerAddressAggregateTDSAddressAddedOrChangedPromotionRow AddressAddedOrChangedRow =
+                    (PartnerAddressAggregateTDSAddressAddedOrChangedPromotionRow)AddressAddedOrChangedPromotionDV[0].Row;
 
                 if (AddressAddedOrChangedRow.UserAnswer == "CHANGE-NONE")
                 {
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine("CheckLocationChange: AAddressAddedOrChangedPromotionDT tells me to CREATE the Location.");
+                        TLogging.Log("CheckLocationChange: AAddressAddedOrChangedPromotionDT tells me to CREATE the Location.");
                     }
 #endif
                     ACreateLocation = true;
@@ -1507,21 +1477,21 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine(
+                        TLogging.Log(
                             "CheckLocationChange: AAddressAddedOrChangedPromotionDT tells me to CREATE the Location and assign it to selected partners.");
                     }
 #endif
                     ACreateLocation = true;
 
                     // Parse the UserAnswer. It's format is 'CHANGESOME:PartnerKey1;PartnerKey2;PartnerKeyN'
-                    ChangeSomeArray = AddressAddedOrChangedRow.UserAnswer.Split(":;".ToCharArray());
+                    string[] ChangeSomeArray = AddressAddedOrChangedRow.UserAnswer.Split(":;".ToCharArray());
 
                     // Build the ACreateLocationOtherPartnerKeys array from it to
                     // signal to calling procedure that the created location should be
                     // assigned to all the Partners contained in the Array.
                     ACreateLocationOtherPartnerKeys = new Int64[ChangeSomeArray.Length - 1];
 
-                    for (Counter = 1; Counter <= ChangeSomeArray.Length - 1; Counter += 1)
+                    for (int Counter = 1; Counter <= ChangeSomeArray.Length - 1; Counter += 1)
                     {
                         ACreateLocationOtherPartnerKeys[Counter - 1] = Convert.ToInt64(ChangeSomeArray[Counter]);
                     }
@@ -1535,7 +1505,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine("CheckLocationChange: AAddressAddedOrChangedPromotionDT tells me to UPDATE the Location.");
+                        TLogging.Log("CheckLocationChange: AAddressAddedOrChangedPromotionDT tells me to UPDATE the Location.");
                     }
 #endif
                     AUpdateLocation = true;
@@ -1548,7 +1518,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine("CheckLocationChange: AAddressAddedOrChangedPromotionDT tells me to CANCEL the changing of the Location.");
+                        TLogging.Log("CheckLocationChange: AAddressAddedOrChangedPromotionDT tells me to CANCEL the changing of the Location.");
                     }
 #endif
                     AddressAddedOrChangedRow.AnswerProcessedClientSide = true;
@@ -1583,7 +1553,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// </summary>
         /// <param name="ALocationRow"></param>
         /// <returns></returns>
-        public static Boolean CheckHasLocationChanged(PLocationRow ALocationRow)
+        private static Boolean CheckHasLocationChanged(PLocationRow ALocationRow)
         {
             Boolean ReturnValue;
 
@@ -1605,7 +1575,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine("CheckHasLocationChanged: Location has changed.");
+                        TLogging.Log("CheckHasLocationChanged: Location has changed.");
                     }
 #endif
                 }
@@ -1614,7 +1584,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine("CheckHasLocationChanged: Location has NOT changed.");
+                        TLogging.Log("CheckHasLocationChanged: Location has NOT changed.");
                     }
 #endif
                 }
@@ -1701,7 +1671,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
             if (TLogging.DL >= 9)
             {
-                Console.WriteLine("CheckHasPartnerLocationOtherPartnerReferences for Location " + ALocationKey.ToString());
+                TLogging.Log("CheckHasPartnerLocationOtherPartnerReferences for Location " + ALocationKey.ToString());
             }
 #endif
 
@@ -1719,7 +1689,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                 if (TLogging.DL >= 9)
                 {
-                    Console.WriteLine(
+                    TLogging.Log(
                         "CheckHasPartnerLocationOtherPartnerReferences: Location " + ALocationKey.ToString() + ": is used by " +
                         OtherPartnerLocationReferences.ToString() + " other Partners.");
                 }
@@ -1736,7 +1706,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                 if (TLogging.DL >= 9)
                 {
-                    Console.WriteLine(
+                    TLogging.Log(
                         "CheckHasPartnerLocationOtherPartnerReferences: Location " + ALocationKey.ToString() +
                         ": is Location 0, therefore it is seen as beeing used by other Partners.");
                 }
@@ -1753,7 +1723,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <param name="ADataRow"></param>
         /// <param name="AChangedDetails"></param>
         /// <returns></returns>
-        public static Boolean CheckHasPartnerLocationPromotionDetailChanged(PPartnerLocationRow ADataRow, out StringCollection AChangedDetails)
+        private static Boolean CheckHasPartnerLocationPromotionDetailChanged(PPartnerLocationRow ADataRow, out StringCollection AChangedDetails)
         {
             Boolean ReturnValue;
 
@@ -1874,7 +1844,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine("CheckHasPartnerLocationPromotionDetailChanged: " + Convert.ToInt16(
+                        TLogging.Log("CheckHasPartnerLocationPromotionDetailChanged: " + Convert.ToInt16(
                                 AChangedDetails.Count / 4.0).ToString() + " promotable Location Detail(s) has/have got changed.");
                     }
 #endif
@@ -1884,7 +1854,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine("CheckHasPartnerLocationPromotionDetailChanged: NO promotable Location Detail has got changed.");
+                        TLogging.Log("CheckHasPartnerLocationPromotionDetailChanged: NO promotable Location Detail has got changed.");
                     }
 #endif
                 }
@@ -1899,7 +1869,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                 if (TLogging.DL >= 9)
                 {
-                    Console.WriteLine("CheckHasPartnerLocationPromotionDetailChanged: PPartnerLocationRow is new and not being seen as changed.");
+                    TLogging.Log("CheckHasPartnerLocationPromotionDetailChanged: PPartnerLocationRow is new and not being seen as changed.");
                 }
 #endif
             }
@@ -1914,7 +1884,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <param name="APartnerKey"></param>
         /// <param name="AReadTransaction"></param>
         /// <returns></returns>
-        public static Boolean CheckHasPartnerOtherPartnerLocations(Int32 ALocationKey, Int64 APartnerKey, TDBTransaction AReadTransaction)
+        private static Boolean CheckHasPartnerOtherPartnerLocations(Int32 ALocationKey, Int64 APartnerKey, TDBTransaction AReadTransaction)
         {
             Int32[] OtherPartnerLocationKeys = new Int32[1];
 
@@ -1929,7 +1899,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <param name="APartnerKey"></param>
         /// <param name="AReadTransaction"></param>
         /// <returns></returns>
-        public static Boolean CheckHasPartnerOtherPartnerLocations(Int32[] ALocationKeys, Int64 APartnerKey, TDBTransaction AReadTransaction)
+        private static Boolean CheckHasPartnerOtherPartnerLocations(Int32[] ALocationKeys, Int64 APartnerKey, TDBTransaction AReadTransaction)
         {
             OdbcParameter[] ParametersArray;
             int Counter;
@@ -1960,7 +1930,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
             if (TLogging.DL >= 9)
             {
-                Console.WriteLine(
+                TLogging.Log(
                     "CheckHasPartnerOtherPartnerLocations: Partner " + APartnerKey.ToString() + ": has " + OtherLocations.ToString() +
                     " other PartnerLocations.");
             }
@@ -1975,7 +1945,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <param name="AExistingLocationParametersDT"></param>
         /// <param name="AChangeLocationParametersDT"></param>
         /// <param name="AAddressAddedOrChangedPromotionParametersDT"></param>
-        public static void CheckParameterTables(PartnerAddressAggregateTDS AInspectDS,
+        private static void CheckParameterTables(PartnerAddressAggregateTDS AInspectDS,
             out PartnerAddressAggregateTDSSimilarLocationParametersTable AExistingLocationParametersDT,
             out PartnerAddressAggregateTDSChangePromotionParametersTable AChangeLocationParametersDT,
             out PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable AAddressAddedOrChangedPromotionParametersDT)
@@ -1993,7 +1963,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                         if (TLogging.DL >= 9)
                         {
-                            Console.WriteLine(
+                            TLogging.Log(
                                 "CheckParameterTables: Passed in ParameterTable ''" + MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME +
                                 "''; Rows.Count: " + AExistingLocationParametersDT.Rows.Count.ToString());
                         }
@@ -2003,7 +1973,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                         {
                             for (Int16 TmpRowCounter = 0; TmpRowCounter <= AExistingLocationParametersDT.Rows.Count - 1; TmpRowCounter += 1)
                             {
-                                Console.WriteLine(
+                                TLogging.Log(
                                     "CheckParameterTables: AExistingLocationParametersDT: Row[" + TmpRowCounter.ToString() + "]: PLocationKey: " +
                                     AExistingLocationParametersDT[TmpRowCounter][PartnerAddressAggregateTDSSimilarLocationParametersTable.
                                                                                  GetLocationKeyDBName(),
@@ -2039,7 +2009,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                         if (TLogging.DL >= 9)
                         {
-                            Console.WriteLine(
+                            TLogging.Log(
                                 "CheckParameterTables: Passed in ParameterTable ''" + MPartnerConstants.ADDRESSCHANGEPROMOTIONPARAMETERS_TABLENAME +
                                 "''; Rows.Count: " + AChangeLocationParametersDT.Rows.Count.ToString());
                         }
@@ -2068,7 +2038,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                         if (TLogging.DL >= 9)
                         {
-                            Console.WriteLine(
+                            TLogging.Log(
                                 "CheckParameterTables: Passed in ParameterTable ''" + MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME +
                                 "''; Rows.Count: " + AAddressAddedOrChangedPromotionParametersDT.Rows.Count.ToString());
                         }
@@ -2090,7 +2060,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                 if (TLogging.DL >= 9)
                 {
-                    Console.WriteLine("CheckParameterTables: Passed in ParameterDataSet is nil.");
+                    TLogging.Log("CheckParameterTables: Passed in ParameterDataSet is nil.");
                 }
 #endif
                 AExistingLocationParametersDT = new PartnerAddressAggregateTDSSimilarLocationParametersTable(
@@ -2112,7 +2082,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <param name="AExistingSiteKey"></param>
         /// <param name="AExistingLocationKey"></param>
         /// <returns></returns>
-        public static Boolean CheckReUseExistingLocation(PLocationRow ALocationRow,
+        private static Boolean CheckReUseExistingLocation(PLocationRow ALocationRow,
             Int64 APartnerKey,
             ref PartnerAddressAggregateTDSSimilarLocationParametersTable AExistingLocationParametersDT,
             TDBTransaction AReadTransaction,
@@ -2137,7 +2107,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
             if (TLogging.DL >= 9)
             {
-                Console.WriteLine(
+                TLogging.Log(
                     "CheckReUseExistingLocation for Location " + ALocationRow.LocationKey.ToString() +
                     ": AExistingLocationParametersDT.Rows.Count: " +
                     AExistingLocationParametersDT.Rows.Count.ToString());
@@ -2198,7 +2168,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine(
+                        TLogging.Log(
                             "CheckReUseExistingLocation: Location " + ALocationRow.LocationKey.ToString() + ": found a similar Location (" +
                             AExistingLocationKey.ToString() + ")!");
                     }
@@ -2210,7 +2180,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine("CheckReUseExistingLocation: LocationUsedByNPartners: " + LocationUsedByNPartners.ToString());
+                        TLogging.Log("CheckReUseExistingLocation: LocationUsedByNPartners: " + LocationUsedByNPartners.ToString());
                     }
 #endif
                     SimilarLocationRow = AExistingLocationParametersDT.NewRowTyped(false);
@@ -2246,7 +2216,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine(
+                        TLogging.Log(
                             "CheckReUseExistingLocation: Location " + ALocationRow.LocationKey.ToString() + ": found no similar Location.");
                     }
 #endif
@@ -2265,7 +2235,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine(
+                        TLogging.Log(
                             "CheckReUseExistingLocation: AExistingLocationParametersDT tells me to re-use existing Location " +
                             AExistingLocationParametersDT[0].LocationKeyOfSimilarLocation.ToString() + '.');
                     }
@@ -2280,7 +2250,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine("CheckReUseExistingLocation: AExistingLocationParametersDT tells me NOT to re-use existing Location.");
+                        TLogging.Log("CheckReUseExistingLocation: AExistingLocationParametersDT tells me NOT to re-use existing Location.");
                     }
 #endif
                     SimilarLocationParameterRow.AnswerProcessedClientSide = true;
@@ -2366,7 +2336,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <param name="ASiteKey"></param>
         /// <param name="APartnerLocationTable"></param>
         /// <param name="ATransaction"></param>
-        public static void MakeSureLocation0IsNotPresent(Int64 APartnerKey,
+        private static void MakeSureLocation0IsNotPresent(Int64 APartnerKey,
             Int64 ASiteKey,
             PPartnerLocationTable APartnerLocationTable,
             TDBTransaction ATransaction)
@@ -2397,7 +2367,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine("MakeSureLocation0IsNotPresent: Deleted PPartnerLoction that referenced Location 0.");
+                        TLogging.Log("MakeSureLocation0IsNotPresent: Deleted PPartnerLoction that referenced Location 0.");
                     }
 #endif
                 }
@@ -2407,1112 +2377,829 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                 if (TLogging.DL >= 9)
                 {
-                    Console.WriteLine(
+                    TLogging.Log(
                         "MakeSureLocation0IsNotPresent: Submitted DataSet contains a Deleted PPartnerLoction Location 0; will get deleted lateron.");
                 }
 #endif
             }
         }
 
+        /// Debugging - what comes into the function in Location and PartnerLocation
+        private static void DebugLocationsBeforeSaving(DataSet AInspectDS)
+        {
+            string TmpDebugString = "";
+
+            if (AInspectDS.Tables.Contains(PLocationTable.GetTableName()))
+            {
+                for (Int16 TmpRowCounter = 0;
+                     TmpRowCounter <= AInspectDS.Tables[PLocationTable.GetTableName()].Rows.Count - 1;
+                     TmpRowCounter += 1)
+                {
+                    if (AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpRowCounter].RowState != DataRowState.Deleted)
+                    {
+                        TmpDebugString = TmpDebugString + PLocationTable.GetTableName() + ".Row[" + TmpRowCounter.ToString() +
+                                         "]: PLocationKey: " +
+                                         AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpRowCounter][PLocationTable.
+                                                                                                              GetLocationKeyDBName()].
+                                         ToString() +
+                                         "; PSiteKey: " +
+                                         AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpRowCounter][PLocationTable.GetSiteKeyDBName()
+                                         ].ToString() +
+                                         "; RowState: " +
+                                         (Enum.GetName(typeof(DataRowState),
+                                              AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpRowCounter].RowState)) + "\r\n";
+                    }
+                    else
+                    {
+                        TmpDebugString = TmpDebugString + PLocationTable.GetTableName() + ".Row[" + TmpRowCounter.ToString() +
+                                         "]: PLocationKey: " +
+                                         AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpRowCounter][1,
+                                                                                                              DataRowVersion.Original].
+                                         ToString() + "; RowState: DELETED" + "\r\n";
+                    }
+                }
+            }
+
+            if (AInspectDS.Tables.Contains(PPartnerLocationTable.GetTableName()))
+            {
+                TmpDebugString = TmpDebugString + Environment.NewLine;
+
+                for (Int16 TmpRowCounter = 0;
+                     TmpRowCounter <= AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows.Count - 1;
+                     TmpRowCounter += 1)
+                {
+                    if (AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter].RowState != DataRowState.Deleted)
+                    {
+                        TmpDebugString = TmpDebugString + PPartnerLocationTable.GetTableName() + ".Row[" + TmpRowCounter.ToString() +
+                                         "]: PLocationKey: " +
+                                         AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter][PPartnerLocationTable.
+                                                                                                                     GetLocationKeyDBName()
+                                         ].ToString() + "; PSiteKey: " +
+                                         AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter][PPartnerLocationTable.
+                                                                                                                     GetSiteKeyDBName()].
+                                         ToString() + "; PPartnerKey: " +
+                                         AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter][PPartnerLocationTable.
+                                                                                                                     GetPartnerKeyDBName()
+                                         ].ToString() + "; RowState: " +
+                                         (Enum.GetName(typeof(DataRowState),
+                                              AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter].RowState) + "\r\n");
+                    }
+                    else
+                    {
+                        TmpDebugString = TmpDebugString + PPartnerLocationTable.GetTableName() + ".Row[" + TmpRowCounter.ToString() +
+                                         "]: PLocationKey: " +
+                                         AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter][2,
+                                                                                                                     DataRowVersion.Original]
+                                         .ToString() + "; RowState: DELETED" + "\r\n";
+                    }
+                }
+
+                TLogging.Log(
+                    "SubmitChanges: PLocation / PPartnerLocation local contents: " + Environment.NewLine + TmpDebugString +
+                    Environment.NewLine);
+            }
+        }
+
         /// <summary>
-        /// todoComment
+        /// Check each Location DataRow before calling SubmitChanges
+        /// to enforce Business Rules:
+        /// - Added or changed Location: check for a similar Location record
+        /// - if no similar Location record exists, save this Location record
+        /// - if a similar Location record exists: allow choosing whether the
+        ///    existing one should be used, or this Location record should be saved
+        /// - Changed Location: don't save Location record if the data is actually
+        ///     the same than before
+        /// - Deleted Location: delete Location only if no other PartnerLocation
+        ///      is referencing it
+        /// - Deleted Location: remove references from any Extracts
         /// </summary>
-        /// <param name="AInspectDS"></param>
-        /// <param name="APartnerKey"></param>
-        /// <param name="APartnerClass"></param>
-        /// <param name="ASubmitChangesTransaction"></param>
-        /// <param name="AResponseDS"></param>
-        /// <param name="AVerificationResult"></param>
-        /// <returns></returns>
-        public static TSubmitChangesResult SubmitChanges(DataSet AInspectDS,
+        private static TSubmitChangesResult ProcessLocationChanges(
+            PLocationTable LocationTable,
+            PPartnerLocationTable APartnerLocationTable,
+            ref PartnerAddressAggregateTDS AResponseDS,
+            TDBTransaction ASubmitChangesTransaction,
+            Int64 APartnerKey,
+            ref PartnerAddressAggregateTDSSimilarLocationParametersTable AExistingLocationParametersDT,
+            ref TLocationPK[, ] ASimilarLocationReUseKeyMapping,
+            ref PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable AAddressAddedOrChangedPromotionParametersDT,
+            ref PartnerAddressAggregateTDSChangePromotionParametersTable AChangeLocationParametersDT,
+            ref TVerificationResultCollection AVerificationResult)
+        {
+            TSubmitChangesResult Result = TSubmitChangesResult.scrOK;
+            TSubmitChangesResult TmpResult;
+
+            for (Int16 LocationCounter = 0; LocationCounter < LocationTable.Rows.Count; LocationCounter++)
+            {
+                if ((LocationTable.Rows[LocationCounter].RowState == DataRowState.Added)
+                    || (LocationTable.Rows[LocationCounter].RowState == DataRowState.Modified))
+                {
+                    if (LocationTable[LocationCounter].LocationKey == 0)
+                    {
+                        throw new Exception("TPPartnerAddress.ProcessLocationChanges: must not add or modify the empty location");
+                    }
+                }
+
+                if (LocationTable.Rows[LocationCounter].RowState == DataRowState.Deleted)
+                {
+                    if (Convert.ToInt32(LocationTable[LocationCounter][PLocationTable.GetLocationKeyDBName(),
+                                                                       DataRowVersion.Original]) == 0)
+                    {
+                        throw new Exception("TPPartnerAddress.ProcessLocationChanges: must not delete the empty location");
+                    }
+                }
+
+                if (LocationTable.Rows[LocationCounter].RowState == DataRowState.Added)
+                {
+                    bool ReUseSimilarLocation = false;
+
+                    // Check for reuse of a similar location in the DB
+                    PLocationRow TmpRow = LocationTable[LocationCounter];
+                    TmpResult = PerformSimilarLocationReUseChecks(
+                        ref TmpRow,
+                        ref AResponseDS,
+                        ASubmitChangesTransaction,
+                        APartnerKey,
+                        ref AExistingLocationParametersDT,
+                        ref APartnerLocationTable,
+                        ref ASimilarLocationReUseKeyMapping,
+                        out ReUseSimilarLocation,
+                        ref AVerificationResult);
+#if DEBUGMODE
+                    if (TLogging.DL >= 8)
+                    {
+                        TLogging.Log(
+                            "SubmitChanges: TmpRow.LocationKey after PerformSimilarLocationReUseChecks (1): " +
+                            TmpRow.LocationKey.ToString());
+                    }
+#endif
+
+                    if (TmpResult != TSubmitChangesResult.scrOK)
+                    {
+                        // Stop processing here - we need a decision whether to re-use
+                        // an existing Location or not (or the user tried to re-use a
+                        // Location that is already used by this Partner, which is a
+                        // user error)
+                        return TmpResult;
+                    }
+                } // DataRowState.Added
+                else if (LocationTable.Rows[LocationCounter].RowState == DataRowState.Modified)
+                {
+                    if (CheckHasLocationChanged(LocationTable[LocationCounter]))
+                    {
+                        bool ReUseSimilarLocation = false;
+
+                        // Check for reuse of a similar location in the DB
+                        PLocationRow TmpRow = LocationTable[LocationCounter];
+                        TmpResult = PerformSimilarLocationReUseChecks(ref TmpRow,
+                            ref AResponseDS,
+                            ASubmitChangesTransaction,
+                            APartnerKey,
+                            ref AExistingLocationParametersDT,
+                            ref APartnerLocationTable,
+                            ref ASimilarLocationReUseKeyMapping,
+                            out ReUseSimilarLocation,
+                            ref AVerificationResult);
+
+#if DEBUGMODE
+                        if (TLogging.DL >= 8)
+                        {
+                            TLogging.Log(
+                                "SubmitChanges: TmpRow.LocationKey after PerformSimilarLocationReUseChecks (2): " +
+                                TmpRow.LocationKey.ToString());
+                        }
+#endif
+
+                        if (TmpResult != TSubmitChangesResult.scrOK)
+                        {
+                            // Stop processing here - we need a decision whether to re-use
+                            // an existing Location or not (or the user tried to re-use a
+                            // Location that is already used by this Partner, which is a
+                            // user error)
+                            return TmpResult;
+                        }
+
+                        if (!ReUseSimilarLocation)
+                        {
+                            // No similar Location exists, or an existing similar Location
+                            // should not be reused
+                            if (CheckHasPartnerLocationOtherPartnerReferences(LocationTable[LocationCounter], APartnerKey,
+                                    ASubmitChangesTransaction))
+                            {
+#if DEBUGMODE
+                                if (TLogging.DL >= 9)
+                                {
+                                    TLogging.Log(
+                                        "SubmitChanges: Location " + LocationTable[LocationCounter].LocationKey.ToString() +
+                                        ": is used by other Partners as well.");
+                                }
+#endif
+
+                                bool CreateLocationFlag;
+                                TLocationPK OriginalLocationKey;
+
+                                TmpResult =
+                                    PerformLocationChangeChecks(LocationTable[LocationCounter],
+                                        APartnerKey,
+                                        ref AResponseDS,
+                                        ASubmitChangesTransaction,
+                                        ref AAddressAddedOrChangedPromotionParametersDT,
+                                        ref AChangeLocationParametersDT,
+                                        ref APartnerLocationTable,
+                                        ref AVerificationResult,
+                                        out CreateLocationFlag,
+                                        out OriginalLocationKey);
+
+                                if (TmpResult != TSubmitChangesResult.scrOK)
+                                {
+                                    Result = TmpResult;
+
+                                    if (Result == TSubmitChangesResult.scrError)
+                                    {
+                                        return Result;
+                                    }
+                                }
+
+                                if (CreateLocationFlag)
+                                {
+                                    ModifyExistingLocationParameters(LocationTable[LocationCounter],
+                                        OriginalLocationKey,
+                                        ref AExistingLocationParametersDT);
+
+                                    // remove this location because it should not be submitted to the database
+                                    LocationTable.Rows.RemoveAt(LocationCounter);
+                                    LocationCounter--;
+                                }
+                            } // if CheckHasPartnerLocationOtherPartnerReferences ... then
+
+                        }
+                    } // if CheckHasLocationChanged ... then
+                    else
+                    {
+#if DEBUGMODE
+                        if (TLogging.DL >= 9)
+                        {
+                            TLogging.Log(
+                                "Location " + LocationTable[LocationCounter].LocationKey.ToString() +
+                                ": data has NOT changed -> will not be saved.");
+                        }
+#endif
+
+                        // remove this location because it should not be submitted to the database
+                        LocationTable.Rows.RemoveAt(LocationCounter);
+                        LocationCounter--;
+                    }
+                } // DataRowState.Modified
+                else if (LocationTable.Rows[LocationCounter].RowState == DataRowState.Deleted)
+                {
+#if DEBUGMODE
+                    if (TLogging.DL >= 9)
+                    {
+                        TLogging.Log("SubmitChanges: Location " +
+                            LocationTable[LocationCounter][PLocationTable.GetLocationKeyDBName(),
+                                                           DataRowVersion.Original].ToString() + ": has been marked for deletion.");
+                    }
+#endif
+
+                    // Handle deletion of Location row: delete it only if no other PartnerLocation is referencing it
+                    if (CheckHasPartnerLocationOtherPartnerReferences(LocationTable[LocationCounter], APartnerKey, ASubmitChangesTransaction))
+                    {
+#if DEBUGMODE
+                        if (TLogging.DL >= 9)
+                        {
+                            TLogging.Log("SubmitChanges: Location " +
+                                LocationTable[LocationCounter][PLocationTable.GetLocationKeyDBName(),
+                                                               DataRowVersion.Original].ToString() +
+                                ": has been marked for deletion and is used by others, so it won''t get deleted.");
+                        }
+#endif
+                        // remove this location because it should not be submitted to the database
+                        LocationTable.Rows.RemoveAt(LocationCounter);
+                        LocationCounter--;
+                    }
+                    else
+                    {
+#if DEBUGMODE
+                        if (TLogging.DL >= 9)
+                        {
+                            TLogging.Log("SubmitChanges: Location " +
+                                LocationTable[LocationCounter][PLocationTable.GetLocationKeyDBName(),
+                                                               DataRowVersion.Original].ToString() +
+                                ": has been marked for deletion and will get deleted.");
+                        }
+#endif
+
+                        // Any Extract in Petra that references this Location must no longer
+                        // reference this Location since it will get deleted
+                        if (!RemoveLocationFromExtracts(LocationTable[LocationCounter], ASubmitChangesTransaction, ref AVerificationResult))
+                        {
+                            return TSubmitChangesResult.scrError;
+                        }
+                    }
+                } // if LocationTable.Rows[LocationCounter].RowState = DataRowState.Deleted
+                else if (LocationTable.Rows[LocationCounter].RowState != DataRowState.Unchanged)
+                {
+                    throw new ArgumentException(
+                        "SubmitChanges can only deal with Locations of DataRowState Added, Modified or Deleted, but not with " +
+                        (Enum.GetName(typeof(DataRowState), LocationTable.Rows[LocationCounter].RowState)));
+                }
+            }
+
+            return Result;
+        }
+
+        /// <summary>
+        ///  Check each PartnerLocation DataRow before calling SubmitChanges
+        ///  to enforce Business Rules:
+        ///  - Added PartnerLocation:
+        ///  - if working with a PartnerLocation of a FAMILY:
+        ///  - Added PartnerLocation: if working with a Location of a FAMILY: allow
+        ///  choosing whether this PartnerLocation should be added to all PERSONs
+        ///  in the FAMILY
+        ///  - make sure that Location 0 is no longer mapped to this Partner.
+        ///  - Modified Location:
+        ///  - if working with a PartnerLocation of a FAMILY:
+        ///  - check whether other Partners are referencing it, and if so,
+        ///  allow choosing which of the Partners (or none or all) should be
+        ///  affected by the change
+        ///  - if the value in the DateGoodUntil column has changed, silently
+        ///  update it for all PERSONs of a FAMILY that have the same LocationKey.
+        ///  - Deleted PartnerLocation: check whether this is the last
+        ///  PartnerLocation that is left for this Partner. If this is the case,
+        ///  don't delete the PartnerLocation, but set it's LocationKey to 0.
+        /// </summary>
+        private static TSubmitChangesResult ProcessPartnerLocationChanges(
+            PLocationTable ALocationTable,
+            PPartnerLocationTable PartnerLocationTable,
+            ref PartnerAddressAggregateTDS AResponseDS,
+            TDBTransaction ASubmitChangesTransaction,
+            Int64 APartnerKey,
+            String APartnerClass,
+            ref TLocationPK[, ] ASimilarLocationReUseKeyMapping,
+            ref PartnerAddressAggregateTDSSimilarLocationParametersTable AExistingLocationParametersDT,
+            ref PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable AAddressAddedOrChangedPromotionParametersDT,
+            ref PartnerAddressAggregateTDSChangePromotionParametersTable AChangeLocationParametersDT,
+            ref TVerificationResultCollection AVerificationResult)
+        {
+            TSubmitChangesResult Result = TSubmitChangesResult.scrOK;
+            TSubmitChangesResult TmpResult;
+
+            for (Int16 PartnerLocationCounter = 0; PartnerLocationCounter <= PartnerLocationTable.Rows.Count - 1; PartnerLocationCounter += 1)
+            {
+                switch (PartnerLocationTable.Rows[PartnerLocationCounter].RowState)
+                {
+                    case DataRowState.Added:
+
+                        if (PartnerLocationTable[PartnerLocationCounter].LocationKey != 0)
+                        {
+                            /*
+                             * PartnerLocation of a FAMILY: Family Members promotion
+                             */
+                            if (APartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.FAMILY))
+                            {
+                                bool PerformPropagation = false;
+
+                                TmpResult = PerformLocationFamilyMemberPropagationChecks(
+                                    PartnerLocationTable[PartnerLocationCounter],
+                                    ref AResponseDS,
+                                    ASubmitChangesTransaction,
+                                    APartnerKey,
+                                    APartnerClass,
+                                    ref AAddressAddedOrChangedPromotionParametersDT,
+                                    ref ALocationTable,
+                                    ref PartnerLocationTable,
+                                    AExistingLocationParametersDT,
+                                    ASimilarLocationReUseKeyMapping,
+                                    out PerformPropagation,
+                                    ref AVerificationResult);
+
+                                if (TmpResult != TSubmitChangesResult.scrOK)
+                                {
+                                    Result = TmpResult;
+
+                                    if (TmpResult == TSubmitChangesResult.scrError)
+                                    {
+                                        return TmpResult;
+                                    }
+                                }
+
+                                if (PerformPropagation)
+                                {
+                                    ModifyAddressAddedOrChangedParameters(PartnerLocationTable[PartnerLocationCounter],
+                                        ref AAddressAddedOrChangedPromotionParametersDT);
+                                }
+                            }
+
+                            /*
+                             * Since a new Location has been added, we need to make sure that
+                             * Location 0 is no longer mapped to this Partner!
+                             */
+                            MakeSureLocation0IsNotPresent(APartnerKey,
+                                PartnerLocationTable[PartnerLocationCounter].SiteKey,
+                                PartnerLocationTable,
+                                ASubmitChangesTransaction);
+                        }
+                        else
+                        {
+                            MakeSureLocation0SavingIsAllowed(PartnerLocationTable[PartnerLocationCounter],
+                                APartnerKey,
+                                ASubmitChangesTransaction);
+                        }
+
+                        break;
+
+                    case DataRowState.Modified:
+
+                        /*
+                         * PartnerLocation of a FAMILY: Family Members promotion
+                         */
+                        if (APartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.FAMILY))
+                        {
+                            /*
+                             * If certain PartnerLocation details are changed, give user the
+                             * option to apply this change to some or all PERSONs of this FAMILY
+                             * (independent of them having the same LocationKey!).
+                             */
+                            TSubmitChangesResult PerformPartnerLocationChangeChecksResult =
+                                PerformPartnerLocationChangeChecks(PartnerLocationTable[PartnerLocationCounter],
+                                    APartnerKey,
+                                    ref AResponseDS,
+                                    ASubmitChangesTransaction,
+                                    ref AAddressAddedOrChangedPromotionParametersDT,
+                                    ref AChangeLocationParametersDT,
+                                    ref PartnerLocationTable,
+                                    ref AVerificationResult);
+
+                            if (PerformPartnerLocationChangeChecksResult != TSubmitChangesResult.scrOK)
+                            {
+                                if (PerformPartnerLocationChangeChecksResult == TSubmitChangesResult.scrError)
+                                {
+                                    return PerformPartnerLocationChangeChecksResult;
+                                }
+                            }
+
+                            /*
+                             * If the value in the DateGoodUntil column has changed, silently
+                             * update it for all PERSONs of this FAMILY that have the same
+                             * LocationKey.
+                             */
+                            if (TSaveConvert.ObjectToDate(PartnerLocationTable[PartnerLocationCounter][PPartnerLocationTable.
+                                                                                                       GetDateGoodUntilDBName(),
+                                                                                                       DataRowVersion.Original]) !=
+                                TSaveConvert.ObjectToDate(PartnerLocationTable[PartnerLocationCounter][PPartnerLocationTable.
+                                                                                                       GetDateGoodUntilDBName(),
+                                                                                                       DataRowVersion.Current]))
+                            {
+#if DEBUGMODE
+                                if (TLogging.DL >= 8)
+                                {
+                                    TLogging.Log(
+                                        "SubmitChanges: PartnerLocation of a FAMILY: DateGoodUntil has changed -> promoting change to FAMILY members...");
+                                }
+#endif
+
+                                TVerificationResultCollection SingleVerificationResultCollection;
+
+                                if (!PromoteToFamilyMembersDateGoodUntilChange(APartnerKey, PartnerLocationTable[PartnerLocationCounter],
+                                        ASubmitChangesTransaction, out SingleVerificationResultCollection))
+                                {
+                                    AVerificationResult.AddCollection(SingleVerificationResultCollection);
+                                    return TSubmitChangesResult.scrError;
+                                }
+                            }
+                        }
+
+                        break;
+
+                    case DataRowState.Deleted:
+
+                        /*
+                         * PPartnerLocation must not get deleted if it is the last one of the
+                         * Partner, but must get mapped to Location 0 instead!
+                         */
+
+                        // Make sure that Location 0 can never get deleted!
+                        if (Convert.ToInt32(PartnerLocationTable[PartnerLocationCounter][PPartnerLocationTable.GetLocationKeyDBName(),
+                                                                                         DataRowVersion.Original]) != 0)
+                        {
+                            // Some other Location than Location 0 is about to be deleted!
+                            // Check in the in-memory PartnerLocation Table first...
+                            DataRow[] ChangePartnerLocationKeyRows = PartnerLocationTable.Select(
+                                PPartnerLocationTable.GetPartnerKeyDBName() + " = " + APartnerKey.ToString() + " AND " +
+                                PPartnerLocationTable.GetLocationKeyDBName() + " <> " +
+                                PartnerLocationTable[PartnerLocationCounter][PPartnerLocationTable.GetLocationKeyDBName(),
+                                                                             DataRowVersion.Original].ToString(), "",
+                                DataViewRowState.CurrentRows);
+
+                            if (ChangePartnerLocationKeyRows.Length == 0)
+                            {
+                                // No PPartnerLocation that is not deleted is left in
+                                // PartnerLocationTable > now check for deleted ones
+                                DataView DeletedPartnerLocationsDV = new DataView(PartnerLocationTable, "", "", DataViewRowState.Deleted);
+                                int[] DeletedPartnerLocationKeys = new int[DeletedPartnerLocationsDV.Count];
+
+                                for (Int16 DeletedPartnerLocationsCounter = 0;
+                                     DeletedPartnerLocationsCounter <= DeletedPartnerLocationsDV.Count - 1;
+                                     DeletedPartnerLocationsCounter += 1)
+                                {
+                                    DeletedPartnerLocationKeys[DeletedPartnerLocationsCounter] =
+                                        Convert.ToInt32(DeletedPartnerLocationsDV[DeletedPartnerLocationsCounter].Row[PPartnerLocationTable.
+                                                                                                                      GetLocationKeyDBName(),
+                                                                                                                      DataRowVersion.Original
+                                            ]);
+                                }
+
+                                // now check in the DB as well
+                                if (!CheckHasPartnerOtherPartnerLocations(DeletedPartnerLocationKeys, APartnerKey, ASubmitChangesTransaction))
+                                {
+                                    // 'Undelete' DataRow and make it point to Location 0
+                                    // (dummy Location) > will get submitted lateron!
+                                    PartnerLocationTable[PartnerLocationCounter].RejectChanges();
+                                    PartnerLocationTable[PartnerLocationCounter].LocationKey = 0;
+#if DEBUGMODE
+                                    if (TLogging.DL >= 8)
+                                    {
+                                        TLogging.Log("SubmitChanges: PPartnerLocation " +
+                                            PartnerLocationTable[PartnerLocationCounter][PPartnerLocationTable.GetLocationKeyDBName(),
+                                                                                         DataRowVersion.Original].ToString() +
+                                            ": was last PartnerLocation, so its LocationKey got set to 0 (will be submitted lateron)!");
+                                    }
+#endif
+                                }
+                            }
+                            else
+                            {
+                                // There is at least one PPartnerLocation that is not deleted
+                                // left in PartnerLocationTable, so the current PPartnerLocation
+                                // can't be the last one > nothing to do.
+                            }
+                        }
+                        else
+                        {
+                            DataRow[] ChangePartnerLocationKeyRows = PartnerLocationTable.Select(
+                                PPartnerLocationTable.GetPartnerKeyDBName() + " = " + APartnerKey.ToString() + " AND " +
+                                PPartnerLocationTable.GetLocationKeyDBName() + " = 0 ", "", DataViewRowState.CurrentRows);
+#if DEBUGMODE
+                            if (TLogging.DL >= 8)
+                            {
+                                TLogging.Log("SubmitChanges: ChangePartnerLocationKeyRows Length: " +
+                                    Convert.ToInt16(ChangePartnerLocationKeyRows.Length).ToString());
+                            }
+#endif
+
+                            if (ChangePartnerLocationKeyRows.Length != 0)
+                            {
+                                // remove this location because it should not be submitted to the database
+                                PartnerLocationTable.Rows.RemoveAt(PartnerLocationCounter);
+                                PartnerLocationCounter--;
+
+#if DEBUGMODE
+                                if (TLogging.DL >= 8)
+                                {
+                                    TLogging.Log("SubmitChanges: Extra Location 0 row won''t be submitted lateron");
+                                }
+#endif
+                            }
+                        }
+
+                        break;
+
+                    case DataRowState.Unchanged:
+                        break;
+
+                    default:
+                        throw new ArgumentException(
+                        "SubmitChanges can only deal with PartnerLocations of DataRowState Added, Modified or Deleted, but not with " +
+                        (Enum.GetName(typeof(DataRowState), PartnerLocationTable.Rows[PartnerLocationCounter].RowState)));
+                }
+            }
+
+            return Result;
+        }
+
+        /// <summary>
+        /// Prepare the address changes. Check for the rules regarding locations
+        /// </summary>
+        public static TSubmitChangesResult PrepareChanges(PartnerEditTDS AInspectDS,
             Int64 APartnerKey,
             String APartnerClass,
             TDBTransaction ASubmitChangesTransaction,
             ref PartnerAddressAggregateTDS AResponseDS,
             out TVerificationResultCollection AVerificationResult)
         {
-            Boolean AllSubmissionsOK;
-            TSubmitChangesResult SubmissionResult;
-            PLocationTable LocationTable;
-            PLocationTable LocationExtraSubmitTable;
-            PPartnerLocationTable PartnerLocationTable;
-            PPartnerLocationTable PartnerLocationExtraSubmitTable = null;
             PartnerAddressAggregateTDSSimilarLocationParametersTable ExistingLocationParametersDT;
             PartnerAddressAggregateTDSChangePromotionParametersTable ChangeLocationParametersDT;
             PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable AddressAddedOrChangedPromotionParametersDT;
-            TVerificationResultCollection SingleVerificationResultCollection = null;
-            DataView NewLocationTableRowsDV;
-            DataView DeletedPartnerLocationsDV;
 
-            Int32[] DeletedPartnerLocationKeys;
-            Int32[] NewLocationTableRowsLocationKeys = null;
-            DataRow[] ChangeLocationKeyRows;
-            DataRow[] ChangePartnerLocationKeyRows;
-            ArrayList NotToBeSubmittedLocationRows = null;
-            ArrayList NotToBeSubmittedPartnerLocationRows = null;
-            TLocationPK[, ] SimilarLocationReUseKeyMapping;
-            Int16 Counter;
-            Int16 Counter2;
-            Int16 LocationCounter;
-            Int16 PartnerLocationCounter;
-            Int16 LocationReUseCounter;
-            Int16 NotToBeSubmittedCounter;
-            Int16 Counter5;
-            Int16 DeletedPartnerLocationsCounter;
-            TSubmitChangesResult PerformLocationChangeChecksResult;
-            TSubmitChangesResult PerformPartnerLocationChangeChecksResult;
-            TSubmitChangesResult PerformLocationReUseChecksResult;
-            TSubmitChangesResult PerformLocationFamilyMemberPropagationChecksResult;
-            Boolean CreateLocationFlag;
-            PLocationRow ReUsedLocationDR;
-            PPartnerLocationRow ReUsedPartnerLocationDR;
-            Boolean ReUseSimilarLocation;
-            Boolean PerformPropagation;
-            TLocationPK OriginalLocationKey;
-
-            TSubmitChangesResult ReturnValue = TSubmitChangesResult.scrOK;
             AVerificationResult = null;
 
-            if (AInspectDS != null)
+            if (AInspectDS == null)
             {
-                #region Initialisations
-                AllSubmissionsOK = true;
-                AVerificationResult = new TVerificationResultCollection();
-                NewLocationTableRowsDV = null;
-                LocationTable = null;
-                PartnerLocationTable = null;
-                NotToBeSubmittedLocationRows = new ArrayList();
-                NotToBeSubmittedPartnerLocationRows = new ArrayList();
-                SimilarLocationReUseKeyMapping = new TLocationPK[1, 2];
-                LocationExtraSubmitTable = null;
-                #endregion
-
-                if (AInspectDS.Tables.Contains(PLocationTable.GetTableName()))
-                {
 #if DEBUGMODE
-                    if (TLogging.DL >= 8)
-                    {
-                        Console.WriteLine("SubmitChanges: PLocation Rows: " + AInspectDS.Tables["PLocation"].Rows.Count.ToString());
-                    }
-#endif
-                    LocationTable = (PLocationTable)AInspectDS.Tables[PLocationTable.GetTableName()];
-                }
-
-                if (AInspectDS.Tables.Contains(PPartnerLocationTable.GetTableName()))
-                {
-#if DEBUGMODE
-                    if (TLogging.DL >= 8)
-                    {
-                        Console.WriteLine("SubmitChanges: PPartnerLocation Rows: " + AInspectDS.Tables["PPartnerLocation"].Rows.Count.ToString());
-                    }
-#endif
-                    PartnerLocationTable = (PPartnerLocationTable)AInspectDS.Tables[PPartnerLocationTable.GetTableName()];
-                }
-
-                #region Debugging - what comes into the function in Location and PartnerLocation
-#if DEBUGMODE
-                string TmpDebugString = "";
-
                 if (TLogging.DL >= 8)
                 {
-                    if (AInspectDS.Tables.Contains(PLocationTable.GetTableName()))
-                    {
-                        for (Int16 TmpRowCounter = 0;
-                             TmpRowCounter <= AInspectDS.Tables[PLocationTable.GetTableName()].Rows.Count - 1;
-                             TmpRowCounter += 1)
-                        {
-                            if (AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpRowCounter].RowState != DataRowState.Deleted)
-                            {
-                                TmpDebugString = TmpDebugString + PLocationTable.GetTableName() + ".Row[" + TmpRowCounter.ToString() +
-                                                 "]: PLocationKey: " +
-                                                 AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpRowCounter][PLocationTable.
-                                                                                                                      GetLocationKeyDBName()].
-                                                 ToString() +
-                                                 "; PSiteKey: " +
-                                                 AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpRowCounter][PLocationTable.GetSiteKeyDBName()
-                                                 ].ToString() +
-                                                 "; RowState: " +
-                                                 (Enum.GetName(typeof(DataRowState),
-                                                      AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpRowCounter].RowState)) + "\r\n";
-                            }
-                            else
-                            {
-                                TmpDebugString = TmpDebugString + PLocationTable.GetTableName() + ".Row[" + TmpRowCounter.ToString() +
-                                                 "]: PLocationKey: " +
-                                                 AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpRowCounter][1,
-                                                                                                                      DataRowVersion.Original].
-                                                 ToString() + "; RowState: DELETED" + "\r\n";
-                            }
-                        }
-                    }
-
-                    if (AInspectDS.Tables.Contains(PPartnerLocationTable.GetTableName()))
-                    {
-                        TmpDebugString = TmpDebugString + Environment.NewLine;
-
-                        for (Int16 TmpRowCounter = 0;
-                             TmpRowCounter <= AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows.Count - 1;
-                             TmpRowCounter += 1)
-                        {
-                            if (AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter].RowState != DataRowState.Deleted)
-                            {
-                                TmpDebugString = TmpDebugString + PPartnerLocationTable.GetTableName() + ".Row[" + TmpRowCounter.ToString() +
-                                                 "]: PLocationKey: " +
-                                                 AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter][PPartnerLocationTable.
-                                                                                                                             GetLocationKeyDBName()
-                                                 ].ToString() + "; PSiteKey: " +
-                                                 AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter][PPartnerLocationTable.
-                                                                                                                             GetSiteKeyDBName()].
-                                                 ToString() + "; PPartnerKey: " +
-                                                 AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter][PPartnerLocationTable.
-                                                                                                                             GetPartnerKeyDBName()
-                                                 ].ToString() + "; RowState: " +
-                                                 (Enum.GetName(typeof(DataRowState),
-                                                      AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter].RowState) + "\r\n");
-                            }
-                            else
-                            {
-                                TmpDebugString = TmpDebugString + PPartnerLocationTable.GetTableName() + ".Row[" + TmpRowCounter.ToString() +
-                                                 "]: PLocationKey: " +
-                                                 AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter][2,
-                                                                                                                             DataRowVersion.Original]
-                                                 .ToString() + "; RowState: DELETED" + "\r\n";
-                            }
-                        }
-
-                        Console.WriteLine(
-                            "SubmitChanges: PLocation / PPartnerLocation local contents: " + Environment.NewLine + TmpDebugString +
-                            Environment.NewLine);
-                    }
+                    TLogging.Log("SubmitChanges: AInspectDS = nil!");
                 }
 #endif
-                #endregion
+                return TSubmitChangesResult.scrNothingToBeSaved;
+            }
 
-                // Check if Parameter Tables are passed in
-                CheckParameterTables(AResponseDS,
-                    out ExistingLocationParametersDT,
-                    out ChangeLocationParametersDT,
-                    out AddressAddedOrChangedPromotionParametersDT);
-                #region Location
+            AVerificationResult = new TVerificationResultCollection();
+            TLocationPK[, ] SimilarLocationReUseKeyMapping = new TLocationPK[1, 2];
 
-                if (LocationTable != null)
+            if (AInspectDS.PLocation != null)
+            {
+#if DEBUGMODE
+                if (TLogging.DL >= 8)
                 {
-                    /*
-                     * Check each Location DataRow before calling SubmitChanges
-                     * to enforce Business Rules:
-                     * - Added or changed Location: check for a similar Location record
-                     * - if no similar Location record exists, save this Location record
-                     * - if a similar Location record exists: allow choosing whether the
-                     * existing one should be used, or this Location record should be
-                     * saved
-                     * - Changed Location: don't save Location record if the data is actually
-                     * the same than before
-                     * - Deleted Location: delete Location only if no other PartnerLocation
-                     * is referencing it
-                     * - Deleted Location: remove references from any Extracts
-                     */
-                    for (LocationCounter = 0; LocationCounter <= LocationTable.Rows.Count - 1; LocationCounter += 1)
-                    {
-                        if ((LocationTable.Rows[LocationCounter].RowState == DataRowState.Added)
-                            || (LocationTable.Rows[LocationCounter].RowState == DataRowState.Modified))
-                        {
-                            switch (LocationTable.Rows[LocationCounter].RowState)
-                            {
-                                case DataRowState.Added:
-
-                                    if (LocationTable[LocationCounter].LocationKey != 0)
-                                    {
-                                        // Check for reuse of a similar location in the DB
-                                        PLocationRow TmpRow = LocationTable[LocationCounter];
-                                        PerformLocationReUseChecksResult = PerformSimilarLocationReUseChecks(ref TmpRow,
-                                            ref AResponseDS,
-                                            ASubmitChangesTransaction,
-                                            APartnerKey,
-                                            ref ExistingLocationParametersDT,
-                                            ref PartnerLocationTable,
-                                            ref SimilarLocationReUseKeyMapping,
-                                            out ReUseSimilarLocation,
-                                            ref AVerificationResult);
-#if DEBUGMODE
-                                        if (TLogging.DL >= 8)
-                                        {
-                                            Console.WriteLine(
-                                                "SubmitChanges: TmpRow.LocationKey after PerformSimilarLocationReUseChecks (1): " +
-                                                TmpRow.LocationKey.ToString());
-                                        }
-#endif
-
-                                        if (PerformLocationReUseChecksResult != TSubmitChangesResult.scrOK)
-                                        {
-                                            ReturnValue = PerformLocationReUseChecksResult;
-
-                                            /*
-                                             * Stop processing here - we need a decision whether to re-use
-                                             * an existing Location or not (or the user tried to re-use a
-                                             * Location that is already used by this Partner, which is a
-                                             * user error)
-                                             */
-                                            return ReturnValue;
-                                        }
-
-                                        if (!ReUseSimilarLocation)
-                                        {
-                                        }
-
-                                        // No similar Location exists, or an existing similar Location
-                                        // should not be reused.
-                                        // > we can just save that new Location
-                                    }
-                                    else
-                                    {
-                                        // Location 0 must never be saved!
-
-                                        /*
-                                         * Remember that the row should not be submitted lateron.
-                                         * NOTE: We can't simply call .AcceptChanges on the DataRow in order
-                                         * to remove it from the DataTable. This would cause this for-loop
-                                         * (with the LocationCounter) to iterate over too much DataRows!
-                                         */
-                                        NotToBeSubmittedLocationRows.Add(LocationTable.Rows[LocationCounter]);
-#if DEBUGMODE
-                                        if (TLogging.DL >= 8)
-                                        {
-                                            Console.WriteLine("SubmitChanges: Location with LocationKey 0 was added and won''t be saved.");
-                                        }
-#endif
-                                    }
-
-                                    // DataRowState.Added:
-                                    break;
-
-                                case DataRowState.Modified:
-
-                                    if ((CheckHasLocationChanged(LocationTable[LocationCounter])) && (LocationTable[LocationCounter].LocationKey != 0))
-                                    {
-                                        // Check for reuse of a similar location in the DB
-                                        PLocationRow TmpRow = LocationTable[LocationCounter];
-                                        PerformLocationReUseChecksResult = PerformSimilarLocationReUseChecks(ref TmpRow,
-                                            ref AResponseDS,
-                                            ASubmitChangesTransaction,
-                                            APartnerKey,
-                                            ref ExistingLocationParametersDT,
-                                            ref PartnerLocationTable,
-                                            ref SimilarLocationReUseKeyMapping,
-                                            out ReUseSimilarLocation,
-                                            ref AVerificationResult);
-
-#if DEBUGMODE
-                                        if (TLogging.DL >= 8)
-                                        {
-                                            Console.WriteLine(
-                                                "SubmitChanges: TmpRow.LocationKey after PerformSimilarLocationReUseChecks (2): " +
-                                                TmpRow.LocationKey.ToString());
-                                        }
-#endif
-
-                                        if (PerformLocationReUseChecksResult != TSubmitChangesResult.scrOK)
-                                        {
-                                            ReturnValue = PerformLocationReUseChecksResult;
-
-                                            /*
-                                             * Stop processing here - we need a decision whether to re-use
-                                             * an existing Location or not (or the user tried to re-use a
-                                             * Location that is already used by this Partner, which is an
-                                             * user error)
-                                             */
-                                            return ReturnValue;
-                                        }
-
-                                        if (!ReUseSimilarLocation)
-                                        {
-                                            // No similar Location exists, or an existing similar Location
-                                            // should not be reused
-                                            if (CheckHasPartnerLocationOtherPartnerReferences(LocationTable[LocationCounter], APartnerKey,
-                                                    ASubmitChangesTransaction))
-                                            {
-#if DEBUGMODE
-                                                if (TLogging.DL >= 9)
-                                                {
-                                                    Console.WriteLine(
-                                                        "SubmitChanges: Location " + LocationTable[LocationCounter].LocationKey.ToString() +
-                                                        ": is used by other Partners as well.");
-                                                }
-#endif
-                                                PerformLocationChangeChecksResult = PerformLocationChangeChecks(LocationTable[LocationCounter],
-                                                    APartnerKey,
-                                                    ref AResponseDS,
-                                                    ASubmitChangesTransaction,
-                                                    ref AddressAddedOrChangedPromotionParametersDT,
-                                                    ref ChangeLocationParametersDT,
-                                                    ref PartnerLocationTable,
-                                                    ref PartnerLocationExtraSubmitTable,
-                                                    ref AVerificationResult,
-                                                    out CreateLocationFlag,
-                                                    out OriginalLocationKey);
-
-                                                if (PerformLocationChangeChecksResult != TSubmitChangesResult.scrOK)
-                                                {
-                                                    ReturnValue = PerformLocationChangeChecksResult;
-
-                                                    if (ReturnValue == TSubmitChangesResult.scrError)
-                                                    {
-                                                        return ReturnValue;
-                                                    }
-                                                }
-
-                                                // if PerformLocationChangeChecksResult <> TSubmitChangesResult.scrOK
-                                                if (CreateLocationFlag)
-                                                {
-                                                    ModifyExistingLocationParameters(LocationTable[LocationCounter],
-                                                        OriginalLocationKey,
-                                                        ref ExistingLocationParametersDT);
-
-                                                    /*
-                                                     * Remember that the row should not be submitted lateron.
-                                                     * NOTE: We can't simply call .AcceptChanges on the DataRow in order
-                                                     * to remove it from the DataTable. This would cause this for-loop
-                                                     * (with the LocationCounter) to iterate over too much DataRows!
-                                                     */
-                                                    NotToBeSubmittedLocationRows.Add(LocationTable.Rows[LocationCounter]);
-                                                }
-                                            }
-
-                                            // if CheckHasPartnerLocationOtherPartnerReferences ... then
-                                        }
-                                    }
-                                    // if CheckHasLocationChanged ... then
-                                    else
-                                    {
-#if DEBUGMODE
-                                        if (TLogging.DL >= 9)
-                                        {
-                                            Console.WriteLine(
-                                                "Location " + LocationTable[LocationCounter].LocationKey.ToString() +
-                                                ": data has NOT changed -> will not be saved.");
-                                        }
-#endif
-
-                                        // Prevent the DataRow from getting submitted lateron
-                                        // LocationTable.Row[LocationCounter].AcceptChanges;
-
-                                        /*
-                                         * Remember that the row should not be submitted lateron.
-                                         * NOTE: We can't simply call .AcceptChanges on the DataRow in order
-                                         * to remove it from the DataTable. This would cause this for-loop
-                                         * (with the LocationCounter) to iterate over too much DataRows!
-                                         */
-                                        NotToBeSubmittedLocationRows.Add(LocationTable.Rows[LocationCounter]);
-                                    }
-
-                                    // DataRowState.Modified:
-                                    break;
-                            }
-
-                            // case LocationTable.Rows[LocationCounter].RowState of
-                        }
-                        // Added or Modified DataRow
-                        else if (LocationTable.Rows[LocationCounter].RowState == DataRowState.Deleted)
-                        {
-#if DEBUGMODE
-                            if (TLogging.DL >= 9)
-                            {
-                                Console.WriteLine("SubmitChanges: Location " +
-                                    LocationTable[LocationCounter][PLocationTable.GetLocationKeyDBName(),
-                                                                   DataRowVersion.Original].ToString() + ": has been marked for deletion.");
-                            }
-#endif
-
-                            /*
-                             * Remember that the row should not be submitted lateron.
-                             * NOTE: We can't simply call .AcceptChanges on the DataRow in order
-                             * to remove it from the DataTable. This would cause this for-loop
-                             * (with the LocationCounter) to iterate over too much DataRows!
-                             */
-                            NotToBeSubmittedLocationRows.Add(LocationTable.Rows[LocationCounter]);
-
-                            // Handle deletion of Location row: delete it only if no other PartnerLocation is referencing it
-                            if (CheckHasPartnerLocationOtherPartnerReferences(LocationTable[LocationCounter], APartnerKey, ASubmitChangesTransaction))
-                            {
-#if DEBUGMODE
-                                if (TLogging.DL >= 9)
-                                {
-                                    Console.WriteLine("SubmitChanges: Location " +
-                                        LocationTable[LocationCounter][PLocationTable.GetLocationKeyDBName(),
-                                                                       DataRowVersion.Original].ToString() +
-                                        ": has been marked for deletion and is used by others, so it won''t get deleted.");
-                                }
-#endif
-                            }
-                            else
-                            {
-#if DEBUGMODE
-                                if (TLogging.DL >= 9)
-                                {
-                                    Console.WriteLine("SubmitChanges: Location " +
-                                        LocationTable[LocationCounter][PLocationTable.GetLocationKeyDBName(),
-                                                                       DataRowVersion.Original].ToString() +
-                                        ": has been marked for deletion and will get deleted.");
-                                }
-#endif
-
-                                /*
-                                 * Location needs to be deleted
-                                 */
-                                if (LocationExtraSubmitTable == null)
-                                {
-                                    LocationExtraSubmitTable = new PLocationTable();
-                                }
-
-                                LocationExtraSubmitTable.ImportRow(LocationTable[LocationCounter]);
-
-                                /*
-                                 * Any Extract in Petra that references this Location must no longer
-                                 * reference this Location since it will get deleted
-                                 */
-                                if (!RemoveLocationFromExtracts(LocationTable[LocationCounter], ASubmitChangesTransaction, ref AVerificationResult))
-                                {
-                                    AVerificationResult.AddCollection(SingleVerificationResultCollection);
-                                    ReturnValue = TSubmitChangesResult.scrError;
-                                    return ReturnValue;
-                                }
-                            }
-                        }
-                        // if LocationTable.Rows[LocationCounter].RowState = DataRowState.Deleted
-                        else if (LocationTable.Rows[LocationCounter].RowState != DataRowState.Unchanged)
-                        {
-                            throw new ArgumentException(
-                                "SubmitChanges can only deal with Locations of DataRowState Added, Modified or Deleted, but not with " +
-                                (Enum.GetName(typeof(DataRowState), LocationTable.Rows[LocationCounter].RowState)));
-                        }
-                    }
-
-                    // for LocationCounter := 0 to LocationTable.Rows.Count  1 do
-                    if (ReturnValue == TSubmitChangesResult.scrInfoNeeded)
-                    {
-                        // Stop processing here, we need more information!
-                        return ReturnValue;
-                    }
+                    TLogging.Log("SubmitChanges: PLocation Rows: " + AInspectDS.PLocation.Rows.Count.ToString());
                 }
+#endif
+            }
 
-                #endregion
-                #region PartnerLocation
-
-                if (PartnerLocationTable != null)
+            if (AInspectDS.PPartnerLocation != null)
+            {
+#if DEBUGMODE
+                if (TLogging.DL >= 8)
                 {
-                    /*
-                     * Check each PartnerLocation DataRow before calling SubmitChanges
-                     * to enforce Business Rules:
-                     * - Added PartnerLocation:
-                     * - if working with a PartnerLocation of a FAMILY:
-                     * - Added PartnerLocation: if working with a Location of a FAMILY: allow
-                     * choosing whether this PartnerLocation should be added to all PERSONs
-                     * in the FAMILY
-                     * - make sure that Location 0 is no longer mapped to this Partner.
-                     * - Modified Location:
-                     * - if working with a PartnerLocation of a FAMILY:
-                     * - check whether other Partners are referencing it, and if so,
-                     * allow choosing which of the Partners (or none or all) should be
-                     * affected by the change
-                     * - if the value in the DateGoodUntil column has changed, silently
-                     * update it for all PERSONs of a FAMILY that have the same LocationKey.
-                     * - Deleted PartnerLocation: check whether this is the last
-                     * PartnerLocation that is left for this Partner. If this is the case,
-                     * don't delete the PartnerLocation, but set it's LocationKey to 0.
-                     */
-                    for (PartnerLocationCounter = 0; PartnerLocationCounter <= PartnerLocationTable.Rows.Count - 1; PartnerLocationCounter += 1)
-                    {
-                        switch (PartnerLocationTable.Rows[PartnerLocationCounter].RowState)
-                        {
-                            case DataRowState.Added:
-
-                                if (PartnerLocationTable[PartnerLocationCounter].LocationKey != 0)
-                                {
-                                    /*
-                                     * PartnerLocation of a FAMILY: Family Members promotion
-                                     */
-                                    if (APartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.FAMILY))
-                                    {
-                                        PerformLocationFamilyMemberPropagationChecksResult = PerformLocationFamilyMemberPropagationChecks(
-                                            PartnerLocationTable[PartnerLocationCounter],
-                                            ref AResponseDS,
-                                            ASubmitChangesTransaction,
-                                            APartnerKey,
-                                            APartnerClass,
-                                            ref AddressAddedOrChangedPromotionParametersDT,
-                                            ref LocationTable,
-                                            ref PartnerLocationTable,
-                                            ref PartnerLocationExtraSubmitTable,
-                                            ExistingLocationParametersDT,
-                                            SimilarLocationReUseKeyMapping,
-                                            out PerformPropagation,
-                                            ref AVerificationResult);
-
-                                        if (PerformLocationFamilyMemberPropagationChecksResult != TSubmitChangesResult.scrOK)
-                                        {
-                                            ReturnValue = PerformLocationFamilyMemberPropagationChecksResult;
-
-                                            if (ReturnValue == TSubmitChangesResult.scrError)
-                                            {
-                                                return ReturnValue;
-                                            }
-                                        }
-
-                                        if (PerformPropagation)
-                                        {
-                                            ModifyAddressAddedOrChangedParameters(PartnerLocationTable[PartnerLocationCounter],
-                                                ref AddressAddedOrChangedPromotionParametersDT);
-                                        }
-                                    }
-
-                                    /*
-                                     * Since a new Location has been added, we need to make sure that
-                                     * Location 0 is no longer mapped to this Partner!
-                                     */
-                                    MakeSureLocation0IsNotPresent(APartnerKey,
-                                        PartnerLocationTable[PartnerLocationCounter].SiteKey,
-                                        PartnerLocationTable,
-                                        ASubmitChangesTransaction);
-                                }
-                                else
-                                {
-                                    MakeSureLocation0SavingIsAllowed(PartnerLocationTable[PartnerLocationCounter],
-                                        APartnerKey,
-                                        ASubmitChangesTransaction);
-                                }
-
-                                break;
-
-                            case DataRowState.Modified:
-
-                                /*
-                                 * PartnerLocation of a FAMILY: Family Members promotion
-                                 */
-                                if (APartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.FAMILY))
-                                {
-                                    /*
-                                     * If certain PartnerLocation details are changed, give user the
-                                     * option to apply this change to some or all PERSONs of this FAMILY
-                                     * (independent of them having the same LocationKey!).
-                                     */
-                                    PerformPartnerLocationChangeChecksResult =
-                                        PerformPartnerLocationChangeChecks(PartnerLocationTable[PartnerLocationCounter],
-                                            APartnerKey,
-                                            ref AResponseDS,
-                                            ASubmitChangesTransaction,
-                                            ref AddressAddedOrChangedPromotionParametersDT,
-                                            ref ChangeLocationParametersDT,
-                                            ref PartnerLocationTable,
-                                            ref PartnerLocationExtraSubmitTable,
-                                            ref AVerificationResult);
-
-                                    if (PerformPartnerLocationChangeChecksResult != TSubmitChangesResult.scrOK)
-                                    {
-                                        ReturnValue = PerformPartnerLocationChangeChecksResult;
-
-                                        if (ReturnValue == TSubmitChangesResult.scrError)
-                                        {
-                                            return ReturnValue;
-                                        }
-                                    }
-
-                                    /*
-                                     * If the value in the DateGoodUntil column has changed, silently
-                                     * update it for all PERSONs of this FAMILY that have the same
-                                     * LocationKey.
-                                     */
-                                    if (TSaveConvert.ObjectToDate(PartnerLocationTable[PartnerLocationCounter][PPartnerLocationTable.
-                                                                                                               GetDateGoodUntilDBName(),
-                                                                                                               DataRowVersion.Original]) !=
-                                        TSaveConvert.ObjectToDate(PartnerLocationTable[PartnerLocationCounter][PPartnerLocationTable.
-                                                                                                               GetDateGoodUntilDBName(),
-                                                                                                               DataRowVersion.Current]))
-                                    {
-#if DEBUGMODE
-                                        if (TLogging.DL >= 8)
-                                        {
-                                            Console.WriteLine(
-                                                "SubmitChanges: PartnerLocation of a FAMILY: DateGoodUntil has changed -> promoting change to FAMILY members...");
-                                        }
-#endif
-
-                                        if (!PromoteToFamilyMembersDateGoodUntilChange(APartnerKey, PartnerLocationTable[PartnerLocationCounter],
-                                                ASubmitChangesTransaction, out SingleVerificationResultCollection))
-                                        {
-                                            AVerificationResult.AddCollection(SingleVerificationResultCollection);
-                                            ReturnValue = TSubmitChangesResult.scrError;
-                                            return ReturnValue;
-                                        }
-                                    }
-                                }
-
-                                break;
-
-                            case DataRowState.Deleted:
-
-                                /*
-                                 * PPartnerLocation must not get deleted if it is the last one of the
-                                 * Partner, but must get mapped to Location 0 instead!
-                                 */
-
-                                // Make sure that Location 0 can never get deleted!
-                                if (Convert.ToInt32(PartnerLocationTable[PartnerLocationCounter][PPartnerLocationTable.GetLocationKeyDBName(),
-                                                                                                 DataRowVersion.Original]) != 0)
-                                {
-                                    // Some other Location than Location 0 is about to be deleted!
-                                    // Check in the in-memory PartnerLocation Table first...
-                                    ChangePartnerLocationKeyRows = PartnerLocationTable.Select(
-                                        PPartnerLocationTable.GetPartnerKeyDBName() + " = " + APartnerKey.ToString() + " AND " +
-                                        PPartnerLocationTable.GetLocationKeyDBName() + " <> " +
-                                        PartnerLocationTable[PartnerLocationCounter][PPartnerLocationTable.GetLocationKeyDBName(),
-                                                                                     DataRowVersion.Original].ToString(), "",
-                                        DataViewRowState.CurrentRows);
-
-                                    if (ChangePartnerLocationKeyRows.Length == 0)
-                                    {
-                                        // No PPartnerLocation that is not deleted is left in
-                                        // PartnerLocationTable > now check for deleted ones
-                                        DeletedPartnerLocationsDV = new DataView(PartnerLocationTable, "", "", DataViewRowState.Deleted);
-                                        DeletedPartnerLocationKeys = new int[DeletedPartnerLocationsDV.Count];
-
-                                        for (DeletedPartnerLocationsCounter = 0;
-                                             DeletedPartnerLocationsCounter <= DeletedPartnerLocationsDV.Count - 1;
-                                             DeletedPartnerLocationsCounter += 1)
-                                        {
-                                            DeletedPartnerLocationKeys[DeletedPartnerLocationsCounter] =
-                                                Convert.ToInt32(DeletedPartnerLocationsDV[DeletedPartnerLocationsCounter].Row[PPartnerLocationTable.
-                                                                                                                              GetLocationKeyDBName(),
-                                                                                                                              DataRowVersion.Original
-                                                    ]);
-                                        }
-
-                                        // now check in the DB as well
-                                        if (!CheckHasPartnerOtherPartnerLocations(DeletedPartnerLocationKeys, APartnerKey, ASubmitChangesTransaction))
-                                        {
-                                            // 'Undelete' DataRow and make it point to Location 0
-                                            // (dummy Location) > will get submitted lateron!
-                                            PartnerLocationTable[PartnerLocationCounter].RejectChanges();
-                                            PartnerLocationTable[PartnerLocationCounter].LocationKey = 0;
-#if DEBUGMODE
-                                            if (TLogging.DL >= 8)
-                                            {
-                                                Console.WriteLine("SubmitChanges: PPartnerLocation " +
-                                                    PartnerLocationTable[PartnerLocationCounter][PPartnerLocationTable.GetLocationKeyDBName(),
-                                                                                                 DataRowVersion.Original].ToString() +
-                                                    ": was last PartnerLocation, so its LocationKey got set to 0 (will be submitted lateron)!");
-                                            }
-#endif
-                                        }
-                                    }
-                                    else
-                                    {
-                                    }
-
-                                    // There is at least one PPartnerLocation that is not deleted
-                                    // left in PartnerLocationTable, so the current PPartnerLocation
-                                    // can't be the last one > nothing to do.
-                                }
-                                else
-                                {
-                                    ChangePartnerLocationKeyRows = PartnerLocationTable.Select(
-                                        PPartnerLocationTable.GetPartnerKeyDBName() + " = " + APartnerKey.ToString() + " AND " +
-                                        PPartnerLocationTable.GetLocationKeyDBName() + " = 0 ", "", DataViewRowState.CurrentRows);
-#if DEBUGMODE
-                                    if (TLogging.DL >= 8)
-                                    {
-                                        Console.WriteLine("SubmitChanges: ChangePartnerLocationKeyRows Length: " +
-                                            Convert.ToInt16(ChangePartnerLocationKeyRows.Length).ToString());
-                                    }
-#endif
-
-                                    if (ChangePartnerLocationKeyRows.Length != 0)
-                                    {
-                                        /*
-                                         * Remember that the row should not be submitted lateron.
-                                         * NOTE: We can't simply call .AcceptChanges on the DataRow in order
-                                         * to remove it from the DataTable. This would cause this for-loop
-                                         * (with the PartnerLocationCounter) to iterate over too much DataRows!
-                                         */
-                                        NotToBeSubmittedPartnerLocationRows.Add(PartnerLocationTable.Rows[PartnerLocationCounter]);
-#if DEBUGMODE
-                                        if (TLogging.DL >= 8)
-                                        {
-                                            Console.WriteLine("SubmitChanges: Extra Location 0 row won''t be submitted lateron");
-                                        }
-#endif
-                                    }
-                                }
-
-                                break;
-
-                            case DataRowState.Unchanged:
-                                break;
-
-                            default:
-                                throw new ArgumentException(
-                                "SubmitChanges can only deal with PartnerLocations of DataRowState Added, Modified or Deleted, but not with " +
-                                (Enum.GetName(typeof(DataRowState), PartnerLocationTable.Rows[PartnerLocationCounter].RowState)));
-                        }
-                    }
-
-#if DEBUGMODE
-                    if (TLogging.DL >= 8)
-                    {
-                        Console.WriteLine("SubmitChanges: PPartnerLocation Rows: " + AInspectDS.Tables["PPartnerLocation"].Rows.Count.ToString());
-                    }
-#endif
-
-                    if (ReturnValue != TSubmitChangesResult.scrInfoNeeded)
-                    {
-                    }
-                    // $IFDEF DEBUGMODE if TLogging.DL >= 9 then Console.WriteLine('SubmitChanges: Length(SimilarLocationReUseKeyMapping): ' + Convert.ToInt16(Length(SimilarLocationReUseKeyMapping)).ToString); $ENDIF
-                    // if (Length(SimilarLocationReUseKeyMapping)  1) > 0 then
-                    // begin
-                    // for LocationReUseCounter := 1 to Length(SimilarLocationReUseKeyMapping)  1 do
-                    // begin
-                    // $IFDEF DEBUGMODE if TLogging.DL >= 9 then Console.WriteLine('LocationReUseCounter: ' + LocationReUseCounter.ToString); $ENDIF
-                    /* $IFDEF DEBUGMODE if TLogging.DL >= 9 then Console.WriteLine('SubmitChanges: LocationReUseKeyMapping[' + LocationReUseCounter.ToString + ', 0].LocationKey: ' + SimilarLocationReUseKeyMapping[LocationReUseCounter,
-                     *0].LocationKey.ToString); $ENDIF */
-                    // ReUsedLocationDR := LocationTable.Rows.Find([
-                    // SimilarLocationReUseKeyMapping[LocationReUseCounter, 0].SiteKey,
-                    // SimilarLocationReUseKeyMapping[LocationReUseCounter, 0].LocationKey]) as PLocationRow;
-                    //
-                    // if ReUsedLocationDR <> nil then
-                    // begin
-                    // Overwrite the originally submitted Key with the one that
-                    // replaces it. This is needed to have the correct Key on
-                    // the Client side!
-                    // ReUsedLocationDR.SiteKey:= SimilarLocationReUseKeyMapping[LocationReUseCounter, 1].SiteKey;
-                    // ReUsedLocationDR.LocationKey:= SimilarLocationReUseKeyMapping[LocationReUseCounter, 1].LocationKey;
-                    //
-                    // Make the DataRow 'unchanged' so that it doesn't get saved in the
-                    // SubmitChanges call for PLocation!
-                    // ReUsedLocationDR.AcceptChanges;
-                    // end
-                    // else
-                    // begin
-                    /* raise ApplicationException.Create('ReUsedLocationDR for SiteKey ' + SimilarLocationReUseKeyMapping[LocationReUseCounter, 0].SiteKey.ToString + ' and LocationKey ' + SimilarLocationReUseKeyMapping[LocationReUseCounter,
-                     *0].LocationKey.ToString + ' could not be found!'); */
-                    // end;
-                    // end;
-                    // end;
-                    else
-                    {
-                        // Stop processing here, we need more information!
-                        return ReturnValue;
-                    }
+                    TLogging.Log("SubmitChanges: PPartnerLocation Rows: " + AInspectDS.PPartnerLocation.Rows.Count.ToString());
                 }
+#endif
+            }
 
-                #endregion
+            if (TLogging.DL >= 8)
+            {
+                DebugLocationsBeforeSaving(AInspectDS);
+            }
 
-                /*
-                 * Actual saving of data
-                 */
-                if (LocationTable != null)
+            // Check if Parameter Tables are passed in
+            CheckParameterTables(AResponseDS,
+                out ExistingLocationParametersDT,
+                out ChangeLocationParametersDT,
+                out AddressAddedOrChangedPromotionParametersDT);
+
+            if (AInspectDS.PLocation != null)
+            {
+                TSubmitChangesResult result = ProcessLocationChanges(
+                    AInspectDS.PLocation,
+                    AInspectDS.PPartnerLocation,
+                    ref AResponseDS,
+                    ASubmitChangesTransaction,
+                    APartnerKey,
+                    ref ExistingLocationParametersDT,
+                    ref SimilarLocationReUseKeyMapping,
+                    ref AddressAddedOrChangedPromotionParametersDT,
+                    ref ChangeLocationParametersDT,
+                    ref AVerificationResult);
+
+                if (result != TSubmitChangesResult.scrOK)
                 {
+                    // Stop processing here, we need more information!
+
+                    return result;
+                }
+            }
+
+            if (AInspectDS.PPartnerLocation != null)
+            {
+                TSubmitChangesResult result = ProcessPartnerLocationChanges(
+                    AInspectDS.PLocation,
+                    AInspectDS.PPartnerLocation,
+                    ref AResponseDS,
+                    ASubmitChangesTransaction,
+                    APartnerKey,
+                    APartnerClass,
+                    ref SimilarLocationReUseKeyMapping,
+                    ref ExistingLocationParametersDT,
+                    ref AddressAddedOrChangedPromotionParametersDT,
+                    ref ChangeLocationParametersDT,
+                    ref AVerificationResult);
+
+                if (result != TSubmitChangesResult.scrOK)
+                {
+                    // Stop processing here, we need more information!
+
+                    return result;
+                }
+            }
+
+            /*
+             * Actual saving of data
+             */
+            if (AInspectDS.PLocation != null)
+            {
 #if DEBUGMODE
-                    if (TLogging.DL >= 9)
-                    {
-                        Console.WriteLine("SubmitChanges: Length(SimilarLocationReUseKeyMapping): " +
-                            Convert.ToInt16(SimilarLocationReUseKeyMapping.GetLength(0)).ToString());
-                    }
+                if (TLogging.DL >= 9)
+                {
+                    TLogging.Log("SubmitChanges: Length(SimilarLocationReUseKeyMapping): " +
+                        Convert.ToInt16(SimilarLocationReUseKeyMapping.GetLength(0)).ToString());
+                }
 #endif
 
-                    if ((SimilarLocationReUseKeyMapping.GetLength(0) - 1) > 0)
+                if ((SimilarLocationReUseKeyMapping.GetLength(0) - 1) > 0)
+                {
+                    for (Int16 LocationReUseCounter = 1;
+                         LocationReUseCounter <= SimilarLocationReUseKeyMapping.GetLength(0) - 1;
+                         LocationReUseCounter += 1)
                     {
-                        for (LocationReUseCounter = 1;
-                             LocationReUseCounter <= SimilarLocationReUseKeyMapping.GetLength(0) - 1;
-                             LocationReUseCounter += 1)
-                        {
-#if DEBUGMODE
-                            if (TLogging.DL >= 9)
-                            {
-                                Console.WriteLine("LocationReUseCounter: " + LocationReUseCounter.ToString());
-                            }
-#endif
-#if DEBUGMODE
-                            if (TLogging.DL >= 9)
-                            {
-                                Console.WriteLine(
-                                    "SubmitChanges: LocationReUseKeyMapping[" + LocationReUseCounter.ToString() +
-                                    ", 0].LocationKey: " +
-                                    SimilarLocationReUseKeyMapping[LocationReUseCounter, 0].LocationKey.ToString());
-                                Console.WriteLine(
-                                    "SubmitChanges: LocationReUseKeyMapping[" + LocationReUseCounter.ToString() +
-                                    ", 1].LocationKey: " +
-                                    SimilarLocationReUseKeyMapping[LocationReUseCounter, 1].LocationKey.ToString());
-                            }
-#endif
-                            ReUsedLocationDR =
-                                (PLocationRow)LocationTable.Rows.Find(
-                                    new System.Object[] { SimilarLocationReUseKeyMapping[LocationReUseCounter, 0].SiteKey,
-                                                          SimilarLocationReUseKeyMapping[LocationReUseCounter, 0].LocationKey });
-
-                            if (ReUsedLocationDR != null)
-                            {
-                                // Overwrite the originally submitted Key with the one that
-                                // replaces it. This is needed to have the correct Key on
-                                // the Client side!
-                                ReUsedLocationDR.SiteKey = SimilarLocationReUseKeyMapping[LocationReUseCounter, 1].SiteKey;
-                                ReUsedLocationDR.LocationKey = SimilarLocationReUseKeyMapping[LocationReUseCounter, 1].LocationKey;
-
-                                // Make the DataRow 'unchanged' so that it doesn't get saved in the
-                                // SubmitChanges call for PLocation!
-                                ReUsedLocationDR.AcceptChanges();
-
-                                // Remember that the row should not be submitted lateron
-                                // NotToBeSubmittedLocationRows.Add(ReUsedLocationDR);
-                            }
-                            else
-                            {
-                                throw new ApplicationException("ReUsedLocationDR for SiteKey " +
-                                    SimilarLocationReUseKeyMapping[LocationReUseCounter,
-                                                                   0].SiteKey.ToString() + " and LocationKey " +
-                                    SimilarLocationReUseKeyMapping[LocationReUseCounter, 0].LocationKey.ToString() + " could not be found!");
-                            }
-                        }
-                    }
-
-                    if (NotToBeSubmittedLocationRows.Count > 0)
-                    {
-                        for (NotToBeSubmittedCounter = 0;
-                             NotToBeSubmittedCounter <= NotToBeSubmittedLocationRows.Count - 1;
-                             NotToBeSubmittedCounter += 1)
-                        {
-                            // mark row as beeing unchanged, therefore it doesn't get removed later in the call to SubmitChanges
-                            ((DataRow)(NotToBeSubmittedLocationRows[NotToBeSubmittedCounter])).AcceptChanges();
-                        }
-                    }
-
-                    NewLocationTableRowsDV = new DataView(LocationTable, "", "", DataViewRowState.Added);
-
-                    if (NewLocationTableRowsDV.Count != 0)
-                    {
-#if DEBUGMODE
-                        if (TLogging.DL >= 8)
-                        {
-                            Console.WriteLine(NewLocationTableRowsDV.Count.ToString() + " new Rows in PLocation!");
-                        }
-#endif
-                        NewLocationTableRowsLocationKeys = new int[NewLocationTableRowsDV.Count];
-
-                        for (Counter = 0; Counter <= NewLocationTableRowsDV.Count - 1; Counter += 1)
-                        {
-                            NewLocationTableRowsLocationKeys[Counter] = (int)((PLocationRow)(NewLocationTableRowsDV[Counter].Row)).LocationKey;
-#if DEBUGMODE
-                            if (TLogging.DL >= 8)
-                            {
-                                Console.WriteLine(
-                                    "SubmitChanges: Row " + Counter.ToString() + ": LocationKey before saving: " +
-                                    NewLocationTableRowsLocationKeys[Counter].ToString());
-                            }
-#endif
-                        }
-                    }
-
-                    if (!PLocationAccess.SubmitChanges(LocationTable, ASubmitChangesTransaction, out SingleVerificationResultCollection))
-                    {
-                        AllSubmissionsOK = false;
-                        AVerificationResult.AddCollection(SingleVerificationResultCollection);
 #if DEBUGMODE
                         if (TLogging.DL >= 9)
                         {
-                            Console.WriteLine(Messages.BuildMessageFromVerificationResult(
-                                    "TPPartnerAddressAggregate.SubmitChanges VerificationResult: ", AVerificationResult));
+                            TLogging.Log("LocationReUseCounter: " + LocationReUseCounter.ToString());
+                            TLogging.Log(
+                                "SubmitChanges: LocationReUseKeyMapping[" + LocationReUseCounter.ToString() +
+                                ", 0].LocationKey: " +
+                                SimilarLocationReUseKeyMapping[LocationReUseCounter, 0].LocationKey.ToString());
+                            TLogging.Log(
+                                "SubmitChanges: LocationReUseKeyMapping[" + LocationReUseCounter.ToString() +
+                                ", 1].LocationKey: " +
+                                SimilarLocationReUseKeyMapping[LocationReUseCounter, 1].LocationKey.ToString());
                         }
 #endif
-                    }
-                }
-
-                if (PartnerLocationTable != null)
-                {
-#if DEBUGMODE
-                    if (TLogging.DL >= 9)
-                    {
-                        Console.WriteLine("SubmitChanges: Length(SimilarLocationReUseKeyMapping): " +
-                            Convert.ToInt16(SimilarLocationReUseKeyMapping.GetLength(0)).ToString());
-                    }
-#endif
-
-                    if ((SimilarLocationReUseKeyMapping.GetLength(0) - 1) > 0)
-                    {
-                        for (LocationReUseCounter = 1;
-                             LocationReUseCounter <= SimilarLocationReUseKeyMapping.GetLength(0) - 1;
-                             LocationReUseCounter += 1)
-                        {
-#if DEBUGMODE
-                            if (TLogging.DL >= 9)
-                            {
-                                Console.WriteLine("LocationReUseCounter: " + LocationReUseCounter.ToString());
-                            }
-#endif
-#if DEBUGMODE
-                            if (TLogging.DL >= 9)
-                            {
-                                Console.WriteLine(
-                                    "SubmitChanges: LocationReUseKeyMapping[" + LocationReUseCounter.ToString() + ", 0].LocationKey: " +
-                                    SimilarLocationReUseKeyMapping[LocationReUseCounter, 0].LocationKey.ToString());
-                            }
-#endif
-                            ReUsedPartnerLocationDR = (PPartnerLocationRow)PartnerLocationTable.Rows.Find(
-                                new System.Object[] { APartnerKey, SimilarLocationReUseKeyMapping[LocationReUseCounter, 0].SiteKey,
+                        PLocationRow ReUsedLocationDR =
+                            (PLocationRow)AInspectDS.PLocation.Rows.Find(
+                                new System.Object[] { SimilarLocationReUseKeyMapping[LocationReUseCounter, 0].SiteKey,
                                                       SimilarLocationReUseKeyMapping[LocationReUseCounter, 0].LocationKey });
 
-                            if (ReUsedPartnerLocationDR != null)
-                            {
-                                // Overwrite the originally submitted Key with the one that
-                                // replaces it. This is needed to have the correct Key on
-                                // the Client side!
-                                ReUsedPartnerLocationDR.SiteKey = SimilarLocationReUseKeyMapping[LocationReUseCounter, 1].SiteKey;
-                                ReUsedPartnerLocationDR.LocationKey = SimilarLocationReUseKeyMapping[LocationReUseCounter, 1].LocationKey;
-                            }
-                            else
-                            {
-                                throw new ApplicationException("ReUsedPartnerLocationDR for SiteKey " +
-                                    SimilarLocationReUseKeyMapping[LocationReUseCounter,
-                                                                   0].SiteKey.ToString() + " and LocationKey " +
-                                    SimilarLocationReUseKeyMapping[LocationReUseCounter, 0].LocationKey.ToString() + " could not be found!");
-                            }
+                        if (ReUsedLocationDR != null)
+                        {
+                            // Overwrite the originally submitted Key with the one that
+                            // replaces it. This is needed to have the correct Key on
+                            // the Client side!
+                            ReUsedLocationDR.SiteKey = SimilarLocationReUseKeyMapping[LocationReUseCounter, 1].SiteKey;
+                            ReUsedLocationDR.LocationKey = SimilarLocationReUseKeyMapping[LocationReUseCounter, 1].LocationKey;
+
+                            // Make the DataRow 'unchanged' so that it doesn't get saved in the
+                            // SubmitChanges call for PLocation!
+                            ReUsedLocationDR.AcceptChanges();
+
+                            // Remember that the row should not be submitted lateron
+                            // NotToBeSubmittedLocationRows.Add(ReUsedLocationDR);
+                        }
+                        else
+                        {
+                            throw new ApplicationException("ReUsedLocationDR for SiteKey " +
+                                SimilarLocationReUseKeyMapping[LocationReUseCounter,
+                                                               0].SiteKey.ToString() + " and LocationKey " +
+                                SimilarLocationReUseKeyMapping[LocationReUseCounter, 0].LocationKey.ToString() + " could not be found!");
                         }
                     }
-
-                    /*
-                     * If there were added Rows in the Location Table: change the LocationKeys
-                     * of the corresponding PartnerLocation Row(s) to the LocationKeys that
-                     * were assigned by the DB while saving the added LocationTable Row(s)
-                     * (based on a Sequence).
-                     */
-                    if (NewLocationTableRowsLocationKeys != null)
-                    {
-                        for (Counter2 = 0; Counter2 <= NewLocationTableRowsLocationKeys.Length - 1; Counter2 += 1)
-                        {
-#if DEBUGMODE
-                            if (TLogging.DL >= 8)
-                            {
-                                Console.WriteLine(
-                                    "SubmitChanges: Finding Row again: " + PPartnerLocationTable.GetLocationKeyDBName() + " = " +
-                                    NewLocationTableRowsLocationKeys[Counter2].ToString());
-                            }
-#endif
-                            ChangeLocationKeyRows = PartnerLocationTable.Select(
-                                PPartnerLocationTable.GetLocationKeyDBName() + " = " + NewLocationTableRowsLocationKeys[Counter2].ToString());
-#if DEBUGMODE
-                            if (TLogging.DL >= 8)
-                            {
-                                Console.WriteLine("SubmitChanges: Assigning LocationKey: " + ((PLocationRow)(
-                                                                                                  NewLocationTableRowsDV[Counter2].Row)).LocationKey.
-                                    ToString());
-                            }
-#endif
-
-                            for (Counter5 = 0; Counter5 <= ChangeLocationKeyRows.Length - 1; Counter5 += 1)
-                            {
-                                ((PPartnerLocationRow)ChangeLocationKeyRows[Counter5]).LocationKey =
-                                    (int)((PLocationRow)(NewLocationTableRowsDV[Counter2].Row)).LocationKey;
-                            }
-
-                            if (PartnerLocationExtraSubmitTable != null)
-                            {
-                                ChangeLocationKeyRows = PartnerLocationExtraSubmitTable.Select(
-                                    PPartnerLocationTable.GetLocationKeyDBName() + " = " + NewLocationTableRowsLocationKeys[Counter2].ToString());
-#if DEBUGMODE
-                                if (TLogging.DL >= 8)
-                                {
-                                    Console.WriteLine("SubmitChanges: Assigning LocationKey: " + ((PLocationRow)(
-                                                                                                      NewLocationTableRowsDV[Counter2].Row)).
-                                        LocationKey.ToString());
-                                }
-#endif
-
-                                for (Counter5 = 0; Counter5 <= ChangeLocationKeyRows.Length - 1; Counter5 += 1)
-                                {
-                                    ((PPartnerLocationRow)ChangeLocationKeyRows[Counter5]).LocationKey =
-                                        (int)((PLocationRow)(NewLocationTableRowsDV[Counter2].Row)).LocationKey;
-                                }
-                            }
-
-#if DEBUGMODE
-                            if (TLogging.DL >= 8)
-                            {
-                                Console.WriteLine(
-                                    "SubmitChanges: New LocationKey: " + ((PPartnerLocationRow)ChangeLocationKeyRows[0]).LocationKey.ToString());
-                            }
-#endif
-                        }
-                    }
-
-                    if (NotToBeSubmittedPartnerLocationRows.Count > 0)
-                    {
-                        for (NotToBeSubmittedCounter = 0;
-                             NotToBeSubmittedCounter <= NotToBeSubmittedPartnerLocationRows.Count - 1;
-                             NotToBeSubmittedCounter += 1)
-                        {
-                            // mark row as beeing unchanged, therefore it doesn't get removed later in the call to SubmitChanges
-                            ((DataRow)NotToBeSubmittedPartnerLocationRows[NotToBeSubmittedCounter]).AcceptChanges();
-                        }
-                    }
-
-                    if (!PPartnerLocationAccess.SubmitChanges(PartnerLocationTable, ASubmitChangesTransaction, out SingleVerificationResultCollection))
-                    {
-                        AllSubmissionsOK = false;
-                        AVerificationResult.AddCollection(SingleVerificationResultCollection);
-                    }
-
-                    if (PartnerLocationExtraSubmitTable != null)
-                    {
-#if DEBUGMODE
-                        if (TLogging.DL >= 8)
-                        {
-                            Console.WriteLine("SubmitChanges: Executing SubmitChanges on PartnerLocationExtraSubmitTable.");
-                        }
-#endif
-
-                        if (!PPartnerLocationAccess.SubmitChanges(PartnerLocationExtraSubmitTable, ASubmitChangesTransaction,
-                                out SingleVerificationResultCollection))
-                        {
-                            AllSubmissionsOK = false;
-                            AVerificationResult.AddCollection(SingleVerificationResultCollection);
-                        }
-                    }
-
-                    if (LocationExtraSubmitTable != null)
-                    {
-#if DEBUGMODE
-                        if (TLogging.DL >= 8)
-                        {
-                            Console.WriteLine("SubmitChanges: Executing SubmitChanges on LocationExtraSubmitTable.");
-                        }
-#endif
-
-                        if (!PLocationAccess.SubmitChanges(LocationExtraSubmitTable, ASubmitChangesTransaction,
-                                out SingleVerificationResultCollection))
-                        {
-                            AllSubmissionsOK = false;
-                            AVerificationResult.AddCollection(SingleVerificationResultCollection);
-                        }
-                    }
-                }
-
-                if (AllSubmissionsOK)
-                {
-                    SubmissionResult = TSubmitChangesResult.scrOK;
-                }
-                else
-                {
-                    SubmissionResult = TSubmitChangesResult.scrError;
                 }
             }
-            else
+
+            if (AInspectDS.PPartnerLocation != null)
             {
 #if DEBUGMODE
-                if (TLogging.DL >= 8)
+                if (TLogging.DL >= 9)
                 {
-                    Console.WriteLine("SubmitChanges: AInspectDS = nil!");
+                    TLogging.Log("SubmitChanges: Length(SimilarLocationReUseKeyMapping): " +
+                        Convert.ToInt16(SimilarLocationReUseKeyMapping.GetLength(0)).ToString());
                 }
 #endif
-                SubmissionResult = TSubmitChangesResult.scrNothingToBeSaved;
+
+                if ((SimilarLocationReUseKeyMapping.GetLength(0) - 1) > 0)
+                {
+                    for (Int16 LocationReUseCounter = 1;
+                         LocationReUseCounter <= SimilarLocationReUseKeyMapping.GetLength(0) - 1;
+                         LocationReUseCounter += 1)
+                    {
+#if DEBUGMODE
+                        if (TLogging.DL >= 9)
+                        {
+                            TLogging.Log("LocationReUseCounter: " + LocationReUseCounter.ToString());
+                        }
+#endif
+#if DEBUGMODE
+                        if (TLogging.DL >= 9)
+                        {
+                            TLogging.Log(
+                                "SubmitChanges: LocationReUseKeyMapping[" + LocationReUseCounter.ToString() + ", 0].LocationKey: " +
+                                SimilarLocationReUseKeyMapping[LocationReUseCounter, 0].LocationKey.ToString());
+                        }
+#endif
+                        PPartnerLocationRow ReUsedPartnerLocationDR = (PPartnerLocationRow)AInspectDS.PPartnerLocation.Rows.Find(
+                            new System.Object[] { APartnerKey, SimilarLocationReUseKeyMapping[LocationReUseCounter, 0].SiteKey,
+                                                  SimilarLocationReUseKeyMapping[LocationReUseCounter, 0].LocationKey });
+
+                        if (ReUsedPartnerLocationDR != null)
+                        {
+                            // Overwrite the originally submitted Key with the one that
+                            // replaces it. This is needed to have the correct Key on
+                            // the Client side!
+                            ReUsedPartnerLocationDR.SiteKey = SimilarLocationReUseKeyMapping[LocationReUseCounter, 1].SiteKey;
+                            ReUsedPartnerLocationDR.LocationKey = SimilarLocationReUseKeyMapping[LocationReUseCounter, 1].LocationKey;
+                        }
+                        else
+                        {
+                            throw new ApplicationException("ReUsedPartnerLocationDR for SiteKey " +
+                                SimilarLocationReUseKeyMapping[LocationReUseCounter,
+                                                               0].SiteKey.ToString() + " and LocationKey " +
+                                SimilarLocationReUseKeyMapping[LocationReUseCounter, 0].LocationKey.ToString() + " could not be found!");
+                        }
+                    }
+                }
             }
 
-            return SubmissionResult;
+            return TSubmitChangesResult.scrOK;
         }
 
         /// <summary>
@@ -3521,7 +3208,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <param name="APartnerLocationRow"></param>
         /// <param name="APartnerKey"></param>
         /// <param name="ASubmitChangesTransaction"></param>
-        public static void MakeSureLocation0SavingIsAllowed(PPartnerLocationRow APartnerLocationRow,
+        private static void MakeSureLocation0SavingIsAllowed(PPartnerLocationRow APartnerLocationRow,
             Int64 APartnerKey,
             TDBTransaction ASubmitChangesTransaction)
         {
@@ -3539,7 +3226,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
             if (TLogging.DL >= 8)
             {
-                Console.WriteLine("MakeSureLocation0SavingIsAllowed: ChangePartnerLocationKeyRows Length: " +
+                TLogging.Log("MakeSureLocation0SavingIsAllowed: ChangePartnerLocationKeyRows Length: " +
                     Convert.ToInt16(ChangePartnerLocationKeyRows.Length).ToString());
             }
 #endif
@@ -3552,7 +3239,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                     if (TLogging.DL >= 8)
                     {
-                        Console.WriteLine("MakeSureLocation0SavingIsAllowed: CheckHasPartnerOtherPartnerLocations found no other Locations.");
+                        TLogging.Log("MakeSureLocation0SavingIsAllowed: CheckHasPartnerOtherPartnerLocations found no other Locations.");
                     }
 #endif
 
@@ -3567,7 +3254,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                         if (TLogging.DL >= 8)
                         {
-                            Console.WriteLine("MakeSureLocation0SavingIsAllowed: PPartnerLocation with LocationKey 0 was added and will be saved.");
+                            TLogging.Log("MakeSureLocation0SavingIsAllowed: PPartnerLocation with LocationKey 0 was added and will be saved.");
                         }
 #endif
                     }
@@ -3585,7 +3272,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// </summary>
         /// <param name="APartnerLocationRow"></param>
         /// <param name="AAddressAddedPromotionDT"></param>
-        public static void ModifyAddressAddedOrChangedParameters(PPartnerLocationRow APartnerLocationRow,
+        private static void ModifyAddressAddedOrChangedParameters(PPartnerLocationRow APartnerLocationRow,
             ref PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable AAddressAddedPromotionDT)
         {
             DataView AddressAddedOrChangedParametersDV;
@@ -3594,7 +3281,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
             if (TLogging.DL >= 9)
             {
-                Console.WriteLine(
+                TLogging.Log(
                     "ModifyAddressAddedOrChangedParameters: Looking for ExistingLocationParameters with LocationKey " +
                     APartnerLocationRow.LocationKey.ToString());
             }
@@ -3604,11 +3291,11 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             {
                 for (int TmpRowCounter = 0; TmpRowCounter <= AAddressAddedPromotionDT.Rows.Count - 1; TmpRowCounter += 1)
                 {
-                    Console.WriteLine("Checking Row: " + TmpRowCounter.ToString());
-                    Console.WriteLine(
+                    TLogging.Log("Checking Row: " + TmpRowCounter.ToString());
+                    TLogging.Log(
                         "ModifyAddressAddedOrChangedParameters: AAddressAddedPromotionDT.Row[" + TmpRowCounter.ToString() + ".RowState: " +
                         (Enum.GetName(typeof(DataRowState), AAddressAddedPromotionDT.Rows[TmpRowCounter].RowState)));
-                    Console.WriteLine(
+                    TLogging.Log(
                         "ModifyAddressAddedOrChangedParameters: before searching: Row[" + TmpRowCounter.ToString() + "]: PLocationKey: " +
                         AAddressAddedPromotionDT[TmpRowCounter][PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable.GetLocationKeyDBName(),
                                                                 DataRowVersion.Current].ToString() + "; PSiteKey: " +
@@ -3636,7 +3323,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                 if (TLogging.DL >= 9)
                 {
-                    Console.WriteLine(
+                    TLogging.Log(
                         "ModifyAddressAddedOrChangedParameters: Exchanging LocationKey " + AddressAddedOrChangedRow.LocationKey.ToString() +
                         " with LocationKey " + APartnerLocationRow.LocationKey.ToString());
                 }
@@ -3652,7 +3339,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <param name="ALocationRow"></param>
         /// <param name="AOriginalLocationKey"></param>
         /// <param name="AExistingLocationParametersDT"></param>
-        public static void ModifyExistingLocationParameters(PLocationRow ALocationRow,
+        private static void ModifyExistingLocationParameters(PLocationRow ALocationRow,
             TLocationPK AOriginalLocationKey,
             ref PartnerAddressAggregateTDSSimilarLocationParametersTable AExistingLocationParametersDT)
         {
@@ -3662,7 +3349,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
             if (TLogging.DL >= 9)
             {
-                Console.WriteLine(
+                TLogging.Log(
                     "ModifyExistingLocationParameters: Looking for ExistingLocationParameters with LocationKey " +
                     AOriginalLocationKey.LocationKey.ToString() + "; AExistingLocationParametersDT.Rows.Count: " +
                     AExistingLocationParametersDT.Rows.Count.ToString());
@@ -3673,10 +3360,10 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             {
                 for (int TmpRowCounter = 0; TmpRowCounter <= AExistingLocationParametersDT.Rows.Count - 1; TmpRowCounter += 1)
                 {
-                    Console.WriteLine("Checking Row: " + TmpRowCounter.ToString());
-                    Console.WriteLine("ModifyExistingLocationParameters: SimilarLocationParameterRow[" + TmpRowCounter.ToString() + ".RowState: " +
+                    TLogging.Log("Checking Row: " + TmpRowCounter.ToString());
+                    TLogging.Log("ModifyExistingLocationParameters: SimilarLocationParameterRow[" + TmpRowCounter.ToString() + ".RowState: " +
                         (Enum.GetName(typeof(DataRowState), AExistingLocationParametersDT.Rows[TmpRowCounter].RowState)));
-                    Console.WriteLine(
+                    TLogging.Log(
                         "ModifyExistingLocationParameters: before searching: Row[" + TmpRowCounter.ToString() + "]: PLocationKey: " +
                         AExistingLocationParametersDT[TmpRowCounter][PartnerAddressAggregateTDSSimilarLocationParametersTable.GetLocationKeyDBName(),
                                                                      DataRowVersion.Current].ToString() + "; PSiteKey: " +
@@ -3713,7 +3400,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine(
+                        TLogging.Log(
                             "ModifyExistingLocationParameters: Exchanging LocationKey " + SimilarLocationParameterRow.LocationKey.ToString() +
                             " with LocationKey " + ALocationRow.LocationKey.ToString());
                     }
@@ -3721,12 +3408,12 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                     if (TLogging.DL >= 8)
                     {
-                        Console.WriteLine("ModifyExistingLocationParameters: SimilarLocationParameterRow.RowState: " +
+                        TLogging.Log("ModifyExistingLocationParameters: SimilarLocationParameterRow.RowState: " +
                             (Enum.GetName(typeof(DataRowState), SimilarLocationParameterRow.RowState)));
 
                         if (SimilarLocationParameterRow.RowState == DataRowState.Added)
                         {
-                            Console.WriteLine("ModifyExistingLocationParameters (before modification): PLocationKey: " +
+                            TLogging.Log("ModifyExistingLocationParameters (before modification): PLocationKey: " +
                                 SimilarLocationParameterRow[PartnerAddressAggregateTDSSimilarLocationParametersTable.GetLocationKeyDBName()].ToString(
                                     ) +
                                 "; PSiteKey: " +
@@ -3736,13 +3423,13 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                         else if ((SimilarLocationParameterRow.RowState == DataRowState.Modified)
                                  || (SimilarLocationParameterRow.RowState == DataRowState.Unchanged))
                         {
-                            Console.WriteLine("ModifyExistingLocationParameters (before modification): PLocationKey: " +
+                            TLogging.Log("ModifyExistingLocationParameters (before modification): PLocationKey: " +
                                 SimilarLocationParameterRow[PartnerAddressAggregateTDSSimilarLocationParametersTable.GetLocationKeyDBName(),
                                                             DataRowVersion.Original].ToString() + "; PSiteKey: " +
                                 SimilarLocationParameterRow[PartnerAddressAggregateTDSSimilarLocationParametersTable.GetSiteKeyDBName(),
                                                             DataRowVersion.Original].ToString() + "; RowState: " +
                                 (Enum.GetName(typeof(DataRowState), SimilarLocationParameterRow.RowState) + " (ORIGINAL)"));
-                            Console.WriteLine("ModifyExistingLocationParameters (before modification): PLocationKey: " +
+                            TLogging.Log("ModifyExistingLocationParameters (before modification): PLocationKey: " +
                                 SimilarLocationParameterRow[PartnerAddressAggregateTDSSimilarLocationParametersTable.GetLocationKeyDBName(),
                                                             DataRowVersion.Current].ToString() + "; PSiteKey: " +
                                 SimilarLocationParameterRow[PartnerAddressAggregateTDSSimilarLocationParametersTable.GetSiteKeyDBName(),
@@ -3758,12 +3445,12 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                     if (TLogging.DL >= 8)
                     {
-                        Console.WriteLine("ModifyExistingLocationParameters: SimilarLocationParameterRow.RowState: " +
+                        TLogging.Log("ModifyExistingLocationParameters: SimilarLocationParameterRow.RowState: " +
                             (Enum.GetName(typeof(DataRowState), SimilarLocationParameterRow.RowState)));
 
                         if (SimilarLocationParameterRow.RowState == DataRowState.Added)
                         {
-                            Console.WriteLine("ModifyExistingLocationParameters (after modification): PLocationKey: " +
+                            TLogging.Log("ModifyExistingLocationParameters (after modification): PLocationKey: " +
                                 SimilarLocationParameterRow[PartnerAddressAggregateTDSSimilarLocationParametersTable.GetLocationKeyDBName()].ToString(
                                     ) +
                                 "; PSiteKey: " +
@@ -3773,13 +3460,13 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                         else if ((SimilarLocationParameterRow.RowState == DataRowState.Modified)
                                  || (SimilarLocationParameterRow.RowState == DataRowState.Unchanged))
                         {
-                            Console.WriteLine("ModifyExistingLocationParameters (after modification): PLocationKey: " +
+                            TLogging.Log("ModifyExistingLocationParameters (after modification): PLocationKey: " +
                                 SimilarLocationParameterRow[PartnerAddressAggregateTDSSimilarLocationParametersTable.GetLocationKeyDBName(),
                                                             DataRowVersion.Original].ToString() + "; PSiteKey: " +
                                 SimilarLocationParameterRow[PartnerAddressAggregateTDSSimilarLocationParametersTable.GetSiteKeyDBName(),
                                                             DataRowVersion.Original].ToString() + "; RowState: " +
                                 (Enum.GetName(typeof(DataRowState), SimilarLocationParameterRow.RowState) + " (ORIGINAL)"));
-                            Console.WriteLine("ModifyExistingLocationParameters (after modification): PLocationKey: " +
+                            TLogging.Log("ModifyExistingLocationParameters (after modification): PLocationKey: " +
                                 SimilarLocationParameterRow[PartnerAddressAggregateTDSSimilarLocationParametersTable.GetLocationKeyDBName(),
                                                             DataRowVersion.Current].ToString() + "; PSiteKey: " +
                                 SimilarLocationParameterRow[PartnerAddressAggregateTDSSimilarLocationParametersTable.GetSiteKeyDBName(),
@@ -3795,7 +3482,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                 if (TLogging.DL >= 9)
                 {
-                    Console.WriteLine(
+                    TLogging.Log(
                         "ModifyExistingLocationParameters: No ExistingLocationParameters with LocationKey " +
                         AOriginalLocationKey.LocationKey.ToString() + " found --> creating new one!");
                 }
@@ -3834,7 +3521,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <param name="AFamilyPartnerKey"></param>
         /// <param name="AReadTransaction"></param>
         /// <returns></returns>
-        public static PPersonTable GetFamilyMemberPartnerKeys(Int64 AFamilyPartnerKey, TDBTransaction AReadTransaction)
+        private static PPersonTable GetFamilyMemberPartnerKeys(Int64 AFamilyPartnerKey, TDBTransaction AReadTransaction)
         {
             PPersonTable TemplateDT;
             PPersonRow TemplateRow;
@@ -3843,7 +3530,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
             if (TLogging.DL >= 9)
             {
-                Console.WriteLine("GetFamilyMemberPartnerKeys for Family with PartnerKey " + AFamilyPartnerKey.ToString());
+                TLogging.Log("GetFamilyMemberPartnerKeys for Family with PartnerKey " + AFamilyPartnerKey.ToString());
             }
 #endif
             TemplateDT = new PPersonTable();
@@ -3864,7 +3551,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <param name="ARow"></param>
         /// <param name="ALocationReUseKeyMapping"></param>
         /// <returns></returns>
-        public static TLocationPK DetermineReplacedLocationPK(DataRow ARow, TLocationPK[, ] ALocationReUseKeyMapping)
+        private static TLocationPK DetermineReplacedLocationPK(DataRow ARow, TLocationPK[, ] ALocationReUseKeyMapping)
         {
             TLocationPK ReturnValue;
             TLocationPK SubmittedLocationPK;
@@ -3897,7 +3584,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                 if (TLogging.DL >= 9)
                 {
-                    Console.WriteLine("(Length(ALocationReUseKeyMapping): " + Convert.ToInt16(ALocationReUseKeyMapping.GetLength(0)).ToString());
+                    TLogging.Log("(Length(ALocationReUseKeyMapping): " + Convert.ToInt16(ALocationReUseKeyMapping.GetLength(0)).ToString());
                 }
 #endif
 
@@ -3912,7 +3599,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                         if (TLogging.DL >= 9)
                         {
-                            Console.WriteLine("DetermineReplacedLocationPK: Key found in Key Mapping.");
+                            TLogging.Log("DetermineReplacedLocationPK: Key found in Key Mapping.");
                         }
 #endif
                         continue;
@@ -3926,7 +3613,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                 if (TLogging.DL >= 9)
                 {
-                    Console.WriteLine("DetermineReplacedLocationPK: Key *not* found in Key Mapping");
+                    TLogging.Log("DetermineReplacedLocationPK: Key *not* found in Key Mapping");
                 }
 #endif
                 ReturnValue = new TLocationPK(SiteKey, LocationKey);
@@ -3935,7 +3622,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
             if (TLogging.DL >= 9)
             {
-                Console.WriteLine(
+                TLogging.Log(
                     "DetermineReplacedLocationPK: ReturnValue.SiteKey: " + ReturnValue.SiteKey.ToString() + "; ReturnValue.LocationKey: " +
                     ReturnValue.LocationKey.ToString());
             }
@@ -3949,7 +3636,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <param name="ARow"></param>
         /// <param name="AExistingLocationParametersDT"></param>
         /// <returns></returns>
-        public static TLocationPK DetermineReplacedLocationPK(DataRow ARow,
+        private static TLocationPK DetermineReplacedLocationPK(DataRow ARow,
             PartnerAddressAggregateTDSSimilarLocationParametersTable AExistingLocationParametersDT)
         {
             TLocationPK ReturnValue;
@@ -3981,7 +3668,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                 if (TLogging.DL >= 9)
                 {
-                    Console.WriteLine("DetermineReplacedLocationPK: checking for LocationKey: " + LocationKey.ToString());
+                    TLogging.Log("DetermineReplacedLocationPK: checking for LocationKey: " + LocationKey.ToString());
                 }
 #endif
 
@@ -3997,7 +3684,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine("DetermineReplacedLocationPK: Key found in AExistingLocationParametersDT");
+                        TLogging.Log("DetermineReplacedLocationPK: Key found in AExistingLocationParametersDT");
                     }
 #endif
                     ExistingLocationParametersDR = (PartnerAddressAggregateTDSSimilarLocationParametersRow)ExistingLocationParametersDV[0].Row;
@@ -4017,7 +3704,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                 if (TLogging.DL >= 9)
                 {
-                    Console.WriteLine("DetermineReplacedLocationPK: Key *not* found in AExistingLocationParametersDT");
+                    TLogging.Log("DetermineReplacedLocationPK: Key *not* found in AExistingLocationParametersDT");
                 }
 #endif
                 ReturnValue = new TLocationPK(SiteKey, LocationKey);
@@ -4026,7 +3713,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
             if (TLogging.DL >= 9)
             {
-                Console.WriteLine(
+                TLogging.Log(
                     "DetermineReplacedLocationPK: Result.SiteKey: " + ReturnValue.SiteKey.ToString() + "; ReturnValue.LocationKey: " +
                     ReturnValue.LocationKey.ToString());
             }
@@ -4040,12 +3727,9 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         ///
         /// @comment Must only be called for Partners of Partner Class FAMILY - the
         /// function does no checks on that and will fail for other Partner Classes!
-        ///
-        ///
-        ///
         /// </summary>
         /// <returns>void</returns>
-        public static TSubmitChangesResult PerformLocationFamilyMemberPropagationChecks(PPartnerLocationRow APartnerLocationRow,
+        private static TSubmitChangesResult PerformLocationFamilyMemberPropagationChecks(PPartnerLocationRow APartnerLocationRow,
             ref PartnerAddressAggregateTDS AResponseDS,
             TDBTransaction ASubmitChangesTransaction,
             Int64 APartnerKey,
@@ -4053,39 +3737,28 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             ref PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable AAddressAddedPromotionDT,
             ref PLocationTable ALocationTable,
             ref PPartnerLocationTable APartnerLocationTable,
-            ref PPartnerLocationTable APartnerLocationExtraSubmitTable,
             PartnerAddressAggregateTDSSimilarLocationParametersTable AExistingLocationParametersDT,
             TLocationPK[, ] ALocationReUseKeyMapping,
             out Boolean APerformPropagation,
             ref TVerificationResultCollection AVerificationResult)
         {
-            TSubmitChangesResult ReturnValue;
-            TLocationPK SubmittedLocationPK;
-            DataView PropagateLocationParametersDV;
-            PPersonTable FamilyPersonsDT;
-            int Counter;
-            PPersonRow ProcessedPersonRow;
-            PPartnerLocationRow FamilyPartnerLocationRow;
-            PPartnerLocationRow AddPartnerLocationRow;
-            TLocationPK LocationPK;
-
 #if DEBUGMODE
             if (TLogging.DL >= 9)
             {
-                Console.WriteLine(
+                TLogging.Log(
                     "PerformLocationFamilyMemberPropagationChecks for LocationKey: " + APartnerLocationRow.LocationKey.ToString() +
                     "; AAddressAddedPromotionDT.Rows.Count: " + AAddressAddedPromotionDT.Rows.Count.ToString());
             }
 #endif
             APerformPropagation = false;
-            SubmittedLocationPK = DetermineReplacedLocationPK(APartnerLocationRow, ALocationReUseKeyMapping);
-            LocationPK = DetermineReplacedLocationPK(APartnerLocationRow, AExistingLocationParametersDT);
+            TLocationPK SubmittedLocationPK = DetermineReplacedLocationPK(APartnerLocationRow, ALocationReUseKeyMapping);
+            TLocationPK LocationPK = DetermineReplacedLocationPK(APartnerLocationRow, AExistingLocationParametersDT);
 
             if (CheckFamilyMemberPropagation(APartnerLocationRow, APartnerKey, APartnerClass, ref AAddressAddedPromotionDT, LocationPK,
                     ASubmitChangesTransaction))
             {
                 // Check if there is a Parameter Row for the LocationKey we are looking at
-                PropagateLocationParametersDV = new DataView(AAddressAddedPromotionDT,
+                DataView PropagateLocationParametersDV = new DataView(AAddressAddedPromotionDT,
                     PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable.GetSiteKeyDBName() + " = " + LocationPK.SiteKey.ToString() +
                     " AND " +
                     PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable.GetLocationKeyDBName() + " = " +
@@ -4100,7 +3773,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine(
+                        TLogging.Log(
                             "PerformLocationFamilyMemberPropagationChecks: Location " + APartnerLocationRow.LocationKey.ToString() +
                             ": found Family Members, decision on propagation is needed.");
                     }
@@ -4116,7 +3789,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                         if (TLogging.DL >= 9)
                         {
-                            Console.WriteLine("PerformLocationFamilyMemberPropagationChecks: Creating AResponseDS.");
+                            TLogging.Log("PerformLocationFamilyMemberPropagationChecks: Creating AResponseDS.");
                         }
 #endif
                         AResponseDS = new PartnerAddressAggregateTDS(MPartnerConstants.PARTNERADDRESSAGGREGATERESPONSE_DATASET);
@@ -4125,7 +3798,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine(
+                        TLogging.Log(
                             "PerformLocationFamilyMemberPropagationChecks: AAddressAddedPromotionDT.Rows.Count: " +
                             AAddressAddedPromotionDT.Rows.Count.ToString());
                     }
@@ -4134,27 +3807,26 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine("PerformLocationFamilyMemberPropagationChecks: Merged AAddressAddedPromotionDT into AResponseDS.");
+                        TLogging.Log("PerformLocationFamilyMemberPropagationChecks: Merged AAddressAddedPromotionDT into AResponseDS.");
                     }
 #endif
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine(
+                        TLogging.Log(
                             "PerformLocationFamilyMemberPropagationChecks: PerformLocationFamilyMemberPropagationChecks: AResponseDS.Tables[" +
                             MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME + "].Rows.Count: " +
                             AResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].Rows.Count.ToString());
                     }
 #endif
-                    ReturnValue = TSubmitChangesResult.scrInfoNeeded;
-                    return ReturnValue;
+                    return TSubmitChangesResult.scrInfoNeeded;
                 }
                 else
                 {
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine(
+                        TLogging.Log(
                             "PerformLocationFamilyMemberPropagationChecks: Location " + APartnerLocationRow.LocationKey.ToString() +
                             ": found Family Members and new Location should be propagated to them!");
                     }
@@ -4167,27 +3839,22 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                     APerformPropagation = true;
 
                     // Load all Persons of the Family
-                    FamilyPersonsDT = PPersonAccess.LoadViaPFamily(APartnerKey, ASubmitChangesTransaction);
+                    PPersonTable FamilyPersonsDT = PPersonAccess.LoadViaPFamily(APartnerKey, ASubmitChangesTransaction);
 
                     // Find PPartnerLocation row of the Family that we should process
-                    FamilyPartnerLocationRow = (PPartnerLocationRow)APartnerLocationTable.Rows.Find(
+                    PPartnerLocationRow FamilyPartnerLocationRow = (PPartnerLocationRow)APartnerLocationTable.Rows.Find(
                         new System.Object[] { APartnerKey, APartnerLocationRow.SiteKey,
                                               APartnerLocationRow.LocationKey });
 
                     if (FamilyPartnerLocationRow != null)
                     {
-                        if (APartnerLocationExtraSubmitTable == null)
+                        for (int Counter = 0; Counter <= FamilyPersonsDT.Rows.Count - 1; Counter += 1)
                         {
-                            APartnerLocationExtraSubmitTable = new PPartnerLocationTable();
-                        }
-
-                        for (Counter = 0; Counter <= FamilyPersonsDT.Rows.Count - 1; Counter += 1)
-                        {
-                            ProcessedPersonRow = FamilyPersonsDT[Counter];
+                            PPersonRow ProcessedPersonRow = FamilyPersonsDT[Counter];
 #if DEBUGMODE
                             if (TLogging.DL >= 9)
                             {
-                                Console.WriteLine(
+                                TLogging.Log(
                                     "PerformLocationFamilyMemberPropagationChecks: Person  " + ProcessedPersonRow.PartnerKey.ToString() +
                                     ": checking...");
                             }
@@ -4200,26 +3867,20 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                                 if (TLogging.DL >= 9)
                                 {
-                                    Console.WriteLine(
+                                    TLogging.Log(
                                         "PerformLocationFamilyMemberPropagationChecks: Person  " + ProcessedPersonRow.PartnerKey.ToString() +
                                         ": adding Location " + SubmittedLocationPK.LocationKey.ToString() + "...");
                                 }
 #endif
 
                                 // Add a copy of the PartnerLocation data to the Person
-                                AddPartnerLocationRow = APartnerLocationExtraSubmitTable.NewRowTyped(false);
+                                PPartnerLocationRow AddPartnerLocationRow = APartnerLocationTable.NewRowTyped(false);
                                 AddPartnerLocationRow.ItemArray = DataUtilities.DestinationSaveItemArray(AddPartnerLocationRow,
                                     FamilyPartnerLocationRow);
                                 AddPartnerLocationRow.PartnerKey = ProcessedPersonRow.PartnerKey;
                                 AddPartnerLocationRow.SiteKey = SubmittedLocationPK.SiteKey;
                                 AddPartnerLocationRow.LocationKey = SubmittedLocationPK.LocationKey;
-
-                                /*
-                                 * Add the DataRow to the PartnerLocationExtraSubmitTable table;
-                                 * it will get saved later in the call to SubmitChanges in the main
-                                 * loop of the SubmitData function.
-                                 */
-                                APartnerLocationExtraSubmitTable.Rows.Add(AddPartnerLocationRow);
+                                APartnerLocationTable.Rows.Add(AddPartnerLocationRow);
 
                                 /*
                                  * If this Person has an PartnerLocation with LocationKey 0 (this
@@ -4232,7 +3893,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                                     if (TLogging.DL >= 9)
                                     {
-                                        Console.WriteLine(
+                                        TLogging.Log(
                                             "PerformLocationFamilyMemberPropagationChecks: Person  " + ProcessedPersonRow.PartnerKey.ToString() +
                                             ": had Location 0 assigned, deleting it.");
                                     }
@@ -4248,7 +3909,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                                 if (TLogging.DL >= 9)
                                 {
-                                    Console.WriteLine(
+                                    TLogging.Log(
                                         "PerformLocationFamilyMemberPropagationChecks: Person  " + ProcessedPersonRow.PartnerKey.ToString() +
                                         ": already has Location " + SubmittedLocationPK.LocationKey.ToString() + " assigned.");
                                 }
@@ -4268,7 +3929,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                 if (TLogging.DL >= 9)
                 {
-                    Console.WriteLine(
+                    TLogging.Log(
                         "PerformLocationFamilyMemberPropagationChecks: Location " + SubmittedLocationPK.LocationKey.ToString() +
                         ": Family either has no Family Members, or no propagation of the new Location is wanted. New Location will therefore only be added to the FAMILY.");
                 }
@@ -4288,17 +3949,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <summary>
         /// todoComment
         /// </summary>
-        /// <param name="ALocationRow"></param>
-        /// <param name="AResponseDS"></param>
-        /// <param name="ASubmitChangesTransaction"></param>
-        /// <param name="APartnerKey"></param>
-        /// <param name="AExistingLocationParametersDT"></param>
-        /// <param name="APartnerLocationTable"></param>
-        /// <param name="ALocationReUseKeyMapping"></param>
-        /// <param name="AReUseSimilarLocation"></param>
-        /// <param name="AVerificationResult"></param>
-        /// <returns></returns>
-        public static TSubmitChangesResult PerformSimilarLocationReUseChecks(ref PLocationRow ALocationRow,
+        private static TSubmitChangesResult PerformSimilarLocationReUseChecks(ref PLocationRow ALocationRow,
             ref PartnerAddressAggregateTDS AResponseDS,
             TDBTransaction ASubmitChangesTransaction,
             Int64 APartnerKey,
@@ -4323,7 +3974,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
             if (TLogging.DL >= 9)
             {
-                Console.WriteLine(
+                TLogging.Log(
                     "PerformSimilarLocationReUseChecks: AExistingLocationParametersDT.Rows.Count: " +
                     AExistingLocationParametersDT.Rows.Count.ToString());
             }
@@ -4346,7 +3997,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine(
+                        TLogging.Log(
                             "PerformSimilarLocationReUseChecks: Location " + ALocationRow.LocationKey.ToString() +
                             ": found similar Location, decision is needed.");
                     }
@@ -4362,7 +4013,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                         if (TLogging.DL >= 9)
                         {
-                            Console.WriteLine("PerformSimilarLocationReUseChecks: Creating AResponseDS.");
+                            TLogging.Log("PerformSimilarLocationReUseChecks: Creating AResponseDS.");
                         }
 #endif
                         AResponseDS = new PartnerAddressAggregateTDS(MPartnerConstants.PARTNERADDRESSAGGREGATERESPONSE_DATASET);
@@ -4371,7 +4022,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine(
+                        TLogging.Log(
                             "PerformSimilarLocationReUseChecks: AExistingLocationParametersDT.Rows.Count: " +
                             AExistingLocationParametersDT.Rows.Count.ToString());
                     }
@@ -4380,26 +4031,25 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine("PerformSimilarLocationReUseChecks: Merged ExistingLocationParametersDT into AResponseDS.");
+                        TLogging.Log("PerformSimilarLocationReUseChecks: Merged ExistingLocationParametersDT into AResponseDS.");
                     }
 #endif
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine(
+                        TLogging.Log(
                             "PerformSimilarLocationReUseChecks: AResponseDS.Tables[" + MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME +
                             "].Rows.Count: " + AResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].Rows.Count.ToString());
                     }
 #endif
-                    ReturnValue = TSubmitChangesResult.scrInfoNeeded;
-                    return ReturnValue;
+                    return TSubmitChangesResult.scrInfoNeeded;
                 }
                 else
                 {
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine(
+                        TLogging.Log(
                             "PerformSimilarLocationReUseChecks: Location " + ALocationRow.LocationKey.ToString() +
                             ": found similar Location and this one (" +
                             ExistingLocationKey.ToString() + ") should be used instead of creating a new one!");
@@ -4433,7 +4083,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                         if (TLogging.DL >= 8)
                         {
-                            Console.WriteLine(
+                            TLogging.Log(
                                 "PerformSimilarLocationReUseChecks: Finding PartnerLocation Row in APartnerLocationTable with LocationKey " +
                                 ALocationRow.LocationKey.ToString());
                         }
@@ -4476,7 +4126,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                                 if (TLogging.DL >= 8)
                                 {
-                                    Console.WriteLine(
+                                    TLogging.Log(
                                         "PerformSimilarLocationReUseChecks: LocationKey: " + ExistingLocationKey.ToString() +
                                         " will later get assigned to PPartnerLocation.");
                                 }
@@ -4496,31 +4146,10 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                          */
                         SimilarLocationDT = PLocationAccess.LoadByPrimaryKey(ExistingSiteKey, ExistingLocationKey, null, ASubmitChangesTransaction);
 
-                        // ExistingLocationParametersDV2 := new DataView(
-                        // AExistingLocationParametersDT,
-                        // PartnerAddressAggregateTDSSimilarLocationParametersTable.GetSiteKeyDBName +
-                        // ' = ' + CurrentSiteKey.ToString + ' AND ' +
-                        // PartnerAddressAggregateTDSSimilarLocationParametersTable.GetLocationKeyDBName +
-                        // ' = ' + CurrentLocationKey.ToString, '', DataViewRowState.CurrentRows);
-                        //
-                        // ExistingLocationRow := ExistingLocationParametersDV2[0].Row as
-                        // PartnerAddressAggregateTDSSimilarLocationParametersRow;
                         if (SimilarLocationDT.Rows.Count != 0)
                         {
                             ExistingLocationRow = (PLocationRow)SimilarLocationDT.Rows[0];
 
-                            /*
-                             * //            Copy all fields from the existing Location to the current Location
-                             * //            but don't try to copy over the custom fields of the
-                             * //            SimilarLocationParameters DataTable (which are at the end of the
-                             * //            DataColumns Collection)
-                             * // */
-
-                            // for Counter := new 0 to PLocationTable().Columns.Count  1 do
-                            // begin
-                            // ALocationRow[Counter] := ExistingLocationRow[Counter];
-                            // $IFDEF DEBUGMODE if TLogging.DL >= 9 then Console.WriteLine('ExistingLocationRow[' + Counter.ToString + ']:' + ExistingLocationRow[Counter].ToString); $ENDIF
-                            // end;
                             ALocationRow.ItemArray = ExistingLocationRow.ItemArray;
 
                             /*
@@ -4535,7 +4164,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                             if (TLogging.DL >= 9)
                             {
-                                Console.WriteLine(
+                                TLogging.Log(
                                     "CheckReUseExistingLocation: Location " + ALocationRow.LocationKey.ToString() +
                                     ": data got replaced with data from the existing Location (" + ExistingLocationKey.ToString() + ")!");
                             }
@@ -4555,7 +4184,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                 if (TLogging.DL >= 9)
                 {
-                    Console.WriteLine(
+                    TLogging.Log(
                         "CheckReUseExistingLocation: Location " + ALocationRow.LocationKey.ToString() +
                         ": Location does not exist yet (or an existing Location should not be re-used) -> will get saved lateron.");
                 }
@@ -4584,17 +4213,15 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <param name="AAddressChangedPromotionDT"></param>
         /// <param name="AChangeLocationParametersDT"></param>
         /// <param name="APartnerLocationTable"></param>
-        /// <param name="APartnerLocationExtraSubmitTable"></param>
         /// <param name="AVerificationResult"></param>
         /// <returns></returns>
-        public static TSubmitChangesResult PerformPartnerLocationChangeChecks(PPartnerLocationRow APartnerLocationRow,
+        private static TSubmitChangesResult PerformPartnerLocationChangeChecks(PPartnerLocationRow APartnerLocationRow,
             Int64 APartnerKey,
             ref PartnerAddressAggregateTDS AResponseDS,
             TDBTransaction ASubmitChangesTransaction,
             ref PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable AAddressChangedPromotionDT,
             ref PartnerAddressAggregateTDSChangePromotionParametersTable AChangeLocationParametersDT,
             ref PPartnerLocationTable APartnerLocationTable,
-            ref PPartnerLocationTable APartnerLocationExtraSubmitTable,
             ref TVerificationResultCollection AVerificationResult)
         {
             TSubmitChangesResult ReturnValue;
@@ -4616,7 +4243,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
             if (TLogging.DL >= 9)
             {
-                Console.WriteLine(
+                TLogging.Log(
                     "PerformPartnerLocationChangeChecks: AAddressChangedPromotionDT.Rows.Count: " + AAddressChangedPromotionDT.Rows.Count.ToString());
             }
 #endif
@@ -4646,7 +4273,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine(
+                        TLogging.Log(
                             "PerformPartnerLocationChangeChecks: PartnerLocation " + APartnerLocationRow.LocationKey.ToString() +
                             ": PartnerLocation has been changed, decision on propagation is needed.");
                     }
@@ -4662,7 +4289,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                         if (TLogging.DL >= 9)
                         {
-                            Console.WriteLine("PerformPartnerLocationChangeChecks: Creating AResponseDS.");
+                            TLogging.Log("PerformPartnerLocationChangeChecks: Creating AResponseDS.");
                         }
 #endif
                         AResponseDS = new PartnerAddressAggregateTDS(MPartnerConstants.PARTNERADDRESSAGGREGATERESPONSE_DATASET);
@@ -4671,7 +4298,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine(
+                        TLogging.Log(
                             "PerformPartnerLocationChangeChecks: AAddressAddedPromotionDT.Rows.Count: " +
                             AAddressChangedPromotionDT.Rows.Count.ToString());
                     }
@@ -4680,20 +4307,20 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine("PerformPartnerLocationChangeChecks: Merged AAddressAddedPromotionDT into AResponseDS.");
+                        TLogging.Log("PerformPartnerLocationChangeChecks: Merged AAddressAddedPromotionDT into AResponseDS.");
                     }
 #endif
                     AResponseDS.Merge(AChangeLocationParametersDT);
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine("PerformPartnerLocationChangeChecks: Merged ChangePromotionParametersDT into AResponseDS.");
+                        TLogging.Log("PerformPartnerLocationChangeChecks: Merged ChangePromotionParametersDT into AResponseDS.");
                     }
 #endif
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
-                        Console.WriteLine(
+                        TLogging.Log(
                             "PerformPartnerLocationChangeChecks: AResponseDS.Tables[" + MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME +
                             "].Rows.Count: " + AResponseDS.Tables[MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME].Rows.Count.ToString());
                     }
@@ -4714,7 +4341,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                         if (TLogging.DL >= 9)
                         {
-                            Console.WriteLine(
+                            TLogging.Log(
                                 "PerformPartnerLocationChangeChecks: User made his/her choice regarding PartnerLocation Change promotion; now processing...");
                         }
 #endif
@@ -4726,7 +4353,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                         if (TLogging.DL >= 9)
                         {
-                            Console.WriteLine(
+                            TLogging.Log(
                                 "PerformPartnerLocationChangeChecks: Updated FAMILY PartnerLocation " + APartnerLocationRow.LocationKey.ToString() +
                                 ": changes should be assigned to " + Convert.ToInt32(UpdatePartnerLocationOtherPersons.GetLength(
                                         0)).ToString() + " PartnerLocations of PERSONs...");
@@ -4765,7 +4392,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                         if (TLogging.DL >= 9)
                         {
-                            Console.WriteLine("PerformPartnerLocationChangeChecks: Length(ChangedFieldsArr): " +
+                            TLogging.Log("PerformPartnerLocationChangeChecks: Length(ChangedFieldsArr): " +
                                 Convert.ToInt16(ChangedFieldsArr.Length).ToString());
                         }
 #endif
@@ -4816,7 +4443,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                                 if (TLogging.DL >= 9)
                                 {
-                                    Console.WriteLine(
+                                    TLogging.Log(
                                         "PerformPartnerLocationChangeChecks: Changes to Column " + ChangedFieldsArr[Counter4].ToString() +
                                         " taken over for LocationKey " +
                                         PartnerLocationModificationDT[0][PPartnerLocationTable.GetLocationKeyDBName()].ToString());
@@ -4846,7 +4473,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                 if (TLogging.DL >= 9)
                 {
-                    Console.WriteLine(
+                    TLogging.Log(
                         "PerformPartnerLocationChangeChecks: Location " + APartnerLocationRow.LocationKey.ToString() +
                         ": User cancelled the selection - stopping the whole saving process!");
                 }
@@ -4880,7 +4507,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// with 1..n TVerificationResult objects (contains DB call exceptions)</param>
         /// <returns>true if processing was successful, otherwise false
         /// </returns>
-        public static Boolean PromoteToFamilyMembersDateGoodUntilChange(Int64 AFamilyPartnerKey,
+        private static Boolean PromoteToFamilyMembersDateGoodUntilChange(Int64 AFamilyPartnerKey,
             PPartnerLocationRow APartnerLocationDR,
             TDBTransaction ASubmitChangesTransaction,
             out TVerificationResultCollection AVerificationResult)
@@ -4909,7 +4536,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
             if (TLogging.DL >= 9)
             {
-                Console.WriteLine(
+                TLogging.Log(
                     "PromoteToFamilyMembersDateGoodUntilChange for Location " + APartnerLocationDR.LocationKey.ToString() + ": Family has " +
                     FamilyPersonsDT.Rows.Count.ToString() + " members.");
             }
@@ -5002,7 +4629,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// with 1..n TVerificationResult objects (contains DB call exceptions)</param>
         /// <returns>true if processing was successful, otherwise false
         /// </returns>
-        public static Boolean RemoveLocationFromExtracts(PLocationRow ALocationRow,
+        private static Boolean RemoveLocationFromExtracts(PLocationRow ALocationRow,
             TDBTransaction ASubmitChangesTransaction,
             ref TVerificationResultCollection AVerificationResult)
         {
@@ -5015,7 +4642,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
             if (TLogging.DL >= 9)
             {
-                Console.WriteLine("RemoveLocationFromExtracts for Location " +
+                TLogging.Log("RemoveLocationFromExtracts for Location " +
                     Convert.ToInt32(ALocationRow[MExtractTable.GetLocationKeyDBName(), DataRowVersion.Original]).ToString());
             }
 #endif
@@ -5044,7 +4671,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                     if (TLogging.DL >= 8)
                     {
-                        Console.WriteLine(
+                        TLogging.Log(
                             "RemoveLocationFromExtracts: Removing Location with LocationKey " + ExtractsDT[Counter].LocationKey.ToString() +
                             " from Extract with ExtractID ''" + ExtractsDT[Counter].ExtractId.ToString() + "''.");
                     }
@@ -5067,7 +4694,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 #if DEBUGMODE
                 if (TLogging.DL >= 8)
                 {
-                    Console.WriteLine("RemoveLocationFromExtracts: Location with LocationKey " +
+                    TLogging.Log("RemoveLocationFromExtracts: Location with LocationKey " +
                         ALocationRow[MExtractTable.GetLocationKeyDBName(),
                                      DataRowVersion.Original].ToString() + " was not referenced in any Extract -> nothing to do.");
                 }

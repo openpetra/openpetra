@@ -1,0 +1,91 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MPartner.Gui   
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data]
+    FormType: edit
+    Template: usercontrolUnbound
+    Actions:
+        actIndivDataItemSelected: {ActionClick=IndividualDataItemSelected}
+        actBasicDataShepherd: {ActionClick=OpenBasicDataShepherd}
+        actIntranetRegistrationShepherd: {ActionClick=OpenIntranetRegistrationShepherd}
+        actEmergencyContacts: {ActionClick=ShowEmergencyContacts}
+        
+    Controls:
+        pnlContent:
+            Controls: [pnlDataItems, pnlButtons]              
+            Dock: Fill
+
+        pnlDataItems:
+            Dock: Fill
+            ControlsOrientation: horizontal
+            Controls: [pnlIndivDataMenu, pnlSelectedIndivDataItem]
+            
+        pnlButtons:
+            Dock: Bottom
+            Height: 30
+            ControlsOrientation: horizontal
+            Controls: [pnlShepherds, pnlEmergencyData]
+        
+        pnlIndivDataMenu:
+            Dock: Left
+            BackColor: System.Drawing.Color.Beige
+            Controls: 
+                Row0: [llbOverview]
+                Row1: [llbPersonalData]
+                Row2: [llbEmergencyData]
+                Row3: [llbPassportDetails]
+                Row4: [llbPersonalDocuments]
+                Row5: [llbSpecialNeeds]                
+                Row6: [llbLocalPersonnelData]
+                Row7: [llbProfessionalAreas]
+                Row8: [llbLanguages]
+                Row9: [llbPersonalAbilities]
+                Row10: [llbPreviousExperience]
+                Row11: [llbCommitmentPeriods]
+                Row12: [llbJobAssignments]
+                Row13: [llbProgressReports]
+                Row14: [llbPersonSkills]
+            RowHeights: [0=Fixed:28]
+
+        llbOverview: {Label=[&v] Overview, Action=actIndivDataItemSelected}
+        llbPersonalData: {Label=[&c] Personal Data, Action=actIndivDataItemSelected}
+        llbEmergencyData: {Label=[&d] Emergency Data, Action=actIndivDataItemSelected}
+        llbPassportDetails: {Label=[&e] Passport Details ({0}), Action=actIndivDataItemSelected}
+        llbPersonalDocuments: {Label=[&f] Personal Documents ({0}), Action=actIndivDataItemSelected}
+        llbSpecialNeeds: {Label=[&g] Special Needs, Action=actIndivDataItemSelected}
+        llbLocalPersonnelData: {Label=[&i] Local Personnel Data, Action=actIndivDataItemSelected}
+        #hide Professional Areas for now as they get replaced by Skills
+        llbProfessionalAreas: {Label=[&j] Professional Areas ({0}), Visible=false, Action=actIndivDataItemSelected}
+        llbLanguages: {Label=[&k] Languages ({0}), Action=actIndivDataItemSelected}
+        #hide Abilities for now as they get replaced by Skills
+        llbPersonalAbilities: {Label=[&l] Abilities ({0}), Visible=false, Action=actIndivDataItemSelected}
+        llbPreviousExperience: {Label=[&m] Previous Experience ({0}), Action=actIndivDataItemSelected}
+        llbCommitmentPeriods: {Label=[&o] Commitment Periods ({0}), Action=actIndivDataItemSelected}
+        llbJobAssignments: {Label=[&p] Job Assignments ({0}), Action=actIndivDataItemSelected}
+        llbProgressReports: {Label=[&q] Progress Reports ({0}), Action=actIndivDataItemSelected}
+        llbPersonSkills: {Label=[&r] Skills ({0}), Action=actIndivDataItemSelected}
+            
+        pnlSelectedIndivDataItem:
+            Dock: Fill
+            Controls: [ucoSummaryData]
+            
+        ucoSummaryData:
+            Type: Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_Summary
+#            Dock: Fill
+            
+        
+        pnlShepherds:
+            Dock: Left
+            ControlsOrientation: horizontal
+            Controls: [btnBasicDataShepherd, btnIntranetRegistrationShepherd]
+            
+        btnBasicDataShepherd: {Label=Basic Data Shepherd...}
+        btnIntranetRegistrationShepherd: {Label=Intranet Registration Shepherd...}
+        
+        pnlEmergencyData:
+            Dock: Fill
+            Padding : 30, 0, 0, 0
+            Controls: [btnEmergencyContacts]
+            
+        btnEmergencyContacts: {Label=Emergency Contacts...}

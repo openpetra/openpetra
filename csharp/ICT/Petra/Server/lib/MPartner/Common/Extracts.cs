@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -32,6 +32,7 @@ using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Server.MPartner.Common;
 
 namespace Ict.Petra.Server.MPartner.Extracts
 {
@@ -96,6 +97,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
                     MExtractMasterRow TemplateRow = (MExtractMasterRow)NewExtractMasterDT.NewRowTyped(true);
                     TemplateRow.ExtractName = AExtractName;
                     TemplateRow.ExtractDesc = AExtractDescription;
+                    TemplateRow.ExtractId = -1;   // initialize id negative so sequence can be used
 
                     NewExtractMasterDT.Rows.Add(TemplateRow);
 
@@ -682,6 +684,98 @@ namespace Ict.Petra.Server.MPartner.Extracts
                     {
                         ResultValue = false;
                     }
+                }
+            }
+
+            if (ResultValue && NewTransaction)
+            {
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            else if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return ResultValue;
+        }
+
+        /// <summary>
+        /// create an extract from a list of best addresses
+        /// </summary>
+        /// <param name="AExtractName">Name of the Extract to be created.</param>
+        /// <param name="AExtractDescription">Description of the Extract to be created.</param>
+        /// <param name="ANewExtractId">Extract Id of the created Extract, or -1 if the
+        /// creation of the Extract was not successful.</param>
+        /// <param name="AVerificationResults">Nil if all verifications are OK and all DB calls
+        /// succeded, otherwise filled with 1..n TVerificationResult objects
+        /// (can also contain DB call exceptions).</param>
+        /// <param name="APartnerKeysTable"></param>
+        /// <param name="APartnerKeyColumn">number of the column that contains the partner keys</param>
+        /// <returns>True if the new Extract was created, otherwise false.</returns>
+        public static bool CreateExtractFromListOfPartnerKeys(
+            String AExtractName,
+            String AExtractDescription,
+            out Int32 ANewExtractId,
+            out TVerificationResultCollection AVerificationResults,
+            DataTable APartnerKeysTable,
+            Int32 APartnerKeyColumn)
+        {
+            Boolean NewTransaction;
+
+            TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+
+            ANewExtractId = -1;
+            bool ExtractAlreadyExists;
+
+            bool ResultValue = CreateNewExtract(AExtractName,
+                AExtractDescription,
+                out ANewExtractId,
+                out ExtractAlreadyExists,
+                out AVerificationResults);
+
+            if (ResultValue)
+            {
+                try
+                {
+                    MExtractTable ExtractTable = new MExtractTable();
+
+                    Int32 testcounter = 0;
+
+                    foreach (DataRow partnerRow in APartnerKeysTable.Rows)
+                    {
+                        // get bestaddresses for the partners
+                        Int64 partnerkey = Convert.ToInt64(partnerRow[APartnerKeyColumn]);
+
+                        testcounter += 1;
+                        TLogging.Log("Preparing Partner " + partnerkey.ToString() + " (Record Number " + testcounter.ToString() + ")");
+
+                        TVerificationResultCollection LocalVerification;
+                        TLocationPK locationPK = TMailing.GetPartnersBestLocation(partnerkey, out LocalVerification);
+
+                        MExtractRow NewRow = ExtractTable.NewRowTyped(false);
+                        NewRow.ExtractId = ANewExtractId;
+                        NewRow.PartnerKey = partnerkey;
+                        NewRow.SiteKey = locationPK.SiteKey;
+                        NewRow.LocationKey = locationPK.LocationKey;
+                        ExtractTable.Rows.Add(NewRow);
+                    }
+
+                    if (ExtractTable.Rows.Count > 0)
+                    {
+                        MExtractMasterTable ExtractMaster = MExtractMasterAccess.LoadByPrimaryKey(ANewExtractId, WriteTransaction);
+                        ExtractMaster[0].KeyCount = ExtractTable.Rows.Count;
+
+                        if (MExtractAccess.SubmitChanges(ExtractTable, WriteTransaction, out AVerificationResults))
+                        {
+                            ResultValue = MExtractMasterAccess.SubmitChanges(ExtractMaster, WriteTransaction, out AVerificationResults);
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    TLogging.Log(e.ToString());
+                    ResultValue = false;
                 }
             }
 

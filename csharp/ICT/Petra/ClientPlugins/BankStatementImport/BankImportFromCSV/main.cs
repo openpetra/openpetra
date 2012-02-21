@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -30,12 +30,14 @@ using Ict.Common;
 using Ict.Common.Data; // Implicit reference
 using Ict.Common.IO;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared.Interfaces.Plugins.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using GNU.Gettext;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 
-namespace Plugin.BankImportFromCSV
+namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromCSV
 {
     /// <summary>
     /// import a bank statement from a CSV file
@@ -56,8 +58,10 @@ namespace Plugin.BankImportFromCSV
         /// asks the user to open a csv file and imports the contents according to the config file
         /// </summary>
         /// <param name="AStatementKey">this returns the first key of a statement that was imported. depending on the implementation, several statements can be created from one file</param>
+        /// <param name="ALedgerNumber">the current ledger number</param>
+        /// <param name="ABankAccountCode">the bank account against which the statement should be stored</param>
         /// <returns></returns>
-        public bool ImportBankStatement(out Int32 AStatementKey)
+        public bool ImportBankStatement(out Int32 AStatementKey, Int32 ALedgerNumber, string ABankAccountCode)
         {
             OpenFileDialog DialogOpen = new OpenFileDialog();
 
@@ -140,7 +144,9 @@ namespace Plugin.BankImportFromCSV
                 stmt.Filename = BankStatementFilename.Substring(BankStatementFilename.Length - AEpStatementTable.GetFilenameLength());
             }
 
+            stmt.LedgerNumber = ALedgerNumber;
             stmt.CurrencyCode = CurrencyCode;
+            stmt.BankAccountCode = ABankAccountCode;
             stmtTable.Rows.Add(stmt);
 
             DateTime latestDate = DateTime.MinValue;

@@ -68,9 +68,9 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 
         private void EnableDisableUnassignableDate(Object sender, EventArgs e)
         {
-            dtpDetailUnassignableDate.Enabled = !chkDetailUnassignableFlag.Checked;
+            dtpDetailUnassignableDate.Enabled = chkDetailUnassignableFlag.Checked;
 
-            if (chkDetailUnassignableFlag.Checked)
+            if (!chkDetailUnassignableFlag.Checked)
             {
                 dtpDetailUnassignableDate.Date = null;
             }

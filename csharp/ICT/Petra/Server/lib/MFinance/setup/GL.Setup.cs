@@ -33,6 +33,8 @@ using Ict.Common.IO;
 using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Common.Data;
+using Ict.Common.Remoting.Server;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -46,7 +48,7 @@ using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.App.Core.Security;
-using Ict.Petra.Server.App.ClientDomain;
+using Ict.Petra.Server.App.Core;
 
 namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 {
@@ -247,11 +249,11 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             TSubmitChangesResult returnValue = GLSetupTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
 
-            DomainManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+            TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
                 TCacheableFinanceTablesEnum.AccountList.ToString());
-            DomainManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+            TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
                 TCacheableFinanceTablesEnum.AnalysisTypeList.ToString());
-            DomainManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+            TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
                 TCacheableFinanceTablesEnum.CostCentreList.ToString());
 
             return returnValue;
@@ -935,16 +937,9 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             systemInterfaceRow.SetUpComplete = true;
             MainDS.ASystemInterface.Rows.Add(systemInterfaceRow);
 
+            ATransactionTypeRow transactionTypeRow;
+
             // TODO: this might be different for other account or costcentre names
-            ATransactionTypeRow transactionTypeRow = MainDS.ATransactionType.NewRowTyped();
-            transactionTypeRow.LedgerNumber = ANewLedgerNumber;
-            transactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.AP.ToString();
-            transactionTypeRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.INV.ToString();
-            transactionTypeRow.DebitAccountCode = "BAL SHT";
-            transactionTypeRow.CreditAccountCode = "CRS CTRL";
-            transactionTypeRow.TransactionTypeDescription = "Input Creditor's Invoice";
-            transactionTypeRow.SpecialTransactionType = true;
-            MainDS.ATransactionType.Rows.Add(transactionTypeRow);
             transactionTypeRow = MainDS.ATransactionType.NewRowTyped();
             transactionTypeRow.LedgerNumber = ANewLedgerNumber;
             transactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
@@ -976,8 +971,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             transactionTypeRow.LedgerNumber = ANewLedgerNumber;
             transactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
             transactionTypeRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.STD.ToString();
-            transactionTypeRow.DebitAccountCode = "BAL SHT";
-            transactionTypeRow.CreditAccountCode = "BAL SHT";
+            transactionTypeRow.DebitAccountCode = MFinanceConstants.ACCOUNT_BAL_SHT;
+            transactionTypeRow.CreditAccountCode = MFinanceConstants.ACCOUNT_BAL_SHT;
             transactionTypeRow.TransactionTypeDescription = "Standard Journal";
             transactionTypeRow.SpecialTransactionType = false;
             MainDS.ATransactionType.Rows.Add(transactionTypeRow);
@@ -988,6 +983,15 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             transactionTypeRow.DebitAccountCode = "CASH";
             transactionTypeRow.CreditAccountCode = "GIFT";
             transactionTypeRow.TransactionTypeDescription = "Gift Receipting";
+            transactionTypeRow.SpecialTransactionType = true;
+            MainDS.ATransactionType.Rows.Add(transactionTypeRow);
+            transactionTypeRow = MainDS.ATransactionType.NewRowTyped();
+            transactionTypeRow.LedgerNumber = ANewLedgerNumber;
+            transactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.AP.ToString();
+            transactionTypeRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.INV.ToString();
+            transactionTypeRow.DebitAccountCode = MFinanceConstants.ACCOUNT_BAL_SHT;
+            transactionTypeRow.CreditAccountCode = MFinanceConstants.ACCOUNT_CREDITORS;
+            transactionTypeRow.TransactionTypeDescription = "Input Creditor's Invoice";
             transactionTypeRow.SpecialTransactionType = true;
             MainDS.ATransactionType.Rows.Add(transactionTypeRow);
 

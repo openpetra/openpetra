@@ -4,7 +4,7 @@
 // @Authors:
 //       alanp
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -43,10 +43,11 @@ namespace Ict.Tools.DevelopersAssistant
     /// </summary>
     public partial class MainForm : Form
     {
+        private SettingsDictionary _localSettings = null;                                   // Our settings persisted locally between sessions
         private bool _serverIsRunning = false;                                              // Local variable holds server state
-        private List <NantTask.TaskItem>_sequence = new List <NantTask.TaskItem>();          // List of tasks in the standard sequence
-        private List <NantTask.TaskItem>_altSequence = new List <NantTask.TaskItem>();       // List of tasks in the alternate sequence
-        private List <OutputText.ErrorItem>_warnings = new List <OutputText.ErrorItem>();    // List of positions/severities in verbose text where warnings/errors appear
+        private List <NantTask.TaskItem>_sequence = new List <NantTask.TaskItem>();         // List of tasks in the standard sequence
+        private List <NantTask.TaskItem>_altSequence = new List <NantTask.TaskItem>();      // List of tasks in the alternate sequence
+        private List <OutputText.ErrorItem>_warnings = new List <OutputText.ErrorItem>();   // List of positions/severities in verbose text where warnings/errors appear
         private int _currentWarning = -1;                                                   // 'Current' warning ID in _warnings list
 
         /**************************************************************************************************************************************
@@ -62,38 +63,49 @@ namespace Ict.Tools.DevelopersAssistant
         {
             InitializeComponent();
 
+            string path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            path = Path.Combine(path, @"OM_International\DevelopersAssistant.ini");
+            string appVersion = System.Diagnostics.FileVersionInfo.GetVersionInfo(Application.ExecutablePath).FileVersion;
+            _localSettings = new SettingsDictionary(path, appVersion);
+            _localSettings.Load();
+
             PopulateCombos();
 
             this.Text = Program.APP_TITLE;
-            cboCodeGeneration.SelectedIndex = Properties.Settings.Default.cboCodeGenerationID;
-            cboCompilation.SelectedIndex = Properties.Settings.Default.cboCompilationID;
-            cboMiscellaneous.SelectedIndex = Properties.Settings.Default.cboMiscellaneousID;
-            cboDatabase.SelectedIndex = Properties.Settings.Default.cboDatabaseID;
-            chkAutoStartServer.Checked = Properties.Settings.Default.AutoStartServer != 0;
-            chkAutoStopServer.Checked = Properties.Settings.Default.AutoStopServer != 0;
-            chkMinimizeServer.Checked = Properties.Settings.Default.MinimizeServerAtStartup != 0;
-            txtFlashAfterSeconds.Text = Properties.Settings.Default.FlashAfterSeconds.ToString();
-            lblVersion.Text = "Version " + System.Diagnostics.FileVersionInfo.GetVersionInfo(Application.ExecutablePath).FileVersion;
+            cboCodeGeneration.SelectedIndex = _localSettings.CodeGenerationComboID;
+            cboCompilation.SelectedIndex = _localSettings.CompilationComboID;
+            cboMiscellaneous.SelectedIndex = _localSettings.MiscellaneousComboID;
+            cboDatabase.SelectedIndex = _localSettings.DatabaseComboID;
+            chkAutoStartServer.Checked = _localSettings.AutoStartServer;
+            chkAutoStopServer.Checked = _localSettings.AutoStopServer;
+            chkMinimizeServer.Checked = _localSettings.MinimiseServerAtStartup;
+            chkTreatWarningsAsErrors.Checked = _localSettings.TreatWarningsAsErrors;
+            txtBranchLocation.Text = _localSettings.BranchLocation;
+            txtYAMLPath.Text = _localSettings.YAMLLocation;
+            txtFlashAfterSeconds.Text = _localSettings.FlashAfterSeconds.ToString();
+            txtBazaarPath.Text = _localSettings.BazaarPath;
+            ValidateBazaarPath();
 
-            txtBranchLocation.Text = Properties.Settings.Default.BranchLocation;
-            txtYAMLPath.Text = Properties.Settings.Default.YAMLLocation;
-            _sequence = ConvertStringToSequenceList(Properties.Settings.Default.Sequence);
-            _altSequence = ConvertStringToSequenceList(Properties.Settings.Default.AltSequence);
+            _sequence = ConvertStringToSequenceList(_localSettings.Sequence);
+            _altSequence = ConvertStringToSequenceList(_localSettings.AltSequence);
             ShowSequence(txtSequence, _sequence);
             ShowSequence(txtAltSequence, _altSequence);
+            lblVersion.Text = "Version " + appVersion;
 
             SetBranchDependencies();
 
             GetServerState();
 
             SetEnabledStates();
+
+            SetToolTips();
         }
 
         private void SetBranchDependencies()
         {
             lblBranchLocation.Text = (txtBranchLocation.Text == String.Empty) ? "Not defined" : txtBranchLocation.Text;
 
-            BuildConfiguration dbCfg = new BuildConfiguration(txtBranchLocation.Text);
+            BuildConfiguration dbCfg = new BuildConfiguration(txtBranchLocation.Text, _localSettings);
 
             if (txtBranchLocation.Text == String.Empty)
             {
@@ -126,6 +138,19 @@ namespace Ict.Tools.DevelopersAssistant
                 chkUseAutoLogon.Checked = (txtAutoLogonUser.Text != String.Empty);
                 chkUseAutoLogon.Enabled = true;
             }
+        }
+
+        private void SetToolTips()
+        {
+            toolTip.SetToolTip(btnDatabase, toolTip.GetToolTip(btnDatabase) + Environment.NewLine + "Shortcut: Ctrl + D");
+            toolTip.SetToolTip(btnCodeGeneration, toolTip.GetToolTip(btnCodeGeneration) + Environment.NewLine + "Shortcut: Ctrl + G");
+            toolTip.SetToolTip(btnCompilation, toolTip.GetToolTip(btnCompilation) + Environment.NewLine + "Shortcut: Ctrl + I");
+            toolTip.SetToolTip(btnMiscellaneous, toolTip.GetToolTip(btnMiscellaneous) + Environment.NewLine + "Shortcut: Ctrl + M");
+            toolTip.SetToolTip(btnStartClient, toolTip.GetToolTip(btnStartClient) + Environment.NewLine + "Shortcut: Ctrl + O");
+            toolTip.SetToolTip(linkLabelRestartServer, toolTip.GetToolTip(linkLabelRestartServer) + Environment.NewLine + "Shortcut: Ctrl + R");
+            toolTip.SetToolTip(linkLabelStartServer, toolTip.GetToolTip(linkLabelStartServer) + Environment.NewLine + "Shortcut: Ctrl + S");
+            toolTip.SetToolTip(btnGenerateWinform, toolTip.GetToolTip(btnGenerateWinform) + Environment.NewLine + "Shortcut: Ctrl + Y");
+            toolTip.SetToolTip(linkLabelBazaar, toolTip.GetToolTip(linkLabelBazaar) + Environment.NewLine + "Shortcut: Ctrl + Z");
         }
 
         private void PopulateCombos()
@@ -351,6 +376,7 @@ namespace Ict.Tools.DevelopersAssistant
         {
             txtOutput.Text = chkVerbose.Checked ? OutputText.VerboseOutput : OutputText.ConciseOutput;
             SetWarningButtons();
+            lblWarnings.Text = GetWarningDisplayText();
         }
 
         private void btnNextWarning_Click(object sender, EventArgs e)
@@ -364,9 +390,9 @@ namespace Ict.Tools.DevelopersAssistant
 
             txtOutput.Focus();
             txtOutput.SelectionStart = _warnings[_currentWarning].Position;
-            txtOutput.SelectionLength = _warnings[_currentWarning].Severity == 1 ? 7 : 12;
+            txtOutput.SelectionLength = _warnings[_currentWarning].SelLength;
             txtOutput.ScrollToCaret();
-            lblWarnings.Text = String.Format("Warning/error {0} of {1}", _currentWarning + 1, _warnings.Count);
+            lblWarnings.Text = GetWarningDisplayText();
             SetWarningButtons();
         }
 
@@ -381,9 +407,9 @@ namespace Ict.Tools.DevelopersAssistant
 
             txtOutput.Focus();
             txtOutput.SelectionStart = _warnings[_currentWarning].Position;
-            txtOutput.SelectionLength = _warnings[_currentWarning].Severity == 1 ? 7 : 12;
+            txtOutput.SelectionLength = _warnings[_currentWarning].SelLength;
             txtOutput.ScrollToCaret();
-            lblWarnings.Text = String.Format("Warning/error {0} of {1}", _currentWarning + 1, _warnings.Count);
+            lblWarnings.Text = GetWarningDisplayText();
             SetWarningButtons();
         }
 
@@ -396,7 +422,7 @@ namespace Ict.Tools.DevelopersAssistant
                 return;
             }
 
-            BuildConfiguration dbCfg = new BuildConfiguration(txtBranchLocation.Text);
+            BuildConfiguration dbCfg = new BuildConfiguration(txtBranchLocation.Text, _localSettings);
             dbCfg.AddConfig(dlg.ExitData);
             SetBranchDependencies();
             listDbBuildConfig.SelectedIndex = listDbBuildConfig.Items.Count - 1;
@@ -418,7 +444,7 @@ namespace Ict.Tools.DevelopersAssistant
                 return;
             }
 
-            BuildConfiguration dbCfg = new BuildConfiguration(txtBranchLocation.Text);
+            BuildConfiguration dbCfg = new BuildConfiguration(txtBranchLocation.Text, _localSettings);
             dbCfg.RemoveConfig(index);
             SetBranchDependencies();
 
@@ -440,14 +466,14 @@ namespace Ict.Tools.DevelopersAssistant
             }
 
             DlgDbBuildConfig dlg = new DlgDbBuildConfig();
-            dlg.InitializeDialog(txtBranchLocation.Text, listDbBuildConfig.SelectedIndex);
+            dlg.InitializeDialog(txtBranchLocation.Text, listDbBuildConfig.SelectedIndex, _localSettings);
 
             if (dlg.ShowDialog() == DialogResult.Cancel)
             {
                 return;
             }
 
-            BuildConfiguration dbCfg = new BuildConfiguration(txtBranchLocation.Text);
+            BuildConfiguration dbCfg = new BuildConfiguration(txtBranchLocation.Text, _localSettings);
             dbCfg.EditConfig(listDbBuildConfig.SelectedIndex, dlg.ExitData);
             SetBranchDependencies();
             listDbBuildConfig.SelectedIndex = index;
@@ -474,7 +500,7 @@ namespace Ict.Tools.DevelopersAssistant
             }
 
             //  Ok - we write the specified settings to the config file and remove the unspecified ones
-            BuildConfiguration DbCfg = new BuildConfiguration(txtBranchLocation.Text);
+            BuildConfiguration DbCfg = new BuildConfiguration(txtBranchLocation.Text, _localSettings);
 
             if (!DbCfg.SetConfigAsDefault(listDbBuildConfig.SelectedIndex))
             {
@@ -491,15 +517,16 @@ namespace Ict.Tools.DevelopersAssistant
                 return;
             }
 
-            int NumErrors = 0;
+            int NumFailures = 0;
             int NumWarnings = 0;
-            RunSimpleNantTarget(new NantTask(NantTask.TaskItem.initConfigFiles), ref NumErrors, ref NumWarnings);
+            RunSimpleNantTarget(new NantTask(NantTask.TaskItem.initConfigFiles), ref NumFailures, ref NumWarnings);
 
             txtOutput.Text = (chkVerbose.Checked) ? OutputText.VerboseOutput : OutputText.ConciseOutput;
 
-            if ((NumErrors > 0) || (NumWarnings > 0))
+            if ((NumFailures > 0) || ((NumWarnings > 0) && chkTreatWarningsAsErrors.Checked))
             {
                 tabControl.SelectedTab = OutputPage;
+                chkVerbose.Checked = true;
             }
 
             PrepareWarnings();
@@ -507,9 +534,9 @@ namespace Ict.Tools.DevelopersAssistant
 
         private void btnSaveCurrentDbBuildConfig_Click(object sender, EventArgs e)
         {
-            // timop: commented this local variable, so that Mono does not give a compiler warning about unused variable
-            // BuildConfiguration dbCfg =
-            new BuildConfiguration(txtBranchLocation.Text);
+            // BuildConfiguration dbCfg = new BuildConfiguration(txtBranchLocation.Text, _localSettings);
+            // please avoid variable dbCfg, because it is never used, and gives a warning on the Jenkins Build server
+            new BuildConfiguration(txtBranchLocation.Text, _localSettings);
         }
 
         private void chkUseAutoLogon_CheckedChanged(object sender, EventArgs e)
@@ -595,7 +622,8 @@ namespace Ict.Tools.DevelopersAssistant
         {
             try
             {
-                // timop: not using a local variable, since that would cause a warning by the mono compiler about unused variable
+                // UInt32 i = Convert.ToUInt32(txtFlashAfterSeconds.Text);
+                // please avoid using variable i, because it is not needed, and gives a warning on the Jenkins Build Server
                 Convert.ToUInt32(txtFlashAfterSeconds.Text);
                 bHaveAlertedFlashSetting = false;
             }
@@ -617,19 +645,24 @@ namespace Ict.Tools.DevelopersAssistant
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Properties.Settings.Default.BranchLocation = txtBranchLocation.Text;
-            Properties.Settings.Default.YAMLLocation = txtYAMLPath.Text;
-            Properties.Settings.Default.cboCodeGenerationID = cboCodeGeneration.SelectedIndex;
-            Properties.Settings.Default.cboCompilationID = cboCompilation.SelectedIndex;
-            Properties.Settings.Default.cboMiscellaneousID = cboMiscellaneous.SelectedIndex;
-            Properties.Settings.Default.cboDatabaseID = cboDatabase.SelectedIndex;
-            Properties.Settings.Default.Sequence = ConvertSequenceListToString(_sequence);
-            Properties.Settings.Default.AltSequence = ConvertSequenceListToString(_altSequence);
-            Properties.Settings.Default.AutoStartServer = (chkAutoStartServer.Checked) ? 1 : 0;
-            Properties.Settings.Default.AutoStopServer = (chkAutoStopServer.Checked) ? 1 : 0;
-            Properties.Settings.Default.MinimizeServerAtStartup = (chkMinimizeServer.Checked) ? 1 : 0;
-            Properties.Settings.Default.FlashAfterSeconds = Convert.ToUInt32(txtFlashAfterSeconds.Text);
-            Properties.Settings.Default.Save();
+            _localSettings.AltSequence = ConvertSequenceListToString(_altSequence);
+            _localSettings.BazaarPath = txtBazaarPath.Text;
+            _localSettings.BranchLocation = txtBranchLocation.Text;
+            _localSettings.AutoStartServer = chkAutoStartServer.Checked;
+            _localSettings.AutoStopServer = chkAutoStopServer.Checked;
+            _localSettings.CodeGenerationComboID = cboCodeGeneration.SelectedIndex;
+            _localSettings.CompilationComboID = cboCompilation.SelectedIndex;
+            _localSettings.DatabaseComboID = cboDatabase.SelectedIndex;
+            _localSettings.FlashAfterSeconds = Convert.ToUInt32(txtFlashAfterSeconds.Text);
+            _localSettings.MinimiseServerAtStartup = chkMinimizeServer.Checked;
+            _localSettings.MiscellaneousComboID = cboMiscellaneous.SelectedIndex;
+            _localSettings.Sequence = ConvertSequenceListToString(_sequence);
+            _localSettings.TreatWarningsAsErrors = chkTreatWarningsAsErrors.Checked;
+            _localSettings.YAMLLocation = txtYAMLPath.Text;
+
+            _localSettings.ContentHeader = String.Format("; Settings file for Open Petra Developer's Assistant\r\n; Application {0}\r\n",
+                lblVersion.Text);
+            _localSettings.Save();
         }
 
         /// <summary>
@@ -640,18 +673,63 @@ namespace Ict.Tools.DevelopersAssistant
         /// <returns></returns>
         protected override bool ProcessCmdKey(ref Message message, Keys keys)
         {
-            switch (keys)
+            if (tabControl.SelectedIndex == 0)
             {
-                case Keys.F5:
-                    btnRunSequence_Click(null, null);
-                    return false;
+                switch (keys)
+                {
+                    case Keys.F5:
+                        btnRunSequence_Click(null, null);
+                        return true;
 
-                case Keys.F5 | Keys.Alt:
-                    btnRunAltSequence_Click(null, null);
-                    return false;
+                    case Keys.F5 | Keys.Alt:
+                        btnRunAltSequence_Click(null, null);
+                        return true;
+
+                    case Keys.G | Keys.Control:
+                        btnCodeGeneration_Click(null, null);
+                        return true;
+
+                    case Keys.I | Keys.Control:
+                        btnCompilation_Click(null, null);
+                        return true;
+
+                    case Keys.M | Keys.Control:
+                        btnMiscellaneous_Click(null, null);
+                        return true;
+
+                    case Keys.O | Keys.Control:
+                        btnStartClient_Click(null, null);
+                        return true;
+
+                    case Keys.R | Keys.Control:
+                        linkLabelRestartServer_LinkClicked(null, null);
+                        return true;
+
+                    case Keys.S | Keys.Control:
+                        linkLabelStartServer_LinkClicked(null, null);
+                        return true;
+
+                    case Keys.Y | Keys.Control:
+                        btnGenerateWinform_Click(null, null);
+                        return true;
+
+                    case Keys.Z | Keys.Control:
+                        linkLabelBazaar_LinkClicked(null, null);
+                        return true;
+                }
             }
 
-            return false;
+            if (tabControl.SelectedIndex == 1)
+            {
+                switch (keys)
+                {
+                    case Keys.D | Keys.Control:
+                        btnDatabase_Click(null, null);
+                        return true;
+                }
+            }
+
+            return base.ProcessCmdKey(ref message, keys);
         }
 
         /*****************************************************************************************************************************
@@ -662,7 +740,7 @@ namespace Ict.Tools.DevelopersAssistant
         private void linkLabelStartServer_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             OutputText.ResetOutput();
-            int NumErrors = 0;
+            int NumFailures = 0;
             int NumWarnings = 0;
 
             // Check if we are up to date with the server state - someone may have started it manually at a cmd window
@@ -675,13 +753,14 @@ namespace Ict.Tools.DevelopersAssistant
             else
             {
                 // Ok.  It needs starting
-                RunSimpleNantTarget(new NantTask(NantTask.TaskItem.startPetraServer), ref NumErrors, ref NumWarnings);
+                RunSimpleNantTarget(new NantTask(NantTask.TaskItem.startPetraServer), ref NumFailures, ref NumWarnings);
 
                 txtOutput.Text = (chkVerbose.Checked) ? OutputText.VerboseOutput : OutputText.ConciseOutput;
 
-                if ((NumErrors > 0) || (NumWarnings > 0))
+                if ((NumFailures > 0) || ((NumWarnings > 0) && chkTreatWarningsAsErrors.Checked))
                 {
                     tabControl.SelectedTab = OutputPage;
+                    chkVerbose.Checked = true;
                 }
 
                 PrepareWarnings();
@@ -691,7 +770,7 @@ namespace Ict.Tools.DevelopersAssistant
         private void linkLabelStopServer_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             OutputText.ResetOutput();
-            int NumErrors = 0;
+            int NumFailures = 0;
             int NumWarnings = 0;
 
             // Check if we are up to date with the server state - someone may have stopped it manually at a cmd window
@@ -700,13 +779,14 @@ namespace Ict.Tools.DevelopersAssistant
             if (_serverIsRunning)
             {
                 // Ok.  It needs stopping
-                RunSimpleNantTarget(new NantTask(NantTask.TaskItem.stopPetraServer), ref NumErrors, ref NumWarnings);
+                RunSimpleNantTarget(new NantTask(NantTask.TaskItem.stopPetraServer), ref NumFailures, ref NumWarnings);
 
                 txtOutput.Text = (chkVerbose.Checked) ? OutputText.VerboseOutput : OutputText.ConciseOutput;
 
-                if ((NumErrors > 0) || (NumWarnings > 0))
+                if ((NumFailures > 0) || ((NumWarnings > 0) && chkTreatWarningsAsErrors.Checked))
                 {
                     tabControl.SelectedTab = OutputPage;
+                    chkVerbose.Checked = true;
                 }
 
                 PrepareWarnings();
@@ -720,7 +800,7 @@ namespace Ict.Tools.DevelopersAssistant
         private void linkLabelRestartServer_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             OutputText.ResetOutput();
-            int NumErrors = 0;
+            int NumFailures = 0;
             int NumWarnings = 0;
 
             // Check if we are up to date with the server state - someone may have stopped it manually at a cmd window
@@ -728,19 +808,20 @@ namespace Ict.Tools.DevelopersAssistant
 
             if (_serverIsRunning)
             {
-                RunSimpleNantTarget(new NantTask(NantTask.TaskItem.stopPetraServer), ref NumErrors, ref NumWarnings);
+                RunSimpleNantTarget(new NantTask(NantTask.TaskItem.stopPetraServer), ref NumFailures, ref NumWarnings);
             }
 
-            if (NumErrors == 0)
+            if (NumFailures == 0)
             {
-                RunSimpleNantTarget(new NantTask(NantTask.TaskItem.startPetraServer), ref NumErrors, ref NumWarnings);
+                RunSimpleNantTarget(new NantTask(NantTask.TaskItem.startPetraServer), ref NumFailures, ref NumWarnings);
             }
 
             txtOutput.Text = (chkVerbose.Checked) ? OutputText.VerboseOutput : OutputText.ConciseOutput;
 
-            if ((NumErrors > 0) || (NumWarnings > 0))
+            if ((NumFailures > 0) || ((NumWarnings > 0) && chkTreatWarningsAsErrors.Checked))
             {
                 tabControl.SelectedTab = OutputPage;
+                chkVerbose.Checked = true;
             }
 
             PrepareWarnings();
@@ -752,7 +833,7 @@ namespace Ict.Tools.DevelopersAssistant
 
             OutputText.ResetOutput();
             NantTask task = new NantTask(cboCodeGeneration.Items[cboCodeGeneration.SelectedIndex].ToString());
-            int NumErrors = 0;
+            int NumFailures = 0;
             int NumWarnings = 0;
 
             if (chkAutoStopServer.Checked && (task.Item == NantTask.TaskItem.generateSolution))
@@ -762,21 +843,22 @@ namespace Ict.Tools.DevelopersAssistant
 
                 if (_serverIsRunning)
                 {
-                    RunSimpleNantTarget(new NantTask(NantTask.TaskItem.stopPetraServer), ref NumErrors, ref NumWarnings);
+                    RunSimpleNantTarget(new NantTask(NantTask.TaskItem.stopPetraServer), ref NumFailures, ref NumWarnings);
                 }
             }
 
             // Now we are ready to perform the original task
-            if (NumErrors == 0)
+            if (NumFailures == 0)
             {
-                RunSimpleNantTarget(task, ref NumErrors, ref NumWarnings);
+                RunSimpleNantTarget(task, ref NumFailures, ref NumWarnings);
             }
 
             txtOutput.Text = (chkVerbose.Checked) ? OutputText.VerboseOutput : OutputText.ConciseOutput;
 
-            if ((NumErrors > 0) || (NumWarnings > 0))
+            if ((NumFailures > 0) || ((NumWarnings > 0) && chkTreatWarningsAsErrors.Checked))
             {
                 tabControl.SelectedTab = OutputPage;
+                chkVerbose.Checked = true;
             }
 
             PrepareWarnings();
@@ -793,7 +875,7 @@ namespace Ict.Tools.DevelopersAssistant
 
             OutputText.ResetOutput();
             NantTask task = new NantTask(cboCompilation.Items[cboCompilation.SelectedIndex].ToString());
-            int NumErrors = 0;
+            int NumFailures = 0;
             int NumWarnings = 0;
 
             if (chkAutoStopServer.Checked && ((task.Item == NantTask.TaskItem.compile) || (task.Item == NantTask.TaskItem.quickCompileServer)))
@@ -803,21 +885,22 @@ namespace Ict.Tools.DevelopersAssistant
 
                 if (_serverIsRunning)
                 {
-                    RunSimpleNantTarget(new NantTask(NantTask.TaskItem.stopPetraServer), ref NumErrors, ref NumWarnings);
+                    RunSimpleNantTarget(new NantTask(NantTask.TaskItem.stopPetraServer), ref NumFailures, ref NumWarnings);
                 }
             }
 
             // Now we are ready to perform the original task
-            if (NumErrors == 0)
+            if (NumFailures == 0)
             {
-                RunSimpleNantTarget(task, ref NumErrors, ref NumWarnings);
+                RunSimpleNantTarget(task, ref NumFailures, ref NumWarnings);
             }
 
             txtOutput.Text = (chkVerbose.Checked) ? OutputText.VerboseOutput : OutputText.ConciseOutput;
 
-            if ((NumErrors > 0) || (NumWarnings > 0))
+            if ((NumFailures > 0) || ((NumWarnings > 0) && chkTreatWarningsAsErrors.Checked))
             {
                 tabControl.SelectedTab = OutputPage;
+                chkVerbose.Checked = true;
             }
 
             PrepareWarnings();
@@ -834,7 +917,7 @@ namespace Ict.Tools.DevelopersAssistant
 
             OutputText.ResetOutput();
             NantTask task = new NantTask(cboMiscellaneous.Items[cboMiscellaneous.SelectedIndex].ToString());
-            int NumErrors = 0;
+            int NumFailures = 0;
             int NumWarnings = 0;
 
             if (task.Item == NantTask.TaskItem.uncrustify)
@@ -842,10 +925,18 @@ namespace Ict.Tools.DevelopersAssistant
                 FolderBrowserDialog dlg = new FolderBrowserDialog();
                 dlg.Description = "Select a folder to Uncrustify";
                 dlg.SelectedPath = txtBranchLocation.Text;
+                dlg.RootFolder = Environment.SpecialFolder.MyComputer;
                 dlg.ShowNewFolderButton = false;
 
                 if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
                 {
+                    return;
+                }
+
+                // check the selection is based on teh current branch
+                if (!dlg.SelectedPath.StartsWith(txtBranchLocation.Text, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    MessageBox.Show("You must choose a folder within the current branch.", Program.APP_TITLE);
                     return;
                 }
 
@@ -860,18 +951,19 @@ namespace Ict.Tools.DevelopersAssistant
                 }
 
                 // Ready to run - overriding the usual root location with the specified folder
-                RunSimpleNantTarget(task, dlg.SelectedPath, ref NumErrors, ref NumWarnings);
+                RunSimpleNantTarget(task, dlg.SelectedPath, ref NumFailures, ref NumWarnings);
             }
             else
             {
-                RunSimpleNantTarget(task, ref NumErrors, ref NumWarnings);
+                RunSimpleNantTarget(task, ref NumFailures, ref NumWarnings);
             }
 
             txtOutput.Text = (chkVerbose.Checked) ? OutputText.VerboseOutput : OutputText.ConciseOutput;
 
-            if ((NumErrors > 0) || (NumWarnings > 0))
+            if ((NumFailures > 0) || ((NumWarnings > 0) && chkTreatWarningsAsErrors.Checked))
             {
                 tabControl.SelectedTab = OutputPage;
+                chkVerbose.Checked = true;
             }
 
             PrepareWarnings();
@@ -888,7 +980,7 @@ namespace Ict.Tools.DevelopersAssistant
 
             OutputText.ResetOutput();
             NantTask task = new NantTask(cboDatabase.Items[cboDatabase.SelectedIndex].ToString());
-            int NumErrors = 0;
+            int NumFailures = 0;
             int NumWarnings = 0;
 
             if (chkAutoStopServer.Checked && (task.Item == NantTask.TaskItem.recreateDatabase))
@@ -898,21 +990,22 @@ namespace Ict.Tools.DevelopersAssistant
 
                 if (_serverIsRunning)
                 {
-                    RunSimpleNantTarget(new NantTask(NantTask.TaskItem.stopPetraServer), ref NumErrors, ref NumWarnings);
+                    RunSimpleNantTarget(new NantTask(NantTask.TaskItem.stopPetraServer), ref NumFailures, ref NumWarnings);
                 }
             }
 
             // Now we are ready to perform the original task
-            if (NumErrors == 0)
+            if (NumFailures == 0)
             {
-                RunSimpleNantTarget(task, ref NumErrors, ref NumWarnings);
+                RunSimpleNantTarget(task, ref NumFailures, ref NumWarnings);
             }
 
             txtOutput.Text = (chkVerbose.Checked) ? OutputText.VerboseOutput : OutputText.ConciseOutput;
 
-            if ((NumErrors > 0) || (NumWarnings > 0))
+            if ((NumFailures > 0) || ((NumWarnings > 0) && chkTreatWarningsAsErrors.Checked))
             {
                 tabControl.SelectedTab = OutputPage;
+                chkVerbose.Checked = true;
             }
 
             PrepareWarnings();
@@ -928,31 +1021,32 @@ namespace Ict.Tools.DevelopersAssistant
             OutputText.ResetOutput();
             DateTime dtStart = DateTime.UtcNow;
             NantTask task = new NantTask(NantTask.TaskItem.startPetraClient);
-            int NumErrors = 0;
+            int NumFailures = 0;
             int NumWarnings = 0;
 
             if (chkAutoStartServer.Checked)
             {
-                // This is a case where we need to auto-stop the server first
+                // This is a case where we need to auto-start the server first
                 GetServerState();
 
                 if (!_serverIsRunning)
                 {
-                    RunSimpleNantTarget(new NantTask(NantTask.TaskItem.startPetraServer), ref NumErrors, ref NumWarnings);
+                    RunSimpleNantTarget(new NantTask(NantTask.TaskItem.startPetraServer), ref NumFailures, ref NumWarnings);
                 }
             }
 
             // Now we are ready to perform the original task
-            if (NumErrors == 0)
+            if (NumFailures == 0)
             {
-                RunSimpleNantTarget(task, ref NumErrors, ref NumWarnings);
+                RunSimpleNantTarget(task, ref NumFailures, ref NumWarnings);
             }
 
             txtOutput.Text = (chkVerbose.Checked) ? OutputText.VerboseOutput : OutputText.ConciseOutput;
 
-            if ((NumErrors > 0) || (NumWarnings > 0))
+            if ((NumFailures > 0) || ((NumWarnings > 0) && chkTreatWarningsAsErrors.Checked))
             {
                 tabControl.SelectedTab = OutputPage;
+                chkVerbose.Checked = true;
             }
 
             PrepareWarnings();
@@ -968,16 +1062,33 @@ namespace Ict.Tools.DevelopersAssistant
             DateTime dtStart = DateTime.UtcNow;
 
             OutputText.ResetOutput();
-            int NumErrors = 0;
+            int NumFailures = 0;
             int NumWarnings = 0;
-            // This is the one that is different from the rest
-            RunGenerateWinform(ref NumErrors, ref NumWarnings);
+
+            if (chkAutoStartServer.Checked && chkStartClientAfterGenerateWinform.Checked)
+            {
+                // This is a case where we need to auto-start the server first
+                GetServerState();
+
+                if (!_serverIsRunning)
+                {
+                    RunSimpleNantTarget(new NantTask(NantTask.TaskItem.startPetraServer), ref NumFailures, ref NumWarnings);
+                }
+            }
+
+            // Now we are ready to perform the original task
+            if (NumFailures == 0)
+            {
+                // This is the one that is different from the rest
+                RunGenerateWinform(ref NumFailures, ref NumWarnings);
+            }
 
             txtOutput.Text = (chkVerbose.Checked) ? OutputText.VerboseOutput : OutputText.ConciseOutput;
 
-            if ((NumErrors > 0) || (NumWarnings > 0))
+            if ((NumFailures > 0) || ((NumWarnings > 0) && chkTreatWarningsAsErrors.Checked))
             {
                 tabControl.SelectedTab = OutputPage;
+                chkVerbose.Checked = true;
             }
 
             PrepareWarnings();
@@ -1007,12 +1118,12 @@ namespace Ict.Tools.DevelopersAssistant
         // Generic method that runs most tasks.
         // It reads and parses the log file for errors/warnings and returns the number of errors and warnings found.
         // It handles the display of the splash dialog and the text that will end up in the output window
-        private void RunSimpleNantTarget(NantTask Task, ref int NumErrors, ref int NumWarnings)
+        private void RunSimpleNantTarget(NantTask Task, ref int NumFailures, ref int NumWarnings)
         {
-            RunSimpleNantTarget(Task, txtBranchLocation.Text, ref NumErrors, ref NumWarnings);
+            RunSimpleNantTarget(Task, txtBranchLocation.Text, ref NumFailures, ref NumWarnings);
         }
 
-        private void RunSimpleNantTarget(NantTask Task, string WorkingFolder, ref int NumErrors, ref int NumWarnings)
+        private void RunSimpleNantTarget(NantTask Task, string WorkingFolder, ref int NumFailures, ref int NumWarnings)
         {
             // Basic routine that runs a simple target with no parameters
             ProgressDialog dlg = new ProgressDialog();
@@ -1020,7 +1131,7 @@ namespace Ict.Tools.DevelopersAssistant
             dlg.lblStatus.Text = Task.StatusText;
             dlg.Show();
 
-            NumErrors = 0;
+            NumFailures = 0;
             NumWarnings = 0;
             OutputText.AppendText(OutputText.OutputStream.Both, String.Format("~~~~~~~~~~~~~~~~ {0} ...\r\n", Task.LogText));
             dlg.Refresh();
@@ -1030,7 +1141,7 @@ namespace Ict.Tools.DevelopersAssistant
             switch (Task.Item)
             {
                 case NantTask.TaskItem.startPetraServer:
-                    bOk = NantExecutor.StartServer(WorkingFolder, (Properties.Settings.Default.MinimizeServerAtStartup != 0));
+                    bOk = NantExecutor.StartServer(WorkingFolder, _localSettings.MinimiseServerAtStartup);
                     break;
 
                 case NantTask.TaskItem.stopPetraServer:
@@ -1045,7 +1156,7 @@ namespace Ict.Tools.DevelopersAssistant
             if (bOk)
             {
                 // It ran successfully - let us check the output ...
-                OutputText.AddLogFileOutput(WorkingFolder + @"\opda.txt", ref NumErrors, ref NumWarnings);
+                OutputText.AddLogFileOutput(WorkingFolder + @"\opda.txt", ref NumFailures, ref NumWarnings);
 
                 if ((Task.Item == NantTask.TaskItem.startPetraServer) || (Task.Item == NantTask.TaskItem.stopPetraServer))
                 {
@@ -1055,14 +1166,14 @@ namespace Ict.Tools.DevelopersAssistant
             }
             else
             {
-                NumErrors++;
+                NumFailures++;
             }
 
             dlg.Close();
         }
 
         // Generic method to run generateWinform because it is in a different disk location to all the rest and takes additional parameters.
-        private void RunGenerateWinform(ref int NumErrors, ref int NumWarnings)
+        private void RunGenerateWinform(ref int NumFailures, ref int NumWarnings)
         {
             NantTask task = new NantTask(NantTask.TaskItem.generateWinform);
 
@@ -1071,7 +1182,7 @@ namespace Ict.Tools.DevelopersAssistant
             dlg.lblStatus.Text = task.StatusText;
             dlg.Show();
 
-            NumErrors = 0;
+            NumFailures = 0;
             NumWarnings = 0;
             OutputText.AppendText(OutputText.OutputStream.Both, String.Format("~~~~~~~~~~~~~~~~ {0} ...\r\n", task.LogText));
             dlg.Refresh();
@@ -1080,11 +1191,11 @@ namespace Ict.Tools.DevelopersAssistant
                     chkStartClientAfterGenerateWinform.Checked))
             {
                 // It ran successfully - let us check the output ...
-                OutputText.AddLogFileOutput(txtBranchLocation.Text + @"\csharp\ICT\Petra\Client\opda.txt", ref NumErrors, ref NumWarnings);
+                OutputText.AddLogFileOutput(txtBranchLocation.Text + @"\csharp\ICT\Petra\Client\opda.txt", ref NumFailures, ref NumWarnings);
             }
             else
             {
-                NumErrors++;
+                NumFailures++;
             }
 
             dlg.Close();
@@ -1101,7 +1212,7 @@ namespace Ict.Tools.DevelopersAssistant
             for (int i = 0; i < Sequence.Count; i++)
             {
                 NantTask task = new NantTask(Sequence[i]);
-                int NumErrors = 0;
+                int NumFailures = 0;
                 int NumWarnings = 0;
 
                 switch (task.Item)
@@ -1110,12 +1221,13 @@ namespace Ict.Tools.DevelopersAssistant
 
                         if (btnGenerateWinform.Enabled)
                         {
-                            RunGenerateWinform(ref NumErrors, ref NumWarnings);
+                            RunGenerateWinform(ref NumFailures, ref NumWarnings);
                         }
                         else
                         {
                             OutputText.AppendText(OutputText.OutputStream.Both,
                                 "\r\n\r\n~~~~~~~~~ Cannot generate Winform: No YAML file specified!\r\n\r\n");
+                            NumFailures++;
                         }
 
                         break;
@@ -1125,7 +1237,7 @@ namespace Ict.Tools.DevelopersAssistant
 
                         if (!_serverIsRunning)
                         {
-                            RunSimpleNantTarget(task, ref NumErrors, ref NumWarnings);
+                            RunSimpleNantTarget(task, ref NumFailures, ref NumWarnings);
                         }
                         else
                         {
@@ -1140,7 +1252,7 @@ namespace Ict.Tools.DevelopersAssistant
 
                         if (_serverIsRunning)
                         {
-                            RunSimpleNantTarget(task, ref NumErrors, ref NumWarnings);
+                            RunSimpleNantTarget(task, ref NumFailures, ref NumWarnings);
                         }
                         else
                         {
@@ -1151,16 +1263,16 @@ namespace Ict.Tools.DevelopersAssistant
                         break;
 
                     default:
-                        RunSimpleNantTarget(task, ref NumErrors, ref NumWarnings);
+                        RunSimpleNantTarget(task, ref NumFailures, ref NumWarnings);
                         break;
                 }
 
-                if ((NumErrors > 0) || (NumWarnings > 0))
+                if ((NumFailures > 0) || ((NumWarnings > 0) && chkTreatWarningsAsErrors.Checked))
                 {
                     bShowOutputTab = true;
                 }
 
-                if (NumErrors > 0)
+                if (NumFailures > 0)
                 {
                     break;
                 }
@@ -1171,6 +1283,7 @@ namespace Ict.Tools.DevelopersAssistant
             if (bShowOutputTab)
             {
                 tabControl.SelectedTab = OutputPage;
+                chkVerbose.Checked = true;
             }
 
             PrepareWarnings();
@@ -1187,8 +1300,135 @@ namespace Ict.Tools.DevelopersAssistant
         {
             _warnings = OutputText.FindWarnings();
             _currentWarning = -1;
-            lblWarnings.Text = String.Format("{0} warnings/errors", _warnings.Count);
+            lblWarnings.Text = String.Format("{0} failed, {1} errors/warnings", OutputText.ErrorCount, OutputText.WarningCount);
             SetWarningButtons();
+
+            if (btnNextWarning.Enabled)
+            {
+                btnNextWarning_Click(null, null);
+            }
+        }
+
+        private void btnBrowseBazaar_Click(object sender, EventArgs e)
+        {
+            string x86 = Environment.GetEnvironmentVariable("ProgramFiles(x86)", EnvironmentVariableTarget.Process);
+
+            if (x86 == null)
+            {
+                x86 = Environment.GetEnvironmentVariable("ProgramFiles", EnvironmentVariableTarget.Process);
+            }
+
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.Title = "Browse for the Bazaar Explorer Application";
+            dlg.FileName = "bzrw.exe";
+            dlg.Filter = "Applications|*.exe";
+            dlg.CheckFileExists = true;
+
+            if (x86 != null)
+            {
+                dlg.InitialDirectory = x86;
+            }
+
+            if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
+            {
+                return;
+            }
+
+            txtBazaarPath.Text = dlg.FileName;
+            linkLabelBazaar.Enabled = true;
+        }
+
+        private void linkLabelBazaar_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            // Launch Bazaar using <Path-to-Bazaar> explorer <branch-location>
+            System.Diagnostics.ProcessStartInfo si = new System.Diagnostics.ProcessStartInfo(txtBazaarPath.Text);
+            si.Arguments = String.Format("explorer \"{0}\"", txtBranchLocation.Text);
+            si.WorkingDirectory = txtBranchLocation.Text;
+
+            try
+            {
+                System.Diagnostics.Process.Start(si);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("The Assistant failed to launch the Bazaar Explorer.  The system error message was: " + ex.Message, Program.APP_TITLE);
+            }
+        }
+
+        private void ValidateBazaarPath()
+        {
+            if (txtBazaarPath.Text != String.Empty)
+            {
+                if (File.Exists(txtBazaarPath.Text))
+                {
+                    // All is good
+                    linkLabelBazaar.Enabled = true;
+                    return;
+                }
+                else
+                {
+                    // Did it get moved??
+                    txtBazaarPath.Text = String.Empty;
+                }
+            }
+
+            if (txtBazaarPath.Text == String.Empty)
+            {
+                // We will try and find it
+                string x86 = Environment.GetEnvironmentVariable("ProgramFiles(x86)", EnvironmentVariableTarget.Process);
+
+                if (x86 == null)
+                {
+                    x86 = Environment.GetEnvironmentVariable("ProgramFiles", EnvironmentVariableTarget.Process);
+                }
+
+                if (x86 == null)
+                {
+                    return;
+                }
+
+                try
+                {
+                    string[] tryPath = Directory.GetFiles(x86, "bzrw.exe", SearchOption.AllDirectories);
+
+                    if ((tryPath == null) || (tryPath.Length < 1))
+                    {
+                        return;
+                    }
+
+                    txtBazaarPath.Text = tryPath[0];
+                    linkLabelBazaar.Enabled = true;
+                }
+                catch (Exception ex)
+                {
+                    string msg = "The Assistant could not verify the location of bzrw.exe - the Windows executable for the Bazaar Explorer.  ";
+                    msg += String.Format("The Assistant searched the folders beneath '{0}' but the following error was generated: {1}",
+                        x86,
+                        ex.Message);
+                    msg += (Environment.NewLine + Environment.NewLine);
+                    msg +=
+                        "You should select the Options Tab on the Assistant main window and click the small browse button to manually locate the bzrw.exe file.  ";
+                    msg += "This will prevent this message from being displayed again.";
+                    MessageBox.Show(msg, Program.APP_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    txtBazaarPath.Text = String.Empty;
+                }
+            }
+        }
+
+        private string GetWarningDisplayText()
+        {
+            if (chkVerbose.Checked)
+            {
+                return String.Format("{0} failed, {1} errors/warnings : Showing {2} of {3}",
+                    OutputText.ErrorCount,
+                    OutputText.WarningCount,
+                    _currentWarning + 1,
+                    _warnings.Count);
+            }
+            else
+            {
+                return String.Format("{0} failed, {1} errors/warnings", OutputText.ErrorCount, OutputText.WarningCount);
+            }
         }
     }
 }

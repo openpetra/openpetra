@@ -1,0 +1,34 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MPartner.Gui   
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data, Ict.Petra.Shared.MPersonnel.Personnel.Data]
+    DatasetType: Ict.Petra.Shared.MPersonnel.Personnel.Data.IndividualDataTDS
+    FormType: edit
+    Template: usercontrol
+    MasterTable: PmPersonalData
+    Controls:
+        pnlContent: {ControlsOrientation=vertical}
+            Controls: [grpBelieverSince, grpDriver]              
+            Dock: Fill
+       
+        grpBelieverSince:
+            Label: Believer since
+            Controls: [txtBelieverSinceYear, txtBelieverSinceComment]
+                   
+        txtBelieverSinceYear:
+            Label: Year
+        txtBelieverSinceComment:
+            Width: 340
+            Height: 165
+            Multiline: true
+            ScrollBars: Vertical
+            Label: Comment
+        #The following required data from field pm_personal_data.pm_driving_license_number_c
+        grpDriver:
+            Label: Driver information
+            Controls: [txtDrivingLicenseNumber]
+
+        txtDrivingLicenseNumber:
+            Width: 260
+            Label: Driving Licence Number

@@ -7,7 +7,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -44,6 +44,8 @@ using System.Threading;
 using System.Runtime.Remoting;
 using System.Security.Cryptography;
 using Ict.Common;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
 using Ict.Petra.Server.App.Core.Security;
 
@@ -105,9 +107,10 @@ using Ict.Petra.Server.MSysMan.ImportExport.WebConnectors;
 
 #region ManualCode
 using Ict.Common.Verification;
+using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Shared.MSysMan;
-using Ict.Petra.Shared.RemotedExceptions;
+using Ict.Common.Data;
 #endregion ManualCode
 namespace Ict.Petra.Server.MSysMan.Instantiator
 {
@@ -1784,6 +1787,14 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.ImportExport.WebConnectors
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector), "ResetDatabase", ";STRING;");
             return Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector.ResetDatabase(AZippedNewDatabaseData);
         }
+
+        /// generated method from connector
+        public System.Boolean SaveTDS(SampleDataConstructorTDS dataTDS,
+                                      out TVerificationResultCollection AVerificationResult)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector), "SaveTDS", ";SAMPLEDATACONSTRUCTORTDS;TVERIFICATIONRESULTCOLLECTION;");
+            return Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportWebConnector.SaveTDS(dataTDS, out AVerificationResult);
+        }
     }
 }
 
@@ -2360,6 +2371,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Cacheable
             switch (ACacheableTable)
             {
                 case TCacheableSysManTablesEnum.UserList:
+                case TCacheableSysManTablesEnum.LanguageSpecificList:
                     ReturnValue = FCachePopulator.GetCacheableTable(
             			ACacheableTable, AHashCode, ARefreshFromDB, out AType);
             		
@@ -2421,6 +2433,16 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Cacheable
             System.Type TmpType;
             ADataTable = GetCacheableTableInternal(ACacheableTable, "", true, out TmpType);
             #endregion ManualCode
+        }
+
+        /// generated method from interface
+        public TSubmitChangesResult SaveChangedStandardCacheableTable(Ict.Petra.Shared.MSysMan.TCacheableSysManTablesEnum ACacheableTable,
+                                                                      ref TTypedDataTable ASubmitTable,
+                                                                      out TVerificationResultCollection AVerificationResult)
+        {
+            #region ManualCode
+            return FCachePopulator.SaveChangedStandardCacheableTable(ACacheableTable, ref ASubmitTable, out AVerificationResult);
+            #endregion ManualCode                                    
         }
     }
 }

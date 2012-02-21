@@ -136,11 +136,11 @@ namespace Ict.Common.Controls
 
             set
             {
-                string NewToolTipText;
+                string NewToolTipText = value;
 
                 // Set Title Text
+                FToolTipText = value;
                 lblDetailHeading.Text = value;
-                NewToolTipText = String.Format(FToolTipText, value);
 
                 // Update ToolTips
                 this.tipCollapseExpandHints.SetToolTip(this.lblDetailHeading, NewToolTipText);
@@ -448,6 +448,13 @@ namespace Ict.Common.Controls
         /// </summary>
         private UserControl RealiseUserControl()
         {
+            if (pnlContent.Controls.Count == 1)
+            {
+                // reuse the existing control, otherwise we will overload more and more user controls
+                // and only the first user control will be visible
+                return (UserControl)pnlContent.Controls[0];
+            }
+
             Assembly asm;
             string dllName = TAppSettingsManager.ApplicationDirectory + Path.DirectorySeparatorChar + FUserControlNamespace + ".dll";
 

@@ -36,7 +36,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MPartner;
-using Ict.Petra.Server.MPartner;
+using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.App.Core.Security;
@@ -115,7 +115,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             // best address for each partner
             DataUtilities.CopyTo(
-                TAddressTools.AddPostalAddress(MainDS.AGift, MainDS.AGift.ColumnDonorKey, ADropForeignAddresses, transaction),
+                TAddressTools.AddPostalAddress(MainDS.AGift, MainDS.AGift.ColumnDonorKey, ADropForeignAddresses, true, transaction),
                 MainDS.BestAddress);
 
             // remove all invalid addresses
@@ -182,6 +182,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 msg =
                     msg.Replace("#RECIPIENTNAME",
                         Calculations.FormatShortName(row.RecipientDescription, eShortNameFormat.eReverseWithoutTitle));
+                msg =
+                    msg.Replace("#RECIPIENTFIRSTNAME",
+                        Calculations.FormatShortName(row.RecipientDescription, eShortNameFormat.eOnlyFirstname));
                 msg = msg.Replace("#TITLE", Calculations.FormatShortName(donorName, eShortNameFormat.eOnlyTitle));
                 msg = msg.Replace("#NAME", Calculations.FormatShortName(donorName, eShortNameFormat.eReverseWithoutTitle));
                 msg = msg.Replace("#FORMALGREETING", Calculations.FormalGreeting(donorName));

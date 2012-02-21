@@ -23,14 +23,17 @@
 //
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Odbc;
 using System.Data.Common;
+using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.IO;
 using System.Xml;
-using System.Web;
+using Ict.Common;
 using Ict.Common.DB.DBCaching;
 using Ict.Common.IO;
 
@@ -72,7 +75,7 @@ namespace Ict.Common.DB
         public const Int32 DB_DEBUGLEVEL_TRACE = 10;
 
         /// <summary>
-        /// this is the object that is used in the non ASP environment
+        /// store the current object for access to the database
         /// </summary>
         private static TDataBase MGDBAccessObj = null;
 
@@ -82,31 +85,17 @@ namespace Ict.Common.DB
         {
             set
             {
-                if (HttpContext.Current == null)
-                {
-                    MGDBAccessObj = value;
-                }
-                else
-                {
-                    HttpContext.Current.Session["DBACCESSOBJ"] = value;
-                }
+                MGDBAccessObj = value;
             }
             get
             {
-                if (HttpContext.Current == null)
-                {
-                    return MGDBAccessObj;
-                }
-                else
-                {
-                    return (TDataBase)HttpContext.Current.Session["DBACCESSOBJ"];
-                }
+                return MGDBAccessObj;
             }
         }
     }
 
     /// <summary>
-    /// every database system that works for OpenPetra has to implement this functions
+    /// every database system that works for OpenPetra has to implement these functions
     /// </summary>
     public interface IDataBaseRDBMS
     {
@@ -235,6 +224,10 @@ namespace Ict.Common.DB
         /// restart a sequence with the given value
         /// </summary>
         void RestartSequence(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase, IDbConnection AConnection, Int64 ARestartValue);
+
+        /// update a database when starting the OpenPetra server. otherwise throw an exception
+        void UpdateDatabase(TFileVersionInfo ADBVersion, TFileVersionInfo AExeVersion,
+            string AHostOrFile, string ADatabasePort, string ADatabaseName, string AUsername, string APassword);
     }
 
     /// <summary>
@@ -254,7 +247,7 @@ namespace Ict.Common.DB
     ///   executing SQL batch statements from which multiple DataTable objects would
     ///   be expected! TODO: this comment needs revising, with native drivers
     /// </summary>
-    public class TDataBase : MarshalByRefObject
+    public class TDataBase
     {
         /// <summary>References the DBConnection instance</summary>
         private TDBConnection FDBConnectionInstance;
@@ -493,6 +486,53 @@ namespace Ict.Common.DB
 
                 throw new EDBConnectionNotEstablishedException(CurrentConnectionInstance.GetConnectionString() + ' ' + exp.ToString());
             }
+
+            CheckDatabaseVersion();
+        }
+
+        /// <summary>
+        /// Application and Database should have the same version, otherwise all sorts of things can go wrong.
+        /// this is specific to the OpenPetra database, for all other databases it will just ignore the database version check
+        /// </summary>
+        private void CheckDatabaseVersion()
+        {
+            if (TAppSettingsManager.GetValue("action", string.Empty, false) == "patchDatabase")
+            {
+                // we want to upgrade the database, so don't check for the database version
+                return;
+            }
+
+            string DBPatchVersion;
+            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+
+            try
+            {
+                // now check if the database is uptodate; otherwise run db patch against it
+                DBPatchVersion =
+                    Convert.ToString(DBAccess.GDBAccessObj.ExecuteScalar(
+                            "SELECT s_default_value_c FROM PUB_s_system_defaults WHERE s_default_code_c = 'CurrentDatabaseVersion'",
+                            transaction));
+            }
+            catch (Exception)
+            {
+                // this can happen when connecting to an old Petra 2.x database, or a completely different database
+                return;
+            }
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            TFileVersionInfo dbversion = new TFileVersionInfo(DBPatchVersion);
+            TFileVersionInfo serverExeInfo = new TFileVersionInfo(TFileVersionInfo.GetApplicationVersion());
+
+            if (dbversion.Compare(serverExeInfo) < 0)
+            {
+                // for a proper server, the patchtool should have already updated the database
+
+                // for standalone versions, we update the database on the fly when starting the server
+                FDataBaseRDBMS.UpdateDatabase(dbversion, serverExeInfo, FDsnOrServer, FDBPort, FDatabaseName, FUsername, FPassword);
+            }
         }
 
         /// <summary>
@@ -658,6 +698,9 @@ namespace Ict.Common.DB
 
             try
             {
+                /* Preprocess ACommandText for `IN (?)' syntax */
+                PreProcessCommand(ref ACommandText, ref AParametersArray);
+
                 if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                 {
                     TLogging.Log(this.GetType().FullName + ".Command: now getting IDbCommand(" + ACommandText + ")...");
@@ -2063,9 +2106,18 @@ namespace Ict.Common.DB
         /// <summary>
         /// read an sql statement from file and remove the comments
         /// </summary>
-        /// <param name="ASqlFilename"></param>
-        /// <returns></returns>
         public static string ReadSqlFile(string ASqlFilename)
+        {
+            return ReadSqlFile(ASqlFilename, null);
+        }
+
+        /// <summary>
+        /// read an sql statement from file and remove the comments
+        /// </summary>
+        /// <param name="ASqlFilename"></param>
+        /// <param name="ADefines">Defines to be set in the sql statement</param>
+        /// <returns></returns>
+        public static string ReadSqlFile(string ASqlFilename, List <string>ADefines)
         {
             ASqlFilename = TAppSettingsManager.GetValue("SqlFiles.Path", ".") +
                            Path.DirectorySeparatorChar +
@@ -2081,16 +2133,126 @@ namespace Ict.Common.DB
                 throw new Exception("cannot open file " + ASqlFilename);
             }
 
+            Regex DecommenterRegex = new Regex(@"\s--.*");
+
             while ((line = reader.ReadLine()) != null)
             {
                 if (!line.Trim().StartsWith("--"))
                 {
-                    stmt += line.Trim() + " ";
+                    stmt += DecommenterRegex.Replace(line.Trim(), "") + Environment.NewLine;
                 }
             }
 
             reader.Close();
-            return stmt;
+
+            if (ADefines != null)
+            {
+                ProcessTemplate template = new ProcessTemplate(null);
+                template.FTemplateCode = stmt;
+
+                foreach (string define in ADefines)
+                {
+                    template.SetCodelet(define, "enabled");
+                }
+
+                return template.FinishWriting(true).Replace(Environment.NewLine, " ");
+            }
+
+            return stmt.Replace(Environment.NewLine, " ");
+        }
+
+        /// <summary>
+        ///   Expand IList items in a parameter list so that `IN (?)' syntax works.
+        /// </summary>
+        static private void PreProcessCommand(ref String ACommandText, ref DbParameter[] AParametersArray)
+        {
+            /* Check if there are any parameters which need `IN (?)' expansion. */
+            Boolean INExpansionNeeded = false;
+
+            if (AParametersArray != null)
+            {
+                foreach (OdbcParameter param in AParametersArray)
+                {
+                    if (param.Value is TDbListParameterValue)
+                    {
+                        INExpansionNeeded = true;
+                        break;
+                    }
+                }
+            }
+
+            /* Perform the `IN (?)' expansion. */
+            if (INExpansionNeeded)
+            {
+                List <OdbcParameter>NewParametersArray = new List <OdbcParameter>();
+                String NewCommandText = "";
+
+                IEnumerator <OdbcParameter>ParametersEnumerator = ((IEnumerable <OdbcParameter> )AParametersArray).GetEnumerator();
+
+                foreach (String SqlPart in ACommandText.Split(new Char[] { '?' }))
+                {
+                    NewCommandText += SqlPart;
+
+                    if (!ParametersEnumerator.MoveNext())
+                    {
+                        /* We're at the end of the string/parameter array */
+                        continue;
+                    }
+
+                    OdbcParameter param = ParametersEnumerator.Current;
+
+                    if (param.Value is TDbListParameterValue)
+                    {
+                        Boolean first = true;
+
+                        foreach (OdbcParameter subparam in (TDbListParameterValue)param.Value)
+                        {
+                            if (first)
+                            {
+                                first = false;
+                            }
+                            else
+                            {
+                                NewCommandText += ", ";
+                            }
+
+                            NewCommandText += "?";
+
+                            NewParametersArray.Add(subparam);
+                        }
+
+                        /* We had an empty list. */
+                        if (first)
+                        {
+                            NewCommandText += "?";
+
+                            /* `column IN ()' is invalid, use `column IN (NULL)' */
+                            param.Value = DBNull.Value;
+                            NewParametersArray.Add(param);
+                        }
+                    }
+                    else
+                    {
+                        NewCommandText += "?";
+                        NewParametersArray.Add(param);
+                    }
+                }
+
+                /* Catch any leftover parameters? */
+                while (ParametersEnumerator.MoveNext())
+                {
+                    NewParametersArray.Add(ParametersEnumerator.Current);
+                }
+
+                ACommandText = NewCommandText;
+                AParametersArray = NewParametersArray.ToArray();
+
+                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                {
+                    TLogging.Log("PreProcessCommand(): Performed `column IN (?)' expansion, result follows:");
+                    LogSqlStatement("PreProcessCommand()", ACommandText, AParametersArray);
+                }
+            }
         }
 
         private bool FConnectionReady = false;
@@ -2511,13 +2673,13 @@ namespace Ict.Common.DB
     /// <remarks>
     /// <em>IMPORTANT:</em> This Transaction Class does not have Commit or
     /// Rollback methods! This is so that the programmers are forced to use the
-    /// CommitTransaction and RollbackTransaction methods of the <see cref="DB.TDataBase" /> Class.
+    /// CommitTransaction and RollbackTransaction methods of the <see cref="TDataBase" /> Class.
     /// <para>
     /// The reasons for this:
     /// <list type="bullet">
-    /// <item><see cref="DB.TDataBase" /> can know whether a Transaction is
+    /// <item><see cref="TDataBase" /> can know whether a Transaction is
     /// running (unbelievably, there is no way to find this out through ADO.NET!)</item>
-    /// <item><see cref="DB.TDataBase" /> can log Commits and Rollbacks. Another benefit of using this
+    /// <item><see cref="TDataBase" /> can log Commits and Rollbacks. Another benefit of using this
     /// Class instead of a concrete implementation of ADO.NET Transaction Classes
     /// (eg. <see cref="OdbcTransaction" />) is that it is not tied to a specific ADO.NET
     /// provider, therefore making it easier to use a different ADO.NET provider than ODBC.</item>
@@ -2561,7 +2723,7 @@ namespace Ict.Common.DB
         /// The actual IDbTransaction.
         /// <para><em><b>WARNING:</b> do not do anything
         /// with this Object other than inspecting it; the correct
-        /// working of Transactions in the <see cref="DB.TDataBase" />
+        /// working of Transactions in the <see cref="TDataBase" />
         /// Object relies on the fact that it manages everything about
         /// a Transaction!!!</em>
         /// </para>
@@ -2587,6 +2749,109 @@ namespace Ict.Common.DB
             //FConnection = ATransaction.Connection;
             FConnection = AConnection;
             FIsolationLevel = ATransaction.IsolationLevel;
+        }
+    }
+
+    /// <summary>
+    ///   A list of parameters which should be expanded into an `IN (?)'
+    ///   context.
+    /// </summary>
+    /// <example>
+    ///   Simply use the following style in your .sql file:
+    ///   <code>
+    ///     SELECT * FROM table WHERE column IN (?)
+    ///   </code>
+    ///
+    ///     Then, to test if <c>column</c> is the string <c>"First"</c>,
+    ///     <c>"Second"</c>, or <c>"Third"</c>, set the <c>OdbcParameter.Value</c>
+    ///     property to a <c>TDbListParameterValue</c> instance. You
+    ///     can use the
+    ///     <c>TDbListParameterValue.OdbcListParameterValue()</c>
+    ///     function to produce an <c>OdbcParameter</c> with an
+    ///     appropriate <c>Value</c> property.
+    ///   <code>
+    ///     OdbcParameter[] parameters = new OdbcParamter[]
+    ///     {
+    ///         TDbListParameterValue(param_grdCommitmentStatusChoices", OdbcType.NChar,
+    ///             new String[] { "First", "Second", "Third" }),
+    ///     };
+    ///   </code>
+    /// </example>
+    public class TDbListParameterValue : IEnumerable <OdbcParameter>
+    {
+        private IEnumerable SubValues;
+
+        /// <summary>
+        ///   The OdbcParameter from which sub-parameters are Clone()d.
+        /// </summary>
+        public OdbcParameter OdbcParam;
+
+        /// <summary>
+        ///   Create a list parameter, such as is used for `column IN (?)' in
+        ///   SQL queries, from any IEnumerable object.
+        /// </summary>
+        /// <param name="name">The ParameterName to use when creating OdbcParameters</param>
+        /// <param name="type">The OdbcType of the produced OdbcParameters</param>
+        /// <param name="value">An enumerable collection of objects.
+        ///   If there are no objects in the enumeration, then the resulting
+        ///   query will look like <c>column IN (NULL)</c> because
+        ///   <c>column IN ()</c> is invalid. To avoid the case where
+        ///   the query should not match any rows and <c>column</c>
+        ///   may be NULL, use an expression like <c>(? AND column IN (?)</c>.
+        ///   Set the first parameter to FALSE if the list is empty and
+        ///   TRUE otherwise so that the prepared statement remains both
+        ///   syntactically and semantically valid.</param>
+        public TDbListParameterValue(String name, OdbcType type, IEnumerable value)
+        {
+            OdbcParam = new OdbcParameter(name, type);
+            SubValues = value;
+        }
+
+        IEnumerator <OdbcParameter>IEnumerable <OdbcParameter> .GetEnumerator()
+        {
+            UInt32 i = 0;
+
+            foreach (Object value in SubValues)
+            {
+                OdbcParameter SubParameter = (OdbcParameter)((ICloneable)OdbcParam).Clone();
+                SubParameter.Value = value;
+
+                if (SubParameter.ParameterName != null)
+                {
+                    SubParameter.ParameterName += "_" + (i++);
+                }
+
+                yield return SubParameter;
+            }
+        }
+
+        /// <summary>
+        ///   Get the generic IEnumerator over the sub OdbcParameters.
+        /// </summary>
+        public IEnumerator GetEnumerator()
+        {
+            return ((IEnumerable <OdbcParameter> ) this).GetEnumerator();
+        }
+
+        /// <summary>
+        ///   Represent this list of parameters as a string, using
+        ///   each value's <c>ToString()</c> method.
+        /// </summary>
+        public override String ToString()
+        {
+            return "[" + String.Join(",", SubValues.Cast <Object>()) + "]";
+        }
+
+        /// <summary>
+        ///   Convenience method for creating an OdbcParameter with an
+        ///   appropriate <c>TDbListParameterValue</c> as a value.
+        /// </summary>
+        public static OdbcParameter OdbcListParameterValue(String name, OdbcType type, IEnumerable value)
+        {
+            return new OdbcParameter(name, type)
+                   {
+                       Value = new TDbListParameterValue(name, type, value)
+                   };
         }
     }
 }

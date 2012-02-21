@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -33,6 +33,7 @@ using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Extracts;
 using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Server.MPartner.Common;
 
 namespace Ict.Petra.Server.MPartner.Mailing.WebConnectors
 {
@@ -45,6 +46,7 @@ namespace Ict.Petra.Server.MPartner.Mailing.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static bool GetBestAddress(Int64 APartnerKey,
             out PLocationTable AAddress,
+            out PPartnerLocationTable APartnerLocation,
             out string ACountryNameLocal,
             out string AEmailAddress)
         {
@@ -58,6 +60,7 @@ namespace Ict.Petra.Server.MPartner.Mailing.WebConnectors
             {
                 ResultValue = TAddressTools.GetBestAddress(APartnerKey,
                     out AAddress,
+                    out APartnerLocation,
                     out ACountryNameLocal,
                     out AEmailAddress,
                     Transaction);
@@ -95,6 +98,7 @@ namespace Ict.Petra.Server.MPartner.Mailing.WebConnectors
                 ResultTable = TAddressTools.AddPostalAddress(APartnerTable,
                     APartnerKeyColumn,
                     AIgnoreForeignAddresses,
+                    false,
                     Transaction);
             }
             catch (Exception)

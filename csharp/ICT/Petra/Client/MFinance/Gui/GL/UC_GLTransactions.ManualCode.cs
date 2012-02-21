@@ -200,6 +200,41 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FTransactionCurrency = TransactionCurrency;
             }
 
+            // Create Text description of Anal Attribs for each transaction..
+
+            foreach (GLBatchTDSATransactionRow TransactionRow in FMainDS.ATransaction.Rows)
+            {
+                ((TFrmGLBatch)ParentForm).LoadAttributes(
+                    TransactionRow.LedgerNumber,
+                    TransactionRow.BatchNumber,
+                    TransactionRow.JournalNumber,
+                    TransactionRow.TransactionNumber
+                    );
+
+
+                string strAnalAttr = "";
+                FMainDS.ATransAnalAttrib.DefaultView.RowFilter =
+                    String.Format("{0}={1} AND {2}={3} AND {4}={5} AND {6}={7}",
+                        ATransAnalAttribTable.GetLedgerNumberDBName(), TransactionRow.LedgerNumber,
+                        ATransAnalAttribTable.GetBatchNumberDBName(), TransactionRow.BatchNumber,
+                        ATransAnalAttribTable.GetJournalNumberDBName(), TransactionRow.JournalNumber,
+                        ATransAnalAttribTable.GetTransactionNumberDBName(), TransactionRow.TransactionNumber);
+
+                foreach (DataRowView rv in FMainDS.ATransAnalAttrib.DefaultView)
+                {
+                    ATransAnalAttribRow Row = (ATransAnalAttribRow)rv.Row;
+
+                    if (strAnalAttr.Length > 0)
+                    {
+                        strAnalAttr += ", ";
+                    }
+
+                    strAnalAttr += (Row.AnalysisTypeCode + "=" + Row.AnalysisAttributeValue);
+                }
+
+                TransactionRow.AnalysisAttributes = strAnalAttr;
+            }
+
             UpdateChangeableStatus();
         }
 
@@ -334,7 +369,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
                 || (MessageBox.Show(String.Format(Catalog.GetString(
-                                "You have choosen to delete this transaction ({0}).\n\nDo you really want to delete it?"),
+                                "You have chosen to delete this transaction ({0}).\n\nDo you really want to delete it?"),
                             FPreviouslySelectedDetailRow.TransactionNumber), Catalog.GetString("Confirm Delete"),
                         MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes))
             {

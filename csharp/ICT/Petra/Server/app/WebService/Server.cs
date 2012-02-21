@@ -23,6 +23,7 @@
 //
 using System;
 using System.IO;
+using System.Web;
 using System.Web.Services;
 using System.Data;
 using System.Collections;
@@ -31,15 +32,19 @@ using Ict.Common;
 using Ict.Common.Data; // Implicit reference
 using Ict.Common.DB;
 using Ict.Common.IO;
-using Ict.Petra.Shared.Interfaces; // Implicit reference
-using Ict.Petra.Server.App.Main;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.App.Core;
-using Ict.Petra.Server.App.ClientDomain;
+using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Server.MFinance.AP.UIConnectors;
+using Ict.Petra.Server.MConference.Applications;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Jayrock.Json;
+using Ict.Petra.Server.MPartner.Import;
+using Ict.Petra.Shared;
 
 namespace PetraWebService
 {
@@ -80,8 +85,9 @@ public class TOpenPetraOrg : WebService
             {
                 TheServerManager.EstablishDBConnection();
 
-                DomainManager.GSystemDefaultsCache = new TSystemDefaultsCache();
-                DomainManager.GSiteKey = DomainManager.GSystemDefaultsCache.GetInt64Default(Ict.Petra.Shared.SharedConstants.SYSDEFAULT_SITEKEY);
+                TSystemDefaultsCache.GSystemDefaultsCache = new TSystemDefaultsCache();
+                DomainManager.GSiteKey = TSystemDefaultsCache.GSystemDefaultsCache.GetInt64Default(
+                    Ict.Petra.Shared.SharedConstants.SYSDEFAULT_SITEKEY);
             }
             catch (Exception e)
             {
@@ -103,6 +109,8 @@ public class TOpenPetraOrg : WebService
             TheServerManager.EstablishDBConnection();
         }
 
+        Session["DBACCESSOBJ"] = DBAccess.GDBAccessObj;
+
         return true;
     }
 
@@ -119,6 +127,7 @@ public class TOpenPetraOrg : WebService
             TClientManager.PerformLoginChecks(
                 username.ToUpper(), password.Trim(), "WEB", "127.0.0.1", out ProcessID, out ASystemEnabled);
             Session["LoggedIn"] = true;
+            Session["USERINFO"] = UserInfo.GUserInfo;
 
             DBAccess.GDBAccessObj.UserID = username.ToUpper();
 
@@ -152,6 +161,9 @@ public class TOpenPetraOrg : WebService
     {
         object loggedIn = Session["LoggedIn"];
 
+        DBAccess.GDBAccessObj = (TDataBase)Session["DBACCESSOBJ"];
+        UserInfo.GUserInfo = (TPetraPrincipal)Session["USERINFO"];
+
         if (null != loggedIn)
         {
             return (bool)loggedIn;
@@ -171,7 +183,9 @@ public class TOpenPetraOrg : WebService
             DBAccess.GDBAccessObj.CloseDBConnection();
         }
 
-        Session.Abandon();
+        // Session Abandon causes problems in Mono 2.10.x see https://bugzilla.novell.com/show_bug.cgi?id=669807
+        // TODO Session.Abandon();
+        Session.Clear();
     }
 
     /// <summary>
@@ -321,20 +335,34 @@ public class TOpenPetraOrg : WebService
     [WebMethod(EnableSession = true)]
     public string DataImportFromForm(string AFormID, string AJSONFormData)
     {
-        // user ANONYMOUS, can only write, not read
-        if (!IsUserLoggedIn())
+        try
         {
-            if (!LoginInternal("ANONYMOUS", TAppSettingsManager.GetValue("AnonymousUserPasswd")))
+            // user ANONYMOUS, can only write, not read
+            if (!IsUserLoggedIn())
             {
-                string message =
-                    "In order to process anonymous submission of data from the web, we need to have a user ANONYMOUS which does not have any read permissions";
-                TLogging.Log(message);
+                InitServer();
 
-                // do not disclose errors on production version
-                message = "There is a problem on the Server";
+                if (!LoginInternal("ANONYMOUS", TAppSettingsManager.GetValue("AnonymousUserPasswd")))
+                {
+                    string message =
+                        "In order to process anonymous submission of data from the web, we need to have a user ANONYMOUS which does not have any read permissions";
+                    TLogging.Log(message);
 
-                return "{\"failure\":true, \"data\":{\"result\":\"" + message + "\"}}";
+                    // do not disclose errors on production version
+                    message = "There is a problem on the Server";
+
+                    return "{\"failure\":true, \"data\":{\"result\":\"" + message + "\"}}";
+                }
             }
+        }
+        catch (Exception e)
+        {
+            TLogging.Log(e.Message);
+            TLogging.Log(e.StackTrace);
+
+            Logout();
+
+            return "{\"failure\":true, \"data\":{\"result\":\"Unexpected failure\"}}";
         }
 
         // remove ext-comp controls, for multi-page forms
@@ -446,6 +474,29 @@ public class TOpenPetraOrg : WebService
     public string SyncModifiedPartnerData(string AUsername, string APassword, DateTime AEarliestModifiedDate)
     {
         return "error";
+    }
+
+    /// <summary>
+    /// get data of all accepted participants, to sync with other tools (eg. seminar registration tool)
+    /// </summary>
+    [WebMethod(EnableSession = true)]
+    public string GetAllParticipants()
+    {
+        if (IsUserLoggedIn())
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MConference.Applications.TApplicationManagement),
+                "GetAllParticipants",
+                ";LONG;STRING;");
+
+            DataTable result = TApplicationManagement.GetAllParticipants(TAppSettingsManager.GetInt64("ConferenceTool.EventPartnerKey"),
+                TAppSettingsManager.GetValue("ConferenceTool.EventCode"));
+
+            StringWriter sw = new StringWriter();
+            result.WriteXml(sw);
+            return sw.ToString();
+        }
+
+        return string.Empty;
     }
 }
 }

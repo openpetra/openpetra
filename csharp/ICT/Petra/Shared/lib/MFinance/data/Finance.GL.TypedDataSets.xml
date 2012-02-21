@@ -34,6 +34,7 @@
 
         <Table sqltable="a_account">
             <CustomField name="BankAccountFlag" type="bool"/>
+            <CustomField name="CashAccountFlag" type="bool"/> <!-- will be set to true for the cacheable tables when this account reports to CASH -->
         </Table>
         <Table sqltable="a_account_hierarchy"/>
         <Table sqltable="a_account_hierarchy_detail"/>
@@ -71,5 +72,20 @@
         <Table sqltable="p_partner_location"/>
         <Table sqltable="p_partner_ledger"/>
     </DataSet>
-
+    <DataSet name="GLStewardshipCalculationTDS">
+        <CustomTable name="CreditFeeTotal">
+            <Field sqltable="a_cost_centre" sqlfield="a_cost_centre_code_c"/>
+            <Field sqltable="a_account" sqlfield="a_account_code_c"/>
+            <Field sqltable="a_transaction" sqlfield="a_transaction_amount_n"/>
+            <PrimaryKey thisFields="CostCentreCode,AccountCode"/>
+        </CustomTable>
+    </DataSet>
+    <DataSet name="BudgetTDS">
+        <Table sqltable="a_ledger"/>
+        <Table sqltable="a_budget_revision"/>
+        <Table sqltable="a_budget"/>
+        <Table sqltable="a_budget_period"/>
+        <Table sqltable="a_budget_type"/>
+        <Table sqltable="a_general_ledger_master_period"/>
+    </DataSet>
 </PetraDataSets>

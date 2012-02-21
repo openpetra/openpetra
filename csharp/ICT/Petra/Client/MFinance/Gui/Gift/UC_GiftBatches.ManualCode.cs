@@ -40,6 +40,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private Int32 FLedgerNumber;
         private Int32 FSelectedBatchNumber;
         private DateTime FDateEffective;
+        private string FStatusFilter = "1 = 1";
+        private string FPeriodFilter = "1 = 1";
+
         /// <summary>
         /// Refresh the data in the grid and the details after the database content was changed on the server
         /// </summary>
@@ -61,8 +64,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             ((TFrmGiftBatch)ParentForm).ClearCurrentSelections();
 
-            // TODO: more criteria: state of batch, period, etc
-            FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(ALedgerNumber));
+            if (ViewMode)
+            {
+                FMainDS.Merge(ViewModeTDS);
+                rbtAll.Checked = true;
+                cmbYear.Enabled = false;
+                cmbPeriod.Enabled = false;
+            }
+            else
+            {
+                FPetraUtilsObject.DisableDataChangedEvent();
+                TFinanceControls.InitialiseAvailableGiftYearsList(ref cmbYear, FLedgerNumber);
+                FPetraUtilsObject.EnableDataChangedEvent();
+
+                // only refresh once, seems we are doing too many loads from the db otherwise
+                RefreshFilter(null, null);
+            }
 
             // Load Motivation detail in this central place; it will be used by UC_GiftTransactions
             AMotivationDetailTable motivationDetail = (AMotivationDetailTable)TDataCache.TMFinance.GetCacheableFinanceTable(
@@ -81,7 +98,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             cmbDetailMethodOfPaymentCode.AddNotSetRow("", "");
             TFinanceControls.InitialiseMethodOfPaymentCodeList(ref cmbDetailMethodOfPaymentCode, ActiveOnly);
 
-
             DateTime StartDateCurrentPeriod;
             DateTime EndDateLastForwardingPeriod;
             DateTime DefaultDate;
@@ -93,10 +109,76 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ShowData();
         }
 
+        void RefreshPeriods(Object sender, EventArgs e)
+        {
+            TFinanceControls.InitialiseAvailableFinancialPeriodsList(ref cmbPeriod, FLedgerNumber, cmbYear.GetSelectedInt32());
+            cmbPeriod.SelectedIndex = 0;
+        }
+
+        void RefreshFilter(Object sender, EventArgs e)
+        {
+            if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection)
+            {
+                return;
+            }
+
+            ClearCurrentSelection();
+
+            Int32 SelectedYear = cmbYear.GetSelectedInt32();
+            Int32 SelectedPeriod = cmbPeriod.GetSelectedInt32();
+
+            FPeriodFilter = String.Format(
+                "{0} = {1} AND ",
+                AGiftBatchTable.GetBatchYearDBName(), SelectedYear);
+
+            if (SelectedPeriod == 0)
+            {
+                ALedgerRow Ledger =
+                    ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
+
+                FPeriodFilter += String.Format(
+                    "{0} >= {1}",
+                    AGiftBatchTable.GetBatchPeriodDBName(), Ledger.CurrentPeriod);
+            }
+            else
+            {
+                FPeriodFilter += String.Format(
+                    "{0} = {1}",
+                    AGiftBatchTable.GetBatchPeriodDBName(), SelectedPeriod);
+            }
+
+            if (rbtEditing.Checked)
+            {
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, MFinanceConstants.BATCH_UNPOSTED, SelectedYear,
+                        SelectedPeriod));
+                FStatusFilter = String.Format("{0} = '{1}'",
+                    AGiftBatchTable.GetBatchStatusDBName(),
+                    MFinanceConstants.BATCH_UNPOSTED);
+            }
+            else if (rbtPosted.Checked)
+            {
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, MFinanceConstants.BATCH_POSTED, SelectedYear,
+                        SelectedPeriod));
+                FStatusFilter = String.Format("{0} = '{1}'",
+                    AGiftBatchTable.GetBatchStatusDBName(),
+                    MFinanceConstants.BATCH_POSTED);
+            }
+            else
+            {
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, string.Empty, SelectedYear, SelectedPeriod));
+                FStatusFilter = "1 = 1";
+            }
+
+            FMainDS.AGiftBatch.DefaultView.RowFilter =
+                String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
+        }
+
         /// reset the control
         public void ClearCurrentSelection()
         {
+            GetDataFromControls();
             this.FPreviouslySelectedDetailRow = null;
+            ShowData();
         }
 
         /// <summary>
@@ -117,16 +199,32 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ShowDetailsManual(AGiftBatchRow ARow)
         {
-            FPetraUtilsObject.DetailProtectedMode = (ARow.BatchStatus.Equals("Posted") || ARow.BatchStatus.Equals("Cancelled"));
+            FPetraUtilsObject.DetailProtectedMode =
+                (ARow.BatchStatus.Equals(MFinanceConstants.BATCH_POSTED) || ARow.BatchStatus.Equals(MFinanceConstants.BATCH_CANCELLED)) || ViewMode;
             ((TFrmGiftBatch)ParentForm).EnableTransactionsTab();
             UpdateChangeableStatus();
-            FPetraUtilsObject.DetailProtectedMode = (ARow.BatchStatus.Equals("Posted") || ARow.BatchStatus.Equals("Cancelled"));
+            FPetraUtilsObject.DetailProtectedMode =
+                (ARow.BatchStatus.Equals(MFinanceConstants.BATCH_POSTED) || ARow.BatchStatus.Equals(MFinanceConstants.BATCH_CANCELLED)) || ViewMode;
             ((TFrmGiftBatch)ParentForm).LoadTransactions(
                 ARow.LedgerNumber,
                 ARow.BatchNumber);
             FSelectedBatchNumber = ARow.BatchNumber;
         }
 
+        private Boolean ViewMode
+        {
+            get
+            {
+                return ((TFrmGiftBatch)ParentForm).ViewMode;
+            }
+        }
+        private GiftBatchTDS ViewModeTDS
+        {
+            get
+            {
+                return ((TFrmGiftBatch)ParentForm).ViewModeTDS;
+            }
+        }
         private void ShowTransactionTab(Object sender, EventArgs e)
         {
             ((TFrmGiftBatch)ParentForm).SelectTab(TFrmGiftBatch.eGiftTabs.Transactions);
@@ -208,31 +306,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        private void ChangeBatchFilter(System.Object sender, System.EventArgs e)
-        {
-            if ((FMainDS == null) || (FMainDS.AGiftBatch == null))
-            {
-                return;
-            }
-
-            if (rbtAll.Checked)
-            {
-                FMainDS.AGiftBatch.DefaultView.RowFilter = "";
-            }
-            else if (rbtEditing.Checked)
-            {
-                FMainDS.AGiftBatch.DefaultView.RowFilter = String.Format("{0} = '{1}'",
-                    AGiftBatchTable.GetBatchStatusDBName(),
-                    MFinanceConstants.BATCH_UNPOSTED);
-            }
-            else if (rbtPosted.Checked)
-            {
-                FMainDS.AGiftBatch.DefaultView.RowFilter = String.Format("{0} = '{1}'",
-                    AGiftBatchTable.GetBatchStatusDBName(),
-                    MFinanceConstants.BATCH_POSTED);
-            }
-        }
-
         private void ExportBatches(System.Object sender, System.EventArgs e)
         {
             if (FPetraUtilsObject.HasChanges)
@@ -245,7 +318,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             TFrmGiftBatchExport exportForm = new TFrmGiftBatchExport(FPetraUtilsObject.GetForm());
             exportForm.LedgerNumber = FLedgerNumber;
-            exportForm.MainDS = FMainDS;
             exportForm.Show();
         }
 
@@ -259,12 +331,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void UpdateChangeableStatus()
         {
-            Boolean changeable = (FPreviouslySelectedDetailRow != null)
-                                 && (FPreviouslySelectedDetailRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
+            Boolean changeable = (FPreviouslySelectedDetailRow != null) && !ViewMode
+                                 && (FPreviouslySelectedDetailRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED) && (!ViewMode);
 
             this.btnDelete.Enabled = changeable;
             this.btnPostBatch.Enabled = changeable;
             pnlDetails.Enabled = changeable;
+            mniBatch.Enabled = !ViewMode;
+            mniPost.Enabled = !ViewMode;
+            tbbExportBatches.Enabled = !ViewMode;
+            tbbImportBatches.Enabled = !ViewMode;
+            tbbPostBatch.Enabled = !ViewMode;
         }
 
         /// <summary>
@@ -302,6 +379,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (t != null)
                 {
                     t.UpdateHashTotal(HashTotal);
+                }
+            }
+        }
+
+        /// Select a special batch number from outside
+        public void SelectBatchNumber(Int32 ABatchNumber)
+        {
+            for (int i = 0; (i < FMainDS.AGiftBatch.Rows.Count); i++)
+            {
+                if (FMainDS.AGiftBatch[i].BatchNumber == ABatchNumber)
+                {
+                    SelectDetailRowByDataTableIndex(i);
+                    break;
                 }
             }
         }

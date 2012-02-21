@@ -258,9 +258,7 @@ namespace Ict.Petra.Shared
             list.Add("pm_application_forms");
             list.Add("pm_document");
             list.Add("pm_passport_details");
-            list.Add("pm_long_term_support_figures");
             list.Add("pm_person_language");
-            list.Add("pm_ownership");
             list.Add("pm_past_experience");
             list.Add("pm_person_ability");
             list.Add("pm_person_qualification");
@@ -273,7 +271,6 @@ namespace Ict.Petra.Shared
             list.Add("pm_interview");
             list.Add("pm_person_evaluation");
             list.Add("pm_person_absence");
-            list.Add("pm_person_vision");
             list.Add("pm_special_need");
             list.Add("pm_staff_data");
             list.Add("pm_person_commitment_status");

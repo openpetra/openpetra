@@ -229,6 +229,14 @@ namespace Ict.Petra.Server.App.Core.Security
                     {
                         string ParameterName = Parameter.ParameterType.ToString().Replace("&", "");
 
+                        // This "fix" was helpful at one time, but now it's now wanted:
+                        /*
+                        if (ParameterName.IndexOf("System.Collections.Generic.List") == 0)
+                        {
+                            ParameterName = "LIST";
+                        }
+                        */
+
                         if (ParameterName.Contains("."))
                         {
                             ParameterName = ParameterName.Substring(ParameterName.LastIndexOf(".") + 1);
@@ -248,6 +256,7 @@ namespace Ict.Petra.Server.App.Core.Security
                     if (ParameterTypes == AParameterTypes)
                     {
                         MethodToTest = method;
+                        break;
                     }
                 }
             }

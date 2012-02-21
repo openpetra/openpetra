@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,6 +27,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.UserDefaults;
 using Ict.Petra.Shared.MSysMan.Data;
@@ -41,12 +42,12 @@ namespace Ict.Petra.Client.App.Core
     /// @Comment The User Defaults are stored in the Database (s_user_defaults table)
     ///   on the Server.
     /// </summary>
-    public class TUserDefaults : object
+    public class TUserDefaults
     {
         /// <summary>
         /// todoComment
         /// </summary>
-        public class NamedDefaults : object
+        public class NamedDefaults
         {
             /// <summary>todoComment</summary>
             public const String WINDOW_POSITION_PREFIX = "WINDOW_POS_";
@@ -104,9 +105,6 @@ namespace Ict.Petra.Client.App.Core
 
             #endregion
         }
-
-        /// <summary>this cannot go into Ict.Petra.Client.App.Core.Shared, because this would give a circular reference; this file already requires Ict.Petra.Client.App.Core.Shared.UserInfo</summary>
-        public static TUserDefaults GUserDefaults;
 
         private static SUserDefaultsTable UUserDefaultsDataTable;
         private static DataView UUserDefaults;
@@ -281,6 +279,9 @@ namespace Ict.Petra.Client.App.Core
         /// </summary>
         public const String FINANCE_REPORTING_SHOWDIFFFINANCIALYEARSELECTION = "ShowDiffFinancialYearSelection";
 
+        /// <summary>which plugin to use for importing bank statements</summary>
+        public const String FINANCE_BANKIMPORT_PLUGIN = "BankImportPlugin";
+
         // Put other User Default Constants here as well.
 
         /// <summary>todoComment</summary>
@@ -296,9 +297,9 @@ namespace Ict.Petra.Client.App.Core
         public const String USERDEFAULT_LASTPERSONCONFERENCE = "ConferenceLastPerson";
 
         /// <summary>
-        /// constructor
+        /// initialise static variables
         /// </summary>
-        public TUserDefaults() : base()
+        public static void InitUserDefaults()
         {
             TRemote.MSysMan.Maintenance.UserDefaults.GetUserDefaults(Ict.Petra.Shared.UserInfo.GUserInfo.UserID, out UUserDefaultsDataTable);
             UUserDefaults = new DataView(UUserDefaultsDataTable);
@@ -440,9 +441,9 @@ namespace Ict.Petra.Client.App.Core
 
             // TLogging.Log('Refreshing DefaultCode ''' + AChangedUserDefaultCode + ''' with Value: ''' + AChangedUserDefaultValue + '''');
             // Split String into String Array
-            ChangedUserDefaultCodes = AChangedUserDefaultCode.Split(new Char[TClientTasksManager.GCLIENTTASKPARAMETER_SEPARATOR[0]]);
-            ChangedUserDefaultValues = AChangedUserDefaultValue.Split(new Char[TClientTasksManager.GCLIENTTASKPARAMETER_SEPARATOR[0]]);
-            ChangedUserDefaultModIds = AChangedUserDefaultModId.Split(new Char[TClientTasksManager.GCLIENTTASKPARAMETER_SEPARATOR[0]]);
+            ChangedUserDefaultCodes = AChangedUserDefaultCode.Split(new Char[RemotingConstants.GCLIENTTASKPARAMETER_SEPARATOR[0]]);
+            ChangedUserDefaultValues = AChangedUserDefaultValue.Split(new Char[RemotingConstants.GCLIENTTASKPARAMETER_SEPARATOR[0]]);
+            ChangedUserDefaultModIds = AChangedUserDefaultModId.Split(new Char[RemotingConstants.GCLIENTTASKPARAMETER_SEPARATOR[0]]);
 
             for (Counter = 0; Counter <= ChangedUserDefaultCodes.Length - 1; Counter += 1)
             {

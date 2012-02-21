@@ -1,37 +1,37 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="systemsettings" value="True" />
-  <Parameter id="xmlfiles" value="FinancialDevelopment\\lapseddonorreport.xml,common.xml" />
-  <Parameter id="currentReport" value="LapsedDonorReport" />
-  <Parameter id="MaxDisplayColumns" value="6" />
-  <Parameter id="param_days_tolerance" value="0" />
-  <Parameter id="param_frequency" value="Monthly - Every Month" />
-  <Parameter id="param_minimum_amount" value="0" />
-  <Parameter id="param_ignore_between" value="true" />
-  <Parameter id="param_currency" value="Base" />
-  <Parameter id="param_motivation_group" value="%" />
-  <Parameter id="param_motivation_detail" value="%" />
-  <Parameter id="param_sort_by" value="Donor_Name" />
-  <Parameter id="param_calculation" column="0" value="Donor Key" />
-  <Parameter id="ColumnWidth" column="0" value="2" />
-  <Parameter id="param_ytd" column="0" value="false" />
-  <Parameter id="param_calculation" column="1" value="Donor Name" />
-  <Parameter id="ColumnWidth" column="1" value="4" />
-  <Parameter id="param_ytd" column="1" value="false" />
-  <Parameter id="param_calculation" column="2" value="Partner Class" />
-  <Parameter id="ColumnWidth" column="2" value="2" />
-  <Parameter id="param_ytd" column="2" value="false" />
-  <Parameter id="param_calculation" column="3" value="Gift year - 2" />
-  <Parameter id="ColumnWidth" column="3" value="2" />
-  <Parameter id="param_ytd" column="3" value="false" />
-  <Parameter id="param_calculation" column="4" value="Gift year - 1" />
-  <Parameter id="ColumnWidth" column="4" value="2" />
-  <Parameter id="param_ytd" column="4" value="false" />
-  <Parameter id="param_calculation" column="5" value="Gift this year" />
-  <Parameter id="ColumnWidth" column="5" value="2" />
-  <Parameter id="param_ytd" column="5" value="false" />
-  <Parameter id="param_currency_format" value="CurrencyComplete" />
-  <Parameter id="param_all_partners" value="true" />
-  <Parameter id="param_extract" value="false" />
-  <Parameter id="param_recipientkey" value="0" />
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:FinancialDevelopment\\lapseddonorreport.xml,common.xml" />
+  <Parameter id="currentReport" value="eString:LapsedDonorReport" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:6" />
+  <Parameter id="param_days_tolerance" value="eInteger:0" />
+  <Parameter id="param_frequency" value="eString:Monthly - Every Month" />
+  <Parameter id="param_minimum_amount" value="eInteger:0" />
+  <Parameter id="param_ignore_between" value="eString:true" />
+  <Parameter id="param_currency" value="eString:Base" />
+  <Parameter id="param_motivation_group" value="eString:%" />
+  <Parameter id="param_motivation_detail" value="eString:%" />
+  <Parameter id="param_sort_by" value="eString:Donor_Name" />
+  <Parameter id="param_calculation" column="0" value="eString:Donor Key" />
+  <Parameter id="ColumnWidth" column="0" value="eInteger:2" />
+  <Parameter id="param_ytd" column="0" value="eString:false" />
+  <Parameter id="param_calculation" column="1" value="eString:Donor Name" />
+  <Parameter id="ColumnWidth" column="1" value="eInteger:4" />
+  <Parameter id="param_ytd" column="1" value="eString:false" />
+  <Parameter id="param_calculation" column="2" value="eString:Partner Class" />
+  <Parameter id="ColumnWidth" column="2" value="eInteger:2" />
+  <Parameter id="param_ytd" column="2" value="eString:false" />
+  <Parameter id="param_calculation" column="3" value="eString:Gift year - 2" />
+  <Parameter id="ColumnWidth" column="3" value="eInteger:2" />
+  <Parameter id="param_ytd" column="3" value="eString:false" />
+  <Parameter id="param_calculation" column="4" value="eString:Gift year - 1" />
+  <Parameter id="ColumnWidth" column="4" value="eInteger:2" />
+  <Parameter id="param_ytd" column="4" value="eString:false" />
+  <Parameter id="param_calculation" column="5" value="eString:Gift this year" />
+  <Parameter id="ColumnWidth" column="5" value="eInteger:2" />
+  <Parameter id="param_ytd" column="5" value="eString:false" />
+  <Parameter id="param_currency_format" value="eString:CurrencyComplete" />
+  <Parameter id="param_all_partners" value="eString:true" />
+  <Parameter id="param_extract" value="eString:false" />
+  <Parameter id="param_recipientkey" value="eInteger:0" />
 </Parameters>

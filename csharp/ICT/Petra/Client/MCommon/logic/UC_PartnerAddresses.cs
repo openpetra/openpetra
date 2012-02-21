@@ -27,6 +27,8 @@ using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
 using Ict.Common;
+using Ict.Common.Remoting.Shared;
+using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -35,7 +37,6 @@ using SourceGrid.Cells;
 using Ict.Common.Data;
 using Ict.Common.Controls;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.RemotedExceptions;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Gui;
@@ -1089,7 +1090,7 @@ namespace Ict.Petra.Client.MCommon
             if (PartnerLocationRecordZero != null)
             {
                 LocationRecordZero = FMainDS.PLocation.Rows.Find(new object[] { SharedConstants.FIXED_SITE_KEY, 0 });
-                LocationRecordZero.Delete();
+                FMainDS.PLocation.Rows.Remove(LocationRecordZero);
                 PartnerLocationRecordZero.Delete();
 
                 // LocationRecordZero.AcceptChanges();
@@ -1201,7 +1202,7 @@ namespace Ict.Petra.Client.MCommon
                 {
                     // MessageBox.Show('FJustDeletedPartnerLocationsRow <> nil');
                     NewPartnerLocationRow.LocationType =
-                        TAddressHandling.GetDefaultLocationType(SharedTypes.PartnerClassStringToEnum(FMainDS.PPartner[0].PartnerClass));
+                        TSharedAddressHandling.GetDefaultLocationType(SharedTypes.PartnerClassStringToEnum(FMainDS.PPartner[0].PartnerClass));
                 }
 
                 NewPartnerLocationRow.LocationKey = 0;

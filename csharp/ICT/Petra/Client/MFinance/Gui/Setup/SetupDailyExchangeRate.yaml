@@ -40,7 +40,7 @@ RootNode:
             Controls:
                 Row0: [cmbDetailFromCurrencyCode]
                 Row1: [cmbDetailToCurrencyCode]
-                Row2: [dtpDetailDateEffectiveFrom, btnUseDateToFilter]
+                Row2: [dtpDetailDateEffectiveFrom]
                 Row3: [txtDetailRateOfExchange, btnInvertExchangeRate]
                 Row4: [lblValueOneDirection]
                 Row5: [lblValueOtherDirection]
@@ -49,7 +49,6 @@ RootNode:
         dtpDetailDateEffectiveFrom: {OnlySetOnce=true, Label=D&ate}
         txtDetailRateOfExchange: {OnlySetOnce=true, Label=&Rate of exchange, Format=Decimal(10), Width=100}
         btnInvertExchangeRate: {Label=&Invert value}
-        btnUseDateToFilter: {Label=Use Date To Filter}
         lblValueOneDirection: {ColSpan=2}
         lblValueOtherDirection: {ColSpan=2}
     Menu:

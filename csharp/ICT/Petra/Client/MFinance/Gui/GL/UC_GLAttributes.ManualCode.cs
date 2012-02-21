@@ -26,6 +26,7 @@ using System.Data;
 using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Data;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Client.MFinance.Logic;
@@ -172,6 +173,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             txtJournalNumber.Text = FJournalNumber.ToString();
             txtTransactionNumber.Text = FTransactionNumber.ToString();
 
+            cmbDetailAnalysisAttributeValue.Items.Clear();  // These details controls may be set by
+            txtReadonlyAnalysisTypeCode.Text = "";          // ShowDetailsManual, below - or they may not...
+            txtReadonlyDescription.Text = "";
+            cmbDetailAnalysisAttributeValue.SetSelectedString("");
 
             checkFCacheInitialised();
         }
@@ -186,14 +191,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ShowDetailsManual(ATransAnalAttribRow ARow)
         {
+            cmbDetailAnalysisAttributeValue.Items.Clear();
+
             if (ARow == null)
             {
                 return;
             }
 
-            //the content of the combobox depends from the typecode the ledgernumber and if the value ist active
-            cmbDetailAnalysisAttributeValue.Items.Clear();
-            //cmbDetailAnalysisAttributeValue.Items.Add("");
+            // The content of the combobox derives from the typecode, the ledgernumber and whether the value is active.
 
             foreach (AFreeformAnalysisRow AFRow in  FCacheDS.AFreeformAnalysis.Rows)
             {
@@ -215,6 +220,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 cmbDetailAnalysisAttributeValue.SelectedIndex = -1;
             }
+
+            // If the batch has been posted, the Combobox can't be changed.
+            Boolean changeable = GetBatchRow() != null
+                                 && (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
+
+            cmbDetailAnalysisAttributeValue.Enabled = changeable;
         }
 
         private void GetDetailDataFromControlsManual(ATransAnalAttribRow ARow)
@@ -295,8 +306,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     && (checkRow.LedgerNumber == FLedgerNumber))
                 {
                     AAnalysisAttributeRow attRow =
-                        (AAnalysisAttributeRow)FCacheDS.AAnalysisAttribute.Rows.Find(new Object[] { checkRow.LedgerNumber, AAccount,
-                                                                                                    checkRow.AnalysisTypeCode });
+                        (AAnalysisAttributeRow)FCacheDS.AAnalysisAttribute.Rows.Find(new Object[] { checkRow.LedgerNumber, checkRow.AnalysisTypeCode,
+                                                                                                    AAccount });
 
                     if (!checkRow.AccountCode.Equals(AAccount) || (attRow == null))
                     {
@@ -391,17 +402,23 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            String v = (String)sio;
-            AFreeformAnalysisRow afaRow =
-                (AFreeformAnalysisRow)FCacheDS.AFreeformAnalysis.Rows.Find(new Object[] { FLedgerNumber, txtReadonlyAnalysisTypeCode.Text,
-                                                                                          v });
-
-            if (afaRow == null)
+            AFreeformAnalysisRow afaRow = null;
+            String v = sio.ToString();
+            bool AccessOk = false;
+            try
             {
-                // this should never happen
+                Object[] PrimaryKey = new Object[] {
+                    FLedgerNumber, txtReadonlyAnalysisTypeCode.Text, v
+                };
+                afaRow = (AFreeformAnalysisRow)FCacheDS.AFreeformAnalysis.Rows.Find(PrimaryKey);
+                AccessOk = true;
+            }
+            catch (Exception)
+            {
                 cmbDetailAnalysisAttributeValue.ForeColor = System.Drawing.Color.Red;
             }
-            else
+
+            if (AccessOk)
             {
                 if (afaRow.Active)
                 {

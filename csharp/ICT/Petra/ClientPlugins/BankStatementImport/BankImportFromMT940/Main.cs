@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,6 +28,8 @@ using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Data; // Implicit reference
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.Interfaces.Plugins.MFinance;
@@ -35,7 +37,7 @@ using Ict.Plugins.Finance.SwiftParser;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using GNU.Gettext;
 
-namespace Plugin.BankImportFromMT940
+namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
 {
     /// <summary>
     /// import a bank statement from a MT940 Swift file
@@ -67,8 +69,10 @@ namespace Plugin.BankImportFromMT940
         /// asks the user to open a csv file and imports the contents according to the config file
         /// </summary>
         /// <param name="AStatementKey">this returns the first key of a statement that was imported. depending on the implementation, several statements can be created from one file</param>
+        /// <param name="ALedgerNumber">the current ledger number</param>
+        /// <param name="ABankAccountCode">the bank account against which the statement should be stored</param>
         /// <returns></returns>
-        public bool ImportBankStatement(out Int32 AStatementKey)
+        public bool ImportBankStatement(out Int32 AStatementKey, Int32 ALedgerNumber, string ABankAccountCode)
         {
             AStatementKey = -1;
 
@@ -92,6 +96,7 @@ namespace Plugin.BankImportFromMT940
             string BankName;
 
             if (ImportFromFile(BankStatementFilename,
+                    ABankAccountCode,
                     ref MainDS,
                     out StartBalance,
                     out EndBalance,
@@ -105,6 +110,7 @@ namespace Plugin.BankImportFromMT940
                             AEpTransactionTable.GetStatementKeyDBName(),
                             stmt.StatementKey);
 
+                    stmt.LedgerNumber = ALedgerNumber;
                     DateTime latestDate = DateTime.MinValue;
 
                     foreach (DataRowView v in MainDS.AEpTransaction.DefaultView)
@@ -141,6 +147,7 @@ namespace Plugin.BankImportFromMT940
         /// open the file and return a typed datatable
         /// </summary>
         public bool ImportFromFile(string AFilename,
+            string ABankAccountCode,
             ref BankImportTDS AMainDS,
             out decimal AStartBalance,
             out decimal AEndBalance,
@@ -271,6 +278,7 @@ namespace Plugin.BankImportFromMT940
                 epstmt.Date = stmt.date;
                 epstmt.CurrencyCode = stmt.currency;
                 epstmt.Filename = AFilename;
+                epstmt.BankAccountCode = ABankAccountCode;
 
                 if (AFilename.Length > AEpStatementTable.GetFilenameLength())
                 {
