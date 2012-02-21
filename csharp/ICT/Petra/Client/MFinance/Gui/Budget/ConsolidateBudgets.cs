@@ -55,16 +55,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
     /// <summary>
     /// Class for calling the Budget Consolidation code
     /// </summary>
-	public static class TConsolidateBudgets
+    public static class TConsolidateBudgets
     {
-
-		/// <summary>
-		/// Call the code to consolidate all budgets
-		/// </summary>
-		/// <param name="AParentWindow"></param>
-		/// <param name="ALedgerNumber"></param>
-		public static void ConsolidateBudgets(Form AParentWindow, Int32 ALedgerNumber) //, TVerificationResultCollection AVerificationResult = null) 		/// <param name="AVerificationResult"></param>
-
+        /// <summary>
+        /// Call the code to consolidate all budgets
+        /// </summary>
+        /// <param name="AParentWindow"></param>
+        /// <param name="ALedgerNumber"></param>
+        public static void ConsolidateBudgets(Form AParentWindow, Int32 ALedgerNumber)         //, TVerificationResultCollection AVerificationResult = null)            /// <param name="AVerificationResult"></param>
         {
             string msg = string.Empty;
 
@@ -81,18 +79,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
             try
             {
-				if (ConsolidateAll)
-				{
-	            	Cursor.Current = Cursors.WaitCursor;
-	
-	                bool LoadBudgetData = TRemote.MFinance.Budget.WebConnectors.LoadBudgetForConsolidate(ALedgerNumber);
-	
-	                TRemote.MFinance.Budget.WebConnectors.ConsolidateBudgets(ALedgerNumber, true, out AVerificationResult);
-	                
-	                MessageBox.Show("Budget Consolidation Complete.", "Consolidate Budgets");
-	
-	                Cursor.Current = Cursors.Default;
-				}
+                if (ConsolidateAll)
+                {
+                    Cursor.Current = Cursors.WaitCursor;
+
+                    bool LoadBudgetData = TRemote.MFinance.Budget.WebConnectors.LoadBudgetForConsolidate(ALedgerNumber);
+
+                    TRemote.MFinance.Budget.WebConnectors.ConsolidateBudgets(ALedgerNumber, true, out AVerificationResult);
+
+                    MessageBox.Show("Budget Consolidation Complete.", "Consolidate Budgets");
+
+                    Cursor.Current = Cursors.Default;
+                }
             }
             catch (InvalidOperationException ex)
             {

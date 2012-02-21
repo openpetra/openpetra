@@ -392,6 +392,7 @@ namespace Ict.Petra.Server.MCommon
             {
                 FSelectSQL = FFindParameters.FSqlQuery;
             }
+
 #if DEBUGMODE
             if (TLogging.DL >= 9)
             {
@@ -728,7 +729,7 @@ namespace Ict.Petra.Server.MCommon
             internal bool FParametersGivenSeparately;
 
             internal String FSqlQuery;
-            
+
             /// <summary>
             /// Initialises the fields.
             /// </summary>
@@ -756,7 +757,7 @@ namespace Ict.Petra.Server.MCommon
             }
 
             /// <summary>
-            /// 
+            ///
             /// </summary>
             /// <param name="ASqlQuery">Completely formed SqlQuery</param>
             public TAsyncFindParameters(String ASqlQuery)

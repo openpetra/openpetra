@@ -78,6 +78,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             AccountsPayableTDS MainDS = new AccountsPayableTDS();
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
             AApSupplierAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
             PPartnerAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
             // Accept row changes here so that the Client gets 'unmodified' rows
@@ -220,7 +221,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         /// <param name="AVerificationResult">Empty if all verifications are OK and all DB calls
         /// succeded, otherwise filled with 1..n TVerificationResult objects
         /// (can also contain DB call exceptions)</param>
-        /// <returns>true if all verifications are OK and all DB calls succeeded, 
+        /// <returns>true if all verifications are OK and all DB calls succeeded,
         /// false if any verification or DB call failed
         /// </returns>
         [RequireModulePermission("FINANCE-1")]
@@ -232,31 +233,34 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
             AVerificationResult = null;
 
-            if (AInspectDS != null && AInspectDS.AApDocument != null && AInspectDS.AApDocument.Rows.Count > 0)
+            if ((AInspectDS != null) && (AInspectDS.AApDocument != null) && (AInspectDS.AApDocument.Rows.Count > 0))
             {
                 AVerificationResult = new TVerificationResultCollection();
 
-                // I want to check that the Invoice numbers are not blank, 
+                // I want to check that the Invoice numbers are not blank,
                 // and that none of the documents already exist in the database.
 
                 foreach (AApDocumentRow NewDocRow in AInspectDS.AApDocument.Rows)
                 {
                     if (NewDocRow.DocumentCode.Length == 0)
                     {
-                        AVerificationResult.Add(new TVerificationResult("Save AP Document", "The Document has empty Document Reference.", TResultSeverity.Resv_Noncritical));
+                        AVerificationResult.Add(new TVerificationResult("Save AP Document", "The Document has empty Document Reference.",
+                                TResultSeverity.Resv_Noncritical));
                         return TSubmitChangesResult.scrInfoNeeded;
                     }
 
-                    if (NewDocRow.RowState == DataRowState.Added)
-                    { // Load via Template
+                    if (NewDocRow.RowState == DataRowState.Added) // Load via Template
+                    {
                         AApDocumentRow DocTemplateRow = AInspectDS.AApDocument.NewRowTyped(false);
                         DocTemplateRow.LedgerNumber = NewDocRow.LedgerNumber;
                         DocTemplateRow.PartnerKey = NewDocRow.PartnerKey;
                         DocTemplateRow.DocumentCode = NewDocRow.DocumentCode;
                         AApDocumentTable MatchingRecords = AApDocumentAccess.LoadUsingTemplate(DocTemplateRow, null);
+
                         if (MatchingRecords.Rows.Count > 0)
                         {
-                            AVerificationResult.Add(new TVerificationResult("Save AP Document", "A Document with this Reference already exists.", TResultSeverity.Resv_Noncritical));
+                            AVerificationResult.Add(new TVerificationResult("Save AP Document", "A Document with this Reference already exists.",
+                                    TResultSeverity.Resv_Noncritical));
                             return TSubmitChangesResult.scrInfoNeeded;
                         }
                     }
@@ -269,6 +273,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     {
                         // Set AP Number if it has not been set yet. Also on DetailRows and AnalAttribs.
                         Int32 ExistingApNum = NewDocRow.ApNumber;
+
                         if (ExistingApNum < 0)
                         {
                             StringCollection fieldlist = new StringCollection();
@@ -286,7 +291,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                             {
                                 foreach (AApDocumentDetailRow detailrow in AInspectDS.AApDocumentDetail.Rows)
                                 {
-                                    if (detailrow.RowState != DataRowState.Deleted && detailrow.ApNumber == ExistingApNum)
+                                    if ((detailrow.RowState != DataRowState.Deleted) && (detailrow.ApNumber == ExistingApNum))
                                     {
                                         detailrow.ApNumber = NewApNum;
                                     }
@@ -296,13 +301,14 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                                 {
                                     foreach (AApAnalAttribRow AnalAttribRow in AInspectDS.AApAnalAttrib.Rows)
                                     {
-                                        if (AnalAttribRow.RowState != DataRowState.Deleted && AnalAttribRow.ApNumber == ExistingApNum)
+                                        if ((AnalAttribRow.RowState != DataRowState.Deleted) && (AnalAttribRow.ApNumber == ExistingApNum))
                                         {
                                             AnalAttribRow.ApNumber = NewApNum;
                                         }
                                     }
                                 }
                             }
+
                             ALedgerAccess.SubmitChanges(myLedgerTable, SubmitChangesTransaction, out AVerificationResult);
                         }
 
@@ -412,8 +418,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             }
 
             if (Row.DocumentStatus == MFinanceConstants.AP_DOCUMENT_PARTIALLY_PAID)
-            // For any invoices that are partly paid, find out how much is outstanding.
             {
+                // For any invoices that are partly paid, find out how much is outstanding.
                 Row.OutstandingAmount -= UIConnectors.TFindUIConnector.GetPartPaidAmount(ALedgerNumber, Row.ApNumber, DocPaymentTbl);
             }
         }
@@ -439,11 +445,11 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             DocumentTemplate.PartnerKey = ASupplierKey;
             AApDocumentAccess.LoadUsingTemplate(MainDS, DocumentTemplate, null);
 
-
             foreach (AccountsPayableTDSAApDocumentRow Row in MainDS.AApDocument.Rows)
             {
                 SetOutstandingAmount(Row, ALedgerNumber, MainDS.AApDocumentPayment);
             }
+
             return MainDS;
         }
 
@@ -740,7 +746,6 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     transaction.TransactionNumber = TransactionCounter++;
                     transaction.TransactionAmount = document.TotalAmount;
 
-
                     if (!document.CreditNoteFlag)
                     {
                         transaction.TransactionAmount *= -1;
@@ -753,7 +758,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         transaction.TransactionAmount *= -1;
                     }
 
-                     // TODO: support foreign currencies
+                    // TODO: support foreign currencies
                     transaction.AmountInBaseCurrency = transaction.TransactionAmount;
 
                     // This seems to be wrong here? (Tim, Feb 2012)
@@ -1093,8 +1098,9 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             if ((APayments.Rows.Count < 1) || (ADocumentPayments.Rows.Count < 1))
             {
                 AVerifications = new TVerificationResultCollection();
-                AVerifications.Add(new TVerificationResult("Post Payment", String.Format("Nothing to do - Payments has {0} rows, Documents has {1} rows.",
-                    APayments.Rows.Count, ADocumentPayments.Rows.Count), TResultSeverity.Resv_Noncritical));
+                AVerifications.Add(new TVerificationResult("Post Payment",
+                        String.Format("Nothing to do - Payments has {0} rows, Documents has {1} rows.",
+                            APayments.Rows.Count, ADocumentPayments.Rows.Count), TResultSeverity.Resv_Noncritical));
                 return false;
             }
 
@@ -1253,11 +1259,13 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         {
             TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
             AccountsPayableTDS MainDs = new AccountsPayableTDS();
+
             AApPaymentAccess.LoadByPrimaryKey(MainDs, ALedgerNumber, APaymentNumber, ReadTransaction);
 
             if (MainDs.AApPayment.Rows.Count > 0) // If I can load the referenced payment, I'll also load related documents.
             {
                 AApDocumentPaymentAccess.LoadViaAApPayment(MainDs, ALedgerNumber, APaymentNumber, ReadTransaction);
+
                 // There may be a batch of several invoices in this payment,
                 // but they should all be to the same supplier.
                 foreach (AApDocumentPaymentRow Row in MainDs.AApDocumentPayment.Rows)
@@ -1268,6 +1276,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     // Then I also need to get any referenced AnalAttrib records
                     MainDs.AApDocumentDetail.DefaultView.RowFilter = String.Format("{0}={1}",
                         AApDocumentDetailTable.GetApNumberDBName(), Row.ApNumber);
+
                     foreach (DataRowView rv in MainDs.AApDocumentDetail.DefaultView)
                     {
                         AApDocumentDetailRow DetailRow = (AApDocumentDetailRow)rv.Row;
@@ -1282,6 +1291,5 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             DBAccess.GDBAccessObj.RollbackTransaction();
             return MainDs;
         }
-
     }
 }
