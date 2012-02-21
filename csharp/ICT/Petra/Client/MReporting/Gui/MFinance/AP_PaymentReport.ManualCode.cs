@@ -4,7 +4,7 @@
 // @Authors:
 //       Tim Ingham
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -51,6 +51,21 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         {
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
             ACalc.AddParameter("MaxDisplayColumns", 7);
+            int ColumnCounter = 0;
+            ACalc.AddParameter("param_calculation", "Payment", ColumnCounter);
+            ACalc.AddParameter("ColumnWidth", (float)4.0, ColumnCounter++);
+            ACalc.AddParameter("param_calculation", "PaymentNumber", ColumnCounter);
+            ACalc.AddParameter("ColumnWidth", (float)4.0, ColumnCounter++);
+            ACalc.AddParameter("param_calculation", "PaymentBank", ColumnCounter);
+            ACalc.AddParameter("ColumnWidth", (float)4.0, ColumnCounter++);
+            ACalc.AddParameter("param_calculation", "PaymentRef", ColumnCounter);
+            ACalc.AddParameter("ColumnWidth", (float)4.0, ColumnCounter++);
+            ACalc.AddParameter("param_calculation", "PaymentDate", ColumnCounter);
+            ACalc.AddParameter("ColumnWidth", (float)2.0, ColumnCounter++);
+            ACalc.AddParameter("param_calculation", "PaymentTotal", ColumnCounter);
+            ACalc.AddParameter("ColumnWidth", (float)4.0, ColumnCounter++);
+            ACalc.AddParameter("param_calculation", "PaymentTotal", ColumnCounter);
+            ACalc.AddParameter("ColumnWidth", (float)4.0, ColumnCounter++);
         }
     }
 }
