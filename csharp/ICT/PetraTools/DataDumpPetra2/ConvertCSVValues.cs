@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -55,11 +55,14 @@ namespace Ict.Tools.DataDumpPetra2
                 RealLineCounter = 0;
             }
 
+            string OrigLine = string.Empty;
+
             try
             {
                 while (!AReader.EndOfStream)
                 {
                     StringBuilder line = new StringBuilder(AReader.ReadLine());
+                    OrigLine = line.ToString();
 
                     int ColumnCounter = 0;
 
@@ -129,6 +132,7 @@ namespace Ict.Tools.DataDumpPetra2
 
                         if (ColumnCounter >= AColumnCount)
                         {
+                            TLogging.Log(OrigLine);
                             throw new Exception(
                                 String.Format("Line {0}: Invalid number of columns, should be only {1} but there are more columns.",
                                     RealLineCounter,
@@ -141,6 +145,7 @@ namespace Ict.Tools.DataDumpPetra2
 
                     if (ColumnCounter != AColumnCount)
                     {
+                        TLogging.Log(OrigLine);
                         throw new Exception(
                             String.Format("Line {0}: Invalid number of columns, should be {1} but there are only {2} columns.",
                                 RealLineCounter,
@@ -164,6 +169,7 @@ namespace Ict.Tools.DataDumpPetra2
             }
             catch (Exception e)
             {
+                TLogging.Log(OrigLine);
                 TLogging.Log("Problem parsing file, in line " + RealLineCounter.ToString());
                 throw e;
             }
