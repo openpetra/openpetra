@@ -938,16 +938,23 @@ namespace Ict.Petra.Server.MConference.Applications
                         DataView DuplicateView = new DataView(AMainDS.PmGeneralApplication);
 
                         // TODO problems with single quotes in rawData: this is not the best solution, because it will not find matches, but at least it will save.
-                        DuplicateView.RowFilter =
-                            String.Format("{0} = '{1}' AND {2} = 'H'",
-                                PmGeneralApplicationTable.GetRawApplicationDataDBName(),
-                                AChangedRow.JSONData.Replace("'", "&apos;"),
-                                PmGeneralApplicationTable.GetGenApplicationStatusDBName());
-
-                        foreach (DataRowView rv in DuplicateView)
+                        try
                         {
-                            PmGeneralApplicationRow DuplicateApplication = (PmGeneralApplicationRow)rv.Row;
-                            DuplicateApplication.GenApplicationStatus = "I";
+                            DuplicateView.RowFilter =
+                                String.Format("{0} = '{1}' AND {2} = 'H'",
+                                    PmGeneralApplicationTable.GetRawApplicationDataDBName(),
+                                    AChangedRow.JSONData.Replace("'", "&apos;"),
+                                    PmGeneralApplicationTable.GetGenApplicationStatusDBName());
+
+                            foreach (DataRowView rv in DuplicateView)
+                            {
+                                PmGeneralApplicationRow DuplicateApplication = (PmGeneralApplicationRow)rv.Row;
+                                DuplicateApplication.GenApplicationStatus = "I";
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            // some problem with Invalid escape sequence: '\"'.
                         }
                     }
                 }
