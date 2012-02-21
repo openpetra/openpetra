@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -976,7 +976,7 @@ namespace Ict.Common
         /// <returns>the string in new convention</returns>
         public static string UpperCamelCase(String AStr, bool AIgnorePrefix, bool AIgnorePostfix)
         {
-            return UpperCamelCase(AStr, "_", AIgnorePrefix, AIgnorePostfix);
+            return UpperCamelCase(AStr, '_', AIgnorePrefix, AIgnorePostfix);
         }
 
         /// <summary>
@@ -987,9 +987,9 @@ namespace Ict.Common
         /// <param name="AIgnorePrefix">should prefixes be ignored</param>
         /// <param name="AIgnorePostfix">should postfixes be ignored</param>
         /// <returns>the string in new convention</returns>
-        public static string UpperCamelCase(String AStr, String ASeparator, bool AIgnorePrefix, bool AIgnorePostfix)
+        public static string UpperCamelCase(String AStr, char ASeparator, bool AIgnorePrefix, bool AIgnorePostfix)
         {
-            string[] parts = AStr.Split(new string[] { ASeparator }, StringSplitOptions.None);
+            string[] parts = AStr.Split(new char[] { ASeparator }, StringSplitOptions.None);
 
             if (parts.Length <= 1)       // Handle string without seperator
             {
