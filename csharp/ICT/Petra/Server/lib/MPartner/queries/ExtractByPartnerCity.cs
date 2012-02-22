@@ -29,6 +29,8 @@ using Ict.Common.DB;
 using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.MReporting;
+using Ict.Petra.Server.MCommon;
+using Ict.Petra.Server.MCommon.queries;
 using Ict.Petra.Server.MPartner.Extracts;
 
 namespace Ict.Petra.Server.MPartner.queries
@@ -36,7 +38,7 @@ namespace Ict.Petra.Server.MPartner.queries
     /// <summary>
     /// this report is quite simple, and should be used as an example for more complex reports and extracts
     /// </summary>
-    public class QueryPartnerByCity
+    public class QueryPartnerByCity : Ict.Petra.Server.MCommon.queries.ExtractQueryBase
     {
         /// <summary>
         /// calculate an extract from a report: all partners living in a given city
@@ -46,70 +48,33 @@ namespace Ict.Petra.Server.MPartner.queries
         /// <returns></returns>
         public static bool CalculateExtract(TParameterList AParameters, TResultList AResults)
         {
-            // get the partner keys from the database
-            try
-            {
-                Boolean ReturnValue = false;
-                Boolean NewTransaction;
-                TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
-
-                string SqlStmt = TDataBase.ReadSqlFile("Partner.Queries.ExtractByPartnerCity.sql");
-
-                OdbcParameter[] parameters = new OdbcParameter[3];
-                parameters[0] = new OdbcParameter("city", OdbcType.VarChar);
-                parameters[0].Value = AParameters.Get("param_city");
-                parameters[1] = new OdbcParameter("Date", OdbcType.Date);
-                parameters[1].Value = AParameters.Get("param_today").ToDate();
-                parameters[2] = new OdbcParameter("Date", OdbcType.Date);
-                parameters[2].Value = AParameters.Get("param_today").ToDate();
-
-                TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
-                DataTable partnerkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "partners", Transaction, parameters);
-
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-
-                // if this is taking a long time, every now and again update the TLogging statusbar, and check for the cancel button
-                // TODO: we might need to add this functionality to TExtractsHandling.CreateExtractFromListOfPartnerKeys as well???
-                if (AParameters.Get("CancelReportCalculation").ToBool() == true)
-                {
-                    return false;
-                }
-
-                TLogging.Log("preparing the extract", TLoggingType.ToStatusBar);
-
-                TVerificationResultCollection VerificationResult;
-                int NewExtractID;
-
-                // create an extract with the given name in the parameters
-                ReturnValue = TExtractsHandling.CreateExtractFromListOfPartnerKeys(
-                    AParameters.Get("param_extract_name").ToString(),
-                    AParameters.Get("param_extract_description").ToString(),
-                    out NewExtractID,
-                    out VerificationResult,
-                    partnerkeys,
-                    0,
-                    false);
-
-                if (ReturnValue)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
-                else
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-
-                return ReturnValue;
-            }
-            catch (Exception e)
-            {
-                TLogging.Log(e.ToString());
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                return false;
-            }
+            string SqlStmt = TDataBase.ReadSqlFile("Partner.Queries.ExtractByPartnerCity.sql");
+           
+            // create a new object of this class and control extract calculation from base class
+        	QueryPartnerByCity ExtractQuery = new QueryPartnerByCity();
+        	return ExtractQuery.CalculateExtractInternal(AParameters, SqlStmt, AResults);
+        }
+        
+        /// <summary>
+        /// retrieve parameters from client sent in AParameters and build up AParameterList to run SQL query
+        /// </summary>
+        /// <param name="AParameters"></param>
+        /// <param name="ASQLParameterList"></param>
+        protected override void RetrieveParameters (TParameterList AParameters, ref TSelfExpandingArrayList ASQLParameterList)
+        {
+            // now add parameters to sql parameter list
+            ASQLParameterList.Add(new OdbcParameter("city", OdbcType.VarChar)
+				{
+	              	Value = AParameters.Get("param_city").ToString()
+				});
+            ASQLParameterList.Add(new OdbcParameter("Date", OdbcType.Date)
+				{
+					Value = AParameters.Get("param_today").ToDate()
+				});
+            ASQLParameterList.Add(new OdbcParameter("Date", OdbcType.Date)
+				{
+					Value = AParameters.Get("param_today").ToDate()
+				});
         }
     }
 }

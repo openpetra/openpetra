@@ -234,6 +234,16 @@ namespace Ict.Petra.Shared.MPartner
             return (   ((TLocationPK)AObject).LocationKey == this.LocationKey
         	        && ((TLocationPK)AObject).SiteKey     == this.SiteKey);
         }
+        
+		/// <summary>
+		/// returns a unique hash code for this object
+		/// </summary>
+		/// <returns></returns>
+        public override int GetHashCode()
+		{
+        	return (int)FSiteKey + FLocationKey;
+	    }
+        
     }
     #endregion
 }
