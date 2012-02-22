@@ -4,7 +4,7 @@
     FormTitle: Partner By Event
     Namespace: Ict.Petra.Client.MReporting.Gui.MPersonnel
     TemplateParameters:
-        CALCULATEFROMMETHOD: Ict.Petra.Server.MPartner.queries.QueryPartnerByEvent.CalculateExtract
+        CALCULATEFROMMETHOD: Ict.Petra.Server.MPersonnel.queries.QueryPartnerByEvent.CalculateExtract
         ISOLATIONLEVEL: serializable
         #REPORTNAME: will be set in cs files later on as it covers both 'Partner By Conference' and 'Partner By Outreach'
         REPORTNAME:

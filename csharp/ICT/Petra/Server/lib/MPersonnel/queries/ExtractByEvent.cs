@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       wolfgangb
 //
 // Copyright 2004-2011 by OM International
 //
@@ -34,7 +34,7 @@ using Ict.Petra.Server.MCommon;
 using Ict.Petra.Server.MCommon.queries;
 using Ict.Petra.Server.MPartner.Extracts;
 
-namespace Ict.Petra.Server.MPartner.queries
+namespace Ict.Petra.Server.MPersonnel.queries
 {
     /// <summary>
     /// this report is quite simple, and should be used as an example for more complex reports and extracts

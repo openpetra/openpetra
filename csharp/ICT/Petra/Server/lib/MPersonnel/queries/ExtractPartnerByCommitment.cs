@@ -35,7 +35,7 @@ using Ict.Petra.Server.MCommon;
 using Ict.Petra.Server.MCommon.queries;
 using Ict.Petra.Server.MPartner.Extracts;
 
-namespace Ict.Petra.Server.MPartner.queries
+namespace Ict.Petra.Server.MPersonnel.queries
 {
     /// <summary>
     /// find all partners that match a commitment
