@@ -3,8 +3,9 @@
 //
 // @Authors:
 //       timop
+//       Tim Ingham
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -42,6 +43,8 @@ using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Server.MFinance.AP.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.Interfaces.MFinance.AP.UIConnectors;
+using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Server.MFinance.Account.Data.Access;
 #endregion ManualCode
 
 namespace Ict.Petra.Server.MFinance.AP.UIConnectors
@@ -79,6 +82,8 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
         /// <summary>Thread that is used for asynchronously executing the Find query</summary>
         Thread FFindThread;
 
+        Int32 FLedgerNumber;
+
         /// <summary>Returns reference to the Asynchronous execution control object to the caller</summary>
         public IAsynchronousExecutionProgress AsyncExecProgress
         {
@@ -95,13 +100,14 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
         {
         }
 
-        #region ManualCode
+        /// <summary>
+        /// If this is true, then search behaves a bit differently, with few filters on the server.
+        /// Other filters may applied by the user on the client.
+        /// </summary>
+        private bool FSearchTransactions = false;
 
         /// <summary>if true, then search for supplier; if false, then search for invoice</summary>
         private bool FSearchSupplierOrInvoice = false;
-
-        /// <summary>if true, then search for by partner key; if false, then search by supplier name</summary>
-        private bool FSearchByPartnerKeyOrSupplierName = false;
 
         /// <summary>
         /// Find a supplier or a list of suppliers matching the search criteria
@@ -109,6 +115,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
         /// <param name="ACriteriaData">HashTable containing non-empty Find parameters</param>
         public void FindSupplier(DataTable ACriteriaData)
         {
+            FSearchTransactions = false;
             FSearchSupplierOrInvoice = true;
             PerformSearch(ACriteriaData);
         }
@@ -119,11 +126,43 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
         /// <param name="ACriteriaData">Optional HashTable containing "DaysPlus" for "due by" calculation</param>
         public void FindInvoices(DataTable ACriteriaData)
         {
+            FSearchTransactions = false;
             FSearchSupplierOrInvoice = false;
             PerformSearch(ACriteriaData);
         }
 
-        #endregion
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ASupplierKey"></param>
+        public void FindSupplierTransactions(Int32 ALedgerNumber, Int64 ASupplierKey)
+        {
+            FSearchTransactions = true;
+
+            DataTable CriteriaTable = new DataTable();
+            CriteriaTable.Columns.Add("PartnerKey", typeof(Int64));
+            CriteriaTable.Columns.Add("LedgerNumber", typeof(Int32));
+
+            DataRow Row = CriteriaTable.NewRow();
+            Row["PartnerKey"] = ASupplierKey;
+            Row["LedgerNumber"] = ALedgerNumber;
+            CriteriaTable.Rows.Add(Row);
+
+            PerformSearch(CriteriaTable);
+        }
+
+        /// <summary>
+        /// Retrieve all the information for the current Ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns>ALedgerTable</returns>
+        public ALedgerTable GetLedgerInfo(Int32 ALedgerNumber)
+        {
+            ALedgerTable Tbl = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, null);
+
+            return Tbl;
+        }
 
         /// <summary>
         /// Procedure to execute a Find query. Although the full
@@ -146,27 +185,66 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             FAsyncExecProgress.StopAsyncronousExecution += new System.EventHandler(this.StopSearch);
 
             DataRow CriteriaRow = PrepareDataRow(ACriteriaData);
+            FLedgerNumber = (Int32)CriteriaRow["LedgerNumber"];
 
-            // Build WHERE criteria string based on ACriteriaData
-            OdbcParameter[] ParametersArray;
-            string WhereClause = BuildWhereClause(CriteriaRow, out ParametersArray);
-            string FieldList = BuildFieldList(CriteriaRow);
-            string FromClause = BuildFromClause(CriteriaRow, ref WhereClause);
-            string OrderByClause = BuildOrderByClause(CriteriaRow);
-
-            if (WhereClause.StartsWith(" AND") == true)
+            if (FSearchTransactions)
             {
-                WhereClause = WhereClause.Substring(4);
+                Int64 PartnerKey = Convert.ToInt64(CriteriaRow["PartnerKey"]);
+                String SqlQuery = "SELECT " +
+                                  "PUB_a_ap_document_payment.a_payment_number_i as ApNum, " +
+                                  "a_document_code_c||'-Payment' as InvNum, " +
+                                  "true as CreditNote, " +
+                                  "a_amount_n as Amount, " +
+                                  "'' as Status, " +
+                                  "0 as DiscountPercent, " +
+                                  "0 as DiscountDays, " +
+                                  "PUB_a_ap_document_payment.s_date_created_d as Date\n" +
+                                  " FROM PUB_a_ap_document_payment LEFT JOIN PUB_a_ap_document on PUB_a_ap_document_payment.a_ledger_number_i=PUB_a_ap_document.a_ledger_number_i"
+                                  +
+                                  " AND PUB_a_ap_document_payment.a_ap_number_i=PUB_a_ap_document.a_ap_number_i\n" +
+                                  " WHERE PUB_a_ap_document_payment.a_ledger_number_i=" + FLedgerNumber +
+                                  " AND p_partner_key_n=" + PartnerKey +
+                                  "\nUNION\n" +
+                                  " SELECT " +
+                                  "a_ap_number_i as ApNum, " +
+                                  "a_document_code_c as InvNum, " +
+                                  "a_credit_note_flag_l as CreditNote, " +
+                                  "a_total_amount_n as Amount, " +
+                                  "a_document_status_c as Status, " +
+                                  "a_discount_percentage_n as DiscountPercent, " +
+                                  "a_discount_days_i as DiscountDays, " +
+                                  "a_date_issued_d as Date\n" +
+                                  " FROM PUB_a_ap_document\n" +
+                                  " WHERE a_ledger_number_i=" + FLedgerNumber +
+                                  " AND p_partner_key_n=" + PartnerKey +
+                                  " ORDER BY Date DESC"
+                ;
+                FPagedDataSetObject.FindParameters = new TPagedDataSet.TAsyncFindParameters(SqlQuery);
             }
+            else
+            {
+                OdbcParameter[] ParametersArray;
 
-            Hashtable ColumnNameMapping = new Hashtable();
-            FPagedDataSetObject.FindParameters = new TPagedDataSet.TAsyncFindParameters(
-                FieldList,
-                FromClause,
-                WhereClause,
-                OrderByClause,
-                ColumnNameMapping,
-                ParametersArray);
+                // Build WHERE criteria string based on ACriteriaData
+                string WhereClause = BuildWhereClause(CriteriaRow, out ParametersArray);
+                string FieldList = BuildFieldList(CriteriaRow);
+                string FromClause = BuildFromClause(CriteriaRow, ref WhereClause);
+                string OrderByClause = BuildOrderByClause(CriteriaRow);
+
+                if (WhereClause.StartsWith(" AND") == true)
+                {
+                    WhereClause = WhereClause.Substring(4);
+                }
+
+                Hashtable ColumnNameMapping = new Hashtable();
+                FPagedDataSetObject.FindParameters = new TPagedDataSet.TAsyncFindParameters(
+                    FieldList,
+                    FromClause,
+                    WhereClause,
+                    OrderByClause,
+                    ColumnNameMapping,
+                    ParametersArray);
+            }
 
             //
             // Start the Find Thread
@@ -218,6 +296,38 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
         }
 
         /// <summary>
+        /// Find out how much has already been paid off this invoice.
+        /// (Also called from EditTransaction.)
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ApDocumentRef"></param>
+        /// <param name="DocPaymntTbl">If this is null, a temporary reference is created.</param>
+        /// <returns>Amount already paid</returns>
+        [NoRemoting]
+        public static Decimal GetPartPaidAmount(Int32 ALedgerNumber, Int32 ApDocumentRef, AApDocumentPaymentTable DocPaymntTbl)
+        {
+            if (DocPaymntTbl == null)
+            {
+                DocPaymntTbl = new AApDocumentPaymentTable();
+            }
+
+            Decimal PaidAmount = 0m;
+            AApDocumentPaymentRow DocumentPaymentTemplate = DocPaymntTbl.NewRowTyped(false);
+            DocumentPaymentTemplate.LedgerNumber = ALedgerNumber;
+            DocumentPaymentTemplate.ApNumber = ApDocumentRef;
+
+            AApDocumentPaymentTable PreviousPayments =
+                AApDocumentPaymentAccess.LoadUsingTemplate(DocumentPaymentTemplate, null);
+
+            foreach (AApDocumentPaymentRow PrevPaymentRow in PreviousPayments.Rows)
+            {
+                PaidAmount += PrevPaymentRow.Amount;
+            }
+
+            return PaidAmount;
+        }
+
+        /// <summary>
         /// Returns the specified find results page.
         ///
         /// @comment Pages can be requested in any order!
@@ -241,6 +351,37 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             }
 #endif
             ReturnValue = FPagedDataSetObject.GetData(APage, APageSize);
+
+            if (!FSearchTransactions && !FSearchSupplierOrInvoice) // If any of the invoices are part-paid, I want to retrieve the outstanding amount.
+
+            {
+                try  // I need an extra column, but it might be already present - I can't really tell without generating an exception!
+                {
+                    DataColumn NewColumn = new DataColumn("OutstandingAmount", typeof(Decimal));
+                    ReturnValue.Columns.Add(NewColumn);
+                }
+                catch (Exception)
+                {
+                }
+
+                foreach (DataRow Row in ReturnValue.Rows)
+                {
+                    Row["OutstandingAmount"] = (Decimal)Row["a_total_amount_n"];
+
+                    if (Row["a_document_status_c"].Equals(MFinanceConstants.AP_DOCUMENT_PAID))
+                    {
+                        Row["OutstandingAmount"] = 0.0m;
+                    }
+
+                    if (Row["a_document_status_c"].Equals(MFinanceConstants.AP_DOCUMENT_PARTIALLY_PAID))
+                    {
+                        Row["OutstandingAmount"] = (Decimal)Row["a_total_amount_n"] - GetPartPaidAmount(FLedgerNumber,
+                            (Int32)Row["a_ap_number_i"],
+                            null);
+                    }
+                }
+            }
+
             ATotalPages = FPagedDataSetObject.TotalPages;
             ATotalRecords = FPagedDataSetObject.TotalRecords;
 
@@ -259,16 +400,15 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
         {
             try
             {
+                ACriteriaTable.Columns.Add("PartnerKey", typeof(Int64));
+                ACriteriaTable.Rows[0]["PartnerKey"] = 0;
+
                 // try if this is a partner key
                 Int64 SupplierPartnerKey = Convert.ToInt64(ACriteriaTable.Rows[0]["SupplierId"]);
-                ACriteriaTable.Columns.Add("PartnerKey", typeof(Int64));
                 ACriteriaTable.Rows[0]["PartnerKey"] = SupplierPartnerKey;
-                FSearchByPartnerKeyOrSupplierName = true;
             }
             catch (Exception)
             {
-                // this is just a partner short name
-                FSearchByPartnerKeyOrSupplierName = false;
             }
             return ACriteriaTable.Rows[0];
         }
@@ -284,18 +424,8 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             ArrayList InternalParameters = new ArrayList();
             string WhereClause = "";
 
-            if (FSearchByPartnerKeyOrSupplierName == true)
+            if (FSearchSupplierOrInvoice) // Search by supplier name
             {
-                // search by partner key
-                Int64 SupplierPartnerKey = Convert.ToInt64(ACriteriaRow["PartnerKey"]);
-                WhereClause += String.Format(" AND PUB_{0}.{1} = ?", AApSupplierTable.GetTableDBName(), AApSupplierTable.GetPartnerKeyDBName());
-                OdbcParameter Param = TTypedDataTable.CreateOdbcParameter(AApSupplierTable.TableId, AApSupplierTable.ColumnPartnerKeyId);
-                Param.Value = SupplierPartnerKey;
-                InternalParameters.Add(Param);
-            }
-            else
-            {
-                // search by supplier name
                 if (((String)ACriteriaRow["SupplierId"]).Length > 0) // If the search box is empty, I'll not add this at all...
                 {
                     WhereClause += String.Format(" AND {0} LIKE ?", PPartnerTable.GetPartnerShortNameDBName());
@@ -306,11 +436,22 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                     InternalParameters.Add(Param);
                 }
             }
-
-            if (!FSearchSupplierOrInvoice) // I'm looking for a list of outstanding invoices
+            else // I'm looking for a list of outstanding invoices
             {
+                // search by partner key
+                Int64 SupplierPartnerKey = Convert.ToInt64(ACriteriaRow["PartnerKey"]);
+                OdbcParameter Param;
+
+                if (SupplierPartnerKey > 0)
+                {
+                    WhereClause += String.Format(" AND PUB_{0}.{1} = ?", AApSupplierTable.GetTableDBName(), AApSupplierTable.GetPartnerKeyDBName());
+                    Param = TTypedDataTable.CreateOdbcParameter(AApSupplierTable.TableId, AApSupplierTable.ColumnPartnerKeyId);
+                    Param.Value = SupplierPartnerKey;
+                    InternalParameters.Add(Param);
+                }
+
                 WhereClause += String.Format(" AND {0}=?", AApDocumentTable.GetLedgerNumberDBName());
-                OdbcParameter Param = TTypedDataTable.CreateOdbcParameter(AApDocumentTable.TableId, AApDocumentTable.ColumnLedgerNumberId);
+                Param = TTypedDataTable.CreateOdbcParameter(AApDocumentTable.TableId, AApDocumentTable.ColumnLedgerNumberId);
                 Param.Value = (Int32)ACriteriaRow["LedgerNumber"];
                 InternalParameters.Add(Param);
 
@@ -334,7 +475,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
         }
 
         /// <summary>
-        /// build the list of fields to be returned
+        /// Build the list of fields to be returned
         /// </summary>
         /// <param name="ACriteriaRow"></param>
         /// <returns></returns>
@@ -353,7 +494,8 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                        DocTbl + AApDocumentTable.GetDateIssuedDBName() + "," +
                        DocTbl + AApDocumentTable.GetDateIssuedDBName() + "+" + DocTbl + AApDocumentTable.GetCreditTermsDBName() + "," +
                        DocTbl + AApDocumentTable.GetDiscountPercentageDBName() + "," +
-                       DocTbl + AApDocumentTable.GetDateIssuedDBName() + "+" + DocTbl + AApDocumentTable.GetDiscountDaysDBName();
+                       DocTbl + AApDocumentTable.GetDateIssuedDBName() + "+" + DocTbl + AApDocumentTable.GetDiscountDaysDBName() + "," +
+                       DocTbl + AApDocumentTable.GetCreditNoteFlagDBName();
             }
             else    // Find Suppliers
             {

@@ -413,9 +413,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 afaRow = (AFreeformAnalysisRow)FCacheDS.AFreeformAnalysis.Rows.Find(PrimaryKey);
                 AccessOk = true;
             }
-            catch (Exception exc)
+            catch (Exception)
             {
-                Type ExcType = exc.GetType();
                 cmbDetailAnalysisAttributeValue.ForeColor = System.Drawing.Color.Red;
             }
 

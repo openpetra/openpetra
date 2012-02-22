@@ -1,31 +1,38 @@
 <PetraDataSets>
   <ImportUnit name="Ict.Petra.Shared.MFinance.Account.Data"/>
+  <ImportUnit name="Ict.Petra.Shared.MPartner.Partner.Data"/>
   
     <DataSet name="AccountsPayableTDS">
         <Table sqltable="a_ap_supplier"/>
         <Table sqltable="a_ap_document">
             <CustomField name="Tagged" type="Boolean"/>
             <CustomField name="DateDue" type="DateTime" notnull="true"/>
+            <CustomField name="OutstandingAmount" type="Decimal"/>
         </Table>
         <Table sqltable="a_ap_document_detail">
             <CustomField name="AnalAttr" type="string"/>
         </Table>
         <Table sqltable="a_ap_document_payment">
-            <CustomField name="TotalAmountToPay" type="Decimal"/>
             <CustomField name="UseDiscount" type="Boolean"/>
-            <CustomField name="PayFullInvoice" type="Boolean"/>
             <CustomField name="HasValidDiscount" type="Boolean"/>
             <CustomField name="DiscountPercentage" type="Decimal"/>
+            <CustomField name="DocumentCode" type="string"/>
+            <CustomField name="DocType" type="string"/>
+            <CustomField name="CurrencyCode" type="string"/>
+            <CustomField name="PayFullInvoice" type="Boolean"/>
+            <CustomField name="InvoiceTotal" type="Decimal"/>
         </Table>
         <Table sqltable="a_ap_payment">
             <CustomField name="SupplierKey" type="Int64"/>
             <CustomField name="SupplierName" type="string"/>
             <CustomField name="CurrencyCode" type="string"/>
             <CustomField name="ListLabel" type="string"/>
+            <CustomField name="TotalAmountToPay" type="Decimal"/>
         </Table>
         <Table sqltable="a_ap_anal_attrib"/>
         <Table sqltable="a_analysis_attribute"/>
         <Table sqltable="a_freeform_analysis"/>
+        <Table sqltable="p_partner"/>
     </DataSet> 
     
 </PetraDataSets>

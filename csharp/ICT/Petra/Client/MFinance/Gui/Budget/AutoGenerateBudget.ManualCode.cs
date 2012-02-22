@@ -154,7 +154,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             {
                 Cursor.Current = Cursors.WaitCursor;
 
-                bool LoadBudgetData = TRemote.MFinance.Budget.WebConnectors.LoadBudgetForConsolidate(FLedgerNumber);
+                TRemote.MFinance.Budget.WebConnectors.LoadBudgetForConsolidate(FLedgerNumber);
 
                 TRemote.MFinance.Budget.WebConnectors.ConsolidateBudgets(FLedgerNumber, ConsolidateAll, out VerificationResult);
 
@@ -180,7 +180,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                         /* Generate report. Parameters are recid of the budget and the forecast type.
                          * RUN gb4000.p (RECID(a_budget), rad_forecast_type_c:SCREEN-VALUE).*/
                         int BudgetItemNo = Convert.ToInt32(BudgetItem);
-                        bool GenBudget = TRemote.MFinance.Budget.WebConnectors.GenBudgetForNextYear(FLedgerNumber, BudgetItemNo, ForecastType);
+                        TRemote.MFinance.Budget.WebConnectors.GenBudgetForNextYear(FLedgerNumber, BudgetItemNo, ForecastType);
                     }
 
                     MessageBox.Show("Budget Auto-Generate Complete.");

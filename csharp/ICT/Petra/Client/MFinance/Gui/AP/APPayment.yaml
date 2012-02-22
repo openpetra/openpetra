@@ -11,16 +11,20 @@ RootNode:
     WindowHeight: 600
     Actions:
         actMakePayment: {Label=&Make Payment, ActionClick=MakePayment}
+        actPayPartial:
+            ActionClick: EnablePartialPayment
     Controls:
         pnlContent:
-            Controls: [grpPaymentList, pnlSupplierDetails, grpDetails]
             Dock: Fill
+            Controls: 
+                Row0: [grpPaymentList, pnlSupplierDetails]
+                Row1: [grpDetails]
         grpPaymentList:
-            RowSpan: 2
             Label: Suppliers to Pay
             Controls: [grdPayments]
             Dock: Left
             Width: 200
+            Height: 250
         grdPayments:
             Dock: Fill
             ActionFocusRow: FocusedRowChanged
@@ -50,20 +54,18 @@ RootNode:
         grdDetails:
             Dock: Fill
             DetailTable: true
-            #Columns: [AApDocumentPayment.Amount, AApDocumentDetail.Narrative, AApDocumentDetail.ItemRef]
             ActionFocusRow: FocusedRowChangedDetails
         pnlDetails:
             Controls: [rgrAmountToPay, chkClaimDiscount, txtAmountToPay]
             Dock: Bottom
         rgrAmountToPay:
             OptionalValues: [PayFullOutstandingAmount, PayAPartialAmount]
+            Action: actPayPartial
         chkClaimDiscount:
             # TODO: allow discounts
             CheckBoxAttachedLabel: right
             ReadOnly: true
         txtAmountToPay:
-            # TODO: allow partial payments
-            ReadOnly: true
         txtCurrency: {Label=Currency, ReadOnly=true, DataField=AApSupplier.CurrencyCode}
         cmbPaymentType:
             OptionalValues: [=Cash, Cheque]
@@ -78,4 +80,3 @@ RootNode:
             ReadOnly: true
     Toolbar:
         tbbMakePayment:
-        tbbSplitByInvoice:

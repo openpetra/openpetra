@@ -44,7 +44,6 @@ using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPersonnel.Person;
-using Ict.Petra.Shared.MPersonnel.Units;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Petra.Shared.MPersonnel.Units.Data;

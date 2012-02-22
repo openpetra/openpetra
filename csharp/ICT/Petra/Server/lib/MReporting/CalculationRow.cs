@@ -514,7 +514,9 @@ namespace Ict.Petra.Server.MReporting
                         return ReturnValue;
                     }
 
-                    if ((ReturnValue.ToString().ToUpper().IndexOf("SELECT") >= 0) && (ReturnValue.ToString().ToUpper().IndexOf("SELECT") <= 3))
+                    int SelectPos = ReturnValue.ToString().ToUpper().IndexOf("SELECT");
+
+                    if ((SelectPos >= 0) && (SelectPos <= 3))
                     {
                         // this is an sql statement and not a function result
                         tab = DatabaseConnection.SelectDT(ReturnValue.ToString(), "", DatabaseConnection.Transaction);

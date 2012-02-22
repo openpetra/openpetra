@@ -3,8 +3,9 @@
 //
 // @Authors:
 //       timop
+//       Tim Ingham
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -35,11 +36,14 @@ using Ict.Petra.Client.MFinance.Gui.GL;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Shared.Interfaces.MFinance.AP.UIConnectors;
 
 namespace Ict.Petra.Client.MFinance.Gui.AP
 {
     public partial class TFrmAPEditDocument
     {
+        ALedgerRow FLedgerRow = null;
+
         private void InitializeManualCode()
         {
         }
@@ -51,7 +55,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private void EnableControls()
         {
             // I need to make everything read-only if this document was already posted.
-            if ("|POSTED|PARTPAID|PAID|".IndexOf(FMainDS.AApDocument[0].DocumentStatus) > 0)
+            if ("|POSTED|PARTPAID|PAID|".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) > 0)
             {
                 tbbPostDocument.Enabled = false;
 
@@ -86,26 +90,33 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
         }
 
-        private bool DetailLineAttributesRequired(ref bool AllPresent, AApDocumentDetailRow DetailRow)
+        private static bool DetailLineAttributesRequired(ref bool AllPresent, AccountsPayableTDS Atds, AApDocumentDetailRow DetailRow)
         {
-            FMainDS.AAnalysisAttribute.DefaultView.RowFilter =
+            Atds.AAnalysisAttribute.DefaultView.RowFilter =
                 String.Format("{0}={1}", AAnalysisAttributeTable.GetAccountCodeDBName(), DetailRow.AccountCode);         // Do I need Cost Centre in here too?
 
-            if (FMainDS.AAnalysisAttribute.DefaultView.Count > 0)
+            if (Atds.AAnalysisAttribute.DefaultView.Count > 0)
             {
-                btnAnalysisAttributes.Enabled = true;
                 bool IhaveAllMyAttributes = true;
 
-                foreach (DataRowView rv in FMainDS.AAnalysisAttribute.DefaultView)
+                //
+                // It's possible that my TDS doesn't even have an AnalAttrib table...
+
+                if (Atds.AApAnalAttrib == null)
+                {
+                    Atds.Merge(new AApAnalAttribTable());
+                }
+
+                foreach (DataRowView rv in Atds.AAnalysisAttribute.DefaultView)
                 {
                     AAnalysisAttributeRow AttrRow = (AAnalysisAttributeRow)rv.Row;
 
-                    FMainDS.AApAnalAttrib.DefaultView.RowFilter =
+                    Atds.AApAnalAttrib.DefaultView.RowFilter =
                         String.Format("{0}={1} AND {2}={3}",
                             AApAnalAttribTable.GetDetailNumberDBName(), DetailRow.DetailNumber,
                             AApAnalAttribTable.GetAccountCodeDBName(), AttrRow.AccountCode);
 
-                    if (FMainDS.AApAnalAttrib.DefaultView.Count == 0)
+                    if (Atds.AApAnalAttrib.DefaultView.Count == 0)
                     {
                         IhaveAllMyAttributes = false;
                         break;
@@ -151,8 +162,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             bool AllPresent = true;
 
-            if (DetailLineAttributesRequired(ref AllPresent, FPreviouslySelectedDetailRow))
+            if (DetailLineAttributesRequired(ref AllPresent, FMainDS, FPreviouslySelectedDetailRow))
             {
+                btnAnalysisAttributes.Enabled = true;
+
                 if (AllPresent)
                 {
                     btnAnalysisAttributes.ForeColor = System.Drawing.Color.Green;             // This detail line is fully specified
@@ -170,13 +183,20 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private void ShowDataManual()
         {
-            txtTotalAmount.CurrencySymbol = FMainDS.AApSupplier[0].CurrencyCode;
-            txtDetailAmount.CurrencySymbol = FMainDS.AApSupplier[0].CurrencyCode;
+            AccountsPayableTDSAApDocumentRow DocumentRow = FMainDS.AApDocument[0];
+            AApSupplierRow SupplierRow = FMainDS.AApSupplier[0];
 
-            // Create Text description of Anal Attribs for each DetailRow..
+            txtTotalAmount.CurrencySymbol = SupplierRow.CurrencyCode;
+            txtDetailAmount.CurrencySymbol = SupplierRow.CurrencyCode;
+
+            IAPUIConnectorsFind FSupplierFindObject = TRemote.MFinance.AP.UIConnectors.Find();
+            ALedgerTable Tbl = FSupplierFindObject.GetLedgerInfo(DocumentRow.LedgerNumber);
+            FLedgerRow = Tbl[0];
+            txtDetailBaseAmount.CurrencySymbol = FLedgerRow.BaseCurrency;
 
             if (FMainDS.AApDocumentDetail != null) // When the form is new, this can be null.
             {
+                // Create Text description of Anal Attribs for each DetailRow..
                 foreach (AccountsPayableTDSAApDocumentDetailRow DetailRow in FMainDS.AApDocumentDetail.Rows)
                 {
                     string strAnalAttr = "";
@@ -258,7 +278,12 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             // I have to prevent the auto-generated code from attempting to access this deleted row.
             grdDetails.Selection.SelectRow(rowIndex, true);
             FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-            ShowDetails(FPreviouslySelectedDetailRow);
+
+            if (FPreviouslySelectedDetailRow != null)
+            {
+                ShowDetails(FPreviouslySelectedDetailRow);
+            }
+
             // Then I need to re-draw the grid, and enable controls as appropriate.
             grdDetails.Refresh();
             FPetraUtilsObject.SetChangedFlag();
@@ -346,13 +371,22 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
         }
 
-        private bool BatchBalancesOK()
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="Atds"></param>
+        /// <param name="AApDocument"></param>
+        /// <returns>true if the document TotalAmount equals the sum of its parts!</returns>
+        public static bool BatchBalancesOK(AccountsPayableTDS Atds, AApDocumentRow AApDocument)
         {
-            decimal DocumentBalance = FMainDS.AApDocument[0].TotalAmount;
+            decimal DocumentBalance = AApDocument.TotalAmount;
 
-            foreach (AApDocumentDetailRow Row in FMainDS.AApDocumentDetail.Rows)
+            foreach (AApDocumentDetailRow Row in Atds.AApDocumentDetail.Rows)
             {
-                DocumentBalance -= Row.Amount;
+                if (Row.ApNumber == AApDocument.ApNumber) // NOTE: When called from elsewhere, the TDS could contain data for several documents.
+                {
+                    DocumentBalance -= Row.Amount;
+                }
             }
 
             if (DocumentBalance == 0.0m)
@@ -367,20 +401,29 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
         }
 
-        private bool AllLinesHaveAttributes()
+        /// <summary>
+        /// Check the required analysis attributes for the detail lines in this invoice
+        /// </summary>
+        /// <param name="Atds"></param>
+        /// <param name="AApDocument"></param>
+        /// <returns>false if any lines don't have the analysis attributes they require</returns>
+        public static bool AllLinesHaveAttributes(AccountsPayableTDS Atds, AApDocumentRow AApDocument)
         {
-            foreach (AApDocumentDetailRow Row in FMainDS.AApDocumentDetail.Rows)
+            foreach (AApDocumentDetailRow Row in Atds.AApDocumentDetail.Rows)
             {
-                bool AllPresent = true;
-
-                if (DetailLineAttributesRequired(ref AllPresent, Row))
+                if (Row.ApNumber == AApDocument.ApNumber)  // NOTE: When called from elsewhere, the TDS could contain data for several documents.
                 {
-                    if (!AllPresent)
+                    bool AllPresent = true;
+
+                    if (DetailLineAttributesRequired(ref AllPresent, Atds, Row))
                     {
-                        System.Windows.Forms.MessageBox.Show(
-                            String.Format(Catalog.GetString("Analysis Attributes are required for account {0}."), Row.AccountCode),
-                            Catalog.GetString("Analysis Attributes"));
-                        return false;
+                        if (!AllPresent)
+                        {
+                            System.Windows.Forms.MessageBox.Show(
+                                String.Format(Catalog.GetString("Analysis Attributes are required for account {0}."), Row.AccountCode),
+                                Catalog.GetString("Analysis Attributes"));
+                            return false;
+                        }
                     }
                 }
             }
@@ -389,63 +432,61 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         }
 
         /// <summary>
-        /// Post document as a GL Batch
-        /// see very similar function in TFrmAPSupplierTransactions
+        /// This static function is called from several places
         /// </summary>
-        private void PostDocument(object sender, EventArgs e)
+        /// <param name="Atds"></param>
+        /// <param name="Adocument"></param>
+        /// <returns>true if this document seems OK to post.</returns>
+        public static bool ApDocumentCanPost(AccountsPayableTDS Atds, AApDocumentRow Adocument)
         {
-            List <Int32>TaggedDocuments = new List <Int32>();
-
-            TaggedDocuments.Add(FMainDS.AApDocument[0].ApNumber);
-
-            if (TaggedDocuments.Count == 0)
-            {
-                return;
-            }
-
-            GetDataFromControls(FMainDS.AApDocument[0]);
-
-            // TODO: make sure that there are uptodate exchange rates
-
             // If the batch will not balance, or required attributes are missing, I'll stop right here..
             bool CanPost = true;
 
-            if (!BatchBalancesOK())
+            if (!BatchBalancesOK(Atds, Adocument))
             {
                 CanPost = false;
             }
 
-            if (!AllLinesHaveAttributes())
+            if (!AllLinesHaveAttributes(Atds, Adocument))
             {
                 CanPost = false;
             }
 
-            if (!CanPost)
-            {
-                return;
-            }
+            return CanPost;
+        }
 
+        /// <summary>
+        /// Post a list of AP documents
+        /// This static function is called from several places
+        /// /// </summary>
+        /// <returns>true if everything went OK</returns>
+        public static bool PostApDocumentList(AccountsPayableTDS Atds, int ALedgerNumber, List <int>AApDocumentNumbers)
+        {
             TVerificationResultCollection Verifications;
 
             TDlgGLEnterDateEffective dateEffectiveDialog = new TDlgGLEnterDateEffective(
-                FMainDS.AApDocument[0].LedgerNumber,
+                ALedgerNumber,
                 Catalog.GetString("Select posting date"),
                 Catalog.GetString("The date effective for posting") + ":");
 
             if (dateEffectiveDialog.ShowDialog() != DialogResult.OK)
             {
-                MessageBox.Show(Catalog.GetString("The payment was cancelled."), Catalog.GetString(
+                MessageBox.Show(Catalog.GetString("Posting was cancelled."), Catalog.GetString(
                         "No Success"), MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+                return false;
             }
 
             DateTime PostingDate = dateEffectiveDialog.SelectedDate;
 
-            if (!TRemote.MFinance.AP.WebConnectors.PostAPDocuments(
-                    FMainDS.AApDocument[0].LedgerNumber,
-                    TaggedDocuments,
+            if (TRemote.MFinance.AP.WebConnectors.PostAPDocuments(
+                    ALedgerNumber,
+                    AApDocumentNumbers,
                     PostingDate,
                     out Verifications))
+            {
+                return true;
+            }
+            else
             {
                 string ErrorMessages = String.Empty;
 
@@ -458,7 +499,30 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                 System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Posting failed"));
             }
-            else
+
+            return false;
+        }
+
+        /// <summary>
+        /// Post document as a GL Batch
+        /// See very similar function in TFrmAPSupplierTransactions
+        /// </summary>
+        private void PostDocument(object sender, EventArgs e)
+        {
+            GetDataFromControls(FMainDS.AApDocument[0]);
+
+            // TODO: make sure that there are uptodate exchange rates
+
+            if (!ApDocumentCanPost(FMainDS, FMainDS.AApDocument[0]))
+            {
+                return;
+            }
+
+            List <Int32>TaggedDocuments = new List <Int32>();
+
+            TaggedDocuments.Add(FMainDS.AApDocument[0].ApNumber);
+
+            if (PostApDocumentList(FMainDS, FMainDS.AApDocument[0].LedgerNumber, TaggedDocuments))
             {
                 // TODO: print reports on successfully posted batch
                 MessageBox.Show(Catalog.GetString("The AP document has been posted successfully!"));
@@ -473,6 +537,17 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     ((TFrmAPSupplierTransactions)Opener).Reload();
                 }
             }
+        }
+
+        private void PayDocument(object sender, EventArgs e)
+        {
+            TFrmAPPayment PaymentScreen = new TFrmAPPayment(this);
+
+            List <int>PayTheseDocs = new List <int>();
+
+            PayTheseDocs.Add(FMainDS.AApDocument[0].ApNumber);
+            PaymentScreen.AddDocumentsToPayment(FMainDS, PayTheseDocs);
+            PaymentScreen.Show();
         }
     }
 }
