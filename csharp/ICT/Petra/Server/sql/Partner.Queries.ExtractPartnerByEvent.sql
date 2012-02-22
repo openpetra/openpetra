@@ -1,6 +1,7 @@
 SELECT DISTINCT pub_p_partner.p_partner_key_n,
        pub_p_partner.p_partner_short_name_c
-FROM pub_p_partner, pub_pm_short_term_application, pm_general_application ##address_filter_table_names##
+       ##address_filter_fields##
+FROM pub_p_partner, pub_pm_short_term_application, pm_general_application ##address_filter_tables##
 WHERE pub_pm_short_term_application.pm_st_confirmed_option_n IN (?)
     AND NOT pub_pm_short_term_application.pm_st_basic_delete_flag_l
     AND pub_pm_general_application.p_partner_key_n  = pub_pm_short_term_application.p_partner_key_n
@@ -17,3 +18,4 @@ WHERE pub_pm_short_term_application.pm_st_confirmed_option_n IN (?)
     AND (NOT ? OR NOT pub_p_partner.p_no_solicitations_l )
  ##address_filter_where_clause##    
 ORDER BY pub_p_partner.p_partner_short_name_c
+##address_filter_order_by_clause##
