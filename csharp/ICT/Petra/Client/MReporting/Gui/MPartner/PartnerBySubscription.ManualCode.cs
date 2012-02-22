@@ -82,6 +82,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
                 tabReportSettings.Controls.Remove(tpgColumns);
                 tabReportSettings.Controls.Remove(tpgReportSorting);
             }
+
+            // enable autofind in list for first character (so the user can press character to find list entry)
+            this.clbIncludePublication.AutoFindColumn = ((Int16)(1));
+            this.clbIncludePublication.AutoFindMode = Ict.Common.Controls.TAutoFindModeEnum.FirstCharacter;
         }
         
         private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)

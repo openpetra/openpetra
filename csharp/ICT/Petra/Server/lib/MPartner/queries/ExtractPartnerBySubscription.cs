@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Odbc;
 using Ict.Common;
@@ -52,46 +53,31 @@ namespace Ict.Petra.Server.MPartner.queries
                 Boolean ReturnValue = false;
                 Boolean NewTransaction;
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
-
+                bool AddressFilterAdded;
+                
                 string SqlStmt = TDataBase.ReadSqlFile("Partner.Queries.ExtractPartnerBySubscription.sql");
 
-                int Index = 0;
-                int SizeOfArray;
-                String ValueList;
-                String ListValue;
-                String ParameterList = "";
-
-                // set array to correct size depending on number of publications selected
-                ValueList = AParameters.Get("param_explicit_publication").ToString();
-                SizeOfArray = StringHelper.CountOccurencesOfChar(ValueList, ',') + 1;
-
-                OdbcParameter[] parameters = new OdbcParameter[SizeOfArray];
-                Index = 0;
-                ListValue = StringHelper.GetNextCSV(ref ValueList, ",");
-
-                while (ListValue != "")
+                // prepare list of selected publications
+                List <String>param_explicit_publication = new List <String>();
+                foreach (TVariant choice in AParameters.Get("param_explicit_publication").ToComposite())
                 {
-                    parameters[Index] = new OdbcParameter("publication" + Index.ToString(), OdbcType.VarChar);
-                    parameters[Index].Value = ListValue;
-                    Index++;
-
-                    if (ParameterList.Length == 0)
-                    {
-                        ParameterList = "?";
-                    }
-                    else
-                    {
-                        ParameterList = ParameterList + ",?";
-                    }
-
-                    ListValue = StringHelper.GetNextCSV(ref ValueList, ",");
+                    param_explicit_publication.Add(choice.ToString());
                 }
 
-                SqlStmt = SqlStmt.Replace("##ParameterList##", ParameterList);
+                // add parameters to ArrayList
+                TSelfExpandingArrayList parameterList = new TSelfExpandingArrayList();
+                parameterList.Add(TDbListParameterValue.OdbcListParameterValue("param_explicit_publication",
+                                                                               OdbcType.VarChar,
+                                                                               param_explicit_publication));
 
+                
+                // add address filter information to sql statement and parameter list
+                AddressFilterAdded = TExtractHelper.AddAddressFilter(AParameters, ref SqlStmt, ref parameterList);
+                
                 TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
-                DataTable partnerkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "partners", Transaction, parameters);
-
+                DataTable partnerkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "partners", Transaction,
+                    TExtractHelper.ConvertParameterArrayList(parameterList));
+                
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.RollbackTransaction();
@@ -116,7 +102,8 @@ namespace Ict.Petra.Server.MPartner.queries
                     out NewExtractID,
                     out VerificationResult,
                     partnerkeys,
-                    0);
+                    0,
+                    AddressFilterAdded);
 
                 if (ReturnValue)
                 {

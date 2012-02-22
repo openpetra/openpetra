@@ -105,7 +105,7 @@ namespace Ict.Petra.Server.MPartner.queries
                     });
 
                 // add address filter information to sql statement and parameter list
-                TExtractHelper.AddAddressFilter(AParameters, ref SqlStmt, ref parameterList, out AddressFilterAdded);
+                AddressFilterAdded = TExtractHelper.AddAddressFilter(AParameters, ref SqlStmt, ref parameterList);
 
                 // now run the database query
                 TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
@@ -136,7 +136,8 @@ namespace Ict.Petra.Server.MPartner.queries
                     out NewExtractID,
                     out VerificationResult,
                     partnerkeys,
-                    0);
+                    0,
+                    AddressFilterAdded);
 
                 if (ReturnValue)
                 {

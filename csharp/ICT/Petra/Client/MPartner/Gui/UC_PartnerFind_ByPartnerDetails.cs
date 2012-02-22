@@ -1140,7 +1140,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void BtnClearCriteria_Click(System.Object sender, System.EventArgs e)
         {
             ucoPartnerFindCriteria.ResetSearchCriteriaValuesToDefault();
-            FPartnerInfoUC.ClearControls();
+            if (FPartnerInfoUC != null)
+            {
+                FPartnerInfoUC.ClearControls();
+            }
             lblSearchInfo.Text = "";
             grpResult.Text = Resourcestrings.StrSearchResult;
             grdResult.SendToBack();

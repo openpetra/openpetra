@@ -90,7 +90,8 @@ namespace Ict.Petra.Server.MPartner.queries
                     out NewExtractID,
                     out VerificationResult,
                     partnerkeys,
-                    0);
+                    0,
+                    false);
 
                 if (ReturnValue)
                 {

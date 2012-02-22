@@ -53,49 +53,61 @@ namespace Ict.Petra.Server.MPartner.queries
                 Boolean ReturnValue = false;
                 Boolean NewTransaction;
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+                bool AddressFilterAdded;
 
                 string SqlStmt = TDataBase.ReadSqlFile("Partner.Queries.ExtractPartnerByEvent.sql");
 
-                ICollection <String>param_events;
-
-                param_events = AParameters.Get("param_events").ToString().Split(new Char[] { ',', });
-
+                
+                // prepare list of selected events
+                List <String>param_events = new List <String>();
+                foreach (TVariant choice in AParameters.Get("param_events").ToComposite())
+                {
+                    param_events.Add(choice.ToString());
+                }
                 if (param_events.Count == 0)
                 {
                     throw new NoNullAllowedException("At least one option must be checked.");
                 }
 
-                OdbcParameter[] parameters = new OdbcParameter[]
-                {
-                    TDbListParameterValue.OdbcListParameterValue("events", OdbcType.BigInt, param_events),
-                    new OdbcParameter("Accepted", OdbcType.Bit) {
-                        Value = AParameters.Get("param_status_accepted").ToBool()
-                    },
-                    new OdbcParameter("Hold", OdbcType.Bit) {
-                        Value = AParameters.Get("param_status_hold").ToBool()
-                    },
-                    new OdbcParameter("Enquiry", OdbcType.Bit) {
-                        Value = AParameters.Get("param_status_enquiry").ToBool()
-                    },
-                    new OdbcParameter("Cancelled", OdbcType.Bit) {
-                        Value = AParameters.Get("param_status_cancelled").ToBool()
-                    },
-                    new OdbcParameter("Rejected", OdbcType.Bit) {
-                        Value = AParameters.Get("param_status_rejected").ToBool()
-                    },
-                    new OdbcParameter("Active", OdbcType.Bit) {
-                        Value = AParameters.Get("param_active_partners").ToBool()
-                    },
-                    new OdbcParameter("Exclude_no_soliciations", OdbcType.Bit) {
-                        Value = AParameters.Get("param_exclude_no_solicitations").ToBool()
-                    },
-                    //new OdbcParameter("Mailing_Addresses_Only", OdbcType.Bit) {
-                    //    Value = AParameters.Get("param_mailing_addresses_only").ToBool()
-                    //},
-                };
+                // add parameters to ArrayList
+                TSelfExpandingArrayList parameterList = new TSelfExpandingArrayList();
 
+                parameterList.Add(TDbListParameterValue.OdbcListParameterValue("events", OdbcType.BigInt, param_events));
+                parameterList.Add(new OdbcParameter("Accepted", OdbcType.Bit) 
+                    {
+                        Value = AParameters.Get("param_status_accepted").ToBool()
+                    });
+                parameterList.Add(new OdbcParameter("Hold", OdbcType.Bit)
+                    {
+                        Value = AParameters.Get("param_status_hold").ToBool()
+                    });
+                parameterList.Add(new OdbcParameter("Enquiry", OdbcType.Bit)
+                    {
+                        Value = AParameters.Get("param_status_enquiry").ToBool()
+                    });
+                parameterList.Add(new OdbcParameter("Cancelled", OdbcType.Bit)
+                    {
+                        Value = AParameters.Get("param_status_cancelled").ToBool()
+                    });
+                parameterList.Add(new OdbcParameter("Rejected", OdbcType.Bit)
+                    {
+                        Value = AParameters.Get("param_status_rejected").ToBool()
+                    });
+                parameterList.Add(new OdbcParameter("Active", OdbcType.Bit)
+                    {
+                        Value = AParameters.Get("param_active_partners").ToBool()
+                    });
+                parameterList.Add(new OdbcParameter("Exclude_no_soliciations", OdbcType.Bit)
+                    {
+                        Value = AParameters.Get("param_exclude_no_solicitations").ToBool()
+                    });
+
+                // add address filter information to sql statement and parameter list
+                AddressFilterAdded = TExtractHelper.AddAddressFilter(AParameters, ref SqlStmt, ref parameterList);
+                
                 TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
-                DataTable partnerkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "partners", Transaction, parameters);
+                DataTable partnerkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "partners", Transaction,
+                    TExtractHelper.ConvertParameterArrayList(parameterList));
 
                 if (NewTransaction)
                 {
@@ -121,7 +133,8 @@ namespace Ict.Petra.Server.MPartner.queries
                     out NewExtractID,
                     out VerificationResult,
                     partnerkeys,
-                    0);
+                    0,
+                    AddressFilterAdded);
 
                 if (ReturnValue)
                 {

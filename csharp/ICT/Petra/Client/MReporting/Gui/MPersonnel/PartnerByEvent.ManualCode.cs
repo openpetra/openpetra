@@ -115,11 +115,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 
             if (FCalledForConferences)
             {
-                Table = TRemote.MPartner.Partner.WebConnectors.GetConferenceUnits("");
+                Table = TRemote.MPartner.Partner.WebConnectors.GetConferenceUnits(AFilter);
             }
             else
             {
-                Table = TRemote.MPartner.Partner.WebConnectors.GetOutreachUnits("");
+                Table = TRemote.MPartner.Partner.WebConnectors.GetOutreachUnits(AFilter);
             }
             
             DataView view = new DataView(Table);
@@ -143,6 +143,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             //TODO: only temporarily until settings file exists
             clbEvent.SetCheckedStringList("");
             
+        }
+        
+        private void FilterList (System.Object sender, EventArgs e)
+        {
+        	LoadListData (txtFilter.Text);
         }
         
         private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)

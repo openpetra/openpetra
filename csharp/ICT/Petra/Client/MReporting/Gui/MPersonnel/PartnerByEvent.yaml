@@ -17,11 +17,16 @@
         SETCONTROLSLOCALVARS: BLANK
     Security:
         ModulePermissionRequired: [PTNRUSER]
+    Actions:
+        actFilter: {Label=Filter List, ActionClick=FilterList}
     Controls:
         tpgReportSpecific: {ControlsOrientation=vertical}
             Label: Report parameters
-            Controls: [pnlTop, pnlBottom]
-        pnlTop: {ControlsOrientation=horizontal}
+            Controls: [pnlFilter, pnlMiddle, pnlBottom]
+        pnlFilter: {ControlsOrientation=horizontal}
+            Dock: Fill
+            Controls: [txtFilter, btnFilter]
+        pnlMiddle: {ControlsOrientation=horizontal}
             #Dock: Fill
             Controls: [pnlGrid, grpChkBoxs]
         pnlBottom: {ControlsOrientation=horizontal}
@@ -44,6 +49,11 @@
             ParameterName: param_events
             Width: 550
             Height: 200
+        txtFilter:
+            NoLabel: true
+            Width: 300
+        btnFilter:
+            Action: actFilter
         chkCancelled: {Label=Cancelled, CheckBoxAttachedLabel=right, ParameterName=param_status_cancelled}
         chkRejected: {Label=Rejected, CheckBoxAttachedLabel=right, ParameterName=param_status_rejected}
         chkAccepted: {Label=Accepted, CheckBoxAttachedLabel=right, ParameterName=param_status_accepted}

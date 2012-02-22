@@ -44,21 +44,33 @@ namespace Ict.Petra.Server.MPartner.queries
         /// <param name="AParameters"></param>
         /// <param name="ASqlStmt"></param>
         /// <param name="AOdbcParameterList"></param>
-        /// <param name="AAddressFilterAdded"></param>
-        /// <returns></returns>
+        /// <returns>true if address tables and fields were added</returns>
         public static bool AddAddressFilter(TParameterList AParameters, ref string ASqlStmt,
-            ref TSelfExpandingArrayList AOdbcParameterList,
-            out bool AAddressFilterAdded)
+            ref TSelfExpandingArrayList AOdbcParameterList)
         {
             string WhereClause = "";
             string TableNames = "";
+            string FieldNames = "";
+            string OrderByClause = "";
             string StringValue;
             DateTime DateValue;
             string PostCodeFrom = "";
             string PostCodeTo = "";
             bool LocationTableNeeded = false;
+            bool PartnerLocationTableNeeded = false;
             bool RegionTableNeeded = false;
+            bool AddressFilterAdded = false;
 
+            // add check for mailing addresses only
+            if (AParameters.Exists("param_mailing_addresses_only"))
+            {
+                if (AParameters.Get("param_mailing_addresses_only").ToBool())
+                {
+                    WhereClause = WhereClause + " AND pub_p_partner_location.p_send_mail_l";
+                    PartnerLocationTableNeeded = true;
+                }
+            }
+            
             // add city statement (allow any city that begins with search string)
             if (AParameters.Exists("param_city"))
             {
@@ -187,14 +199,28 @@ namespace Ict.Petra.Server.MPartner.queries
                 }
             }
 
+           	// if location table is needed then automatically partner location table is needed as well
             if (LocationTableNeeded)
             {
+                FieldNames = ", pub_p_partner_location.p_site_key_n, pub_p_partner_location.p_location_key_i ";
                 TableNames = TableNames + ", pub_p_location, pub_p_partner_location";
 
                 WhereClause = " AND pub_p_partner_location.p_partner_key_n = pub_p_partner.p_partner_key_n" +
                               " AND pub_p_location.p_site_key_n = pub_p_partner_location.p_site_key_n" +
                               " AND pub_p_location.p_location_key_i = pub_p_partner_location.p_location_key_i" +
                               WhereClause;
+                              
+                OrderByClause = ", pub_p_partner.p_partner_key_n";
+            }
+            else if (PartnerLocationTableNeeded)
+            {
+                FieldNames = ", pub_p_partner_location.p_site_key_n, pub_p_partner_location.p_location_key_i ";
+                TableNames = TableNames + ", pub_p_partner_location";
+
+                WhereClause = " AND pub_p_partner_location.p_partner_key_n = pub_p_partner.p_partner_key_n" +
+                              WhereClause;
+                              
+                OrderByClause = ", pub_p_partner.p_partner_key_n";
             }
 
             if (RegionTableNeeded)
@@ -202,20 +228,22 @@ namespace Ict.Petra.Server.MPartner.queries
                 TableNames = TableNames + ", pub_p_postcode_region, pub_p_postcode_range";
             }
 
-            ASqlStmt = ASqlStmt.Replace("##address_filter_table_names##", TableNames);
+            ASqlStmt = ASqlStmt.Replace("##address_filter_fields##", FieldNames);
+            ASqlStmt = ASqlStmt.Replace("##address_filter_tables##", TableNames);
             ASqlStmt = ASqlStmt.Replace("##address_filter_where_clause##", WhereClause);
+            ASqlStmt = ASqlStmt.Replace("##address_filter_order_by_clause##", OrderByClause);
 
             if ((TableNames.Length > 0)
                 || (WhereClause.Length > 0))
             {
-                AAddressFilterAdded = true;
+                AddressFilterAdded = true;
             }
             else
             {
-                AAddressFilterAdded = false;
+                AddressFilterAdded = false;
             }
 
-            return true;
+            return AddressFilterAdded;
         }
 
         /// <summary>

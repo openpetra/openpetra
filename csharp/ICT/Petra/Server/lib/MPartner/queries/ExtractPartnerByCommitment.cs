@@ -51,6 +51,7 @@ namespace Ict.Petra.Server.MPartner.queries
                 Boolean ReturnValue = false;
                 Boolean NewTransaction;
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+                bool AddressFilterAdded;
 
                 String SqlStmt = TDataBase.ReadSqlFile("Partner.Queries.ExtractPartnerByCommitment.sql");
 
@@ -61,77 +62,100 @@ namespace Ict.Petra.Server.MPartner.queries
                     param_commitment_status_choices.Add(choice.ToString());
                 }
 
-                OdbcParameter[] parameters = new OdbcParameter[]
-                {
-                    new OdbcParameter("param_start_date_from_unset", OdbcType.Bit) {
+                
+                // add parameters to ArrayList
+                TSelfExpandingArrayList parameterList = new TSelfExpandingArrayList();
+                
+                parameterList.Add(new OdbcParameter("param_start_date_from_unset", OdbcType.Bit) 
+                    {
                         Value = AParameters.Get("param_start_date_from").IsZeroOrNull()
-                    },
-                    new OdbcParameter("param_start_date_from", OdbcType.Date) {
+                    });
+                parameterList.Add(new OdbcParameter("param_start_date_from", OdbcType.Date) 
+                    {
                         Value = AParameters.Get("param_start_date_from").ToDate()
-                    },
-                    new OdbcParameter("param_start_date_to_unset", OdbcType.Bit) {
+                    });
+                parameterList.Add(new OdbcParameter("param_start_date_to_unset", OdbcType.Bit)
+                    {
                         Value = AParameters.Get("param_start_date_to").IsZeroOrNull()
-                    },
-                    new OdbcParameter("param_start_date_to", OdbcType.Date) {
+                    });
+                parameterList.Add(new OdbcParameter("param_start_date_to", OdbcType.Date)
+                    {
                         Value = AParameters.Get("param_start_date_to").ToDate()
-                    },
-                    new OdbcParameter("param_end_date_from_unset", OdbcType.Bit) {
+                    });
+                parameterList.Add(new OdbcParameter("param_end_date_from_unset", OdbcType.Bit)
+                    {
                         Value = AParameters.Get("param_end_date_from").IsZeroOrNull()
-                    },
-                    new OdbcParameter("param_end_date_from", OdbcType.Date) {
+                    });
+                parameterList.Add(new OdbcParameter("param_end_date_from", OdbcType.Date)
+                    {
                         Value = AParameters.Get("param_end_date_from").ToDate()
-                    },
-                    new OdbcParameter("param_end_date_to_unset", OdbcType.Bit) {
+                    });
+                parameterList.Add(new OdbcParameter("param_end_date_to_unset", OdbcType.Bit)
+                    {
                         Value = AParameters.Get("param_end_date_to").IsZeroOrNull()
-                    },
-                    new OdbcParameter("param_end_date_to", OdbcType.Date) {
+                    });
+                parameterList.Add(new OdbcParameter("param_end_date_to", OdbcType.Date)
+                    {
                         Value = AParameters.Get("param_end_date_to").ToDate()
-                    },
-                    new OdbcParameter("param_date_valid_on_unset", OdbcType.Bit) {
+                    });
+                parameterList.Add(new OdbcParameter("param_date_valid_on_unset", OdbcType.Bit)
+                    {
                         Value = AParameters.Get("param_date_valid_on").IsZeroOrNull()
-                    },
-                    new OdbcParameter("param_date_valid_on_a", OdbcType.Date) {
+                    });
+                parameterList.Add(new OdbcParameter("param_date_valid_on_a", OdbcType.Date)
+                    {
                         Value = AParameters.Get("param_date_valid_on").ToDate()
-                    },
-                    new OdbcParameter("param_date_valid_on_b", OdbcType.Date) {
+                    });
+                parameterList.Add(new OdbcParameter("param_date_valid_on_b", OdbcType.Date)
+                    {
                         Value = AParameters.Get("param_date_valid_on").ToDate()
-                    },
+                    });
 
-                    new OdbcParameter("param_field_sending_unset", OdbcType.Bit) {
+                parameterList.Add(new OdbcParameter("param_field_sending_unset", OdbcType.Bit)
+                    {
                         Value = AParameters.Get("param_field_sending").IsZeroOrNull()
-                    },
-                    new OdbcParameter("param_field_sending", OdbcType.Int) {
+                    });
+                parameterList.Add(new OdbcParameter("param_field_sending", OdbcType.Int)
+                    {
                         Value = AParameters.Get("param_field_sending").ToInt32()
-                    },
-                    new OdbcParameter("param_field_receiving_unset", OdbcType.Bit) {
+                    });
+                parameterList.Add(new OdbcParameter("param_field_receiving_unset", OdbcType.Bit)
+                    {
                         Value = AParameters.Get("param_field_receiving").IsZeroOrNull()
-                    },
-                    new OdbcParameter("param_field_receiving", OdbcType.Int) {
+                    });
+                parameterList.Add(new OdbcParameter("param_field_receiving", OdbcType.Int)
+                    {
                         Value = AParameters.Get("param_field_receiving").ToInt32()
-                    },
+                    });
 
-                    new OdbcParameter("param_consider_commitment_status_not", OdbcType.Bit) {
+                parameterList.Add(new OdbcParameter("param_consider_commitment_status_not", OdbcType.Bit)
+                    {
                         Value = !AParameters.Get("param_consider_commitment_status").ToBool()
-                    },
-                    TDbListParameterValue.OdbcListParameterValue("param_commitment_status_choices",
-                        OdbcType.VarChar,
-                        param_commitment_status_choices),
-                    new OdbcParameter("param_include_no_commitment_status", OdbcType.Bit) {
+                    });
+                parameterList.Add(TDbListParameterValue.OdbcListParameterValue("param_commitment_status_choices",
+                                                                               OdbcType.VarChar,
+                                                                               param_commitment_status_choices));
+                parameterList.Add(new OdbcParameter("param_include_no_commitment_status", OdbcType.Bit)
+                    {
                         Value = AParameters.Get("param_include_no_commitment_status").ToBool()
-                    },
+                    });
 
-                    new OdbcParameter("param_active_not", OdbcType.Bit) {
+                parameterList.Add(new OdbcParameter("param_active_not", OdbcType.Bit)
+                    {
                         Value = !AParameters.Get("param_active").ToBool()
-                    },
+                    });
 
-/*                    new OdbcParameter("param_mailing_addresses_only_not", OdbcType.Bit) { Value = !AParameters.Get("param_mailing_addresses_only").ToBool() },*/
-                    new OdbcParameter("param_exclude_no_solicitations_not", OdbcType.Bit) {
+                parameterList.Add(new OdbcParameter("param_exclude_no_solicitations_not", OdbcType.Bit)
+                    {
                         Value = !AParameters.Get("param_exclude_no_solicitations").ToBool()
-                    },
-                };
+                    });
+
+                // add address filter information to sql statement and parameter list
+                AddressFilterAdded = TExtractHelper.AddAddressFilter(AParameters, ref SqlStmt, ref parameterList);
 
                 TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
-                DataTable partnerkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "partners", Transaction, parameters);
+                DataTable partnerkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "partners", Transaction,
+                    TExtractHelper.ConvertParameterArrayList(parameterList));
 
                 if (NewTransaction)
                 {
@@ -157,7 +181,8 @@ namespace Ict.Petra.Server.MPartner.queries
                     out NewExtractID,
                     out VerificationResult,
                     partnerkeys,
-                    0);
+                    0,
+                    AddressFilterAdded);
 
                 if (ReturnValue)
                 {
