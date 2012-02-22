@@ -44,11 +44,12 @@
               PUB_a_ap_payment.a_ledger_number_i = {{param_ledger_number_i}}
               AND PUB_a_ap_document.a_ledger_number_i = {{param_ledger_number_i}}
               AND PUB_a_ap_document_payment.a_ledger_number_i = {{param_ledger_number_i}}
-              AND PUB_a_ap_document_payment.a_payment_number_i = {{param_payment_number_i}}
-              AND PUB_a_ap_payment.a_payment_number_i = {{param_payment_number_i}}
+              AND PUB_a_ap_payment.a_payment_number_i &gt;= {{param_payment_num_from_i}}
+              AND PUB_a_ap_payment.a_payment_number_i &lt;= {{param_payment_num_to_i}}
+              AND PUB_a_ap_payment.a_payment_number_i = PUB_a_ap_document_payment.a_payment_number_i
               AND PUB_a_ap_document_payment.a_ap_number_i = PUB_a_ap_document.a_ap_number_i
               AND PUB_a_ap_document.p_partner_key_n = PUB_a_ap_supplier.p_partner_key_n
-              AND PUB_p_partner.p_partner_key_n = PUB_a_ap_supplier.p_partner_key_n
+              AND PUB_p_partner.p_partner_key_n = PUB_a_ap_document.p_partner_key_n
             </value>
           </queryDetail>
         </query>

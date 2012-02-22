@@ -258,7 +258,7 @@ namespace Ict.Petra.Client.MReporting.Gui
 
 
         /// <summary>
-        /// This function makes sure whether the window can be closed.
+        /// Determines whether the window can be closed.
         /// It can be used e.g. if something is still edited.
         /// </summary>
         /// <returns>true if window can be closed
@@ -327,7 +327,8 @@ namespace Ict.Petra.Client.MReporting.Gui
         }
 
         /// <summary>
-        /// generate a report, called by menu item or toolbar button
+        /// Generate a report, called by menu item or toolbar button.
+        /// Can also cancel a currently running report thread.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -335,7 +336,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             if ((FGenerateReportThread != null) && FGenerateReportThread.IsAlive)
             {
-                // cancel the report
+                // Cancel the report
                 FCalculator.CancelReportCalculation();
                 return;
             }
@@ -381,7 +382,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         }
 
         /// <summary>
-        /// generate an extract
+        /// Generate an extract
         /// </summary>
         public void MI_GenerateExtract_Click(System.Object sender, System.EventArgs e)
         {
@@ -441,7 +442,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         }
 
         /// <summary>
-        /// toggle the option to wrap a column in the report
+        /// Toggle the option to wrap a column in the report
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -455,7 +456,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         }
 
         /// <summary>
-        /// Reads path of default browser from registry
+        /// Reads path of default browser from registry - apparently no-one is calling this!
         /// </summary>
         /// <returns>void</returns>
         public static string GetDefaultBrowserPath()
@@ -475,108 +476,109 @@ namespace Ict.Petra.Client.MReporting.Gui
         }
 
         /// <summary>
-        /// This procedure does the calculation of the report, including fetching the parameters from the GUI, verifying them, and providing error messages This should be called in a different thread, by MI_GenerateReport_Click
+        /// This can be used directly by external functions that need to generate
+        /// a report without showing the UI for it.
         /// </summary>
-        /// <returns>void</returns>
-        private void GenerateReport()
+        /// <param name="ACalculator">This must be set up already</param>
+        /// <param name="ACallerForm">Parent Form</param>
+        /// <param name="AReportName"></param>
+        /// <param name="AWrapColumn"></param>
+        public static void GenerateReport(TRptCalculator ACalculator, Form ACallerForm, String AReportName, bool AWrapColumn)
         {
             try
             {
-                // calculate the report
-                // TODO : should the server know the user name and password? what about user permissions? does not know about the database
-                if (FCalculator.GenerateResultRemoteClient())
+                if (ACalculator.GenerateResultRemoteClient())
                 {
                     TMyUpdateDelegate myDelegate = @ReportCalculationSuccess;
-                    FWinForm.Invoke((System.Delegate) new TMyUpdateDelegate(myDelegate));
-                }
-                else
-                {
-                    TMyUpdateDelegate myDelegate = @ReportCalculationFailure;
-                    FWinForm.Invoke((System.Delegate) new TMyUpdateDelegate(myDelegate));
+                    ACallerForm.Invoke((System.Delegate)new TMyUpdateDelegate(myDelegate), new object[] { ACalculator, ACallerForm, AReportName, AWrapColumn });
                 }
             }
             catch (Exception e)
             {
-                if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_REPORTING)
+//              if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_REPORTING)  // I always want this, whatever my debug level?
                 {
                     MessageBox.Show(e.ToString());
                     MessageBox.Show(e.Message);
                 }
-
-                TMyUpdateDelegate myDelegate = @ReportCalculationFailure;
-                FWinForm.Invoke((System.Delegate) new TMyUpdateDelegate(myDelegate));
             }
         }
 
         /// <summary>
-        /// This procedure does the calculation of the extract, including fetching the parameters from the GUI, verifying them, and providing error messages This should be called in a different thread, by MI_GenerateExtract_Click
+        /// This procedure does the calculation of the report and provides error messages. It is called in a new thread, by MI_GenerateReport_Click.
+        /// I'm just going to call the static version, above.
+        /// </summary>
+        /// <returns>void</returns>
+        private void GenerateReport()
+        {
+            GenerateReport(FCalculator, FWinForm, FReportName, FWrapColumn);
+            this.FWinForm.Cursor = Cursors.Default;
+            ((IFrmReporting)this.FTheForm).EnableBusy(false);
+
+        }
+
+        /// <summary>
+        /// This procedure does the calculation of the extract, and provides error messages. 
+        /// It is called in a new thread, by MI_GenerateExtract_Click
         /// </summary>
         /// <returns>void</returns>
         private void GenerateExtract()
         {
-            // extracts are not calculated by using the default way but other method has to be declared,
+            // Extracts are not calculated in the default way but another method must be declared,
             // so make this known to the calculator
             if (FCalculateFromMethod.Length > 0)
             {
                 FCalculator.AddParameter("calculateFromMethod", FCalculateFromMethod);
             }
 
-            // at the moment triggers same procedure as generating a report
+            // At the moment triggers the same procedure as generating a report
             FCalculator.CalculatesExtract = true;
             GenerateReport();
         }
 
-        private void ReportCalculationSuccess()
+        /// <summary>
+        /// This was previously "protected", so that might give me some problem...
+        /// </summary>
+        /// <param name="Calculator"></param>
+        /// <param name="ACallerForm"></param>
+        /// <param name="AReportName"></param>
+        /// <param name="AWrapColumn"></param>
+        public static void ReportCalculationSuccess(TRptCalculator Calculator, Form ACallerForm, String AReportName, bool AWrapColumn)
         {
             if (TClientSettings.DebugLevel >= TClientSettings.DEBUGLEVEL_REPORTINGDATA)
             {
-                FCalculator.GetParameters().Save(TClientSettings.PathLog + Path.DirectorySeparatorChar + "debugParameterReturn.xml", true);
-                FCalculator.GetResults().WriteCSV(
-                    FCalculator.GetParameters(), TClientSettings.PathLog + Path.DirectorySeparatorChar + "debugResultReturn.csv");
+                Calculator.GetParameters().Save(TClientSettings.PathLog + Path.DirectorySeparatorChar + "debugParameterReturn.xml", true);
+                Calculator.GetResults().WriteCSV(
+                    Calculator.GetParameters(), TClientSettings.PathLog + Path.DirectorySeparatorChar + "debugResultReturn.csv");
             }
 
-            this.FWinForm.Cursor = Cursors.Default;
-
-            if (FCalculator.GetParameters().Exists("SaveCSVFilename")
-                && (FCalculator.GetParameters().Get("SaveCSVFilename").ToString().Length > 0))
+            if (Calculator.GetParameters().Exists("SaveCSVFilename")
+                && (Calculator.GetParameters().Get("SaveCSVFilename").ToString().Length > 0))
             {
-                FCalculator.GetResults().WriteCSV(FCalculator.GetParameters(), FCalculator.GetParameters().Get("SaveCSVFilename").ToString());
+                Calculator.GetResults().WriteCSV(Calculator.GetParameters(), Calculator.GetParameters().Get("SaveCSVFilename").ToString());
             }
 
-            if (FCalculator.GetParameters().GetOrDefault("OnlySaveCSV", -1, new TVariant(false)).ToBool() == true)
+            if (Calculator.GetParameters().GetOrDefault("OnlySaveCSV", -1, new TVariant(false)).ToBool() == false)
             {
-                ((IFrmReporting) this.FTheForm).EnableBusy(false);
+                PreviewReport(Calculator, ACallerForm, AReportName, AWrapColumn);
             }
-            else
-            {
-                PreviewReport();
-            }
-        }
-
-        private void ReportCalculationFailure()
-        {
-            // if generateResult failed or was cancelled
-            this.FWinForm.Cursor = Cursors.Default;
-
-            ((IFrmReporting) this.FTheForm).EnableBusy(false);
         }
 
         /// <summary>
-        /// to be called by the thread, after the calculation of the report has been finished
+        /// Called after the calculation of the report has been finished.
+        /// Converted to static so that it can be called from elsewhere.
         /// </summary>
         /// <returns>void</returns>
-        protected void PreviewReport()
+        public static void PreviewReport(TRptCalculator Calculator, Form ACallerForm, String AReportName, bool AWrapColumn)
         {
-            // show a print window with all kinds of output options
-            TFrmPrintPreview printWindow = new TFrmPrintPreview(FWinForm, FReportName, FCalculator.GetDuration(),
-                FCalculator.GetResults(), FCalculator.GetParameters(), FWrapColumn);
+            // Create a print window with all kinds of output options
+            TFrmPrintPreview printWindow = new TFrmPrintPreview(ACallerForm, AReportName, Calculator.GetDuration(),
+                Calculator.GetResults(), Calculator.GetParameters(), AWrapColumn);
 
-            this.FWinForm.AddOwnedForm(printWindow);
-            printWindow.Owner = FWinForm;
+            ACallerForm.AddOwnedForm(printWindow);
+            printWindow.Owner = ACallerForm;
 
-// TODO            printWindow.SetPrintChartProcedure(GenerateChart);
+// TODO     printWindow.SetPrintChartProcedure(GenerateChart);
             printWindow.ShowDialog();
-            ((IFrmReporting) this.FTheForm).EnableBusy(false);
         }
 
         #region Manage Settings
@@ -847,7 +849,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             try
             {
                 FVerificationResults = new TVerificationResultCollection();
-                ReadControls(AReportAction);
+                ReadControls(AReportAction); // Overridden versions of this method may add verification results.
 
                 if (FVerificationResults.Count != 0)
                 {
@@ -894,27 +896,37 @@ namespace Ict.Petra.Client.MReporting.Gui
         }
 
         /// <summary>
+        /// Set up the calculator with the initial parameters that everyone needs
+        /// </summary>
+        /// <param name="ACalculator"></param>
+        /// <param name="AXMLFiles"></param>
+        /// <param name="AIsolationLevel"></param>
+        /// <param name="ACurrentReport"></param>
+        public static void InitialiseCalculator (TRptCalculator ACalculator, string AXMLFiles, string AIsolationLevel, string ACurrentReport)
+        {
+            ACalculator.ResetParameters();
+
+            if (AXMLFiles.Length > 0)
+            {
+                ACalculator.AddParameter("xmlfiles", AXMLFiles);
+            }
+
+            if (AIsolationLevel.Length > 0)
+            {
+                ACalculator.AddParameter("IsolationLevel", AIsolationLevel);
+            }
+
+            ACalculator.AddParameter("currentReport", ACurrentReport);
+        }
+
+        /// <summary>
         /// Reads the selected values from the controls,
         /// and stores them into the parameter system of FCalculator
-        ///
         /// </summary>
         /// <returns>void</returns>
         public virtual void ReadControls(TReportActionEnum AReportAction)
         {
-            FCalculator.ResetParameters();
-
-            if (FXMLFiles.Length > 0)
-            {
-                FCalculator.AddParameter("xmlfiles", FXMLFiles);
-            }
-
-            if (FIsolationLevel.Length > 0)
-            {
-                FCalculator.AddParameter("IsolationLevel", FIsolationLevel);
-            }
-
-            FCalculator.AddParameter("currentReport", FCurrentReport);
-
+            InitialiseCalculator (FCalculator, FXMLFiles, FIsolationLevel, FCurrentReport);
             ((IFrmReporting) this.FTheForm).ReadControls(FCalculator, AReportAction);
 
             TParameterList CurrentParameters = FCalculator.GetParameters();
@@ -1310,7 +1322,7 @@ namespace Ict.Petra.Client.MReporting.Gui
     /// <summary>
     /// a delegate for running the report preview window
     /// </summary>
-    public delegate void TMyUpdateDelegate();
+    public delegate void TMyUpdateDelegate(TRptCalculator Calculator, Form ACallerForm, String AReportName, bool AWrapColumn);
 
     /// for accessing the reporting form from the TFrmPetraReportingUtils object
     public interface IFrmReporting : IFrmPetra

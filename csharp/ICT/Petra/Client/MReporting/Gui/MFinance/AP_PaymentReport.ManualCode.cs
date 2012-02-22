@@ -28,6 +28,7 @@ using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MReporting;
+using System.Windows.Forms;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
@@ -43,7 +44,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             set
             {
                 FLedgerNumber = value;
-                txtLedgerNumber.Text = FLedgerNumber.ToString();
             }
         }
 
@@ -51,6 +51,27 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         {
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
             ACalc.AddParameter("MaxDisplayColumns", 7);
+        }
+
+        public static void CreateReportNoGui(Int32 ALedgerNumber, Int32 APaymentNumber, Form Owner)
+        {
+            TRptCalculator Calculator = new TRptCalculator();
+            TFrmPetraReportingUtils.InitialiseCalculator(
+                Calculator, 
+                "Finance/AccountsPayable/AP_PaymentReport.xml,Finance/finance.xml,common.xml", 
+                "",
+                "APPaymentReport");
+
+            Calculator.AddParameter("param_payment_num_from_i", APaymentNumber);
+            Calculator.AddParameter("param_payment_num_to_i", APaymentNumber);
+/*
+            Calculator.AddParameter("param_payment_date_from_i", DateTime.Now);
+            Calculator.AddParameter("param_payment_date_to_i", DateTime.Now);
+*/
+            Calculator.AddParameter("param_ledger_number_i", ALedgerNumber);
+            Calculator.AddParameter("MaxDisplayColumns", 7);
+
+            TFrmPetraReportingUtils.GenerateReport(Calculator, Owner, "APPaymentReport", true);
         }
     }
 }

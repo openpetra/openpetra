@@ -38,6 +38,7 @@ using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Client.MReporting.Gui.MFinance;
 
 namespace Ict.Petra.Client.MFinance.Gui.AP
 {
@@ -160,7 +161,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         }
 
         /// <summary>
-        /// set which payments should be paid; initialises the data of this screen
+        /// Set which payments should be paid; initialises the data of this screen
         /// </summary>
         /// <param name="ADataset"></param>
         /// <param name="ADocumentsToPay"></param>
@@ -344,8 +345,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
             else
             {
-                // TODO: print reports on successfully posted batch
-                MessageBox.Show(Catalog.GetString("The AP payment has been posted successfully!"));
+                //
+                // I need to find the payment number, which will have been set by the call to PostAPPayments..
+                //
+                Int32 PaymentNumber = FMainDS.AApPayment[0].PaymentNumber;
+                Int32 LedgerNumber = FMainDS.AApPayment[0].LedgerNumber;
+
+                // Print Payment report..
+                TFrmAP_PaymentReport.CreateReportNoGui(LedgerNumber, PaymentNumber, this);
 
                 // TODO: show posting register of GL Batch?
 
